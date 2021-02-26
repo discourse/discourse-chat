@@ -55,13 +55,12 @@ after_initialize do
       if tc && tc.trashed?
         tc.recover!
       else if tc
-        tc.errors.add(:base, :already_exists)
-        success = false
+        return render_json_error I18n.t("chat.already_enabled")
       end
         tc = TopicChat.new(topic_id: t.id)
       end
-      success = tc.save
 
+      success = tc.save
       if success
         t.add_small_action(current_user, 'chat_enabled', current_user)
       end
@@ -76,12 +75,16 @@ after_initialize do
 
       tc = TopicChat.with_deleted.find_by(topic_id: t.id)
       if tc.trashed?
-        return render_json_error I18n.t("chat.already_exists")
+        return render_json_error I18n.t("chat.already_disabled")
       end
       tc.trash!(current_user)
-      tc.save!
 
-      render_success_json
+      success = tc.save
+      if success
+        t.add_small_action(current_user, 'chat_disabled', current_user)
+      end
+
+      success ? render_success_json : render_json_error(tc)
     end
 
     def send
@@ -129,7 +132,17 @@ after_initialize do
       raise Discourse::NotFound unless tc
 
       messages = TopicChatMessage.where(topic: t).order_by(created_at: :desc).limit(20)
+      # TODO: send message bus position
       render_serialized(message, TopicChatMessageSerializer)
+    end
+
+    def historical
+      t = Topic.with_deleted.find(params[:topic_id])
+      raise Discourse::NotFound unless guardian.can_see?(t)
+      tc = TopicChat.with_deleted.find_by(topic: t)
+      raise Discourse::NotFound unless tc
+
+      raise NotImplementedError
     end
 
     def delete

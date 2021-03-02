@@ -1,0 +1,3 @@
+plugins:
+  topic_chat_enabled:
+    default: false

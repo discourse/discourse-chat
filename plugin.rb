@@ -8,6 +8,7 @@
 
 enabled_site_setting :topic_chat_enabled
 
+register_asset 'stylesheets/drawer.scss'
 
 after_initialize do
   module ::DiscourseTopicChat
@@ -159,6 +160,67 @@ after_initialize do
       if !SiteSetting.topic_chat_enabled
         raise Discourse::NotFound
       end
+    end
+  end
+
+  require_dependency 'topic_view'
+  class ::TopicView
+    def chat_record
+      return @chat_record if @chat_record_lookup_done
+      begin
+        @chat_record = TopicChat.with_deleted.find_by(topic_id: @topic.id)
+        @chat_record_lookup_done = true
+        @chat_record
+      end
+    end
+
+    def chat_history_by_post
+      @chat_history_by_post ||= begin
+                                  msgs = TopicChatMessage
+                                    .where(topic_id: object.topic.id)
+                                    .where(post_id: object.posts.pluck(:id))
+                                    .order(created_at: :asc)
+                                  by_post = {}
+                                  msgs.each do |tcm|
+                                    by_post[tcm.post_id] ||= []
+                                    by_post[tcm.post_id] << tcm
+                                  end
+                                end
+    end
+  end
+
+  require_dependency 'topic_view_serializer'
+  class ::TopicViewSerializer
+    attributes :has_chat_live #, :has_chat_history
+    attributes :can_chat
+
+    def has_chat_live
+      chat_lookup && !chat_lookup.trashed?
+    end
+
+    #def has_chat_history
+    #  !chat_lookup.nil?
+    #end
+
+
+    private
+    def chat_lookup
+      @chat_lookup ||= TopicChat.with_deleted.find_by(topic_id: object.topic.id)
+    end
+  end
+
+  require_dependency 'post_serializer'
+  class ::PostSerializer
+    attributes :chat_history
+
+    def chat_history
+      msgs = topic_view.chat_history_by_post[object.id]
+      return nil unless msgs
+      TopicChatMessageSerializer.new(msgs, root: false).as_json
+    end
+
+    def include_chat_history?
+      topic_view && topic_view.chat_record
     end
   end
 

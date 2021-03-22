@@ -5,12 +5,7 @@
       {{d-icon this.expandIcon}}
     </div>
     <div class="topic-chat-drawer-content">
-    {{#each message in messages}}
-      <div class="topic-chat-msg">
-      <span class="user">{{message.username}}</span>
-      <span class="msg">{{message.text}}</span>
-      </div>
-    {{/each}}
+      {{float-chat-pane topicId=this.selectedTopicId}}
     </div>
   </div>
 </div>

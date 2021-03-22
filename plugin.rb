@@ -34,6 +34,8 @@ after_initialize do
     has_one :topic_chat
   }
 
+  # MessageBus.register_client_message_filter
+
   require_dependency "application_controller"
 
   class DiscourseTopicChat::ChatController < ::ApplicationController
@@ -202,6 +204,9 @@ after_initialize do
     #  !chat_lookup.nil?
     #end
 
+    def can_chat
+      scope.can_chat?(object)
+    end
 
     private
     def chat_lookup
@@ -228,13 +233,12 @@ after_initialize do
     get '/index' => 'chat#index'
     get '/t/:topic_id/recent' => 'chat#recent'
     post '/t/:topic_id' => 'chat#send'
+    post '/t/:topic_id/enable' => 'chat#enable'
     delete '/t/:topic_id/:message_id' => 'chat#delete'
     post '/t/:topic_id/:message_id/flag' => 'chat#flag'
   end
 
   Discourse::Application.routes.append do
     mount ::DiscourseTopicChat::Engine, at: '/chat'
-
-    post '/t/:topic_id/chat' => 'discoursre_topic_chat/chat#enable'
   end
 end

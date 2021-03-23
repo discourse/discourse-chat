@@ -2,34 +2,36 @@
 
 class TopicChatPublisher
 
-  def publish_new!(msg)
+  def self.last_id(topic)
+    MessageBus.last_id("/chat/#{topic.id}")
+  end
+
+  def self.publish_new!(topic, msg)
     content = TopicChatMessageSerializer.new(msg, { scope: anonymous_guardian }).as_json
-    MessageBus.publish("/chat/#{topic.id}", {
-      typ: 'sent',
-      msg: content,
-    })
+    content['typ'] = 'sent'
+    MessageBus.publish("/chat/#{topic.id}", content)
   end
 
-  def publish_presence!(topic, user, typ)
+  def self.publish_presence!(topic, user, typ)
     raise NotImplementedError
   end
 
-  def publish_delete!(msg)
+  def self.publish_delete!(msg)
     raise NotImplementedError
   end
 
-  def publish_index!
+  def self.publish_index!
     raise NotImplementedError
     MessageBus.publish("/chat-index", nil)
   end
 
-  def publish_flag!(msg)
+  def self.publish_flag!(msg)
     raise NotImplementedError
   end
 
   private
 
-  def anonymous_guardian
+  def self.anonymous_guardian
     Guardian.new(nil)
   end
 end

@@ -1,7 +1,9 @@
+$header-height: 2.5em;
+
 .topic-chat-float-container {
+  z-index: 120; // higher than timeline, lower than composer
   position: fixed;
   right: 0;
-  bottom: 0;
   left: 0;
   margin: 0;
   padding: 0;
@@ -11,8 +13,12 @@
   * {
     pointer-events: auto;
   }
+  bottom: 0;
+  &.composer-draft-collapsed {
+    bottom: 40px;
+  }
 }
-.topic-chat-drawer {
+.tc-drawer {
   width: 400px;
   margin-right: 20px;
   align-self: flex-end;
@@ -30,13 +36,17 @@
   &.expanded {
     max-height: 530px;
     height: 80vh;
+    .tc-live-pane, .tc-chat-listing {
+      max-height: calc(530px - #{$header-height});
+      height: calc(80vh - #{$header-height});
+    }
   }
 }
 .topic-chat-drawer-header {
   box-sizing: border-box;
   border-bottom: solid 1px var(--primary, $primary);
   padding: 0.25em 1em;
-  height: 2.5em;
+  height: $header-height;
   width: 100%;
   display: flex;
   justify-content: space-between;
@@ -50,7 +60,59 @@
     height: 1.1em;
   }
 }
-.topic-chat-drawer-content {
-  overflow-y: scroll;
-  height: calc(100% - 2.5em - 1px);
+
+.tc-live-pane {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  .tc-messages-scroll {
+    flex-grow: 1;
+    word-wrap: break-word;
+    white-space: normal;
+    overflow-y: scroll;
+    padding: 2px;
+    margin-left: 4px;
+  }
+  .tc-message {
+    margin-top: 4px;
+  }
+  .tc-meta-data {
+    color: $primary-high;
+    .chat-user-name {
+    font-weight: bold;
+  }
+  }
+  .scroll-stick-wrap {
+    position: relative;
+  }
+  .scroll-stick-wrap2 {
+    position: absolute;
+    bottom: 0;
+    margin-bottom: 2em;
+    display: flex;
+    width: 100%;
+    justify-content: center;
+  }
+  .scroll-stick-warning {
+    color: var(--primary-very-low, $primary-very-low);
+    background: var(--secondary-low, $secondary-low);
+    padding: 0.5em;
+    border-radius: 4px;
+    opacity: 75%;
+  }
+  .tc-composer {
+    min-height: 1.5em;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    textarea {
+      flex-grow: 1;
+      margin-bottom: 0;
+      border: 0;
+    }
+    margin-bottom: 2px;
+    border: solid var(--primary-medium, $primary-medium);
+    border-width: 1px 0;
+  }
 }

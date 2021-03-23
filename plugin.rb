@@ -23,16 +23,17 @@ after_initialize do
   load File.expand_path('../app/models/topic_chat.rb', __FILE__)
   load File.expand_path('../app/models/topic_chat_message.rb', __FILE__)
   load File.expand_path('../app/serializers/topic_chat_message_serializer.rb', __FILE__)
+  load File.expand_path('../app/serializers/topic_chat_view_serializer.rb', __FILE__)
+  load File.expand_path('../lib/topic_chat_view.rb', __FILE__)
   load File.expand_path('../app/services/topic_chat_publisher.rb', __FILE__)
   load File.expand_path('../lib/guardian_extensions.rb', __FILE__)
 
   reloadable_patch do |plugin|
     Guardian.class_eval { include DiscourseTopicChat::GuardianExtensions }
+    Topic.class_eval {
+      has_one :topic_chat
+    }
   end
-
-  Topic.class_eval {
-    has_one :topic_chat
-  }
 
   # MessageBus.register_client_message_filter
 
@@ -40,12 +41,7 @@ after_initialize do
 
   class DiscourseTopicChat::ChatController < ::ApplicationController
     requires_plugin DiscourseTopicChat::PLUGIN_NAME
-    before_action :ensure_enabled
     before_action :ensure_logged_in, only: [:send]
-
-    def index
-      raise NotImplementedError
-    end
 
     def enable
       t = Topic.find(params[:topic_id])
@@ -87,10 +83,10 @@ after_initialize do
         t.add_small_action(current_user, 'chat_disabled', current_user)
       end
 
-      success ? render_success_json : render_json_error(tc)
+      success ? (render json: success_json) : (render_json_error(tc))
     end
 
-    def send
+    def send_chat
       t = Topic.find(params[:topic_id])
       raise Discourse::NotFound unless guardian.can_see?(t)
       tc = TopicChat.find_by(topic: t)
@@ -124,19 +120,21 @@ after_initialize do
         return render_json_error(msg)
       end
 
-      TopicChatPublisher.publish_new!(msg)
-      render_success_json
+      TopicChatPublisher.publish_new!(t, msg)
+      render json: success_json
     end
 
     def recent
-      t = Topic.find(params[:topic_id])
-      raise Discourse::NotFound unless guardian.can_see?(t)
-      tc = TopicChat.find_by(topic: t)
+      topic = Topic.find(params[:topic_id])
+      raise Discourse::NotFound unless guardian.can_see?(topic)
+      tc = TopicChat.find_by(topic: topic)
       raise Discourse::NotFound unless tc
 
-      messages = TopicChatMessage.where(topic: t).order_by(created_at: :desc).limit(20)
-      # TODO: send message bus position
-      render_serialized(message, TopicChatMessageSerializer)
+      # n.b.: must fetch ID before querying DB
+      message_bus_last_id = TopicChatPublisher.last_id(topic)
+      messages = TopicChatMessage.where(topic: topic).order(created_at: :desc).limit(20)
+
+      render_serialized(TopicChatView.new(topic, messages, message_bus_last_id), TopicChatViewSerializer, root: :topic_chat_view)
     end
 
     def historical
@@ -156,12 +154,8 @@ after_initialize do
       raise NotImplementedError
     end
 
-    private
-
-    def ensure_enabled
-      if !SiteSetting.topic_chat_enabled
-        raise Discourse::NotFound
-      end
+    def index
+      render json: success_json
     end
   end
 
@@ -179,8 +173,8 @@ after_initialize do
     def chat_history_by_post
       @chat_history_by_post ||= begin
                                   msgs = TopicChatMessage
-                                    .where(topic_id: object.topic.id)
-                                    .where(post_id: object.posts.pluck(:id))
+                                    .where(topic_id: @topic.id)
+                                    .where(post_id: posts.pluck(:id))
                                     .order(created_at: :asc)
                                   by_post = {}
                                   msgs.each do |tcm|
@@ -191,11 +185,17 @@ after_initialize do
     end
   end
 
+  add_to_serializer('listable_topic', :has_chat_live) do
+    # TODO N+1 query
+    !object.topic_chat.nil?
+  end
+
   require_dependency 'topic_view_serializer'
   class ::TopicViewSerializer
     attributes :has_chat_live #, :has_chat_history
     attributes :can_chat
 
+    # overrides has_chat_live from ListableTopicSerializer
     def has_chat_live
       chat_lookup && !chat_lookup.trashed?
     end
@@ -205,7 +205,11 @@ after_initialize do
     #end
 
     def can_chat
-      scope.can_chat?(object)
+      scope.can_chat?(self.object)
+    end
+
+    def include_can_chat?
+      has_chat_live
     end
 
     private
@@ -232,7 +236,7 @@ after_initialize do
   DiscourseTopicChat::Engine.routes.draw do
     get '/index' => 'chat#index'
     get '/t/:topic_id/recent' => 'chat#recent'
-    post '/t/:topic_id' => 'chat#send'
+    post '/t/:topic_id' => 'chat#send_chat'
     post '/t/:topic_id/enable' => 'chat#enable'
     delete '/t/:topic_id/:message_id' => 'chat#delete'
     post '/t/:topic_id/:message_id/flag' => 'chat#flag'

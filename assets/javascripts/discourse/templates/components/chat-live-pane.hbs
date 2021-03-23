@@ -1,0 +1,10 @@
+<div class="tc-messages-scroll">
+  {{#each this.messages as |message|}}
+    {{chat-message-render message=message}}
+  {{/each}}
+</div>
+<div class="scroll-stick-wrap">
+<div class="scroll-stick-wrap2">
+<a class="btn btn-flat scroll-stick-warning {{if this.stickyScroll "hidden"}}" {{on "click" (action "restickScrolling")}}>{{i18n "chat.scroll_stick"}}</a>
+</div></div>
+{{chat-composer sendChat=(action "sendChat") loading=sendingloading}}

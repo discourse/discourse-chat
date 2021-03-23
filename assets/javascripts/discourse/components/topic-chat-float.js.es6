@@ -1,10 +1,14 @@
 import Component from "@ember/component";
 import discourseComputed from "discourse-common/utils/decorators";
+import I18n from "I18n";
 
 export default Component.extend({
-  classNameBindings: [":topic-chat-float-container", "enabled"],
+  classNameBindings: [":topic-chat-float-container", "hidden"],
 
-  selectedTopicId: 75,
+  hidden: true,
+
+  selectedTopicId: null,
+  selectedTopicTitle: null,
 
   didInsertElement() {
     this._super(...arguments);
@@ -23,6 +27,20 @@ export default Component.extend({
   enteredTopic(topic) {
     if (topic.has_chat_live) {
       this.set("selectedTopicId", topic.id);
+      this.set("selectedTopicTitle", topic.title);
+      this.set("expanded", true);
+      this.set("hidden", false);
+    }
+  },
+
+  @discourseComputed("selectedTopicTitle")
+  title(topicTitle) {
+    if (topicTitle === null) {
+      return I18n.t("chat.title_bare");
+    } else {
+      return I18n.t("chat.title_topic", {
+        topic_title: topicTitle,
+      });
     }
   },
 

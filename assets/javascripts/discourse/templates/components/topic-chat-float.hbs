@@ -1,11 +1,13 @@
-<div class="topic-chat-drawer">
+<div class="tc-drawer">
   <div class={{containerClassNames}}>
     <div class="topic-chat-drawer-header" {{on "click" (action "toggleExpand")}}>
-      <span class="tc-title">Chat</span>
+      <span class="tc-title">{{title}}</span>
       {{d-icon this.expandIcon}}
     </div>
     <div class="topic-chat-drawer-content">
-      {{float-chat-pane topicId=this.selectedTopicId}}
+      {{#if this.selectedTopicId}}
+        {{chat-live-pane topicId=this.selectedTopicId}}
+      {{/if}}
     </div>
   </div>
 </div>

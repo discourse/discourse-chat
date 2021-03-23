@@ -1,0 +1,11 @@
+{{d-textarea value=value
+  type="text"
+  class="tc-composer"
+  disabled=loading
+  autocorrect="on"
+  autocapitalize="off"
+  placeholder=placeholder}}
+{{flat-button action=(action "internalSendChat")
+  icon=sendIcon
+  disabled=loading
+  title=sendTitle}}

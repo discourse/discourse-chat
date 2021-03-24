@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 class TopicChatMessageSerializer < ApplicationSerializer
-  attributes :message,
+  attributes :id,
+    :message,
     :post_id,
     :created_at,
     :in_reply_to_id,
@@ -19,9 +20,13 @@ class TopicChatMessageSerializer < ApplicationSerializer
     !object.deleted_at.nil?
   end
 
+  def include_in_reply_to_id?
+    object.in_reply_to_id.presence
+  end
+
   def flag_count
     0 # TODO: flagging
-    # object.flag_count
+    # object.flag_count / ReviewableSomethingOrOther
   end
 
   def include_flag_count?

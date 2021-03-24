@@ -181,6 +181,7 @@ after_initialize do
                                     by_post[tcm.post_id] ||= []
                                     by_post[tcm.post_id] << tcm
                                   end
+                                  by_post
                                 end
     end
   end
@@ -223,13 +224,13 @@ after_initialize do
     attributes :chat_history
 
     def chat_history
-      msgs = topic_view.chat_history_by_post[object.id]
-      return nil unless msgs
-      TopicChatMessageSerializer.new(msgs, root: false).as_json
+      # TODO: user info not included
+      msgs = @topic_view.chat_history_by_post[object.id]
+      ActiveModel::ArraySerializer.new(msgs, each_serializer: TopicChatMessageSerializer, scope: scope, root: false)
     end
 
     def include_chat_history?
-      topic_view && topic_view.chat_record
+      @topic_view&.chat_record
     end
   end
 

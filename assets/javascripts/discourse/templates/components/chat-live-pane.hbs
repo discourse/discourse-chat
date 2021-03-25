@@ -1,6 +1,6 @@
-<div class="tc-messages-scroll">
+<div class="tc-messages-scroll tc-messages-container">
   {{#each this.messages as |message|}}
-    {{chat-message-render message=message}}
+    {{mount-widget widget="tc-message" args=message}}
   {{/each}}
 </div>
 <div class="scroll-stick-wrap">

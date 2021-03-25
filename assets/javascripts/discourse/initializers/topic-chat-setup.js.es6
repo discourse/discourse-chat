@@ -1,6 +1,7 @@
 import { createWidget } from "discourse/widgets/widget";
 import { h } from "virtual-dom";
 import hbs from "discourse/widgets/hbs-compiler";
+import { historyContainer } from "discourse/plugins/discourse-topic-chat/discourse/widgets/chat-message-render";
 import I18n from "I18n";
 import { includeAttributes } from "discourse/lib/transform-post";
 import TopicStatus from "discourse/raw-views/topic-status";
@@ -49,23 +50,12 @@ export default {
 
       api.attachWidgetAction("post-contents", "showChat", function() {
         this.state.chatShown = !this.state.chatShown;
-      });
-
-      const historyWidget = createWidget("chat-history-container", {
-        tagName: "section.chat-history",
-        template: hbs`
-          {{#each attrs.chat_history as |chline|}}
-            <div class="tc-h-msg">
-              {{chline.message}}
-            </div>
-          {{/each}}
-        `,
+        // TODO: this needs to be an ajax.
       });
 
       api.decorateWidget("post-contents:after-cooked", (dec) => {
         if (dec.state.chatShown) {
-          debugger;
-          return dec.widget.attach("chat-history-container", dec.attrs);
+          return dec.widget.attach("tc-history-container", dec.attrs);
         }
       });
     });

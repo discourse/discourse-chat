@@ -13,6 +13,7 @@ function makeLookupMap(usersData) {
   const ret = {};
   usersData.forEach(v => {
     ret[v.id] = v;
+    v.template = v.avatar_template; // HACK
   });
   return ret;
 }

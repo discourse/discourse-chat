@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class TopicChatMessageSerializer < ApplicationSerializer
+class TopicChatBaseMessageSerializer < ApplicationSerializer
   attributes :id,
     :message,
     :post_id,
@@ -10,7 +10,8 @@ class TopicChatMessageSerializer < ApplicationSerializer
     :deleted_by_id,
     :flag_count
 
-  has_one :user, serializer: BasicUserSerializer, root: :users
+  # handled in subclasses
+  #has_one :user, serializer: BasicUserSerializer, root: :users
 
   def include_deleted_at?
     !object.deleted_at.nil?

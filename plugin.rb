@@ -22,7 +22,9 @@ after_initialize do
 
   load File.expand_path('../app/models/topic_chat.rb', __FILE__)
   load File.expand_path('../app/models/topic_chat_message.rb', __FILE__)
-  load File.expand_path('../app/serializers/topic_chat_message_serializer.rb', __FILE__)
+  load File.expand_path('../app/serializers/topic_chat_base_message_serializer.rb', __FILE__)
+  load File.expand_path('../app/serializers/topic_chat_live_message_serializer.rb', __FILE__)
+  load File.expand_path('../app/serializers/topic_chat_history_message_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/topic_chat_view_serializer.rb', __FILE__)
   load File.expand_path('../lib/topic_chat_view.rb', __FILE__)
   load File.expand_path('../app/services/topic_chat_publisher.rb', __FILE__)
@@ -226,7 +228,7 @@ after_initialize do
     def chat_history
       # TODO: user info not included
       msgs = @topic_view.chat_history_by_post[object.id]
-      ActiveModel::ArraySerializer.new(msgs, each_serializer: TopicChatMessageSerializer, scope: scope, root: false)
+      ActiveModel::ArraySerializer.new(msgs, each_serializer: TopicChatHistoryMessageSerializer, scope: scope, root: false)
     end
 
     def include_chat_history?

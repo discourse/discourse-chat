@@ -2,7 +2,7 @@
 
 class TopicChatViewSerializer < ApplicationSerializer
   attributes :last_id
-  has_many :messages, serializer: TopicChatMessageSerializer, embed: :objects
+  has_many :messages, serializer: TopicChatLiveMessageSerializer, embed: :objects
 
   def last_id
     object.message_bus_last_id

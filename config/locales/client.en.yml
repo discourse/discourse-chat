@@ -1,0 +1,8 @@
+en:
+  js:
+    chat:
+      title_bare: "Chat"
+      title_topic: "Chat - %{topic_title}"
+      placeholder: "Chat..."
+      send: "Send Chat Message"
+      scroll_stick: "Chat Paused Due To Scroll"

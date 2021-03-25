@@ -7,7 +7,7 @@ class TopicChatPublisher
   end
 
   def self.publish_new!(topic, msg)
-    content = TopicChatMessageSerializer.new(msg, { scope: anonymous_guardian }).as_json
+    content = TopicChatLiveMessageSerializer.new(msg, { scope: anonymous_guardian }).as_json
     content['typ'] = 'sent'
     MessageBus.publish("/chat/#{topic.id}", content)
   end

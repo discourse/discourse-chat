@@ -19,6 +19,26 @@ export default Component.extend({
     return this.element.querySelector('textarea');
   },
 
+  keyDown(evt) {
+    if (evt.keyCode === /* ENTER */ 13) {
+      if (evt.shiftKey) {
+        // Shift+Enter: insert newline
+        return;
+      }
+      if (evt.altKey) {
+        // Alt+Enter: no action
+        return;
+      }
+      if (evt.metaKey) {
+        // Super+Enter: no action
+        return;
+      }
+      // Ctrl+Enter, plain Enter: send
+
+      this.send("internalSendChat", evt);
+    }
+  },
+
   @observes("value")
   _watchChanges() {
     // throttle, not debounce, because we do eventually want to react during the typing
@@ -40,6 +60,7 @@ export default Component.extend({
   },
 
   actions: {
+    // evt: either ClickEvent or KeyboardEvent
     internalSendChat(evt) {
       const p = this.sendChat(this.value, evt);
       const cleanup = () => {

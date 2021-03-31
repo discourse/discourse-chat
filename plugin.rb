@@ -188,13 +188,20 @@ after_initialize do
     end
   end
 
+  TopicQuery.add_custom_filter(::DiscourseTopicChat::PLUGIN_NAME) do |results, topic_query|
+    if SiteSetting.topic_chat_enabled
+      results = results.includes(:topic_chat)
+    end
+    results
+  end
+
   add_to_serializer('listable_topic', :has_chat_live) do
     # TODO N+1 query
     !object.topic_chat.nil?
   end
 
   add_to_serializer('topic_view', :has_chat_live) do
-    raise "bad version"
+    raise "bad version of function"
   end
 
   require_dependency 'topic_view_serializer'

@@ -145,6 +145,10 @@ after_initialize do
       tc = TopicChat.with_deleted.find_by(topic: t)
       raise Discourse::NotFound unless tc
 
+      post_id = params[:post_id]
+      p = Post.find(post_id)
+      raise Discourse::NotFound if p.topic_id != t.id
+
       raise NotImplementedError
     end
 
@@ -157,6 +161,8 @@ after_initialize do
     end
 
     def index
+      # not implemented...
+
       render json: success_json
     end
   end
@@ -250,6 +256,7 @@ after_initialize do
   DiscourseTopicChat::Engine.routes.draw do
     get '/index' => 'chat#index'
     get '/t/:topic_id/recent' => 'chat#recent'
+    get '/t/:topic_id/p/:post_id' => 'chat#historical'
     post '/t/:topic_id' => 'chat#send_chat'
     post '/t/:topic_id/enable' => 'chat#enable_chat'
     post '/t/:topic_id/disable' => 'chat#disable_chat'

@@ -7,6 +7,15 @@ import { includeAttributes } from "discourse/lib/transform-post";
 import TopicStatus from "discourse/raw-views/topic-status";
 import { withPluginApi } from "discourse/lib/plugin-api";
 
+function findParentWidget(widget, ofName) {
+  while (widget) {
+    if (widget.name === ofName) {
+      return widget;
+    }
+    widget = widget.parentWidget;
+  }
+}
+
 export default {
   name: "topic-chat-setup",
   initialize() {
@@ -29,6 +38,7 @@ export default {
 
     // post widget attrs
     includeAttributes("chat_history");
+    // TODO: need to extract extra fields from post.topic.details, topic.has_chat_history
 
     withPluginApi("0.11.0", (api) => {
       api.addPostMenuButton("chat", (attrs, _state, _siteSettings, menuSettings) => {
@@ -48,15 +58,22 @@ export default {
         };
       });
 
-      api.attachWidgetAction("post-contents", "showChat", function() {
-        this.state.chatShown = !this.state.chatShown;
-        // TODO: this needs to be an ajax.
+      api.attachWidgetAction("post-body", "showChat", function() {
+        const targetWidget = findParentWidget(this, "post-article");
+        targetWidget.state.chatShown = !targetWidget.state.chatShown;
+        // TODO: this needs to be an ajax in case history is too long to deliver initially
       });
 
-      api.decorateWidget("post-contents:after-cooked", (dec) => {
-        if (dec.state.chatShown) {
+      api.decorateWidget("actions-summary:before", (dec) => {
+        const targetWidget = findParentWidget(dec.widget, "post-article");
+        if (targetWidget.state.chatShown) {
           return dec.widget.attach("tc-history-container", dec.attrs);
         }
+      });
+
+      api.attachWidgetAction("post", "deleteChat", function() {
+        // TODO: is this the right place to handle this action?
+        // core's post actions are handled on the topic, but we can't inject additional closures to the post stream
       });
     });
   },

@@ -10,13 +10,18 @@ $header-height: 2.5em;
   display: flex;
   flex-direction: column;
   pointer-events: none !important;
-  * {
+  > * {
     pointer-events: auto;
   }
   bottom: 0;
   &.composer-draft-collapsed {
     bottom: 40px;
   }
+
+  box-sizing: border-box;
+  max-height: 90vh;
+  padding-bottom: var(--composer-height, 0px);
+  transition: padding-bottom 250ms ease;
 }
 .tc-drawer {
   width: 400px;
@@ -35,10 +40,10 @@ $header-height: 2.5em;
   //overflow-y: hidden;
   &.expanded {
     max-height: 530px;
-    height: 80vh;
+    height: calc(85vh - var(--composer-height, 0px));
     .tc-live-pane, .tc-chat-listing {
       max-height: calc(530px - #{$header-height});
-      height: calc(80vh - #{$header-height});
+      height: calc(85vh - var(--composer-height, 0px) - #{$header-height});
     }
   }
 }
@@ -132,6 +137,7 @@ $header-height: 2.5em;
   background-color: var(--primary-low, $primary-low);
   border: 1px solid var(--primary-high, $primary-high);
   padding: 4px;
+  text-align: left;
 }
 
 .post-controls .show-chat.btn-flat span {

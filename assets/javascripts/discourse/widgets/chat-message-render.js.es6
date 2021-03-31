@@ -64,8 +64,6 @@ const historyContainer = createWidget("tc-history-container", {
   tagName: "section.tc-history",
 
   html(attrs) {
-    debugger;
-
     let contents = attrs.chat_history.map(msg => {
       msg.user.template = msg.user.avatar_template; // HACK
       return this.attach("tc-message", msg);

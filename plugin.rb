@@ -172,7 +172,7 @@ after_initialize do
     def chat_record
       return @chat_record if @chat_record_lookup_done
       begin
-        @chat_record = TopicChat.with_deleted.find_by(topic_id: @topic.id)
+        @chat_record = TopicChat.with_deleted.find_by(topic_id: @topic.id) if SiteSetting.topic_chat_enabled
         @chat_record_lookup_done = true
         @chat_record
       end
@@ -228,13 +228,22 @@ after_initialize do
       scope.can_chat?(self.object)
     end
 
+    def include_has_chat_live?
+      SiteSetting.topic_chat_enabled
+    end
+
+    def include_has_chat_history?
+      SiteSetting.topic_chat_enabled
+    end
+
     def include_can_chat?
+      return false unless SiteSetting.topic_chat_enabled
       has_chat_live
     end
 
     private
     def chat_lookup
-      @chat_lookup ||= TopicChat.with_deleted.find_by(topic_id: object.topic.id)
+      object.chat_record
     end
   end
 

@@ -1,7 +1,9 @@
 <div class="tc-messages-scroll tc-messages-container">
-  {{#each this.messages as |message|}}
-    {{mount-widget widget="tc-message" args=message}}
-  {{/each}}
+  {{#conditional-loading-spinner condition=this.loading}}
+    {{#each this.messages as |message|}}
+      {{mount-widget widget="tc-message" args=message}}
+    {{/each}}
+  {{/conditional-loading-spinner}}
 </div>
 <div class="scroll-stick-wrap">
 <div class="scroll-stick-wrap2">

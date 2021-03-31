@@ -206,7 +206,7 @@ after_initialize do
 
   require_dependency 'topic_view_serializer'
   class ::TopicViewSerializer
-    attributes :has_chat_live #, :has_chat_history
+    attributes :has_chat_live, :has_chat_history
     attributes :can_chat
 
     # overrides has_chat_live from ListableTopicSerializer
@@ -214,9 +214,9 @@ after_initialize do
       chat_lookup && !chat_lookup.trashed?
     end
 
-    #def has_chat_history
-    #  !chat_lookup.nil?
-    #end
+    def has_chat_history
+      !chat_lookup.nil?
+    end
 
     def can_chat
       scope.can_chat?(self.object)

@@ -11,6 +11,10 @@ const STICKY_SCROLL_LENIENCE = 4;
 
 function makeLookupMap(usersData) {
   const ret = {};
+  if (!usersData) {
+    // empty set returned
+    return ret;
+  }
   usersData.forEach(v => {
     ret[v.id] = v;
     v.template = v.avatar_template; // HACK

@@ -1,9 +1,12 @@
+import { addPostSmallActionIcon } from "discourse/widgets/post-small-action";
+import { ajax } from "discourse/lib/ajax";
 import { createWidget } from "discourse/widgets/widget";
 import { h } from "virtual-dom";
 import hbs from "discourse/widgets/hbs-compiler";
 import { historyContainer } from "discourse/plugins/discourse-topic-chat/discourse/widgets/chat-message-render";
 import I18n from "I18n";
 import { includeAttributes } from "discourse/lib/transform-post";
+import { popupAjaxError } from "discourse/lib/ajax-error";
 import TopicStatus from "discourse/raw-views/topic-status";
 import { withPluginApi } from "discourse/lib/plugin-api";
 
@@ -39,6 +42,18 @@ export default {
     // post widget attrs
     includeAttributes("chat_history");
     // TODO: need to extract extra fields from post.topic.details, topic.has_chat_history
+    addPostSmallActionIcon("chat.enabled", "comment");
+    addPostSmallActionIcon("chat.disabled", "comment");
+
+    function doToggleChat(topic) {
+      const current = topic.has_chat_live;
+
+      ajax(`/chat/t/${topic.id}/${current ? "disable" : "enable"}`, {
+        type: 'POST',
+      }).then(resp => {
+        window.location.reload();
+      }).catch(popupAjaxError);
+    };
 
     withPluginApi("0.11.0", (api) => {
       api.addPostMenuButton("chat", (attrs, _state, _siteSettings, menuSettings) => {
@@ -74,6 +89,34 @@ export default {
       api.attachWidgetAction("post", "deleteChat", function() {
         // TODO: is this the right place to handle this action?
         // core's post actions are handled on the topic, but we can't inject additional closures to the post stream
+      });
+
+      api.decorateWidget("topic-admin-menu:adminMenuButtons", (dec) => {
+        const topic = dec.attrs.topic;
+        const { canManageTopic } = dec.widget.currentUser || {};
+        if (!canManageTopic) {
+          return;
+        }
+
+        dec.widget.addActionButton({
+          className: "topic-admin-chat",
+          buttonClass: "popup-menu-btn",
+          action: "toggleChat",
+          icon: "comment",
+          label: topic.has_chat_live ? "actions.chat_disable" : "actions.chat_enable",
+        });
+      });
+
+      api.modifyClass("component:topic-admin-menu-button", {
+        toggleChat() {
+          doToggleChat(this.topic);
+        },
+      });
+
+      api.modifyClass("component:topic-timeline", {
+        toggleChat() {
+          doToggleChat(this.topic);
+        },
       });
     });
   },

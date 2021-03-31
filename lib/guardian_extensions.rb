@@ -2,8 +2,8 @@
 
 module DiscourseTopicChat::GuardianExtensions
 
-  def can_enable_chat?
-    can_perform_action_available_to_group_moderators?
+  def can_enable_chat?(topic)
+    can_perform_action_available_to_group_moderators?(topic)
   end
 
   def can_chat?(topic_chat_record)

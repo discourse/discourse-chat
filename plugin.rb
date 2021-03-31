@@ -45,7 +45,7 @@ after_initialize do
     requires_plugin DiscourseTopicChat::PLUGIN_NAME
     before_action :ensure_logged_in, only: [:send]
 
-    def enable
+    def enable_chat
       t = Topic.find(params[:topic_id])
       guardian.ensure_can_see!(t)
       guardian.ensure_can_enable_chat!(t)
@@ -63,13 +63,13 @@ after_initialize do
 
       success = tc.save
       if success
-        t.add_small_action(current_user, 'chat_enabled', current_user)
+        t.add_small_action(current_user, 'chat.enabled', current_user)
       end
 
-      success ? render_serialized(tc, TopicChatSerializer) : render_json_error(tc)
+      success ? (render json: success_json) : render_json_error(tc)
     end
 
-    def disable
+    def disable_chat
       t = Topic.with_deleted.find(params[:topic_id])
       guardian.ensure_can_see!(t)
       guardian.ensure_can_enable_chat!(t)
@@ -82,7 +82,7 @@ after_initialize do
 
       success = tc.save
       if success
-        t.add_small_action(current_user, 'chat_disabled', current_user)
+        t.add_small_action(current_user, 'chat.disabled', current_user)
       end
 
       success ? (render json: success_json) : (render_json_error(tc))
@@ -193,6 +193,10 @@ after_initialize do
     !object.topic_chat.nil?
   end
 
+  add_to_serializer('topic_view', :has_chat_live) do
+    raise "bad version"
+  end
+
   require_dependency 'topic_view_serializer'
   class ::TopicViewSerializer
     attributes :has_chat_live #, :has_chat_history
@@ -228,7 +232,7 @@ after_initialize do
     def chat_history
       # TODO: user info not included
       msgs = @topic_view.chat_history_by_post[object.id]
-      ActiveModel::ArraySerializer.new(msgs, each_serializer: TopicChatHistoryMessageSerializer, scope: scope, root: false)
+      ActiveModel::ArraySerializer.new(msgs, each_serializer: TopicChatHistoryMessageSerializer, scope: scope, root: false) if msgs
     end
 
     def include_chat_history?
@@ -240,7 +244,8 @@ after_initialize do
     get '/index' => 'chat#index'
     get '/t/:topic_id/recent' => 'chat#recent'
     post '/t/:topic_id' => 'chat#send_chat'
-    post '/t/:topic_id/enable' => 'chat#enable'
+    post '/t/:topic_id/enable' => 'chat#enable_chat'
+    post '/t/:topic_id/disable' => 'chat#disable_chat'
     delete '/t/:topic_id/:message_id' => 'chat#delete'
     post '/t/:topic_id/:message_id/flag' => 'chat#flag'
   end

@@ -48,9 +48,10 @@ export default {
     function doToggleChat(topic) {
       const current = topic.has_chat_live;
 
-      ajax(`/chat/t/${topic.id}/${current ? "disable" : "enable"}`, {
+      return ajax(`/chat/t/${topic.id}/${current ? "disable" : "enable"}`, {
         type: 'POST',
       }).then(resp => {
+        // TODO graceful handling of chat enable
         window.location.reload();
       }).catch(popupAjaxError);
     };
@@ -73,9 +74,8 @@ export default {
         };
       });
 
-      api.attachWidgetAction("post-body", "showChat", function() {
-        const targetWidget = findParentWidget(this, "post-article");
-        targetWidget.state.chatShown = !targetWidget.state.chatShown;
+      api.attachWidgetAction("post-article", "showChat", function() {
+        this.state.chatShown = !this.state.chatShown;
         // TODO: this needs to be an ajax in case history is too long to deliver initially
       });
 
@@ -109,13 +109,13 @@ export default {
 
       api.modifyClass("component:topic-admin-menu-button", {
         toggleChat() {
-          doToggleChat(this.topic);
+          return doToggleChat(this.topic);
         },
       });
 
       api.modifyClass("component:topic-timeline", {
         toggleChat() {
-          doToggleChat(this.topic);
+          return doToggleChat(this.topic);
         },
       });
     });

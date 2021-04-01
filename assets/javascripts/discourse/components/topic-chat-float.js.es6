@@ -1,13 +1,14 @@
 import Component from "@ember/component";
 import discourseComputed from "discourse-common/utils/decorators";
 import I18n from "I18n";
-import { schedule, throttle } from "@ember/runloop";
+import { cancel, schedule, throttle } from "@ember/runloop";
 
 export default Component.extend({
   classNameBindings: [":topic-chat-float-container", "hidden"],
 
   hidden: true,
   sizeTimer: null,
+  rafTimer: null,
 
   selectedTopicId: null,
   selectedTopicTitle: null,
@@ -30,21 +31,40 @@ export default Component.extend({
 
     if (this.appEvents) {
       this.appEvents.off("header:update-topic", this, "enteredTopic");
+      this.appEvents.off("composer:closed", this, "_checkSize");
+      this.appEvents.off("composer:will-close", this, "_setSizeWillClose");
+      this.appEvents.off("composer:opened", this, "_checkSize");
+      this.appEvents.off("composer:resized", this, "_checkSize");
+      this.appEvents.off("composer:div-resizing", this, "_dynamicCheckSize");
+      this.appEvents.off("composer:resize-started", this, "_startDynamicCheckSize");
+      this.appEvents.off("composer:resize-ended", this, "_clearDynamicCheckSize");
+    }
+    if (this.sizeTimer) {
+      cancel(this.sizeTimer);
+      this.sizeTimer = null;
+    }
+    if (this.rafTimer) {
+      window.cancelAnimationFrame(this.rafTimer);
     }
   },
 
   enteredTopic(topic) {
     if (topic.has_chat_live) {
-      this.set("selectedTopicId", topic.id);
-      this.set("selectedTopicTitle", topic.title);
-      this.set("expanded", true);
-      this.set("hidden", false);
+      this.setProperties({
+        selectedTopicId: topic.id,
+        selectedTopicTitle: topic.title,
+        expanded: true,
+        hidden: false,
+      });
     }
   },
 
   _dynamicCheckSize() {
-    if (!this.sizeTimer) {
-      this.sizeTimer = window.requestAnimationFrame(() => this._performCheckSize());
+    if (!this.rafTimer) {
+      this.rafTimer = window.requestAnimationFrame(() => {
+        this.rafTimer = null;
+        this._performCheckSize()
+      });
     }
   },
 
@@ -58,11 +78,10 @@ export default Component.extend({
   },
 
   _checkSize() {
-    throttle(this, this._performCheckSize, 150);
+    this.sizeTimer = throttle(this, this._performCheckSize, 150);
   },
 
   _performCheckSize() {
-    this.sizeTimer = null;
     if (!this.element || this.isDestroying || this.isDestroyed) {
       return;
     }

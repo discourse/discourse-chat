@@ -1,7 +1,7 @@
 import Component from "@ember/component";
 import discourseComputed, { observes } from "discourse-common/utils/decorators";
 import I18n from "I18n";
-import { throttle } from "@ember/runloop";
+import { cancel, throttle } from "@ember/runloop";
 
 export default Component.extend({
   classNames: ["tc-composer"],
@@ -10,9 +10,19 @@ export default Component.extend({
   sendTitle: "chat.send",
   placeholderKey: "chat.placeholder",
 
+  timer: null,
+
   didInsertElement() {
     this._super(...arguments);
     this.textarea().rows = 1;
+  },
+
+  willDestroyElement() {
+    this._super(...arguments);
+    if (this.timer) {
+      cancel(this.timer);
+      this.timer = null;
+    }
   },
 
   textarea() {
@@ -42,7 +52,7 @@ export default Component.extend({
   @observes("value")
   _watchChanges() {
     // throttle, not debounce, because we do eventually want to react during the typing
-    throttle(this, this._setMinHeight, 150);
+    this.timer = throttle(this, this._setMinHeight, 150);
   },
 
   _setMinHeight() {
@@ -62,20 +72,13 @@ export default Component.extend({
   actions: {
     // evt: either ClickEvent or KeyboardEvent
     internalSendChat(evt) {
-      const p = this.sendChat(this.value, evt);
-      const cleanup = () => {
+      return this.sendChat(this.value, evt).then(() => {
         this.set('value', "");
         // If user resized textarea to write a long message, reset it.
         const textarea = this.element.querySelector('textarea');
         textarea.style = "";
         textarea.rows = 1;
-      };
-      if (p.then) {
-        // do NOT cleanup on reject
-        p.then(cleanup);
-      } else {
-        cleanup();
-      }
+      });
     },
   },
 });

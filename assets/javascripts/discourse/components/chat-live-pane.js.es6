@@ -4,7 +4,7 @@ import Component from "@ember/component";
 import discourseComputed from "discourse-common/utils/decorators";
 import discourseDebounce from "discourse-common/lib/debounce";
 import { popupAjaxError } from "discourse/lib/ajax-error";
-import { schedule } from "@ember/runloop";
+import { cancel, schedule } from "@ember/runloop";
 
 const MAX_RECENT_MSGS = 100;
 const STICKY_SCROLL_LENIENCE = 4;
@@ -29,6 +29,7 @@ export default Component.extend({
   loading: false,
   sendingloading: false,
   stickyScroll: true,
+  stickyScrollTimer: null,
 
   messages: A(),
 
@@ -37,8 +38,20 @@ export default Component.extend({
 
     const scroller = this.element.querySelector('.tc-messages-scroll');
     scroller.addEventListener('scroll', evt => {
-      discourseDebounce(this, this.checkScrollStick, 50);
+      this.stickyScrollTimer = discourseDebounce(this, this.checkScrollStick, 50);
     }, { passive: true });
+  },
+
+  willDestroyElement() {
+    // don't need to removeEventListener from scroller as the DOM element goes away
+    if (this.stickyScrollTimer) {
+      cancel(this.stickyScrollTimer);
+      this.stickyScrollTimer = null;
+    }
+    if (this.registeredTopicId) {
+      this.messageBus.unsubscribe(`/chat/${this.registeredTopicId}`);
+      this.registeredTopicId = null;
+    }
   },
 
   didReceiveAttrs() {

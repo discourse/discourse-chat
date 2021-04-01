@@ -102,7 +102,7 @@ export default {
           className: "topic-admin-chat",
           buttonClass: "popup-menu-btn",
           action: "toggleChat",
-          icon: "comment",
+          icon: topic.has_chat_live ? "comment-slash" : "comment",
           label: topic.has_chat_live ? "actions.chat_disable" : "actions.chat_enable",
         });
       });

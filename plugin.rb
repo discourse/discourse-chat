@@ -10,6 +10,9 @@ enabled_site_setting :topic_chat_enabled
 
 register_asset 'stylesheets/drawer.scss'
 
+register_svg_icon "comments"
+register_svg_icon "comment-slash"
+
 after_initialize do
   module ::DiscourseTopicChat
     PLUGIN_NAME = "discourse-topic-chat"

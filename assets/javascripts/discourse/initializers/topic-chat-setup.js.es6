@@ -23,7 +23,7 @@ export default {
   name: "topic-chat-setup",
   initialize() {
     TopicStatus.reopen({
-      statuses: Ember.computed(function() {
+      statuses: Ember.computed(function () {
         const results = this._super(...arguments);
 
         if (this.topic.has_chat_live) {
@@ -49,32 +49,37 @@ export default {
       const current = topic.has_chat_live;
 
       return ajax(`/chat/t/${topic.id}/${current ? "disable" : "enable"}`, {
-        type: 'POST',
-      }).then(resp => {
-        // TODO graceful handling of chat enable
-        window.location.reload();
-      }).catch(popupAjaxError);
-    };
+        type: "POST",
+      })
+        .then((resp) => {
+          // TODO graceful handling of chat enable
+          window.location.reload();
+        })
+        .catch(popupAjaxError);
+    }
 
     withPluginApi("0.11.0", (api) => {
-      api.addPostMenuButton("chat", (attrs, _state, _siteSettings, menuSettings) => {
-        // TODO: want an includeTopicAttributes. we want topic.has_chat_history
-        if (!attrs.chat_history) {
+      api.addPostMenuButton(
+        "chat",
+        (attrs, _state, _siteSettings, menuSettings) => {
+          // TODO: want an includeTopicAttributes. we want topic.has_chat_history
+          if (!attrs.chat_history) {
+            return {
+              className: "hidden",
+              disabled: "true",
+            };
+          }
           return {
-            className: "hidden",
-            disabled: "true",
+            className: "show-chat",
+            position: "first",
+            contents: h("span", [attrs.chat_history.length.toString()]),
+            action: "showChat",
+            icon: "comment",
           };
         }
-        return {
-          className: "show-chat",
-          position: "first",
-          contents: h("span", [attrs.chat_history.length.toString()]),
-          action: "showChat",
-          icon: "comment",
-        };
-      });
+      );
 
-      api.attachWidgetAction("post-article", "showChat", function() {
+      api.attachWidgetAction("post-article", "showChat", function () {
         this.state.chatShown = !this.state.chatShown;
         // TODO: this needs to be an ajax in case history is too long to deliver initially
       });
@@ -86,7 +91,7 @@ export default {
         }
       });
 
-      api.attachWidgetAction("post", "deleteChat", function() {
+      api.attachWidgetAction("post", "deleteChat", function () {
         // TODO: is this the right place to handle this action?
         // core's post actions are handled on the topic, but we can't inject additional closures to the post stream
       });
@@ -103,7 +108,9 @@ export default {
           buttonClass: "popup-menu-btn",
           action: "toggleChat",
           icon: topic.has_chat_live ? "comment-slash" : "comment",
-          label: topic.has_chat_live ? "actions.chat_disable" : "actions.chat_enable",
+          label: topic.has_chat_live
+            ? "actions.chat_disable"
+            : "actions.chat_enable",
         });
       });
 
@@ -120,4 +127,4 @@ export default {
       });
     });
   },
-}
+};

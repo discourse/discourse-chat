@@ -22,7 +22,11 @@ export default Component.extend({
     this.appEvents.on("composer:opened", this, "_checkSize");
     this.appEvents.on("composer:resized", this, "_checkSize");
     this.appEvents.on("composer:div-resizing", this, "_dynamicCheckSize");
-    this.appEvents.on("composer:resize-started", this, "_startDynamicCheckSize");
+    this.appEvents.on(
+      "composer:resize-started",
+      this,
+      "_startDynamicCheckSize"
+    );
     this.appEvents.on("composer:resize-ended", this, "_clearDynamicCheckSize");
   },
 
@@ -36,8 +40,16 @@ export default Component.extend({
       this.appEvents.off("composer:opened", this, "_checkSize");
       this.appEvents.off("composer:resized", this, "_checkSize");
       this.appEvents.off("composer:div-resizing", this, "_dynamicCheckSize");
-      this.appEvents.off("composer:resize-started", this, "_startDynamicCheckSize");
-      this.appEvents.off("composer:resize-ended", this, "_clearDynamicCheckSize");
+      this.appEvents.off(
+        "composer:resize-started",
+        this,
+        "_startDynamicCheckSize"
+      );
+      this.appEvents.off(
+        "composer:resize-ended",
+        this,
+        "_clearDynamicCheckSize"
+      );
     }
     if (this.sizeTimer) {
       cancel(this.sizeTimer);
@@ -63,7 +75,7 @@ export default Component.extend({
     if (!this.rafTimer) {
       this.rafTimer = window.requestAnimationFrame(() => {
         this.rafTimer = null;
-        this._performCheckSize()
+        this._performCheckSize();
       });
     }
   },
@@ -88,7 +100,10 @@ export default Component.extend({
 
     const composer = document.getElementById("reply-control");
 
-    this.element.style.setProperty("--composer-height", composer.offsetHeight + "px");
+    this.element.style.setProperty(
+      "--composer-height",
+      composer.offsetHeight + "px"
+    );
   },
 
   _setSizeWillClose() {

@@ -26,7 +26,7 @@ export default Component.extend({
   },
 
   textarea() {
-    return this.element.querySelector('textarea');
+    return this.element.querySelector("textarea");
   },
 
   keyDown(evt) {
@@ -73,9 +73,9 @@ export default Component.extend({
     // evt: either ClickEvent or KeyboardEvent
     internalSendChat(evt) {
       return this.sendChat(this.value, evt).then(() => {
-        this.set('value', "");
+        this.set("value", "");
         // If user resized textarea to write a long message, reset it.
-        const textarea = this.element.querySelector('textarea');
+        const textarea = this.element.querySelector("textarea");
         textarea.style = "";
         textarea.rows = 1;
       });

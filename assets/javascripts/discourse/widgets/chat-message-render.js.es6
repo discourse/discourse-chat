@@ -15,9 +15,7 @@ createWidget("tc-poster-name", {
     // TODO similar site setting for chat?
     const nameFirst =
       this.siteSettings.display_name_on_posts && prioritizeNameInUx(name);
-    const classNames = nameFirst
-      ? ["full-name first"]
-      : ["username first"];
+    const classNames = nameFirst ? ["full-name first"] : ["username first"];
     const text = nameFirst ? name : username;
 
     if (attrs.staff) {
@@ -31,16 +29,20 @@ createWidget("tc-poster-name", {
     }
     if (attrs.groupModerator) {
       classNames.push("category-moderator");
-    } 
+    }
 
     return h("span", { className: classNames.join(" ") }, [
       //h("a", {
-      h("span", {
-        attributes: {
-          href: attrs.usernameUrl,
-          "data-user-card": attrs.username,
+      h(
+        "span",
+        {
+          attributes: {
+            href: attrs.usernameUrl,
+            "data-user-card": attrs.username,
+          },
         },
-      }, formatUsername(text)),
+        formatUsername(text)
+      ),
     ]);
   },
 });
@@ -64,7 +66,7 @@ const historyContainer = createWidget("tc-history-container", {
   tagName: "section.tc-history",
 
   html(attrs) {
-    let contents = attrs.chat_history.map(msg => {
+    let contents = attrs.chat_history.map((msg) => {
       msg.user.template = msg.user.avatar_template; // HACK
       return this.attach("tc-message", msg);
     });

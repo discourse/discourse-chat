@@ -15,7 +15,7 @@ function makeLookupMap(usersData) {
     // empty set returned
     return ret;
   }
-  usersData.forEach(v => {
+  usersData.forEach((v) => {
     ret[v.id] = v;
     v.template = v.avatar_template; // HACK
   });
@@ -36,10 +36,18 @@ export default Component.extend({
   didInsertElement() {
     this._super(...arguments);
 
-    const scroller = this.element.querySelector('.tc-messages-scroll');
-    scroller.addEventListener('scroll', evt => {
-      this.stickyScrollTimer = discourseDebounce(this, this.checkScrollStick, 50);
-    }, { passive: true });
+    const scroller = this.element.querySelector(".tc-messages-scroll");
+    scroller.addEventListener(
+      "scroll",
+      (evt) => {
+        this.stickyScrollTimer = discourseDebounce(
+          this,
+          this.checkScrollStick,
+          50
+        );
+      },
+      { passive: true }
+    );
   },
 
   willDestroyElement() {
@@ -63,39 +71,57 @@ export default Component.extend({
         this.messages.clear();
         this.registeredTopicId = null;
       }
-      
+
       if (this.topicId != null) {
         const topicId = this.topicId;
-        this.set('loading', true);
-        ajax(`/chat/t/${this.topicId}/recent`).then(data => {
-          const tc = data.topic_chat_view;
-          const usersLookup = makeLookupMap(data.users);
-          this.set('messages', A(tc.messages.map(m => this.prepareMessage(m, usersLookup)).reverse()));
-          this.registeredTopicId = topicId;
-          schedule("afterRender", this, this.doScrollStick);
+        this.set("loading", true);
+        ajax(`/chat/t/${this.topicId}/recent`)
+          .then((data) => {
+            const tc = data.topic_chat_view;
+            const usersLookup = makeLookupMap(data.users);
+            this.set(
+              "messages",
+              A(
+                tc.messages
+                  .map((m) => this.prepareMessage(m, usersLookup))
+                  .reverse()
+              )
+            );
+            this.registeredTopicId = topicId;
+            schedule("afterRender", this, this.doScrollStick);
 
-          this.messageBus.subscribe(`/chat/${topicId}`, (busData) => {
-            this.handleMessage(busData);
-          }, tc.last_id);
-        }).catch(err => {
-          throw err;
-        }).finally(() => { this.set('loading', false); });
+            this.messageBus.subscribe(
+              `/chat/${topicId}`,
+              (busData) => {
+                this.handleMessage(busData);
+              },
+              tc.last_id
+            );
+          })
+          .catch((err) => {
+            throw err;
+          })
+          .finally(() => {
+            this.set("loading", false);
+          });
       }
     }
   },
 
   doScrollStick() {
     if (this.stickyScroll) {
-      const scroller = this.element.querySelector('.tc-messages-scroll');
+      const scroller = this.element.querySelector(".tc-messages-scroll");
       scroller.scrollTop = scroller.scrollHeight - scroller.clientHeight;
     }
   },
 
   checkScrollStick() {
-    const scroller = this.element.querySelector('.tc-messages-scroll');
-    const current = (scroller.scrollHeight - scroller.scrollTop - scroller.clientHeight) <= STICKY_SCROLL_LENIENCE;
+    const scroller = this.element.querySelector(".tc-messages-scroll");
+    const current =
+      scroller.scrollHeight - scroller.scrollTop - scroller.clientHeight <=
+      STICKY_SCROLL_LENIENCE;
     if (current != this.stickyScroll) {
-      this.set('stickyScroll', current);
+      this.set("stickyScroll", current);
       if (current) {
         scroller.scrollTop = scroller.scrollHeight - scroller.clientHeight;
       }
@@ -108,7 +134,7 @@ export default Component.extend({
   },
 
   handleMessage(data) {
-    if (data.typ === 'sent') {
+    if (data.typ === "sent") {
       const userLookup = makeLookupMap(data.users);
       const msg = this.prepareMessage(data.topic_chat_message, userLookup);
 
@@ -117,34 +143,36 @@ export default Component.extend({
         this.messages.shiftObject();
       }
       schedule("afterRender", this, this.doScrollStick);
-    } else if (data.type == 'delete') {
+    } else if (data.type == "delete") {
       const deletedId = data.deletedId;
-      const targetMsg = this.messages.findBy('id', deletedId);
+      const targetMsg = this.messages.findBy("id", deletedId);
       // TODO: only softdelete if canModerateChat
-      targetMsg.set('deleted', true);
+      targetMsg.set("deleted", true);
     }
   },
 
   actions: {
     sendChat(message) {
-      this.set('sendingloading', true);
+      this.set("sendingloading", true);
       return ajax(`/chat/t/${this.topicId}/`, {
-        type: 'POST',
+        type: "POST",
         data: {
           message,
           /* in_reply_to_id, */
         },
-      }).then(resp => {
-        // TODO
-      }).catch(popupAjaxError).finally(() => {
-        this.set('sendingloading', false);
-      });
+      })
+        .then((resp) => {
+          // TODO
+        })
+        .catch(popupAjaxError)
+        .finally(() => {
+          this.set("sendingloading", false);
+        });
     },
 
     restickScrolling() {
-      this.set('stickyScroll', true);
+      this.set("stickyScroll", true);
       this.doScrollStick();
     },
   },
-
 });

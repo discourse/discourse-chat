@@ -8,8 +8,8 @@ class TopicChatPublisher
 
   def self.publish_new!(topic, msg)
     content = TopicChatLiveMessageSerializer.new(msg, { scope: anonymous_guardian, root: :topic_chat_message }).as_json
-    content['typ'] = 'sent'
-    MessageBus.publish("/chat/#{topic.id}", content)
+    content[:typ] = :sent
+    MessageBus.publish("/chat/#{topic.id}", content.as_json)
   end
 
   def self.publish_presence!(topic, user, typ)

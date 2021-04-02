@@ -59,6 +59,9 @@ $header-height: 2.5em;
   .tc-title-seg {
     padding: 0 0.25em;
     line-height: 1.75em;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow-x: hidden;
   }
   .tc-unread-count {
     color: var(--secondary, $secondary);

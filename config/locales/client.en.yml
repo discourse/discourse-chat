@@ -5,6 +5,8 @@ en:
       title_topic: "Chat - %{topic_title}"
       placeholder: "Chat..."
       send: "Send Chat Message"
+      close: "Close"
+      collapse: "Collapse Chat Drawer"
       scroll_stick: "Chat Paused Due To Scroll"
       already_enabled: "Chat is already enabled on this topic. Please refresh."
       already_disabled: "Chat is already closed on this topic. Please refresh."

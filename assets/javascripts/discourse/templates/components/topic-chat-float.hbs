@@ -12,7 +12,7 @@
           {{/if}}
         {{/if}}
       </div>
-      {{flat-button icon=this.expandIcon action=(action "toggleExpand") title="chat.close"}}
+      {{flat-button icon=this.expandIcon class="tc-expand" action=(action "toggleExpand") title="chat.collapse"}}
       {{#if showClose}}
         {{flat-button icon="times" action=(action "close") title="chat.close"}}
       {{/if}}

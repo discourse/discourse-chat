@@ -58,7 +58,6 @@ $header-height: 2.5em;
 
   .tc-title-seg {
     padding: 0 0.25em;
-    flex-grow: 1;
     line-height: 1.75em;
   }
   .tc-unread-count {
@@ -69,6 +68,10 @@ $header-height: 2.5em;
     min-height: 1.4em;
     display: inline-block;
     text-align: center;
+  }
+  .tc-expand {
+    flex-grow: 1;
+    text-align: right;
   }
   .d-icon {
     color: var(--tertiary, $tertiary);

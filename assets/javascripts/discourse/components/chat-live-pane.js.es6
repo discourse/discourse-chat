@@ -173,6 +173,10 @@ export default Component.extend({
         });
     },
 
+    composerHeightChange() {
+      this.doScrollStick();
+    },
+
     restickScrolling() {
       this.set("stickyScroll", true);
       this.doScrollStick();

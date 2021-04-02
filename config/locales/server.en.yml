@@ -1,0 +1,3 @@
+en:
+  site_settings:
+    topic_chat_enabled: "Enable the discourse-topic-chat plugin. Use the per-topic 'Enable Chat' action to set up."

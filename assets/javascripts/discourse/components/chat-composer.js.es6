@@ -78,6 +78,9 @@ export default Component.extend({
       if (evt) {
         evt.preventDefault();
       }
+      if (this.get("value").trim() === "") {
+        return;
+      }
       return this.sendChat(this.value, evt).then(() => {
         this.set("value", "");
         // If user resized textarea to write a long message, reset it.

@@ -8,6 +8,6 @@ module DiscourseTopicChat::GuardianExtensions
 
   def can_chat?(topic_chat_record)
     # TODO: separate chatting permission?
-    can_create_post?(topic_chat_record.topic)
+    can_create_post?(topic_chat_record.topic) && !topic.closed? && !topic.archived?
   end
 end

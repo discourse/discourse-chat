@@ -1,5 +1,6 @@
 import Component from "@ember/component";
 import discourseComputed from "discourse-common/utils/decorators";
+import getURL from "discourse-common/lib/get-url";
 import I18n from "I18n";
 import { cancel, schedule, throttle } from "@ember/runloop";
 
@@ -7,11 +8,14 @@ export default Component.extend({
   classNameBindings: [":topic-chat-float-container", "hidden"],
 
   hidden: true,
+  showClose: true, // TODO - false when on same topic
   sizeTimer: null,
   rafTimer: null,
 
   selectedTopicId: null,
   selectedTopicTitle: null,
+  selectedTopicSlug: null,
+  unreadMessageCount: 0,
 
   didInsertElement() {
     this._super(...arguments);
@@ -65,6 +69,7 @@ export default Component.extend({
       this.setProperties({
         selectedTopicId: topic.id,
         selectedTopicTitle: topic.title,
+        selectedTopicSlug: topic.slug,
         expanded: true,
         hidden: false,
       });
@@ -126,6 +131,11 @@ export default Component.extend({
     }
   },
 
+  @discourseComputed("selectedTopicId", "selectedTopicSlug")
+  selectedTopicLink(id, slug) {
+    return getURL(`/t/${slug}/${id}/last`);
+  },
+
   @discourseComputed("expanded")
   containerClassNames(expanded) {
     if (expanded) {
@@ -138,15 +148,42 @@ export default Component.extend({
   @discourseComputed("expanded")
   expandIcon(expanded) {
     if (expanded) {
-      return "angle-double-up";
-    } else {
       return "angle-double-down";
+    } else {
+      return "angle-double-up";
     }
+  },
+
+  @discourseComputed("unreadMessageCount")
+  showUnreadMessageCount(count) {
+    return count > 0;
   },
 
   actions: {
     toggleExpand() {
-      this.set("expanded", !this.get("expanded"));
+      const old = this.get("expanded");
+      this.set("expanded", !old);
+      if (!old) {
+        this.set("unreadMessageCount", 0);
+      }
+    },
+
+    newMessageCb() {
+      if (!this.get("expanded")) {
+        this.set("unreadMessageCount", this.get("unreadMessageCount") + 1);
+      }
+    },
+
+    back() {
+      bootbox.alert("unimplemented");
+    },
+
+    close() {
+      this.setProperties({
+        hidden: true,
+        selectedTopicId: null,
+        selectedTopicTitle: null,
+      });
     },
   },
 });

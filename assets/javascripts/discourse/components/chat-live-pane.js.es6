@@ -143,6 +143,9 @@ export default Component.extend({
         this.messages.shiftObject();
       }
       schedule("afterRender", this, this.doScrollStick);
+      if (this.newMessageCb) {
+        this.newMessageCb();
+      }
     } else if (data.type == "delete") {
       const deletedId = data.deletedId;
       const targetMsg = this.messages.findBy("id", deletedId);

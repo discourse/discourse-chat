@@ -1,12 +1,25 @@
 <div class="tc-drawer">
   <div class={{containerClassNames}}>
-    <div class="topic-chat-drawer-header" {{on "click" (action "toggleExpand")}}>
-      <span class="tc-title">{{title}}</span>
-      {{d-icon this.expandIcon}}
+    <div class="topic-chat-drawer-header">
+      {{flat-button icon="chevron-left" action=(action "back") title="chat.return_to_list"}}
+      <div class="tc-title-seg">
+        <span class="tc-branding">{{i18n "chat.title_bare"}}</span>
+        {{#if selectedTopicTitle}}
+          <span class="tc-title-sep">-</span>
+          <a href={{selectedTopicLink}} class="tc-topic-title">{{this.selectedTopicTitle}}</a>
+          {{#if showUnreadMessageCount}}
+            <span class="tc-unread-count">{{this.unreadMessageCount}}</span>
+          {{/if}}
+        {{/if}}
+      </div>
+      {{flat-button icon=this.expandIcon action=(action "toggleExpand") title="chat.close"}}
+      {{#if showClose}}
+        {{flat-button icon="times" action=(action "close") title="chat.close"}}
+      {{/if}}
     </div>
     <div class="topic-chat-drawer-content">
       {{#if this.selectedTopicId}}
-        {{chat-live-pane topicId=this.selectedTopicId}}
+        {{chat-live-pane topicId=this.selectedTopicId newMessageCb=(action "newMessageCb")}}
       {{/if}}
     </div>
   </div>

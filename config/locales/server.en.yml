@@ -1,3 +1,9 @@
 en:
   site_settings:
     topic_chat_enabled: "Enable the discourse-topic-chat plugin. Use the per-topic 'Enable Chat' action to set up."
+    topic_chat_max_messages_per_post: "Maximum number of chat messages on the same post before the site will automatically create a new post. -1 to disable."
+  chat:
+    separator_post_day:
+      content: "Chat separation post for %{date}."
+    separator_post_hour:
+      content: "Chat separation post for %{date}."

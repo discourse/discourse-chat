@@ -24,6 +24,7 @@ after_initialize do
   end
 
   load File.expand_path('../app/controllers/chat_controller.rb', __FILE__)
+  load File.expand_path('../app/jobs/scheduled/split_long_chats.rb', __FILE__)
   load File.expand_path('../app/models/topic_chat.rb', __FILE__)
   load File.expand_path('../app/models/topic_chat_message.rb', __FILE__)
   load File.expand_path('../app/serializers/topic_chat_base_message_serializer.rb', __FILE__)

@@ -3,6 +3,7 @@
 class TopicChatBaseMessageSerializer < ApplicationSerializer
   attributes :id,
     :message,
+    :action_code,
     :post_id,
     :created_at,
     :in_reply_to_id,

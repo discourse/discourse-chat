@@ -10,8 +10,17 @@ class TopicChat < ActiveRecord::Base
     TopicChat.where(topic_id: t.id).exists?
   end
 
+  def self.last_regular_post(t)
+    # Chat can't be viewed on a small action.
+    t.posts.where(post_type: Post.types[:regular]).last
+  end
+
+  def last_regular_post
+    TopicChat.last_regular_post(self.topic)
+  end
+
   def make_separator_post!
-    last_post = self.topic.posts.where(post_type: Post.types[:regular]).last
+    last_post = last_regular_post
     now = Time.now.utc
     message_type = :day
     if last_post.user_id == Discourse.system_user.id

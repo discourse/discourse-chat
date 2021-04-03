@@ -18,3 +18,5 @@ en:
       chat:
         enabled: "enabled chat %{when}"
         disabled: "closed chat %{when}"
+        post_created: "created a new post: %{excerpt}"
+        generic_small_action: "performed a topic management action"

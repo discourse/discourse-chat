@@ -61,6 +61,7 @@ after_initialize do
                                   msgs = TopicChatMessage
                                     .where(topic_id: @topic.id)
                                     .where(post_id: posts.pluck(:id))
+                                    .where("COALESCE(action_code, 'null') NOT IN ('chat.post_created')")
                                     .order(created_at: :asc)
                                   by_post = {}
                                   msgs.each do |tcm|
@@ -138,6 +139,26 @@ after_initialize do
     def include_chat_history?
       @topic_view&.chat_record
     end
+  end
+
+  DiscourseEvent.on(:post_created) do |post, opts, user|
+    tc = post.topic.topic_chat
+    next unless tc && !tc.trashed?
+    complex_action = !post.custom_fields["action_code_who"].nil?
+    action_code = opts[:action_code] || "chat.post_created"
+    action_code = "chat.generic_small_action" if complex_action
+
+    excerpt = post.excerpt(SiteSetting.topic_chat_excerpt_maxlength, strip_links: true, strip_images: true) unless opts[:action_code]
+
+    msg = TopicChatMessage.new(
+      topic: post.topic,
+      post: post,
+      user: user,
+      action_code: action_code,
+      message: excerpt || "",
+    )
+    msg.save!
+    TopicChatPublisher.publish_new!(post.topic, msg)
   end
 
   DiscourseTopicChat::Engine.routes.draw do

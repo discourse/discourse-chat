@@ -16,11 +16,14 @@ class DiscourseTopicChat::ChatController < ::ApplicationController
     tc = TopicChat.with_deleted.find_by(topic_id: t.id)
     if tc && tc.trashed?
       tc.recover!
-    else if tc
+    elsif tc
       return render_json_error I18n.t("chat.already_enabled")
-    end
+    else
       tc = TopicChat.new(topic_id: t.id)
     end
+
+    # safeguard against unusual topic archetypes
+    return render_json_error('chat.no_regular_posts') unless tc.last_regular_post.presence
 
     success = tc.save
     if success
@@ -68,8 +71,7 @@ class DiscourseTopicChat::ChatController < ::ApplicationController
       post_id = rm.post_id
     end
 
-    # chat can't be viewed on a small-action
-    post_id ||= t.posts.where(post_type: Post.types[:regular]).last.id
+    post_id ||= TopicChat.last_regular_post(t).id
     content = params[:message]
 
     msg = TopicChatMessage.new(

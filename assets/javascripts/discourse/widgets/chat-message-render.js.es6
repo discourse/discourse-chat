@@ -4,6 +4,8 @@ import { dateNode } from "discourse/helpers/node";
 import { formatUsername } from "discourse/lib/utilities";
 import { h } from "virtual-dom";
 import { prioritizeNameInUx } from "discourse/lib/settings";
+import RawHtml from "discourse/widgets/raw-html";
+import { autoUpdatingRelativeAge } from "discourse/lib/formatter";
 
 createWidget("tc-poster-name", {
   // see discourse/widgets/poster-name.js
@@ -48,16 +50,42 @@ createWidget("tc-poster-name", {
 });
 
 createWidget("tc-message", {
-  tagName: "div.tc-message",
+  tagName: "div",
+
+  buildAttributes(attrs) {
+    if (attrs.action_code) {
+      return {
+        "class": `tc-message tc-action tc-action-${attrs.action_code}`,
+      };
+    }
+    return {
+      "class": "tc-message",
+    };
+  },
 
   html(attrs) {
+    let content = [attrs.message];
+    if (attrs.action_code) {
+      // DANGER: we're trusting .message as html in this case
+      // .message in this case may have HTML entities from the server, decode them
+      const when = autoUpdatingRelativeAge(new Date(attrs.created_at), { format: "medium-with-ago" });
+
+      const text = I18n.t(`action_codes.${attrs.action_code}`, {
+        excerpt: attrs.message,
+        when,
+        who: "[INVALID]",
+      });
+      content = [
+        new RawHtml({ html: `<span class="tc-action-text">${text}</span>` }),
+      ];
+    }
     return [
       h("div.tc-meta-data", [
         avatarFor("tiny", attrs.user),
         this.attach("tc-poster-name", attrs.user),
         dateNode(attrs.created_at),
       ]),
-      h("div.tc-msgbody", [attrs.message]),
+      h("div.tc-msgbody", content),
     ];
   },
 });

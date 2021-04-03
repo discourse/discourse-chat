@@ -97,7 +97,7 @@ class DiscourseTopicChat::ChatController < ::ApplicationController
 
     # n.b.: must fetch ID before querying DB
     message_bus_last_id = TopicChatPublisher.last_id(topic)
-    messages = TopicChatMessage.where(topic: topic).order(created_at: :desc).limit(20)
+    messages = TopicChatMessage.where(topic: topic).order(created_at: :desc).limit(50)
 
     render_serialized(TopicChatView.new(topic, messages, message_bus_last_id), TopicChatViewSerializer, root: :topic_chat_view)
   end

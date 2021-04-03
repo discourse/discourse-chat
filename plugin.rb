@@ -35,6 +35,11 @@ after_initialize do
   load File.expand_path('../app/services/topic_chat_publisher.rb', __FILE__)
   load File.expand_path('../lib/guardian_extensions.rb', __FILE__)
 
+  if Rails.env.test?
+    load File.expand_path('../spec/fabricators/topic_chat_fabricator.rb', __FILE__)
+    load File.expand_path('../spec/support/topic_chat_helper.rb', __FILE__)
+  end
+
   reloadable_patch do |plugin|
     Guardian.class_eval { include DiscourseTopicChat::GuardianExtensions }
     Topic.class_eval {

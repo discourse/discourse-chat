@@ -88,10 +88,17 @@ $header-height: 2.5em;
   white-space: normal;
   .tc-message {
     margin-top: 4px;
+    &.tc-action {
+      background-color: var(--highlight-medium);
+    }
+  }
+  .tc-action-text {
+    font-style: italic;
   }
   .tc-meta-data {
-    color: $primary-high;
+    color: var(--secondary-medium);
     .names {
+      color: var(--secondary-low);
       display: inline-block;
       vertical-align: bottom;
       margin-left: 4px;

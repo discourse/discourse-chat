@@ -2,6 +2,8 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
+require_relative '../support/topic_chat_helper'
+require_relative '../fabricators/topic_chat_fabricator'
 
 describe Jobs::SplitLongChats do
   let(:topic) { Fabricate(:topic) }

@@ -4,7 +4,7 @@
 # about: Topic or category scoped chat for Discourse sites
 # version: 0.1
 # authors: Kane York
-# url: https://github.com/discourse/discourse-topic-chat
+# url: https://github.com/discourse-org/discourse-topic-chat
 
 enabled_site_setting :topic_chat_enabled
 

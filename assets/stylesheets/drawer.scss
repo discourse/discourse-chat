@@ -41,7 +41,6 @@ $header-height: 2.5em;
   &.expanded {
     max-height: 530px;
     height: calc(85vh - var(--composer-height, 0px));
-    .tc-live-pane, .tc-chat-listing {
       max-height: calc(530px - #{$header-height});
       height: calc(85vh - var(--composer-height, 0px) - #{$header-height});
     }
@@ -55,6 +54,7 @@ $header-height: 2.5em;
   width: 100%;
   display: flex;
   justify-content: space-between;
+  align-items: center;
 
   .tc-title-seg {
     padding: 0 0.25em;

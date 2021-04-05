@@ -1,7 +1,8 @@
+import { emojiUnescape } from "discourse/lib/text";
 import { avatarFor } from "discourse/widgets/post";
 import { createWidget } from "discourse/widgets/widget";
 import { dateNode } from "discourse/helpers/node";
-import { formatUsername } from "discourse/lib/utilities";
+import { formatUsername, escapeExpression } from "discourse/lib/utilities";
 import { h } from "virtual-dom";
 import { prioritizeNameInUx } from "discourse/lib/settings";
 import RawHtml from "discourse/widgets/raw-html";
@@ -64,7 +65,7 @@ createWidget("tc-message", {
   },
 
   html(attrs) {
-    let content = [attrs.message];
+    let content = [new RawHtml({ html: `<p class="tc-text">${emojiUnescape(escapeExpression(attrs.message))}</p>` })];
     if (attrs.action_code) {
       // DANGER: we're trusting .message as html in this case
       // .message in this case may have HTML entities from the server, decode them

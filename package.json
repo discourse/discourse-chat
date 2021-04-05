@@ -1,0 +1,10 @@
+{
+  "name": "discourse-topic-chat",
+  "version": "0.1",
+  "repository": "https://github.com/discourse-org/discourse-topic-chat",
+  "author": "Kane York",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint-config-discourse": "^1.1.8"
+  }
+}

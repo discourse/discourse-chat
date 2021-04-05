@@ -87,6 +87,12 @@ $header-height: 2.5em;
   word-wrap: break-word;
   white-space: normal;
   .tc-message {
+    .tc-text {
+      margin: 0;
+    }
+  }
+
+  .tc-message {
     margin-top: 4px;
     &.tc-action {
       background-color: var(--highlight-medium);

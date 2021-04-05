@@ -4,7 +4,7 @@
 # about: Topic or category scoped chat for Discourse sites
 # version: 0.1
 # authors: Kane York
-# url: https://github.com/discourse/discourse-topic-chat
+# url: https://github.com/discourse-org/discourse-topic-chat
 
 enabled_site_setting :topic_chat_enabled
 
@@ -34,11 +34,6 @@ after_initialize do
   load File.expand_path('../lib/topic_chat_view.rb', __FILE__)
   load File.expand_path('../app/services/topic_chat_publisher.rb', __FILE__)
   load File.expand_path('../lib/guardian_extensions.rb', __FILE__)
-
-  if Rails.env.test?
-    load File.expand_path('../spec/fabricators/topic_chat_fabricator.rb', __FILE__)
-    load File.expand_path('../spec/support/topic_chat_helper.rb', __FILE__)
-  end
 
   reloadable_patch do |plugin|
     Guardian.class_eval { include DiscourseTopicChat::GuardianExtensions }

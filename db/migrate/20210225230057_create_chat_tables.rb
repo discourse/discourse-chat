@@ -10,7 +10,7 @@ class CreateChatTables < ActiveRecord::Migration[6.0]
       t.integer :featured_in_category_id
       t.integer :delete_after_seconds, default: nil
     end
-    
+
     create_table :topic_chat_messages do |t|
       t.integer :topic_id, null: false
       t.integer :post_id, null: false, index: true

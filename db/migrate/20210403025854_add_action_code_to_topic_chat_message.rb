@@ -5,4 +5,3 @@ class AddActionCodeToTopicChatMessage < ActiveRecord::Migration[6.0]
     add_column :topic_chat_messages, :action_code, :string, null: true
   end
 end
-

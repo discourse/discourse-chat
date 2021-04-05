@@ -2,7 +2,7 @@ import Component from "@ember/component";
 import discourseComputed from "discourse-common/utils/decorators";
 import getURL from "discourse-common/lib/get-url";
 import I18n from "I18n";
-import { cancel, schedule, throttle } from "@ember/runloop";
+import { cancel, throttle } from "@ember/runloop";
 
 export default Component.extend({
   classNameBindings: [":topic-chat-float-container", "hidden"],
@@ -115,7 +115,6 @@ export default Component.extend({
     if (!this.element || this.isDestroying || this.isDestroyed) {
       return;
     }
-    const composer = document.getElementById("reply-control");
     // if overridden by themes, will get fixed up in the composer:closed event
     this.element.style.setProperty("--composer-height", "40px");
   },

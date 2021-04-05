@@ -5,8 +5,13 @@
     {{/each}}
   {{/conditional-loading-spinner}}
 </div>
+
 <div class="scroll-stick-wrap">
-<div class="scroll-stick-wrap2">
-<a class="btn btn-flat scroll-stick-warning {{if this.stickyScroll "hidden"}}" {{on "click" (action "restickScrolling")}}>{{i18n "chat.scroll_stick"}}</a>
-</div></div>
+  <div class="scroll-stick-wrap2">
+    <a href class="btn btn-flat scroll-stick-warning {{if this.stickyScroll "hidden"}}" {{on "click" (action "restickScrolling")}}>
+      {{i18n "chat.scroll_stick"}}
+    </a>
+  </div>
+</div>
+
 {{chat-composer sendChat=(action "sendChat") onChangeHeight=(action "composerHeightChange") loading=sendingloading}}

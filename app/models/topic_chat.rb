@@ -30,10 +30,10 @@ class TopicChat < ActiveRecord::Base
     end
 
     date_text = if message_type == :day
-                  now.beginning_of_day.strftime('[date=%Y-%m-%d timezone="UTC"]')
+      now.beginning_of_day.strftime('[date=%Y-%m-%d timezone="UTC"]')
                 else
                   now.beginning_of_hour.strftime('[date=%Y-%m-%d time=%H:%M:%S timezone="UTC"]')
-                end
+    end
 
     raw = I18n.t("chat.separator_post_#{message_type}.content", date: date_text)
 

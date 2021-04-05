@@ -2,11 +2,12 @@ import { emojiUnescape } from "discourse/lib/text";
 import { avatarFor } from "discourse/widgets/post";
 import { createWidget } from "discourse/widgets/widget";
 import { dateNode } from "discourse/helpers/node";
-import { formatUsername, escapeExpression } from "discourse/lib/utilities";
+import { escapeExpression, formatUsername } from "discourse/lib/utilities";
 import { h } from "virtual-dom";
 import { prioritizeNameInUx } from "discourse/lib/settings";
 import RawHtml from "discourse/widgets/raw-html";
 import { autoUpdatingRelativeAge } from "discourse/lib/formatter";
+import I18n from "I18n";
 
 createWidget("tc-poster-name", {
   // see discourse/widgets/poster-name.js

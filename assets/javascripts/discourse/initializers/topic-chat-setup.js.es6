@@ -1,9 +1,6 @@
 import { addPostSmallActionIcon } from "discourse/widgets/post-small-action";
 import { ajax } from "discourse/lib/ajax";
-import { createWidget } from "discourse/widgets/widget";
 import { h } from "virtual-dom";
-import hbs from "discourse/widgets/hbs-compiler";
-import { historyContainer } from "discourse/plugins/discourse-topic-chat/discourse/widgets/chat-message-render";
 import I18n from "I18n";
 import { includeAttributes } from "discourse/lib/transform-post";
 import { popupAjaxError } from "discourse/lib/ajax-error";
@@ -51,7 +48,7 @@ export default {
       return ajax(`/chat/t/${topic.id}/${current ? "disable" : "enable"}`, {
         type: "POST",
       })
-        .then((resp) => {
+        .then(() => {
           // TODO graceful handling of chat enable
           window.location.reload();
         })
@@ -61,7 +58,7 @@ export default {
     withPluginApi("0.11.0", (api) => {
       api.addPostMenuButton(
         "chat",
-        (attrs, _state, _siteSettings, menuSettings) => {
+        (attrs) => {
           // TODO: want an includeTopicAttributes. we want topic.has_chat_history
           if (!attrs.chat_history) {
             return {

@@ -1,7 +1,6 @@
 import { A } from "@ember/array";
 import { ajax } from "discourse/lib/ajax";
 import Component from "@ember/component";
-import discourseComputed from "discourse-common/utils/decorators";
 import discourseDebounce from "discourse-common/lib/debounce";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { cancel, schedule } from "@ember/runloop";
@@ -39,7 +38,7 @@ export default Component.extend({
     const scroller = this.element.querySelector(".tc-messages-scroll");
     scroller.addEventListener(
       "scroll",
-      (evt) => {
+      () => {
         this.stickyScrollTimer = discourseDebounce(
           this,
           this.checkScrollStick,
@@ -65,7 +64,7 @@ export default Component.extend({
   didReceiveAttrs() {
     this._super(...arguments);
 
-    if (this.registeredTopicId != this.topicId) {
+    if (this.registeredTopicId !== this.topicId) {
       if (this.registeredTopicId) {
         this.messageBus.unsubscribe(`/chat/${this.registeredTopicId}`);
         this.messages.clear();
@@ -120,7 +119,7 @@ export default Component.extend({
     const current =
       scroller.scrollHeight - scroller.scrollTop - scroller.clientHeight <=
       STICKY_SCROLL_LENIENCE;
-    if (current != this.stickyScroll) {
+    if (current !== this.stickyScroll) {
       this.set("stickyScroll", current);
       if (current) {
         scroller.scrollTop = scroller.scrollHeight - scroller.clientHeight;
@@ -146,7 +145,7 @@ export default Component.extend({
       if (this.newMessageCb) {
         this.newMessageCb();
       }
-    } else if (data.type == "delete") {
+    } else if (data.type === "delete") {
       const deletedId = data.deletedId;
       const targetMsg = this.messages.findBy("id", deletedId);
       // TODO: only softdelete if canModerateChat
@@ -164,7 +163,7 @@ export default Component.extend({
           /* in_reply_to_id, */
         },
       })
-        .then((resp) => {
+        .then(() => {
           // TODO
         })
         .catch(popupAjaxError)

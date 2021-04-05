@@ -57,20 +57,28 @@ createWidget("tc-message", {
   buildAttributes(attrs) {
     if (attrs.action_code) {
       return {
-        "class": `tc-message tc-action tc-action-${attrs.action_code}`,
+        class: `tc-message tc-action tc-action-${attrs.action_code}`,
       };
     }
     return {
-      "class": "tc-message",
+      class: "tc-message",
     };
   },
 
   html(attrs) {
-    let content = [new RawHtml({ html: `<p class="tc-text">${emojiUnescape(escapeExpression(attrs.message))}</p>` })];
+    let content = [
+      new RawHtml({
+        html: `<p class="tc-text">${emojiUnescape(
+          escapeExpression(attrs.message)
+        )}</p>`,
+      }),
+    ];
     if (attrs.action_code) {
       // DANGER: we're trusting .message as html in this case
       // .message in this case may have HTML entities from the server, decode them
-      const when = autoUpdatingRelativeAge(new Date(attrs.created_at), { format: "medium-with-ago" });
+      const when = autoUpdatingRelativeAge(new Date(attrs.created_at), {
+        format: "medium-with-ago",
+      });
 
       const text = I18n.t(`action_codes.${attrs.action_code}`, {
         excerpt: attrs.message,

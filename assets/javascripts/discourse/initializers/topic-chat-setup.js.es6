@@ -56,25 +56,22 @@ export default {
     }
 
     withPluginApi("0.11.0", (api) => {
-      api.addPostMenuButton(
-        "chat",
-        (attrs) => {
-          // TODO: want an includeTopicAttributes. we want topic.has_chat_history
-          if (!attrs.chat_history) {
-            return {
-              className: "hidden",
-              disabled: "true",
-            };
-          }
+      api.addPostMenuButton("chat", (attrs) => {
+        // TODO: want an includeTopicAttributes. we want topic.has_chat_history
+        if (!attrs.chat_history) {
           return {
-            className: "show-chat",
-            position: "first",
-            contents: h("span", [attrs.chat_history.length.toString()]),
-            action: "showChat",
-            icon: "comment",
+            className: "hidden",
+            disabled: "true",
           };
         }
-      );
+        return {
+          className: "show-chat",
+          position: "first",
+          contents: h("span", [attrs.chat_history.length.toString()]),
+          action: "showChat",
+          icon: "comment",
+        };
+      });
 
       api.attachWidgetAction("post-article", "showChat", function () {
         this.state.chatShown = !this.state.chatShown;

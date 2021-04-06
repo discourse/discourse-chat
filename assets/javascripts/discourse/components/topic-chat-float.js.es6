@@ -65,7 +65,7 @@ export default Component.extend({
   },
 
   enteredTopic(topic) {
-    if (topic.has_chat_live) {
+    if (topic && topic.has_chat_live) {
       this.setProperties({
         selectedTopicId: topic.id,
         selectedTopicTitle: topic.title,

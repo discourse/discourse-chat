@@ -8,7 +8,6 @@ export default Component.extend({
   value: "",
   sendIcon: "play",
   sendTitle: "chat.send",
-  placeholderKey: "chat.placeholder",
 
   timer: null,
 
@@ -30,7 +29,7 @@ export default Component.extend({
   },
 
   keyDown(evt) {
-    if (evt.keyCode === /* ENTER */ 13) {
+    if (evt.code === "Enter" || evt.keyCode === 13) {
       if (evt.shiftKey) {
         // Shift+Enter: insert newline
         return;
@@ -46,6 +45,14 @@ export default Component.extend({
       // Ctrl+Enter, plain Enter: send
 
       this.send("internalSendChat", evt);
+    }
+    if (evt.code === "Escape" || evt.which === 27) {
+      if (this.get("replyToMsg") !== null) {
+        evt.preventDefault();
+        this.set("replyToMsg", null);
+      } else {
+        this.element.querySelector("textarea").blur();
+      }
     }
   },
 
@@ -67,9 +74,19 @@ export default Component.extend({
     }
   },
 
-  @discourseComputed("placeholderKey")
-  placeholder(key) {
-    return I18n.t(key);
+  @discourseComputed("canChat")
+  placeholder(canChat) {
+    return I18n.t(canChat ? "chat.placeholder" : "chat.placeholder_log_in");
+  },
+
+  @discourseComputed("canChat", "loading")
+  sendDisabled(canChat, loading) {
+    return !canChat || loading;
+  },
+
+  @discourseComputed("canChat")
+  inputDisabled(canChat) {
+    return !canChat;
   },
 
   actions: {
@@ -89,6 +106,10 @@ export default Component.extend({
         textarea.rows = 1;
         textarea.focus();
       });
+    },
+
+    cancelReplyTo() {
+      this.set("replyToMsg", null);
     },
   },
 });

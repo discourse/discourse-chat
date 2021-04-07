@@ -68,7 +68,7 @@ export default Component.extend({
     }
   },
 
-  pageChange(url, title) {
+  pageChange() {
     this.setProperties({
       expectPageChange: true,
       showClose: true,

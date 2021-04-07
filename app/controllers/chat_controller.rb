@@ -112,15 +112,15 @@ class DiscourseTopicChat::ChatController < ::ApplicationController
     p = Post.find(post_id)
     raise Discourse::NotFound if p.topic_id != t.id
 
-    raise NotImplementedError
+    render_json_error "unimplemented"
   end
 
   def delete
-    raise NotImplementedError
+    render_json_error "unimplemented"
   end
 
   def flag
-    raise NotImplementedError
+    render_json_error "unimplemented"
   end
 
   def index

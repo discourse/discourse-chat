@@ -8,6 +8,7 @@ export default Component.extend({
   classNameBindings: [":topic-chat-float-container", "hidden"],
 
   hidden: true,
+  expanded: true, // TODO - false when not first-load topic
   showClose: true, // TODO - false when on same topic
   expectPageChange: false,
   sizeTimer: null,

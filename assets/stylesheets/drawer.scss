@@ -1,4 +1,4 @@
-$header-height: 2.5em;
+$header-height: 2.5rem;
 
 .topic-chat-float-container {
   z-index: 220; // higher than timeline, lower than composer
@@ -27,6 +27,13 @@ $header-height: 2.5em;
   width: 400px;
   margin-right: 20px;
   align-self: flex-end;
+}
+:root.mobile-view .tc-drawer {
+  width: 100vw;
+  margin-right: 0px;
+}
+:root.mobile-view #main {
+  padding-bottom: $header-height;
 }
 
 .topic-chat-container {

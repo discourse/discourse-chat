@@ -9,6 +9,7 @@ export default Component.extend({
 
   hidden: true,
   showClose: true, // TODO - false when on same topic
+  expectPageChange: false,
   sizeTimer: null,
   rafTimer: null,
 
@@ -21,6 +22,7 @@ export default Component.extend({
     this._super(...arguments);
 
     this.appEvents.on("header:update-topic", this, "enteredTopic");
+    this.appEvents.on("page:changed", this, "pageChange");
     this.appEvents.on("composer:closed", this, "_checkSize");
     this.appEvents.on("composer:will-close", this, "_setSizeWillClose");
     this.appEvents.on("composer:opened", this, "_checkSize");
@@ -39,6 +41,7 @@ export default Component.extend({
 
     if (this.appEvents) {
       this.appEvents.off("header:update-topic", this, "enteredTopic");
+      this.appEvents.off("page:changed", this, "pageChange");
       this.appEvents.off("composer:closed", this, "_checkSize");
       this.appEvents.off("composer:will-close", this, "_setSizeWillClose");
       this.appEvents.off("composer:opened", this, "_checkSize");
@@ -64,14 +67,22 @@ export default Component.extend({
     }
   },
 
+  pageChange(url, title) {
+    this.setProperties({
+      expectPageChange: true,
+      showClose: true,
+    });
+  },
+
   enteredTopic(topic) {
     if (topic && topic.has_chat_live) {
       this.setProperties({
         selectedTopicId: topic.id,
         selectedTopicTitle: topic.title,
         selectedTopicSlug: topic.slug,
-        expanded: true,
+        expanded: this.expectPageChange ? true : this.expanded,
         hidden: false,
+        expectPageChange: false,
       });
     }
   },

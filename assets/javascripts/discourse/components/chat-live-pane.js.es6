@@ -1,6 +1,7 @@
 import { A } from "@ember/array";
 import { ajax } from "discourse/lib/ajax";
 import Component from "@ember/component";
+import discourseComputed, { observes } from "discourse-common/utils/decorators";
 import discourseDebounce from "discourse-common/lib/debounce";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { cancel, schedule } from "@ember/runloop";
@@ -115,6 +116,12 @@ export default Component.extend({
   },
 
   checkScrollStick() {
+    if (!this.expanded) {
+      // Force to bottom when collapsed
+      this.set("stickyScroll", true);
+      return;
+    }
+
     const scroller = this.element.querySelector(".tc-messages-scroll");
     const current =
       scroller.scrollHeight - scroller.scrollTop - scroller.clientHeight <=
@@ -125,6 +132,11 @@ export default Component.extend({
         scroller.scrollTop = scroller.scrollHeight - scroller.clientHeight;
       }
     }
+  },
+
+  @observes("expanded")
+  restickOnExpand() {
+    this.doScrollStick();
   },
 
   prepareMessage(msgData, userLookup) {

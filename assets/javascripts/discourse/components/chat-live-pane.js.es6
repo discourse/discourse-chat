@@ -176,9 +176,10 @@ export default Component.extend({
       this.doScrollStick();
     },
 
-    restickScrolling() {
+    restickScrolling(evt) {
       this.set("stickyScroll", true);
       this.doScrollStick();
+      evt.preventDefault();
     },
   },
 });

@@ -19,7 +19,7 @@
     </div>
     <div class="topic-chat-drawer-content">
       {{#if this.selectedTopicId}}
-        {{chat-live-pane details=this.selectedTopic topicId=this.selectedTopicId newMessageCb=(action "newMessageCb") expanded=this.expanded}}
+        {{chat-live-pane topicId=this.selectedTopicId newMessageCb=(action "newMessageCb") expanded=this.expanded}}
       {{/if}}
     </div>
   </div>

@@ -179,7 +179,7 @@ createWidget("tc-message", {
     if (msg.action_code) {
       // DANGER: we're trusting .message as html in this case
       // .message in this case may have HTML entities from the server, decode them
-      const when = autoUpdatingRelativeAge(new Date(attrs.msg), {
+      const when = autoUpdatingRelativeAge(new Date(attrs.msg.created_at), {
         format: "medium-with-ago",
       });
 
@@ -193,8 +193,8 @@ createWidget("tc-message", {
       ];
     }
     return [
-      this.attach("tc-message-actions", this.attrs),
-      this.attach("tc-reply-display", this.attrs),
+      this.attach("tc-message-actions", attrs),
+      this.attach("tc-reply-display", attrs),
       h("div.tc-meta-data", [
         avatarFor("tiny", msg.user),
         this.attach("tc-poster-name", msg.user),

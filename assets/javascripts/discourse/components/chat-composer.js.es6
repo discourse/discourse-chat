@@ -1,3 +1,4 @@
+import { action } from "@ember/object";
 import Component from "@ember/component";
 import discourseComputed, { observes } from "discourse-common/utils/decorators";
 import { not } from "@ember/object/computed";
@@ -87,27 +88,27 @@ export default Component.extend({
 
   inputDisabled: not("canChat"),
 
-  actions: {
-    // evt: either ClickEvent or KeyboardEvent
-    internalSendChat(evt) {
-      if (evt) {
-        evt.preventDefault();
-      }
-      if (this.get("value").trim() === "") {
-        return;
-      }
-      return this.sendChat(this.value, evt).then(() => {
-        this.set("value", "");
-        // If user resized textarea to write a long message, reset it.
-        const textarea = this.element.querySelector("textarea");
-        textarea.style = "";
-        textarea.rows = 1;
-        textarea.focus();
-      });
-    },
+  // evt: either ClickEvent or KeyboardEvent
+  @action
+  internalSendChat(evt) {
+    if (evt) {
+      evt.preventDefault();
+    }
+    if (this.get("value").trim() === "") {
+      return;
+    }
+    return this.sendChat(this.value, evt).then(() => {
+      this.set("value", "");
+      // If user resized textarea to write a long message, reset it.
+      const textarea = this.element.querySelector("textarea");
+      textarea.style = "";
+      textarea.rows = 1;
+      textarea.focus();
+    });
+  },
 
-    cancelReplyTo() {
-      this.set("replyToMsg", null);
-    },
+  @action
+  cancelReplyTo() {
+    this.set("replyToMsg", null);
   },
 });

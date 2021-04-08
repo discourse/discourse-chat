@@ -1,4 +1,5 @@
 import { A } from "@ember/array";
+import { action } from "@ember/object";
 import { ajax } from "discourse/lib/ajax";
 import Component from "@ember/component";
 import { observes } from "discourse-common/utils/decorators";
@@ -183,47 +184,49 @@ export default Component.extend({
     }
   },
 
-  actions: {
-    sendChat(message) {
-      this.set("sendingloading", true);
-      let data = { message };
-      if (this.replyToMsg) {
-        data.in_reply_to_id = this.replyToMsg.id;
-      }
-      return ajax(`/chat/t/${this.topicId}/`, {
-        type: "POST",
-        data,
-      })
-        .then(() => {
-          this.set("replyToMsg", null);
-        })
-        .catch(popupAjaxError)
-        .finally(() => {
-          this.set("sendingloading", false);
-        });
-    },
-
-    setReplyTo(msgId) {
-      if (msgId) {
-        this.set("replyToMsg", this.messages.findBy("id", msgId));
-        const textarea = this.element.querySelector(".tc-composer textarea");
-        if (textarea) {
-          textarea.focus();
-        }
-      } else {
+  @action
+  sendChat(message) {
+    this.set("sendingloading", true);
+    let data = { message };
+    if (this.replyToMsg) {
+      data.in_reply_to_id = this.replyToMsg.id;
+    }
+    return ajax(`/chat/t/${this.topicId}/`, {
+      type: "POST",
+      data,
+    })
+      .then(() => {
         this.set("replyToMsg", null);
+      })
+      .catch(popupAjaxError)
+      .finally(() => {
+        this.set("sendingloading", false);
+      });
+  },
+
+  @action
+  setReplyTo(msgId) {
+    if (msgId) {
+      this.set("replyToMsg", this.messages.findBy("id", msgId));
+      const textarea = this.element.querySelector(".tc-composer textarea");
+      if (textarea) {
+        textarea.focus();
       }
-      schedule("afterRender", this, this.doScrollStick);
-    },
+    } else {
+      this.set("replyToMsg", null);
+    }
+    schedule("afterRender", this, this.doScrollStick);
+  },
 
-    composerHeightChange() {
-      this.doScrollStick();
-    },
+  @action
+  composerHeightChange() {
+    this.doScrollStick();
+  },
 
-    restickScrolling(evt) {
-      this.set("stickyScroll", true);
-      this.doScrollStick();
-      evt.preventDefault();
-    },
+  @action
+  restickScrolling(evt) {
+    this.set("stickyScroll", true);
+    this.doScrollStick();
+    evt.preventDefault();
   },
 });

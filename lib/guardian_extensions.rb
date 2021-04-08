@@ -24,6 +24,11 @@ module DiscourseTopicChat::GuardianExtensions
     @user.has_trust_level?(TrustLevel[SiteSetting.min_trust_to_flag_posts])
   end
 
+  def can_delete_chat?(message)
+    # TODO
+    raise NotImplementedError
+  end
+
   def can_delete_own_chats?(topic)
     return false if !can_see_topic?(topic)
     return false if topic.archived?

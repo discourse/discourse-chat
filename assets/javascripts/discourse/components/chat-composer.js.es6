@@ -1,5 +1,6 @@
 import Component from "@ember/component";
 import discourseComputed, { observes } from "discourse-common/utils/decorators";
+import { not } from "@ember/object/computed";
 import I18n from "I18n";
 import { cancel, throttle } from "@ember/runloop";
 
@@ -29,7 +30,7 @@ export default Component.extend({
   },
 
   keyDown(evt) {
-    if (evt.code === "Enter" || evt.keyCode === 13) {
+    if (evt.code === "Enter") {
       if (evt.shiftKey) {
         // Shift+Enter: insert newline
         return;
@@ -46,8 +47,8 @@ export default Component.extend({
 
       this.send("internalSendChat", evt);
     }
-    if (evt.code === "Escape" || evt.which === 27) {
-      if (this.get("replyToMsg") !== null) {
+    if (evt.code === "Escape") {
+      if (this.replyToMsg) {
         evt.preventDefault();
         this.set("replyToMsg", null);
       } else {
@@ -84,10 +85,7 @@ export default Component.extend({
     return !canChat || loading;
   },
 
-  @discourseComputed("canChat")
-  inputDisabled(canChat) {
-    return !canChat;
-  },
+  inputDisabled: not("canChat"),
 
   actions: {
     // evt: either ClickEvent or KeyboardEvent

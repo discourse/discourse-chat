@@ -11,17 +11,18 @@ const STICKY_SCROLL_LENIENCE = 4;
 
 export default Component.extend({
   classNameBindings: [":tc-live-pane", "sendingloading", "loading"],
-  topicId: null,
-  registeredTopicId: null,
+  topicId: null, // ?Number
+  registeredTopicId: null, // ?Number
   loading: false,
   sendingloading: false,
   stickyScroll: true,
   stickyScrollTimer: null,
 
-  replyToMsg: null,
-  messages: A(),
-  userLookup: {},
-  messageLookup: {},
+  replyToMsg: null, // ?Message
+  details: null, // Object { topicId, can_chat, ... }
+  messages: null, // Array
+  userLookup: null, // Object<Number, User>
+  messageLookup: null, // Object<Number, Message>
 
   didInsertElement() {
     this._super(...arguments);
@@ -38,6 +39,10 @@ export default Component.extend({
       },
       { passive: true }
     );
+
+    this.messages = A();
+    this.userLookup = {};
+    this.messageLookup = {};
   },
 
   willDestroyElement() {

@@ -75,6 +75,9 @@ export default Component.extend({
         this.set("loading", true);
         ajax(`/chat/t/${this.topicId}/recent`)
           .then((data) => {
+            if (!this.element || this.isDestroying || this.isDestroyed) {
+              return;
+            }
             const tc = data.topic_chat_view;
             this.updateUserLookup(data.users);
             this.set(
@@ -103,6 +106,9 @@ export default Component.extend({
             throw err;
           })
           .finally(() => {
+            if (!this.element || this.isDestroying || this.isDestroyed) {
+              return;
+            }
             this.set("loading", false);
           });
       }
@@ -110,6 +116,9 @@ export default Component.extend({
   },
 
   doScrollStick() {
+    if (!this.element || this.isDestroying || this.isDestroyed) {
+      return;
+    }
     if (this.stickyScroll) {
       const scroller = this.element.querySelector(".tc-messages-scroll");
       scroller.scrollTop = scroller.scrollHeight - scroller.clientHeight;
@@ -117,6 +126,9 @@ export default Component.extend({
   },
 
   checkScrollStick() {
+    if (!this.element || this.isDestroying || this.isDestroyed) {
+      return;
+    }
     if (!this.expanded) {
       // Force to bottom when collapsed
       this.set("stickyScroll", true);
@@ -196,10 +208,16 @@ export default Component.extend({
       data,
     })
       .then(() => {
+        if (!this.element || this.isDestroying || this.isDestroyed) {
+          return;
+        }
         this.set("replyToMsg", null);
       })
       .catch(popupAjaxError)
       .finally(() => {
+        if (!this.element || this.isDestroying || this.isDestroyed) {
+          return;
+        }
         this.set("sendingloading", false);
       });
   },

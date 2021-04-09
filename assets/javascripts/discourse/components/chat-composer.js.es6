@@ -94,7 +94,7 @@ export default Component.extend({
     if (evt) {
       evt.preventDefault();
     }
-    if (this.get("value").trim() === "") {
+    if ((this.value || "").trim() === "") {
       return;
     }
     return this.sendChat(this.value, evt).then(() => {

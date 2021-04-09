@@ -1,3 +1,4 @@
+import { action } from "@ember/object";
 import Component from "@ember/component";
 import discourseComputed from "discourse-common/utils/decorators";
 import getURL from "discourse-common/lib/get-url";
@@ -68,7 +69,7 @@ export default Component.extend({
     }
   },
 
-  pageChange(url, title) {
+  pageChange() {
     this.setProperties({
       expectPageChange: true,
       showClose: true,
@@ -170,31 +171,33 @@ export default Component.extend({
     return count > 0;
   },
 
-  actions: {
-    toggleExpand() {
-      const old = this.get("expanded");
-      this.set("expanded", !old);
-      if (!old) {
-        this.set("unreadMessageCount", 0);
-      }
-    },
+  @action
+  toggleExpand() {
+    const old = this.expanded;
+    this.set("expanded", !old);
+    if (!old) {
+      this.set("unreadMessageCount", 0);
+    }
+  },
 
-    newMessageCb() {
-      if (!this.get("expanded")) {
-        this.set("unreadMessageCount", this.get("unreadMessageCount") + 1);
-      }
-    },
+  @action
+  newMessageCb() {
+    if (!this.expanded) {
+      this.set("unreadMessageCount", this.get("unreadMessageCount") + 1);
+    }
+  },
 
-    back() {
-      bootbox.alert("unimplemented");
-    },
+  @action
+  back() {
+    bootbox.alert("unimplemented");
+  },
 
-    close() {
-      this.setProperties({
-        hidden: true,
-        selectedTopicId: null,
-        selectedTopicTitle: null,
-      });
-    },
+  @action
+  close() {
+    this.setProperties({
+      hidden: true,
+      selectedTopicId: null,
+      selectedTopicTitle: null,
+    });
   },
 });

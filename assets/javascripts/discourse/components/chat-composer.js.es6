@@ -1,5 +1,7 @@
+import { action } from "@ember/object";
 import Component from "@ember/component";
 import discourseComputed, { observes } from "discourse-common/utils/decorators";
+import { not } from "@ember/object/computed";
 import I18n from "I18n";
 import { cancel, throttle } from "@ember/runloop";
 
@@ -8,7 +10,6 @@ export default Component.extend({
   value: "",
   sendIcon: "play",
   sendTitle: "chat.send",
-  placeholderKey: "chat.placeholder",
 
   timer: null,
 
@@ -30,7 +31,7 @@ export default Component.extend({
   },
 
   keyDown(evt) {
-    if (evt.keyCode === /* ENTER */ 13) {
+    if (evt.code === "Enter") {
       if (evt.shiftKey) {
         // Shift+Enter: insert newline
         return;
@@ -46,6 +47,14 @@ export default Component.extend({
       // Ctrl+Enter, plain Enter: send
 
       this.send("internalSendChat", evt);
+    }
+    if (evt.code === "Escape") {
+      if (this.replyToMsg) {
+        evt.preventDefault();
+        this.set("replyToMsg", null);
+      } else {
+        this.element.querySelector("textarea").blur();
+      }
     }
   },
 
@@ -67,28 +76,39 @@ export default Component.extend({
     }
   },
 
-  @discourseComputed("placeholderKey")
-  placeholder(key) {
-    return I18n.t(key);
+  @discourseComputed("canChat")
+  placeholder(canChat) {
+    return I18n.t(canChat ? "chat.placeholder" : "chat.placeholder_log_in");
   },
 
-  actions: {
-    // evt: either ClickEvent or KeyboardEvent
-    internalSendChat(evt) {
-      if (evt) {
-        evt.preventDefault();
-      }
-      if (this.get("value").trim() === "") {
-        return;
-      }
-      return this.sendChat(this.value, evt).then(() => {
-        this.set("value", "");
-        // If user resized textarea to write a long message, reset it.
-        const textarea = this.element.querySelector("textarea");
-        textarea.style = "";
-        textarea.rows = 1;
-        textarea.focus();
-      });
-    },
+  @discourseComputed("canChat", "loading")
+  sendDisabled(canChat, loading) {
+    return !canChat || loading;
+  },
+
+  inputDisabled: not("canChat"),
+
+  // evt: either ClickEvent or KeyboardEvent
+  @action
+  internalSendChat(evt) {
+    if (evt) {
+      evt.preventDefault();
+    }
+    if ((this.value || "").trim() === "") {
+      return;
+    }
+    return this.sendChat(this.value, evt).then(() => {
+      this.set("value", "");
+      // If user resized textarea to write a long message, reset it.
+      const textarea = this.element.querySelector("textarea");
+      textarea.style = "";
+      textarea.rows = 1;
+      textarea.focus();
+    });
+  },
+
+  @action
+  cancelReplyTo() {
+    this.set("replyToMsg", null);
   },
 });

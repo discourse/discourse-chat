@@ -105,20 +105,56 @@ $header-height: 2.5rem;
 .tc-messages-container {
   word-wrap: break-word;
   white-space: normal;
-  .tc-message {
-    .tc-text {
-      margin: 0;
-    }
-  }
 
   .tc-message {
+    position: relative;
     margin-top: 4px;
     &.tc-action {
       background-color: var(--highlight-medium);
     }
+    &.deleted {
+      background-color: var(--danger-medium);
+    }
+    .tc-text {
+      margin: 0;
+    }
+    .tc-reply-display {
+      display: inline-block;
+      text-overflow: ellipsis;
+      overflow-x: hidden;
+      white-space: nowrap;
+      width: 94%;
+      font-size: 0.8em;
+      line-height: 0.8em;
+      margin-bottom: -0.5em;
+    }
   }
   .tc-action-text {
     font-style: italic;
+  }
+  .tc-msgactions-hover {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+    right: 4px;
+    // Give a larger hover box
+    margin-top: -1em;
+    padding-top: 1em;
+    button {
+      padding: 0.5em 10px;
+    }
+  }
+  .tc-message:hover,
+  .tc-message:focus-within {
+    .tc-msgactions-hover {
+      opacity: 1;
+      pointer-events: initial;
+    }
+  }
+  .tc-msgactions {
+    border: 1px solid var(--secondary-high);
+    border-radius: 2px;
+    background-color: var(--secondary);
   }
   .tc-meta-data {
     color: var(--secondary-medium);
@@ -168,13 +204,34 @@ $header-height: 2.5rem;
   .tc-composer {
     min-height: 1.5em;
     flex-shrink: 0;
-    display: flex;
-    flex-direction: row;
-    align-items: stretch;
+    .tc-composer-row {
+      display: flex;
+      flex-direction: row;
+      align-items: stretch;
+    }
     textarea {
       flex-grow: 1;
       margin-bottom: 0;
       border: 0;
+    }
+    .tc-composer-replypreview {
+      display: flex;
+      flex-direction: row;
+      padding-left: 4px;
+      height: 1.6em;
+
+      .width-limited {
+        display: inline-block;
+        text-overflow: ellipsis;
+        overflow-x: hidden;
+        white-space: nowrap;
+        flex-grow: 1;
+      }
+    }
+    .tc-cancel-reply {
+      align-self: flex-end;
+      padding: 4px;
+      margin-right: 2em;
     }
     margin-bottom: 2px;
     border: solid var(--primary-medium, $primary-medium);
@@ -191,6 +248,20 @@ $header-height: 2.5rem;
     button {
       width: 36px;
     }
+  }
+}
+
+.tc-composer-replypreview,
+.tc-reply-display {
+  color: var(--secondary-medium);
+  .tc-reply-av {
+    margin-left: 2px;
+  }
+  .tc-reply-username {
+    font-weight: bold;
+  }
+  .tc-reply-msg {
+    text-overflow: ellipsis;
   }
 }
 

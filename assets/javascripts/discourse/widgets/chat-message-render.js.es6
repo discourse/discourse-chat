@@ -179,7 +179,7 @@ createWidget("tc-message", {
     if (msg.action_code) {
       // DANGER: we're trusting .message as html in this case
       // .message in this case may have HTML entities from the server, decode them
-      const when = autoUpdatingRelativeAge(new Date(attrs.msg.created_at), {
+      const when = autoUpdatingRelativeAge(new Date(msg.created_at), {
         format: "medium-with-ago",
       });
 

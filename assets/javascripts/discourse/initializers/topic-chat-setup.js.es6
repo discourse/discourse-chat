@@ -18,7 +18,7 @@ function findParentWidget(widget, ofName) {
 
 export default {
   name: "topic-chat-setup",
-  initialize() {
+  initialize(container) {
     TopicStatus.reopen({
       statuses: Ember.computed(function () {
         const results = this._super(...arguments);
@@ -42,15 +42,17 @@ export default {
     addPostSmallActionIcon("chat.enabled", "comment");
     addPostSmallActionIcon("chat.disabled", "comment");
 
-    function doToggleChat(topic) {
-      const current = topic.has_chat_live;
+    const appEvents = container.lookup("service:app-events");
 
-      return ajax(`/chat/t/${topic.id}/${current ? "disable" : "enable"}`, {
+    function doToggleChat(topic) {
+      topic.set("has_chat_live", !topic.has_chat_live);
+
+      const action = topic.has_chat_live ? "enable" : "disable";
+      return ajax(`/chat/t/${topic.id}/${action}`, {
         type: "POST",
       })
         .then(() => {
-          // TODO graceful handling of chat enable
-          window.location.reload();
+          appEvents.trigger(`topic-chat-${action}`, topic);
         })
         .catch(popupAjaxError);
     }

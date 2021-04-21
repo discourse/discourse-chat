@@ -24,6 +24,8 @@ export default Component.extend({
     this._super(...arguments);
 
     this.appEvents.on("header:update-topic", this, "enteredTopic");
+    this.appEvents.on("topic-chat-enable", this, "chatEnabledForTopic");
+    this.appEvents.on("topic-chat-disable", this, "chatDisabledForTopic");
     this.appEvents.on("page:changed", this, "pageChange");
     this.appEvents.on("composer:closed", this, "_checkSize");
     this.appEvents.on("composer:will-close", this, "_setSizeWillClose");
@@ -43,6 +45,8 @@ export default Component.extend({
 
     if (this.appEvents) {
       this.appEvents.off("header:update-topic", this, "enteredTopic");
+      this.appEvents.off("topic-chat-enable", this, "chatEnabledForTopic");
+      this.appEvents.off("topic-chat-disable", this, "chatDisabledForTopic");
       this.appEvents.off("page:changed", this, "pageChange");
       this.appEvents.off("composer:closed", this, "_checkSize");
       this.appEvents.off("composer:will-close", this, "_setSizeWillClose");
@@ -86,6 +90,19 @@ export default Component.extend({
         hidden: false,
         expectPageChange: false,
       });
+    }
+  },
+
+  chatEnabledForTopic(topic) {
+    if (!this.selectedTopicId || this.selectedTopicId === topic.id) {
+      // Don't do anything if viewing another topic
+      this.enteredTopic(topic);
+    }
+  },
+
+  chatDisabledForTopic(topic) {
+    if (this.expanded && this.selectedTopicId === topic.id) {
+      this._close();
     }
   },
 
@@ -192,12 +209,16 @@ export default Component.extend({
     bootbox.alert("unimplemented");
   },
 
-  @action
-  close() {
+  _close() {
     this.setProperties({
       hidden: true,
       selectedTopicId: null,
       selectedTopicTitle: null,
     });
+  },
+
+  @action
+  close() {
+    this._close();
   },
 });

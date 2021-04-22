@@ -24,9 +24,10 @@ module DiscourseTopicChat::GuardianExtensions
     @user.has_trust_level?(TrustLevel[SiteSetting.min_trust_to_flag_posts])
   end
 
-  def can_delete_chat?(message)
-    # TODO
-    raise NotImplementedError
+  def can_delete_chat?(message, topic)
+    return message.user_id == current_user.id ?
+      can_delete_own_chats?(topic) :
+      can_delete_other_chats?(topic)
   end
 
   def can_delete_own_chats?(topic)

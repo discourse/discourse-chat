@@ -16,8 +16,8 @@ class TopicChatPublisher
     raise NotImplementedError
   end
 
-  def self.publish_delete!(msg)
-    raise NotImplementedError
+  def self.publish_delete!(topic, msg)
+    MessageBus.publish("/chat/#{topic.id}", { typ: "delete", deleted_id: msg.id, deleted_at: msg.deleted_at } )
   end
 
   def self.publish_index!

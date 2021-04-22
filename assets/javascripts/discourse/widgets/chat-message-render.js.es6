@@ -219,11 +219,7 @@ createWidget("tc-message", {
       {
         type: "DELETE",
       }
-    )
-      .then(() => {
-        this.attrs.message.deleted_at = new Date().toISOString();
-      })
-      .catch(popupAjaxError);
+    ).catch(popupAjaxError);
   },
 });
 

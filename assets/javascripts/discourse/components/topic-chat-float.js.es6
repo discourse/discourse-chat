@@ -102,7 +102,7 @@ export default Component.extend({
 
   chatDisabledForTopic(topic) {
     if (this.expanded && this.selectedTopicId === topic.id) {
-      this._close();
+      this.close();
     }
   },
 
@@ -209,16 +209,12 @@ export default Component.extend({
     bootbox.alert("unimplemented");
   },
 
-  _close() {
+  @action
+  close() {
     this.setProperties({
       hidden: true,
       selectedTopicId: null,
       selectedTopicTitle: null,
     });
-  },
-
-  @action
-  close() {
-    this._close();
   },
 });

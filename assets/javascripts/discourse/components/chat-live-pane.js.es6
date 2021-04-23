@@ -1,5 +1,5 @@
 import { A } from "@ember/array";
-import { action, set } from "@ember/object";
+import EmberObject, { action } from "@ember/object";
 import { ajax } from "discourse/lib/ajax";
 import Component from "@ember/component";
 import { observes } from "discourse-common/utils/decorators";
@@ -168,7 +168,7 @@ export default Component.extend({
       msgData.in_reply_to = this.messageLookup[msgData.in_reply_to_id];
     }
     this.messageLookup[msgData.id] = msgData;
-    return msgData;
+    return EmberObject.create(msgData);
   },
 
   removeMessage(msgData) {
@@ -176,7 +176,6 @@ export default Component.extend({
   },
 
   handleMessage(data) {
-    console.log(data)
     if (data.typ === "sent") {
       this.updateUserLookup(data.users);
       const msg = this.prepareMessage(data.topic_chat_message);
@@ -193,7 +192,7 @@ export default Component.extend({
       const deletedId = data.deleted_id;
       const targetMsg = this.messages.findBy("id", deletedId);
       if (this.currentUser.staff || this.currentUser.id === targetMsg.user_id) {
-        targetMsg.deleted_at = data.deleted_at
+        targetMsg.set("deleted_at", data.deleted_at);
       } else {
         this.messages.removeObject(targetMsg);
       }

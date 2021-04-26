@@ -1,0 +1,33 @@
+<div class="tc-msgactions-hover">
+  <div class="tc-msgactions">
+    {{#if showReplyButton}}
+      {{d-button
+        class="btn-flat"
+        action="reply"
+        icon="reply"
+      }}
+    {{/if}}
+    {{#if showFlagButton}}
+      {{d-button
+        class="btn-flat"
+        action="flag"
+        icon="flag"
+      }}
+    {{/if}}
+    {{#if showDeleteButton}}
+      {{d-button
+        class="btn-flat"
+        action="deleteMessage"
+        icon="trash-alt"
+      }}
+    {{/if}}
+  </div>
+</div>
+
+<div class="tc-meta-data">
+  {{avatar user imageSize="tiny"}}
+  <span class={{usernameClasses}}>{{name}}</span>
+</div>
+{{message.user.username}}
+{{message.message}}
+

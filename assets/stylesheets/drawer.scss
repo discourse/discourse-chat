@@ -163,15 +163,12 @@ $header-height: 2.5rem;
       display: inline-block;
       vertical-align: bottom;
       margin-left: 4px;
-      .first {
+      margin-right: 4px;
+      &.first {
         font-weight: bold;
-      }
-      span {
-        margin-right: 4px;
       }
     }
   }
-}
 
 .tc-live-pane {
   display: flex;

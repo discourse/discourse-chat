@@ -3,9 +3,7 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 import Component from "@ember/component";
 import discourseComputed from "discourse-common/utils/decorators";
 import { prioritizeNameInUx } from "discourse/lib/settings";
-import { formatUsername } from "discourse/lib/utilities";
 import { action } from "@ember/object";
-import { and } from "@ember/object/computed";
 import { autoUpdatingRelativeAge } from "discourse/lib/formatter";
 import I18n from "I18n";
 
@@ -112,7 +110,7 @@ export default Component.extend({
       format: "medium-with-ago",
     });
 
-    return I18n.t(`action_codes.${message.action_code}`, {
+    return I18n.t(`action_codes.${actionCode}`, {
       excerpt: message.message,
       when,
       who: "[INVALID]",

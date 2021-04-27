@@ -25,7 +25,7 @@ module DiscourseTopicChat::GuardianExtensions
   end
 
   def can_delete_chat?(message, topic)
-    return message.user_id == current_user.id ?
+    message.user_id == current_user.id ?
       can_delete_own_chats?(topic) :
       can_delete_other_chats?(topic)
   end

@@ -107,9 +107,12 @@ $header-height: 2.5rem;
   white-space: normal;
 
   .tc-message-deleted {
-    padding-top: 5px;
-    cursor: pointer;
-    color: var(--primary-high);
+    margin-top: 2px;
+
+    .tc-message-expand-deleted {
+      color: var(--primary-high);
+      padding: 2px;
+    }
   }
   .tc-message {
     position: relative;

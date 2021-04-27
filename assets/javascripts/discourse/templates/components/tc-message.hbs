@@ -1,9 +1,11 @@
 {{#if show}}
   {{#if deletedAndCollapsed}}
     <div class="tc-message-deleted">
-      <span onclick={{action "expand"}} class="tc-message-expand-deleted">
-        {{i18n "chat.deleted"}}
-      </span>
+      {{d-button
+        class="btn-flat tc-message-expand-deleted"
+        action="expand"
+        label="chat.deleted"
+        }}
     </div>
   {{else}}
     <div class={{messageClasses}}>

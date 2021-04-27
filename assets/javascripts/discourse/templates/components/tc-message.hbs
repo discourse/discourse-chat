@@ -1,33 +1,74 @@
-<div class="tc-msgactions-hover">
-  <div class="tc-msgactions">
-    {{#if showReplyButton}}
-      {{d-button
-        class="btn-flat"
-        action="reply"
-        icon="reply"
-      }}
-    {{/if}}
-    {{#if showFlagButton}}
-      {{d-button
-        class="btn-flat"
-        action="flag"
-        icon="flag"
-      }}
-    {{/if}}
-    {{#if showDeleteButton}}
-      {{d-button
-        class="btn-flat"
-        action="deleteMessage"
-        icon="trash-alt"
-      }}
-    {{/if}}
-  </div>
-</div>
+{{#if show}}
+  {{#if deletedAndCollapsed}}
+    <div class="tc-message-deleted">
+      <span onclick={{action "expand"}} class="tc-message-expand-deleted">
+        {{i18n "chat.deleted"}}
+      </span>
+    </div>
+  {{else}}
+    <div class={{messageClasses}}>
+      <div class="tc-msgactions-hover">
+        <div class="tc-msgactions">
+          {{#if showReplyButton}}
+            {{d-button
+              class="btn-flat"
+              action="reply"
+              icon="reply"
+            }}
+          {{/if}}
+          {{#if showFlagButton}}
+            {{d-button
+              class="btn-flat"
+              action="flag"
+              icon="flag"
+            }}
+          {{/if}}
+          {{#if showDeleteButton}}
+            {{d-button
+              class="btn-flat"
+              action="deleteMessage"
+              icon="trash-alt"
+            }}
+          {{/if}}
+          {{#if showRestoreButton}}
+            {{d-button
+              class="btn-flat"
+              action="restore"
+              icon="undo"
+            }}
+          {{/if}}
+        </div>
+      </div>
 
-<div class="tc-meta-data">
-  {{avatar user imageSize="tiny"}}
-  <span class={{usernameClasses}}>{{name}}</span>
-</div>
-{{message.user.username}}
-{{message.message}}
+      {{#if message.in_reply_to}}
+        <div class="tc-reply-display">
+          {{d-icon "share" title="chat.in_reply_to"}}
+          <span class="tc-reply-av">
+            {{avatar message.in_reply_to.user imageSize="tiny"}}
+          </span>
+          <span class="tc-reply-msg">
+            {{html-safe message.in_reply_to.message}}
+          </span>
+        </div>
+      {{/if}}
 
+      <div class="tc-meta-data">
+        {{avatar user imageSize="tiny"}}
+        <span class={{usernameClasses}}>{{name}}</span>
+        {{format-date message.created_at format="tiny"}}
+      </div>
+
+      <p class="tc-text">
+        {{#if message.action_code}}
+          <span class="tc-action-text">
+            {{actionCodeText}}
+          </span>
+        {{else}}
+          <p class="tc-text">
+            {{message.message}}
+          </p>
+        {{/if}}
+      </p>
+    </div>
+  {{/if}}
+{{/if}}

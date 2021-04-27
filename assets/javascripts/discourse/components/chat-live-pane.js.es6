@@ -167,6 +167,7 @@ export default Component.extend({
     if (msgData.in_reply_to_id) {
       msgData.in_reply_to = this.messageLookup[msgData.in_reply_to_id];
     }
+    msgData.expanded = !msgData.deleted_at;
     this.messageLookup[msgData.id] = msgData;
     return EmberObject.create(msgData);
   },
@@ -192,7 +193,10 @@ export default Component.extend({
       const deletedId = data.deleted_id;
       const targetMsg = this.messages.findBy("id", deletedId);
       if (this.currentUser.staff || this.currentUser.id === targetMsg.user_id) {
-        targetMsg.set("deleted_at", data.deleted_at);
+        targetMsg.setProperties({
+          deleted_at: data.deleted_at,
+          expanded: false,
+        });
       } else {
         this.messages.removeObject(targetMsg);
       }

@@ -1,7 +1,7 @@
 <div class="tc-messages-scroll tc-messages-container">
   {{#conditional-loading-spinner condition=this.loading}}
     {{#each this.messages as |message|}}
-      {{mount-widget widget="tc-message" args=(hash message=message details=this.details setReplyTo=(action "setReplyTo"))}}
+      {{tc-message message=message details=this.details setReplyTo=(action "setReplyTo")}}
     {{/each}}
   {{/conditional-loading-spinner}}
 </div>

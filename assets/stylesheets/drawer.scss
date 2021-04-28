@@ -106,6 +106,14 @@ $header-height: 2.5rem;
   word-wrap: break-word;
   white-space: normal;
 
+  .tc-message-deleted {
+    margin-top: 2px;
+
+    .tc-message-expand-deleted {
+      color: var(--primary-high);
+      padding: 2px;
+    }
+  }
   .tc-message {
     position: relative;
     margin-top: 4px;
@@ -162,12 +170,10 @@ $header-height: 2.5rem;
       color: var(--secondary-low);
       display: inline-block;
       vertical-align: bottom;
-      margin-left: 4px;
-      .first {
+      margin-left: 0;
+      margin-right: 4px;
+      &.first {
         font-weight: bold;
-      }
-      span {
-        margin-right: 4px;
       }
     }
   }

@@ -1,5 +1,5 @@
 import { A } from "@ember/array";
-import { action } from "@ember/object";
+import EmberObject, { action } from "@ember/object";
 import { ajax } from "discourse/lib/ajax";
 import Component from "@ember/component";
 import { observes } from "discourse-common/utils/decorators";
@@ -167,8 +167,9 @@ export default Component.extend({
     if (msgData.in_reply_to_id) {
       msgData.in_reply_to = this.messageLookup[msgData.in_reply_to_id];
     }
+    msgData.expanded = !msgData.deleted_at;
     this.messageLookup[msgData.id] = msgData;
-    return msgData;
+    return EmberObject.create(msgData);
   },
 
   removeMessage(msgData) {
@@ -188,11 +189,17 @@ export default Component.extend({
       if (this.newMessageCb) {
         this.newMessageCb();
       }
-    } else if (data.type === "delete") {
-      const deletedId = data.deletedId;
+    } else if (data.typ === "delete") {
+      const deletedId = data.deleted_id;
       const targetMsg = this.messages.findBy("id", deletedId);
-      // TODO: only softdelete if canModerateChat
-      targetMsg.set("deleted", true);
+      if (this.currentUser.staff || this.currentUser.id === targetMsg.user_id) {
+        targetMsg.setProperties({
+          deleted_at: data.deleted_at,
+          expanded: false,
+        });
+      } else {
+        this.messages.removeObject(targetMsg);
+      }
     }
   },
 

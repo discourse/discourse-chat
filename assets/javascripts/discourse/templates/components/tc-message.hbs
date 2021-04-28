@@ -5,7 +5,7 @@
         class="btn-flat tc-message-expand-deleted"
         action="expand"
         label="chat.deleted"
-        }}
+      }}
     </div>
   {{else}}
     <div class={{messageClasses}}>
@@ -55,7 +55,7 @@
       {{/if}}
 
       <div class="tc-meta-data">
-        {{avatar user imageSize="tiny"}}
+        {{avatar message.user imageSize="tiny"}}
         <span class={{usernameClasses}}>{{name}}</span>
         {{format-date message.created_at format="tiny"}}
       </div>

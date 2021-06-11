@@ -231,8 +231,15 @@ const historyContainer = createWidget("tc-history-container", {
   tagName: "section.tc-history",
 
   html(attrs) {
+    let lookup = {};
+    attrs.chat_history.forEach(msg => {
+      lookup[msg.id] = msg;
+    });
     let contents = attrs.chat_history.map((msg) => {
       msg.user.template = msg.user.avatar_template; // HACK
+      if (msg.in_reply_to_id) {
+        msg.in_reply_to = lookup[msg.in_reply_to_id];
+      }
       return this.attach("tc-message", { message: msg, details: {} });
     });
 

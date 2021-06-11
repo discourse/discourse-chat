@@ -23,10 +23,9 @@ export default Component.extend({
   didInsertElement() {
     this._super(...arguments);
 
-    this.appEvents.on("header:update-topic", this, "enteredTopic");
+    this.appEvents.on("page:topic-loaded", this, "enteredTopic");
     this.appEvents.on("topic-chat-enable", this, "chatEnabledForTopic");
     this.appEvents.on("topic-chat-disable", this, "chatDisabledForTopic");
-    this.appEvents.on("page:changed", this, "pageChange");
     this.appEvents.on("composer:closed", this, "_checkSize");
     this.appEvents.on("composer:will-close", this, "_setSizeWillClose");
     this.appEvents.on("composer:opened", this, "_checkSize");
@@ -44,10 +43,9 @@ export default Component.extend({
     this._super(...arguments);
 
     if (this.appEvents) {
-      this.appEvents.off("header:update-topic", this, "enteredTopic");
+      this.appEvents.off("page:topic-loaded", this, "enteredTopic");
       this.appEvents.off("topic-chat-enable", this, "chatEnabledForTopic");
       this.appEvents.off("topic-chat-disable", this, "chatDisabledForTopic");
-      this.appEvents.off("page:changed", this, "pageChange");
       this.appEvents.off("composer:closed", this, "_checkSize");
       this.appEvents.off("composer:will-close", this, "_setSizeWillClose");
       this.appEvents.off("composer:opened", this, "_checkSize");
@@ -71,13 +69,6 @@ export default Component.extend({
     if (this.rafTimer) {
       window.cancelAnimationFrame(this.rafTimer);
     }
-  },
-
-  pageChange() {
-    this.setProperties({
-      expectPageChange: true,
-      showClose: true,
-    });
   },
 
   enteredTopic(topic) {

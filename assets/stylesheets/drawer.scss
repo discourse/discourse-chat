@@ -108,6 +108,7 @@ $header-height: 2.5rem;
 
   .tc-message-deleted {
     margin-top: 2px;
+    text-align: center;
 
     .tc-message-expand-deleted {
       color: var(--primary-high);
@@ -239,9 +240,8 @@ $header-height: 2.5rem;
       padding: 4px;
       margin-right: 2em;
     }
-    margin-bottom: 2px;
     border: solid var(--primary-medium, $primary-medium);
-    border-width: 1px 0;
+    border-width: 1px 0 3px;
   }
 }
 :root.mobile-view {

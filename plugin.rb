@@ -5,6 +5,7 @@
 # version: 0.1
 # authors: Kane York
 # url: https://github.com/discourse-org/discourse-topic-chat
+# transpile_js: true
 
 enabled_site_setting :topic_chat_enabled
 

@@ -43,29 +43,31 @@ after_initialize do
     }
   end
 
-  require_dependency 'topic_view'
-  class ::TopicView
-    def chat_record
-      return @chat_record if @chat_record_lookup_done
-      @chat_record = TopicChat.with_deleted.find_by(topic_id: @topic.id) if SiteSetting.topic_chat_enabled
-      @chat_record_lookup_done = true
-      @chat_record
-    end
+  reloadable_patch do |plugin|
+    require_dependency 'topic_view'
+    class ::TopicView
+      def chat_record
+        return @chat_record if @chat_record_lookup_done
+        @chat_record = TopicChat.with_deleted.find_by(topic_id: @topic.id) if SiteSetting.topic_chat_enabled
+        @chat_record_lookup_done = true
+        @chat_record
+      end
 
-    def chat_history_by_post
-      @chat_history_by_post ||= begin
-                                  msgs = TopicChatMessage
-                                    .where(topic_id: @topic.id)
-                                    .where(post_id: posts.pluck(:id))
-                                    .where("COALESCE(action_code, 'null') NOT IN ('chat.post_created')")
-                                    .order(created_at: :asc)
-                                  by_post = {}
-                                  msgs.each do |tcm|
-                                    by_post[tcm.post_id] ||= []
-                                    by_post[tcm.post_id] << tcm
+      def chat_history_by_post
+        @chat_history_by_post ||= begin
+                                    msgs = TopicChatMessage
+                                      .where(topic_id: @topic.id)
+                                      .where(post_id: posts.pluck(:id))
+                                      .where("COALESCE(action_code, 'null') NOT IN ('chat.post_created')")
+                                      .order(created_at: :asc)
+                                    by_post = {}
+                                    msgs.each do |tcm|
+                                      by_post[tcm.post_id] ||= []
+                                      by_post[tcm.post_id] << tcm
+                                    end
+                                    by_post
                                   end
-                                  by_post
-                                end
+      end
     end
   end
 
@@ -81,59 +83,57 @@ after_initialize do
     !object.topic_chat.nil?
   end
 
-  add_to_serializer('topic_view', :has_chat_live) do
-    raise "bad version of function"
-  end
+  reloadable_patch do |plugin|
+    require_dependency 'topic_view_serializer'
+    class ::TopicViewSerializer
+      attributes :has_chat_live, :has_chat_history
+      attributes :can_chat
 
-  require_dependency 'topic_view_serializer'
-  class ::TopicViewSerializer
-    attributes :has_chat_live, :has_chat_history
-    attributes :can_chat
+      # overrides has_chat_live from ListableTopicSerializer
+      def has_chat_live
+        chat_lookup && !chat_lookup.trashed?
+      end
 
-    # overrides has_chat_live from ListableTopicSerializer
-    def has_chat_live
-      chat_lookup && !chat_lookup.trashed?
+      def has_chat_history
+        !chat_lookup.nil?
+      end
+
+      def can_chat
+        scope.can_chat?(self.object)
+      end
+
+      def include_has_chat_live?
+        SiteSetting.topic_chat_enabled
+      end
+
+      def include_has_chat_history?
+        SiteSetting.topic_chat_enabled
+      end
+
+      def include_can_chat?
+        return false unless SiteSetting.topic_chat_enabled
+        has_chat_live
+      end
+
+      private
+      def chat_lookup
+        object.chat_record
+      end
     end
 
-    def has_chat_history
-      !chat_lookup.nil?
-    end
+    require_dependency 'post_serializer'
+    class ::PostSerializer
+      attributes :chat_history
 
-    def can_chat
-      scope.can_chat?(self.object)
-    end
+      def chat_history
+        # TODO: user info not included
+        msgs = @topic_view.chat_history_by_post[object.id]
+        ActiveModel::ArraySerializer.new(msgs, each_serializer: TopicChatHistoryMessageSerializer, scope: scope, root: false) if msgs
+      end
 
-    def include_has_chat_live?
-      SiteSetting.topic_chat_enabled
-    end
-
-    def include_has_chat_history?
-      SiteSetting.topic_chat_enabled
-    end
-
-    def include_can_chat?
-      return false unless SiteSetting.topic_chat_enabled
-      has_chat_live
-    end
-
-    private
-    def chat_lookup
-      object.chat_record
-    end
-  end
-
-  require_dependency 'post_serializer'
-  class ::PostSerializer
-    attributes :chat_history
-
-    def chat_history
-      # TODO: user info not included
-      msgs = @topic_view.chat_history_by_post[object.id]
-      ActiveModel::ArraySerializer.new(msgs, each_serializer: TopicChatHistoryMessageSerializer, scope: scope, root: false) if msgs
-    end
-
-    def include_chat_history?
-      @topic_view&.chat_record
+      def include_chat_history?
+        @topic_view&.chat_record
+      end
     end
   end
 

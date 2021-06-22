@@ -7,7 +7,7 @@ class TopicChatViewSerializer < ApplicationSerializer
     :can_delete_self,
     :can_delete_others
 
-  has_many :messages, serializer: TopicChatLiveMessageSerializer, embed: :objects
+  has_many :messages, serializer: TopicChatHistoryMessageSerializer, embed: :objects
 
   def last_id
     object.message_bus_last_id

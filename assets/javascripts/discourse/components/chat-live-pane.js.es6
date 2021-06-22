@@ -22,7 +22,6 @@ export default Component.extend({
   replyToMsg: null, // ?Message
   details: null, // Object { topicId, can_chat, ... }
   messages: null, // Array
-  userLookup: null, // Object<Number, User>
   messageLookup: null, // Object<Number, Message>
 
   didInsertElement() {
@@ -42,7 +41,6 @@ export default Component.extend({
     );
 
     this.messages = A();
-    this.userLookup = {};
     this.messageLookup = {};
   },
 
@@ -65,7 +63,6 @@ export default Component.extend({
       if (this.registeredTopicId) {
         this.messageBus.unsubscribe(`/chat/${this.registeredTopicId}`);
         this.messages.clear();
-        this.userLookup = {};
         this.messageLookup = {};
         this.registeredTopicId = null;
       }
@@ -79,7 +76,6 @@ export default Component.extend({
               return;
             }
             const tc = data.topic_chat_view;
-            this.updateUserLookup(data.users);
             this.set(
               "messages",
               A(tc.messages.reverse().map((m) => this.prepareMessage(m)))
@@ -152,18 +148,7 @@ export default Component.extend({
     this.doScrollStick();
   },
 
-  updateUserLookup(usersData) {
-    if (!usersData) {
-      return;
-    }
-    usersData.forEach((v) => {
-      this.userLookup[v.id] = v;
-      v.template = v.avatar_template; // HACK
-    });
-  },
-
   prepareMessage(msgData) {
-    msgData.user = this.userLookup[msgData.user_id];
     if (msgData.in_reply_to_id) {
       msgData.in_reply_to = this.messageLookup[msgData.in_reply_to_id];
     }
@@ -178,7 +163,6 @@ export default Component.extend({
 
   handleMessage(data) {
     if (data.typ === "sent") {
-      this.updateUserLookup(data.users);
       const msg = this.prepareMessage(data.topic_chat_message);
 
       this.messages.pushObject(msg);

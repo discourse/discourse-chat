@@ -11,8 +11,7 @@ class TopicChatBaseMessageSerializer < ApplicationSerializer
     :deleted_by_id,
     :flag_count
 
-  # handled in subclasses
-  #has_one :user, serializer: BasicUserSerializer, root: :users
+  has_one :user, serializer: BasicUserSerializer, embed: :objects
 
   def include_deleted_at?
     !object.deleted_at.nil?

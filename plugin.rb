@@ -29,7 +29,6 @@ after_initialize do
   load File.expand_path('../app/models/topic_chat.rb', __FILE__)
   load File.expand_path('../app/models/topic_chat_message.rb', __FILE__)
   load File.expand_path('../app/serializers/topic_chat_base_message_serializer.rb', __FILE__)
-  load File.expand_path('../app/serializers/topic_chat_live_message_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/topic_chat_history_message_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/topic_chat_view_serializer.rb', __FILE__)
   load File.expand_path('../lib/topic_chat_view.rb', __FILE__)

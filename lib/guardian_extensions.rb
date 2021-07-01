@@ -10,9 +10,14 @@ module DiscourseTopicChat::GuardianExtensions
     can_moderate_chat?(topic)
   end
 
-  def can_chat?(topic_chat_record)
+  def can_chat?(user)
+    SiteSetting.topic_chat_restrict_to_staff ? user.staff? : true
+  end
+
+  def can_chat_in_topic?(topic_chat_record)
     topic = topic_chat_record.topic
     # TODO: separate chatting permission?
+
     can_create_post?(topic) && !topic.closed? && !topic.archived?
   end
 

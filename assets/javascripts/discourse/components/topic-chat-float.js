@@ -22,6 +22,7 @@ export default Component.extend({
 
   didInsertElement() {
     this._super(...arguments);
+    if (!this.currentUser || !this.currentUser.can_chat) return;
 
     this.appEvents.on("page:topic-loaded", this, "enteredTopic");
     this.appEvents.on("topic-chat-enable", this, "chatEnabledForTopic");
@@ -41,6 +42,7 @@ export default Component.extend({
 
   willDestroyElement() {
     this._super(...arguments);
+    if (!this.currentUser || !this.currentUser.can_chat) return;
 
     if (this.appEvents) {
       this.appEvents.off("page:topic-loaded", this, "enteredTopic");

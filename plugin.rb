@@ -78,8 +78,20 @@ after_initialize do
   end
 
   add_to_serializer('listable_topic', :has_chat_live) do
-    # TODO N+1 query
-    !object.topic_chat.nil?
+    true
+  end
+
+  add_to_serializer('listable_topic', :include_has_chat_live?) do
+    # TODO N+1 query for 'object.topic_chat'
+    SiteSetting.topic_chat_enabled && scope.can_chat?(scope.user) && !object.topic_chat.nil?
+  end
+
+  add_to_serializer(:current_user, :can_chat) do
+    scope.can_chat?(object)
+  end
+
+  add_to_serializer(:current_user, :include_can_chat?) do
+    SiteSetting.topic_chat_enabled
   end
 
   reloadable_patch do |plugin|
@@ -98,11 +110,11 @@ after_initialize do
       end
 
       def can_chat
-        scope.can_chat?(self.object)
+        scope.can_chat_in_topic?(self.object)
       end
 
       def include_has_chat_live?
-        SiteSetting.topic_chat_enabled
+        SiteSetting.topic_chat_enabled && scope.can_chat?(scope.user) && !object.topic_chat.nil?
       end
 
       def include_has_chat_history?
@@ -131,6 +143,8 @@ after_initialize do
       end
 
       def include_chat_history?
+        return false if !SiteSetting.topic_chat_enabled || !scope.can_chat?(scope.user)
+
         @topic_view&.chat_record
       end
     end
@@ -138,7 +152,7 @@ after_initialize do
 
   DiscourseEvent.on(:post_created) do |post, opts, user|
     tc = post.topic.topic_chat
-    next unless tc && !tc.trashed?
+    next unless tc && !tc.deleted_at && post.post_type != Post.types[:whisper]
     complex_action = !post.custom_fields["action_code_who"].nil?
     action_code = opts[:action_code] || "chat.post_created"
     action_code = "chat.generic_small_action" if complex_action

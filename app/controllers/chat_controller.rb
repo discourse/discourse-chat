@@ -27,7 +27,7 @@ class DiscourseTopicChat::ChatController < ::ApplicationController
     return render_json_error('chat.no_regular_posts') unless tc.last_regular_post.presence
 
     success = tc.save
-    create_action_whisper(t, 'chat_enabled') if success
+    create_action_whisper(t, 'enabled_chat') if success
     success ? (render json: success_json) : render_json_error(tc)
   end
 
@@ -43,7 +43,7 @@ class DiscourseTopicChat::ChatController < ::ApplicationController
     tc.trash!(current_user)
 
     success = tc.save
-    create_action_whisper(t, 'chat_disabled') if success
+    create_action_whisper(t, 'disabled_chat') if success
     success ? (render json: success_json) : (render_json_error(tc))
   end
 

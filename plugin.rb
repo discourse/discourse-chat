@@ -114,7 +114,7 @@ after_initialize do
       end
 
       def include_has_chat_live?
-        SiteSetting.topic_chat_enabled && scope.can_chat?(scope.user) && !object.topic_chat.nil?
+        SiteSetting.topic_chat_enabled && scope.can_chat?(scope.user) && !object.topic.topic_chat.nil?
       end
 
       def include_has_chat_history?

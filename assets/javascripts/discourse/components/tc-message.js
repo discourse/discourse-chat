@@ -81,7 +81,8 @@ export default Component.extend({
 
   @discourseComputed("message", "message.deleted_at")
   showFlagButton(message, deletedAt) {
-    return this.details.can_flag && !message.action_code && !deletedAt;
+    return false // TODO: Add flagging
+    // return this.details.can_flag && !message.action_code && !deletedAt;
   },
 
   @discourseComputed("message")

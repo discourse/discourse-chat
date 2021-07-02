@@ -146,7 +146,7 @@ class DiscourseTopicChat::ChatController < ::ApplicationController
 
   def create_action_whisper(topic, action)
     PostCreator.new(current_user,
-                    raw: I18n.t(action),
+                    raw: I18n.t("chat.#{action}"),
                     topic_id: topic.id,
                     skip_validations: true,
                     post_type: Post.types[:whisper]

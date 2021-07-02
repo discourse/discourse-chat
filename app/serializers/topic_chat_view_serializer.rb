@@ -14,7 +14,7 @@ class TopicChatViewSerializer < ApplicationSerializer
   end
 
   def can_chat
-    scope.can_chat?(object.topic.topic_chat)
+    scope.can_chat_in_topic?(object.topic.topic_chat)
   end
 
   def can_flag
@@ -28,5 +28,4 @@ class TopicChatViewSerializer < ApplicationSerializer
   def can_delete_others
     scope.can_delete_other_chats?(object.topic)
   end
-
 end

@@ -7,3 +7,5 @@ plugins:
   topic_chat_excerpt_maxlength:
     default: 30
     min: 0
+  topic_chat_restrict_to_staff:
+    default: true

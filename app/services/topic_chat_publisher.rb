@@ -20,6 +20,12 @@ class TopicChatPublisher
     MessageBus.publish("/chat/#{topic.id}", { typ: "delete", deleted_id: msg.id, deleted_at: msg.deleted_at })
   end
 
+  def self.publish_restore!(topic, msg)
+    content = TopicChatHistoryMessageSerializer.new(msg, { scope: anonymous_guardian, root: :topic_chat_message }).as_json
+    content[:typ] = :restore
+    MessageBus.publish("/chat/#{topic.id}", content.as_json)
+  end
+
   def self.publish_index!
     raise NotImplementedError
     MessageBus.publish("/chat-index", nil)

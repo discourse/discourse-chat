@@ -127,10 +127,6 @@ class DiscourseTopicChat::ChatController < ::ApplicationController
   end
 
   def restore
-    puts "#@################"
-    puts "#@################"
-    puts "#@################"
-    puts "#@################"
     topic = @message.topic
     raise Discourse::NotFound unless guardian.can_restore_chat?(@message, topic)
 

@@ -144,9 +144,9 @@ class DiscourseTopicChat::ChatController < ::ApplicationController
   end
 
   def index
-    # not implemented...
+    channels = TopicChat.joins(:topic).merge(Topic.secured(Guardian.new(current_user)))
 
-    render json: success_json
+    render_serialized(channels, TopicChatChannelSerializer)
   end
 
   private

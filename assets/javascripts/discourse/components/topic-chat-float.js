@@ -1,11 +1,17 @@
 import { action } from "@ember/object";
+import { equal } from "@ember/object/computed";
+import { ajax } from "discourse/lib/ajax";
 import Component from "@ember/component";
 import discourseComputed from "discourse-common/utils/decorators";
 import getURL from "discourse-common/lib/get-url";
 import I18n from "I18n";
 import { cancel, throttle } from "@ember/runloop";
 
+export const LIST_VIEW = "list_view";
+export const CHAT_VIEW = "chat_view";
 export default Component.extend({
+  chatView: equal("view", CHAT_VIEW),
+
   classNameBindings: [":topic-chat-float-container", "hidden"],
 
   hidden: true,
@@ -14,17 +20,21 @@ export default Component.extend({
   expectPageChange: false,
   sizeTimer: null,
   rafTimer: null,
+  view: null,
 
   selectedTopicId: null,
   selectedTopicTitle: null,
   selectedTopicSlug: null,
   unreadMessageCount: 0,
 
+  channels: null,
+
   didInsertElement() {
     this._super(...arguments);
     if (!this.currentUser || !this.currentUser.can_chat) return;
 
-    this.appEvents.on("page:topic-loaded", this, "enteredTopic");
+    this.appEvents.on("chat:request-open", this, "openChat");
+    this.appEvents.on("page:topic-loaded", this, "enterChannel");
     this.appEvents.on("topic-chat-enable", this, "chatEnabledForTopic");
     this.appEvents.on("topic-chat-disable", this, "chatDisabledForTopic");
     this.appEvents.on("composer:closed", this, "_checkSize");
@@ -45,7 +55,8 @@ export default Component.extend({
     if (!this.currentUser || !this.currentUser.can_chat) return;
 
     if (this.appEvents) {
-      this.appEvents.off("page:topic-loaded", this, "enteredTopic");
+      this.appEvents.off("chat:request-open", this, "openChat");
+      this.appEvents.off("page:topic-loaded", this, "enterChannel");
       this.appEvents.off("topic-chat-enable", this, "chatEnabledForTopic");
       this.appEvents.off("topic-chat-disable", this, "chatDisabledForTopic");
       this.appEvents.off("composer:closed", this, "_checkSize");
@@ -73,7 +84,7 @@ export default Component.extend({
     }
   },
 
-  enteredTopic(topic) {
+  enterChannel(topic) {
     if (topic && topic.has_chat_live) {
       this.setProperties({
         selectedTopicId: topic.id,
@@ -82,6 +93,7 @@ export default Component.extend({
         expanded: this.expectPageChange ? true : this.expanded,
         hidden: false,
         expectPageChange: false,
+        view: CHAT_VIEW,
       });
     }
   },
@@ -89,7 +101,7 @@ export default Component.extend({
   chatEnabledForTopic(topic) {
     if (!this.selectedTopicId || this.selectedTopicId === topic.id) {
       // Don't do anything if viewing another topic
-      this.enteredTopic(topic);
+      this.enterChannel(topic);
     }
   },
 
@@ -198,16 +210,31 @@ export default Component.extend({
   },
 
   @action
-  back() {
-    bootbox.alert("unimplemented");
-  },
-
-  @action
   close() {
     this.setProperties({
       hidden: true,
       selectedTopicId: null,
       selectedTopicTitle: null,
+    });
+  },
+
+  @action
+  openChat() {
+    ajax("/chat/index.json").then((channels) => {
+      this.setProperties({
+        channels: channels,
+        hidden: false,
+        expanded: true,
+        view: LIST_VIEW,
+      });
+    });
+  },
+
+  @action
+  switchChannel(channel) {
+    // This will be polymorphic. Just dealing with topics still for now.
+    ajax(`/t/${channel.topic_id}.json`).then((response) => {
+      this.enterChannel(response);
     });
   },
 });

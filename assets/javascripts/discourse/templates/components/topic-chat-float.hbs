@@ -1,25 +1,45 @@
 <div class="tc-drawer">
   <div class={{containerClassNames}}>
     <div class="topic-chat-drawer-header">
-      {{flat-button icon="chevron-left" action=(action "back") title="chat.return_to_list"}}
-      <div class="tc-title-seg">
-        <span class="tc-branding">{{i18n "chat.title_bare"}}</span>
-        {{#if selectedTopicTitle}}
-          <span class="tc-title-sep">-</span>
-          <a href={{selectedTopicLink}} class="tc-topic-title">{{this.selectedTopicTitle}}</a>
-          {{#if showUnreadMessageCount}}
-            <span class="tc-unread-count">{{this.unreadMessageCount}}</span>
+
+      {{#if chatView}}
+        {{flat-button icon="chevron-left" action=(action "openChat") title="chat.return_to_list"}}
+        <div class="tc-title-seg">
+          <span class="tc-branding">{{i18n "chat.title_bare"}}</span>
+          {{#if selectedTopicTitle}}
+            <span class="tc-title-sep">-</span>
+            <a href={{selectedTopicLink}} class="tc-topic-title">{{this.selectedTopicTitle}}</a>
+            {{#if showUnreadMessageCount}}
+              <span class="tc-unread-count">{{this.unreadMessageCount}}</span>
+            {{/if}}
           {{/if}}
-        {{/if}}
-      </div>
+        </div>
+      {{else}}
+        <div class="tc-title-seg">
+          <span class="tc-branding">{{i18n "chat.list"}}</span>
+        </div>
+
+      {{/if}}
+
       {{flat-button icon=this.expandIcon class="tc-expand" action=(action "toggleExpand") title="chat.collapse"}}
       {{#if showClose}}
         {{flat-button icon="times" action=(action "close") title="chat.close"}}
       {{/if}}
     </div>
     <div class="topic-chat-drawer-content">
-      {{#if this.selectedTopicId}}
-        {{chat-live-pane topicId=this.selectedTopicId newMessageCb=(action "newMessageCb") expanded=this.expanded}}
+      {{#if chatView}}
+        {{#if this.selectedTopicId}}
+          {{chat-live-pane topicId=this.selectedTopicId newMessageCb=(action "newMessageCb") expanded=this.expanded}}
+        {{/if}}
+      {{else}}
+
+        <ul class="tc-channels">
+          {{#each channels as |channel|}}
+            <li class="tc-channel-item" onclick={{action "switchChannel" channel}}>
+              {{channel.title}}
+            </li>
+          {{/each}}
+        </ul>
       {{/if}}
     </div>
   </div>

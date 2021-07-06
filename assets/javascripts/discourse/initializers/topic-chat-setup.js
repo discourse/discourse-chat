@@ -117,6 +117,12 @@ export default {
         },
       });
 
+      api.modifyClass("component:topic-timeline", {
+        toggleChat() {
+          return doToggleChat(this.topic);
+        },
+      });
+
       api.reopenWidget("quick-access-profile", {
         openChat() {
           appEvents.trigger("chat:request-open");

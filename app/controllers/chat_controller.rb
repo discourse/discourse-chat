@@ -4,8 +4,8 @@ require_dependency "application_controller"
 
 class DiscourseTopicChat::ChatController < ::ApplicationController
   requires_plugin DiscourseTopicChat::PLUGIN_NAME
-  before_action :ensure_logged_in, only: [:send_chat, :delete, :restore]
-  before_action :find_chat_message, only: [:delete, :restore]
+  before_action :ensure_logged_in, only: [:send_chat, :delete]
+  before_action :find_chat_message, only: [:delete]
 
   def enable_chat
     t = Topic.find(params[:topic_id])
@@ -126,19 +126,6 @@ class DiscourseTopicChat::ChatController < ::ApplicationController
     end
   end
 
-  def restore
-    topic = @message.topic
-    raise Discourse::NotFound unless guardian.can_restore_chat?(@message, topic)
-
-    updated = @message.update(deleted_at: nil, deleted_by_id: nil)
-    if updated
-      TopicChatPublisher.publish_restore!(topic, @message)
-      render json: success_json
-    else
-      render_json_error(@message)
-    end
-  end
-
   def flag
     render_json_error "unimplemented"
   end
@@ -152,7 +139,7 @@ class DiscourseTopicChat::ChatController < ::ApplicationController
   private
 
   def find_chat_message
-    @message = TopicChatMessage.unscoped.find_by(id: params[:message_id])
+    @message = TopicChatMessage.find_by(id: params[:message_id])
 
     raise Discourse::NotFound unless @message
   end

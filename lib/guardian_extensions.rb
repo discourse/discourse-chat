@@ -48,21 +48,4 @@ module DiscourseTopicChat::GuardianExtensions
     return true if can_moderate_chat?(topic)
     false
   end
-
-  def can_restore_chat?(message, topic)
-    message.user_id == current_user.id ?
-      can_restore_own_chats?(topic) :
-      can_delete_other_chats?(topic)
-  end
-
-  def can_restore_own_chats?(topic)
-    return false if !can_see_topic?(topic)
-    return false if topic.archived?
-    true
-  end
-
-  def can_restore_other_chats?(topic)
-    return false if topic.archived?
-    can_moderate_chat?(topic)
-  end
 end

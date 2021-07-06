@@ -179,7 +179,6 @@ after_initialize do
     post '/t/:topic_id/enable' => 'chat#enable_chat'
     post '/t/:topic_id/disable' => 'chat#disable_chat'
     delete '/t/:topic_id/:message_id' => 'chat#delete'
-    put '/t/:topic_id/restore/:message_id' => 'chat#restore'
     post '/t/:topic_id/:message_id/flag' => 'chat#flag'
   end
 

@@ -81,7 +81,7 @@ export default Component.extend({
 
   @discourseComputed("message", "message.deleted_at")
   showFlagButton(message, deletedAt) {
-    return false; // TODO: Add flagging
+    return false // TODO: Add flagging
     // return this.details.can_flag && !message.action_code && !deletedAt;
   },
 
@@ -136,10 +136,7 @@ export default Component.extend({
 
   @action
   restore() {
-    // bootbox.alert("unimplemented");
-    return ajax(`/chat/t/${this.details.topicId}/restore/${this.message.id}`, {
-      type: "PUT",
-    }).catch(popupAjaxError);
+    bootbox.alert("unimplemented");
   },
 
   @action

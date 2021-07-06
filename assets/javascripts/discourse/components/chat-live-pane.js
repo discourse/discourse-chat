@@ -162,98 +162,29 @@ export default Component.extend({
   },
 
   handleMessage(data) {
-    switch (data.typ) {
-      case "sent":
-        this.handleSentMessage(data);
-        break;
-      case "delete":
-        this.handleDeleteMessage(data);
-        break;
-      case "restore":
-        this.handleRestoreMessage(data);
-        break;
-    }
-  },
+    if (data.typ === "sent") {
+      const msg = this.prepareMessage(data.topic_chat_message);
 
-  handleSentMessage(data) {
-    const msg = this.prepareMessage(data.topic_chat_message);
-
-    this.messages.pushObject(msg);
-    if (this.messages.length >= MAX_RECENT_MSGS) {
-      this.removeMessage(this.messages.shiftObject());
-    }
-    schedule("afterRender", this, this.doScrollStick);
-    if (this.newMessageCb) {
-      this.newMessageCb();
-    }
-  },
-
-  handleDeleteMessage(data) {
-    const deletedId = data.deleted_id;
-    const targetMsg = this.messages.findBy("id", deletedId);
-    if (this.currentUser.staff || this.currentUser.id === targetMsg.user.id) {
-      targetMsg.setProperties({
-        deleted_at: data.deleted_at,
-        expanded: false,
-      });
-    } else {
-      this.messages.removeObject(targetMsg);
-    }
-  },
-
-  handleRestoreMessage(data) {
-    let message = this.messages.findBy("id", data.topic_chat_message.id);
-    if (message) {
-      message.set("deleted_at", null);
-    } else {
-      // The message isn't present in the list for this user. Find the index
-      // where we should push the message to. Binary search is O(log(n))
-      message = this.prepareMessage(data.topic_chat_message);
-      let newMessageIndex = this.binarySearchForMessagePosition(
-        this.messages,
-        message
-      );
-      if (newMessageIndex === 0) return; // Restored post is too old to show
-
-      this.messages.splice(newMessageIndex, 0, message);
-      this.notifyPropertyChange("messages");
+      this.messages.pushObject(msg);
+      if (this.messages.length >= MAX_RECENT_MSGS) {
+        this.removeMessage(this.messages.shiftObject());
+      }
+      schedule("afterRender", this, this.doScrollStick);
       if (this.newMessageCb) {
         this.newMessageCb();
       }
-    }
-  },
-
-  binarySearchForMessagePosition(messages, newMessage) {
-    const newMessageCreatedAt = Date.parse(newMessage.created_at);
-    if (newMessageCreatedAt < Date.parse(messages[0].created_at)) return 0;
-    if (
-      newMessageCreatedAt > Date.parse(messages[messages.length - 1].created_at)
-    )
-      return messages.length;
-    let m = 0;
-    let n = messages.length - 1;
-    while (m <= n) {
-      let k = (n + m) >> 1;
-      let comparison = this.compareCreatedAt(newMessageCreatedAt, messages[k]);
-      if (comparison > 0) {
-        m = k + 1;
-      } else if (comparison < 0) {
-        n = k - 1;
+    } else if (data.typ === "delete") {
+      const deletedId = data.deleted_id;
+      const targetMsg = this.messages.findBy("id", deletedId);
+      if (this.currentUser.staff || this.currentUser.id === targetMsg.user_id) {
+        targetMsg.setProperties({
+          deleted_at: data.deleted_at,
+          expanded: false,
+        });
       } else {
-        return k;
+        this.messages.removeObject(targetMsg);
       }
     }
-    return m;
-  },
-
-  compareCreatedAt(newMessageCreatedAt, comparatorMessage) {
-    const compareDate = Date.parse(comparatorMessage.created_at);
-    if (newMessageCreatedAt > compareDate) {
-      return 1;
-    } else if (newMessageCreatedAt < compareDate) {
-      return -1;
-    }
-    return 0;
   },
 
   @action

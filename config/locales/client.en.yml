@@ -17,6 +17,8 @@ en:
       delete: "Delete"
       restore: "Restore deleted message"
       deleted: "View deleted message"
+      open: "Open chat"
+      list: "Chats"
     topic:
       actions:
         chat_enable: "Enable Chat"

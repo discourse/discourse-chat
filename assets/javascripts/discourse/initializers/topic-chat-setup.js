@@ -19,6 +19,9 @@ function findParentWidget(widget, ofName) {
 export default {
   name: "topic-chat-setup",
   initialize(container) {
+    const appEvents = container.lookup("service:app-events");
+    const currentUser = container.lookup("current-user:main");
+
     TopicStatus.reopen({
       statuses: Ember.computed(function () {
         const results = this._super(...arguments);
@@ -41,8 +44,6 @@ export default {
     // TODO: need to extract extra fields from post.topic.details, topic.has_chat_history
     addPostSmallActionIcon("chat.enabled", "comment");
     addPostSmallActionIcon("chat.disabled", "comment");
-
-    const appEvents = container.lookup("service:app-events");
 
     function doToggleChat(topic) {
       topic.set("has_chat_live", !topic.has_chat_live);
@@ -121,6 +122,21 @@ export default {
           return doToggleChat(this.topic);
         },
       });
+
+      api.reopenWidget("quick-access-profile", {
+        openChat() {
+          appEvents.trigger("chat:request-open");
+        },
+      });
+
+      if (currentUser && currentUser.can_chat) {
+        api.addQuickAccessProfileItem({
+          action: "openChat",
+          className: "open-chat",
+          icon: "comment",
+          content: I18n.t("chat.open"),
+        });
+      }
     });
   },
 };

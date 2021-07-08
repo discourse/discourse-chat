@@ -48,6 +48,8 @@ class DiscourseTopicChat::ChatController < ::ApplicationController
   end
 
   def send_chat
+    guardian.ensure_can_chat!(current_user)
+
     t = Topic.find(params[:topic_id])
     raise Discourse::NotFound unless guardian.can_see?(t)
     tc = TopicChat.find_by(topic: t)

@@ -14,21 +14,21 @@ class DiscourseChat::ChatController < ::ApplicationController
 
     success = true
 
-    chat_chanel = ChatChannel.with_deleted.find_by(chatable: t)
-    if chat_chanel && chat_chanel.trashed?
-      chat_chanel.recover!
-    elsif chat_chanel
+    chat_channel = ChatChannel.with_deleted.find_by(chatable: t)
+    if chat_channel && chat_channel.trashed?
+      chat_channel.recover!
+    elsif chat_channel
       return render_json_error I18n.t("chat.already_enabled")
     else
-      chat_chanel = ChatChannel.new(chatable: t)
+      chat_channel = ChatChannel.new(chatable: t)
     end
 
     # safeguard against unusual topic archetypes
-    return render_json_error('chat.no_regular_posts') unless chat_chanel.last_regular_post.presence
+    return render_json_error('chat.no_regular_posts') unless chat_channel.last_regular_post.presence
 
-    success = chat_chanel.save
+    success = chat_channel.save
     create_action_whisper(t, 'enabled_chat') if success
-    success ? (render json: success_json) : render_json_error(chat_chanel)
+    success ? (render json: success_json) : render_json_error(chat_channel)
   end
 
   def disable_chat

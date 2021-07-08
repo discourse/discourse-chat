@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module DiscourseTopicChat::GuardianExtensions
+module DiscourseChat::GuardianExtensions
 
   def can_moderate_chat?(topic)
     can_perform_action_available_to_group_moderators?(topic)
@@ -14,8 +14,7 @@ module DiscourseTopicChat::GuardianExtensions
     SiteSetting.topic_chat_restrict_to_staff ? user.staff? : true
   end
 
-  def can_chat_in_topic?(topic_chat_record)
-    topic = topic_chat_record.topic
+  def can_chat_in_topic?(topic)
     # TODO: separate chatting permission?
 
     can_create_post?(topic) && !topic.closed? && !topic.archived?

@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-class TopicChatPublisher
+class ChatPublisher
 
   def self.last_id(topic)
     MessageBus.last_id("/chat/#{topic.id}")
   end
 
   def self.publish_new!(topic, msg)
-    content = TopicChatHistoryMessageSerializer.new(msg, { scope: anonymous_guardian, root: :topic_chat_message }).as_json
+    content = ChatHistoryMessageSerializer.new(msg, { scope: anonymous_guardian, root: :topic_chat_message }).as_json
     content[:typ] = :sent
     MessageBus.publish("/chat/#{topic.id}", content.as_json)
   end

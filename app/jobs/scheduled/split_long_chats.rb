@@ -13,26 +13,27 @@ module Jobs
       sql = <<~SQL
       WITH last_posts as (
         SELECT t.id as topic_id, max(p.id) as post_id
-        FROM topic_chats tc
-        LEFT JOIN topics t ON tc.topic_id = t.id
+        FROM chat_channels cc
+        LEFT JOIN topics t ON cc.chatable_id = t.id AND cc.chatable_type = 'Topic'
         LEFT JOIN posts p ON p.topic_id = t.id
         WHERE p.post_type = 1
-          AND tc.deleted_at IS NULL
+          AND cc.deleted_at IS NULL
         GROUP BY t.id
       )
       SELECT last_posts.topic_id as topic_id
       FROM last_posts
-      LEFT JOIN topic_chat_messages tcm ON tcm.topic_id = last_posts.topic_id AND tcm.post_id = last_posts.post_id
-      GROUP BY last_posts.topic_id
+      LEFT JOIN chat_channels cc ON cc.chatable_id = last_posts.topic_id AND cc.chatable_type = 'Topic'
+      LEFT JOIN chat_messages cm ON cm.chat_channel_id = cc.id AND cm.post_id = last_posts.post_id
+      GROUP BY topic_id
       HAVING COUNT(*) > :count
       SQL
 
       topic_ids = DB.query_single(sql, count: count)
       topic_ids.each do |id|
         begin
-          TopicChat.find_by(topic_id: id).make_separator_post!
+          ChatChannel.find_by(chatable_id: id, chatable_type: 'Topic').make_separator_post!
         rescue => ex
-          Discourse.handle_job_exception(ex, error_context(args, "TopicChat long chat split for id #{id}", topic_id: id))
+          Discourse.handle_job_exception(ex, error_context(args, "ChatChannel long chat split for id #{id}", topic_id: id))
         end
       end
     end

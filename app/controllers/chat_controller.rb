@@ -52,7 +52,7 @@ class DiscourseTopicChat::ChatController < ::ApplicationController
     raise Discourse::NotFound unless guardian.can_see?(t)
     tc = TopicChat.find_by(topic: t)
     raise Discourse::NotFound unless tc
-    guardian.ensure_can_chat!(tc)
+    guardian.ensure_can_chat_in_topic!(tc)
 
     post_id = params[:post_id]
     if post_id

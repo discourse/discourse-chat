@@ -78,7 +78,7 @@ export default {
       api.addPostTransformCallback((transformed) => {
         if (
           transformed.actionCode === "chat.enabled" ||
-            transformed.actionCode === "chat.disabled"
+          transformed.actionCode === "chat.disabled"
         ) {
           transformed.isSmallAction = true;
           transformed.canEdit = false;

@@ -103,14 +103,14 @@ export default Component.extend({
   },
 
   chatEnabledForTopic(topic) {
-    if (!this.selectedTopicId || this.selectedTopicId === topic.id) {
+    if (!this.chatChannelId || this.chatChannelId === topic.chat_channel_id) {
       // Don't do anything if viewing another topic
       this.enterChannel(topic);
     }
   },
 
   chatDisabledForTopic(topic) {
-    if (this.expanded && this.selectedTopicId === topic.id) {
+    if (this.expanded && this.chatChannelId === topic.chat_channel_id) {
       this.close();
     }
   },

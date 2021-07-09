@@ -239,7 +239,6 @@ export default Component.extend({
     const url = `/${channel.chatable_type == "Topic" ? "t" : "c"}/${
       channel.chatable_id
     }.json`;
-    // This will be polymorphic. Just dealing with topics still for now.
     ajax(url).then((response) => {
       this.enterChannel(response);
     });

@@ -23,7 +23,7 @@ class DiscourseChat::ChatController < ::ApplicationController
 
     success = chat_channel.save
     if success && chat_channel.chatable_type == "Topic"
-      create_action_whisper(@chatable, 'enabled_chat')
+      create_action_whisper(@chatable, 'enabled')
     end
     success ? (render json: success_json) : render_json_error(chat_channel)
   end
@@ -37,7 +37,7 @@ class DiscourseChat::ChatController < ::ApplicationController
 
     success = chat_channel.save
     if success && chat_channel.chatable_type == "Topic"
-      create_action_whisper(@chatable, 'disabled_chat') if success
+      create_action_whisper(@chatable, 'disabled') if success
     end
     success ? (render json: success_json) : (render_json_error(chat_channel))
   end
@@ -178,11 +178,13 @@ class DiscourseChat::ChatController < ::ApplicationController
   end
 
   def create_action_whisper(topic, action)
-    PostCreator.new(current_user,
-                    raw: I18n.t(action),
-                    topic_id: topic.id,
-                    skip_validations: true,
-                    post_type: Post.types[:whisper]
-                   ).create
+    topic.add_moderator_post(
+        current_user,
+        nil,
+        bump: false,
+        post_type: Post.types[:whisper],
+        action_code: "chat.#{action}",
+        custom_fields: { "action_code_who" => current_user.username }
+      )
   end
 end

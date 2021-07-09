@@ -1,4 +1,3 @@
-import { addPostSmallActionIcon } from "discourse/widgets/post-small-action";
 import { ajax } from "discourse/lib/ajax";
 import { h } from "virtual-dom";
 import I18n from "I18n";
@@ -42,8 +41,6 @@ export default {
     // post widget attrs
     includeAttributes("chat_history");
     // TODO: need to extract extra fields from post.topic.details, topic.has_chat_history
-    addPostSmallActionIcon("chat.enabled", "comment");
-    addPostSmallActionIcon("chat.disabled", "comment");
 
     function doToggleChat(topic) {
       topic.set("has_chat_live", !topic.has_chat_live);
@@ -74,6 +71,18 @@ export default {
           action: "showChat",
           icon: "comment",
         };
+      });
+
+      api.addPostSmallActionIcon("chat.enabled", "comment");
+      api.addPostSmallActionIcon("chat.disabled", "comment");
+      api.addPostTransformCallback((transformed) => {
+        if (
+          transformed.actionCode === "chat.enabled" ||
+            transformed.actionCode === "chat.disabled"
+        ) {
+          transformed.isSmallAction = true;
+          transformed.canEdit = false;
+        }
       });
 
       api.attachWidgetAction("post-article", "showChat", function () {

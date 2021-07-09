@@ -28,8 +28,13 @@
     </div>
     <div class="topic-chat-drawer-content">
       {{#if chatView}}
-        {{#if this.selectedTopicId}}
-          {{chat-live-pane topicId=this.selectedTopicId newMessageCb=(action "newMessageCb") expanded=this.expanded}}
+        {{#if this.chatChannelId}}
+          {{chat-live-pane
+            chatChannelType=this.chatChannelType
+            chatChannelId=this.chatChannelId
+            newMessageCb=(action "newMessageCb")
+            expanded=this.expanded
+          }}
         {{/if}}
       {{else}}
 

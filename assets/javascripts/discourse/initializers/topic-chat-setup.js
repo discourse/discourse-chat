@@ -49,7 +49,7 @@ export default {
       topic.set("has_chat_live", !topic.has_chat_live);
 
       const action = topic.has_chat_live ? "enable" : "disable";
-      return ajax(`/chat/t/${topic.id}/${action}`, {
+      return ajax(`/chat/topic/${topic.id}/${action}`, {
         type: "POST",
       })
         .then(() => {

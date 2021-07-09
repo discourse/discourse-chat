@@ -98,8 +98,11 @@ after_initialize do
   reloadable_patch do |plugin|
     require_dependency 'topic_view_serializer'
     class ::TopicViewSerializer
-      attributes :has_chat_live, :has_chat_history
-      attributes :can_chat
+      attributes :has_chat_live,
+                 :has_chat_history,
+                 :can_chat,
+                 :chat_channel_id
+
 
       # overrides has_chat_live from ListableTopicSerializer
       def has_chat_live
@@ -115,9 +118,35 @@ after_initialize do
       end
 
       def include_has_chat_live?
-        SiteSetting.topic_chat_enabled && scope.can_chat?(scope.user) && !object.topic.chat_channel.nil?
+        return @include_has_chat_live if defined?(@include_has_chat_live)
+
+        @include_has_chat_live = SiteSetting.topic_chat_enabled &&
+                                 scope.can_chat?(scope.user) &&
+                                 !chat_channel.nil?
+
       end
 
+      def chat_channel
+        return @chat_channel if defined?(@chat_channel)
+
+        @chat_channel = object.topic.chat_channel
+      end
+
+      def chat_channel_id
+        chat_channel.id
+      end
+
+      def include_chat_channel_id?
+        !chat_channel.nil?
+      end
+
+      def chat_channel_type
+        chat_channel.chatable_type
+      end
+
+      def include_chat_channel_type?
+        !chat_channel.nil?
+      end
       def include_has_chat_history?
         SiteSetting.topic_chat_enabled
       end
@@ -173,13 +202,13 @@ after_initialize do
 
   DiscourseChat::Engine.routes.draw do
     get '/index' => 'chat#index'
-    get '/t/:topic_id/recent' => 'chat#recent'
-    get '/t/:topic_id/p/:post_id' => 'chat#historical'
-    post '/t/:topic_id' => 'chat#send_chat'
-    post '/t/:topic_id/enable' => 'chat#enable_chat'
-    post '/t/:topic_id/disable' => 'chat#disable_chat'
-    delete '/t/:topic_id/:message_id' => 'chat#delete'
-    post '/t/:topic_id/:message_id/flag' => 'chat#flag'
+    get '/:chat_channel_id/recent' => 'chat#recent'
+    get '/:chat_channel_id/p/:post_id' => 'chat#historical'
+    post '/:chat_channel_id' => 'chat#send_chat'
+    post '/:chatable_type/:chatable_id/enable' => 'chat#enable_chat'
+    post '/:chatable_type/:chatable_id/disable' => 'chat#disable_chat'
+    delete '/:chat_channel_id/:message_id' => 'chat#delete'
+    post '/:chat_channel_id/:message_id/flag' => 'chat#flag'
   end
 
   Discourse::Application.routes.append do

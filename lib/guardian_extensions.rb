@@ -11,7 +11,7 @@ module DiscourseChat::GuardianExtensions
   end
 
   def can_chat?(user)
-    SiteSetting.topic_chat_restrict_to_staff ? user.staff? : true
+    SiteSetting.topic_chat_restrict_to_staff ? user&.staff? : true
   end
 
   def can_chat_in_topic?(topic)

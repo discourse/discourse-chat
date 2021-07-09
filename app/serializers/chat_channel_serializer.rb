@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 class ChatChannelSerializer < ApplicationSerializer
-  attributes :chatable_id,
+  attributes :id,
+             :chatable_id,
+             :chatable_type,
              :title
 
   def title

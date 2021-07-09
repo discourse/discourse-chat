@@ -25,6 +25,8 @@ export default Component.extend({
   selectedTopicId: null,
   selectedTopicTitle: null,
   selectedTopicSlug: null,
+  chatChannelId: null,
+  chatChannelType: null,
   unreadMessageCount: 0,
 
   channels: null,
@@ -90,6 +92,8 @@ export default Component.extend({
         selectedTopicId: topic.id,
         selectedTopicTitle: topic.title,
         selectedTopicSlug: topic.slug,
+        chatChannelId: topic.chat_channel_id,
+        chatChannelType: topic.chat_channel_type,
         expanded: this.expectPageChange ? true : this.expanded,
         hidden: false,
         expectPageChange: false,
@@ -232,8 +236,11 @@ export default Component.extend({
 
   @action
   switchChannel(channel) {
+    const url = `/${channel.chatable_type == "Topic" ? "t" : "c"}/${
+      channel.chatable_id
+    }.json`;
     // This will be polymorphic. Just dealing with topics still for now.
-    ajax(`/t/${channel.topic_id}.json`).then((response) => {
+    ajax(url).then((response) => {
       this.enterChannel(response);
     });
   },

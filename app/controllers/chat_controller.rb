@@ -2,6 +2,7 @@
 
 class DiscourseChat::ChatController < ::ApplicationController
   before_action :ensure_logged_in
+  before_action :ensure_can_chat
   before_action :find_chat_message, only: [:delete, :restore]
   before_action :find_chatable, only: [:enable_chat, :disable_chat]
 
@@ -39,8 +40,6 @@ class DiscourseChat::ChatController < ::ApplicationController
   def send_chat
     chat_channel = ChatChannel.includes(:chatable).find(params[:chat_channel_id])
     raise Discourse::NotFound unless chat_channel
-
-    guardian.ensure_can_chat!(current_user)
 
     chatable = chat_channel.chatable
     if chat_channel.chatable_type == "Topic"
@@ -161,8 +160,14 @@ class DiscourseChat::ChatController < ::ApplicationController
   end
 
   def index
-    # channels = ChatChannel.joins(:topic).merge(Topic.secured(Guardian.new(current_user)))
-    channels = ChatChannel.all # SECURE THIS
+    channels = ChatChannel.includes(:chatable).all # SECURE THIS
+    channels = channels.to_a.select do |channel|
+      if channel.chatable_type == "Topic"
+        !channel.chatable.closed && !channel.chatable.archived && guardian.can_see_topic?(channel.chatable)
+      else
+        guardian.can_see_category?(channel.chatable)
+      end
+    end
 
     render_serialized(channels, ChatChannelSerializer)
   end
@@ -198,5 +203,9 @@ class DiscourseChat::ChatController < ::ApplicationController
         action_code: "chat.#{action}",
         custom_fields: { "action_code_who" => current_user.username }
       )
+  end
+
+  def ensure_can_chat
+    guardian.ensure_can_chat!(current_user)
   end
 end

@@ -7,6 +7,8 @@ class ChatChannelSerializer < ApplicationSerializer
              :title
 
   def title
-    object.chatable.fancy_title
+    object.chatable_type == "Topic" ?
+      object.chatable.fancy_title :
+      object.chatable.name
   end
 end

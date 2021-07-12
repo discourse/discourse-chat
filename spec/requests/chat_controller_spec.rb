@@ -9,6 +9,10 @@ RSpec.describe DiscourseChat::ChatController do
   fab!(:topic) { Fabricate(:topic) }
   fab!(:category) { Fabricate(:category) }
 
+  before do
+    SiteSetting.topic_chat_restrict_to_staff = false # Change this per-test to false if needed
+  end
+
   describe "#enable_chat" do
     describe "for topic" do
       it "errors for non-staff" do
@@ -79,7 +83,6 @@ RSpec.describe DiscourseChat::ChatController do
 
     it "sends a message for regular user when staff-only is false" do
       sign_in(user)
-      SiteSetting.topic_chat_restrict_to_staff = false
 
       expect {
         post "/chat/#{chat_channel.id}.json", params: { message: message }
@@ -94,7 +97,6 @@ RSpec.describe DiscourseChat::ChatController do
     fab!(:second_user) { Fabricate(:user) }
 
     before do
-      SiteSetting.topic_chat_restrict_to_staff = false
       ChatMessage.create(user: user, message: "this is a message", chat_channel: chat_channel)
     end
 
@@ -129,7 +131,6 @@ RSpec.describe DiscourseChat::ChatController do
     fab!(:second_user) { Fabricate(:user) }
 
     before do
-      SiteSetting.topic_chat_restrict_to_staff = false
       message = ChatMessage.create(user: user, message: "this is a message", chat_channel: chat_channel)
       message.update(deleted_at: Time.now, deleted_by_id: user.id)
     end
@@ -173,6 +174,62 @@ RSpec.describe DiscourseChat::ChatController do
       put "/chat/#{chat_channel.id}/restore/#{deleted_message.id}.json"
       expect(response.status).to eq(200)
       expect(deleted_message.reload.deleted_at).to eq(nil)
+    end
+  end
+
+  describe "#index" do
+    fab!(:private_group) { Fabricate(:group) }
+    fab!(:user_with_private_access) { Fabricate(:user, group_ids: [private_group.id]) }
+
+    fab!(:public_category_cc) { Fabricate(:chat_channel, chatable: category) }
+    fab!(:public_topic_cc) { Fabricate(:chat_channel, chatable: topic) }
+
+    fab!(:private_category) { Fabricate(:private_category, group: private_group) }
+    fab!(:private_category_cc) { Fabricate(:chat_channel, chatable: private_category) }
+
+    fab!(:private_topic) { Fabricate(:topic, category: private_category) }
+    fab!(:private_topic_cc) { Fabricate(:chat_channel, chatable: private_topic) }
+
+    # Create closed/archived topic chat channels. These will never be returned to anyone.
+    fab!(:closed_topic) { Fabricate(:closed_topic) }
+    fab!(:closed_topic_channel) { Fabricate(:chat_channel, chatable: closed_topic) }
+    fab!(:archived_topic) { Fabricate(:closed_topic) }
+    fab!(:archived_topic_channel) { Fabricate(:chat_channel, chatable: archived_topic) }
+
+    it "errors for regular user when chat is staff-only" do
+      sign_in(user)
+      SiteSetting.topic_chat_restrict_to_staff = true
+
+      get "/chat/index.json"
+
+      expect(response.status).to eq(403)
+    end
+
+    it "returns public channels to only-public user" do
+      sign_in(user)
+      get "/chat/index.json"
+
+      expect(response.status).to eq(200)
+      expect(response.parsed_body.map { |channel| channel["id"] })
+        .to match_array([public_category_cc.id, public_topic_cc.id])
+    end
+
+    it "returns channels visible to user with private access" do
+      sign_in(user_with_private_access)
+      get "/chat/index.json"
+
+      expect(response.status).to eq(200)
+      expect(response.parsed_body.map { |channel| channel["id"] })
+        .to match_array([public_category_cc.id, public_topic_cc.id, private_category_cc.id, private_topic_cc.id])
+    end
+
+    it "returns all channels for admin" do
+      sign_in(admin)
+      get "/chat/index.json"
+
+      expect(response.status).to eq(200)
+      expect(response.parsed_body.map { |channel| channel["id"] })
+        .to match_array([public_category_cc.id, public_topic_cc.id, private_category_cc.id, private_topic_cc.id])
     end
   end
 end

@@ -12,13 +12,13 @@ module DiscourseChat::GuardianExtensions
     SiteSetting.topic_chat_restrict_to_staff ? user&.staff? : true
   end
 
-  def can_chat_in_topic?(topic)
-    # TODO: separate chatting permission?
-
-    can_create_post?(topic) && !topic.closed? && !topic.archived?
+  def can_chat_in_chatable?(chatable)
+    chatable.class.name == "Topic" ?
+      can_create_post?(topic) && !topic.closed? && !topic.archived? :
+      true
   end
 
-  def can_flag_chats?(topic)
+  def can_flag_chats?
     # TODO: SiteSetting.allow_flagging_staff is ignored
 
     return false if @user.silenced?
@@ -32,17 +32,25 @@ module DiscourseChat::GuardianExtensions
       can_delete_other_chats?(topic)
   end
 
-  def can_delete_own_chats?(topic)
-    return false if !can_see_topic?(topic)
-    return false if topic.archived?
-    return true if can_moderate_chat?(topic)
+  def can_delete_own_chats?(chatable)
     return false if (SiteSetting.max_post_deletions_per_day < 1)
+    return true if can_moderate_chat?(chatable)
+
+    if chatable.class.name == "Topic"
+      return false if !can_see_topic?(chatable)
+      return false if chatable.archived?
+    end
+
     true
   end
 
-  def can_delete_other_chats?(topic)
-    return false if topic.archived?
-    return true if can_moderate_chat?(topic)
+  def can_delete_other_chats?(chatable)
+    if chatable.class.name == "Topic"
+      return false if chatable.archived?
+      return false if chatable.closed?
+    end
+    return true if can_moderate_chat?(chatable)
+
     false
   end
 

@@ -4,7 +4,12 @@ class ChatChannelSerializer < ApplicationSerializer
   attributes :id,
              :chatable_id,
              :chatable_type,
+             :chatable_url,
              :title
+
+  def chatable_url
+    object.chatable.url
+  end
 
   def title
     object.chatable_type == "Topic" ?

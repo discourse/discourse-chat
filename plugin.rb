@@ -17,6 +17,7 @@ register_svg_icon "comment-slash"
 after_initialize do
   module ::DiscourseChat
     PLUGIN_NAME = "discourse-topic-chat"
+    HAS_CHAT_ENABLED = "has_chat_enabled"
 
     class Engine < ::Rails::Engine
       engine_name PLUGIN_NAME
@@ -35,6 +36,31 @@ after_initialize do
   load File.expand_path('../lib/chat_view.rb', __FILE__)
   load File.expand_path('../app/services/chat_publisher.rb', __FILE__)
   load File.expand_path('../lib/guardian_extensions.rb', __FILE__)
+
+  register_topic_custom_field_type(DiscourseChat::HAS_CHAT_ENABLED, :boolean)
+  TopicList.preloaded_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
+  register_category_custom_field_type(DiscourseChat::HAS_CHAT_ENABLED, :boolean)
+  Site.preloaded_category_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
+
+  on(:category_updated) do |category|
+    next if !SiteSetting.topic_chat_enabled
+
+    chat_channel = ChatChannel.with_deleted.find_by(chatable: category)
+
+    if category.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]
+      if chat_channel && chat_channel.trashed?
+        chat_channel.recover!
+      elsif chat_channel.nil?
+        chat_channel = ChatChannel.new(chatable: category)
+        chat_channel.save!
+      end
+
+    else
+      if chat_channel && !chat_channel.trashed?
+        chat_channel.trash!
+      end
+    end
+  end
 
   reloadable_patch do |plugin|
     Guardian.class_eval { include DiscourseChat::GuardianExtensions }
@@ -86,8 +112,9 @@ after_initialize do
   end
 
   add_to_serializer('listable_topic', :include_has_chat_live?) do
-    # TODO N+1 query for 'object.chat_channel'
-    SiteSetting.topic_chat_enabled && scope.can_chat?(scope.user) && !object.chat_channel.nil?
+    SiteSetting.topic_chat_enabled &&
+      scope.can_chat?(scope.user) &&
+      object.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]
   end
 
   add_to_serializer(:current_user, :can_chat) do
@@ -101,67 +128,10 @@ after_initialize do
   reloadable_patch do |plugin|
     require_dependency 'topic_view_serializer'
     class ::TopicViewSerializer
-      attributes :has_chat_live,
-                 :has_chat_history,
-                 :can_chat,
-                 :chat_channel_id
-
-
-      # overrides has_chat_live from ListableTopicSerializer
-      def has_chat_live
-        chat_lookup && !chat_lookup.trashed?
-      end
-
-      def has_chat_history
-        !chat_lookup.nil?
-      end
-
-      def can_chat
-        scope.can_chat_in_topic?(self.object.topic)
-      end
-
-      def include_has_chat_live?
-        return @include_has_chat_live if defined?(@include_has_chat_live)
-
-        @include_has_chat_live = SiteSetting.topic_chat_enabled &&
-                                 scope.can_chat?(scope.user) &&
-                                 !chat_channel.nil?
-
-      end
+      has_one :chat_channel, serializer: ChatChannelSerializer, root: false, embed: :objects
 
       def chat_channel
-        return @chat_channel if defined?(@chat_channel)
-
-        @chat_channel = object.topic.chat_channel
-      end
-
-      def chat_channel_id
-        chat_channel.id
-      end
-
-      def include_chat_channel_id?
-        !chat_channel.nil?
-      end
-
-      def chat_channel_type
-        chat_channel.chatable_type
-      end
-
-      def include_chat_channel_type?
-        !chat_channel.nil?
-      end
-      def include_has_chat_history?
-        SiteSetting.topic_chat_enabled
-      end
-
-      def include_can_chat?
-        return false unless SiteSetting.topic_chat_enabled
-        has_chat_live
-      end
-
-      private
-      def chat_lookup
-        object.chat_record
+        object.topic.chat_channel
       end
     end
 

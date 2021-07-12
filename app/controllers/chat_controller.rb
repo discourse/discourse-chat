@@ -17,8 +17,11 @@ class DiscourseChat::ChatController < ::ApplicationController
     end
 
     success = chat_channel.save
-    if success && chat_channel.chatable_type == "Topic"
-      create_action_whisper(@chatable, 'enabled')
+    if success
+      @chatable.custom_fields[DiscourseChat::HAS_CHAT_ENABLED] = true
+      @chatable.save!
+
+      create_action_whisper(@chatable, 'enabled') if chat_channel.for_topic?
     end
     success ? (render json: success_json) : render_json_error(chat_channel)
   end
@@ -31,8 +34,11 @@ class DiscourseChat::ChatController < ::ApplicationController
     chat_channel.trash!(current_user)
 
     success = chat_channel.save
-    if success && chat_channel.chatable_type == "Topic"
-      create_action_whisper(@chatable, 'disabled') if success
+    if success &&
+      @chatable.custom_fields.delete(DiscourseChat::HAS_CHAT_ENABLED)
+      @chatable.save!
+
+      create_action_whisper(@chatable, 'disabled') if chat_channel.for_topic?
     end
     success ? (render json: success_json) : (render_json_error(chat_channel))
   end
@@ -42,12 +48,7 @@ class DiscourseChat::ChatController < ::ApplicationController
     raise Discourse::NotFound unless chat_channel
 
     chatable = chat_channel.chatable
-    if chat_channel.chatable_type == "Topic"
-      raise Discourse::NotFound unless guardian.can_see?(chatable)
-    else
-      # TODO: Secure with category guardian
-    end
-
+    guardian.ensure_can_see!(chatable)
 
     post_id = params[:post_id]
     if post_id
@@ -61,7 +62,10 @@ class DiscourseChat::ChatController < ::ApplicationController
       post_id = rm.post_id
     end
 
-    post_id ||= ChatChannel.last_regular_post(chatable).id
+    if chat_channel.for_topic?
+      post_id ||= ChatChannel.last_regular_post(chatable).id
+    end
+
     content = params[:message]
 
     msg = ChatMessage.new(
@@ -84,7 +88,7 @@ class DiscourseChat::ChatController < ::ApplicationController
     raise Discourse::NotFound unless chat_channel
 
     chatable = chat_channel.chatable
-    if chat_channel.chatable_type == "Topic"
+    if chat_channel.for_topic?
       raise Discourse::NotFound unless guardian.can_see?(chatable)
     else
       # TODO: Secure with category guardian
@@ -109,7 +113,7 @@ class DiscourseChat::ChatController < ::ApplicationController
     raise Discourse::NotFound unless chat_channel
 
     chatable = chat_channel.chatable
-    if chat_channel.chatable_type == "Topic"
+    if chat_channel.for_topic?
       raise Discourse::NotFound unless guardian.can_see?(chatable)
     else
       # TODO: Secure with category guardian
@@ -162,7 +166,7 @@ class DiscourseChat::ChatController < ::ApplicationController
   def index
     channels = ChatChannel.includes(:chatable).all # SECURE THIS
     channels = channels.to_a.select do |channel|
-      if channel.chatable_type == "Topic"
+      if channel.for_topic?
         !channel.chatable.closed && !channel.chatable.archived && guardian.can_see_topic?(channel.chatable)
       else
         guardian.can_see_category?(channel.chatable)

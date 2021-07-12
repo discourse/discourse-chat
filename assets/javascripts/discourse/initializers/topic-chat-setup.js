@@ -50,8 +50,8 @@ export default {
         type: "POST",
         data: {
           chatable_type: "topic",
-          chatable_id: topic.id
-        }
+          chatable_id: topic.id,
+        },
       })
         .then(() => {
           appEvents.trigger(`topic-chat-${action}`, topic);

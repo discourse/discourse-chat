@@ -14,18 +14,18 @@ class ChatViewSerializer < ApplicationSerializer
   end
 
   def can_chat
-    scope.can_chat_in_topic?(object.topic)
+    scope.can_chat_in_chatable?(object.chatable)
   end
 
   def can_flag
-    scope.can_flag_chats?(object.topic)
+    scope.can_flag_chats?
   end
 
   def can_delete_self
-    scope.can_delete_own_chats?(object.topic)
+    scope.can_delete_own_chats?(object.chatable)
   end
 
   def can_delete_others
-    scope.can_delete_other_chats?(object.topic)
+    scope.can_delete_other_chats?(object.chatable)
   end
 end

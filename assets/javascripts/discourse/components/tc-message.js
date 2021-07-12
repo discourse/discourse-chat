@@ -136,9 +136,12 @@ export default Component.extend({
 
   @action
   restore() {
-    return ajax(`/chat/${this.details.chat_channel_id}/restore/${this.message.id}`, {
-      type: "PUT",
-    }).catch(popupAjaxError);
+    return ajax(
+      `/chat/${this.details.chat_channel_id}/restore/${this.message.id}`,
+      {
+        type: "PUT",
+      }
+    ).catch(popupAjaxError);
   },
 
   @action

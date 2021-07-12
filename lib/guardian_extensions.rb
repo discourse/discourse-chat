@@ -64,17 +64,17 @@ module DiscourseChat::GuardianExtensions
       return false if !can_see_topic?(chatable)
       return false if chatable.archived? || chatable.closed?
     else
-      # Category
+      return false if !can_see_category?(chatable)
     end
+
     true
   end
 
   def can_restore_other_chats?(chatable)
     if chatable.class.name == "Topic"
       return false if chatable.archived?
-    else
-      # Category
     end
+
     can_moderate_chat?(chatable)
   end
 end

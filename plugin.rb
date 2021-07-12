@@ -212,6 +212,7 @@ after_initialize do
     post '/:chat_channel_id' => 'chat#send_chat'
     delete '/:chat_channel_id/:message_id' => 'chat#delete'
     post '/:chat_channel_id/:message_id/flag' => 'chat#flag'
+    put '/:chat_channel_id/restore/:message_id' => 'chat#restore'
   end
 
   Discourse::Application.routes.append do

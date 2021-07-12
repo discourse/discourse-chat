@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-class ChatPublisher
+class TopicChatPublisher
 
   def self.last_id(chat_channel)
     MessageBus.last_id("/chat/#{chat_channel.id}")
   end
 
   def self.publish_new!(chat_channel, msg)
-    content = ChatHistoryMessageSerializer.new(msg, { scope: anonymous_guardian, root: :topic_chat_message }).as_json
+    content = TopicChatHistoryMessageSerializer.new(msg, { scope: anonymous_guardian, root: :topic_chat_message }).as_json
     content[:typ] = :sent
     MessageBus.publish("/chat/#{chat_channel.id}", content.as_json)
   end
@@ -21,7 +21,7 @@ class ChatPublisher
   end
 
   def self.publish_restore!(chat_channel, msg)
-    content = ChatHistoryMessageSerializer.new(msg, { scope: anonymous_guardian, root: :topic_chat_message }).as_json
+    content = TopicChatHistoryMessageSerializer.new(msg, { scope: anonymous_guardian, root: :topic_chat_message }).as_json
     content[:typ] = :restore
     MessageBus.publish("/chat/#{chat_channel.id}", content.as_json)
   end

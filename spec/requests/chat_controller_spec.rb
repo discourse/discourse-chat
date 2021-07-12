@@ -98,7 +98,7 @@ RSpec.describe DiscourseChat::ChatController do
       ChatMessage.create(user: user, message: "this is a message", chat_channel: chat_channel)
     end
 
-    it "errors when a user tries to delete another users message" do
+    it "doesn't allow a user to delete another user's message" do
       sign_in(second_user)
 
       delete "/chat/#{chat_channel.id}/#{ChatMessage.last.id}.json"
@@ -121,6 +121,58 @@ RSpec.describe DiscourseChat::ChatController do
         delete "/chat/#{chat_channel.id}/#{ChatMessage.last.id}.json"
       }.to change { ChatMessage.count}.by(-1)
       expect(response.status).to eq(200)
+    end
+  end
+
+  describe "#restore" do
+    fab!(:chat_channel) { Fabricate(:chat_channel, chatable: topic) }
+    fab!(:second_user) { Fabricate(:user) }
+
+    before do
+      SiteSetting.topic_chat_restrict_to_staff = false
+      message = ChatMessage.create(user: user, message: "this is a message", chat_channel: chat_channel)
+      message.update(deleted_at: Time.now, deleted_by_id: user.id)
+    end
+
+    it "doesn't allow a user to restore another user's message" do
+      sign_in(second_user)
+
+      put "/chat/#{chat_channel.id}/restore/#{ChatMessage.unscoped.last.id}.json"
+      expect(response.status).to eq(403)
+    end
+
+    it "doesn't allow restoration of posts on closed topics" do
+      sign_in(user)
+      topic.update(closed: true)
+
+      put "/chat/#{chat_channel.id}/restore/#{ChatMessage.unscoped.last.id}.json"
+      expect(response.status).to eq(403)
+    end
+
+    it "doesn't allow restoration of posts on archived topics" do
+      sign_in(user)
+      topic.update(archived: true)
+
+      put "/chat/#{chat_channel.id}/restore/#{ChatMessage.unscoped.last.id}.json"
+      expect(response.status).to eq(403)
+    end
+
+    it "allows a user to restore their own posts" do
+      sign_in(user)
+
+      deleted_message = ChatMessage.unscoped.last
+      put "/chat/#{chat_channel.id}/restore/#{deleted_message.id}.json"
+      expect(response.status).to eq(200)
+      expect(deleted_message.reload.deleted_at).to eq(nil)
+    end
+
+    it "allows admin to restore others' posts" do
+      sign_in(admin)
+
+      deleted_message = ChatMessage.unscoped.last
+      put "/chat/#{chat_channel.id}/restore/#{deleted_message.id}.json"
+      expect(response.status).to eq(200)
+      expect(deleted_message.reload.deleted_at).to eq(nil)
     end
   end
 end

@@ -45,4 +45,28 @@ module DiscourseChat::GuardianExtensions
     return true if can_moderate_chat?(topic)
     false
   end
+
+  def can_restore_chat?(message, chatable)
+    message.user_id == current_user.id ?
+      can_restore_own_chats?(chatable) :
+      can_delete_other_chats?(chatable) end
+
+  def can_restore_own_chats?(chatable)
+    if chatable.class.name == "Topic"
+      return false if !can_see_topic?(chatable)
+      return false if chatable.archived? || chatable.closed?
+    else
+      # Category
+    end
+    true
+  end
+
+  def can_restore_other_chats?(chatable)
+    if chatable.class.name == "Topic"
+      return false if chatable.archived?
+    else
+      # Category
+    end
+    can_moderate_chat?(chatable)
+  end
 end

@@ -2,7 +2,7 @@
 
 class DiscourseChat::ChatController < ::ApplicationController
   before_action :ensure_logged_in
-  before_action :find_chat_message, only: [:delete]
+  before_action :find_chat_message, only: [:delete, :restore]
   before_action :find_chatable, only: [:enable_chat, :disable_chat]
 
   def enable_chat
@@ -40,6 +40,8 @@ class DiscourseChat::ChatController < ::ApplicationController
     chat_channel = ChatChannel.includes(:chatable).find(params[:chat_channel_id])
     raise Discourse::NotFound unless chat_channel
 
+    guardian.ensure_can_chat!(current_user)
+
     chatable = chat_channel.chatable
     if chat_channel.chatable_type == "Topic"
       raise Discourse::NotFound unless guardian.can_see?(chatable)
@@ -47,7 +49,6 @@ class DiscourseChat::ChatController < ::ApplicationController
       # TODO: Secure with category guardian
     end
 
-    guardian.ensure_can_chat!(current_user)
 
     post_id = params[:post_id]
     if post_id
@@ -141,6 +142,20 @@ class DiscourseChat::ChatController < ::ApplicationController
     end
   end
 
+  def restore
+    chat_channel = @message.chat_channel
+    chatable = chat_channel.chatable
+    guardian.ensure_can_restore_chat!(@message, chatable)
+
+    updated = @message.update(deleted_at: nil, deleted_by_id: nil)
+    if updated
+      ChatPublisher.publish_restore!(chat_channel, @message)
+      render json: success_json
+    else
+      render_json_error(@message)
+    end
+  end
+
   def flag
     render_json_error "unimplemented"
   end
@@ -166,7 +181,10 @@ class DiscourseChat::ChatController < ::ApplicationController
   end
 
   def find_chat_message
-    @message = ChatMessage.find_by(id: params[:message_id])
+    @message = ChatMessage
+                .unscoped
+                .includes(:chat_channel)
+                .find_by(id: params[:message_id])
 
     raise Discourse::NotFound unless @message
   end

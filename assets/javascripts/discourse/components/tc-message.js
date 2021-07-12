@@ -136,7 +136,9 @@ export default Component.extend({
 
   @action
   restore() {
-    bootbox.alert("unimplemented");
+    return ajax(`/chat/${this.details.chat_channel_id}/restore/${this.message.id}`, {
+      type: "PUT",
+    }).catch(popupAjaxError);
   },
 
   @action

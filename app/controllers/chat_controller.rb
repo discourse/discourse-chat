@@ -1,16 +1,11 @@
 # frozen_string_literal: true
 
-require_dependency "application_controller"
-
 class DiscourseChat::ChatController < ::ApplicationController
-  requires_plugin DiscourseChat::PLUGIN_NAME
   before_action :ensure_logged_in
   before_action :find_chat_message, only: [:delete]
   before_action :find_chatable, only: [:enable_chat, :disable_chat]
 
   def enable_chat
-    guardian.ensure_can_moderate_chat!(@chatable)
-
     chat_channel = ChatChannel.with_deleted.find_by(chatable: @chatable)
     if chat_channel && chat_channel.trashed?
       chat_channel.recover!
@@ -20,9 +15,6 @@ class DiscourseChat::ChatController < ::ApplicationController
       chat_channel = ChatChannel.new(chatable: @chatable)
     end
 
-    # safeguard against unusual topic archetypes
-    return render_json_error('chat.no_regular_posts') unless chat_channel.last_regular_post.presence
-
     success = chat_channel.save
     if success && chat_channel.chatable_type == "Topic"
       create_action_whisper(@chatable, 'enabled')
@@ -31,8 +23,6 @@ class DiscourseChat::ChatController < ::ApplicationController
   end
 
   def disable_chat
-    guardian.ensure_can_moderate_chat!(@chatable)
-
     chat_channel = ChatChannel.with_deleted.find_by(chatable: @chatable)
     if chat_channel.trashed?
       return render_json_error I18n.t("chat.already_disabled")
@@ -165,13 +155,10 @@ class DiscourseChat::ChatController < ::ApplicationController
   private
 
   def find_chatable
-    puts '###############'
-    puts '###############'
-    puts '###############'
     if params[:chatable_type].downcase == "topic"
       @chatable = Topic.find(params[:chatable_id])
       guardian.ensure_can_see!(@chatable)
-      guardian.ensure_can_enable_chat!(@chatable)
+      guardian.ensure_can_moderate_chat!(@chatable)
     else
       @chatable = Category.find(params[:chatable_id])
       # TODO: Secure with category guardian

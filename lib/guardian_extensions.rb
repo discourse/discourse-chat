@@ -4,7 +4,7 @@ module DiscourseChat::GuardianExtensions
 
   def can_moderate_chat?(chatable)
     chatable.class.name == "Topic" ?
-      can_perform_action_available_to_group_moderators?(topic) :
+      can_perform_action_available_to_group_moderators?(chatable) :
       is_staff?
   end
 

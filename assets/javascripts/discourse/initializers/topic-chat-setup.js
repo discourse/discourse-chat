@@ -46,8 +46,12 @@ export default {
       topic.set("has_chat_live", !topic.has_chat_live);
 
       const action = topic.has_chat_live ? "enable" : "disable";
-      return ajax(`/chat/topic/${topic.id}/${action}`, {
+      return ajax(`/chat/${action}`, {
         type: "POST",
+        data: {
+          chatable_type: "topic",
+          chatable_id: topic.id
+        }
       })
         .then(() => {
           appEvents.trigger(`topic-chat-${action}`, topic);

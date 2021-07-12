@@ -41,6 +41,9 @@ after_initialize do
     Topic.class_eval {
       has_one :chat_channel, as: :chatable
     }
+    Category.class_eval {
+      has_one :chat_channel, as: :chatable
+    }
   end
 
   reloadable_patch do |plugin|
@@ -202,11 +205,11 @@ after_initialize do
 
   DiscourseChat::Engine.routes.draw do
     get '/index' => 'chat#index'
+    post '/enable' => 'chat#enable_chat'
+    post '/disable' => 'chat#disable_chat'
     get '/:chat_channel_id/recent' => 'chat#recent'
     get '/:chat_channel_id/p/:post_id' => 'chat#historical'
     post '/:chat_channel_id' => 'chat#send_chat'
-    post '/:chatable_type/:chatable_id/enable' => 'chat#enable_chat', constraints: { chatable_type: /topic|category/i }
-    post '/:chatable_type/:chatable_id/disable' => 'chat#disable_chat'
     delete '/:chat_channel_id/:message_id' => 'chat#delete'
     post '/:chat_channel_id/:message_id/flag' => 'chat#flag'
   end

@@ -20,6 +20,7 @@ class RenameTopicChatsToChatChannels < ActiveRecord::Migration[6.1]
       # topic_chat_messages table changes
       rename_table :topic_chat_messages, :chat_messages
       rename_column :chat_messages, :topic_id, :chat_channel_id
+      change_column_null :chat_messages, :post_id, true # Don't require post_id
     ensure
       Migration::SafeMigrate.enable!
     end

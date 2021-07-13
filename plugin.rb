@@ -15,60 +15,31 @@ register_svg_icon "comments"
 register_svg_icon "comment-slash"
 
 after_initialize do
-  module ::DiscourseChat
+  module ::DiscourseTopicChat
     PLUGIN_NAME = "discourse-topic-chat"
-    HAS_CHAT_ENABLED = "has_chat_enabled"
 
     class Engine < ::Rails::Engine
       engine_name PLUGIN_NAME
-      isolate_namespace DiscourseChat
+      isolate_namespace DiscourseTopicChat
     end
   end
 
   load File.expand_path('../app/controllers/chat_controller.rb', __FILE__)
   load File.expand_path('../app/jobs/scheduled/split_long_chats.rb', __FILE__)
-  load File.expand_path('../app/models/chat_channel.rb', __FILE__)
-  load File.expand_path('../app/models/chat_message.rb', __FILE__)
-  load File.expand_path('../app/serializers/chat_base_message_serializer.rb', __FILE__)
-  load File.expand_path('../app/serializers/chat_channel_serializer.rb', __FILE__)
-  load File.expand_path('../app/serializers/chat_history_message_serializer.rb', __FILE__)
-  load File.expand_path('../app/serializers/chat_view_serializer.rb', __FILE__)
-  load File.expand_path('../lib/chat_view.rb', __FILE__)
-  load File.expand_path('../app/services/chat_publisher.rb', __FILE__)
+  load File.expand_path('../app/models/topic_chat.rb', __FILE__)
+  load File.expand_path('../app/models/topic_chat_message.rb', __FILE__)
+  load File.expand_path('../app/serializers/topic_chat_base_message_serializer.rb', __FILE__)
+  load File.expand_path('../app/serializers/topic_chat_channel_serializer.rb', __FILE__)
+  load File.expand_path('../app/serializers/topic_chat_history_message_serializer.rb', __FILE__)
+  load File.expand_path('../app/serializers/topic_chat_view_serializer.rb', __FILE__)
+  load File.expand_path('../lib/topic_chat_view.rb', __FILE__)
+  load File.expand_path('../app/services/topic_chat_publisher.rb', __FILE__)
   load File.expand_path('../lib/guardian_extensions.rb', __FILE__)
 
-  register_topic_custom_field_type(DiscourseChat::HAS_CHAT_ENABLED, :boolean)
-  TopicList.preloaded_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
-  register_category_custom_field_type(DiscourseChat::HAS_CHAT_ENABLED, :boolean)
-  Site.preloaded_category_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
-
-  on(:category_updated) do |category|
-    next if !SiteSetting.topic_chat_enabled
-
-    chat_channel = ChatChannel.with_deleted.find_by(chatable: category)
-
-    if category.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]
-      if chat_channel && chat_channel.trashed?
-        chat_channel.recover!
-      elsif chat_channel.nil?
-        chat_channel = ChatChannel.new(chatable: category)
-        chat_channel.save!
-      end
-
-    else
-      if chat_channel && !chat_channel.trashed?
-        chat_channel.trash!
-      end
-    end
-  end
-
   reloadable_patch do |plugin|
-    Guardian.class_eval { include DiscourseChat::GuardianExtensions }
+    Guardian.class_eval { include DiscourseTopicChat::GuardianExtensions }
     Topic.class_eval {
-      has_one :chat_channel, as: :chatable
-    }
-    Category.class_eval {
-      has_one :chat_channel, as: :chatable
+      has_one :topic_chat
     }
   end
 
@@ -77,15 +48,15 @@ after_initialize do
     class ::TopicView
       def chat_record
         return @chat_record if @chat_record_lookup_done
-        @chat_record = ChatChannel.with_deleted.find_by(chatable: @topic) if SiteSetting.topic_chat_enabled
+        @chat_record = TopicChat.with_deleted.find_by(topic_id: @topic.id) if SiteSetting.topic_chat_enabled
         @chat_record_lookup_done = true
         @chat_record
       end
 
       def chat_history_by_post
         @chat_history_by_post ||= begin
-                                    msgs = ChatMessage
-                                      .where(chat_channel: @topic.chat_channel)
+                                    msgs = TopicChatMessage
+                                      .where(topic_id: @topic.id)
                                       .where(post_id: posts.pluck(:id))
                                       .where("COALESCE(action_code, 'null') NOT IN ('chat.post_created')")
                                       .order(created_at: :asc)
@@ -100,9 +71,9 @@ after_initialize do
     end
   end
 
-  TopicQuery.add_custom_filter(::DiscourseChat::PLUGIN_NAME) do |results, topic_query|
+  TopicQuery.add_custom_filter(::DiscourseTopicChat::PLUGIN_NAME) do |results, topic_query|
     if SiteSetting.topic_chat_enabled
-      results = results.includes(:chat_channel)
+      results = results.includes(:topic_chat)
     end
     results
   end
@@ -112,9 +83,8 @@ after_initialize do
   end
 
   add_to_serializer('listable_topic', :include_has_chat_live?) do
-    SiteSetting.topic_chat_enabled &&
-      scope.can_chat?(scope.user) &&
-      object.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]
+    # TODO N+1 query for 'object.topic_chat'
+    SiteSetting.topic_chat_enabled && scope.can_chat?(scope.user) && !object.topic_chat.nil?
   end
 
   add_to_serializer(:current_user, :can_chat) do
@@ -128,10 +98,38 @@ after_initialize do
   reloadable_patch do |plugin|
     require_dependency 'topic_view_serializer'
     class ::TopicViewSerializer
-      has_one :chat_channel, serializer: ChatChannelSerializer, root: false, embed: :objects
+      attributes :has_chat_live, :has_chat_history
+      attributes :can_chat
 
-      def chat_channel
-        object.topic.chat_channel
+      # overrides has_chat_live from ListableTopicSerializer
+      def has_chat_live
+        chat_lookup && !chat_lookup.trashed?
+      end
+
+      def has_chat_history
+        !chat_lookup.nil?
+      end
+
+      def can_chat
+        scope.can_chat_in_topic?(self.object)
+      end
+
+      def include_has_chat_live?
+        SiteSetting.topic_chat_enabled && scope.can_chat?(scope.user) && !object.topic.topic_chat.nil?
+      end
+
+      def include_has_chat_history?
+        SiteSetting.topic_chat_enabled
+      end
+
+      def include_can_chat?
+        return false unless SiteSetting.topic_chat_enabled
+        has_chat_live
+      end
+
+      private
+      def chat_lookup
+        object.chat_record
       end
     end
 
@@ -142,7 +140,7 @@ after_initialize do
       def chat_history
         # TODO: user info not included
         msgs = @topic_view.chat_history_by_post[object.id]
-        ActiveModel::ArraySerializer.new(msgs, each_serializer: ChatHistoryMessageSerializer, scope: scope, root: false) if msgs
+        ActiveModel::ArraySerializer.new(msgs, each_serializer: TopicChatHistoryMessageSerializer, scope: scope, root: false) if msgs
       end
 
       def include_chat_history?
@@ -154,38 +152,38 @@ after_initialize do
   end
 
   DiscourseEvent.on(:post_created) do |post, opts, user|
-    chat_channel = post.topic.chat_channel
-    next unless chat_channel && !chat_channel.deleted_at && post.post_type != Post.types[:whisper]
+    tc = post.topic.topic_chat
+    next unless tc && !tc.deleted_at && post.post_type != Post.types[:whisper]
     complex_action = !post.custom_fields["action_code_who"].nil?
     action_code = opts[:action_code] || "chat.post_created"
     action_code = "chat.generic_small_action" if complex_action
 
     excerpt = post.excerpt(SiteSetting.topic_chat_excerpt_maxlength, strip_links: true, strip_images: true) unless opts[:action_code]
 
-    msg = ChatMessage.new(
-      chat_channel: chat_channel,
+    msg = TopicChatMessage.new(
+      topic: post.topic,
       post: post,
       user: user,
       action_code: action_code,
       message: excerpt || "",
     )
     msg.save!
-    ::ChatPublisher.publish_new!(post.topic, msg)
+    TopicChatPublisher.publish_new!(post.topic, msg)
   end
 
-  DiscourseChat::Engine.routes.draw do
+  DiscourseTopicChat::Engine.routes.draw do
     get '/index' => 'chat#index'
-    post '/enable' => 'chat#enable_chat'
-    post '/disable' => 'chat#disable_chat'
-    get '/:chat_channel_id/recent' => 'chat#recent'
-    get '/:chat_channel_id/p/:post_id' => 'chat#historical'
-    post '/:chat_channel_id' => 'chat#send_chat'
-    delete '/:chat_channel_id/:message_id' => 'chat#delete'
-    post '/:chat_channel_id/:message_id/flag' => 'chat#flag'
-    put '/:chat_channel_id/restore/:message_id' => 'chat#restore'
+    get '/t/:topic_id/recent' => 'chat#recent'
+    get '/t/:topic_id/p/:post_id' => 'chat#historical'
+    post '/t/:topic_id' => 'chat#send_chat'
+    post '/t/:topic_id/enable' => 'chat#enable_chat'
+    post '/t/:topic_id/disable' => 'chat#disable_chat'
+    delete '/t/:topic_id/:message_id' => 'chat#delete'
+    put '/t/:topic_id/restore/:message_id' => 'chat#restore'
+    post '/t/:topic_id/:message_id/flag' => 'chat#flag'
   end
 
   Discourse::Application.routes.append do
-    mount ::DiscourseChat::Engine, at: '/chat'
+    mount ::DiscourseTopicChat::Engine, at: '/chat'
   end
 end

@@ -6,11 +6,11 @@
         {{flat-button icon="chevron-left" action=(action "openChat") title="chat.return_to_list"}}
         <div class="tc-title-seg">
           <span class="tc-branding">{{i18n "chat.title_bare"}}</span>
-          {{#if title}}
+          {{#if selectedTopicTitle}}
             <span class="tc-title-sep">-</span>
-            <a href={{chatableUrl}} class="tc-topic-title">{{title}}</a>
+            <a href={{selectedTopicLink}} class="tc-topic-title">{{this.selectedTopicTitle}}</a>
             {{#if showUnreadMessageCount}}
-              <span class="tc-unread-count">{{unreadMessageCount}}</span>
+              <span class="tc-unread-count">{{this.unreadMessageCount}}</span>
             {{/if}}
           {{/if}}
         </div>
@@ -28,21 +28,15 @@
     </div>
     <div class="topic-chat-drawer-content">
       {{#if chatView}}
-        {{#if this.chatChannelId}}
-          {{chat-live-pane
-            chatChannelType=this.chatChannelType
-            chatChannelId=this.chatChannelId
-            newMessageCb=(action "newMessageCb")
-            expanded=this.expanded
-          }}
+        {{#if this.selectedTopicId}}
+          {{chat-live-pane topicId=this.selectedTopicId newMessageCb=(action "newMessageCb") expanded=this.expanded}}
         {{/if}}
       {{else}}
 
         <ul class="tc-channels">
           {{#each channels as |channel|}}
             <li class="tc-channel-item" onclick={{action "switchChannel" channel}}>
-            {{channel.title}}
-            <small>{{channel.chatable_type}}</small>
+              {{channel.title}}
             </li>
           {{/each}}
         </ul>

@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
 # Kept for legacy naming reasons only
-class ChatHistoryMessageSerializer < ChatBaseMessageSerializer
+class TopicChatHistoryMessageSerializer < TopicChatBaseMessageSerializer
 end

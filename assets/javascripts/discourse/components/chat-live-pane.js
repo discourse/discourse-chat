@@ -13,16 +13,14 @@ const STICKY_SCROLL_LENIENCE = 4;
 export default Component.extend({
   classNameBindings: [":tc-live-pane", "sendingloading", "loading"],
   topicId: null, // ?Number
-  chatChannelId: null,
-  chatChannelType: null, // "Category" or "Topic"
-  registeredChatChannelId: null, // ?Number
+  registeredTopicId: null, // ?Number
   loading: false,
   sendingloading: false,
   stickyScroll: true,
   stickyScrollTimer: null,
 
   replyToMsg: null, // ?Message
-  details: null, // Object { chat_channel_id, can_chat, ... }
+  details: null, // Object { topicId, can_chat, ... }
   messages: null, // Array
   messageLookup: null, // Object<Number, Message>
 
@@ -52,27 +50,27 @@ export default Component.extend({
       cancel(this.stickyScrollTimer);
       this.stickyScrollTimer = null;
     }
-    if (this.registeredChatChannelId) {
-      this.messageBus.unsubscribe(`/chat/${this.registeredChatChannelId}`);
-      this.registeredChatChannelId = null;
+    if (this.registeredTopicId) {
+      this.messageBus.unsubscribe(`/chat/${this.registeredTopicId}`);
+      this.registeredTopicId = null;
     }
   },
 
   didReceiveAttrs() {
     this._super(...arguments);
 
-    if (this.registeredChatChannelId !== this.chatChannelId) {
-      if (this.registeredChatChannelId) {
-        this.messageBus.unsubscribe(`/chat/${this.registeredChatChannelId}`);
+    if (this.registeredTopicId !== this.topicId) {
+      if (this.registeredTopicId) {
+        this.messageBus.unsubscribe(`/chat/${this.registeredTopicId}`);
         this.messages.clear();
         this.messageLookup = {};
-        this.registeredChatChannelId = null;
+        this.registeredTopicId = null;
       }
 
-      if (this.chatChannelId != null) {
-        const chatChannelId = this.chatChannelId;
+      if (this.topicId != null) {
+        const topicId = this.topicId;
         this.set("loading", true);
-        ajax(`/chat/${this.chatChannelId}/recent`)
+        ajax(`/chat/t/${this.topicId}/recent`)
           .then((data) => {
             if (!this.element || this.isDestroying || this.isDestroyed) {
               return;
@@ -83,17 +81,17 @@ export default Component.extend({
               A(tc.messages.reverse().map((m) => this.prepareMessage(m)))
             );
             this.set("details", {
-              chat_channel_id: this.chatChannelId,
+              topicId,
               can_chat: tc.can_chat,
               can_flag: tc.can_flag,
               can_delete_self: tc.can_delete_self,
               can_delete_others: tc.can_delete_others,
             });
-            this.registeredChatChannelId = this.chatChannelId;
+            this.registeredTopicId = topicId;
             schedule("afterRender", this, this.doScrollStick);
 
             this.messageBus.subscribe(
-              `/chat/${chatChannelId}`,
+              `/chat/${topicId}`,
               (busData) => {
                 this.handleMessage(busData);
               },
@@ -265,7 +263,7 @@ export default Component.extend({
     if (this.replyToMsg) {
       data.in_reply_to_id = this.replyToMsg.id;
     }
-    return ajax(`/chat/${this.chatChannelId}/`, {
+    return ajax(`/chat/t/${this.topicId}/`, {
       type: "POST",
       data,
     })

@@ -1,18 +1,13 @@
 # frozen_string_literal: true
 
-class ChatChannel < ActiveRecord::Base
+class TopicChat < ActiveRecord::Base
   include Trashable
 
-  belongs_to :chatable, polymorphic: true
-  has_many :chat_messages
-
-  def for_topic?
-    chatable_type == "Topic"
-  end
+  belongs_to :topic
 
   def self.is_enabled?(t)
     return false if !SiteSetting.topic_chat_enabled
-    ChatChannel.where(chatable: topic).exists?
+    TopicChat.where(topic_id: t.id).exists?
   end
 
   def self.last_regular_post(t)
@@ -21,7 +16,7 @@ class ChatChannel < ActiveRecord::Base
   end
 
   def last_regular_post
-    ChatChannel.last_regular_post(self.chatable)
+    TopicChat.last_regular_post(self.topic)
   end
 
   def make_separator_post!
@@ -44,7 +39,7 @@ class ChatChannel < ActiveRecord::Base
 
     creator = PostCreator.new(Discourse.system_user, {
       raw: raw,
-      topic_id: self.chatable_id,
+      topic_id: self.topic.id,
       skip_validations: true,
     })
     creator.create

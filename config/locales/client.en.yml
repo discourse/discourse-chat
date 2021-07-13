@@ -2,6 +2,7 @@ en:
   js:
     chat:
       title_bare: "Chat"
+      title_topic: "Chat - %{topic_title}"
       placeholder: "Chat..."
       placeholder_log_in: "Log in to chat"
       send: "Send Chat Message"
@@ -18,7 +19,6 @@ en:
       deleted: "View deleted message"
       open: "Open chat"
       list: "Chats"
-      category_chat_enabled: "Chat enabled for category"
     topic:
       actions:
         chat_enable: "Enable Chat"

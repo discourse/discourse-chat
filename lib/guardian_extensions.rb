@@ -14,7 +14,7 @@ module DiscourseChat::GuardianExtensions
 
   def can_chat_in_chatable?(chatable)
     chatable.class.name == "Topic" ?
-      can_create_post?(topic) && !topic.closed? && !topic.archived? :
+      can_create_post?(chatable) && !chatable.closed? && !chatable.archived? :
       true
   end
 
@@ -39,6 +39,7 @@ module DiscourseChat::GuardianExtensions
     if chatable.class.name == "Topic"
       return false if !can_see_topic?(chatable)
       return false if chatable.archived?
+      return false if chatable.closed?
     end
 
     true

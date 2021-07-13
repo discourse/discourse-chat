@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
-class ChatPublisher
-
+module ChatPublisher
   def self.last_id(chat_channel)
     MessageBus.last_id("/chat/#{chat_channel.id}")
   end

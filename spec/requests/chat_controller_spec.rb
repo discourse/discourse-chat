@@ -116,7 +116,7 @@ RSpec.describe DiscourseChat::ChatController do
       sign_in(second_user)
 
       delete "/chat/#{chat_channel.id}/#{ChatMessage.last.id}.json"
-      expect(response.status).to eq(404)
+      expect(response.status).to eq(403)
     end
 
     it "Allows users to delete their own messages" do

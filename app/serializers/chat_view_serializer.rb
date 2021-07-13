@@ -13,19 +13,35 @@ class ChatViewSerializer < ApplicationSerializer
     object.message_bus_last_id
   end
 
-  def can_chat
+  def include_can_chat?
     scope.can_chat_in_chatable?(object.chatable)
   end
 
-  def can_flag
+  def can_chat
+    true
+  end
+
+  def include_can_flag?
     scope.can_flag_chats?
   end
 
-  def can_delete_self
+  def can_flag
+    true
+  end
+
+  def include_can_delete_self?
     scope.can_delete_own_chats?(object.chatable)
   end
 
-  def can_delete_others
+  def can_delete_self
+    true
+  end
+
+  def include_can_delete_others?
     scope.can_delete_other_chats?(object.chatable)
+  end
+
+  def can_delete_others
+    true
   end
 end

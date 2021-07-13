@@ -88,16 +88,12 @@ class DiscourseChat::ChatController < ::ApplicationController
     raise Discourse::NotFound unless chat_channel
 
     chatable = chat_channel.chatable
-    if chat_channel.for_topic?
-      raise Discourse::NotFound unless guardian.can_see?(chatable)
-    else
-      # TODO: Secure with category guardian
-    end
+    guardian.ensure_can_see!(chatable)
 
     # n.b.: must fetch ID before querying DB
     message_bus_last_id = ChatPublisher.last_id(chat_channel)
     messages = ChatMessage.where(chat_channel: chat_channel).order(created_at: :desc).limit(50)
-    # TODO: Make sure `can_moderator_chat` checks type
+
     if guardian.can_moderate_chat?(chatable)
       messages = messages.with_deleted
     end
@@ -113,11 +109,7 @@ class DiscourseChat::ChatController < ::ApplicationController
     raise Discourse::NotFound unless chat_channel
 
     chatable = chat_channel.chatable
-    if chat_channel.for_topic?
-      raise Discourse::NotFound unless guardian.can_see?(chatable)
-    else
-      # TODO: Secure with category guardian
-    end
+    guardian.ensure_can_see!(chatable)
 
     post_id = params[:post_id]
     p = Post.find(post_id)
@@ -129,12 +121,8 @@ class DiscourseChat::ChatController < ::ApplicationController
   def delete
     chat_channel = @message.chat_channel
     chatable = @message.chat_channel.chatable
-    if chatable.class.name == "Topic"
-      raise Discourse::NotFound unless guardian.can_see?(chatable)
-      raise Discourse::NotFound unless guardian.can_delete_chat?(@message, chatable)
-    else
-      # TODO: Secure with category guardian
-    end
+    guardian.ensure_can_see!(chatable)
+    guardian.ensure_can_delete_chat!(@message, chatable)
 
     updated = @message.update(deleted_at: Time.now, deleted_by_id: current_user.id)
     if updated
@@ -179,14 +167,12 @@ class DiscourseChat::ChatController < ::ApplicationController
   private
 
   def find_chatable
-    if params[:chatable_type].downcase == "topic"
-      @chatable = Topic.find(params[:chatable_id])
-      guardian.ensure_can_see!(@chatable)
-      guardian.ensure_can_moderate_chat!(@chatable)
-    else
-      @chatable = Category.find(params[:chatable_id])
-      # TODO: Secure with category guardian
-    end
+    @chatable = params[:chatable_type].downcase == "topic" ?
+      Topic.find(params[:chatable_id]) :
+      Category.find(params[:chatable_id])
+
+    guardian.ensure_can_see!(@chatable)
+    guardian.ensure_can_moderate_chat!(@chatable)
   end
 
   def find_chat_message

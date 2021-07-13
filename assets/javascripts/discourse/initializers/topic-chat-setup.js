@@ -46,8 +46,12 @@ export default {
       topic.set("has_chat_live", !topic.has_chat_live);
 
       const action = topic.has_chat_live ? "enable" : "disable";
-      return ajax(`/chat/t/${topic.id}/${action}`, {
+      return ajax(`/chat/${action}`, {
         type: "POST",
+        data: {
+          chatable_type: "topic",
+          chatable_id: topic.id,
+        },
       })
         .then(() => {
           appEvents.trigger(`topic-chat-${action}`, topic);
@@ -78,7 +82,7 @@ export default {
       api.addPostTransformCallback((transformed) => {
         if (
           transformed.actionCode === "chat.enabled" ||
-            transformed.actionCode === "chat.disabled"
+          transformed.actionCode === "chat.disabled"
         ) {
           transformed.isSmallAction = true;
           transformed.canEdit = false;

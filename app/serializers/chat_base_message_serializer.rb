@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class TopicChatBaseMessageSerializer < ApplicationSerializer
+class ChatBaseMessageSerializer < ApplicationSerializer
   attributes :id,
     :message,
     :action_code,
@@ -31,6 +31,6 @@ class TopicChatBaseMessageSerializer < ApplicationSerializer
   end
 
   def include_flag_count?
-    scope.can_see_flags?(object.topic) && (false && object.flag_count > 0)
+    scope.can_see_flags?(object.chat_channel.chatable) && (false && object.flag_count > 0)
   end
 end

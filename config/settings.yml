@@ -1,6 +1,7 @@
 plugins:
   topic_chat_enabled:
     default: false
+    client: true
   topic_chat_max_messages_per_post:
     default: 1000
     min: -1

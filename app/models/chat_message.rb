@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-class TopicChatMessage < ActiveRecord::Base
+class ChatMessage < ActiveRecord::Base
   include Trashable
 
   belongs_to :post
-  belongs_to :topic
+  belongs_to :chat_channel
   belongs_to :user
 
-  belongs_to :in_reply_to, class_name: "TopicChatMessage"
+  belongs_to :in_reply_to, class_name: "ChatMessage"
 
   def reviewable_flag
     raise NotImplementedError

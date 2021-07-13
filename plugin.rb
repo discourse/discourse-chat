@@ -38,9 +38,10 @@ after_initialize do
   load File.expand_path('../lib/guardian_extensions.rb', __FILE__)
 
   register_topic_custom_field_type(DiscourseChat::HAS_CHAT_ENABLED, :boolean)
-  TopicList.preloaded_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
   register_category_custom_field_type(DiscourseChat::HAS_CHAT_ENABLED, :boolean)
   Site.preloaded_category_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
+  TopicList.preloaded_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
+  Search.preloaded_topic_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
 
   on(:category_updated) do |category|
     next if !SiteSetting.topic_chat_enabled

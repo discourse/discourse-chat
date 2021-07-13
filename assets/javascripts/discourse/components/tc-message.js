@@ -136,14 +136,17 @@ export default Component.extend({
 
   @action
   restore() {
-    return ajax(`/chat/t/${this.details.topicId}/restore/${this.message.id}`, {
-      type: "PUT",
-    }).catch(popupAjaxError);
+    return ajax(
+      `/chat/${this.details.chat_channel_id}/restore/${this.message.id}`,
+      {
+        type: "PUT",
+      }
+    ).catch(popupAjaxError);
   },
 
   @action
   deleteMessage() {
-    return ajax(`/chat/t/${this.details.topicId}/${this.message.id}`, {
+    return ajax(`/chat/${this.details.chat_channel_id}/${this.message.id}`, {
       type: "DELETE",
     }).catch(popupAjaxError);
   },

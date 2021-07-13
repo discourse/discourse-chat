@@ -1,78 +1,75 @@
 # frozen_string_literal: true
 
-require_dependency "application_controller"
-
-class DiscourseTopicChat::ChatController < ::ApplicationController
-  requires_plugin DiscourseTopicChat::PLUGIN_NAME
-  before_action :ensure_logged_in, only: [:send_chat, :delete, :restore]
+class DiscourseChat::ChatController < ::ApplicationController
+  before_action :ensure_logged_in
+  before_action :ensure_can_chat
   before_action :find_chat_message, only: [:delete, :restore]
+  before_action :find_chatable, only: [:enable_chat, :disable_chat]
 
   def enable_chat
-    t = Topic.find(params[:topic_id])
-    guardian.ensure_can_see!(t)
-    guardian.ensure_can_enable_chat!(t)
-
-    success = true
-
-    tc = TopicChat.with_deleted.find_by(topic_id: t.id)
-    if tc && tc.trashed?
-      tc.recover!
-    elsif tc
+    chat_channel = ChatChannel.with_deleted.find_by(chatable: @chatable)
+    if chat_channel && chat_channel.trashed?
+      chat_channel.recover!
+    elsif chat_channel
       return render_json_error I18n.t("chat.already_enabled")
     else
-      tc = TopicChat.new(topic_id: t.id)
+      chat_channel = ChatChannel.new(chatable: @chatable)
     end
 
-    # safeguard against unusual topic archetypes
-    return render_json_error('chat.no_regular_posts') unless tc.last_regular_post.presence
+    success = chat_channel.save
+    if success
+      @chatable.custom_fields[DiscourseChat::HAS_CHAT_ENABLED] = true
+      @chatable.save!
 
-    success = tc.save
-    create_action_whisper(t, 'enabled') if success
-    success ? (render json: success_json) : render_json_error(tc)
+      create_action_whisper(@chatable, 'enabled') if chat_channel.for_topic?
+    end
+    success ? (render json: success_json) : render_json_error(chat_channel)
   end
 
   def disable_chat
-    t = Topic.with_deleted.find(params[:topic_id])
-    guardian.ensure_can_see!(t)
-    guardian.ensure_can_enable_chat!(t)
-
-    tc = TopicChat.with_deleted.find_by(topic_id: t.id)
-    if tc.trashed?
+    chat_channel = ChatChannel.with_deleted.find_by(chatable: @chatable)
+    if chat_channel.trashed?
       return render_json_error I18n.t("chat.already_disabled")
     end
-    tc.trash!(current_user)
+    chat_channel.trash!(current_user)
 
-    success = tc.save
-    create_action_whisper(t, 'disabled') if success
-    success ? (render json: success_json) : (render_json_error(tc))
+    success = chat_channel.save
+    if success &&
+      @chatable.custom_fields.delete(DiscourseChat::HAS_CHAT_ENABLED)
+      @chatable.save!
+
+      create_action_whisper(@chatable, 'disabled') if chat_channel.for_topic?
+    end
+    success ? (render json: success_json) : (render_json_error(chat_channel))
   end
 
   def send_chat
-    guardian.ensure_can_chat!(current_user)
+    chat_channel = ChatChannel.includes(:chatable).find(params[:chat_channel_id])
+    raise Discourse::NotFound unless chat_channel
 
-    t = Topic.find(params[:topic_id])
-    raise Discourse::NotFound unless guardian.can_see?(t)
-    tc = TopicChat.find_by(topic: t)
-    raise Discourse::NotFound unless tc
-    guardian.ensure_can_chat_in_topic!(tc)
+    chatable = chat_channel.chatable
+    guardian.ensure_can_see!(chatable)
 
     post_id = params[:post_id]
     if post_id
-      raise Discourse::NotFound if Post.find(post_id).topic_id != t.id
+      raise Discourse::NotFound if Post.find(post_id).topic_id != chatable.id
     end
 
     reply_to_msg_id = params[:in_reply_to_id]
     if reply_to_msg_id
-      rm = TopicChatMessage.find(reply_to_msg_id)
-      raise Discourse::NotFound if rm.topic_id != t.id
+      rm = ChatMessage.find(reply_to_msg_id)
+      raise Discourse::NotFound if rm.chat_channel_id != chat_channel.id
       post_id = rm.post_id
     end
 
-    post_id ||= TopicChat.last_regular_post(t).id
+    if chat_channel.for_topic?
+      post_id ||= ChatChannel.last_regular_post(chatable).id
+    end
+
     content = params[:message]
 
-    msg = TopicChatMessage.new(
-      topic_id: t.id,
+    msg = ChatMessage.new(
+      chat_channel: chat_channel,
       post_id: post_id,
       user_id: current_user.id,
       in_reply_to_id: reply_to_msg_id,
@@ -82,31 +79,37 @@ class DiscourseTopicChat::ChatController < ::ApplicationController
       return render_json_error(msg)
     end
 
-    TopicChatPublisher.publish_new!(t, msg)
+    ChatPublisher.publish_new!(chat_channel, msg)
     render json: success_json
   end
 
   def recent
-    topic = Topic.find(params[:topic_id])
-    raise Discourse::NotFound unless guardian.can_see?(topic)
-    tc = TopicChat.find_by(topic: topic)
-    raise Discourse::NotFound unless tc
+    chat_channel = ChatChannel.includes(:chatable).find(params[:chat_channel_id])
+    raise Discourse::NotFound unless chat_channel
+
+    chatable = chat_channel.chatable
+    guardian.ensure_can_see!(chatable)
 
     # n.b.: must fetch ID before querying DB
-    message_bus_last_id = TopicChatPublisher.last_id(topic)
-    messages = TopicChatMessage.where(topic: topic).order(created_at: :desc).limit(50)
-    if guardian.can_moderate_chat?(topic)
+    message_bus_last_id = ChatPublisher.last_id(chat_channel)
+    messages = ChatMessage.where(chat_channel: chat_channel).order(created_at: :desc).limit(50)
+
+    if guardian.can_moderate_chat?(chatable)
       messages = messages.with_deleted
     end
 
-    render_serialized(TopicChatView.new(topic, messages, message_bus_last_id), TopicChatViewSerializer, root: :topic_chat_view)
+    render_serialized(ChatView.new(chatable, messages, message_bus_last_id), ChatViewSerializer, root: :topic_chat_view)
   end
 
   def historical
-    t = Topic.with_deleted.find(params[:topic_id])
-    raise Discourse::NotFound unless guardian.can_see?(t)
-    tc = TopicChat.with_deleted.find_by(topic: t)
-    raise Discourse::NotFound unless tc
+    chat_channel = ChatChannel
+      .includes(:chatable)
+      .with_deleted
+      .find(params[:chat_channel_id])
+    raise Discourse::NotFound unless chat_channel
+
+    chatable = chat_channel.chatable
+    guardian.ensure_can_see!(chatable)
 
     post_id = params[:post_id]
     p = Post.find(post_id)
@@ -116,12 +119,14 @@ class DiscourseTopicChat::ChatController < ::ApplicationController
   end
 
   def delete
-    topic = @message.topic
-    raise Discourse::NotFound unless guardian.can_delete_chat?(@message, topic)
+    chat_channel = @message.chat_channel
+    chatable = @message.chat_channel.chatable
+    guardian.ensure_can_see!(chatable)
+    guardian.ensure_can_delete_chat!(@message, chatable)
 
     updated = @message.update(deleted_at: Time.now, deleted_by_id: current_user.id)
     if updated
-      TopicChatPublisher.publish_delete!(topic, @message)
+      ChatPublisher.publish_delete!(chat_channel, @message)
       render json: success_json
     else
       render_json_error(@message)
@@ -129,12 +134,13 @@ class DiscourseTopicChat::ChatController < ::ApplicationController
   end
 
   def restore
-    topic = @message.topic
-    raise Discourse::NotFound unless guardian.can_restore_chat?(@message, topic)
+    chat_channel = @message.chat_channel
+    chatable = chat_channel.chatable
+    guardian.ensure_can_restore_chat!(@message, chatable)
 
     updated = @message.update(deleted_at: nil, deleted_by_id: nil)
     if updated
-      TopicChatPublisher.publish_restore!(topic, @message)
+      ChatPublisher.publish_restore!(chat_channel, @message)
       render json: success_json
     else
       render_json_error(@message)
@@ -146,15 +152,34 @@ class DiscourseTopicChat::ChatController < ::ApplicationController
   end
 
   def index
-    channels = TopicChat.joins(:topic).merge(Topic.secured(Guardian.new(current_user)))
+    channels = ChatChannel.includes(:chatable).all # SECURE THIS
+    channels = channels.to_a.select do |channel|
+      if channel.for_topic?
+        !channel.chatable.closed && !channel.chatable.archived && guardian.can_see_topic?(channel.chatable)
+      else
+        guardian.can_see_category?(channel.chatable)
+      end
+    end
 
-    render_serialized(channels, TopicChatChannelSerializer)
+    render_serialized(channels, ChatChannelSerializer)
   end
 
   private
 
+  def find_chatable
+    @chatable = params[:chatable_type].downcase == "topic" ?
+      Topic.find(params[:chatable_id]) :
+      Category.find(params[:chatable_id])
+
+    guardian.ensure_can_see!(@chatable)
+    guardian.ensure_can_moderate_chat!(@chatable)
+  end
+
   def find_chat_message
-    @message = TopicChatMessage.unscoped.find_by(id: params[:message_id])
+    @message = ChatMessage
+                .unscoped
+                .includes(:chat_channel)
+                .find_by(id: params[:message_id])
 
     raise Discourse::NotFound unless @message
   end
@@ -168,5 +193,9 @@ class DiscourseTopicChat::ChatController < ::ApplicationController
         action_code: "chat.#{action}",
         custom_fields: { "action_code_who" => current_user.username }
       )
+  end
+
+  def ensure_can_chat
+    guardian.ensure_can_chat!(current_user)
   end
 end

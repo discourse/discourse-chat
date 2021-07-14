@@ -1,11 +1,11 @@
 import Service from "@ember/service";
+import { inject as service } from "@ember/service";
 
 export default Service.extend({
   lastTopicEntered: null,
-  appEvents: null,
+  appEvents: service(),
 
-  start(appEvents) {
-    this.set("appEvents", appEvents);
+  start() {
     this.appEvents.on("page:topic-loaded", this, "_captureLastEnteredTopic");
   },
 

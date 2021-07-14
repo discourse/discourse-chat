@@ -21,7 +21,7 @@ export default {
     const appEvents = container.lookup("service:app-events");
     const currentUser = container.lookup("current-user:main");
     if (currentUser && currentUser.can_chat) {
-      container.lookup("service:chat-service").start(appEvents);
+      container.lookup("service:chat-service").start();
     }
 
     TopicStatus.reopen({

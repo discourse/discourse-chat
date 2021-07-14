@@ -5,8 +5,6 @@ export default Service.extend({
   appEvents: null,
 
   start(appEvents) {
-    if (!this.currentUser || !this.currentUser.can_chat) return;
-
     this.set("appEvents", appEvents);
     this.appEvents.on("page:topic-loaded", this, "_captureLastEnteredTopic");
   },

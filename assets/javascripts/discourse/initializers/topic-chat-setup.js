@@ -21,7 +21,9 @@ export default {
     const appEvents = container.lookup("service:app-events");
     const currentUser = container.lookup("current-user:main");
     const chatService = container.lookup("service:chat-service");
-    chatService.start(appEvents);
+    if (currentUser && currentUser.can_chat) {
+      chatService.start(appEvents);
+    }
 
     TopicStatus.reopen({
       statuses: Ember.computed(function () {

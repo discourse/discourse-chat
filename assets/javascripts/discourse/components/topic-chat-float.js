@@ -1,6 +1,7 @@
 import { action } from "@ember/object";
 import { equal } from "@ember/object/computed";
 import { ajax } from "discourse/lib/ajax";
+import { getOwner } from "discourse-common/lib/get-owner";
 import Component from "@ember/component";
 import discourseComputed from "discourse-common/utils/decorators";
 import getURL from "discourse-common/lib/get-url";
@@ -32,6 +33,11 @@ export default Component.extend({
   didInsertElement() {
     this._super(...arguments);
     if (!this.currentUser || !this.currentUser.can_chat) return;
+
+    const topicController = getOwner(this).lookup("controller:topic");
+    if (topicController.model) {
+      this.enteredTopic(topicController.model)
+    }
 
     this.appEvents.on("chat:request-open", this, "openChat");
     this.appEvents.on("page:topic-loaded", this, "enteredTopic");

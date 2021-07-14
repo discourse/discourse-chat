@@ -63,7 +63,7 @@
       <p class="tc-text">
         {{#if message.action_code}}
           <span class="tc-action-text">
-            {{actionCodeText}}
+            {{html-safe actionCodeText}}
           </span>
         {{else}}
           <p class="tc-text">

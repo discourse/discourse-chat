@@ -36,7 +36,7 @@ export default Component.extend({
 
     const chatService = getOwner(this).lookup("service:chat-service");
     if (chatService && chatService.lastTopicEntered) {
-      this.enteredTopic(chatService.lastTopicEntered)
+      this.enteredTopic(chatService.lastTopicEntered);
       chatService.stop();
     }
 

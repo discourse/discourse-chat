@@ -1,4 +1,4 @@
-import Service from '@ember/service';
+import Service from "@ember/service";
 
 export default Service.extend({
   lastTopicEntered: null,
@@ -7,15 +7,15 @@ export default Service.extend({
   start(appEvents) {
     if (!this.currentUser || !this.currentUser.can_chat) return;
 
-    this.set("appEvents", appEvents)
-    this.appEvents.on("page:topic-loaded", this, "_captureLastEnteredTopic")
+    this.set("appEvents", appEvents);
+    this.appEvents.on("page:topic-loaded", this, "_captureLastEnteredTopic");
   },
 
   stop() {
-    this.appEvents.off("page:topic-loaded", this, "_captureLastEnteredTopic")
+    this.appEvents.off("page:topic-loaded", this, "_captureLastEnteredTopic");
   },
 
   _captureLastEnteredTopic(topic) {
     this.set("lastTopicEntered", topic);
-  }
+  },
 });

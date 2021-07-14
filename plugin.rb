@@ -41,6 +41,7 @@ after_initialize do
   register_category_custom_field_type(DiscourseChat::HAS_CHAT_ENABLED, :boolean)
   Site.preloaded_category_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
   TopicList.preloaded_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
+  CategoryList.preloaded_topic_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
   Search.preloaded_topic_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
 
   on(:category_updated) do |category|

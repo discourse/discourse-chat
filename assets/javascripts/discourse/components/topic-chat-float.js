@@ -1,18 +1,19 @@
 import { action } from "@ember/object";
 import { equal } from "@ember/object/computed";
 import { ajax } from "discourse/lib/ajax";
-import { getOwner } from "discourse-common/lib/get-owner";
 import Component from "@ember/component";
 import discourseComputed from "discourse-common/utils/decorators";
 import getURL from "discourse-common/lib/get-url";
 import I18n from "I18n";
 import { cancel, throttle } from "@ember/runloop";
+import { inject as service } from "@ember/service";
 
 export const LIST_VIEW = "list_view";
 export const CHAT_VIEW = "chat_view";
 export default Component.extend({
   chatView: equal("view", CHAT_VIEW),
 
+  chatService: service(),
   classNameBindings: [":topic-chat-float-container", "hidden"],
 
   hidden: true,
@@ -34,9 +35,9 @@ export default Component.extend({
     this._super(...arguments);
     if (!this.currentUser || !this.currentUser.can_chat) return;
 
-    const topicController = getOwner(this).lookup("controller:topic");
-    if (topicController.model) {
-      this.enteredTopic(topicController.model)
+    if (this.chatService.lastTopicEntered) {
+      this.enteredTopic(this.chatService.lastTopicEntered);
+      this.chatService.stop();
     }
 
     this.appEvents.on("chat:request-open", this, "openChat");

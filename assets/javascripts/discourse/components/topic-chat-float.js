@@ -34,9 +34,10 @@ export default Component.extend({
     this._super(...arguments);
     if (!this.currentUser || !this.currentUser.can_chat) return;
 
-    const topicController = getOwner(this).lookup("controller:topic");
-    if (topicController.model) {
-      this.enteredTopic(topicController.model)
+    const chatService = getOwner(this).lookup("service:chat-service");
+    if (chatService && chatService.lastTopicEntered) {
+      this.enteredTopic(chatService.lastTopicEntered)
+      chatService.stop();
     }
 
     this.appEvents.on("chat:request-open", this, "openChat");

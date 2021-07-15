@@ -19,11 +19,16 @@ after_initialize do
     PLUGIN_NAME = "discourse-topic-chat"
     HAS_CHAT_ENABLED = "has_chat_enabled"
 
+    SITE_CHAT_ID = -1
+    SITE_CHAT_TYPE = "Site"
+
     class Engine < ::Rails::Engine
       engine_name PLUGIN_NAME
       isolate_namespace DiscourseChat
     end
   end
+
+  SeedFu.fixture_paths << Rails.root.join("plugins", "discourse-topic-chat", "db", "fixtures").to_s
 
   load File.expand_path('../app/controllers/chat_controller.rb', __FILE__)
   load File.expand_path('../app/jobs/scheduled/split_long_chats.rb', __FILE__)

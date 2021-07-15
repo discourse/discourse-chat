@@ -10,122 +10,125 @@ RSpec.describe DiscourseChat::ChatController do
   fab!(:category) { Fabricate(:category) }
 
   before do
+    SiteSetting.topic_chat_enabled = true
     SiteSetting.topic_chat_restrict_to_staff = false # Change this per-test to false if needed
   end
 
   describe "#enable_chat" do
-    describe "for topic" do
-      it "errors for non-staff" do
-        sign_in(user)
-        Fabricate(:chat_channel, chatable: topic)
-        post "/chat/enable.json", params: { chatable_type: "topic", chatable_id: topic.id }
-        expect(response.status).to eq(403)
+    it "errors for non-staff" do
+      sign_in(user)
+      Fabricate(:chat_channel, chatable: topic)
+      post "/chat/enable.json", params: { chatable_type: "topic", chatable_id: topic.id }
+      expect(response.status).to eq(403)
 
-        expect(topic.reload.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]).to eq(nil)
-      end
+      expect(topic.reload.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]).to eq(nil)
+    end
 
-      it "Returns a 422 when chat is already enabled" do
-        sign_in(admin)
-        Fabricate(:chat_channel, chatable: topic)
-        post "/chat/enable.json", params: { chatable_type: "topic", chatable_id: topic.id }
-        expect(response.status).to eq(422)
+    it "Returns a 422 when chat is already enabled" do
+      sign_in(admin)
+      Fabricate(:chat_channel, chatable: topic)
+      post "/chat/enable.json", params: { chatable_type: "topic", chatable_id: topic.id }
+      expect(response.status).to eq(422)
 
-        expect(topic.reload.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]).to eq(nil)
-      end
+      expect(topic.reload.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]).to eq(nil)
+    end
 
-      it "Enables chat" do
-        sign_in(admin)
-        post "/chat/enable.json", params: { chatable_type: "topic", chatable_id: topic.id }
-        expect(response.status).to eq(200)
-        expect(topic.chat_channel).to be_present
+    it "Enables chat" do
+      sign_in(admin)
+      post "/chat/enable.json", params: { chatable_type: "topic", chatable_id: topic.id }
+      expect(response.status).to eq(200)
+      expect(topic.chat_channel).to be_present
 
-        expect(topic.reload.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]).to eq(true)
-      end
+      expect(topic.reload.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]).to eq(true)
     end
   end
 
   describe "#disable_chat" do
-    describe "for topic" do
-      it "errors for non-staff" do
-        sign_in(user)
-        Fabricate(:chat_channel, chatable: topic)
+    it "errors for non-staff" do
+      sign_in(user)
+      Fabricate(:chat_channel, chatable: topic)
 
-        post "/chat/disable.json", params: { chatable_type: "topic", chatable_id: topic.id }
-        expect(response.status).to eq(403)
-      end
+      post "/chat/disable.json", params: { chatable_type: "topic", chatable_id: topic.id }
+      expect(response.status).to eq(403)
+    end
 
-      it "Returns a 422 when chat is already disabled" do
-        sign_in(admin)
-        chat_channel = Fabricate(:chat_channel, chatable: topic)
-        chat_channel.update(deleted_at: Time.now, deleted_by_id: admin.id)
+    it "Returns a 422 when chat is already disabled" do
+      sign_in(admin)
+      chat_channel = Fabricate(:chat_channel, chatable: topic)
+      chat_channel.update(deleted_at: Time.now, deleted_by_id: admin.id)
 
-        post "/chat/disable.json", params: { chatable_type: "topic", chatable_id: topic.id }
-        expect(response.status).to eq(422)
-      end
+      post "/chat/disable.json", params: { chatable_type: "topic", chatable_id: topic.id }
+      expect(response.status).to eq(422)
+    end
 
-      it "disables chat" do
-        sign_in(admin)
-        chat_channel = Fabricate(:chat_channel, chatable: topic)
+    it "disables chat" do
+      sign_in(admin)
+      chat_channel = Fabricate(:chat_channel, chatable: topic)
 
-        topic.custom_fields[DiscourseChat::HAS_CHAT_ENABLED] = true
-        topic.save!
+      topic.custom_fields[DiscourseChat::HAS_CHAT_ENABLED] = true
+      topic.save!
 
-        post "/chat/disable.json", params: { chatable_type: "topic", chatable_id: topic.id }
-        expect(response.status).to eq(200)
-        expect(chat_channel.reload.deleted_by_id).to eq(admin.id)
-        expect(topic.reload.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]).to eq(nil)
-      end
+      post "/chat/disable.json", params: { chatable_type: "topic", chatable_id: topic.id }
+      expect(response.status).to eq(200)
+      expect(chat_channel.reload.deleted_by_id).to eq(admin.id)
+      expect(topic.reload.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]).to eq(nil)
     end
   end
 
   describe "#send_chat" do
-    fab!(:chat_channel) { Fabricate(:chat_channel, chatable: topic) }
     let(:message) { "This is a message" }
-    before do
-      create_post(user: user, topic: topic)
-    end
 
-    it "errors for regular user when chat is staff-only" do
-      sign_in(user)
-      SiteSetting.topic_chat_restrict_to_staff = true
+    describe "for topic" do
+      fab!(:chat_channel) { Fabricate(:chat_channel, chatable: topic) }
 
-      post "/chat/#{chat_channel.id}.json", params: { message: message }
-      expect(response.status).to eq(403)
-    end
+      it "errors for regular user when chat is staff-only" do
+        sign_in(user)
+        SiteSetting.topic_chat_restrict_to_staff = true
 
-    it "sends a message for regular user when staff-only is false" do
-      sign_in(user)
-
-      expect {
         post "/chat/#{chat_channel.id}.json", params: { message: message }
-      }.to change { ChatMessage.count}.by(1)
-      expect(response.status).to eq(200)
-      expect(ChatMessage.last.message).to eq(message)
+        expect(response.status).to eq(403)
+      end
+
+      it "sends a message for regular user when staff-only is false" do
+        sign_in(user)
+
+        expect {
+          post "/chat/#{chat_channel.id}.json", params: { message: message }
+        }.to change { ChatMessage.count}.by(1)
+        expect(response.status).to eq(200)
+        expect(ChatMessage.last.message).to eq(message)
+      end
+    end
+
+    describe "for site chat" do
+      fab!(:chat_channel) { Fabricate(:site_chat_channel) }
+
+      it "errors for regular user" do
+        sign_in(user)
+        SiteSetting.topic_chat_restrict_to_staff = false
+
+        post "/chat/#{chat_channel.id}.json", params: { message: message }
+        expect(response.status).to eq(403)
+      end
+
+      it "sends a message for staff" do
+        sign_in(admin)
+
+        expect {
+          post "/chat/#{chat_channel.id}.json", params: { message: message }
+        }.to change { ChatMessage.count}.by(1)
+        expect(response.status).to eq(200)
+        expect(ChatMessage.last.message).to eq(message)
+      end
     end
   end
 
-  describe "#delete" do
-    fab!(:chat_channel) { Fabricate(:chat_channel, chatable: topic) }
-    fab!(:second_user) { Fabricate(:user) }
-
-    before do
-      ChatMessage.create(user: user, message: "this is a message", chat_channel: chat_channel)
-    end
-
+  RSpec.shared_examples "chat_message_deletion" do
     it "doesn't allow a user to delete another user's message" do
-      sign_in(second_user)
+      sign_in(other_user)
 
       delete "/chat/#{chat_channel.id}/#{ChatMessage.last.id}.json"
       expect(response.status).to eq(403)
-    end
-
-    it "Allows users to delete their own messages" do
-      sign_in(user)
-
-      expect {
-        delete "/chat/#{chat_channel.id}/#{ChatMessage.last.id}.json"
-      }.to change { ChatMessage.count}.by(-1)
-      expect(response.status).to eq(200)
     end
 
     it "Allows admin to delete others' messages" do
@@ -138,33 +141,64 @@ RSpec.describe DiscourseChat::ChatController do
     end
   end
 
-  describe "#restore" do
-    fab!(:chat_channel) { Fabricate(:chat_channel, chatable: topic) }
+  describe "#delete" do
     fab!(:second_user) { Fabricate(:user) }
 
     before do
-      message = ChatMessage.create(user: user, message: "this is a message", chat_channel: chat_channel)
-      message.update(deleted_at: Time.now, deleted_by_id: user.id)
+      ChatMessage.create(user: user, message: "this is a message", chat_channel: chat_channel)
     end
 
+    describe "for topic" do
+      fab!(:chat_channel) { Fabricate(:chat_channel, chatable: topic) }
+
+      it_behaves_like "chat_message_deletion" do
+        let(:other_user) { second_user }
+      end
+
+      it "Allows users to delete their own messages" do
+        sign_in(user)
+        expect {
+          delete "/chat/#{chat_channel.id}/#{ChatMessage.last.id}.json"
+        }.to change { ChatMessage.count}.by(-1)
+        expect(response.status).to eq(200)
+      end
+    end
+
+    describe "for category" do
+      fab!(:chat_channel) { Fabricate(:chat_channel, chatable: category) }
+
+      it_behaves_like "chat_message_deletion" do
+        let(:other_user) { second_user }
+      end
+
+      it "Allows users to delete their own messages" do
+        sign_in(user)
+        expect {
+          delete "/chat/#{chat_channel.id}/#{ChatMessage.last.id}.json"
+        }.to change { ChatMessage.count}.by(-1)
+        expect(response.status).to eq(200)
+      end
+    end
+
+    describe "for site" do
+      fab!(:chat_channel) { Fabricate(:site_chat_channel) }
+
+      it_behaves_like "chat_message_deletion" do
+        let(:other_user) { second_user }
+      end
+
+      it "Doesn't allows regular users to delete their own messages" do
+        sign_in(user)
+
+        delete "/chat/#{chat_channel.id}/#{ChatMessage.last.id}.json"
+        expect(response.status).to eq(403)
+      end
+    end
+  end
+
+  RSpec.shared_examples "chat_message_restoration" do
     it "doesn't allow a user to restore another user's message" do
-      sign_in(second_user)
-
-      put "/chat/#{chat_channel.id}/restore/#{ChatMessage.unscoped.last.id}.json"
-      expect(response.status).to eq(403)
-    end
-
-    it "doesn't allow restoration of posts on closed topics" do
-      sign_in(user)
-      topic.update(closed: true)
-
-      put "/chat/#{chat_channel.id}/restore/#{ChatMessage.unscoped.last.id}.json"
-      expect(response.status).to eq(403)
-    end
-
-    it "doesn't allow restoration of posts on archived topics" do
-      sign_in(user)
-      topic.update(archived: true)
+      sign_in(other_user)
 
       put "/chat/#{chat_channel.id}/restore/#{ChatMessage.unscoped.last.id}.json"
       expect(response.status).to eq(403)
@@ -186,6 +220,78 @@ RSpec.describe DiscourseChat::ChatController do
       put "/chat/#{chat_channel.id}/restore/#{deleted_message.id}.json"
       expect(response.status).to eq(200)
       expect(deleted_message.reload.deleted_at).to eq(nil)
+    end
+  end
+
+  describe "#restore" do
+    fab!(:second_user) { Fabricate(:user) }
+
+    before do
+      message = ChatMessage.create(user: user, message: "this is a message", chat_channel: chat_channel)
+      message.update(deleted_at: Time.now, deleted_by_id: user.id)
+    end
+
+    describe "for topic" do
+      fab!(:chat_channel) { Fabricate(:chat_channel, chatable: topic) }
+
+      it_behaves_like "chat_message_restoration" do
+        let(:other_user) { second_user }
+      end
+
+      it "doesn't allow restoration of posts on closed topics" do
+        sign_in(user)
+        topic.update(closed: true)
+
+        put "/chat/#{chat_channel.id}/restore/#{ChatMessage.unscoped.last.id}.json"
+        expect(response.status).to eq(403)
+      end
+
+      it "doesn't allow restoration of posts on archived topics" do
+        sign_in(user)
+        topic.update(archived: true)
+
+        put "/chat/#{chat_channel.id}/restore/#{ChatMessage.unscoped.last.id}.json"
+        expect(response.status).to eq(403)
+      end
+    end
+
+    describe "for category" do
+      fab!(:chat_channel) { Fabricate(:chat_channel, chatable: category) }
+
+      it_behaves_like "chat_message_restoration" do
+        let(:other_user) { second_user }
+      end
+    end
+
+    describe "for site" do
+      fab!(:chat_channel) { Fabricate(:site_chat_channel) }
+
+      it "doesn't allow regular users to restore their own posts" do
+        sign_in(user)
+
+        deleted_message = ChatMessage.unscoped.last
+        put "/chat/#{chat_channel.id}/restore/#{deleted_message.id}.json"
+        expect(response.status).to eq(403)
+      end
+
+      it "allows admin to restore their own" do
+        admin_message = ChatMessage.create(user: admin, message: "this is a message", chat_channel: chat_channel)
+        admin_message.update(deleted_at: Time.now, deleted_by_id: user.id)
+        sign_in(admin)
+
+        put "/chat/#{chat_channel.id}/restore/#{admin_message.id}.json"
+        expect(response.status).to eq(200)
+        expect(admin_message.reload.deleted_at).to eq(nil)
+      end
+
+      it "allows admin to restore others' posts" do
+        sign_in(admin)
+
+        deleted_message = ChatMessage.unscoped.last
+        put "/chat/#{chat_channel.id}/restore/#{deleted_message.id}.json"
+        expect(response.status).to eq(200)
+        expect(deleted_message.reload.deleted_at).to eq(nil)
+      end
     end
   end
 
@@ -222,8 +328,8 @@ RSpec.describe DiscourseChat::ChatController do
       get "/chat/index.json"
 
       expect(response.status).to eq(200)
-      expect(response.parsed_body.map { |channel| channel["id"] })
-        .to match_array([public_category_cc.id, public_topic_cc.id])
+      expect(response.parsed_body.map { |channel| channel["chatable_id"] })
+        .to match_array([public_category_cc.chatable_id, public_topic_cc.chatable_id])
     end
 
     it "returns channels visible to user with private access" do
@@ -231,17 +337,17 @@ RSpec.describe DiscourseChat::ChatController do
       get "/chat/index.json"
 
       expect(response.status).to eq(200)
-      expect(response.parsed_body.map { |channel| channel["id"] })
-        .to match_array([public_category_cc.id, public_topic_cc.id, private_category_cc.id, private_topic_cc.id])
+      expect(response.parsed_body.map { |channel| channel["chatable_id"] })
+        .to match_array([public_category_cc.chatable_id, public_topic_cc.chatable_id, private_category_cc.chatable_id, private_topic_cc.chatable_id])
     end
 
-    it "returns all channels for admin" do
+    it "returns all channels for admin, including site chat" do
       sign_in(admin)
       get "/chat/index.json"
 
       expect(response.status).to eq(200)
-      expect(response.parsed_body.map { |channel| channel["id"] })
-        .to match_array([public_category_cc.id, public_topic_cc.id, private_category_cc.id, private_topic_cc.id])
+      expect(response.parsed_body.map { |channel| channel["chatable_id"] })
+        .to match_array([DiscourseChat::SITE_CHAT_ID, public_category_cc.chatable_id, public_topic_cc.chatable_id, private_category_cc.chatable_id, private_topic_cc.chatable_id])
     end
   end
 end

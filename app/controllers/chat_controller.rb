@@ -108,7 +108,7 @@ class DiscourseChat::ChatController < ::ApplicationController
     chat_channel = @message.chat_channel
 
     if chat_channel.site_channel?
-      guardian.ensure_can_see_site_chat!
+      guardian.ensure_can_access_site_chat!
     else
       chatable = chat_channel.chatable
       guardian.ensure_can_see!(chatable)
@@ -128,7 +128,7 @@ class DiscourseChat::ChatController < ::ApplicationController
     chat_channel = @message.chat_channel
 
     if chat_channel.site_channel?
-      guardian.ensure_can_see_site_chat!
+      guardian.ensure_can_access_site_chat!
     else
       guardian.ensure_can_restore_chat!(@message, chat_channel.chatable)
     end
@@ -173,9 +173,8 @@ class DiscourseChat::ChatController < ::ApplicationController
     @chat_channel = chat_channel_query.find_by(id: params[:chat_channel_id])
     raise Discourse::NotFound unless @chat_channel
 
-    @chatable = nil
     if @chat_channel.site_channel?
-      guardian.ensure_can_see_site_chat!
+      guardian.ensure_can_access_site_chat!
     else
       @chatable = @chat_channel.chatable
       guardian.ensure_can_see!(@chatable)

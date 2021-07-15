@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module DiscourseChat::GuardianExtensions
-  def can_see_site_chat?
+  def can_access_site_chat?
     @user.staff?
   end
 

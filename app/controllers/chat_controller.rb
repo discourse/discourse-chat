@@ -21,7 +21,7 @@ class DiscourseChat::ChatController < ::ApplicationController
       @chatable.custom_fields[DiscourseChat::HAS_CHAT_ENABLED] = true
       @chatable.save!
 
-      create_action_whisper(@chatable, 'enabled') if chat_channel.for_topic?
+      create_action_whisper(@chatable, 'enabled') if chat_channel.topic_channel?
     end
     success ? (render json: success_json) : render_json_error(chat_channel)
   end
@@ -38,7 +38,7 @@ class DiscourseChat::ChatController < ::ApplicationController
       @chatable.custom_fields.delete(DiscourseChat::HAS_CHAT_ENABLED)
       @chatable.save!
 
-      create_action_whisper(@chatable, 'disabled') if chat_channel.for_topic?
+      create_action_whisper(@chatable, 'disabled') if chat_channel.topic_channel?
     end
     success ? (render json: success_json) : (render_json_error(chat_channel))
   end
@@ -58,7 +58,7 @@ class DiscourseChat::ChatController < ::ApplicationController
       post_id = rm.post_id
     end
 
-    if @chat_channel.for_topic?
+    if @chat_channel.topic_channel?
       post_id ||= ChatChannel.last_regular_post(@chatable)&.id
     end
 
@@ -106,15 +106,13 @@ class DiscourseChat::ChatController < ::ApplicationController
 
   def delete
     chat_channel = @message.chat_channel
-    chatable = chat_channel.chatable_type == DiscourseChat::SITE_CHAT_TYPE ?
-      nil :
-      @message.chat_channel.chatable
 
-    if chatable
+    if chat_channel.site_channel?
+      guardian.ensure_can_see_site_chat!
+    else
+      chatable = chat_channel.chatable
       guardian.ensure_can_see!(chatable)
       guardian.ensure_can_delete_chat!(@message, chatable)
-    else
-      guardian.ensure_can_see_site_chat!
     end
 
     updated = @message.update(deleted_at: Time.now, deleted_by_id: current_user.id)
@@ -128,14 +126,11 @@ class DiscourseChat::ChatController < ::ApplicationController
 
   def restore
     chat_channel = @message.chat_channel
-    chatable = chat_channel.chatable_type == DiscourseChat::SITE_CHAT_TYPE ?
-      nil :
-      @message.chat_channel.chatable
 
-    if chatable
-      guardian.ensure_can_restore_chat!(@message, chatable)
-    else
+    if chat_channel.site_channel?
       guardian.ensure_can_see_site_chat!
+    else
+      guardian.ensure_can_restore_chat!(@message, chat_channel.chatable)
     end
 
     updated = @message.update(deleted_at: nil, deleted_by_id: nil)
@@ -154,7 +149,7 @@ class DiscourseChat::ChatController < ::ApplicationController
   def index
     channels = ChatChannel.includes(:chatable).where(chatable_type: ["Topic", "Category"]).all
     channels = channels.to_a.select do |channel|
-      if channel.for_topic?
+      if channel.topic_channel?
         !channel.chatable.closed && !channel.chatable.archived && guardian.can_see_topic?(channel.chatable)
       else
         guardian.can_see_category?(channel.chatable)
@@ -170,21 +165,20 @@ class DiscourseChat::ChatController < ::ApplicationController
   private
 
   def set_channel_and_chatable(with_trashed: false)
-    chat_channel = ChatChannel
+    chat_channel_query = ChatChannel
     if with_trashed
-      chat_channel = chat_channel.with_deleted
+      chat_channel_query = chat_channel.with_deleted
     end
-    @chat_channel = chat_channel.find_by(id: params[:chat_channel_id])
 
+    @chat_channel = chat_channel_query.find_by(id: params[:chat_channel_id])
     raise Discourse::NotFound unless @chat_channel
 
-    is_site_channel = @chat_channel.chatable_type == DiscourseChat::SITE_CHAT_TYPE
-
-    @chatable = is_site_channel ? nil : @chat_channel.chatable
-    if @chatable
-      guardian.ensure_can_see!(@chatable)
-    else
+    @chatable = nil
+    if @chat_channel.site_channel?
       guardian.ensure_can_see_site_chat!
+    else
+      @chatable = @chat_channel.chatable
+      guardian.ensure_can_see!(@chatable)
     end
   end
 

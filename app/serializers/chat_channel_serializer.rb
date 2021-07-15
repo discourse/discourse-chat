@@ -8,9 +8,9 @@ class ChatChannelSerializer < ApplicationSerializer
              :title
 
   def chatable_url
-    object.chatable_type != DiscourseChat::SITE_CHAT_TYPE ?
-      object.chatable.url :
-      Discourse.base_url
+    object.site_channel? ?
+      Discourse.base_url :
+      object.chatable.url
   end
 
   def title

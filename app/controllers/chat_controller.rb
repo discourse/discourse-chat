@@ -86,12 +86,17 @@ class DiscourseChat::ChatController < ::ApplicationController
     message_bus_last_id = ChatPublisher.last_id(@chat_channel)
     messages = ChatMessage.where(chat_channel: @chat_channel).order(created_at: :desc).limit(50)
 
-    # If chatable is nil and we are here, we can assume it is site-chat and authenticated.
-    if @chatable.nil? || guardian.can_moderate_chat?(@chatable)
+    if @chat_channel.site_channel? || guardian.can_moderate_chat?(@chatable)
       messages = messages.with_deleted
     end
 
-    render_serialized(ChatView.new(@chatable, messages, message_bus_last_id), ChatViewSerializer, root: :topic_chat_view)
+    chat_view = ChatView.new(
+      chat_channel: @chat_channel,
+      chatable: @chatable,
+      messages: messages,
+      message_bus_last_id: message_bus_last_id
+    )
+    render_serialized(chat_view, ChatViewSerializer, root: :topic_chat_view)
   end
 
   def historical
@@ -173,6 +178,7 @@ class DiscourseChat::ChatController < ::ApplicationController
     @chat_channel = chat_channel_query.find_by(id: params[:chat_channel_id])
     raise Discourse::NotFound unless @chat_channel
 
+    @chatable = nil
     if @chat_channel.site_channel?
       guardian.ensure_can_access_site_chat!
     else

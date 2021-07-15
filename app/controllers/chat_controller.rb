@@ -160,7 +160,8 @@ class DiscourseChat::ChatController < ::ApplicationController
         guardian.can_see_category?(channel.chatable)
       end
     end
-    if current_user.staff?
+
+    if guardian.can_access_site_chat?
       channels.prepend(ChatChannel.find_by(chatable_id: DiscourseChat::SITE_CHAT_ID))
     end
 

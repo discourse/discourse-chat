@@ -193,9 +193,9 @@ class DiscourseChat::ChatController < ::ApplicationController
 
   def find_chat_message
     @message = ChatMessage
-                .unscoped
-                .includes(:chat_channel)
-                .find_by(id: params[:message_id])
+      .unscoped
+      .includes(:chat_channel)
+      .find_by(id: params[:message_id])
 
     raise Discourse::NotFound unless @message
   end

@@ -94,7 +94,7 @@ RSpec.describe DiscourseChat::ChatController do
 
         expect {
           post "/chat/#{chat_channel.id}.json", params: { message: message }
-        }.to change { ChatMessage.count}.by(1)
+        }.to change { ChatMessage.count }.by(1)
         expect(response.status).to eq(200)
         expect(ChatMessage.last.message).to eq(message)
       end
@@ -116,7 +116,7 @@ RSpec.describe DiscourseChat::ChatController do
 
         expect {
           post "/chat/#{chat_channel.id}.json", params: { message: message }
-        }.to change { ChatMessage.count}.by(1)
+        }.to change { ChatMessage.count }.by(1)
         expect(response.status).to eq(200)
         expect(ChatMessage.last.message).to eq(message)
       end
@@ -136,7 +136,7 @@ RSpec.describe DiscourseChat::ChatController do
 
       expect {
         delete "/chat/#{chat_channel.id}/#{ChatMessage.last.id}.json"
-      }.to change { ChatMessage.count}.by(-1)
+      }.to change { ChatMessage.count }.by(-1)
       expect(response.status).to eq(200)
     end
   end
@@ -159,7 +159,7 @@ RSpec.describe DiscourseChat::ChatController do
         sign_in(user)
         expect {
           delete "/chat/#{chat_channel.id}/#{ChatMessage.last.id}.json"
-        }.to change { ChatMessage.count}.by(-1)
+        }.to change { ChatMessage.count }.by(-1)
         expect(response.status).to eq(200)
       end
     end
@@ -175,7 +175,7 @@ RSpec.describe DiscourseChat::ChatController do
         sign_in(user)
         expect {
           delete "/chat/#{chat_channel.id}/#{ChatMessage.last.id}.json"
-        }.to change { ChatMessage.count}.by(-1)
+        }.to change { ChatMessage.count }.by(-1)
         expect(response.status).to eq(200)
       end
     end

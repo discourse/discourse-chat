@@ -44,17 +44,18 @@ $header-height: 2.5rem;
 }
 
 .topic-chat-container {
-  background: var(--secondary, $secondary);
-  border: solid 1px;
-  border-color: var(--primary, $primary);
+  background: var(--secondary);
+  border: 1px solid var(--secondary-high);
   border-bottom: 0;
-  border-top-left-radius: 16px;
-  border-top-right-radius: 16px;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
   height: 2.5em;
   //overflow-y: hidden;
+
   &.expanded {
     max-height: 530px;
     height: calc(85vh - var(--composer-height, 0px));
+
     .tc-live-pane,
     .tc-chat-listing {
       max-height: calc(530px - #{$header-height});
@@ -62,9 +63,10 @@ $header-height: 2.5rem;
     }
   }
 }
+
 .topic-chat-drawer-header {
   box-sizing: border-box;
-  border-bottom: solid 1px var(--primary, $primary);
+  border-bottom: solid 1px var(--secondary-high);
   padding: 0.25em;
   height: $header-height;
   width: 100%;
@@ -107,17 +109,30 @@ $header-height: 2.5rem;
   white-space: normal;
 
   .tc-message-deleted {
-    margin-top: 2px;
-    text-align: center;
+    padding: 0.25em;
+
+    &:hover {
+      background: var(--primary-very-low);
+    }
 
     .tc-message-expand-deleted {
       color: var(--primary-high);
-      padding: 2px;
+      padding: 0.25em;
+
+      &:hover {
+        color: var(--primary-very-low);
+      }
     }
   }
+
   .tc-message {
     position: relative;
-    margin-top: 4px;
+    padding: 0.25em;
+
+    &:hover {
+      background: var(--primary-very-low);
+    }
+
     &.tc-action {
       background-color: var(--highlight-medium);
     }
@@ -126,6 +141,7 @@ $header-height: 2.5rem;
     }
     .tc-text {
       margin: 0;
+      padding-left: 0.05em;
     }
     .tc-reply-display {
       display: inline-block;
@@ -141,18 +157,21 @@ $header-height: 2.5rem;
   .tc-action-text {
     font-style: italic;
   }
+
   .tc-msgactions-hover {
     position: absolute;
     opacity: 0;
     pointer-events: none;
-    right: 4px;
+    right: 0.25em;
     // Give a larger hover box
     margin-top: -1em;
     padding-top: 1em;
+
     button {
-      padding: 0.5em 10px;
+      padding: 0.25em 0.5em;
     }
   }
+
   .tc-message:hover,
   .tc-message:focus-within {
     .tc-msgactions-hover {
@@ -160,11 +179,11 @@ $header-height: 2.5rem;
       pointer-events: initial;
     }
   }
+
   .tc-msgactions {
-    border: 1px solid var(--secondary-high);
-    border-radius: 2px;
-    background-color: var(--secondary);
+    display: flex;
   }
+
   .tc-meta-data {
     color: var(--secondary-medium);
     .names {
@@ -184,12 +203,12 @@ $header-height: 2.5rem;
   display: flex;
   flex-direction: column;
   align-items: stretch;
+
   .tc-messages-scroll {
     flex-grow: 1;
     overflow-y: scroll;
-    padding: 2px;
-    margin-left: 4px;
   }
+
   .scroll-stick-wrap {
     position: relative;
   }
@@ -201,16 +220,21 @@ $header-height: 2.5rem;
     width: 100%;
     justify-content: center;
   }
+
   .scroll-stick-warning {
     color: var(--primary-very-low, $primary-very-low);
     background: var(--secondary-low, $secondary-low);
     padding: 0.5em;
     border-radius: 4px;
-    opacity: 75%;
+    opacity: 90%;
   }
+
   .tc-composer {
+    border: solid var(--secondary-high);
+    border-width: 1px 0 2px;
     min-height: 1.5em;
     flex-shrink: 0;
+
     .tc-composer-row {
       display: flex;
       flex-direction: row;
@@ -240,8 +264,10 @@ $header-height: 2.5rem;
       padding: 4px;
       margin-right: 2em;
     }
-    border: solid var(--primary-medium, $primary-medium);
-    border-width: 1px 0 3px;
+
+    .d-icon {
+      color: var(--tertiary);
+    }
   }
 }
 :root.mobile-view {

@@ -155,26 +155,6 @@ after_initialize do
     end
   end
 
-  DiscourseEvent.on(:post_created) do |post, opts, user|
-    chat_channel = post.topic.chat_channel
-    next unless chat_channel && !chat_channel.deleted_at && post.post_type != Post.types[:whisper]
-    complex_action = !post.custom_fields["action_code_who"].nil?
-    action_code = opts[:action_code] || "chat.post_created"
-    action_code = "chat.generic_small_action" if complex_action
-
-    excerpt = post.excerpt(SiteSetting.topic_chat_excerpt_maxlength, strip_links: true, strip_images: true) unless opts[:action_code]
-
-    msg = ChatMessage.new(
-      chat_channel: chat_channel,
-      post: post,
-      user: user,
-      action_code: action_code,
-      message: excerpt || "",
-    )
-    msg.save!
-    ::ChatPublisher.publish_new!(post.topic, msg)
-  end
-
   DiscourseChat::Engine.routes.draw do
     get '/index' => 'chat#index'
     post '/enable' => 'chat#enable_chat'

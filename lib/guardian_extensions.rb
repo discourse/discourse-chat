@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 module DiscourseChat::GuardianExtensions
+  def can_see_site_chat?
+    @user.staff?
+  end
 
   def can_moderate_chat?(chatable)
     chatable.class.name == "Topic" ?

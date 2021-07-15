@@ -8,4 +8,5 @@ class ChatView
     @message_bus_last_id = message_bus_last_id || ChatPublisher.last_id(chatable)
     @messages = messages
   end
+
 end

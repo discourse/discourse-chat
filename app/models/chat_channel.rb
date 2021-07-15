@@ -6,8 +6,12 @@ class ChatChannel < ActiveRecord::Base
   belongs_to :chatable, polymorphic: true
   has_many :chat_messages
 
-  def for_topic?
+  def topic_channel?
     chatable_type == "Topic"
+  end
+
+  def site_channel?
+    chatable_type == DiscourseChat::SITE_CHAT_TYPE
   end
 
   def self.is_enabled?(t)

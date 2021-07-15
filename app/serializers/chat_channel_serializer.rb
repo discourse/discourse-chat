@@ -8,12 +8,19 @@ class ChatChannelSerializer < ApplicationSerializer
              :title
 
   def chatable_url
-    object.chatable.url
+    object.site_channel? ?
+      Discourse.base_url :
+      object.chatable.url
   end
 
   def title
-    object.chatable_type == "Topic" ?
-      object.chatable.fancy_title :
+    case object.chatable_type
+    when "Topic"
+      object.chatable.fancy_title
+    when "Category"
       object.chatable.name
+    when "Site"
+      I18n.t("chat.site_chat_name")
+    end
   end
 end

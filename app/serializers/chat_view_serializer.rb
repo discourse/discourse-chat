@@ -14,7 +14,8 @@ class ChatViewSerializer < ApplicationSerializer
   end
 
   def include_can_chat?
-    scope.can_chat_in_chatable?(object.chatable)
+    object.chat_channel.site_channel? ||
+      scope.can_chat_in_chatable?(object.chatable)
   end
 
   def can_chat
@@ -30,7 +31,8 @@ class ChatViewSerializer < ApplicationSerializer
   end
 
   def include_can_delete_self?
-    scope.can_delete_own_chats?(object.chatable)
+    object.chat_channel.site_channel? ||
+      scope.can_delete_own_chats?(object.chatable)
   end
 
   def can_delete_self
@@ -38,7 +40,8 @@ class ChatViewSerializer < ApplicationSerializer
   end
 
   def include_can_delete_others?
-    scope.can_delete_other_chats?(object.chatable)
+    object.chat_channel.site_channel? ||
+      scope.can_delete_other_chats?(object.chatable)
   end
 
   def can_delete_others

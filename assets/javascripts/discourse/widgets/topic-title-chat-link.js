@@ -8,15 +8,12 @@ export default createWidget("topic-title-chat-link", {
   title: "chat.open",
 
   html(topic) {
-    if (!topic.has_chat_live) {
-      return;
+    if (topic.has_chat_live) {
+      return iconNode("far-comments");
     }
-
-    return iconNode("far-comments");
   },
 
   click() {
-    console.log(this.attrs);
     this.appEvents.trigger("chat:open-channel", this.attrs);
   },
 });

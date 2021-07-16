@@ -6,14 +6,13 @@ import discourseComputed from "discourse-common/utils/decorators";
 import getURL from "discourse-common/lib/get-url";
 import I18n from "I18n";
 import { cancel, throttle } from "@ember/runloop";
-import { inject as service } from "@ember/service";
 
 export const LIST_VIEW = "list_view";
 export const CHAT_VIEW = "chat_view";
+
 export default Component.extend({
   chatView: equal("view", CHAT_VIEW),
 
-  chatService: service(),
   classNameBindings: [":topic-chat-float-container", "hidden"],
 
   hidden: true,
@@ -35,13 +34,8 @@ export default Component.extend({
     this._super(...arguments);
     if (!this.currentUser || !this.currentUser.can_chat) return;
 
-    if (this.chatService.lastTopicEntered) {
-      this.enteredTopic(this.chatService.lastTopicEntered);
-      this.chatService.stop();
-    }
-
     this.appEvents.on("chat:request-open", this, "openChat");
-    this.appEvents.on("page:topic-loaded", this, "enteredTopic");
+    this.appEvents.on("chat:open-channel", this, "openChannelFor");
     this.appEvents.on("topic-chat-enable", this, "chatEnabledForTopic");
     this.appEvents.on("topic-chat-disable", this, "chatDisabledForTopic");
     this.appEvents.on("composer:closed", this, "_checkSize");
@@ -63,7 +57,7 @@ export default Component.extend({
 
     if (this.appEvents) {
       this.appEvents.off("chat:request-open", this, "openChat");
-      this.appEvents.off("page:topic-loaded", this, "enteredTopic");
+      this.appEvents.off("chat:open-channel", this, "openChannelFor");
       this.appEvents.off("topic-chat-enable", this, "chatEnabledForTopic");
       this.appEvents.off("topic-chat-disable", this, "chatDisabledForTopic");
       this.appEvents.off("composer:closed", this, "_checkSize");
@@ -91,7 +85,7 @@ export default Component.extend({
     }
   },
 
-  enteredTopic(chatable) {
+  openChannelFor(chatable) {
     if (chatable.chat_channel) {
       this.switchChannel(chatable.chat_channel);
     }
@@ -100,7 +94,7 @@ export default Component.extend({
   chatEnabledForTopic(topic) {
     if (!this.chatChannelId || this.chatChannelId === topic.chat_channel_id) {
       // Don't do anything if viewing another topic
-      this.enteredTopic(topic);
+      this.openChannelFor(topic);
     }
   },
 

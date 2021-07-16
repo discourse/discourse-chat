@@ -1,9 +1,11 @@
 import { ajax } from "discourse/lib/ajax";
 import { h } from "virtual-dom";
+import { iconNode } from "discourse-common/lib/icon-library";
+import { createWidget } from "discourse/widgets/widget";
 import I18n from "I18n";
 import { includeAttributes } from "discourse/lib/transform-post";
 import { popupAjaxError } from "discourse/lib/ajax-error";
-import TopicStatus from "discourse/raw-views/topic-status";
+import RawTopicStatus from "discourse/raw-views/topic-status";
 import { withPluginApi } from "discourse/lib/plugin-api";
 
 function findParentWidget(widget, ofName) {
@@ -20,11 +22,8 @@ export default {
   initialize(container) {
     const appEvents = container.lookup("service:app-events");
     const currentUser = container.lookup("current-user:main");
-    if (currentUser && currentUser.can_chat) {
-      container.lookup("service:chat-service").start();
-    }
 
-    TopicStatus.reopen({
+    RawTopicStatus.reopen({
       statuses: Ember.computed(function () {
         const results = this._super(...arguments);
 
@@ -97,16 +96,17 @@ export default {
         // TODO: this needs to be an ajax in case history is too long to deliver initially
       });
 
+      api.decorateWidget("topic-status:after", (dec) => {
+        if (dec.attrs.topic.has_chat_live) {
+          return dec.widget.attach("topic-title-chat-link", dec.attrs.topic);
+        }
+      });
+
       api.decorateWidget("actions-summary:before", (dec) => {
         const targetWidget = findParentWidget(dec.widget, "post-article");
         if (targetWidget.state.chatShown) {
           return dec.widget.attach("tc-history-container", dec.attrs);
         }
-      });
-
-      api.attachWidgetAction("post", "deleteChat", function () {
-        // TODO: is this the right place to handle this action?
-        // core's post actions are handled on the topic, but we can't inject additional closures to the post stream
       });
 
       api.decorateWidget("topic-admin-menu:adminMenuButtons", (dec) => {

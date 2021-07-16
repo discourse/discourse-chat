@@ -307,3 +307,21 @@ $header-height: 2.5rem;
 .post-controls .show-chat.btn-flat span {
   padding-left: 0.45em;
 }
+
+.topic-title-chat-icon {
+  display: inline-block;
+  * {
+    display: inline-block;
+  }
+}
+
+.topic-title-chat-link {
+  padding: 0 0.1em;
+  cursor: pointer;
+}
+
+.d-header {
+  .topic-title-chat-link {
+    padding: 0 0.2em 0 0.25em;
+  }
+}

@@ -143,7 +143,7 @@ after_initialize do
       end
 
       def include_has_chat_live?
-        !chat_channel.nil?
+        chat_channel.present?
       end
 
       def chat_channel

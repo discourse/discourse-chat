@@ -97,7 +97,9 @@ export default {
       });
 
       api.decorateWidget("topic-status:after", (dec) => {
-        return dec.widget.attach("topic-title-chat-link", dec.attrs.topic);
+        if (dec.attrs.topic.has_chat_live) {
+          return dec.widget.attach("topic-title-chat-link", dec.attrs.topic);
+        }
       });
 
       api.decorateWidget("actions-summary:before", (dec) => {

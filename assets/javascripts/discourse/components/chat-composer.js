@@ -1,9 +1,11 @@
-import { action } from "@ember/object";
+import I18n from "I18n";
 import Component from "@ember/component";
 import discourseComputed, { observes } from "discourse-common/utils/decorators";
-import { not } from "@ember/object/computed";
-import I18n from "I18n";
+import userSearch from "discourse/lib/user-search";
+import { action } from "@ember/object";
 import { cancel, throttle } from "@ember/runloop";
+import { findRawTemplate } from "discourse-common/lib/raw-templates";
+import { not } from "@ember/object/computed";
 
 export default Component.extend({
   classNames: ["tc-composer"],
@@ -61,7 +63,28 @@ export default Component.extend({
   @observes("value")
   _watchChanges() {
     // throttle, not debounce, because we do eventually want to react during the typing
-    this.timer = throttle(this, this._setMinHeight, 150);
+    this.timer = throttle(
+      this,
+      () => {
+        this._setMinHeight();
+        this._applyAutocomplete();
+      },
+      150
+    );
+  },
+
+  _applyAutocomplete() {
+    if (this.siteSettings.enable_mentions) {
+      $(this.textarea()).autocomplete({
+        template: findRawTemplate("user-selector-autocomplete"),
+        key: "@",
+        width: "100%",
+        treatAsTextarea: true,
+        autoSelectFirstSuggestion: false,
+        transformComplete: (v) => v.username || v.name,
+        dataSource: (term) => userSearch({ term, includeGroups: false }),
+      });
+    }
   },
 
   _setMinHeight() {

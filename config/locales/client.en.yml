@@ -19,6 +19,7 @@ en:
       open: "Open chat"
       list: "Chats"
       category_chat_enabled: "Chat enabled for category"
+      mention_notification: "<p><span>%{username}</span>%{description}</p>"
     topic:
       actions:
         chat_enable: "Enable Chat"

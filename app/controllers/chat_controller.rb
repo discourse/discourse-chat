@@ -64,18 +64,19 @@ class DiscourseChat::ChatController < ::ApplicationController
 
     content = params[:message]
 
-    msg = ChatMessage.new(
+
+    chat_message_creator = DiscourseChat::ChatMessageCreator.create(
       chat_channel: @chat_channel,
       post_id: post_id,
-      user_id: current_user.id,
+      user: current_user,
       in_reply_to_id: reply_to_msg_id,
-      message: content,
+      content: content,
     )
-    if !msg.save
-      return render_json_error(msg)
+
+    if chat_message_creator.failed?
+      return render_json_error(chat_message_creator.error)
     end
 
-    ChatPublisher.publish_new!(@chat_channel, msg)
     render json: success_json
   end
 

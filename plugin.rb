@@ -136,9 +136,20 @@ after_initialize do
     require_dependency 'topic_view_serializer'
     class ::TopicViewSerializer
       has_one :chat_channel, serializer: ChatChannelSerializer, root: false, embed: :objects
+      attributes :has_chat_live
+
+      def has_chat_live
+        true
+      end
+
+      def include_has_chat_live?
+        !chat_channel.nil?
+      end
 
       def chat_channel
-        object.topic.chat_channel
+        return @chat_channel if defined?(@chat_channel)
+
+        @chat_channel = object.topic.chat_channel
       end
     end
 

@@ -194,12 +194,15 @@ class DiscourseChat::ChatController < ::ApplicationController
       .where(chat_channel: chat_channel)
       .where("created_at < ?", @message.created_at)
       .order(created_at: :desc).limit(20)
+    past_messages = past_messages.with_deleted if include_deleted
+
 
     # .with_deleted if include_deleted
     future_messages = ChatMessage
       .where(chat_channel: chat_channel)
       .where("created_at > ?", @message.created_at)
       .order(created_at: :asc)
+    future_messages = future_messages.with_deleted if include_deleted
 
     messages = [past_messages.reverse, [@message], future_messages].reduce([], :concat)
 

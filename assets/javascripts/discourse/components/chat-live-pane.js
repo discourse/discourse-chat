@@ -5,7 +5,8 @@ import Component from "@ember/component";
 import { observes } from "discourse-common/utils/decorators";
 import discourseDebounce from "discourse-common/lib/debounce";
 import { popupAjaxError } from "discourse/lib/ajax-error";
-import { cancel, schedule } from "@ember/runloop";
+import { cancel, later, schedule } from "@ember/runloop";
+import { inject as service } from "@ember/service";
 
 const MAX_RECENT_MSGS = 100;
 const STICKY_SCROLL_LENIENCE = 4;
@@ -25,9 +26,17 @@ export default Component.extend({
   details: null, // Object { chat_channel_id, can_chat, ... }
   messages: null, // Array
   messageLookup: null, // Object<Number, Message>
+  targetMessageId: null,
+
+  chatService: service(),
+
+  getCachedChannelDetails: null,
+  clearCachedChannelDetails: null,
 
   didInsertElement() {
     this._super(...arguments);
+
+    this.appEvents.on("chat:open-message", this, "highlightOrFetchMessage");
 
     const scroller = this.element.querySelector(".tc-messages-scroll");
     scroller.addEventListener(
@@ -41,12 +50,11 @@ export default Component.extend({
       },
       { passive: true }
     );
-
-    this.messages = A();
-    this.messageLookup = {};
   },
 
   willDestroyElement() {
+    this.appEvents.off("chat:open-message", this, "highlightOrFetchMessage");
+
     // don't need to removeEventListener from scroller as the DOM element goes away
     if (this.stickyScrollTimer) {
       cancel(this.stickyScrollTimer);
@@ -61,55 +69,114 @@ export default Component.extend({
   didReceiveAttrs() {
     this._super(...arguments);
 
+    this.set("targetMessageId", this.chatService.getMessageId());
     if (this.registeredChatChannelId !== this.chatChannelId) {
       if (this.registeredChatChannelId) {
         this.messageBus.unsubscribe(`/chat/${this.registeredChatChannelId}`);
         this.messages.clear();
-        this.messageLookup = {};
-        this.registeredChatChannelId = null;
       }
+      this.messageLookup = {};
+      this.registeredChatChannelId = null;
 
       if (this.chatChannelId != null) {
-        const chatChannelId = this.chatChannelId;
-        this.set("loading", true);
-        ajax(`/chat/${this.chatChannelId}/recent`)
-          .then((data) => {
-            if (!this.element || this.isDestroying || this.isDestroyed) {
-              return;
-            }
-            const tc = data.topic_chat_view;
-            this.set(
-              "messages",
-              A(tc.messages.reverse().map((m) => this.prepareMessage(m)))
-            );
-            this.set("details", {
-              chat_channel_id: this.chatChannelId,
-              can_chat: tc.can_chat,
-              can_flag: tc.can_flag,
-              can_delete_self: tc.can_delete_self,
-              can_delete_others: tc.can_delete_others,
-            });
-            this.registeredChatChannelId = this.chatChannelId;
-            schedule("afterRender", this, this.doScrollStick);
-
-            this.messageBus.subscribe(
-              `/chat/${chatChannelId}`,
-              (busData) => {
-                this.handleMessage(busData);
-              },
-              tc.last_id
-            );
-          })
-          .catch((err) => {
-            throw err;
-          })
-          .finally(() => {
-            if (!this.element || this.isDestroying || this.isDestroyed) {
-              return;
-            }
-            this.set("loading", false);
-          });
+        this.fetchMessages();
       }
+    }
+  },
+
+  fetchMessages() {
+    this.set("loading", true);
+    const url = this.targetMessageId
+      ? `/chat/lookup/${this.targetMessageId}.json`
+      : `/chat/${this.chatChannelId}/recent`;
+
+    ajax(url)
+      .then((data) => {
+        if (!this.element || this.isDestroying || this.isDestroyed) {
+          return;
+        }
+        this.setMessageProps(data.topic_chat_view);
+      })
+      .catch((err) => {
+        throw err;
+      })
+      .finally(() => {
+        if (this.targetMessageId) {
+          this.chatService.clearMessageId();
+        }
+
+        if (!this.element || this.isDestroying || this.isDestroyed) {
+          return;
+        }
+        this.set("loading", false);
+      });
+  },
+
+  setMessageProps(chatView) {
+    this.setProperties({
+      messages: A(chatView.messages.map((m) => this.prepareMessage(m))),
+      details: {
+        chat_channel_id: this.chatChannelId,
+        can_chat: chatView.can_chat,
+        can_flag: chatView.can_flag,
+        can_delete_self: chatView.can_delete_self,
+        can_delete_others: chatView.can_delete_others,
+      },
+      registeredChatChannelId: this.chatChannelId,
+    });
+
+    schedule("afterRender", this, () => {
+      this.doScrollStick();
+      if (this.targetMessageId) {
+        this.scrollToHighlightedMessage(this.targetMessageId);
+      }
+    });
+    this.messageBus.subscribe(
+      `/chat/${this.chatChannelId}`,
+      (busData) => {
+        this.handleMessage(busData);
+      },
+      chatView.last_id
+    );
+  },
+
+  highlightOrFetchMessage(chatChannelId, messageId) {
+    if (!this.element || this.isDestroying || this.isDestroyed) {
+      return;
+    }
+
+    if (this.messageLookup[messageId]) {
+      // We have the message rendered. highlight and scrollTo
+      this.scrollToHighlightedMessage(messageId);
+    } else {
+      this.set("targetMessageId", messageId);
+      this.fetchMessages();
+    }
+  },
+
+  scrollToHighlightedMessage(messageId) {
+    if (!this.element || this.isDestroying || this.isDestroyed) {
+      return;
+    }
+
+    const messageEl = this.element.querySelector(
+      `.tc-messages-scroll .tc-message-${messageId}`
+    );
+    if (messageEl) {
+      messageEl.classList.add("highlighted");
+      messageEl.scrollIntoView({ behavior: "smooth" });
+
+      // Remove highlighted class, but keep `transition-slow` on for another 2 seconds
+      // to ensure the background color fades smoothly out
+      later(() => {
+        messageEl.classList.add("transition-slow");
+      }, 2000);
+      later(() => {
+        messageEl.classList.remove("highlighted");
+        later(() => {
+          messageEl.classList.remove("transition-slow");
+        }, 2000);
+      }, 3000);
     }
   },
 
@@ -151,6 +218,9 @@ export default Component.extend({
   },
 
   prepareMessage(msgData) {
+    if (this.targetMessageId === msgData.id) {
+      // msgData.highlighted = true
+    }
     if (msgData.in_reply_to_id) {
       msgData.in_reply_to = this.messageLookup[msgData.in_reply_to_id];
     }

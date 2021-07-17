@@ -3,7 +3,7 @@
 class DiscourseChat::ChatController < ::ApplicationController
   before_action :ensure_logged_in
   before_action :ensure_can_chat
-  before_action :find_chat_message, only: [:delete, :restore]
+  before_action :find_chat_message, only: [:delete, :restore, :lookup_message]
   before_action :find_chatable, only: [:enable_chat, :disable_chat]
 
   def enable_chat
@@ -64,7 +64,6 @@ class DiscourseChat::ChatController < ::ApplicationController
 
     content = params[:message]
 
-
     chat_message_creator = DiscourseChat::ChatMessageCreator.create(
       chat_channel: @chat_channel,
       post_id: post_id,
@@ -91,6 +90,9 @@ class DiscourseChat::ChatController < ::ApplicationController
       messages = messages.with_deleted
     end
 
+    # Reverse messages so they are in the correct order. Need the order on the query with the
+    # limit to fetch the correct messages.
+    messages = messages.to_a.reverse
     chat_view = ChatView.new(
       chat_channel: @chat_channel,
       chatable: @chatable,
@@ -167,6 +169,47 @@ class DiscourseChat::ChatController < ::ApplicationController
     end
 
     render_serialized(channels, ChatChannelSerializer)
+  end
+
+  def channel_details
+    set_channel_and_chatable
+    render_serialized(@chat_channel, ChatChannelSerializer)
+  end
+
+  def lookup_message
+    chat_channel = @message.chat_channel
+    chatable = nil
+    if chat_channel.site_channel?
+      include_deleted = true
+      guardian.ensure_can_access_site_chat!
+    else
+      chatable = chat_channel.chatable
+      guardian.ensure_can_see!(chatable)
+      include_deleted = guardian.can_moderate_chat?(chatable)
+    end
+
+    message_bus_last_id = ChatPublisher.last_id(chat_channel)
+
+    past_messages = ChatMessage
+      .where(chat_channel: chat_channel)
+      .where("created_at < ?", @message.created_at)
+      .order(created_at: :desc).limit(20)
+
+    # .with_deleted if include_deleted
+    future_messages = ChatMessage
+      .where(chat_channel: chat_channel)
+      .where("created_at > ?", @message.created_at)
+      .order(created_at: :asc)
+
+    messages = [past_messages.reverse, [@message], future_messages].reduce([], :concat)
+
+    chat_view = ChatView.new(
+      chat_channel: chat_channel,
+      chatable: chatable,
+      messages: messages,
+      message_bus_last_id: message_bus_last_id
+    )
+    render_serialized(chat_view, ChatViewSerializer, root: :topic_chat_view)
   end
 
   private

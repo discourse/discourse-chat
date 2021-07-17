@@ -27,10 +27,11 @@ export default Component.extend({
   @discourseComputed(
     "message.deleted_at",
     "message.in_reply_to",
-    "message.action_code"
+    "message.action_code",
+    "message.highlighted"
   )
-  messageClasses(deletedAt, inReplyTo, actionCode) {
-    let classNames = ["tc-message"];
+  messageClasses(deletedAt, inReplyTo, actionCode, highlighted) {
+    let classNames = ["tc-message", `tc-message-${this.message.id}`];
     if (actionCode) {
       classNames.push("tc-action");
       classNames.push(`tc-action-${actionCode}`);
@@ -40,6 +41,10 @@ export default Component.extend({
     }
     if (inReplyTo) {
       classNames.push("is-reply");
+    }
+    if (highlighted) {
+      classNames.push("highlighted");
+      classNames.push("transition-slow");
     }
     return classNames.join(" ");
   },

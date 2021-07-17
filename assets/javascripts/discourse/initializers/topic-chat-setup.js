@@ -153,11 +153,6 @@ export default {
           content: I18n.t("chat.open"),
         });
       }
-
-      api.replaceIcon(
-        "notification.chat.mention_notification",
-        "at"
-      );
     });
   },
 };

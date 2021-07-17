@@ -128,16 +128,22 @@ $header-height: 2.5rem;
   .tc-message {
     position: relative;
     padding: 0.25em;
+    background-color: var(--secondary);
 
     &:hover {
       background: var(--primary-very-low);
     }
-
     &.tc-action {
       background-color: var(--highlight-medium);
     }
     &.deleted {
       background-color: var(--danger-medium);
+    }
+    &.highlighted {
+      background-color: var(--tertiary-low);
+    }
+    &.transition-slow {
+      transition: 2s linear background-color;
     }
     .tc-text {
       margin: 0;
@@ -215,18 +221,22 @@ $header-height: 2.5rem;
   .scroll-stick-wrap2 {
     position: absolute;
     bottom: 0;
-    margin-bottom: 2em;
+    margin-bottom: 1em;
     display: flex;
     width: 100%;
     justify-content: center;
   }
 
-  .scroll-stick-warning {
-    color: var(--primary-very-low, $primary-very-low);
-    background: var(--secondary-low, $secondary-low);
+  .chat-scroll-to-bottom {
+    background: var(--primary-medium);
     padding: 0.5em;
-    border-radius: 4px;
-    opacity: 90%;
+    border-radius: 100%;
+    opacity: 20%;
+
+    .d-icon {
+      color: var(--primary);
+      margin: 0;
+    }
   }
 
   .tc-composer {

@@ -176,12 +176,14 @@ after_initialize do
     get '/index' => 'chat#index'
     post '/enable' => 'chat#enable_chat'
     post '/disable' => 'chat#disable_chat'
+    get '/:chat_channel_id' => 'chat#channel_details'
     get '/:chat_channel_id/recent' => 'chat#recent'
     get '/:chat_channel_id/p/:post_id' => 'chat#historical'
     post '/:chat_channel_id' => 'chat#send_chat'
     delete '/:chat_channel_id/:message_id' => 'chat#delete'
     post '/:chat_channel_id/:message_id/flag' => 'chat#flag'
     put '/:chat_channel_id/restore/:message_id' => 'chat#restore'
+    get '/lookup/:message_id' => 'chat#lookup_message'
   end
 
   Discourse::Application.routes.append do

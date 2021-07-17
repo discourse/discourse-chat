@@ -56,14 +56,14 @@ class DiscourseChat::ChatMessageCreator
 
   def create_notification_for(message_creator, mentioned_user)
     Notification.create!(
-      notification_type: Notification.types[:custom],
+      notification_type: Notification.types[:chat_mention],
       user_id: mentioned_user.id,
       high_priority: true,
       data: {
         message: 'chat.mention_notification',
         chat_message_id: @chat_message.id,
-        display_username: message_creator.username,
-        mentioned_by_id: message_creator.id
+        chat_channel_id: @chat_channel.id,
+        mentioned_by_username: message_creator.username,
       }.to_json
     )
   end

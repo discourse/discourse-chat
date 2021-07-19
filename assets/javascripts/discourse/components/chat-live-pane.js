@@ -141,7 +141,7 @@ export default Component.extend({
   },
 
   highlightOrFetchMessage(chatChannelId, messageId) {
-    if (!this.element || this.isDestroying || this.isDestroyed) {
+    if (this.selfDeleted()) {
       return;
     }
 
@@ -155,7 +155,7 @@ export default Component.extend({
   },
 
   scrollToHighlightedMessage(messageId) {
-    if (!this.element || this.isDestroying || this.isDestroyed) {
+    if (this.selfDeleted()) {
       return;
     }
 
@@ -181,7 +181,7 @@ export default Component.extend({
   },
 
   doScrollStick() {
-    if (!this.element || this.isDestroying || this.isDestroyed) {
+    if (this.selfDeleted()) {
       return;
     }
     if (this.stickyScroll) {
@@ -191,7 +191,7 @@ export default Component.extend({
   },
 
   checkScrollStick() {
-    if (!this.element || this.isDestroying || this.isDestroyed) {
+    if (this.selfDeleted()) {
       return;
     }
     if (!this.expanded) {
@@ -218,9 +218,6 @@ export default Component.extend({
   },
 
   prepareMessage(msgData) {
-    if (this.targetMessageId === msgData.id) {
-      // msgData.highlighted = true
-    }
     if (msgData.in_reply_to_id) {
       msgData.in_reply_to = this.messageLookup[msgData.in_reply_to_id];
     }
@@ -326,6 +323,10 @@ export default Component.extend({
       return -1;
     }
     return 0;
+  },
+
+  selfDeleted() {
+    return !this.element || this.isDestroying || this.isDestroyed
   },
 
   @action

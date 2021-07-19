@@ -30,7 +30,7 @@ export default Component.extend({
     "message.action_code"
   )
   messageClasses(deletedAt, inReplyTo, actionCode) {
-    let classNames = ["tc-message"];
+    let classNames = ["tc-message", `tc-message-${this.message.id}`];
     if (actionCode) {
       classNames.push("tc-action");
       classNames.push(`tc-action-${actionCode}`);

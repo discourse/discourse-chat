@@ -7,7 +7,7 @@ en:
       send: "Send Chat Message"
       close: "Close"
       collapse: "Collapse Chat Drawer"
-      scroll_stick: "Chat Paused Due To Scroll"
+      scroll_to_bottom: "Scroll to bottom"
       already_enabled: "Chat is already enabled on this topic. Please refresh."
       already_disabled: "Chat is already closed on this topic. Please refresh."
       in_reply_to: "In reply to"
@@ -19,6 +19,11 @@ en:
       open: "Open chat"
       list: "Chats"
       category_chat_enabled: "Chat enabled for category"
+      mention_notification: "<span>%{username} mentioned you in chat</span>"
+
+    notifications:
+      titles:
+        chat_mention: "You were mentioned in chat"
     topic:
       actions:
         chat_enable: "Enable Chat"

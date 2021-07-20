@@ -17,7 +17,7 @@ en:
       restore: "Restore deleted message"
       deleted: "View deleted message"
       open: "Open chat"
-      list: "Chats"
+      list: "Channels"
       category_chat_enabled: "Chat enabled for category"
       mention_notification: "<span>%{username} mentioned you in chat</span>"
 

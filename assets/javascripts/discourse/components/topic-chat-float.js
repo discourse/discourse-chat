@@ -159,17 +159,6 @@ export default Component.extend({
     this.element.style.setProperty("--composer-height", "40px");
   },
 
-  @discourseComputed("activeChannel")
-  title(activeChannel) {
-    if (activeChannel.chatable_type === "Topic")
-      return emojiUnescape(activeChannel.chatable.fancy_title);
-    else if (activeChannel.chatable_type === "Category") {
-      return;
-    }
-    return;
-    return chatableTitle || I18n.t("chat.title_bare");
-  },
-
   @discourseComputed("expanded")
   containerClassNames(expanded) {
     if (expanded) {

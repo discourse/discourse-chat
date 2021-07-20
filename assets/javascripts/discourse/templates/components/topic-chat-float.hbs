@@ -37,15 +37,11 @@
           }}
         {{/if}}
       {{else}}
-
-        <ul class="tc-channels">
+        <div class="tc-channels">
           {{#each channels as |channel|}}
-            <li class="tc-channel-item" onclick={{action "switchChannel" channel}}>
-            {{channel.title}}
-            <small>{{channel.chatable_type}}</small>
-            </li>
+            {{chat-channel-row channel=channel switchChannel=(action "switchChannel")}}
           {{/each}}
-        </ul>
+        </div>
       {{/if}}
     </div>
   </div>

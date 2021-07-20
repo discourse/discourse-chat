@@ -164,11 +164,26 @@ class DiscourseChat::ChatController < ::ApplicationController
       end
     end
 
-    if guardian.can_access_site_chat?
-      channels.prepend(ChatChannel.find_by(chatable_id: DiscourseChat::SITE_CHAT_ID))
+    category_channels = channels.select(&:category_channel?)
+    added_channel_ids = category_channels.map(&:id)
+
+    structured_channels = category_channels.map do |category_channel|
+      category_channel.chat_channels = channels.select do |channel|
+        add = channel.topic_channel? && channel.chatable.category_id == category_channel.chatable.id
+        added_channel_ids << channel.id if add
+        add
+      end
+      category_channel
     end
 
-    render_serialized(channels, ChatChannelSerializer)
+    remaining_channels = channels.select { |channel| !added_channel_ids.include?(channel.id) }
+    structured_channels = structured_channels.concat(remaining_channels)
+
+    if guardian.can_access_site_chat?
+      structured_channels.prepend(ChatChannel.find_by(chatable_id: DiscourseChat::SITE_CHAT_ID))
+    end
+
+    render_serialized(structured_channels, ChatChannelSerializer)
   end
 
   def channel_details
@@ -195,7 +210,6 @@ class DiscourseChat::ChatController < ::ApplicationController
       .where("created_at < ?", @message.created_at)
       .order(created_at: :desc).limit(20)
     past_messages = past_messages.with_deleted if include_deleted
-
 
     # .with_deleted if include_deleted
     future_messages = ChatMessage

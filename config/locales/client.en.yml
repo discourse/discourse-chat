@@ -21,6 +21,11 @@ en:
       category_chat_enabled: "Chat enabled for category"
       mention_notification: "<span>%{username} mentioned you in chat</span>"
 
+      channels:
+        staff: "Staff-only"
+        category: ""
+        topic: ""
+
     notifications:
       titles:
         chat_mention: "You were mentioned in chat"

@@ -335,3 +335,37 @@ $header-height: 2.5rem;
     padding: 0 0.2em 0 0.25em;
   }
 }
+
+.chat-channel-row {
+  display: flex;
+  padding: 0.5em;
+  cursor: pointer;
+  color: var(--primary-high);
+  align-items: center;
+
+  &:hover {
+    background: var(--primary-low);
+  }
+
+  &.nested {
+    padding-left: 2.5em;
+  }
+
+  .chat-channel-row-type {
+    margin-left: 0.5em;
+    font-size: var(--font-down-2);
+  }
+
+  .d-icon {
+    padding: 0.25em 0.75em 0.25em 0.5em;
+
+    &:hover {
+      background: var(--primary-med-low);
+    }
+  }
+
+  .badge-wrapper {
+    align-items: center;
+    margin-right: 0;
+  }
+}

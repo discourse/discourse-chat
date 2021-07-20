@@ -1,0 +1,29 @@
+<div class={{classes}}>
+  {{log channel}}
+  {{#if (eq channel.chatable_type "Category")}}
+    {{#if channel.chat_channels}}
+      <span class="chat-channel-toggle-expand" onclick={{action "toggleExpand"}}>
+        {{#if expanded}}
+          {{d-icon "chevron-up"}}
+        {{else}}
+          {{d-icon "chevron-right"}}
+        {{/if}}
+      </span>
+    {{/if}}
+    {{category-badge channel.chatable allowUncategorized="true"}}
+    <span class="chat-channel-row-type">{{i18n "chat.channels.category"}}</span>
+
+  {{else if (eq channel.chatable_type "Topic")}}
+    {{replace-emoji channel.chatable.fancy_title}}
+    <span class="chat-channel-row-type">{{i18n "chat.channels.topic"}}</span>
+
+  {{else}}
+    {{i18n "chat.channels.staff"}}
+  {{/if}}
+</div>
+
+{{#if expanded}}
+  {{#each channel.chat_channels as |nested_channel|}}
+    {{chat-channel-row channel=nested_channel switchChannel=switchChannel nested=true}}
+  {{/each}}
+{{/if}}

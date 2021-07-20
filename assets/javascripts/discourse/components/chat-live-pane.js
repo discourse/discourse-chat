@@ -326,7 +326,7 @@ export default Component.extend({
   },
 
   selfDeleted() {
-    return !this.element || this.isDestroying || this.isDestroyed
+    return !this.element || this.isDestroying || this.isDestroyed;
   },
 
   @action

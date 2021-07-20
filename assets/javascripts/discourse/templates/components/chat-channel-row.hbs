@@ -1,5 +1,4 @@
 <div class={{classes}}>
-  {{log channel}}
   {{#if (eq channel.chatable_type "Category")}}
     {{#if channel.chat_channels}}
       <span class="chat-channel-toggle-expand" onclick={{action "toggleExpand"}}>
@@ -10,16 +9,8 @@
         {{/if}}
       </span>
     {{/if}}
-    {{category-badge channel.chatable allowUncategorized="true"}}
-    <span class="chat-channel-row-type">{{i18n "chat.channels.category"}}</span>
-
-  {{else if (eq channel.chatable_type "Topic")}}
-    {{replace-emoji channel.chatable.fancy_title}}
-    <span class="chat-channel-row-type">{{i18n "chat.channels.topic"}}</span>
-
-  {{else}}
-    {{i18n "chat.channels.staff"}}
   {{/if}}
+  {{chat-channel-title channel=channel}}
 </div>
 
 {{#if expanded}}

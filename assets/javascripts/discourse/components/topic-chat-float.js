@@ -25,11 +25,9 @@ export default Component.extend({
   rafTimer: null,
   view: null,
 
-  chatableTitle: null,
-  chatChannelId: null,
-  chatChannelType: null,
   unreadMessageCount: 0,
 
+  activeChannel: null,
   channels: null,
 
   didInsertElement() {
@@ -95,22 +93,25 @@ export default Component.extend({
     }
   },
 
-  openChannelAtMessage(chatChannelId, messageId) {
+  openChannelAtMessage(activeChannel, messageId) {
     this.chatService.setMessageId(messageId);
-    ajax(`/chat/${chatChannelId}.json`).then((response) => {
+    ajax(`/chat/${activeChannel.id}.json`).then((response) => {
       this.switchChannel(response.chat_channel);
     });
   },
 
   chatEnabledForTopic(topic) {
-    if (!this.chatChannelId || this.chatChannelId === topic.chat_channel_id) {
+    if (
+      !this.activeChannel ||
+      this.activeChannel.id === topic.chat_channel_id
+    ) {
       // Don't do anything if viewing another topic
       this.openChannelFor(topic);
     }
   },
 
   chatDisabledForTopic(topic) {
-    if (this.expanded && this.chatChannelId === topic.chat_channel_id) {
+    if (this.expanded && this.activeChannel.id === topic.chat_channel_id) {
       this.close();
     }
   },
@@ -158,8 +159,14 @@ export default Component.extend({
     this.element.style.setProperty("--composer-height", "40px");
   },
 
-  @discourseComputed("chatableTitle")
-  title(chatableTitle) {
+  @discourseComputed("activeChannel")
+  title(activeChannel) {
+    if (activeChannel.chatable_type === "Topic")
+      return emojiUnescape(activeChannel.chatable.fancy_title);
+    else if (activeChannel.chatable_type === "Category") {
+      return;
+    }
+    return;
     return chatableTitle || I18n.t("chat.title_bare");
   },
 
@@ -206,7 +213,7 @@ export default Component.extend({
   close() {
     this.setProperties({
       hidden: true,
-      chatChannelId: null,
+      activeChannel: null,
     });
   },
 
@@ -215,6 +222,7 @@ export default Component.extend({
     ajax("/chat/index.json").then((channels) => {
       this.setProperties({
         channels: channels,
+        activeChannel: null,
         hidden: false,
         expanded: true,
         view: LIST_VIEW,
@@ -225,10 +233,7 @@ export default Component.extend({
   @action
   switchChannel(channel) {
     let channelInfo = {
-      chatChannelId: channel.id,
-      chatChannelType: channel.chatable_type,
-      chatableUrl: channel.chatable_url,
-      chatableTitle: channel.title,
+      activeChannel: channel,
       expanded: this.expectPageChange ? true : this.expanded,
       hidden: false,
       expectPageChange: false,

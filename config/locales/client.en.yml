@@ -1,7 +1,7 @@
 en:
   js:
     chat:
-      title_bare: "Chat"
+      title_bare: "Channels"
       placeholder: "Chat..."
       placeholder_log_in: "Log in to chat"
       send: "Send Chat Message"
@@ -23,8 +23,6 @@ en:
 
       channels:
         staff: "Staff-only"
-        category: ""
-        topic: ""
 
     notifications:
       titles:

@@ -14,8 +14,7 @@ const STICKY_SCROLL_LENIENCE = 4;
 export default Component.extend({
   classNameBindings: [":tc-live-pane", "sendingloading", "loading"],
   topicId: null, // ?Number
-  chatChannelId: null,
-  chatChannelType: null, // "Category" or "Topic"
+  chatChannel: null,
   registeredChatChannelId: null, // ?Number
   loading: false,
   sendingloading: false,
@@ -70,7 +69,7 @@ export default Component.extend({
     this._super(...arguments);
 
     this.set("targetMessageId", this.chatService.getMessageId());
-    if (this.registeredChatChannelId !== this.chatChannelId) {
+    if (this.registeredChatChannelId !== this.chatChannel.id) {
       if (this.registeredChatChannelId) {
         this.messageBus.unsubscribe(`/chat/${this.registeredChatChannelId}`);
         this.messages.clear();
@@ -78,7 +77,7 @@ export default Component.extend({
       this.messageLookup = {};
       this.registeredChatChannelId = null;
 
-      if (this.chatChannelId != null) {
+      if (this.chatChannel.id != null) {
         this.fetchMessages();
       }
     }
@@ -88,7 +87,7 @@ export default Component.extend({
     this.set("loading", true);
     const url = this.targetMessageId
       ? `/chat/lookup/${this.targetMessageId}.json`
-      : `/chat/${this.chatChannelId}/recent`;
+      : `/chat/${this.chatChannel.id}/recent`;
 
     ajax(url)
       .then((data) => {
@@ -116,13 +115,13 @@ export default Component.extend({
     this.setProperties({
       messages: A(chatView.messages.map((m) => this.prepareMessage(m))),
       details: {
-        chat_channel_id: this.chatChannelId,
+        chat_channel_id: this.chatChannel.id,
         can_chat: chatView.can_chat,
         can_flag: chatView.can_flag,
         can_delete_self: chatView.can_delete_self,
         can_delete_others: chatView.can_delete_others,
       },
-      registeredChatChannelId: this.chatChannelId,
+      registeredChatChannelId: this.chatChannel.id,
     });
 
     schedule("afterRender", this, () => {
@@ -132,7 +131,7 @@ export default Component.extend({
       }
     });
     this.messageBus.subscribe(
-      `/chat/${this.chatChannelId}`,
+      `/chat/${this.chatChannel.id}`,
       (busData) => {
         this.handleMessage(busData);
       },
@@ -140,7 +139,7 @@ export default Component.extend({
     );
   },
 
-  highlightOrFetchMessage(chatChannelId, messageId) {
+  highlightOrFetchMessage(_, messageId) {
     if (this.selfDeleted()) {
       return;
     }
@@ -336,7 +335,7 @@ export default Component.extend({
     if (this.replyToMsg) {
       data.in_reply_to_id = this.replyToMsg.id;
     }
-    return ajax(`/chat/${this.chatChannelId}/`, {
+    return ajax(`/chat/${this.chatChannel.id}/`, {
       type: "POST",
       data,
     })

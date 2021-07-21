@@ -2,8 +2,8 @@
 
 class ChatMessage < ActiveRecord::Base
   include Trashable
+  self.ignored_columns = ["post_id"]
 
-  belongs_to :post
   belongs_to :chat_channel
   belongs_to :user
 

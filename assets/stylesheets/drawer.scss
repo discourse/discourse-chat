@@ -344,17 +344,6 @@ $header-height: 2.5rem;
   }
 }
 
-.tc-history {
-  background-color: var(--primary-low, $primary-low);
-  border: 1px solid var(--primary-high, $primary-high);
-  padding: 4px;
-  text-align: left;
-}
-
-.post-controls .show-chat.btn-flat span {
-  padding-left: 0.45em;
-}
-
 .topic-title-chat-icon {
   display: inline-block;
   * {

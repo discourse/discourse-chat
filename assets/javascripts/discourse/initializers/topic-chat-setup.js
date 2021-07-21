@@ -8,15 +8,6 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 import RawTopicStatus from "discourse/raw-views/topic-status";
 import { withPluginApi } from "discourse/lib/plugin-api";
 
-function findParentWidget(widget, ofName) {
-  while (widget) {
-    if (widget.name === ofName) {
-      return widget;
-    }
-    widget = widget.parentWidget;
-  }
-}
-
 export default {
   name: "topic-chat-setup",
   initialize(container) {
@@ -40,10 +31,6 @@ export default {
       }),
     });
 
-    // post widget attrs
-    includeAttributes("chat_history");
-    // TODO: need to extract extra fields from post.topic.details, topic.has_chat_history
-
     function doToggleChat(topic) {
       topic.set("has_chat_live", !topic.has_chat_live);
 
@@ -62,23 +49,6 @@ export default {
     }
 
     withPluginApi("0.11.0", (api) => {
-      api.addPostMenuButton("chat", (attrs) => {
-        // TODO: want an includeTopicAttributes. we want topic.has_chat_history
-        if (!attrs.chat_history) {
-          return {
-            className: "hidden",
-            disabled: "true",
-          };
-        }
-        return {
-          className: "show-chat",
-          position: "first",
-          contents: h("span", [attrs.chat_history.length.toString()]),
-          action: "showChat",
-          icon: "comment",
-        };
-      });
-
       api.addPostSmallActionIcon("chat.enabled", "comment");
       api.addPostSmallActionIcon("chat.disabled", "comment");
       api.addPostTransformCallback((transformed) => {
@@ -91,21 +61,9 @@ export default {
         }
       });
 
-      api.attachWidgetAction("post-article", "showChat", function () {
-        this.state.chatShown = !this.state.chatShown;
-        // TODO: this needs to be an ajax in case history is too long to deliver initially
-      });
-
       api.decorateWidget("topic-status:after", (dec) => {
         if (dec.attrs.topic.has_chat_live) {
           return dec.widget.attach("topic-title-chat-link", dec.attrs.topic);
-        }
-      });
-
-      api.decorateWidget("actions-summary:before", (dec) => {
-        const targetWidget = findParentWidget(dec.widget, "post-article");
-        if (targetWidget.state.chatShown) {
-          return dec.widget.attach("tc-history-container", dec.attrs);
         }
       });
 

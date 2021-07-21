@@ -7,13 +7,10 @@ module ChatHelper
 
     topic = Fabricate(:topic) unless topic
     chat_channel = Fabricate(:chat_channel, chatable: topic)
-    post = topic.posts.last
-    post = Fabricate(:post, topic: topic) unless post
 
     count.times do |n|
       ChatMessage.new(
         chat_channel: chat_channel,
-        post: post,
         user: users[n % users.length],
         message: "Chat message for test #{n}",
       ).save!

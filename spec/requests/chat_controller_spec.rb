@@ -332,7 +332,9 @@ RSpec.describe DiscourseChat::ChatController do
 
       expect(response.status).to eq(200)
       expect(response.parsed_body.map { |channel| channel["chatable_id"] })
-        .to match_array([public_category_cc.chatable_id, public_topic_cc.chatable_id])
+        .to match_array([public_category_cc.chatable_id, one_off_cc.chatable_id])
+
+      expect(response.parsed_body.detect { |channel| channel["id"] == public_category_cc.id }["chat_channels"].first["chatable_id"]).to eq(public_topic_cc.chatable_id)
     end
 
     it "returns channels visible to user with private access" do
@@ -341,7 +343,14 @@ RSpec.describe DiscourseChat::ChatController do
 
       expect(response.status).to eq(200)
       expect(response.parsed_body.map { |channel| channel["chatable_id"] })
-        .to match_array([public_category_cc.chatable_id, public_topic_cc.chatable_id, private_category_cc.chatable_id, private_topic_cc.chatable_id])
+        .to match_array([
+          public_category_cc.chatable_id,
+          one_off_cc.chatable_id,
+          private_category_cc.chatable_id
+        ])
+
+      expect(response.parsed_body.detect { |channel| channel["id"] == public_category_cc.id }["chat_channels"].first["chatable_id"]).to eq(public_topic_cc.chatable_id)
+      expect(response.parsed_body.detect { |channel| channel["id"] == private_category_cc.id }["chat_channels"].first["chatable_id"]).to eq(private_topic_cc.chatable_id)
     end
 
     it "returns all channels for admin, including site chat" do

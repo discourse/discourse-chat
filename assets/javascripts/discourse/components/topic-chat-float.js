@@ -111,7 +111,11 @@ export default Component.extend({
   },
 
   chatDisabledForTopic(topic) {
-    if (this.expanded && this.activeChannel.id === topic.chat_channel_id) {
+    if (
+      this.expanded &&
+      this.activeChannel &&
+      this.activeChannel.id === topic.chat_channel_id
+    ) {
       this.close();
     }
   },

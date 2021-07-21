@@ -319,12 +319,13 @@ $header-height: 2.5rem;
 :root.mobile-view {
   .tc-composer {
     min-height: 2.5em;
-    line-height: 1.4em;
     textarea {
-      padding: 4px;
+      width: calc(100% - 4px - 1em);
+      padding: 4px 1em 4px 4px;
     }
-    button {
-      width: 36px;
+    .btn-flat {
+      right: 1em;
+      bottom: 1.25em;
     }
   }
 }

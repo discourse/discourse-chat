@@ -2,12 +2,17 @@
 
 class ChatChannel < ActiveRecord::Base
   include Trashable
+  attribute :chat_channels, default: []
 
   belongs_to :chatable, polymorphic: true
   has_many :chat_messages
 
   def topic_channel?
     chatable_type == "Topic"
+  end
+
+  def category_channel?
+    chatable_type == "Category"
   end
 
   def site_channel?

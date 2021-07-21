@@ -1,0 +1,14 @@
+<div class={{if nested "chat-channel-row nested" "chat-channel-row"}}>
+  {{#if (and (eq channel.chatable_type "Category") channel.chat_channels)}}
+    <span class="chat-channel-toggle-expand" onclick={{action "toggleExpand"}}>
+      {{d-icon (if expanded "chevron-up" "chevron-right")}}
+    </span>
+  {{/if}}
+  {{chat-channel-title channel=channel}}
+</div>
+
+{{#if expanded}}
+  {{#each channel.chat_channels as |nested_channel|}}
+    {{chat-channel-row channel=nested_channel switchChannel=switchChannel nested=true}}
+  {{/each}}
+{{/if}}

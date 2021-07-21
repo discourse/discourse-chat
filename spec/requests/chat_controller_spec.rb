@@ -6,8 +6,8 @@ require_relative '../fabricators/chat_channel_fabricator'
 RSpec.describe DiscourseChat::ChatController do
   fab!(:user) { Fabricate(:user) }
   fab!(:admin) { Fabricate(:admin) }
-  fab!(:topic) { Fabricate(:topic) }
   fab!(:category) { Fabricate(:category) }
+  fab!(:topic) { Fabricate(:topic, category: category) }
 
   before do
     SiteSetting.topic_chat_enabled = true
@@ -308,6 +308,9 @@ RSpec.describe DiscourseChat::ChatController do
     fab!(:private_topic) { Fabricate(:topic, category: private_category) }
     fab!(:private_topic_cc) { Fabricate(:chat_channel, chatable: private_topic) }
 
+    fab!(:one_off_topic) { Fabricate(:topic) }
+    fab!(:one_off_cc) { Fabricate(:chat_channel, chatable: one_off_topic) }
+
     # Create closed/archived topic chat channels. These will never be returned to anyone.
     fab!(:closed_topic) { Fabricate(:closed_topic) }
     fab!(:closed_topic_channel) { Fabricate(:chat_channel, chatable: closed_topic) }
@@ -347,7 +350,16 @@ RSpec.describe DiscourseChat::ChatController do
 
       expect(response.status).to eq(200)
       expect(response.parsed_body.map { |channel| channel["chatable_id"] })
-        .to match_array([DiscourseChat::SITE_CHAT_ID, public_category_cc.chatable_id, public_topic_cc.chatable_id, private_category_cc.chatable_id, private_topic_cc.chatable_id])
+        .to match_array([
+          DiscourseChat::SITE_CHAT_ID,
+          public_category_cc.chatable_id,
+          private_category_cc.chatable_id,
+          one_off_cc.chatable_id
+        ])
+
+      expect(response.parsed_body.detect { |channel| channel["id"] == public_category_cc.id }["chat_channels"].first["chatable_id"]).to eq(public_topic_cc.chatable_id)
+
+      expect(response.parsed_body.detect { |channel| channel["id"] == private_category_cc.id }["chat_channels"].first["chatable_id"]).to eq(private_topic_cc.chatable_id)
     end
   end
 end

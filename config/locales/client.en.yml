@@ -1,7 +1,7 @@
 en:
   js:
     chat:
-      title_bare: "Chat"
+      title: "Chat"
       placeholder: "Chat..."
       placeholder_log_in: "Log in to chat"
       send: "Send Chat Message"
@@ -17,9 +17,12 @@ en:
       restore: "Restore deleted message"
       deleted: "View deleted message"
       open: "Open chat"
-      list: "Chats"
+      list: "Channels"
       category_chat_enabled: "Chat enabled for category"
       mention_notification: "<span>%{username} mentioned you in chat</span>"
+
+      channels:
+        staff: "Staff-only"
 
     notifications:
       titles:

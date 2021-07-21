@@ -8,9 +8,8 @@ class DiscourseChat::ChatMessageCreator
     instance
   end
 
-  def initialize(chat_channel:, post_id: nil, in_reply_to_id: nil, user:, content:)
+  def initialize(chat_channel:, in_reply_to_id: nil, user:, content:)
     @chat_channel = chat_channel
-    @post_id = post_id
     @user = user
     @in_reply_to_id = in_reply_to_id
     @content = content
@@ -18,7 +17,6 @@ class DiscourseChat::ChatMessageCreator
 
     @chat_message = ChatMessage.new(
       chat_channel: @chat_channel,
-      post_id: @post_id,
       user_id: @user.id,
       in_reply_to_id: @in_reply_to_id,
       message: @content,

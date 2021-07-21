@@ -14,7 +14,6 @@ describe DiscourseChat::ChatMessageCreator do
     expect {
       DiscourseChat::ChatMessageCreator.create(
         chat_channel: chat_channel,
-        post_id: nil,
         user: user,
         in_reply_to_id: nil,
         content: "this is a message"
@@ -26,7 +25,6 @@ describe DiscourseChat::ChatMessageCreator do
     expect {
       DiscourseChat::ChatMessageCreator.create(
         chat_channel: chat_channel,
-        post_id: nil,
         user: user,
         in_reply_to_id: nil,
         content: "this is a @#{user.username} message with @system @mentions @#{second_user.username} and @#{third_user.username}"

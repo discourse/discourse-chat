@@ -6,7 +6,7 @@ module ChatPublisher
   end
 
   def self.publish_new!(chat_channel, msg)
-    content = ChatHistoryMessageSerializer.new(msg, { scope: anonymous_guardian, root: :topic_chat_message }).as_json
+    content = ChatBaseMessageSerializer.new(msg, { scope: anonymous_guardian, root: :topic_chat_message }).as_json
     content[:typ] = :sent
     MessageBus.publish("/chat/#{chat_channel.id}", content.as_json)
   end
@@ -20,7 +20,7 @@ module ChatPublisher
   end
 
   def self.publish_restore!(chat_channel, msg)
-    content = ChatHistoryMessageSerializer.new(msg, { scope: anonymous_guardian, root: :topic_chat_message }).as_json
+    content = ChatBaseMessageSerializer.new(msg, { scope: anonymous_guardian, root: :topic_chat_message }).as_json
     content[:typ] = :restore
     MessageBus.publish("/chat/#{chat_channel.id}", content.as_json)
   end

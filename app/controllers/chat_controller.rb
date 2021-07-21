@@ -46,27 +46,16 @@ class DiscourseChat::ChatController < ::ApplicationController
   def send_chat
     set_channel_and_chatable
 
-    post_id = params[:post_id]
-    if post_id
-      raise Discourse::NotFound if Post.find(post_id).topic_id != @chatable.id
-    end
-
     reply_to_msg_id = params[:in_reply_to_id]
     if reply_to_msg_id
       rm = ChatMessage.find(reply_to_msg_id)
       raise Discourse::NotFound if rm.chat_channel_id != @chat_channel.id
-      post_id = rm.post_id
-    end
-
-    if @chat_channel.topic_channel?
-      post_id ||= ChatChannel.last_regular_post(@chatable)&.id
     end
 
     content = params[:message]
 
     chat_message_creator = DiscourseChat::ChatMessageCreator.create(
       chat_channel: @chat_channel,
-      post_id: post_id,
       user: current_user,
       in_reply_to_id: reply_to_msg_id,
       content: content,
@@ -100,16 +89,6 @@ class DiscourseChat::ChatController < ::ApplicationController
       message_bus_last_id: message_bus_last_id
     )
     render_serialized(chat_view, ChatViewSerializer, root: :topic_chat_view)
-  end
-
-  def historical
-    set_channel_and_chatable(with_trashed: true)
-
-    post_id = params[:post_id]
-    p = Post.find(post_id)
-    raise Discourse::NotFound if p.topic_id != t.id
-
-    render_json_error "unimplemented"
   end
 
   def delete

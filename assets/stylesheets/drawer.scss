@@ -45,7 +45,8 @@ $header-height: 2.5rem;
 
 .topic-chat-container {
   background: var(--secondary);
-  border: 1px solid var(--secondary-high);
+  border: 1px solid var(--primary-low-mid);
+  box-shadow: 0 4px 4px rgba(0,0,0,0.25);
   border-bottom: 0;
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
@@ -66,8 +67,8 @@ $header-height: 2.5rem;
 
 .topic-chat-drawer-header {
   box-sizing: border-box;
-  border-bottom: solid 1px var(--secondary-high);
-  padding: 0.25em;
+  border-bottom: solid 1px var(--primary-low-mid);
+  padding: 0.5em;
   height: $header-height;
   width: 100%;
   display: flex;
@@ -127,8 +128,9 @@ $header-height: 2.5rem;
 
   .tc-message {
     position: relative;
-    padding: 0.25em;
+    padding: 0.25em 0.5em 0.25em 0.75em;
     background-color: var(--secondary);
+    display: flex;
 
     &:hover {
       background: var(--primary-very-low);
@@ -144,6 +146,17 @@ $header-height: 2.5rem;
     }
     &.transition-slow {
       transition: 2s linear background-color;
+    }
+    .tc-avatar {
+      width: calc(10% - 0.25em);
+      margin-right: 0.25em;
+      .avatar {
+        width: 90%;
+        height: auto;
+      }
+    }
+    .tc-message-container {
+      width: 90%;
     }
     .tc-text {
       margin: 0;
@@ -213,6 +226,11 @@ $header-height: 2.5rem;
   .tc-messages-scroll {
     flex-grow: 1;
     overflow-y: scroll;
+    scrollbar-color: var(--primary-low) transparent;
+    transition: scrollbar-color 0.2s ease-in-out;
+    &:hover {
+      scrollbar-color: var(--primary-low-mid) transparent;
+    }
   }
 
   .scroll-stick-wrap {
@@ -240,20 +258,37 @@ $header-height: 2.5rem;
   }
 
   .tc-composer {
-    border: solid var(--secondary-high);
-    border-width: 1px 0 2px;
     min-height: 1.5em;
     flex-shrink: 0;
+    width: 95%;
+    margin: 0 auto 0.5em auto;
 
     .tc-composer-row {
       display: flex;
       flex-direction: row;
       align-items: stretch;
     }
-    textarea {
-      flex-grow: 1;
+    .tc-composer-input {
       margin-bottom: 0;
-      border: 0;
+      resize: none;
+      height: 25px;
+      padding: 8px 2em 8px 8px;
+      width: calc(100% - 8px - 2em);
+      border-radius: 4px;
+      border: 1px solid var(--primary-low-mid);
+      &:focus {
+        border: 1px solid var(--primary-medium);
+        outline: none;
+        + .btn-flat .d-icon {
+          color: var(--tertiary);
+        }
+      } 
+    }
+    .btn-flat {
+      position: absolute;
+      bottom: 20px;
+      right: 2.5em;
+      color: var(--primary-low);
     }
     .tc-composer-replypreview {
       display: flex;
@@ -276,19 +311,21 @@ $header-height: 2.5rem;
     }
 
     .d-icon {
-      color: var(--tertiary);
+      animation: color 0.2s ease-in-out;
+      color: var(--primary-low-mid);
     }
   }
 }
 :root.mobile-view {
   .tc-composer {
     min-height: 2.5em;
-    line-height: 1.4em;
     textarea {
-      padding: 4px;
+      width: calc(100% - 4px - 1em);
+      padding: 4px 1em 4px 4px;
     }
-    button {
-      width: 36px;
+    .btn-flat {
+      right: 1em;
+      bottom: 1.25em;
     }
   }
 }

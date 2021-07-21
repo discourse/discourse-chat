@@ -54,23 +54,33 @@
         </div>
       {{/if}}
 
-      <div class="tc-meta-data">
+      {{!-- <div class="tc-meta-data">
         {{avatar message.user imageSize="tiny"}}
         <span class={{usernameClasses}}>{{name}}</span>
         {{format-date message.created_at format="tiny"}}
+      </div> --}}
+
+      <div class="tc-avatar">
+        {{avatar message.user imageSize="medium"}}
       </div>
 
-      <p class="tc-text">
-        {{#if message.action_code}}
-          <span class="tc-action-text">
-            {{html-safe actionCodeText}}
-          </span>
-        {{else}}
-          <p class="tc-text">
-            {{message.message}}
-          </p>
-        {{/if}}
-      </p>
+      <div class="tc-message-container">
+        <div class="tc-meta-data">
+          <span class={{usernameClasses}}>{{name}}</span>
+          {{format-date message.created_at format="tiny"}}
+        </div>
+        <p class="tc-text">
+          {{#if message.action_code}}
+            <span class="tc-action-text">
+              {{html-safe actionCodeText}}
+            </span>
+          {{else}}
+            <p class="tc-text">
+              {{message.message}}
+            </p>
+          {{/if}}
+        </p>
+      </div>
     </div>
   {{/if}}
 {{/if}}

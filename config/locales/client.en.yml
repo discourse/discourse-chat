@@ -1,7 +1,7 @@
 en:
   js:
     chat:
-      title_bare: "Channels"
+      title: "Chat"
       placeholder: "Chat..."
       placeholder_log_in: "Log in to chat"
       send: "Send Chat Message"

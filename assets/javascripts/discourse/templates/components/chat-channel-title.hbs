@@ -1,7 +1,9 @@
-{{#if (eq channel.chatable_type "Category")}}
-  {{category-badge channel.chatable allowUncategorized="true"}}
-{{else if (eq channel.chatable_type "Topic")}}
-  {{replace-emoji channel.chatable.fancy_title}}
-{{else}}
-  {{i18n "chat.channels.staff"}}
-{{/if}}
+<span class="chat-channel-title">
+  {{#if (eq channel.chatable_type "Category")}}
+    {{category-badge channel.chatable allowUncategorized="true"}}
+  {{else if (eq channel.chatable_type "Topic")}}
+    {{replace-emoji channel.chatable.fancy_title}}
+  {{else}}
+    {{i18n "chat.channels.staff"}}
+  {{/if}}
+</span>

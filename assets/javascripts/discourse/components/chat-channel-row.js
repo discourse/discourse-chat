@@ -8,15 +8,6 @@ export default Component.extend({
   expanded: true,
   nested: false,
 
-  @discourseComputed("nested")
-  classes(nested) {
-    let classes = "chat-channel-row";
-    if (nested) {
-      classes += " nested";
-    }
-    return classes;
-  },
-
   click() {
     this.switchChannel(this.channel);
   },

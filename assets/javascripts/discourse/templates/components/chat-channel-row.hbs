@@ -1,14 +1,8 @@
-<div class={{classes}}>
-  {{#if (eq channel.chatable_type "Category")}}
-    {{#if channel.chat_channels}}
-      <span class="chat-channel-toggle-expand" onclick={{action "toggleExpand"}}>
-        {{#if expanded}}
-          {{d-icon "chevron-up"}}
-        {{else}}
-          {{d-icon "chevron-right"}}
-        {{/if}}
-      </span>
-    {{/if}}
+<div class={{if nested "chat-channel-row nested" "chat-channel-row"}}>
+  {{#if (and (eq channel.chatable_type "Category") channel.chat_channels)}}
+    <span class="chat-channel-toggle-expand" onclick={{action "toggleExpand"}}>
+      {{d-icon (if expanded "chevron-up" "chevron-right")}}
+    </span>
   {{/if}}
   {{chat-channel-title channel=channel}}
 </div>

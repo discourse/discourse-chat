@@ -147,6 +147,24 @@ $header-height: 2.5rem;
     &.transition-slow {
       transition: 2s linear background-color;
     }
+    &.is-reply {
+      display: grid;
+      grid-template-columns: 10% 90%;
+      grid-template-rows: 30px auto;
+      grid-template-areas: "replyto replyto"
+                            "avatar message";
+      .tc-reply-display {
+        grid-area: replyto;
+      }
+      .tc-avatar {
+        grid-area: avatar;
+        width: 100%;
+      }
+      .tc-message-container {
+        grid-area: message;
+        width: 100%;
+      }
+    }
     .tc-avatar {
       width: calc(10% - 0.25em);
       margin-right: 0.25em;

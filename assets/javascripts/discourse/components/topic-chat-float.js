@@ -117,9 +117,9 @@ export default Component.extend({
     }
   },
 
-  openChannelAtMessage(activeChannel, messageId) {
+  openChannelAtMessage(chat_channel_id, messageId) {
     this.chatService.setMessageId(messageId);
-    ajax(`/chat/${activeChannel.id}.json`).then((response) => {
+    ajax(`/chat/${chat_channel_id}.json`).then((response) => {
       this.switchChannel(response.chat_channel);
     });
   },

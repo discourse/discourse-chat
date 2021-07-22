@@ -20,8 +20,10 @@
     autocorrect="on"
     autocapitalize="off"
     placeholder=placeholder}}
-  {{flat-button action=(action "internalSendChat")
-    icon=sendIcon
-    disabled=sendDisabled
-    title=sendTitle}}
+  {{#if expanded}}
+    {{flat-button action=(action "internalSendChat")
+      icon=sendIcon
+      disabled=sendDisabled
+      title=sendTitle}}
+  {{/if}}
 </div>

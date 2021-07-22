@@ -2,7 +2,7 @@ import cookie from "discourse/lib/cookie";
 import getURL from "discourse-common/lib/get-url";
 import I18n from "I18n";
 import RawHtml from "discourse/widgets/raw-html";
-import { ajax, setTransientHeader } from "discourse/lib/ajax";
+import { setTransientHeader } from "discourse/lib/ajax";
 import { createWidgetFrom } from "discourse/widgets/widget";
 import { DefaultNotificationItem } from "discourse/widgets/default-notification-item";
 import { h } from "virtual-dom";
@@ -34,7 +34,7 @@ createWidgetFrom(
         "a",
         { attributes: { title } },
         contents
-      )
+      );
     },
 
     click(e) {
@@ -46,7 +46,7 @@ createWidgetFrom(
       e.preventDefault();
 
       this.sendWidgetEvent("linkClicked");
-      this.appEvents.trigger("chat:open-message", this.attrs.data.chat_channel_id, this.attrs.data.chat_message_id)
+      this.appEvents.trigger("chat:open-message", this.attrs.data.chat_channel_id, this.attrs.data.chat_message_id);
     },
   }
 );

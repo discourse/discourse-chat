@@ -3,8 +3,6 @@ import { equal } from "@ember/object/computed";
 import { ajax } from "discourse/lib/ajax";
 import Component from "@ember/component";
 import discourseComputed from "discourse-common/utils/decorators";
-import getURL from "discourse-common/lib/get-url";
-import I18n from "I18n";
 import { cancel, throttle } from "@ember/runloop";
 import { inject as service } from "@ember/service";
 import loadScript from "discourse/lib/load-script";
@@ -52,7 +50,7 @@ export default Component.extend({
 
   didInsertElement() {
     this._super(...arguments);
-    if (!this.currentUser || !this.currentUser.can_chat) return;
+    if (!this.currentUser || !this.currentUser.can_chat) {return;}
 
     this.appEvents.on("chat:request-open", this, "openChat");
     this.appEvents.on("chat:open-channel", this, "openChannelFor");
@@ -77,7 +75,7 @@ export default Component.extend({
   },
   willDestroyElement() {
     this._super(...arguments);
-    if (!this.currentUser || !this.currentUser.can_chat) return;
+    if (!this.currentUser || !this.currentUser.can_chat) {return;}
 
     if (this.appEvents) {
       this.appEvents.off("chat:request-open", this, "openChat");

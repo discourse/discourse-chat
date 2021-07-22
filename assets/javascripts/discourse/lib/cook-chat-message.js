@@ -1,8 +1,6 @@
 import { escapeExpression } from "discourse/lib/utilities";
 import { emojiUnescape } from "discourse/lib/text";
 const mentionsModule = require("pretty-text/engines/discourse-markdown/mentions");
-const categoryHashtagRegex = require("pretty-text/engines/discourse-markdown/category-hashtag")
-  .categoryHashtagRegex;
 
 export default function cook(raw, siteSettings, categories) {
   let cooked = escapeExpression(raw);
@@ -26,11 +24,11 @@ function transformCategoryTagHashes(raw, categories) {
   return raw.replace(
     /(\s|^)#([\u00C0-\u1FFF\u2C00-\uD7FF\w:-]{1,101})/g,
     function (a, _, b) {
-      const category = categories.find(
+      const matchingCategory = categories.find(
         (category) => category.name.toLowerCase() === b.toLowerCase()
       );
-      const href = category
-        ? `/c/${category.name}/${category.id}`
+      const href = matchingCategory
+        ? `/c/${matchingCategory.name}/${matchingCategory.id}`
         : `/tag/${b}`;
       return `<a class="hashtag" href=${href}>${a}</a>`;
     }

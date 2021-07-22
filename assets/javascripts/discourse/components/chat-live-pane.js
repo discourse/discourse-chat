@@ -281,7 +281,7 @@ export default Component.extend({
         this.messages,
         message
       );
-      if (newMessageIndex === 0) return; // Restored post is too old to show
+      if (newMessageIndex === 0) {return;} // Restored post is too old to show
 
       this.messages.splice(newMessageIndex, 0, message);
       this.notifyPropertyChange("messages");
@@ -293,11 +293,11 @@ export default Component.extend({
 
   binarySearchForMessagePosition(messages, newMessage) {
     const newMessageCreatedAt = Date.parse(newMessage.created_at);
-    if (newMessageCreatedAt < Date.parse(messages[0].created_at)) return 0;
+    if (newMessageCreatedAt < Date.parse(messages[0].created_at)) {return 0;}
     if (
       newMessageCreatedAt > Date.parse(messages[messages.length - 1].created_at)
     )
-      return messages.length;
+      {return messages.length;}
     let m = 0;
     let n = messages.length - 1;
     while (m <= n) {

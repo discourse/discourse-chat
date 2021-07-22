@@ -7,9 +7,28 @@ import getURL from "discourse-common/lib/get-url";
 import I18n from "I18n";
 import { cancel, throttle } from "@ember/runloop";
 import { inject as service } from "@ember/service";
+import loadScript from "discourse/lib/load-script";
+import { Promise } from "rsvp";
+import Session from "discourse/models/session";
 
 export const LIST_VIEW = "list_view";
 export const CHAT_VIEW = "chat_view";
+
+const loadMarkdownIt = function () {
+  return new Promise((resolve) => {
+    let markdownItURL = Session.currentProp("markdownItURL");
+    if (markdownItURL) {
+      loadScript(markdownItURL)
+        .then(() => resolve())
+        .catch((e) => {
+          // eslint-disable-next-line no-console
+          console.error(e);
+        });
+    } else {
+      resolve();
+    }
+  });
+};
 
 export default Component.extend({
   chatView: equal("view", CHAT_VIEW),
@@ -24,6 +43,7 @@ export default Component.extend({
   sizeTimer: null,
   rafTimer: null,
   view: null,
+  markdownItLoaded: false,
 
   unreadMessageCount: 0,
 
@@ -50,8 +70,11 @@ export default Component.extend({
       "_startDynamicCheckSize"
     );
     this.appEvents.on("composer:resize-ended", this, "_clearDynamicCheckSize");
-  },
 
+    loadMarkdownIt().then(() => {
+      this.set("markdownItLoaded", true);
+    });
+  },
   willDestroyElement() {
     this._super(...arguments);
     if (!this.currentUser || !this.currentUser.can_chat) return;

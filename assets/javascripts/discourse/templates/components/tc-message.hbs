@@ -70,7 +70,7 @@
             </span>
           {{else}}
             <p class="tc-text">
-              {{message.message}}
+              {{html-safe cooked}}
             </p>
           {{/if}}
         </p>

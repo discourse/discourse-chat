@@ -3,7 +3,7 @@ import Component from "@ember/component";
 import discourseComputed, { observes } from "discourse-common/utils/decorators";
 import userSearch from "discourse/lib/user-search";
 import { action } from "@ember/object";
-import { cancel, later, schedule, throttle  } from "@ember/runloop";
+import { cancel, later, schedule, throttle } from "@ember/runloop";
 import { categoryHashtagTriggerRule } from "discourse/lib/category-hashtags";
 import { findRawTemplate } from "discourse-common/lib/raw-templates";
 import { emojiSearch, isSkinTonableEmoji } from "pretty-text/emoji";
@@ -14,6 +14,13 @@ import { search as searchCategoryTag } from "discourse/lib/category-tag-search";
 import { SKIP } from "discourse/lib/autocomplete";
 import { translations } from "pretty-text/emoji/data";
 import { Promise } from "rsvp";
+
+const autocompleteModifiers = [
+  {
+    name: "eventListeners",
+    options: { scroll: false },
+  },
+];
 
 export default Component.extend({
   classNames: ["tc-composer"],
@@ -92,12 +99,7 @@ export default Component.extend({
         autoSelectFirstSuggestion: true,
         transformComplete: (v) => v.username || v.name,
         dataSource: (term) => userSearch({ term, includeGroups: false }),
-        modifiers: [
-          {
-            name: "eventListeners",
-            options: { scroll: false },
-          },
-        ],
+        modifiers: autocompleteModifiers,
       });
     }
   },
@@ -125,6 +127,7 @@ export default Component.extend({
       triggerRule: (textarea, opts) => {
         return categoryHashtagTriggerRule(textarea, opts);
       },
+      modifiers: autocompleteModifiers,
     });
   },
 
@@ -137,6 +140,7 @@ export default Component.extend({
       template: findRawTemplate("emoji-selector-autocomplete"),
       treatAsTextarea: true,
       key: ":",
+      modifiers: autocompleteModifiers,
       afterComplete: (text) => {
         this.set("value", text);
         this._focusTextArea();

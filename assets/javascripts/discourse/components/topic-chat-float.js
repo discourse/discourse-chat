@@ -7,26 +7,9 @@ import { cancel, throttle } from "@ember/runloop";
 import { inject as service } from "@ember/service";
 import loadScript from "discourse/lib/load-script";
 import { Promise } from "rsvp";
-import Session from "discourse/models/session";
 
 export const LIST_VIEW = "list_view";
 export const CHAT_VIEW = "chat_view";
-
-const loadMarkdownIt = function () {
-  return new Promise((resolve) => {
-    let markdownItURL = Session.currentProp("markdownItURL");
-    if (markdownItURL) {
-      loadScript(markdownItURL)
-        .then(() => resolve())
-        .catch((e) => {
-          // eslint-disable-next-line no-console
-          console.error(e);
-        });
-    } else {
-      resolve();
-    }
-  });
-};
 
 export default Component.extend({
   chatView: equal("view", CHAT_VIEW),
@@ -50,7 +33,9 @@ export default Component.extend({
 
   didInsertElement() {
     this._super(...arguments);
-    if (!this.currentUser || !this.currentUser.can_chat) {return;}
+    if (!this.currentUser || !this.currentUser.can_chat) {
+      return;
+    }
 
     this.appEvents.on("chat:request-open", this, "openChat");
     this.appEvents.on("chat:open-channel", this, "openChannelFor");
@@ -69,13 +54,15 @@ export default Component.extend({
     );
     this.appEvents.on("composer:resize-ended", this, "_clearDynamicCheckSize");
 
-    loadMarkdownIt().then(() => {
+    this.loadMarkdownIt().then(() => {
       this.set("markdownItLoaded", true);
     });
   },
   willDestroyElement() {
     this._super(...arguments);
-    if (!this.currentUser || !this.currentUser.can_chat) {return;}
+    if (!this.currentUser || !this.currentUser.can_chat) {
+      return;
+    }
 
     if (this.appEvents) {
       this.appEvents.off("chat:request-open", this, "openChat");
@@ -106,6 +93,22 @@ export default Component.extend({
     if (this.rafTimer) {
       window.cancelAnimationFrame(this.rafTimer);
     }
+  },
+
+  loadMarkdownIt() {
+    return new Promise((resolve) => {
+      let markdownItURL = this.session.markdownItURL;
+      if (markdownItURL) {
+        loadScript(markdownItURL)
+          .then(() => resolve())
+          .catch((e) => {
+            // eslint-disable-next-line no-console
+            console.error(e);
+          });
+      } else {
+        resolve();
+      }
+    });
   },
 
   openChannelFor(chatable) {

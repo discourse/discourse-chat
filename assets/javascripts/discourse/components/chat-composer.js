@@ -15,7 +15,7 @@ import { SKIP } from "discourse/lib/autocomplete";
 import { translations } from "pretty-text/emoji/data";
 import { Promise } from "rsvp";
 
-const autocompleteModifiers = [
+const AUTOCOMPLETE_MODIFIERS = [
   {
     name: "eventListeners",
     options: { scroll: false },
@@ -99,7 +99,7 @@ export default Component.extend({
         autoSelectFirstSuggestion: true,
         transformComplete: (v) => v.username || v.name,
         dataSource: (term) => userSearch({ term, includeGroups: false }),
-        modifiers: autocompleteModifiers,
+        modifiers: AUTOCOMPLETE_MODIFIERS,
       });
     }
   },
@@ -127,7 +127,7 @@ export default Component.extend({
       triggerRule: (textarea, opts) => {
         return categoryHashtagTriggerRule(textarea, opts);
       },
-      modifiers: autocompleteModifiers,
+      modifiers: AUTOCOMPLETE_MODIFIERS,
     });
   },
 
@@ -140,7 +140,7 @@ export default Component.extend({
       template: findRawTemplate("emoji-selector-autocomplete"),
       treatAsTextarea: true,
       key: ":",
-      modifiers: autocompleteModifiers,
+      modifiers: AUTOCOMPLETE_MODIFIERS,
       afterComplete: (text) => {
         this.set("value", text);
         this._focusTextArea();
@@ -163,18 +163,6 @@ export default Component.extend({
         } else {
           $textarea.autocomplete({ cancel: true });
           this.set("emojiPickerIsActive", true);
-
-          schedule("afterRender", () => {
-            const filterInput = document.querySelector(
-              ".emoji-picker input[name='filter']"
-            );
-            if (filterInput) {
-              filterInput.value = v.term;
-
-              later(() => filterInput.dispatchEvent(new Event("input")), 50);
-            }
-          });
-
           return "";
         }
       },

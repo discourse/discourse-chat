@@ -5,7 +5,7 @@ import discourseComputed from "discourse-common/utils/decorators";
 import { prioritizeNameInUx } from "discourse/lib/settings";
 import { action } from "@ember/object";
 import { autoUpdatingRelativeAge } from "discourse/lib/formatter";
-import cookChatMessage from "../lib/cook-chat-message";
+import cookChatMessage from "discourse/plugins/discourse-topic-chat/discourse/lib/cook-chat-message";
 import I18n from "I18n";
 
 export default Component.extend({

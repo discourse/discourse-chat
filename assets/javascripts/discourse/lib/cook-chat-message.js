@@ -1,3 +1,4 @@
+import getURL from "discourse-common/lib/get-url";
 import { escapeExpression } from "discourse/lib/utilities";
 import { emojiUnescape } from "discourse/lib/text";
 const mentionsModule = require("pretty-text/engines/discourse-markdown/mentions");
@@ -16,7 +17,8 @@ function transformMentions(raw, unicode_usernames) {
     "g"
   );
   return raw.replace(mentionRegex, function (a, b) {
-    return `<a class="mention" href="/u/${b}">${a}</a>`;
+    const href = getURL(`/u/${b}`);
+    return `<a class="mention" href="${href}">${a}</a>`;
   });
 }
 
@@ -27,9 +29,11 @@ function transformCategoryTagHashes(raw, categories) {
       const matchingCategory = categories.find(
         (category) => category.name.toLowerCase() === b.toLowerCase()
       );
-      const href = matchingCategory
-        ? `/c/${matchingCategory.name}/${matchingCategory.id}`
-        : `/tag/${b}`;
+      const href = getURL(
+        matchingCategory
+          ? `/c/${matchingCategory.name}/${matchingCategory.id}`
+          : `/tag/${b}`
+      );
       return `<a class="hashtag" href=${href}>${a}</a>`;
     }
   );

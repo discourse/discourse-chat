@@ -26,7 +26,7 @@
     </div>
     <div class="topic-chat-drawer-content">
       {{#if chatView}}
-        {{#if this.activeChannel}}
+        {{#if (and this.activeChannel markdownItLoaded)}}
           {{chat-live-pane
             chatChannel=activeChannel
             newMessageCb=(action "newMessageCb")

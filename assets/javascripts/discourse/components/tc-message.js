@@ -5,6 +5,7 @@ import discourseComputed from "discourse-common/utils/decorators";
 import { prioritizeNameInUx } from "discourse/lib/settings";
 import { action } from "@ember/object";
 import { autoUpdatingRelativeAge } from "discourse/lib/formatter";
+import cookChatMessage from "discourse/plugins/discourse-topic-chat/discourse/lib/cook-chat-message";
 import I18n from "I18n";
 
 export default Component.extend({
@@ -22,6 +23,11 @@ export default Component.extend({
       this.currentUser === this.message.user.id ||
       this.currentUser.staff
     );
+  },
+
+  @discourseComputed("message.message")
+  cooked(raw) {
+    return cookChatMessage(raw, this.siteSettings, this.site.categories);
   },
 
   @discourseComputed(
@@ -81,7 +87,7 @@ export default Component.extend({
 
   @discourseComputed("message", "message.deleted_at")
   showFlagButton(message, deletedAt) {
-    return !deletedAt
+    return !deletedAt;
     // TODO: Add flagging
     // return this.details.can_flag && !message.action_code && !deletedAt;
   },

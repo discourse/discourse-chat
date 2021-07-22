@@ -51,11 +51,18 @@ $header-height: 2.5rem;
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
   height: 2.5em;
-  //overflow-y: hidden;
 
   &.expanded {
     max-height: 530px;
     height: calc(85vh - var(--composer-height, 0px));
+    
+    // only show button when expanded
+    .tc-live-pane .tc-composer .btn-flat {
+      position: absolute;
+      bottom: 20px;
+      right: 2.5em;
+      color: var(--primary-low);
+    }
 
     .tc-live-pane,
     .tc-chat-listing {
@@ -315,12 +322,6 @@ $header-height: 2.5rem;
           color: var(--tertiary);
         }
       } 
-    }
-    .btn-flat {
-      position: absolute;
-      bottom: 20px;
-      right: 2.5em;
-      color: var(--primary-low);
     }
     .tc-composer-replypreview {
       display: flex;

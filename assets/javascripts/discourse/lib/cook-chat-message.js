@@ -4,6 +4,10 @@ import { emojiUnescape } from "discourse/lib/text";
 const mentionsModule = require("pretty-text/engines/discourse-markdown/mentions");
 
 export default function cook(raw, siteSettings, categories) {
+  if (!raw) {
+    return;
+  }
+
   let cooked = escapeExpression(raw);
   cooked = transformMentions(cooked, siteSettings.unicode_usernames);
   cooked = transformCategoryTagHashes(cooked, categories);

@@ -302,7 +302,8 @@ $header-height: 2.5rem;
     .tc-composer-input {
       margin-bottom: 0;
       resize: none;
-      height: 25px;
+      min-height: 25px;
+      max-height: 100px;
       padding: 8px 2em 8px 8px;
       width: calc(100% - 8px - 2em);
       border-radius: 4px;

@@ -49,7 +49,7 @@
             {{avatar message.in_reply_to.user imageSize="tiny"}}
           </span>
           <span class="tc-reply-msg">
-            {{html-safe message.in_reply_to.message}}
+            {{html-safe message.in_reply_to.cookedMessage}}
           </span>
         </div>
       {{/if}}
@@ -70,7 +70,7 @@
             </span>
           {{else}}
             <p class="tc-text">
-              {{message.message}}
+              {{html-safe message.cookedMessage}}
             </p>
           {{/if}}
         </p>

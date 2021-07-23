@@ -3,6 +3,7 @@ import EmberObject, { action } from "@ember/object";
 import { ajax } from "discourse/lib/ajax";
 import Component from "@ember/component";
 import { observes } from "discourse-common/utils/decorators";
+import cookChatMessage from "discourse/plugins/discourse-topic-chat/discourse/lib/cook-chat-message";
 import discourseDebounce from "discourse-common/lib/debounce";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { cancel, later, schedule } from "@ember/runloop";
@@ -221,6 +222,11 @@ export default Component.extend({
       msgData.in_reply_to = this.messageLookup[msgData.in_reply_to_id];
     }
     msgData.expanded = !msgData.deleted_at;
+    msgData.cookedMessage = cookChatMessage(
+      msgData.message,
+      this.siteSettings,
+      this.site.categories
+    );
     this.messageLookup[msgData.id] = msgData;
     return EmberObject.create(msgData);
   },
@@ -281,7 +287,9 @@ export default Component.extend({
         this.messages,
         message
       );
-      if (newMessageIndex === 0) return; // Restored post is too old to show
+      if (newMessageIndex === 0) {
+        return;
+      } // Restored post is too old to show
 
       this.messages.splice(newMessageIndex, 0, message);
       this.notifyPropertyChange("messages");
@@ -293,11 +301,14 @@ export default Component.extend({
 
   binarySearchForMessagePosition(messages, newMessage) {
     const newMessageCreatedAt = Date.parse(newMessage.created_at);
-    if (newMessageCreatedAt < Date.parse(messages[0].created_at)) return 0;
+    if (newMessageCreatedAt < Date.parse(messages[0].created_at)) {
+      return 0;
+    }
     if (
       newMessageCreatedAt > Date.parse(messages[messages.length - 1].created_at)
-    )
+    ) {
       return messages.length;
+    }
     let m = 0;
     let n = messages.length - 1;
     while (m <= n) {

@@ -1,9 +1,5 @@
 import { ajax } from "discourse/lib/ajax";
-import { h } from "virtual-dom";
-import { iconNode } from "discourse-common/lib/icon-library";
-import { createWidget } from "discourse/widgets/widget";
 import I18n from "I18n";
-import { includeAttributes } from "discourse/lib/transform-post";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import RawTopicStatus from "discourse/raw-views/topic-status";
 import { withPluginApi } from "discourse/lib/plugin-api";

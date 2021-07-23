@@ -3,10 +3,10 @@ import { equal } from "@ember/object/computed";
 import { ajax } from "discourse/lib/ajax";
 import Component from "@ember/component";
 import discourseComputed from "discourse-common/utils/decorators";
-import getURL from "discourse-common/lib/get-url";
-import I18n from "I18n";
 import { cancel, throttle } from "@ember/runloop";
 import { inject as service } from "@ember/service";
+import loadScript from "discourse/lib/load-script";
+import { Promise } from "rsvp";
 
 export const LIST_VIEW = "list_view";
 export const CHAT_VIEW = "chat_view";
@@ -24,6 +24,7 @@ export default Component.extend({
   sizeTimer: null,
   rafTimer: null,
   view: null,
+  markdownItLoaded: false,
 
   unreadMessageCount: 0,
 
@@ -32,7 +33,9 @@ export default Component.extend({
 
   didInsertElement() {
     this._super(...arguments);
-    if (!this.currentUser || !this.currentUser.can_chat) return;
+    if (!this.currentUser || !this.currentUser.can_chat) {
+      return;
+    }
 
     this.appEvents.on("chat:request-open", this, "openChat");
     this.appEvents.on("chat:open-channel", this, "openChannelFor");
@@ -50,11 +53,16 @@ export default Component.extend({
       "_startDynamicCheckSize"
     );
     this.appEvents.on("composer:resize-ended", this, "_clearDynamicCheckSize");
-  },
 
+    this.loadMarkdownIt().then(() => {
+      this.set("markdownItLoaded", true);
+    });
+  },
   willDestroyElement() {
     this._super(...arguments);
-    if (!this.currentUser || !this.currentUser.can_chat) return;
+    if (!this.currentUser || !this.currentUser.can_chat) {
+      return;
+    }
 
     if (this.appEvents) {
       this.appEvents.off("chat:request-open", this, "openChat");
@@ -87,15 +95,31 @@ export default Component.extend({
     }
   },
 
+  loadMarkdownIt() {
+    return new Promise((resolve) => {
+      let markdownItURL = this.session.markdownItURL;
+      if (markdownItURL) {
+        loadScript(markdownItURL)
+          .then(() => resolve())
+          .catch((e) => {
+            // eslint-disable-next-line no-console
+            console.error(e);
+          });
+      } else {
+        resolve();
+      }
+    });
+  },
+
   openChannelFor(chatable) {
     if (chatable.chat_channel) {
       this.switchChannel(chatable.chat_channel);
     }
   },
 
-  openChannelAtMessage(activeChannel, messageId) {
+  openChannelAtMessage(chat_channel_id, messageId) {
     this.chatService.setMessageId(messageId);
-    ajax(`/chat/${activeChannel.id}.json`).then((response) => {
+    ajax(`/chat/${chat_channel_id}.json`).then((response) => {
       this.switchChannel(response.chat_channel);
     });
   },

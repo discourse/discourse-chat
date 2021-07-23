@@ -298,6 +298,10 @@ $header-height: 2.5rem;
       display: flex;
       flex-direction: row;
       align-items: stretch;
+
+      .autocomplete {
+        transform: translateY(-100%);
+      }
     }
     .tc-composer-input {
       margin-bottom: 0;
@@ -313,7 +317,7 @@ $header-height: 2.5rem;
         + .btn-flat .d-icon {
           color: var(--tertiary);
         }
-      } 
+      }
     }
     .btn-flat {
       position: absolute;

@@ -15,13 +15,6 @@ import { SKIP } from "discourse/lib/autocomplete";
 import { translations } from "pretty-text/emoji/data";
 import { Promise } from "rsvp";
 
-const AUTOCOMPLETE_MODIFIERS = [
-  {
-    name: "eventListeners",
-    options: { scroll: false },
-  },
-];
-
 export default Component.extend({
   classNames: ["tc-composer"],
   value: "",
@@ -95,11 +88,9 @@ export default Component.extend({
         template: findRawTemplate("user-selector-autocomplete"),
         key: "@",
         width: "100%",
-        treatAsTextarea: true,
         autoSelectFirstSuggestion: true,
         transformComplete: (v) => v.username || v.name,
         dataSource: (term) => userSearch({ term, includeGroups: false }),
-        modifiers: AUTOCOMPLETE_MODIFIERS,
       });
     }
   },
@@ -110,7 +101,6 @@ export default Component.extend({
     $textarea.autocomplete({
       template: findRawTemplate("category-tag-autocomplete"),
       key: "#",
-      treatAsTextarea: true,
       afterComplete: (value) => {
         this.set("value", value);
         return this._focusTextArea();
@@ -127,7 +117,6 @@ export default Component.extend({
       triggerRule: (textarea, opts) => {
         return categoryHashtagTriggerRule(textarea, opts);
       },
-      modifiers: AUTOCOMPLETE_MODIFIERS,
     });
   },
 
@@ -138,9 +127,7 @@ export default Component.extend({
 
     $textarea.autocomplete({
       template: findRawTemplate("emoji-selector-autocomplete"),
-      treatAsTextarea: true,
       key: ":",
-      modifiers: AUTOCOMPLETE_MODIFIERS,
       afterComplete: (text) => {
         this.set("value", text);
         this._focusTextArea();

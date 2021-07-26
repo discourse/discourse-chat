@@ -101,7 +101,7 @@ export default {
       });
 
       api.decorateWidget("hamburger-menu:generalLinks", () => {
-        if (currentUser && currentUser.can_chat) {
+        if (currentUser?.can_chat) {
           return {
             action: "openChat",
             icon: "comment",

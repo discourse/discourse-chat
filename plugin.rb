@@ -14,6 +14,7 @@ register_asset 'stylesheets/drawer.scss'
 register_svg_icon "comments"
 register_svg_icon "comment-slash"
 register_svg_icon "hashtag"
+register_svg_icon "lock"
 
 after_initialize do
   module ::DiscourseChat

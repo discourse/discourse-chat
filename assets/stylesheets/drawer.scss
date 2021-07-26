@@ -86,6 +86,9 @@ $header-height: 2.5rem;
     .chat-channel-title .d-icon:not(.d-icon-hashtag) {
       color: var(--primary-high);
     }
+    .chat-channel-title .category-hashtag {
+      padding: 2px 4px 2px 4px;
+    }
   }
   .tc-unread-count {
     color: var(--secondary, $secondary);
@@ -425,7 +428,7 @@ $header-height: 2.5rem;
   }
   .category-hashtag {
     font-size: 10px;
-    padding: 3px 4px 1px 4px;
+    padding: 1px 3px;
     border-radius: 50%;
   }
   .chat-category-name {

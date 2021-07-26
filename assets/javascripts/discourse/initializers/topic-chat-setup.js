@@ -93,20 +93,23 @@ export default {
         },
       });
 
-      api.reopenWidget("quick-access-profile", {
+      api.reopenWidget("hamburger-menu", {
         openChat() {
           appEvents.trigger("chat:request-open");
+          this.sendWidgetAction("toggleHamburger");
         },
       });
 
-      if (currentUser && currentUser.can_chat) {
-        api.addQuickAccessProfileItem({
-          action: "openChat",
-          className: "open-chat",
-          icon: "comment",
-          content: I18n.t("chat.open"),
-        });
-      }
+      api.decorateWidget("hamburger-menu:generalLinks", () => {
+        if (currentUser && currentUser.can_chat) {
+          return {
+            action: "openChat",
+            icon: "comment",
+            label: "chat.title",
+            className: "open-chat",
+          };
+        }
+      });
     });
   },
 };

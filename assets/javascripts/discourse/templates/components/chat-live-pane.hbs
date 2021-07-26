@@ -1,7 +1,12 @@
 <div class="tc-messages-scroll tc-messages-container">
   {{#conditional-loading-spinner condition=this.loading}}
     {{#each this.messages as |message|}}
-      {{tc-message message=message details=this.details setReplyTo=(action "setReplyTo")}}
+      {{tc-message
+        message=message
+        details=this.details
+        setReplyTo=(action "setReplyTo")
+        editButtonClicked=(action "editButtonClicked")
+      }}
     {{/each}}
   {{/conditional-loading-spinner}}
 </div>
@@ -16,12 +21,15 @@
 
 {{#if expanded}}
   {{chat-composer
-    sendChat=(action "sendChat")
+    sendMessage=(action "sendMessage")
+    editMessage=(action "editMessage")
     onChangeHeight=(action "composerHeightChange")
     setReplyTo=(action "setReplyTo")
     loading=sendingloading
     canChat=this.details.can_chat
     replyToMsg=this.replyToMsg
-    }}
+    editingMessage=this.editingMessage
+    onCancelEditing=this.cancelEditing
+  }}
 {{/if}}
 

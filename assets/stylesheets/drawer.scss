@@ -294,21 +294,21 @@ $header-height: 2.5rem;
     width: 95%;
     margin: 0 auto 0.5em auto;
 
-    .tc-composer-row {
-      display: flex;
-      flex-direction: row;
-      align-items: stretch;
+    .tc-reply-username {
+      font-weight: bold;
     }
-    .tc-composer-input {
-      margin-bottom: 0;
-      resize: none;
-      min-height: 25px;
-      max-height: 100px;
-      padding: 8px 2em 8px 8px;
-      width: calc(100% - 8px - 2em);
-      border-radius: 4px;
-      border: 1px solid var(--primary-low-mid);
-      &:focus {
+
+    .tc-composer-row {
+      display: grid;
+
+      &::after {
+        content: attr(data-replicated-value) " ";
+        white-space: pre-wrap;
+        visibility: hidden;
+        outline: none;
+      }
+
+      &:focus, .tc-composer-input:focus {
         border: 1px solid var(--primary-medium);
         outline: none;
         + .btn-flat .d-icon {
@@ -316,30 +316,41 @@ $header-height: 2.5rem;
         }
       }
     }
-    .btn-flat {
-      position: absolute;
-      bottom: 20px;
-      right: 2.5em;
-      color: var(--primary-low);
+
+    .tc-composer-row > .tc-composer-input,
+    .tc-composer-row::after {
+      grid-area: 1 / 1 / 2 / 2;
+      margin-bottom: 0;
+      resize: none;
+      max-height: 125px;
+      padding: 8px 2em 8px 8px;
+      width: calc(100% - 8px - 2em);
+      border-radius: 4px;
+      border: 1px solid var(--primary-low-mid);
     }
-    .tc-composer-replypreview {
+
+    .tc-composer-message-details {
+      position: relative;
       display: flex;
+      width: 100%;
       flex-direction: row;
-      padding-left: 4px;
+      padding: 6px 4px;
       height: 1.6em;
+      border-top: 1px solid var(--primary-low);
 
       .width-limited {
         display: inline-block;
         text-overflow: ellipsis;
-        overflow-x: hidden;
+        overflow: hidden;
         white-space: nowrap;
         flex-grow: 1;
       }
     }
-    .tc-cancel-reply {
-      align-self: flex-end;
+    .cancel-message-action {
+      position: absolute;
+      top: 6px;
+      right: 5px;
       padding: 4px;
-      margin-right: 2em;
     }
 
     .d-icon {
@@ -359,20 +370,6 @@ $header-height: 2.5rem;
       right: 1em;
       bottom: 1.25em;
     }
-  }
-}
-
-.tc-composer-replypreview,
-.tc-reply-display {
-  color: var(--secondary-medium);
-  .tc-reply-av {
-    margin-left: 2px;
-  }
-  .tc-reply-username {
-    font-weight: bold;
-  }
-  .tc-reply-msg {
-    text-overflow: ellipsis;
   }
 }
 

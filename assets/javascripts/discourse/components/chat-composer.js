@@ -3,7 +3,7 @@ import Component from "@ember/component";
 import discourseComputed, { observes } from "discourse-common/utils/decorators";
 import userSearch from "discourse/lib/user-search";
 import { action } from "@ember/object";
-import { cancel, later, schedule, throttle } from "@ember/runloop";
+import { cancel, later, schedule, throttle, next } from "@ember/runloop";
 import { categoryHashtagTriggerRule } from "discourse/lib/category-hashtags";
 import { findRawTemplate } from "discourse-common/lib/raw-templates";
 import { emojiSearch, isSkinTonableEmoji } from "pretty-text/emoji";
@@ -15,14 +15,16 @@ import { SKIP } from "discourse/lib/autocomplete";
 import { translations } from "pretty-text/emoji/data";
 import { Promise } from "rsvp";
 
+const THROTTLE_MS = 150;
+
 export default Component.extend({
   classNames: ["tc-composer"],
   value: "",
-  sendIcon: "play",
-  sendTitle: "chat.send",
   emojiStore: service("emoji-store"),
-
+  editingMessage: null,
+  valueBeforeEditing: null,
   timer: null,
+  inputDisabled: not("canChat"),
 
   didInsertElement() {
     this._super(...arguments);
@@ -57,7 +59,12 @@ export default Component.extend({
       }
       // Ctrl+Enter, plain Enter: send
 
-      this.send("internalSendChat", evt);
+      evt.preventDefault();
+      if (this.editingMessage) {
+        this.send("internalEditMessage", evt);
+      } else {
+        this.send("internalSendMessage", evt);
+      }
     }
     if (evt.code === "Escape") {
       if (this.replyToMsg) {
@@ -69,16 +76,35 @@ export default Component.extend({
     }
   },
 
+  @observes("editingMessage")
+  _watchEditingMessageChanges() {
+    if (this.editingMessage) {
+      this.set("valueBeforeEditing", this.value);
+      this.set("value", this.editingMessage.message)
+      this._focusTextArea({ ensureAtEnd: true, resizeTextArea: true })
+    }
+  },
+
+  @action
+  cancelEditing() {
+    this.setProperties({
+      value: this.valueBeforeEditing,
+      editingMessage: null
+    });
+    this.onCancelEditing();
+    this._focusTextArea({ ensureAtEnd: true, resizeTextArea: true })
+  },
+
   @observes("value")
   _watchChanges() {
     // throttle, not debounce, because we do eventually want to react during the typing
     this.timer = throttle(
       this,
       () => {
-        this._setMinHeight();
+        this._resizeTextArea();
         this._applyUserAutocomplete();
       },
-      150
+      THROTTLE_MS
     );
   },
 
@@ -224,7 +250,7 @@ export default Component.extend({
     });
   },
 
-  _focusTextArea() {
+  _focusTextArea(opts = { ensureAtEnd: false, resizeTextArea: true }) {
     schedule("afterRender", () => {
       if (!this.element || this.isDestroying || this.isDestroyed) {
         return;
@@ -236,16 +262,20 @@ export default Component.extend({
 
       this.textarea.blur();
       this.textarea.focus();
+
+      if (opts.resizeTextArea) {
+        this._resizeTextArea();
+      }
+
+      if (opts.ensureAtEnd) {
+        this.textarea.setSelectionRange(this.value.length, this.value.length);
+      }
     });
   },
 
-  _setMinHeight() {
-    const textarea = this.textarea;
-    if (textarea.scrollHeight > textarea.clientHeight) {
-      if (textarea.rows < 3) {
-        textarea.rows = textarea.rows + 1;
-      }
-    }
+  _resizeTextArea() {
+    this.textarea.parentNode.dataset.replicatedValue = this.textarea.value;
+
     if (this.onChangeHeight) {
       this.onChangeHeight();
     }
@@ -261,25 +291,30 @@ export default Component.extend({
     return !canChat || loading;
   },
 
-  inputDisabled: not("canChat"),
-
-  // evt: either ClickEvent or KeyboardEvent
   @action
-  internalSendChat(evt) {
-    if (evt) {
-      evt.preventDefault();
+  internalSendMessage(evt) {
+    if (this._messageIsValid()) {
+      return this.sendMessage(this.value).then(this._reset);
     }
-    if ((this.value || "").trim() === "") {
-      return;
+  },
+
+  @action
+  internalEditMessage(evt) {
+    if (this._messageIsValid()) {
+      return this.editMessage(this.value).then(this._reset);
     }
-    return this.sendChat(this.value, evt).then(() => {
-      this.set("value", "");
-      // If user resized textarea to write a long message, reset it.
-      const textarea = this.element.querySelector("textarea");
-      textarea.style = "";
-      textarea.rows = 1;
-      textarea.focus();
-    });
+  },
+
+  _messageIsValid() {
+    this.canChat && (this.value || "").trim() !== "")
+  },
+
+  _reset() {
+    this.setProperties({
+      value: "",
+      editingMessage: null
+    })
+    this._focusTextArea();
   },
 
   @action

@@ -1,16 +1,18 @@
 {{#if replyToMsg}}
-  <div class="tc-composer-replypreview">
-    <span class="width-limited">
-      {{d-icon "reply"}}
-      <span class="tc-reply-av">{{avatar replyToMsg.user imageSize="tiny"}}</span>
-      <span class="tc-reply-username">@{{replyToMsg.user.username}}</span>
-      <span class="tc-reply-msg">{{html-safe replyToMsg.cookedMessage}}</span>
-    </span>
-    {{flat-button action=(action "cancelReplyTo")
-      class="tc-cancel-reply"
-      icon="times-circle"
-      title="chat.reply_cancel"}}
-  </div>
+  {{chat-composer-message-details
+    message=replyToMsg
+    icon="reply"
+    action=(action "cancelReplyTo")
+    title="chat.cancel_reply"
+  }}
+{{/if}}
+{{#if editingMessage}}
+  {{chat-composer-message-details
+    message=editingMessage
+    icon="pencil-alt"
+    action=(action "cancelEditing")
+    title="chat.reply_edit"
+  }}
 {{/if}}
 <div class="tc-composer-row">
   {{d-textarea value=value
@@ -20,8 +22,4 @@
     autocorrect="on"
     autocapitalize="off"
     placeholder=placeholder}}
-  {{flat-button action=(action "internalSendChat")
-    icon=sendIcon
-    disabled=sendDisabled
-    title=sendTitle}}
 </div>

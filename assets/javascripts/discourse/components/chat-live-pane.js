@@ -22,6 +22,7 @@ export default Component.extend({
   stickyScroll: true,
   stickyScrollTimer: null,
 
+  editingMessage: null, // ?Message
   replyToMsg: null, // ?Message
   details: null, // Object { chat_channel_id, can_chat, ... }
   messages: null, // Array
@@ -250,9 +251,9 @@ export default Component.extend({
   },
 
   handleSentMessage(data) {
-    const msg = this.prepareMessage(data.topic_chat_message);
+    const newMessage = this.prepareMessage(data.topic_chat_message);
+    this.messages.pushObject(newMessage);
 
-    this.messages.pushObject(msg);
     if (this.messages.length >= MAX_RECENT_MSGS) {
       this.removeMessage(this.messages.shiftObject());
     }
@@ -264,7 +265,7 @@ export default Component.extend({
 
   handleDeleteMessage(data) {
     const deletedId = data.deleted_id;
-    const targetMsg = this.messages.findBy("id", deletedId);
+    const targetMsg = this.messageLookup[deletedId];
     if (this.currentUser.staff || this.currentUser.id === targetMsg.user.id) {
       targetMsg.setProperties({
         deleted_at: data.deleted_at,
@@ -272,11 +273,12 @@ export default Component.extend({
       });
     } else {
       this.messages.removeObject(targetMsg);
+      this.messageLookup[deletedId] = null;
     }
   },
 
   handleRestoreMessage(data) {
-    let message = this.messages.findBy("id", data.topic_chat_message.id);
+    let message = this.messageLookup[data.topic_chat_message.id];
     if (message) {
       message.set("deleted_at", null);
     } else {
@@ -340,7 +342,7 @@ export default Component.extend({
   },
 
   @action
-  sendChat(message) {
+  sendMessage(message) {
     this.set("sendingloading", true);
     let data = { message };
     if (this.replyToMsg) {
@@ -366,9 +368,14 @@ export default Component.extend({
   },
 
   @action
-  setReplyTo(msgId) {
-    if (msgId) {
-      this.set("replyToMsg", this.messages.findBy("id", msgId));
+  editMessage(message) {
+    console.log(message)
+  },
+
+  @action
+  setReplyTo(messageId) {
+    if (messageId) {
+      this.set("replyToMsg", this.messageLookup[messageId]);
       const textarea = this.element.querySelector(".tc-composer textarea");
       if (textarea) {
         textarea.focus();
@@ -377,6 +384,18 @@ export default Component.extend({
       this.set("replyToMsg", null);
     }
     schedule("afterRender", this, this.doScrollStick);
+  },
+
+  @action
+  editButtonClicked(messageId) {
+    const message = this.messageLookup[messageId];
+    this.set("editingMessage", message);
+    schedule("afterRender", this, this.doScrollStick);
+  },
+
+  @action
+  cancelEditing() {
+    this.set("editingMessage", null);
   },
 
   @action

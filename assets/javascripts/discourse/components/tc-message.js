@@ -80,8 +80,18 @@ export default Component.extend({
   },
 
   @discourseComputed("message", "message.deleted_at")
+  showEditButton(message, deletedAt) {
+    return (
+      this.details.can_chat &&
+      !message.action_code &&
+      !deletedAt &&
+      (this.currentUser?.id === message.user.id || this.currentUser?.staff)
+    );
+  },
+
+  @discourseComputed("message", "message.deleted_at")
   showFlagButton(message, deletedAt) {
-    return !deletedAt;
+    return this.currentUser?.id !== message.user.id && !deletedAt;
     // TODO: Add flagging
     // return this.details.can_flag && !message.action_code && !deletedAt;
   },
@@ -90,7 +100,7 @@ export default Component.extend({
   canManageDeletion(message) {
     return (
       !message.action_code &&
-      (this.currentUser && this.currentUser.id === message.user.id
+      (this.currentUser?.id === message.user.id
         ? this.details.can_delete_self
         : this.details.can_delete_others)
     );
@@ -122,6 +132,11 @@ export default Component.extend({
   @action
   reply() {
     this.setReplyTo(this.message.id);
+  },
+
+  @action
+  edit() {
+    this.editButtonClicked(this.message.id);
   },
 
   @action

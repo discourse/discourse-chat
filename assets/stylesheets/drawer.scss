@@ -401,6 +401,13 @@ $header-height: 2.5rem;
   color: var(--primary-high);
   align-items: center;
 
+  .chat-channel-title {
+    display: flex;
+    .chat-category-name {
+      margin: 0 0 0 0.25em;
+    }
+  }
+
   &:hover {
     background: var(--primary-low);
   }

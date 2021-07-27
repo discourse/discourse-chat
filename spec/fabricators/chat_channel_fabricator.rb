@@ -8,9 +8,3 @@ Fabricator(:site_chat_channel, from: :chat_channel) do
   chatable_id DiscourseChat::SITE_CHAT_ID
   chatable_type DiscourseChat::SITE_CHAT_TYPE
 end
-
-Fabricator(:chat_message) do
-  chat_channel
-  user
-  message "This is a message"
-end

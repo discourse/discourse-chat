@@ -9,6 +9,7 @@ import I18n from "I18n";
 
 export default Component.extend({
   tagName: "",
+  editingMessage: null,
 
   @discourseComputed("message.deleted_at", "message.expanded")
   deletedAndCollapsed(deletedAt, expanded) {
@@ -75,7 +76,7 @@ export default Component.extend({
   },
 
   @discourseComputed("message", "message.deleted_at")
-  showReplyButton(message, deletedAt) {
+  showReplyButton(message, deletedAt, editingMessage) {
     return this.details.can_chat && !message.action_code && !deletedAt;
   },
 
@@ -85,7 +86,7 @@ export default Component.extend({
       this.details.can_chat &&
       !message.action_code &&
       !deletedAt &&
-      (this.currentUser?.id === message.user.id || this.currentUser?.staff)
+      (this.currentUser.staff || this.currentUser.id === message.user.id)
     );
   },
 

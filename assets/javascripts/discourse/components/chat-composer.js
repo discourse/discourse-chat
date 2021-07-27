@@ -22,7 +22,6 @@ export default Component.extend({
   value: "",
   emojiStore: service("emoji-store"),
   editingMessage: null,
-  valueBeforeEditing: null,
   timer: null,
   inputDisabled: not("canChat"),
 
@@ -43,35 +42,45 @@ export default Component.extend({
     }
   },
 
-  keyDown(evt) {
-    if (evt.code === "Enter") {
-      if (evt.shiftKey) {
+  keyDown(event) {
+    if (event.code === "Enter") {
+      if (event.shiftKey) {
         // Shift+Enter: insert newline
         return;
       }
-      if (evt.altKey) {
+      if (event.altKey) {
         // Alt+Enter: no action
         return;
       }
-      if (evt.metaKey) {
+      if (event.metaKey) {
         // Super+Enter: no action
         return;
       }
       // Ctrl+Enter, plain Enter: send
 
-      evt.preventDefault();
+      event.preventDefault();
       if (this.editingMessage) {
-        this.send("internalEditMessage", evt);
+        this.send("internalEditMessage", event);
       } else {
-        this.send("internalSendMessage", evt);
+        this.send("internalSendMessage", event);
       }
     }
-    if (evt.code === "Escape") {
+
+    if (event.code === "ArrowUp" && !this.editingMessage) {
+      event.preventDefault();
+      this.onEditLastMessageRequested();
+    }
+
+    if (event.code === "Escape") {
       if (this.replyToMsg) {
-        evt.preventDefault();
+        event.preventDefault();
         this.set("replyToMsg", null);
+      } else if (this.editingMessage) {
+        event.preventDefault();
+        this.set("replyToMsg", null);
+        this.cancelEditing();
       } else {
-        this.element.querySelector("textarea").blur();
+        this.textarea.blur();
       }
     }
   },
@@ -79,20 +88,22 @@ export default Component.extend({
   @observes("editingMessage")
   _watchEditingMessageChanges() {
     if (this.editingMessage) {
-      this.set("valueBeforeEditing", this.value);
-      this.set("value", this.editingMessage.message)
-      this._focusTextArea({ ensureAtEnd: true, resizeTextArea: true })
+      this.setProperties({
+        replyToMsg: null,
+        value: this.editingMessage.message,
+      });
+      this._focusTextArea({ ensureAtEnd: true, resizeTextArea: true });
+    } else {
+      // Reply button pressed. Reset composer.
+      this._reset();
     }
   },
 
   @action
   cancelEditing() {
-    this.setProperties({
-      value: this.valueBeforeEditing,
-      editingMessage: null
-    });
+    this.setProperties("editingMessage", null);
     this.onCancelEditing();
-    this._focusTextArea({ ensureAtEnd: true, resizeTextArea: true })
+    this._focusTextArea({ ensureAtEnd: true, resizeTextArea: true });
   },
 
   @observes("value")
@@ -292,28 +303,30 @@ export default Component.extend({
   },
 
   @action
-  internalSendMessage(evt) {
+  internalSendMessage(event) {
     if (this._messageIsValid()) {
-      return this.sendMessage(this.value).then(this._reset);
+      return this.sendMessage(this.value).then(() => this._reset());
     }
   },
 
   @action
-  internalEditMessage(evt) {
+  internalEditMessage(event) {
     if (this._messageIsValid()) {
-      return this.editMessage(this.value).then(this._reset);
+      return this.editMessage(this.editingMessage, this.value).then(() =>
+        this._reset()
+      );
     }
   },
 
   _messageIsValid() {
-    this.canChat && (this.value || "").trim() !== "")
+    return this.canChat && (this.value || "").trim() !== "";
   },
 
   _reset() {
     this.setProperties({
       value: "",
-      editingMessage: null
-    })
+      editingMessage: null,
+    });
     this._focusTextArea();
   },
 

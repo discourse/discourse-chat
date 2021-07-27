@@ -228,8 +228,9 @@ export default Component.extend({
       this.siteSettings,
       this.site.categories
     );
-    this.messageLookup[msgData.id] = msgData;
-    return EmberObject.create(msgData);
+    const prepared = EmberObject.create(msgData);
+    this.messageLookup[msgData.id] = prepared;
+    return prepared;
   },
 
   removeMessage(msgData) {
@@ -240,6 +241,9 @@ export default Component.extend({
     switch (data.typ) {
       case "sent":
         this.handleSentMessage(data);
+        break;
+      case "edit":
+        this.handleEditMessage(data);
         break;
       case "delete":
         this.handleDeleteMessage(data);
@@ -260,6 +264,20 @@ export default Component.extend({
     schedule("afterRender", this, this.doScrollStick);
     if (this.newMessageCb) {
       this.newMessageCb();
+    }
+  },
+
+  handleEditMessage(data) {
+    const message = this.messageLookup[data.topic_chat_message.id];
+    if (message) {
+      message.setProperties({
+        message: data.topic_chat_message.message,
+        cookedMessage: cookChatMessage(
+          data.topic_chat_message.message,
+          this.siteSettings,
+          this.site.categories
+        ),
+      });
     }
   },
 
@@ -352,12 +370,7 @@ export default Component.extend({
       type: "POST",
       data,
     })
-      .then(() => {
-        if (!this.element || this.isDestroying || this.isDestroyed) {
-          return;
-        }
-        this.set("replyToMsg", null);
-      })
+      .then(() => this._resetAfterSend())
       .catch(popupAjaxError)
       .finally(() => {
         if (!this.element || this.isDestroying || this.isDestroyed) {
@@ -368,14 +381,58 @@ export default Component.extend({
   },
 
   @action
-  editMessage(message) {
-    console.log(message)
+  editMessage(chatMessage, newContent) {
+    this.set("sendingloading", true);
+    let data = { new_message: newContent };
+    return ajax(`/chat/${this.chatChannel.id}/edit/${chatMessage.id}`, {
+      type: "PUT",
+      data,
+    })
+      .then(() => this._resetAfterSend())
+      .catch(popupAjaxError)
+      .finally(() => {
+        if (!this.element || this.isDestroying || this.isDestroyed) {
+          return;
+        }
+        this.set("sendingloading", false);
+      });
+  },
+
+  _resetAfterSend() {
+    if (!this.element || this.isDestroying || this.isDestroyed) {
+      return;
+    }
+    this.setProperties({
+      replyToMsg: null,
+      editingMessage: null,
+    });
+  },
+
+  @action
+  editLastMessageRequested() {
+    let lastUserMessage = null;
+    for (
+      let messageIndex = this.messages.length - 1;
+      messageIndex >= 0;
+      messageIndex--
+    ) {
+      if (this.messages[messageIndex].user.id === this.currentUser.id) {
+        lastUserMessage = this.messages[messageIndex];
+        break;
+      }
+    }
+    if (lastUserMessage) {
+      this.set("editingMessage", lastUserMessage);
+    }
   },
 
   @action
   setReplyTo(messageId) {
     if (messageId) {
-      this.set("replyToMsg", this.messageLookup[messageId]);
+      this.set("editingMessage", null);
+      this.setProperties({
+        replyToMsg: this.messageLookup[messageId],
+      });
       const textarea = this.element.querySelector(".tc-composer textarea");
       if (textarea) {
         textarea.focus();

@@ -5,6 +5,7 @@
         message=message
         details=this.details
         setReplyTo=(action "setReplyTo")
+        editingMessage=this.editingMessage
         editButtonClicked=(action "editButtonClicked")
       }}
     {{/each}}
@@ -30,6 +31,7 @@
     replyToMsg=this.replyToMsg
     editingMessage=this.editingMessage
     onCancelEditing=this.cancelEditing
+    onEditLastMessageRequested=this.editLastMessageRequested
   }}
 {{/if}}
 

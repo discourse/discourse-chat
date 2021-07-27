@@ -331,7 +331,6 @@ $header-height: 2.5rem;
 
     .tc-composer-message-details {
       position: relative;
-      display: flex;
       width: 100%;
       flex-direction: row;
       padding: 6px 4px;
@@ -340,6 +339,7 @@ $header-height: 2.5rem;
 
       .width-limited {
         display: inline-block;
+        width: calc(100% - 28px);
         text-overflow: ellipsis;
         overflow: hidden;
         white-space: nowrap;

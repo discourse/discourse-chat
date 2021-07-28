@@ -42,6 +42,13 @@ export default Component.extend({
     }
   },
 
+  didRender() {
+    this._super(...arguments);
+    if (this.canChat && this._messageIsEmpty()) {
+      this._focusTextArea();
+    }
+  },
+
   keyDown(event) {
     if (event.code === "Enter") {
       if (event.shiftKey) {

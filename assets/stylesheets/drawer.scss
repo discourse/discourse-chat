@@ -85,6 +85,9 @@ $header-height: 2.5rem;
   .tc-expand {
     flex-grow: 1;
     text-align: right;
+    &:focus {
+      background: none;
+    }
   }
   .d-icon {
     align-self: center;

@@ -13,35 +13,35 @@
         <div class="tc-msgactions">
           {{#if showReplyButton}}
             {{d-button
-              class="btn-flat"
+              class="btn-flat reply-btn"
               action="reply"
               icon="reply"
             }}
           {{/if}}
           {{#if showEditButton}}
             {{d-button
-              class="btn-flat"
+              class="btn-flat edit-btn"
               action="edit"
               icon="pencil-alt"
             }}
           {{/if}}
           {{#if showFlagButton}}
             {{d-button
-              class="btn-flat"
+              class="btn-flat flag-btn"
               action="flag"
               icon="flag"
             }}
           {{/if}}
           {{#if showDeleteButton}}
             {{d-button
-              class="btn-flat"
+              class="btn-flat delete-btn"
               action="deleteMessage"
               icon="trash-alt"
             }}
           {{/if}}
           {{#if showRestoreButton}}
             {{d-button
-              class="btn-flat"
+              class="btn-flat restore-btn"
               action="restore"
               icon="undo"
             }}
@@ -70,17 +70,15 @@
           <span class={{usernameClasses}}>{{name}}</span>
           {{format-date message.created_at format="tiny"}}
         </div>
-        <p class="tc-text">
-          {{#if message.action_code}}
-            <span class="tc-action-text">
-              {{html-safe actionCodeText}}
-            </span>
-          {{else}}
-            <p class="tc-text">
-              {{html-safe message.cookedMessage}}
-            </p>
-          {{/if}}
-        </p>
+        {{#if message.action_code}}
+          <span class="tc-action-text">
+            {{html-safe actionCodeText}}
+          </span>
+        {{else}}
+          <p class="tc-text">
+          {{html-safe message.cookedMessage}}
+          </p>
+        {{/if}}
       </div>
     </div>
   {{/if}}

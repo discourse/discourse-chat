@@ -15,11 +15,23 @@
   }}
 {{/if}}
 <div class="tc-composer-row">
-  {{d-textarea value=value
+  {{d-textarea
+    value=value
     type="text"
     class="tc-composer-input"
     disabled=inputDisabled
     autocorrect="on"
     autocapitalize="off"
-    placeholder=placeholder}}
+    placeholder=placeholder
+  }}
+
+  {{#if site.mobileView}}
+    {{flat-button
+      action=(action "sendClicked")
+      class="mobile-send-btn"
+      icon="play"
+      disabled=sendDisabled
+      title=sendTitle
+    }}
+  {{/if}}
 </div>

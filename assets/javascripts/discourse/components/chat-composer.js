@@ -59,14 +59,14 @@ export default Component.extend({
       // Ctrl+Enter, plain Enter: send
 
       event.preventDefault();
-      if (this.editingMessage) {
-        this.send("internalEditMessage", event);
-      } else {
-        this.send("internalSendMessage", event);
-      }
+      this.sendClicked();
     }
 
-    if (event.code === "ArrowUp" && !this.editingMessage) {
+    if (
+      event.code === "ArrowUp" &&
+      this._messageIsEmpty() &&
+      !this.editingMessage
+    ) {
       event.preventDefault();
       this.onEditLastMessageRequested();
     }
@@ -303,14 +303,23 @@ export default Component.extend({
   },
 
   @action
-  internalSendMessage(event) {
+  sendClicked() {
+    if (this.editingMessage) {
+      this.internalEditMessage();
+    } else {
+      this.internalSendMessage();
+    }
+  },
+
+  @action
+  internalSendMessage() {
     if (this._messageIsValid()) {
       return this.sendMessage(this.value).then(() => this._reset());
     }
   },
 
   @action
-  internalEditMessage(event) {
+  internalEditMessage() {
     if (this._messageIsValid()) {
       return this.editMessage(this.editingMessage, this.value).then(() =>
         this._reset()
@@ -319,7 +328,11 @@ export default Component.extend({
   },
 
   _messageIsValid() {
-    return this.canChat && (this.value || "").trim() !== "";
+    return this.canChat && !this._messageIsEmpty();
+  },
+
+  _messageIsEmpty() {
+    return (this.value || "").trim() === "";
   },
 
   _reset() {

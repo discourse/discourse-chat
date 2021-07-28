@@ -1,6 +1,8 @@
+# frozen_string_literal: true
 class DiscourseChat::ChatMessageCreator
   MENTION_REGEX = /\@\w+/
   attr_reader :error
+  attr_reader :chat_message
 
   def self.create(opts)
     instance = new(opts)
@@ -25,11 +27,10 @@ class DiscourseChat::ChatMessageCreator
 
   def create
     begin
-      save_message
+      @chat_message.save!
       create_mention_notifications
       ChatPublisher.publish_new!(@chat_channel, @chat_message)
     rescue => error
-      p error.inspect
       @error = error
     end
   end
@@ -40,28 +41,34 @@ class DiscourseChat::ChatMessageCreator
 
   private
 
-  def save_message
-    @chat_message.save
-    errors = @chat_message
-  end
-
   def create_mention_notifications
-    mention_matches = @chat_message.message.scan(MENTION_REGEX)
-    mention_matches.reject! { |match| ["@#{@user.username}", "@system"].include?(match) }
-    users = User.where(username: mention_matches.map { |match| match[1..-1] })
-    users.each { |target_user| create_notification_for(@user, target_user) }
+    self.class.mentioned_users(chat_message: @chat_message, creator: @user)
+      .each do |target_user|
+      self.class.create_mention_notification(
+        creator_username: @user.username,
+        mentioned_user_id: target_user.id,
+        chat_channel_id: @chat_channel.id,
+        chat_message_id: @chat_message.id,
+      )
+    end
   end
 
-  def create_notification_for(message_creator, mentioned_user)
+  def self.mentioned_users(chat_message:, creator:)
+    mention_matches = chat_message.message.scan(MENTION_REGEX)
+    mention_matches.reject! { |match| ["@#{creator.username}", "@system"].include?(match) }
+    User.where(username: mention_matches.map { |match| match[1..-1] })
+  end
+
+  def self.create_mention_notification(creator_username:, mentioned_user_id:, chat_channel_id:, chat_message_id:)
     Notification.create!(
       notification_type: Notification.types[:chat_mention],
-      user_id: mentioned_user.id,
+      user_id: mentioned_user_id,
       high_priority: true,
       data: {
         message: 'chat.mention_notification',
-        chat_message_id: @chat_message.id,
-        chat_channel_id: @chat_channel.id,
-        mentioned_by_username: message_creator.username,
+        chat_message_id: chat_message_id,
+        chat_channel_id: chat_channel_id,
+        mentioned_by_username: creator_username,
       }.to_json
     )
   end

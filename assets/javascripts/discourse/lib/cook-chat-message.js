@@ -11,6 +11,7 @@ export default function cook(raw, siteSettings, categories) {
   let cooked = escapeExpression(raw);
   cooked = transformMentions(cooked, siteSettings.unicode_usernames);
   cooked = transformCategoryTagHashes(cooked, categories);
+  cooked = convertNewlines(cooked);
 
   return emojiUnescape(cooked);
 }
@@ -41,4 +42,8 @@ function transformCategoryTagHashes(raw, categories) {
       return `<a class="hashtag" href=${href}>${a}</a>`;
     }
   );
+}
+
+function convertNewlines(raw) {
+  return raw.replace(/\n/g, '<br>');
 }

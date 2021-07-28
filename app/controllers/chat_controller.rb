@@ -3,8 +3,13 @@
 class DiscourseChat::ChatController < ::ApplicationController
   before_action :ensure_logged_in
   before_action :ensure_can_chat
-  before_action :find_chat_message, only: [:delete, :restore, :lookup_message]
   before_action :find_chatable, only: [:enable_chat, :disable_chat]
+  before_action :find_chat_message, only: [
+    :delete,
+    :restore,
+    :lookup_message,
+    :edit_message
+  ]
 
   def enable_chat
     chat_channel = ChatChannel.with_deleted.find_by(chatable: @chatable)
@@ -43,7 +48,7 @@ class DiscourseChat::ChatController < ::ApplicationController
     success ? (render json: success_json) : (render_json_error(chat_channel))
   end
 
-  def send_chat
+  def create_message
     set_channel_and_chatable
 
     reply_to_msg_id = params[:in_reply_to_id]
@@ -63,6 +68,20 @@ class DiscourseChat::ChatController < ::ApplicationController
 
     if chat_message_creator.failed?
       return render_json_error(chat_message_creator.error)
+    end
+
+    render json: success_json
+  end
+
+  def edit_message
+    guardian.ensure_can_edit_chat!(@message)
+    chat_message_updater = DiscourseChat::ChatMessageUpdater.update(
+      chat_message: @message,
+      new_content: params[:new_message],
+    )
+
+    if chat_message_updater.failed?
+      return render_json_error(chat_message_updater.error)
     end
 
     render json: success_json

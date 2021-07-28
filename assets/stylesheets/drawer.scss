@@ -26,27 +26,10 @@ $header-height: 2.5rem;
 .tc-drawer {
   align-self: flex-end;
 }
-:root:not(.mobile-view) {
-  .tc-drawer {
-    width: 400px;
-    margin-right: 20px;
-    max-width: calc(100vw - 20px);
-  }
-}
-:root.mobile-view {
-  .tc-drawer {
-    width: 100vw;
-    margin-right: 0px;
-  }
-  #main {
-    padding-bottom: $header-height;
-  }
-}
-
 .topic-chat-container {
   background: var(--secondary);
   border: 1px solid var(--primary-low-mid);
-  box-shadow: 0 4px 4px rgba(0,0,0,0.25);
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
   border-bottom: 0;
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
@@ -102,6 +85,9 @@ $header-height: 2.5rem;
   .tc-expand {
     flex-grow: 1;
     text-align: right;
+    &:focus {
+      background: none;
+    }
   }
   .d-icon {
     align-self: center;
@@ -155,8 +141,9 @@ $header-height: 2.5rem;
       display: grid;
       grid-template-columns: 10% 90%;
       grid-template-rows: 30px auto;
-      grid-template-areas: "replyto replyto"
-                            "avatar message";
+      grid-template-areas:
+        "replyto replyto"
+        "avatar message";
       .tc-reply-display {
         grid-area: replyto;
       }
@@ -211,6 +198,10 @@ $header-height: 2.5rem;
     button {
       padding: 0.25em 0.5em;
     }
+  }
+
+  .tc-message.is-reply .tc-msgactions-hover {
+    top: 35px;
   }
 
   .tc-message:hover,
@@ -299,85 +290,73 @@ $header-height: 2.5rem;
     width: 95%;
     margin: 0 auto 0.5em auto;
 
-    .tc-composer-row {
-      display: flex;
-      flex-direction: row;
-      align-items: stretch;
+    .tc-reply-username {
+      font-weight: bold;
     }
-    .tc-composer-input {
-      margin-bottom: 0;
-      resize: none;
-      min-height: 25px;
-      max-height: 100px;
-      padding: 8px 2em 8px 8px;
-      width: calc(100% - 8px - 2em);
-      border-radius: 4px;
-      border: 1px solid var(--primary-low-mid);
-      &:focus {
+
+    .tc-composer-row {
+      position: relative;
+      display: grid;
+
+      &::after {
+        content: attr(data-replicated-value) " ";
+        white-space: pre-wrap;
+        visibility: hidden;
+        outline: none;
+      }
+
+      &:focus,
+      .tc-composer-input:focus {
         border: 1px solid var(--primary-medium);
         outline: none;
-        + .btn-flat .d-icon {
+        + .mobile-send-btn .d-icon {
           color: var(--tertiary);
         }
       }
     }
-    .btn-flat {
-      position: absolute;
-      bottom: 20px;
-      right: 2.5em;
-      color: var(--primary-low);
+
+    .tc-composer-row > .tc-composer-input,
+    .tc-composer-row::after {
+      grid-area: 1 / 1 / 2 / 2;
+      margin-bottom: 0;
+      resize: none;
+      max-height: 125px;
+      padding: 8px;
+      width: calc(100% - 16px);
+      border-radius: 4px;
+      border: 1px solid var(--primary-low-mid);
+      word-break: break-all;
     }
-    .tc-composer-replypreview {
-      display: flex;
+
+    .tc-composer-message-details {
+      position: relative;
+      width: 100%;
       flex-direction: row;
-      padding-left: 4px;
+      padding: 6px 4px;
       height: 1.6em;
+      border-top: 1px solid var(--primary-low);
 
       .width-limited {
         display: inline-block;
+        width: calc(100% - 28px);
+        height: 1.5em;
         text-overflow: ellipsis;
-        overflow-x: hidden;
+        overflow: hidden;
         white-space: nowrap;
         flex-grow: 1;
       }
     }
-    .tc-cancel-reply {
-      align-self: flex-end;
+    .cancel-message-action {
+      position: absolute;
+      top: 6px;
+      right: 5px;
       padding: 4px;
-      margin-right: 2em;
     }
 
     .d-icon {
       animation: color 0.2s ease-in-out;
       color: var(--primary-low-mid);
     }
-  }
-}
-:root.mobile-view {
-  .tc-composer {
-    min-height: 2.5em;
-    textarea {
-      width: calc(100% - 4px - 1em);
-      padding: 4px 1em 4px 4px;
-    }
-    .btn-flat {
-      right: 1em;
-      bottom: 1.25em;
-    }
-  }
-}
-
-.tc-composer-replypreview,
-.tc-reply-display {
-  color: var(--secondary-medium);
-  .tc-reply-av {
-    margin-left: 2px;
-  }
-  .tc-reply-username {
-    font-weight: bold;
-  }
-  .tc-reply-msg {
-    text-overflow: ellipsis;
   }
 }
 
@@ -437,5 +416,37 @@ $header-height: 2.5rem;
   }
   .topic-chat-icon {
     color: var(--primary-medium);
+  }
+}
+
+:root:not(.mobile-view) {
+  .tc-drawer {
+    width: 400px;
+    margin-right: 20px;
+    max-width: calc(100vw - 20px);
+  }
+}
+:root.mobile-view {
+  .tc-drawer {
+    width: 100vw;
+    margin-right: 0px;
+  }
+  #main {
+    padding-bottom: $header-height;
+  }
+  .tc-composer .tc-composer-row {
+    .tc-composer-input {
+      padding-right: 2.5em;
+
+      width: calc(100% - 2.5em - 8px);
+    }
+
+    .mobile-send-btn {
+      position: absolute;
+      padding: 10px;
+      right: 3px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
   }
 }

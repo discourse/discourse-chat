@@ -11,6 +11,12 @@ module ChatPublisher
     MessageBus.publish("/chat/#{chat_channel.id}", content.as_json)
   end
 
+  def self.publish_edit!(chat_channel, msg)
+    content = ChatBaseMessageSerializer.new(msg, { scope: anonymous_guardian, root: :topic_chat_message }).as_json
+    content[:typ] = :edit
+    MessageBus.publish("/chat/#{chat_channel.id}", content.as_json)
+  end
+
   def self.publish_presence!(chat_channel, user, typ)
     raise NotImplementedError
   end

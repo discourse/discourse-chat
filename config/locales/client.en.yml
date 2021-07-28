@@ -12,6 +12,8 @@ en:
       already_disabled: "Chat is already closed on this topic. Please refresh."
       in_reply_to: "In reply to"
       reply: "Reply"
+      cancel_reply: "Cancel reply"
+      cancel_edit: "Cancel edit"
       flag: "Flag"
       delete: "Delete"
       restore: "Restore deleted message"

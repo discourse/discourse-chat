@@ -81,4 +81,10 @@ module DiscourseChat::GuardianExtensions
 
     can_moderate_chat?(chatable)
   end
+
+  def can_edit_chat?(message)
+    return true if @user.staff?
+
+    message.user_id == @user.id
+  end
 end

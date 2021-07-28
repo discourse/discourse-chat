@@ -18,6 +18,13 @@
               icon="reply"
             }}
           {{/if}}
+          {{#if showEditButton}}
+            {{d-button
+              class="btn-flat"
+              action="edit"
+              icon="pencil-alt"
+            }}
+          {{/if}}
           {{#if showFlagButton}}
             {{d-button
               class="btn-flat"

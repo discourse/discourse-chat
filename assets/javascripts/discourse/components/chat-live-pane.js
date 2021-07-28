@@ -22,6 +22,7 @@ export default Component.extend({
   stickyScroll: true,
   stickyScrollTimer: null,
 
+  editingMessage: null, // ?Message
   replyToMsg: null, // ?Message
   details: null, // Object { chat_channel_id, can_chat, ... }
   messages: null, // Array
@@ -227,8 +228,9 @@ export default Component.extend({
       this.siteSettings,
       this.site.categories
     );
-    this.messageLookup[msgData.id] = msgData;
-    return EmberObject.create(msgData);
+    const prepared = EmberObject.create(msgData);
+    this.messageLookup[msgData.id] = prepared;
+    return prepared;
   },
 
   removeMessage(msgData) {
@@ -240,6 +242,9 @@ export default Component.extend({
       case "sent":
         this.handleSentMessage(data);
         break;
+      case "edit":
+        this.handleEditMessage(data);
+        break;
       case "delete":
         this.handleDeleteMessage(data);
         break;
@@ -250,9 +255,9 @@ export default Component.extend({
   },
 
   handleSentMessage(data) {
-    const msg = this.prepareMessage(data.topic_chat_message);
+    const newMessage = this.prepareMessage(data.topic_chat_message);
+    this.messages.pushObject(newMessage);
 
-    this.messages.pushObject(msg);
     if (this.messages.length >= MAX_RECENT_MSGS) {
       this.removeMessage(this.messages.shiftObject());
     }
@@ -262,9 +267,23 @@ export default Component.extend({
     }
   },
 
+  handleEditMessage(data) {
+    const message = this.messageLookup[data.topic_chat_message.id];
+    if (message) {
+      message.setProperties({
+        message: data.topic_chat_message.message,
+        cookedMessage: cookChatMessage(
+          data.topic_chat_message.message,
+          this.siteSettings,
+          this.site.categories
+        ),
+      });
+    }
+  },
+
   handleDeleteMessage(data) {
     const deletedId = data.deleted_id;
-    const targetMsg = this.messages.findBy("id", deletedId);
+    const targetMsg = this.messageLookup[deletedId];
     if (this.currentUser.staff || this.currentUser.id === targetMsg.user.id) {
       targetMsg.setProperties({
         deleted_at: data.deleted_at,
@@ -272,11 +291,12 @@ export default Component.extend({
       });
     } else {
       this.messages.removeObject(targetMsg);
+      this.messageLookup[deletedId] = null;
     }
   },
 
   handleRestoreMessage(data) {
-    let message = this.messages.findBy("id", data.topic_chat_message.id);
+    let message = this.messageLookup[data.topic_chat_message.id];
     if (message) {
       message.set("deleted_at", null);
     } else {
@@ -340,7 +360,7 @@ export default Component.extend({
   },
 
   @action
-  sendChat(message) {
+  sendMessage(message) {
     this.set("sendingloading", true);
     let data = { message };
     if (this.replyToMsg) {
@@ -350,12 +370,7 @@ export default Component.extend({
       type: "POST",
       data,
     })
-      .then(() => {
-        if (!this.element || this.isDestroying || this.isDestroyed) {
-          return;
-        }
-        this.set("replyToMsg", null);
-      })
+      .then(() => this._resetAfterSend())
       .catch(popupAjaxError)
       .finally(() => {
         if (!this.element || this.isDestroying || this.isDestroyed) {
@@ -366,9 +381,58 @@ export default Component.extend({
   },
 
   @action
-  setReplyTo(msgId) {
-    if (msgId) {
-      this.set("replyToMsg", this.messages.findBy("id", msgId));
+  editMessage(chatMessage, newContent) {
+    this.set("sendingloading", true);
+    let data = { new_message: newContent };
+    return ajax(`/chat/${this.chatChannel.id}/edit/${chatMessage.id}`, {
+      type: "PUT",
+      data,
+    })
+      .then(() => this._resetAfterSend())
+      .catch(popupAjaxError)
+      .finally(() => {
+        if (!this.element || this.isDestroying || this.isDestroyed) {
+          return;
+        }
+        this.set("sendingloading", false);
+      });
+  },
+
+  _resetAfterSend() {
+    if (!this.element || this.isDestroying || this.isDestroyed) {
+      return;
+    }
+    this.setProperties({
+      replyToMsg: null,
+      editingMessage: null,
+    });
+  },
+
+  @action
+  editLastMessageRequested() {
+    let lastUserMessage = null;
+    for (
+      let messageIndex = this.messages.length - 1;
+      messageIndex >= 0;
+      messageIndex--
+    ) {
+      if (this.messages[messageIndex].user.id === this.currentUser.id) {
+        lastUserMessage = this.messages[messageIndex];
+        break;
+      }
+    }
+    if (lastUserMessage) {
+      this.set("editingMessage", lastUserMessage);
+    }
+  },
+
+  @action
+  setReplyTo(messageId) {
+    if (messageId) {
+      this.set("editingMessage", null);
+      this.setProperties({
+        replyToMsg: this.messageLookup[messageId],
+      });
       const textarea = this.element.querySelector(".tc-composer textarea");
       if (textarea) {
         textarea.focus();
@@ -377,6 +441,18 @@ export default Component.extend({
       this.set("replyToMsg", null);
     }
     schedule("afterRender", this, this.doScrollStick);
+  },
+
+  @action
+  editButtonClicked(messageId) {
+    const message = this.messageLookup[messageId];
+    this.set("editingMessage", message);
+    schedule("afterRender", this, this.doScrollStick);
+  },
+
+  @action
+  cancelEditing() {
+    this.set("editingMessage", null);
   },
 
   @action

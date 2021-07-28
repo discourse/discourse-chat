@@ -3,7 +3,7 @@ import Component from "@ember/component";
 import discourseComputed, { observes } from "discourse-common/utils/decorators";
 import userSearch from "discourse/lib/user-search";
 import { action } from "@ember/object";
-import { cancel, later, schedule, throttle } from "@ember/runloop";
+import { cancel, schedule, throttle } from "@ember/runloop";
 import { categoryHashtagTriggerRule } from "discourse/lib/category-hashtags";
 import { findRawTemplate } from "discourse-common/lib/raw-templates";
 import { emojiSearch, isSkinTonableEmoji } from "pretty-text/emoji";
@@ -15,14 +15,15 @@ import { SKIP } from "discourse/lib/autocomplete";
 import { translations } from "pretty-text/emoji/data";
 import { Promise } from "rsvp";
 
+const THROTTLE_MS = 150;
+
 export default Component.extend({
   classNames: ["tc-composer"],
   value: "",
-  sendIcon: "play",
-  sendTitle: "chat.send",
   emojiStore: service("emoji-store"),
-
+  editingMessage: null,
   timer: null,
+  inputDisabled: not("canChat"),
 
   didInsertElement() {
     this._super(...arguments);
@@ -41,32 +42,75 @@ export default Component.extend({
     }
   },
 
-  keyDown(evt) {
-    if (evt.code === "Enter") {
-      if (evt.shiftKey) {
+  didRender() {
+    this._super(...arguments);
+    if (this.canChat && this._messageIsEmpty()) {
+      this._focusTextArea();
+    }
+  },
+
+  keyDown(event) {
+    if (event.code === "Enter") {
+      if (event.shiftKey) {
         // Shift+Enter: insert newline
         return;
       }
-      if (evt.altKey) {
+      if (event.altKey) {
         // Alt+Enter: no action
         return;
       }
-      if (evt.metaKey) {
+      if (event.metaKey) {
         // Super+Enter: no action
         return;
       }
       // Ctrl+Enter, plain Enter: send
 
-      this.send("internalSendChat", evt);
+      event.preventDefault();
+      this.sendClicked();
     }
-    if (evt.code === "Escape") {
+
+    if (
+      event.code === "ArrowUp" &&
+      this._messageIsEmpty() &&
+      !this.editingMessage
+    ) {
+      event.preventDefault();
+      this.onEditLastMessageRequested();
+    }
+
+    if (event.code === "Escape") {
       if (this.replyToMsg) {
-        evt.preventDefault();
+        event.preventDefault();
         this.set("replyToMsg", null);
+      } else if (this.editingMessage) {
+        event.preventDefault();
+        this.set("replyToMsg", null);
+        this.cancelEditing();
       } else {
-        this.element.querySelector("textarea").blur();
+        this.textarea.blur();
       }
     }
+  },
+
+  @observes("editingMessage")
+  _watchEditingMessageChanges() {
+    if (this.editingMessage) {
+      this.setProperties({
+        replyToMsg: null,
+        value: this.editingMessage.message,
+      });
+      this._focusTextArea({ ensureAtEnd: true, resizeTextArea: true });
+    } else {
+      // Reply button pressed. Reset composer.
+      this._reset();
+    }
+  },
+
+  @action
+  cancelEditing() {
+    this.setProperties("editingMessage", null);
+    this.onCancelEditing();
+    this._focusTextArea({ ensureAtEnd: true, resizeTextArea: true });
   },
 
   @observes("value")
@@ -75,10 +119,10 @@ export default Component.extend({
     this.timer = throttle(
       this,
       () => {
-        this._setMinHeight();
+        this._resizeTextArea();
         this._applyUserAutocomplete();
       },
-      150
+      THROTTLE_MS
     );
   },
 
@@ -224,7 +268,7 @@ export default Component.extend({
     });
   },
 
-  _focusTextArea() {
+  _focusTextArea(opts = { ensureAtEnd: false, resizeTextArea: true }) {
     schedule("afterRender", () => {
       if (!this.element || this.isDestroying || this.isDestroyed) {
         return;
@@ -236,16 +280,20 @@ export default Component.extend({
 
       this.textarea.blur();
       this.textarea.focus();
+
+      if (opts.resizeTextArea) {
+        this._resizeTextArea();
+      }
+
+      if (opts.ensureAtEnd) {
+        this.textarea.setSelectionRange(this.value.length, this.value.length);
+      }
     });
   },
 
-  _setMinHeight() {
-    const textarea = this.textarea;
-    if (textarea.scrollHeight > textarea.clientHeight) {
-      if (textarea.rows < 3) {
-        textarea.rows = textarea.rows + 1;
-      }
-    }
+  _resizeTextArea() {
+    this.textarea.parentNode.dataset.replicatedValue = this.textarea.value;
+
     if (this.onChangeHeight) {
       this.onChangeHeight();
     }
@@ -261,25 +309,45 @@ export default Component.extend({
     return !canChat || loading;
   },
 
-  inputDisabled: not("canChat"),
-
-  // evt: either ClickEvent or KeyboardEvent
   @action
-  internalSendChat(evt) {
-    if (evt) {
-      evt.preventDefault();
+  sendClicked() {
+    if (this.editingMessage) {
+      this.internalEditMessage();
+    } else {
+      this.internalSendMessage();
     }
-    if ((this.value || "").trim() === "") {
-      return;
+  },
+
+  @action
+  internalSendMessage() {
+    if (this._messageIsValid()) {
+      return this.sendMessage(this.value).then(() => this._reset());
     }
-    return this.sendChat(this.value, evt).then(() => {
-      this.set("value", "");
-      // If user resized textarea to write a long message, reset it.
-      const textarea = this.element.querySelector("textarea");
-      textarea.style = "";
-      textarea.rows = 1;
-      textarea.focus();
+  },
+
+  @action
+  internalEditMessage() {
+    if (this._messageIsValid()) {
+      return this.editMessage(this.editingMessage, this.value).then(() =>
+        this._reset()
+      );
+    }
+  },
+
+  _messageIsValid() {
+    return this.canChat && !this._messageIsEmpty();
+  },
+
+  _messageIsEmpty() {
+    return (this.value || "").trim() === "";
+  },
+
+  _reset() {
+    this.setProperties({
+      value: "",
+      editingMessage: null,
     });
+    this._focusTextArea();
   },
 
   @action

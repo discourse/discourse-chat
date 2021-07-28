@@ -39,6 +39,7 @@ after_initialize do
   load File.expand_path('../app/serializers/chat_channel_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/chat_view_serializer.rb', __FILE__)
   load File.expand_path('../lib/chat_message_creator.rb', __FILE__)
+  load File.expand_path('../lib/chat_message_updater.rb', __FILE__)
   load File.expand_path('../lib/chat_view.rb', __FILE__)
   load File.expand_path('../lib/guardian_extensions.rb', __FILE__)
   load File.expand_path('../app/services/chat_publisher.rb', __FILE__)
@@ -133,7 +134,8 @@ after_initialize do
     post '/disable' => 'chat#disable_chat'
     get '/:chat_channel_id' => 'chat#channel_details'
     get '/:chat_channel_id/recent' => 'chat#recent'
-    post '/:chat_channel_id' => 'chat#send_chat'
+    post '/:chat_channel_id' => 'chat#create_message'
+    put ':chat_channel_id/edit/:message_id' => 'chat#edit_message'
     delete '/:chat_channel_id/:message_id' => 'chat#delete'
     post '/:chat_channel_id/:message_id/flag' => 'chat#flag'
     put '/:chat_channel_id/restore/:message_id' => 'chat#restore'

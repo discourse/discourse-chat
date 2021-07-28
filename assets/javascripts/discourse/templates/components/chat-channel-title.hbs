@@ -1,9 +1,9 @@
 <span class="chat-channel-title">
   {{#if (eq channel.chatable_type "Category")}}
-    {{category-badge channel.chatable allowUncategorized="true"}}
+    <span class="category-hashtag" style="background-color: #{{channel.chatable.color}}; color: #{{channel.chatable.text_color}}">{{d-icon "hashtag"}}</span> <p class="chat-category-name">{{channel.chatable.name}}</p>
   {{else if (eq channel.chatable_type "Topic")}}
-    {{replace-emoji channel.chatable.fancy_title}}
+    <span class="topic-chat-icon">{{d-icon "far-comments"}}</span> <p class="chat-category-name">{{replace-emoji channel.chatable.fancy_title}}</p>
   {{else}}
-    {{i18n "chat.channels.staff"}}
+    {{d-icon "lock"}}{{i18n "chat.channels.staff"}}
   {{/if}}
 </span>

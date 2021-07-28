@@ -62,10 +62,16 @@ $header-height: 2.5rem;
   }
   .tc-title-seg {
     padding: 0 0.25em;
-    line-height: 1.75em;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow-x: hidden;
+    color: var(--primary);
+    .chat-channel-title .d-icon:not(.d-icon-hashtag) {
+      color: var(--primary-high);
+    }
+    .chat-channel-title .category-hashtag {
+      padding: 2px 4px;
+    }
   }
   .tc-unread-count {
     color: var(--secondary, $secondary);
@@ -81,7 +87,6 @@ $header-height: 2.5rem;
     text-align: right;
   }
   .d-icon {
-    color: var(--tertiary, $tertiary);
     align-self: center;
     height: 1.1em;
   }
@@ -382,12 +387,32 @@ $header-height: 2.5rem;
   }
 
   &.nested {
-    padding-left: 2.5em;
+    padding-left: 1.75em;
   }
 
   .badge-wrapper {
     align-items: center;
     margin-right: 0;
+  }
+}
+
+.chat-channel-title {
+  display: flex;
+  align-items: center;
+  .d-icon-lock {
+    margin-right: 0.25em;
+  }
+  .category-hashtag {
+    font-size: 10px;
+    padding: 1px 3px;
+    border-radius: 50%;
+  }
+  .chat-category-name {
+    margin: 0 0 0 0.25em;
+    font-weight: 500;
+  }
+  .topic-chat-icon {
+    color: var(--primary-medium);
   }
 }
 

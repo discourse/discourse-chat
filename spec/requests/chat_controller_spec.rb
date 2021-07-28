@@ -75,7 +75,7 @@ RSpec.describe DiscourseChat::ChatController do
     end
   end
 
-  describe "#send_chat" do
+  describe "#create_message" do
     let(:message) { "This is a message" }
 
     describe "for topic" do
@@ -120,6 +120,36 @@ RSpec.describe DiscourseChat::ChatController do
         expect(response.status).to eq(200)
         expect(ChatMessage.last.message).to eq(message)
       end
+    end
+  end
+
+  describe "#edit_message" do
+    fab!(:chat_channel) { Fabricate(:site_chat_channel) }
+    fab!(:chat_message) { Fabricate(:chat_message, chat_channel: chat_channel, user: user) }
+
+    it "errors when a user tries to edit another user's message" do
+      sign_in(Fabricate(:user))
+
+      put "/chat/#{chat_channel.id}/edit/#{chat_message.id}.json", params: { new_message: "edit!" }
+      expect(response.status).to eq(403)
+    end
+
+    it "allows a user to edit their own messages" do
+      sign_in(user)
+      new_message = "Wow markvanlan must be a good programmer"
+
+      put "/chat/#{chat_channel.id}/edit/#{chat_message.id}.json", params: { new_message: new_message }
+      expect(response.status).to eq(200)
+      expect(chat_message.reload.message).to eq(new_message)
+    end
+
+    it "allows staff to edit others' messages" do
+      sign_in(admin)
+      new_message = "Vrroooom cars go fast"
+
+      put "/chat/#{chat_channel.id}/edit/#{chat_message.id}.json", params: { new_message: new_message }
+      expect(response.status).to eq(200)
+      expect(chat_message.reload.message).to eq(new_message)
     end
   end
 

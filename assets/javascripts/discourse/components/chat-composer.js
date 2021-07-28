@@ -3,7 +3,7 @@ import Component from "@ember/component";
 import discourseComputed, { observes } from "discourse-common/utils/decorators";
 import userSearch from "discourse/lib/user-search";
 import { action } from "@ember/object";
-import { cancel, later, schedule, throttle, next } from "@ember/runloop";
+import { cancel, schedule, throttle } from "@ember/runloop";
 import { categoryHashtagTriggerRule } from "discourse/lib/category-hashtags";
 import { findRawTemplate } from "discourse-common/lib/raw-templates";
 import { emojiSearch, isSkinTonableEmoji } from "pretty-text/emoji";

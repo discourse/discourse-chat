@@ -11,7 +11,7 @@ export default function cook(raw, siteSettings, categories) {
   let cooked = escapeExpression(raw);
   cooked = transformMentions(cooked, siteSettings.unicode_usernames);
   cooked = transformCategoryTagHashes(cooked, categories);
-  cooked = convertNewlines(cooked)
+  cooked = convertNewlines(cooked);
 
   return emojiUnescape(cooked);
 }
@@ -45,5 +45,5 @@ function transformCategoryTagHashes(raw, categories) {
 }
 
 function convertNewlines(raw) {
-  return raw.replace(/\n/g, '<br>')
+  return raw.replace(/\n/g, '<br>');
 }

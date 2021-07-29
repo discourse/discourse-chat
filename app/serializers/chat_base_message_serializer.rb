@@ -8,9 +8,18 @@ class ChatBaseMessageSerializer < ApplicationSerializer
     :in_reply_to_id,
     :deleted_at,
     :deleted_by_id,
-    :flag_count
+    :flag_count,
+    :edited
 
   has_one :user, serializer: BasicUserSerializer, embed: :objects
+
+  def edited
+    true
+  end
+
+  def include_edited?
+    object.revisions.any?
+  end
 
   def include_deleted_at?
     !object.deleted_at.nil?

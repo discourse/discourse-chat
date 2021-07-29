@@ -6,8 +6,8 @@ class ChatMessage < ActiveRecord::Base
 
   belongs_to :chat_channel
   belongs_to :user
-
   belongs_to :in_reply_to, class_name: "ChatMessage"
+  has_many :revisions, class_name: "ChatMessageRevision"
 
   def reviewable_flag
     raise NotImplementedError

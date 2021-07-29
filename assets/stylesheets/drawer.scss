@@ -167,6 +167,11 @@ $header-height: 2.5rem;
       margin: 0;
       padding-left: 0.05em;
     }
+    .tc-message-edited {
+      display: inline-block;
+      color: var(--primary-medium);
+      font-size: var(--font-down-1);
+    }
     .tc-reply-display {
       display: inline-block;
       text-overflow: ellipsis;

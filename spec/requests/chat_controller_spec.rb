@@ -134,18 +134,17 @@ RSpec.describe DiscourseChat::ChatController do
       expect(response.status).to eq(403)
     end
 
+    it "errors when staff tries to edit another user's message" do
+      sign_in(admin)
+      new_message = "Vrroooom cars go fast"
+
+      put "/chat/#{chat_channel.id}/edit/#{chat_message.id}.json", params: { new_message: new_message }
+      expect(response.status).to eq(403)
+    end
+
     it "allows a user to edit their own messages" do
       sign_in(user)
       new_message = "Wow markvanlan must be a good programmer"
-
-      put "/chat/#{chat_channel.id}/edit/#{chat_message.id}.json", params: { new_message: new_message }
-      expect(response.status).to eq(200)
-      expect(chat_message.reload.message).to eq(new_message)
-    end
-
-    it "allows staff to edit others' messages" do
-      sign_in(admin)
-      new_message = "Vrroooom cars go fast"
 
       put "/chat/#{chat_channel.id}/edit/#{chat_message.id}.json", params: { new_message: new_message }
       expect(response.status).to eq(200)

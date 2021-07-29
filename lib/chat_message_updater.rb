@@ -10,6 +10,7 @@ class DiscourseChat::ChatMessageUpdater
 
   def initialize(chat_message:, new_content:)
     @chat_message = chat_message
+    @old_message_content = chat_message.message
     @chat_channel = @chat_message.chat_channel
     @user = @chat_message.user
     @new_content = new_content
@@ -20,6 +21,7 @@ class DiscourseChat::ChatMessageUpdater
     begin
       @chat_message.message = @new_content
       @chat_message.save!
+      save_revision
       update_mention_notifications
       ChatPublisher.publish_edit!(@chat_channel, @chat_message)
     rescue => error
@@ -32,6 +34,10 @@ class DiscourseChat::ChatMessageUpdater
   end
 
   private
+
+  def save_revision
+    @chat_message.revisions.create!(old_message: @old_message_content, new_message: @chat_message.message)
+  end
 
   def update_mention_notifications
     existing_notifications = Notification

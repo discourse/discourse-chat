@@ -85,7 +85,7 @@ export default Component.extend({
       this.details.can_chat &&
       !message.action_code &&
       !deletedAt &&
-      (this.currentUser.staff || this.currentUser.id === message.user.id)
+      this.currentUser.id === message.user.id
     );
   },
 

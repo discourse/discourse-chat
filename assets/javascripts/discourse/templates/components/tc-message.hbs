@@ -76,13 +76,13 @@
           </span>
         {{else}}
           <p class="tc-text">
-          {{html-safe message.cookedMessage}}
+            {{html-safe message.cookedMessage}}
+            {{#if message.edited}}
+              <div class="tc-message-edited">
+                {{i18n "chat.edited"}}
+              </div>
+            {{/if}}
           </p>
-        {{/if}}
-        {{#if message.edited}}
-          <div class="tc-message-edited">
-            {{i18n "chat.edited"}}
-          </div>
         {{/if}}
       </div>
     </div>

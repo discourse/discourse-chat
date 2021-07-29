@@ -168,6 +168,7 @@ $header-height: 2.5rem;
       padding-left: 0.05em;
     }
     .tc-message-edited {
+      display: inline-block;
       color: var(--primary-medium);
       font-size: var(--font-down-1);
     }

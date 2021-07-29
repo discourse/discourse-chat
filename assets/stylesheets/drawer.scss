@@ -1,7 +1,7 @@
 $header-height: 2.5rem;
 
 .topic-chat-float-container {
-  z-index: 220; // higher than timeline, lower than composer
+  z-index: 199; // higher than timeline, lower than composer, lower than user card
   position: fixed;
   right: 0;
   left: 0;
@@ -155,6 +155,7 @@ $header-height: 2.5rem;
     .tc-avatar {
       width: calc(10% - 0.25em);
       margin-right: 0.25em;
+      cursor: pointer;
       .avatar {
         width: 90%;
         height: auto;

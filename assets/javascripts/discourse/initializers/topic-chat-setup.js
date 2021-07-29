@@ -1,7 +1,10 @@
-import { ajax } from "discourse/lib/ajax";
 import I18n from "I18n";
-import { popupAjaxError } from "discourse/lib/ajax-error";
 import RawTopicStatus from "discourse/raw-views/topic-status";
+import { ajax } from "discourse/lib/ajax";
+import { createWidget } from "discourse/widgets/widget";
+import { h } from "virtual-dom";
+import { iconNode } from "discourse-common/lib/icon-library";
+import { popupAjaxError } from "discourse/lib/ajax-error";
 import { withPluginApi } from "discourse/lib/plugin-api";
 
 export default {
@@ -93,23 +96,17 @@ export default {
         },
       });
 
-      api.reopenWidget("hamburger-menu", {
-        openChat() {
+      createWidget("chat-link", {
+        tagName: "li.header-dropdown-toggle.open-chat",
+        title: "chat.title",
+        html(attrs) {
+          return h("a.icon", iconNode("comment"));
+        },
+        click() {
           appEvents.trigger("chat:request-open");
-          this.sendWidgetAction("toggleHamburger");
         },
       });
-
-      api.decorateWidget("hamburger-menu:generalLinks", () => {
-        if (currentUser?.can_chat) {
-          return {
-            action: "openChat",
-            icon: "comment",
-            label: "chat.title",
-            className: "open-chat",
-          };
-        }
-      });
+      api.addToHeaderIcons("chat-link");
     });
   },
 };

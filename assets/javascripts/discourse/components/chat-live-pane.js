@@ -277,6 +277,7 @@ export default Component.extend({
           this.siteSettings,
           this.site.categories
         ),
+        edited: true,
       });
     }
   },

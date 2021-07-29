@@ -92,7 +92,11 @@ class DiscourseChat::ChatController < ::ApplicationController
 
     # n.b.: must fetch ID before querying DB
     message_bus_last_id = ChatPublisher.last_id(@chat_channel)
-    messages = ChatMessage.where(chat_channel: @chat_channel).order(created_at: :desc).limit(50)
+    messages = ChatMessage
+      .includes(:revisions)
+      .where(chat_channel: @chat_channel)
+      .order(created_at: :desc)
+      .limit(50)
 
     if @chat_channel.site_channel? || guardian.can_moderate_chat?(@chatable)
       messages = messages.with_deleted

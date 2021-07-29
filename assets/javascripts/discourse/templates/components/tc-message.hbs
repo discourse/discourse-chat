@@ -79,6 +79,11 @@
           {{html-safe message.cookedMessage}}
           </p>
         {{/if}}
+        {{#if message.edited}}
+          <div class="tc-message-edited">
+            {{i18n "chat.edited"}}
+          </div>
+        {{/if}}
       </div>
     </div>
   {{/if}}

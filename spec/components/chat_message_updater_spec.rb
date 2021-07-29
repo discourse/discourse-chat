@@ -91,4 +91,17 @@ describe DiscourseChat::ChatMessageUpdater do
       .where("data LIKE ?", "%\"chat_message_id\":#{chat_message.id}%")
     ).to be_present
   end
+
+  it "creates a chat_message_revision record" do
+    old_message = "It's a thrsday!"
+    new_message = "It's a thursday!"
+    chat_message = create_chat_message(old_message)
+    DiscourseChat::ChatMessageUpdater.update(
+      chat_message: chat_message,
+      new_content: new_message
+    )
+    revision = chat_message.revisions.last
+    expect(revision.old_message).to eq(old_message)
+    expect(revision.new_message).to eq(new_message)
+  end
 end

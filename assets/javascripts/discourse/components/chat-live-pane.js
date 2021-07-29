@@ -89,7 +89,7 @@ export default Component.extend({
     this.set("loading", true);
     const url = this.targetMessageId
       ? `/chat/lookup/${this.targetMessageId}.json`
-      : `/chat/${this.chatChannel.id}/recent`;
+      : `/chat/${this.chatChannel.id}/recent.json`;
 
     ajax(url)
       .then((data) => {

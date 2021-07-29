@@ -48,6 +48,7 @@ export default {
     }
 
     withPluginApi("0.11.0", (api) => {
+      api.addCardClickListenerSelector(".topic-chat-float-container");
       api.addPostSmallActionIcon("chat.enabled", "comment");
       api.addPostSmallActionIcon("chat.disabled", "comment");
       api.addPostTransformCallback((transformed) => {

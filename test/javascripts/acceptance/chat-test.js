@@ -196,7 +196,7 @@ acceptance("Discourse Chat - Acceptance Test", function (needs) {
       "Reply icon is present"
     );
     assert.equal(
-      queryAll(".tc-composer-message-details .tc-reply-username").text().trim(),
+      query(".tc-composer-message-details .tc-reply-username").innerText.trim(),
       "markvanlan"
     );
   });
@@ -209,7 +209,7 @@ acceptance("Discourse Chat - Acceptance Test", function (needs) {
       "Edit icon is present"
     );
     assert.equal(
-      queryAll(".tc-composer-message-details .tc-reply-username").text().trim(),
+      query(".tc-composer-message-details .tc-reply-username").innerText.trim(),
       "markvanlan"
     );
 

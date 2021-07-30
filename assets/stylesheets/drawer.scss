@@ -407,12 +407,10 @@ $header-height: 2.5rem;
   .d-icon-lock {
     margin-right: 0.25em;
   }
-  .category-hashtag {
-    font-size: 10px;
-    padding: 1px 3px;
-    border-radius: 50%;
+  .badge-category {
+    font-size: var(--font-up-1);
   }
-  .chat-category-name {
+  .chat-name {
     margin: 0 0 0 0.25em;
     font-weight: 500;
   }

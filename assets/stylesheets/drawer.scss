@@ -1,7 +1,7 @@
 $header-height: 2.5rem;
 
 .topic-chat-float-container {
-  z-index: 199; // higher than timeline, lower than composer, lower than user card
+  z-index: 200; // higher than timeline, lower than composer, lower than user card
   position: fixed;
   right: 0;
   left: 0;
@@ -417,6 +417,10 @@ $header-height: 2.5rem;
   .topic-chat-icon {
     color: var(--primary-medium);
   }
+}
+
+.user-card, .group-card {
+  z-index: 201;
 }
 
 :root:not(.mobile-view) {

@@ -6,11 +6,12 @@ import { observes } from "discourse-common/utils/decorators";
 import cookChatMessage from "discourse/plugins/discourse-topic-chat/discourse/lib/cook-chat-message";
 import discourseDebounce from "discourse-common/lib/debounce";
 import { popupAjaxError } from "discourse/lib/ajax-error";
-import { cancel, later, schedule } from "@ember/runloop";
+import { cancel, later, next, schedule } from "@ember/runloop";
 import { inject as service } from "@ember/service";
 
 const MAX_RECENT_MSGS = 100;
 const STICKY_SCROLL_LENIENCE = 4;
+const READ_INTERVAL = 2000;
 
 export default Component.extend({
   classNameBindings: [":tc-live-pane", "sendingloading", "loading"],
@@ -34,10 +35,16 @@ export default Component.extend({
   getCachedChannelDetails: null,
   clearCachedChannelDetails: null,
 
+  updateReadRunner: null,
+  lastSendReadMessageId: null,
+
   didInsertElement() {
     this._super(...arguments);
 
     this.appEvents.on("chat:open-message", this, "highlightOrFetchMessage");
+    next(this, () => {
+      this.set("updateReadRunner", this._updateLastReadMessage());
+    });
 
     const scroller = this.element.querySelector(".tc-messages-scroll");
     scroller.addEventListener(
@@ -55,6 +62,7 @@ export default Component.extend({
 
   willDestroyElement() {
     this.appEvents.off("chat:open-message", this, "highlightOrFetchMessage");
+    this._stopLastReadRunner();
 
     // don't need to removeEventListener from scroller as the DOM element goes away
     if (this.stickyScrollTimer) {
@@ -97,6 +105,7 @@ export default Component.extend({
           return;
         }
         this.setMessageProps(data.topic_chat_view);
+        // ajax(`/chat/${this.chatChannel.id}/read`).then('ping')
       })
       .catch((err) => {
         throw err;
@@ -127,9 +136,10 @@ export default Component.extend({
     });
 
     schedule("afterRender", this, () => {
-      this.doScrollStick();
       if (this.targetMessageId) {
-        this.scrollToHighlightedMessage(this.targetMessageId);
+        this.scrollToMessage(this.targetMessageId, { highlight: true });
+      } else {
+        this._markLastReadMessage();
       }
     });
     this.messageBus.subscribe(
@@ -141,6 +151,23 @@ export default Component.extend({
     );
   },
 
+  _markLastReadMessage() {
+    const lastReadId = this.currentUser.chat_channel_tracking_state.findBy(
+      "chat_channel_id",
+      this.chatChannel.id
+    )?.chat_message_id;
+    if (lastReadId) {
+      this.set("lastSendReadMessageId", lastReadId);
+      let message = this.messageLookup[lastReadId] || this.messages[0];
+
+      // If user has read the last message, don't add anything.
+      if (message !== this.messages[this.messages.length - 1]) {
+        message.set("last_read", true);
+      }
+      this.scrollToMessage(message.id);
+    }
+  },
+
   highlightOrFetchMessage(_, messageId) {
     if (this.selfDeleted()) {
       return;
@@ -148,14 +175,14 @@ export default Component.extend({
 
     if (this.messageLookup[messageId]) {
       // We have the message rendered. highlight and scrollTo
-      this.scrollToHighlightedMessage(messageId);
+      this.scrollToMessage(messageId, { highlight: true });
     } else {
       this.set("targetMessageId", messageId);
       this.fetchMessages();
     }
   },
 
-  scrollToHighlightedMessage(messageId) {
+  scrollToMessage(messageId, opts = { highlight: false }) {
     if (this.selfDeleted()) {
       return;
     }
@@ -164,24 +191,30 @@ export default Component.extend({
       `.tc-messages-scroll .tc-message-${messageId}`
     );
     if (messageEl) {
-      messageEl.classList.add("highlighted");
-      messageEl.scrollIntoView({ behavior: "smooth" });
-
-      // Remove highlighted class, but keep `transition-slow` on for another 2 seconds
-      // to ensure the background color fades smoothly out
-      later(() => {
-        messageEl.classList.add("transition-slow");
-      }, 2000);
-      later(() => {
-        messageEl.classList.remove("highlighted");
-        later(() => {
-          messageEl.classList.remove("transition-slow");
-        }, 2000);
-      }, 3000);
+      next(() => {
+        messageEl.scrollIntoView();
+      });
+      if (opts.highlight) {
+        messageEl.classList.add("highlighted");
+        // Remove highlighted class, but keep `transition-slow` on for another 2 seconds
+        // to ensure the background color fades smoothly out
+        if (opts.highlight) {
+          later(() => {
+            messageEl.classList.add("transition-slow");
+          }, 2000);
+          later(() => {
+            messageEl.classList.remove("highlighted");
+            later(() => {
+              messageEl.classList.remove("transition-slow");
+            }, 2000);
+          }, 3000);
+        }
+      }
     }
   },
 
-  doScrollStick() {
+  stickScrollToBottom() {
+    console.log("STICK");
     if (this.selfDeleted()) {
       return;
     }
@@ -215,7 +248,7 @@ export default Component.extend({
 
   @observes("expanded")
   restickOnExpand() {
-    this.doScrollStick();
+    this.stickScrollToBottom();
   },
 
   prepareMessage(msgData) {
@@ -261,7 +294,7 @@ export default Component.extend({
     if (this.messages.length >= MAX_RECENT_MSGS) {
       this.removeMessage(this.messages.shiftObject());
     }
-    schedule("afterRender", this, this.doScrollStick);
+    schedule("afterRender", this, this.stickScrollToBottom);
     if (this.newMessageCb) {
       this.newMessageCb();
     }
@@ -360,6 +393,43 @@ export default Component.extend({
     return !this.element || this.isDestroying || this.isDestroyed;
   },
 
+  _updateLastReadMessage() {
+    if (this.selfDeleted()) {
+      return;
+    }
+
+    return later(
+      this,
+      () => {
+        const messageId = this.messages[this.messages.length - 1].id;
+        // Make sure new messages have come in. Do not keep pinging server with read updates
+        // if no new messages came in since last read update was sent.
+        if (messageId !== this.lastSendReadMessageId) {
+          this.set("lastSendReadMessageId", messageId);
+          const trackingState = this.currentUser.chat_channel_tracking_state.findBy(
+            "chat_channel_id",
+            this.chatChannel.id
+          );
+          trackingState.chat_message_id = messageId;
+          trackingState.unread_count = 0;
+          "chat_channel_id",
+            ajax(`/chat/${this.chatChannel.id}/read/${messageId}.json`, {
+              method: "PUT",
+            }).catch(() => {
+              this._stopLastReadRunner();
+            });
+        }
+
+        this.set("updateReadRunner", this._updateLastReadMessage());
+      },
+      READ_INTERVAL
+    );
+  },
+
+  _stopLastReadRunner() {
+    cancel(this.updateReadRunner);
+  },
+
   @action
   sendMessage(message) {
     this.set("sendingloading", true);
@@ -441,14 +511,14 @@ export default Component.extend({
     } else {
       this.set("replyToMsg", null);
     }
-    schedule("afterRender", this, this.doScrollStick);
+    schedule("afterRender", this, this.stickScrollToBottom);
   },
 
   @action
   editButtonClicked(messageId) {
     const message = this.messageLookup[messageId];
     this.set("editingMessage", message);
-    schedule("afterRender", this, this.doScrollStick);
+    schedule("afterRender", this, this.stickScrollToBottom);
   },
 
   @action
@@ -457,14 +527,9 @@ export default Component.extend({
   },
 
   @action
-  composerHeightChange() {
-    this.doScrollStick();
-  },
-
-  @action
   restickScrolling(evt) {
     this.set("stickyScroll", true);
-    this.doScrollStick();
+    this.stickScrollToBottom();
     evt.preventDefault();
   },
 });

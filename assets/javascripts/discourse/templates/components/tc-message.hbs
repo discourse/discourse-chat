@@ -86,5 +86,10 @@
         {{/if}}
       </div>
     </div>
+    {{#if message.last_read}}
+      <div class="tc-new-messages">
+        {{i18n "chat.new_messages"}}
+      </div>
+    {{/if}}
   {{/if}}
 {{/if}}

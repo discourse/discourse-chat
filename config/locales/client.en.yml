@@ -20,6 +20,8 @@ en:
       restore: "Restore deleted message"
       deleted: "A message was deleted. [view]"
       list: "Channels"
+      new_messages: "New messages"
+      unread_count: "(%{count} new)"
       category_chat_enabled: "Chat enabled for category"
       mention_notification: "<span>%{username} mentioned you in chat</span>"
 

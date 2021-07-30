@@ -87,6 +87,15 @@ class DiscourseChat::ChatController < ::ApplicationController
     render json: success_json
   end
 
+  def update_user_timing
+    set_channel_and_chatable
+    timing = @chat_channel.user_chat_channel_timings.find_or_initialize_by(user: current_user)
+    timing.chat_message_id = params[:message_id]
+    timing.save
+
+    render json: success_json
+  end
+
   def recent
     set_channel_and_chatable
 

@@ -1,17 +1,8 @@
 # frozen_string_literal: true
 
-class DiscourseChat::ChatChannelFetcher
-
+module DiscourseChat::ChatChannelFetcher
   def self.structured(guardian)
-    channels = ChatChannel.includes(:chatable).where(chatable_type: ["Topic", "Category"]).all
-    channels = channels.to_a.select do |channel|
-      if channel.topic_channel?
-        !channel.chatable.closed && !channel.chatable.archived && guardian.can_see_topic?(channel.chatable)
-      else
-        guardian.can_see_category?(channel.chatable)
-      end
-    end
-
+    channels = secured_channels(guardian)
     category_channels = channels.select(&:category_channel?)
     added_channel_ids = category_channels.map(&:id)
 
@@ -28,12 +19,31 @@ class DiscourseChat::ChatChannelFetcher
     structured_channels = structured_channels.concat(remaining_channels)
 
     if guardian.can_access_site_chat?
-      structured_channels.prepend(ChatChannel.find_by(chatable_id: DiscourseChat::SITE_CHAT_ID))
+      structured_channels.prepend(ChatChannel.site_channel)
     end
     structured_channels
   end
 
   def self.unstructured(guardian)
+    channels = secured_channels(guardian, include_chatables: false)
+    channels << ChatChannel.site_channel if guardian.user.staff?
+    channels
+  end
 
+  def self.secured_channels(guardian, include_chatables: true)
+    channels = ChatChannel
+    channels.includes(:chatables) if include_chatables
+    channels = channels.where(chatable_type: ["Topic", "Category"])
+    channels.to_a.select { |channel| can_see_channel?(channel, guardian) }
+  end
+
+  def self.can_see_channel?(channel, guardian)
+    if channel.topic_channel?
+      !channel.chatable.closed && !channel.chatable.archived && guardian.can_see_topic?(channel.chatable)
+    elsif channel.category_channel?
+      guardian.can_see_category?(channel.chatable)
+    else
+      true
+    end
   end
 end

@@ -1,5 +1,14 @@
+
 <div class={{if nested "chat-channel-row nested" "chat-channel-row"}}>
+  {{#if channel.unreadCount}}
+    <span class="chat-channel-row-unread-indicator"></span>
+  {{/if}}
   {{chat-channel-title channel=channel}}
+  {{#if channel.unreadCount}}
+    <span class="chat-channel-row-unread-count">
+      {{i18n "chat.unread_count" count=channel.unreadCount}}
+    </span>
+  {{/if}}
 </div>
 
 {{#each channel.chat_channels as |nested_channel|}}

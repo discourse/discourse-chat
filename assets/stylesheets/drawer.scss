@@ -233,6 +233,14 @@ $header-height: 2.5rem;
   }
 }
 
+.tc-new-messages {
+  text-align: center;
+  color: var(--tertiary);
+  padding: 2px 0;
+  font-size: var(--font-down-1);
+  border-bottom: 1px solid var(--tertiary-medium);
+}
+
 .tc-live-pane {
   display: flex;
   flex-direction: column;
@@ -399,6 +407,21 @@ $header-height: 2.5rem;
     align-items: center;
     margin-right: 0;
   }
+  .chat-channel-row-unread-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: var(--love);
+    border-radius: 100%;
+    margin-right: 5px;
+  }
+  .chat-channel-row-unread-count {
+    display: inline-block;
+    margin-left: 5px;
+    font-size: var(--font-down-1);
+    color: $primary-high;
+  }
+
 }
 
 .chat-channel-title {

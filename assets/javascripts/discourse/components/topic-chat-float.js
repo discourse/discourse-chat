@@ -238,12 +238,25 @@ export default Component.extend({
   openChat() {
     ajax("/chat/index.json").then((channels) => {
       this.setProperties({
-        channels: channels,
+        channels: this._formatChannels(channels),
         activeChannel: null,
         hidden: false,
         expanded: true,
         view: LIST_VIEW,
       });
+    });
+  },
+
+  _formatChannels(channels) {
+    return channels.map((channel) => {
+      channel.unreadCount = this.currentUser.chat_channel_tracking_state.findBy(
+        "chat_channel_id",
+        channel.id
+      ).unread_count;
+      if (channel.chat_channels) {
+        channel.chat_channels = this._formatChannels(channel.chat_channels);
+      }
+      return channel;
     });
   },
 

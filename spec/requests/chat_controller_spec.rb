@@ -400,4 +400,37 @@ RSpec.describe DiscourseChat::ChatController do
       expect(response.parsed_body.detect { |channel| channel["id"] == private_category_cc.id }["chat_channels"].first["chatable_id"]).to eq(private_topic_cc.chatable_id)
     end
   end
+
+  describe "#update_user_timing" do
+    fab!(:chat_channel) { Fabricate(:chat_channel, chatable: topic) }
+    fab!(:chat_message) { Fabricate(:chat_message, chat_channel: chat_channel, user: user) }
+
+    before { sign_in(user) }
+
+    it "create a new timing records when one doesn't exist" do
+      expect {
+        put "/chat/#{chat_channel.id}/read/#{chat_message.id}.json"
+      }.to change { UserChatChannelTiming.count }.by(1)
+      timing_record = UserChatChannelTiming.last
+      expect(timing_record.chat_channel_id).to eq(chat_channel.id)
+      expect(timing_record.chat_message_id).to eq(chat_message.id)
+      expect(timing_record.user_id).to eq(user.id)
+    end
+
+    it "updates existing timing records" do
+      existing_record = UserChatChannelTiming.create(
+        chat_channel: chat_channel,
+        chat_message_id: 0,
+        user: user
+      )
+
+      expect {
+        put "/chat/#{chat_channel.id}/read/#{chat_message.id}.json"
+      }.to change { UserChatChannelTiming.count }.by(0)
+      existing_record.reload
+      expect(existing_record.chat_channel_id).to eq(chat_channel.id)
+      expect(existing_record.chat_message_id).to eq(chat_message.id)
+      expect(existing_record.user_id).to eq(user.id)
+    end
+  end
 end

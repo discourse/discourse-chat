@@ -126,9 +126,11 @@ export default {
         },
         _chatOpened() {
           chatOpen = true;
+          this.scheduleRerender();
         },
         _chatClosed() {
           chatOpen = false;
+          this.scheduleRerender();
         },
       });
       api.addToHeaderIcons("chat-link");

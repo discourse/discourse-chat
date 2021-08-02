@@ -2,7 +2,7 @@ import { action } from "@ember/object";
 import { equal } from "@ember/object/computed";
 import { ajax } from "discourse/lib/ajax";
 import Component from "@ember/component";
-import discourseComputed from "discourse-common/utils/decorators";
+import discourseComputed, { observes } from "discourse-common/utils/decorators";
 import { cancel, throttle } from "@ember/runloop";
 import { inject as service } from "@ember/service";
 import loadScript from "discourse/lib/load-script";
@@ -93,6 +93,14 @@ export default Component.extend({
     if (this.rafTimer) {
       window.cancelAnimationFrame(this.rafTimer);
     }
+  },
+
+  @observes("hidden")
+  _fireHiddenAppEvents() {
+    console.log(`chat:${this.hidden ? "chat-closed" : "chat-opened"}`);
+    this.appEvents.trigger(
+      `chat:${this.hidden ? "chat-closed" : "chat-opened"}`
+    );
   },
 
   loadMarkdownIt() {
@@ -238,10 +246,8 @@ export default Component.extend({
   toggleChat() {
     if (this.hidden) {
       this.fetchChannels();
-      this.appEvents.trigger("chat:chat-opened");
     } else {
       this.set("hidden", true);
-      this.appEvents.trigger("chat:chat-closed");
     }
   },
 

@@ -97,7 +97,6 @@ export default Component.extend({
 
   @observes("hidden")
   _fireHiddenAppEvents() {
-    console.log(`chat:${this.hidden ? "chat-closed" : "chat-opened"}`);
     this.appEvents.trigger(
       `chat:${this.hidden ? "chat-closed" : "chat-opened"}`
     );

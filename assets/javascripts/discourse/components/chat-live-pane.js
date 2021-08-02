@@ -1,5 +1,5 @@
 import { A } from "@ember/array";
-import EmberObject, { action } from "@ember/object";
+import EmberObject, { action, setProperties } from "@ember/object";
 import { ajax } from "discourse/lib/ajax";
 import Component from "@ember/component";
 import { observes } from "discourse-common/utils/decorators";
@@ -214,7 +214,6 @@ export default Component.extend({
   },
 
   stickScrollToBottom() {
-    console.log("STICK");
     if (this.selfDeleted()) {
       return;
     }
@@ -406,18 +405,13 @@ export default Component.extend({
         // if no new messages came in since last read update was sent.
         if (messageId !== this.lastSendReadMessageId) {
           this.set("lastSendReadMessageId", messageId);
-          const trackingState = this.currentUser.chat_channel_tracking_state.findBy(
-            "chat_channel_id",
-            this.chatChannel.id
-          );
-          trackingState.chat_message_id = messageId;
-          trackingState.unread_count = 0;
           "chat_channel_id",
-            ajax(`/chat/${this.chatChannel.id}/read/${messageId}.json`, {
-              method: "PUT",
-            }).catch(() => {
-              this._stopLastReadRunner();
-            });
+            this.onReadLastMessage(this.chatChannel.id, messageId);
+          ajax(`/chat/${this.chatChannel.id}/read/${messageId}.json`, {
+            method: "PUT",
+          }).catch(() => {
+            this._stopLastReadRunner();
+          });
         }
 
         this.set("updateReadRunner", this._updateLastReadMessage());

@@ -1,5 +1,19 @@
 $header-height: 2.5rem;
 
+.unread-chat-messages-indicator {
+  width: 8px;
+  height: 8px;
+  background: var(--love);
+  border-radius: 100%;
+}
+
+.header-dropdown-toggle.open-chat {
+  .unread-chat-messages-indicator {
+    position: absolute;
+    right: 3px;
+    bottom: 6px;
+  }
+}
 .topic-chat-float-container {
   z-index: 200; // higher than timeline, lower than composer, lower than user card
   position: fixed;
@@ -407,12 +421,8 @@ $header-height: 2.5rem;
     align-items: center;
     margin-right: 0;
   }
-  .chat-channel-row-unread-indicator {
+  .unread-chat-messages-indicator {
     display: inline-block;
-    width: 8px;
-    height: 8px;
-    background: var(--love);
-    border-radius: 100%;
     margin-right: 5px;
   }
   .chat-channel-row-unread-count {

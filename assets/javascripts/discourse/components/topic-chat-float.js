@@ -1,4 +1,4 @@
-import { action } from "@ember/object";
+import { action, set, setProperties } from "@ember/object";
 import { equal } from "@ember/object/computed";
 import { ajax } from "discourse/lib/ajax";
 import Component from "@ember/component";
@@ -37,6 +37,7 @@ export default Component.extend({
       return;
     }
 
+    this._subscribeToUpdateChannels();
     this.appEvents.on("chat:request-open", this, "openChat");
     this.appEvents.on("chat:open-channel", this, "openChannelFor");
     this.appEvents.on("chat:open-message", this, "openChannelAtMessage");
@@ -186,6 +187,16 @@ export default Component.extend({
     // if overridden by themes, will get fixed up in the composer:closed event
     this.element.style.setProperty("--composer-height", "40px");
   },
+  _subscribeToUpdateChannels() {
+    this.currentUser.chat_channel_tracking_state.forEach((channel) => {
+      this.messageBus.subscribe(
+        `/chat/${channel.chat_channel_id}/new_messages`,
+        (busData) => {
+          set(channel, "unread_count", channel.unread_count + 1);
+        }
+      );
+    });
+  },
 
   @discourseComputed("expanded")
   containerClassNames(expanded) {
@@ -238,25 +249,12 @@ export default Component.extend({
   openChat() {
     ajax("/chat/index.json").then((channels) => {
       this.setProperties({
-        channels: this._formatChannels(channels),
+        channels: channels,
         activeChannel: null,
         hidden: false,
         expanded: true,
         view: LIST_VIEW,
       });
-    });
-  },
-
-  _formatChannels(channels) {
-    return channels.map((channel) => {
-      channel.unreadCount = this.currentUser.chat_channel_tracking_state.findBy(
-        "chat_channel_id",
-        channel.id
-      ).unread_count;
-      if (channel.chat_channels) {
-        channel.chat_channels = this._formatChannels(channel.chat_channels);
-      }
-      return channel;
     });
   },
 
@@ -270,5 +268,17 @@ export default Component.extend({
       view: CHAT_VIEW,
     };
     this.setProperties(channelInfo);
+  },
+
+  @action
+  _readLastMessageForChannel(channelId, messageId) {
+    const trackingState = this.currentUser.chat_channel_tracking_state.findBy(
+      "chat_channel_id",
+      channelId
+    );
+    setProperties(trackingState, {
+      chat_message_id: messageId,
+      unread_count: 0,
+    });
   },
 });

@@ -1,6 +1,6 @@
 <span class="chat-channel-title">
   {{#if (eq channel.chatable_type "Category")}}
-    {{category-badge channel.chatable hideParent=true}}
+    {{category-badge channel.chatable hideParent=true allowUncategorized=true}}
   {{else if (eq channel.chatable_type "Topic")}}
     <span class="topic-chat-icon">{{d-icon "far-comments"}}</span>
     <p class="chat-name">{{replace-emoji channel.chatable.fancy_title}}</p>

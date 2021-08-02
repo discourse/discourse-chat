@@ -139,7 +139,7 @@ after_initialize do
           )
         }
     end
-    timings
+    timings.as_json
   end
 
   add_to_serializer(:current_user, :include_chat_channel_tracking_state?) do

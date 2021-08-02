@@ -433,4 +433,53 @@ RSpec.describe DiscourseChat::ChatController do
       expect(existing_record.user_id).to eq(user.id)
     end
   end
+
+  # CurrentUserSerializer specs. Need signed_in user so moving these to requests spec
+  describe "current_user_serializer" do
+    fab!(:chat_channel_0) { Fabricate(:chat_channel, chatable: Fabricate(:topic)) }
+    fab!(:chat_channel_1) { Fabricate(:chat_channel, chatable: Fabricate(:topic)) }
+    fab!(:chat_channel_2) { Fabricate(:chat_channel, chatable: Fabricate(:topic)) }
+
+    before do
+      sign_in(user)
+    end
+
+    let :serializer do
+      CurrentUserSerializer.new(user, scope: Guardian.new(user), root: false)
+    end
+
+    describe "chat_channel_tracking_state" do
+      it 'creates new UserChatChannelTiming records for each unseen channel' do
+        expect(UserChatChannelTiming.count).to eq(0)
+        payload = serializer.as_json
+        expect(UserChatChannelTiming.count).to eq(3)
+        UserChatChannelTiming.where(user: user).each do |timing|
+          expect(timing.chat_message_id).to be_nil
+        end
+      end
+
+      it 'has correct unread_counts for each channel' do
+        2.times do |n|
+          ChatMessage.create(
+            chat_channel: chat_channel_0,
+            user: admin,
+            message: "message #{n}",
+          )
+        end
+        ChatMessage.create(
+          chat_channel: chat_channel_1,
+          user: admin,
+          message: "asd",
+        )
+        payload = serializer.as_json
+        channel_0_state = payload[:chat_channel_tracking_state].detect { |state| state["chat_channel_id"] == chat_channel_0.id }
+        channel_1_state = payload[:chat_channel_tracking_state].detect { |state| state["chat_channel_id"] == chat_channel_1.id }
+        channel_2_state = payload[:chat_channel_tracking_state].detect { |state| state["chat_channel_id"] == chat_channel_2.id }
+
+        expect(channel_0_state["unread_count"]).to eq(2)
+        expect(channel_1_state["unread_count"]).to eq(1)
+        expect(channel_2_state["unread_count"]).to eq(0)
+      end
+    end
+  end
 end

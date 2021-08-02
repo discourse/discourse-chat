@@ -104,7 +104,7 @@ export default {
           return h("a.icon", iconNode("comment"));
         },
         click() {
-          appEvents.trigger("chat:request-open");
+          appEvents.trigger("chat:toggle-open");
         },
       });
       api.addToHeaderIcons("chat-link");

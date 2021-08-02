@@ -119,7 +119,7 @@ after_initialize do
       .where(chat_channel_id: chat_channel_ids)
       .map { |timing|
         timing.unread_count = timing.chat_channel.chat_messages.count { |message|
-          message.id > (timing.chat_message_id || 0)
+          message.user_id != object.id && message.id > (timing.chat_message_id || 0)
         }
         timing
       }

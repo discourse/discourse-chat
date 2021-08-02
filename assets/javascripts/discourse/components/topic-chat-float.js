@@ -67,6 +67,7 @@ export default Component.extend({
     }
 
     if (this.appEvents) {
+      this._unsubscribeFromUpdateChannels();
       this.appEvents.off("chat:request-open", this, "openChat");
       this.appEvents.off("chat:open-channel", this, "openChannelFor");
       this.appEvents.off("chat:open-message", this, "openChannelAtMessage");
@@ -192,9 +193,19 @@ export default Component.extend({
     this.currentUser.chat_channel_tracking_state.forEach((channel) => {
       this.messageBus.subscribe(
         `/chat/${channel.chat_channel_id}/new_messages`,
-        () => {
-          set(channel, "unread_count", channel.unread_count + 1);
+        (busData) => {
+          if (busData.user_id !== this.currentUser.id) {
+            set(channel, "unread_count", channel.unread_count + 1);
+          }
         }
+      );
+    });
+  },
+
+  _unsubscribeFromUpdateChannels() {
+    this.currentUser.chat_channel_tracking_state.forEach((channel) => {
+      this.messageBus.unsubscribe(
+        `/chat/${channel.chat_channel_id}/new_messages`
       );
     });
   },

@@ -236,10 +236,10 @@ export default Component.extend({
 
   @action
   toggleChat() {
-    if (!this.hidden) {
-      this.set("hidden", true);
-    } else {
+    if (this.hidden) {
       this.fetchChannels();
+    } else {
+      this.set("hidden", true);
     }
   },
 

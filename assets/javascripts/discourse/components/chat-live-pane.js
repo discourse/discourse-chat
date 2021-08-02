@@ -154,10 +154,9 @@ export default Component.extend({
   },
 
   _markLastReadMessage() {
-    const lastReadId = this.currentUser.chat_channel_tracking_state.findBy(
-      "chat_channel_id",
+    const lastReadId = this.currentUser.chat_channel_tracking_state[
       this.chatChannel.id
-    )?.chat_message_id;
+    ]?.chat_message_id;
     if (lastReadId) {
       this.set("lastSendReadMessageId", lastReadId);
       let message = this.messageLookup[lastReadId] || this.messages[0];

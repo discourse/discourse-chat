@@ -139,7 +139,15 @@ after_initialize do
           )
         }
     end
-    timings.as_json
+    timings_hash = {}
+    timings.each do |timing|
+      timings_hash[timing.chat_channel_id] = {
+        unread_count: timing.unread_count,
+        user_id: timing.id,
+        chat_message_id: timing.chat_message_id
+      }
+    end
+    timings_hash.as_json
   end
 
   add_to_serializer(:current_user, :include_chat_channel_tracking_state?) do

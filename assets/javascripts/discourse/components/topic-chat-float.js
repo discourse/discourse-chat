@@ -190,24 +190,31 @@ export default Component.extend({
     this.element.style.setProperty("--composer-height", "40px");
   },
   _subscribeToUpdateChannels() {
-    this.currentUser.chat_channel_tracking_state.forEach((channel) => {
+    for (const [channelId, state] of Object.entries(
+      this.currentUser.chat_channel_tracking_state
+    )) {
       this.messageBus.subscribe(
-        `/chat/${channel.chat_channel_id}/new_messages`,
+        `/chat/${channelId}/new_messages`,
         (busData) => {
           if (busData.user_id !== this.currentUser.id) {
-            set(channel, "unread_count", channel.unread_count + 1);
+            this.currentUser.chat_channel_tracking_state[
+              channelId
+            ].unread_count = state.unreadCount++;
+            this.currentUser.notifyPropertyChange(
+              "chat_channel_tracking_state"
+            );
           }
         }
       );
-    });
+    }
   },
 
   _unsubscribeFromUpdateChannels() {
-    this.currentUser.chat_channel_tracking_state.forEach((channel) => {
-      this.messageBus.unsubscribe(
-        `/chat/${channel.chat_channel_id}/new_messages`
-      );
-    });
+    Object.keys(this.currentUser.chat_channel_tracking_state).forEach(
+      (channelId) => {
+        this.messageBus.unsubscribe(`/chat/${channelId}/new_messages`);
+      }
+    );
   },
 
   @discourseComputed("expanded")
@@ -228,13 +235,9 @@ export default Component.extend({
     }
   },
 
-  @discourseComputed(
-    "activeChannel",
-    "currentUser.chat_channel_tracking_state.@each.unread_count"
-  )
+  @discourseComputed("activeChannel", "currentUser.chat_channel_tracking_state")
   unreadCount(activeChannel, trackingState) {
-    return trackingState.findBy("chat_channel_id", activeChannel.id)
-      .unread_count;
+    return trackingState[activeChannel.id].unread_count;
   },
 
   @action
@@ -286,10 +289,9 @@ export default Component.extend({
 
   @action
   _readLastMessageForChannel(channelId, messageId) {
-    const trackingState = this.currentUser.chat_channel_tracking_state.findBy(
-      "chat_channel_id",
+    const trackingState = this.currentUser.chat_channel_tracking_state[
       channelId
-    );
+    ];
     setProperties(trackingState, {
       chat_message_id: messageId,
       unread_count: 0,

@@ -10,11 +10,8 @@ export default Component.extend({
     this.switchChannel(this.channel);
   },
 
-  @discourseComputed(
-    "currentUser.chat_channel_tracking_state.@each.unread_count"
-  )
+  @discourseComputed("currentUser.chat_channel_tracking_state")
   unreadCount(trackingState) {
-    return trackingState.findBy("chat_channel_id", this.channel.id)
-      .unread_count;
+    return trackingState[this.channel.id].unread_count;
   },
 });

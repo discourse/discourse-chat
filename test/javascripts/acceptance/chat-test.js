@@ -19,12 +19,12 @@ acceptance("Discourse Chat - Acceptance Test", function (needs) {
     moderator: false,
     id: 1,
     can_chat: true,
-    chat_channel_tracking_state: [
-      { chat_channel_id: 9, unread_count: 2 },
-      { chat_channel_id: 7, unread_count: 0 },
-      { chat_channel_id: 4, unread_count: 0 },
-      { chat_channel_id: 11, unread_count: 0 },
-    ],
+    chat_channel_tracking_state: {
+      9: { unread_count: 2 },
+      7: { unread_count: 0 },
+      4: { unread_count: 0 },
+      11: { unread_count: 0 },
+    }
   });
   needs.settings({
     topic_chat_enabled: true,

@@ -70,6 +70,9 @@ class DiscourseChat::ChatController < ::ApplicationController
       return render_json_error(chat_message_creator.error)
     end
 
+    timing = @chat_channel.user_chat_channel_timings.find_by(user: current_user)
+    timing.update(chat_message_id: params[:message_id]) if timing
+
     render json: success_json
   end
 
@@ -89,9 +92,8 @@ class DiscourseChat::ChatController < ::ApplicationController
 
   def update_user_timing
     set_channel_and_chatable
-    timing = @chat_channel.user_chat_channel_timings.find_or_initialize_by(user: current_user)
-    timing.chat_message_id = params[:message_id]
-    timing.save
+    timing = @chat_channel.user_chat_channel_timings.find_by(user: current_user)
+    timing.update(chat_message_id: params[:message_id])
 
     render json: success_json
   end

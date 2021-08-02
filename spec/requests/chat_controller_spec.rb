@@ -407,17 +407,7 @@ RSpec.describe DiscourseChat::ChatController do
 
     before { sign_in(user) }
 
-    it "create a new timing records when one doesn't exist" do
-      expect {
-        put "/chat/#{chat_channel.id}/read/#{chat_message.id}.json"
-      }.to change { UserChatChannelTiming.count }.by(1)
-      timing_record = UserChatChannelTiming.last
-      expect(timing_record.chat_channel_id).to eq(chat_channel.id)
-      expect(timing_record.chat_message_id).to eq(chat_message.id)
-      expect(timing_record.user_id).to eq(user.id)
-    end
-
-    it "updates existing timing records" do
+    it "updates timing records" do
       existing_record = UserChatChannelTiming.create(
         chat_channel: chat_channel,
         chat_message_id: 0,
@@ -472,10 +462,9 @@ RSpec.describe DiscourseChat::ChatController do
           message: "asd",
         )
         payload = serializer.as_json
-        channel_0_state = payload[:chat_channel_tracking_state].detect { |state| state["chat_channel_id"] == chat_channel_0.id }
-        channel_1_state = payload[:chat_channel_tracking_state].detect { |state| state["chat_channel_id"] == chat_channel_1.id }
-        channel_2_state = payload[:chat_channel_tracking_state].detect { |state| state["chat_channel_id"] == chat_channel_2.id }
-
+        channel_0_state = payload[:chat_channel_tracking_state][chat_channel_0.id.to_s]
+        channel_1_state = payload[:chat_channel_tracking_state][chat_channel_1.id.to_s]
+        channel_2_state = payload[:chat_channel_tracking_state][chat_channel_2.id.to_s]
         expect(channel_0_state["unread_count"]).to eq(2)
         expect(channel_1_state["unread_count"]).to eq(1)
         expect(channel_2_state["unread_count"]).to eq(0)

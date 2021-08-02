@@ -97,24 +97,27 @@ export default {
         },
       });
 
-      createWidget("chat-link", {
-        tagName: "li.header-dropdown-toggle.open-chat",
-        title: "chat.title",
-        html(attrs) {
-          const hasUnread = this.currentUser.chat_channel_tracking_state.some(
-            (trackingState) => trackingState.unread_count > 0
-          );
-          let contents = [h("a.icon", iconNode("comment"))];
-          if (hasUnread) {
-            contents.push(h("div.unread-chat-messages-indicator"));
-          }
-          return contents;
-        },
-        click() {
-          appEvents.trigger("chat:request-open");
-        },
-      });
-      api.addToHeaderIcons("chat-link");
+      if (currentUser.can_chat) {
+        createWidget("chat-link", {
+          tagName: "li.header-dropdown-toggle.open-chat",
+          title: "chat.title",
+          html() {
+            const hasUnread = this.currentUser.chat_channel_tracking_state.some(
+              (trackingState) => trackingState.unread_count > 0
+            );
+            let contents = [h("a.icon", iconNode("comment"))];
+            if (hasUnread) {
+              contents.push(h("div.unread-chat-messages-indicator"));
+            }
+            return contents;
+          },
+          click() {
+            appEvents.trigger("chat:request-open");
+          },
+        });
+
+        api.addToHeaderIcons("chat-link");
+      }
     });
   },
 };

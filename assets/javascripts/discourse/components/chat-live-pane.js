@@ -1,5 +1,5 @@
 import { A } from "@ember/array";
-import EmberObject, { action, setProperties } from "@ember/object";
+import EmberObject, { action } from "@ember/object";
 import { ajax } from "discourse/lib/ajax";
 import Component from "@ember/component";
 import { observes } from "discourse-common/utils/decorators";
@@ -399,8 +399,7 @@ export default Component.extend({
         // if no new messages came in since last read update was sent.
         if (this.expanded && messageId !== this.lastSendReadMessageId) {
           this.set("lastSendReadMessageId", messageId);
-          "chat_channel_id",
-            this.onReadLastMessage(this.chatChannel.id, messageId);
+          this.onReadLastMessage(this.chatChannel.id, messageId);
           ajax(`/chat/${this.chatChannel.id}/read/${messageId}.json`, {
             method: "PUT",
           }).catch(() => {

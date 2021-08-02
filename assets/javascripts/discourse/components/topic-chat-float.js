@@ -192,7 +192,7 @@ export default Component.extend({
     this.currentUser.chat_channel_tracking_state.forEach((channel) => {
       this.messageBus.subscribe(
         `/chat/${channel.chat_channel_id}/new_messages`,
-        (busData) => {
+        () => {
           set(channel, "unread_count", channel.unread_count + 1);
         }
       );

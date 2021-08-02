@@ -238,10 +238,10 @@ export default Component.extend({
   toggleChat() {
     if (this.hidden) {
       this.fetchChannels();
-      this.appEvents.trigger("chat:chat-opened")
+      this.appEvents.trigger("chat:chat-opened");
     } else {
       this.set("hidden", true);
-      this.appEvents.trigger("chat:chat-closed")
+      this.appEvents.trigger("chat:chat-closed");
     }
   },
 

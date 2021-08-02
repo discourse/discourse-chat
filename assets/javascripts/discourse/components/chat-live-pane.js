@@ -7,7 +7,6 @@ import cookChatMessage from "discourse/plugins/discourse-topic-chat/discourse/li
 import discourseDebounce from "discourse-common/lib/debounce";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { cancel, later, schedule } from "@ember/runloop";
-import { inject as service } from "@ember/service";
 
 const MAX_RECENT_MSGS = 100;
 const STICKY_SCROLL_LENIENCE = 4;
@@ -28,8 +27,6 @@ export default Component.extend({
   messages: null, // Array
   messageLookup: null, // Object<Number, Message>
   targetMessageId: null,
-
-  chatService: service(),
 
   getCachedChannelDetails: null,
   clearCachedChannelDetails: null,

@@ -4,7 +4,6 @@ import { ajax } from "discourse/lib/ajax";
 import Component from "@ember/component";
 import discourseComputed, { observes } from "discourse-common/utils/decorators";
 import { cancel, throttle } from "@ember/runloop";
-import { inject as service } from "@ember/service";
 import loadScript from "discourse/lib/load-script";
 import { Promise } from "rsvp";
 
@@ -13,9 +12,7 @@ export const CHAT_VIEW = "chat_view";
 
 export default Component.extend({
   chatView: equal("view", CHAT_VIEW),
-
   classNameBindings: [":topic-chat-float-container", "hidden"],
-  chatService: service(),
 
   hidden: true,
   expanded: true, // TODO - false when not first-load topic
@@ -97,9 +94,8 @@ export default Component.extend({
 
   @observes("hidden")
   _fireHiddenAppEvents() {
-    this.appEvents.trigger(
-      `chat:${this.hidden ? "chat-closed" : "chat-opened"}`
-    );
+    this.chatService.setChatOpenStatus(!this.hidden);
+    this.appEvents.trigger("chat:rerender-header");
   },
 
   loadMarkdownIt() {

@@ -97,22 +97,24 @@ export default {
         },
       });
 
-      let chatOpen = false;
       createWidget("chat-link", {
+        chatService: null,
         tagName: "li.header-dropdown-toggle.open-chat",
         title: "chat.title",
-        buildClasses() {
-          return chatOpen ? "active" : null;
+        init() {
+          this.chatService = this.register.lookup("service:chat");
         },
         html(attrs) {
-          return h("a.icon", iconNode("comment"));
+          return h(
+            `a.icon${this.chatService.getChatOpenStatus() ? ".active" : ""}`,
+            iconNode("comment")
+          );
         },
         click() {
           this.appEvents.trigger("chat:toggle-open");
         },
         didRenderWidget() {
-          this.appEvents.on("chat:chat-opened", this, "_chatOpened");
-          this.appEvents.on("chat:chat-closed", this, "_chatClosed");
+          this.appEvents.on("chat:rerender-header", this, "scheduleRerender");
         },
         willRerenderWidget() {
           this._stopAppEvents();
@@ -121,16 +123,7 @@ export default {
           this._stopAppEvents();
         },
         _stopAppEvents() {
-          this.appEvents.off("chat:chat-opened", this, "_chatOpened");
-          this.appEvents.off("chat:chat-closed", this, "_chatClosed");
-        },
-        _chatOpened() {
-          chatOpen = true;
-          this.scheduleRerender();
-        },
-        _chatClosed() {
-          chatOpen = false;
-          this.scheduleRerender();
+          this.appEvents.off("chat:rerender-header", this, "scheduleRerender");
         },
       });
       api.addToHeaderIcons("chat-link");

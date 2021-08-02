@@ -1,5 +1,5 @@
 import { action, set, setProperties } from "@ember/object";
-import { equal } from "@ember/object/computed";
+import { equal, not } from "@ember/object/computed";
 import { ajax } from "discourse/lib/ajax";
 import Component from "@ember/component";
 import discourseComputed from "discourse-common/utils/decorators";
@@ -19,6 +19,7 @@ export default Component.extend({
 
   hidden: true,
   expanded: true, // TODO - false when not first-load topic
+  notExpanded: not("expanded"),
   showClose: true, // TODO - false when on same topic
   expectPageChange: false,
   sizeTimer: null,
@@ -216,25 +217,18 @@ export default Component.extend({
     }
   },
 
-  @discourseComputed("unreadMessageCount")
-  showUnreadMessageCount(count) {
-    return count > 0;
+  @discourseComputed(
+    "activeChannel",
+    "currentUser.chat_channel_tracking_state.@each.unread_count"
+  )
+  unreadCount(activeChannel, trackingState) {
+    return trackingState.findBy("chat_channel_id", activeChannel.id)
+      .unread_count;
   },
 
   @action
   toggleExpand() {
-    const old = this.expanded;
-    this.set("expanded", !old);
-    if (!old) {
-      this.set("unreadMessageCount", 0);
-    }
-  },
-
-  @action
-  newMessageCb() {
-    if (!this.expanded) {
-      this.set("unreadMessageCount", this.get("unreadMessageCount") + 1);
-    }
+    this.set("expanded", !this.expanded);
   },
 
   @action

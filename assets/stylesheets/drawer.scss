@@ -80,20 +80,26 @@ $header-height: 2.5rem;
     text-overflow: ellipsis;
     overflow-x: hidden;
     color: var(--primary);
-    .chat-channel-title .d-icon:not(.d-icon-hashtag) {
-      color: var(--primary-high);
-    }
-    .chat-channel-title .category-hashtag {
-      padding: 2px 4px;
+    .chat-channel-title {
+      display: inline-flex;
+      margin-right: -8px;
+
+      .d-icon:not(.d-icon-hashtag) {
+        color: var(--primary-high);
+      }
+      .category-hashtag {
+        padding: 2px 4px;
+      }
     }
   }
   .tc-unread-count {
+    display: inline-block;
     color: var(--secondary, $secondary);
-    background-color: var(--danger, $danger);
-    border-radius: 1.4em;
+    background-color: var(--love, $danger);
+    font-size: var(--font-down-2);
+    border-radius: 100%;
     min-width: 1.4em;
     min-height: 1.4em;
-    display: inline-block;
     text-align: center;
   }
   .tc-expand {

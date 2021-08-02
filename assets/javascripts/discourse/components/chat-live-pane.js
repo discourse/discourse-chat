@@ -294,9 +294,6 @@ export default Component.extend({
       this.removeMessage(this.messages.shiftObject());
     }
     schedule("afterRender", this, this.stickScrollToBottom);
-    if (this.newMessageCb) {
-      this.newMessageCb();
-    }
   },
 
   handleEditMessage(data) {
@@ -346,9 +343,6 @@ export default Component.extend({
 
       this.messages.splice(newMessageIndex, 0, message);
       this.notifyPropertyChange("messages");
-      if (this.newMessageCb) {
-        this.newMessageCb();
-      }
     }
   },
 
@@ -403,7 +397,7 @@ export default Component.extend({
         const messageId = this.messages[this.messages.length - 1].id;
         // Make sure new messages have come in. Do not keep pinging server with read updates
         // if no new messages came in since last read update was sent.
-        if (messageId !== this.lastSendReadMessageId) {
+        if (this.expanded && messageId !== this.lastSendReadMessageId) {
           this.set("lastSendReadMessageId", messageId);
           "chat_channel_id",
             this.onReadLastMessage(this.chatChannel.id, messageId);

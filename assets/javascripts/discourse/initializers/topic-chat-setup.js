@@ -97,7 +97,7 @@ export default {
         },
       });
 
-      if (currentUser.can_chat) {
+      if (currentUser?.can_chat) {
         createWidget("chat-link", {
           tagName: "li.header-dropdown-toggle.open-chat",
           title: "chat.title",

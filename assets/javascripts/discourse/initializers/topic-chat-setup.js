@@ -112,7 +112,7 @@ export default {
             return contents;
           },
           click() {
-            appEvents.trigger("chat:request-open");
+            appEvents.trigger("chat:toggle-open");
           },
         });
 

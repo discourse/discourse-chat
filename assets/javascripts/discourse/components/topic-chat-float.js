@@ -39,7 +39,7 @@ export default Component.extend({
     }
 
     this._subscribeToUpdateChannels();
-    this.appEvents.on("chat:request-open", this, "openChat");
+    this.appEvents.on("chat:toggle-open", this, "toggleChat");
     this.appEvents.on("chat:open-channel", this, "openChannelFor");
     this.appEvents.on("chat:open-message", this, "openChannelAtMessage");
     this.appEvents.on("topic-chat-enable", this, "chatEnabledForTopic");
@@ -68,7 +68,7 @@ export default Component.extend({
 
     if (this.appEvents) {
       this._unsubscribeFromUpdateChannels();
-      this.appEvents.off("chat:request-open", this, "openChat");
+      this.appEvents.off("chat:toggle-open", this, "toggleChat");
       this.appEvents.off("chat:open-channel", this, "openChannelFor");
       this.appEvents.off("chat:open-message", this, "openChannelAtMessage");
       this.appEvents.off("topic-chat-enable", this, "chatEnabledForTopic");
@@ -251,7 +251,16 @@ export default Component.extend({
   },
 
   @action
-  openChat() {
+  toggleChat() {
+    if (this.hidden) {
+      this.fetchChannels();
+    } else {
+      this.set("hidden", true);
+    }
+  },
+
+  @action
+  fetchChannels() {
     ajax("/chat/index.json").then((channels) => {
       this.setProperties({
         channels: channels,

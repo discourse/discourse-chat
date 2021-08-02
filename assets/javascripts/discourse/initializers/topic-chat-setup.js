@@ -97,14 +97,38 @@ export default {
         },
       });
 
+      let chatOpen = false;
       createWidget("chat-link", {
         tagName: "li.header-dropdown-toggle.open-chat",
         title: "chat.title",
+        buildClasses() {
+          return chatOpen ? "active" : null;
+        },
         html(attrs) {
           return h("a.icon", iconNode("comment"));
         },
         click() {
-          appEvents.trigger("chat:toggle-open");
+          this.appEvents.trigger("chat:toggle-open");
+        },
+        didRenderWidget() {
+          this.appEvents.on("chat:chat-opened", this, "_chatOpened");
+          this.appEvents.on("chat:chat-closed", this, "_chatClosed");
+        },
+        willRerenderWidget() {
+          this._stopAppEvents();
+        },
+        destroy() {
+          this._stopAppEvents();
+        },
+        _stopAppEvents() {
+          this.appEvents.off("chat:chat-opened", this, "_chatOpened");
+          this.appEvents.off("chat:chat-closed", this, "_chatClosed");
+        },
+        _chatOpened() {
+          chatOpen = true;
+        },
+        _chatClosed() {
+          chatOpen = false;
         },
       });
       api.addToHeaderIcons("chat-link");

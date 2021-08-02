@@ -49,6 +49,8 @@ function convertNewlines(raw) {
   return raw.replace(/\n/g, "<br>");
 }
 
+// Regex's are from stack overflow
+// https://stackoverflow.com/questions/49634850/javascript-convert-plain-text-links-to-clickable-links
 const LINK_HTTP_REGEX = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
 const LINK_WWW_REGEX = /(^|[^\/])(www\.[\S]+(\b|$))/gim;
 const LINK_MAILTO_REGEX = /(([a-zA-Z0-9\-\_\.])+@[a-zA-Z\_]+?(\.[a-zA-Z]{2,6})+)/gim;

@@ -1,3 +1,4 @@
+import I18n from "I18n";
 import {
   acceptance,
   count,
@@ -13,7 +14,18 @@ const messageOneContent = "Hello world";
 const messageTwoContent = "What upp";
 
 acceptance("Discourse Chat - Acceptance Test", function (needs) {
-  needs.user({ admin: false, moderator: false, id: 1, can_chat: true });
+  needs.user({
+    admin: false,
+    moderator: false,
+    id: 1,
+    can_chat: true,
+    chat_channel_tracking_state: [
+      { chat_channel_id: 9, unread_count: 2 },
+      { chat_channel_id: 7, unread_count: 0 },
+      { chat_channel_id: 4, unread_count: 0 },
+      { chat_channel_id: 11, unread_count: 0 },
+    ],
+  });
   needs.settings({
     topic_chat_enabled: true,
   });
@@ -80,7 +92,7 @@ acceptance("Discourse Chat - Acceptance Test", function (needs) {
         },
       ])
     );
-    server.get("/chat/9/recent.json", () =>
+    server.get("/chat/:chat_channel_id/recent.json", () =>
       helper.response({
         topic_chat_view: {
           last_id: 0,
@@ -126,16 +138,14 @@ acceptance("Discourse Chat - Acceptance Test", function (needs) {
 
   test("Chat float can be opened and channels are populated", async function (assert) {
     await visit("/t/internationalization-localization/280");
-    await click("#toggle-hamburger-menu");
-    await click(".widget-link.open-chat");
+    await click(".header-dropdown-toggle.open-chat");
 
     assert.ok(visible(".topic-chat-float-container"), "chat float is visible");
     assert.equal(count(".chat-channel-row"), 4, "it shows chat channel rows");
   });
   const enterFirstChatChannel = async function () {
     await visit("/t/internationalization-localization/280");
-    await click("#toggle-hamburger-menu");
-    await click(".widget-link.open-chat");
+    await click(".header-dropdown-toggle.open-chat");
     await click(".chat-channel-row");
   };
 
@@ -143,7 +153,6 @@ acceptance("Discourse Chat - Acceptance Test", function (needs) {
     await enterFirstChatChannel();
     const messages = queryAll(".tc-message .tc-text");
     assert.equal(messages[0].textContent.trim(), messageOneContent);
-
     assert.equal(messages[1].textContent.trim(), messageTwoContent);
   });
 
@@ -214,5 +223,30 @@ acceptance("Discourse Chat - Acceptance Test", function (needs) {
     );
 
     assert.equal(query(".tc-composer-input").value.trim(), messageOneContent);
+  });
+
+  test("unread count and indicator is present", async function (assert) {
+    await visit("/t/internationalization-localization/280");
+
+    assert.ok(
+      exists(
+        ".header-dropdown-toggle.open-chat .unread-chat-messages-indicator"
+      ),
+      "Unread indicator present in header"
+    );
+
+    await click(".header-dropdown-toggle.open-chat");
+
+    assert.ok(
+      exists(".chat-channel-row .unread-chat-messages-indicator"),
+      "Unread indicator present in chat channel row"
+    );
+
+    assert.equal(
+      query(
+        ".chat-channel-row .chat-channel-row-unread-count"
+      ).innerText.trim(),
+      I18n.t("chat.unread_count", { count: 2 })
+    );
   });
 });

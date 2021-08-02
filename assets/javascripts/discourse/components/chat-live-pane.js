@@ -1,4 +1,5 @@
 import { A } from "@ember/array";
+import { isTesting } from "discourse-common/config/environment";
 import EmberObject, { action } from "@ember/object";
 import { ajax } from "discourse/lib/ajax";
 import Component from "@ember/component";
@@ -42,9 +43,11 @@ export default Component.extend({
     this._super(...arguments);
 
     this.appEvents.on("chat:open-message", this, "highlightOrFetchMessage");
-    next(this, () => {
-      this.set("updateReadRunner", this._updateLastReadMessage());
-    });
+    if (!isTesting()) {
+      next(this, () => {
+        this.set("updateReadRunner", this._updateLastReadMessage());
+      });
+    }
 
     const scroller = this.element.querySelector(".tc-messages-scroll");
     scroller.addEventListener(
@@ -105,7 +108,6 @@ export default Component.extend({
           return;
         }
         this.setMessageProps(data.topic_chat_view);
-        // ajax(`/chat/${this.chatChannel.id}/read`).then('ping')
       })
       .catch((err) => {
         throw err;
@@ -491,10 +493,6 @@ export default Component.extend({
       this.setProperties({
         replyToMsg: this.messageLookup[messageId],
       });
-      const textarea = this.element.querySelector(".tc-composer textarea");
-      if (textarea) {
-        textarea.focus();
-      }
     } else {
       this.set("replyToMsg", null);
     }

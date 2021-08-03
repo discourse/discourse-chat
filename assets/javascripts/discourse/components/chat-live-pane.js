@@ -6,16 +6,14 @@ import { observes } from "discourse-common/utils/decorators";
 import cookChatMessage from "discourse/plugins/discourse-topic-chat/discourse/lib/cook-chat-message";
 import discourseDebounce from "discourse-common/lib/debounce";
 import { popupAjaxError } from "discourse/lib/ajax-error";
-import { inject as service } from "@ember/service";
 import { cancel, later, schedule } from "@ember/runloop";
+import { inject as service } from "@ember/service";
 
 const MAX_RECENT_MSGS = 100;
 const STICKY_SCROLL_LENIENCE = 4;
 
 export default Component.extend({
   classNameBindings: [":tc-live-pane", "sendingloading", "loading"],
-  chatService: service("chat"),
-
   topicId: null, // ?Number
   chatChannel: null,
   registeredChatChannelId: null, // ?Number
@@ -30,6 +28,8 @@ export default Component.extend({
   messages: null, // Array
   messageLookup: null, // Object<Number, Message>
   targetMessageId: null,
+
+  chatService: service("chat"),
 
   getCachedChannelDetails: null,
   clearCachedChannelDetails: null,

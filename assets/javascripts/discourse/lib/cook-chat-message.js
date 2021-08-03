@@ -12,6 +12,7 @@ export default function cook(raw, siteSettings, categories) {
   cooked = transformMentions(cooked, siteSettings.unicode_usernames);
   cooked = transformCategoryTagHashes(cooked, categories);
   cooked = convertNewlines(cooked);
+  cooked = convertLinks(cooked);
 
   return emojiUnescape(cooked);
 }
@@ -45,5 +46,23 @@ function transformCategoryTagHashes(raw, categories) {
 }
 
 function convertNewlines(raw) {
-  return raw.replace(/\n/g, '<br>');
+  return raw.replace(/\n/g, "<br>");
+}
+
+// Regex's are from stack overflow
+// https://stackoverflow.com/questions/49634850/javascript-convert-plain-text-links-to-clickable-links
+const LINK_HTTP_REGEX = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
+const LINK_WWW_REGEX = /(^|[^\/])(www\.[\S]+(\b|$))/gim;
+const LINK_MAILTO_REGEX = /(([a-zA-Z0-9\-\_\.])+@[a-zA-Z\_]+?(\.[a-zA-Z]{2,6})+)/gim;
+
+function convertLinks(raw) {
+  let cooked = raw.replace(
+    LINK_HTTP_REGEX,
+    '<a href="$1" target="_blank">$1</a>'
+  );
+  cooked = cooked.replace(
+    LINK_WWW_REGEX,
+    '$1<a href="http://$2" target="_blank">$2</a>'
+  );
+  return cooked.replace(LINK_MAILTO_REGEX, '<a href="mailto:$1">$1</a>');
 }

@@ -6,6 +6,7 @@ import { observes } from "discourse-common/utils/decorators";
 import cookChatMessage from "discourse/plugins/discourse-topic-chat/discourse/lib/cook-chat-message";
 import discourseDebounce from "discourse-common/lib/debounce";
 import { popupAjaxError } from "discourse/lib/ajax-error";
+import { inject as service } from "@ember/service";
 import { cancel, later, schedule } from "@ember/runloop";
 
 const MAX_RECENT_MSGS = 100;
@@ -13,6 +14,8 @@ const STICKY_SCROLL_LENIENCE = 4;
 
 export default Component.extend({
   classNameBindings: [":tc-live-pane", "sendingloading", "loading"],
+  chatService: service("chat"),
+
   topicId: null, // ?Number
   chatChannel: null,
   registeredChatChannelId: null, // ?Number

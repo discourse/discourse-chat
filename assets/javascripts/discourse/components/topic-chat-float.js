@@ -5,6 +5,7 @@ import Component from "@ember/component";
 import discourseComputed, { observes } from "discourse-common/utils/decorators";
 import { cancel, throttle } from "@ember/runloop";
 import loadScript from "discourse/lib/load-script";
+import { inject as service } from "@ember/service";
 import { Promise } from "rsvp";
 
 export const LIST_VIEW = "list_view";
@@ -13,6 +14,7 @@ export const CHAT_VIEW = "chat_view";
 export default Component.extend({
   chatView: equal("view", CHAT_VIEW),
   classNameBindings: [":topic-chat-float-container", "hidden"],
+  chatService: service("chat"),
 
   hidden: true,
   expanded: true, // TODO - false when not first-load topic

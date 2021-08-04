@@ -36,6 +36,14 @@ module ChatPublisher
     raise NotImplementedError
   end
 
+  def self.publish_user_tracking_state(user, chat_channel_id, chat_message_id)
+    MessageBus.publish(
+      "/chat/user-tracking-state/#{user.id}",
+      { chat_channel_id: chat_channel_id, chat_message_id: chat_message_id.to_i }.as_json,
+       user_ids: [user.id]
+    )
+  end
+
   private
 
   def self.anonymous_guardian

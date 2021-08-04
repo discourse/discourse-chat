@@ -24,9 +24,7 @@ export default Component.extend({
   rafTimer: null,
   view: null,
   markdownItLoaded: false,
-
-  unreadMessageCount: 0,
-
+  hasUnreadMessages: false,
   activeChannel: null,
   channels: null,
 
@@ -101,6 +99,20 @@ export default Component.extend({
     this.chatService.setChatOpenStatus(!this.hidden);
     this.appEvents.trigger("chat:rerender-header");
   },
+
+
+  @observes("currentUser.chat_channel_tracking_state")
+  _listenForUnreadMessageChanges() {
+    const hasUnread = Object.values(
+      this.currentUser.chat_channel_tracking_state
+    ).some((trackingState) => trackingState.unread_count > 0);
+
+    if (hasUnread !== this.getHasUnreadMessages()) {
+      this.chatService.setHasUnreadMessages(hasUnread);
+      this.appEvents.trigger("chat:rerender-header");
+    }
+  },
+
 
   loadMarkdownIt() {
     return new Promise((resolve) => {

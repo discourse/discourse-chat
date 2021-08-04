@@ -10,16 +10,13 @@ export default createWidget("header-chat-link", {
     this.chatService = this.register.lookup("service:chat");
   },
   html(attrs) {
-    const hasUnread = Object.values(
-      this.currentUser.chat_channel_tracking_state
-    ).some((trackingState) => trackingState.unread_count > 0);
     let contents = [
       h(
         `a.icon${this.chatService.getChatOpenStatus() ? ".active" : ""}`,
         iconNode("comment")
       ),
     ];
-    if (hasUnread) {
+    if (this.chatService.getHasUnreadMessages()) {
       contents.push(h("div.unread-chat-messages-indicator"));
     }
     return contents;

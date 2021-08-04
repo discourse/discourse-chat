@@ -67,7 +67,7 @@ export default Component.extend({
 
     if (this.appEvents) {
       this._unsubscribeFromUpdateChannels();
-      this._subscribeFromUserTrackingChannel();
+      this._unsubscribeFromUserTrackingChannel();
       this.appEvents.off("chat:toggle-open", this, "toggleChat");
       this.appEvents.off("chat:open-channel", this, "openChannelFor");
       this.appEvents.off("chat:open-message", this, "openChannelAtMessage");

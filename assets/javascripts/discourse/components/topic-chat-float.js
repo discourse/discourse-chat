@@ -2,10 +2,10 @@ import { action, set, setProperties } from "@ember/object";
 import { equal, not } from "@ember/object/computed";
 import { ajax } from "discourse/lib/ajax";
 import Component from "@ember/component";
-import discourseComputed from "discourse-common/utils/decorators";
+import discourseComputed, { observes } from "discourse-common/utils/decorators";
 import { cancel, throttle } from "@ember/runloop";
-import { inject as service } from "@ember/service";
 import loadScript from "discourse/lib/load-script";
+import { inject as service } from "@ember/service";
 import { Promise } from "rsvp";
 
 export const LIST_VIEW = "list_view";
@@ -13,9 +13,8 @@ export const CHAT_VIEW = "chat_view";
 
 export default Component.extend({
   chatView: equal("view", CHAT_VIEW),
-
   classNameBindings: [":topic-chat-float-container", "hidden"],
-  chatService: service(),
+  chatService: service("chat"),
 
   hidden: true,
   expanded: true, // TODO - false when not first-load topic
@@ -96,6 +95,12 @@ export default Component.extend({
     if (this.rafTimer) {
       window.cancelAnimationFrame(this.rafTimer);
     }
+  },
+
+  @observes("hidden")
+  _fireHiddenAppEvents() {
+    this.chatService.setChatOpenStatus(!this.hidden);
+    this.appEvents.trigger("chat:rerender-header");
   },
 
   loadMarkdownIt() {
@@ -199,11 +204,13 @@ export default Component.extend({
           if (busData.user_id !== this.currentUser.id) {
             this.currentUser.chat_channel_tracking_state[
               channelId
-            ].unread_count = state.unreadCount++;
-            this.currentUser.notifyPropertyChange(
-              "chat_channel_tracking_state"
-            );
+            ].chat_message_id = busData.message_id;
+          } else {
+            this.currentUser.chat_channel_tracking_state[
+              channelId
+            ].unread_count = state.unread_count + 1;
           }
+          this.currentUser.notifyPropertyChange("chat_channel_tracking_state");
         }
       );
     }

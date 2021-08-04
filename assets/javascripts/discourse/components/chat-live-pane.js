@@ -31,7 +31,7 @@ export default Component.extend({
   messageLookup: null, // Object<Number, Message>
   targetMessageId: null,
 
-  chatService: service(),
+  chatService: service("chat"),
 
   getCachedChannelDetails: null,
   clearCachedChannelDetails: null,

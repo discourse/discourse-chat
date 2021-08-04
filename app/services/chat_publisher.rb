@@ -9,7 +9,7 @@ module ChatPublisher
     content = ChatBaseMessageSerializer.new(msg, { scope: anonymous_guardian, root: :topic_chat_message }).as_json
     content[:typ] = :sent
     MessageBus.publish("/chat/#{chat_channel.id}", content.as_json)
-    MessageBus.publish("/chat/#{chat_channel.id}/new_messages", { user_id: msg.user_id })
+    MessageBus.publish("/chat/#{chat_channel.id}/new_messages", { message_id: msg.id, user_id: msg.user_id })
   end
 
   def self.publish_edit!(chat_channel, msg)

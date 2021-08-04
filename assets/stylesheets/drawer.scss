@@ -3,7 +3,7 @@ $header-height: 2.5rem;
 .unread-chat-messages-indicator {
   width: 8px;
   height: 8px;
-  background: var(--love);
+  background: var(--tertiary-med-or-tertiary);
   border-radius: 100%;
 }
 
@@ -22,7 +22,7 @@ $header-height: 2.5rem;
   }
   .icon.active {
     .d-icon-comment {
-      color: var(--tertiary);
+      color: var(--primary-medium);
     }
   }
 }
@@ -107,7 +107,7 @@ $header-height: 2.5rem;
   .tc-unread-count {
     display: inline-block;
     color: var(--secondary, $secondary);
-    background-color: var(--love, $danger);
+    background-color: var(--tertiary-med-or-tertiary, $danger);
     font-size: var(--font-down-2);
     border-radius: 100%;
     min-width: 1.4em;

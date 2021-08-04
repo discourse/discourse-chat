@@ -1,24 +1,19 @@
 $header-height: 2.5rem;
 
 .unread-chat-messages-indicator {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   background: var(--tertiary-med-or-tertiary);
   border-radius: 100%;
+  box-sizing: content-box;
+  border: 2px solid var(--primary-very-low);
 }
 
-.header-dropdown-toggle.open-chat {
-  .unread-chat-messages-indicator {
-    position: absolute;
-    right: 3px;
-    bottom: 6px;
-  }
-}
 .header-dropdown-toggle.open-chat  {
   .unread-chat-messages-indicator {
     position: absolute;
-    right: 3px;
-    bottom: 6px;
+    right: 4px;
+    bottom: 5px;
   }
   .icon.active {
     .d-icon-comment {

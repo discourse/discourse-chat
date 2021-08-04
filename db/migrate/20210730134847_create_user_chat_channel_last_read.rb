@@ -2,7 +2,7 @@
 
 class CreateUserChatChannelLastRead < ActiveRecord::Migration[6.1]
   def change
-    create_table :user_chat_channel_last_read do |t|
+    create_table :user_chat_channel_last_reads do |t|
       t.integer :chat_channel_id, null: false
       t.integer :chat_message_id, null: true # Can be null if user hasn't opened the channel
       t.integer :user_id, null: false

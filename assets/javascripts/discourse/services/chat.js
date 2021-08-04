@@ -29,5 +29,5 @@ export default Service.extend({
   },
   getHasUnreadMessages() {
     return this.hasUnreadMessages;
-  }
+  },
 });

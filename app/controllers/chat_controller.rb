@@ -70,6 +70,10 @@ class DiscourseChat::ChatController < ::ApplicationController
       return render_json_error(chat_message_creator.error)
     end
 
+    UserChatChannelLastRead
+      .where(user: current_user, chat_channel: @chat_channel)
+      .update_all(chat_message_id: params[:message_id])
+
     render json: success_json
   end
 
@@ -83,6 +87,15 @@ class DiscourseChat::ChatController < ::ApplicationController
     if chat_message_updater.failed?
       return render_json_error(chat_message_updater.error)
     end
+
+    render json: success_json
+  end
+
+  def update_user_last_read
+    set_channel_and_chatable
+    UserChatChannelLastRead
+      .where(user: current_user, chat_channel: @chat_channel)
+      .update_all(chat_message_id: params[:message_id])
 
     render json: success_json
   end
@@ -157,35 +170,8 @@ class DiscourseChat::ChatController < ::ApplicationController
   end
 
   def index
-    channels = ChatChannel.includes(:chatable).where(chatable_type: ["Topic", "Category"]).all
-    channels = channels.to_a.select do |channel|
-      if channel.topic_channel?
-        !channel.chatable.closed && !channel.chatable.archived && guardian.can_see_topic?(channel.chatable)
-      else
-        guardian.can_see_category?(channel.chatable)
-      end
-    end
-
-    category_channels = channels.select(&:category_channel?)
-    added_channel_ids = category_channels.map(&:id)
-
-    structured_channels = category_channels.map do |category_channel|
-      category_channel.chat_channels = channels.select do |channel|
-        add = channel.topic_channel? && channel.chatable.category_id == category_channel.chatable.id
-        added_channel_ids << channel.id if add
-        add
-      end
-      category_channel
-    end
-
-    remaining_channels = channels.select { |channel| !added_channel_ids.include?(channel.id) }
-    structured_channels = structured_channels.concat(remaining_channels)
-
-    if guardian.can_access_site_chat?
-      structured_channels.prepend(ChatChannel.find_by(chatable_id: DiscourseChat::SITE_CHAT_ID))
-    end
-
-    render_serialized(structured_channels, ChatChannelSerializer)
+    channels = DiscourseChat::ChatChannelFetcher.structured(guardian)
+    render_serialized(channels, ChatChannelSerializer)
   end
 
   def channel_details

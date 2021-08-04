@@ -1,5 +1,5 @@
-import { action } from "@ember/object";
-import { equal } from "@ember/object/computed";
+import { action, set, setProperties } from "@ember/object";
+import { equal, not } from "@ember/object/computed";
 import { ajax } from "discourse/lib/ajax";
 import Component from "@ember/component";
 import discourseComputed, { observes } from "discourse-common/utils/decorators";
@@ -36,6 +36,7 @@ export default Component.extend({
       return;
     }
 
+    this._subscribeToUpdateChannels();
     this.appEvents.on("chat:toggle-open", this, "toggleChat");
     this.appEvents.on("chat:open-channel", this, "openChannelFor");
     this.appEvents.on("chat:open-message", this, "openChannelAtMessage");
@@ -64,6 +65,7 @@ export default Component.extend({
     }
 
     if (this.appEvents) {
+      this._unsubscribeFromUpdateChannels();
       this.appEvents.off("chat:toggle-open", this, "toggleChat");
       this.appEvents.off("chat:open-channel", this, "openChannelFor");
       this.appEvents.off("chat:open-message", this, "openChannelAtMessage");
@@ -191,6 +193,35 @@ export default Component.extend({
     // if overridden by themes, will get fixed up in the composer:closed event
     this.element.style.setProperty("--composer-height", "40px");
   },
+  _subscribeToUpdateChannels() {
+    for (const [channelId, state] of Object.entries(
+      this.currentUser.chat_channel_tracking_state
+    )) {
+      this.messageBus.subscribe(
+        `/chat/${channelId}/new_messages`,
+        (busData) => {
+          if (busData.user_id === this.currentUser.id) {
+            this.currentUser.chat_channel_tracking_state[
+              channelId
+            ].chat_message_id = busData.message_id;
+          } else {
+            this.currentUser.chat_channel_tracking_state[
+              channelId
+            ].unread_count = state.unread_count + 1;
+          }
+          this.currentUser.notifyPropertyChange("chat_channel_tracking_state");
+        }
+      );
+    }
+  },
+
+  _unsubscribeFromUpdateChannels() {
+    Object.keys(this.currentUser.chat_channel_tracking_state).forEach(
+      (channelId) => {
+        this.messageBus.unsubscribe(`/chat/${channelId}/new_messages`);
+      }
+    );
+  },
 
   @discourseComputed("expanded")
   containerClassNames(expanded) {
@@ -210,25 +241,14 @@ export default Component.extend({
     }
   },
 
-  @discourseComputed("unreadMessageCount")
-  showUnreadMessageCount(count) {
-    return count > 0;
+  @discourseComputed("activeChannel", "currentUser.chat_channel_tracking_state")
+  unreadCount(activeChannel, trackingState) {
+    return trackingState[activeChannel.id].unread_count;
   },
 
   @action
   toggleExpand() {
-    const old = this.expanded;
-    this.set("expanded", !old);
-    if (!old) {
-      this.set("unreadMessageCount", 0);
-    }
-  },
-
-  @action
-  newMessageCb() {
-    if (!this.expanded) {
-      this.set("unreadMessageCount", this.get("unreadMessageCount") + 1);
-    }
+    this.set("expanded", !this.expanded);
   },
 
   @action
@@ -271,5 +291,17 @@ export default Component.extend({
       view: CHAT_VIEW,
     };
     this.setProperties(channelInfo);
+  },
+
+  @action
+  readLastMessageForChannel(channelId, messageId) {
+    const trackingState = this.currentUser.chat_channel_tracking_state[
+      channelId
+    ];
+    setProperties(trackingState, {
+      chat_message_id: messageId,
+      unread_count: 0,
+    });
+    this.currentUser.notifyPropertyChange("chat_channel_tracking_state");
   },
 });

@@ -1,9 +1,6 @@
 import I18n from "I18n";
 import RawTopicStatus from "discourse/raw-views/topic-status";
 import { ajax } from "discourse/lib/ajax";
-import { createWidget } from "discourse/widgets/widget";
-import { h } from "virtual-dom";
-import { iconNode } from "discourse-common/lib/icon-library";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { withPluginApi } from "discourse/lib/plugin-api";
 
@@ -97,36 +94,9 @@ export default {
         },
       });
 
-      createWidget("chat-link", {
-        chatService: null,
-        tagName: "li.header-dropdown-toggle.open-chat",
-        title: "chat.title",
-        init() {
-          this.chatService = this.register.lookup("service:chat");
-        },
-        html(attrs) {
-          return h(
-            `a.icon${this.chatService.getChatOpenStatus() ? ".active" : ""}`,
-            iconNode("comment")
-          );
-        },
-        click() {
-          this.appEvents.trigger("chat:toggle-open");
-        },
-        didRenderWidget() {
-          this.appEvents.on("chat:rerender-header", this, "scheduleRerender");
-        },
-        willRerenderWidget() {
-          this._stopAppEvents();
-        },
-        destroy() {
-          this._stopAppEvents();
-        },
-        _stopAppEvents() {
-          this.appEvents.off("chat:rerender-header", this, "scheduleRerender");
-        },
-      });
-      api.addToHeaderIcons("chat-link");
+      if (currentUser?.can_chat) {
+        api.addToHeaderIcons("header-chat-link");
+      }
     });
   },
 };

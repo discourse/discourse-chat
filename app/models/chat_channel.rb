@@ -6,6 +6,7 @@ class ChatChannel < ActiveRecord::Base
 
   belongs_to :chatable, polymorphic: true
   has_many :chat_messages
+  has_many :user_chat_channel_last_reads
 
   def topic_channel?
     chatable_type == "Topic"
@@ -19,8 +20,13 @@ class ChatChannel < ActiveRecord::Base
     chatable_type == DiscourseChat::SITE_CHAT_TYPE
   end
 
+  def self.site_channel
+    find_by(chatable_id: DiscourseChat::SITE_CHAT_ID)
+  end
+
   def self.is_enabled?(t)
     return false if !SiteSetting.topic_chat_enabled
+
     ChatChannel.where(chatable: topic).exists?
   end
 end

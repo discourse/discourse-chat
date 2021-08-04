@@ -400,4 +400,75 @@ RSpec.describe DiscourseChat::ChatController do
       expect(response.parsed_body.detect { |channel| channel["id"] == private_category_cc.id }["chat_channels"].first["chatable_id"]).to eq(private_topic_cc.chatable_id)
     end
   end
+
+  describe "#update_user_last_read" do
+    fab!(:chat_channel) { Fabricate(:chat_channel, chatable: topic) }
+    fab!(:chat_message) { Fabricate(:chat_message, chat_channel: chat_channel, user: user) }
+
+    before { sign_in(user) }
+
+    it "updates timing records" do
+      existing_record = UserChatChannelLastRead.create(
+        chat_channel: chat_channel,
+        chat_message_id: 0,
+        user: user
+      )
+
+      expect {
+        put "/chat/#{chat_channel.id}/read/#{chat_message.id}.json"
+      }.to change { UserChatChannelLastRead.count }.by(0)
+      existing_record.reload
+      expect(existing_record.chat_channel_id).to eq(chat_channel.id)
+      expect(existing_record.chat_message_id).to eq(chat_message.id)
+      expect(existing_record.user_id).to eq(user.id)
+    end
+  end
+
+  # CurrentUserSerializer specs. Need signed_in user so moving these to requests spec
+  describe "current_user_serializer" do
+    fab!(:chat_channel_0) { Fabricate(:chat_channel, chatable: Fabricate(:topic)) }
+    fab!(:chat_channel_1) { Fabricate(:chat_channel, chatable: Fabricate(:topic)) }
+    fab!(:chat_channel_2) { Fabricate(:chat_channel, chatable: Fabricate(:topic)) }
+
+    before do
+      sign_in(user)
+    end
+
+    let :serializer do
+      CurrentUserSerializer.new(user, scope: Guardian.new(user), root: false)
+    end
+
+    describe "chat_channel_tracking_state" do
+      it 'creates new UserChatChannelLastRead records for each unseen channel' do
+        expect(UserChatChannelLastRead.count).to eq(0)
+        payload = serializer.as_json
+        expect(UserChatChannelLastRead.count).to eq(3)
+        UserChatChannelLastRead.where(user: user).each do |timing|
+          expect(timing.chat_message_id).to be_nil
+        end
+      end
+
+      it 'has correct unread_counts for each channel' do
+        2.times do |n|
+          ChatMessage.create(
+            chat_channel: chat_channel_0,
+            user: admin,
+            message: "message #{n}",
+          )
+        end
+        ChatMessage.create(
+          chat_channel: chat_channel_1,
+          user: admin,
+          message: "asd",
+        )
+        payload = serializer.as_json
+        channel_0_state = payload[:chat_channel_tracking_state][chat_channel_0.id.to_s]
+        channel_1_state = payload[:chat_channel_tracking_state][chat_channel_1.id.to_s]
+        channel_2_state = payload[:chat_channel_tracking_state][chat_channel_2.id.to_s]
+        expect(channel_0_state["unread_count"]).to eq(2)
+        expect(channel_1_state["unread_count"]).to eq(1)
+        expect(channel_2_state["unread_count"]).to eq(0)
+      end
+    end
+  end
 end

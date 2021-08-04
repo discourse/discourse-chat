@@ -425,15 +425,16 @@ $header-height: 2.5rem;
   }
 }
 
-.user-card, .group-card {
-  z-index: 201;
-}
-
 :root:not(.mobile-view) {
   .tc-drawer {
     width: 400px;
     margin-right: 20px;
     max-width: calc(100vw - 20px);
+  }
+
+  .user-card,
+  .group-card {
+    z-index: 201;
   }
 }
 :root.mobile-view {

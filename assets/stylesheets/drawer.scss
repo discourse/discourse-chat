@@ -1,5 +1,11 @@
 $header-height: 2.5rem;
 
+.header-dropdown-toggle.open-chat .icon.active {
+  .d-icon-comment {
+    color: var(--tertiary);
+  }
+}
+
 .topic-chat-float-container {
   z-index: 200; // higher than timeline, lower than composer, lower than user card
   position: fixed;

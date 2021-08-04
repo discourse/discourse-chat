@@ -400,7 +400,6 @@ export default Component.extend({
         // if no new messages came in since last read update was sent.
         if (this.expanded && messageId !== this.lastSendReadMessageId) {
           this.set("lastSendReadMessageId", messageId);
-          this.onReadLastMessage(this.chatChannel.id, messageId);
           ajax(`/chat/${this.chatChannel.id}/read/${messageId}.json`, {
             method: "PUT",
           }).catch(() => {

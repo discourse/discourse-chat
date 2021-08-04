@@ -70,10 +70,7 @@ class DiscourseChat::ChatController < ::ApplicationController
       return render_json_error(chat_message_creator.error)
     end
 
-    UserChatChannelLastRead
-      .where(user: current_user, chat_channel: @chat_channel)
-      .update_all(chat_message_id: params[:message_id])
-
+    set_user_last_read
     render json: success_json
   end
 
@@ -93,9 +90,7 @@ class DiscourseChat::ChatController < ::ApplicationController
 
   def update_user_last_read
     set_channel_and_chatable
-    UserChatChannelLastRead
-      .where(user: current_user, chat_channel: @chat_channel)
-      .update_all(chat_message_id: params[:message_id])
+    set_user_last_read
 
     render json: success_json
   end
@@ -218,6 +213,18 @@ class DiscourseChat::ChatController < ::ApplicationController
   end
 
   private
+
+  def set_user_last_read
+    UserChatChannelLastRead
+      .where(user: current_user, chat_channel: @chat_channel)
+      .update_all(chat_message_id: params[:message_id])
+
+    ChatPublisher.publish_user_tracking_state(
+      current_user,
+      @chat_channel.id,
+      params[:message_id]
+    )
+  end
 
   def set_channel_and_chatable(with_trashed: false)
     chat_channel_query = ChatChannel

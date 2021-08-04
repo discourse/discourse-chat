@@ -37,6 +37,7 @@ export default Component.extend({
     }
 
     this._subscribeToUpdateChannels();
+    this._subscribeToUserTrackingChannel();
     this.appEvents.on("chat:toggle-open", this, "toggleChat");
     this.appEvents.on("chat:open-channel", this, "openChannelFor");
     this.appEvents.on("chat:open-message", this, "openChannelAtMessage");
@@ -66,6 +67,7 @@ export default Component.extend({
 
     if (this.appEvents) {
       this._unsubscribeFromUpdateChannels();
+      this._subscribeFromUserTrackingChannel();
       this.appEvents.off("chat:toggle-open", this, "toggleChat");
       this.appEvents.off("chat:open-channel", this, "openChannelFor");
       this.appEvents.off("chat:open-message", this, "openChannelAtMessage");
@@ -223,6 +225,24 @@ export default Component.extend({
     );
   },
 
+  _subscribeToUserTrackingChannel() {
+      this.messageBus.subscribe(
+        `/chat/user-tracking-state/${this.currentUser.id}`,
+        (busData) => {
+          const channelData = this.currentUser.chat_channel_tracking_state[busData.chat_channel_id]
+          if (channelData) {
+            channelData.chat_message_id = busData.chat_channel_id
+            channelData.unread_count = 0
+            this.currentUser.notifyPropertyChange("chat_channel_tracking_state");
+          }
+        }
+      )
+  },
+
+  _unsubscribeFromUserTrackingChannel() {
+    this.messageBus.unsubscribe(`/chat/user-tracking-state/${this.currentUser.id}`);
+  },
+
   @discourseComputed("expanded")
   containerClassNames(expanded) {
     if (expanded) {
@@ -291,17 +311,5 @@ export default Component.extend({
       view: CHAT_VIEW,
     };
     this.setProperties(channelInfo);
-  },
-
-  @action
-  readLastMessageForChannel(channelId, messageId) {
-    const trackingState = this.currentUser.chat_channel_tracking_state[
-      channelId
-    ];
-    setProperties(trackingState, {
-      chat_message_id: messageId,
-      unread_count: 0,
-    });
-    this.currentUser.notifyPropertyChange("chat_channel_tracking_state");
   },
 });

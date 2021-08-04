@@ -17,6 +17,7 @@ export default Component.extend({
   chatService: service("chat"),
 
   hidden: true,
+  loading: false,
   expanded: true, // TODO - false when not first-load topic
   showClose: true, // TODO - false when on same topic
   expectPageChange: false,
@@ -270,11 +271,15 @@ export default Component.extend({
 
   @action
   fetchChannels() {
+    this.setProperties({
+      hidden: false,
+      loading: true,
+    });
     ajax("/chat/index.json").then((channels) => {
       this.setProperties({
         channels: channels,
         activeChannel: null,
-        hidden: false,
+        loading: false,
         expanded: true,
         view: LIST_VIEW,
       });

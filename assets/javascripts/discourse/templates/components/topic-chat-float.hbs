@@ -35,9 +35,11 @@
         {{/if}}
       {{else}}
         <div class="tc-channels">
-          {{#each channels as |channel|}}
-            {{chat-channel-row channel=channel switchChannel=(action "switchChannel")}}
-          {{/each}}
+          {{#conditional-loading-spinner condition=this.loading}}
+            {{#each channels as |channel|}}
+              {{chat-channel-row channel=channel switchChannel=(action "switchChannel")}}
+            {{/each}}
+          {{/conditional-loading-spinner}}
         </div>
       {{/if}}
     </div>

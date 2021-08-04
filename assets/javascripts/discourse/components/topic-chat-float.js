@@ -201,7 +201,7 @@ export default Component.extend({
       this.messageBus.subscribe(
         `/chat/${channelId}/new_messages`,
         (busData) => {
-          if (busData.user_id !== this.currentUser.id) {
+          if (busData.user_id === this.currentUser.id) {
             this.currentUser.chat_channel_tracking_state[
               channelId
             ].chat_message_id = busData.message_id;

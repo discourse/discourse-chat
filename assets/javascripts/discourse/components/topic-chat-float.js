@@ -242,6 +242,7 @@ export default Component.extend({
   @action
   toggleChat() {
     if (this.hidden) {
+      this.set("hidden", false);
       this.fetchChannels();
     } else {
       this.set("hidden", true);
@@ -254,7 +255,6 @@ export default Component.extend({
       this.setProperties({
         channels: channels,
         activeChannel: null,
-        hidden: false,
         expanded: true,
         view: LIST_VIEW,
       });

@@ -226,21 +226,25 @@ export default Component.extend({
   },
 
   _subscribeToUserTrackingChannel() {
-      this.messageBus.subscribe(
-        `/chat/user-tracking-state/${this.currentUser.id}`,
-        (busData) => {
-          const channelData = this.currentUser.chat_channel_tracking_state[busData.chat_channel_id]
-          if (channelData) {
-            channelData.chat_message_id = busData.chat_channel_id
-            channelData.unread_count = 0
-            this.currentUser.notifyPropertyChange("chat_channel_tracking_state");
-          }
+    this.messageBus.subscribe(
+      `/chat/user-tracking-state/${this.currentUser.id}`,
+      (busData) => {
+        const channelData = this.currentUser.chat_channel_tracking_state[
+          busData.chat_channel_id
+        ];
+        if (channelData) {
+          channelData.chat_message_id = busData.chat_channel_id;
+          channelData.unread_count = 0;
+          this.currentUser.notifyPropertyChange("chat_channel_tracking_state");
         }
-      )
+      }
+    );
   },
 
   _unsubscribeFromUserTrackingChannel() {
-    this.messageBus.unsubscribe(`/chat/user-tracking-state/${this.currentUser.id}`);
+    this.messageBus.unsubscribe(
+      `/chat/user-tracking-state/${this.currentUser.id}`
+    );
   },
 
   @discourseComputed("expanded")

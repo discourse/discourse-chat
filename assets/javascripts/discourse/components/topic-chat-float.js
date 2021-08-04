@@ -25,9 +25,7 @@ export default Component.extend({
   rafTimer: null,
   view: null,
   markdownItLoaded: false,
-
-  unreadMessageCount: 0,
-
+  hasUnreadMessages: false,
   activeChannel: null,
   channels: null,
 
@@ -38,6 +36,7 @@ export default Component.extend({
     }
 
     this._subscribeToUpdateChannels();
+    this._setHasUnreadMessages();
     this.appEvents.on("chat:toggle-open", this, "toggleChat");
     this.appEvents.on("chat:open-channel", this, "openChannelFor");
     this.appEvents.on("chat:open-message", this, "openChannelAtMessage");
@@ -101,6 +100,23 @@ export default Component.extend({
   _fireHiddenAppEvents() {
     this.chatService.setChatOpenStatus(!this.hidden);
     this.appEvents.trigger("chat:rerender-header");
+  },
+
+  @observes("currentUser.chat_channel_tracking_state")
+  _listenForUnreadMessageChanges() {
+    this._setHasUnreadMessages();
+  },
+
+  _setHasUnreadMessages() {
+    const hasUnread = Object.values(
+      this.currentUser.chat_channel_tracking_state
+    ).some((trackingState) => trackingState.unread_count > 0);
+
+    if (hasUnread !== this.chatService.getHasUnreadMessages()) {
+      // Only update service and header if something changed
+      this.chatService.setHasUnreadMessages(hasUnread);
+      this.appEvents.trigger("chat:rerender-header");
+    }
   },
 
   loadMarkdownIt() {

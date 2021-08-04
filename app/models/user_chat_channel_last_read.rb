@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class UserChatChannelTiming < ActiveRecord::Base
+class UserChatChannelLastRead < ActiveRecord::Base
   attribute :unread_count, default: 0
 
   belongs_to :user

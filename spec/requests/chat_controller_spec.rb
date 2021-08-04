@@ -401,14 +401,14 @@ RSpec.describe DiscourseChat::ChatController do
     end
   end
 
-  describe "#update_user_timing" do
+  describe "#update_user_last_read" do
     fab!(:chat_channel) { Fabricate(:chat_channel, chatable: topic) }
     fab!(:chat_message) { Fabricate(:chat_message, chat_channel: chat_channel, user: user) }
 
     before { sign_in(user) }
 
     it "updates timing records" do
-      existing_record = UserChatChannelTiming.create(
+      existing_record = UserChatChannelLastRead.create(
         chat_channel: chat_channel,
         chat_message_id: 0,
         user: user
@@ -416,7 +416,7 @@ RSpec.describe DiscourseChat::ChatController do
 
       expect {
         put "/chat/#{chat_channel.id}/read/#{chat_message.id}.json"
-      }.to change { UserChatChannelTiming.count }.by(0)
+      }.to change { UserChatChannelLastRead.count }.by(0)
       existing_record.reload
       expect(existing_record.chat_channel_id).to eq(chat_channel.id)
       expect(existing_record.chat_message_id).to eq(chat_message.id)
@@ -439,11 +439,11 @@ RSpec.describe DiscourseChat::ChatController do
     end
 
     describe "chat_channel_tracking_state" do
-      it 'creates new UserChatChannelTiming records for each unseen channel' do
-        expect(UserChatChannelTiming.count).to eq(0)
+      it 'creates new UserChatChannelLastRead records for each unseen channel' do
+        expect(UserChatChannelLastRead.count).to eq(0)
         payload = serializer.as_json
-        expect(UserChatChannelTiming.count).to eq(3)
-        UserChatChannelTiming.where(user: user).each do |timing|
+        expect(UserChatChannelLastRead.count).to eq(3)
+        UserChatChannelLastRead.where(user: user).each do |timing|
           expect(timing.chat_message_id).to be_nil
         end
       end

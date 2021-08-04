@@ -6,7 +6,7 @@ class ChatChannel < ActiveRecord::Base
 
   belongs_to :chatable, polymorphic: true
   has_many :chat_messages
-  has_many :user_chat_channel_timings
+  has_many :user_chat_channel_last_reads
 
   def topic_channel?
     chatable_type == "Topic"

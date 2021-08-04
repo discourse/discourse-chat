@@ -1,9 +1,6 @@
 import I18n from "I18n";
 import RawTopicStatus from "discourse/raw-views/topic-status";
 import { ajax } from "discourse/lib/ajax";
-import { createWidget } from "discourse/widgets/widget";
-import { h } from "virtual-dom";
-import { iconNode } from "discourse-common/lib/icon-library";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { withPluginApi } from "discourse/lib/plugin-api";
 
@@ -98,51 +95,7 @@ export default {
       });
 
       if (currentUser?.can_chat) {
-        createWidget("chat-link", {
-          chatService: null,
-          tagName: "li.header-dropdown-toggle.open-chat",
-          title: "chat.title",
-          init() {
-            this.chatService = this.register.lookup("service:chat");
-          },
-          html(attrs) {
-            const hasUnread = Object.values(
-              this.currentUser.chat_channel_tracking_state
-            ).some((trackingState) => trackingState.unread_count > 0);
-            let contents = [
-              h(
-                `a.icon${
-                  this.chatService.getChatOpenStatus() ? ".active" : ""
-                }`,
-                iconNode("comment")
-              ),
-            ];
-            if (hasUnread) {
-              contents.push(h("div.unread-chat-messages-indicator"));
-            }
-            return contents;
-          },
-          click() {
-            this.appEvents.trigger("chat:toggle-open");
-          },
-          didRenderWidget() {
-            this.appEvents.on("chat:rerender-header", this, "scheduleRerender");
-          },
-          willRerenderWidget() {
-            this._stopAppEvents();
-          },
-          destroy() {
-            this._stopAppEvents();
-          },
-          _stopAppEvents() {
-            this.appEvents.off(
-              "chat:rerender-header",
-              this,
-              "scheduleRerender"
-            );
-          },
-        });
-        api.addToHeaderIcons("chat-link");
+        api.addToHeaderIcons("header-chat-link");
       }
     });
   },

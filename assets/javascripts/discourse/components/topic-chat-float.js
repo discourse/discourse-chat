@@ -18,7 +18,6 @@ export default Component.extend({
 
   hidden: true,
   expanded: true, // TODO - false when not first-load topic
-  notExpanded: not("expanded"),
   showClose: true, // TODO - false when on same topic
   expectPageChange: false,
   sizeTimer: null,
@@ -295,7 +294,7 @@ export default Component.extend({
   },
 
   @action
-  _readLastMessageForChannel(channelId, messageId) {
+  readLastMessageForChannel(channelId, messageId) {
     const trackingState = this.currentUser.chat_channel_tracking_state[
       channelId
     ];
@@ -303,5 +302,6 @@ export default Component.extend({
       chat_message_id: messageId,
       unread_count: 0,
     });
+    this.currentUser.notifyPropertyChange("chat_channel_tracking_state");
   },
 });

@@ -95,7 +95,6 @@ $header-height: 2.5rem;
     color: var(--primary);
     .chat-channel-title {
       display: inline-flex;
-      margin-right: -8px;
 
       .d-icon:not(.d-icon-hashtag) {
         color: var(--primary-high);
@@ -270,6 +269,7 @@ $header-height: 2.5rem;
   text-align: center;
   color: var(--tertiary);
   padding: 2px 0;
+  margin-left: 0.75em;
   font-size: var(--font-down-1);
   border-bottom: 1px solid var(--tertiary-medium);
 }

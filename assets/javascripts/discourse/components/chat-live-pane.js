@@ -36,7 +36,7 @@ export default Component.extend({
   getCachedChannelDetails: null,
   clearCachedChannelDetails: null,
 
-  updateReadRunner: null,
+  _updateReadTimer: null,
   lastSendReadMessageId: null,
 
   didInsertElement() {
@@ -45,7 +45,7 @@ export default Component.extend({
     this.appEvents.on("chat:open-message", this, "highlightOrFetchMessage");
     if (!isTesting()) {
       next(this, () => {
-        this.set("updateReadRunner", this._updateLastReadMessage());
+        this._updateReadTimer = this._updateLastReadMessage();
       });
     }
 
@@ -408,14 +408,14 @@ export default Component.extend({
           });
         }
 
-        this.set("updateReadRunner", this._updateLastReadMessage());
+        this._updateReadTimer = this._updateLastReadMessage();
       },
       READ_INTERVAL
     );
   },
 
   _stopLastReadRunner() {
-    cancel(this.updateReadRunner);
+    cancel(this._updateReadTimer);
   },
 
   @action

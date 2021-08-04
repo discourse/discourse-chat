@@ -36,7 +36,7 @@ after_initialize do
   load File.expand_path('../app/models/chat_channel.rb', __FILE__)
   load File.expand_path('../app/models/chat_message.rb', __FILE__)
   load File.expand_path('../app/models/chat_message_revision.rb', __FILE__)
-  load File.expand_path('../app/models/user_chat_channel_timing.rb', __FILE__)
+  load File.expand_path('../app/models/user_chat_channel_last_read.rb', __FILE__)
   load File.expand_path('../app/serializers/chat_base_message_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/chat_channel_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/chat_view_serializer.rb', __FILE__)
@@ -113,7 +113,7 @@ after_initialize do
 
   add_to_serializer(:current_user, :chat_channel_tracking_state) do
     chat_channel_ids = DiscourseChat::ChatChannelFetcher.unstructured(scope).map(&:id)
-    timings = UserChatChannelTiming
+    timings = UserChatChannelLastRead
       .includes(chat_channel: :chat_messages)
       .where(user_id: object.id)
       .where(chat_channel_id: chat_channel_ids)
@@ -131,7 +131,7 @@ after_initialize do
         .includes(:chat_messages)
         .where(id: untracked_channel_ids)
         .each { |channel|
-          timings << UserChatChannelTiming.create(
+          timings << UserChatChannelLastRead.create(
             chat_channel_id: channel.id,
             unread_count: channel.chat_messages.count,
             user_id: object.id,
@@ -188,7 +188,7 @@ after_initialize do
     post '/:chat_channel_id/:message_id/flag' => 'chat#flag'
     put '/:chat_channel_id/restore/:message_id' => 'chat#restore'
     get '/lookup/:message_id' => 'chat#lookup_message'
-    put '/:chat_channel_id/read/:message_id' => 'chat#update_user_timing'
+    put '/:chat_channel_id/read/:message_id' => 'chat#update_user_last_read'
   end
 
   Discourse::Application.routes.append do

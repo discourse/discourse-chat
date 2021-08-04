@@ -233,7 +233,7 @@ export default Component.extend({
           busData.chat_channel_id
         ];
         if (channelData) {
-          channelData.chat_message_id = busData.chat_channel_id;
+          channelData.chat_message_id = busData.chat_message_id;
           channelData.unread_count = 0;
           this.currentUser.notifyPropertyChange("chat_channel_tracking_state");
         }

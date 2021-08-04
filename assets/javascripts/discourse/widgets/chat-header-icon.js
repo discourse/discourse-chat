@@ -6,17 +6,15 @@ export default createWidget("header-chat-link", {
   chatService: null,
   tagName: "li.header-dropdown-toggle.open-chat",
   title: "chat.title",
-  init() {
-    this.chatService = this.register.lookup("service:chat");
-  },
+  services: ["chat"],
   html(attrs) {
     let contents = [
       h(
-        `a.icon${this.chatService.getChatOpenStatus() ? ".active" : ""}`,
+        `a.icon${this.chat.getChatOpenStatus() ? ".active" : ""}`,
         iconNode("comment")
       ),
     ];
-    if (this.chatService.getHasUnreadMessages()) {
+    if (this.chat.getHasUnreadMessages()) {
       contents.push(h("div.unread-chat-messages-indicator"));
     }
     return contents;

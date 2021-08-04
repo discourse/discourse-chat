@@ -114,6 +114,9 @@ $header-height: 2.5rem;
     text-align: right;
     &:focus {
       background: none;
+      .d-icon {
+        color: var(--primary-low-mid);
+      }
     }
   }
   .d-icon {

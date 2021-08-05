@@ -153,7 +153,14 @@ export default Component.extend({
     );
   },
 
-  _markLastReadMessage() {
+  _markLastReadMessage(opts = { reRender: false }) {
+    if (opts.reRender) {
+      this.messages.forEach((m) => {
+        if (m.lastRead) {
+          m.set("lastRead", false);
+        }
+      });
+    }
     const lastReadId = this.currentUser.chat_channel_tracking_state[
       this.chatChannel.id
     ]?.chat_message_id;
@@ -163,7 +170,7 @@ export default Component.extend({
 
       // If user has read the last message, don't add anything.
       if (message !== this.messages[this.messages.length - 1]) {
-        message.set("last_read", true);
+        message.set("lastRead", true);
       }
       this.scrollToMessage(message.id);
     }
@@ -246,9 +253,12 @@ export default Component.extend({
     }
   },
 
-  @observes("expanded")
+  @observes("expanded", "floatHidden")
   restickOnExpand() {
-    this.stickScrollToBottom();
+    schedule("afterRender", this, () => {
+      this._markLastReadMessage({ reRender: true });
+      this.stickScrollToBottom();
+    });
   },
 
   prepareMessage(msgData) {
@@ -398,7 +408,11 @@ export default Component.extend({
         const messageId = this.messages[this.messages.length - 1].id;
         // Make sure new messages have come in. Do not keep pinging server with read updates
         // if no new messages came in since last read update was sent.
-        if (this.expanded && messageId !== this.lastSendReadMessageId) {
+        if (
+          this.expanded &&
+          !this.floatHidden &&
+          messageId !== this.lastSendReadMessageId
+        ) {
           this.set("lastSendReadMessageId", messageId);
           ajax(`/chat/${this.chatChannel.id}/read/${messageId}.json`, {
             method: "PUT",

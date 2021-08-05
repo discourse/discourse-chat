@@ -294,16 +294,16 @@ export default Component.extend({
 
   @action
   close() {
-    this.setProperties({
-      hidden: true,
-      activeChannel: null,
-    });
+    this.set("hidden", true);
   },
 
   @action
   toggleChat() {
     if (this.hidden) {
-      this.fetchChannels();
+      this.set("hidden", false);
+      if (!this.activeChannel) {
+        this.fetchChannels();
+      }
     } else {
       this.set("hidden", true);
     }
@@ -311,10 +311,7 @@ export default Component.extend({
 
   @action
   fetchChannels() {
-    this.setProperties({
-      hidden: false,
-      loading: true,
-    });
+    this.set("loading", true);
     ajax("/chat/index.json").then((channels) => {
       this.setProperties({
         channels: channels,

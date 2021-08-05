@@ -25,6 +25,7 @@ en:
       category_chat_enabled: "Chat enabled for category"
       mention_notification: "<span>%{username} mentioned you in chat</span>"
       return_to_list: "Return to channel list"
+      all_loaded: "Showing all messages"
 
       channels:
         staff: "Staff-only"

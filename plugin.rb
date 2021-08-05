@@ -181,7 +181,7 @@ after_initialize do
     post '/enable' => 'chat#enable_chat'
     post '/disable' => 'chat#disable_chat'
     get '/:chat_channel_id' => 'chat#channel_details'
-    get '/:chat_channel_id/recent' => 'chat#recent'
+    get '/:chat_channel_id/messages' => 'chat#messages'
     post '/:chat_channel_id' => 'chat#create_message'
     put ':chat_channel_id/edit/:message_id' => 'chat#edit_message'
     delete '/:chat_channel_id/:message_id' => 'chat#delete'

@@ -264,12 +264,24 @@ $header-height: 2.5rem;
 }
 
 .tc-new-messages {
-  text-align: center;
-  color: var(--tertiary);
-  padding: 2px 0;
   margin-left: 0.75em;
+  display: flex;
+  color: var(--tertiary);
   font-size: var(--font-down-1);
-  border-bottom: 1px solid var(--tertiary-medium);
+  position: relative;
+  .new-message-indicator {
+    margin: 0 auto;
+    background-color: var(--secondary);
+    padding: 0 0.5em;
+    z-index: 1;
+  }
+  .new-message-separator {
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    background-color: var(--tertiary-medium);
+    top: 50%;
+  }
 }
 
 .tc-live-pane {
@@ -298,6 +310,13 @@ $header-height: 2.5rem;
       &::-webkit-scrollbar-thumb {
         background: var(--primary-low-mid);
       }
+    }
+
+    .all-loaded-message {
+      text-align: center;
+      color: var(--tertiary);
+      font-size: var(--font-down-1);
+      padding: 0.5em 0.25em 0.25em;
     }
   }
 
@@ -366,7 +385,7 @@ $header-height: 2.5rem;
       width: calc(100% - 16px);
       border-radius: 4px;
       border: 1px solid var(--primary-low-mid);
-      word-break: break-all;
+      word-break: break-word;
     }
 
     .tc-composer-message-details {
@@ -492,7 +511,6 @@ $header-height: 2.5rem;
   .tc-composer .tc-composer-row {
     .tc-composer-input {
       padding-right: 2.5em;
-
       width: calc(100% - 2.5em - 8px);
     }
 

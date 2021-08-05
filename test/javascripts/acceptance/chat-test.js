@@ -24,7 +24,7 @@ acceptance("Discourse Chat - Acceptance Test", function (needs) {
       7: { unread_count: 0 },
       4: { unread_count: 0 },
       11: { unread_count: 0 },
-    }
+    },
   });
   needs.settings({
     topic_chat_enabled: true,
@@ -92,10 +92,9 @@ acceptance("Discourse Chat - Acceptance Test", function (needs) {
         },
       ])
     );
-    server.get("/chat/:chat_channel_id/recent.json", () =>
+    server.get("/chat/:chat_channel_id/messages.json", () =>
       helper.response({
         topic_chat_view: {
-          last_id: 0,
           can_chat: true,
           can_flag: true,
           can_delete_self: true,

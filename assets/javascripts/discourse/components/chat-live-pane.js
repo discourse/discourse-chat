@@ -360,7 +360,7 @@ export default Component.extend({
     let m = 0;
     let n = messages.length - 1;
     while (m <= n) {
-      let k = (n + m) >> 1;
+      let k = Math.floor((n + m) / 2);
       let comparison = this.compareCreatedAt(newMessageCreatedAt, messages[k]);
       if (comparison > 0) {
         m = k + 1;

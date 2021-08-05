@@ -9,7 +9,7 @@ $header-height: 2.5rem;
   border: 2px solid var(--primary-very-low);
 }
 
-.header-dropdown-toggle.open-chat  {
+.header-dropdown-toggle.open-chat {
   .unread-chat-messages-indicator {
     position: absolute;
     right: 4px;
@@ -448,7 +448,6 @@ $header-height: 2.5rem;
     font-size: var(--font-down-1);
     color: $primary-high;
   }
-
 }
 
 .chat-channel-title {

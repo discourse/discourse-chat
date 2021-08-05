@@ -253,7 +253,7 @@ export default Component.extend({
     }
   },
 
-  @observes("expanded", "floatHidden")
+  @observes("expanded")
   restickOnExpand() {
     if (this.expanded) {
       schedule("afterRender", this, this.stickScrollToBottom);

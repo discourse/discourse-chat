@@ -255,10 +255,20 @@ export default Component.extend({
 
   @observes("expanded", "floatHidden")
   restickOnExpand() {
-    schedule("afterRender", this, () => {
-      this._markLastReadMessage({ reRender: true });
-      this.stickScrollToBottom();
-    });
+    if (this.expanded) {
+      schedule("afterRender", this, this.stickScrollToBottom);
+    }
+  },
+
+  @observes("floatHidden")
+  onFloatHiddenChange() {
+    if (!this.floatHidden) {
+      this.set("expanded", true);
+      schedule("afterRender", this, () => {
+        this._markLastReadMessage({ reRender: true });
+        this.stickScrollToBottom();
+      });
+    }
   },
 
   prepareMessage(msgData) {

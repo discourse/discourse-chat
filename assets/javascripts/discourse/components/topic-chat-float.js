@@ -299,13 +299,10 @@ export default Component.extend({
 
   @action
   toggleChat() {
-    if (this.hidden) {
-      this.set("hidden", false);
-      if (!this.activeChannel) {
-        this.fetchChannels();
-      }
-    } else {
-      this.set("hidden", true);
+    this.set("hidden", !this.hidden);
+
+    if (!this.hidden && !this.activeChannel) {
+      this.fetchChannels();
     }
   },
 

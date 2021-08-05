@@ -299,6 +299,13 @@ $header-height: 2.5rem;
         background: var(--primary-low-mid);
       }
     }
+
+    .all-loaded-message {
+      text-align: center;
+      color: var(--tertiary);
+      font-size: var(--font-down-1);
+      padding: 0.5em 0.25em 0.25em;
+    }
   }
 
   .scroll-stick-wrap {

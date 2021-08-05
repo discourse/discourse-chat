@@ -1,17 +1,12 @@
 # frozen_string_literal: true
 
 class ChatViewSerializer < ApplicationSerializer
-  attributes :last_id,
-    :can_chat,
-    :can_flag,
-    :can_delete_self,
-    :can_delete_others
+  attributes :can_chat,
+             :can_flag,
+             :can_delete_self,
+             :can_delete_others
 
   has_many :messages, serializer: ChatBaseMessageSerializer, embed: :objects
-
-  def last_id
-    object.message_bus_last_id
-  end
 
   def include_can_chat?
     object.chat_channel.site_channel? ||

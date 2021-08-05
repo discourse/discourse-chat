@@ -26,7 +26,6 @@ export default Component.extend({
   sizeTimer: null,
   rafTimer: null,
   view: null,
-  cookFunctionGenerated: false,
   hasUnreadMessages: false,
   activeChannel: null,
   channels: null,

@@ -10,7 +10,6 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 import { cancel, later, next, schedule } from "@ember/runloop";
 import { inject as service } from "@ember/service";
 
-
 const MAX_RECENT_MSGS = 100;
 const STICKY_SCROLL_LENIENCE = 4;
 const READ_INTERVAL = 2000;

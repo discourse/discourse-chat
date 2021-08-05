@@ -399,6 +399,15 @@ RSpec.describe DiscourseChat::ChatController do
 
       expect(response.parsed_body.detect { |channel| channel["id"] == private_category_cc.id }["chat_channels"].first["chatable_id"]).to eq(private_topic_cc.chatable_id)
     end
+
+    it "doesn't error when a chat channel's chatable is destroyed" do
+      sign_in(user_with_private_access)
+      topic.destroy!
+      private_category.destroy!
+
+      get "/chat/index.json"
+      expect(response.status).to eq(200)
+    end
   end
 
   describe "#update_user_last_read" do

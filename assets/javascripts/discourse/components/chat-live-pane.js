@@ -56,7 +56,7 @@ export default Component.extend({
     this._scrollerEl = this.element.querySelector(".tc-messages-scroll");
     this._scrollerEl.addEventListener(
       "scroll",
-      (e) => {
+      () => {
         this.stickyScrollTimer = discourseDebounce(this, this.onScroll, 50);
       },
       { passive: true }

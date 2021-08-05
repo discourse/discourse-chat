@@ -39,9 +39,12 @@ module DiscourseChat::ChatChannelFetcher
 
   def self.can_see_channel?(channel, guardian)
     if channel.topic_channel?
-      !channel.chatable.closed && !channel.chatable.archived && guardian.can_see_topic?(channel.chatable)
+      channel.chatable &&
+        !channel.chatable.closed &&
+        !channel.chatable.archived &&
+        guardian.can_see_topic?(channel.chatable)
     elsif channel.category_channel?
-      guardian.can_see_category?(channel.chatable)
+      channel.chatable && guardian.can_see_category?(channel.chatable)
     else
       true
     end

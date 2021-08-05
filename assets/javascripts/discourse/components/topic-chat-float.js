@@ -1,5 +1,5 @@
-import { action, set, setProperties } from "@ember/object";
-import { equal, not } from "@ember/object/computed";
+import { action } from "@ember/object";
+import { equal } from "@ember/object/computed";
 import { ajax } from "discourse/lib/ajax";
 import Component from "@ember/component";
 import discourseComputed, { observes } from "discourse-common/utils/decorators";

@@ -7,7 +7,7 @@ export default createWidget("header-chat-link", {
   tagName: "li.header-dropdown-toggle.open-chat",
   title: "chat.title",
   services: ["chat"],
-  html(attrs) {
+  html() {
     let contents = [
       h(
         `a.icon${this.chat.getChatOpenStatus() ? ".active" : ""}`,

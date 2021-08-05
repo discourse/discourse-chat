@@ -24,7 +24,7 @@ acceptance("Discourse Chat - Acceptance Test", function (needs) {
       7: { unread_count: 0 },
       4: { unread_count: 0 },
       11: { unread_count: 0 },
-    }
+    },
   });
   needs.settings({
     topic_chat_enabled: true,

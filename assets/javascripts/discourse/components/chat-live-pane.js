@@ -102,7 +102,7 @@ export default Component.extend({
       ? `/chat/lookup/${this.targetMessageId}.json`
       : `/chat/${this.chatChannel.id}/messages.json`;
 
-    ajax(url)
+    ajax(url, { data: { page_size: PAGE_SIZE } })
       .then((data) => {
         if (this.selfDeleted()) {
           return;
@@ -132,7 +132,7 @@ export default Component.extend({
     const firstMessageId = this.messages[0].id;
 
     ajax(`/chat/${this.chatChannel.id}/messages`, {
-      data: { before_message_id: firstMessageId },
+      data: { before_message_id: firstMessageId, page_size: PAGE_SIZE },
     })
       .then((data) => {
         if (this.selfDeleted()) {

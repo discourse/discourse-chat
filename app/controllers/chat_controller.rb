@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class DiscourseChat::ChatController < ::ApplicationController
-  PAGE_SIZE = 30 # Same constant in chat_pane_live.js. Update together!
   before_action :ensure_logged_in
   before_action :ensure_can_chat
   before_action :find_chatable, only: [:enable_chat, :disable_chat]
@@ -98,6 +97,9 @@ class DiscourseChat::ChatController < ::ApplicationController
 
   def messages
     set_channel_and_chatable
+    if (params[:page_size]&.to_i || 1000) > 50
+      raise Discourse::InvalidParameters
+    end
 
     # n.b.: must fetch ID before querying DB
     messages = ChatMessage
@@ -108,7 +110,7 @@ class DiscourseChat::ChatController < ::ApplicationController
       messages = messages.where("id < ?", params[:before_message_id])
     end
 
-    messages = messages.order(created_at: :desc).limit(PAGE_SIZE)
+    messages = messages.order(created_at: :desc).limit(params[:page_size])
 
     if @chat_channel.site_channel? || guardian.can_moderate_chat?(@chatable)
       messages = messages.with_deleted

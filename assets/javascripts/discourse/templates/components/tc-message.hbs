@@ -88,7 +88,10 @@
     </div>
     {{#if message.lastRead}}
       <div class="tc-new-messages">
-        {{i18n "chat.new_messages"}}
+        <div class="new-message-separator"></div>
+        <span class="new-message-indicator">
+          {{i18n "chat.new_messages"}}
+        </span>
       </div>
     {{/if}}
   {{/if}}

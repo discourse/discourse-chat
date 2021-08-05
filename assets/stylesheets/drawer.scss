@@ -264,12 +264,24 @@ $header-height: 2.5rem;
 }
 
 .tc-new-messages {
-  text-align: center;
+  margin-left: 5px;
+  display: flex;
   color: var(--tertiary);
-  padding: 2px 0;
-  margin-left: 0.75em;
   font-size: var(--font-down-1);
-  border-bottom: 1px solid var(--tertiary-medium);
+  position: relative;
+  .new-message-indicator {
+    margin: 0 auto;
+    background-color: var(--secondary);
+    padding: 0 0.5em;
+    z-index: 1;
+  }
+  .new-message-separator {
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    background-color: var(--tertiary-medium);
+    top: 50%;
+  }
 }
 
 .tc-live-pane {

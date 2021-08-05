@@ -8,6 +8,8 @@ import loadScript from "discourse/lib/load-script";
 import { inject as service } from "@ember/service";
 import { Promise } from "rsvp";
 
+import { generateCookFunction } from "discourse/lib/text";
+
 export const LIST_VIEW = "list_view";
 export const CHAT_VIEW = "chat_view";
 
@@ -24,7 +26,7 @@ export default Component.extend({
   sizeTimer: null,
   rafTimer: null,
   view: null,
-  markdownItLoaded: false,
+  cookFunctionGenerated: false,
   hasUnreadMessages: false,
   activeChannel: null,
   channels: null,
@@ -55,8 +57,8 @@ export default Component.extend({
     );
     this.appEvents.on("composer:resize-ended", this, "_clearDynamicCheckSize");
 
-    this.loadMarkdownIt().then(() => {
-      this.set("markdownItLoaded", true);
+    this.loadCookFunction().then((cookFunction) => {
+      this.set("cookFunction", cookFunction);
     });
   },
   willDestroyElement() {
@@ -121,19 +123,12 @@ export default Component.extend({
     }
   },
 
-  loadMarkdownIt() {
+  loadCookFunction() {
     return new Promise((resolve) => {
-      let markdownItURL = this.session.markdownItURL;
-      if (markdownItURL) {
-        loadScript(markdownItURL)
-          .then(() => resolve())
-          .catch((e) => {
-            // eslint-disable-next-line no-console
-            console.error(e);
-          });
-      } else {
-        resolve();
-      }
+      let markdownOptions = {}
+      return generateCookFunction(markdownOptions).then((cookFunction) => {
+        return resolve(cookFunction);
+      });
     });
   },
 

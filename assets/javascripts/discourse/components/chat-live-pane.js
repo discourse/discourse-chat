@@ -10,6 +10,7 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 import { cancel, later, next, schedule } from "@ember/runloop";
 import { inject as service } from "@ember/service";
 
+
 const MAX_RECENT_MSGS = 100;
 const STICKY_SCROLL_LENIENCE = 4;
 const READ_INTERVAL = 2000;
@@ -319,11 +320,13 @@ export default Component.extend({
       msgData.in_reply_to = this.messageLookup[msgData.in_reply_to_id];
     }
     msgData.expanded = !msgData.deleted_at;
-    msgData.cookedMessage = cookChatMessage(
-      msgData.message,
-      this.siteSettings,
-      this.site.categories
-    );
+    console.log(this.cookFunction(msgData.message))
+    msgData.cookedMessage = this.cookFunction(msgData.message);
+    // msgData.cookedMessage = cookChatMessage(
+      // msgData.message,
+      // this.siteSettings,
+      // this.site.categories
+    // );
     const prepared = EmberObject.create(msgData);
     this.messageLookup[msgData.id] = prepared;
     return prepared;

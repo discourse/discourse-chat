@@ -9,7 +9,7 @@ import I18n from "I18n";
 
 export default Component.extend({
   tagName: "",
-  last_read: false,
+  lastRead: false,
 
   @discourseComputed("message.deleted_at", "message.expanded")
   deletedAndCollapsed(deletedAt, expanded) {

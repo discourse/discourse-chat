@@ -95,16 +95,22 @@ class DiscourseChat::ChatController < ::ApplicationController
     render json: success_json
   end
 
-  def recent
+  def messages
     set_channel_and_chatable
+    if (params[:page_size]&.to_i || 1000) > 50
+      raise Discourse::InvalidParameters
+    end
 
     # n.b.: must fetch ID before querying DB
-    message_bus_last_id = ChatPublisher.last_id(@chat_channel)
     messages = ChatMessage
       .includes(:revisions)
       .where(chat_channel: @chat_channel)
-      .order(created_at: :desc)
-      .limit(50)
+
+    if params[:before_message_id]
+      messages = messages.where("id < ?", params[:before_message_id])
+    end
+
+    messages = messages.order(created_at: :desc).limit(params[:page_size])
 
     if @chat_channel.site_channel? || guardian.can_moderate_chat?(@chatable)
       messages = messages.with_deleted
@@ -116,8 +122,7 @@ class DiscourseChat::ChatController < ::ApplicationController
     chat_view = ChatView.new(
       chat_channel: @chat_channel,
       chatable: @chatable,
-      messages: messages,
-      message_bus_last_id: message_bus_last_id
+      messages: messages
     )
     render_serialized(chat_view, ChatViewSerializer, root: :topic_chat_view)
   end
@@ -186,8 +191,6 @@ class DiscourseChat::ChatController < ::ApplicationController
       include_deleted = guardian.can_moderate_chat?(chatable)
     end
 
-    message_bus_last_id = ChatPublisher.last_id(chat_channel)
-
     past_messages = ChatMessage
       .where(chat_channel: chat_channel)
       .where("created_at < ?", @message.created_at)
@@ -206,8 +209,7 @@ class DiscourseChat::ChatController < ::ApplicationController
     chat_view = ChatView.new(
       chat_channel: chat_channel,
       chatable: chatable,
-      messages: messages,
-      message_bus_last_id: message_bus_last_id
+      messages: messages
     )
     render_serialized(chat_view, ChatViewSerializer, root: :topic_chat_view)
   end

@@ -13,6 +13,7 @@ import { inject as service } from "@ember/service";
 const MAX_RECENT_MSGS = 100;
 const STICKY_SCROLL_LENIENCE = 4;
 const READ_INTERVAL = 2000;
+const PAGE_SIZE = 30; // Same constant in chat_controller.rb. Update both together!
 
 export default Component.extend({
   classNameBindings: [":tc-live-pane", "sendingloading", "loading"],
@@ -20,6 +21,8 @@ export default Component.extend({
   chatChannel: null,
   registeredChatChannelId: null, // ?Number
   loading: false,
+  loadingMore: false,
+  allPastMessagesLoaded: false,
   sendingloading: false,
   stickyScroll: true,
   stickyScrollTimer: null,
@@ -38,6 +41,7 @@ export default Component.extend({
 
   _updateReadTimer: null,
   lastSendReadMessageId: null,
+  _scrollerEl: null,
 
   didInsertElement() {
     this._super(...arguments);
@@ -49,15 +53,11 @@ export default Component.extend({
       });
     }
 
-    const scroller = this.element.querySelector(".tc-messages-scroll");
-    scroller.addEventListener(
+    this._scrollerEl = this.element.querySelector(".tc-messages-scroll");
+    this._scrollerEl.addEventListener(
       "scroll",
       () => {
-        this.stickyScrollTimer = discourseDebounce(
-          this,
-          this.checkScrollStick,
-          50
-        );
+        this.stickyScrollTimer = discourseDebounce(this, this.onScroll, 50);
       },
       { passive: true }
     );
@@ -100,11 +100,11 @@ export default Component.extend({
     this.set("loading", true);
     const url = this.targetMessageId
       ? `/chat/lookup/${this.targetMessageId}.json`
-      : `/chat/${this.chatChannel.id}/recent.json`;
+      : `/chat/${this.chatChannel.id}/messages.json`;
 
-    ajax(url)
+    ajax(url, { data: { page_size: PAGE_SIZE } })
       .then((data) => {
-        if (!this.element || this.isDestroying || this.isDestroyed) {
+        if (this.selfDeleted()) {
           return;
         }
         this.setMessageProps(data.topic_chat_view);
@@ -113,20 +113,55 @@ export default Component.extend({
         throw err;
       })
       .finally(() => {
+        if (this.selfDeleted()) {
+          return;
+        }
         if (this.targetMessageId) {
           this.chatService.clearMessageId();
-        }
-
-        if (!this.element || this.isDestroying || this.isDestroyed) {
-          return;
         }
         this.set("loading", false);
       });
   },
 
+  _fetchMorePastMessages() {
+    if (this.loadingMore || this.allPastMessagesLoaded) {
+      return;
+    }
+
+    this.set("loadingMore", true);
+    const firstMessageId = this.messages[0].id;
+
+    ajax(`/chat/${this.chatChannel.id}/messages`, {
+      data: { before_message_id: firstMessageId, page_size: PAGE_SIZE },
+    })
+      .then((data) => {
+        if (this.selfDeleted()) {
+          return;
+        }
+        const newMessages = (data.topic_chat_view.messages || []).map((m) =>
+          this._prepareMessage(m)
+        );
+        if (newMessages.length) {
+          this.set("messages", newMessages.concat(this.messages));
+          this.scrollToMessage(firstMessageId);
+        } else {
+          this.set("allPastMessagesLoaded", true);
+        }
+      })
+      .catch((err) => {
+        throw err;
+      })
+      .finally(() => {
+        if (this.selfDeleted()) {
+          return;
+        }
+        this.set("loadingMore", false);
+      });
+  },
+
   setMessageProps(chatView) {
     this.setProperties({
-      messages: A(chatView.messages.map((m) => this.prepareMessage(m))),
+      messages: A(chatView.messages.map((m) => this._prepareMessage(m))),
       details: {
         chat_channel_id: this.chatChannel.id,
         can_chat: chatView.can_chat,
@@ -137,6 +172,10 @@ export default Component.extend({
       registeredChatChannelId: this.chatChannel.id,
     });
 
+    if (!this.targetMessageId && this.messages.length < PAGE_SIZE) {
+      this.set("allPastMessagesLoaded", true);
+    }
+
     schedule("afterRender", this, () => {
       if (this.targetMessageId) {
         this.scrollToMessage(this.targetMessageId, { highlight: true });
@@ -144,16 +183,19 @@ export default Component.extend({
         this._markLastReadMessage();
       }
     });
-    this.messageBus.subscribe(
-      `/chat/${this.chatChannel.id}`,
-      (busData) => {
-        this.handleMessage(busData);
-      },
-      chatView.last_id
-    );
+    this.messageBus.subscribe(`/chat/${this.chatChannel.id}`, (busData) => {
+      this.handleMessage(busData);
+    });
   },
 
-  _markLastReadMessage() {
+  _markLastReadMessage(opts = { reRender: false }) {
+    if (opts.reRender) {
+      this.messages.forEach((m) => {
+        if (m.lastRead) {
+          m.set("lastRead", false);
+        }
+      });
+    }
     const lastReadId = this.currentUser.chat_channel_tracking_state[
       this.chatChannel.id
     ]?.chat_message_id;
@@ -163,7 +205,7 @@ export default Component.extend({
 
       // If user has read the last message, don't add anything.
       if (message !== this.messages[this.messages.length - 1]) {
-        message.set("last_read", true);
+        message.set("lastRead", true);
       }
       this.scrollToMessage(message.id);
     }
@@ -188,8 +230,8 @@ export default Component.extend({
       return;
     }
 
-    const messageEl = this.element.querySelector(
-      `.tc-messages-scroll .tc-message-${messageId}`
+    const messageEl = this._scrollerEl.querySelector(
+      `.tc-message-${messageId}`
     );
     if (messageEl) {
       next(() => {
@@ -219,12 +261,12 @@ export default Component.extend({
       return;
     }
     if (this.stickyScroll) {
-      const scroller = this.element.querySelector(".tc-messages-scroll");
-      scroller.scrollTop = scroller.scrollHeight - scroller.clientHeight;
+      this._scrollerEl.scrollTop =
+        this._scrollerEl.scrollHeight - this._scrollerEl.clientHeight;
     }
   },
 
-  checkScrollStick() {
+  onScroll() {
     if (this.selfDeleted()) {
       return;
     }
@@ -234,24 +276,45 @@ export default Component.extend({
       return;
     }
 
-    const scroller = this.element.querySelector(".tc-messages-scroll");
+    if (this._scrollerEl.scrollTop === 0) {
+      this._fetchMorePastMessages();
+      return;
+    }
+
+    // Stick to bottom if scroll is at the bottom
     const current =
-      scroller.scrollHeight - scroller.scrollTop - scroller.clientHeight <=
+      this._scrollerEl.scrollHeight -
+        this._scrollerEl.scrollTop -
+        this._scrollerEl.clientHeight <=
       STICKY_SCROLL_LENIENCE;
     if (current !== this.stickyScroll) {
       this.set("stickyScroll", current);
       if (current) {
-        scroller.scrollTop = scroller.scrollHeight - scroller.clientHeight;
+        this._scrollerEl.scrollTop =
+          this._scrollerEl.scrollHeight - this._scrollerEl.clientHeight;
       }
     }
   },
 
   @observes("expanded")
   restickOnExpand() {
-    this.stickScrollToBottom();
+    if (this.expanded) {
+      schedule("afterRender", this, this.stickScrollToBottom);
+    }
   },
 
-  prepareMessage(msgData) {
+  @observes("floatHidden")
+  onFloatHiddenChange() {
+    if (!this.floatHidden) {
+      this.set("expanded", true);
+      schedule("afterRender", this, () => {
+        this._markLastReadMessage({ reRender: true });
+        this.stickScrollToBottom();
+      });
+    }
+  },
+
+  _prepareMessage(msgData) {
     if (msgData.in_reply_to_id) {
       msgData.in_reply_to = this.messageLookup[msgData.in_reply_to_id];
     }
@@ -288,7 +351,7 @@ export default Component.extend({
   },
 
   handleSentMessage(data) {
-    const newMessage = this.prepareMessage(data.topic_chat_message);
+    const newMessage = this._prepareMessage(data.topic_chat_message);
     this.messages.pushObject(newMessage);
 
     if (this.messages.length >= MAX_RECENT_MSGS) {
@@ -333,7 +396,7 @@ export default Component.extend({
     } else {
       // The message isn't present in the list for this user. Find the index
       // where we should push the message to. Binary search is O(log(n))
-      message = this.prepareMessage(data.topic_chat_message);
+      message = this._prepareMessage(data.topic_chat_message);
       let newMessageIndex = this.binarySearchForMessagePosition(
         this.messages,
         message
@@ -398,7 +461,11 @@ export default Component.extend({
         const messageId = this.messages[this.messages.length - 1].id;
         // Make sure new messages have come in. Do not keep pinging server with read updates
         // if no new messages came in since last read update was sent.
-        if (this.expanded && messageId !== this.lastSendReadMessageId) {
+        if (
+          this.expanded &&
+          !this.floatHidden &&
+          messageId !== this.lastSendReadMessageId
+        ) {
           this.set("lastSendReadMessageId", messageId);
           ajax(`/chat/${this.chatChannel.id}/read/${messageId}.json`, {
             method: "PUT",

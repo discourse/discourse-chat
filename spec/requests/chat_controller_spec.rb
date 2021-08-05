@@ -14,6 +14,57 @@ RSpec.describe DiscourseChat::ChatController do
     SiteSetting.topic_chat_restrict_to_staff = false # Change this per-test to false if needed
   end
 
+  describe "#messages" do
+    fab!(:chat_channel) { Fabricate(:chat_channel, chatable: topic) }
+    let(:page_size) { 30 }
+    let(:message_count) { 35 }
+
+    before do
+      message_count.times do |n|
+        ChatMessage.create(
+          chat_channel: chat_channel,
+          user: user,
+          message: "message #{n}",
+        )
+      end
+      sign_in(user)
+    end
+
+    it "errors for regular user when chat is restricts to staff" do
+      SiteSetting.topic_chat_restrict_to_staff = true
+      get "/chat/#{chat_channel.id}/messages.json", params: { page_size: page_size }
+      expect(response.status).to eq(403)
+    end
+
+    it "errors when page size is over 50" do
+      get "/chat/#{chat_channel.id}/messages.json", params: { page_size: 51 }
+      expect(response.status).to eq(400)
+    end
+
+    it "errors when page size is nil" do
+      get "/chat/#{chat_channel.id}/messages.json"
+      expect(response.status).to eq(400)
+    end
+
+    it "returns the latest messages" do
+      get "/chat/#{chat_channel.id}/messages.json", params: { page_size: page_size }
+      messages = response.parsed_body["topic_chat_view"]["messages"]
+      expect(messages.count).to eq(page_size)
+      expect(messages.first["id"]).to be < messages.last["id"]
+    end
+
+    it "returns messages before `before_message_id` if present" do
+      before_message_id = ChatMessage
+        .order(created_at: :desc)
+        .to_a[page_size - 1]
+        .id
+
+      get "/chat/#{chat_channel.id}/messages.json", params: { before_message_id: before_message_id, page_size: page_size }
+      messages = response.parsed_body["topic_chat_view"]["messages"]
+      expect(messages.count).to eq(message_count - page_size)
+    end
+  end
+
   describe "#enable_chat" do
     it "errors for non-staff" do
       sign_in(user)

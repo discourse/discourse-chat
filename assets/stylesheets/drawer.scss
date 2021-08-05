@@ -264,7 +264,7 @@ $header-height: 2.5rem;
 }
 
 .tc-new-messages {
-  margin-left: 5px;
+  margin-left: 0.75em;
   display: flex;
   color: var(--tertiary);
   font-size: var(--font-down-1);
@@ -510,7 +510,6 @@ $header-height: 2.5rem;
   .tc-composer .tc-composer-row {
     .tc-composer-input {
       padding-right: 2.5em;
-
       width: calc(100% - 2.5em - 8px);
     }
 

@@ -208,6 +208,9 @@ export default Component.extend({
         message.set("lastRead", true);
       }
       this.scrollToMessage(message.id);
+    } else {
+      // This is the user's first visit to the channel. Scroll them to the bottom
+      this.stickScrollToBottom();
     }
   },
 
@@ -282,16 +285,15 @@ export default Component.extend({
     }
 
     // Stick to bottom if scroll is at the bottom
-    const current =
+    const shouldStick =
       this._scrollerEl.scrollHeight -
         this._scrollerEl.scrollTop -
         this._scrollerEl.clientHeight <=
       STICKY_SCROLL_LENIENCE;
-    if (current !== this.stickyScroll) {
-      this.set("stickyScroll", current);
-      if (current) {
-        this._scrollerEl.scrollTop =
-          this._scrollerEl.scrollHeight - this._scrollerEl.clientHeight;
+    if (shouldStick !== this.stickyScroll) {
+      this.set("stickyScroll", shouldStick);
+      if (shouldStick) {
+        this.stickScrollToBottom();
       }
     }
   },
@@ -482,6 +484,13 @@ export default Component.extend({
 
   _stopLastReadRunner() {
     cancel(this._updateReadTimer);
+  },
+
+  @action
+  onComposerValueChange() {
+    // When the composer value changes and sticky scroll is set, make sure to stay
+    // stuck to the bottom. Composer height changes force content up.
+    this.stickScrollToBottom();
   },
 
   @action

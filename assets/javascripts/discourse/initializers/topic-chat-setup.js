@@ -44,7 +44,7 @@ export default {
         .catch(popupAjaxError);
     }
 
-    withPluginApi("0.11.0", (api) => {
+    withPluginApi("0.12.1", (api) => {
       api.addCardClickListenerSelector(".topic-chat-float-container");
       api.addPostSmallActionIcon("chat.enabled", "comment");
       api.addPostSmallActionIcon("chat.disabled", "comment");
@@ -81,6 +81,8 @@ export default {
             : "actions.chat_enable",
         });
       });
+
+      api.dispatchWidgetAppEvent('site-header', 'header-chat-link', 'chat:rerender-header');
 
       api.modifyClass("component:topic-admin-menu-button", {
         toggleChat() {

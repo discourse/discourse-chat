@@ -82,7 +82,11 @@ export default {
         });
       });
 
-      api.dispatchWidgetAppEvent('site-header', 'header-chat-link', 'chat:rerender-header');
+      api.dispatchWidgetAppEvent(
+        "site-header",
+        "header-chat-link",
+        "chat:rerender-header"
+      );
 
       api.modifyClass("component:topic-admin-menu-button", {
         toggleChat() {

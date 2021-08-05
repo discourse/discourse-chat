@@ -24,6 +24,7 @@ en:
       unread_count: "(%{count} new)"
       category_chat_enabled: "Chat enabled for category"
       mention_notification: "<span>%{username} mentioned you in chat</span>"
+      all_loaded: "Showing all messages"
 
       channels:
         staff: "Staff-only"

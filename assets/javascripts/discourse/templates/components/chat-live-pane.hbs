@@ -1,4 +1,10 @@
 <div class="tc-messages-scroll tc-messages-container">
+  {{#if allPastMessagesLoaded}}
+    <div class="all-loaded-message">
+      {{i18n "chat.all_loaded"}}
+    </div>
+  {{/if}}
+  {{conditional-loading-spinner condition=this.loadingMore}}
   {{#conditional-loading-spinner condition=this.loading}}
     {{#each this.messages as |message|}}
       {{tc-message

@@ -4,7 +4,6 @@ import EmberObject, { action } from "@ember/object";
 import { ajax } from "discourse/lib/ajax";
 import Component from "@ember/component";
 import { observes } from "discourse-common/utils/decorators";
-import cookChatMessage from "discourse/plugins/discourse-topic-chat/discourse/lib/cook-chat-message";
 import discourseDebounce from "discourse-common/lib/debounce";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { cancel, later, next, schedule } from "@ember/runloop";
@@ -319,13 +318,7 @@ export default Component.extend({
       msgData.in_reply_to = this.messageLookup[msgData.in_reply_to_id];
     }
     msgData.expanded = !msgData.deleted_at;
-    console.log(this.cookFunction(msgData.message))
     msgData.cookedMessage = this.cookFunction(msgData.message);
-    // msgData.cookedMessage = cookChatMessage(
-      // msgData.message,
-      // this.siteSettings,
-      // this.site.categories
-    // );
     const prepared = EmberObject.create(msgData);
     this.messageLookup[msgData.id] = prepared;
     return prepared;

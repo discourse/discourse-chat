@@ -338,6 +338,10 @@ $header-height: 2.5rem;
     border-radius: 100%;
     opacity: 20%;
 
+    &:hover {
+      opacity: 75%;
+    }
+
     .d-icon {
       color: var(--primary);
       margin: 0;

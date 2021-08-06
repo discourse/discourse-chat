@@ -1,6 +1,5 @@
 import Component from "@ember/component";
 import discourseComputed, { observes } from "discourse-common/utils/decorators";
-import loadScript from "discourse/lib/load-script";
 import simpleCategoryHashMentionTransform from "discourse/plugins/discourse-topic-chat/discourse/lib/simple-category-hash-mention-transform";
 import { action } from "@ember/object";
 import { ajax } from "discourse/lib/ajax";
@@ -8,7 +7,6 @@ import { equal } from "@ember/object/computed";
 import { cancel, throttle } from "@ember/runloop";
 import { generateCookFunction } from "discourse/lib/text";
 import { inject as service } from "@ember/service";
-import { Promise } from "rsvp";
 
 export const LIST_VIEW = "list_view";
 export const CHAT_VIEW = "chat_view";

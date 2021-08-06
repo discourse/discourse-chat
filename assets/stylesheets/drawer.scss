@@ -6,18 +6,29 @@ $header-height: 2.5rem;
   background: var(--tertiary-med-or-tertiary);
   border-radius: 100%;
   box-sizing: content-box;
-  border: 2px solid var(--primary-very-low);
+  border: 2px solid var(--secondary);
 }
 
 .header-dropdown-toggle.open-chat {
-  .unread-chat-messages-indicator {
-    position: absolute;
-    right: 4px;
-    bottom: 5px;
-  }
-  .icon.active {
-    .d-icon-comment {
-      color: var(--primary-medium);
+  .icon {
+    &.active {
+      .d-icon-comment {
+        color: var(--primary-medium);
+      }
+    }
+
+    &:hover {
+      .unread-chat-messages-indicator {
+        border-color: var(--primary-low);
+      }
+    }
+
+    .unread-chat-messages-indicator {
+      border-color: var(--header_background);
+      position: absolute;
+      right: 4px;
+      bottom: 5px;
+      transition: border-color linear 0.15s;
     }
   }
 }
@@ -447,6 +458,10 @@ $header-height: 2.5rem;
 
   &:hover {
     background: var(--primary-low);
+
+    .unread-chat-messages-indicator {
+      border-color: var(--primary-low);
+    }
   }
 
   &.nested {
@@ -457,10 +472,12 @@ $header-height: 2.5rem;
     align-items: center;
     margin-right: 0;
   }
+
   .unread-chat-messages-indicator {
     display: inline-block;
     margin-right: 5px;
   }
+
   .chat-channel-row-unread-count {
     display: inline-block;
     margin-left: 5px;

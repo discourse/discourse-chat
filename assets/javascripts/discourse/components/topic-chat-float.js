@@ -56,9 +56,7 @@ export default Component.extend({
     );
     this.appEvents.on("composer:resize-ended", this, "_clearDynamicCheckSize");
 
-    this.loadCookFunction().then((cookFunction) => {
-      this.set("cookFunction", cookFunction);
-    });
+    this._loadCookFunction()
   },
   willDestroyElement() {
     this._super(...arguments);
@@ -122,12 +120,10 @@ export default Component.extend({
     }
   },
 
-  loadCookFunction() {
-    return new Promise((resolve) => {
-      let markdownOptions = {}
-      return generateCookFunction(markdownOptions).then((cookFunction) => {
-        return resolve(cookFunction);
-      });
+  _loadCookFunction() {
+    let markdownOptions = {}
+    return generateCookFunction(markdownOptions).then((cookFunction) => {
+      return this.set("cookFunction", cookFunction);
     });
   },
 

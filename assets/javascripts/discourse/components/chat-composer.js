@@ -24,6 +24,7 @@ export default Component.extend({
   editingMessage: null,
   timer: null,
   inputDisabled: not("canChat"),
+  onValueChange: null,
 
   didInsertElement() {
     this._super(...arguments);
@@ -121,6 +122,7 @@ export default Component.extend({
       () => {
         this._resizeTextArea();
         this._applyUserAutocomplete();
+        this.onValueChange();
       },
       THROTTLE_MS
     );

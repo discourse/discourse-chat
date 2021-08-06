@@ -1,9 +1,10 @@
 <div class="tc-drawer">
   <div class={{containerClassNames}}>
     <div class="topic-chat-drawer-header">
-
       {{#if chatView}}
-        {{flat-button icon="chevron-left" action=(action "fetchChannels") title="chat.return_to_list"}}
+        {{#if this.expanded}}
+          {{flat-button icon="chevron-left" action=(action "fetchChannels") title="chat.return_to_list"}}
+        {{/if}}
         <a href={{activeChannel.chatable_url}} class="tc-title-seg">
           {{#if activeChannel}}
             {{chat-channel-title channel=activeChannel}}
@@ -16,10 +17,10 @@
         <div class="tc-title-seg">
           <span class="tc-branding">{{i18n "chat.list"}}</span>
         </div>
-
       {{/if}}
 
       {{flat-button icon=this.expandIcon class="tc-expand" action=(action "toggleExpand") title="chat.collapse"}}
+
       {{#if showClose}}
         {{flat-button icon="times" action=(action "close") title="chat.close"}}
       {{/if}}

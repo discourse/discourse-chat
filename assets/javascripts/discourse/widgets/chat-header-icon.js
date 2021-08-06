@@ -8,21 +8,24 @@ export default createWidget("header-chat-link", {
   tagName: "li.header-dropdown-toggle.open-chat",
   title: "chat.title",
   services: ["chat"],
+
   html() {
-    let contents = [
+    return [
       h(
         `a.icon${this.chat.getChatOpenStatus() ? ".active" : ""}`,
-        iconNode("comment")
+        [
+          iconNode("comment"),
+          this.chat.getHasUnreadMessages() &&
+            h("div.unread-chat-messages-indicator"),
+        ].filter(Boolean)
       ),
     ];
-    if (this.chat.getHasUnreadMessages()) {
-      contents.push(h("div.unread-chat-messages-indicator"));
-    }
-    return contents;
   },
+
   click() {
     this.appEvents.trigger("chat:toggle-open");
   },
+
   chatRerenderHeader() {
     this.scheduleRerender();
   },

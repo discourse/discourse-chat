@@ -318,7 +318,7 @@ export default Component.extend({
       msgData.in_reply_to = this.messageLookup[msgData.in_reply_to_id];
     }
     msgData.expanded = !msgData.deleted_at;
-    msgData.cookedMessage = this.cookFunction(msgData.message);
+    msgData.cookedMessage = this.cook(msgData.message);
     const prepared = EmberObject.create(msgData);
     this.messageLookup[msgData.id] = prepared;
     return prepared;
@@ -360,11 +360,7 @@ export default Component.extend({
     if (message) {
       message.setProperties({
         message: data.topic_chat_message.message,
-        cookedMessage: cookChatMessage(
-          data.topic_chat_message.message,
-          this.siteSettings,
-          this.site.categories
-        ),
+        cookedMessage: this.cook(data.topic_chat_message.message),
         edited: true,
       });
     }

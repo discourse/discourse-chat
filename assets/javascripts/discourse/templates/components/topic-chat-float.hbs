@@ -29,7 +29,7 @@
       {{#if chatView}}
         {{#if (and this.activeChannel cookFunction)}}
           {{chat-live-pane
-            cookFunction=cookFunction
+            cook=cookFunction
             chatChannel=activeChannel
             expanded=this.expanded
             floatHidden=this.hidden

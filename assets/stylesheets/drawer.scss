@@ -208,6 +208,10 @@ $header-height: 2.5rem;
     .tc-text {
       margin: 0;
       padding-left: 0.05em;
+
+      > p {
+        margin: 0;
+      }
     }
     .tc-message-edited {
       display: inline-block;

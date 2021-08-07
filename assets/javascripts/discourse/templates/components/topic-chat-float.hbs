@@ -27,8 +27,9 @@
     </div>
     <div class="topic-chat-drawer-content">
       {{#if chatView}}
-        {{#if (and this.activeChannel markdownItLoaded)}}
+        {{#if (and this.activeChannel cookFunction)}}
           {{chat-live-pane
+            cook=cookFunction
             chatChannel=activeChannel
             expanded=this.expanded
             floatHidden=this.hidden

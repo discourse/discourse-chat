@@ -1,15 +1,54 @@
-import { action } from "@ember/object";
-import { equal } from "@ember/object/computed";
-import { ajax } from "discourse/lib/ajax";
 import Component from "@ember/component";
 import discourseComputed, { observes } from "discourse-common/utils/decorators";
+import simpleCategoryHashMentionTransform from "discourse/plugins/discourse-topic-chat/discourse/lib/simple-category-hash-mention-transform";
+import { action } from "@ember/object";
+import { ajax } from "discourse/lib/ajax";
+import { equal } from "@ember/object/computed";
 import { cancel, throttle } from "@ember/runloop";
-import loadScript from "discourse/lib/load-script";
+import { generateCookFunction } from "discourse/lib/text";
 import { inject as service } from "@ember/service";
-import { Promise } from "rsvp";
 
 export const LIST_VIEW = "list_view";
 export const CHAT_VIEW = "chat_view";
+const MARKDOWN_OPTIONS = {
+  features: {
+    anchor: true,
+    "auto-link": true,
+    bbcode: true,
+    "bbcode-block": true,
+    "bbcode-inline": true,
+    "bold-italics": true,
+    "category-hashtag": true,
+    censored: true,
+    checklist: false,
+    code: true,
+    "custom-typographer-replacements": false,
+    "d-wrap": false,
+    details: false,
+    "discourse-local-dates": false,
+    emoji: true,
+    emojiShortcuts: true,
+    html: false,
+    "html-img": true,
+    "inject-line-number": true,
+    inlineEmoji: true,
+    linkify: true,
+    mentions: true,
+    newline: true,
+    onebox: false,
+    paragraph: false,
+    policy: false,
+    poll: false,
+    quote: true,
+    quotes: true,
+    "resize-controls": false,
+    table: true,
+    "text-post-process": true,
+    unicodeUsernames: false,
+    "upload-protocol": true,
+    "watched-words": true,
+  },
+};
 
 export default Component.extend({
   chatView: equal("view", CHAT_VIEW),
@@ -24,7 +63,6 @@ export default Component.extend({
   sizeTimer: null,
   rafTimer: null,
   view: null,
-  markdownItLoaded: false,
   hasUnreadMessages: false,
   activeChannel: null,
   channels: null,
@@ -55,9 +93,7 @@ export default Component.extend({
     );
     this.appEvents.on("composer:resize-ended", this, "_clearDynamicCheckSize");
 
-    this.loadMarkdownIt().then(() => {
-      this.set("markdownItLoaded", true);
-    });
+    this._loadCookFunction();
   },
   willDestroyElement() {
     this._super(...arguments);
@@ -121,19 +157,14 @@ export default Component.extend({
     }
   },
 
-  loadMarkdownIt() {
-    return new Promise((resolve) => {
-      let markdownItURL = this.session.markdownItURL;
-      if (markdownItURL) {
-        loadScript(markdownItURL)
-          .then(() => resolve())
-          .catch((e) => {
-            // eslint-disable-next-line no-console
-            console.error(e);
-          });
-      } else {
-        resolve();
-      }
+  _loadCookFunction() {
+    return generateCookFunction(MARKDOWN_OPTIONS).then((cookFunction) => {
+      return this.set("cookFunction", (raw) => {
+        return simpleCategoryHashMentionTransform(
+          cookFunction(raw),
+          this.site.categories
+        );
+      });
     });
   },
 

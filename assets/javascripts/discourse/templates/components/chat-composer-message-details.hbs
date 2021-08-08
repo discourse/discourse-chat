@@ -1,10 +1,10 @@
 <div class="tc-composer-message-details">
-  <span class="width-limited">
+  <div class="tc-reply-display">
     {{d-icon icon}}
     <span class="tc-reply-av">{{avatar message.user imageSize="tiny"}}</span>
     <span class="tc-reply-username">{{message.user.username}}</span>
     <span class="tc-reply-msg">{{html-safe message.cookedMessage}}</span>
-  </span>
+  </div>
 
   {{flat-button
     action=action

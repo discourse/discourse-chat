@@ -184,6 +184,10 @@ $header-height: 2.5rem;
       .tc-reply-display {
         grid-area: replyto;
         cursor: pointer;
+
+        .d-icon {
+          color: var(--primary-high);
+        }
       }
       .tc-avatar {
         grid-area: avatar;

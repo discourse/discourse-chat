@@ -31,6 +31,7 @@ export default Component.extend({
   details: null, // Object { chat_channel_id, can_chat, ... }
   messages: null, // Array
   messageLookup: null, // Object<Number, Message>
+  unLoadedReplyIds: null, // Array
   targetMessageId: null,
 
   chatService: service("chat"),
@@ -44,7 +45,7 @@ export default Component.extend({
 
   didInsertElement() {
     this._super(...arguments);
-
+    this.set("unLoadedReplyIds", []);
     this.appEvents.on("chat:open-message", this, "highlightOrFetchMessage");
     if (!isTesting()) {
       next(this, () => {
@@ -75,6 +76,7 @@ export default Component.extend({
       this.messageBus.unsubscribe(`/chat/${this.registeredChatChannelId}`);
       this.registeredChatChannelId = null;
     }
+    this.set("unLoadedReplyIds", null);
   },
 
   didReceiveAttrs() {
@@ -123,7 +125,7 @@ export default Component.extend({
   },
 
   _fetchMorePastMessages() {
-    if (this.loadingMore || this.allPastMessagesLoaded) {
+    if (this.loading || this.loadingMore || this.allPastMessagesLoaded) {
       return;
     }
 
@@ -159,6 +161,7 @@ export default Component.extend({
   },
 
   setMessageProps(chatView) {
+    this.set("unLoadedReplyIds", []);
     this.setProperties({
       messages: A(chatView.messages.map((m) => this._prepareMessage(m))),
       details: {
@@ -316,8 +319,19 @@ export default Component.extend({
   },
 
   _prepareMessage(msgData) {
-    if (msgData.in_reply_to_id) {
-      msgData.in_reply_to = this.messageLookup[msgData.in_reply_to_id];
+    if (msgData.in_reply_to) {
+      let inReplyToMessage = this.messageLookup[msgData.in_reply_to.id];
+      if (inReplyToMessage) {
+        // Reply to message has already been added
+        msgData.in_reply_to = inReplyToMessage;
+      } else {
+        msgData.in_reply_to.cookedMessage = this.cook(
+          msgData.in_reply_to.message
+        );
+        inReplyToMessage = EmberObject.create(msgData.in_reply_to);
+        this.unLoadedReplyIds.push(inReplyToMessage.id);
+        this.messageLookup[inReplyToMessage.id] = inReplyToMessage;
+      }
     }
     msgData.expanded = !msgData.deleted_at;
     msgData.cookedMessage = this.cook(msgData.message);
@@ -562,6 +576,18 @@ export default Component.extend({
       this.set("replyToMsg", null);
     }
     schedule("afterRender", this, this.stickScrollToBottom);
+  },
+
+  @action
+  replyMessageClicked(message) {
+    const replyMessageFromLookup = this.messageLookup[message.id];
+    if (this.unLoadedReplyIds.includes(message.id)) {
+      // Message is not present in the loaded messages. Fetch it!
+      this.set("targetMessageId", message.id);
+      this.fetchMessages();
+    } else {
+      this.scrollToMessage(replyMessageFromLookup.id, { highlight: true });
+    }
   },
 
   @action

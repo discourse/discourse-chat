@@ -183,6 +183,7 @@ $header-height: 2.5rem;
         "avatar message";
       .tc-reply-display {
         grid-area: replyto;
+        cursor: pointer;
       }
       .tc-avatar {
         grid-area: avatar;

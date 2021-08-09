@@ -136,6 +136,11 @@ export default Component.extend({
   },
 
   @action
+  viewReply() {
+    this.replyMessageClicked(this.message.in_reply_to);
+  },
+
+  @action
   edit() {
     this.editButtonClicked(this.message.id);
   },

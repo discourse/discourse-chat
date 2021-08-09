@@ -50,7 +50,7 @@
       </div>
 
       {{#if message.in_reply_to}}
-        <div class="tc-reply-display">
+        <div onclick={{action "viewReply"}} class="tc-reply-display">
           {{d-icon "share" title="chat.in_reply_to"}}
           <span class="tc-reply-av">
             {{avatar message.in_reply_to.user imageSize="tiny"}}

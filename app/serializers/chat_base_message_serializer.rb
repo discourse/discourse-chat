@@ -12,6 +12,7 @@ class ChatBaseMessageSerializer < ApplicationSerializer
     :edited
 
   has_one :user, serializer: BasicUserSerializer, embed: :objects
+  has_one :in_reply_to, serializer: ChatBaseMessageSerializer, embed: :objects
 
   def edited
     true

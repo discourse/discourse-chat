@@ -76,6 +76,7 @@ export default Component.extend({
     this._subscribeToUpdateChannels();
     this._subscribeToUserTrackingChannel();
     this._setHasUnreadMessages();
+    this._checkSize();
     this.appEvents.on("chat:toggle-open", this, "toggleChat");
     this.appEvents.on("chat:open-channel", this, "openChannelFor");
     this.appEvents.on("chat:open-message", this, "openChannelAtMessage");
@@ -233,6 +234,10 @@ export default Component.extend({
     this.element.style.setProperty(
       "--composer-height",
       composer.offsetHeight + "px"
+    );
+    this.element.style.setProperty(
+      "--composer-right",
+      composer.offsetLeft + "px"
     );
   },
 

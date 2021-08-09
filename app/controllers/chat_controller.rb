@@ -103,6 +103,7 @@ class DiscourseChat::ChatController < ::ApplicationController
 
     # n.b.: must fetch ID before querying DB
     messages = ChatMessage
+      .includes(:in_reply_to)
       .includes(:revisions)
       .where(chat_channel: @chat_channel)
 

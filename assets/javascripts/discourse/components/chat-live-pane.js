@@ -139,8 +139,8 @@ export default Component.extend({
         if (this.selfDeleted()) {
           return;
         }
-        const newMessages = (data.topic_chat_view.messages || []).map((m) =>
-          this._prepareMessage(m)
+        const newMessages = this._prepareMessages(
+          data.topic_chat_view.messages
         );
         if (newMessages.length) {
           this.set("messages", newMessages.concat(this.messages));
@@ -163,7 +163,7 @@ export default Component.extend({
   setMessageProps(chatView) {
     this.set("unLoadedReplyIds", []);
     this.setProperties({
-      messages: A(chatView.messages.map((m) => this._prepareMessage(m))),
+      messages: this._prepareMessages(chatView.messages),
       details: {
         chat_channel_id: this.chatChannel.id,
         can_chat: chatView.can_chat,
@@ -188,6 +188,46 @@ export default Component.extend({
     this.messageBus.subscribe(`/chat/${this.chatChannel.id}`, (busData) => {
       this.handleMessage(busData);
     });
+  },
+
+  _prepareMessages(messages) {
+    const preparedMessages = A();
+    let lastMessage;
+    messages.forEach((currentMessage) => {
+      let prepared = this._prepareSingleMessage(currentMessage, lastMessage);
+      preparedMessages.push(prepared);
+      lastMessage = prepared;
+    });
+    return preparedMessages;
+  },
+
+  _prepareSingleMessage(messageData, previousMessageData) {
+    if (messageData.in_reply_to) {
+      let inReplyToMessage = this.messageLookup[messageData.in_reply_to.id];
+      if (inReplyToMessage) {
+        // Reply to message has already been added
+        messageData.in_reply_to = inReplyToMessage;
+      } else {
+        messageData.in_reply_to.cookedMessage = this.cook(
+          messageData.in_reply_to.message
+        );
+        inReplyToMessage = EmberObject.create(messageData.in_reply_to);
+        this.unLoadedReplyIds.push(inReplyToMessage.id);
+        this.messageLookup[inReplyToMessage.id] = inReplyToMessage;
+      }
+    } else {
+      // In reply-to is false. Check if previous message was created by same
+      // user and if so, no need to repeat avatar and username
+
+      if (messageData.user.id === previousMessageData?.user?.id) {
+        messageData.hideUserInfo = true;
+      }
+    }
+    messageData.expanded = !messageData.deleted_at;
+    messageData.cookedMessage = this.cook(messageData.message);
+    const prepared = EmberObject.create(messageData);
+    this.messageLookup[messageData.id] = prepared;
+    return prepared;
   },
 
   _markLastReadMessage(opts = { reRender: false }) {
@@ -318,28 +358,6 @@ export default Component.extend({
     }
   },
 
-  _prepareMessage(msgData) {
-    if (msgData.in_reply_to) {
-      let inReplyToMessage = this.messageLookup[msgData.in_reply_to.id];
-      if (inReplyToMessage) {
-        // Reply to message has already been added
-        msgData.in_reply_to = inReplyToMessage;
-      } else {
-        msgData.in_reply_to.cookedMessage = this.cook(
-          msgData.in_reply_to.message
-        );
-        inReplyToMessage = EmberObject.create(msgData.in_reply_to);
-        this.unLoadedReplyIds.push(inReplyToMessage.id);
-        this.messageLookup[inReplyToMessage.id] = inReplyToMessage;
-      }
-    }
-    msgData.expanded = !msgData.deleted_at;
-    msgData.cookedMessage = this.cook(msgData.message);
-    const prepared = EmberObject.create(msgData);
-    this.messageLookup[msgData.id] = prepared;
-    return prepared;
-  },
-
   removeMessage(msgData) {
     delete this.messageLookup[msgData.id];
   },
@@ -362,8 +380,12 @@ export default Component.extend({
   },
 
   handleSentMessage(data) {
-    const newMessage = this._prepareMessage(data.topic_chat_message);
-    this.messages.pushObject(newMessage);
+    this.messages.pushObject(
+      this._prepareSingleMessage(
+        data.topic_chat_message,
+        this.messages[this.messages.length - 1]
+      )
+    );
 
     if (this.messages.length >= MAX_RECENT_MSGS) {
       this.removeMessage(this.messages.shiftObject());
@@ -403,10 +425,15 @@ export default Component.extend({
     } else {
       // The message isn't present in the list for this user. Find the index
       // where we should push the message to. Binary search is O(log(n))
-      message = this._prepareMessage(data.topic_chat_message);
       let newMessageIndex = this.binarySearchForMessagePosition(
         this.messages,
         message
+      );
+      const previousMessage =
+        newMessageIndex > 0 ? this.messages[newMessageIndex - 1] : null;
+      message = this._prepareSingleMessage(
+        data.topic_chat_message,
+        previousMessage
       );
       if (newMessageIndex === 0) {
         return;

@@ -224,6 +224,34 @@ $header-height: 2.5rem;
       font-size: var(--font-down-1);
     }
   }
+  .tc-message.user-info-hidden {
+    .tc-meta-data {
+      display: inline-block;
+      width: 10%;
+      vertical-align: top;
+
+      .relative-date {
+        visibility: hidden;
+      }
+    }
+
+    &:hover {
+      .tc-meta-data .relative-date {
+        visibility: visible;
+      }
+    }
+
+    .tc-text {
+      display: inline-block;
+      width: calc(90% - 0.5em);
+    }
+    .tc-msgactions-hover {
+      position: absolute;
+      top: 0;
+      right: 0;
+      background: var(--primary-low);
+    }
+  }
   .tc-action-text {
     font-style: italic;
   }
@@ -233,9 +261,6 @@ $header-height: 2.5rem;
     opacity: 0;
     pointer-events: none;
     right: 0.25em;
-    // Give a larger hover box
-    margin-top: -1em;
-    padding-top: 1em;
 
     button {
       padding: 0.25em 0.5em;

@@ -140,7 +140,7 @@ export default Component.extend({
           return;
         }
         const newMessages = this._prepareMessages(
-          data.topic_chat_view.messages
+          data.topic_chat_view.messages || []
         );
         if (newMessages.length) {
           this.set("messages", newMessages.concat(this.messages));

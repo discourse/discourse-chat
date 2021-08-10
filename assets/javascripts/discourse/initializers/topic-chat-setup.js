@@ -88,6 +88,12 @@ export default {
         "chat:rerender-header"
       );
 
+      api.dispatchWidgetAppEvent(
+        "sidebar-header",
+        "header-chat-link",
+        "chat:rerender-header"
+      );
+
       api.modifyClass("component:topic-admin-menu-button", {
         toggleChat() {
           return doToggleChat(this.topic);

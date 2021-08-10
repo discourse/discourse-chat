@@ -306,7 +306,7 @@ $header-height: 2.5rem;
 .tc-new-messages {
   margin-left: 0.75em;
   display: flex;
-  color: var(--tertiary);
+  color: var(--danger-medium);
   font-size: var(--font-down-1);
   position: relative;
   .new-message-indicator {
@@ -319,7 +319,7 @@ $header-height: 2.5rem;
     position: absolute;
     width: 100%;
     height: 1px;
-    background-color: var(--tertiary-medium);
+    background-color: var(--danger-medium);
     top: 50%;
   }
 }

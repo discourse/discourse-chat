@@ -3,7 +3,12 @@
     <div class="topic-chat-drawer-header">
       {{#if chatView}}
         {{#if this.expanded}}
-          {{flat-button icon="chevron-left" action=(action "fetchChannels") title="chat.return_to_list"}}
+          {{flat-button
+            class="return-to-channels"
+            icon="chevron-left"
+            action=(action "fetchChannels")
+            title="chat.return_to_list"
+          }}
         {{/if}}
         <a href={{activeChannel.chatable_url}} class="tc-title-seg">
           {{#if activeChannel}}

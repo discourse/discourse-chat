@@ -551,7 +551,7 @@ export default Component.extend({
   sendMessage(message) {
     this.set("sendingloading", true);
     this.set("_pendingMessageGuid", this._pendingMessageGuid + 1);
-    let data = { message, staged: true, stagedId: this._pendingMessageGuid };
+    let data = { message, stagedId: this._pendingMessageGuid };
     if (this.replyToMsg) {
       data.in_reply_to_id = this.replyToMsg.id;
     }
@@ -574,7 +574,7 @@ export default Component.extend({
 
     const stagedMessage = this._prepareSingleMessage(
       // We need to add the user and created at for presentation of staged message
-      Object.assign(data, { user: this.currentUser, created_at: new Date() }),
+      Object.assign(data, { staged: true, user: this.currentUser, created_at: new Date() }),
       this.messages[this.messages.length - 1]
     );
     this.messages.pushObject(stagedMessage);
@@ -584,11 +584,13 @@ export default Component.extend({
 
   _onSendError(stagedId) {
     const stagedMessage = this.messageLookup[`staged-${stagedId}`];
-    stagedMessage.set("error", true);
-    schedule("afterRender", () => {
-      this._resetAfterSend();
-      this.stickScrollToBottom();
-    });
+    if (stagedMessage) {
+      stagedMessage.set("error", true);
+      schedule("afterRender", () => {
+        this._resetAfterSend();
+        this.stickScrollToBottom();
+      });
+    }
   },
 
   @action

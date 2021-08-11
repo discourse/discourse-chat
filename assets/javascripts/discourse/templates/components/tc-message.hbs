@@ -61,18 +61,18 @@
         </div>
       {{/if}}
 
-      {{#if (not message.hideUserInfo)}}
+      {{#unless message.hideUserInfo}}
         <div class="tc-avatar" data-user-card={{message.user.username}}>
           {{avatar message.user imageSize="medium"}}
         </div>
-      {{/if}}
+      {{/unless}}
 
       <div class="tc-message-container">
 
         <div class="tc-meta-data">
-          {{#if (not message.hideUserInfo)}}
+          {{#unless message.hideUserInfo}}
             <span class={{usernameClasses}}>{{name}}</span>
-          {{/if}}
+          {{/unless}}
           {{format-date message.created_at format="tiny"}}
         </div>
         {{#if message.action_code}}

@@ -10,7 +10,7 @@ class DiscourseChat::ChatMessageCreator
     instance
   end
 
-  def initialize(chat_channel:, in_reply_to_id: nil, user:, content:, staged_id:)
+  def initialize(chat_channel:, in_reply_to_id: nil, user:, content:, staged_id: nil)
     @chat_channel = chat_channel
     @user = user
     @in_reply_to_id = in_reply_to_id

@@ -33,7 +33,7 @@ export default Component.extend({
   messages: null, // Array
   messageLookup: null, // Object<Number, Message>
   _unloadedReplyIds: null, // Array
-  _pendingMessageGuid: 0, // Iterate on every new message
+  _nextStagedMessageId: 0, // Iterate on every new message
   targetMessageId: null,
 
   chatService: service("chat"),
@@ -550,8 +550,8 @@ export default Component.extend({
   @action
   sendMessage(message) {
     this.set("sendingloading", true);
-    this.set("_pendingMessageGuid", this._pendingMessageGuid + 1);
-    let data = { message, stagedId: this._pendingMessageGuid };
+    this.set("_nextStagedMessageId", this._nextStagedMessageId + 1);
+    let data = { message, stagedId: this._nextStagedMessageId };
     if (this.replyToMsg) {
       data.in_reply_to_id = this.replyToMsg.id;
     }

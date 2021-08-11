@@ -7,7 +7,7 @@ body {
     padding-bottom: 1em;
   }
 
-  .topic-chat-float-container::before {
+  .topic-chat-container.expanded::before {
     content: "";
     width: 100vw;
     height: 100vh;

@@ -246,10 +246,7 @@ $header-height: 2.5rem;
       width: calc(90% - 0.5em);
     }
     .tc-msgactions-hover {
-      position: absolute;
-      top: 0;
-      right: 0;
-      background: var(--primary-low);
+      top: -1.75em;
     }
   }
   .tc-action-text {
@@ -261,9 +258,18 @@ $header-height: 2.5rem;
     opacity: 0;
     pointer-events: none;
     right: 0.25em;
+    top: -.5em;
+    padding: 0.25em;
+    background-color: var(--secondary);
+    border: 1px solid var(--primary-low);
+    border-radius: 0.25em;
 
     button {
       padding: 0.25em 0.5em;
+      &:hover {
+        background-color: var(--primary-low);
+        color: var(--primary-medium);
+      }
     }
   }
 

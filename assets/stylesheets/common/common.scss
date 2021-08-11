@@ -34,7 +34,9 @@ $header-height: 2.5rem;
 }
 
 .topic-chat-float-container {
-  z-index: 200; // higher than timeline, lower than composer, lower than user card
+  z-index: z(
+    "usercard"
+  ); // higher than timeline, lower than composer, lower than user card (bump up below)
   position: fixed;
   right: var(--composer-right, 20px);
   left: 0;
@@ -564,7 +566,7 @@ $header-height: 2.5rem;
 
   .user-card,
   .group-card {
-    z-index: 201;
+    z-index: z("usercard") + 1; // bump up user card
   }
 }
 :root.mobile-view {

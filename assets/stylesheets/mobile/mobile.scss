@@ -6,4 +6,15 @@ body {
   .topic-chat-float-container .tc-composer {
     padding-bottom: 1em;
   }
+
+  .topic-chat-container.expanded::before {
+    content: "";
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.75);
+    display: block;
+    position: fixed;
+    top: 0;
+    z-index: -1;
+  }
 }

@@ -56,7 +56,8 @@ $header-height: 2.5rem;
   box-sizing: border-box;
   max-height: 90vh;
   padding-bottom: var(--composer-height, 0);
-  transition: padding-bottom 100ms ease-in;
+  transition: all 100ms ease-in;
+  transition-property: bottom, padding-bottom;
 }
 .tc-drawer {
   align-self: flex-end;

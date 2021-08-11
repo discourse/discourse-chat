@@ -1,5 +1,9 @@
 body {
   &.footer-nav-visible .topic-chat-float-container {
-    bottom: var(--footer-nav-height);
+    bottom: calc(var(--footer-nav-height) + 1em);
+  }
+
+  .topic-chat-float-container .tc-composer {
+    padding-bottom: 1em;
   }
 }

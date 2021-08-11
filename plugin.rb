@@ -9,7 +9,8 @@
 
 enabled_site_setting :topic_chat_enabled
 
-register_asset 'stylesheets/drawer.scss'
+register_asset 'stylesheets/common/common.scss'
+register_asset 'stylesheets/mobile/mobile.scss', :mobile
 
 register_svg_icon "comments"
 register_svg_icon "comment-slash"

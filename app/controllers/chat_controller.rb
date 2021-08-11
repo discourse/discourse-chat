@@ -49,7 +49,6 @@ class DiscourseChat::ChatController < ::ApplicationController
   end
 
   def create_message
-    raise Discourse::NotFound
     set_channel_and_chatable
 
     reply_to_msg_id = params[:in_reply_to_id]

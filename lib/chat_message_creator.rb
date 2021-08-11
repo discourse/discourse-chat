@@ -10,11 +10,12 @@ class DiscourseChat::ChatMessageCreator
     instance
   end
 
-  def initialize(chat_channel:, in_reply_to_id: nil, user:, content:)
+  def initialize(chat_channel:, in_reply_to_id: nil, user:, content:, staged_id:)
     @chat_channel = chat_channel
     @user = user
     @in_reply_to_id = in_reply_to_id
     @content = content
+    @staged_id = staged_id
     @error = nil
 
     @chat_message = ChatMessage.new(
@@ -29,7 +30,7 @@ class DiscourseChat::ChatMessageCreator
     begin
       @chat_message.save!
       create_mention_notifications
-      ChatPublisher.publish_new!(@chat_channel, @chat_message)
+      ChatPublisher.publish_new!(@chat_channel, @chat_message, @staged_id)
     rescue => error
       @error = error
     end

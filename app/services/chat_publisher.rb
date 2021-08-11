@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
 module ChatPublisher
-  def self.publish_new!(chat_channel, msg)
+  def self.publish_new!(chat_channel, msg, staged_id)
     content = ChatBaseMessageSerializer.new(msg, { scope: anonymous_guardian, root: :topic_chat_message }).as_json
     content[:typ] = :sent
+    content[:stagedId] = staged_id
     MessageBus.publish("/chat/#{chat_channel.id}", content.as_json)
     MessageBus.publish("/chat/#{chat_channel.id}/new_messages", { message_id: msg.id, user_id: msg.user_id })
   end

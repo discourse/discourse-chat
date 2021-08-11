@@ -49,6 +49,7 @@ class DiscourseChat::ChatController < ::ApplicationController
   end
 
   def create_message
+    raise Discourse::NotFound
     set_channel_and_chatable
 
     reply_to_msg_id = params[:in_reply_to_id]
@@ -64,6 +65,7 @@ class DiscourseChat::ChatController < ::ApplicationController
       user: current_user,
       in_reply_to_id: reply_to_msg_id,
       content: content,
+      staged_id: params[:stagedId]
     )
 
     if chat_message_creator.failed?

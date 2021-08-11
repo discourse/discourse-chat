@@ -8,6 +8,7 @@ import discourseDebounce from "discourse-common/lib/debounce";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { cancel, later, next, schedule } from "@ember/runloop";
 import { inject as service } from "@ember/service";
+import { Promise } from "rsvp";
 
 const MAX_RECENT_MSGS = 100;
 const STICKY_SCROLL_LENIENCE = 4;
@@ -31,7 +32,8 @@ export default Component.extend({
   details: null, // Object { chat_channel_id, can_chat, ... }
   messages: null, // Array
   messageLookup: null, // Object<Number, Message>
-  unLoadedReplyIds: null, // Array
+  _unloadedReplyIds: null, // Array
+  _pendingMessageGuid: 0, // Iterate on every new message
   targetMessageId: null,
 
   chatService: service("chat"),
@@ -45,7 +47,7 @@ export default Component.extend({
 
   didInsertElement() {
     this._super(...arguments);
-    this.set("unLoadedReplyIds", []);
+    this._unloadedReplyIds = [];
     this.appEvents.on("chat:open-message", this, "highlightOrFetchMessage");
     if (!isTesting()) {
       next(this, () => {
@@ -76,7 +78,7 @@ export default Component.extend({
       this.messageBus.unsubscribe(`/chat/${this.registeredChatChannelId}`);
       this.registeredChatChannelId = null;
     }
-    this.set("unLoadedReplyIds", null);
+    this._unloadedReplyIds = null;
   },
 
   didReceiveAttrs() {
@@ -161,7 +163,7 @@ export default Component.extend({
   },
 
   setMessageProps(chatView) {
-    this.set("unLoadedReplyIds", []);
+    this._unloadedReplyIds = [];
     this.setProperties({
       messages: this._prepareMessages(chatView.messages),
       details: {
@@ -212,7 +214,7 @@ export default Component.extend({
           messageData.in_reply_to.message
         );
         inReplyToMessage = EmberObject.create(messageData.in_reply_to);
-        this.unLoadedReplyIds.push(inReplyToMessage.id);
+        this._unloadedReplyIds.push(inReplyToMessage.id);
         this.messageLookup[inReplyToMessage.id] = inReplyToMessage;
       }
     } else {
@@ -225,9 +227,14 @@ export default Component.extend({
     }
     messageData.expanded = !messageData.deleted_at;
     messageData.cookedMessage = this.cook(messageData.message);
+    messageData.messageLookupId = this._generateMessageLookupId(messageData);
     const prepared = EmberObject.create(messageData);
-    this.messageLookup[messageData.id] = prepared;
+    this.messageLookup[messageData.messageLookupId] = prepared;
     return prepared;
+  },
+
+  _generateMessageLookupId(message) {
+    return message.id || `staged-${message.stagedId}`;
   },
 
   _markLastReadMessage(opts = { reRender: false }) {
@@ -380,6 +387,20 @@ export default Component.extend({
   },
 
   handleSentMessage(data) {
+    if (data.topic_chat_message.user.id === this.currentUser.id) {
+      // User sent this message. Check staged messages to see if this client sent the message.
+      // If so, need to update the staged message with and id.
+      const stagedMessage = this.messageLookup[`staged-${data.stagedId}`];
+      if (stagedMessage) {
+        stagedMessage.setProperties({
+          staged: false,
+          id: data.topic_chat_message.id,
+        });
+        this.messageLookup[data.topic_chat_message.id] = stagedMessage;
+        delete this.messageLookup[`staged-${data.stagedId}`];
+        return;
+      }
+    }
     this.messages.pushObject(
       this._prepareSingleMessage(
         data.topic_chat_message,
@@ -498,6 +519,7 @@ export default Component.extend({
         if (
           this.expanded &&
           !this.floatHidden &&
+          messageId &&
           messageId !== this.lastSendReadMessageId
         ) {
           this.set("lastSendReadMessageId", messageId);
@@ -528,22 +550,45 @@ export default Component.extend({
   @action
   sendMessage(message) {
     this.set("sendingloading", true);
-    let data = { message };
+    this.set("_pendingMessageGuid", this._pendingMessageGuid + 1);
+    let data = { message, staged: true, stagedId: this._pendingMessageGuid };
     if (this.replyToMsg) {
       data.in_reply_to_id = this.replyToMsg.id;
     }
-    return ajax(`/chat/${this.chatChannel.id}/`, {
+
+    // Start ajax request but don't return here, we want to stage the message instantly.
+    // Return a resolved promise below.
+    ajax(`/chat/${this.chatChannel.id}/`, {
       type: "POST",
       data,
     })
-      .then(() => this._resetAfterSend())
-      .catch(popupAjaxError)
+      .catch(() => {
+        this._onSendError(data.stagedId);
+      })
       .finally(() => {
         if (!this.element || this.isDestroying || this.isDestroyed) {
           return;
         }
         this.set("sendingloading", false);
       });
+
+    const stagedMessage = this._prepareSingleMessage(
+      // We need to add the user and created at for presentation of staged message
+      Object.assign(data, { user: this.currentUser, created_at: new Date() }),
+      this.messages[this.messages.length - 1]
+    );
+    this.messages.pushObject(stagedMessage);
+    schedule("afterRender", this, this._resetAfterSend);
+    return Promise.resolve();
+  },
+
+  _onSendError(stagedId) {
+    const stagedMessage = this.messageLookup[`staged-${stagedId}`];
+    stagedMessage.set("error", true);
+    schedule("afterRender", () => {
+      this._resetAfterSend();
+      this.stickScrollToBottom();
+    });
   },
 
   @action
@@ -608,7 +653,7 @@ export default Component.extend({
   @action
   replyMessageClicked(message) {
     const replyMessageFromLookup = this.messageLookup[message.id];
-    if (this.unLoadedReplyIds.includes(message.id)) {
+    if (this._unloadedReplyIds.includes(message.id)) {
       // Message is not present in the loaded messages. Fetch it!
       this.set("targetMessageId", message.id);
       this.fetchMessages();

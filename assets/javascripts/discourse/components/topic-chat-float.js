@@ -336,12 +336,33 @@ export default Component.extend({
   @action
   toggleChat() {
     this.set("hidden", !this.hidden);
-    if (!this.hidden) {
+    if (this.hidden) {
+      return;
+    } else {
       this.set("expanded", true);
-
-      if (!this.activeChannel) {
-        this.fetchChannels();
+      if (this.activeChannel) {
+        // Channel was previously open, so after expand we are done.
+        return;
       }
+    }
+
+    let channelIdWithUnread;
+    for (const [channelId, state] of Object.entries(
+      this.currentUser.chat_channel_tracking_state
+    )) {
+      if (state.unread_count > 0) {
+        channelIdWithUnread = channelId;
+        break;
+      }
+    }
+    if (channelIdWithUnread) {
+      // User has unread messages in at least 1 channel. Switch to that channel automatically
+      ajax(`/chat/${channelIdWithUnread}.json`).then((response) => {
+        this.switchChannel(response.chat_channel);
+      });
+    } else {
+      // No channels with unread messages. Fetch channel index.
+      this.fetchChannels();
     }
   },
 

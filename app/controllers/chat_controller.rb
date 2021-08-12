@@ -64,6 +64,7 @@ class DiscourseChat::ChatController < ::ApplicationController
       user: current_user,
       in_reply_to_id: reply_to_msg_id,
       content: content,
+      staged_id: params[:stagedId]
     )
 
     if chat_message_creator.failed?

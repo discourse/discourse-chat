@@ -26,13 +26,19 @@ export default Component.extend({
   },
 
   @discourseComputed(
+    "message.id",
+    "message.staged",
     "message.deleted_at",
     "message.in_reply_to",
     "message.action_code",
     "message.hideUserInfo"
   )
-  messageClasses(deletedAt, inReplyTo, actionCode, hideUserInfo) {
-    let classNames = ["tc-message", `tc-message-${this.message.id}`];
+  messageClasses(id, staged, deletedAt, inReplyTo, actionCode, hideUserInfo) {
+    let classNames = ["tc-message"];
+    classNames.push(
+      staged ? "tc-message-staged" : `tc-message-${this.message.id}`
+    );
+
     if (actionCode) {
       classNames.push("tc-action");
       classNames.push(`tc-action-${actionCode}`);
@@ -76,7 +82,7 @@ export default Component.extend({
     if (user.groupModerator) {
       classes.push("category-moderator");
     }
-    return classes;
+    return classes.join(" ");
   },
 
   @discourseComputed("message", "message.deleted_at")

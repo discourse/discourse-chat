@@ -26,6 +26,7 @@ en:
       mention_notification: "<span>%{username} mentioned you in chat</span>"
       return_to_list: "Return to channel list"
       all_loaded: "Showing all messages"
+      send_error: "Something went wrong"
 
       channels:
         staff: "Staff-only"

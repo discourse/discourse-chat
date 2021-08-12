@@ -226,6 +226,10 @@ $header-height: 2.5rem;
       color: var(--primary-medium);
       font-size: var(--font-down-1);
     }
+    .tc-send-error {
+      text-align: center;
+      color: var(--danger-medium);
+    }
   }
   .tc-message.user-info-hidden {
     .tc-meta-data {

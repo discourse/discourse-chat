@@ -9,45 +9,47 @@
     </div>
   {{else}}
     <div class={{messageClasses}}>
-      <div class="tc-msgactions-hover">
-        <div class="tc-msgactions">
-          {{#if showReplyButton}}
-            {{d-button
-              class="btn-flat reply-btn"
-              action="reply"
-              icon="reply"
-            }}
-          {{/if}}
-          {{#if showEditButton}}
-            {{d-button
-              class="btn-flat edit-btn"
-              action="edit"
-              icon="pencil-alt"
-            }}
-          {{/if}}
-          {{#if showFlagButton}}
-            {{d-button
-              class="btn-flat flag-btn"
-              action="flag"
-              icon="flag"
-            }}
-          {{/if}}
-          {{#if showDeleteButton}}
-            {{d-button
-              class="btn-flat delete-btn"
-              action="deleteMessage"
-              icon="trash-alt"
-            }}
-          {{/if}}
-          {{#if showRestoreButton}}
-            {{d-button
-              class="btn-flat restore-btn"
-              action="restore"
-              icon="undo"
-            }}
-          {{/if}}
+      {{#unless message.staged}}
+        <div class="tc-msgactions-hover">
+          <div class="tc-msgactions">
+            {{#if showReplyButton}}
+              {{d-button
+                class="btn-flat reply-btn"
+                action="reply"
+                icon="reply"
+              }}
+            {{/if}}
+            {{#if showEditButton}}
+              {{d-button
+                class="btn-flat edit-btn"
+                action="edit"
+                icon="pencil-alt"
+              }}
+            {{/if}}
+            {{#if showFlagButton}}
+              {{d-button
+                class="btn-flat flag-btn"
+                action="flag"
+                icon="flag"
+              }}
+            {{/if}}
+            {{#if showDeleteButton}}
+              {{d-button
+                class="btn-flat delete-btn"
+                action="deleteMessage"
+                icon="trash-alt"
+              }}
+            {{/if}}
+            {{#if showRestoreButton}}
+              {{d-button
+                class="btn-flat restore-btn"
+                action="restore"
+                icon="undo"
+              }}
+            {{/if}}
+          </div>
         </div>
-      </div>
+      {{/unless}}
 
       {{#if message.in_reply_to}}
         <div role="button" onclick={{action "viewReply"}} class="tc-reply-display">
@@ -88,6 +90,11 @@
               </div>
             {{/if}}
           </p>
+        {{/if}}
+        {{#if message.error}}
+          <div class="tc-send-error">
+            {{i18n "chat.send_error"}}
+          </div>
         {{/if}}
       </div>
     </div>

@@ -9,18 +9,21 @@ import {
 } from "discourse/tests/helpers/qunit-helpers";
 import { click, visit } from "@ember/test-helpers";
 import { test } from "qunit";
+import {
+  chatChannels,
+  chatView,
+  messageContents,
+  siteChannel,
+} from "discourse/plugins/discourse-topic-chat/chat-fixtures";
 
-const messageOneContent = "Hello world";
-const messageTwoContent = "What upp";
-
-acceptance("Discourse Chat - Acceptance Test", function (needs) {
+acceptance("Discourse Chat - without unread", function (needs) {
   needs.user({
     admin: false,
     moderator: false,
     id: 1,
     can_chat: true,
     chat_channel_tracking_state: {
-      9: { unread_count: 2 },
+      9: { unread_count: 0 },
       7: { unread_count: 0 },
       4: { unread_count: 0 },
       11: { unread_count: 0 },
@@ -31,107 +34,9 @@ acceptance("Discourse Chat - Acceptance Test", function (needs) {
   });
 
   needs.pretender((server, helper) => {
-    server.get("/chat/index.json", () =>
-      helper.response([
-        {
-          chat_channels: [],
-          chatable: null,
-          chatable_id: -1,
-          chatable_type: "Site",
-          chatable_url: "http://localhost:3000",
-          id: 9,
-          title: "Site",
-        },
-        {
-          id: 7,
-          chatable_id: 1,
-          chatable_type: "Category",
-          chatable_url: "/c/uncategorized/1",
-          title: "Uncategorized",
-          chatable: {
-            id: 1,
-            name: "Uncategorized",
-            color: "0088CC",
-            text_color: "FFFFFF",
-            slug: "uncategorized",
-          },
-          chat_channels: [
-            {
-              id: 4,
-              chatable_id: 12,
-              chatable_type: "Topic",
-              chatable_url:
-                "http://localhost:3000/t/small-action-testing-topic/12",
-              title: "Small action - testing topic",
-              chatable: {
-                id: 12,
-                title: "Small action - testing topic",
-                fancy_title: "Small action - testing topic",
-                slug: "small-action-testing-topic",
-                posts_count: 1,
-              },
-              chat_channels: [],
-            },
-            {
-              id: 11,
-              chatable_id: 80,
-              chatable_type: "Topic",
-              chatable_url:
-                "http://localhost:3000/t/coolest-thing-you-have-seen-today/80",
-              title: "Coolest thing you have seen today",
-              chatable: {
-                id: 80,
-                title: "Coolest thing you have seen today",
-                fancy_title: "Coolest thing you have seen today",
-                slug: "coolest-thing-you-have-seen-today",
-                posts_count: 100,
-              },
-              chat_channels: [],
-            },
-          ],
-        },
-      ])
-    );
+    server.get("/chat/index.json", () => helper.response(chatChannels));
     server.get("/chat/:chat_channel_id/messages.json", () =>
-      helper.response({
-        topic_chat_view: {
-          can_chat: true,
-          can_flag: true,
-          can_delete_self: true,
-          can_delete_others: false,
-          messages: [
-            {
-              id: 174,
-              message: messageOneContent,
-              action_code: null,
-              created_at: "2021-07-20T08:14:16.950Z",
-              flag_count: 0,
-              user: {
-                id: 1,
-                username: "markvanlan",
-                name: null,
-                avatar_template:
-                  "/letter_avatar_proxy/v4/letter/m/48db29/{size}.png",
-              },
-            },
-            {
-              id: 175,
-              message: messageTwoContent,
-              action_code: null,
-              created_at: "2021-07-20T08:14:22.043Z",
-              in_reply_to_id: 174,
-              flag_count: 0,
-              user: {
-                id: 2,
-                username: "hawk",
-                name: null,
-                avatar_template:
-                  "/letter_avatar_proxy/v4/letter/m/48db29/{size}.png",
-              },
-            },
-          ],
-        },
-      })
+      helper.response(chatView)
     );
   });
 
@@ -151,8 +56,8 @@ acceptance("Discourse Chat - Acceptance Test", function (needs) {
   test("Chat messages are populated when a channel is entered", async function (assert) {
     await enterFirstChatChannel();
     const messages = queryAll(".tc-message .tc-text");
-    assert.equal(messages[0].textContent.trim(), messageOneContent);
-    assert.equal(messages[1].textContent.trim(), messageTwoContent);
+    assert.equal(messages[0].textContent.trim(), messageContents[0]);
+    assert.equal(messages[1].textContent.trim(), messageContents[1]);
   });
 
   test("Message controls are present and correct for permissions", async function (assert) {
@@ -221,10 +126,48 @@ acceptance("Discourse Chat - Acceptance Test", function (needs) {
       "markvanlan"
     );
 
-    assert.equal(query(".tc-composer-input").value.trim(), messageOneContent);
+    assert.equal(query(".tc-composer-input").value.trim(), messageContents[0]);
+  });
+});
+
+acceptance("Discourse Chat - Acceptance Test with unread", function (needs) {
+  needs.user({
+    admin: false,
+    moderator: false,
+    id: 1,
+    can_chat: true,
+    chat_channel_tracking_state: {
+      9: { unread_count: 2 },
+      7: { unread_count: 0 },
+      4: { unread_count: 0 },
+      11: { unread_count: 0 },
+    },
+  });
+  needs.settings({
+    topic_chat_enabled: true,
   });
 
-  test("unread count and indicator is present", async function (assert) {
+  needs.pretender((server, helper) => {
+    server.get("/chat/index.json", () => helper.response(chatChannels));
+    server.get("/chat/:chat_channel_id/messages.json", () =>
+      helper.response(chatView)
+    );
+    server.get("/chat/:chat_channel_id.json", () =>
+      helper.response(siteChannel)
+    );
+  });
+
+  test("Chat opens to channel with unread messages", async function (assert) {
+    await visit("/t/internationalization-localization/280");
+    await click(".header-dropdown-toggle.open-chat");
+
+    assert.ok(
+      exists(".topic-chat-float-container .tc-messages-scroll"),
+      "The messages scroll container is present"
+    );
+  });
+
+  test("Unread header indicator and unread count on channel row are present", async function (assert) {
     await visit("/t/internationalization-localization/280");
 
     assert.ok(
@@ -235,6 +178,8 @@ acceptance("Discourse Chat - Acceptance Test", function (needs) {
     );
 
     await click(".header-dropdown-toggle.open-chat");
+    // Automatically placed in site channel. Go back to index and check channel row
+    await click(".return-to-channels");
 
     assert.ok(
       exists(".chat-channel-row .unread-chat-messages-indicator"),

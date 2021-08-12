@@ -107,7 +107,7 @@ export default Component.extend({
 
     ajax(url, { data: { page_size: PAGE_SIZE } })
       .then((data) => {
-        if (this.selfDeleted()) {
+        if (this._selfDeleted()) {
           return;
         }
         this.setMessageProps(data.topic_chat_view);
@@ -116,7 +116,7 @@ export default Component.extend({
         throw err;
       })
       .finally(() => {
-        if (this.selfDeleted()) {
+        if (this._selfDeleted()) {
           return;
         }
         if (this.targetMessageId) {
@@ -138,7 +138,7 @@ export default Component.extend({
       data: { before_message_id: firstMessageId, page_size: PAGE_SIZE },
     })
       .then((data) => {
-        if (this.selfDeleted()) {
+        if (this._selfDeleted()) {
           return;
         }
         const newMessages = this._prepareMessages(
@@ -155,7 +155,7 @@ export default Component.extend({
         throw err;
       })
       .finally(() => {
-        if (this.selfDeleted()) {
+        if (this._selfDeleted()) {
           return;
         }
         this.set("loadingMore", false);
@@ -259,12 +259,12 @@ export default Component.extend({
       this.scrollToMessage(message.id);
     } else {
       // This is the user's first visit to the channel. Scroll them to the bottom
-      this.stickScrollToBottom();
+      this._stickScrollToBottom();
     }
   },
 
   highlightOrFetchMessage(_, messageId) {
-    if (this.selfDeleted()) {
+    if (this._selfDeleted()) {
       return;
     }
 
@@ -278,7 +278,7 @@ export default Component.extend({
   },
 
   scrollToMessage(messageId, opts = { highlight: false }) {
-    if (this.selfDeleted()) {
+    if (this._selfDeleted()) {
       return;
     }
 
@@ -308,18 +308,20 @@ export default Component.extend({
     }
   },
 
-  stickScrollToBottom() {
-    if (this.selfDeleted()) {
-      return;
-    }
-    if (this.stickyScroll) {
-      this._scrollerEl.scrollTop =
-        this._scrollerEl.scrollHeight - this._scrollerEl.clientHeight;
-    }
+  _stickScrollToBottom() {
+    schedule("afterRender", () => {
+      if (this._selfDeleted()) {
+        return;
+      }
+      if (this.stickyScroll) {
+        this._scrollerEl.scrollTop =
+          this._scrollerEl.scrollHeight - this._scrollerEl.clientHeight;
+      }
+    });
   },
 
   onScroll() {
-    if (this.selfDeleted()) {
+    if (this._selfDeleted()) {
       return;
     }
     if (!this.expanded) {
@@ -342,7 +344,7 @@ export default Component.extend({
     if (shouldStick !== this.stickyScroll) {
       this.set("stickyScroll", shouldStick);
       if (shouldStick) {
-        this.stickScrollToBottom();
+        this._stickScrollToBottom();
       }
     }
   },
@@ -350,7 +352,7 @@ export default Component.extend({
   @observes("expanded")
   restickOnExpand() {
     if (this.expanded) {
-      schedule("afterRender", this, this.stickScrollToBottom);
+      this._stickScrollToBottom();
     }
   },
 
@@ -358,10 +360,8 @@ export default Component.extend({
   onFloatHiddenChange() {
     if (!this.floatHidden) {
       this.set("expanded", true);
-      schedule("afterRender", this, () => {
-        this._markLastReadMessage({ reRender: true });
-        this.stickScrollToBottom();
-      });
+      this._markLastReadMessage({ reRender: true });
+      this._stickScrollToBottom();
     }
   },
 
@@ -411,7 +411,7 @@ export default Component.extend({
     if (this.messages.length >= MAX_RECENT_MSGS) {
       this.removeMessage(this.messages.shiftObject());
     }
-    schedule("afterRender", this, this.stickScrollToBottom);
+    this._stickScrollToBottom();
   },
 
   handleEditMessage(data) {
@@ -501,12 +501,12 @@ export default Component.extend({
     return 0;
   },
 
-  selfDeleted() {
+  _selfDeleted() {
     return !this.element || this.isDestroying || this.isDestroyed;
   },
 
   _updateLastReadMessage() {
-    if (this.selfDeleted()) {
+    if (this._selfDeleted()) {
       return;
     }
 
@@ -544,11 +544,14 @@ export default Component.extend({
   onComposerValueChange() {
     // When the composer value changes and sticky scroll is set, make sure to stay
     // stuck to the bottom. Composer height changes force content up.
-    this.stickScrollToBottom();
+    this._stickScrollToBottom();
   },
 
   @action
   sendMessage(message) {
+    if (this.sendingloading) {
+      return;
+    }
     this.set("sendingloading", true);
     this.set("_nextStagedMessageId", this._nextStagedMessageId + 1);
     let data = { message, stagedId: this._nextStagedMessageId };
@@ -566,7 +569,7 @@ export default Component.extend({
         this._onSendError(data.stagedId);
       })
       .finally(() => {
-        if (!this.element || this.isDestroying || this.isDestroyed) {
+        if (this._selfDeleted()) {
           return;
         }
         this.set("sendingloading", false);
@@ -574,11 +577,16 @@ export default Component.extend({
 
     const stagedMessage = this._prepareSingleMessage(
       // We need to add the user and created at for presentation of staged message
-      Object.assign(data, { staged: true, user: this.currentUser, created_at: new Date() }),
+      Object.assign(data, {
+        staged: true,
+        user: this.currentUser,
+        created_at: new Date(),
+      }),
       this.messages[this.messages.length - 1]
     );
     this.messages.pushObject(stagedMessage);
-    schedule("afterRender", this, this._resetAfterSend);
+    this._resetAfterSend();
+    this._stickScrollToBottom();
     return Promise.resolve();
   },
 
@@ -586,10 +594,8 @@ export default Component.extend({
     const stagedMessage = this.messageLookup[`staged-${stagedId}`];
     if (stagedMessage) {
       stagedMessage.set("error", true);
-      schedule("afterRender", () => {
-        this._resetAfterSend();
-        this.stickScrollToBottom();
-      });
+      this._resetAfterSend();
+      this._stickScrollToBottom();
     }
   },
 
@@ -604,7 +610,7 @@ export default Component.extend({
       .then(() => this._resetAfterSend())
       .catch(popupAjaxError)
       .finally(() => {
-        if (!this.element || this.isDestroying || this.isDestroyed) {
+        if (this._selfDeleted()) {
           return;
         }
         this.set("sendingloading", false);
@@ -612,7 +618,7 @@ export default Component.extend({
   },
 
   _resetAfterSend() {
-    if (!this.element || this.isDestroying || this.isDestroyed) {
+    if (this._selfDeleted()) {
       return;
     }
     this.setProperties({
@@ -649,7 +655,7 @@ export default Component.extend({
     } else {
       this.set("replyToMsg", null);
     }
-    schedule("afterRender", this, this.stickScrollToBottom);
+    this._stickScrollToBottom();
   },
 
   @action
@@ -668,7 +674,7 @@ export default Component.extend({
   editButtonClicked(messageId) {
     const message = this.messageLookup[messageId];
     this.set("editingMessage", message);
-    schedule("afterRender", this, this.stickScrollToBottom);
+    this._stickScrollToBottom();
   },
 
   @action
@@ -679,7 +685,7 @@ export default Component.extend({
   @action
   restickScrolling(evt) {
     this.set("stickyScroll", true);
-    this.stickScrollToBottom();
+    this._stickScrollToBottom();
     evt.preventDefault();
   },
 });

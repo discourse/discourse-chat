@@ -309,13 +309,15 @@ export default Component.extend({
   },
 
   _stickScrollToBottom() {
-    if (this._selfDeleted()) {
-      return;
-    }
-    if (this.stickyScroll) {
-      this._scrollerEl.scrollTop =
-        this._scrollerEl.scrollHeight - this._scrollerEl.clientHeight;
-    }
+    schedule("afterRender", () => {
+      if (this._selfDeleted()) {
+        return;
+      }
+      if (this.stickyScroll) {
+        this._scrollerEl.scrollTop =
+          this._scrollerEl.scrollHeight - this._scrollerEl.clientHeight;
+      }
+    });
   },
 
   onScroll() {
@@ -350,7 +352,7 @@ export default Component.extend({
   @observes("expanded")
   restickOnExpand() {
     if (this.expanded) {
-      schedule("afterRender", this, this._stickScrollToBottom);
+      this._stickScrollToBottom();
     }
   },
 
@@ -358,10 +360,8 @@ export default Component.extend({
   onFloatHiddenChange() {
     if (!this.floatHidden) {
       this.set("expanded", true);
-      schedule("afterRender", this, () => {
-        this._markLastReadMessage({ reRender: true });
-        this._stickScrollToBottom();
-      });
+      this._markLastReadMessage({ reRender: true });
+      this._stickScrollToBottom();
     }
   },
 
@@ -411,7 +411,7 @@ export default Component.extend({
     if (this.messages.length >= MAX_RECENT_MSGS) {
       this.removeMessage(this.messages.shiftObject());
     }
-    schedule("afterRender", this, this._stickScrollToBottom);
+    this._stickScrollToBottom();
   },
 
   handleEditMessage(data) {
@@ -585,10 +585,8 @@ export default Component.extend({
       this.messages[this.messages.length - 1]
     );
     this.messages.pushObject(stagedMessage);
-    schedule("afterRender", () => {
-      this._resetAfterSend();
-      this._stickScrollToBottom();
-    });
+    this._resetAfterSend();
+    this._stickScrollToBottom();
     return Promise.resolve();
   },
 
@@ -596,10 +594,8 @@ export default Component.extend({
     const stagedMessage = this.messageLookup[`staged-${stagedId}`];
     if (stagedMessage) {
       stagedMessage.set("error", true);
-      schedule("afterRender", () => {
-        this._resetAfterSend();
-        this._stickScrollToBottom();
-      });
+      this._resetAfterSend();
+      this._stickScrollToBottom();
     }
   },
 
@@ -659,7 +655,7 @@ export default Component.extend({
     } else {
       this.set("replyToMsg", null);
     }
-    schedule("afterRender", this, this._stickScrollToBottom);
+    this._stickScrollToBottom();
   },
 
   @action
@@ -678,7 +674,7 @@ export default Component.extend({
   editButtonClicked(messageId) {
     const message = this.messageLookup[messageId];
     this.set("editingMessage", message);
-    schedule("afterRender", this, this._stickScrollToBottom);
+    this._stickScrollToBottom();
   },
 
   @action

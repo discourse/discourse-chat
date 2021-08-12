@@ -1,5 +1,19 @@
 <span class="chat-channel-title">
-  {{#if (eq channel.chatable_type "Category")}}
+  {{#if (eq channel.chatable_type "DirectMessageChannel")}}
+    {{#if multiDm}}
+      <span class="dm-multi-count">
+        {{userCount}}
+      </span>
+      <span class="dm-usernames">{{usernames}}</span>
+
+    {{else}}
+      <div class="dm-single-user">
+        {{avatar firstUser imageSize="medium"}}
+        <span class="dm-username">{{firstUser.username}}</span>
+      </div>
+
+    {{/if}}
+  {{else if (eq channel.chatable_type "Category")}}
     {{category-badge channel.chatable hideParent=true allowUncategorized=true}}
   {{else if (eq channel.chatable_type "Topic")}}
     <span class="topic-chat-icon">{{d-icon "far-comments"}}</span>

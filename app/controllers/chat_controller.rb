@@ -172,8 +172,8 @@ class DiscourseChat::ChatController < ::ApplicationController
   end
 
   def index
-    channels = DiscourseChat::ChatChannelFetcher.structured(guardian)
-    render_serialized(channels, ChatChannelSerializer)
+    structured = DiscourseChat::ChatChannelFetcher.structured(guardian)
+    render_serialized(structured, ChatChannelIndexSerializer, root: false)
   end
 
   def channel_details

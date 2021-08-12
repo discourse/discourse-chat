@@ -515,7 +515,7 @@ $header-height: 2.5rem;
 
 .chat-channel-row {
   display: flex;
-  padding: 0.5em;
+  padding: 0.5em 0.5em 0.5em 1.5em;
   cursor: pointer;
   color: var(--primary-high);
   align-items: center;
@@ -529,7 +529,7 @@ $header-height: 2.5rem;
   }
 
   &.nested {
-    padding-left: 1.75em;
+    padding-left: 3em;
   }
 
   .badge-wrapper {
@@ -567,6 +567,25 @@ $header-height: 2.5rem;
   .topic-chat-icon {
     color: var(--primary-medium);
   }
+  .avatar {
+    width: 1.5em;
+    height: 1.5em;
+    margin-right: 0.25em;
+  }
+  .dm-multi-count {
+    display: inline-block;
+    border-radius: 3px;
+    background: var(--primary-low);
+    padding: 0.1em 0.4em;
+    text-align: center;
+    font-weight: bold;
+    margin-right: 0.25em;
+  }
+}
+
+.chat-channel-divider {
+  font-weight: bold;
+  padding: 0.5em;
 }
 
 :root:not(.mobile-view) {

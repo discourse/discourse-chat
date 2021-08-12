@@ -3,10 +3,11 @@ import discourseComputed, { observes } from "discourse-common/utils/decorators";
 import simpleCategoryHashMentionTransform from "discourse/plugins/discourse-topic-chat/discourse/lib/simple-category-hash-mention-transform";
 import { action } from "@ember/object";
 import { ajax } from "discourse/lib/ajax";
-import { equal } from "@ember/object/computed";
+import { empty, equal } from "@ember/object/computed";
 import { cancel, throttle } from "@ember/runloop";
 import { generateCookFunction } from "discourse/lib/text";
 import { inject as service } from "@ember/service";
+import { schedule } from "@ember/runloop";
 
 export const LIST_VIEW = "list_view";
 export const CHAT_VIEW = "chat_view";
@@ -65,7 +66,11 @@ export default Component.extend({
   view: null,
   hasUnreadMessages: false,
   activeChannel: null,
-  channels: null,
+  publicChannels: null,
+  directMessageChannels: null,
+  creatingDmChannel: false,
+  newDmUsernames: null,
+  newDmUsernamesEmpty: empty("newDmUsernames"),
 
   didInsertElement() {
     this._super(...arguments);
@@ -371,7 +376,8 @@ export default Component.extend({
     this.set("loading", true);
     ajax("/chat/index.json").then((channels) => {
       this.setProperties({
-        channels: channels,
+        publicChannels: channels.public_channels,
+        directMessageChannels: channels.direct_message_channels,
         activeChannel: null,
         loading: false,
         expanded: true,
@@ -390,5 +396,46 @@ export default Component.extend({
       view: CHAT_VIEW,
     };
     this.setProperties(channelInfo);
+  },
+
+  @action
+  startCreatingDmChannel() {
+    this.set("creatingDmChannel", true);
+    schedule("afterRender", () => {
+      const userChooser = this.element.querySelector(".dm-user-chooser input");
+      if (userChooser) {
+        userChooser.focus();
+      }
+    });
+  },
+
+  @action
+  onChangeNewDmUsernames(usernames) {
+    this.set("newDmUsernames", usernames);
+  },
+
+  @action
+  cancelCreatingDmChannel() {
+    this.setProperties({
+      newDmUsernames: null,
+      creatingDmChannel: false,
+    });
+  },
+
+  @action
+  createDmChannel() {
+    if (this.newDmUsernamesEmpty) {
+      return;
+    }
+
+    return ajax("/chat/direct_messages/create.json", {
+      method: "POST",
+      data: { usernames: this.newDmUsernames.uniq().join(",") },
+    }).then(() => {
+      this.setProperties({
+        newDmUsernames: null,
+        creatingDmChannel: false,
+      });
+    });
   },
 });

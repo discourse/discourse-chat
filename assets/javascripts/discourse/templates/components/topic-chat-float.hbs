@@ -30,6 +30,8 @@
         {{flat-button icon="times" action=(action "close") title="chat.close"}}
       {{/if}}
     </div>
+
+    {{!-- Content --}}
     <div class="topic-chat-drawer-content">
       {{#if chatView}}
         {{#if (and this.activeChannel cookFunction)}}
@@ -43,9 +45,53 @@
       {{else}}
         <div class="tc-channels">
           {{#conditional-loading-spinner condition=this.loading}}
-            {{#each channels as |channel|}}
-              {{chat-channel-row channel=channel switchChannel=(action "switchChannel")}}
-            {{/each}}
+            <div class="chat-channel-divider">
+              {{i18n "chat.chat_channels"}}
+            </div>
+            <div class="chat-channels-container">
+              {{#each publicChannels as |channel|}}
+                {{chat-channel-row channel=channel switchChannel=(action "switchChannel")}}
+              {{/each}}
+            </div>
+
+            <div class="chat-channel-divider">
+              {{i18n "chat.direct_messages.title"}}
+              {{#if creatingDmChannel}}
+                {{user-chooser
+                  class="dm-user-chooser"
+                  value=newDmUsernames
+                  onChange=(action "onChangeNewDmUsernames")
+                  options=(hash
+                    excludeCurrentUser=true
+                  )
+                }}
+                {{d-button
+                  class="create-dm btn-primary"
+                  disabled=newDmUsernamesEmpty
+                  label="chat.direct_messages.create"
+                  action=(action "createDmChannel")
+                  title="chat.direct_messages.create"
+                }}
+                {{d-button
+                  class="create-dm"
+                  label="chat.direct_messages.cancel"
+                  action=(action "cancelCreatingDmChannel")
+                  title="chat.direct_messages.cancel"
+                }}
+              {{else}}
+                {{flat-button
+                  class="new-dm"
+                  icon="plus"
+                  action=(action "startCreatingDmChannel")
+                  title="chat.direct_messages.new"
+                }}
+              {{/if}}
+            </div>
+            <div class="chat-channels-container">
+              {{#each directMessageChannels as |channel|}}
+                {{chat-channel-row channel=channel switchChannel=(action "switchChannel")}}
+              {{/each}}
+            </div>
           {{/conditional-loading-spinner}}
         </div>
       {{/if}}

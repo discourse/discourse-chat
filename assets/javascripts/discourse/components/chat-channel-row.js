@@ -12,6 +12,6 @@ export default Component.extend({
 
   @discourseComputed("currentUser.chat_channel_tracking_state")
   unreadCount(trackingState) {
-    return trackingState[this.channel.id].unread_count;
+    return trackingState[this.channel.id]?.unread_count;
   },
 });

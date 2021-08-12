@@ -34,12 +34,17 @@ after_initialize do
   SeedFu.fixture_paths << Rails.root.join("plugins", "discourse-topic-chat", "db", "fixtures").to_s
 
   load File.expand_path('../app/controllers/chat_controller.rb', __FILE__)
+  load File.expand_path('../app/controllers/direct_messages_controller.rb', __FILE__)
   load File.expand_path('../app/models/chat_channel.rb', __FILE__)
   load File.expand_path('../app/models/chat_message.rb', __FILE__)
   load File.expand_path('../app/models/chat_message_revision.rb', __FILE__)
+  load File.expand_path('../app/models/direct_message_channel.rb', __FILE__)
+  load File.expand_path('../app/models/direct_message_user.rb', __FILE__)
   load File.expand_path('../app/models/user_chat_channel_last_read.rb', __FILE__)
+  load File.expand_path('../app/serializers/direct_message_channel_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/chat_base_message_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/chat_channel_serializer.rb', __FILE__)
+  load File.expand_path('../app/serializers/chat_channel_index_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/chat_view_serializer.rb', __FILE__)
   load File.expand_path('../lib/chat_channel_fetcher.rb', __FILE__)
   load File.expand_path('../lib/chat_message_creator.rb', __FILE__)
@@ -190,6 +195,8 @@ after_initialize do
     put '/:chat_channel_id/restore/:message_id' => 'chat#restore'
     get '/lookup/:message_id' => 'chat#lookup_message'
     put '/:chat_channel_id/read/:message_id' => 'chat#update_user_last_read'
+
+    post '/direct_messages/create' => 'direct_messages#create'
   end
 
   Discourse::Application.routes.append do

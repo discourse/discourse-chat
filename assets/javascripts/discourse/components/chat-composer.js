@@ -102,9 +102,6 @@ export default Component.extend({
         value: this.editingMessage.message,
       });
       this._focusTextArea({ ensureAtEnd: true, resizeTextArea: true });
-    } else {
-      // Reply button pressed. Reset composer.
-      this._reset();
     }
   },
 

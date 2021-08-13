@@ -585,6 +585,7 @@ export default Component.extend({
       Object.assign(data, {
         staged: true,
         user: this.currentUser,
+        in_reply_to: this.replyToMsg,
         created_at: new Date(),
       }),
       this.messages[this.messages.length - 1]

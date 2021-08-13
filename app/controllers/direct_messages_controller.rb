@@ -19,10 +19,7 @@ class DiscourseChat::DirectMessagesController < ::ApplicationController
     if direct_messages_channel
       chat_channel = ChatChannel.find_by(chatable: direct_messages_channel)
     else
-      direct_messages_channel = DirectMessageChannel.create!
-      user_ids.each do |user_id|
-        direct_messages_channel.direct_message_users.create!(user_id: user_id)
-      end
+      direct_messages_channel = DirectMessageChannel.create!(users: users)
       chat_channel = ChatChannel.create!(chatable: direct_messages_channel)
       last_read_attrs = user_ids.map { |user_id|
         {

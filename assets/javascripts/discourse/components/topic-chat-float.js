@@ -302,6 +302,7 @@ export default Component.extend({
       this.directMessageChannels.pushObject(busData.chat_channel);
       this.currentUser.chat_channel_tracking_state[busData.chat_channel.id] = {
         unread_count: 0,
+        chatable_type: "DirectMessageChannel"
       };
       this.currentUser.notifyPropertyChange("chat_channel_tracking_state");
       this._subscribeToSingleUpdateChannel(busData.chat_channel.id);

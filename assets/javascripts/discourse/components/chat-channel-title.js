@@ -8,17 +8,7 @@ export default Component.extend({
   multiDm: gt("channel.chatable.users.length", 1),
 
   @discourseComputed("channel.chatable.users")
-  userCount(users) {
-    return users.length;
-  },
-
-  @discourseComputed("channel.chatable.users")
   usernames(users) {
     return users.map((user) => user.username).join(", ");
-  },
-
-  @discourseComputed("channel.chatable.users")
-  firstUser(users) {
-    return users[0]; // Template has a hard time with this
   },
 });

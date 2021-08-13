@@ -206,14 +206,14 @@ export default Component.extend({
     }
   },
 
-  openChannelAtMessage(chat_channel_id, messageId) {
+  openChannelAtMessage(chatChannelId, messageId) {
     this.chatService.setMessageId(messageId);
-    this._fetchChannelAndSwitch(chat_channel_id);
+    this._fetchChannelAndSwitch(chatChannelId);
   },
 
-  _fetchChannelAndSwitch(chat_channel_id) {
+  _fetchChannelAndSwitch(chatChannelId) {
     this.set("loading", true);
-    return ajax(`/chat/${chat_channel_id}.json`).then((response) => {
+    return ajax(`/chat/${chatChannelId}.json`).then((response) => {
       this.switchChannel(response.chat_channel);
     });
   },

@@ -1,6 +1,6 @@
 import I18n from "I18n";
 import Component from "@ember/component";
-import discourseComputed, { observes } from "discourse-common/utils/decorators";
+import discourseComputed from "discourse-common/utils/decorators";
 import userSearch from "discourse/lib/user-search";
 import { action } from "@ember/object";
 import { cancel, schedule, throttle } from "@ember/runloop";
@@ -93,8 +93,9 @@ export default Component.extend({
     }
   },
 
-  @observes("editingMessage")
-  _watchEditingMessageChanges() {
+  didReceiveAttrs() {
+    this._super(...arguments);
+
     if (this.editingMessage) {
       this.setProperties({
         replyToMsg: null,
@@ -109,7 +110,6 @@ export default Component.extend({
 
   @action
   cancelEditing() {
-    this.setProperties("editingMessage", null);
     this.onCancelEditing();
     this._focusTextArea({ ensureAtEnd: true, resizeTextArea: true });
   },
@@ -348,10 +348,8 @@ export default Component.extend({
   },
 
   _reset() {
-    this.setProperties({
-      value: "",
-      editingMessage: null,
-    });
+    this.set("value", "");
+    this.onCancelEditing();
     this._focusTextArea();
   },
 

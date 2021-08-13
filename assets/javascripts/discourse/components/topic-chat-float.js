@@ -79,10 +79,6 @@ export default Component.extend({
       return;
     }
 
-    this.setProperties({
-      publicChannels: A(),
-      directMessageChannels: A(),
-    });
     this._subscribeToUpdateChannels();
     this._subscribeToUserTrackingChannel();
     this._setHasUnreadMessages();
@@ -112,10 +108,6 @@ export default Component.extend({
       return;
     }
 
-    this.setProperties({
-      publicChannels: null,
-      directMessageChannels: null,
-    });
     if (this.appEvents) {
       this._unsubscribeFromUpdateChannels();
       this._unsubscribeFromUserTrackingChannel();

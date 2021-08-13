@@ -165,13 +165,14 @@ export default Component.extend({
     let unreadPublicCount = 0;
     let unreadDmCount = 0;
     let headerNeedsRerender = false;
-    for (const [channelId, state] of Object.entries(
-      this.currentUser.chat_channel_tracking_state
-    )) {
-      state.chatable_type === "DirectMessageChannel"
-        ? (unreadDmCount += state.unread_count || 0)
-        : (unreadPublicCount += state.unread_count || 0);
-    }
+
+    Object.values(this.currentUser.chat_channel_tracking_state).forEach(
+      (state) => {
+        state.chatable_type === "DirectMessageChannel"
+          ? (unreadDmCount += state.unread_count || 0)
+          : (unreadPublicCount += state.unread_count || 0);
+      }
+    );
 
     let hasUnreadPublic = unreadPublicCount > 0;
     if (hasUnreadPublic !== this.chatService.getHasUnreadMessages()) {
@@ -294,7 +295,7 @@ export default Component.extend({
       this.directMessageChannels.pushObject(busData.chat_channel);
       this.currentUser.chat_channel_tracking_state[busData.chat_channel.id] = {
         unread_count: 0,
-        chatable_type: "DirectMessageChannel"
+        chatable_type: "DirectMessageChannel",
       };
       this.currentUser.notifyPropertyChange("chat_channel_tracking_state");
       this._subscribeToSingleUpdateChannel(busData.chat_channel.id);

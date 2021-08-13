@@ -1,6 +1,7 @@
 import Component from "@ember/component";
 import discourseComputed, { observes } from "discourse-common/utils/decorators";
 import simpleCategoryHashMentionTransform from "discourse/plugins/discourse-topic-chat/discourse/lib/simple-category-hash-mention-transform";
+import { A } from "@ember/array";
 import { action } from "@ember/object";
 import { ajax } from "discourse/lib/ajax";
 import { empty, equal } from "@ember/object/computed";
@@ -182,7 +183,11 @@ export default Component.extend({
 
   openChannelAtMessage(chat_channel_id, messageId) {
     this.chatService.setMessageId(messageId);
-    ajax(`/chat/${chat_channel_id}.json`).then((response) => {
+    this._fetchChannelAndSwitch(chat_channel_id);
+  },
+
+  _fetchChannelAndSwitch(chat_channel_id) {
+    return ajax(`/chat/${chat_channel_id}.json`).then((response) => {
       this.switchChannel(response.chat_channel);
     });
   },
@@ -254,25 +259,34 @@ export default Component.extend({
     this.element.style.setProperty("--composer-height", "40px");
   },
   _subscribeToUpdateChannels() {
-    for (const [channelId, state] of Object.entries(
-      this.currentUser.chat_channel_tracking_state
-    )) {
-      this.messageBus.subscribe(
-        `/chat/${channelId}/new_messages`,
-        (busData) => {
-          if (busData.user_id === this.currentUser.id) {
-            this.currentUser.chat_channel_tracking_state[
-              channelId
-            ].chat_message_id = busData.message_id;
-          } else {
-            this.currentUser.chat_channel_tracking_state[
-              channelId
-            ].unread_count = state.unread_count + 1;
-          }
-          this.currentUser.notifyPropertyChange("chat_channel_tracking_state");
-        }
-      );
-    }
+    Object.keys(this.currentUser.chat_channel_tracking_state).forEach(
+      (channelId) => {
+        this._subscribeToSingleUpdateChannel(channelId);
+      }
+    );
+    this.messageBus.subscribe("/chat/new-direct-message-channel", (busData) => {
+      console.log("here", busData);
+      this.currentUser.chat_channel_tracking_state[busData.chat_channel_id] = {
+        unread_count: 0,
+      };
+      this.currentUser.notifyPropertyChange("chat_channel_tracking_state");
+      this._subscribeToSingleUpdateChannel(busData.chat_channel_id);
+    });
+  },
+
+  _subscribeToSingleUpdateChannel(channelId) {
+    this.messageBus.subscribe(`/chat/${channelId}/new_messages`, (busData) => {
+      if (busData.user_id === this.currentUser.id) {
+        this.currentUser.chat_channel_tracking_state[
+          channelId
+        ].chat_message_id = busData.message_id;
+      } else {
+        this.currentUser.chat_channel_tracking_state[channelId].unread_count =
+          this.currentUser.chat_channel_tracking_state[channelId].unread_count +
+          1;
+      }
+      this.currentUser.notifyPropertyChange("chat_channel_tracking_state");
+    });
   },
 
   _unsubscribeFromUpdateChannels() {
@@ -281,6 +295,7 @@ export default Component.extend({
         this.messageBus.unsubscribe(`/chat/${channelId}/new_messages`);
       }
     );
+    this.messageBus.unsubscribe("/chat/new-direct-message-channel");
   },
 
   _subscribeToUserTrackingChannel() {
@@ -325,7 +340,7 @@ export default Component.extend({
 
   @discourseComputed("activeChannel", "currentUser.chat_channel_tracking_state")
   unreadCount(activeChannel, trackingState) {
-    return trackingState[activeChannel.id].unread_count;
+    return trackingState[activeChannel.id]?.unread_count || 0;
   },
 
   @action
@@ -362,9 +377,8 @@ export default Component.extend({
     }
     if (channelIdWithUnread) {
       // User has unread messages in at least 1 channel. Switch to that channel automatically
-      ajax(`/chat/${channelIdWithUnread}.json`).then((response) => {
-        this.switchChannel(response.chat_channel);
-      });
+      // p
+      this._fetchChannelAndSwitch(channelIdWithUnread);
     } else {
       // No channels with unread messages. Fetch channel index.
       this.fetchChannels();
@@ -376,8 +390,8 @@ export default Component.extend({
     this.set("loading", true);
     ajax("/chat/index.json").then((channels) => {
       this.setProperties({
-        publicChannels: channels.public_channels,
-        directMessageChannels: channels.direct_message_channels,
+        publicChannels: A(channels.public_channels),
+        directMessageChannels: A(channels.direct_message_channels),
         activeChannel: null,
         loading: false,
         expanded: true,
@@ -415,14 +429,6 @@ export default Component.extend({
   },
 
   @action
-  cancelCreatingDmChannel() {
-    this.setProperties({
-      newDmUsernames: null,
-      creatingDmChannel: false,
-    });
-  },
-
-  @action
   createDmChannel() {
     if (this.newDmUsernamesEmpty) {
       return;
@@ -431,11 +437,17 @@ export default Component.extend({
     return ajax("/chat/direct_messages/create.json", {
       method: "POST",
       data: { usernames: this.newDmUsernames.uniq().join(",") },
-    }).then(() => {
-      this.setProperties({
-        newDmUsernames: null,
-        creatingDmChannel: false,
-      });
+    }).then((response) => {
+      this.resetDmCreation();
+      this.switchChannel(response.chat_channel);
+    });
+  },
+
+  @action
+  resetDmCreation() {
+    this.setProperties({
+      newDmUsernames: null,
+      creatingDmChannel: false,
     });
   },
 });

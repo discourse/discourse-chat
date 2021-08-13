@@ -1,4 +1,5 @@
 $header-height: 2.5rem;
+$float-height: 530px;
 
 .unread-chat-messages-indicator {
   width: 10px;
@@ -72,12 +73,12 @@ $header-height: 2.5rem;
   height: 2.5em;
 
   &.expanded {
-    max-height: 530px;
+    max-height: $float-height;
     height: calc(85vh - var(--composer-height, 0px));
 
     .tc-live-pane,
     .tc-chat-listing {
-      max-height: calc(530px - #{$header-height});
+      max-height: calc(#{$float-height} - #{$header-height});
       height: calc(85vh - var(--composer-height, 0px) - #{$header-height});
     }
   }
@@ -137,6 +138,11 @@ $header-height: 2.5rem;
     align-self: center;
     height: 1.1em;
   }
+}
+
+.tc-channels {
+  overflow-y: auto;
+  height: calc(#{$float-height} - #{$header-height});
 }
 
 .tc-messages-container {

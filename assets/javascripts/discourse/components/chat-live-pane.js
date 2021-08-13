@@ -513,7 +513,7 @@ export default Component.extend({
     return later(
       this,
       () => {
-        const messageId = this.messages[this.messages.length - 1].id;
+        const messageId = this.messages[this.messages.length - 1]?.id;
         // Make sure new messages have come in. Do not keep pinging server with read updates
         // if no new messages came in since last read update was sent.
         if (

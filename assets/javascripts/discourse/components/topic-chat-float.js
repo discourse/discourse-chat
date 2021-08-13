@@ -5,10 +5,9 @@ import simpleCategoryHashMentionTransform from "discourse/plugins/discourse-topi
 import { A } from "@ember/array";
 import { ajax } from "discourse/lib/ajax";
 import { empty, equal } from "@ember/object/computed";
-import { cancel, throttle } from "@ember/runloop";
+import { cancel, schedule, throttle } from "@ember/runloop";
 import { generateCookFunction } from "discourse/lib/text";
 import { inject as service } from "@ember/service";
-import { schedule } from "@ember/runloop";
 
 export const LIST_VIEW = "list_view";
 export const CHAT_VIEW = "chat_view";

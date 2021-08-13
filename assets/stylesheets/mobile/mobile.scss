@@ -1,4 +1,4 @@
-body {
+.mobile-view body {
   &.footer-nav-visible .topic-chat-float-container {
     bottom: calc(var(--footer-nav-height) + 1em);
   }
@@ -9,8 +9,8 @@ body {
 
   .expanded .tc-live-pane,
   .tc-channels {
-    max-height: unset !important;
-    height: calc(93vh + 2px - var(--composer-height, 0px) - 3rem) !important;
+    max-height: unset;
+    height: calc(93vh + 2px - var(--composer-height, 0px) - 3rem);
   }
 
   .topic-chat-float-container .tc-composer {
@@ -28,6 +28,11 @@ body {
     }
   }
 
+  .topic-chat-drawer-header .d-icon:not(.d-icon-hashtag),
+  .topic-chat-drawer-header .tc-title-seg .chat-channel-title .d-icon:not(.d-icon-hashtag) {
+    color: var(--secondary);
+  }
+
   .topic-chat-drawer-header {
     background-color: var(--tertiary);
     height: 3rem;
@@ -40,9 +45,6 @@ body {
       flex-grow: unset;
       margin-left: auto;
       margin-right: 0.5em;
-    }
-    .d-icon {
-      color: var(--secondary) !important;
     }
     button:not(.return-to-channels) {
       border-radius: 50%;

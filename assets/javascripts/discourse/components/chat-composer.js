@@ -114,8 +114,10 @@ export default Component.extend({
     this._focusTextArea({ ensureAtEnd: true, resizeTextArea: true });
   },
 
-  @observes("value")
-  _watchChanges() {
+  @action
+  onTextareaInput(value) {
+    this.set("value", value);
+
     // throttle, not debounce, because we do eventually want to react during the typing
     this.timer = throttle(
       this,

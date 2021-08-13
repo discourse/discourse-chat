@@ -3,7 +3,7 @@
     <div class="tc-message-deleted">
       {{d-button
         class="btn-flat tc-message-expand-deleted"
-        action="expand"
+        action=(action "expand")
         label="chat.deleted"
       }}
     </div>
@@ -15,35 +15,35 @@
             {{#if showReplyButton}}
               {{d-button
                 class="btn-flat reply-btn"
-                action="reply"
+                action=(action "reply")
                 icon="reply"
               }}
             {{/if}}
             {{#if showEditButton}}
               {{d-button
                 class="btn-flat edit-btn"
-                action="edit"
+                action=(action "edit")
                 icon="pencil-alt"
               }}
             {{/if}}
             {{#if showFlagButton}}
               {{d-button
                 class="btn-flat flag-btn"
-                action="flag"
+                action=(action "flag")
                 icon="flag"
               }}
             {{/if}}
             {{#if showDeleteButton}}
               {{d-button
                 class="btn-flat delete-btn"
-                action="deleteMessage"
+                action=(action "deleteMessage")
                 icon="trash-alt"
               }}
             {{/if}}
             {{#if showRestoreButton}}
               {{d-button
                 class="btn-flat restore-btn"
-                action="restore"
+                action=(action "restore")
                 icon="undo"
               }}
             {{/if}}

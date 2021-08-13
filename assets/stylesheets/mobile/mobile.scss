@@ -29,7 +29,10 @@
   }
 
   .topic-chat-drawer-header .d-icon:not(.d-icon-hashtag),
-  .topic-chat-drawer-header .tc-title-seg .chat-channel-title .d-icon:not(.d-icon-hashtag) {
+  .topic-chat-drawer-header
+    .tc-title-seg
+    .chat-channel-title
+    .d-icon:not(.d-icon-hashtag) {
     color: var(--secondary);
   }
 

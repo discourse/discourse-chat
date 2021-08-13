@@ -27,6 +27,12 @@ en:
       return_to_list: "Return to channel list"
       all_loaded: "Showing all messages"
       send_error: "Something went wrong"
+      chat_channels: "Channels"
+      direct_messages:
+        title: "Direct messages"
+        new: "New direct message"
+        create: "Go"
+        cancel: "Cancel"
 
       channels:
         staff: "Staff-only"

@@ -1,10 +1,11 @@
 import Component from "@ember/component";
 import discourseComputed, { observes } from "discourse-common/utils/decorators";
+import EmberObject, { action, computed } from "@ember/object";
 import simpleCategoryHashMentionTransform from "discourse/plugins/discourse-topic-chat/discourse/lib/simple-category-hash-mention-transform";
-import { action } from "@ember/object";
+import { A } from "@ember/array";
 import { ajax } from "discourse/lib/ajax";
-import { equal } from "@ember/object/computed";
-import { cancel, throttle } from "@ember/runloop";
+import { empty, equal } from "@ember/object/computed";
+import { cancel, schedule, throttle } from "@ember/runloop";
 import { generateCookFunction } from "discourse/lib/text";
 import { inject as service } from "@ember/service";
 
@@ -65,7 +66,11 @@ export default Component.extend({
   view: null,
   hasUnreadMessages: false,
   activeChannel: null,
-  channels: null,
+  publicChannels: null,
+  directMessageChannels: null,
+  creatingDmChannel: false,
+  newDmUsernames: null,
+  newDmUsernamesEmpty: empty("newDmUsernames"),
 
   didInsertElement() {
     this._super(...arguments);
@@ -135,6 +140,15 @@ export default Component.extend({
     }
   },
 
+  sortedDirectMessageChannels: computed(
+    "directMessageChannels.@each.updated_at",
+    function () {
+      return this.directMessageChannels
+        ? this.directMessageChannels.sortBy("updated_at").reverse()
+        : [];
+    }
+  ),
+
   @observes("hidden")
   _fireHiddenAppEvents() {
     this.chatService.setChatOpenStatus(!this.hidden);
@@ -147,13 +161,30 @@ export default Component.extend({
   },
 
   _setHasUnreadMessages() {
-    const hasUnread = Object.values(
-      this.currentUser.chat_channel_tracking_state
-    ).some((trackingState) => trackingState.unread_count > 0);
+    let unreadPublicCount = 0;
+    let unreadDmCount = 0;
+    let headerNeedsRerender = false;
 
-    if (hasUnread !== this.chatService.getHasUnreadMessages()) {
-      // Only update service and header if something changed
-      this.chatService.setHasUnreadMessages(hasUnread);
+    Object.values(this.currentUser.chat_channel_tracking_state).forEach(
+      (state) => {
+        state.chatable_type === "DirectMessageChannel"
+          ? (unreadDmCount += state.unread_count || 0)
+          : (unreadPublicCount += state.unread_count || 0);
+      }
+    );
+
+    let hasUnreadPublic = unreadPublicCount > 0;
+    if (hasUnreadPublic !== this.chatService.getHasUnreadMessages()) {
+      headerNeedsRerender = true;
+      this.chatService.setHasUnreadMessages(hasUnreadPublic);
+    }
+
+    if (unreadDmCount !== this.chatService.getUnreadDirectMessageCount()) {
+      headerNeedsRerender = true;
+      this.chatService.setUnreadDirectMessageCount(unreadDmCount);
+    }
+
+    if (headerNeedsRerender) {
       this.appEvents.trigger("chat:rerender-header");
     }
   },
@@ -175,9 +206,14 @@ export default Component.extend({
     }
   },
 
-  openChannelAtMessage(chat_channel_id, messageId) {
+  openChannelAtMessage(chatChannelId, messageId) {
     this.chatService.setMessageId(messageId);
-    ajax(`/chat/${chat_channel_id}.json`).then((response) => {
+    this._fetchChannelAndSwitch(chatChannelId);
+  },
+
+  _fetchChannelAndSwitch(chatChannelId) {
+    this.set("loading", true);
+    return ajax(`/chat/${chatChannelId}.json`).then((response) => {
       this.switchChannel(response.chat_channel);
     });
   },
@@ -249,25 +285,47 @@ export default Component.extend({
     this.element.style.setProperty("--composer-height", "40px");
   },
   _subscribeToUpdateChannels() {
-    for (const [channelId, state] of Object.entries(
-      this.currentUser.chat_channel_tracking_state
-    )) {
-      this.messageBus.subscribe(
-        `/chat/${channelId}/new_messages`,
-        (busData) => {
-          if (busData.user_id === this.currentUser.id) {
-            this.currentUser.chat_channel_tracking_state[
-              channelId
-            ].chat_message_id = busData.message_id;
-          } else {
-            this.currentUser.chat_channel_tracking_state[
-              channelId
-            ].unread_count = state.unread_count + 1;
-          }
-          this.currentUser.notifyPropertyChange("chat_channel_tracking_state");
-        }
+    Object.keys(this.currentUser.chat_channel_tracking_state).forEach(
+      (channelId) => {
+        this._subscribeToSingleUpdateChannel(channelId);
+      }
+    );
+    this.messageBus.subscribe("/chat/new-direct-message-channel", (busData) => {
+      this.directMessageChannels.pushObject(busData.chat_channel);
+      this.currentUser.chat_channel_tracking_state[busData.chat_channel.id] = {
+        unread_count: 0,
+        chatable_type: "DirectMessageChannel",
+      };
+      this.currentUser.notifyPropertyChange("chat_channel_tracking_state");
+      this._subscribeToSingleUpdateChannel(busData.chat_channel.id);
+    });
+  },
+
+  _subscribeToSingleUpdateChannel(channelId) {
+    this.messageBus.subscribe(`/chat/${channelId}/new_messages`, (busData) => {
+      if (busData.user_id === this.currentUser.id) {
+        // User sent message, update tracking state to no unread
+        this.currentUser.chat_channel_tracking_state[
+          channelId
+        ].chat_message_id = busData.message_id;
+      } else {
+        // Message from other user. Incriment trackings state
+        this.currentUser.chat_channel_tracking_state[channelId].unread_count =
+          this.currentUser.chat_channel_tracking_state[channelId].unread_count +
+          1;
+      }
+      this.currentUser.notifyPropertyChange("chat_channel_tracking_state");
+
+      // Update updated_at timestamp for channel if direct message
+      const dmChatChannel = this.directMessageChannels.findBy(
+        "id",
+        parseInt(channelId, 10)
       );
-    }
+      if (dmChatChannel) {
+        dmChatChannel.set("updated_at", new Date());
+        this.notifyPropertyChange("directMessageChannels");
+      }
+    });
   },
 
   _unsubscribeFromUpdateChannels() {
@@ -276,6 +334,7 @@ export default Component.extend({
         this.messageBus.unsubscribe(`/chat/${channelId}/new_messages`);
       }
     );
+    this.messageBus.unsubscribe("/chat/new-direct-message-channel");
   },
 
   _subscribeToUserTrackingChannel() {
@@ -320,7 +379,7 @@ export default Component.extend({
 
   @discourseComputed("activeChannel", "currentUser.chat_channel_tracking_state")
   unreadCount(activeChannel, trackingState) {
-    return trackingState[activeChannel.id].unread_count;
+    return trackingState[activeChannel.id]?.unread_count || 0;
   },
 
   @action
@@ -346,20 +405,27 @@ export default Component.extend({
       }
     }
 
-    let channelIdWithUnread;
+    let publicChannelIdWithUnread;
+    let dmChannelIdWithUnread;
+
+    // Look for DM channel with unread, and fallback to public channel with unread
     for (const [channelId, state] of Object.entries(
       this.currentUser.chat_channel_tracking_state
     )) {
-      if (state.unread_count > 0) {
-        channelIdWithUnread = channelId;
-        break;
+      if (state.chatable_type === "DirectMessageChannel") {
+        if (!dmChannelIdWithUnread && state.unread_count > 0) {
+          dmChannelIdWithUnread = channelId;
+          break;
+        }
+      } else {
+        if (!publicChannelIdWithUnread && state.unread_count > 0) {
+          publicChannelIdWithUnread = channelId;
+        }
       }
     }
-    if (channelIdWithUnread) {
-      // User has unread messages in at least 1 channel. Switch to that channel automatically
-      ajax(`/chat/${channelIdWithUnread}.json`).then((response) => {
-        this.switchChannel(response.chat_channel);
-      });
+    let channelId = dmChannelIdWithUnread || publicChannelIdWithUnread;
+    if (channelId) {
+      this._fetchChannelAndSwitch(channelId);
     } else {
       // No channels with unread messages. Fetch channel index.
       this.fetchChannels();
@@ -371,7 +437,14 @@ export default Component.extend({
     this.set("loading", true);
     ajax("/chat/index.json").then((channels) => {
       this.setProperties({
-        channels: channels,
+        publicChannels: A(
+          channels.public_channels.map((channel) => EmberObject.create(channel))
+        ),
+        directMessageChannels: A(
+          channels.direct_message_channels.map((channel) =>
+            EmberObject.create(channel)
+          )
+        ),
         activeChannel: null,
         loading: false,
         expanded: true,
@@ -385,10 +458,50 @@ export default Component.extend({
     let channelInfo = {
       activeChannel: channel,
       expanded: this.expectPageChange ? true : this.expanded,
+      loading: false,
       hidden: false,
       expectPageChange: false,
       view: CHAT_VIEW,
     };
     this.setProperties(channelInfo);
+  },
+
+  @action
+  startCreatingDmChannel() {
+    this.set("creatingDmChannel", true);
+    schedule("afterRender", () => {
+      const userChooser = this.element.querySelector(".dm-user-chooser input");
+      if (userChooser) {
+        userChooser.focus();
+      }
+    });
+  },
+
+  @action
+  onChangeNewDmUsernames(usernames) {
+    this.set("newDmUsernames", usernames);
+  },
+
+  @action
+  createDmChannel() {
+    if (this.newDmUsernamesEmpty) {
+      return;
+    }
+
+    return ajax("/chat/direct_messages/create.json", {
+      method: "POST",
+      data: { usernames: this.newDmUsernames.uniq().join(",") },
+    }).then((response) => {
+      this.resetDmCreation();
+      this.switchChannel(response.chat_channel);
+    });
+  },
+
+  @action
+  resetDmCreation() {
+    this.setProperties({
+      newDmUsernames: null,
+      creatingDmChannel: false,
+    });
   },
 });

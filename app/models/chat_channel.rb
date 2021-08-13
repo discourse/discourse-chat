@@ -8,12 +8,24 @@ class ChatChannel < ActiveRecord::Base
   has_many :chat_messages
   has_many :user_chat_channel_last_reads
 
+  def chatable_url
+    return nil if direct_message_channel?
+
+    site_channel? ?
+      Discourse.base_url :
+      chatable.url
+  end
+
   def topic_channel?
     chatable_type == "Topic"
   end
 
   def category_channel?
     chatable_type == "Category"
+  end
+
+  def direct_message_channel?
+    chatable_type == "DirectMessageChannel"
   end
 
   def site_channel?

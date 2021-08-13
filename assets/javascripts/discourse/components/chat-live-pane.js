@@ -111,6 +111,7 @@ export default Component.extend({
           return;
         }
         this.setMessageProps(data.topic_chat_view);
+        this._calculateStickScroll();
       })
       .catch((err) => {
         throw err;
@@ -335,6 +336,10 @@ export default Component.extend({
       return;
     }
 
+    this._calculateStickScroll();
+  },
+
+  _calculateStickScroll() {
     // Stick to bottom if scroll is at the bottom
     const shouldStick =
       this._scrollerEl.scrollHeight -
@@ -513,7 +518,7 @@ export default Component.extend({
     return later(
       this,
       () => {
-        const messageId = this.messages[this.messages.length - 1].id;
+        const messageId = this.messages[this.messages.length - 1]?.id;
         // Make sure new messages have come in. Do not keep pinging server with read updates
         // if no new messages came in since last read update was sent.
         if (

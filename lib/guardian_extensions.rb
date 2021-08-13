@@ -15,6 +15,10 @@ module DiscourseChat::GuardianExtensions
     SiteSetting.topic_chat_restrict_to_staff ? user&.staff? : true
   end
 
+  def can_see_direct_message_channel?(direct_message_channel)
+    direct_message_channel.user_can_access?(user)
+  end
+
   def can_chat_in_chatable?(chatable)
     chatable.class.name == "Topic" ?
       can_create_post?(chatable) && !chatable.closed? && !chatable.archived? :

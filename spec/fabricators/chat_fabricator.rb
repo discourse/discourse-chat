@@ -14,3 +14,7 @@ Fabricator(:chat_message) do
   user
   message "Beep boop"
 end
+
+Fabricator(:direct_message_channel) do
+  users
+end

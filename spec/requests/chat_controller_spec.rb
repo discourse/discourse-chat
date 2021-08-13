@@ -411,10 +411,10 @@ RSpec.describe DiscourseChat::ChatController do
       get "/chat/index.json"
 
       expect(response.status).to eq(200)
-      expect(response.parsed_body.map { |channel| channel["chatable_id"] })
+      expect(response.parsed_body["public_channels"].map { |channel| channel["chatable_id"] })
         .to match_array([public_category_cc.chatable_id, one_off_cc.chatable_id])
 
-      expect(response.parsed_body.detect { |channel| channel["id"] == public_category_cc.id }["chat_channels"].first["chatable_id"]).to eq(public_topic_cc.chatable_id)
+      expect(response.parsed_body["public_channels"].detect { |channel| channel["id"] == public_category_cc.id }["chat_channels"].first["chatable_id"]).to eq(public_topic_cc.chatable_id)
     end
 
     it "returns channels visible to user with private access" do
@@ -422,15 +422,15 @@ RSpec.describe DiscourseChat::ChatController do
       get "/chat/index.json"
 
       expect(response.status).to eq(200)
-      expect(response.parsed_body.map { |channel| channel["chatable_id"] })
+      expect(response.parsed_body["public_channels"].map { |channel| channel["chatable_id"] })
         .to match_array([
           public_category_cc.chatable_id,
           one_off_cc.chatable_id,
           private_category_cc.chatable_id
         ])
 
-      expect(response.parsed_body.detect { |channel| channel["id"] == public_category_cc.id }["chat_channels"].first["chatable_id"]).to eq(public_topic_cc.chatable_id)
-      expect(response.parsed_body.detect { |channel| channel["id"] == private_category_cc.id }["chat_channels"].first["chatable_id"]).to eq(private_topic_cc.chatable_id)
+      expect(response.parsed_body["public_channels"].detect { |channel| channel["id"] == public_category_cc.id }["chat_channels"].first["chatable_id"]).to eq(public_topic_cc.chatable_id)
+      expect(response.parsed_body["public_channels"].detect { |channel| channel["id"] == private_category_cc.id }["chat_channels"].first["chatable_id"]).to eq(private_topic_cc.chatable_id)
     end
 
     it "returns all channels for admin, including site chat" do
@@ -438,7 +438,7 @@ RSpec.describe DiscourseChat::ChatController do
       get "/chat/index.json"
 
       expect(response.status).to eq(200)
-      expect(response.parsed_body.map { |channel| channel["chatable_id"] })
+      expect(response.parsed_body["public_channels"].map { |channel| channel["chatable_id"] })
         .to match_array([
           DiscourseChat::SITE_CHAT_ID,
           public_category_cc.chatable_id,
@@ -446,9 +446,9 @@ RSpec.describe DiscourseChat::ChatController do
           one_off_cc.chatable_id
         ])
 
-      expect(response.parsed_body.detect { |channel| channel["id"] == public_category_cc.id }["chat_channels"].first["chatable_id"]).to eq(public_topic_cc.chatable_id)
+      expect(response.parsed_body["public_channels"].detect { |channel| channel["id"] == public_category_cc.id }["chat_channels"].first["chatable_id"]).to eq(public_topic_cc.chatable_id)
 
-      expect(response.parsed_body.detect { |channel| channel["id"] == private_category_cc.id }["chat_channels"].first["chatable_id"]).to eq(private_topic_cc.chatable_id)
+      expect(response.parsed_body["public_channels"].detect { |channel| channel["id"] == private_category_cc.id }["chat_channels"].first["chatable_id"]).to eq(private_topic_cc.chatable_id)
     end
 
     it "doesn't error when a chat channel's chatable is destroyed" do
@@ -458,6 +458,52 @@ RSpec.describe DiscourseChat::ChatController do
 
       get "/chat/index.json"
       expect(response.status).to eq(200)
+    end
+
+    describe "direct messages" do
+      fab!(:user1) { Fabricate(:user) }
+      fab!(:user2) { Fabricate(:user) }
+      fab!(:user3) { Fabricate(:user) }
+
+      # DM between user1 and user2
+      fab!(:dm1) { Fabricate(:direct_message_channel, users: [user1, user2]) }
+      fab!(:dmChannel1) { Fabricate(:chat_channel, chatable: dm1) }
+
+      # DM between user1 and user3
+      fab!(:dm2) { Fabricate(:direct_message_channel, users: [user1, user3]) }
+      fab!(:dmChannel2) { Fabricate(:chat_channel, chatable: dm2) }
+
+      # DM between user1, user2, and user3
+      fab!(:dm3) { Fabricate(:direct_message_channel, users: [user1, user2, user3]) }
+      fab!(:dmChannel3) { Fabricate(:chat_channel, chatable: dm3) }
+
+      # DM between user2 and user3
+      fab!(:dm4) { Fabricate(:direct_message_channel, users: [user2, user3]) }
+      fab!(:dmChannel4) { Fabricate(:chat_channel, chatable: dm4) }
+
+      it "returns correct DMs for user1" do
+        sign_in(user1)
+
+        get "/chat/index.json"
+        expect(response.parsed_body["direct_message_channels"].map { |c| c["id"] })
+          .to match_array([dmChannel1.id, dmChannel2.id, dmChannel3.id])
+      end
+
+      it "returns correct DMs for user2" do
+        sign_in(user2)
+
+        get "/chat/index.json"
+        expect(response.parsed_body["direct_message_channels"].map { |c| c["id"] })
+          .to match_array([dmChannel1.id, dmChannel3.id, dmChannel4.id])
+      end
+
+      it "returns correct DMs for user3" do
+        sign_in(user3)
+
+        get "/chat/index.json"
+        expect(response.parsed_body["direct_message_channels"].map { |c| c["id"] })
+          .to match_array([dmChannel2.id, dmChannel3.id, dmChannel4.id])
+      end
     end
   end
 

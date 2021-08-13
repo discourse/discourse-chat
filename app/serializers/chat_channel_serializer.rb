@@ -6,14 +6,13 @@ class ChatChannelSerializer < ApplicationSerializer
              :chatable_type,
              :chatable_url,
              :title,
-             :chatable
+             :chatable,
+             :updated_at
 
   has_many :chat_channels, serializer: ChatChannelSerializer, embed: :objects
 
   def chatable_url
-    object.site_channel? ?
-      Discourse.base_url :
-      object.chatable.url
+    object.chatable_url
   end
 
   def title
@@ -28,8 +27,15 @@ class ChatChannelSerializer < ApplicationSerializer
   end
 
   def chatable
-    return nil if object.site_channel?
-    return BasicTopicSerializer.new(object.chatable, root: false).as_json if object.topic_channel?
-    BasicCategorySerializer.new(object.chatable, root: false).as_json
+    case object.chatable_type
+    when "Topic"
+      BasicTopicSerializer.new(object.chatable, root: false).as_json
+    when "Category"
+      BasicCategorySerializer.new(object.chatable, root: false).as_json
+    when "DirectMessageChannel"
+      DirectMessageChannelSerializer.new(object.chatable, scope: scope, root: false).as_json
+    when "Site"
+      nil
+    end
   end
 end

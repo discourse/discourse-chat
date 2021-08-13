@@ -28,9 +28,9 @@ export default Component.extend({
 
   didInsertElement() {
     this._super(...arguments);
-    this.set("textarea", this.element.querySelector(".tc-composer-input"));
-    this.textarea.rows = 1;
-    const $textarea = $(this.textarea);
+
+    this._textarea = this.element.querySelector(".tc-composer-input");
+    const $textarea = $(this._textarea);
     this._applyCategoryHashtagAutocomplete($textarea);
     this._applyEmojiAutocomplete($textarea);
   },
@@ -88,7 +88,7 @@ export default Component.extend({
         this.set("replyToMsg", null);
         this.cancelEditing();
       } else {
-        this.textarea.blur();
+        this._textarea.blur();
       }
     }
   },
@@ -130,7 +130,7 @@ export default Component.extend({
 
   _applyUserAutocomplete() {
     if (this.siteSettings.enable_mentions) {
-      $(this.textarea).autocomplete({
+      $(this._textarea).autocomplete({
         template: findRawTemplate("user-selector-autocomplete"),
         key: "@",
         width: "100%",
@@ -180,9 +180,10 @@ export default Component.extend({
       },
 
       onKeyUp: (text, cp) => {
-        const matches = /(?:^|[\s.\?,@\/#!%&*;:\[\]{}=\-_()])(:(?!:).?[\w-]*:?(?!:)(?:t\d?)?:?) ?$/gi.exec(
-          text.substring(0, cp)
-        );
+        const matches =
+          /(?:^|[\s.\?,@\/#!%&*;:\[\]{}=\-_()])(:(?!:).?[\w-]*:?(?!:)(?:t\d?)?:?) ?$/gi.exec(
+            text.substring(0, cp)
+          );
 
         if (matches && matches[1]) {
           return [matches[1]];
@@ -276,25 +277,25 @@ export default Component.extend({
         return;
       }
 
-      if (!this.textarea) {
+      if (!this._textarea) {
         return;
       }
 
-      this.textarea.blur();
-      this.textarea.focus();
+      this._textarea.blur();
+      this._textarea.focus();
 
       if (opts.resizeTextArea) {
         this._resizeTextArea();
       }
 
       if (opts.ensureAtEnd) {
-        this.textarea.setSelectionRange(this.value.length, this.value.length);
+        this._textarea.setSelectionRange(this.value.length, this.value.length);
       }
     });
   },
 
   _resizeTextArea() {
-    this.textarea.parentNode.dataset.replicatedValue = this.textarea.value;
+    this._textarea.parentNode.dataset.replicatedValue = this._textarea.value;
 
     if (this.onChangeHeight) {
       this.onChangeHeight();

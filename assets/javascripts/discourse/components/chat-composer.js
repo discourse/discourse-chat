@@ -1,6 +1,6 @@
 import I18n from "I18n";
 import Component from "@ember/component";
-import discourseComputed, { observes } from "discourse-common/utils/decorators";
+import discourseComputed from "discourse-common/utils/decorators";
 import userSearch from "discourse/lib/user-search";
 import { action } from "@ember/object";
 import { cancel, schedule, throttle } from "@ember/runloop";
@@ -28,9 +28,9 @@ export default Component.extend({
 
   didInsertElement() {
     this._super(...arguments);
-    this.set("textarea", this.element.querySelector(".tc-composer-input"));
-    this.textarea.rows = 1;
-    const $textarea = $(this.textarea);
+
+    this._textarea = this.element.querySelector(".tc-composer-input");
+    const $textarea = $(this._textarea);
     this._applyCategoryHashtagAutocomplete($textarea);
     this._applyEmojiAutocomplete($textarea);
   },
@@ -88,13 +88,14 @@ export default Component.extend({
         this.set("replyToMsg", null);
         this.cancelEditing();
       } else {
-        this.textarea.blur();
+        this._textarea.blur();
       }
     }
   },
 
-  @observes("editingMessage")
-  _watchEditingMessageChanges() {
+  didReceiveAttrs() {
+    this._super(...arguments);
+
     if (this.editingMessage) {
       this.setProperties({
         replyToMsg: null,
@@ -109,13 +110,14 @@ export default Component.extend({
 
   @action
   cancelEditing() {
-    this.setProperties("editingMessage", null);
     this.onCancelEditing();
     this._focusTextArea({ ensureAtEnd: true, resizeTextArea: true });
   },
 
-  @observes("value")
-  _watchChanges() {
+  @action
+  onTextareaInput(value) {
+    this.set("value", value);
+
     // throttle, not debounce, because we do eventually want to react during the typing
     this.timer = throttle(
       this,
@@ -130,7 +132,7 @@ export default Component.extend({
 
   _applyUserAutocomplete() {
     if (this.siteSettings.enable_mentions) {
-      $(this.textarea).autocomplete({
+      $(this._textarea).autocomplete({
         template: findRawTemplate("user-selector-autocomplete"),
         key: "@",
         width: "100%",
@@ -180,9 +182,10 @@ export default Component.extend({
       },
 
       onKeyUp: (text, cp) => {
-        const matches = /(?:^|[\s.\?,@\/#!%&*;:\[\]{}=\-_()])(:(?!:).?[\w-]*:?(?!:)(?:t\d?)?:?) ?$/gi.exec(
-          text.substring(0, cp)
-        );
+        const matches =
+          /(?:^|[\s.\?,@\/#!%&*;:\[\]{}=\-_()])(:(?!:).?[\w-]*:?(?!:)(?:t\d?)?:?) ?$/gi.exec(
+            text.substring(0, cp)
+          );
 
         if (matches && matches[1]) {
           return [matches[1]];
@@ -276,25 +279,25 @@ export default Component.extend({
         return;
       }
 
-      if (!this.textarea) {
+      if (!this._textarea) {
         return;
       }
 
-      this.textarea.blur();
-      this.textarea.focus();
+      this._textarea.blur();
+      this._textarea.focus();
 
       if (opts.resizeTextArea) {
         this._resizeTextArea();
       }
 
       if (opts.ensureAtEnd) {
-        this.textarea.setSelectionRange(this.value.length, this.value.length);
+        this._textarea.setSelectionRange(this.value.length, this.value.length);
       }
     });
   },
 
   _resizeTextArea() {
-    this.textarea.parentNode.dataset.replicatedValue = this.textarea.value;
+    this._textarea.parentNode.dataset.replicatedValue = this._textarea.value;
 
     if (this.onChangeHeight) {
       this.onChangeHeight();
@@ -345,10 +348,8 @@ export default Component.extend({
   },
 
   _reset() {
-    this.setProperties({
-      value: "",
-      editingMessage: null,
-    });
+    this.set("value", "");
+    this.onCancelEditing();
     this._focusTextArea();
   },
 

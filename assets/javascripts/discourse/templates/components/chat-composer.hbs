@@ -16,13 +16,15 @@
 {{/if}}
 <div class="tc-composer-row">
   {{d-textarea
-    value=value
+    value=(readonly value)
+    input=(action "onTextareaInput" value="target.value")
     type="text"
     class="tc-composer-input"
     disabled=inputDisabled
     autocorrect="on"
     autocapitalize="off"
     placeholder=placeholder
+    rows=1
   }}
 
   {{#if site.mobileView}}

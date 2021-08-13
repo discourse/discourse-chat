@@ -3,7 +3,8 @@ import Service from "@ember/service";
 export default Service.extend({
   messageId: null,
   chatOpen: false,
-  hasUnreadMessages: false,
+  hasUnreadPublicMessages: false,
+  unreadDirectMessageCount: null,
 
   setMessageId(messageId) {
     this.set("messageId", messageId);
@@ -29,5 +30,12 @@ export default Service.extend({
   },
   getHasUnreadMessages() {
     return this.hasUnreadMessages;
+  },
+
+  setUnreadDirectMessageCount(count) {
+    this.set("unreadDirectMessageCount", count);
+  },
+  getUnreadDirectMessageCount() {
+    return this.unreadDirectMessageCount;
   },
 });

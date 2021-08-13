@@ -55,5 +55,16 @@ RSpec.describe DiscourseChat::DirectMessagesController do
         post "/chat/direct_messages/create.json", params: { usernames: usernames }
       }.to change { DirectMessageChannel.count }.by(0)
     end
+
+    it "creates a new dm channel when a multi-channel exists with 2 of the users" do
+      users = [user, user1, user2]
+      create_dm_channel(users.map(&:id))
+      expect {
+        post "/chat/direct_messages/create.json", params: { usernames: user2.username }
+      }.to change { DirectMessageChannel.count }.by(1)
+      expect(DirectMessageChannel.last.direct_message_users.map(&:user_id))
+        .to match_array([user.id, user2.id])
+
+    end
   end
 end

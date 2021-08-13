@@ -6,7 +6,8 @@ class ChatChannelSerializer < ApplicationSerializer
              :chatable_type,
              :chatable_url,
              :title,
-             :chatable
+             :chatable,
+             :updated_at
 
   has_many :chat_channels, serializer: ChatChannelSerializer, embed: :objects
 

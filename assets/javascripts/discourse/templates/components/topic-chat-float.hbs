@@ -56,7 +56,17 @@
 
             <div class="chat-channel-divider">
               {{i18n "chat.direct_messages.title"}}
-              {{#if creatingDmChannel}}
+              {{#unless creatingDmChannel}}
+                {{flat-button
+                  class="new-dm"
+                  icon="plus"
+                  action=(action "startCreatingDmChannel")
+                  title="chat.direct_messages.new"
+                }}
+              {{/unless}}
+            </div>
+            {{#if creatingDmChannel}}
+              <div class="dm-creation-row">
                 {{user-chooser
                   class="dm-user-chooser"
                   value=newDmUsernames
@@ -78,17 +88,10 @@
                   action=(action "resetDmCreation")
                   title="chat.direct_messages.cancel"
                 }}
-              {{else}}
-                {{flat-button
-                  class="new-dm"
-                  icon="plus"
-                  action=(action "startCreatingDmChannel")
-                  title="chat.direct_messages.new"
-                }}
-              {{/if}}
-            </div>
+              </div>
+            {{/if}}
             <div class="chat-channels-container">
-              {{#each directMessageChannels as |channel|}}
+              {{#each sortedDirectMessageChannels as |channel|}}
                 {{chat-channel-row channel=channel switchChannel=(action "switchChannel")}}
               {{/each}}
             </div>

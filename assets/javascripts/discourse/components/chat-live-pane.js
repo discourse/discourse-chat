@@ -111,6 +111,7 @@ export default Component.extend({
           return;
         }
         this.setMessageProps(data.topic_chat_view);
+        this._calculateStickScroll();
       })
       .catch((err) => {
         throw err;
@@ -335,6 +336,10 @@ export default Component.extend({
       return;
     }
 
+    this._calculateStickScroll();
+  },
+
+  _calculateStickScroll() {
     // Stick to bottom if scroll is at the bottom
     const shouldStick =
       this._scrollerEl.scrollHeight -

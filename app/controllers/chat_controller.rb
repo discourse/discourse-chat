@@ -71,6 +71,7 @@ class DiscourseChat::ChatController < ::ApplicationController
       return render_json_error(chat_message_creator.error)
     end
 
+    @chat_channel.touch
     set_user_last_read
     render json: success_json
   end

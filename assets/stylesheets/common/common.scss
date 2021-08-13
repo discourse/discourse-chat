@@ -1,13 +1,39 @@
 $header-height: 2.5rem;
 $float-height: 530px;
 
+.unread-dm-indicator,
 .unread-chat-messages-indicator {
-  width: 10px;
-  height: 10px;
-  background: var(--tertiary-med-or-tertiary);
+  width: 14px;
+  height: 14px;
   border-radius: 100%;
   box-sizing: content-box;
   border: 2px solid var(--secondary);
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.unread-chat-messages-indicator {
+  background: var(--tertiary-med-or-tertiary);
+}
+.unread-dm-indicator {
+  background: var(--success);
+  color: var(--secondary);
+  font-size: var(--font-down-2);
+
+  .unread-dm-indicator-number-wrap {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    .unread-dm-indicator-number {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+  }
 }
 
 .header-dropdown-toggle.open-chat {
@@ -23,12 +49,12 @@ $float-height: 530px;
         border-color: var(--primary-low);
       }
     }
-
+    .unread-dm-indicator,
     .unread-chat-messages-indicator {
       border-color: var(--header_background);
       position: absolute;
-      right: 4px;
-      bottom: 5px;
+      right: 2px;
+      bottom: 2px;
       transition: border-color linear 0.15s;
     }
   }
@@ -143,6 +169,21 @@ $float-height: 530px;
 .tc-channels {
   overflow-y: auto;
   height: calc(#{$float-height} - #{$header-height});
+
+  .dm-creation-row {
+    display: flex;
+    align-items: center;
+    margin: 0 0.5em;
+    justify-content: space-between;
+
+    .dm-user-chooser {
+      width: calc(100% - 88px);
+    }
+  }
+  .chat-channel-divider {
+    font-weight: bold;
+    padding: 0.5em;
+  }
 }
 
 .tc-messages-container {
@@ -521,7 +562,8 @@ $float-height: 530px;
 
 .chat-channel-row {
   display: flex;
-  padding: 0.5em 0.5em 0.5em 1.5em;
+  padding: 0.5em 0.5em 0.5em 2em;
+  position: relative;
   cursor: pointer;
   color: var(--primary-high);
   align-items: center;
@@ -529,6 +571,7 @@ $float-height: 530px;
   &:hover {
     background: var(--primary-low);
 
+    .unread-dm-indicator,
     .unread-chat-messages-indicator {
       border-color: var(--primary-low);
     }
@@ -544,8 +587,13 @@ $float-height: 530px;
   }
 
   .unread-chat-messages-indicator {
-    display: inline-block;
-    margin-right: 5px;
+    width: 12px;
+    height: 12px;
+  }
+  .unread-dm-indicator,
+  .unread-chat-messages-indicator {
+    position: absolute;
+    left: 0.5em;
   }
 
   .chat-channel-row-unread-count {
@@ -582,16 +630,11 @@ $float-height: 530px;
     display: inline-block;
     border-radius: 3px;
     background: var(--primary-low);
-    padding: 0.1em 0.4em;
+    padding: 0.1em 0.5em;
     text-align: center;
     font-weight: bold;
-    margin-right: 0.25em;
+    margin-right: 0.5em;
   }
-}
-
-.chat-channel-divider {
-  font-weight: bold;
-  padding: 0.5em;
 }
 
 :root:not(.mobile-view) {

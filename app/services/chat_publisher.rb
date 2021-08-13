@@ -45,7 +45,7 @@ module ChatPublisher
     users.each do |user|
       content = ChatChannelSerializer.new(
         chat_channel,
-        scope: Guardian.new(user), # We need a guardian here
+        scope: Guardian.new(user), # We need a guardian here for direct messages
         root: :chat_channel
       )
       MessageBus.publish(

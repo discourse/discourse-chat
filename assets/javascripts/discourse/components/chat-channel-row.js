@@ -1,10 +1,12 @@
 import discourseComputed from "discourse-common/utils/decorators";
 import Component from "@ember/component";
+import { equal } from "@ember/object/computed";
 
 export default Component.extend({
   channel: null,
   switchChannel: null,
   nested: false,
+  isDirectMessageRow: equal("channel.chatable_type", "DirectMessageChannel"),
 
   click() {
     this.switchChannel(this.channel);

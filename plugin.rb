@@ -150,7 +150,8 @@ after_initialize do
       timings_hash[timing.chat_channel_id] = {
         unread_count: timing.unread_count,
         user_id: timing.id,
-        chat_message_id: timing.chat_message_id
+        chat_message_id: timing.chat_message_id,
+        chatable_type: timing.chat_channel.chatable_type,
       }
     end
     timings_hash.as_json

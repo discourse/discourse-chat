@@ -9,11 +9,9 @@ class DirectMessageChannel < ActiveRecord::Base
   end
 
   def self.for_user_ids(user_ids)
-    includes(direct_message_users: :user)
-      .where("NOT EXISTS (SELECT * FROM users
-        WHERE NOT EXISTS (SELECT * FROM direct_message_users
-          WHERE direct_message_users.user_id = users.id
-          AND direct_message_users.direct_message_channel_id = direct_message_channels.id)
-        AND users.id IN (?))", user_ids)&.first
+    joins(:users)
+      .group("direct_message_channels.id")
+      .having("ARRAY[?] = ARRAY_AGG(users.id ORDER BY users.id)", user_ids.sort)
+      &.first
   end
 end

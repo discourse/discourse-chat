@@ -3,6 +3,7 @@ import {
   acceptance,
   count,
   exists,
+  publishToMessageBus,
   query,
   queryAll,
   visible,
@@ -15,6 +16,7 @@ import {
   messageContents,
   siteChannel,
 } from "discourse/plugins/discourse-topic-chat/chat-fixtures";
+import { next } from "@ember/runloop";
 
 acceptance("Discourse Chat - without unread", function (needs) {
   needs.user({
@@ -23,10 +25,11 @@ acceptance("Discourse Chat - without unread", function (needs) {
     id: 1,
     can_chat: true,
     chat_channel_tracking_state: {
-      9: { unread_count: 0 },
-      7: { unread_count: 0 },
-      4: { unread_count: 0 },
-      11: { unread_count: 0 },
+      9: { unread_count: 0, chatable_type: "Site" },
+      7: { unread_count: 0, chatable_type: "Site" },
+      4: { unread_count: 0, chatable_type: "Site" },
+      11: { unread_count: 0, chatable_type: "Site" },
+      75: { unread_count: 0, chatable_type: "DirectMessageChannel" }, // Direct message channel
     },
   });
   needs.settings({
@@ -38,6 +41,9 @@ acceptance("Discourse Chat - without unread", function (needs) {
     server.get("/chat/:chat_channel_id/messages.json", () =>
       helper.response(chatView)
     );
+    server.get("/chat/:chat_channel_id.json", () =>
+      helper.response(siteChannel)
+    );
   });
 
   test("Chat float can be opened and channels are populated", async function (assert) {
@@ -45,7 +51,16 @@ acceptance("Discourse Chat - without unread", function (needs) {
     await click(".header-dropdown-toggle.open-chat");
 
     assert.ok(visible(".topic-chat-float-container"), "chat float is visible");
-    assert.equal(count(".chat-channel-row"), 4, "it shows chat channel rows");
+    assert.equal(
+      count(".public-channels .chat-channel-row"),
+      4,
+      "it show public channel rows"
+    );
+    assert.equal(
+      count(".direct-message-channels .chat-channel-row"),
+      1,
+      "it shows DM channel rows"
+    );
   });
   const enterFirstChatChannel = async function () {
     await visit("/t/internationalization-localization/280");
@@ -127,6 +142,50 @@ acceptance("Discourse Chat - without unread", function (needs) {
     );
 
     assert.equal(query(".tc-composer-input").value.trim(), messageContents[0]);
+  });
+
+  test("Unread indicator increments for public channels when messages come in", async function (assert) {
+    await visit("/t/internationalization-localization/280");
+    assert.notOk(
+      exists(
+        ".header-dropdown-toggle.open-chat .unread-chat-messages-indicator"
+      )
+    );
+
+    publishToMessageBus("/chat/9/new_messages", {
+      message_id: 200,
+      user_id: 2,
+    });
+    next(() => {
+      assert.ok(
+        exists(
+          ".header-dropdown-toggle.open-chat .unread-chat-messages-indicator"
+        )
+      );
+    });
+  });
+
+  test("Unread count increments for direct message channels when messages come in", async function (assert) {
+    await visit("/t/internationalization-localization/280");
+    assert.notOk(
+      exists(".header-dropdown-toggle.open-chat .unread-dm-indicator-number")
+    );
+
+    publishToMessageBus("/chat/75/new_messages", {
+      message_id: 200,
+      user_id: 2,
+    });
+    next(() => {
+      assert.ok(
+        exists(".header-dropdown-toggle.open-chat .unread-dm-indicator-number")
+      );
+      assert.equal(
+        query(
+          ".header-dropdown-toggle.open-chat .unread-dm-indicator-number"
+        ).innerText.trim(),
+        1
+      );
+    });
   });
 });
 

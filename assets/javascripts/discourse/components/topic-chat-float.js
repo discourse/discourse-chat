@@ -317,7 +317,7 @@ export default Component.extend({
       this.currentUser.notifyPropertyChange("chat_channel_tracking_state");
 
       // Update updated_at timestamp for channel if direct message
-      const dmChatChannel = this.directMessageChannels.findBy(
+      const dmChatChannel = (this.directMessageChannels || []).findBy(
         "id",
         parseInt(channelId, 10)
       );

@@ -25,9 +25,6 @@ class DiscourseChat::ChatMessageUpdater
       update_mention_notifications
       ChatPublisher.publish_edit!(@chat_channel, @chat_message)
     rescue => error
-      puts '#################'
-      puts error.inspect
-      puts '#################'
       @error = error
     end
   end

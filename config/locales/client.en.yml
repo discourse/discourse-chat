@@ -1,8 +1,8 @@
 en:
   js:
     chat:
-      title: "Chat"
-      placeholder: "Chat..."
+      title: "chat"
+      placeholder: "chat..."
       placeholder_log_in: "Log in to chat"
       send: "Send Chat Message"
       close: "Close"
@@ -29,8 +29,8 @@ en:
       send_error: "Something went wrong"
       chat_channels: "Channels"
       direct_messages:
-        title: "Direct messages"
-        new: "New direct message"
+        title: "Personal chat"
+        new: "New personal chat"
         create: "Go"
         cancel: "Cancel"
 

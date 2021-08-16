@@ -25,6 +25,9 @@ class DiscourseChat::ChatMessageUpdater
       update_mention_notifications
       ChatPublisher.publish_edit!(@chat_channel, @chat_message)
     rescue => error
+      puts '#################'
+      puts error.inspect
+      puts '#################'
       @error = error
     end
   end
@@ -55,14 +58,19 @@ class DiscourseChat::ChatMessageUpdater
       notification.destroy!
     end
 
-    needs_notification = mentioned_user_ids - already_notified_user_ids
-    needs_notification.each { |target_user_id|
-      DiscourseChat::ChatMessageCreator.create_mention_notification(
-        creator_username: @user.username,
-        mentioned_user_id: target_user_id,
-        chat_channel_id: @chat_channel.id,
-        chat_message_id: @chat_message.id,
-      )
+    needs_notification_ids = mentioned_user_ids - already_notified_user_ids
+    return unless needs_notification_ids.present?
+
+    needs_notification = User.where(id: needs_notification_ids)
+    needs_notification.each { |target_user|
+      if Guardian.new(target_user).can_see_chat_channel?(@chat_channel)
+        DiscourseChat::ChatMessageCreator.create_mention_notification(
+          creator_username: @user.username,
+          mentioned_user_id: target_user.id,
+          chat_channel_id: @chat_channel.id,
+          chat_message_id: @chat_message.id,
+        )
+      end
     }
   end
 end

@@ -80,7 +80,6 @@ class DiscourseChat::ChatController < ::ApplicationController
     guardian.ensure_can_edit_chat!(@message)
     chat_message_updater = DiscourseChat::ChatMessageUpdater.update(
       chat_message: @message,
-      chat_channel: @message.chat_channel,
       new_content: params[:new_message],
     )
 

@@ -8,7 +8,7 @@ import {
   queryAll,
   visible,
 } from "discourse/tests/helpers/qunit-helpers";
-import { click, visit } from "@ember/test-helpers";
+import { click, triggerKeyEvent, visit } from "@ember/test-helpers";
 import { test } from "qunit";
 import {
   chatChannels,
@@ -40,11 +40,14 @@ const userNeeds = (unreadCounts = {}) => {
 
 const chatPretenders = (server, helper) => {
   server.get("/chat/index.json", () => helper.response(chatChannels));
-  server.get("/chat/:chat_channel_id/messages.json", () =>
+  server.get("/chat/:chatChannelId/messages.json", () =>
     helper.response(chatView)
   );
   server.get("/chat/9.json", () => helper.response(siteChannel));
   server.get("/chat/75.json", () => helper.response(directMessageChannel));
+  server.post("/chat/:chatChannelId.json", () =>
+    helper.response({ success: "OK" })
+  );
 };
 
 acceptance("Discourse Chat - without unread", function (needs) {
@@ -73,7 +76,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
   const enterFirstChatChannel = async function () {
     await visit("/t/internationalization-localization/280");
     await click(".header-dropdown-toggle.open-chat");
-    await click(".chat-channel-row");
+    await click(".public-channels .chat-channel-row");
   };
 
   test("Chat messages are populated when a channel is entered", async function (assert) {
@@ -150,6 +153,71 @@ acceptance("Discourse Chat - without unread", function (needs) {
     );
 
     assert.equal(query(".tc-composer-input").value.trim(), messageContents[0]);
+  });
+
+  test("Sending a message", async function (assert) {
+    await enterFirstChatChannel();
+    const messageContent = "Here's a message";
+    const composerInput = query(".tc-composer-input");
+    await fillIn(composerInput, messageContent);
+    await focus(composerInput);
+    await triggerKeyEvent(composerInput, "keydown", 13); // 13 is enter keycode
+
+    // Composer input is cleared
+    assert.equal(composerInput.innerText.trim(), "");
+
+    let messages = queryAll(".tc-message");
+    let lastMessage = messages[messages.length - 1];
+
+    // Message is staged, without an ID
+    assert.ok(lastMessage.classList.contains("tc-message-staged"));
+
+    // Last message was from a different user; full meta data is shown
+    assert.ok(lastMessage.querySelector(".tc-avatar"), "Avatar is present");
+    assert.ok(lastMessage.querySelector(".full-name"), "Username is present");
+    assert.equal(
+      lastMessage.querySelector(".tc-text").innerText.trim(),
+      messageContent
+    );
+
+    publishToMessageBus("/chat/9", {
+      typ: "sent",
+      stagedId: 1,
+      topic_chat_message: {
+        id: 202,
+        user: {
+          id: 1,
+        },
+      },
+    });
+
+    next(async () => {
+      // Wait for DOM to rerender. Message should be un-staged
+      assert.ok(lastMessage.classList.contains("tc-message-202"));
+      assert.notOk(lastMessage.classList.contains("tc-message-staged"));
+
+      const sendMessageContent = "What up what up!";
+      await fillIn(composerInput, sendMessageContent);
+      await focus(composerInput);
+      await triggerKeyEvent(composerInput, "keydown", 13); // 13 is enter keycode
+
+      messages = queryAll(".tc-message");
+      lastMessage = messages[messages.length - 1];
+
+      // We just sent a message so avatar/username will not be present
+      assert.notOk(
+        lastMessage.querySelector(".tc-avatar"),
+        "Avatar is not shown"
+      );
+      assert.notOk(
+        lastMessage.querySelector("full-name"),
+        "Username is not shown"
+      );
+      assert.equal(
+        lastMessage.querySelector(".tc-text").innerText.trim(),
+        sendMessageContent
+      );
+    });
   });
 
   test("Unread indicator increments for public channels when messages come in", async function (assert) {

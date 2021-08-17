@@ -16,7 +16,7 @@ export const directMessageChannel = {
     chatable: {
       users: [
         { id: 1, username: "markvanlan" },
-        { id: 2, username: "eviltrout" },
+        { id: 2, username: "hawk" },
       ],
     },
     chatable_id: 58,

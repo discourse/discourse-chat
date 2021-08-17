@@ -415,7 +415,7 @@ $header-height: 2.5rem;
     padding: 0.5em;
     border-radius: 100%;
     opacity: 20%;
-
+    z-index: 2;
     &:hover {
       opacity: 75%;
     }

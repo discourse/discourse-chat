@@ -213,7 +213,9 @@ export default Component.extend({
 
   _fetchChannelAndSwitch(chatChannelId) {
     this.set("loading", true);
+    console.log(`/chat/${chatChannelId}.json`)
     return ajax(`/chat/${chatChannelId}.json`).then((response) => {
+      console.log(response)
       this.switchChannel(response.chat_channel);
     });
   },
@@ -359,13 +361,16 @@ export default Component.extend({
     );
   },
 
-  @discourseComputed("expanded")
-  containerClassNames(expanded) {
+  @discourseComputed("expanded", "activeChannel")
+  containerClassNames(expanded, activeChannel) {
+    const classNames = ["topic-chat-container"];
     if (expanded) {
-      return "topic-chat-container expanded";
-    } else {
-      return "topic-chat-container";
+      classNames.push("expanded");
     }
+    if (activeChannel) {
+      classNames.push(`channel-${activeChannel.id}`);
+    }
+    return classNames.join(" ");
   },
 
   @discourseComputed("expanded")
@@ -455,6 +460,7 @@ export default Component.extend({
 
   @action
   switchChannel(channel) {
+    console.log(channel)
     let channelInfo = {
       activeChannel: channel,
       expanded: this.expectPageChange ? true : this.expanded,

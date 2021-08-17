@@ -232,7 +232,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
       message_id: 200,
       user_id: 2,
     });
-    next(() => {
+    await next(() => {
       assert.ok(
         exists(
           ".header-dropdown-toggle.open-chat .unread-chat-messages-indicator"
@@ -251,7 +251,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
       message_id: 200,
       user_id: 2,
     });
-    next(() => {
+    await next(() => {
       assert.ok(
         exists(".header-dropdown-toggle.open-chat .unread-dm-indicator-number")
       );

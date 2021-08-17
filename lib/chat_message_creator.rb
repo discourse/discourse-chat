@@ -45,12 +45,14 @@ class DiscourseChat::ChatMessageCreator
   def create_mention_notifications
     self.class.mentioned_users(chat_message: @chat_message, creator: @user)
       .each do |target_user|
-      self.class.create_mention_notification(
-        creator_username: @user.username,
-        mentioned_user_id: target_user.id,
-        chat_channel_id: @chat_channel.id,
-        chat_message_id: @chat_message.id,
-      )
+      if Guardian.new(target_user).can_see_chat_channel?(@chat_channel)
+        self.class.create_mention_notification(
+          creator_username: @user.username,
+          mentioned_user_id: target_user.id,
+          chat_channel_id: @chat_channel.id,
+          chat_message_id: @chat_message.id,
+        )
+      end
     end
   end
 

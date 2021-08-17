@@ -89,4 +89,11 @@ module DiscourseChat::GuardianExtensions
   def can_edit_chat?(message)
     message.user_id == @user.id
   end
+
+  def can_see_chat_channel?(chat_channel)
+    return false unless @user
+    return @user.staff? if chat_channel.site_channel?
+
+    can_see?(chat_channel.chatable)
+  end
 end

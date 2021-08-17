@@ -462,7 +462,7 @@ $float-height: 530px;
     padding: 0.5em;
     border-radius: 100%;
     opacity: 20%;
-
+    z-index: 2;
     &:hover {
       opacity: 75%;
     }

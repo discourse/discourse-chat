@@ -24,7 +24,7 @@ export const directMessageChannel = {
     chatable_url: null,
     id: 75,
     title: null,
-  }
+  },
 };
 
 export const chatChannels = {

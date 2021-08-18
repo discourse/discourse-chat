@@ -75,7 +75,7 @@ export default Component.extend({
       return;
     }
 
-    this.chatService.calulateHasUnreadMessages();
+    this.chatService.calculateHasUnreadMessages();
     this._checkSize();
     this.appEvents.on("chat:toggle-open", this, "toggleChat");
     this.appEvents.on("chat:open-channel-for", this, "openChannelFor");
@@ -312,7 +312,6 @@ export default Component.extend({
       this.fetchChannels();
     }
   },
-
 
   @action
   fetchChannels() {

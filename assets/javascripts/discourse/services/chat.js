@@ -182,10 +182,10 @@ export default Service.extend({
 
   @observes("currentUser.chat_channel_tracking_state")
   _listenForUnreadMessageChanges() {
-    this.calulateHasUnreadMessages();
+    this.calculateHasUnreadMessages();
   },
 
-  calulateHasUnreadMessages() {
+  calculateHasUnreadMessages() {
     let unreadPublicCount = 0;
     let unreadDmCount = 0;
     let headerNeedsRerender = false;

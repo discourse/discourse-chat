@@ -237,13 +237,16 @@ export default Component.extend({
     this.element.style.setProperty("--composer-height", "40px");
   },
 
-  @discourseComputed("expanded")
-  containerClassNames(expanded) {
+  @discourseComputed("expanded", "activeChannel")
+  containerClassNames(expanded, activeChannel) {
+    const classNames = ["topic-chat-container"];
     if (expanded) {
-      return "topic-chat-container expanded";
-    } else {
-      return "topic-chat-container";
+      classNames.push("expanded");
     }
+    if (activeChannel) {
+      classNames.push(`channel-${activeChannel.id}`);
+    }
+    return classNames.join(" ");
   },
 
   @discourseComputed("expanded")

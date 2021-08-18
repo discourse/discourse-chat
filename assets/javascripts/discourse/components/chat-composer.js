@@ -51,7 +51,7 @@ export default Component.extend({
   },
 
   keyDown(event) {
-    if (event.code === "Enter") {
+    if (event.keyCode === 13) { // keyCode for 'Enter'
       if (event.shiftKey) {
         // Shift+Enter: insert newline
         return;

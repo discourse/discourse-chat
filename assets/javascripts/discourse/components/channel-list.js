@@ -1,4 +1,5 @@
 import Component from "@ember/component";
+import discourseComputed from "discourse-common/utils/decorators";
 import { action, computed } from "@ember/object";
 import { ajax } from "discourse/lib/ajax";
 import { empty } from "@ember/object/computed";
@@ -10,6 +11,8 @@ export default Component.extend({
   creatingDmChannel: false,
   newDmUsernames: null,
   newDmUsernamesEmpty: empty("newDmUsernames"),
+  inSidebar: false,
+  toggleSection: null,
 
   sortedDirectMessageChannels: computed(
     "directMessageChannels.@each.updated_at",
@@ -19,6 +22,19 @@ export default Component.extend({
         : [];
     }
   ),
+
+  @discourseComputed("inSidebar")
+  publicChannelClasses(inSidebar) {
+    return `chat-channels-container public-channels ${
+      inSidebar ? "collapsible-sidebar-section" : ""
+    }`;
+  },
+  @discourseComputed("inSidebar")
+  directMessageChannelClasses(inSidebar) {
+    return `chat-channels-container direct-message-channels ${
+      inSidebar ? "collapsible-sidebar-section" : ""
+    }`;
+  },
 
   @action
   startCreatingDmChannel() {
@@ -57,5 +73,10 @@ export default Component.extend({
       newDmUsernames: null,
       creatingDmChannel: false,
     });
+  },
+
+  @action
+  toggleChannelSection(section) {
+    this.toggleSection(section);
   },
 });

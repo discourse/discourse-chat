@@ -643,11 +643,24 @@ $float-height: 530px;
     color: var(--primary);
     font-size: var(--font-down-1);
     padding: 0 2em;
+    height: unset;
+    padding-bottom: 2em;
 
     .chat-channel-divider {
       position: relative;
       text-transform: uppercase;
       padding-left: 0;
+
+      &:hover {
+        .title-caret {
+          opacity: 1;
+        }
+      }
+      .title-caret {
+        position: absolute;
+        left: -25px;
+        top: 0;
+      }
     }
 
     .new-dm {

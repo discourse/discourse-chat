@@ -5,6 +5,7 @@ import { inject as service } from "@ember/service";
 export default Component.extend({
   publicChannels: null,
   directMessageChannels: null,
+  toggleSection: null,
   chat: service(),
 
   didInsertElement() {

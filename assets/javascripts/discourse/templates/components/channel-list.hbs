@@ -1,15 +1,39 @@
 <div class="tc-channels">
   {{#conditional-loading-spinner condition=this.loading}}
     <div class="chat-channel-divider">
+      {{#if inSidebar}}
+        <span
+          class="title-caret"
+          id="public-channels-caret"
+          role="button"
+          title="toggle nav list"
+          {{action "toggleChannelSection" "public-channels"}}
+          data-toggleable="public-channels"
+        >
+          {{d-icon "angle-up"}}
+        </span>
+      {{/if}}
       {{i18n "chat.chat_channels"}}
     </div>
-    <div class="chat-channels-container public-channels">
+    <div id="public-channels" class={{publicChannelClasses}}>
       {{#each publicChannels as |channel|}}
         {{chat-channel-row channel=channel switchChannel=onSelect}}
       {{/each}}
     </div>
 
     <div class="chat-channel-divider">
+      {{#if inSidebar}}
+        <span
+          class="title-caret"
+          id="direct-message-channels-caret"
+          role="button"
+          title="toggle nav list"
+          {{action "toggleChannelSection" "direct-message-channels"}}
+          data-toggleable="direct-message-channels"
+        >
+          {{d-icon "angle-up"}}
+        </span>
+      {{/if}}
       {{i18n "chat.direct_messages.title"}}
       {{#unless creatingDmChannel}}
         {{flat-button
@@ -45,7 +69,8 @@
         }}
       </div>
     {{/if}}
-    <div class="chat-channels-container direct-message-channels">
+
+    <div id="direct-message-channels" class={{directMessageChannelClasses}}>
       {{#each sortedDirectMessageChannels as |channel|}}
         {{chat-channel-row channel=channel switchChannel=onSelect}}
       {{/each}}

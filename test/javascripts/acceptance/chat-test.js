@@ -68,14 +68,12 @@ acceptance("Discourse Chat - without unread", function (needs) {
 
     assert.ok(visible(".topic-chat-float-container"), "chat float is visible");
     assert.equal(
-      count(".topic-chat-float-container .public-channels .chat-channel-row"),
+      count(".public-channels .chat-channel-row"),
       4,
       "it show public channel rows"
     );
     assert.equal(
-      count(
-        ".topic-chat-float-container .direct-message-channels .chat-channel-row"
-      ),
+      count(".direct-message-channels .chat-channel-row"),
       1,
       "it shows DM channel rows"
     );
@@ -255,7 +253,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
       exists(".header-dropdown-toggle.open-chat .unread-dm-indicator-number")
     );
 
-    publishToMessageBus("/chat/75/new-messages", {
+    publishToMessageBus("/chat/75/new_messages", {
       message_id: 200,
       user_id: 2,
     });
@@ -276,11 +274,11 @@ acceptance("Discourse Chat - without unread", function (needs) {
 
   test("Unread DM count overrides the public unread indicator", async function (assert) {
     await visit("/t/internationalization-localization/280");
-    publishToMessageBus("/chat/9/new-messages", {
+    publishToMessageBus("/chat/9/new_messages", {
       message_id: 200,
       user_id: 2,
     });
-    publishToMessageBus("/chat/75/new-messages", {
+    publishToMessageBus("/chat/75/new_messages", {
       message_id: 200,
       user_id: 2,
     });

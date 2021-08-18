@@ -637,6 +637,44 @@ $float-height: 530px;
   }
 }
 
+// Styles to make channel list in sidebar match sidebar's theme
+.sidebar-container {
+  .tc-channels {
+    color: var(--primary);
+    font-size: var(--font-down-1);
+    padding: 0 1.75em;
+
+    .chat-channel-divider {
+      text-transform: uppercase;
+      padding-left: 0;
+    }
+
+    .chat-channel-row {
+      padding: 0.5em;
+
+      .chat-channel-title {
+        width: 100%;
+      }
+
+      .chat-channel-row-unread-count {
+        display: none;
+      }
+
+      .unread-chat-messages-indicator {
+        left: -1.25em;
+      }
+      .unread-dm-indicator {
+        left: -1.75em;
+      }
+    }
+
+    .tc-channels {
+      width: 100%;
+      overflow-x: hidden;
+    }
+  }
+}
+
 :root:not(.mobile-view) {
   .tc-drawer {
     width: 400px;

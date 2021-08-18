@@ -48,7 +48,7 @@ const chatPretenders = (server, helper) => {
   server.get("/chat/9.json", () => helper.response(siteChannel));
   server.get("/chat/75.json", () => helper.response(directMessageChannel));
   server.post("/chat/:chatChannelId.json", () => {
-    return helper.response({ success: "OK" })
+    return helper.response({ success: "OK" });
   });
 };
 

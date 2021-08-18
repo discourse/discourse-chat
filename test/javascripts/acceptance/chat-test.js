@@ -196,7 +196,8 @@ acceptance("Discourse Chat - without unread", function (needs) {
       },
     });
 
-    await next(async () => {
+    const done = assert.async();
+    next(async () => {
       // Wait for DOM to rerender. Message should be un-staged
       assert.ok(lastMessage.classList.contains("tc-message-202"));
       assert.notOk(lastMessage.classList.contains("tc-message-staged"));
@@ -222,6 +223,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
         lastMessage.querySelector(".tc-text").innerText.trim(),
         nextMessageContent
       );
+      done();
     });
   });
 
@@ -237,12 +239,14 @@ acceptance("Discourse Chat - without unread", function (needs) {
       message_id: 200,
       user_id: 2,
     });
-    await next(() => {
+    const done = assert.async();
+    next(() => {
       assert.ok(
         exists(
           ".header-dropdown-toggle.open-chat .unread-chat-messages-indicator"
         )
       );
+      done();
     });
   });
 
@@ -256,7 +260,8 @@ acceptance("Discourse Chat - without unread", function (needs) {
       message_id: 200,
       user_id: 2,
     });
-    await next(() => {
+    const done = assert.async();
+    next(() => {
       assert.ok(
         exists(".header-dropdown-toggle.open-chat .unread-dm-indicator-number")
       );
@@ -266,6 +271,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
         ).innerText.trim(),
         1
       );
+      done();
     });
   });
 
@@ -279,7 +285,8 @@ acceptance("Discourse Chat - without unread", function (needs) {
       message_id: 200,
       user_id: 2,
     });
-    await next(() => {
+    const done = assert.async();
+    next(() => {
       assert.notOk(
         exists(
           ".header-dropdown-toggle.open-chat .unread-chat-messages-indicator"
@@ -288,6 +295,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
       assert.ok(
         exists(".header-dropdown-toggle.open-chat .unread-dm-indicator-number")
       );
+      done();
     });
   });
 });

@@ -317,7 +317,7 @@ export default Component.extend({
       this.currentUser.notifyPropertyChange("chat_channel_tracking_state");
 
       // Update updated_at timestamp for channel if direct message
-      const dmChatChannel = this.directMessageChannels.findBy(
+      const dmChatChannel = (this.directMessageChannels || []).findBy(
         "id",
         parseInt(channelId, 10)
       );
@@ -359,13 +359,16 @@ export default Component.extend({
     );
   },
 
-  @discourseComputed("expanded")
-  containerClassNames(expanded) {
+  @discourseComputed("expanded", "activeChannel")
+  containerClassNames(expanded, activeChannel) {
+    const classNames = ["topic-chat-container"];
     if (expanded) {
-      return "topic-chat-container expanded";
-    } else {
-      return "topic-chat-container";
+      classNames.push("expanded");
     }
+    if (activeChannel) {
+      classNames.push(`channel-${activeChannel.id}`);
+    }
+    return classNames.join(" ");
   },
 
   @discourseComputed("expanded")

@@ -566,7 +566,7 @@ export default Component.extend({
 
     // Start ajax request but don't return here, we want to stage the message instantly.
     // Return a resolved promise below.
-    ajax(`/chat/${this.chatChannel.id}/`, {
+    ajax(`/chat/${this.chatChannel.id}.json`, {
       type: "POST",
       data,
     })
@@ -582,7 +582,7 @@ export default Component.extend({
 
     const stagedMessage = this._prepareSingleMessage(
       // We need to add the user and created at for presentation of staged message
-      Object.assign(data, {
+      Object.assign({}, data, {
         staged: true,
         user: this.currentUser,
         in_reply_to: this.replyToMsg,

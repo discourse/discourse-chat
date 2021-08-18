@@ -6,6 +6,7 @@ import {
   publishToMessageBus,
   query,
   queryAll,
+  updateCurrentUser,
   visible,
 } from "discourse/tests/helpers/qunit-helpers";
 import { click, triggerKeyEvent, visit } from "@ember/test-helpers";
@@ -20,6 +21,7 @@ import {
 import { next } from "@ember/runloop";
 
 const userNeeds = (unreadCounts = {}) => {
+  console.log("needs");
   return {
     admin: false,
     moderator: false,
@@ -51,11 +53,14 @@ const chatPretenders = (server, helper) => {
 };
 
 acceptance("Discourse Chat - without unread", function (needs) {
-  needs.user(userNeeds());
+  needs.user();
   needs.settings({
     topic_chat_enabled: true,
   });
   needs.pretender(chatPretenders);
+  needs.hooks.beforeEach(() => {
+    updateCurrentUser(userNeeds());
+  });
 
   test("Chat float can be opened and channels are populated", async function (assert) {
     await visit("/t/internationalization-localization/280");
@@ -73,6 +78,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
       "it shows DM channel rows"
     );
   });
+
   const enterFirstChatChannel = async function () {
     await visit("/t/internationalization-localization/280");
     await click(".header-dropdown-toggle.open-chat");
@@ -196,15 +202,15 @@ acceptance("Discourse Chat - without unread", function (needs) {
       assert.ok(lastMessage.classList.contains("tc-message-202"));
       assert.notOk(lastMessage.classList.contains("tc-message-staged"));
 
-      const sendMessageContent = "What up what up!";
-      await fillIn(composerInput, sendMessageContent);
+      const nextMessageContent = "What up what up!";
+      await fillIn(composerInput, nextMessageContent);
       await focus(composerInput);
       await triggerKeyEvent(composerInput, "keydown", 13); // 13 is enter keycode
 
       messages = queryAll(".tc-message");
       lastMessage = messages[messages.length - 1];
 
-      // We just sent a message so avatar/username will not be present
+      // We just sent a message so avatar/username will not be present for the last message
       assert.notOk(
         lastMessage.querySelector(".tc-avatar"),
         "Avatar is not shown"
@@ -215,7 +221,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
       );
       assert.equal(
         lastMessage.querySelector(".tc-text").innerText.trim(),
-        sendMessageContent
+        nextMessageContent
       );
     });
   });
@@ -232,13 +238,13 @@ acceptance("Discourse Chat - without unread", function (needs) {
       message_id: 200,
       user_id: 2,
     });
-    // next(() => {
-      // assert.ok(
-        // exists(
-          // ".header-dropdown-toggle.open-chat .unread-chat-messages-indicator"
-        // )
-      // );
-    // });
+    next(() => {
+      assert.ok(
+        exists(
+          ".header-dropdown-toggle.open-chat .unread-chat-messages-indicator"
+        )
+      );
+    });
   });
 
   test("Unread count increments for direct message channels when messages come in", async function (assert) {
@@ -247,25 +253,27 @@ acceptance("Discourse Chat - without unread", function (needs) {
       exists(".header-dropdown-toggle.open-chat .unread-dm-indicator-number")
     );
 
+    console.log("publish!");
     publishToMessageBus("/chat/75/new_messages", {
       message_id: 200,
       user_id: 2,
     });
-    // next(() => {
-      // assert.ok(
-        // exists(".header-dropdown-toggle.open-chat .unread-dm-indicator-number")
-      // );
-      // assert.equal(
-        // query(
-          // ".header-dropdown-toggle.open-chat .unread-dm-indicator-number"
-        // ).innerText.trim(),
-        // 1
-      // );
-    // });
+    next(() => {
+      assert.ok(
+        exists(".header-dropdown-toggle.open-chat .unread-dm-indicator-number")
+      );
+      assert.equal(
+        query(
+          ".header-dropdown-toggle.open-chat .unread-dm-indicator-number"
+        ).innerText.trim(),
+        1
+      );
+    });
   });
 
   test("Unread DM count overrides the public unread indicator", async function (assert) {
     await visit("/t/internationalization-localization/280");
+    console.log("pbulish!");
     publishToMessageBus("/chat/9/new_messages", {
       message_id: 200,
       user_id: 2,
@@ -274,27 +282,30 @@ acceptance("Discourse Chat - without unread", function (needs) {
       message_id: 200,
       user_id: 2,
     });
-    // next(() => {
-      // assert.notOk(
-        // exists(
-          // ".header-dropdown-toggle.open-chat .unread-chat-messages-indicator"
-        // )
-      // );
-      // assert.ok(
-        // exists(".header-dropdown-toggle.open-chat .unread-dm-indicator-number")
-      // );
-    // });
+    next(() => {
+      assert.notOk(
+        exists(
+          ".header-dropdown-toggle.open-chat .unread-chat-messages-indicator"
+        )
+      );
+      assert.ok(
+        exists(".header-dropdown-toggle.open-chat .unread-dm-indicator-number")
+      );
+    });
   });
 });
 
 acceptance(
   "Discourse Chat - Acceptance Test with unread public channel messages",
   function (needs) {
-    needs.user(userNeeds({ 9: 2 }));
+    needs.user();
     needs.settings({
       topic_chat_enabled: true,
     });
     needs.pretender(chatPretenders);
+    needs.hooks.beforeEach(() => {
+      updateCurrentUser(userNeeds({ 9: 2 }));
+    });
 
     test("Chat opens to channel with unread messages", async function (assert) {
       await visit("/t/internationalization-localization/280");
@@ -338,11 +349,14 @@ acceptance(
 acceptance(
   "Discourse Chat - Acceptance Test with unread DMs and public channel messages",
   function (needs) {
-    needs.user(userNeeds({ 9: 2, 75: 2 }));
+    needs.user();
     needs.settings({
       topic_chat_enabled: true,
     });
     needs.pretender(chatPretenders);
+    needs.hooks.beforeEach(() => {
+      updateCurrentUser(userNeeds({ 9: 2, 75: 2 }));
+    });
 
     test("Chat opens to DM channel with unread messages", async function (assert) {
       await visit("/t/internationalization-localization/280");

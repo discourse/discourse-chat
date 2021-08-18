@@ -68,12 +68,14 @@ acceptance("Discourse Chat - without unread", function (needs) {
 
     assert.ok(visible(".topic-chat-float-container"), "chat float is visible");
     assert.equal(
-      count(".public-channels .chat-channel-row"),
+      count(".topic-chat-float-container .public-channels .chat-channel-row"),
       4,
       "it show public channel rows"
     );
     assert.equal(
-      count(".direct-message-channels .chat-channel-row"),
+      count(
+        ".topic-chat-float-container .direct-message-channels .chat-channel-row"
+      ),
       1,
       "it shows DM channel rows"
     );

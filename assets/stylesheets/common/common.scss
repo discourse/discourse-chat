@@ -645,8 +645,24 @@ $float-height: 530px;
     padding: 0 1.75em;
 
     .chat-channel-divider {
+      position: relative;
       text-transform: uppercase;
       padding-left: 0;
+    }
+
+    .new-dm {
+      position: absolute;
+      right: 0;
+      top: 0;
+      padding: 0.5em;
+      border-radius: 0.25em;
+
+      &:hover {
+        background-color: var(--tertiary-low);
+      }
+      .d-icon {
+        color: var(--primary-medium);
+      }
     }
 
     .chat-channel-row {

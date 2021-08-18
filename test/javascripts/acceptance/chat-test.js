@@ -21,7 +21,6 @@ import {
 import { next } from "@ember/runloop";
 
 const userNeeds = (unreadCounts = {}) => {
-  console.log("needs");
   return {
     admin: false,
     moderator: false,
@@ -197,7 +196,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
       },
     });
 
-    next(async () => {
+    await next(async () => {
       // Wait for DOM to rerender. Message should be un-staged
       assert.ok(lastMessage.classList.contains("tc-message-202"));
       assert.notOk(lastMessage.classList.contains("tc-message-staged"));
@@ -238,7 +237,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
       message_id: 200,
       user_id: 2,
     });
-    next(() => {
+    await next(() => {
       assert.ok(
         exists(
           ".header-dropdown-toggle.open-chat .unread-chat-messages-indicator"
@@ -253,12 +252,11 @@ acceptance("Discourse Chat - without unread", function (needs) {
       exists(".header-dropdown-toggle.open-chat .unread-dm-indicator-number")
     );
 
-    console.log("publish!");
     publishToMessageBus("/chat/75/new_messages", {
       message_id: 200,
       user_id: 2,
     });
-    next(() => {
+    await next(() => {
       assert.ok(
         exists(".header-dropdown-toggle.open-chat .unread-dm-indicator-number")
       );
@@ -273,7 +271,6 @@ acceptance("Discourse Chat - without unread", function (needs) {
 
   test("Unread DM count overrides the public unread indicator", async function (assert) {
     await visit("/t/internationalization-localization/280");
-    console.log("pbulish!");
     publishToMessageBus("/chat/9/new_messages", {
       message_id: 200,
       user_id: 2,
@@ -282,7 +279,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
       message_id: 200,
       user_id: 2,
     });
-    next(() => {
+    await next(() => {
       assert.notOk(
         exists(
           ".header-dropdown-toggle.open-chat .unread-chat-messages-indicator"

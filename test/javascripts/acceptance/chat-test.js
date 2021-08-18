@@ -24,6 +24,7 @@ const userNeeds = (unreadCounts = {}) => {
   return {
     admin: false,
     moderator: false,
+    username: "eviltrout",
     id: 1,
     can_chat: true,
     chat_channel_tracking_state: {
@@ -46,9 +47,9 @@ const chatPretenders = (server, helper) => {
   );
   server.get("/chat/9.json", () => helper.response(siteChannel));
   server.get("/chat/75.json", () => helper.response(directMessageChannel));
-  server.post("/chat/:chatChannelId.json", () =>
-    helper.response({ success: "OK" })
-  );
+  server.post("/chat/:chatChannelId.json", () => {
+    return helper.response({ success: "OK" })
+  });
 };
 
 acceptance("Discourse Chat - without unread", function (needs) {

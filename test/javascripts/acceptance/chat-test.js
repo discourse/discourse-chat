@@ -238,11 +238,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
       )
     );
 
-    publishToMessageBus("/chat/9/new-messages", {
       message_id: 200,
-      user_id: 2,
-    });
-    const done = assert.async();
     next(() => {
       assert.ok(
         exists(

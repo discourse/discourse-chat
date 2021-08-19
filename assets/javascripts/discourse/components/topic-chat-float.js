@@ -266,6 +266,13 @@ export default Component.extend({
   @action
   toggleExpand() {
     this.set("expanded", !this.expanded);
+    if (this.expanded === false) {
+      document.body.classList.remove("mobile-chat-open");
+      document.body.classList.add("mobile-chat-minimized");
+    } else {
+      document.body.classList.add("mobile-chat-open");
+      document.body.classList.remove("mobile-chat-minimized");
+    }
   },
 
   @action

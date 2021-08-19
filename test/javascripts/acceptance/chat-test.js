@@ -238,7 +238,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
       )
     );
 
-    publishToMessageBus("/chat/9/new_messages", {
+    publishToMessageBus("/chat/9/new-messages", {
       message_id: 200,
       user_id: 2,
     });
@@ -259,7 +259,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
       exists(".header-dropdown-toggle.open-chat .unread-dm-indicator-number")
     );
 
-    publishToMessageBus("/chat/75/new_messages", {
+    publishToMessageBus("/chat/75/new-messages", {
       message_id: 200,
       user_id: 2,
     });
@@ -280,11 +280,11 @@ acceptance("Discourse Chat - without unread", function (needs) {
 
   test("Unread DM count overrides the public unread indicator", async function (assert) {
     await visit("/t/internationalization-localization/280");
-    publishToMessageBus("/chat/9/new_messages", {
+    publishToMessageBus("/chat/9/new-messages", {
       message_id: 200,
       user_id: 2,
     });
-    publishToMessageBus("/chat/75/new_messages", {
+    publishToMessageBus("/chat/75/new-messages", {
       message_id: 200,
       user_id: 2,
     });

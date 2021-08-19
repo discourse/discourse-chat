@@ -1,6 +1,8 @@
 en:
   js:
     chat:
+      admin:
+        title: "Chat"
       title: "chat"
       placeholder: "chat..."
       placeholder_log_in: "Log in to chat"

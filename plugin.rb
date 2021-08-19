@@ -17,6 +17,9 @@ register_svg_icon "comment-slash"
 register_svg_icon "hashtag"
 register_svg_icon "lock"
 
+# route: /admin/plugins/chat
+add_admin_route 'chat.admin.title', 'chat'
+
 after_initialize do
   module ::DiscourseChat
     PLUGIN_NAME = "discourse-topic-chat"
@@ -198,9 +201,11 @@ after_initialize do
     put '/:chat_channel_id/read/:message_id' => 'chat#update_user_last_read'
 
     post '/direct_messages/create' => 'direct_messages#create'
+
   end
 
   Discourse::Application.routes.append do
     mount ::DiscourseChat::Engine, at: '/chat'
+    get '/admin/plugins/chat' => 'admin/admin_chat#index', constraints: StaffConstraint.new
   end
 end

@@ -10,22 +10,6 @@ export const siteChannel = {
     title: "Site",
   },
 };
-export const directMessageChannel = {
-  chat_channel: {
-    chat_channels: [],
-    chatable: {
-      users: [
-        { id: 1, username: "markvanlan" },
-        { id: 2, username: "hawk" },
-      ],
-    },
-    chatable_id: 58,
-    chatable_type: "DirectMessageChannel",
-    chatable_url: null,
-    id: 75,
-    title: null,
-  },
-};
 
 export const chatChannels = {
   public_channels: [
@@ -78,7 +62,7 @@ export const chatChannels = {
       ],
     },
   ],
-  direct_message_channels: [directMessageChannel.chat_channel],
+  direct_message_channels: [],
 };
 
 export const chatView = {

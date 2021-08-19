@@ -271,6 +271,7 @@ export default Component.extend({
   @action
   close() {
     this.set("hidden", true);
+    document.body.classList.remove("mobile-chat-open");
   },
 
   @action
@@ -280,6 +281,10 @@ export default Component.extend({
       return;
     } else {
       this.set("expanded", true);
+      let html = document.documentElement;
+      if (html.classList.contains("mobile-view")) {
+        document.body.classList.add("mobile-chat-open")
+      }
       if (this.activeChannel) {
         // Channel was previously open, so after expand we are done.
         return;

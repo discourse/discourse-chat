@@ -252,6 +252,9 @@ export default Component.extend({
     if (lastReadId) {
       this.set("lastSendReadMessageId", lastReadId);
       let message = this.messageLookup[lastReadId] || this.messages[0];
+      if (!message) {
+        return this._stickScrollToBottom();
+      }
 
       // If user has read the last message, don't add anything.
       if (message !== this.messages[this.messages.length - 1]) {

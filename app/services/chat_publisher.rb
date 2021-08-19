@@ -6,7 +6,7 @@ module ChatPublisher
     content[:typ] = :sent
     content[:stagedId] = staged_id
     MessageBus.publish("/chat/#{chat_channel.id}", content.as_json)
-    MessageBus.publish("/chat/#{chat_channel.id}/new_messages", { message_id: msg.id, user_id: msg.user_id })
+    MessageBus.publish("/chat/#{chat_channel.id}/new-messages", { message_id: msg.id, user_id: msg.user_id })
   end
 
   def self.publish_edit!(chat_channel, msg)

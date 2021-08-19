@@ -43,60 +43,11 @@
           }}
         {{/if}}
       {{else}}
-        <div class="tc-channels">
-          {{#conditional-loading-spinner condition=this.loading}}
-            <div class="chat-channel-divider">
-              {{i18n "chat.chat_channels"}}
-            </div>
-            <div class="chat-channels-container public-channels">
-              {{#each publicChannels as |channel|}}
-                {{chat-channel-row channel=channel switchChannel=(action "switchChannel")}}
-              {{/each}}
-            </div>
-
-            <div class="chat-channel-divider">
-              {{i18n "chat.direct_messages.title"}}
-              {{#unless creatingDmChannel}}
-                {{flat-button
-                  class="new-dm"
-                  icon="plus"
-                  action=(action "startCreatingDmChannel")
-                  title="chat.direct_messages.new"
-                }}
-              {{/unless}}
-            </div>
-            {{#if creatingDmChannel}}
-              <div class="dm-creation-row">
-                {{user-chooser
-                  class="dm-user-chooser"
-                  value=newDmUsernames
-                  onChange=(action "onChangeNewDmUsernames")
-                  options=(hash
-                    excludeCurrentUser=true
-                  )
-                }}
-                {{d-button
-                  class="create-dm btn-primary"
-                  disabled=newDmUsernamesEmpty
-                  label="chat.direct_messages.create"
-                  action=(action "createDmChannel")
-                  title="chat.direct_messages.create"
-                }}
-                {{d-button
-                  class="create-dm"
-                  icon="times"
-                  action=(action "resetDmCreation")
-                  title="chat.direct_messages.cancel"
-                }}
-              </div>
-            {{/if}}
-            <div class="chat-channels-container direct-message-channels">
-              {{#each sortedDirectMessageChannels as |channel|}}
-                {{chat-channel-row channel=channel switchChannel=(action "switchChannel")}}
-              {{/each}}
-            </div>
-          {{/conditional-loading-spinner}}
-        </div>
+        {{channel-list
+          publicChannels=publicChannels
+          directMessageChannels=directMessageChannels
+          onSelect=(action "switchChannel")
+        }}
       {{/if}}
     </div>
   </div>

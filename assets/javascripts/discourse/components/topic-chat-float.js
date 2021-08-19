@@ -1,16 +1,18 @@
 import Component from "@ember/component";
 import discourseComputed, { observes } from "discourse-common/utils/decorators";
-import EmberObject, { action, computed } from "@ember/object";
+import { action } from "@ember/object";
 import simpleCategoryHashMentionTransform from "discourse/plugins/discourse-topic-chat/discourse/lib/simple-category-hash-mention-transform";
-import { A } from "@ember/array";
+import {
+  CHAT_VIEW,
+  LIST_VIEW,
+} from "discourse/plugins/discourse-topic-chat/discourse/services/chat";
+
 import { ajax } from "discourse/lib/ajax";
-import { empty, equal } from "@ember/object/computed";
+import { equal } from "@ember/object/computed";
 import { cancel, schedule, throttle } from "@ember/runloop";
 import { generateCookFunction } from "discourse/lib/text";
 import { inject as service } from "@ember/service";
 
-export const LIST_VIEW = "list_view";
-export const CHAT_VIEW = "chat_view";
 const MARKDOWN_OPTIONS = {
   features: {
     anchor: true,
@@ -66,11 +68,6 @@ export default Component.extend({
   view: null,
   hasUnreadMessages: false,
   activeChannel: null,
-  publicChannels: null,
-  directMessageChannels: null,
-  creatingDmChannel: false,
-  newDmUsernames: null,
-  newDmUsernamesEmpty: empty("newDmUsernames"),
 
   didInsertElement() {
     this._super(...arguments);
@@ -78,12 +75,11 @@ export default Component.extend({
       return;
     }
 
-    this._subscribeToUpdateChannels();
-    this._subscribeToUserTrackingChannel();
-    this._setHasUnreadMessages();
+    this.chatService.calculateHasUnreadMessages();
     this._checkSize();
     this.appEvents.on("chat:toggle-open", this, "toggleChat");
-    this.appEvents.on("chat:open-channel", this, "openChannelFor");
+    this.appEvents.on("chat:open-channel-for", this, "openChannelFor");
+    this.appEvents.on("chat:open-channel", this, "switchChannel");
     this.appEvents.on("chat:open-message", this, "openChannelAtMessage");
     this.appEvents.on("topic-chat-enable", this, "chatEnabledForTopic");
     this.appEvents.on("topic-chat-disable", this, "chatDisabledForTopic");
@@ -108,10 +104,9 @@ export default Component.extend({
     }
 
     if (this.appEvents) {
-      this._unsubscribeFromUpdateChannels();
-      this._unsubscribeFromUserTrackingChannel();
       this.appEvents.off("chat:toggle-open", this, "toggleChat");
-      this.appEvents.off("chat:open-channel", this, "openChannelFor");
+      this.appEvents.off("chat:open-channel-for", this, "openChannelFor");
+      this.appEvents.off("chat:open-channel", this, "switchChannel");
       this.appEvents.off("chat:open-message", this, "openChannelAtMessage");
       this.appEvents.off("topic-chat-enable", this, "chatEnabledForTopic");
       this.appEvents.off("topic-chat-disable", this, "chatDisabledForTopic");
@@ -140,53 +135,10 @@ export default Component.extend({
     }
   },
 
-  sortedDirectMessageChannels: computed(
-    "directMessageChannels.@each.updated_at",
-    function () {
-      return this.directMessageChannels
-        ? this.directMessageChannels.sortBy("updated_at").reverse()
-        : [];
-    }
-  ),
-
   @observes("hidden")
   _fireHiddenAppEvents() {
     this.chatService.setChatOpenStatus(!this.hidden);
     this.appEvents.trigger("chat:rerender-header");
-  },
-
-  @observes("currentUser.chat_channel_tracking_state")
-  _listenForUnreadMessageChanges() {
-    this._setHasUnreadMessages();
-  },
-
-  _setHasUnreadMessages() {
-    let unreadPublicCount = 0;
-    let unreadDmCount = 0;
-    let headerNeedsRerender = false;
-
-    Object.values(this.currentUser.chat_channel_tracking_state).forEach(
-      (state) => {
-        state.chatable_type === "DirectMessageChannel"
-          ? (unreadDmCount += state.unread_count || 0)
-          : (unreadPublicCount += state.unread_count || 0);
-      }
-    );
-
-    let hasUnreadPublic = unreadPublicCount > 0;
-    if (hasUnreadPublic !== this.chatService.getHasUnreadMessages()) {
-      headerNeedsRerender = true;
-      this.chatService.setHasUnreadMessages(hasUnreadPublic);
-    }
-
-    if (unreadDmCount !== this.chatService.getUnreadDirectMessageCount()) {
-      headerNeedsRerender = true;
-      this.chatService.setUnreadDirectMessageCount(unreadDmCount);
-    }
-
-    if (headerNeedsRerender) {
-      this.appEvents.trigger("chat:rerender-header");
-    }
   },
 
   _loadCookFunction() {
@@ -284,80 +236,6 @@ export default Component.extend({
     // if overridden by themes, will get fixed up in the composer:closed event
     this.element.style.setProperty("--composer-height", "40px");
   },
-  _subscribeToUpdateChannels() {
-    Object.keys(this.currentUser.chat_channel_tracking_state).forEach(
-      (channelId) => {
-        this._subscribeToSingleUpdateChannel(channelId);
-      }
-    );
-    this.messageBus.subscribe("/chat/new-direct-message-channel", (busData) => {
-      this.directMessageChannels.pushObject(busData.chat_channel);
-      this.currentUser.chat_channel_tracking_state[busData.chat_channel.id] = {
-        unread_count: 0,
-        chatable_type: "DirectMessageChannel",
-      };
-      this.currentUser.notifyPropertyChange("chat_channel_tracking_state");
-      this._subscribeToSingleUpdateChannel(busData.chat_channel.id);
-    });
-  },
-
-  _subscribeToSingleUpdateChannel(channelId) {
-    this.messageBus.subscribe(`/chat/${channelId}/new_messages`, (busData) => {
-      if (busData.user_id === this.currentUser.id) {
-        // User sent message, update tracking state to no unread
-        this.currentUser.chat_channel_tracking_state[
-          channelId
-        ].chat_message_id = busData.message_id;
-      } else {
-        // Message from other user. Incriment trackings state
-        this.currentUser.chat_channel_tracking_state[channelId].unread_count =
-          this.currentUser.chat_channel_tracking_state[channelId].unread_count +
-          1;
-      }
-      this.currentUser.notifyPropertyChange("chat_channel_tracking_state");
-
-      // Update updated_at timestamp for channel if direct message
-      const dmChatChannel = (this.directMessageChannels || []).findBy(
-        "id",
-        parseInt(channelId, 10)
-      );
-      if (dmChatChannel) {
-        dmChatChannel.set("updated_at", new Date());
-        this.notifyPropertyChange("directMessageChannels");
-      }
-    });
-  },
-
-  _unsubscribeFromUpdateChannels() {
-    Object.keys(this.currentUser.chat_channel_tracking_state).forEach(
-      (channelId) => {
-        this.messageBus.unsubscribe(`/chat/${channelId}/new_messages`);
-      }
-    );
-    this.messageBus.unsubscribe("/chat/new-direct-message-channel");
-  },
-
-  _subscribeToUserTrackingChannel() {
-    this.messageBus.subscribe(
-      `/chat/user-tracking-state/${this.currentUser.id}`,
-      (busData) => {
-        const channelData = this.currentUser.chat_channel_tracking_state[
-          busData.chat_channel_id
-        ];
-        if (channelData) {
-          channelData.chat_message_id = busData.chat_message_id;
-          channelData.unread_count = 0;
-          this.currentUser.notifyPropertyChange("chat_channel_tracking_state");
-        }
-      }
-    );
-  },
-
-  _unsubscribeFromUserTrackingChannel() {
-    this.messageBus.unsubscribe(
-      `/chat/user-tracking-state/${this.currentUser.id}`
-    );
-  },
 
   @discourseComputed("expanded", "activeChannel")
   containerClassNames(expanded, activeChannel) {
@@ -452,16 +330,10 @@ export default Component.extend({
   @action
   fetchChannels() {
     this.set("loading", true);
-    ajax("/chat/index.json").then((channels) => {
+    this.chatService.getChannels().then((channels) => {
       this.setProperties({
-        publicChannels: A(
-          channels.public_channels.map((channel) => EmberObject.create(channel))
-        ),
-        directMessageChannels: A(
-          channels.direct_message_channels.map((channel) =>
-            EmberObject.create(channel)
-          )
-        ),
+        publicChannels: channels.publicChannels,
+        directMessageChannels: channels.directMessageChannels,
         activeChannel: null,
         loading: false,
         expanded: true,

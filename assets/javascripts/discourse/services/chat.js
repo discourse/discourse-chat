@@ -7,6 +7,15 @@ import { Promise } from "rsvp";
 
 export const LIST_VIEW = "list_view";
 export const CHAT_VIEW = "chat_view";
+
+const convertChannelToEmberObj = (channel) => {
+  channel = EmberObject.create(channel);
+  channel.chat_channels = channel.chat_channels.map((nested_channel) => {
+    return convertChannelToEmberObj(nested_channel);
+  });
+  return channel;
+};
+
 export default Service.extend({
   messageId: null,
   chatOpen: false,
@@ -78,12 +87,12 @@ export default Service.extend({
       this.setProperties({
         publicChannels: A(
           channels.public_channels.map((channel) => {
-            return this.convertChannelToEmberObj(channel);
+            return convertChannelToEmberObj(channel);
           })
         ),
         directMessageChannels: A(
           channels.direct_message_channels.map((channel) => {
-            return this.convertChannelToEmberObj(channel);
+            return convertChannelToEmberObj(channel);
           })
         ),
         hasFetchedChannels: true,
@@ -95,14 +104,6 @@ export default Service.extend({
     });
   },
 
-  convertChannelToEmberObj(channel) {
-    channel = EmberObject.create(channel);
-    channel.chat_channels = channel.chat_channels.map((nested_channel) => {
-      return this.convertChannelToEmberObj(nested_channel);
-    });
-    return channel;
-  },
-
   _subscribeToUpdateChannels() {
     Object.keys(this.currentUser.chat_channel_tracking_state).forEach(
       (channelId) => {
@@ -111,7 +112,7 @@ export default Service.extend({
     );
     this.messageBus.subscribe("/chat/new-direct-message-channel", (busData) => {
       this.directMessageChannels.pushObject(
-        this.convertChannelToEmberObj(busData.chat_channel)
+        convertChannelToEmberObj(busData.chat_channel)
       );
       this.currentUser.chat_channel_tracking_state[busData.chat_channel.id] = {
         unread_count: 0,
@@ -125,14 +126,14 @@ export default Service.extend({
   _unsubscribeFromUpdateChannels() {
     Object.keys(this.currentUser.chat_channel_tracking_state).forEach(
       (channelId) => {
-        this.messageBus.unsubscribe(`/chat/${channelId}/new_messages`);
+        this.messageBus.unsubscribe(`/chat/${channelId}/new-messages`);
       }
     );
     this.messageBus.unsubscribe("/chat/new-direct-message-channel");
   },
 
   _subscribeToSingleUpdateChannel(channelId) {
-    this.messageBus.subscribe(`/chat/${channelId}/new_messages`, (busData) => {
+    this.messageBus.subscribe(`/chat/${channelId}/new-messages`, (busData) => {
       if (busData.user_id === this.currentUser.id) {
         // User sent message, update tracking state to no unread
         this.currentUser.chat_channel_tracking_state[

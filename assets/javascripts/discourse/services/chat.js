@@ -8,7 +8,7 @@ import { Promise } from "rsvp";
 export const LIST_VIEW = "list_view";
 export const CHAT_VIEW = "chat_view";
 
-const convertChannelToEmberObj = (channel) => {
+function convertChannelToEmberObj(channel) {
   channel = EmberObject.create(channel);
   channel.chat_channels = channel.chat_channels.map((nested_channel) => {
     return convertChannelToEmberObj(nested_channel);

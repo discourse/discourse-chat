@@ -35,10 +35,8 @@ body {
 
   .tc-messages-container .tc-message.user-info-hidden {
     .tc-message-container {
-      display: flex;
-    }
-    .tc-meta-data {
-      width: calc(32px + 0.5em);
+      display: grid;
+      grid-template-columns: calc(32px + 0.5em) auto;
     }
   }
   .topic-chat-drawer-header,
@@ -98,6 +96,7 @@ body {
             flex-direction: column;
             height: 100%;
             max-height: unset;
+            max-height: -webkit-fill-available;
             .tc-messages-scroll {
               height: 95%;
               flex-shrink: 1;

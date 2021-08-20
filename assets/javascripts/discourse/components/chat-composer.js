@@ -45,7 +45,7 @@ export default Component.extend({
 
   didRender() {
     this._super(...arguments);
-    if (this.canChat && this._messageIsEmpty()) {
+    if (this.canChat && this._messageIsEmpty() && !this.site.mobileView) {
       this._focusTextArea();
     }
   },

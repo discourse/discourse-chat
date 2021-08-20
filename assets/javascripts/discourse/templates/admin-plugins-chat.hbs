@@ -1,65 +1,78 @@
-<h3>{{i18n "chat.incoming_webhooks.title"}}</h3>
-{{#if creatingNew}}
-  {{input
-    type="text"
-    value=newWebhookName
-    placeholder=(i18n "chat.incoming_webhooks.name_placeholder")
-  }}
-  {{chat-channel-chooser
-    content=model.chat_channels
-    value=newWebhookChannelId
-    onChange=(action (mut newWebhookChannelId))
-    none="chat.incoming_webhooks.channel_placeholder"
-  }}
+{{#if selectedWebhook}}
+  <h3 class="incoming-chat-webhooks-edit-title">{{i18n "chat.incoming_webhooks.edit"}}</h3>
   {{d-button
-    label="chat.create"
-    title="chat.create"
-    class="btn-primary"
-    disabled=(not nameAndChannelValid)
-    action=(action "createNewWebhook")
+    icon="chevron-left"
+    label="chat.incoming_webhooks.back"
+    title="chat.incoming_webhooks.back"
+    action=(action "backToIndex")
   }}
-  {{d-button
-    label="chat.cancel"
-    title="chat.cancel"
-    action=(action "cancelNewWebhook")
-  }}
+  {{selectedWebhook.name}}
 {{else}}
-  {{d-button
-    label="chat.incoming_webhooks.new"
-    title="chat.incoming_webhooks.new"
-    class="btn-primary"
-    action=(action "startCreatingWebhook")
-  }}
-{{/if}}
+ {{!--  Index view   --}}
+  <h3>{{i18n "chat.incoming_webhooks.title"}}</h3>
+  {{#if creatingNew}}
+    {{input
+      type="text"
+      value=newWebhookName
+      placeholder=(i18n "chat.incoming_webhooks.name_placeholder")
+    }}
+    {{chat-channel-chooser
+      content=model.chat_channels
+      value=newWebhookChannelId
+      onChange=(action (mut newWebhookChannelId))
+      none="chat.incoming_webhooks.channel_placeholder"
+    }}
+    {{d-button
+      label="chat.create"
+      title="chat.create"
+      class="btn-primary"
+      disabled=(not nameAndChannelValid)
+      action=(action "createNewWebhook")
+    }}
+    {{d-button
+      label="chat.cancel"
+      title="chat.cancel"
+      action=(action "cancelNewWebhook")
+    }}
+  {{else}}
+    {{d-button
+      label="chat.incoming_webhooks.new"
+      title="chat.incoming_webhooks.new"
+      class="btn-primary"
+      action=(action "startCreatingWebhook")
+    }}
+  {{/if}}
 
-<div class="incoming-chat-webhooks">
-  {{#if model.incoming_chat_webhooks}}
-    {{#each model.incoming_chat_webhooks as |webhook|}}
-      <div class="incoming-chat-webhooks--row">
-        <div class="incoming-chat-webhooks--row--details">
-          <div class="incoming-chat-webhooks--row--details--name">{{webhook.name}}</div>
-          <div>{{chat-channel-title channel=webhook.chat_channel}}</div>
-          <div>{{webhook.url}}</div>
-        </div>
-        <div class="incoming-chat-webhooks--row--controls">
-          <div>
-            {{d-button
-              class="btn"
-              icon="pencil-alt"
-              title="chat.incoming_webhooks.edit"
-              action=(action "editWebhook" webhook)
-            }}
-            {{d-button
-              class="btn"
-              icon="trash-alt"
-              title="chat.incoming_webhooks.delete"
-              action=(action "destroyWebhook" webhook)
-            }}
+  <div class="incoming-chat-webhooks">
+    {{#if model.incoming_chat_webhooks}}
+      {{#each model.incoming_chat_webhooks as |webhook|}}
+        <div class="incoming-chat-webhooks--row">
+          <div class="incoming-chat-webhooks--row--details">
+            <div class="incoming-chat-webhooks--row--details--name">{{webhook.name}}</div>
+            <div>{{chat-channel-title channel=webhook.chat_channel}}</div>
+            <div>{{webhook.description}}</div>
+            <div>{{webhook.url}}</div>
+          </div>
+          <div class="incoming-chat-webhooks--row--controls">
+            <div>
+              {{d-button
+                class="btn"
+                icon="pencil-alt"
+                title="chat.incoming_webhooks.edit"
+                action=(action "editWebhook" webhook)
+              }}
+              {{d-button
+                class="btn"
+                icon="trash-alt"
+                title="chat.incoming_webhooks.delete"
+                action=(action "destroyWebhook" webhook)
+              }}
+            </div>
           </div>
         </div>
-      </div>
-    {{/each}}
-  {{else}}
-    {{i18n "chat.incoming_webhooks.none"}}
-  {{/if}}
-</div>
+      {{/each}}
+    {{else}}
+      {{i18n "chat.incoming_webhooks.none"}}
+    {{/if}}
+  </div>
+{{/if}}

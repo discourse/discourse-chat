@@ -4,6 +4,7 @@ en:
       admin:
         title: "Chat"
       incoming_webhooks:
+        back: "Back"
         channel: "Channel"
         channel_placeholder: "Select a channel"
         description: "Description"

@@ -1,4 +1,5 @@
 import Controller from "@ember/controller";
+import discourseComputed from "discourse-common/utils/decorators";
 import EmberObject, { action } from "@ember/object";
 import { and } from "@ember/object/computed";
 import { ajax } from "discourse/lib/ajax";
@@ -11,7 +12,12 @@ export default Controller.extend({
   newWebhookName: "",
   newWebhookChannelId: null,
   nameAndChannelValid: and("newWebhookName", "newWebhookChannelId"),
-  selectedWebhook: null,
+
+  @discourseComputed("selectedWebhookId")
+  selectedWebhook(id) {
+    id = parseInt(id, 10);
+    return this.model.incoming_chat_webhooks.findBy("id", id);
+  },
 
   @action
   startCreatingWebhook() {
@@ -33,8 +39,7 @@ export default Controller.extend({
       this.set("model.incoming_chat_webhooks", [newWebhook].concat(this.model.incoming_chat_webhooks))
       this.setProperties({
         loading: false,
-        selectedWebhookId: newWebhook.id,
-        selectedWebhook: newWebhook,
+        selectedWebhookId: newWebhook.id
       })
     });
   },
@@ -49,8 +54,17 @@ export default Controller.extend({
   },
 
   @action
+  backToIndex() {
+    this.setProperties({
+      selectedWebhookId: null
+    })
+  },
+
+  @action
   editWebhook(webhook) {
-    console.log(webhook)
+    this.setProperties({
+      selectedWebhookId: webhook.id,
+    })
   },
 
   @action

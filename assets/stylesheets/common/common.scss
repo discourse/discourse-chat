@@ -226,8 +226,9 @@ $float-height: 530px;
     }
     &.is-reply {
       display: grid;
-      grid-template-columns: 10% 90%;
-      grid-template-rows: 30px auto;
+      grid-template-columns: 32px auto;
+      grid-column-gap: 0.5em;
+      grid-template-rows: 32px auto;
       grid-template-areas:
         "replyto replyto"
         "avatar message";
@@ -241,7 +242,7 @@ $float-height: 530px;
       }
       .tc-avatar {
         grid-area: avatar;
-        width: 100%;
+        width: 32px;
       }
       .tc-message-container {
         grid-area: message;
@@ -249,13 +250,9 @@ $float-height: 530px;
       }
     }
     .tc-avatar {
-      width: calc(10% - 0.25em);
-      margin-right: 0.25em;
+      width: 32px;
+      margin-right: 0.5em;
       cursor: pointer;
-      .avatar {
-        width: 90%;
-        height: auto;
-      }
     }
     .tc-message-container {
       width: 90%;
@@ -622,9 +619,9 @@ $float-height: 530px;
     color: var(--primary-medium);
   }
   .avatar {
-    width: 1.5em;
-    height: 1.5em;
-    margin-right: 0.25em;
+    width: 32px;
+    height: 32px;
+    margin-right: 0.5em;
   }
   .dm-multi-count {
     display: inline-block;

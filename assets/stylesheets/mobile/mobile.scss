@@ -23,6 +23,7 @@ body {
     border-top-left-radius: 1em;
     border-top: 1px solid var(--tertiary-hover);
     overflow: hidden;
+    right: unset;
     .tc-messages-scroll {
       background-color: var(--secondary);
     }
@@ -32,6 +33,14 @@ body {
     height: 100%;
   }
 
+  .tc-messages-container .tc-message.user-info-hidden {
+    .tc-message-container {
+      display: flex;
+    }
+    .tc-meta-data {
+      width: calc(32px + 0.5em);
+    }
+  }
   .topic-chat-drawer-header,
   &.mobile-chat-open .topic-chat-drawer-header,
   &.mobile-chat-minimized .topic-chat-drawer-header {
@@ -96,9 +105,9 @@ body {
             }
             .tc-composer {
               height: auto;
+              width: 98%;
               max-height: 10%;
               flex-grow: 1;
-              padding-bottom: 8px;
               margin: 0 auto 0 auto;
               padding-bottom: 0.5em;
               padding-top: 0.5em;

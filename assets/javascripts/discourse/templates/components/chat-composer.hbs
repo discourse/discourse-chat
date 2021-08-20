@@ -16,6 +16,7 @@
 {{/if}}
 <div class="tc-composer-row">
   {{d-textarea
+    autofocus=""
     value=(readonly value)
     input=(action "onTextareaInput" value="target.value")
     type="text"

@@ -398,6 +398,7 @@ export default Component.extend({
   close() {
     this.set("hidden", true);
     document.body.classList.remove("mobile-chat-open");
+    document.body.classList.remove("mobile-chat-minimized");
   },
 
   @action
@@ -409,6 +410,7 @@ export default Component.extend({
       this.set("expanded", true);
       let html = document.documentElement;
       if (html.classList.contains("mobile-view")) {
+        document.body.classList.remove("mobile-chat-minimized");
         document.body.classList.add("mobile-chat-open")
       }
       if (this.activeChannel) {

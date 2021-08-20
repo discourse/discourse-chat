@@ -411,7 +411,7 @@ export default Component.extend({
       let html = document.documentElement;
       if (html.classList.contains("mobile-view")) {
         document.body.classList.remove("mobile-chat-minimized");
-        document.body.classList.add("mobile-chat-open")
+        document.body.classList.add("mobile-chat-open");
       }
       if (this.activeChannel) {
         // Channel was previously open, so after expand we are done.

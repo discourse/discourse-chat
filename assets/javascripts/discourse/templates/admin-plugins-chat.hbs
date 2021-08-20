@@ -1,0 +1,26 @@
+<h1>{{i18n "chat.incoming_webhooks.title"}}</h1>
+{{#if creatingNew}}
+  <input
+    value={{newWebhookName}}
+    placeholder={{i18n "chat.incoming_webhooks.name_placeholder"}}
+    type="text"
+  />
+  {{combo-box
+    content=model.chat_channels
+    value=newWebhookChannel
+    onChange=(action (mut newWebhookChannel))
+    none="chat.incoming_webhooks.channel_placeholder"
+  }}
+  {{d-button
+    label="chat.cancel"
+    title="chat.cancel"
+    action=(action "cancelNewWebhook")
+  }}
+{{else}}
+  {{d-button
+    label="chat.incoming_webhooks.new"
+    title="chat.incoming_webhooks.new"
+    class="btn-primary"
+    action=(action "newWebhook")
+  }}
+{{/if}}

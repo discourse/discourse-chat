@@ -266,11 +266,20 @@ export default Component.extend({
   @action
   toggleExpand() {
     this.set("expanded", !this.expanded);
+    if (this.expanded === false) {
+      document.body.classList.remove("mobile-chat-open");
+      document.body.classList.add("mobile-chat-minimized");
+    } else {
+      document.body.classList.add("mobile-chat-open");
+      document.body.classList.remove("mobile-chat-minimized");
+    }
   },
 
   @action
   close() {
     this.set("hidden", true);
+    document.body.classList.remove("mobile-chat-open");
+    document.body.classList.remove("mobile-chat-minimized");
   },
 
   @action
@@ -280,6 +289,11 @@ export default Component.extend({
       return;
     } else {
       this.set("expanded", true);
+      let html = document.documentElement;
+      if (html.classList.contains("mobile-view")) {
+        document.body.classList.remove("mobile-chat-minimized");
+        document.body.classList.add("mobile-chat-open");
+      }
       if (this.activeChannel) {
         // Channel was previously open, so after expand we are done.
         return;

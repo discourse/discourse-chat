@@ -10,6 +10,7 @@
 enabled_site_setting :topic_chat_enabled
 
 register_asset 'stylesheets/common/common.scss'
+register_asset 'stylesheets/common/incoming-chat-webhooks.scss'
 register_asset 'stylesheets/mobile/mobile.scss', :mobile
 
 register_svg_icon "comments"
@@ -36,7 +37,7 @@ after_initialize do
 
   SeedFu.fixture_paths << Rails.root.join("plugins", "discourse-topic-chat", "db", "fixtures").to_s
 
-  load File.expand_path('../app/controllers/admin/admin_chat_controller.rb', __FILE__)
+  load File.expand_path('../app/controllers/admin/incoming_chat_webhooks_controller.rb', __FILE__)
   load File.expand_path('../app/controllers/chat_controller.rb', __FILE__)
   load File.expand_path('../app/controllers/direct_messages_controller.rb', __FILE__)
   load File.expand_path('../app/models/chat_channel.rb', __FILE__)
@@ -209,6 +210,7 @@ after_initialize do
 
   Discourse::Application.routes.append do
     mount ::DiscourseChat::Engine, at: '/chat'
-    get '/admin/plugins/chat' => 'discourse_chat/admin_chat#index', constraints: StaffConstraint.new
+    get '/admin/plugins/chat' => 'discourse_chat/incoming_chat_webhooks#index', constraints: StaffConstraint.new
+    post '/admin/plugins/chat/hooks' => 'discourse_chat/incoming_chat_webhooks#create', constraints: StaffConstraint.new
   end
 end

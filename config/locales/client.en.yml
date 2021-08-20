@@ -4,10 +4,17 @@ en:
       admin:
         title: "Chat"
       incoming_webhooks:
-        title: "Incoming webhooks"
-        new: "New incoming webhook"
-        name_placeholder: "name..."
+        channel: "Channel"
         channel_placeholder: "Select a channel"
+        description: "Description"
+        delete: "Delete"
+        edit: "edit"
+        name: "Name"
+        name_placeholder: "name..."
+        new: "New incoming webhook"
+        none: "No existing incoming webhooks created."
+        title: "Incoming webhooks"
+        url: "URL"
 
       title: "chat"
       placeholder: "chat..."
@@ -20,6 +27,7 @@ en:
       already_disabled: "Chat is already closed on this topic. Please refresh."
       in_reply_to: "In reply to"
       reply: "Reply"
+      create: "Create"
       cancel: "Cancel"
       cancel_reply: "Cancel reply"
       cancel_edit: "Cancel edit"

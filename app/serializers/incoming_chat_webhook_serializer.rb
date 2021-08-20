@@ -4,7 +4,8 @@ class IncomingChatWebhookSerializer < ApplicationSerializer
   has_one :upload, serializer: UploadSerializer, embed: :objects
   has_one :chat_channel, serializer: ChatChannelSerializer, embed: :objects
 
-  attributes :name,
+  attributes :id,
+             :name,
              :description,
              :url,
              :username

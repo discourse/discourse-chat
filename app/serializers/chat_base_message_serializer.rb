@@ -20,7 +20,7 @@ class ChatBaseMessageSerializer < ApplicationSerializer
   end
 
   def include_edited?
-    object.revisions.present?
+    object.revisions.any?
   end
 
   def include_deleted_at?

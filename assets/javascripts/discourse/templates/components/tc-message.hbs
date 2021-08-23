@@ -63,7 +63,7 @@
         </div>
       {{/if}}
 
-      {{#unless message.hideUserInfo}}
+      {{#if message.chat_webhook_event}}
         {{#if message.chat_webhook_event.emoji}}
           <div class="tc-avatar">{{replace-emoji message.chat_webhook_event.emoji}}</div>
         {{else}}
@@ -71,20 +71,29 @@
             {{avatar message.user imageSize="medium"}}
           </div>
         {{/if}}
-      {{/unless}}
+      {{else}}
+        {{#unless message.hideUserInfo}}
+          <div class="tc-avatar" data-user-card={{message.user.username}}>
+            {{avatar message.user imageSize="medium"}}
+          </div>
+        {{/unless}}
+      {{/if}}
 
       <div class="tc-message-container">
 
         <div class="tc-meta-data">
-          {{#unless message.hideUserInfo}}
+          {{#if message.chat_webhook_event.username}}
             <span class={{usernameClasses}}>
-              {{#if message.chat_webhook_event.username}}
-                {{message.chat_webhook_event.username}}
-              {{else}}
-                {{name}}
-              {{/if}}
+              {{message.chat_webhook_event.username}}
             </span>
-          {{/unless}}
+          {{else}}
+
+            {{#unless message.hideUserInfo}}
+              <span class={{usernameClasses}}>
+                {{name}}
+              </span>
+            {{/unless}}
+          {{/if}}
           {{format-date message.created_at format="tiny"}}
         </div>
         {{#if message.action_code}}

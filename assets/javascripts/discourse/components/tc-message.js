@@ -31,9 +31,18 @@ export default Component.extend({
     "message.deleted_at",
     "message.in_reply_to",
     "message.action_code",
-    "message.hideUserInfo"
+    "message.hideUserInfo",
+    "message.chat_webhook_event"
   )
-  messageClasses(id, staged, deletedAt, inReplyTo, actionCode, hideUserInfo) {
+  messageClasses(
+    id,
+    staged,
+    deletedAt,
+    inReplyTo,
+    actionCode,
+    hideUserInfo,
+    chatWebhookEvent
+  ) {
     let classNames = ["tc-message"];
     classNames.push(
       staged ? "tc-message-staged" : `tc-message-${this.message.id}`
@@ -49,7 +58,7 @@ export default Component.extend({
     if (inReplyTo) {
       classNames.push("is-reply");
     }
-    if (hideUserInfo) {
+    if (hideUserInfo && !chatWebhookEvent) {
       classNames.push("user-info-hidden");
     }
     return classNames.join(" ");

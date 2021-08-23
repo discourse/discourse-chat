@@ -6,6 +6,6 @@ class IncomingChatWebhook < ActiveRecord::Base
   has_many :chat_webhook_events
 
   def url
-    "#{Discourse.base_url}/chat/hooks/#{key}"
+    "#{Discourse.base_url}/chat/hooks/#{key}.json"
   end
 end

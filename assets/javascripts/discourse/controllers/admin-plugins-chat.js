@@ -74,16 +74,12 @@ export default Controller.extend({
 
   @action
   backToIndex() {
-    this.setProperties({
-      selectedWebhookId: null,
-    });
+    this.set("selectedWebhookId", null);
   },
 
   @action
   editWebhook(webhook) {
-    this.setProperties({
-      selectedWebhookId: webhook.id,
-    });
+    this.set("selectedWebhookId", webhook.id);
   },
 
   @action

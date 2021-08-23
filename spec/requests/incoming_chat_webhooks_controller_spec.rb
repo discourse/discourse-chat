@@ -14,13 +14,13 @@ RSpec.describe DiscourseChat::IncomingChatWebhooksController do
     end
 
     it "errors when no body is present" do
-      post "#{webhook.url}.json"
+      post "/chat/hooks/#{webhook.key}.json"
       expect(response.status).to eq(400)
     end
 
     it "creates a new chat message" do
       expect {
-        post "#{webhook.url}.json", params: { body: "A new signup woo!" }
+        post "/chat/hooks/#{webhook.key}.json", params: { body: "A new signup woo!" }
       }.to change { ChatMessage.where(chat_channel: chat_channel).count }.by(1)
       expect(response.status).to eq(200)
       chat_webhook_event = ChatWebhookEvent.last

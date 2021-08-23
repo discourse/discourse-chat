@@ -72,6 +72,5 @@ class DiscourseChat::AdminIncomingChatWebhooksController < Admin::AdminControlle
     else
       render_json_error(webhook)
     end
-
   end
 end

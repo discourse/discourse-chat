@@ -25,14 +25,17 @@ export default Component.extend({
     );
   },
 
+  @discourseComputed("message.hideUserInfo", "message.chat_webhook_event")
+  hideUserInfo(hide, webhookEvent) {
+    return hide && !webhookEvent;
+  },
+
   @discourseComputed(
     "message.id",
     "message.staged",
     "message.deleted_at",
     "message.in_reply_to",
     "message.action_code",
-    "message.hideUserInfo",
-    "message.chat_webhook_event"
   )
   messageClasses(
     id,
@@ -40,8 +43,6 @@ export default Component.extend({
     deletedAt,
     inReplyTo,
     actionCode,
-    hideUserInfo,
-    chatWebhookEvent
   ) {
     let classNames = ["tc-message"];
     classNames.push(
@@ -58,7 +59,7 @@ export default Component.extend({
     if (inReplyTo) {
       classNames.push("is-reply");
     }
-    if (hideUserInfo && !chatWebhookEvent) {
+    if (this.hideUserInfo) {
       classNames.push("user-info-hidden");
     }
     return classNames.join(" ");

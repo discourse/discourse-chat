@@ -1,4 +1,3 @@
-import { computed } from "@ember/object";
 import ComboBoxComponent from "select-kit/components/combo-box";
 
 export default ComboBoxComponent.extend({

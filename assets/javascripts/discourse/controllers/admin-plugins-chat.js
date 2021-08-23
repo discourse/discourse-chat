@@ -118,7 +118,7 @@ export default Controller.extend({
       data,
       type: "PUT",
     })
-      .then((webhook) => {
+      .then(() => {
         this.selectedWebhook.set("updated_at", new Date());
         this.setProperties({
           loading: false,

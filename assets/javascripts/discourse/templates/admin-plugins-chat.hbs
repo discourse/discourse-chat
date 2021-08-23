@@ -46,7 +46,7 @@
     <div class="control-group">
       <label class="control-label">
         {{#if selectedWebhook.emoji}}
-            {{i18n "chat.incoming_webhooks.current_emoji"}}
+          {{i18n "chat.incoming_webhooks.current_emoji"}}
           <span class="incoming-chat-webhooks-current-emoji">
             {{replace-emoji selectedWebhook.emoji}}
           </span>
@@ -60,7 +60,7 @@
         emojiSelected=(action "emojiSelected")
         onEmojiPickerClose=(action (mut emojiPickerIsActive) false)
       }}
-      {{#if (not emojiPickerIsActive)}}
+      {{#unless emojiPickerIsActive}}
         {{d-button
           class="btn-primary"
           label="chat.incoming_webhooks.select_emoji"
@@ -68,11 +68,10 @@
         }}
         {{d-button
           label="chat.incoming_webhooks.reset_emoji"
-          action=(action "resetEmoji")
           action=(action (mut selectedWebhook.emoji) null)
           disabled=(not selectedWebhook.emoji)
         }}
-      {{/if}}
+      {{/unless}}
       <div class="control-instructions">{{i18n "chat.incoming_webhooks.emoji_instructions"}}</div>
     </div>
 
@@ -90,7 +89,7 @@
     }}
   </form>
 {{else}}
- {{!--  Index view   --}}
+  {{!--  Index view   --}}
   <h3>{{i18n "chat.incoming_webhooks.title"}}</h3>
   {{#if creatingNew}}
     <div class="new-incoming-webhook-container">

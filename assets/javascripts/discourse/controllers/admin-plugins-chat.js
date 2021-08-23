@@ -42,11 +42,6 @@ export default Controller.extend({
   },
 
   @action
-  startCreatingWebhook() {
-    this.set("creatingNew", true);
-  },
-
-  @action
   createNewWebhook() {
     if (this.loading) {
       return;
@@ -119,7 +114,7 @@ export default Controller.extend({
       emoji: this.selectedWebhook.emoji,
       username: this.selectedWebhook.username,
     };
-    ajax(`/admin/plugins/chat/hooks/${this.selectedWebhook.id}`, {
+    return ajax(`/admin/plugins/chat/hooks/${this.selectedWebhook.id}`, {
       data,
       type: "PUT",
     })
@@ -131,10 +126,6 @@ export default Controller.extend({
         });
       })
       .catch(popupAjaxError);
-  },
-  @action
-  resetEmoji() {
-    this.selectedWebhook.set("emoji", null);
   },
 
   @action

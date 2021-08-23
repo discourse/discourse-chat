@@ -69,6 +69,7 @@
         {{d-button
           label="chat.incoming_webhooks.reset_emoji"
           action=(action "resetEmoji")
+          action=(action (mut selectedWebhook.emoji) null)
           disabled=(not selectedWebhook.emoji)
         }}
       {{/if}}

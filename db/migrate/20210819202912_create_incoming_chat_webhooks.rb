@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class CreateIncomingChatWebhooks < ActiveRecord::Migration[6.1]
   def change
     create_table :incoming_chat_webhooks do |t|

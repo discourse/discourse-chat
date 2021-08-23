@@ -44,10 +44,12 @@ after_initialize do
   load File.expand_path('../app/models/chat_channel.rb', __FILE__)
   load File.expand_path('../app/models/chat_message.rb', __FILE__)
   load File.expand_path('../app/models/chat_message_revision.rb', __FILE__)
+  load File.expand_path('../app/models/chat_webhook_event.rb', __FILE__)
   load File.expand_path('../app/models/direct_message_channel.rb', __FILE__)
   load File.expand_path('../app/models/direct_message_user.rb', __FILE__)
   load File.expand_path('../app/models/incoming_chat_webhook.rb', __FILE__)
   load File.expand_path('../app/models/user_chat_channel_last_read.rb', __FILE__)
+  load File.expand_path('../app/serializers/chat_webhook_event_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/chat_base_message_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/chat_channel_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/chat_channel_index_serializer.rb', __FILE__)
@@ -207,6 +209,7 @@ after_initialize do
 
     post '/direct_messages/create' => 'direct_messages#create'
 
+    post '/hooks/:key' => 'incoming_chat_webhooks#create_message'
   end
 
   Discourse::Application.routes.append do

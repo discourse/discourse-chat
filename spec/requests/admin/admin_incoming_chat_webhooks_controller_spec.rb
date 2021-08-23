@@ -100,7 +100,6 @@ RSpec.describe DiscourseChat::AdminIncomingChatWebhooksController do
       put "/admin/plugins/chat/hooks/#{existing.id}.json", params: invalid_attrs
       expect(response.status).to eq(400)
 
-
       invalid_attrs[:name] = "woopsers"
       invalid_attrs[:chat_channel_id] = nil
       put "/admin/plugins/chat/hooks/#{existing.id}.json", params: invalid_attrs

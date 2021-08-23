@@ -35,15 +35,9 @@ export default Component.extend({
     "message.staged",
     "message.deleted_at",
     "message.in_reply_to",
-    "message.action_code",
+    "message.action_code"
   )
-  messageClasses(
-    id,
-    staged,
-    deletedAt,
-    inReplyTo,
-    actionCode,
-  ) {
+  messageClasses(id, staged, deletedAt, inReplyTo, actionCode) {
     let classNames = ["tc-message"];
     classNames.push(
       staged ? "tc-message-staged" : `tc-message-${this.message.id}`

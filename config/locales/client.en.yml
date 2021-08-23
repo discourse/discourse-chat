@@ -39,6 +39,7 @@ en:
       already_disabled: "Chat is already closed on this topic. Please refresh."
       in_reply_to: "In reply to"
       reply: "Reply"
+      bot: "bot"
       create: "Create"
       cancel: "Cancel"
       cancel_reply: "Cancel reply"

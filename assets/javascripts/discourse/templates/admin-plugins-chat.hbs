@@ -4,7 +4,7 @@
     icon="chevron-left"
     label="chat.incoming_webhooks.back"
     title="chat.incoming_webhooks.back"
-    action=(action "backToIndex")
+    action=(action (mut selectedWebhookId) null)
   }}
 
   <form class="form-vertical">
@@ -39,8 +39,7 @@
       {{chat-channel-chooser
         content=model.chat_channels
         value=selectedWebhook.chat_channel.id
-        onChange=(action (mut selectedWebhook.chat_channel.id))
-        none="chat.incoming_webhooks.channel_placeholder"
+        onChange=(action "changeChatChannel")
       }}
     </div>
 
@@ -103,7 +102,6 @@
         content=model.chat_channels
         value=newWebhookChannelId
         onChange=(action (mut newWebhookChannelId))
-        none="chat.incoming_webhooks.channel_placeholder"
       }}
       {{d-button
         label="chat.create"
@@ -123,13 +121,13 @@
       label="chat.incoming_webhooks.new"
       title="chat.incoming_webhooks.new"
       class="btn-primary"
-      action=(action "startCreatingWebhook")
+      action=(action (mut creatingNew) true)
     }}
   {{/if}}
 
   <div class="incoming-chat-webhooks">
     {{#if model.incoming_chat_webhooks}}
-      {{#each model.incoming_chat_webhooks as |webhook|}}
+      {{#each sortedWebhooks as |webhook|}}
         <div class="incoming-chat-webhooks--row">
           <div class="incoming-chat-webhooks--row--details">
             <div class="incoming-chat-webhooks--row--details--name">
@@ -155,7 +153,7 @@
                 class="btn"
                 icon="pencil-alt"
                 title="chat.incoming_webhooks.edit"
-                action=(action "editWebhook" webhook)
+                action=(action (mut selectedWebhookId) webhook.id)
               }}
               {{d-button
                 class="btn"

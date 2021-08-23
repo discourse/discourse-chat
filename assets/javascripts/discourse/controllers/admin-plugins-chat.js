@@ -1,7 +1,7 @@
 import Controller from "@ember/controller";
 import bootbox from "bootbox";
 import discourseComputed from "discourse-common/utils/decorators";
-import EmberObject, { action } from "@ember/object";
+import EmberObject, { action, computed } from "@ember/object";
 import I18n from "I18n";
 import { and } from "@ember/object/computed";
 import { ajax } from "discourse/lib/ajax";
@@ -16,6 +16,15 @@ export default Controller.extend({
   newWebhookChannelId: null,
   nameAndChannelValid: and("newWebhookName", "newWebhookChannelId"),
   emojiPickerIsActive: false,
+
+  sortedWebhooks: computed(
+    "model.incoming_chat_webhooks.@each.updated_at",
+    function () {
+      return this.model.incoming_chat_webhooks
+        ? this.model.incoming_chat_webhooks.sortBy("updated_at").reverse()
+        : [];
+    }
+  ),
 
   @discourseComputed("selectedWebhookId")
   selectedWebhook(id) {
@@ -73,16 +82,6 @@ export default Controller.extend({
   },
 
   @action
-  backToIndex() {
-    this.set("selectedWebhookId", null);
-  },
-
-  @action
-  editWebhook(webhook) {
-    this.set("selectedWebhookId", webhook.id);
-  },
-
-  @action
   destroyWebhook(webhook) {
     bootbox.confirm(
       I18n.t("chat.incoming_webhooks.confirm_destroy"),
@@ -125,6 +124,7 @@ export default Controller.extend({
       type: "PUT",
     })
       .then((webhook) => {
+        this.selectedWebhook.set("updated_at", new Date());
         this.setProperties({
           loading: false,
           selectedWebhookId: null,
@@ -135,5 +135,13 @@ export default Controller.extend({
   @action
   resetEmoji() {
     this.selectedWebhook.set("emoji", null);
+  },
+
+  @action
+  changeChatChannel(chatChannelId) {
+    this.selectedWebhook.set(
+      "chat_channel",
+      this.model.chat_channels.findBy("id", chatChannelId)
+    );
   },
 });

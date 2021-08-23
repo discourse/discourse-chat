@@ -84,6 +84,9 @@
                 {{name}}
               {{/if}}
             </span>
+            {{#if message.chat_webhook_event}}
+              <span class="tc-bot-indicator">{{i18n "chat.bot"}}</span>
+            {{/if}}
           {{/unless}}
           {{format-date message.created_at format="tiny"}}
         </div>

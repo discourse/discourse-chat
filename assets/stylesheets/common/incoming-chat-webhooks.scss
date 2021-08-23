@@ -26,6 +26,27 @@
   }
 }
 
-.incoming-chat-webhooks-edit-title {
-  text-transform: capitalize;
+.incoming-chat-webhooks-back {
+  margin-bottom: 1em;
+}
+
+.incoming-chat-webhooks-current-emoji {
+  padding-left: 0.5em;
+}
+
+.new-incoming-webhook-container {
+  display: flex;
+  align-items: center;
+
+  input {
+    margin: 0;
+  }
+
+  input, details {
+    margin-right: 0.5em;
+  }
+
+  .create-new-incoming-webhook-btn {
+    margin-right: 0.25em;
+  }
 }

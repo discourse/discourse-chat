@@ -37,9 +37,10 @@ after_initialize do
 
   SeedFu.fixture_paths << Rails.root.join("plugins", "discourse-topic-chat", "db", "fixtures").to_s
 
-  load File.expand_path('../app/controllers/admin/incoming_chat_webhooks_controller.rb', __FILE__)
+  load File.expand_path('../app/controllers/admin/admin_incoming_chat_webhooks_controller.rb', __FILE__)
   load File.expand_path('../app/controllers/chat_controller.rb', __FILE__)
   load File.expand_path('../app/controllers/direct_messages_controller.rb', __FILE__)
+  load File.expand_path('../app/controllers/incoming_chat_webhooks_controller.rb', __FILE__)
   load File.expand_path('../app/models/chat_channel.rb', __FILE__)
   load File.expand_path('../app/models/chat_message.rb', __FILE__)
   load File.expand_path('../app/models/chat_message_revision.rb', __FILE__)
@@ -210,7 +211,9 @@ after_initialize do
 
   Discourse::Application.routes.append do
     mount ::DiscourseChat::Engine, at: '/chat'
-    get '/admin/plugins/chat' => 'discourse_chat/incoming_chat_webhooks#index', constraints: StaffConstraint.new
-    post '/admin/plugins/chat/hooks' => 'discourse_chat/incoming_chat_webhooks#create', constraints: StaffConstraint.new
+    get '/admin/plugins/chat' => 'discourse_chat/admin_incoming_chat_webhooks#index', constraints: StaffConstraint.new
+    post '/admin/plugins/chat/hooks' => 'discourse_chat/admin_incoming_chat_webhooks#create', constraints: StaffConstraint.new
+    put '/admin/plugins/chat/hooks/:incoming_chat_webhook_id' => 'discourse_chat/admin_incoming_chat_webhooks#update', constraints: StaffConstraint.new
+    delete '/admin/plugins/chat/hooks/:incoming_chat_webhook_id' => 'discourse_chat/admin_incoming_chat_webhooks#destroy', constraints: StaffConstraint.new
   end
 end

@@ -1,39 +1,123 @@
 {{#if selectedWebhook}}
-  <h3 class="incoming-chat-webhooks-edit-title">{{i18n "chat.incoming_webhooks.edit"}}</h3>
   {{d-button
+    class="incoming-chat-webhooks-back"
     icon="chevron-left"
     label="chat.incoming_webhooks.back"
     title="chat.incoming_webhooks.back"
     action=(action "backToIndex")
   }}
-  {{selectedWebhook.name}}
+
+  <form class="form-vertical">
+    <div class="control-group">
+      <label class="control-label">{{i18n "chat.incoming_webhooks.name"}}</label>
+      {{input
+        type="text"
+        value=selectedWebhook.name
+        placeholder=(i18n "chat.incoming_webhooks.name")
+      }}
+    </div>
+
+    <div class="control-group">
+      <label class="control-label">{{i18n "chat.incoming_webhooks.description"}}</label>
+      {{textarea
+        value=selectedWebhook.description
+      }}
+    </div>
+
+    <div class="control-group">
+      <label class="control-label">{{i18n "chat.incoming_webhooks.username"}}</label>
+      {{input
+        type="text"
+        value=selectedWebhook.username
+        placeholder=(i18n "chat.incoming_webhooks.system")
+      }}
+      <div class="control-instructions">{{i18n "chat.incoming_webhooks.username_instructions"}}</div>
+    </div>
+
+    <div class="control-group">
+      <label class="control-label">{{i18n "chat.incoming_webhooks.post_to"}}</label>
+      {{chat-channel-chooser
+        content=model.chat_channels
+        value=selectedWebhook.chat_channel.id
+        onChange=(action (mut selectedWebhook.chat_channel.id))
+        none="chat.incoming_webhooks.channel_placeholder"
+      }}
+    </div>
+
+    <div class="control-group">
+      <label class="control-label">
+        {{#if selectedWebhook.emoji}}
+            {{i18n "chat.incoming_webhooks.current_emoji"}}
+          <span class="incoming-chat-webhooks-current-emoji">
+            {{replace-emoji selectedWebhook.emoji}}
+          </span>
+        {{else}}
+          {{i18n "chat.incoming_webhooks.no_emoji"}}
+        {{/if}}
+      </label>
+      {{emoji-picker
+        isActive=emojiPickerIsActive
+        isEditorFocused=true
+        emojiSelected=(action "emojiSelected")
+        onEmojiPickerClose=(action (mut emojiPickerIsActive) false)
+      }}
+      {{#if (not emojiPickerIsActive)}}
+        {{d-button
+          class="btn-primary"
+          label="chat.incoming_webhooks.select_emoji"
+          action=(action (mut emojiPickerIsActive) true)
+        }}
+        {{d-button
+          label="chat.incoming_webhooks.reset_emoji"
+          action=(action "resetEmoji")
+          disabled=(not selectedWebhook.emoji)
+        }}
+      {{/if}}
+      <div class="control-instructions">{{i18n "chat.incoming_webhooks.emoji_instructions"}}</div>
+    </div>
+
+    <div class="control-group">
+      <label class="control-label">{{i18n "chat.incoming_webhooks.url"}}</label>
+      <label>{{selectedWebhook.url}}</label>
+    </div>
+
+    {{d-button
+      class="btn-primary"
+      label="chat.incoming_webhooks.save"
+      title="chat.incoming_webhooks.save"
+      action=(action "saveEdit")
+      disabled=saveEditDisabled
+    }}
+  </form>
 {{else}}
  {{!--  Index view   --}}
   <h3>{{i18n "chat.incoming_webhooks.title"}}</h3>
   {{#if creatingNew}}
-    {{input
-      type="text"
-      value=newWebhookName
-      placeholder=(i18n "chat.incoming_webhooks.name_placeholder")
-    }}
-    {{chat-channel-chooser
-      content=model.chat_channels
-      value=newWebhookChannelId
-      onChange=(action (mut newWebhookChannelId))
-      none="chat.incoming_webhooks.channel_placeholder"
-    }}
-    {{d-button
-      label="chat.create"
-      title="chat.create"
-      class="btn-primary"
-      disabled=(not nameAndChannelValid)
-      action=(action "createNewWebhook")
-    }}
-    {{d-button
-      label="chat.cancel"
-      title="chat.cancel"
-      action=(action "cancelNewWebhook")
-    }}
+    <div class="new-incoming-webhook-container">
+      {{input
+        type="text"
+        value=newWebhookName
+        placeholder=(i18n "chat.incoming_webhooks.name_placeholder")
+      }}
+      {{chat-channel-chooser
+        content=model.chat_channels
+        value=newWebhookChannelId
+        onChange=(action (mut newWebhookChannelId))
+        none="chat.incoming_webhooks.channel_placeholder"
+      }}
+      {{d-button
+        label="chat.create"
+        title="chat.create"
+        class="btn-primary create-new-incoming-webhook-btn"
+        disabled=(not nameAndChannelValid)
+        action=(action "createNewWebhook")
+      }}
+      {{d-button
+        label="chat.cancel"
+        title="chat.cancel"
+        action=(action "resetNewWebhook")
+      }}
+    </div>
   {{else}}
     {{d-button
       label="chat.incoming_webhooks.new"
@@ -48,7 +132,19 @@
       {{#each model.incoming_chat_webhooks as |webhook|}}
         <div class="incoming-chat-webhooks--row">
           <div class="incoming-chat-webhooks--row--details">
-            <div class="incoming-chat-webhooks--row--details--name">{{webhook.name}}</div>
+            <div class="incoming-chat-webhooks--row--details--name">
+              {{webhook.name}}
+            </div>
+            <div>
+              {{#if webhook.emoji}}
+                {{replace-emoji webhook.emoji}}
+              {{/if}}
+              {{#if webhook.username}}
+                {{webhook.username}}
+              {{else}}
+                {{i18n "chat.incoming_webhooks.system"}}
+              {{/if}}
+            </div>
             <div>{{chat-channel-title channel=webhook.chat_channel}}</div>
             <div>{{webhook.description}}</div>
             <div>{{webhook.url}}</div>

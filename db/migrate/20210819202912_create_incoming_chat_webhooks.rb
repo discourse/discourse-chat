@@ -6,7 +6,7 @@ class CreateIncomingChatWebhooks < ActiveRecord::Migration[6.1]
       t.integer :chat_channel_id, null: false
       t.string :username
       t.string :description
-      t.integer :upload_id
+      t.string :emoji
 
       t.timestamps
     end

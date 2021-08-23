@@ -18,3 +18,9 @@ end
 Fabricator(:direct_message_channel) do
   users
 end
+
+Fabricator(:incoming_chat_webhook) do
+  name { sequence(:name) { |i| "#{i + 1}" } }
+  key { sequence(:key) { |i| "#{i + 1}" } }
+  chat_channel { Fabricate(:site_chat_channel) }
+end

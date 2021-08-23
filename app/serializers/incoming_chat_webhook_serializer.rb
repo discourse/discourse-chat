@@ -7,6 +7,7 @@ class IncomingChatWebhookSerializer < ApplicationSerializer
   attributes :id,
              :name,
              :description,
+             :emoji,
              :url,
              :username
 end

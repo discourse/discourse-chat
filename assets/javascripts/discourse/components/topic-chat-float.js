@@ -300,31 +300,15 @@ export default Component.extend({
       }
     }
 
-    let publicChannelIdWithUnread;
-    let dmChannelIdWithUnread;
-
     // Look for DM channel with unread, and fallback to public channel with unread
-    for (const [channelId, state] of Object.entries(
-      this.currentUser.chat_channel_tracking_state
-    )) {
-      if (state.chatable_type === "DirectMessageChannel") {
-        if (!dmChannelIdWithUnread && state.unread_count > 0) {
-          dmChannelIdWithUnread = channelId;
-          break;
-        }
+    this.chatService.getIdealFirstChannelId().then((channelId) => {
+      if (channelId) {
+        this._fetchChannelAndSwitch(channelId);
       } else {
-        if (!publicChannelIdWithUnread && state.unread_count > 0) {
-          publicChannelIdWithUnread = channelId;
-        }
+        // No channels with unread messages. Fetch channel index.
+        this.fetchChannels();
       }
-    }
-    let channelId = dmChannelIdWithUnread || publicChannelIdWithUnread;
-    if (channelId) {
-      this._fetchChannelAndSwitch(channelId);
-    } else {
-      // No channels with unread messages. Fetch channel index.
-      this.fetchChannels();
-    }
+    });
   },
 
   @action

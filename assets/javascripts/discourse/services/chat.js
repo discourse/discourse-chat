@@ -103,6 +103,31 @@ export default Service.extend({
       };
     });
   },
+  getIdealFirstChannelId() {
+    // Returns the channel ID of the first direct message channel with unread messages if one exists.
+    // Otherwise returns the ID of the first public channel with unread messages.
+    // If there is no channel ID to enter, return null and handle the fallback where this function is used.
+    return this.getChannels().then(() => {
+      let publicChannelIdWithUnread;
+      let dmChannelIdWithUnread;
+
+      for (const [channelId, state] of Object.entries(
+        this.currentUser.chat_channel_tracking_state
+      )) {
+        if (state.chatable_type === "DirectMessageChannel") {
+          if (!dmChannelIdWithUnread && state.unread_count > 0) {
+            dmChannelIdWithUnread = channelId;
+            break;
+          }
+        } else {
+          if (!publicChannelIdWithUnread && state.unread_count > 0) {
+            publicChannelIdWithUnread = channelId;
+          }
+        }
+      }
+      return dmChannelIdWithUnread || publicChannelIdWithUnread;
+    });
+  },
 
   _subscribeToUpdateChannels() {
     Object.keys(this.currentUser.chat_channel_tracking_state).forEach(

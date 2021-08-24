@@ -184,6 +184,7 @@ after_initialize do
   end
 
   DiscourseChat::Engine.routes.draw do
+    get '/' => 'chat#index'
     get '/index' => 'chat#index'
     post '/enable' => 'chat#enable_chat'
     post '/disable' => 'chat#disable_chat'

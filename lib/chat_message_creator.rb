@@ -60,6 +60,7 @@ class DiscourseChat::ChatMessageCreator
           chat_channel_id: @chat_channel.id,
           chat_message_id: @chat_message.id,
         )
+        self.class.send_push_and_desktop_notifications(target_user, @user)
       end
     end
   end
@@ -67,7 +68,9 @@ class DiscourseChat::ChatMessageCreator
   def self.mentioned_users(chat_message:, creator:)
     mention_matches = chat_message.message.scan(MENTION_REGEX)
     mention_matches.reject! { |match| ["@#{creator.username}", "@system"].include?(match) }
-    User.where(username: mention_matches.map { |match| match[1..-1] })
+    User
+      .includes(:do_not_disturb_timings) # Avoid n+1 for push notifications
+      .where(username: mention_matches.map { |match| match[1..-1] })
   end
 
   def self.create_mention_notification(creator_username:, mentioned_user_id:, chat_channel_id:, chat_message_id:)
@@ -82,5 +85,15 @@ class DiscourseChat::ChatMessageCreator
         mentioned_by_username: creator_username,
       }.to_json
     )
+  end
+
+  def self.send_push_and_desktop_notifications(mentioned, mentioner)
+    return if mentioned.do_not_disturb?
+
+    payload = "@#{mentioner.username} mentioned you in chat"
+    MessageBus.publish("/notification-alert/#{mentioned.id}", payload, user_ids: [mentioned.id])
+    if mentioned.push_subscriptions.exists?
+      Jobs.enqueue(:send_push_notification, user_id: mentioned.id, payload: payload)
+    end
   end
 end

@@ -14,7 +14,7 @@ function convertChannelToEmberObj(channel) {
     return convertChannelToEmberObj(nested_channel);
   });
   return channel;
-};
+}
 
 export default Service.extend({
   messageId: null,
@@ -28,13 +28,20 @@ export default Service.extend({
 
   init() {
     this._super(...arguments);
-    this._subscribeToUpdateChannels();
-    this._subscribeToUserTrackingChannel();
+
+    if (this.currentUser?.can_chat) {
+      this._subscribeToUpdateChannels();
+      this._subscribeToUserTrackingChannel();
+    }
   },
 
   willDestroy() {
-    this._unsubscribeFromUpdateChannels();
-    this._unsubscribeFromUserTrackingChannel();
+    this._super(...arguments);
+
+    if (this.currentUser?.can_chat) {
+      this._unsubscribeFromUpdateChannels();
+      this._unsubscribeFromUserTrackingChannel();
+    }
   },
 
   setMessageId(messageId) {

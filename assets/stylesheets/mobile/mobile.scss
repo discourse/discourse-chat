@@ -13,7 +13,8 @@ body {
     &:not(.mobile-chat-open) .topic-chat-float-container {
       bottom: calc(var(--footer-nav-height) + 2.25em);
     }
-    .tc-channels, .tc-live-pane {
+    .tc-channels,
+    .tc-live-pane {
       padding-bottom: calc(var(--footer-nav-height) + 2.25em);
     }
   }

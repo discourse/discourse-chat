@@ -9,6 +9,15 @@ body {
     }
   }
 
+  &.mobile-chat-minimized {
+    #toppic-progress-wrapper {
+      margin-bottom: 3em;
+    }
+    &.footer-nav-visible {
+      margin-bottom: calc(var(--footer-nav-height) + 2em)
+    }
+  }
+
   &.footer-nav-visible {
     &:not(.mobile-chat-open) .topic-chat-float-container {
       bottom: calc(var(--footer-nav-height) + 2.25em);

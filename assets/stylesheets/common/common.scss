@@ -263,7 +263,10 @@ $float-height: 530px;
     .tc-text {
       margin: 0;
       padding-left: 0.05em;
-
+      pre {
+        width: 90%;
+        overflow: scroll;
+      }
       > p {
         margin: 0;
       }

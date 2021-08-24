@@ -129,9 +129,18 @@ $float-height: 530px;
     text-overflow: ellipsis;
     overflow-x: hidden;
     color: var(--primary);
+    display: flex;
+    align-items: center;
     .chat-channel-title {
       display: flex;
-
+      width: calc(95% - 0.5em);
+      margin-right: 0.5em;
+      flex-grow: 1;
+      .dm-usernames {
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
       .d-icon:not(.d-icon-hashtag) {
         color: var(--primary-high);
       }
@@ -148,6 +157,9 @@ $float-height: 530px;
     border-radius: 100%;
     min-width: 1.4em;
     min-height: 1.4em;
+    height: 1.4em;
+    width: 1.4em;
+    padding: 1px;
     text-align: center;
   }
   .tc-expand {

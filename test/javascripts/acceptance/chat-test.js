@@ -325,7 +325,7 @@ acceptance(
       );
     });
 
-    test("Unread header indicator and unread count on channel row are present", async function (assert) {
+    test("Unread header indicator is present", async function (assert) {
       await visit("/t/internationalization-localization/280");
 
       assert.ok(
@@ -335,21 +335,6 @@ acceptance(
         "Unread indicator present in header"
       );
 
-      await click(".header-dropdown-toggle.open-chat");
-      // Automatically placed in site channel. Go back to index and check channel row
-      await click(".return-to-channels");
-
-      assert.ok(
-        exists(".chat-channel-row .unread-chat-messages-indicator"),
-        "Unread indicator present in chat channel row"
-      );
-
-      assert.equal(
-        query(
-          ".chat-channel-row .chat-channel-row-unread-count"
-        ).innerText.trim(),
-        I18n.t("chat.unread_count", { count: 2 })
-      );
     });
   }
 );

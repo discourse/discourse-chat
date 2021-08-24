@@ -263,6 +263,9 @@ $float-height: 530px;
     .tc-text {
       margin: 0;
       padding-left: 0.05em;
+      img {
+        max-width: 100%;
+      }
       pre {
         width: 90%;
         overflow: scroll;

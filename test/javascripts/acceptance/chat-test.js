@@ -333,7 +333,6 @@ acceptance(
         ),
         "Unread indicator present in header"
       );
-
     });
   }
 );

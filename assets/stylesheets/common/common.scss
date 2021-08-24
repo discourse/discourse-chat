@@ -697,6 +697,10 @@ $float-height: 530px;
   }
 }
 
+.full-page-chat {
+  height: 100%;
+}
+
 :root:not(.mobile-view) {
   .tc-drawer {
     width: 400px;

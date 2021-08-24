@@ -34,9 +34,8 @@
     {{!-- Content --}}
     <div class="topic-chat-drawer-content">
       {{#if chatView}}
-        {{#if (and this.activeChannel cookFunction)}}
+        {{#if this.activeChannel}}
           {{chat-live-pane
-            cook=cookFunction
             chatChannel=activeChannel
             expanded=this.expanded
             floatHidden=this.hidden

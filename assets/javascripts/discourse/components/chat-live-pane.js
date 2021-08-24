@@ -105,26 +105,29 @@ export default Component.extend({
       ? `/chat/lookup/${this.targetMessageId}.json`
       : `/chat/${this.chatChannel.id}/messages.json`;
 
-    ajax(url, { data: { page_size: PAGE_SIZE } })
-      .then((data) => {
-        if (this._selfDeleted()) {
-          return;
-        }
-        this.setMessageProps(data.topic_chat_view);
-        this._calculateStickScroll();
-      })
-      .catch((err) => {
-        throw err;
-      })
-      .finally(() => {
-        if (this._selfDeleted()) {
-          return;
-        }
-        if (this.targetMessageId) {
-          this.chatService.clearMessageId();
-        }
-        this.set("loading", false);
-      });
+    this.chatService.loadCookFunction(this.site.categories).then((cook) => {
+      this.set("cook", cook);
+      return ajax(url, { data: { page_size: PAGE_SIZE } })
+        .then((data) => {
+          if (this._selfDeleted()) {
+            return;
+          }
+          this.setMessageProps(data.topic_chat_view);
+          this._calculateStickScroll();
+        })
+        .catch((err) => {
+          throw err;
+        })
+        .finally(() => {
+          if (this._selfDeleted()) {
+            return;
+          }
+          if (this.targetMessageId) {
+            this.chatService.clearMessageId();
+          }
+          this.set("loading", false);
+        });
+    });
   },
 
   _fetchMorePastMessages() {

@@ -13,46 +13,6 @@ import { cancel, schedule, throttle } from "@ember/runloop";
 import { generateCookFunction } from "discourse/lib/text";
 import { inject as service } from "@ember/service";
 
-const MARKDOWN_OPTIONS = {
-  features: {
-    anchor: true,
-    "auto-link": true,
-    bbcode: true,
-    "bbcode-block": true,
-    "bbcode-inline": true,
-    "bold-italics": true,
-    "category-hashtag": true,
-    censored: true,
-    checklist: false,
-    code: true,
-    "custom-typographer-replacements": false,
-    "d-wrap": false,
-    details: false,
-    "discourse-local-dates": false,
-    emoji: true,
-    emojiShortcuts: true,
-    html: false,
-    "html-img": true,
-    "inject-line-number": true,
-    inlineEmoji: true,
-    linkify: true,
-    mentions: true,
-    newline: true,
-    onebox: false,
-    paragraph: false,
-    policy: false,
-    poll: false,
-    quote: true,
-    quotes: true,
-    "resize-controls": false,
-    table: true,
-    "text-post-process": true,
-    unicodeUsernames: false,
-    "upload-protocol": true,
-    "watched-words": true,
-  },
-};
-
 export default Component.extend({
   chatView: equal("view", CHAT_VIEW),
   classNameBindings: [":topic-chat-float-container", "hidden"],
@@ -94,8 +54,6 @@ export default Component.extend({
       "_startDynamicCheckSize"
     );
     this.appEvents.on("composer:resize-ended", this, "_clearDynamicCheckSize");
-
-    this._loadCookFunction();
   },
   willDestroyElement() {
     this._super(...arguments);
@@ -139,17 +97,6 @@ export default Component.extend({
   _fireHiddenAppEvents() {
     this.chatService.setChatOpenStatus(!this.hidden);
     this.appEvents.trigger("chat:rerender-header");
-  },
-
-  _loadCookFunction() {
-    return generateCookFunction(MARKDOWN_OPTIONS).then((cookFunction) => {
-      return this.set("cookFunction", (raw) => {
-        return simpleCategoryHashMentionTransform(
-          cookFunction(raw),
-          this.site.categories
-        );
-      });
-    });
   },
 
   openChannelFor(chatable) {

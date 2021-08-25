@@ -712,7 +712,10 @@ $float-height: 530px;
 }
 
 .full-page-chat {
-  height: 100%;
+  height: var(--full-page-chat-height, 80vh);
+  .tc-live-pane {
+    height: 100%;
+  }
 }
 
 :root:not(.mobile-view) {

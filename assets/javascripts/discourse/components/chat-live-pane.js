@@ -357,20 +357,15 @@ export default Component.extend({
 
   _calculateHeight() {
     const main = document.querySelector("#main-outlet"),
-      pTop = window
-        .getComputedStyle(main, null)
-        .getPropertyValue("padding-top"),
-      pBottom = window
+      padBottom = window
         .getComputedStyle(main, null)
         .getPropertyValue("padding-bottom"),
-      mainCoords = main.getBoundingClientRect();
+      chatContainerCoords = document
+        .querySelector(".full-page-chat")
+        .getBoundingClientRect();
 
     const elHeight =
-      window.innerHeight -
-      mainCoords.y -
-      parseInt(pTop, 10) -
-      parseInt(pBottom, 10) -
-      10;
+      window.innerHeight - chatContainerCoords.y - parseInt(padBottom, 10) - 10;
     document.body.style.setProperty("--full-page-chat-height", `${elHeight}px`);
   },
 

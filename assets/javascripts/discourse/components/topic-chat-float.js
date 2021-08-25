@@ -37,6 +37,7 @@ export default Component.extend({
 
     this.chatService.calculateHasUnreadMessages();
     this._checkSize();
+    this.appEvents.on("chat:navigated-to-full-page", this, "close");
     this.appEvents.on("chat:toggle-open", this, "toggleChat");
     this.appEvents.on("chat:open-channel-for", this, "openChannelFor");
     this.appEvents.on("chat:open-channel", this, "switchChannel");
@@ -62,6 +63,7 @@ export default Component.extend({
     }
 
     if (this.appEvents) {
+      this.appEvents.off("chat:navigated-to-full-page", this, "close");
       this.appEvents.off("chat:toggle-open", this, "toggleChat");
       this.appEvents.off("chat:open-channel-for", this, "openChannelFor");
       this.appEvents.off("chat:open-channel", this, "switchChannel");

@@ -1,3 +1,4 @@
+import DiscourseURL from "discourse/lib/url";
 import { createWidget } from "discourse/widgets/widget";
 import { h } from "virtual-dom";
 import { iconNode } from "discourse-common/lib/icon-library";
@@ -7,7 +8,7 @@ export default createWidget("header-chat-link", {
   chatService: null,
   tagName: "li.header-dropdown-toggle.open-chat",
   title: "chat.title",
-  services: ["chat"],
+  services: ["chat", "router"],
 
   html() {
     const unreadDmCount = this.chat.getUnreadDirectMessageCount();
@@ -35,7 +36,11 @@ export default createWidget("header-chat-link", {
   },
 
   click() {
-    this.appEvents.trigger("chat:toggle-open");
+    if (this.router.currentRouteName === "chat.channel") {
+      return;
+    }
+
+    DiscourseURL.routeTo("/chat")
   },
 
   chatRerenderHeader() {

@@ -14,4 +14,8 @@ export default DiscourseRoute.extend({
   model(params) {
     return this.chat.getChannelBy("title", params.channelTitle);
   },
+
+  afterModel() {
+    this.appEvents.trigger("chat:navigated-to-full-page");
+  }
 });

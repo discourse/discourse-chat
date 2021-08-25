@@ -10,18 +10,11 @@ import simpleCategoryHashMentionTransform from "discourse/plugins/discourse-topi
 export const LIST_VIEW = "list_view";
 export const CHAT_VIEW = "chat_view";
 
-function convertChannelToEmberObj(channel) {
-  channel = EmberObject.create(channel);
-  channel.chat_channels = channel.chat_channels.map((nested_channel) => {
-    return convertChannelToEmberObj(nested_channel);
-  });
-  return channel;
-}
-
 export default Service.extend({
   messageId: null,
   chatOpen: false,
   hasUnreadPublicMessages: false,
+  allChannels: null,
   unreadDirectMessageCount: null,
   publicChannels: null,
   directMessageChannels: null,
@@ -32,11 +25,13 @@ export default Service.extend({
 
   init() {
     this._super(...arguments);
+    this.set("allChannels", A());
     this._subscribeToUpdateChannels();
     this._subscribeToUserTrackingChannel();
   },
 
   willDestroy() {
+    this.set("allChannels", null);
     this._unsubscribeFromUpdateChannels();
     this._unsubscribeFromUserTrackingChannel();
   },
@@ -106,18 +101,18 @@ export default Service.extend({
       this.setProperties({
         publicChannels: A(
           channels.public_channels.map((channel) => {
-            return convertChannelToEmberObj(channel);
+            return this.processChannel(channel);
           })
         ),
         directMessageChannels: A(
           channels.direct_message_channels.map((channel) => {
-            return convertChannelToEmberObj(channel);
+            return this.processChannel(channel);
           })
         ),
         hasFetchedChannels: true,
       });
       const idToTitleMap = {};
-      this.publicChannels.concat(this.directMessageChannels).forEach((c) => {
+      this.allChannels.forEach((c) => {
         idToTitleMap[c.id] = c.title;
       });
       this.set("idToTitleMap", idToTitleMap);
@@ -130,9 +125,10 @@ export default Service.extend({
 
   getChannelBy(key, value) {
     return this.getChannels().then(() => {
-      return this.publicChannels
-        .concat(this.directMessageChannels)
-        .findBy(key, value);
+      if (!isNaN(value)) {
+        value = parseInt(value, 10);
+      }
+      return this.allChannels.findBy(key, value);
     });
   },
 
@@ -180,7 +176,7 @@ export default Service.extend({
     );
     this.messageBus.subscribe("/chat/new-direct-message-channel", (busData) => {
       this.directMessageChannels.pushObject(
-        convertChannelToEmberObj(busData.chat_channel)
+        this.processChannel(busData.chat_channel)
       );
       this.currentUser.chat_channel_tracking_state[busData.chat_channel.id] = {
         unread_count: 0,
@@ -282,6 +278,15 @@ export default Service.extend({
       this.appEvents.trigger("chat:rerender-header");
     }
   },
+
+  processChannel(channel) {
+    channel = EmberObject.create(channel);
+    channel.chat_channels = channel.chat_channels.map((nested_channel) => {
+      return this.processChannel(nested_channel);
+    });
+    this.allChannels.push(channel)
+    return channel;
+  }
 });
 
 const MARKDOWN_OPTIONS = {

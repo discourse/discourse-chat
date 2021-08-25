@@ -1,6 +1,9 @@
 $header-height: 2.5rem;
 $float-height: 530px;
 
+$small-message-left-width: 28px;
+$large-message-left-width: 38px;
+
 .unread-dm-indicator,
 .unread-chat-messages-indicator {
   width: 14px;
@@ -236,9 +239,38 @@ $float-height: 530px;
     &.transition-slow {
       transition: 2s linear background-color;
     }
+    &.user-info-hidden {
+      .tc-meta-data {
+        display: inline-block;
+        width: $small-message-left-width;
+        padding-right: 0.2em;
+        vertical-align: top;
+
+        .relative-date {
+          visibility: hidden;
+        }
+      }
+
+      .tc-message-container {
+        margin-left: 0;
+      }
+
+      &:hover {
+        .tc-meta-data .relative-date {
+          visibility: visible;
+        }
+      }
+
+      .tc-text {
+        display: inline-block;
+      }
+      .tc-msgactions-hover {
+        top: -1.75em;
+      }
+    }
     &.is-reply {
       display: grid;
-      grid-template-columns: 10% 90%;
+      grid-template-columns: $small-message-left-width 1fr;
       grid-template-rows: 30px auto;
       grid-template-areas:
         "replyto replyto"
@@ -260,17 +292,19 @@ $float-height: 530px;
         width: 100%;
       }
     }
-    .tc-avatar {
-      width: calc(10% - 0.25em);
-      margin-right: 0.25em;
-      cursor: pointer;
-      .avatar {
-        width: 90%;
-        height: auto;
-      }
-    }
     .tc-message-container {
-      width: 90%;
+      margin-left: 0.5em;
+      width: calc(100% - #{$small-message-left-width}
+    }
+    .tc-avatar {
+      width: $small-message-left-width;
+      // margin-right: 0.6em;
+      cursor: pointer;
+
+      img {
+        width: 100%;
+        height: unset;
+      }
     }
     .tc-text {
       margin: 0;
@@ -290,31 +324,7 @@ $float-height: 530px;
       color: var(--danger-medium);
     }
   }
-  .tc-message.user-info-hidden {
-    .tc-meta-data {
-      display: inline-block;
-      width: 10%;
-      vertical-align: top;
 
-      .relative-date {
-        visibility: hidden;
-      }
-    }
-
-    &:hover {
-      .tc-meta-data .relative-date {
-        visibility: visible;
-      }
-    }
-
-    .tc-text {
-      display: inline-block;
-      width: calc(90% - 0.5em);
-    }
-    .tc-msgactions-hover {
-      top: -1.75em;
-    }
-  }
   .tc-action-text {
     font-style: italic;
   }
@@ -488,7 +498,7 @@ $float-height: 530px;
   .tc-composer {
     min-height: 1.5em;
     flex-shrink: 0;
-    width: 95%;
+    width: 100%;
     margin: 0 auto 0.5em auto;
 
     .tc-reply-username {
@@ -497,6 +507,7 @@ $float-height: 530px;
 
     .tc-composer-row {
       position: relative;
+      padding: 0 0.75em;
       display: grid;
 
       &::after {
@@ -531,9 +542,8 @@ $float-height: 530px;
 
     .tc-composer-message-details {
       position: relative;
-      width: 100%;
       max-height: calc(2em - 5px);
-      padding: 6px 4px;
+      padding: 6px 0.75em;
       border-top: 1px solid var(--primary-low);
 
       .tc-reply-display {
@@ -711,10 +721,73 @@ $float-height: 530px;
   }
 }
 
+$full-page-border-radius: 12px;
+$full-page-sidebar-width: 250px;
+
 .full-page-chat {
-  height: var(--full-page-chat-height, 80vh);
+  display: grid;
+  grid-template-columns: $full-page-sidebar-width 1fr;
+  grid-template-rows: var(--full-page-chat-height, 80vh);
+
+  .tc-channels {
+    background: var(--primary-very-low);
+    height: 100%;
+    border-right: 1px solid var(--primary-low);
+    border-radius: $full-page-border-radius;
+  }
+
+  .tc-full-page-header {
+    display: flex;
+    width: calc(100% + 2em);
+    padding: 0.5em 1em;
+    align-items: center;
+    margin-left: -1em;
+  }
   .tc-live-pane {
     height: 100%;
+  }
+  .tc-live-pane, .tc-messages-scroll, .tc-message {
+    background: var(--primary-very-low);
+  }
+  .tc-live-pane {
+    padding: 0 1em 1em;
+    border-radius: $full-page-border-radius;
+
+    .tc-message {
+      padding: 0.15em 1em;
+
+      &:hover {
+        background: var(--primary-low);
+      }
+
+      &:not(.user-info-hidden) {
+        padding: 0.5em 1em;
+        margin-top: 0.5em;
+      }
+      &.user-info-hidden {
+        .tc-meta-data {
+          width: $large-message-left-width;
+        }
+      }
+      &.is-reply {
+        grid-template-columns: $large-message-left-width 1fr;
+      }
+      .tc-avatar {
+        width: $large-message-left-width;
+      }
+    }
+  }
+
+  .tc-composer {
+    margin: 0;
+
+    .tc-composer-message-details {
+      padding-left: 1em;
+      padding-right: 1.5em;
+    }
+    .tc-composer-row {
+      padding: 0 1em;
+    }
   }
 }
 

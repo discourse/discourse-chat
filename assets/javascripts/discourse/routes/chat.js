@@ -10,6 +10,8 @@ export default DiscourseRoute.extend({
       this.transitionTo("discovery");
     }
     if (params.to.name === "chat.channel") {
+      // The target is a specific chat channel, so return and let
+      // the chat-channel route handle it.
       return;
     }
 

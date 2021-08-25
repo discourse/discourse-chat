@@ -1,0 +1,13 @@
+<div class={{wrapperClassNames}}>
+  {{channel-list
+    publicChannels=publicChannels
+    directMessageChannels=directMessageChannels
+    onSelect=(action "switchChannel")
+  }}
+  {{chat-live-pane
+    chatChannel=chatChannel
+    expanded=true
+    floatHidden=false
+    fullPage=true
+  }}
+</div>

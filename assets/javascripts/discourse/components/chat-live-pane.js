@@ -48,11 +48,6 @@ export default Component.extend({
   didInsertElement() {
     this._super(...arguments);
 
-    if (this.fullPage) {
-      this._calculateHeight();
-      window.addEventListener("resize", this._calculateHeight, false);
-    }
-
     this._unloadedReplyIds = [];
     this.appEvents.on("chat:open-message", this, "highlightOrFetchMessage");
     if (!isTesting()) {
@@ -85,10 +80,6 @@ export default Component.extend({
       this.registeredChatChannelId = null;
     }
     this._unloadedReplyIds = null;
-
-    if (this.fullPage) {
-      window.removeEventListener("resize", this._calculateHeight, false);
-    }
   },
 
   didReceiveAttrs() {
@@ -355,26 +346,12 @@ export default Component.extend({
     this._calculateStickScroll();
   },
 
-  _calculateHeight() {
-    const main = document.querySelector("#main-outlet"),
-      padBottom = window
-        .getComputedStyle(main, null)
-        .getPropertyValue("padding-bottom"),
-      chatContainerCoords = document
-        .querySelector(".full-page-chat")
-        .getBoundingClientRect();
-
-    const elHeight =
-      window.innerHeight - chatContainerCoords.y - parseInt(padBottom, 10) - 10;
-    document.body.style.setProperty("--full-page-chat-height", `${elHeight}px`);
-  },
-
   _calculateStickScroll() {
     // Stick to bottom if scroll is at the bottom
     const shouldStick =
       this._scrollerEl.scrollHeight -
-        this._scrollerEl.scrollTop -
-        this._scrollerEl.clientHeight <=
+      this._scrollerEl.scrollTop -
+      this._scrollerEl.clientHeight <=
       STICKY_SCROLL_LENIENCE;
     if (shouldStick !== this.stickyScroll) {
       this.set("stickyScroll", shouldStick);

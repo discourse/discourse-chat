@@ -1,8 +1,5 @@
-<div class="full-page-chat">
-  {{chat-live-pane
-    chatChannel=model
-    expanded=true
-    floatHidden=false
-    fullPage=true
-  }}
-</div>
+{{full-page-chat
+  publicChannels=model.channels.publicChannels
+  directMessageChannels=model.channels.directMessageChannels
+  chatChannel=model.chatChannel
+}}

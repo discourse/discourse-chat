@@ -1,3 +1,9 @@
+{{#if fullPage}}
+  <div class="tc-full-page-header">
+    {{chat-channel-title channel=chatChannel}}
+  </div>
+{{/if}}
+
 <div class="tc-messages-scroll tc-messages-container">
   {{#if allPastMessagesLoaded}}
     <div class="all-loaded-message">

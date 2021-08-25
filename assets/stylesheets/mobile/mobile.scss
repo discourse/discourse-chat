@@ -46,6 +46,7 @@ body {
 
   .tc-channels {
     height: 100%;
+    padding-bottom: env(safe-area-inset-bottom);
   }
 
   .tc-messages-container .tc-message.user-info-hidden {
@@ -66,6 +67,9 @@ body {
     .tc-title-seg {
       color: var(--secondary);
       font-weight: bold;
+      .chat-channel-title .dm-multi-count {
+        background: rgba(var(--primary-rgb),0.25);
+      }
     }
     .tc-expand {
       flex-grow: unset;

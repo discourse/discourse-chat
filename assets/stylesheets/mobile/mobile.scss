@@ -14,7 +14,7 @@ body {
       margin-bottom: 3em;
     }
     &.footer-nav-visible {
-      margin-bottom: calc(var(--footer-nav-height) + 2em)
+      margin-bottom: calc(var(--footer-nav-height) + 2em);
     }
   }
 
@@ -68,7 +68,7 @@ body {
       color: var(--secondary);
       font-weight: bold;
       .chat-channel-title .dm-multi-count {
-        background: rgba(var(--primary-rgb),0.25);
+        background: rgba(var(--primary-rgb), 0.25);
       }
     }
     .tc-expand {

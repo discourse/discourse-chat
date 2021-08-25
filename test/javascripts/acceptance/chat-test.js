@@ -342,13 +342,6 @@ acceptance(
         exists(".chat-channel-row .unread-chat-messages-indicator"),
         "Unread indicator present in chat channel row"
       );
-
-      assert.equal(
-        query(
-          ".chat-channel-row .chat-channel-row-unread-count"
-        ).innerText.trim(),
-        I18n.t("chat.unread_count", { count: 2 })
-      );
     });
   }
 );

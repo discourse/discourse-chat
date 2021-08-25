@@ -4,20 +4,10 @@ class DiscourseChat::AdminIncomingChatWebhooksController < Admin::AdminControlle
   requires_plugin DiscourseChat::PLUGIN_NAME
 
   def index
-    json = {
-      chat_channels: ActiveModel::ArraySerializer.new(
-        ChatChannel.public_channels,
-        each_serializer: ChatChannelSerializer,
-        root: false
-      ),
-      incoming_chat_webhooks: ActiveModel::ArraySerializer.new(
-        IncomingChatWebhook.includes(:chat_channel).all,
-        each_serializer: IncomingChatWebhookSerializer,
-        root: false
-      )
-    }.as_json
-
-    render json: json
+    render_serialized({
+      chat_channels: ChatChannel.public_channels,
+      incoming_chat_webhooks: IncomingChatWebhook.includes(:chat_channel).all
+    }, AdminChatIndexSerializer, root: false)
   end
 
   def create
@@ -25,11 +15,10 @@ class DiscourseChat::AdminIncomingChatWebhooksController < Admin::AdminControlle
 
     chat_channel = ChatChannel.find_by(id: params[:chat_channel_id])
     if chat_channel.nil? || chat_channel.direct_message_channel?
-      raise Discourse::InvalidParameters
+      raise Discourse::NotFound
     end
 
     webhook = IncomingChatWebhook.new(name: params[:name], chat_channel: chat_channel)
-    webhook.key = SecureRandom.hex(12)
     if webhook.save
       render_serialized(webhook, IncomingChatWebhookSerializer, root: false)
     else
@@ -41,11 +30,11 @@ class DiscourseChat::AdminIncomingChatWebhooksController < Admin::AdminControlle
     params.require([:incoming_chat_webhook_id, :name, :chat_channel_id])
 
     webhook = IncomingChatWebhook.find_by(id: params[:incoming_chat_webhook_id])
-    raise Discourse::InvalidParameters unless webhook
+    raise Discourse::NotFound unless webhook
 
     chat_channel = ChatChannel.find_by(id: params[:chat_channel_id])
     if chat_channel.nil? || chat_channel.direct_message_channel?
-      raise Discourse::InvalidParameters
+      raise Discourse::NotFound
     end
 
     if webhook.update(
@@ -65,12 +54,7 @@ class DiscourseChat::AdminIncomingChatWebhooksController < Admin::AdminControlle
     params.require(:incoming_chat_webhook_id)
 
     webhook = IncomingChatWebhook.find_by(id: params[:incoming_chat_webhook_id])
-    raise Discourse::InvalidParameters unless webhook
-
-    if webhook.destroy
-      render json: success_json
-    else
-      render_json_error(webhook)
-    end
+    webhook.destroy if webhook
+    render json: success_json
   end
 end

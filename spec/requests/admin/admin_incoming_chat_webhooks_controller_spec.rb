@@ -60,7 +60,7 @@ RSpec.describe DiscourseChat::AdminIncomingChatWebhooksController do
     it "errors when chat_channel isn't valid" do
       sign_in(admin)
       post "/admin/plugins/chat/hooks.json", params: { name: "test1a", chat_channel_id: ChatChannel.last.id + 1 }
-      expect(response.status).to eq(400)
+      expect(response.status).to eq(404)
     end
 
     it "creates a new incoming_chat_webhook record" do

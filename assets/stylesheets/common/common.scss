@@ -136,6 +136,10 @@ $float-height: 530px;
       width: calc(95% - 0.5em);
       margin-right: 0.5em;
       flex-grow: 1;
+      flex-shrink: 1;
+      .badge-wrapper.bullet {
+        margin-right: 0px;
+      }
       .dm-usernames {
         max-width: 100%;
         overflow: hidden;

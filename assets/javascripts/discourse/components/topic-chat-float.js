@@ -17,6 +17,7 @@ export default Component.extend({
   chatView: equal("view", CHAT_VIEW),
   classNameBindings: [":topic-chat-float-container", "hidden"],
   chatService: service("chat"),
+  router: service(),
 
   hidden: true,
   loading: false,
@@ -210,6 +211,16 @@ export default Component.extend({
   @discourseComputed("activeChannel", "currentUser.chat_channel_tracking_state")
   unreadCount(activeChannel, trackingState) {
     return trackingState[activeChannel.id]?.unread_count || 0;
+  },
+
+  @action
+  openInFullPage() {
+    if (this.activeChannel) {
+      console.log("what the heck")
+      return this.router.transitionTo("chat.channel", this.activeChannel.title)
+    }
+
+    this.router.transitionTo("chat")
   },
 
   @action

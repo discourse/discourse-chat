@@ -150,19 +150,31 @@ $float-height: 530px;
     min-height: 1.4em;
     text-align: center;
   }
-  .tc-expand {
-    flex-grow: 1;
-    text-align: right;
+  .tc-full-screen-btn {
+    margin-left: auto;
+  }
+  .tc-full-screen-btn, .tc-expand {
     &:focus {
+      outline: none;
       background: none;
+
       .d-icon {
+        background: none;
         color: var(--primary-low-mid);
+      }
+    }
+    &:hover {
+      .d-icon {
+        color: var(--primary-high);
       }
     }
   }
   .d-icon {
     align-self: center;
     height: 1.1em;
+    &:hover {
+      color: var(--primary-high);
+    }
   }
 }
 

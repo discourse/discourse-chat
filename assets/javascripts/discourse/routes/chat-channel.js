@@ -12,6 +12,7 @@ export default DiscourseRoute.extend({
   },
 
   model(params) {
+    console.log(params)
     return this.chat.getChannelBy("title", params.channelTitle);
   },
 

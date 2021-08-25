@@ -9,6 +9,7 @@ export default DiscourseRoute.extend({
     if (!this.currentUser?.can_chat || !this.siteSettings.topic_chat_enabled) {
       this.transitionTo("discovery");
     }
+    console.log("HERE!")
     this.chat.getIdealFirstChannelTitle().then((channelTitle) => {
       this.transitionTo("chat.channel", channelTitle);
     });

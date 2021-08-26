@@ -23,13 +23,8 @@ export default Component.extend({
   },
 
   click() {
-    if (this.router.currentRouteName === "chat.channel") {
-      this.router.transitionTo('chat.channel', this.channel.title)
-      return false;
-    } else {
-      this.switchChannel(this.channel);
-      return false; // Don't propogate click to potential parent channel
-    }
+    this.switchChannel(this.channel)
+    return false;
   },
 
   @discourseComputed("channel", "router.currentRoute")

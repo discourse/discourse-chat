@@ -1,8 +1,13 @@
 $header-height: 2.5rem;
 $float-height: 530px;
 
-$small-message-left-width: 28px;
-$large-message-left-width: 38px;
+:root {
+  --footer-nav-height: 49px;
+  --small-message-left-width: 28px;
+  --large-message-left-width: 38px;
+  --full-page-border-radius: 12px;
+  --full-page-sidebar-width: 250px;
+}
 
 .unread-dm-indicator,
 .unread-chat-messages-indicator {
@@ -242,7 +247,7 @@ $large-message-left-width: 38px;
     &.user-info-hidden {
       .tc-meta-data {
         display: inline-block;
-        width: $small-message-left-width;
+        width: var(--small-message-left-width);
         padding-right: 0.2em;
         vertical-align: top;
 
@@ -263,7 +268,7 @@ $large-message-left-width: 38px;
 
       .tc-text {
         display: inline-block;
-        max-width: calc(100% - (#{$small-message-left-width} + 1em));
+        max-width: calc(100% - (#{var(--small-message-left-width)} + 1em));
       }
       .tc-msgactions-hover {
         top: -1.75em;
@@ -271,7 +276,7 @@ $large-message-left-width: 38px;
     }
     &.is-reply {
       display: grid;
-      grid-template-columns: $small-message-left-width 1fr;
+      grid-template-columns: var(--small-message-left-width) 1fr;
       grid-template-rows: 30px auto;
       grid-template-areas:
         "replyto replyto"
@@ -295,12 +300,12 @@ $large-message-left-width: 38px;
     }
     .tc-message-container {
       margin-left: 0.5em;
-      width: calc(100% - #{$small-message-left-width};
+      width: calc(100% - #{var(--small-message-left-width)};
       word-break: break-word;
       overflow-wrap: break-word;
     }
     .tc-avatar {
-      width: $small-message-left-width;
+      width: var(--small-message-left-width);
       // margin-right: 0.6em;
       cursor: pointer;
 
@@ -730,27 +735,23 @@ $large-message-left-width: 38px;
   }
 }
 
-$full-page-border-radius: 12px;
-$full-page-sidebar-width: 250px;
-
 .full-page-chat {
   display: grid;
-  grid-template-columns: $full-page-sidebar-width 1fr;
+  grid-template-columns: var(--full-page-sidebar-width) 1fr;
   grid-template-rows: var(--full-page-chat-height, 80vh);
 
   .tc-channels {
     background: var(--primary-very-low);
     height: 100%;
     border-right: 1px solid var(--primary-low);
-    border-radius: $full-page-border-radius 0 0 $full-page-border-radius;
+    border-radius: var(--full-page-border-radius) 0 0 var(--full-page-border-radius);
   }
 
   .tc-full-page-header {
     display: flex;
-    width: 100%;
-    padding: 0.5em 1em;
+    // width: 100%;
     align-items: center;
-    margin-left: -1em;
+    // margin-left: -1em;
     border-bottom: 1px solid var(--primary-low);
   }
   .tc-live-pane {
@@ -760,26 +761,14 @@ $full-page-sidebar-width: 250px;
     background: var(--primary-very-low);
   }
   .tc-live-pane {
-    padding: 0 1em 1em;
-    border-radius: 0 $full-page-border-radius $full-page-border-radius 0;
+    padding: 0 0 1em;
+    border-radius: 0 var(--full-page-border-radius) var(--full-page-border-radius) 0;
 
     .tc-message {
 
       &:hover {
         background: var(--primary-low);
       }
-    }
-  }
-
-  .tc-composer {
-    margin: 0;
-
-    .tc-composer-message-details {
-      padding-left: 1em;
-      padding-right: 1.5em;
-    }
-    .tc-composer-row {
-      padding: 0 1em;
     }
   }
 }

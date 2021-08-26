@@ -7,6 +7,7 @@ export default Component.extend({
   directMessageChannels: null,
   toggleSection: null,
   chat: service(),
+  router: service(),
 
   didInsertElement() {
     this._super(...arguments);
@@ -25,6 +26,10 @@ export default Component.extend({
 
   @action
   switchChannel(channel) {
-    this.appEvents.trigger("chat:open-channel", channel);
+    if (this.site.mobileView || this.router.currentRouteName === "chat.channel") {
+      return this.router.transitionTo('chat.channel', channel.title)
+    } else {
+      this.appEvents.trigger("chat:open-channel", channel);
+    }
   },
 });

@@ -1,21 +1,18 @@
 import Component from "@ember/component";
 import discourseComputed from "discourse-common/utils/decorators";
 import { action } from "@ember/object";
+import { inject as service } from "@ember/service";
 
 export default Component.extend({
   tagName: '',
   teamsSidebarOn: false,
   showingChannels: false,
+  router: service(),
 
   init() {
     this._super(...arguments);
-    const sidebarWrapper = document.querySelector('.sidebar-wrapper')
-    if (sidebarWrapper) {
-      this.set("teamsSidebarOn", true)
-    }
+    this.set("teamsSidebarOn", document.body.classList.contains("discourse-sidebar"))
   },
-
-  // @discourseComputed("site.mobileView", "teamsSidebarOn")
 
   @discourseComputed("teamsSidebarOn", "showingChannels")
   wrapperClassNames(teamsSidebarOn, showingChannels) {
@@ -68,7 +65,11 @@ export default Component.extend({
   },
 
   @action
-  switchChannel() {
-    console.log("here")
+  switchChannel(channel) {
+    if (channel.id === this.chatChannel.id) {
+      return this.set("showingChannels", false);
+    }
+
+    return this.router.transitionTo('chat.channel', channel.title)
   }
 })

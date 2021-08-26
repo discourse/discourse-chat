@@ -350,8 +350,8 @@ export default Component.extend({
     // Stick to bottom if scroll is at the bottom
     const shouldStick =
       this._scrollerEl.scrollHeight -
-      this._scrollerEl.scrollTop -
-      this._scrollerEl.clientHeight <=
+        this._scrollerEl.scrollTop -
+        this._scrollerEl.clientHeight <=
       STICKY_SCROLL_LENIENCE;
     if (shouldStick !== this.stickyScroll) {
       this.set("stickyScroll", shouldStick);

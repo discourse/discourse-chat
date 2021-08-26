@@ -12,24 +12,13 @@ export default DiscourseRoute.extend({
   },
 
   async model(params) {
-
     let [chatChannel, channels] = await Promise.all([
       this.chat.getChannelBy("title", params.channelTitle),
       this.chat.getChannels()
     ]);
 
-
     return { chatChannel, channels };
   },
-
-  // setupController(controller, model) {
-    // return this.chat.getChannels().then((channels) => {
-      // controller.setProperties({
-        // publicChannels: channels.publicChannels,
-        // directMessageChannels: channels.directMessageChannels
-      // })
-    // });
-  // },
 
   afterModel() {
     this.appEvents.trigger("chat:navigated-to-full-page");

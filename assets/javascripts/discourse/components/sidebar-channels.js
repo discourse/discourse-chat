@@ -26,8 +26,11 @@ export default Component.extend({
 
   @action
   switchChannel(channel) {
-    if (this.site.mobileView || this.router.currentRouteName === "chat.channel") {
-      return this.router.transitionTo('chat.channel', channel.title)
+    if (
+      this.site.mobileView ||
+      this.router.currentRouteName === "chat.channel"
+    ) {
+      return this.router.transitionTo("chat.channel", channel.title);
     } else {
       this.appEvents.trigger("chat:open-channel", channel);
     }

@@ -12,24 +12,27 @@ export default Component.extend({
 
   @discourseComputed("nested", "active")
   rowClassNames(nested, active) {
-    const classes = ["chat-channel-row"]
+    const classes = ["chat-channel-row"];
     if (nested) {
       classes.push("nested");
     }
     if (active) {
-      classes.push("active")
+      classes.push("active");
     }
-    return classes.join(" ")
+    return classes.join(" ");
   },
 
   click() {
-    this.switchChannel(this.channel)
+    this.switchChannel(this.channel);
     return false;
   },
 
   @discourseComputed("channel", "router.currentRoute")
   active(channel, currentRoute) {
-    return currentRoute.name === "chat.channel" && currentRoute.params.channelTitle === channel.title.toString(10);
+    return (
+      currentRoute.name === "chat.channel" &&
+      currentRoute.params.channelTitle === channel.title.toString(10)
+    );
   },
 
   @discourseComputed("currentUser.chat_channel_tracking_state")

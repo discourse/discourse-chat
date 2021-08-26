@@ -6,7 +6,7 @@ import { empty } from "@ember/object/computed";
 import { schedule } from "@ember/runloop";
 
 export default Component.extend({
-  tagName: '',
+  tagName: "",
   publicChannels: null,
   directMessageChannels: null,
   creatingDmChannel: false,

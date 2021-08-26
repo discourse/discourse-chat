@@ -29,6 +29,15 @@ export default Component.extend({
     return classNames.join(" ");
   },
 
+  @discourseComputed("site.mobileView", "teamsSidebarOn", "showingChannels")
+  showChannelSelector(mobileView, sidebarOn, showingChannels) {
+    if (mobileView) {
+      return showingChannels;
+    }
+
+    return !sidebarOn;
+  },
+
   didInsertElement() {
     this._super(...arguments);
 

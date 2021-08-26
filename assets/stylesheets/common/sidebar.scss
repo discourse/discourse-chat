@@ -19,6 +19,9 @@
     #main > div .sidebar-wrapper.has-sidebar ~ div.d-header-wrap {
       max-height: 4em;
     }
+    #main .d-header-wrap > .d-header .wrap {
+      padding: 0;
+    }
     #teams-background {
       display: none;
     }
@@ -30,8 +33,8 @@
     }
 
     #main-outlet {
-      padding: 1em 1.5em;
-      height: calc(100vh - 4em - 2em);
+      padding: 2em 1.5em;
+      height: calc(100vh - 4em - 4em);
       overflow: scroll;
     }
 

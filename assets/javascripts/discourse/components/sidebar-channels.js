@@ -30,9 +30,10 @@ export default Component.extend({
       this.site.mobileView ||
       this.router.currentRouteName === "chat.channel"
     ) {
-      return this.router.transitionTo("chat.channel", channel.title);
+      this.router.transitionTo("chat.channel", channel.title);
     } else {
       this.appEvents.trigger("chat:open-channel", channel);
     }
+    return false;
   },
 });

@@ -14,7 +14,7 @@ export default DiscourseRoute.extend({
   async model(params) {
     let [chatChannel, channels] = await Promise.all([
       this.chat.getChannelBy("title", params.channelTitle),
-      this.chat.getChannels()
+      this.chat.getChannels(),
     ]);
 
     return { chatChannel, channels };
@@ -22,5 +22,5 @@ export default DiscourseRoute.extend({
 
   afterModel() {
     this.appEvents.trigger("chat:navigated-to-full-page");
-  }
+  },
 });

@@ -17,11 +17,14 @@ export default Component.extend({
 
   // @discourseComputed("site.mobileView", "teamsSidebarOn")
 
-  @discourseComputed("teamsSidebarOn")
-  wrapperClassNames(teamsSidebarOn) {
+  @discourseComputed("teamsSidebarOn", "showingChannels")
+  wrapperClassNames(teamsSidebarOn, showingChannels) {
     const classNames = ["full-page-chat"]
     if (teamsSidebarOn) {
       classNames.push("teams-sidebar-on")
+    }
+    if (showingChannels) {
+      classNames.push("showing-channels")
     }
     return classNames.join(" ")
   },

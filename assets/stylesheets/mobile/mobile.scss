@@ -131,8 +131,10 @@ body {
   overflow-x: hidden;
   width: 100%;
 
-  &.channels-open {
-    grid-template-columns: 90% 10%;
+  &.showing-channels {
+    .tc-live-pane {
+      display: none;
+    }
   }
 
   .tc-channels, .tc-live-pane {

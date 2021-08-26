@@ -168,8 +168,8 @@ $float-height: 530px;
     text-align: center;
   }
   .tc-expand {
-    flex-grow: 1;
-    text-align: right;
+    margin-left: auto;
+    margin-right: 0.5em;
     &:focus {
       background: none;
       .d-icon {

@@ -71,11 +71,6 @@ body {
         background: rgba(var(--primary-rgb), 0.25);
       }
     }
-    .tc-expand {
-      flex-grow: unset;
-      margin-left: auto;
-      margin-right: 0.5em;
-    }
     .btn-flat:not(.return-to-channels) {
       background-color: rgba(var(--secondary-rgb), 0.25);
       border-radius: 50%;

@@ -4,26 +4,29 @@ import { action } from "@ember/object";
 import { inject as service } from "@ember/service";
 
 export default Component.extend({
-  tagName: '',
+  tagName: "",
   teamsSidebarOn: false,
   showingChannels: false,
   router: service(),
 
   init() {
     this._super(...arguments);
-    this.set("teamsSidebarOn", document.body.classList.contains("discourse-sidebar"))
+    this.set(
+      "teamsSidebarOn",
+      document.body.classList.contains("discourse-sidebar")
+    );
   },
 
   @discourseComputed("teamsSidebarOn", "showingChannels")
   wrapperClassNames(teamsSidebarOn, showingChannels) {
-    const classNames = ["full-page-chat"]
+    const classNames = ["full-page-chat"];
     if (teamsSidebarOn) {
-      classNames.push("teams-sidebar-on")
+      classNames.push("teams-sidebar-on");
     }
     if (showingChannels) {
-      classNames.push("showing-channels")
+      classNames.push("showing-channels");
     }
-    return classNames.join(" ")
+    return classNames.join(" ");
   },
 
   didInsertElement() {
@@ -32,11 +35,13 @@ export default Component.extend({
     this._calculateHeight();
     this._scrollSidebarToBotton();
     window.addEventListener("resize", this._calculateHeight, false);
+    document.body.classList.add("has-full-page-chat");
   },
 
   willDestroyElement() {
     this._super(...arguments);
     window.removeEventListener("resize", this._calculateHeight, false);
+    document.body.classList.remove("has-full-page-chat");
   },
 
   _scrollSidebarToBotton() {
@@ -44,7 +49,9 @@ export default Component.extend({
       return;
     }
 
-    const sidebarScroll = document.querySelector(".sidebar-container .scroll-wrapper")
+    const sidebarScroll = document.querySelector(
+      ".sidebar-container .scroll-wrapper"
+    );
     if (sidebarScroll) {
       sidebarScroll.scrollTop = sidebarScroll.scrollHeight;
     }
@@ -70,6 +77,6 @@ export default Component.extend({
       return this.set("showingChannels", false);
     }
 
-    return this.router.transitionTo('chat.channel', channel.title)
-  }
-})
+    return this.router.transitionTo("chat.channel", channel.title);
+  },
+});

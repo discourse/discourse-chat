@@ -2,7 +2,6 @@ $header-height: 2.5rem;
 $float-height: 530px;
 
 :root {
-  --footer-nav-height: 49px;
   --small-message-left-width: 28px;
   --large-message-left-width: 38px;
   --full-page-border-radius: 12px;
@@ -788,8 +787,8 @@ $float-height: 530px;
     width: 100vw;
     margin-right: 0px;
   }
-  #main {
-    padding-bottom: $header-height;
+  #main-outlet {
+    padding-bottom: 0em;
   }
   .tc-composer .tc-composer-row {
     .tc-composer-input {

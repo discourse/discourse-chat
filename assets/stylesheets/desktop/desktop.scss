@@ -1,0 +1,43 @@
+$small-message-left-width: 28px;
+$large-message-left-width: 38px;
+$full-page-border-radius: 12px;
+$full-page-sidebar-width: 250px;
+
+.full-page-chat {
+  &.teams-sidebar-on {
+    grid-template-columns: 1fr;
+
+    .tc-live-pane {
+      border-radius: $full-page-border-radius;
+    }
+  }
+
+  .tc-live-pane {
+    .tc-messages-container {
+      .tc-message {
+        padding: 0.15em 1em;
+
+        &:not(.user-info-hidden) {
+          padding: 0.5em 1em;
+          margin-top: 0.5em;
+        }
+        &.user-info-hidden {
+          .tc-meta-data {
+            width: $large-message-left-width;
+            padding-right: 0.3em;
+          }
+        }
+        &.is-reply {
+          grid-template-columns: $large-message-left-width 1fr;
+
+          .tc-avatar {
+            width: $large-message-left-width;
+          }
+        }
+        .tc-avatar {
+          width: $large-message-left-width;
+        }
+      }
+    }
+  }
+}

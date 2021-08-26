@@ -263,6 +263,7 @@ $large-message-left-width: 38px;
 
       .tc-text {
         display: inline-block;
+        max-width: calc(100% - (#{$small-message-left-width} + 1em));
       }
       .tc-msgactions-hover {
         top: -1.75em;
@@ -294,7 +295,9 @@ $large-message-left-width: 38px;
     }
     .tc-message-container {
       margin-left: 0.5em;
-      width: calc(100% - #{$small-message-left-width}
+      width: calc(100% - #{$small-message-left-width};
+      word-break: break-word;
+      overflow-wrap: break-word;
     }
     .tc-avatar {
       width: $small-message-left-width;
@@ -309,6 +312,8 @@ $large-message-left-width: 38px;
     .tc-text {
       margin: 0;
       padding-left: 0.05em;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
 
       > p {
         margin: 0;
@@ -367,6 +372,7 @@ $large-message-left-width: 38px;
 
   .tc-meta-data {
     color: var(--secondary-medium);
+
     .names {
       color: var(--secondary-low);
       display: inline-block;
@@ -376,6 +382,9 @@ $large-message-left-width: 38px;
       &.first {
         font-weight: bold;
       }
+    }
+    .relative-date {
+      font-size: var(--font-down-1);
     }
   }
 }
@@ -733,15 +742,16 @@ $full-page-sidebar-width: 250px;
     background: var(--primary-very-low);
     height: 100%;
     border-right: 1px solid var(--primary-low);
-    border-radius: $full-page-border-radius;
+    border-radius: $full-page-border-radius 0 0 $full-page-border-radius;
   }
 
   .tc-full-page-header {
     display: flex;
-    width: calc(100% + 2em);
+    width: 100%;
     padding: 0.5em 1em;
     align-items: center;
     margin-left: -1em;
+    border-bottom: 1px solid var(--primary-low);
   }
   .tc-live-pane {
     height: 100%;
@@ -751,29 +761,12 @@ $full-page-sidebar-width: 250px;
   }
   .tc-live-pane {
     padding: 0 1em 1em;
-    border-radius: $full-page-border-radius;
+    border-radius: 0 $full-page-border-radius $full-page-border-radius 0;
 
     .tc-message {
-      padding: 0.15em 1em;
 
       &:hover {
         background: var(--primary-low);
-      }
-
-      &:not(.user-info-hidden) {
-        padding: 0.5em 1em;
-        margin-top: 0.5em;
-      }
-      &.user-info-hidden {
-        .tc-meta-data {
-          width: $large-message-left-width;
-        }
-      }
-      &.is-reply {
-        grid-template-columns: $large-message-left-width 1fr;
-      }
-      .tc-avatar {
-        width: $large-message-left-width;
       }
     }
   }

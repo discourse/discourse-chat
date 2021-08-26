@@ -5,6 +5,7 @@ import { action } from "@ember/object";
 export default Component.extend({
   tagName: '',
   teamsSidebarOn: false,
+  showingChannels: false,
 
   init() {
     this._super(...arguments);
@@ -13,6 +14,8 @@ export default Component.extend({
       this.set("teamsSidebarOn", true)
     }
   },
+
+  // @discourseComputed("site.mobileView", "teamsSidebarOn")
 
   @discourseComputed("teamsSidebarOn")
   wrapperClassNames(teamsSidebarOn) {
@@ -27,12 +30,24 @@ export default Component.extend({
     this._super(...arguments);
 
     this._calculateHeight();
+    this._scrollSidebarToBotton();
     window.addEventListener("resize", this._calculateHeight, false);
   },
 
   willDestroyElement() {
     this._super(...arguments);
     window.removeEventListener("resize", this._calculateHeight, false);
+  },
+
+  _scrollSidebarToBotton() {
+    if (!this.teamsSidebarOn) {
+      return;
+    }
+
+    const sidebarScroll = document.querySelector(".sidebar-container .scroll-wrapper")
+    if (sidebarScroll) {
+      sidebarScroll.scrollTop = sidebarScroll.scrollHeight;
+    }
   },
 
   _calculateHeight() {
@@ -48,7 +63,6 @@ export default Component.extend({
       window.innerHeight - chatContainerCoords.y - parseInt(padBottom, 10) - 10;
     document.body.style.setProperty("--full-page-chat-height", `${elHeight}px`);
   },
-
 
   @action
   switchChannel() {

@@ -1,13 +1,16 @@
 <div class={{wrapperClassNames}}>
-  {{channel-list
-    publicChannels=publicChannels
-    directMessageChannels=directMessageChannels
-    onSelect=(action "switchChannel")
-  }}
+  {{#if (or (and site.mobileView showingChannels) (not teamsSidebarOn))}}
+    {{channel-list
+      publicChannels=publicChannels
+      directMessageChannels=directMessageChannels
+      onSelect=(action "switchChannel")
+    }}
+  {{/if}}
   {{chat-live-pane
     chatChannel=chatChannel
     expanded=true
     floatHidden=false
     fullPage=true
+    onBackClick=(action (mut showingChannels) true)
   }}
 </div>

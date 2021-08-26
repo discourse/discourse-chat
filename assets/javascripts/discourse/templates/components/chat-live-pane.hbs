@@ -1,5 +1,12 @@
 {{#if fullPage}}
   <div class="tc-full-page-header">
+    {{#if site.mobileView}}
+      {{d-button
+        class="btn-flat"
+        icon="chevron-left"
+        action=onBackClick
+      }}
+    {{/if}}
     {{chat-channel-title channel=chatChannel}}
   </div>
 {{/if}}

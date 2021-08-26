@@ -11,6 +11,7 @@ enabled_site_setting :topic_chat_enabled
 
 register_asset 'stylesheets/common/common.scss'
 register_asset 'stylesheets/mobile/mobile.scss', :mobile
+register_asset 'stylesheets/desktop/desktop.scss', :desktop
 
 register_svg_icon "comments"
 register_svg_icon "comment-slash"

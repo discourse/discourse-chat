@@ -1,0 +1,92 @@
+@media screen and (min-width: 1450px) {
+  body.discourse-sidebar.chat-open {
+    #main > div {
+      max-width: unset;
+      grid-template-columns: 16em 70% calc(30% - 16em);
+      grid-template-areas: "sidebar header chat" "sidebar content chat";
+    }
+
+    #main-outlet {
+      padding: 1em 1.5em;
+      height: calc(100vh - 4em - 2em);
+      overflow: scroll;
+    }
+  }
+}
+
+@media screen and (min-width: 1300px) {
+  body.discourse-sidebar.chat-open {
+    #main > div .sidebar-wrapper.has-sidebar ~ div.d-header-wrap {
+      max-height: 4em;
+    }
+    #teams-background {
+      display: none;
+    }
+    #main > div {
+      max-width: unset;
+      grid-template-columns: 16em 60% calc(40% - 16em);
+      grid-template-rows: 4em calc(100vh - 4em);
+      grid-template-areas: "sidebar header chat" "sidebar content chat";
+    }
+
+    #main-outlet {
+      padding: 1em 1.5em;
+      height: calc(100vh - 4em - 2em);
+      overflow: scroll;
+    }
+
+    .topic-chat-outlet {
+      grid-area: chat;
+      // hide expand button, not needed
+      .tc-expand {
+        display: none;
+      }
+      .topic-chat-float-container {
+        height: 100vh;
+        max-width: 100%;
+        position: sticky;
+        top: 0;
+        max-height: unset;
+        padding-bottom: unset;
+        .tc-drawer {
+          height: 100vh;
+          max-width: 100%;
+          min-width: 100%;
+          .tc-channels {
+            height: calc(100vh - 3em);
+          }
+          .topic-chat-container.expanded {
+            border: none;
+            box-shadow: none;
+            border-radius: 0px;
+            border-left: 1px solid var(--primary-low-mid);
+            height: 100vh;
+            max-height: 100vh;
+            .topic-chat-drawer-header {
+              height: calc(4em - 1em);
+              .tc-title-seg {
+                margin-right: auto;
+                font-size: $font-up-1;
+                font-weight: bold;
+              }
+            }
+            .topic-chat-drawer-content {
+              height: 100%;
+              max-height: calc(100vh - 3em);
+              .tc-live-pane {
+                max-height: unset;
+                height: calc(100vh - 3em);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+html.mobile-view body.discourse-sidebar.chat-minimized {
+  .navigation-container .btn-container {
+    bottom: 4em;
+  }
+}

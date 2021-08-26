@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class DiscourseChat::IncomingChatWebhooksController < ::ApplicationController
-  skip_before_action :verify_authenticity_token
+  skip_before_action :verify_authenticity_token, :redirect_to_login_if_required
 
   def create_message
     params.require([:key, :body])

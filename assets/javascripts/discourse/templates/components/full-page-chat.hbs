@@ -1,5 +1,5 @@
 <div class={{wrapperClassNames}}>
-  {{#if (or (and site.mobileView showingChannels) (not teamsSidebarOn))}}
+  {{#if (or (and site.mobileView showingChannels) (and (not teamsSidebarOn) (not site.mobileView)))}}
     {{channel-list
       publicChannels=publicChannels
       directMessageChannels=directMessageChannels

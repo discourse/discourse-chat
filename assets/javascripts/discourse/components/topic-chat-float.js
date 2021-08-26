@@ -139,7 +139,7 @@ export default Component.extend({
   _fireHiddenAppEvents() {
     this.chatService.setChatOpenStatus(!this.hidden);
     this.appEvents.trigger("chat:rerender-header");
-    this.appEvents.trigger("chat:float-closed")
+    this.appEvents.trigger("chat:float-closed");
   },
 
   _loadCookFunction() {
@@ -291,9 +291,8 @@ export default Component.extend({
       return;
     } else {
       this.set("expanded", true);
-      let html = document.documentElement;
-        document.body.classList.remove("chat-minimized");
-        document.body.classList.add("chat-open");
+      document.body.classList.remove("chat-minimized");
+      document.body.classList.add("chat-open");
       if (this.activeChannel) {
         // Channel was previously open, so after expand we are done.
         return;

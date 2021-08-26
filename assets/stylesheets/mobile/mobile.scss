@@ -1,5 +1,5 @@
 body {
-  &.mobile-chat-open {
+  &.chat-open {
     #main-outlet,
     header {
       display: none;
@@ -9,7 +9,7 @@ body {
     }
   }
 
-  &.mobile-chat-minimized {
+  &.chat-minimized {
     #toppic-progress-wrapper {
       margin-bottom: 3em;
     }
@@ -19,7 +19,7 @@ body {
   }
 
   &.footer-nav-visible {
-    &:not(.mobile-chat-open) .topic-chat-float-container {
+    &:not(.chat-open) .topic-chat-float-container {
       bottom: calc(var(--footer-nav-height) + 2.25em);
     }
     .tc-channels,
@@ -32,7 +32,7 @@ body {
     border: none;
   }
 
-  &.mobile-chat-minimized .topic-chat-float-container {
+  &.chat-minimized .topic-chat-float-container {
     padding-bottom: 0.5em;
     border-top-right-radius: 1em;
     border-top-left-radius: 1em;
@@ -56,8 +56,8 @@ body {
     }
   }
   .topic-chat-drawer-header,
-  &.mobile-chat-open .topic-chat-drawer-header,
-  &.mobile-chat-minimized .topic-chat-drawer-header {
+  &.chat-open .topic-chat-drawer-header,
+  &.chat-minimized .topic-chat-drawer-header {
     background-color: var(--tertiary);
     height: 3em;
     border-bottom: 1px solid var(--tertiary-hover);
@@ -70,11 +70,6 @@ body {
       .chat-channel-title .dm-multi-count {
         background: rgba(var(--primary-rgb), 0.25);
       }
-    }
-    .tc-expand {
-      flex-grow: unset;
-      margin-left: auto;
-      margin-right: 0.5em;
     }
     .btn-flat:not(.return-to-channels) {
       background-color: rgba(var(--secondary-rgb), 0.25);
@@ -91,7 +86,7 @@ body {
     }
   }
 
-  &.mobile-chat-open {
+  &.chat-open {
     .topic-chat-float-container {
       height: 100vh;
       height: -webkit-fill-available;

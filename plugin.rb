@@ -10,7 +10,6 @@
 enabled_site_setting :topic_chat_enabled
 
 register_asset 'stylesheets/common/common.scss'
-register_asset 'stylesheets/common/sidebar.scss'
 register_asset 'stylesheets/common/incoming-chat-webhooks.scss'
 register_asset 'stylesheets/mobile/mobile.scss', :mobile
 

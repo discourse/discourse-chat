@@ -121,8 +121,7 @@ $float-height: 530px;
   align-items: center;
 
   button {
-    height: 32px;
-    width: 32px;
+    height: 100%;
   }
   .tc-title-seg {
     padding: 0 0.25em;
@@ -168,8 +167,8 @@ $float-height: 530px;
     text-align: center;
   }
   .tc-expand {
-    margin-left: auto;
-    margin-right: 0.5em;
+    flex-grow: 1;
+    text-align: right;
     &:focus {
       background: none;
       .d-icon {
@@ -728,7 +727,7 @@ $float-height: 530px;
   }
 }
 
-:root:not(.mobile-view) body:not(.discourse-sidebar) {
+:root:not(.mobile-view) {
   .tc-drawer {
     width: 400px;
     max-width: 100vw;

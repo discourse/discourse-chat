@@ -675,7 +675,7 @@ $float-height: 530px;
   }
 }
 
-// Styles to make channel list in sidebar match sidebar's theme
+// Styles to make channel list in sidebar match sidebar theme
 .sidebar-container {
   .tc-channels {
     color: var(--primary);
@@ -754,14 +754,13 @@ $float-height: 530px;
     // margin-left: -1em;
     border-bottom: 1px solid var(--primary-low);
   }
-  .tc-live-pane {
-    height: 100%;
-  }
   .tc-live-pane, .tc-messages-scroll, .tc-message {
     background: var(--primary-very-low);
   }
   .tc-live-pane {
     padding: 0 0 1em;
+    height: 100%;
+    box-sizing: border-box;
     border-radius: 0 var(--full-page-border-radius) var(--full-page-border-radius) 0;
 
     .tc-message {

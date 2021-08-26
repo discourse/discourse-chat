@@ -1,0 +1,9 @@
+<div class="select-kit-header-wrapper">
+  {{#if selectedContent}}
+    {{chat-channel-title channel=selectedContent}}
+  {{else}}
+    {{i18n "chat.incoming_webhooks.channel_placeholder"}}
+  {{/if}}
+
+  {{d-icon caretIcon class="caret-icon"}}
+</div>

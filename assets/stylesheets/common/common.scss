@@ -273,6 +273,14 @@ $float-height: 530px;
         height: auto;
       }
     }
+    .tc-bot-indicator {
+      text-transform: uppercase;
+      padding: 0.25em;
+      background: var(--primary-low);
+      border-radius: 3px;
+      font-size: var(--font-down-2);
+      margin-left: -0.25em;
+    }
     .tc-message-container {
       width: 90%;
     }

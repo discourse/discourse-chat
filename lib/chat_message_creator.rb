@@ -10,12 +10,13 @@ class DiscourseChat::ChatMessageCreator
     instance
   end
 
-  def initialize(chat_channel:, in_reply_to_id: nil, user:, content:, staged_id: nil)
+  def initialize(chat_channel:, in_reply_to_id: nil, user:, content:, staged_id: nil, incoming_chat_webhook: nil)
     @chat_channel = chat_channel
     @user = user
     @in_reply_to_id = in_reply_to_id
     @content = content
     @staged_id = staged_id
+    @incoming_chat_webhook = incoming_chat_webhook
     @error = nil
 
     @chat_message = ChatMessage.new(
@@ -24,6 +25,13 @@ class DiscourseChat::ChatMessageCreator
       in_reply_to_id: @in_reply_to_id,
       message: @content,
     )
+
+    if @incoming_chat_webhook
+      ChatWebhookEvent.create(
+        chat_message: @chat_message,
+        incoming_chat_webhook: @incoming_chat_webhook
+      )
+    end
   end
 
   def create

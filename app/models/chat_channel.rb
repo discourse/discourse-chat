@@ -32,6 +32,10 @@ class ChatChannel < ActiveRecord::Base
     chatable_type == DiscourseChat::SITE_CHAT_TYPE
   end
 
+  def self.public_channels
+    where(chatable_type: ["Topic", "Category", DiscourseChat::SITE_CHAT_TYPE])
+  end
+
   def self.site_channel
     find_by(chatable_id: DiscourseChat::SITE_CHAT_ID)
   end

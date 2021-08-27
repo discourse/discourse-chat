@@ -13,8 +13,8 @@
           {{d-icon "angle-up"}}
         </span>
       {{/if}}
-      {{#if chatService.presenceChannel.count}}
-        {{i18n "chat.chat_channels_with_count" count=chatService.presenceChannel.count}}
+      {{#if chat.presenceChannel.count}}
+        {{i18n "chat.chat_channels_with_count" count=chat.presenceChannel.count}}
       {{else}}
         {{i18n "chat.chat_channels"}}
       {{/if}}

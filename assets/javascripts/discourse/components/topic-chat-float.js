@@ -14,7 +14,7 @@ import { inject as service } from "@ember/service";
 export default Component.extend({
   chatView: equal("view", CHAT_VIEW),
   classNameBindings: [":topic-chat-float-container", "hidden"],
-  chatService: service("chat"),
+  chat: service(),
   router: service(),
 
   hidden: true,
@@ -34,7 +34,7 @@ export default Component.extend({
       return;
     }
 
-    this.chatService.calculateHasUnreadMessages();
+    this.chat.calculateHasUnreadMessages();
     this._checkSize();
     this.appEvents.on("chat:navigated-to-full-page", this, "close");
     this.appEvents.on("chat:toggle-open", this, "toggleChat");
@@ -96,7 +96,7 @@ export default Component.extend({
 
   @observes("hidden")
   _fireHiddenAppEvents() {
-    this.chatService.setChatOpenStatus(!this.hidden);
+    this.chat.setChatOpenStatus(!this.hidden);
     this.appEvents.trigger("chat:rerender-header");
   },
 
@@ -107,7 +107,7 @@ export default Component.extend({
   },
 
   openChannelAtMessage(chatChannelId, messageId) {
-    this.chatService.setMessageId(messageId);
+    this.chat.setMessageId(messageId);
     this._fetchChannelAndSwitch(chatChannelId);
   },
 
@@ -244,7 +244,7 @@ export default Component.extend({
     }
 
     // Look for DM channel with unread, and fallback to public channel with unread
-    this.chatService.getIdealFirstChannelId().then((channelId) => {
+    this.chat.getIdealFirstChannelId().then((channelId) => {
       if (channelId) {
         this._fetchChannelAndSwitch(channelId);
       } else {
@@ -257,7 +257,7 @@ export default Component.extend({
   @action
   fetchChannels() {
     this.set("loading", true);
-    this.chatService.getChannels().then((channels) => {
+    this.chat.getChannels().then((channels) => {
       this.setProperties({
         publicChannels: channels.publicChannels,
         directMessageChannels: channels.directMessageChannels,

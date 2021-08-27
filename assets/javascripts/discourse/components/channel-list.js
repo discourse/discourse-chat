@@ -15,7 +15,7 @@ export default Component.extend({
   newDmUsernamesEmpty: empty("newDmUsernames"),
   inSidebar: false,
   toggleSection: null,
-  chatService: service("chat"),
+  chat: service(),
 
   sortedDirectMessageChannels: computed(
     "directMessageChannels.@each.updated_at",

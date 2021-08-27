@@ -1,6 +1,12 @@
 $header-height: 2.5rem;
 $float-height: 530px;
 
+.tc-composer {
+  #file-uploader {
+    display: none;
+  }
+}
+
 .unread-dm-indicator,
 .unread-chat-messages-indicator {
   width: 14px;
@@ -289,6 +295,7 @@ $float-height: 530px;
       padding-left: 0.05em;
       img {
         max-width: 100%;
+        height: unset;
       }
       pre {
         width: 90%;

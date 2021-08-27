@@ -9,6 +9,7 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 import { cancel, later, next, schedule } from "@ember/runloop";
 import { inject as service } from "@ember/service";
 import { Promise } from "rsvp";
+import { resolveAllShortUrls } from "pretty-text/upload-short-url";
 
 const MAX_RECENT_MSGS = 100;
 const STICKY_SCROLL_LENIENCE = 4;
@@ -357,6 +358,17 @@ export default Component.extend({
     }
   },
 
+  @observes("messages.@each.expanded")
+  _listenForMessageChanges() {
+    this._resolveURLs();
+  },
+
+  _resolveURLs() {
+    next(() => {
+      resolveAllShortUrls(ajax, this.siteSettings, this.element);
+    });
+  },
+
   @observes("expanded")
   restickOnExpand() {
     if (this.expanded) {
@@ -392,6 +404,7 @@ export default Component.extend({
         this.handleRestoreMessage(data);
         break;
     }
+    this._resolveURLs();
   },
 
   handleSentMessage(data) {

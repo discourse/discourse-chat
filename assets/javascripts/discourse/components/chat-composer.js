@@ -1,10 +1,20 @@
 import I18n from "I18n";
 import Component from "@ember/component";
+import ComposerUpload from "discourse/mixins/composer-upload";
+import ComposerUploadUppy from "discourse/mixins/composer-upload-uppy";
 import discourseComputed from "discourse-common/utils/decorators";
 import userSearch from "discourse/lib/user-search";
+import {
+  authorizedExtensions,
+  authorizesAllExtensions,
+} from "discourse/lib/uploads";
 import { action } from "@ember/object";
-import { cancel, schedule, throttle } from "@ember/runloop";
+import { cancel, next, schedule, throttle } from "@ember/runloop";
 import { categoryHashtagTriggerRule } from "discourse/lib/category-hashtags";
+import {
+  determinePostReplaceSelection,
+  safariHacksDisabled,
+} from "discourse/lib/utilities";
 import { findRawTemplate } from "discourse-common/lib/raw-templates";
 import { emojiSearch, isSkinTonableEmoji } from "pretty-text/emoji";
 import { emojiUrlFor } from "discourse/lib/text";
@@ -17,7 +27,10 @@ import { Promise } from "rsvp";
 
 const THROTTLE_MS = 150;
 
-export default Component.extend({
+let uploadProcessorActions = {};
+let uploadMarkdownResolvers = [];
+
+export default Component.extend(ComposerUpload, ComposerUploadUppy, {
   classNames: ["tc-composer"],
   value: "",
   emojiStore: service("emoji-store"),
@@ -26,13 +39,29 @@ export default Component.extend({
   inputDisabled: not("canChat"),
   onValueChange: null,
 
+  // Composer Uppy values
+  fileUploadElementId: "file-uploader",
+  eventPrefix: "chat-composer",
+  uploadType: "chat-composer",
+  uppyId: "chat-composer-uppy",
+  composerModel: null,
+  composerModelContentKey: "value",
+  editorInputClass: ".tc-composer-input",
+  uploadProcessorActions,
+  uploadMarkdownResolvers,
+
   didInsertElement() {
     this._super(...arguments);
+    this.set("composerModel", this);
 
     this._textarea = this.element.querySelector(".tc-composer-input");
-    const $textarea = $(this._textarea);
-    this._applyCategoryHashtagAutocomplete($textarea);
-    this._applyEmojiAutocomplete($textarea);
+    this._$textarea = $(this._textarea);
+    this._applyCategoryHashtagAutocomplete(this._$textarea);
+    this._applyEmojiAutocomplete(this._$textarea);
+    this._bindUploadTarget();
+
+    this.appEvents.on(`${this.eventPrefix}:insert-text`, this, "_insertText");
+    this.appEvents.on(`${this.eventPrefix}:replace-text`, this, "_replaceText");
   },
 
   willDestroyElement() {
@@ -41,6 +70,13 @@ export default Component.extend({
       cancel(this.timer);
       this.timer = null;
     }
+
+    this.appEvents.off(`${this.eventPrefix}:insert-text`, this, "_insertText");
+    this.appEvents.off(
+      `${this.eventPrefix}:replace-text`,
+      this,
+      "_replaceText"
+    );
   },
 
   didRender() {
@@ -323,7 +359,7 @@ export default Component.extend({
   @action
   internalSendMessage() {
     if (this._messageIsValid()) {
-      return this.sendMessage(this.value).then(() => this._reset());
+      return this.sendMessage(this.value).then(() => this._resetTextarea());
     }
   },
 
@@ -331,7 +367,7 @@ export default Component.extend({
   internalEditMessage() {
     if (this._messageIsValid()) {
       return this.editMessage(this.editingMessage, this.value).then(() =>
-        this._reset()
+        this._resetTextarea()
       );
     }
   },
@@ -344,7 +380,7 @@ export default Component.extend({
     return (this.value || "").trim() === "";
   },
 
-  _reset() {
+  _resetTextarea() {
     this.set("value", "");
     this.onCancelEditing();
     this._focusTextArea();
@@ -353,5 +389,114 @@ export default Component.extend({
   @action
   cancelReplyTo() {
     this.set("replyToMsg", null);
+  },
+
+  @discourseComputed()
+  acceptedFormats() {
+    const extensions = authorizedExtensions(
+      this.currentUser.staff,
+      this.siteSettings
+    );
+
+    return extensions.map((ext) => `.${ext}`).join();
+  },
+  @discourseComputed()
+  acceptsAllFormats() {
+    return authorizesAllExtensions(this.currentUser.staff, this.siteSettings);
+  },
+
+  _cursorIsOnEmptyLine() {
+    const selectionStart = this._textarea.selectionStart;
+    if (selectionStart === 0) {
+      return true;
+    } else if (this._textarea.value.charAt(selectionStart - 1) === "\n") {
+      return true;
+    } else {
+      return false;
+    }
+  },
+
+  _replaceText(oldVal, newVal) {
+    const val = this.value;
+    const needleStart = val.indexOf(oldVal);
+
+    if (needleStart === -1) {
+      // Nothing to replace.
+      return;
+    }
+
+    // Determine post-replace selection.
+    const newSelection = determinePostReplaceSelection({
+      selection: {
+        start: this._textarea.selectionStart,
+        end: this._textarea.selectionEnd,
+      },
+      needle: { start: needleStart, end: needleStart + oldVal.length },
+      replacement: { start: needleStart, end: needleStart + newVal.length },
+    });
+
+    this.set("value", val.replace(oldVal, newVal));
+
+    if (document.activeElement === this._textarea) {
+      // Restore cursor.
+      this._selectText(
+        newSelection.start,
+        newSelection.end - newSelection.start
+      );
+    }
+  },
+
+  _insertText(text) {
+    let sel = this._getSelected();
+    const insert = `${sel.pre}${text}`;
+    const value = `${insert}${sel.post}`;
+    this.set("value", value);
+    this._$textarea.val(value);
+    this._$textarea.prop("selectionStart", insert.length);
+    this._$textarea.prop("selectionEnd", insert.length);
+    next(() => this._$textarea.trigger("change"));
+    this._focusTextArea();
+  },
+
+  _getSelected(trimLeading) {
+    const value = this._textarea.value;
+    let start = this._textarea.selectionStart;
+    let end = this._textarea.selectionEnd;
+
+    // trim trailing spaces cause **test ** would be invalid
+    while (end > start && /\s/.test(value.charAt(end - 1))) {
+      end--;
+    }
+
+    if (trimLeading) {
+      // trim leading spaces cause ** test** would be invalid
+      while (end > start && /\s/.test(value.charAt(start))) {
+        start++;
+      }
+    }
+
+    const selVal = value.substring(start, end);
+    const pre = value.slice(0, start);
+    const post = value.slice(end);
+    return { start, end, value: selVal, pre, post };
+  },
+
+  _selectText(from, length, opts = { scroll: true }) {
+    next(() => {
+      if (!this._textarea) {
+        return;
+      }
+
+      this._textarea.selectionStart = from;
+      this._textarea.selectionEnd = from + length;
+      this._$textarea.trigger("change");
+      if (opts.scroll) {
+        const oldScrollPos = this._$textarea.scrollTop();
+        if (!this.capabilities.isIOS || safariHacksDisabled()) {
+          this._$textarea.focus();
+        }
+        this._$textarea.scrollTop(oldScrollPos);
+      }
+    });
   },
 });

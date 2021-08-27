@@ -14,7 +14,7 @@ export default DiscourseRoute.extend({
       return;
     }
 
-    this.chat.getIdealFirstChannelTitle().then((channelTitle) => {
+    return this.chat.getIdealFirstChannelTitle().then((channelTitle) => {
       this.transitionTo("chat.channel", channelTitle);
     });
   },

@@ -67,7 +67,7 @@ export default Component.extend({
   },
 
   _calculateHeight() {
-    const main = document.querySelector("#main-outlet"),
+    const main = document.getElementById("main-outlet"),
       padBottom = window
         .getComputedStyle(main, null)
         .getPropertyValue("padding-bottom"),

@@ -185,8 +185,8 @@ after_initialize do
   end
 
   DiscourseChat::Engine.routes.draw do
-    get '/' => 'chat#empty'
-    get '/channel/:channel_title' => 'chat#empty'
+    get '/' => 'chat#respond'
+    get '/channel/:channel_title' => 'chat#respond'
     get '/index' => 'chat#index'
     post '/enable' => 'chat#enable_chat'
     post '/disable' => 'chat#disable_chat'

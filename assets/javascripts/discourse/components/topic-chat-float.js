@@ -216,7 +216,6 @@ export default Component.extend({
   @action
   openInFullPage() {
     if (this.activeChannel) {
-      console.log("what the heck");
       return this.router.transitionTo("chat.channel", this.activeChannel.title);
     }
 

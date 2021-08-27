@@ -11,8 +11,8 @@ class DiscourseChat::ChatController < ::ApplicationController
     :edit_message
   ]
 
-  def empty
-    head :ok
+  def respond
+    render
   end
 
   def enable_chat

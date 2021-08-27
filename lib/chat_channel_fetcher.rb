@@ -55,6 +55,8 @@ module DiscourseChat::ChatChannelFetcher
         .where(direct_message_users: { user_id: user_id })
         .pluck(:id)
             )
+      .order(updated_at: :desc)
+      .limit(10)
   end
 
   def self.can_see_channel?(channel, guardian)

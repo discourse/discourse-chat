@@ -12,6 +12,7 @@ enabled_site_setting :topic_chat_enabled
 register_asset 'stylesheets/common/common.scss'
 register_asset 'stylesheets/common/incoming-chat-webhooks.scss'
 register_asset 'stylesheets/mobile/mobile.scss', :mobile
+register_asset 'stylesheets/desktop/desktop.scss', :desktop
 
 register_svg_icon "comments"
 register_svg_icon "comment-slash"
@@ -195,6 +196,8 @@ after_initialize do
   end
 
   DiscourseChat::Engine.routes.draw do
+    get '/' => 'chat#respond'
+    get '/channel/:channel_title' => 'chat#respond'
     get '/index' => 'chat#index'
     post '/enable' => 'chat#enable_chat'
     post '/disable' => 'chat#disable_chat'

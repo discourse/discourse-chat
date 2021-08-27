@@ -24,6 +24,7 @@
         </div>
       {{/if}}
 
+      {{flat-button icon="discourse-expand" class="tc-full-screen-btn" action=(action "openInFullPage") title="chat.open_full_page"}}
       {{flat-button icon=this.expandIcon class="tc-expand" action=(action "toggleExpand") title="chat.collapse"}}
 
       {{#if showClose}}
@@ -34,12 +35,12 @@
     {{!-- Content --}}
     <div class="topic-chat-drawer-content">
       {{#if chatView}}
-        {{#if (and this.activeChannel cookFunction)}}
+        {{#if this.activeChannel}}
           {{chat-live-pane
-            cook=cookFunction
             chatChannel=activeChannel
             expanded=this.expanded
             floatHidden=this.hidden
+            fullPage=false
           }}
         {{/if}}
       {{else}}

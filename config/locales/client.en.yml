@@ -1,8 +1,49 @@
 en:
   js:
     chat:
+      all_loaded: "Showing all messages"
+      already_enabled: "Chat is already enabled on this topic. Please refresh."
+      already_disabled: "Chat is already closed on this topic. Please refresh."
+      bot: "bot"
+      create: "Create"
+      cancel: "Cancel"
+      cancel_reply: "Cancel reply"
+      cancel_edit: "Cancel edit"
+      category_chat_enabled: "Chat enabled for category"
+      chat_channels: "Channels"
+      close: "Close"
+      collapse: "Collapse Chat Drawer"
+      deleted: "A message was deleted. [view]"
+      delete: "Delete"
+      edited: "(edited)"
+      flag: "Flag"
+      in_reply_to: "In reply to"
+      list: "Channels"
+      new_messages: "new messages"
+      mention_notification: "<span>%{username} mentioned you in chat</span>"
+      open_full_page: "Open full-screen chat"
+      placeholder: "chat..."
+      placeholder_log_in: "Log in to chat"
+      reply: "Reply"
+      restore: "Restore deleted message"
+      return_to_list: "Return to channel list"
+      scroll_to_bottom: "Scroll to bottom"
+      send: "Send Chat Message"
+      send_error: "Something went wrong"
+      title: "chat"
+      unread_count: "(%{count} new)"
+
       admin:
         title: "Chat"
+
+      direct_messages:
+        title: "Personal chat"
+        new: "New personal chat"
+        create: "Go"
+
+      channels:
+        staff: "Staff-only"
+
       incoming_webhooks:
         back: "Back"
         channel: "Channel"
@@ -27,44 +68,6 @@ en:
         url: "URL"
         username: "Username"
         username_instructions: "Username of bot that posts to channel. Defaults to 'system' when left blank."
-
-      title: "chat"
-      placeholder: "chat..."
-      placeholder_log_in: "Log in to chat"
-      send: "Send Chat Message"
-      close: "Close"
-      collapse: "Collapse Chat Drawer"
-      scroll_to_bottom: "Scroll to bottom"
-      already_enabled: "Chat is already enabled on this topic. Please refresh."
-      already_disabled: "Chat is already closed on this topic. Please refresh."
-      in_reply_to: "In reply to"
-      reply: "Reply"
-      bot: "bot"
-      create: "Create"
-      cancel: "Cancel"
-      cancel_reply: "Cancel reply"
-      cancel_edit: "Cancel edit"
-      edited: "(edited)"
-      flag: "Flag"
-      delete: "Delete"
-      restore: "Restore deleted message"
-      deleted: "A message was deleted. [view]"
-      list: "Channels"
-      new_messages: "new messages"
-      unread_count: "(%{count} new)"
-      category_chat_enabled: "Chat enabled for category"
-      mention_notification: "<span>%{username} mentioned you in chat</span>"
-      return_to_list: "Return to channel list"
-      all_loaded: "Showing all messages"
-      send_error: "Something went wrong"
-      chat_channels: "Channels"
-      direct_messages:
-        title: "Personal chat"
-        new: "New personal chat"
-        create: "Go"
-
-      channels:
-        staff: "Staff-only"
 
     notifications:
       titles:

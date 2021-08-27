@@ -11,6 +11,10 @@ class DiscourseChat::ChatController < ::ApplicationController
     :edit_message
   ]
 
+  def respond
+    render
+  end
+
   def enable_chat
     chat_channel = ChatChannel.with_deleted.find_by(chatable: @chatable)
     if chat_channel && chat_channel.trashed?

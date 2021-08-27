@@ -23,6 +23,8 @@ class ChatChannelSerializer < ApplicationSerializer
       object.chatable.name
     when "Site"
       I18n.t("chat.site_chat_name")
+    when "DirectMessageChannel"
+      object.chatable.chat_channel_title_for_user(object, scope.user)
     end
   end
 

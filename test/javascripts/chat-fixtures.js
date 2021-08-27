@@ -23,7 +23,7 @@ export const directMessageChannel = {
     chatable_type: "DirectMessageChannel",
     chatable_url: null,
     id: 75,
-    title: null,
+    title: "@hawk",
   },
 };
 

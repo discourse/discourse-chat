@@ -8,6 +8,13 @@ class DirectMessageChannel < ActiveRecord::Base
     users.include?(user)
   end
 
+  def chat_channel_title_for_user(chat_channel, user)
+    users = direct_message_users.map(&:user) - [user]
+    users.count > 1 ?
+      chat_channel.id :
+      "@#{users.first.username}"
+  end
+
   def self.for_user_ids(user_ids)
     joins(:users)
       .group("direct_message_channels.id")

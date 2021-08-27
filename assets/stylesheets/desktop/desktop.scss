@@ -1,0 +1,68 @@
+.tc-drawer {
+  width: 400px;
+  max-width: 100vw;
+}
+
+.user-card,
+.group-card {
+  z-index: z("usercard") + 1; // bump up user card
+}
+
+.full-page-chat {
+  &.teams-sidebar-on {
+    grid-template-columns: 1fr;
+
+    .tc-live-pane {
+      border-radius: var(--full-page-border-radius);
+    }
+  }
+
+  .tc-full-page-header {
+    padding: 0.5em 1em;
+  }
+
+  .tc-live-pane {
+    .tc-messages-container {
+      .tc-message {
+        padding: 0.15em 1em;
+
+        &:not(.user-info-hidden) {
+          padding: 0.5em 1em;
+          margin-top: 0.5em;
+        }
+        &.user-info-hidden {
+          .tc-meta-data {
+            width: var(--large-message-left-width);
+            padding-right: 0.3em;
+          }
+        }
+        &.is-reply {
+          grid-template-columns: var(--large-message-left-width) 1fr;
+
+          .tc-avatar {
+            width: var(--large-message-left-width);
+          }
+        }
+        .tc-avatar {
+          width: var(--large-message-left-width);
+        }
+      }
+    }
+  }
+
+  .tc-composer {
+    margin: 0;
+
+    .tc-composer-message-details {
+      padding-left: 1em;
+      padding-right: 1.5em;
+    }
+    .tc-composer-row {
+      padding: 0 1em;
+    }
+  }
+}
+
+.tc-text {
+  max-width: calc(100% - (#{var(--large-message-left-width)} + 1.5em));
+}

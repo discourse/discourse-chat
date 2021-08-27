@@ -111,6 +111,7 @@ class DiscourseChat::ChatController < ::ApplicationController
     messages = ChatMessage
       .includes(:in_reply_to)
       .includes(:revisions)
+      .includes(chat_webhook_event: :incoming_chat_webhook)
       .where(chat_channel: @chat_channel)
 
     if params[:before_message_id]

@@ -25,15 +25,21 @@ export default Service.extend({
 
   init() {
     this._super(...arguments);
-    this.set("allChannels", A());
-    this._subscribeToUpdateChannels();
-    this._subscribeToUserTrackingChannel();
+    if (this.currentUser?.can_chat) {
+      this.set("allChannels", []);
+      this._subscribeToUpdateChannels();
+      this._subscribeToUserTrackingChannel();
+    }
   },
 
   willDestroy() {
-    this.set("allChannels", null);
-    this._unsubscribeFromUpdateChannels();
-    this._unsubscribeFromUserTrackingChannel();
+    this._super(...arguments);
+
+    if (this.currentUser?.can_chat) {
+      this.set("allChannels", null);
+      this._unsubscribeFromUpdateChannels();
+      this._unsubscribeFromUserTrackingChannel();
+    }
   },
 
   loadCookFunction(categories) {

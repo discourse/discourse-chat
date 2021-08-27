@@ -140,9 +140,22 @@ $float-height: 530px;
     text-overflow: ellipsis;
     overflow-x: hidden;
     color: var(--primary);
+    display: flex;
+    align-items: center;
     .chat-channel-title {
       display: flex;
-
+      width: calc(95% - 0.5em);
+      margin-right: 0.5em;
+      flex-grow: 1;
+      flex-shrink: 1;
+      .badge-wrapper.bullet {
+        margin-right: 0px;
+      }
+      .dm-usernames {
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
       .d-icon:not(.d-icon-hashtag) {
         color: var(--primary-high);
       }
@@ -159,6 +172,9 @@ $float-height: 530px;
     border-radius: 100%;
     min-width: 1.4em;
     min-height: 1.4em;
+    height: 1.4em;
+    width: 1.4em;
+    padding: 1px;
     text-align: center;
   }
   .tc-full-screen-btn {
@@ -313,11 +329,26 @@ $float-height: 530px;
         height: unset;
       }
     }
+
+    .tc-bot-indicator {
+      text-transform: uppercase;
+      padding: 0.25em;
+      background: var(--primary-low);
+      border-radius: 3px;
+      font-size: var(--font-down-2);
+      margin-left: -0.25em;
+    }
     .tc-text {
       display: inline-block;
       margin: 0;
       padding-left: 0.05em;
-
+      img {
+        max-width: 100%;
+      }
+      pre {
+        width: 90%;
+        overflow: scroll;
+      }
       > p {
         margin: 0;
       }
@@ -664,7 +695,7 @@ $float-height: 530px;
   .dm-multi-count {
     display: inline-block;
     border-radius: 3px;
-    background: var(--primary-low);
+    background: rgba(var(--primary-rgb), 0.1);
     padding: 0.1em 0.5em;
     text-align: center;
     font-weight: bold;

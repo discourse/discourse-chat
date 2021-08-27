@@ -1,5 +1,5 @@
-import discourseComputed from "discourse-common/utils/decorators";
 import Component from "@ember/component";
+import discourseComputed from "discourse-common/utils/decorators";
 import { equal } from "@ember/object/computed";
 import { inject as service } from "@ember/service";
 

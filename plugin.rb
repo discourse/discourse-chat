@@ -10,6 +10,7 @@
 enabled_site_setting :topic_chat_enabled
 
 register_asset 'stylesheets/common/common.scss'
+register_asset 'stylesheets/common/incoming-chat-webhooks.scss'
 register_asset 'stylesheets/mobile/mobile.scss', :mobile
 register_asset 'stylesheets/desktop/desktop.scss', :desktop
 
@@ -17,6 +18,9 @@ register_svg_icon "comments"
 register_svg_icon "comment-slash"
 register_svg_icon "hashtag"
 register_svg_icon "lock"
+
+# route: /admin/plugins/chat
+add_admin_route 'chat.admin.title', 'chat'
 
 after_initialize do
   module ::DiscourseChat
@@ -34,19 +38,26 @@ after_initialize do
 
   SeedFu.fixture_paths << Rails.root.join("plugins", "discourse-topic-chat", "db", "fixtures").to_s
 
+  load File.expand_path('../app/controllers/admin/admin_incoming_chat_webhooks_controller.rb', __FILE__)
   load File.expand_path('../app/controllers/chat_controller.rb', __FILE__)
   load File.expand_path('../app/controllers/direct_messages_controller.rb', __FILE__)
+  load File.expand_path('../app/controllers/incoming_chat_webhooks_controller.rb', __FILE__)
   load File.expand_path('../app/models/chat_channel.rb', __FILE__)
   load File.expand_path('../app/models/chat_message.rb', __FILE__)
   load File.expand_path('../app/models/chat_message_revision.rb', __FILE__)
+  load File.expand_path('../app/models/chat_webhook_event.rb', __FILE__)
   load File.expand_path('../app/models/direct_message_channel.rb', __FILE__)
   load File.expand_path('../app/models/direct_message_user.rb', __FILE__)
+  load File.expand_path('../app/models/incoming_chat_webhook.rb', __FILE__)
   load File.expand_path('../app/models/user_chat_channel_last_read.rb', __FILE__)
-  load File.expand_path('../app/serializers/direct_message_channel_serializer.rb', __FILE__)
+  load File.expand_path('../app/serializers/chat_webhook_event_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/chat_base_message_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/chat_channel_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/chat_channel_index_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/chat_view_serializer.rb', __FILE__)
+  load File.expand_path('../app/serializers/direct_message_channel_serializer.rb', __FILE__)
+  load File.expand_path('../app/serializers/incoming_chat_webhook_serializer.rb', __FILE__)
+  load File.expand_path('../app/serializers/admin_chat_index_serializer.rb', __FILE__)
   load File.expand_path('../lib/chat_channel_fetcher.rb', __FILE__)
   load File.expand_path('../lib/chat_message_creator.rb', __FILE__)
   load File.expand_path('../lib/chat_message_updater.rb', __FILE__)
@@ -201,9 +212,15 @@ after_initialize do
     put '/:chat_channel_id/read/:message_id' => 'chat#update_user_last_read'
 
     post '/direct_messages/create' => 'direct_messages#create'
+
+    post '/hooks/:key' => 'incoming_chat_webhooks#create_message'
   end
 
   Discourse::Application.routes.append do
     mount ::DiscourseChat::Engine, at: '/chat'
+    get '/admin/plugins/chat' => 'discourse_chat/admin_incoming_chat_webhooks#index', constraints: StaffConstraint.new
+    post '/admin/plugins/chat/hooks' => 'discourse_chat/admin_incoming_chat_webhooks#create', constraints: StaffConstraint.new
+    put '/admin/plugins/chat/hooks/:incoming_chat_webhook_id' => 'discourse_chat/admin_incoming_chat_webhooks#update', constraints: StaffConstraint.new
+    delete '/admin/plugins/chat/hooks/:incoming_chat_webhook_id' => 'discourse_chat/admin_incoming_chat_webhooks#destroy', constraints: StaffConstraint.new
   end
 end

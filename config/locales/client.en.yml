@@ -4,6 +4,9 @@ en:
       all_loaded: "Showing all messages"
       already_enabled: "Chat is already enabled on this topic. Please refresh."
       already_disabled: "Chat is already closed on this topic. Please refresh."
+      bot: "bot"
+      create: "Create"
+      cancel: "Cancel"
       cancel_reply: "Cancel reply"
       cancel_edit: "Cancel edit"
       category_chat_enabled: "Chat enabled for category"
@@ -30,14 +33,41 @@ en:
       title: "chat"
       unread_count: "(%{count} new)"
 
+      admin:
+        title: "Chat"
+
       direct_messages:
         title: "Personal chat"
         new: "New personal chat"
         create: "Go"
-        cancel: "Cancel"
 
       channels:
         staff: "Staff-only"
+
+      incoming_webhooks:
+        back: "Back"
+        channel: "Channel"
+        channel_placeholder: "Select a channel"
+        confirm_destroy: "Are you sure you want to delete this incoming webhook? This cannot be un-done."
+        current_emoji: "Current Emoji"
+        description: "Description"
+        delete: "Delete"
+        emoji: "Emoji"
+        emoji_instructions: "System avatar will be used if emoji is left blank."
+        name: "Name"
+        name_placeholder: "name..."
+        new: "New incoming webhook"
+        none: "No existing incoming webhooks created."
+        no_emoji: "No Emoji selected"
+        post_to: "Post to"
+        reset_emoji: "Reset Emoji"
+        save: "Save"
+        select_emoji: "Choose Emoji"
+        system: "system"
+        title: "Incoming webhooks"
+        url: "URL"
+        username: "Username"
+        username_instructions: "Username of bot that posts to channel. Defaults to 'system' when left blank."
 
     notifications:
       titles:

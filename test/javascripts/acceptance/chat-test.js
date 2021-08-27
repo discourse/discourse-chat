@@ -1,4 +1,3 @@
-import I18n from "I18n";
 import {
   acceptance,
   count,
@@ -334,19 +333,11 @@ acceptance(
         ),
         "Unread indicator present in header"
       );
-
       await click(".header-dropdown-toggle.open-chat");
 
       assert.ok(
         exists(".chat-channel-row .unread-chat-messages-indicator"),
         "Unread indicator present in chat channel row"
-      );
-
-      assert.equal(
-        query(
-          ".chat-channel-row .chat-channel-row-unread-count"
-        ).innerText.trim(),
-        I18n.t("chat.unread_count", { count: 2 })
       );
     });
   }

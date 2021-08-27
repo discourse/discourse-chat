@@ -29,18 +29,27 @@ export default createWidget("header-chat-link", {
 
     return [
       h(
-        `a.icon${this.chat.getChatOpenStatus() ? ".active" : ""}`,
+        `a.icon${
+          this.onChatPage() || this.chat.getChatOpenStatus() ? ".active" : ""
+        }`,
         [iconNode("comment"), indicator].filter(Boolean)
       ),
     ];
   },
 
+  onChatPage() {
+    return (
+      this.router.currentRouteName === "chat" ||
+      this.router.currentRouteName === "chat.channel"
+    );
+  },
+
   click() {
-    if (this.router.currentRouteName === "chat.channel") {
+    if (this.onChatPage()) {
       return;
     }
 
-    DiscourseURL.routeTo("/chat")
+    DiscourseURL.routeTo("/chat");
   },
 
   chatRerenderHeader() {

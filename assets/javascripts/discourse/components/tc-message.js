@@ -25,15 +25,19 @@ export default Component.extend({
     );
   },
 
+  @discourseComputed("message.hideUserInfo", "message.chat_webhook_event")
+  hideUserInfo(hide, webhookEvent) {
+    return hide && !webhookEvent;
+  },
+
   @discourseComputed(
     "message.id",
     "message.staged",
     "message.deleted_at",
     "message.in_reply_to",
-    "message.action_code",
-    "message.hideUserInfo"
+    "message.action_code"
   )
-  messageClasses(id, staged, deletedAt, inReplyTo, actionCode, hideUserInfo) {
+  messageClasses(id, staged, deletedAt, inReplyTo, actionCode) {
     let classNames = ["tc-message"];
     classNames.push(
       staged ? "tc-message-staged" : `tc-message-${this.message.id}`
@@ -49,7 +53,7 @@ export default Component.extend({
     if (inReplyTo) {
       classNames.push("is-reply");
     }
-    if (hideUserInfo) {
+    if (this.hideUserInfo) {
       classNames.push("user-info-hidden");
     }
     return classNames.join(" ");
@@ -87,7 +91,12 @@ export default Component.extend({
 
   @discourseComputed("message", "message.deleted_at")
   showReplyButton(message, deletedAt) {
-    return this.details.can_chat && !message.action_code && !deletedAt;
+    return (
+      !message.chat_webhook_event &&
+      this.details.can_chat &&
+      !message.action_code &&
+      !deletedAt
+    );
   },
 
   @discourseComputed("message", "message.deleted_at")
@@ -102,7 +111,11 @@ export default Component.extend({
 
   @discourseComputed("message", "message.deleted_at")
   showFlagButton(message, deletedAt) {
-    return this.currentUser?.id !== message.user.id && !deletedAt;
+    return (
+      this.currentUser?.id !== message.user.id &&
+      !message.chat_webhook_event &&
+      !deletedAt
+    );
     // TODO: Add flagging
     // return this.details.can_flag && !message.action_code && !deletedAt;
   },

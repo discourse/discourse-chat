@@ -23,8 +23,7 @@ export default Component.extend({
   },
 
   click() {
-    this.switchChannel(this.channel);
-    return false;
+    return this.switchChannel(this.channel);
   },
 
   @discourseComputed("channel", "router.currentRoute")

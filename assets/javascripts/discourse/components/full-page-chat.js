@@ -2,6 +2,7 @@ import Component from "@ember/component";
 import discourseComputed from "discourse-common/utils/decorators";
 import { action } from "@ember/object";
 import { inject as service } from "@ember/service";
+import { next } from "@ember/runloop";
 
 export default Component.extend({
   tagName: "",
@@ -9,14 +10,6 @@ export default Component.extend({
   showingChannels: false,
   router: service(),
   chat: service(),
-
-  init() {
-    this._super(...arguments);
-    this.set(
-      "teamsSidebarOn",
-      document.body.classList.contains("discourse-sidebar")
-    );
-  },
 
   @discourseComputed("teamsSidebarOn", "showingChannels")
   wrapperClassNames(teamsSidebarOn, showingChannels) {
@@ -42,11 +35,15 @@ export default Component.extend({
   didInsertElement() {
     this._super(...arguments);
 
-    this._calculateHeight();
     this._scrollSidebarToBotton();
     window.addEventListener("resize", this._calculateHeight, false);
+    this.set(
+      "teamsSidebarOn",
+      document.body.classList.contains("discourse-sidebar")
+    );
     document.body.classList.add("has-full-page-chat");
     this.chat.setFullScreenChatOpenStatus(true);
+    next(this._calculateHeight);
   },
 
   willDestroyElement() {
@@ -85,10 +82,11 @@ export default Component.extend({
 
   @action
   switchChannel(channel) {
-    if (channel.id === this.chatChannel.id) {
-      return this.set("showingChannels", false);
-    }
+    this.set("showingChannels", false);
 
-    return this.router.transitionTo("chat.channel", channel.title);
+    if (channel.id !== this.chatChannel.id) {
+      this.router.transitionTo("chat.channel", channel.title);
+    }
+    return false;
   },
 });

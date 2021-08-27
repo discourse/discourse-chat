@@ -6,7 +6,7 @@ export default DiscourseRoute.extend({
 
   beforeModel(params) {
     if (!this.currentUser?.can_chat || !this.siteSettings.topic_chat_enabled) {
-      this.transitionTo("discovery");
+      return this.transitionTo("discovery");
     }
     if (params.to.name === "chat.channel") {
       // The target is a specific chat channel, so return and let
@@ -15,7 +15,7 @@ export default DiscourseRoute.extend({
     }
 
     return this.chat.getIdealFirstChannelTitle().then((channelTitle) => {
-      this.transitionTo("chat.channel", channelTitle);
+      return this.transitionTo("chat.channel", channelTitle);
     });
   },
 });

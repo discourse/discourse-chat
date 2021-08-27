@@ -65,8 +65,10 @@ acceptance("Discourse Chat - without unread", function (needs) {
     await visit("/t/internationalization-localization/280");
     await click(".header-dropdown-toggle.open-chat");
 
-
-    assert.equal(currentURL(), `/chat/channel/${siteChannel.chat_channel.title}`)
+    assert.equal(
+      currentURL(),
+      `/chat/channel/${siteChannel.chat_channel.title}`
+    );
     assert.ok(visible(".full-page-chat"));
     assert.equal(
       count(".public-channels .chat-channel-row"),
@@ -74,9 +76,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
       "it show public channel rows"
     );
     assert.equal(
-      count(
-        ".direct-message-channels .chat-channel-row"
-      ),
+      count(".direct-message-channels .chat-channel-row"),
       1,
       "it shows DM channel rows"
     );
@@ -320,8 +320,10 @@ acceptance(
       await visit("/t/internationalization-localization/280");
       await click(".header-dropdown-toggle.open-chat");
 
-      const channelWithUnread = chatChannels.public_channels.find((c) => c.id === 7);
-      assert.equal(currentURL(), `/chat/channel/${channelWithUnread.title}`)
+      const channelWithUnread = chatChannels.public_channels.find(
+        (c) => c.id === 7
+      );
+      assert.equal(currentURL(), `/chat/channel/${channelWithUnread.title}`);
     });
 
     test("Unread header indicator and unread count on channel row are present", async function (assert) {
@@ -360,8 +362,10 @@ acceptance(
       await visit("/t/internationalization-localization/280");
       await click(".header-dropdown-toggle.open-chat");
 
-      const channelWithUnread = chatChannels.direct_message_channels.find((c) => c.id === 75);
-      assert.equal(currentURL(), `/chat/channel/${channelWithUnread.title}`)
+      const channelWithUnread = chatChannels.direct_message_channels.find(
+        (c) => c.id === 75
+      );
+      assert.equal(currentURL(), `/chat/channel/${channelWithUnread.title}`);
     });
   }
 );

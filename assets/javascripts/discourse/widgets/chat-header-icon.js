@@ -5,7 +5,7 @@ import { iconNode } from "discourse-common/lib/icon-library";
 
 export default createWidget("header-chat-link", {
   buildKey: () => "header-chat-link",
-  chatService: null,
+  chat: null,
   tagName: "li.header-dropdown-toggle.open-chat",
   title: "chat.title",
   services: ["chat", "router"],

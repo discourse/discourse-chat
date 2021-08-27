@@ -49,6 +49,14 @@ const chatPretenders = (server, helper) => {
   server.post("/chat/:chatChannelId.json", () => {
     return helper.response({ success: "OK" });
   });
+
+  // TODO(david): Should these be part of core?
+  server.post("/presence/update", () => {
+    return helper.response({ success: "OK" });
+  });
+  server.get("/presence/get", () => {
+    return helper.response({ count: 0, users: [], next_message_id: 0 });
+  });
 };
 
 acceptance("Discourse Chat - without unread", function (needs) {

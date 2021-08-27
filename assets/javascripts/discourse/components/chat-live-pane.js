@@ -36,7 +36,7 @@ export default Component.extend({
   _nextStagedMessageId: 0, // Iterate on every new message
   targetMessageId: null,
 
-  chatService: service("chat"),
+  chat: service(),
 
   getCachedChannelDetails: null,
   clearCachedChannelDetails: null,
@@ -85,7 +85,7 @@ export default Component.extend({
   didReceiveAttrs() {
     this._super(...arguments);
 
-    this.set("targetMessageId", this.chatService.getMessageId());
+    this.set("targetMessageId", this.chat.getMessageId());
     if (this.registeredChatChannelId !== this.chatChannel.id) {
       if (this.registeredChatChannelId) {
         this.messageBus.unsubscribe(`/chat/${this.registeredChatChannelId}`);
@@ -106,7 +106,7 @@ export default Component.extend({
       ? `/chat/lookup/${this.targetMessageId}.json`
       : `/chat/${this.chatChannel.id}/messages.json`;
 
-    this.chatService.loadCookFunction(this.site.categories).then((cook) => {
+    this.chat.loadCookFunction(this.site.categories).then((cook) => {
       this.set("cook", cook);
       return ajax(url, { data: { page_size: PAGE_SIZE } })
         .then((data) => {
@@ -124,7 +124,7 @@ export default Component.extend({
             return;
           }
           if (this.targetMessageId) {
-            this.chatService.clearMessageId();
+            this.chat.clearMessageId();
           }
           this.set("loading", false);
         });

@@ -4,6 +4,7 @@ import { action, computed } from "@ember/object";
 import { ajax } from "discourse/lib/ajax";
 import { empty } from "@ember/object/computed";
 import { schedule } from "@ember/runloop";
+import { inject as service } from "@ember/service";
 
 export default Component.extend({
   tagName: "",
@@ -14,6 +15,7 @@ export default Component.extend({
   newDmUsernamesEmpty: empty("newDmUsernames"),
   inSidebar: false,
   toggleSection: null,
+  chatService: service("chat"),
 
   sortedDirectMessageChannels: computed(
     "directMessageChannels.@each.updated_at",

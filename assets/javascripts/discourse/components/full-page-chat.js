@@ -8,6 +8,7 @@ export default Component.extend({
   teamsSidebarOn: false,
   showingChannels: false,
   router: service(),
+  chatService: service("chat"),
 
   init() {
     this._super(...arguments);
@@ -45,12 +46,14 @@ export default Component.extend({
     this._scrollSidebarToBotton();
     window.addEventListener("resize", this._calculateHeight, false);
     document.body.classList.add("has-full-page-chat");
+    this.chatService.setFullScreenChatOpenStatus(true);
   },
 
   willDestroyElement() {
     this._super(...arguments);
     window.removeEventListener("resize", this._calculateHeight, false);
     document.body.classList.remove("has-full-page-chat");
+    this.chatService.setFullScreenChatOpenStatus(false);
   },
 
   _scrollSidebarToBotton() {

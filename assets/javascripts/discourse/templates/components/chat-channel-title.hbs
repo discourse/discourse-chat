@@ -8,7 +8,10 @@
 
     {{else}}
       <div class="dm-single-user">
-        {{avatar channel.chatable.users.firstObject imageSize="medium"}}
+        <div class="tc-avatar-container">
+          {{avatar channel.chatable.users.firstObject imageSize="medium"}}
+          {{tc-user-presence-flair user=channel.chatable.users.firstObject}}
+        </div>
         <span class="dm-username">{{channel.chatable.users.firstObject.username}}</span>
       </div>
 

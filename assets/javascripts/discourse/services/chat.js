@@ -22,6 +22,8 @@ export default Service.extend({
   idToTitleMap: null,
   appEvents: service(),
   cook: null,
+  presence: service(),
+  presenceChannel: null,
 
   init() {
     this._super(...arguments);
@@ -29,6 +31,7 @@ export default Service.extend({
       this.set("allChannels", []);
       this._subscribeToUpdateChannels();
       this._subscribeToUserTrackingChannel();
+      this.presenceChannel = this.presence.getChannel("/chat/online");
     }
   },
 
@@ -69,11 +72,25 @@ export default Service.extend({
     this.set("messageId", null);
   },
 
+  setFullScreenChatOpenStatus(status) {
+    this.set("fullScreenChatOpen", status);
+    this._updatePresence();
+  },
+
   setChatOpenStatus(status) {
     this.set("chatOpen", status);
+    this._updatePresence();
   },
   getChatOpenStatus() {
     return this.chatOpen;
+  },
+
+  _updatePresence() {
+    if (this.fullScreenChatOpen || this.chatOpen) {
+      this.presenceChannel.enter();
+    } else {
+      this.presenceChannel.leave();
+    }
   },
 
   setHasUnreadMessages(value) {
@@ -122,6 +139,7 @@ export default Service.extend({
         idToTitleMap[c.id] = c.title;
       });
       this.set("idToTitleMap", idToTitleMap);
+      this.presenceChannel.subscribe(channels.global_presence_channel_state);
       return {
         publicChannels: this.publicChannels,
         directMessageChannels: this.directMessageChannels,

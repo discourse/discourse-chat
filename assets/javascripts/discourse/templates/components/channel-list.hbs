@@ -13,7 +13,11 @@
           {{d-icon "angle-up"}}
         </span>
       {{/if}}
-      {{i18n "chat.chat_channels"}}
+      {{#if chatService.presenceChannel.count}}
+        {{i18n "chat.chat_channels_with_count" count=chatService.presenceChannel.count}}
+      {{else}}
+        {{i18n "chat.chat_channels"}}
+      {{/if}}
     </div>
     <div id="public-channels" class={{publicChannelClasses}}>
       {{#each publicChannels as |channel|}}

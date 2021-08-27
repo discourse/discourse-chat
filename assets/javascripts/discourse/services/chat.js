@@ -290,9 +290,9 @@ export default Service.extend({
     channel.chat_channels = channel.chat_channels.map((nested_channel) => {
       return this.processChannel(nested_channel);
     });
-    this.allChannels.push(channel)
+    this.allChannels.push(channel);
     return channel;
-  }
+  },
 });
 
 const MARKDOWN_OPTIONS = {

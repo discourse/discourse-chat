@@ -258,10 +258,6 @@ $float-height: 530px;
   .tc-message-deleted {
     padding: 0.25em;
 
-    &:hover {
-      background: var(--primary-very-low);
-    }
-
     .tc-message-expand-deleted {
       color: var(--primary-high);
       padding: 0.25em;
@@ -274,9 +270,6 @@ $float-height: 530px;
     background-color: var(--secondary);
     display: flex;
 
-    &:hover {
-      background: var(--primary-very-low);
-    }
     &.tc-action {
       background-color: var(--highlight-medium);
     }
@@ -303,12 +296,6 @@ $float-height: 530px;
 
       .tc-message-container {
         margin-left: 0;
-      }
-
-      &:hover {
-        .tc-meta-data .relative-date {
-          visibility: visible;
-        }
       }
 
       .tc-msgactions-hover {
@@ -412,14 +399,6 @@ $float-height: 530px;
     top: 0.75em;
   }
 
-  .tc-message:hover,
-  .tc-message:focus-within {
-    .tc-msgactions-hover {
-      opacity: 1;
-      pointer-events: initial;
-    }
-  }
-
   .tc-msgactions {
     display: flex;
   }
@@ -439,6 +418,27 @@ $float-height: 530px;
     }
     .relative-date {
       font-size: var(--font-down-1);
+    }
+  }
+
+  .no-touch & .tc-message:hover,
+  .tc-message.tc-message-selected {
+    background: var(--primary-very-low);
+  }
+
+  .no-touch & .tc-message:hover,
+  .tc-message.tc-message-selected,
+  .tc-message:focus-within {
+    .tc-msgactions-hover {
+      opacity: 1;
+      pointer-events: initial;
+    }
+  }
+
+  .no-touch & .user-info-hidden:hover,
+  .user-info-hidden.tc-message-selected {
+    .tc-meta-data .relative-date {
+      visibility: visible;
     }
   }
 }
@@ -813,11 +813,10 @@ $float-height: 530px;
     box-sizing: border-box;
     border-radius: 0 var(--full-page-border-radius)
       var(--full-page-border-radius) 0;
+  }
 
-    .tc-message {
-      &:hover {
-        background: var(--primary-low);
-      }
-    }
+  .no-touch & .tc-message:hover,
+  .tc-message.tc-message-selected {
+    background: var(--primary-low);
   }
 }

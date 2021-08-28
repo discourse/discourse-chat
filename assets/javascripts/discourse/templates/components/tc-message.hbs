@@ -8,7 +8,7 @@
       }}
     </div>
   {{else}}
-    <div class={{messageClasses}}>
+    <div class={{messageClasses}} onclick={{action "clickMessage"}}>
       {{#unless message.staged}}
         <div class="tc-msgactions-hover">
           <div class="tc-msgactions">

@@ -8,7 +8,7 @@ import { autoUpdatingRelativeAge } from "discourse/lib/formatter";
 import I18n from "I18n";
 
 export default Component.extend({
-  tagName: "",
+  tagName: "div",
   lastRead: false,
   isSelected: false,
 
@@ -24,6 +24,12 @@ export default Component.extend({
       this.currentUser === this.message.user.id ||
       this.currentUser.staff
     );
+  },
+
+  click() {
+    if (this.capabilities.touch) {
+      this.toggleProperty("isSelected");
+    }
   },
 
   @discourseComputed("message.hideUserInfo", "message.chat_webhook_event")
@@ -62,13 +68,6 @@ export default Component.extend({
       classNames.push("tc-message-selected");
     }
     return classNames.join(" ");
-  },
-
-  @action
-  clickMessage() {
-    if (this.capabilities.touch) {
-      this.toggleProperty("isSelected");
-    }
   },
 
   @discourseComputed("message.user")

@@ -164,6 +164,11 @@ export default Component.extend(ComposerUpload, ComposerUploadUppy, {
     );
   },
 
+  @action
+  uploadClicked() {
+    this.element.querySelector("#file-uploader").click();
+  },
+
   _applyUserAutocomplete() {
     if (this.siteSettings.enable_mentions) {
       $(this._textarea).autocomplete({
@@ -342,18 +347,20 @@ export default Component.extend(ComposerUpload, ComposerUploadUppy, {
     return I18n.t(canChat ? "chat.placeholder" : "chat.placeholder_log_in");
   },
 
-  @discourseComputed("canChat", "loading")
-  sendDisabled(canChat, loading) {
-    return !canChat || loading;
+  @discourseComputed("canChat", "loading", "isUploading", "isProcessingUpload")
+  sendDisabled(canChat, loading, uploading, processingUpload) {
+    return !canChat || loading || uploading || processingUpload;
   },
 
   @action
   sendClicked() {
-    if (this.editingMessage) {
-      this.internalEditMessage();
-    } else {
-      this.internalSendMessage();
+    if (this.sendDisabled) {
+      return;
     }
+
+    this.editingMessage
+      ? this.internalEditMessage()
+      : this.internalSendMessage();
   },
 
   @action

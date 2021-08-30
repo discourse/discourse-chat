@@ -27,6 +27,14 @@
     rows=1
   }}
 
+  {{flat-button
+    action=(action "uploadClicked")
+    class="upload-btn"
+    id="mobile-file-upload"
+    icon="far-image"
+    title="chat.upload"
+  }}
+
   {{#if site.mobileView}}
     {{flat-button
       action=(action "sendClicked")

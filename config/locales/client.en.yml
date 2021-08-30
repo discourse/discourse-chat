@@ -33,6 +33,7 @@ en:
       send_error: "Something went wrong"
       title: "chat"
       unread_count: "(%{count} new)"
+      upload: "Attach a file"
 
       admin:
         title: "Chat"

@@ -27,7 +27,7 @@ export default Component.extend({
   },
 
   click() {
-    if (this.capabilities.touch) {
+    if (this.site.mobileView) {
       this.toggleProperty("isSelected");
     }
   },

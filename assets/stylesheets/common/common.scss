@@ -421,12 +421,12 @@ $float-height: 530px;
     }
   }
 
-  .no-touch & .tc-message:hover,
+  .not-mobile-device & .tc-message:hover,
   .tc-message.tc-message-selected {
     background: var(--primary-very-low);
   }
 
-  .no-touch & .tc-message:hover,
+  .not-mobile-device & .tc-message:hover,
   .tc-message.tc-message-selected,
   .tc-message:focus-within {
     .tc-msgactions-hover {
@@ -435,7 +435,7 @@ $float-height: 530px;
     }
   }
 
-  .no-touch & .user-info-hidden:hover,
+  .not-mobile-device & .user-info-hidden:hover,
   .user-info-hidden.tc-message-selected {
     .tc-meta-data .relative-date {
       visibility: visible;
@@ -815,7 +815,7 @@ $float-height: 530px;
       var(--full-page-border-radius) 0;
   }
 
-  .no-touch & .tc-message:hover,
+  .not-mobile-device & .tc-message:hover,
   .tc-message.tc-message-selected {
     background: var(--primary-low);
   }

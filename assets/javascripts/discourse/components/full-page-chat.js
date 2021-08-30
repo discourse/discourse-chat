@@ -35,6 +35,7 @@ export default Component.extend({
   didInsertElement() {
     this._super(...arguments);
 
+    console.log(this.site)
     this._scrollSidebarToBotton();
     window.addEventListener("resize", this._calculateHeight, false);
     this.set(

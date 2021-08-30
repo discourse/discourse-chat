@@ -226,7 +226,15 @@ export default Component.extend({
       // In reply-to is false. Check if previous message was created by same
       // user and if so, no need to repeat avatar and username
 
-      if (messageData.user.id === previousMessageData?.user?.id) {
+      if (
+        previousMessageData &&
+        !previousMessageData.deleted_at &&
+        Math.abs(
+          new Date(messageData.created_at) -
+            new Date(previousMessageData.created_at)
+        ) < 300000 && // If the time between messages is over 5 minutes, break.
+        messageData.user.id === previousMessageData.user.id
+      ) {
         messageData.hideUserInfo = true;
       }
     }

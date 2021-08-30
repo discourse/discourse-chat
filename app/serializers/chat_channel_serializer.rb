@@ -16,16 +16,7 @@ class ChatChannelSerializer < ApplicationSerializer
   end
 
   def title
-    case object.chatable_type
-    when "Topic"
-      object.chatable.title.parameterize
-    when "Category"
-      object.chatable.name
-    when "Site"
-      I18n.t("chat.site_chat_name")
-    when "DirectMessageChannel"
-      object.chatable.chat_channel_title_for_user(object, scope.user)
-    end
+    object.title(scope.user)
   end
 
   def chatable

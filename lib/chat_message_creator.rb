@@ -40,6 +40,9 @@ class DiscourseChat::ChatMessageCreator
       create_mention_notifications
       ChatPublisher.publish_new!(@chat_channel, @chat_message, @staged_id)
     rescue => error
+      puts '########'
+      puts error.inspect
+      puts '########'
       @error = error
     end
   end
@@ -60,7 +63,12 @@ class DiscourseChat::ChatMessageCreator
           chat_channel_id: @chat_channel.id,
           chat_message_id: @chat_message.id,
         )
-        self.class.send_push_and_desktop_notifications(target_user, @user)
+        self.class.send_push_and_desktop_notifications(
+          chat_channel: @chat_channel,
+          chat_message: @chat_message,
+          mentioned: target_user,
+          mentioner: @user
+        )
       end
     end
   end
@@ -87,10 +95,16 @@ class DiscourseChat::ChatMessageCreator
     )
   end
 
-  def self.send_push_and_desktop_notifications(mentioned, mentioner)
+  def self.send_push_and_desktop_notifications(chat_channel:, chat_message:, mentioned:, mentioner:)
     return if mentioned.do_not_disturb?
 
-    payload = "@#{mentioner.username} mentioned you in chat"
+    payload = {
+      notification_type: Notification.types[:chat_mention],
+      topic_title: I18n.t("chat.notifications.mention", username: mentioner.username),
+      username: mentioned.username,
+      post_url: "/chat/channel/#{chat_channel.title(mentioned)}?messageId=#{chat_message.id}"
+    }
+
     MessageBus.publish("/notification-alert/#{mentioned.id}", payload, user_ids: [mentioned.id])
     if mentioned.push_subscriptions.exists?
       Jobs.enqueue(:send_push_notification, user_id: mentioned.id, payload: payload)

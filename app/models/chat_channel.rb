@@ -32,6 +32,19 @@ class ChatChannel < ActiveRecord::Base
     chatable_type == DiscourseChat::SITE_CHAT_TYPE
   end
 
+  def title(user)
+    case chatable_type
+    when "Topic"
+      object.chatable.title.parameterize
+    when "Category"
+      chatable.name
+    when "Site"
+      I18n.t("chat.site_chat_name")
+    when "DirectMessageChannel"
+      chatable.chat_channel_title_for_user(self, user)
+    end
+  end
+
   def self.public_channels
     where(chatable_type: ["Topic", "Category", DiscourseChat::SITE_CHAT_TYPE])
   end

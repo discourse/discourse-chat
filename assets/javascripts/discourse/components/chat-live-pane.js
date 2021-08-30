@@ -37,7 +37,7 @@ export default Component.extend({
   _nextStagedMessageId: 0, // Iterate on every new message
   targetMessageId: null,
 
-  chatService: service("chat"),
+  chat: service(),
 
   getCachedChannelDetails: null,
   clearCachedChannelDetails: null,
@@ -48,6 +48,7 @@ export default Component.extend({
 
   didInsertElement() {
     this._super(...arguments);
+
     this._unloadedReplyIds = [];
     this.appEvents.on("chat:open-message", this, "highlightOrFetchMessage");
     if (!isTesting()) {
@@ -85,7 +86,7 @@ export default Component.extend({
   didReceiveAttrs() {
     this._super(...arguments);
 
-    this.set("targetMessageId", this.chatService.getMessageId());
+    this.set("targetMessageId", this.chat.getMessageId());
     if (this.registeredChatChannelId !== this.chatChannel.id) {
       if (this.registeredChatChannelId) {
         this.messageBus.unsubscribe(`/chat/${this.registeredChatChannelId}`);
@@ -106,26 +107,29 @@ export default Component.extend({
       ? `/chat/lookup/${this.targetMessageId}.json`
       : `/chat/${this.chatChannel.id}/messages.json`;
 
-    ajax(url, { data: { page_size: PAGE_SIZE } })
-      .then((data) => {
-        if (this._selfDeleted()) {
-          return;
-        }
-        this.setMessageProps(data.topic_chat_view);
-        this._calculateStickScroll();
-      })
-      .catch((err) => {
-        throw err;
-      })
-      .finally(() => {
-        if (this._selfDeleted()) {
-          return;
-        }
-        if (this.targetMessageId) {
-          this.chatService.clearMessageId();
-        }
-        this.set("loading", false);
-      });
+    this.chat.loadCookFunction(this.site.categories).then((cook) => {
+      this.set("cook", cook);
+      return ajax(url, { data: { page_size: PAGE_SIZE } })
+        .then((data) => {
+          if (this._selfDeleted()) {
+            return;
+          }
+          this.setMessageProps(data.topic_chat_view);
+          this._calculateStickScroll();
+        })
+        .catch((err) => {
+          throw err;
+        })
+        .finally(() => {
+          if (this._selfDeleted()) {
+            return;
+          }
+          if (this.targetMessageId) {
+            this.chat.clearMessageId();
+          }
+          this.set("loading", false);
+        });
+    });
   },
 
   _fetchMorePastMessages() {

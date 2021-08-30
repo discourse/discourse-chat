@@ -12,6 +12,7 @@ enabled_site_setting :topic_chat_enabled
 register_asset 'stylesheets/common/common.scss'
 register_asset 'stylesheets/common/incoming-chat-webhooks.scss'
 register_asset 'stylesheets/mobile/mobile.scss', :mobile
+register_asset 'stylesheets/desktop/desktop.scss', :desktop
 
 register_svg_icon "comments"
 register_svg_icon "comment-slash"
@@ -194,7 +195,20 @@ after_initialize do
     end
   end
 
+  register_presence_channel_prefix("chat") do |channel|
+    next nil unless channel == "/chat/online"
+    config = PresenceChannel::Config.new
+    if SiteSetting.topic_chat_restrict_to_staff
+      config.allowed_group_ids = [::Group::AUTO_GROUPS[:staff]]
+    else
+      config.public = true
+    end
+    config
+  end
+
   DiscourseChat::Engine.routes.draw do
+    get '/' => 'chat#respond'
+    get '/channel/:channel_title' => 'chat#respond'
     get '/index' => 'chat#index'
     post '/enable' => 'chat#enable_chat'
     post '/disable' => 'chat#disable_chat'

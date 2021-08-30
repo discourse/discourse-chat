@@ -49,6 +49,14 @@ const chatPretenders = (server, helper) => {
   server.post("/chat/:chatChannelId.json", () => {
     return helper.response({ success: "OK" });
   });
+
+  // TODO(david): Should these be part of core?
+  server.post("/presence/update", () => {
+    return helper.response({ success: "OK" });
+  });
+  server.get("/presence/get", () => {
+    return helper.response({ count: 0, users: [], next_message_id: 0 });
+  });
 };
 
 acceptance("Discourse Chat - without unread", function (needs) {
@@ -61,20 +69,22 @@ acceptance("Discourse Chat - without unread", function (needs) {
     updateCurrentUser(userNeeds());
   });
 
-  test("Chat float can be opened and channels are populated", async function (assert) {
+  test("Chat header link takes you to full page chat with Site channel open", async function (assert) {
     await visit("/t/internationalization-localization/280");
     await click(".header-dropdown-toggle.open-chat");
 
-    assert.ok(visible(".topic-chat-float-container"), "chat float is visible");
     assert.equal(
-      count(".topic-chat-float-container .public-channels .chat-channel-row"),
+      currentURL(),
+      `/chat/channel/${siteChannel.chat_channel.title}`
+    );
+    assert.ok(visible(".full-page-chat"));
+    assert.equal(
+      count(".public-channels .chat-channel-row"),
       4,
       "it show public channel rows"
     );
     assert.equal(
-      count(
-        ".topic-chat-float-container .direct-message-channels .chat-channel-row"
-      ),
+      count(".direct-message-channels .chat-channel-row"),
       1,
       "it shows DM channel rows"
     );
@@ -311,17 +321,17 @@ acceptance(
     });
     needs.pretender(chatPretenders);
     needs.hooks.beforeEach(() => {
-      updateCurrentUser(userNeeds({ 9: 2 }));
+      updateCurrentUser(userNeeds({ 7: 2 }));
     });
 
     test("Chat opens to channel with unread messages", async function (assert) {
       await visit("/t/internationalization-localization/280");
       await click(".header-dropdown-toggle.open-chat");
 
-      assert.ok(
-        exists(".topic-chat-float-container .tc-messages-scroll"),
-        "The messages scroll container is present"
+      const channelWithUnread = chatChannels.public_channels.find(
+        (c) => c.id === 7
       );
+      assert.equal(currentURL(), `/chat/channel/${channelWithUnread.title}`);
     });
 
     test("Unread header indicator and unread count on channel row are present", async function (assert) {
@@ -334,8 +344,6 @@ acceptance(
         "Unread indicator present in header"
       );
       await click(".header-dropdown-toggle.open-chat");
-      // Automatically placed in site channel. Go back to index and check channel row
-      await click(".return-to-channels");
 
       assert.ok(
         exists(".chat-channel-row .unread-chat-messages-indicator"),
@@ -354,6 +362,7 @@ acceptance(
     });
     needs.pretender(chatPretenders);
     needs.hooks.beforeEach(() => {
+      // chat channel with ID 75 is direct message channel.
       updateCurrentUser(userNeeds({ 9: 2, 75: 2 }));
     });
 
@@ -361,14 +370,10 @@ acceptance(
       await visit("/t/internationalization-localization/280");
       await click(".header-dropdown-toggle.open-chat");
 
-      assert.ok(
-        exists(".topic-chat-float-container .tc-messages-scroll"),
-        "The messages scroll container is present"
+      const channelWithUnread = chatChannels.direct_message_channels.find(
+        (c) => c.id === 75
       );
-      assert.ok(
-        exists(`.topic-chat-container.channel-75`),
-        "Active channel id matches direct message channel id"
-      );
+      assert.equal(currentURL(), `/chat/channel/${channelWithUnread.title}`);
     });
   }
 );

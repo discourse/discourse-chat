@@ -68,7 +68,10 @@
           <div class="tc-avatar">{{replace-emoji message.chat_webhook_event.emoji}}</div>
         {{else}}
           <div class="tc-avatar" data-user-card={{message.user.username}}>
-            {{avatar message.user imageSize="medium"}}
+            <div class="tc-avatar-container">
+              {{avatar message.user imageSize="medium"}}
+              {{tc-user-presence-flair user=message.user}}
+            </div>
           </div>
         {{/if}}
       {{/unless}}

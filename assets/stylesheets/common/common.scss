@@ -1,6 +1,13 @@
 $header-height: 2.5rem;
 $float-height: 530px;
 
+:root {
+  --small-message-left-width: 28px;
+  --large-message-left-width: 38px;
+  --full-page-border-radius: 12px;
+  --full-page-sidebar-width: 250px;
+}
+
 .tc-composer {
   #file-uploader {
     display: none;
@@ -91,6 +98,10 @@ $float-height: 530px;
   padding-bottom: var(--composer-height, 0);
   transition: all 100ms ease-in;
   transition-property: bottom, padding-bottom;
+
+  .tc-composer {
+    margin-bottom: 0.75em;
+  }
 }
 .tc-drawer {
   align-self: flex-end;
@@ -172,19 +183,32 @@ $float-height: 530px;
     padding: 1px;
     text-align: center;
   }
+  .tc-full-screen-btn {
+    margin-left: auto;
+  }
+  .tc-full-screen-btn,
   .tc-expand {
-    flex-grow: 1;
-    text-align: right;
     &:focus {
+      outline: none;
       background: none;
+
       .d-icon {
+        background: none;
         color: var(--primary-low-mid);
+      }
+    }
+    &:hover {
+      .d-icon {
+        color: var(--primary-high);
       }
     }
   }
   .d-icon {
     align-self: center;
     height: 1.1em;
+    &:hover {
+      color: var(--primary-high);
+    }
   }
 }
 
@@ -208,16 +232,37 @@ $float-height: 530px;
   }
 }
 
+.tc-avatar-container {
+  position: relative;
+  .avatar {
+    width: 100%;
+    height: auto;
+  }
+  .tc-presence-flair {
+    display: none;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+
+    background-color: var(--success);
+    width: 30%;
+    height: 30%;
+
+    border: 1px solid var(--secondary);
+    border-radius: 50%;
+
+    &.online {
+      display: block;
+    }
+  }
+}
+
 .tc-messages-container {
   word-wrap: break-word;
   white-space: normal;
 
   .tc-message-deleted {
     padding: 0.25em;
-
-    &:hover {
-      background: var(--primary-very-low);
-    }
 
     .tc-message-expand-deleted {
       color: var(--primary-high);
@@ -231,9 +276,6 @@ $float-height: 530px;
     background-color: var(--secondary);
     display: flex;
 
-    &:hover {
-      background: var(--primary-very-low);
-    }
     &.tc-action {
       background-color: var(--highlight-medium);
     }
@@ -246,9 +288,29 @@ $float-height: 530px;
     &.transition-slow {
       transition: 2s linear background-color;
     }
+    &.user-info-hidden {
+      .tc-meta-data {
+        display: inline-block;
+        width: var(--small-message-left-width);
+        padding-right: 0.2em;
+        vertical-align: top;
+
+        .relative-date {
+          visibility: hidden;
+        }
+      }
+
+      .tc-message-container {
+        margin-left: 0;
+      }
+
+      .tc-msgactions-hover {
+        top: -1.75em;
+      }
+    }
     &.is-reply {
       display: grid;
-      grid-template-columns: 10% 90%;
+      grid-template-columns: var(--small-message-left-width) 1fr;
       grid-template-rows: 30px auto;
       grid-template-areas:
         "replyto replyto"
@@ -270,15 +332,17 @@ $float-height: 530px;
         width: 100%;
       }
     }
-    .tc-avatar {
-      width: calc(10% - 0.25em);
-      margin-right: 0.25em;
-      cursor: pointer;
-      .avatar {
-        width: 90%;
-        height: auto;
-      }
+    .tc-message-container {
+      margin-left: 0.5em;
+      flex-grow: 1;
+      word-break: break-word;
+      overflow-wrap: break-word;
     }
+    .tc-avatar-container {
+      width: var(--small-message-left-width);
+      cursor: pointer;
+    }
+
     .tc-bot-indicator {
       text-transform: uppercase;
       padding: 0.25em;
@@ -287,10 +351,8 @@ $float-height: 530px;
       font-size: var(--font-down-2);
       margin-left: -0.25em;
     }
-    .tc-message-container {
-      width: 90%;
-    }
     .tc-text {
+      display: inline-block;
       margin: 0;
       padding-left: 0.05em;
       img {
@@ -315,31 +377,7 @@ $float-height: 530px;
       color: var(--danger-medium);
     }
   }
-  .tc-message.user-info-hidden {
-    .tc-meta-data {
-      display: inline-block;
-      width: 10%;
-      vertical-align: top;
 
-      .relative-date {
-        visibility: hidden;
-      }
-    }
-
-    &:hover {
-      .tc-meta-data .relative-date {
-        visibility: visible;
-      }
-    }
-
-    .tc-text {
-      display: inline-block;
-      width: calc(90% - 0.5em);
-    }
-    .tc-msgactions-hover {
-      top: -1.75em;
-    }
-  }
   .tc-action-text {
     font-style: italic;
   }
@@ -368,20 +406,13 @@ $float-height: 530px;
     top: 0.75em;
   }
 
-  .tc-message:hover,
-  .tc-message:focus-within {
-    .tc-msgactions-hover {
-      opacity: 1;
-      pointer-events: initial;
-    }
-  }
-
   .tc-msgactions {
     display: flex;
   }
 
   .tc-meta-data {
     color: var(--secondary-medium);
+
     .names {
       color: var(--secondary-low);
       display: inline-block;
@@ -391,6 +422,30 @@ $float-height: 530px;
       &.first {
         font-weight: bold;
       }
+    }
+    .relative-date {
+      font-size: var(--font-down-1);
+    }
+  }
+
+  .no-touch & .tc-message:hover,
+  .tc-message.tc-message-selected {
+    background: var(--primary-very-low);
+  }
+
+  .no-touch & .tc-message:hover,
+  .tc-message.tc-message-selected,
+  .tc-message:focus-within {
+    .tc-msgactions-hover {
+      opacity: 1;
+      pointer-events: initial;
+    }
+  }
+
+  .no-touch & .user-info-hidden:hover,
+  .user-info-hidden.tc-message-selected {
+    .tc-meta-data .relative-date {
+      visibility: visible;
     }
   }
 }
@@ -513,8 +568,7 @@ $float-height: 530px;
   .tc-composer {
     min-height: 1.5em;
     flex-shrink: 0;
-    width: 95%;
-    margin: 0 auto 0.5em auto;
+    width: 100%;
 
     .tc-reply-username {
       font-weight: bold;
@@ -522,6 +576,7 @@ $float-height: 530px;
 
     .tc-composer-row {
       position: relative;
+      padding: 0 0.75em;
       display: grid;
 
       &::after {
@@ -556,9 +611,8 @@ $float-height: 530px;
 
     .tc-composer-message-details {
       position: relative;
-      width: 100%;
       max-height: calc(2em - 5px);
-      padding: 6px 4px;
+      padding: 6px 0.75em;
       border-top: 1px solid var(--primary-low);
 
       .tc-reply-display {
@@ -614,6 +668,9 @@ $float-height: 530px;
     }
   }
 
+  &.active {
+    font-weight: bold;
+  }
   &.nested {
     padding-left: 3em;
   }
@@ -652,13 +709,13 @@ $float-height: 530px;
   }
   .chat-name {
     margin: 0 0 0 0.25em;
-    font-weight: 500;
     @include ellipsis;
   }
   .topic-chat-icon {
     color: var(--primary-medium);
   }
-  .avatar {
+  .tc-avatar-container {
+    display: inline-block;
     width: 1.5em;
     height: 1.5em;
     margin-right: 0.25em;
@@ -674,7 +731,7 @@ $float-height: 530px;
   }
 }
 
-// Styles to make channel list in sidebar match sidebar's theme
+// Styles to make channel list in sidebar match sidebar theme
 .sidebar-container {
   .tc-channels {
     color: var(--primary);
@@ -734,37 +791,39 @@ $float-height: 530px;
   }
 }
 
-:root:not(.mobile-view) {
-  .tc-drawer {
-    width: 400px;
-    max-width: 100vw;
+.full-page-chat {
+  display: grid;
+  grid-template-columns: var(--full-page-sidebar-width) 1fr;
+  grid-template-rows: var(--full-page-chat-height, 80vh);
+
+  .tc-channels {
+    background: var(--primary-very-low);
+    height: 100%;
+    border-right: 1px solid var(--primary-low);
+    border-radius: var(--full-page-border-radius) 0 0
+      var(--full-page-border-radius);
   }
 
-  .user-card,
-  .group-card {
-    z-index: z("usercard") + 1; // bump up user card
+  .tc-full-page-header {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid var(--primary-low);
   }
-}
-:root.mobile-view {
-  .tc-drawer {
-    width: 100vw;
-    margin-right: 0px;
+  .tc-live-pane,
+  .tc-messages-scroll,
+  .tc-message {
+    background: var(--primary-very-low);
   }
-  #main {
-    padding-bottom: $header-height;
+  .tc-live-pane {
+    padding: 0 0 1em;
+    height: 100%;
+    box-sizing: border-box;
+    border-radius: 0 var(--full-page-border-radius)
+      var(--full-page-border-radius) 0;
   }
-  .tc-composer .tc-composer-row {
-    .tc-composer-input {
-      padding-right: 2.5em;
-      width: calc(100% - 2.5em - 8px);
-    }
 
-    .mobile-send-btn {
-      position: absolute;
-      padding: 10px;
-      right: 3px;
-      top: 50%;
-      transform: translateY(-50%);
-    }
+  .no-touch & .tc-message:hover,
+  .tc-message.tc-message-selected {
+    background: var(--primary-low);
   }
 }

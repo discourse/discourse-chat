@@ -1,0 +1,16 @@
+<div class={{wrapperClassNames}}>
+  {{#if showChannelSelector}}
+    {{channel-list
+      publicChannels=publicChannels
+      directMessageChannels=directMessageChannels
+      onSelect=(action "switchChannel")
+    }}
+  {{/if}}
+  {{chat-live-pane
+    chatChannel=chatChannel
+    expanded=true
+    floatHidden=false
+    fullPage=true
+    onBackClick=(action (mut showingChannels) true)
+  }}
+</div>

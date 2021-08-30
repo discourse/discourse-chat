@@ -8,8 +8,9 @@ import { autoUpdatingRelativeAge } from "discourse/lib/formatter";
 import I18n from "I18n";
 
 export default Component.extend({
-  tagName: "",
+  tagName: "div",
   lastRead: false,
+  isSelected: false,
 
   @discourseComputed("message.deleted_at", "message.expanded")
   deletedAndCollapsed(deletedAt, expanded) {
@@ -25,6 +26,12 @@ export default Component.extend({
     );
   },
 
+  click() {
+    if (this.capabilities.touch) {
+      this.toggleProperty("isSelected");
+    }
+  },
+
   @discourseComputed("message.hideUserInfo", "message.chat_webhook_event")
   hideUserInfo(hide, webhookEvent) {
     return hide && !webhookEvent;
@@ -35,9 +42,10 @@ export default Component.extend({
     "message.staged",
     "message.deleted_at",
     "message.in_reply_to",
-    "message.action_code"
+    "message.action_code",
+    "isSelected"
   )
-  messageClasses(id, staged, deletedAt, inReplyTo, actionCode) {
+  messageClasses(id, staged, deletedAt, inReplyTo, actionCode, isSelected) {
     let classNames = ["tc-message"];
     classNames.push(
       staged ? "tc-message-staged" : `tc-message-${this.message.id}`
@@ -55,6 +63,9 @@ export default Component.extend({
     }
     if (this.hideUserInfo) {
       classNames.push("user-info-hidden");
+    }
+    if (isSelected) {
+      classNames.push("tc-message-selected");
     }
     return classNames.join(" ");
   },

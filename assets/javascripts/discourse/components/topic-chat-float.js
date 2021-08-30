@@ -1,7 +1,6 @@
 import Component from "@ember/component";
 import discourseComputed, { observes } from "discourse-common/utils/decorators";
 import { action } from "@ember/object";
-import simpleCategoryHashMentionTransform from "discourse/plugins/discourse-topic-chat/discourse/lib/simple-category-hash-mention-transform";
 import {
   CHAT_VIEW,
   LIST_VIEW,
@@ -10,53 +9,13 @@ import {
 import { ajax } from "discourse/lib/ajax";
 import { equal } from "@ember/object/computed";
 import { cancel, schedule, throttle } from "@ember/runloop";
-import { generateCookFunction } from "discourse/lib/text";
 import { inject as service } from "@ember/service";
-
-const MARKDOWN_OPTIONS = {
-  features: {
-    anchor: true,
-    "auto-link": true,
-    bbcode: true,
-    "bbcode-block": true,
-    "bbcode-inline": true,
-    "bold-italics": true,
-    "category-hashtag": true,
-    censored: true,
-    checklist: false,
-    code: true,
-    "custom-typographer-replacements": false,
-    "d-wrap": false,
-    details: false,
-    "discourse-local-dates": false,
-    emoji: true,
-    emojiShortcuts: true,
-    html: false,
-    "html-img": true,
-    "inject-line-number": true,
-    inlineEmoji: true,
-    linkify: true,
-    mentions: true,
-    newline: true,
-    onebox: false,
-    paragraph: false,
-    policy: false,
-    poll: false,
-    quote: true,
-    quotes: true,
-    "resize-controls": false,
-    table: true,
-    "text-post-process": true,
-    unicodeUsernames: false,
-    "upload-protocol": true,
-    "watched-words": true,
-  },
-};
 
 export default Component.extend({
   chatView: equal("view", CHAT_VIEW),
   classNameBindings: [":topic-chat-float-container", "hidden"],
-  chatService: service("chat"),
+  chat: service(),
+  router: service(),
 
   hidden: true,
   loading: false,
@@ -75,8 +34,9 @@ export default Component.extend({
       return;
     }
 
-    this.chatService.calculateHasUnreadMessages();
+    this.chat.calculateHasUnreadMessages();
     this._checkSize();
+    this.appEvents.on("chat:navigated-to-full-page", this, "close");
     this.appEvents.on("chat:toggle-open", this, "toggleChat");
     this.appEvents.on("chat:open-channel-for", this, "openChannelFor");
     this.appEvents.on("chat:open-channel", this, "switchChannel");
@@ -94,8 +54,6 @@ export default Component.extend({
       "_startDynamicCheckSize"
     );
     this.appEvents.on("composer:resize-ended", this, "_clearDynamicCheckSize");
-
-    this._loadCookFunction();
   },
   willDestroyElement() {
     this._super(...arguments);
@@ -104,6 +62,7 @@ export default Component.extend({
     }
 
     if (this.appEvents) {
+      this.appEvents.off("chat:navigated-to-full-page", this, "close");
       this.appEvents.off("chat:toggle-open", this, "toggleChat");
       this.appEvents.off("chat:open-channel-for", this, "openChannelFor");
       this.appEvents.off("chat:open-channel", this, "switchChannel");
@@ -137,19 +96,9 @@ export default Component.extend({
 
   @observes("hidden")
   _fireHiddenAppEvents() {
-    this.chatService.setChatOpenStatus(!this.hidden);
+    this.chat.setChatOpenStatus(!this.hidden);
     this.appEvents.trigger("chat:rerender-header");
-  },
-
-  _loadCookFunction() {
-    return generateCookFunction(MARKDOWN_OPTIONS).then((cookFunction) => {
-      return this.set("cookFunction", (raw) => {
-        return simpleCategoryHashMentionTransform(
-          cookFunction(raw),
-          this.site.categories
-        );
-      });
-    });
+    this.appEvents.trigger("chat:float-toggled", this.hidden);
   },
 
   openChannelFor(chatable) {
@@ -159,7 +108,7 @@ export default Component.extend({
   },
 
   openChannelAtMessage(chatChannelId, messageId) {
-    this.chatService.setMessageId(messageId);
+    this.chat.setMessageId(messageId);
     this._fetchChannelAndSwitch(chatChannelId);
   },
 
@@ -264,22 +213,22 @@ export default Component.extend({
   },
 
   @action
+  openInFullPage() {
+    if (this.activeChannel) {
+      return this.router.transitionTo("chat.channel", this.activeChannel.title);
+    }
+
+    this.router.transitionTo("chat");
+  },
+
+  @action
   toggleExpand() {
     this.set("expanded", !this.expanded);
-    if (this.expanded === false) {
-      document.body.classList.remove("mobile-chat-open");
-      document.body.classList.add("mobile-chat-minimized");
-    } else {
-      document.body.classList.add("mobile-chat-open");
-      document.body.classList.remove("mobile-chat-minimized");
-    }
   },
 
   @action
   close() {
     this.set("hidden", true);
-    document.body.classList.remove("mobile-chat-open");
-    document.body.classList.remove("mobile-chat-minimized");
   },
 
   @action
@@ -289,48 +238,27 @@ export default Component.extend({
       return;
     } else {
       this.set("expanded", true);
-      let html = document.documentElement;
-      if (html.classList.contains("mobile-view")) {
-        document.body.classList.remove("mobile-chat-minimized");
-        document.body.classList.add("mobile-chat-open");
-      }
       if (this.activeChannel) {
         // Channel was previously open, so after expand we are done.
         return;
       }
     }
 
-    let publicChannelIdWithUnread;
-    let dmChannelIdWithUnread;
-
     // Look for DM channel with unread, and fallback to public channel with unread
-    for (const [channelId, state] of Object.entries(
-      this.currentUser.chat_channel_tracking_state
-    )) {
-      if (state.chatable_type === "DirectMessageChannel") {
-        if (!dmChannelIdWithUnread && state.unread_count > 0) {
-          dmChannelIdWithUnread = channelId;
-          break;
-        }
+    this.chat.getIdealFirstChannelId().then((channelId) => {
+      if (channelId) {
+        this._fetchChannelAndSwitch(channelId);
       } else {
-        if (!publicChannelIdWithUnread && state.unread_count > 0) {
-          publicChannelIdWithUnread = channelId;
-        }
+        // No channels with unread messages. Fetch channel index.
+        this.fetchChannels();
       }
-    }
-    let channelId = dmChannelIdWithUnread || publicChannelIdWithUnread;
-    if (channelId) {
-      this._fetchChannelAndSwitch(channelId);
-    } else {
-      // No channels with unread messages. Fetch channel index.
-      this.fetchChannels();
-    }
+    });
   },
 
   @action
   fetchChannels() {
     this.set("loading", true);
-    this.chatService.getChannels().then((channels) => {
+    this.chat.getChannels().then((channels) => {
       this.setProperties({
         publicChannels: channels.publicChannels,
         directMessageChannels: channels.directMessageChannels,

@@ -229,8 +229,10 @@ export default Component.extend({
       if (
         previousMessageData &&
         !previousMessageData.deleted_at &&
-        Math.abs(new Date(messageData.created_at) - new Date(previousMessageData.created_at)) <
-          300000 && // If the time between messages is over 5 minutes, break.
+        Math.abs(
+          new Date(messageData.created_at) -
+            new Date(previousMessageData.created_at)
+        ) < 300000 && // If the time between messages is over 5 minutes, break.
         messageData.user.id === previousMessageData.user.id
       ) {
         messageData.hideUserInfo = true;

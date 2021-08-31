@@ -1,8 +1,9 @@
-import I18n from "I18n";
 import Component from "@ember/component";
 import ComposerUpload from "discourse/mixins/composer-upload";
 import ComposerUploadUppy from "discourse/mixins/composer-upload-uppy";
 import discourseComputed from "discourse-common/utils/decorators";
+import I18n from "I18n";
+import TextareaTextManipulation from "discourse/mixins/textarea-text-manipulation";
 import userSearch from "discourse/lib/user-search";
 import {
   authorizedExtensions,
@@ -31,7 +32,7 @@ const THROTTLE_MS = 150;
 let uploadProcessorActions = {};
 let uploadMarkdownResolvers = [];
 
-export default Component.extend(ComposerUpload, ComposerUploadUppy, {
+export default Component.extend(TextareaTextManipulation, ComposerUpload, ComposerUploadUppy, {
   classNames: ["tc-composer"],
   value: "",
   emojiStore: service("emoji-store"),
@@ -42,6 +43,7 @@ export default Component.extend(ComposerUpload, ComposerUploadUppy, {
   onValueChange: null,
 
   // Composer Uppy values
+  ready: true,
   fileUploadElementId: "file-uploader",
   eventPrefix: "chat-composer",
   uploadType: "chat-composer",
@@ -439,90 +441,6 @@ export default Component.extend(ComposerUpload, ComposerUploadUppy, {
     } else {
       return false;
     }
-  },
-
-  _replaceText(oldVal, newVal) {
-    const val = this.value;
-    const needleStart = val.indexOf(oldVal);
-
-    if (needleStart === -1) {
-      // Nothing to replace.
-      return;
-    }
-
-    // Determine post-replace selection.
-    const newSelection = determinePostReplaceSelection({
-      selection: {
-        start: this._textarea.selectionStart,
-        end: this._textarea.selectionEnd,
-      },
-      needle: { start: needleStart, end: needleStart + oldVal.length },
-      replacement: { start: needleStart, end: needleStart + newVal.length },
-    });
-
-    this.set("value", val.replace(oldVal, newVal));
-
-    if (document.activeElement === this._textarea) {
-      // Restore cursor.
-      this._selectText(
-        newSelection.start,
-        newSelection.end - newSelection.start
-      );
-    }
-  },
-
-  _insertText(text) {
-    let sel = this._getSelected();
-    const insert = `${sel.pre}${text}`;
-    const value = `${insert}${sel.post}`;
-    this.set("value", value);
-    this._$textarea.val(value);
-    this._$textarea.prop("selectionStart", insert.length);
-    this._$textarea.prop("selectionEnd", insert.length);
-    next(() => this._$textarea.trigger("change"));
-    this._focusTextArea();
-  },
-
-  _getSelected(trimLeading) {
-    const value = this._textarea.value;
-    let start = this._textarea.selectionStart;
-    let end = this._textarea.selectionEnd;
-
-    // trim trailing spaces cause **test ** would be invalid
-    while (end > start && /\s/.test(value.charAt(end - 1))) {
-      end--;
-    }
-
-    if (trimLeading) {
-      // trim leading spaces cause ** test** would be invalid
-      while (end > start && /\s/.test(value.charAt(start))) {
-        start++;
-      }
-    }
-
-    const selVal = value.substring(start, end);
-    const pre = value.slice(0, start);
-    const post = value.slice(end);
-    return { start, end, value: selVal, pre, post };
-  },
-
-  _selectText(from, length, opts = { scroll: true }) {
-    next(() => {
-      if (!this._textarea) {
-        return;
-      }
-
-      this._textarea.selectionStart = from;
-      this._textarea.selectionEnd = from + length;
-      this._$textarea.trigger("change");
-      if (opts.scroll) {
-        const oldScrollPos = this._$textarea.scrollTop();
-        if (!this.capabilities.isIOS || safariHacksDisabled()) {
-          this._$textarea.focus();
-        }
-        this._$textarea.scrollTop(oldScrollPos);
-      }
-    });
   },
 
   @action

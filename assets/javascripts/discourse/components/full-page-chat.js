@@ -89,4 +89,9 @@ export default Component.extend({
     }
     return false;
   },
+
+  @action
+  exitChat() {
+    return this.router.transitionTo(this.chat.getLastNonChatRoute());
+  },
 });

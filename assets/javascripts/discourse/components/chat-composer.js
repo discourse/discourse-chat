@@ -20,7 +20,7 @@ import { emojiSearch, isSkinTonableEmoji } from "pretty-text/emoji";
 import { emojiUrlFor } from "discourse/lib/text";
 import { inject as service } from "@ember/service";
 import { isProduction } from "discourse-common/config/environment";
-import { or, not } from "@ember/object/computed";
+import { not, or } from "@ember/object/computed";
 import { search as searchCategoryTag } from "discourse/lib/category-tag-search";
 import { SKIP } from "discourse/lib/autocomplete";
 import { Promise } from "rsvp";

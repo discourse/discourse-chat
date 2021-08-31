@@ -5,7 +5,7 @@ class DiscourseChat::ChatMessageCreator
   attr_reader :chat_message
 
   def self.create(opts)
-    instance = new(opts)
+    instance = new(**opts)
     instance.create
     instance
   end
@@ -100,7 +100,6 @@ class DiscourseChat::ChatMessageCreator
 
     payload = {
       notification_type: Notification.types[:chat_mention],
-      topic_title: I18n.t("chat.notifications.mention", username: mentioner.username),
       username: mentioned.username,
       post_url: "/chat/channel/#{chat_channel.title(mentioned)}?messageId=#{chat_message.id}"
     }

@@ -1,5 +1,8 @@
 en:
   js:
+    notifications:
+      popup:
+        chat_mention: "@%{username} mentioned you in chat"
     chat:
       all_loaded: "Showing all messages"
       already_enabled: "Chat is already enabled on this topic. Please refresh."

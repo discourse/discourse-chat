@@ -3,7 +3,7 @@ class DiscourseChat::ChatMessageUpdater
   attr_reader :error
 
   def self.update(opts)
-    instance = new(opts)
+    instance = new(**opts)
     instance.update
     instance
   end

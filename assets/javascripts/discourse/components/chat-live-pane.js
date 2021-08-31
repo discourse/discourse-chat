@@ -364,10 +364,11 @@ export default Component.extend({
 
   @observes("messages.@each.expanded")
   _listenForMessageChanges() {
-    this._resolveURLs();
+    this.resolveURLs();
   },
 
-  _resolveURLs() {
+  @action
+  resolveURLs() {
     next(() => {
       resolveAllShortUrls(ajax, this.siteSettings, this.element);
       this._stickScrollToBottom();
@@ -409,7 +410,7 @@ export default Component.extend({
         this.handleRestoreMessage(data);
         break;
     }
-    this._resolveURLs();
+    this.resolveURLs();
   },
 
   handleSentMessage(data) {

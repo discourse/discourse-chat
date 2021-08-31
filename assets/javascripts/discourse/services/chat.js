@@ -6,24 +6,27 @@ import { generateCookFunction } from "discourse/lib/text";
 import { observes } from "discourse-common/utils/decorators";
 import { Promise } from "rsvp";
 import simpleCategoryHashMentionTransform from "discourse/plugins/discourse-topic-chat/discourse/lib/simple-category-hash-mention-transform";
+import { defaultHomepage } from "discourse/lib/utilities";
 
 export const LIST_VIEW = "list_view";
 export const CHAT_VIEW = "chat_view";
 
 export default Service.extend({
-  messageId: null,
-  chatOpen: false,
-  hasUnreadPublicMessages: false,
   allChannels: null,
-  unreadDirectMessageCount: null,
-  publicChannels: null,
+  appEvents: service(),
+  chatOpen: false,
+  cook: null,
   directMessageChannels: null,
   hasFetchedChannels: false,
+  hasUnreadPublicMessages: false,
   idToTitleMap: null,
-  appEvents: service(),
-  cook: null,
+  lastNonChatRoute: null,
+  messageId: null,
   presence: service(),
   presenceChannel: null,
+  publicChannels: null,
+  router: service(),
+  unreadDirectMessageCount: null,
 
   init() {
     this._super(...arguments);
@@ -32,6 +35,7 @@ export default Service.extend({
       this._subscribeToUpdateChannels();
       this._subscribeToUserTrackingChannel();
       this.presenceChannel = this.presence.getChannel("/chat/online");
+      this._setLastNonChatRoute();
     }
   },
 
@@ -43,6 +47,24 @@ export default Service.extend({
       this._unsubscribeFromUpdateChannels();
       this._unsubscribeFromUserTrackingChannel();
     }
+  },
+
+  @observes("router.currentRoute")
+  _setLastNonChatRoute() {
+    if (
+      this.router.currentRouteName !== "chat" &&
+      this.router.currentRouteName !== "chat.channel"
+    ) {
+      let url = this.router.currentURL;
+      if (!url || url === "/") {
+        url = `discovery.${defaultHomepage()}`;
+      }
+      this.set("lastNonChatRoute", url);
+    }
+  },
+
+  getLastNonChatRoute() {
+    return this.lastNonChatRoute;
   },
 
   loadCookFunction(categories) {

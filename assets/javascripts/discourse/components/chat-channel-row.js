@@ -29,8 +29,8 @@ export default Component.extend({
   @discourseComputed("channel", "router.currentRoute")
   active(channel, currentRoute) {
     return (
-      currentRoute.name === "chat.channel" &&
-      currentRoute.params.channelTitle === channel.title.toString(10)
+      currentRoute?.name === "chat.channel" &&
+      currentRoute?.params?.channelTitle === channel.title.toString(10)
     );
   },
 

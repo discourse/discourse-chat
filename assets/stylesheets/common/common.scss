@@ -6,6 +6,7 @@ $float-height: 530px;
   --large-message-left-width: 38px;
   --full-page-border-radius: 12px;
   --full-page-sidebar-width: 250px;
+  --full-page-back-height: 40px;
 }
 
 .unread-dm-indicator,
@@ -787,7 +788,13 @@ $float-height: 530px;
 .full-page-chat {
   display: grid;
   grid-template-columns: var(--full-page-sidebar-width) 1fr;
-  grid-template-rows: var(--full-page-chat-height, 80vh);
+  grid-template-rows: var(----full-page-back-height) calc(var(--full-page-chat-height, 80vh) - var(----full-page-back-height));
+
+  .exit-chat-btn {
+    height: 40px;
+    justify-content: flex-start;
+    grid-column: 1 / 3;
+  }
 
   .tc-channels {
     background: var(--primary-very-low);
@@ -811,6 +818,7 @@ $float-height: 530px;
     padding: 0 0 1em;
     height: 100%;
     box-sizing: border-box;
+    height: calc(var(--full-page-chat-height) - var(--full-page-back-height));
     border-radius: 0 var(--full-page-border-radius)
       var(--full-page-border-radius) 0;
   }

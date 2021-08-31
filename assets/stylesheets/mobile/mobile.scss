@@ -1,5 +1,6 @@
 .full-page-chat {
-  grid-template-rows: var(--full-page-chat-height, 80vh);
+  // grid-template-rows: var(--full-page-chat-height, 80vh);
+  grid-template-rows: 40px calc(var(--full-page-chat-height, 80vh) - 40px);
   grid-template-columns: 100%;
   overflow-x: hidden;
   width: 100%;
@@ -16,7 +17,7 @@
 
   .tc-channels,
   .tc-live-pane {
-    height: var(--full-page-chat-height, 80vh);
+    // height: var(--full-page-chat-height, 80vh);
     border-radius: var(--full-page-border-radius);
   }
 

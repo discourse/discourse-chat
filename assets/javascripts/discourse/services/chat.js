@@ -25,7 +25,6 @@ export default Service.extend({
   presence: service(),
   presenceChannel: null,
   publicChannels: null,
-  router: service(),
   unreadDirectMessageCount: null,
 
   init() {
@@ -35,7 +34,7 @@ export default Service.extend({
       this._subscribeToUpdateChannels();
       this._subscribeToUserTrackingChannel();
       this.presenceChannel = this.presence.getChannel("/chat/online");
-      this._setLastNonChatRoute();
+      this.appEvents.on("page:changed", this, "_storeLastNonChatRouteInfo");
     }
   },
 
@@ -46,16 +45,16 @@ export default Service.extend({
       this.set("allChannels", null);
       this._unsubscribeFromUpdateChannels();
       this._unsubscribeFromUserTrackingChannel();
+      this.appEvents.off("page:changed", this, "_storeLastNonChatRouteInfo");
     }
   },
 
-  @observes("router.currentRoute")
-  _setLastNonChatRoute() {
+  _storeLastNonChatRouteInfo(data) {
     if (
-      this.router.currentRouteName !== "chat" &&
-      this.router.currentRouteName !== "chat.channel"
+      data.currentRouteName !== "chat" &&
+      data.currentRouteName !== "chat.channel"
     ) {
-      let url = this.router.currentURL;
+      let url = data.url;
       if (!url || url === "/") {
         url = `discovery.${defaultHomepage()}`;
       }

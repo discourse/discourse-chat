@@ -25,14 +25,15 @@
   }
 }
 
-.tc-text {
+.tc-text,
+.tc-message-container {
   max-width: calc(100% - (#{var(--small-message-left-width)} + 1.5em));
 }
 
 .tc-live-pane .tc-composer .tc-composer-row {
   .tc-composer-input {
     padding-right: 75px;
-    width: calc(100% - ( 75px + 8px));
+    width: calc(100% - (75px + 8px));
   }
   .upload-btn {
     right: 48px;
@@ -45,6 +46,10 @@
     top: 50%;
     transform: translateY(-50%);
   }
+}
+
+.tc-composer-uploads-container {
+  padding: 0.25em 0.75em;
 }
 
 body.has-full-page-chat .footer-nav {

@@ -799,6 +799,19 @@ $float-height: 530px;
   }
 }
 
+.tc-composer-uploads-container {
+  padding: 0.25em 1em;
+  display: flex;
+  justify-content: space-between;
+
+  .uploading-indicator {
+    width: calc(100% - 80px);
+  }
+  .cancel-btn {
+    width: 70px;
+  }
+}
+
 .full-page-chat {
   display: grid;
   grid-template-columns: var(--full-page-sidebar-width) 1fr;

@@ -19,11 +19,12 @@ import { findRawTemplate } from "discourse-common/lib/raw-templates";
 import { emojiSearch, isSkinTonableEmoji } from "pretty-text/emoji";
 import { emojiUrlFor } from "discourse/lib/text";
 import { inject as service } from "@ember/service";
+import { isProduction } from "discourse-common/config/environment";
 import { not } from "@ember/object/computed";
 import { search as searchCategoryTag } from "discourse/lib/category-tag-search";
 import { SKIP } from "discourse/lib/autocomplete";
-import { translations } from "pretty-text/emoji/data";
 import { Promise } from "rsvp";
+import { translations } from "pretty-text/emoji/data";
 
 const THROTTLE_MS = 150;
 
@@ -34,6 +35,7 @@ export default Component.extend(ComposerUpload, ComposerUploadUppy, {
   classNames: ["tc-composer"],
   value: "",
   emojiStore: service("emoji-store"),
+  mediaOptimizationWorker: service(),
   editingMessage: null,
   timer: null,
   inputDisabled: not("canChat"),
@@ -47,8 +49,23 @@ export default Component.extend(ComposerUpload, ComposerUploadUppy, {
   composerModel: null,
   composerModelContentKey: "value",
   editorInputClass: ".tc-composer-input",
+  uploadCancelled: false,
   uploadProcessorActions,
   uploadMarkdownResolvers,
+
+  init() {
+    this._super(...arguments);
+
+    // Keeping image optimization just for production as the worker doesn't
+    // function locally b/c ember-cli and server are on different ports. Ask Falco.
+    if (
+      isProduction() &&
+      this.siteSettings.composer_media_optimization_image_enabled
+    ) {
+      this.uploadProcessorActions["optimizeJPEG"] = (data, opts) =>
+        this.mediaOptimizationWorker.optimizeImage(data, opts);
+    }
+  },
 
   didInsertElement() {
     this._super(...arguments);
@@ -166,7 +183,7 @@ export default Component.extend(ComposerUpload, ComposerUploadUppy, {
 
   @action
   uploadClicked() {
-    this.element.querySelector("#file-uploader").click();
+    this.element.querySelector(`#${this.fileUploadElementId}`).click();
   },
 
   _applyUserAutocomplete() {
@@ -505,5 +522,10 @@ export default Component.extend(ComposerUpload, ComposerUploadUppy, {
         this._$textarea.scrollTop(oldScrollPos);
       }
     });
+  },
+
+  @action
+  cancelUploads() {
+    this.set("uploadCancelled", true);
   },
 });

@@ -44,6 +44,11 @@
       title=sendTitle
     }}
   {{/if}}
-
-  <input type="file" id="file-uploader" accept={{acceptedFormats}} multiple>
 </div>
+
+<div class="tc-composer-uploads-container">
+  <span class="btn uploading-indicator {{unless isUploading "hidden"}}">{{i18n "upload_selector.uploading"}} {{uploadProgress}}%</span>
+  <span class="btn uploading-indicator {{unless isProcessingUpload "hidden"}}">{{i18n "upload_selector.processing"}}</span>
+  <span role="button" onClick={{action "cancelUploads"}} class="btn btn-danger cancel-btn {{unless (or isUploading isProcessingUpload) "hidden"}}">{{i18n "cancel"}}</span>
+</div>
+<input type="file" id="file-uploader" accept={{acceptedFormats}} multiple>

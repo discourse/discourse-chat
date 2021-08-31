@@ -370,6 +370,7 @@ export default Component.extend({
   _resolveURLs() {
     next(() => {
       resolveAllShortUrls(ajax, this.siteSettings, this.element);
+      this._stickScrollToBottom();
     });
   },
 

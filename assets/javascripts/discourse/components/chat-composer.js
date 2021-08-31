@@ -10,12 +10,8 @@ import {
   authorizesAllExtensions,
 } from "discourse/lib/uploads";
 import { action } from "@ember/object";
-import { cancel, next, schedule, throttle } from "@ember/runloop";
+import { cancel, schedule, throttle } from "@ember/runloop";
 import { categoryHashtagTriggerRule } from "discourse/lib/category-hashtags";
-import {
-  determinePostReplaceSelection,
-  safariHacksDisabled,
-} from "discourse/lib/utilities";
 import { findRawTemplate } from "discourse-common/lib/raw-templates";
 import { emojiSearch, isSkinTonableEmoji } from "pretty-text/emoji";
 import { emojiUrlFor } from "discourse/lib/text";

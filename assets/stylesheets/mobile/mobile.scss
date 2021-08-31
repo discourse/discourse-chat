@@ -21,8 +21,23 @@
   .tc-channels {
     border: none;
   }
+}
 
-  .tc-composer .mobile-send-btn {
+.tc-text,
+.tc-message-container {
+  max-width: calc(100% - (#{var(--small-message-left-width)} + 1.5em));
+}
+
+.tc-live-pane .tc-composer .tc-composer-row {
+  .tc-composer-input {
+    padding-right: 75px;
+    width: calc(100% - (75px + 8px));
+  }
+  .upload-btn {
+    right: 48px;
+  }
+
+  .mobile-send-btn {
     position: absolute;
     padding: 10px;
     right: 12px;
@@ -31,8 +46,8 @@
   }
 }
 
-.tc-text {
-  max-width: calc(100% - (#{var(--small-message-left-width)} + 1.5em));
+.tc-composer-uploads-container {
+  padding: 0.25em 0.75em;
 }
 
 body.has-full-page-chat .footer-nav {

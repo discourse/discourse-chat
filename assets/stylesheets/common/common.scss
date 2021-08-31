@@ -9,6 +9,12 @@ $float-height: 530px;
   --full-page-back-height: 40px;
 }
 
+.tc-composer {
+  #file-uploader {
+    display: none;
+  }
+}
+
 .unread-dm-indicator,
 .unread-chat-messages-indicator {
   width: 14px;
@@ -352,6 +358,7 @@ $float-height: 530px;
       padding-left: 0.05em;
       img {
         max-width: 100%;
+        height: unset;
       }
       pre {
         width: 90%;
@@ -588,6 +595,14 @@ $float-height: 530px;
           color: var(--tertiary);
         }
       }
+
+      .upload-btn {
+        position: absolute;
+        right: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        padding: 10px;
+      }
     }
 
     .tc-composer-row > .tc-composer-input,
@@ -596,8 +611,8 @@ $float-height: 530px;
       margin-bottom: 0;
       resize: none;
       max-height: 125px;
-      padding: 8px;
-      width: calc(100% - 16px);
+      padding: 8px 40px 8px 8px;
+      width: calc(100% - (40px + 8px));
       border-radius: 4px;
       border: 1px solid var(--primary-low-mid);
       word-break: break-word;
@@ -782,6 +797,19 @@ $float-height: 530px;
       width: 100%;
       overflow-x: hidden;
     }
+  }
+}
+
+.tc-composer-uploads-container {
+  padding: 0.5em 1em 0;
+  display: flex;
+  justify-content: space-between;
+
+  .uploading-indicator {
+    width: calc(100% - 80px);
+  }
+  .cancel-btn {
+    width: 70px;
   }
 }
 

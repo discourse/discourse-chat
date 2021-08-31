@@ -63,6 +63,7 @@
   }
 }
 
-.tc-text {
+.tc-text,
+.tc-message-container {
   max-width: calc(100% - (#{var(--large-message-left-width)} + 1.5em));
 }

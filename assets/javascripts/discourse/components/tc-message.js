@@ -188,6 +188,7 @@ export default Component.extend({
   @action
   expand() {
     this.message.set("expanded", true);
+    this.afterExpand();
   },
 
   @action

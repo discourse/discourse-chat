@@ -62,7 +62,6 @@ export default Component.extend(
         uploadProcessorActions: {},
         uploadMarkdownResolvers: [],
       });
-      this.set("uploadProcessorActions", []);
       if (
         isProduction() &&
         this.siteSettings.composer_media_optimization_image_enabled

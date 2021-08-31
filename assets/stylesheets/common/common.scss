@@ -6,6 +6,7 @@ $float-height: 530px;
   --large-message-left-width: 38px;
   --full-page-border-radius: 12px;
   --full-page-sidebar-width: 250px;
+  --full-page-back-height: 40px;
 }
 
 .tc-composer {
@@ -428,12 +429,12 @@ $float-height: 530px;
     }
   }
 
-  .no-touch & .tc-message:hover,
+  .not-mobile-device & .tc-message:hover,
   .tc-message.tc-message-selected {
     background: var(--primary-very-low);
   }
 
-  .no-touch & .tc-message:hover,
+  .not-mobile-device & .tc-message:hover,
   .tc-message.tc-message-selected,
   .tc-message:focus-within {
     .tc-msgactions-hover {
@@ -442,7 +443,7 @@ $float-height: 530px;
     }
   }
 
-  .no-touch & .user-info-hidden:hover,
+  .not-mobile-device & .user-info-hidden:hover,
   .user-info-hidden.tc-message-selected {
     .tc-meta-data .relative-date {
       visibility: visible;
@@ -815,7 +816,14 @@ $float-height: 530px;
 .full-page-chat {
   display: grid;
   grid-template-columns: var(--full-page-sidebar-width) 1fr;
-  grid-template-rows: var(--full-page-chat-height, 80vh);
+  grid-template-rows: var(----full-page-back-height) calc(var(--full-page-chat-height, 80vh) - var(----full-page-back-height));
+
+  .exit-chat-btn {
+    height: var(--full-page-back-height);
+    justify-content: flex-start;
+    grid-column: 1 / 3;
+    color: var(--primary-high);
+  }
 
   .tc-channels {
     background: var(--primary-very-low);
@@ -839,11 +847,12 @@ $float-height: 530px;
     padding: 0 0 1em;
     height: 100%;
     box-sizing: border-box;
+    height: calc(var(--full-page-chat-height) - var(--full-page-back-height));
     border-radius: 0 var(--full-page-border-radius)
       var(--full-page-border-radius) 0;
   }
 
-  .no-touch & .tc-message:hover,
+  .not-mobile-device & .tc-message:hover,
   .tc-message.tc-message-selected {
     background: var(--primary-low);
   }

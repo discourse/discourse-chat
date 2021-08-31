@@ -34,6 +34,7 @@ en:
       title: "chat"
       unread_count: "(%{count} new)"
       upload: "Attach a file"
+      exit: "back"
 
       admin:
         title: "Chat"

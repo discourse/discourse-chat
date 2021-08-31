@@ -227,7 +227,15 @@ export default Component.extend({
       // In reply-to is false. Check if previous message was created by same
       // user and if so, no need to repeat avatar and username
 
-      if (messageData.user.id === previousMessageData?.user?.id) {
+      if (
+        previousMessageData &&
+        !previousMessageData.deleted_at &&
+        Math.abs(
+          new Date(messageData.created_at) -
+            new Date(previousMessageData.created_at)
+        ) < 300000 && // If the time between messages is over 5 minutes, break.
+        messageData.user.id === previousMessageData.user.id
+      ) {
         messageData.hideUserInfo = true;
       }
     }
@@ -261,11 +269,15 @@ export default Component.extend({
         return this._stickScrollToBottom();
       }
 
-      // If user has read the last message, don't add anything.
-      if (message !== this.messages[this.messages.length - 1]) {
+      // If user has not read last message, scroll to the last message they have read,
+      // and mark it as the last read so indicator will show up below.
+      // If user _has_ read last message stick scroll to bottom
+      if (message === this.messages[this.messages.length - 1]) {
+        this._stickScrollToBottom();
+      } else {
         message.set("lastRead", true);
+        this.scrollToMessage(message.id);
       }
-      this.scrollToMessage(message.id);
     } else {
       // This is the user's first visit to the channel. Scroll them to the bottom
       this._stickScrollToBottom();

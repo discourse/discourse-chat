@@ -23,11 +23,6 @@
   }
 }
 
-.tc-text,
-.tc-message-container {
-  max-width: calc(100% - (#{var(--small-message-left-width)} + 1.5em));
-}
-
 .tc-live-pane .tc-composer .tc-composer-row {
   .tc-composer-input {
     padding-right: 75px;
@@ -48,6 +43,31 @@
 
 .tc-composer-uploads-container {
   padding: 0.25em 0.75em;
+}
+
+.tc-message:not(.user-info-hidden) {
+  padding: 0.25em 1em 0.1em;
+  margin-top: 0.5em;
+
+  .tc-message-container {
+    max-width: calc(100% - (#{var(--small-message-left-width)} + 1em));
+
+    .tc-text {
+      width: 100%;
+    }
+  }
+}
+
+.tc-message.user-info-hidden {
+  padding: 0.1em 1em;
+
+  .tc-message-container {
+    width: 100%;
+
+    .tc-text {
+      max-width: calc(100% - (#{var(--small-message-left-width)} + 1em));
+    }
+  }
 }
 
 body.has-full-page-chat .footer-nav {

@@ -115,7 +115,7 @@ export default Component.extend({
             return;
           }
           this.setMessageProps(data.topic_chat_view);
-          this._calculateStickScroll();
+          this.resolveURLs();
         })
         .catch((err) => {
           throw err;
@@ -153,6 +153,7 @@ export default Component.extend({
         if (newMessages.length) {
           this.set("messages", newMessages.concat(this.messages));
           this.scrollToMessage(firstMessageId);
+          this.resolveURLs();
         } else {
           this.set("allPastMessagesLoaded", true);
         }
@@ -334,10 +335,9 @@ export default Component.extend({
       if (this._selfDeleted()) {
         return;
       }
-      if (this.stickyScroll) {
-        this._scrollerEl.scrollTop =
-          this._scrollerEl.scrollHeight - this._scrollerEl.clientHeight;
-      }
+      this.set("stickyScroll", true);
+      this._scrollerEl.scrollTop =
+        this._scrollerEl.scrollHeight - this._scrollerEl.clientHeight;
     });
   },
 
@@ -367,23 +367,19 @@ export default Component.extend({
         this._scrollerEl.clientHeight <=
       STICKY_SCROLL_LENIENCE;
     if (shouldStick !== this.stickyScroll) {
-      this.set("stickyScroll", shouldStick);
       if (shouldStick) {
         this._stickScrollToBottom();
+      } else {
+        this.set("stickyScroll", false);
       }
     }
   },
 
-  @observes("messages.@each.expanded")
-  _listenForMessageChanges() {
-    this.resolveURLs();
-  },
-
   @action
   resolveURLs() {
-    next(() => {
+    schedule("afterRender", this, () => {
       resolveAllShortUrls(ajax, this.siteSettings, this.element);
-      this._stickScrollToBottom();
+      this._reScrollAfterImagesLoad();
     });
   },
 
@@ -450,7 +446,6 @@ export default Component.extend({
     if (this.messages.length >= MAX_RECENT_MSGS) {
       this.removeMessage(this.messages.shiftObject());
     }
-    this._stickScrollToBottom();
   },
 
   handleEditMessage(data) {
@@ -579,11 +574,31 @@ export default Component.extend({
     cancel(this._updateReadTimer);
   },
 
-  @action
-  onComposerValueChange() {
-    // When the composer value changes and sticky scroll is set, make sure to stay
-    // stuck to the bottom. Composer height changes force content up.
-    this._stickScrollToBottom();
+  _reScrollAfterImagesLoad() {
+    const images = this.element.querySelectorAll("img:not(.avatar, .emoji)");
+    if (!images.length) {
+      return;
+    }
+
+    let count = 0;
+    images.forEach((image) => {
+      if (image.complete) {
+        count++;
+        if (count === images.length) {
+          return this.reStickScrollIfNeeded();
+        }
+      } else {
+        const afterImageLoad = () => {
+          // closure here so we can remove the listener with the local var 'image'
+          count++;
+          if (count === images.length) {
+            this.reStickScrollIfNeeded();
+            image.removeEventListener("load", afterImageLoad);
+          }
+        };
+        image.addEventListener("load", afterImageLoad);
+      }
+    });
   },
 
   @action
@@ -714,12 +729,22 @@ export default Component.extend({
   editButtonClicked(messageId) {
     const message = this.messageLookup[messageId];
     this.set("editingMessage", message);
-    this._stickScrollToBottom();
+    next(this.reStickScrollIfNeeded.bind(this));
   },
 
   @action
   cancelEditing() {
-    this.set("editingMessage", null);
+    this.setProperties({
+      editingMessage: null,
+      value: "",
+    });
+  },
+
+  @action
+  reStickScrollIfNeeded() {
+    if (this.stickyScroll) {
+      this._stickScrollToBottom();
+    }
   },
 
   @action

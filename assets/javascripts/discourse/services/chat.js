@@ -54,16 +54,12 @@ export default Service.extend({
       data.currentRouteName !== "chat" &&
       data.currentRouteName !== "chat.channel"
     ) {
-      let url = data.url;
-      if (!url || url === "/") {
-        url = `discovery.${defaultHomepage()}`;
-      }
-      this.set("lastNonChatRoute", url);
+      this.set("lastNonChatRoute", data.url);
     }
   },
 
   getLastNonChatRoute() {
-    return this.lastNonChatRoute;
+    return this.lastNonChatRoute || `discovery.${defaultHomepage()}`;
   },
 
   loadCookFunction(categories) {

@@ -46,7 +46,7 @@
 }
 
 .tc-message:not(.user-info-hidden) {
-  padding: 0.5em 1em;
+  padding: 0.25em 1em 0.1em;
   margin-top: 0.5em;
 
   .tc-message-container {
@@ -59,7 +59,7 @@
 }
 
 .tc-message.user-info-hidden {
-  padding: 0 1em;
+  padding: 0.1em 1em;
 
   .tc-message-container {
     width: 100%;

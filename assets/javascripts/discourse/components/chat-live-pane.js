@@ -16,6 +16,7 @@ const STICKY_SCROLL_LENIENCE = 4;
 const READ_INTERVAL = 2000;
 const PAGE_SIZE = 30; // Same constant in chat_controller.rb. Update both together!
 
+let self;
 export default Component.extend({
   classNameBindings: [":tc-live-pane", "sendingloading", "loading"],
   topicId: null, // ?Number
@@ -49,6 +50,7 @@ export default Component.extend({
   didInsertElement() {
     this._super(...arguments);
 
+    self = this;
     this._unloadedReplyIds = [];
     this.appEvents.on("chat:open-message", this, "highlightOrFetchMessage");
     if (!isTesting()) {
@@ -581,17 +583,21 @@ export default Component.extend({
     }
 
     let count = 0;
-    const afterImageLoad = () => {
-      // closure here as we need the same logic in 2 places with local variables
-      count++;
-      if (count === images.length) {
-        this.reStickScrollIfNeeded();
-      }
-    };
     images.forEach((image) => {
       if (image.complete) {
-        return afterImageLoad();
+        count++;
+        if (count === images.length) {
+          return this.reStickScrollIfNeeded();
+        }
       } else {
+        const afterImageLoad = () => {
+          // closure here so we can remove the listener with the local var 'image'
+          count++;
+          if (count === images.length) {
+            this.reStickScrollIfNeeded();
+            image.removeEventListener("load", afterImageLoad);
+          }
+        };
         image.addEventListener("load", afterImageLoad);
       }
     });

@@ -178,6 +178,7 @@ export default Component.extend(
 
     @action
     cancelEditing() {
+      this.set("value", "");
       this.onCancelEditing();
       this._focusTextArea({ ensureAtEnd: true, resizeTextArea: true });
     },

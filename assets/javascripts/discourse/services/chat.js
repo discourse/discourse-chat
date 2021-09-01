@@ -59,7 +59,9 @@ export default Service.extend({
   },
 
   getLastNonChatRoute() {
-    return this.lastNonChatRoute || `discovery.${defaultHomepage()}`;
+    return this.lastNonChatRoute && this.lastNonChatRoute !== "/"
+      ? this.lastNonChatRoute
+      : `discovery.${defaultHomepage()}`;
   },
 
   loadCookFunction(categories) {

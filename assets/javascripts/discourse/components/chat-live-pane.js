@@ -16,7 +16,6 @@ const STICKY_SCROLL_LENIENCE = 4;
 const READ_INTERVAL = 2000;
 const PAGE_SIZE = 30; // Same constant in chat_controller.rb. Update both together!
 
-let self;
 export default Component.extend({
   classNameBindings: [":tc-live-pane", "sendingloading", "loading"],
   topicId: null, // ?Number
@@ -50,7 +49,6 @@ export default Component.extend({
   didInsertElement() {
     this._super(...arguments);
 
-    self = this;
     this._unloadedReplyIds = [];
     this.appEvents.on("chat:open-message", this, "highlightOrFetchMessage");
     if (!isTesting()) {
@@ -381,7 +379,7 @@ export default Component.extend({
   resolveURLs() {
     schedule("afterRender", this, () => {
       resolveAllShortUrls(ajax, this.siteSettings, this.element);
-      this._rescrollAfterImagesLoad();
+      this._reScrollAfterImagesLoad();
     });
   },
 
@@ -576,7 +574,7 @@ export default Component.extend({
     cancel(this._updateReadTimer);
   },
 
-  _rescrollAfterImagesLoad() {
+  _reScrollAfterImagesLoad() {
     const images = this.element.querySelectorAll("img:not(.avatar, .emoji)");
     if (!images.length) {
       return;

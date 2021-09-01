@@ -577,23 +577,22 @@ export default Component.extend({
   _rescrollAfterImagesLoad() {
     const images = this.element.querySelectorAll("img:not(.avatar, .emoji)");
     if (!images.length) {
-      return this.restickIfNeeded();
+      return;
     }
 
     let count = 0;
+    const afterImageLoad = () => {
+      // closure here as we need the same logic in 2 places with local variables
+      count++;
+      if (count === images.length) {
+        this.restickIfNeeded();
+      }
+    };
     images.forEach((image) => {
       if (image.complete) {
-        count += 1;
-        if (count === images.length) {
-          this.restickIfNeeded();
-        }
+        return afterImageLoad();
       } else {
-        image.addEventListener("load", () => {
-          count += 1;
-          if (count === images.length) {
-            this.restickIfNeeded();
-          }
-        });
+        image.addEventListener("load", afterImageLoad);
       }
     });
   },

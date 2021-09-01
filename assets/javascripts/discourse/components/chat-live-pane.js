@@ -585,7 +585,7 @@ export default Component.extend({
       // closure here as we need the same logic in 2 places with local variables
       count++;
       if (count === images.length) {
-        this.restickIfNeeded();
+        this.reStickScrollIfNeeded();
       }
     };
     images.forEach((image) => {
@@ -725,7 +725,7 @@ export default Component.extend({
   editButtonClicked(messageId) {
     const message = this.messageLookup[messageId];
     this.set("editingMessage", message);
-    next(this.restickIfNeeded.bind(this));
+    next(this.reStickScrollIfNeeded.bind(this));
   },
 
   @action
@@ -737,7 +737,7 @@ export default Component.extend({
   },
 
   @action
-  restickIfNeeded() {
+  reStickScrollIfNeeded() {
     if (this.stickyScroll) {
       this._stickScrollToBottom();
     }

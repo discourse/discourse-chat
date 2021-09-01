@@ -510,10 +510,12 @@ $float-height: 530px;
   overflow: hidden;
 
   .tc-messages-scroll {
+    margin-bottom: 0.5em;
     flex-grow: 1;
     overflow-y: scroll;
     scrollbar-color: var(--primary-low) transparent;
     transition: scrollbar-color 0.2s ease-in-out;
+
     &::-webkit-scrollbar {
       width: 15px;
     }
@@ -818,7 +820,9 @@ $float-height: 530px;
 .full-page-chat {
   display: grid;
   grid-template-columns: var(--full-page-sidebar-width) 1fr;
-  grid-template-rows: var(----full-page-back-height) calc(var(--full-page-chat-height, 80vh) - var(----full-page-back-height));
+  grid-template-rows: var(----full-page-back-height) calc(
+      var(--full-page-chat-height, 80vh) - var(----full-page-back-height)
+    );
 
   .exit-chat-btn {
     height: var(--full-page-back-height);

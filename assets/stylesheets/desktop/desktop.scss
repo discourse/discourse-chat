@@ -24,12 +24,6 @@
   .tc-live-pane {
     .tc-messages-container {
       .tc-message {
-        padding: 0.15em 1em;
-
-        &:not(.user-info-hidden) {
-          padding: 0.5em 1em;
-          margin-top: 0.5em;
-        }
         &.user-info-hidden {
           .tc-meta-data {
             width: var(--large-message-left-width);
@@ -63,7 +57,27 @@
   }
 }
 
-.tc-text,
-.tc-message-container {
-  max-width: calc(100% - (#{var(--large-message-left-width)} + 1.5em));
+.tc-message:not(.user-info-hidden) {
+  padding: 0.5em 1em;
+  margin-top: 0.5em;
+
+  .tc-message-container {
+    max-width: calc(100% - (#{var(--large-message-left-width)} + 1em));
+
+    .tc-text {
+      width: 100%;
+    }
+  }
+}
+
+.tc-message.user-info-hidden {
+  padding: 0.15em 1em;
+
+  .tc-message-container {
+    width: 100%;
+
+    .tc-text {
+      max-width: calc(100% - (#{var(--large-message-left-width)} + 1em));
+    }
+  }
 }

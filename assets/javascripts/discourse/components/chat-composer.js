@@ -113,6 +113,9 @@ export default Component.extend(
       );
     },
 
+    // noop, the upload button is different on mobile here
+    _bindMobileUploadButton() {},
+
     didRender() {
       this._super(...arguments);
       if (this.canChat && this._messageIsEmpty() && !this.site.mobileView) {

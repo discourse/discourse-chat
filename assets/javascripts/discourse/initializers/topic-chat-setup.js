@@ -4,6 +4,8 @@ import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { withPluginApi } from "discourse/lib/plugin-api";
 
+const PLUGIN_ID = "discourse-topic-chat";
+
 export default {
   name: "topic-chat-setup",
   initialize(container) {
@@ -95,12 +97,14 @@ export default {
       );
 
       api.modifyClass("component:topic-admin-menu-button", {
+        pluginId: PLUGIN_ID,
         toggleChat() {
           return doToggleChat(this.topic);
         },
       });
 
       api.modifyClass("component:topic-timeline", {
+        pluginId: PLUGIN_ID,
         toggleChat() {
           return doToggleChat(this.topic);
         },

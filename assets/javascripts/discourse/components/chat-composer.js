@@ -1,4 +1,5 @@
 import Component from "@ember/component";
+import UppyMediaOptimization from "discourse/lib/uppy-media-optimization-plugin";
 import ComposerUpload from "discourse/mixins/composer-upload";
 import ComposerUploadUppy from "discourse/mixins/composer-upload-uppy";
 import discourseComputed from "discourse-common/utils/decorators";
@@ -51,6 +52,7 @@ export default Component.extend(
     uploadCancelled: false,
     showCancelBtn: or("isUploading", "isProcessingUpload"),
     uploadProcessorActions: null,
+    uploadPreProcessors: null,
     uploadMarkdownResolvers: null,
 
     init() {
@@ -60,14 +62,33 @@ export default Component.extend(
       // function locally b/c ember-cli and server are on different ports. Ask Falco.
       this.setProperties({
         uploadProcessorActions: {},
+        uploadPreProcessors: [],
         uploadMarkdownResolvers: [],
       });
       if (
         isProduction() &&
         this.siteSettings.composer_media_optimization_image_enabled
       ) {
-        this.uploadProcessorActions["optimizeJPEG"] = (data, opts) =>
-          this.mediaOptimizationWorker.optimizeImage(data, opts);
+        // TODO:
+        // This whole deal really is not ideal, maybe we need some sort
+        // of ComposerLike mixin that handles adding these processors? But
+        // then again maybe not, because we may not want all processors
+        // for chat...
+        if (this.siteSettings.enable_experimental_composer_uploader) {
+          this.uploadPreProcessors.push({
+            pluginClass: UppyMediaOptimization,
+            optionsResolverFn: ({ isMobileDevice }) => {
+              return {
+                optimizeFn: (data, opts) =>
+                  this.mediaOptimizationWorker.optimizeImage(data, opts),
+                runParallel: !isMobileDevice,
+              };
+            },
+          });
+        } else {
+          this.uploadProcessorActions["optimizeJPEG"] = (data, opts) =>
+            this.mediaOptimizationWorker.optimizeImage(data, opts);
+        }
       }
     },
 
@@ -97,6 +118,7 @@ export default Component.extend(
       }
 
       this.setProperties({
+        uploadPreProcessors: null,
         uploadProcessorActions: null,
         uploadMarkdownResolvers: null,
       });

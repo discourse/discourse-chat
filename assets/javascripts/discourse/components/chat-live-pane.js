@@ -336,8 +336,11 @@ export default Component.extend({
         return;
       }
       this.set("stickyScroll", true);
-      this._scrollerEl.scrollTop =
-        this._scrollerEl.scrollHeight - this._scrollerEl.clientHeight;
+
+      if (this._scrollerEl) {
+        this._scrollerEl.scrollTop =
+          this._scrollerEl.scrollHeight - this._scrollerEl.clientHeight;
+      }
     });
   },
 

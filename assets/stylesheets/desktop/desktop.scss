@@ -58,7 +58,7 @@
 }
 
 .tc-message:not(.user-info-hidden) {
-  padding: 0.5em 1em;
+  padding: 0.5em 2em 0.15em 2em;
   margin-top: 0.5em;
 
   .tc-message-container {
@@ -78,6 +78,39 @@
 
     .tc-text {
       max-width: calc(100% - (#{var(--large-message-left-width)} + 1em));
+    }
+  }
+}
+
+// Full Page Styling
+.discourse-sidebar.has-full-page-chat {
+  #main-outlet {
+    padding: 0;
+  }
+  .full-page-chat.teams-sidebar-on {
+    height: calc(100vh - 75px);
+    grid-template-rows: 40px auto;
+    .exit-chat-btn {
+      grid-column: unset;
+      z-index: 999;
+      width: min-content;
+    }
+    .tc-live-pane {
+      border-radius: 0;
+      // height: 100%;
+    }
+    .tc-live-pane,
+    .tc-messages-scroll,
+    .tc-message {
+      background: transparent;
+    }
+    .tc-message {
+      padding-left: 2em;
+      font-family: "Lato";
+      -moz-osx-font-smoothing: grayscale;
+    }
+    .tc-messages-container .tc-message-deleted {
+      padding: 0.25em 2em;
     }
   }
 }

@@ -110,7 +110,6 @@ export default Component.extend({
   openChannelAtMessage(chatChannelId, messageId) {
     this.chat.setMessageId(messageId);
     this.chat.getChannelBy("id", chatChannelId).then((channel) => {
-      console.log("HERE!")
       this.switchChannel(channel);
     });
   },
@@ -244,7 +243,6 @@ export default Component.extend({
     this.chat.getIdealFirstChannelId().then((channelId) => {
       if (channelId) {
         this.chat.getChannelBy("id", channelId).then((channel) => {
-          console.log(channel)
           this.switchChannel(channel);
         });
       } else {

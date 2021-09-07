@@ -1,11 +1,4 @@
 <div class={{wrapperClassNames}}>
-  {{d-button
-    action=(action "exitChat")
-    class="btn-flat exit-chat-btn"
-    icon="arrow-left"
-    label="chat.exit"
-    title="chat.exit"
-  }}
   {{#if showChannelSelector}}
     {{channel-list
       publicChannels=publicChannels

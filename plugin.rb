@@ -3,7 +3,7 @@
 # name: discourse-topic-chat
 # about: Topic or category scoped chat for Discourse sites
 # version: 0.1
-# authors: Kane York
+# authors: Kane York, Mark VanLandingham
 # url: https://github.com/discourse-org/discourse-topic-chat
 # transpile_js: true
 

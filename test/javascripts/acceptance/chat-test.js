@@ -326,7 +326,7 @@ acceptance(
 
     test("Chat opens to full-page channel with unread messages when sidebar is installed", async function (assert) {
       await visit("/t/internationalization-localization/280");
-      document.body.classList.add("discourse-sidebar");
+      this.container.lookup("service:chat").setSidebarOn(true);
       await click(".header-dropdown-toggle.open-chat");
 
       const channelWithUnread = chatChannels.public_channels.find(
@@ -341,7 +341,7 @@ acceptance(
 
     test("Chat float opens on header icon click when sidebar is not installed", async function (assert) {
       await visit("/t/internationalization-localization/280");
-      document.body.classList.remove("discourse-sidebar");
+      this.container.lookup("service:chat").setSidebarOn(false);
       await click(".header-dropdown-toggle.open-chat");
 
       assert.ok(visible(".topic-chat-float-container"), "chat float is open");

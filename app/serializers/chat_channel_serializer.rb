@@ -18,7 +18,7 @@ class ChatChannelSerializer < ApplicationSerializer
   def title
     case object.chatable_type
     when "Topic"
-      object.chatable.fancy_title
+      object.chatable.title.parameterize
     when "Category"
       object.chatable.name
     when "Site"

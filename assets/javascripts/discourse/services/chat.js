@@ -25,6 +25,7 @@ export default Service.extend({
   presence: service(),
   presenceChannel: null,
   publicChannels: null,
+  sidebarActive: false,
   unreadDirectMessageCount: null,
 
   init() {
@@ -62,6 +63,14 @@ export default Service.extend({
     return this.lastNonChatRoute && this.lastNonChatRoute !== "/"
       ? this.lastNonChatRoute
       : `discovery.${defaultHomepage()}`;
+  },
+
+  getSidebarActive() {
+    return this.sidebarActive;
+  },
+
+  setSidebarActive(on) {
+    this.set("sidebarActive", on);
   },
 
   loadCookFunction(categories) {

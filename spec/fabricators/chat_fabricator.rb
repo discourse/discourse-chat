@@ -24,3 +24,8 @@ Fabricator(:incoming_chat_webhook) do
   key { sequence(:key) { |i| "#{i + 1}" } }
   chat_channel { Fabricate(:site_chat_channel) }
 end
+
+Fabricator(:user_chat_channel_membership) do
+  user
+  chat_channel
+end

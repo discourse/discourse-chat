@@ -131,38 +131,38 @@ after_initialize do
 
   add_to_serializer(:current_user, :chat_channel_tracking_state) do
     chat_channel_ids = DiscourseChat::ChatChannelFetcher.unstructured(scope).map(&:id)
-    timings = UserChatChannelLastRead
+    timings = UserChatChannelMembership
       .includes(chat_channel: :chat_messages)
       .where(user_id: object.id)
       .where(chat_channel_id: chat_channel_ids)
       .map { |timing|
         timing.unread_count = timing.chat_channel.chat_messages.count { |message|
-          message.user_id != object.id && message.id > (timing.chat_message_id || 0)
+          message.user_id != object.id && message.id > (timing.last_read_message_id || 0)
         }
         timing
       }
 
-    # Start tracking channels that haven't been tracked yet
-    untracked_channel_ids = chat_channel_ids - timings.map(&:chat_channel_id)
-    if untracked_channel_ids.any?
-      ChatChannel
-        .includes(:chat_messages)
-        .where(id: untracked_channel_ids)
-        .each { |channel|
-          timings << UserChatChannelLastRead.create(
-            chat_channel_id: channel.id,
-            unread_count: channel.chat_messages.count,
-            user_id: object.id,
-            chat_message_id: nil
-          )
-        }
-    end
+    # OLD -Start tracking channels that haven't been tracked yet
+    # untracked_channel_ids = chat_channel_ids - timings.map(&:chat_channel_id)
+    # if untracked_channel_ids.any?
+      # ChatChannel
+        # .includes(:chat_messages)
+        # .where(id: untracked_channel_ids)
+        # .each { |channel|
+          # timings << UserChatChannelLastRead.create(
+            # chat_channel_id: channel.id,
+            # unread_count: channel.chat_messages.count,
+            # user_id: object.id,
+            # chat_message_id: nil
+          # )
+        # }
+    # end
     timings_hash = {}
     timings.each do |timing|
       timings_hash[timing.chat_channel_id] = {
         unread_count: timing.unread_count,
         user_id: timing.id,
-        chat_message_id: timing.chat_message_id,
+        chat_message_id: timing.last_read_message_id,
         chatable_type: timing.chat_channel.chatable_type,
       }
     end

@@ -225,9 +225,9 @@ class DiscourseChat::ChatController < ::ApplicationController
   private
 
   def set_user_last_read
-    UserChatChannelLastRead
+    UserChatChannelMembership
       .where(user: current_user, chat_channel: @chat_channel)
-      .update_all(chat_message_id: params[:message_id])
+      .update_all(last_read_message_id: params[:message_id])
 
     ChatPublisher.publish_user_tracking_state(
       current_user,

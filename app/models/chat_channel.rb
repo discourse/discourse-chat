@@ -35,7 +35,7 @@ class ChatChannel < ActiveRecord::Base
   def title(user)
     case chatable_type
     when "Topic"
-      object.chatable.title.parameterize
+      chatable.title.parameterize
     when "Category"
       chatable.name
     when "Site"

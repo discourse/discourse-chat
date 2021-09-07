@@ -8,6 +8,12 @@
       }}
     {{/if}}
     {{chat-channel-title channel=chatChannel}}
+    {{d-button
+      action=(action "exitChat")
+      class="btn-flat exit-chat-btn"
+      icon="times"
+      title="chat.exit"
+    }}
   </div>
 {{/if}}
 

@@ -1,6 +1,5 @@
 import {
   acceptance,
-  count,
   exists,
   publishToMessageBus,
   query,
@@ -67,27 +66,6 @@ acceptance("Discourse Chat - without unread", function (needs) {
   needs.pretender(chatPretenders);
   needs.hooks.beforeEach(() => {
     updateCurrentUser(userNeeds());
-  });
-
-  test("Chat header link takes you to full page chat with Site channel open", async function (assert) {
-    await visit("/t/internationalization-localization/280");
-    await click(".header-dropdown-toggle.open-chat");
-
-    assert.equal(
-      currentURL(),
-      `/chat/channel/${siteChannel.chat_channel.title}`
-    );
-    assert.ok(visible(".full-page-chat"));
-    assert.equal(
-      count(".public-channels .chat-channel-row"),
-      4,
-      "it show public channel rows"
-    );
-    assert.equal(
-      count(".direct-message-channels .chat-channel-row"),
-      1,
-      "it shows DM channel rows"
-    );
   });
 
   const enterFirstChatChannel = async function () {
@@ -324,17 +302,31 @@ acceptance(
       updateCurrentUser(userNeeds({ 7: 2 }));
     });
 
-    test("Chat opens to channel with unread messages", async function (assert) {
+    test("Chat opens to full-page channel with unread messages when sidebar is installed", async function (assert) {
       await visit("/t/internationalization-localization/280");
+      this.container.lookup("service:chat").setSidebarActive(true);
       await click(".header-dropdown-toggle.open-chat");
 
       const channelWithUnread = chatChannels.public_channels.find(
         (c) => c.id === 7
       );
       assert.equal(currentURL(), `/chat/channel/${channelWithUnread.title}`);
+      assert.notOk(
+        visible(".topic-chat-float-container"),
+        "chat float is not open"
+      );
     });
 
-    test("Unread header indicator and unread count on channel row are present", async function (assert) {
+    test("Chat float opens on header icon click when sidebar is not installed", async function (assert) {
+      await visit("/t/internationalization-localization/280");
+      this.container.lookup("service:chat").setSidebarActive(false);
+      await click(".header-dropdown-toggle.open-chat");
+
+      assert.ok(visible(".topic-chat-float-container"), "chat float is open");
+      assert.equal(currentURL(), `/t/internationalization-localization/280`);
+    });
+
+    test("Unread header indicator is present", async function (assert) {
       await visit("/t/internationalization-localization/280");
 
       assert.ok(
@@ -342,12 +334,6 @@ acceptance(
           ".header-dropdown-toggle.open-chat .unread-chat-messages-indicator"
         ),
         "Unread indicator present in header"
-      );
-      await click(".header-dropdown-toggle.open-chat");
-
-      assert.ok(
-        exists(".chat-channel-row .unread-chat-messages-indicator"),
-        "Unread indicator present in chat channel row"
       );
     });
   }
@@ -366,7 +352,17 @@ acceptance(
       updateCurrentUser(userNeeds({ 9: 2, 75: 2 }));
     });
 
-    test("Chat opens to DM channel with unread messages", async function (assert) {
+    test("Chat float open to DM channel with unread messages with sidebar off", async function (assert) {
+      this.container.lookup("service:chat").setSidebarActive(false);
+      await visit("/t/internationalization-localization/280");
+      await click(".header-dropdown-toggle.open-chat");
+
+      const chatContainer = query(".topic-chat-container");
+      assert.ok(chatContainer.classList.contains("channel-75"));
+    });
+
+    test("Chat full page open to DM channel with unread messages with sidebar on", async function (assert) {
+      this.container.lookup("service:chat").setSidebarActive(true);
       await visit("/t/internationalization-localization/280");
       await click(".header-dropdown-toggle.open-chat");
 

@@ -380,23 +380,23 @@ acceptance(
       updateCurrentUser(userNeeds({ 9: 2, 75: 2 }));
     });
 
-    // test("Chat opens to DM channel with unread messages", async function (assert) {
-      // await visit("/t/internationalization-localization/280");
-      // await click(".header-dropdown-toggle.open-chat");
+    test("Chat opens to DM channel with unread messages", async function (assert) {
+      await visit("/t/internationalization-localization/280");
+      await click(".header-dropdown-toggle.open-chat");
 
-      // const channelWithUnread = chatChannels.direct_message_channels.find(
-        // (c) => c.id === 75
-      // );
-      // assert.equal(currentURL(), `/chat/channel/${channelWithUnread.title}`);
-    // });
+      const channelWithUnread = chatChannels.direct_message_channels.find(
+        (c) => c.id === 75
+      );
+      assert.equal(currentURL(), `/chat/channel/${channelWithUnread.title}`);
+    });
 
-    // test("Exit full screen chat button takes you to previous non-chat location", async function (assert) {
-      // const nonChatPath = "/t/internationalization-localization/280";
-      // await visit(nonChatPath);
-      // await visit("/chat/channel/@hawk");
-      // await visit("/chat/channel/Site");
-      // await click(".exit-chat-btn");
-      // assert.equal(currentURL(), nonChatPath);
-    // });
+    test("Exit full screen chat button takes you to previous non-chat location", async function (assert) {
+      const nonChatPath = "/t/internationalization-localization/280";
+      await visit(nonChatPath);
+      await visit("/chat/channel/@hawk");
+      await visit("/chat/channel/Site");
+      await click(".exit-chat-btn");
+      assert.equal(currentURL(), nonChatPath);
+    });
   }
 );

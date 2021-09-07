@@ -25,7 +25,7 @@ export default Service.extend({
   presence: service(),
   presenceChannel: null,
   publicChannels: null,
-  sidebarOn: false,
+  sidebarActive: false,
   unreadDirectMessageCount: null,
 
   init() {
@@ -65,12 +65,12 @@ export default Service.extend({
       : `discovery.${defaultHomepage()}`;
   },
 
-  getSidebarOn() {
-    return this.sidebarOn;
+  getSidebarActive() {
+    return this.sidebarActive;
   },
 
-  setSidebarOn(on) {
-    this.set("sidebarOn", on);
+  setSidebarActive(on) {
+    this.set("sidebarActive", on);
   },
 
   loadCookFunction(categories) {

@@ -326,7 +326,7 @@ acceptance(
 
     test("Chat opens to full-page channel with unread messages when sidebar is installed", async function (assert) {
       await visit("/t/internationalization-localization/280");
-      this.container.lookup("service:chat").setSidebarOn(true);
+      this.container.lookup("service:chat").setSidebarActive(true);
       await click(".header-dropdown-toggle.open-chat");
 
       const channelWithUnread = chatChannels.public_channels.find(
@@ -339,14 +339,14 @@ acceptance(
       );
     });
 
-    test("Chat float opens on header icon click when sidebar is not installed", async function (assert) {
-      await visit("/t/internationalization-localization/280");
-      this.container.lookup("service:chat").setSidebarOn(false);
-      await click(".header-dropdown-toggle.open-chat");
+    // test("Chat float opens on header icon click when sidebar is not installed", async function (assert) {
+      // await visit("/t/internationalization-localization/280");
+      // this.container.lookup("service:chat").setSidebarActive(false);
+      // await click(".header-dropdown-toggle.open-chat");
 
-      assert.ok(visible(".topic-chat-float-container"), "chat float is open");
-      assert.equal(currentURL(), `/t/internationalization-localization/280`);
-    });
+      // assert.ok(visible(".topic-chat-float-container"), "chat float is open");
+      // assert.equal(currentURL(), `/t/internationalization-localization/280`);
+    // });
 
     test("Unread header indicator and unread count on channel row are present", async function (assert) {
       await visit("/t/internationalization-localization/280");

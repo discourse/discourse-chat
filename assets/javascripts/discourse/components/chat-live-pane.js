@@ -38,6 +38,7 @@ export default Component.extend({
   targetMessageId: null,
 
   chat: service(),
+  router: service(),
 
   getCachedChannelDetails: null,
   clearCachedChannelDetails: null,
@@ -755,5 +756,10 @@ export default Component.extend({
     this.set("stickyScroll", true);
     this._stickScrollToBottom();
     evt.preventDefault();
+  },
+
+  @action
+  exitChat() {
+    return this.router.transitionTo(this.chat.getLastNonChatRoute());
   },
 });

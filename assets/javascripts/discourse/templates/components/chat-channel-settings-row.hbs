@@ -19,7 +19,7 @@
     {{else}}
       {{d-button
         class="chat-channel-preview"
-        action=(action "toggleExpanded")
+        action=(action "previewChannel")
         disabled=loading
         label="chat.settings.preview"
       }}
@@ -66,6 +66,21 @@
           }}
         </div>
       {{/unless}}
+      <div class="controls save-container">
+        <label></label>
+        {{d-button
+          class="btn-primary"
+          action=(action "save")
+          disabled=loading
+          label="chat.settings.save"
+          }}
+        {{#if showSaveSuccess}}
+          <span class="notification-settings-saved">
+            {{d-icon "check"}}
+            {{i18n "chat.settings.saved"}}
+          </span>
+        {{/if}}
+      </div>
     </div>
   {{/if}}
 </div>

@@ -1,8 +1,5 @@
 en:
   js:
-    notifications:
-      popup:
-        chat_mention: "@%{username} mentioned you in chat"
     chat:
       all_loaded: "Showing all messages"
       already_enabled: "Chat is already enabled on this topic. Please refresh."
@@ -35,29 +32,28 @@ en:
       scroll_to_bottom: "Scroll to bottom"
       send: "Send Chat Message"
       send_error: "Something went wrong"
-      settings: "Chat settings"
       title: "chat"
       unread_count: "(%{count} new)"
       upload: "Attach a file"
       exit: "back"
-
 
       notification_levels:
         never: "Never"
         mention: "Only for mentions"
         always: "For all activity"
 
-      mute:
-        on: "On"
-        off: "Off"
-
       settings:
         desktop_notification_level: "Desktop notifications"
         follow: "Join"
         mobile_notification_level: "Mobile push notifications"
         mute: "Mute channel"
+        muted_on: "On"
+        muted_off: "Off"
         notifications: "Notifications"
         preview: "Preview"
+        save: "Save"
+        saved: "Saved"
+        title: "Channel Settings"
         unfollow: "Leave"
 
       admin:
@@ -99,6 +95,8 @@ en:
     notifications:
       titles:
         chat_mention: "You were mentioned in chat"
+      popup:
+        chat_mention: "@%{username} mentioned you in chat"
     topic:
       actions:
         chat_enable: "Enable Chat"

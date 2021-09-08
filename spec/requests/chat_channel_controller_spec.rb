@@ -61,4 +61,52 @@ RSpec.describe DiscourseChat::ChatChannelsController do
       expect(response.status).to eq(200)
     end
   end
+
+  describe "#notification_settings" do
+    fab!(:membership) { Fabricate(:user_chat_channel_membership, user: user, chat_channel: chat_channel) }
+
+    it "returns a 404 when the user isn't logged in" do
+      post "/chat/chat_channels/#{chat_channel.id}/notification_settings.json", params: {
+        muted: true,
+        desktop_notification_level: "mention",
+        mobile_notification_level: "mention"
+      }
+      expect(response.status).to eq(403)
+
+    end
+
+    it "requires the correct params" do
+      sign_in(user)
+      post "/chat/chat_channels/#{chat_channel.id}/notification_settings.json", params: {
+        muted: true,
+        desktop_notification_level: "mention"
+      }
+      expect(response.status).to eq(400)
+      post "/chat/chat_channels/#{chat_channel.id}/notification_settings.json", params: {
+        muted: true,
+        mobile_notification_level: "mention"
+      }
+      expect(response.status).to eq(400)
+      post "/chat/chat_channels/#{chat_channel.id}/notification_settings.json", params: {
+        mobile_notification_level: "mention",
+        desktop_notification_level: "mention"
+      }
+      expect(response.status).to eq(400)
+    end
+
+    it "saves all the correct fields" do
+      sign_in(user)
+      post "/chat/chat_channels/#{chat_channel.id}/notification_settings.json", params: {
+        muted: true,
+        mobile_notification_level: "never",
+        desktop_notification_level: "always"
+      }
+      expect(response.status).to eq(200)
+      chat_channel.reload
+      expect(chat_channel.muted).to eq(true)
+      expect(chat_channel.desktop_notification_level).to eq("never")
+      expect(chat_channel.mobile_notification_level).to eq("always")
+
+    end
+  end
 end

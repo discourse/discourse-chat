@@ -838,19 +838,9 @@ $float-height: 530px;
     }
 
     .chat-channel-title {
-      color: var(--primary-high);
+      color: var(--primary-very-high);
     }
-    .chat-channel-expand-settings {
-      color: var(--primary-high);
 
-      &:focus {
-        .d-icon {
-          color: var(--primary-high);
-        }
-        outline: none;
-        background: var(--primary-low);
-      }
-    }
     .chat-channel-row-controls {
       width: 100%;
       padding: 1em 0;
@@ -864,6 +854,18 @@ $float-height: 530px;
         label {
           margin-right: 1em;
           width: 170px;
+        }
+      }
+
+      .save-container {
+        .btn {
+          display: inline-block;
+        }
+
+        .notification-settings-saved {
+          margin-left: 0.5em;
+          color: var(--success);
+
         }
       }
     }

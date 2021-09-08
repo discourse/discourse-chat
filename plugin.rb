@@ -210,6 +210,7 @@ after_initialize do
     get '/lookup/:message_id' => 'chat#lookup_message'
     put '/:chat_channel_id/read/:message_id' => 'chat#update_user_last_read'
 
+    post '/chat_channels/:chat_channel_id/notification_settings' => 'chat_channels#notification_settings'
     post '/chat_channels/:chat_channel_id/follow' => 'chat_channels#follow'
     post '/chat_channels/:chat_channel_id/unfollow' => 'chat_channels#unfollow'
 

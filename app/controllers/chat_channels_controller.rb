@@ -29,6 +29,31 @@ class DiscourseChat::ChatChannelsController < ::ApplicationController
     render json: success_json
   end
 
+  def notification_settings
+    params.require([
+      :chat_channel_id,
+      :muted,
+      :desktop_notification_level,
+      :mobile_notification_level
+    ])
+
+    membership = UserChatChannelMembership.find_by(
+      user_id: current_user.id,
+      chat_channel_id: params[:chat_channel_id]
+    )
+    raise Discourse::NotFound unless membership
+
+    if membership.update(
+      muted: params[:muted],
+      desktop_notification_level: params[:desktop_notification_level],
+      mobile_notification_level: params[:mobile_notification_level]
+    )
+      render json: success_json
+    else
+      render_json_error(membership)
+    end
+  end
+
   private
 
   def ensure_chat_enabled

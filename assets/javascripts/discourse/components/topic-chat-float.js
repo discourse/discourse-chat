@@ -100,11 +100,6 @@ export default Component.extend({
     this.appEvents.trigger("chat:rerender-header");
   },
 
-  @observes("expanded")
-  _fireExpandedAppEvents() {
-    this.appEvents.trigger("chat:float-toggled", this.expanded);
-  },
-
   openChannelFor(chatable) {
     if (chatable.chat_channel) {
       this.switchChannel(chatable.chat_channel);
@@ -223,20 +218,24 @@ export default Component.extend({
   @action
   toggleExpand() {
     this.set("expanded", !this.expanded);
+    this.appEvents.trigger("chat:toggle-expand", this.expanded);
   },
 
   @action
   close() {
     this.set("hidden", true);
+    this.appEvents.trigger("chat:float-toggled", this.hidden);
   },
 
   @action
   toggleChat() {
     this.set("hidden", !this.hidden);
+    this.appEvents.trigger("chat:float-toggled", this.hidden);
     if (this.hidden) {
       return;
     } else {
       this.set("expanded", true);
+      this.appEvents.trigger("chat:toggle-expand", this.expanded);
       if (this.activeChannel) {
         // Channel was previously open, so after expand we are done.
         return;

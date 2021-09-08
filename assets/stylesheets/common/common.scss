@@ -151,7 +151,6 @@ $float-height: 530px;
     color: var(--primary);
     display: flex;
     align-items: center;
-    width: 100%;
     .chat-channel-title {
       display: flex;
       width: calc(95% - 0.5em);
@@ -732,7 +731,7 @@ $float-height: 530px;
   .tc-avatar-container {
     display: inline-block;
     width: 1.5em;
-    height: auto;
+    height: 1.5em;
     margin-right: 0.25em;
   }
   .dm-multi-count {

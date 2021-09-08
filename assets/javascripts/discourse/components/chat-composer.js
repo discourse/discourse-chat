@@ -17,7 +17,6 @@ import { findRawTemplate } from "discourse-common/lib/raw-templates";
 import { emojiSearch, isSkinTonableEmoji } from "pretty-text/emoji";
 import { emojiUrlFor } from "discourse/lib/text";
 import { inject as service } from "@ember/service";
-import { isProduction } from "discourse-common/config/environment";
 import { not, or } from "@ember/object/computed";
 import { search as searchCategoryTag } from "discourse/lib/category-tag-search";
 import { SKIP } from "discourse/lib/autocomplete";
@@ -58,17 +57,12 @@ export default Component.extend(
     init() {
       this._super(...arguments);
 
-      // Keeping image optimization just for production as the worker doesn't
-      // function locally b/c ember-cli and server are on different ports. Ask Falco.
       this.setProperties({
         uploadProcessorActions: {},
         uploadPreProcessors: [],
         uploadMarkdownResolvers: [],
       });
-      if (
-        isProduction() &&
-        this.siteSettings.composer_media_optimization_image_enabled
-      ) {
+      if (this.siteSettings.composer_media_optimization_image_enabled) {
         // TODO:
         // This whole deal really is not ideal, maybe we need some sort
         // of ComposerLike mixin that handles adding these processors? But

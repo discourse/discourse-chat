@@ -98,7 +98,11 @@ export default Component.extend({
   _fireHiddenAppEvents() {
     this.chat.setChatOpenStatus(!this.hidden);
     this.appEvents.trigger("chat:rerender-header");
-    this.appEvents.trigger("chat:float-toggled", this.hidden);
+  },
+
+  @observes("expanded")
+  _fireExpandedAppEvents() {
+    this.appEvents.trigger("chat:float-toggled", this.expanded);
   },
 
   openChannelFor(chatable) {

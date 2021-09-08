@@ -182,6 +182,15 @@ class DiscourseChat::ChatController < ::ApplicationController
     render_serialized(structured, ChatChannelIndexSerializer, root: false)
   end
 
+  def all_channels
+    channels = DiscourseChat::ChatChannelFetcher.structured_public_channels(
+      guardian,
+      scope_with_membership: false
+    )
+
+    render_serialized(channels, ChatChannelSerializer)
+  end
+
   def channel_details
     set_channel_and_chatable
     render_serialized(@chat_channel, ChatChannelSerializer)

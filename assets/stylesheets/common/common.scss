@@ -817,6 +817,59 @@ $float-height: 530px;
   }
 }
 
+.chat-settings-modal {
+  .chat-channel-settings-row {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    align-content: center;
+    justify-content: space-between;
+    width: 650px;
+    padding: 0.75em 0;
+    border-bottom: 1px solid var(--primary-low);
+
+    .btn-container {
+      display: flex;
+      align-content: center;
+
+      .btn {
+        margin-left: 0.5em;
+      }
+    }
+
+    .chat-channel-title {
+      color: var(--primary-high);
+    }
+    .chat-channel-expand-settings {
+      color: var(--primary-high);
+
+      &:focus {
+        .d-icon {
+          color: var(--primary-high);
+        }
+        outline: none;
+        background: var(--primary-low);
+      }
+    }
+    .chat-channel-row-controls {
+      width: 100%;
+      padding: 1em 0;
+
+      .controls {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        margin-top: 0.5em;
+
+        label {
+          margin-right: 1em;
+          width: 170px;
+        }
+      }
+    }
+  }
+}
+
 .full-page-chat {
   display: grid;
   grid-template-columns: var(--full-page-sidebar-width) 1fr;

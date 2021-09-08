@@ -7,7 +7,11 @@ class ChatChannelSerializer < ApplicationSerializer
              :chatable_url,
              :title,
              :chatable,
-             :updated_at
+             :updated_at,
+             :muted,
+             :desktop_notification_level,
+             :mobile_notification_level,
+             :following
 
   has_many :chat_channels, serializer: ChatChannelSerializer, embed: :objects
 

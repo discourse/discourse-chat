@@ -18,6 +18,12 @@
       {{else}}
         {{i18n "chat.chat_channels"}}
       {{/if}}
+      {{flat-button
+        class="edit-channel-membership-btn"
+        icon="pencil-alt"
+        action=(action "openChannelSettingsModal")
+        title="chat.edit_channels"
+      }}
     </div>
     <div id="public-channels" class={{publicChannelClasses}}>
       {{#each publicChannels as |channel|}}

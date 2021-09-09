@@ -36,6 +36,7 @@ export default Service.extend({
       this._subscribeToUserTrackingChannel();
       this.presenceChannel = this.presence.getChannel("/chat/online");
       this.appEvents.on("page:changed", this, "_storeLastNonChatRouteInfo");
+      this.appEvents.on("modal:closed", this, "_onSettingsModalClosed");
     }
   },
 
@@ -47,7 +48,18 @@ export default Service.extend({
       this._unsubscribeFromUpdateChannels();
       this._unsubscribeFromUserTrackingChannel();
       this.appEvents.off("page:changed", this, "_storeLastNonChatRouteInfo");
+      this.appEvents.off("modal:closed", this, "_onSettingsModalClosed");
     }
+  },
+
+  _onSettingsModalClosed(modal) {
+    if (modal.name !== "chat-channel-settings") {
+      return
+    }
+
+    this.refreshChannels().then(() => {
+      this.appEvents.trigger("chat:refresh-channels")
+    });
   },
 
   _storeLastNonChatRouteInfo(data) {

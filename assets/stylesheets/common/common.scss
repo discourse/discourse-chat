@@ -881,11 +881,6 @@ $float-height: 530px;
   grid-template-columns: var(--full-page-sidebar-width) 1fr;
   grid-template-rows: var(--full-page-chat-height);
 
-  .exit-chat-btn {
-    margin-left: auto;
-    color: var(--primary-high);
-  }
-
   .tc-channels {
     background: var(--primary-very-low);
     height: 100%;
@@ -898,6 +893,28 @@ $float-height: 530px;
     display: flex;
     align-items: center;
     border-bottom: 1px solid var(--primary-low);
+
+    .exit-chat-btn {
+      margin-left: auto;
+      color: var(--primary-high);
+    }
+    .chat-channel-title {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    &.previewing {
+      .chat-channel-title {
+        max-width: calc(100% - 200px);
+      }
+      .join-channel-btn {
+        margin-left: auto;
+        width: 110px;
+      }
+      .exit-chat-btn {
+        margin-left: 0.25em;
+      }
+    }
   }
   .tc-live-pane,
   .tc-messages-scroll,

@@ -12,6 +12,12 @@ export default Component.extend({
   didInsertElement() {
     this._super(...arguments);
     this.fetchChannels();
+    this.appEvents.on("chat:refresh-channels", this, "fetchChannels")
+  },
+
+  willDestoryElement() {
+    this._super(...arguments);
+    this.appEvents.off("chat:refresh-channels", this, "fetchChannels")
   },
 
   @action

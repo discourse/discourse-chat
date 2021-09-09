@@ -57,7 +57,9 @@ export default Component.extend({
   @action
   toggleExpanded() {
     this.channel.set("expanded", !this.channel.expanded);
-    const expandBtn = this.element.querySelector(".chat-channel-expand-settings")
+    const expandBtn = this.element.querySelector(
+      ".chat-channel-expand-settings"
+    );
     if (expandBtn) {
       expandBtn.blur(); // Button isn't lossing focus naturally.
     }
@@ -67,28 +69,33 @@ export default Component.extend({
   @action
   save() {
     this.set("loading", true);
-    return ajax(`/chat/chat_channels/${this.channel.id}/notification_settings`, {
-      method: "POST",
-      data: {
-        muted: this.channel.muted,
-        desktop_notification_level: this.channel.desktop_notification_level,
-        mobile_notification_level: this.channel.mobile_notification_level,
+    return ajax(
+      `/chat/chat_channels/${this.channel.id}/notification_settings`,
+      {
+        method: "POST",
+        data: {
+          muted: this.channel.muted,
+          desktop_notification_level: this.channel.desktop_notification_level,
+          mobile_notification_level: this.channel.mobile_notification_level,
+        },
       }
-    }).then((response) => {
+    ).then((response) => {
       this.setProperties({
         loading: false,
-        showSaveSuccess: true
-      })
+        showSaveSuccess: true,
+      });
       later(() => {
         if (!this.isDestroying && !this.isDestroyed) {
           this.set("showSaveSuccess", false);
         }
-      }, 2000)
+      }, 2000);
     });
   },
 
   @action
   previewChannel() {
-    this.router.transitionTo("chat.channel", { queryParams: { previewing: true }})
-  }
+    this.router.transitionTo("chat.channel", this.channel.title, {
+      queryParams: { previewing: true, id: this.channel.id },
+    });
+  },
 });

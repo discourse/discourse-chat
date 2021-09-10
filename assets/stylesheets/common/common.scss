@@ -585,6 +585,10 @@ $float-height: 530px;
       position: relative;
       padding: 0 0.75em;
       display: grid;
+      
+      > .tc-composer-input {
+        width: 100%;
+      }
 
       &::after {
         content: attr(data-replicated-value) " ";

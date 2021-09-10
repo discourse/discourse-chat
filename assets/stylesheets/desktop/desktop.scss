@@ -54,9 +54,6 @@
     .tc-composer-row {
       padding: 0 1em;
       width: calc(100% - 40px + 8px);
-      > .tc-composer-input {
-        width: 100%;
-      }
       &::after {
         width: calc(100% - 40px + 8px);
       }

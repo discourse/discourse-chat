@@ -618,12 +618,11 @@ $float-height: 530px;
       resize: none;
       max-height: 125px;
       padding: 8px 40px 8px 8px;
-      width: calc(100% - (40px + 8px));
       border-radius: 4px;
       border: 1px solid var(--primary-low-mid);
       word-break: break-word;
     }
-
+    
     .tc-composer-message-details {
       position: relative;
       max-height: calc(2em - 5px);

@@ -86,6 +86,36 @@
   }
 }
 
+// Full Page Styling in Core
+.has-full-page-chat:not(.discourse-sidebar) {
+  #main-outlet {
+    padding: 1.5em 0em;
+  }
+  .full-page-chat {
+    border: 1px solid var(--primary-low-mid);
+    border-radius: var(--full-page-border-radius);
+    overflow: hidden;
+    box-shadow: 6px 6px 0px 0px rgba(var(--primary-rgb),0.125);
+    .tc-channels {
+      background: var(--primary-very-low);
+      border-radius: unset;
+      .chat-channel-divider {
+        padding: 1em 1em 0.5em 1em;
+      }
+      .loading-container {
+        padding-bottom: 1em;
+      }
+    }
+    .tc-live-pane {
+      padding: 0 0 1em;
+      border-radius: unset;
+    }
+    .tc-live-pane, .tc-messages-scroll, .tc-message {
+      background-color: var(--secondary);
+    }
+  }
+}
+
 // Full page styling with sidebar enabled
 .discourse-sidebar.has-full-page-chat {
   #main-outlet {
@@ -102,6 +132,9 @@
       background: transparent;
     }
     .tc-message {
+      &.tc-message-selected, &:hover {
+        background: var(--primary-low);
+      }
       padding-left: 2em;
     }
     .tc-messages-container .tc-message-deleted {

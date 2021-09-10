@@ -1,13 +1,30 @@
 # frozen_string_literal: true
 
-class DiscourseChat::ChatChannelsController < ::ApplicationController
-  before_action :ensure_logged_in
-  before_action :ensure_chat_enabled
+class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
+  def index
+    structured = DiscourseChat::ChatChannelFetcher.structured(guardian)
+    render_serialized(structured, ChatChannelIndexSerializer, root: false)
+  end
+
+  def all
+    channels = DiscourseChat::ChatChannelFetcher.structured_public_channels(
+      guardian,
+      UserChatChannelMemberships.where(user: current_user),
+      scope_with_membership: false
+    )
+
+    render_serialized(channels, ChatChannelSettingsSerializer)
+  end
+
+  def show
+    set_channel_and_chatable
+    render_serialized(@chat_channel, ChatChannelSerializer)
+  end
 
   def follow
     params.require(:chat_channel_id)
 
-    membership = UserChatChannelMembership.find_or_create_by(
+    membership = UserChatChannelMembership.includes(:chat_channel).find_or_create_by(
       user_id: current_user.id,
       chat_channel_id: params[:chat_channel_id]
     )
@@ -22,11 +39,17 @@ class DiscourseChat::ChatChannelsController < ::ApplicationController
   def unfollow
     params.require(:chat_channel_id)
 
-    UserChatChannelMembership.where(
-      user_id: current_user.id,
-      chat_channel_id: params[:chat_channel_id]
-    ).update_all(following: false)
-    render json: success_json
+    membership = UserChatChannelMembership
+      .includes(:chat_channel)
+      .find_by(
+        user_id: current_user.id,
+        chat_channel_id: params[:chat_channel_id]
+      )
+    if (membership && membership.update(following: false))
+      render json: success_json
+    else
+      render_json_error(membership)
+    end
   end
 
   def notification_settings
@@ -52,11 +75,5 @@ class DiscourseChat::ChatChannelsController < ::ApplicationController
     else
       render_json_error(membership)
     end
-  end
-
-  private
-
-  def ensure_chat_enabled
-    raise Discourse::NotFound unless SiteSetting.topic_chat_enabled
   end
 end

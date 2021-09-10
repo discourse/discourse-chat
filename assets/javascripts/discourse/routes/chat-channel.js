@@ -26,7 +26,7 @@ export default DiscourseRoute.extend({
     if (params.previewing && params.id) {
       // We are previewing a channel, so we don't have it in the chat service
       // Fetch it using ajax.
-      return ajax(`/chat/${params.id}`).then((response) => {
+      return ajax(`/chat/chat_channels/${params.id}`).then((response) => {
         return response.chat_channel;
       });
     } else {
@@ -42,5 +42,5 @@ export default DiscourseRoute.extend({
   @action
   refreshModel() {
     this.refresh();
-  }
+  },
 });

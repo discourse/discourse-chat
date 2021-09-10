@@ -41,6 +41,7 @@ export default Component.extend({
     this.appEvents.on("chat:open-channel-for", this, "openChannelFor");
     this.appEvents.on("chat:open-channel", this, "switchChannel");
     this.appEvents.on("chat:open-message", this, "openChannelAtMessage");
+    this.appEvents.on("chat:refresh-channels", this, "fetchChannels");
     this.appEvents.on("topic-chat-enable", this, "chatEnabledForTopic");
     this.appEvents.on("topic-chat-disable", this, "chatDisabledForTopic");
     this.appEvents.on("composer:closed", this, "_checkSize");
@@ -67,6 +68,7 @@ export default Component.extend({
       this.appEvents.off("chat:open-channel-for", this, "openChannelFor");
       this.appEvents.off("chat:open-channel", this, "switchChannel");
       this.appEvents.off("chat:open-message", this, "openChannelAtMessage");
+      this.appEvents.off("chat:refresh-channels", this, "fetchChannels");
       this.appEvents.off("topic-chat-enable", this, "chatEnabledForTopic");
       this.appEvents.off("topic-chat-disable", this, "chatDisabledForTopic");
       this.appEvents.off("composer:closed", this, "_checkSize");

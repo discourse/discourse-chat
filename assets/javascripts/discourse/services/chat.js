@@ -32,7 +32,7 @@ export default Service.extend({
     this._super(...arguments);
     if (this.currentUser?.can_chat) {
       this.set("allChannels", []);
-      this._subscribeToUpdateChannels();
+      // this._subscribeToUpdateChannels();
       this._subscribeToUserTrackingChannel();
       this.presenceChannel = this.presence.getChannel("/chat/online");
       this.appEvents.on("page:changed", this, "_storeLastNonChatRouteInfo");
@@ -45,7 +45,8 @@ export default Service.extend({
 
     if (this.currentUser?.can_chat) {
       this.set("allChannels", null);
-      this._unsubscribeFromUpdateChannels();
+      // this._unsubscribeFromUpdateChannels();
+      this._unsubscribeFromAllChatChannels();
       this._unsubscribeFromUserTrackingChannel();
       this.appEvents.off("page:changed", this, "_storeLastNonChatRouteInfo");
       this.appEvents.off("modal:closed", this, "_onSettingsModalClosed");
@@ -54,11 +55,11 @@ export default Service.extend({
 
   _onSettingsModalClosed(modal) {
     if (modal.name !== "chat-channel-settings") {
-      return
+      return;
     }
 
     this.refreshChannels().then(() => {
-      this.appEvents.trigger("chat:refresh-channels")
+      this.appEvents.trigger("chat:refresh-channels");
     });
   },
 
@@ -159,8 +160,9 @@ export default Service.extend({
   },
 
   refreshChannels() {
-    this.set("loading", true);
-    return ajax("/chat/index.json").then((channels) => {
+    this._unsubscribeFromAllChatChannels();
+    this.currentUser.chat_channel_tracking_state = {};
+    return ajax("/chat/chat_channels.json").then((channels) => {
       this.setProperties({
         publicChannels: A(
           channels.public_channels.map((channel) => {
@@ -180,6 +182,7 @@ export default Service.extend({
       });
       this.set("idToTitleMap", idToTitleMap);
       this.presenceChannel.subscribe(channels.global_presence_channel_state);
+      this.currentUser.notifyPropertyChange("chat_channel_tracking_state");
       return {
         publicChannels: this.publicChannels,
         directMessageChannels: this.directMessageChannels,
@@ -232,58 +235,68 @@ export default Service.extend({
     });
   },
 
-  _subscribeToUpdateChannels() {
-    Object.keys(this.currentUser.chat_channel_tracking_state).forEach(
-      (channelId) => {
-        this._subscribeToSingleUpdateChannel(channelId);
-      }
-    );
-    this.messageBus.subscribe("/chat/new-direct-message-channel", (busData) => {
-      this.directMessageChannels.pushObject(
-        this.processChannel(busData.chat_channel)
-      );
-      this.currentUser.chat_channel_tracking_state[busData.chat_channel.id] = {
-        unread_count: 0,
-        chatable_type: "DirectMessageChannel",
-      };
-      this.currentUser.notifyPropertyChange("chat_channel_tracking_state");
-      this._subscribeToSingleUpdateChannel(busData.chat_channel.id);
-    });
-  },
+  // _subscribeToUpdateChannels() {
+  // Object.keys(this.currentUser.chat_channel_tracking_state).forEach(
+  // (channelId) => {
+  // this._subscribeToSingleUpdateChannel(channelId);
+  // }
+  // );
+  // this.messageBus.subscribe("/chat/new-direct-message-channel", (busData) => {
+  // this.directMessageChannels.pushObject(
+  // this.processChannel(busData.chat_channel)
+  // );
+  // this.currentUser.chat_channel_tracking_state[busData.chat_channel.id] = {
+  // unread_count: 0,
+  // chatable_type: "DirectMessageChannel",
+  // };
+  // this.currentUser.notifyPropertyChange("chat_channel_tracking_state");
+  // this._subscribeToSingleUpdateChannel(busData.chat_channel.id);
+  // });
+  // },
 
-  _unsubscribeFromUpdateChannels() {
-    Object.keys(this.currentUser.chat_channel_tracking_state).forEach(
-      (channelId) => {
-        this.messageBus.unsubscribe(`/chat/${channelId}/new-messages`);
-      }
-    );
-    this.messageBus.unsubscribe("/chat/new-direct-message-channel");
-  },
+  // _unsubscribeFromUpdateChannels() {
+  // Object.keys(this.currentUser.chat_channel_tracking_state).forEach(
+  // (channelId) => {
+  // this.messageBus.unsubscribe(`/chat/${channelId}/new-messages`);
+  // }
+  // );
+  // this.messageBus.unsubscribe("/chat/new-direct-message-channel");
+  // },
 
-  _subscribeToSingleUpdateChannel(channelId) {
-    this.messageBus.subscribe(`/chat/${channelId}/new-messages`, (busData) => {
+  _subscribeToSingleUpdateChannel(channel) {
+    if (channel.muted) {
+      return;
+    }
+
+    this.messageBus.subscribe(`/chat/${channel.id}/new-messages`, (busData) => {
       if (busData.user_id === this.currentUser.id) {
         // User sent message, update tracking state to no unread
         this.currentUser.chat_channel_tracking_state[
-          channelId
+          channel.id
         ].chat_message_id = busData.message_id;
       } else {
         // Message from other user. Incriment trackings state
-        this.currentUser.chat_channel_tracking_state[channelId].unread_count =
-          this.currentUser.chat_channel_tracking_state[channelId].unread_count +
-          1;
+        this.currentUser.chat_channel_tracking_state[channel.id].unread_count =
+          this.currentUser.chat_channel_tracking_state[channel.id]
+            .unread_count + 1;
       }
       this.currentUser.notifyPropertyChange("chat_channel_tracking_state");
 
       // Update updated_at timestamp for channel if direct message
       const dmChatChannel = (this.directMessageChannels || []).findBy(
         "id",
-        parseInt(channelId, 10)
+        parseInt(channel.id, 10)
       );
       if (dmChatChannel) {
         dmChatChannel.set("updated_at", new Date());
         this.notifyPropertyChange("directMessageChannels");
       }
+    });
+  },
+
+  _unsubscribeFromAllChatChannels() {
+    this.allChannels.forEach((channel) => {
+      this.messageBus.unsubscribe(`/chat/${channel.id}/new-messages`);
     });
   },
 
@@ -345,11 +358,22 @@ export default Service.extend({
 
   processChannel(channel) {
     channel = EmberObject.create(channel);
+    this._subscribeToSingleUpdateChannel(channel);
+    this._updateUserTrackingState(channel);
     channel.chat_channels = channel.chat_channels.map((nested_channel) => {
       return this.processChannel(nested_channel);
     });
     this.allChannels.push(channel);
     return channel;
+  },
+
+  _updateUserTrackingState(channel) {
+    this.currentUser.chat_channel_tracking_state[channel.id] = {
+      muted: channel.muted,
+      unread_count: channel.unread_count,
+      chatable_type: channel.chatable_type,
+      chat_message_id: channel.last_read_message_id,
+    };
   },
 });
 

@@ -2,30 +2,22 @@
 
 module DiscourseChat::ChatChannelFetcher
   def self.structured(guardian)
+    memberships = UserChatChannelMembership.where(user_id: guardian.user.id)
     {
-      public_channels: structured_public_channels(guardian),
+      public_channels: structured_public_channels(guardian, memberships),
       direct_message_channels: secured_direct_message_channels(
         guardian.user.id,
+        memberships,
         include_chatables: true
       ),
     }
   end
 
-  # def self.for_user(guardian, only_followed: true)
-    # memberships = UserChatChannelMembership
-      # .includes(:chat_channel)
-      # .where(user_id: guardian.user.id)
-
-    # memberships = memberships.where(following: true) if only_followed
-    # memberships.filter do |membership|
-      # can_see_channel?(membership.chat_channel, guardian)
-    # end
-  # end
-
-  def self.structured_public_channels(guardian, scope_with_membership: true)
-    channels = secured_public_channels(guardian, scope_with_membership: scope_with_membership)
+  def self.structured_public_channels(guardian, memberships, scope_with_membership: true)
+    channels = secured_public_channels(guardian, memberships, scope_with_membership: scope_with_membership)
     category_channels = channels.select(&:category_channel?)
     topic_channels = channels.select(&:topic_channel?)
+    site_channel = channels.detect(&:site_channel?)
     added_channel_ids = category_channels.map(&:id)
 
     structured = category_channels.map do |category_channel|
@@ -39,41 +31,46 @@ module DiscourseChat::ChatChannelFetcher
 
     remaining_channels = topic_channels.select { |channel| !added_channel_ids.include?(channel.id) }
     structured = structured.concat(remaining_channels)
-
-    if guardian.can_access_site_chat?
-      structured.prepend(ChatChannel.site_channel)
-    end
+    structured.prepend(site_channel) if site_channel
 
     structured
   end
 
-  def self.unstructured(guardian)
-    channels = secured_public_channels(guardian, include_chatables: false)
-    channels.push(*secured_direct_message_channels(guardian.user.id, include_chatables: false))
-    channels << ChatChannel.site_channel if guardian.user.staff?
-    channels
-  end
-
-  def self.secured_public_channels(guardian, include_chatables: true, scope_with_membership: true)
+  def self.secured_public_channels(guardian, memberships, include_chatables: true, scope_with_membership: true)
     channels = ChatChannel
     if include_chatables
-      channels = channels.includes(:chatable)
+      channels = channels.includes([:chat_messages])
     end
 
+    channels = channels.where(chatable_type: [DiscourseChat::SITE_CHAT_TYPE, "Topic", "Category"])
     if scope_with_membership
       channels = channels
         .joins(:user_chat_channel_memberships)
         .where(user_chat_channel_memberships: { user_id: guardian.user.id, following: true })
     end
-    channels = channels.where(chatable_type: ["Topic", "Category"])
 
-    memberships = UserChatChannelMembership.where(user_id: guardian.user.id)
+    # Separate query for site channel b/c we can't preload `chatable` record as it doesn't
+    # exist for the site channel. Would _love_ a workaround but I spent too much time trying - markvanlan
+    # site_channel_membership = memberships.detect { |membership|
+      # membership.chat_channel_id == DiscourseChat::SITE_CHAT_ID
+    # }
+    # channels.prepend(ChatChannel.site_channel) if site_channel_membership
+    filter_public_channels(channels, memberships, guardian)
+  end
+
+  def self.filter_public_channels(channels, memberships, guardian)
     secured = []
     channels.each do |channel|
       if can_see_channel?(channel, guardian)
         membership = memberships.detect { |membership| membership.chat_channel_id == channel.id }
         if membership
+          channel.last_read_message_id = membership.last_read_message_id
           channel.muted = membership.muted
+          if (!channel.muted)
+            channel.unread_count = channel.chat_messages.count { |message|
+              message.id > (membership.last_read_message_id || 0)
+            }
+          end
           channel.following = membership.following
           channel.desktop_notification_level = membership.desktop_notification_level
           channel.mobile_notification_level = membership.mobile_notification_level
@@ -84,16 +81,13 @@ module DiscourseChat::ChatChannelFetcher
     secured
   end
 
-  def self.secured_direct_message_channels(user_id, include_chatables: false)
+  def self.secured_direct_message_channels(user_id, memberships, include_chatables: false)
     channels = ChatChannel
     channels = channels.includes(chatable: { direct_message_users: :user }) if include_chatables
     channels
+      .joins(:user_chat_channel_memberships)
+      .where(user_chat_channel_memberships: { user_id: user_id, following: true })
       .where(chatable_type: "DirectMessageChannel")
-      .where(chatable_id: DirectMessageChannel
-        .joins(:direct_message_users)
-        .where(direct_message_users: { user_id: user_id })
-        .pluck(:id)
-            )
       .order(updated_at: :desc)
       .limit(10)
   end
@@ -110,8 +104,7 @@ module DiscourseChat::ChatChannelFetcher
 
       guardian.can_see_category?(channel.chatable)
     elsif channel.site_channel?
-
-      guardian.user.staff?
+      guardian.can_access_site_chat?
     else
       true
     end

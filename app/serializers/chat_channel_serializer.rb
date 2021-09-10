@@ -2,18 +2,21 @@
 
 class ChatChannelSerializer < ApplicationSerializer
   attributes :id,
+             :chatable,
              :chatable_id,
              :chatable_type,
              :chatable_url,
-             :title,
-             :chatable,
-             :updated_at,
+             :last_read_message_id,
              :muted,
-             :desktop_notification_level,
-             :mobile_notification_level,
-             :following
+             :title,
+             :unread_count,
+             :updated_at
 
   has_many :chat_channels, serializer: ChatChannelSerializer, embed: :objects
+
+  def include_muted?
+    !object.direct_message_channel?
+  end
 
   def chatable_url
     object.chatable_url

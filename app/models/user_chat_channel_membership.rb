@@ -13,6 +13,26 @@ class UserChatChannelMembership < ActiveRecord::Base
     mention: 1,
     always: 2
   }
+  VALIDATED_ATTRS = [
+    :following,
+    :muted,
+    :desktop_notification_level,
+    :mobile_notification_level
+  ]
   enum desktop_notification_level: NOTIFICATION_LEVELS, _prefix: :desktop
   enum mobile_notification_level: NOTIFICATION_LEVELS, _prefix: :mobile
+
+  validate :changes_for_direct_message_channels
+
+  private
+
+  def changes_for_direct_message_channels
+    needs_validation = VALIDATED_ATTRS.any? { |attr| changed_attribute_names_to_save.include?(attr.to_s) }
+    if needs_validation && chat_channel.direct_message_channel?
+      errors.add(:following) if !following
+      errors.add(:muted) if muted
+      errors.add(:desktop_notification_level) if desktop_notification_level.to_sym != :always
+      errors.add(:mobile_notification_level) if mobile_notification_level.to_sym != :always
+    end
+  end
 end

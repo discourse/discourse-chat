@@ -682,6 +682,9 @@ $float-height: 530px;
     }
   }
 
+  &.muted {
+    opacity: 0.65;
+  }
   &.active {
     font-weight: bold;
   }
@@ -866,7 +869,6 @@ $float-height: 530px;
         .notification-settings-saved {
           margin-left: 0.5em;
           color: var(--success);
-
         }
       }
     }

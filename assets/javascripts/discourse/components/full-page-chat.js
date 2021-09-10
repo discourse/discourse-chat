@@ -36,7 +36,7 @@ export default Component.extend({
 
   init() {
     this._super(...arguments);
-    this.appEvents.on("chat:refresh-channels", this, "refreshModel")
+    this.appEvents.on("chat:refresh-channels", this, "refreshModel");
     this.chat.setMessageId(this.messageId);
   },
 
@@ -57,7 +57,7 @@ export default Component.extend({
 
   willDestroyElement() {
     this._super(...arguments);
-    this.appEvents.off("chat:refresh-channels", this, "refreshModel")
+    this.appEvents.off("chat:refresh-channels", this, "refreshModel");
     window.removeEventListener("resize", this._calculateHeight, false);
     document.body.classList.remove("has-full-page-chat");
     this.chat.setFullScreenChatOpenStatus(false);

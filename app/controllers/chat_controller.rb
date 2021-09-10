@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
-class DiscourseChat::ChatController < ::ApplicationController
-  before_action :ensure_logged_in
-  before_action :ensure_can_chat
+class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
   before_action :find_chatable, only: [:enable_chat, :disable_chat]
   before_action :find_chat_message, only: [
     :delete,
@@ -177,25 +175,6 @@ class DiscourseChat::ChatController < ::ApplicationController
     render_json_error "unimplemented"
   end
 
-  def index
-    structured = DiscourseChat::ChatChannelFetcher.structured(guardian)
-    render_serialized(structured, ChatChannelIndexSerializer, root: false)
-  end
-
-  def all_channels
-    channels = DiscourseChat::ChatChannelFetcher.structured_public_channels(
-      guardian,
-      scope_with_membership: false
-    )
-
-    render_serialized(channels, ChatChannelSerializer)
-  end
-
-  def channel_details
-    set_channel_and_chatable
-    render_serialized(@chat_channel, ChatChannelSerializer)
-  end
-
   def lookup_message
     chat_channel = @message.chat_channel
     chatable = nil
@@ -245,24 +224,6 @@ class DiscourseChat::ChatController < ::ApplicationController
     )
   end
 
-  def set_channel_and_chatable(with_trashed: false)
-    chat_channel_query = ChatChannel
-    if with_trashed
-      chat_channel_query = chat_channel.with_deleted
-    end
-
-    @chat_channel = chat_channel_query.find_by(id: params[:chat_channel_id])
-    raise Discourse::NotFound unless @chat_channel
-
-    @chatable = nil
-    if @chat_channel.site_channel?
-      guardian.ensure_can_access_site_chat!
-    else
-      @chatable = @chat_channel.chatable
-      guardian.ensure_can_see!(@chatable)
-    end
-  end
-
   def find_chatable
     @chatable = params[:chatable_type].downcase == "topic" ?
       Topic.find(params[:chatable_id]) :
@@ -290,9 +251,5 @@ class DiscourseChat::ChatController < ::ApplicationController
         action_code: "chat.#{action}",
         custom_fields: { "action_code_who" => current_user.username }
       )
-  end
-
-  def ensure_can_chat
-    guardian.ensure_can_chat!(current_user)
   end
 end

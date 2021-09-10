@@ -10,6 +10,8 @@ export default {
   name: "topic-chat-setup",
   initialize(container) {
     const appEvents = container.lookup("service:app-events");
+    const chat = container.lookup("service:chat");
+    chat.refreshChannels();
     const currentUser = container.lookup("current-user:main");
 
     RawTopicStatus.reopen({

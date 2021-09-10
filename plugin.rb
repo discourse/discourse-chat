@@ -158,6 +158,10 @@ after_initialize do
         @chat_channel = object.topic.chat_channel
       end
     end
+
+    class ::User
+      has_many :user_chat_channel_memberships
+    end
   end
 
   register_presence_channel_prefix("chat") do |channel|

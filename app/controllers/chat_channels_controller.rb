@@ -9,7 +9,7 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
   def all
     channels = DiscourseChat::ChatChannelFetcher.structured_public_channels(
       guardian,
-      UserChatChannelMemberships.where(user: current_user),
+      UserChatChannelMembership.where(user: current_user),
       scope_with_membership: false
     )
 

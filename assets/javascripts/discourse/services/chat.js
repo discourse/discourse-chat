@@ -32,7 +32,7 @@ export default Service.extend({
     this._super(...arguments);
     if (this.currentUser?.can_chat) {
       this.set("allChannels", []);
-      // this._subscribeToUpdateChannels();
+      this._subscribeToNewDmChannelUpdates();
       this._subscribeToUserTrackingChannel();
       this.presenceChannel = this.presence.getChannel("/chat/online");
       this.appEvents.on("page:changed", this, "_storeLastNonChatRouteInfo");
@@ -45,9 +45,9 @@ export default Service.extend({
 
     if (this.currentUser?.can_chat) {
       this.set("allChannels", null);
-      // this._unsubscribeFromUpdateChannels();
-      this._unsubscribeFromAllChatChannels();
+      this._unsubscribeFromNewDmChannelUpdates();
       this._unsubscribeFromUserTrackingChannel();
+      this._unsubscribeFromAllChatChannels();
       this.appEvents.off("page:changed", this, "_storeLastNonChatRouteInfo");
       this.appEvents.off("modal:closed", this, "_onSettingsModalClosed");
     }
@@ -235,33 +235,22 @@ export default Service.extend({
     });
   },
 
-  // _subscribeToUpdateChannels() {
-  // Object.keys(this.currentUser.chat_channel_tracking_state).forEach(
-  // (channelId) => {
-  // this._subscribeToSingleUpdateChannel(channelId);
-  // }
-  // );
-  // this.messageBus.subscribe("/chat/new-direct-message-channel", (busData) => {
-  // this.directMessageChannels.pushObject(
-  // this.processChannel(busData.chat_channel)
-  // );
-  // this.currentUser.chat_channel_tracking_state[busData.chat_channel.id] = {
-  // unread_count: 0,
-  // chatable_type: "DirectMessageChannel",
-  // };
-  // this.currentUser.notifyPropertyChange("chat_channel_tracking_state");
-  // this._subscribeToSingleUpdateChannel(busData.chat_channel.id);
-  // });
-  // },
+  _subscribeToNewDmChannelUpdates() {
+    this.messageBus.subscribe("/chat/new-direct-message-channel", (busData) => {
+      this.directMessageChannels.pushObject(
+        this.processChannel(busData.chat_channel)
+      );
+      this.currentUser.chat_channel_tracking_state[busData.chat_channel.id] = {
+        unread_count: 0,
+        chatable_type: "DirectMessageChannel",
+      };
+      this.currentUser.notifyPropertyChange("chat_channel_tracking_state");
+    });
+  },
 
-  // _unsubscribeFromUpdateChannels() {
-  // Object.keys(this.currentUser.chat_channel_tracking_state).forEach(
-  // (channelId) => {
-  // this.messageBus.unsubscribe(`/chat/${channelId}/new-messages`);
-  // }
-  // );
-  // this.messageBus.unsubscribe("/chat/new-direct-message-channel");
-  // },
+  _unsubscribeFromNewDmChannelUpdates() {
+    this.messageBus.unsubscribe("/chat/new-direct-message-channel");
+  },
 
   _subscribeToSingleUpdateChannel(channel) {
     if (channel.muted) {

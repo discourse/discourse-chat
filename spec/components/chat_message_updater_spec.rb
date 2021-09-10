@@ -12,11 +12,18 @@ describe DiscourseChat::ChatMessageUpdater do
   fab!(:user4) { Fabricate(:user) }
   fab!(:public_chat_channel) { Fabricate(:chat_channel, chatable: Fabricate(:topic)) }
   fab!(:site_chat_channel) { Fabricate(:site_chat_channel) }
-  fab!(:direct_message_channel) { Fabricate(:chat_channel, chatable: Fabricate(:direct_message_channel, users: [user1, user2])) }
 
   before do
     SiteSetting.topic_chat_enabled = true
     SiteSetting.topic_chat_restrict_to_staff = false
+
+    [admin1, admin2].each do |user|
+      Fabricate(:user_chat_channel_membership, chat_channel: site_chat_channel, user: user)
+    end
+    [admin1, admin2, user1, user2, user3, user4].each do |user|
+      Fabricate(:user_chat_channel_membership, chat_channel: public_chat_channel, user: user)
+    end
+    @direct_message_channel = DiscourseChat::DirectMessageChannelCreator.create([user1, user2])
   end
 
   def create_chat_message(user, message, channel)
@@ -59,6 +66,10 @@ describe DiscourseChat::ChatMessageUpdater do
         new_content: message + " editedddd"
       )
     }.to change { Notification.count }.by(0)
+  end
+
+  it "doesn't create mentions for users without access" do
+
   end
 
   it "destroys mention notifications that should be removed" do
@@ -112,7 +123,7 @@ describe DiscourseChat::ChatMessageUpdater do
   end
 
   it "does not create new mentions in direct message for users who don't have access" do
-    chat_message = create_chat_message(user1, "ping nobody" , direct_message_channel)
+    chat_message = create_chat_message(user1, "ping nobody" , @direct_message_channel)
     expect {
       DiscourseChat::ChatMessageUpdater.update(
         chat_message: chat_message,

@@ -45,9 +45,11 @@ export default Component.extend({
   startCreatingDmChannel() {
     this.set("creatingDmChannel", true);
     schedule("afterRender", () => {
-      const userChooser = this.element.querySelector(".dm-user-chooser input");
+      const userChooser = document.querySelector(
+        ".dm-creation-row .dm-user-chooser .select-kit-header-wrapper"
+      );
       if (userChooser) {
-        userChooser.focus();
+        userChooser.click();
       }
     });
   },

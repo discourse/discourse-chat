@@ -78,6 +78,8 @@ class DiscourseChat::ChatMessageCreator
     mention_matches.reject! { |match| ["@#{creator.username}", "@system"].include?(match) }
     User
       .includes(:do_not_disturb_timings) # Avoid n+1 for push notifications
+      .joins(:user_chat_channel_memberships)
+      .where(user_chat_channel_memberships: { chat_channel_id: chat_message.chat_channel_id })
       .where(username: mention_matches.map { |match| match[1..-1] })
   end
 

@@ -585,7 +585,7 @@ $float-height: 530px;
       position: relative;
       padding: 0 0.75em;
       display: grid;
-      
+
       > .tc-composer-input {
         width: 100%;
       }
@@ -617,6 +617,8 @@ $float-height: 530px;
 
     .tc-composer-row > .tc-composer-input,
     .tc-composer-row::after {
+      // after pseudoelement should match input styling exactly
+      // via https://css-tricks.com/the-cleanest-trick-for-autogrowing-textareas/
       grid-area: 1 / 1 / 2 / 2;
       margin-bottom: 0;
       resize: none;
@@ -626,7 +628,7 @@ $float-height: 530px;
       border: 1px solid var(--primary-low-mid);
       word-break: break-word;
     }
-    
+
     .tc-composer-message-details {
       position: relative;
       max-height: calc(2em - 5px);

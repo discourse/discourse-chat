@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class CreateUserChatChannelMembership < ActiveRecord::Migration[6.1]
   def change
     create_table :user_chat_channel_memberships do |t|

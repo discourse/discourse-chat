@@ -4,7 +4,6 @@ import {
   publishToMessageBus,
   query,
   queryAll,
-  updateCurrentUser,
   visible,
 } from "discourse/tests/helpers/qunit-helpers";
 import { click, triggerKeyEvent, visit } from "@ember/test-helpers";
@@ -17,16 +16,6 @@ import {
   siteChannel,
 } from "discourse/plugins/discourse-topic-chat/chat-fixtures";
 import { next } from "@ember/runloop";
-
-const userNeeds = (unreadCounts = {}) => {
-  return {
-    admin: false,
-    moderator: false,
-    username: "eviltrout",
-    id: 1,
-    can_chat: true,
-  };
-};
 
 const baseChatPretenders = (server, helper) => {
   server.get("/chat/:chatChannelId/messages.json", () =>
@@ -89,7 +78,13 @@ function chatChannelPretender(server, helper, changes = []) {
 }
 
 acceptance("Discourse Chat - without unread", function (needs) {
-  needs.user();
+  needs.user({
+    admin: false,
+    moderator: false,
+    username: "eviltrout",
+    id: 1,
+    can_chat: true,
+  });
   needs.settings({
     topic_chat_enabled: true,
   });
@@ -98,9 +93,6 @@ acceptance("Discourse Chat - without unread", function (needs) {
     siteChannelPretender(server, helper);
     directMessageChannelPretender(server, helper);
     chatChannelPretender(server, helper);
-  });
-  needs.hooks.beforeEach(() => {
-    updateCurrentUser(userNeeds());
   });
 
   const enterFirstChatChannel = async function () {
@@ -328,7 +320,13 @@ acceptance("Discourse Chat - without unread", function (needs) {
 acceptance(
   "Discourse Chat - Acceptance Test with unread public channel messages",
   function (needs) {
-    needs.user();
+    needs.user({
+      admin: false,
+      moderator: false,
+      username: "eviltrout",
+      id: 1,
+      can_chat: true,
+    });
     needs.settings({
       topic_chat_enabled: true,
     });
@@ -339,9 +337,6 @@ acceptance(
       chatChannelPretender(server, helper, [
         { id: 7, unread_count: 2, muted: false },
       ]);
-    });
-    needs.hooks.beforeEach(() => {
-      updateCurrentUser(userNeeds());
     });
 
     test("Chat opens to full-page channel with unread messages when sidebar is installed", async function (assert) {
@@ -384,7 +379,13 @@ acceptance(
 acceptance(
   "Discourse Chat - Acceptance Test with unread DMs and public channel messages",
   function (needs) {
-    needs.user();
+    needs.user({
+      admin: false,
+      moderator: false,
+      username: "eviltrout",
+      id: 1,
+      can_chat: true,
+    });
     needs.settings({
       topic_chat_enabled: true,
     });
@@ -392,14 +393,11 @@ acceptance(
       baseChatPretenders(server, helper);
       siteChannelPretender(server, helper, { unread_count: 2, muted: false });
       directMessageChannelPretender(server, helper);
+      // chat channel with ID 75 is direct message channel.
       chatChannelPretender(server, helper, [
         { id: 9, unread_count: 2, muted: false },
         { id: 75, unread_count: 2, muted: false },
       ]);
-    });
-    needs.hooks.beforeEach(() => {
-      // chat channel with ID 75 is direct message channel.
-      updateCurrentUser(userNeeds());
     });
 
     test("Chat float open to DM channel with unread messages with sidebar off", async function (assert) {

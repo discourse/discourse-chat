@@ -52,7 +52,7 @@ module DiscourseChat::ChatChannelFetcher
     # Separate query for site channel b/c we can't preload `chatable` record as it doesn't
     # exist for the site channel. Would _love_ a workaround but I spent too much time trying - markvanlan
     # site_channel_membership = memberships.detect { |membership|
-      # membership.chat_channel_id == DiscourseChat::SITE_CHAT_ID
+    # membership.chat_channel_id == DiscourseChat::SITE_CHAT_ID
     # }
     # channels.prepend(ChatChannel.site_channel) if site_channel_membership
     filter_public_channels(channels, memberships, guardian)
@@ -62,7 +62,7 @@ module DiscourseChat::ChatChannelFetcher
     secured = []
     channels.each do |channel|
       if can_see_channel?(channel, guardian)
-        membership = memberships.detect { |membership| membership.chat_channel_id == channel.id }
+        membership = memberships.detect { |m| m.chat_channel_id == channel.id }
         if membership
           channel.last_read_message_id = membership.last_read_message_id
           channel.muted = membership.muted

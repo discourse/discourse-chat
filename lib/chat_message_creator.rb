@@ -137,7 +137,7 @@ class DiscourseChat::ChatMessageCreator
                               ),
       post_url: "/chat/channel/#{chat_channel.title(mentioned)}?messageId=#{chat_message.id}"
     }
-    membership = mentioned.user_chat_channel_memberships.detect { |membership| membership.chat_channel_id == chat_channel.id }
+    membership = mentioned.user_chat_channel_memberships.detect { |m| m.chat_channel_id == chat_channel.id }
     return if !membership || membership.muted
 
     unless membership.desktop_notifications_never?

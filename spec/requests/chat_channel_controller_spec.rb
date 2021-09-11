@@ -152,7 +152,6 @@ RSpec.describe DiscourseChat::ChatChannelsController do
       end
     end
 
-
     describe "#follow" do
       it "creates a user_chat_channel_membership record if one doesn't exist" do
         sign_in(user)
@@ -220,8 +219,8 @@ RSpec.describe DiscourseChat::ChatChannelsController do
       it "returns a 404 when the user isn't logged in" do
         post "/chat/chat_channels/#{chat_channel.id}/notification_settings.json", params: {
           muted: true,
-            desktop_notification_level: "mention",
-            mobile_notification_level: "mention"
+          desktop_notification_level: "mention",
+          mobile_notification_level: "mention"
         }
         expect(response.status).to eq(403)
 
@@ -231,17 +230,17 @@ RSpec.describe DiscourseChat::ChatChannelsController do
         sign_in(user)
         post "/chat/chat_channels/#{chat_channel.id}/notification_settings.json", params: {
           muted: true,
-            desktop_notification_level: "mention"
+          desktop_notification_level: "mention"
         }
         expect(response.status).to eq(400)
         post "/chat/chat_channels/#{chat_channel.id}/notification_settings.json", params: {
           muted: true,
-            mobile_notification_level: "mention"
+          mobile_notification_level: "mention"
         }
         expect(response.status).to eq(400)
         post "/chat/chat_channels/#{chat_channel.id}/notification_settings.json", params: {
           mobile_notification_level: "mention",
-            desktop_notification_level: "mention"
+          desktop_notification_level: "mention"
         }
         expect(response.status).to eq(400)
       end

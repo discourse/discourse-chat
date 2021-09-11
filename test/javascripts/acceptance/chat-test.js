@@ -9,6 +9,7 @@ import {
 import { click, triggerKeyEvent, visit } from "@ember/test-helpers";
 import { test } from "qunit";
 import {
+  allChannels,
   chatChannels,
   chatView,
   directMessageChannel,
@@ -428,3 +429,84 @@ acceptance(
     });
   }
 );
+
+acceptance("Discourse Chat - chat channel settings", function (needs) {
+  needs.user({
+    admin: false,
+    moderator: false,
+    username: "eviltrout",
+    id: 1,
+    can_chat: true,
+  });
+  needs.settings({
+    topic_chat_enabled: true,
+  });
+  needs.pretender((server, helper) => {
+    baseChatPretenders(server, helper);
+    siteChannelPretender(server, helper);
+    directMessageChannelPretender(server, helper);
+    chatChannelPretender(server, helper);
+    server.get("/chat/chat_channels/all.json", () => {
+      return helper.response(allChannels());
+    });
+    server.post("/chat/chat_channels/:chatChannelId/unfollow", () => {
+      return helper.response({ success: "OK" });
+    });
+    server.get("/chat/chat_channels/:chatChannelId", () => {
+      return helper.response(siteChannel);
+    });
+    server.post("/chat/chat_channels/:chatChannelId/follow", () => {
+      return helper.response(siteChannel.chat_channel);
+    });
+  });
+
+  test("Chat channel settings modal", async function (assert) {
+    await visit("/t/internationalization-localization/280");
+    await click(".header-dropdown-toggle.open-chat");
+    await click(".edit-channel-membership-btn");
+    assert.ok(
+      exists(".chat-channel-settings-modal"),
+      "Chat channel settings modal is open"
+    );
+    const settingsRow = query(".chat-channel-settings-row");
+    assert.ok(
+      settingsRow.querySelector(".chat-channel-expand-settings"),
+      "Expand notifications button is present"
+    );
+    assert.ok(
+      settingsRow.querySelector(".chat-channel-unfollow"),
+      "Unfollow button is present"
+    );
+    await click(".chat-channel-expand-settings");
+    assert.ok(exists(".chat-channel-row-controls"), "Controls are present");
+
+    // Click unfollow!
+    await click(".chat-channel-unfollow");
+    assert.notOk(
+      settingsRow.querySelector(".chat-channel-expand-settings"),
+      "Expand notifications button is gone"
+    );
+    assert.notOk(
+      settingsRow.querySelector(".chat-channel-unfollow"),
+      "Unfollow button is gone"
+    );
+
+    assert.ok(
+      settingsRow.querySelector(".chat-channel-preview"),
+      "Preview channel button is present"
+    );
+    assert.ok(
+      settingsRow.querySelector(".chat-channel-follow"),
+      "Follow button is present"
+    );
+
+    // Click preview button!
+    await click(".chat-channel-preview");
+    assert.equal(currentURL(), "/chat/channel/Site?id=9&previewing=true");
+    assert.ok(exists(".join-channel-btn"), "Join channel button is present");
+
+    await click(".join-channel-btn");
+    assert.equal(currentURL(), "/chat/channel/Site");
+    assert.notOk(exists(".join-channel-btn"), "Join channel button is gone");
+  });
+});

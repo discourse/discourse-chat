@@ -91,6 +91,22 @@ export const chatChannels = {
   direct_message_channels: [directMessageChannel.chat_channel],
 };
 
+function addSettingsAttrs(channel) {
+  channel.following = true;
+  channel.desktop_notification_level = "mention";
+  channel.mobile_notification_level = "mention";
+  channel.chat_channels.forEach((c) => addSettingsAttrs(c));
+}
+
+export function allChannels() {
+  let channels = Object.assign({}, chatChannels);
+
+  channels.public_channels.forEach((c) => {
+    addSettingsAttrs(c);
+  });
+  return channels.public_channels;
+}
+
 export const chatView = {
   topic_chat_view: {
     can_chat: true,

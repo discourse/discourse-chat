@@ -18,7 +18,7 @@ export default Controller.extend(ModalFunctionality, {
 
   onShow() {
     this.set("loadingChannels", true);
-    ajax("/chat/all_channels.json").then((channels) => {
+    ajax("/chat/chat_channels/all.json").then((channels) => {
       this.setProperties({
         channels: channels.map((channel) => convertToEmberObject(channel)),
         loadingChannels: false,

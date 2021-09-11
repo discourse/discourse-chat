@@ -25,26 +25,13 @@ const userNeeds = (unreadCounts = {}) => {
     username: "eviltrout",
     id: 1,
     can_chat: true,
-    chat_channel_tracking_state: {
-      9: { unread_count: unreadCounts["9"] || 0, chatable_type: "Site" },
-      7: { unread_count: unreadCounts["7"] || 0, chatable_type: "Topic" },
-      4: { unread_count: unreadCounts["4"] || 0, chatable_type: "Topic" },
-      11: { unread_count: unreadCounts["11"] || 0, chatable_type: "Topic" },
-      75: {
-        unread_count: unreadCounts["75"] || 0,
-        chatable_type: "DirectMessageChannel",
-      }, // Direct message channel
-    },
   };
 };
 
-const chatPretenders = (server, helper) => {
-  server.get("/chat/index.json", () => helper.response(chatChannels));
+const baseChatPretenders = (server, helper) => {
   server.get("/chat/:chatChannelId/messages.json", () =>
     helper.response(chatView)
   );
-  server.get("/chat/9.json", () => helper.response(siteChannel));
-  server.get("/chat/75.json", () => helper.response(directMessageChannel));
   server.post("/chat/:chatChannelId.json", () => {
     return helper.response({ success: "OK" });
   });
@@ -58,12 +45,60 @@ const chatPretenders = (server, helper) => {
   });
 };
 
+function siteChannelPretender(
+  server,
+  helper,
+  opts = { unread_count: 0, muted: false }
+) {
+  let copy = Object.assign({}, siteChannel);
+  copy.chat_channel.unread_count = opts.unread_count;
+  copy.chat_channel.muted = opts.muted;
+  server.get("/chat/chat_channels/9.json", () => helper.response(copy));
+}
+
+function directMessageChannelPretender(
+  server,
+  helper,
+  opts = { unread_count: 0, muted: false }
+) {
+  let copy = Object.assign({}, directMessageChannel);
+  copy.chat_channel.unread_count = opts.unread_count;
+  copy.chat_channel.muted = opts.muted;
+  server.get("/chat/chat_channels/75.json", () => helper.response(copy));
+}
+
+function chatChannelPretender(server, helper, changes = []) {
+  // changes is [{ id: X, unread_count: Y, muted: true}]
+  let copy = Object.assign({}, chatChannels);
+  changes.forEach((change) => {
+    let found = false;
+    found = copy.public_channels.find((c) => c.id === change.id);
+    if (found) {
+      found.unread_count = change.unread_count;
+      found.muted = change.muted;
+    }
+    if (!found) {
+      found = copy.direct_message_channels.find((c) => c.id === change.id);
+      if (found) {
+        found.unread_count = change.unread_count;
+        found.muted = change.muted;
+      }
+    }
+  });
+  server.get("/chat/chat_channels.json", () => helper.response(copy));
+}
+
 acceptance("Discourse Chat - without unread", function (needs) {
   needs.user();
   needs.settings({
     topic_chat_enabled: true,
   });
-  needs.pretender(chatPretenders);
+  needs.pretender((server, helper) => {
+    baseChatPretenders(server, helper);
+    siteChannelPretender(server, helper);
+    directMessageChannelPretender(server, helper);
+    chatChannelPretender(server, helper);
+  });
   needs.hooks.beforeEach(() => {
     updateCurrentUser(userNeeds());
   });
@@ -297,9 +332,16 @@ acceptance(
     needs.settings({
       topic_chat_enabled: true,
     });
-    needs.pretender(chatPretenders);
+    needs.pretender((server, helper) => {
+      baseChatPretenders(server, helper);
+      siteChannelPretender(server, helper);
+      directMessageChannelPretender(server, helper);
+      chatChannelPretender(server, helper, [
+        { id: 7, unread_count: 2, muted: false },
+      ]);
+    });
     needs.hooks.beforeEach(() => {
-      updateCurrentUser(userNeeds({ 7: 2 }));
+      updateCurrentUser(userNeeds());
     });
 
     test("Chat opens to full-page channel with unread messages when sidebar is installed", async function (assert) {
@@ -346,26 +388,32 @@ acceptance(
     needs.settings({
       topic_chat_enabled: true,
     });
-    needs.pretender(chatPretenders);
+    needs.pretender((server, helper) => {
+      baseChatPretenders(server, helper);
+      siteChannelPretender(server, helper, { unread_count: 2, muted: false });
+      directMessageChannelPretender(server, helper);
+      chatChannelPretender(server, helper, [
+        { id: 9, unread_count: 2, muted: false },
+        { id: 75, unread_count: 2, muted: false },
+      ]);
+    });
     needs.hooks.beforeEach(() => {
       // chat channel with ID 75 is direct message channel.
-      updateCurrentUser(userNeeds({ 9: 2, 75: 2 }));
+      updateCurrentUser(userNeeds());
     });
 
     test("Chat float open to DM channel with unread messages with sidebar off", async function (assert) {
-      this.container.lookup("service:chat").setSidebarActive(false);
       await visit("/t/internationalization-localization/280");
+      this.container.lookup("service:chat").setSidebarActive(false);
       await click(".header-dropdown-toggle.open-chat");
-
       const chatContainer = query(".topic-chat-container");
       assert.ok(chatContainer.classList.contains("channel-75"));
     });
 
     test("Chat full page open to DM channel with unread messages with sidebar on", async function (assert) {
-      this.container.lookup("service:chat").setSidebarActive(true);
       await visit("/t/internationalization-localization/280");
+      this.container.lookup("service:chat").setSidebarActive(true);
       await click(".header-dropdown-toggle.open-chat");
-
       const channelWithUnread = chatChannels.direct_message_channels.find(
         (c) => c.id === 75
       );

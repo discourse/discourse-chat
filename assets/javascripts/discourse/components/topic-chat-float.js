@@ -210,6 +210,10 @@ export default Component.extend({
 
   @action
   openInFullPage() {
+    this.setProperties({
+      hidden: true,
+      activeChannel: null,
+    });
     if (this.activeChannel) {
       return this.router.transitionTo("chat.channel", this.activeChannel.title);
     }

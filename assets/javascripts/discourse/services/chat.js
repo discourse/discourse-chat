@@ -7,6 +7,7 @@ import { observes } from "discourse-common/utils/decorators";
 import { Promise } from "rsvp";
 import simpleCategoryHashMentionTransform from "discourse/plugins/discourse-topic-chat/discourse/lib/simple-category-hash-mention-transform";
 import { defaultHomepage } from "discourse/lib/utilities";
+import { later } from "@ember/runloop";
 
 export const LIST_VIEW = "list_view";
 export const CHAT_VIEW = "chat_view";
@@ -58,7 +59,7 @@ export default Service.extend({
       return;
     }
 
-    this.refreshChannels().then(() => {
+    this.forceRefreshChannels().then(() => {
       this.appEvents.trigger("chat:refresh-channels");
     });
   },
@@ -148,19 +149,50 @@ export default Service.extend({
     return this.unreadDirectMessageCount;
   },
 
-  getChannels() {
+  async getChannels() {
+    let channels;
+    let retries = 0;
+    while (retries < 4) {
+      try {
+        channels = await this._waitForChannelsToBeFetched();
+        return channels;
+      } catch {
+        retries++;
+      }
+    }
+    return {};
+  },
+
+  async _waitForChannelsToBeFetched() {
     if (this.hasFetchedChannels) {
       return Promise.resolve({
         publicChannels: this.publicChannels,
         directMessageChannels: this.directMessageChannels,
       });
-    } else {
-      return this.refreshChannels();
     }
+
+    if (this.loading) {
+      // Ajax is in process. return a rejected promise after some time
+      return await new Promise((_, rej) => {
+        setTimeout(rej, 100);
+      });
+    }
+
+    return this._refreshChannels();
   },
 
-  refreshChannels() {
+  forceRefreshChannels() {
+    this.set("hasFetchChannels", false);
     this._unsubscribeFromAllChatChannels();
+    return this._refreshChannels();
+  },
+
+  async _refreshChannels() {
+    if (!this.currentUser || !this.currentUser.can_chat) {
+      return Promise.reject();
+    }
+
+    this.set("loading", true);
     this.currentUser.chat_channel_tracking_state = {};
     return ajax("/chat/chat_channels.json").then((channels) => {
       this.setProperties({
@@ -175,6 +207,7 @@ export default Service.extend({
           })
         ),
         hasFetchedChannels: true,
+        loading: false,
       });
       const idToTitleMap = {};
       this.allChannels.forEach((c) => {
@@ -284,7 +317,7 @@ export default Service.extend({
   },
 
   _unsubscribeFromAllChatChannels() {
-    this.allChannels.forEach((channel) => {
+    [this.allChannels || []].forEach((channel) => {
       this.messageBus.unsubscribe(`/chat/${channel.id}/new-messages`);
     });
   },

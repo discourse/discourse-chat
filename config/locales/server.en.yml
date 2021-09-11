@@ -15,3 +15,8 @@ en:
 
     notifications:
       mention: "@%{username} mentioned you in chat"
+
+  discourse_push_notifications:
+    popup:
+      chat_message: "New chat message in %{chat_channel_title}"
+      chat_mention: "@%{username} mentioned you in chat"

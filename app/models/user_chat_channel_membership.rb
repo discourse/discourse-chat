@@ -19,8 +19,8 @@ class UserChatChannelMembership < ActiveRecord::Base
     :desktop_notification_level,
     :mobile_notification_level
   ]
-  enum desktop_notification_level: NOTIFICATION_LEVELS, _prefix: :desktop
-  enum mobile_notification_level: NOTIFICATION_LEVELS, _prefix: :mobile
+  enum desktop_notification_level: NOTIFICATION_LEVELS, _prefix: :desktop_notifications
+  enum mobile_notification_level: NOTIFICATION_LEVELS, _prefix: :mobile_notifications
 
   validate :changes_for_direct_message_channels
 

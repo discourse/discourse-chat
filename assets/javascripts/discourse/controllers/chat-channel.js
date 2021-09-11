@@ -16,7 +16,7 @@ export default Controller.extend({
         previewing: null,
         id: null,
       });
-      this.chat.refreshChannels().then(() => {
+      this.chat.forceRefreshChannels().then(() => {
         this.send("refreshModel");
         this.appEvents.trigger("chat:refresh-channels");
       });

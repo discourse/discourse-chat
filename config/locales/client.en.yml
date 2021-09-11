@@ -94,10 +94,9 @@ en:
         username_instructions: "Username of bot that posts to channel. Defaults to 'system' when left blank."
 
     notifications:
-      titles:
-        chat_mention: "You were mentioned in chat"
       popup:
         chat_mention: "@%{username} mentioned you in chat"
+        chat_mention: "New chat message"
     topic:
       actions:
         chat_enable: "Enable Chat"

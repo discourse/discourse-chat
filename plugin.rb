@@ -178,7 +178,7 @@ after_initialize do
   DiscourseChat::Engine.routes.draw do
     # chat_channel_controller routes
     get '/chat_channels' => 'chat_channels#index'
-    get '/all_channels' => 'chat_channels#all'
+    get '/chat_channels/all' => 'chat_channels#all'
     post '/chat_channels/:chat_channel_id/notification_settings' => 'chat_channels#notification_settings'
     post '/chat_channels/:chat_channel_id/follow' => 'chat_channels#follow'
     post '/chat_channels/:chat_channel_id/unfollow' => 'chat_channels#unfollow'

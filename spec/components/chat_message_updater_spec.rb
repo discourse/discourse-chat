@@ -10,6 +10,7 @@ describe DiscourseChat::ChatMessageUpdater do
   fab!(:user2) { Fabricate(:user) }
   fab!(:user3) { Fabricate(:user) }
   fab!(:user4) { Fabricate(:user) }
+  fab!(:user_without_memberships) { Fabricate(:user) }
   fab!(:public_chat_channel) { Fabricate(:chat_channel, chatable: Fabricate(:topic)) }
   fab!(:site_chat_channel) { Fabricate(:site_chat_channel) }
 
@@ -69,7 +70,15 @@ describe DiscourseChat::ChatMessageUpdater do
   end
 
   it "doesn't create mentions for users without access" do
+    message = "ping"
+    chat_message = create_chat_message(user1, message, public_chat_channel)
 
+    expect {
+      DiscourseChat::ChatMessageUpdater.update(
+        chat_message: chat_message,
+        new_content: message + " @#{user_without_memberships.username}"
+      )
+    }.to change { Notification.count }.by(0)
   end
 
   it "destroys mention notifications that should be removed" do

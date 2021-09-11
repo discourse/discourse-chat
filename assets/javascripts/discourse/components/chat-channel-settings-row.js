@@ -2,8 +2,9 @@ import Component from "@ember/component";
 import I18n from "I18n";
 import { action } from "@ember/object";
 import { ajax } from "discourse/lib/ajax";
-import { later } from "@ember/runloop";
 import { inject as service } from "@ember/service";
+import { later } from "@ember/runloop";
+import { popupAjaxError } from "discourse/lib/ajax-error";
 
 const NOTIFICATION_LEVELS = [
   { name: I18n.t("chat.notification_levels.never"), value: "never" },
@@ -37,7 +38,7 @@ export default Component.extend({
         mobile_notification_level: membership.mobile_notification_level,
       });
       this.set("loading", false);
-    });
+    }).catch(popupAjaxError);
   },
 
   @action
@@ -45,13 +46,13 @@ export default Component.extend({
     this.set("loading", true);
     return ajax(`/chat/chat_channels/${this.channel.id}/unfollow`, {
       method: "POST",
-    }).then((response) => {
+    }).then(() => {
       this.channel.setProperties({
         expanded: false,
         following: false,
       });
       this.set("loading", false);
-    });
+    }).catch(popupAjaxError);
   },
 
   @action
@@ -79,7 +80,7 @@ export default Component.extend({
           mobile_notification_level: this.channel.mobile_notification_level,
         },
       }
-    ).then((response) => {
+    ).then(() => {
       this.setProperties({
         loading: false,
         showSaveSuccess: true,
@@ -89,7 +90,7 @@ export default Component.extend({
           this.set("showSaveSuccess", false);
         }
       }, 2000);
-    });
+    }).catch(popupAjaxError);
   },
 
   @action

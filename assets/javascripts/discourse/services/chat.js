@@ -174,7 +174,7 @@ export default Service.extend({
     if (this.loading) {
       // Ajax is in process. return a rejected promise after some time
       return await new Promise((_, rej) => {
-        setTimeout(rej, 100);
+        later(rej, 100);
       });
     }
 

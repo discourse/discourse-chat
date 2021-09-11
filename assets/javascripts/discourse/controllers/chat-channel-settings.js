@@ -1,9 +1,7 @@
 import Controller from "@ember/controller";
-import ModalFunctionality from "discourse/mixins/modal-functionality";
-import { action } from "@ember/object";
-import { ajax } from "discourse/lib/ajax";
-import { extractError } from "discourse/lib/ajax-error";
 import EmberObject from "@ember/object";
+import ModalFunctionality from "discourse/mixins/modal-functionality";
+import { ajax } from "discourse/lib/ajax";
 
 function convertToEmberObject(channel) {
   channel = EmberObject.create(channel);

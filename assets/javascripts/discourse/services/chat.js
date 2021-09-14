@@ -150,17 +150,9 @@ export default Service.extend({
   },
 
   async getChannels() {
-    let channels;
-    let retries = 0;
-    while (retries < 4) {
-      try {
-        channels = await this._waitForChannelsToBeFetched();
-        return channels;
-      } catch {
-        retries++;
-      }
-    }
-    return {};
+    return await this._waitForChannelsToBeFetched().then((channels) => {
+      return channels;
+    });
   },
 
   async _waitForChannelsToBeFetched() {
@@ -173,9 +165,8 @@ export default Service.extend({
 
     if (this.loading) {
       // Ajax is in process. return a rejected promise after some time
-      return await new Promise((_, rej) => {
-        later(rej, 100);
-      });
+      await new Promise((resolve) => later(resolve, 20));
+      return this._waitForChannelsToBeFetched();
     }
 
     return this._refreshChannels();

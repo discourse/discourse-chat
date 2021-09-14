@@ -9,13 +9,13 @@ export default Component.extend({
   nested: false,
   isDirectMessageRow: equal("channel.chatable_type", "DirectMessageChannel"),
   router: service(),
-  tagName: "div",
-  classNameBindings: ["rowClassNames"],
-
 
   @discourseComputed("nested", "active")
   rowClassNames(nested, active) {
     const classes = ["chat-channel-row"];
+    if (this.channel.chat_channels.length) {
+      classes.push("has-children")
+    }
     if (nested) {
       classes.push("nested");
     }

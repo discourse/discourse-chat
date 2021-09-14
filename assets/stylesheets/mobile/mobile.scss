@@ -81,26 +81,25 @@ body.has-full-page-chat {
   }
 }
 
-.tc-drawer {
-  width: 100%;
-}
-.tc-live-pane {
-  padding: 0;
-}
-.tc-full-page-header {
-  background-color: var(--secondary);
-}
-.tc-composer {
-  background-color: var(--primary-very-low);
-}
-.tc-channels {
-  font-weight: 500;
-  background-color: var(--secondary);
-}
-.chat-channel-row {
-  padding-left: 0.75em;
-}
-.tc-full-page-header {
-  padding: 0.5em 1em;
-  font-weight: bold;
+.full-page-chat {
+  .tc-drawer {
+    width: 100%;
+  }
+  .tc-live-pane {
+    padding: 0;
+  }
+  .tc-full-page-header {
+    background-color: var(--secondary);
+  }
+  .tc-composer {
+    background-color: var(--primary-very-low);
+  }
+  .tc-channels {
+    font-weight: 500;
+    background-color: var(--secondary);
+  }
+  .tc-full-page-header {
+    padding: 0.5em 1em;
+    font-weight: bold;
+  }
 }

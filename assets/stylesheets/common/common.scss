@@ -676,11 +676,12 @@ $float-height: 530px;
 
 .chat-channel-row {
   display: flex;
-  padding: 0.5em 0.5em 0.5em 2em;
+  flex-direction: column;
+  align-items: baseline;
+  padding: 0.5em;
   position: relative;
   cursor: pointer;
   color: var(--primary-high);
-  align-items: center;
 
   &:hover {
     background: var(--primary-low);
@@ -695,7 +696,10 @@ $float-height: 530px;
     font-weight: bold;
   }
   &.nested {
-    padding-left: 3em;
+    padding-left: 1.5em;
+    .chat-channel-title {
+      align-items: baseline;
+    }
   }
 
   .badge-wrapper {
@@ -737,6 +741,7 @@ $float-height: 530px;
   }
   .topic-chat-icon {
     color: var(--primary-medium);
+    margin-right: 0.25em;
   }
   .tc-avatar-container {
     display: inline-block;
@@ -805,6 +810,9 @@ $float-height: 530px;
       }
       .chat-channel-row-unread-count {
         display: none;
+      }
+      &.nested {
+        padding-left: 3em;
       }
     }
 
@@ -881,8 +889,8 @@ $float-height: 530px;
 
   .category-chat-badge, .topic-chat-badge {
     .d-icon {
-      height: 1.25em;
-      width: 1.25em;
+      height: 1.125em;
+      width: 1.125em;
     }
   }
 
@@ -902,18 +910,44 @@ $float-height: 530px;
     top: -4px;
   }
 
-  .topic-chat-icon::before {
-    content: "";
-    display: block;
-    position: absolute;
-    border-left: 2px solid var(--primary-low-mid);
-    border-bottom: 2px solid var(--primary-low-mid);
-    border-bottom-left-radius: 0.5em;
-    left: calc(-1.5em - 3px);
-    bottom: 10px;
-    height: 1em;
-    width: 1em;
+  .chat-channel-row.nested {
+    position: relative;
+    .topic-chat-icon::before {
+      content: "";
+      display: block;
+      position: absolute;
+      border-left: 2px solid var(--primary-low-mid);
+      border-bottom: 2px solid var(--primary-low-mid);
+      border-bottom-left-radius: 0.5em;
+      left: -8px;
+      bottom: calc(100% - (1.125em / 2));
+      width: 5px;
+      height: calc(100% + 2px);
+    }
+    .topic-chat-icon::after {
+      content: "";
+      display: block;
+      position: absolute;
+      border-left: 2px solid var(--primary-low-mid);
+      left: -8px;
+      bottom: 0em;
+      width: 5px;
+      height: 100%;
+    }
   }
+
+  .nested-container div:first-of-type .chat-channel-row.nested {
+    .topic-chat-icon::before {
+      height: calc(1em - 2px);
+    }
+  }
+
+  .nested-container div:last-of-type .chat-channel-row.nested {
+    .topic-chat-icon::after {
+      all: unset;
+    }
+  }
+
   .topic-chat-name {
     margin: 0 0 0 0.5em;
   }

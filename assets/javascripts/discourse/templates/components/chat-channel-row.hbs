@@ -1,16 +1,20 @@
-{{#if (and unreadCount isDirectMessageRow)}}
-  <div class="unread-dm-indicator">
-    <div class="unread-dm-indicator-number-wrap">
-      <div class="unread-dm-indicator-number">
-        {{unreadCount}}
+<div class={{rowClassNames}}>
+  {{#if (and unreadCount isDirectMessageRow)}}
+    <div class="unread-dm-indicator">
+      <div class="unread-dm-indicator-number-wrap">
+        <div class="unread-dm-indicator-number">
+          {{unreadCount}}
+        </div>
       </div>
     </div>
-  </div>
-{{else if unreadCount}}
-  <span class="unread-chat-messages-indicator"></span>
-{{/if}}
-{{chat-channel-title channel=channel}}
+  {{else if unreadCount}}
+    <span class="unread-chat-messages-indicator"></span>
+  {{/if}}
+  {{chat-channel-title channel=channel}}
+</div>
 
-{{#each channel.chat_channels as |nested_channel|}}
-  {{chat-channel-row channel=nested_channel switchChannel=switchChannel nested=true}}
-{{/each}}
+<div class="nested-container">
+  {{#each channel.chat_channels as |nested_channel|}}
+    {{chat-channel-row channel=nested_channel switchChannel=switchChannel nested=true}}
+  {{/each}}
+</div>

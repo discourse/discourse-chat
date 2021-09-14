@@ -96,21 +96,15 @@ acceptance("Discourse Chat - without unread", function (needs) {
     chatChannelPretender(server, helper);
   });
 
-  const enterFirstChatChannel = async function () {
-    await visit("/t/internationalization-localization/280");
-    await click(".header-dropdown-toggle.open-chat");
-    await click(".public-channels .chat-channel-row");
-  };
-
   test("Chat messages are populated when a channel is entered", async function (assert) {
-    await enterFirstChatChannel();
+    await visit("/chat/channel/Site");
     const messages = queryAll(".tc-message .tc-text");
     assert.equal(messages[0].textContent.trim(), messageContents[0]);
     assert.equal(messages[1].textContent.trim(), messageContents[1]);
   });
 
   test("Message controls are present and correct for permissions", async function (assert) {
-    await enterFirstChatChannel();
+    await visit("/chat/channel/Site");
     const messages = queryAll(".tc-message");
 
     // User created this message
@@ -151,7 +145,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
   });
 
   test("pressing the reply button adds the indicator to the composer", async function (assert) {
-    await enterFirstChatChannel();
+    await visit("/chat/channel/Site");
     await click(".reply-btn");
     assert.ok(
       exists(".tc-composer-message-details .d-icon-reply"),
@@ -164,7 +158,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
   });
 
   test("pressing the edit button fills the composer and indicates edit", async function (assert) {
-    await enterFirstChatChannel();
+    await visit("/chat/channel/Site");
     await click(".edit-btn");
     assert.ok(
       exists(".tc-composer-message-details .d-icon-pencil-alt"),
@@ -179,7 +173,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
   });
 
   test("Sending a message", async function (assert) {
-    await enterFirstChatChannel();
+    await visit("/chat/channel/Site");
     const messageContent = "Here's a message";
     const composerInput = query(".tc-composer-input");
     await fillIn(composerInput, messageContent);
@@ -461,7 +455,7 @@ acceptance("Discourse Chat - chat channel settings", function (needs) {
   });
 
   test("Chat channel settings modal", async function (assert) {
-    await visit("/chat/channel/Site");
+    await visit("/chat/channel/@hawk");
     await click(".edit-channel-membership-btn");
     assert.ok(
       exists(".chat-channel-settings-modal"),

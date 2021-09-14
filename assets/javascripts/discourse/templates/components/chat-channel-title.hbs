@@ -17,10 +17,23 @@
 
     {{/if}}
   {{else if (eq channel.chatable_type "Category")}}
-    {{category-badge channel.chatable hideParent=true allowUncategorized=true}}
+    <span class="category-chat-badge" style="color: #{{channel.chatable.color}}">
+      {{d-icon "hashtag"}}
+      {{#if channel.chatable.read_restricted}}
+        <span class="category-chat-private">
+          {{d-icon "lock"}}
+        </span>
+      {{/if}}
+      <span class="category-chat-name">
+        {{channel.chatable.slug}}
+      </span>
+    </span>
   {{else if (eq channel.chatable_type "Topic")}}
-    <span class="topic-chat-icon">{{d-icon "far-comments"}}</span>
-    <p class="chat-name">{{replace-emoji channel.chatable.fancy_title}}</p>
+    {{log channel}}
+    <span class="topic-chat-badge">
+      <span class="topic-chat-icon">{{d-icon "far-comments"}}</span>
+    </span>
+    <p class="topic-chat-name">{{replace-emoji channel.chatable.fancy_title}}</p>
   {{else}}
     {{d-icon "lock"}}
     <p class="chat-name">{{i18n "chat.channels.staff"}}</p>

@@ -9,6 +9,9 @@ export default Component.extend({
   nested: false,
   isDirectMessageRow: equal("channel.chatable_type", "DirectMessageChannel"),
   router: service(),
+  tagName: "div",
+  classNameBindings: ["rowClassNames"],
+
 
   @discourseComputed("nested", "active")
   rowClassNames(nested, active) {

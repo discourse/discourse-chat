@@ -17,9 +17,11 @@ en:
       deleted: "A message was deleted. [view]"
       delete: "Delete"
       edited: "(edited)"
+      edit_channels: "Edit channels"
       flag: "Flag"
       in_reply_to: "In reply to"
       heading: "Chat"
+      join_channel: "Join channel"
       new_messages: "new messages"
       mention_notification: "<span>%{username} mentioned you in chat</span>"
       open_full_page: "Open full-screen chat"
@@ -35,6 +37,25 @@ en:
       unread_count: "(%{count} new)"
       upload: "Attach a file"
       exit: "back"
+
+      notification_levels:
+        never: "Never"
+        mention: "Only for mentions"
+        always: "For all activity"
+
+      settings:
+        desktop_notification_level: "Desktop notifications"
+        follow: "Join"
+        mobile_notification_level: "Mobile push notifications"
+        mute: "Mute channel"
+        muted_on: "On"
+        muted_off: "Off"
+        notifications: "Notifications"
+        preview: "Preview"
+        save: "Save"
+        saved: "Saved"
+        title: "Channel Settings"
+        unfollow: "Leave"
 
       admin:
         title: "Chat"
@@ -73,8 +94,9 @@ en:
         username_instructions: "Username of bot that posts to channel. Defaults to 'system' when left blank."
 
     notifications:
-      titles:
-        chat_mention: "You were mentioned in chat"
+      popup:
+        chat_mention: "@%{username} mentioned you in chat"
+        chat_mention: "New chat message"
     topic:
       actions:
         chat_enable: "Enable Chat"

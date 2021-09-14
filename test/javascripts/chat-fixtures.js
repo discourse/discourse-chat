@@ -1,3 +1,4 @@
+import { cloneJSON } from "discourse-common/lib/object";
 export const messageContents = ["Hello world", "What up"];
 export const siteChannel = {
   chat_channel: {
@@ -8,6 +9,8 @@ export const siteChannel = {
     chatable_url: "http://localhost:3000",
     id: 9,
     title: "Site",
+    unread_count: 0,
+    muted: false,
   },
 };
 export const directMessageChannel = {
@@ -24,6 +27,8 @@ export const directMessageChannel = {
     chatable_url: null,
     id: 75,
     title: "@hawk",
+    unread_count: 0,
+    muted: false,
   },
 };
 
@@ -36,6 +41,8 @@ export const chatChannels = {
       chatable_type: "Category",
       chatable_url: "/c/uncategorized/1",
       title: "Uncategorized",
+      unread_count: 0,
+      muted: false,
       chatable: {
         id: 1,
         name: "Uncategorized",
@@ -50,6 +57,8 @@ export const chatChannels = {
           chatable_type: "Topic",
           chatable_url: "http://localhost:3000/t/small-action-testing-topic/12",
           title: "Small action - testing topic",
+          unread_count: 0,
+          muted: false,
           chatable: {
             id: 12,
             title: "Small action - testing topic",
@@ -66,6 +75,8 @@ export const chatChannels = {
           chatable_url:
             "http://localhost:3000/t/coolest-thing-you-have-seen-today/80",
           title: "Coolest thing you have seen today",
+          unread_count: 0,
+          muted: false,
           chatable: {
             id: 80,
             title: "Coolest thing you have seen today",
@@ -80,6 +91,22 @@ export const chatChannels = {
   ],
   direct_message_channels: [directMessageChannel.chat_channel],
 };
+
+function addSettingsAttrs(channel) {
+  channel.following = true;
+  channel.desktop_notification_level = "mention";
+  channel.mobile_notification_level = "mention";
+  channel.chat_channels.forEach((c) => addSettingsAttrs(c));
+}
+
+export function allChannels() {
+  let channels = cloneJSON(chatChannels);
+
+  channels.public_channels.forEach((c) => {
+    addSettingsAttrs(c);
+  });
+  return channels.public_channels;
+}
 
 export const chatView = {
   topic_chat_view: {

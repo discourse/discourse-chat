@@ -1,5 +1,5 @@
 {{#if fullPage}}
-  <div class="tc-full-page-header">
+  <div class="tc-full-page-header {{if previewing "previewing"}}">
     {{#if site.mobileView}}
       {{d-button
         class="btn-flat"
@@ -8,6 +8,13 @@
       }}
     {{/if}}
     {{chat-channel-title channel=chatChannel}}
+    {{#if previewing}}
+      {{d-button
+        class="btn-primary join-channel-btn"
+        action=joinChannel
+        label="chat.join_channel"
+      }}
+    {{/if}}
     {{d-button
       action=(action "exitChat")
       class="btn-flat exit-chat-btn"

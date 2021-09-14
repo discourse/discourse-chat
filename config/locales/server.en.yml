@@ -12,3 +12,11 @@ en:
     enabled_chat: "Enabled chat"
     disabled_chat: "Disabled chat"
     site_chat_name: "Staff-only"
+
+    notifications:
+      mention: "@%{username} mentioned you in chat"
+
+  discourse_push_notifications:
+    popup:
+      chat_message: "New chat message in %{chat_channel_title}"
+      chat_mention: "@%{username} mentioned you in chat"

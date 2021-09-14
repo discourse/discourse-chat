@@ -8,6 +8,8 @@ export default Component.extend({
   tagName: "",
   teamsSidebarOn: false,
   showingChannels: false,
+  messageId: null,
+  clearMessageIdQueryParam: null,
   router: service(),
   chat: service(),
 
@@ -32,6 +34,12 @@ export default Component.extend({
     return !sidebarOn;
   },
 
+  init() {
+    this._super(...arguments);
+    this.appEvents.on("chat:refresh-channels", this, "refreshModel");
+    this.chat.setMessageId(this.messageId);
+  },
+
   didInsertElement() {
     this._super(...arguments);
 
@@ -43,11 +51,13 @@ export default Component.extend({
     );
     document.body.classList.add("has-full-page-chat");
     this.chat.setFullScreenChatOpenStatus(true);
+    this.clearMessageIdQueryParam();
     next(this._calculateHeight);
   },
 
   willDestroyElement() {
     this._super(...arguments);
+    this.appEvents.off("chat:refresh-channels", this, "refreshModel");
     window.removeEventListener("resize", this._calculateHeight, false);
     document.body.classList.remove("has-full-page-chat");
     this.chat.setFullScreenChatOpenStatus(false);

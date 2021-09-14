@@ -4,12 +4,12 @@ import {
   publishToMessageBus,
   query,
   queryAll,
-  updateCurrentUser,
   visible,
 } from "discourse/tests/helpers/qunit-helpers";
 import { click, triggerKeyEvent, visit } from "@ember/test-helpers";
 import { test } from "qunit";
 import {
+  allChannels,
   chatChannels,
   chatView,
   directMessageChannel,
@@ -17,34 +17,12 @@ import {
   siteChannel,
 } from "discourse/plugins/discourse-topic-chat/chat-fixtures";
 import { next } from "@ember/runloop";
+import { cloneJSON } from "discourse-common/lib/object";
 
-const userNeeds = (unreadCounts = {}) => {
-  return {
-    admin: false,
-    moderator: false,
-    username: "eviltrout",
-    id: 1,
-    can_chat: true,
-    chat_channel_tracking_state: {
-      9: { unread_count: unreadCounts["9"] || 0, chatable_type: "Site" },
-      7: { unread_count: unreadCounts["7"] || 0, chatable_type: "Topic" },
-      4: { unread_count: unreadCounts["4"] || 0, chatable_type: "Topic" },
-      11: { unread_count: unreadCounts["11"] || 0, chatable_type: "Topic" },
-      75: {
-        unread_count: unreadCounts["75"] || 0,
-        chatable_type: "DirectMessageChannel",
-      }, // Direct message channel
-    },
-  };
-};
-
-const chatPretenders = (server, helper) => {
-  server.get("/chat/index.json", () => helper.response(chatChannels));
+const baseChatPretenders = (server, helper) => {
   server.get("/chat/:chatChannelId/messages.json", () =>
     helper.response(chatView)
   );
-  server.get("/chat/9.json", () => helper.response(siteChannel));
-  server.get("/chat/75.json", () => helper.response(directMessageChannel));
   server.post("/chat/:chatChannelId.json", () => {
     return helper.response({ success: "OK" });
   });
@@ -58,31 +36,76 @@ const chatPretenders = (server, helper) => {
   });
 };
 
+function siteChannelPretender(
+  server,
+  helper,
+  opts = { unread_count: 0, muted: false }
+) {
+  let copy = cloneJSON(siteChannel);
+  copy.chat_channel.unread_count = opts.unread_count;
+  copy.chat_channel.muted = opts.muted;
+  server.get("/chat/chat_channels/9.json", () => helper.response(copy));
+}
+
+function directMessageChannelPretender(
+  server,
+  helper,
+  opts = { unread_count: 0, muted: false }
+) {
+  let copy = cloneJSON(directMessageChannel);
+  copy.chat_channel.unread_count = opts.unread_count;
+  copy.chat_channel.muted = opts.muted;
+  server.get("/chat/chat_channels/75.json", () => helper.response(copy));
+}
+
+function chatChannelPretender(server, helper, changes = []) {
+  // changes is [{ id: X, unread_count: Y, muted: true}]
+  let copy = cloneJSON(chatChannels);
+  changes.forEach((change) => {
+    let found = false;
+    found = copy.public_channels.find((c) => c.id === change.id);
+    if (found) {
+      found.unread_count = change.unread_count;
+      found.muted = change.muted;
+    }
+    if (!found) {
+      found = copy.direct_message_channels.find((c) => c.id === change.id);
+      if (found) {
+        found.unread_count = change.unread_count;
+        found.muted = change.muted;
+      }
+    }
+  });
+  server.get("/chat/chat_channels.json", () => helper.response(copy));
+}
+
 acceptance("Discourse Chat - without unread", function (needs) {
-  needs.user();
+  needs.user({
+    admin: false,
+    moderator: false,
+    username: "eviltrout",
+    id: 1,
+    can_chat: true,
+  });
   needs.settings({
     topic_chat_enabled: true,
   });
-  needs.pretender(chatPretenders);
-  needs.hooks.beforeEach(() => {
-    updateCurrentUser(userNeeds());
+  needs.pretender((server, helper) => {
+    baseChatPretenders(server, helper);
+    siteChannelPretender(server, helper);
+    directMessageChannelPretender(server, helper);
+    chatChannelPretender(server, helper);
   });
 
-  const enterFirstChatChannel = async function () {
-    await visit("/t/internationalization-localization/280");
-    await click(".header-dropdown-toggle.open-chat");
-    await click(".public-channels .chat-channel-row");
-  };
-
   test("Chat messages are populated when a channel is entered", async function (assert) {
-    await enterFirstChatChannel();
+    await visit("/chat/channel/Site");
     const messages = queryAll(".tc-message .tc-text");
     assert.equal(messages[0].textContent.trim(), messageContents[0]);
     assert.equal(messages[1].textContent.trim(), messageContents[1]);
   });
 
   test("Message controls are present and correct for permissions", async function (assert) {
-    await enterFirstChatChannel();
+    await visit("/chat/channel/Site");
     const messages = queryAll(".tc-message");
 
     // User created this message
@@ -123,7 +146,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
   });
 
   test("pressing the reply button adds the indicator to the composer", async function (assert) {
-    await enterFirstChatChannel();
+    await visit("/chat/channel/Site");
     await click(".reply-btn");
     assert.ok(
       exists(".tc-composer-message-details .d-icon-reply"),
@@ -136,7 +159,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
   });
 
   test("pressing the edit button fills the composer and indicates edit", async function (assert) {
-    await enterFirstChatChannel();
+    await visit("/chat/channel/Site");
     await click(".edit-btn");
     assert.ok(
       exists(".tc-composer-message-details .d-icon-pencil-alt"),
@@ -151,7 +174,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
   });
 
   test("Sending a message", async function (assert) {
-    await enterFirstChatChannel();
+    await visit("/chat/channel/Site");
     const messageContent = "Here's a message";
     const composerInput = query(".tc-composer-input");
     await fillIn(composerInput, messageContent);
@@ -272,18 +295,18 @@ acceptance("Discourse Chat - without unread", function (needs) {
       user_id: 2,
     });
     publishToMessageBus("/chat/75/new-messages", {
-      message_id: 200,
+      message_id: 201,
       user_id: 2,
     });
     const done = assert.async();
     next(() => {
+      assert.ok(
+        exists(".header-dropdown-toggle.open-chat .unread-dm-indicator-number")
+      );
       assert.notOk(
         exists(
           ".header-dropdown-toggle.open-chat .unread-chat-messages-indicator"
         )
-      );
-      assert.ok(
-        exists(".header-dropdown-toggle.open-chat .unread-dm-indicator-number")
       );
       done();
     });
@@ -293,13 +316,23 @@ acceptance("Discourse Chat - without unread", function (needs) {
 acceptance(
   "Discourse Chat - Acceptance Test with unread public channel messages",
   function (needs) {
-    needs.user();
+    needs.user({
+      admin: false,
+      moderator: false,
+      username: "eviltrout",
+      id: 1,
+      can_chat: true,
+    });
     needs.settings({
       topic_chat_enabled: true,
     });
-    needs.pretender(chatPretenders);
-    needs.hooks.beforeEach(() => {
-      updateCurrentUser(userNeeds({ 7: 2 }));
+    needs.pretender((server, helper) => {
+      baseChatPretenders(server, helper);
+      siteChannelPretender(server, helper);
+      directMessageChannelPretender(server, helper);
+      chatChannelPretender(server, helper, [
+        { id: 7, unread_count: 2, muted: false },
+      ]);
     });
 
     test("Chat opens to full-page channel with unread messages when sidebar is installed", async function (assert) {
@@ -342,30 +375,39 @@ acceptance(
 acceptance(
   "Discourse Chat - Acceptance Test with unread DMs and public channel messages",
   function (needs) {
-    needs.user();
+    needs.user({
+      admin: false,
+      moderator: false,
+      username: "eviltrout",
+      id: 1,
+      can_chat: true,
+    });
     needs.settings({
       topic_chat_enabled: true,
     });
-    needs.pretender(chatPretenders);
-    needs.hooks.beforeEach(() => {
+    needs.pretender((server, helper) => {
+      baseChatPretenders(server, helper);
+      siteChannelPretender(server, helper, { unread_count: 2, muted: false });
+      directMessageChannelPretender(server, helper);
       // chat channel with ID 75 is direct message channel.
-      updateCurrentUser(userNeeds({ 9: 2, 75: 2 }));
+      chatChannelPretender(server, helper, [
+        { id: 9, unread_count: 2, muted: false },
+        { id: 75, unread_count: 2, muted: false },
+      ]);
     });
 
     test("Chat float open to DM channel with unread messages with sidebar off", async function (assert) {
-      this.container.lookup("service:chat").setSidebarActive(false);
       await visit("/t/internationalization-localization/280");
+      this.container.lookup("service:chat").setSidebarActive(false);
       await click(".header-dropdown-toggle.open-chat");
-
       const chatContainer = query(".topic-chat-container");
       assert.ok(chatContainer.classList.contains("channel-75"));
     });
 
     test("Chat full page open to DM channel with unread messages with sidebar on", async function (assert) {
-      this.container.lookup("service:chat").setSidebarActive(true);
       await visit("/t/internationalization-localization/280");
+      this.container.lookup("service:chat").setSidebarActive(true);
       await click(".header-dropdown-toggle.open-chat");
-
       const channelWithUnread = chatChannels.direct_message_channels.find(
         (c) => c.id === 75
       );
@@ -382,3 +424,83 @@ acceptance(
     });
   }
 );
+
+acceptance("Discourse Chat - chat channel settings", function (needs) {
+  needs.user({
+    admin: false,
+    moderator: false,
+    username: "eviltrout",
+    id: 1,
+    can_chat: true,
+  });
+  needs.settings({
+    topic_chat_enabled: true,
+  });
+  needs.pretender((server, helper) => {
+    baseChatPretenders(server, helper);
+    siteChannelPretender(server, helper);
+    directMessageChannelPretender(server, helper);
+    chatChannelPretender(server, helper);
+    server.get("/chat/chat_channels/all.json", () => {
+      return helper.response(allChannels());
+    });
+    server.post("/chat/chat_channels/:chatChannelId/unfollow", () => {
+      return helper.response({ success: "OK" });
+    });
+    server.get("/chat/chat_channels/:chatChannelId", () => {
+      return helper.response(siteChannel);
+    });
+    server.post("/chat/chat_channels/:chatChannelId/follow", () => {
+      return helper.response(siteChannel.chat_channel);
+    });
+  });
+
+  test("Chat channel settings modal", async function (assert) {
+    await visit("/chat/channel/@hawk");
+    await click(".edit-channel-membership-btn");
+    assert.ok(
+      exists(".chat-channel-settings-modal"),
+      "Chat channel settings modal is open"
+    );
+    const settingsRow = query(".chat-channel-settings-row");
+    assert.ok(
+      settingsRow.querySelector(".chat-channel-expand-settings"),
+      "Expand notifications button is present"
+    );
+    assert.ok(
+      settingsRow.querySelector(".chat-channel-unfollow"),
+      "Unfollow button is present"
+    );
+    await click(".chat-channel-expand-settings");
+    assert.ok(exists(".chat-channel-row-controls"), "Controls are present");
+
+    // Click unfollow!
+    await click(".chat-channel-unfollow");
+    assert.notOk(
+      settingsRow.querySelector(".chat-channel-expand-settings"),
+      "Expand notifications button is gone"
+    );
+    assert.notOk(
+      settingsRow.querySelector(".chat-channel-unfollow"),
+      "Unfollow button is gone"
+    );
+
+    assert.ok(
+      settingsRow.querySelector(".chat-channel-preview"),
+      "Preview channel button is present"
+    );
+    assert.ok(
+      settingsRow.querySelector(".chat-channel-follow"),
+      "Follow button is present"
+    );
+
+    // Click preview button!
+    await click(".chat-channel-preview");
+    assert.equal(currentURL(), "/chat/channel/Site?id=9&previewing=true");
+    assert.ok(exists(".join-channel-btn"), "Join channel button is present");
+
+    await click(".join-channel-btn");
+    assert.equal(currentURL(), "/chat/channel/Site");
+    assert.notOk(exists(".join-channel-btn"), "Join channel button is gone");
+  });
+});

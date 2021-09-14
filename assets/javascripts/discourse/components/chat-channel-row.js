@@ -10,8 +10,8 @@ export default Component.extend({
   isDirectMessageRow: equal("channel.chatable_type", "DirectMessageChannel"),
   router: service(),
 
-  @discourseComputed("nested", "active")
-  rowClassNames(nested, active) {
+  @discourseComputed("nested", "active", "channel.muted")
+  rowClassNames(nested, active, muted) {
     const classes = ["chat-channel-row"];
     if (nested) {
       classes.push("nested");
@@ -19,11 +19,18 @@ export default Component.extend({
     if (active) {
       classes.push("active");
     }
+    if (muted) {
+      classes.push("muted");
+    }
     return classes.join(" ");
   },
 
   click() {
-    return this.switchChannel(this.channel);
+    if (this.switchChannel) {
+      return this.switchChannel(this.channel);
+    }
+
+    return false;
   },
 
   @discourseComputed("channel", "router.currentRoute")

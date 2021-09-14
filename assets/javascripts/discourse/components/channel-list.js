@@ -1,5 +1,6 @@
 import Component from "@ember/component";
 import discourseComputed from "discourse-common/utils/decorators";
+import showModal from "discourse/lib/show-modal";
 import { action, computed } from "@ember/object";
 import { ajax } from "discourse/lib/ajax";
 import { empty } from "@ember/object/computed";
@@ -7,7 +8,7 @@ import { schedule } from "@ember/runloop";
 import { inject as service } from "@ember/service";
 
 export default Component.extend({
-  tagName: "",
+  classNames: "tc-channels",
   publicChannels: null,
   directMessageChannels: null,
   creatingDmChannel: false,
@@ -43,9 +44,11 @@ export default Component.extend({
   startCreatingDmChannel() {
     this.set("creatingDmChannel", true);
     schedule("afterRender", () => {
-      const userChooser = this.element.querySelector(".dm-user-chooser input");
+      const userChooser = this.element.querySelector(
+        ".dm-creation-row .dm-user-chooser .select-kit-header-wrapper"
+      );
       if (userChooser) {
-        userChooser.focus();
+        userChooser.click();
       }
     });
   },
@@ -81,5 +84,10 @@ export default Component.extend({
   @action
   toggleChannelSection(section) {
     this.toggleSection(section);
+  },
+
+  @action
+  openChannelSettingsModal() {
+    showModal("chat-channel-settings");
   },
 });

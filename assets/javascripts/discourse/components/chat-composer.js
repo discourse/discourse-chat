@@ -41,18 +41,18 @@ export default Component.extend(
 
     // Composer Uppy values
     ready: true,
-    fileUploadElementId: "file-uploader",
     eventPrefix: "chat-composer",
-    uploadType: "chat-composer",
-    uppyId: "chat-composer-uppy",
     composerModel: null,
     composerModelContentKey: "value",
     editorInputClass: ".tc-composer-input",
-    uploadCancelled: false,
+    fileUploadElementId: "file-uploader",
     showCancelBtn: or("isUploading", "isProcessingUpload"),
+    uploadCancelled: false,
     uploadProcessorActions: null,
     uploadPreProcessors: null,
     uploadMarkdownResolvers: null,
+    uploadType: "chat-composer",
+    uppyId: "chat-composer-uppy",
 
     init() {
       this._super(...arguments);

@@ -11,7 +11,8 @@ export default {
   initialize(container) {
     const appEvents = container.lookup("service:app-events");
     const currentUser = container.lookup("current-user:main");
-
+    const chat = container.lookup("service:chat");
+    chat.getChannels();
     RawTopicStatus.reopen({
       statuses: Ember.computed(function () {
         const results = this._super(...arguments);

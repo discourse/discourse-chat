@@ -58,18 +58,19 @@ module DiscourseChat::ChatChannelFetcher
       next unless can_see_channel?(channel, guardian)
 
       membership = memberships.detect { |m| m.chat_channel_id == channel.id }
-      next unless membership
-
-      channel.last_read_message_id = membership.last_read_message_id
-      channel.muted = membership.muted
-      if (!channel.muted)
-        channel.unread_count = channel.chat_messages.count { |message|
-          message.user_id != guardian.user.id && message.id > (membership.last_read_message_id || 0)
-        }
+      if membership
+        channel.last_read_message_id = membership.last_read_message_id
+        channel.muted = membership.muted
+        if (!channel.muted)
+          channel.unread_count = channel.chat_messages.count { |message|
+            message.user_id != guardian.user.id && message.id > (membership.last_read_message_id || 0)
+          }
+        end
+        channel.following = membership.following
+        channel.desktop_notification_level = membership.desktop_notification_level
+        channel.mobile_notification_level = membership.mobile_notification_level
       end
-      channel.following = membership.following
-      channel.desktop_notification_level = membership.desktop_notification_level
-      channel.mobile_notification_level = membership.mobile_notification_level
+
       secured.push(channel)
     end
     secured

@@ -147,7 +147,7 @@ $float-height: 530px;
     padding: 0 0.25em;
     white-space: nowrap;
     text-overflow: ellipsis;
-    overflow-x: hidden;
+    overflow: hidden;
     color: var(--primary);
     display: flex;
     align-items: center;
@@ -734,7 +734,6 @@ $float-height: 530px;
   .tc-avatar-container {
     display: inline-block;
     width: 1.5em;
-    height: 1.5em;
     margin-right: 0.25em;
   }
   .dm-multi-count {

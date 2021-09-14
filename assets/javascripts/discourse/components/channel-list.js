@@ -8,7 +8,7 @@ import { schedule } from "@ember/runloop";
 import { inject as service } from "@ember/service";
 
 export default Component.extend({
-  tagName: "",
+  classNames: "tc-channels",
   publicChannels: null,
   directMessageChannels: null,
   creatingDmChannel: false,
@@ -44,7 +44,7 @@ export default Component.extend({
   startCreatingDmChannel() {
     this.set("creatingDmChannel", true);
     schedule("afterRender", () => {
-      const userChooser = document.querySelector(
+      const userChooser = this.element.querySelector(
         ".dm-creation-row .dm-user-chooser .select-kit-header-wrapper"
       );
       if (userChooser) {

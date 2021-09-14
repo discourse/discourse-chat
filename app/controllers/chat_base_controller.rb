@@ -11,13 +11,8 @@ class DiscourseChat::ChatBaseController < ::ApplicationController
     guardian.ensure_can_chat!(current_user)
   end
 
-  def set_channel_and_chatable(with_trashed: false)
-    chat_channel_query = ChatChannel
-    if with_trashed
-      chat_channel_query = chat_channel.with_deleted
-    end
-
-    @chat_channel = chat_channel_query.find_by(id: params[:chat_channel_id])
+  def set_channel_and_chatable
+    @chat_channel = ChatChannel.find_by(id: params[:chat_channel_id])
     raise Discourse::NotFound unless @chat_channel
 
     @chatable = nil

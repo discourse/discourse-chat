@@ -7,7 +7,6 @@ import { observes } from "discourse-common/utils/decorators";
 import { Promise } from "rsvp";
 import simpleCategoryHashMentionTransform from "discourse/plugins/discourse-topic-chat/discourse/lib/simple-category-hash-mention-transform";
 import { defaultHomepage } from "discourse/lib/utilities";
-import { later } from "@ember/runloop";
 
 export const LIST_VIEW = "list_view";
 export const CHAT_VIEW = "chat_view";
@@ -28,6 +27,7 @@ export default Service.extend({
   publicChannels: null,
   sidebarActive: false,
   unreadDirectMessageCount: null,
+  _fetchingChannels: null,
 
   init() {
     this._super(...arguments);

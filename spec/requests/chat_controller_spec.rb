@@ -375,138 +375,6 @@ RSpec.describe DiscourseChat::ChatController do
     end
   end
 
-  describe "#index" do
-    fab!(:private_group) { Fabricate(:group) }
-    fab!(:user_with_private_access) { Fabricate(:user, group_ids: [private_group.id]) }
-
-    fab!(:public_category_cc) { Fabricate(:chat_channel, chatable: category) }
-    fab!(:public_topic_cc) { Fabricate(:chat_channel, chatable: topic) }
-
-    fab!(:private_category) { Fabricate(:private_category, group: private_group) }
-    fab!(:private_category_cc) { Fabricate(:chat_channel, chatable: private_category) }
-
-    fab!(:private_topic) { Fabricate(:topic, category: private_category) }
-    fab!(:private_topic_cc) { Fabricate(:chat_channel, chatable: private_topic) }
-
-    fab!(:one_off_topic) { Fabricate(:topic) }
-    fab!(:one_off_cc) { Fabricate(:chat_channel, chatable: one_off_topic) }
-
-    # Create closed/archived topic chat channels. These will never be returned to anyone.
-    fab!(:closed_topic) { Fabricate(:closed_topic) }
-    fab!(:closed_topic_channel) { Fabricate(:chat_channel, chatable: closed_topic) }
-    fab!(:archived_topic) { Fabricate(:closed_topic) }
-    fab!(:archived_topic_channel) { Fabricate(:chat_channel, chatable: archived_topic) }
-
-    it "errors for regular user when chat is staff-only" do
-      sign_in(user)
-      SiteSetting.topic_chat_restrict_to_staff = true
-
-      get "/chat/index.json"
-
-      expect(response.status).to eq(403)
-    end
-
-    it "returns public channels to only-public user" do
-      sign_in(user)
-      get "/chat/index.json"
-
-      expect(response.status).to eq(200)
-      expect(response.parsed_body["public_channels"].map { |channel| channel["chatable_id"] })
-        .to match_array([public_category_cc.chatable_id, one_off_cc.chatable_id])
-
-      expect(response.parsed_body["public_channels"].detect { |channel| channel["id"] == public_category_cc.id }["chat_channels"].first["chatable_id"]).to eq(public_topic_cc.chatable_id)
-    end
-
-    it "returns channels visible to user with private access" do
-      sign_in(user_with_private_access)
-      get "/chat/index.json"
-
-      expect(response.status).to eq(200)
-      expect(response.parsed_body["public_channels"].map { |channel| channel["chatable_id"] })
-        .to match_array([
-          public_category_cc.chatable_id,
-          one_off_cc.chatable_id,
-          private_category_cc.chatable_id
-        ])
-
-      expect(response.parsed_body["public_channels"].detect { |channel| channel["id"] == public_category_cc.id }["chat_channels"].first["chatable_id"]).to eq(public_topic_cc.chatable_id)
-      expect(response.parsed_body["public_channels"].detect { |channel| channel["id"] == private_category_cc.id }["chat_channels"].first["chatable_id"]).to eq(private_topic_cc.chatable_id)
-    end
-
-    it "returns all channels for admin, including site chat" do
-      sign_in(admin)
-      get "/chat/index.json"
-
-      expect(response.status).to eq(200)
-      expect(response.parsed_body["public_channels"].map { |channel| channel["chatable_id"] })
-        .to match_array([
-          DiscourseChat::SITE_CHAT_ID,
-          public_category_cc.chatable_id,
-          private_category_cc.chatable_id,
-          one_off_cc.chatable_id
-        ])
-
-      expect(response.parsed_body["public_channels"].detect { |channel| channel["id"] == public_category_cc.id }["chat_channels"].first["chatable_id"]).to eq(public_topic_cc.chatable_id)
-
-      expect(response.parsed_body["public_channels"].detect { |channel| channel["id"] == private_category_cc.id }["chat_channels"].first["chatable_id"]).to eq(private_topic_cc.chatable_id)
-    end
-
-    it "doesn't error when a chat channel's chatable is destroyed" do
-      sign_in(user_with_private_access)
-      topic.destroy!
-      private_category.destroy!
-
-      get "/chat/index.json"
-      expect(response.status).to eq(200)
-    end
-
-    describe "direct messages" do
-      fab!(:user1) { Fabricate(:user) }
-      fab!(:user2) { Fabricate(:user) }
-      fab!(:user3) { Fabricate(:user) }
-
-      # DM between user1 and user2
-      fab!(:dm1) { Fabricate(:direct_message_channel, users: [user1, user2]) }
-      fab!(:dmChannel1) { Fabricate(:chat_channel, chatable: dm1) }
-
-      # DM between user1 and user3
-      fab!(:dm2) { Fabricate(:direct_message_channel, users: [user1, user3]) }
-      fab!(:dmChannel2) { Fabricate(:chat_channel, chatable: dm2) }
-
-      # DM between user1, user2, and user3
-      fab!(:dm3) { Fabricate(:direct_message_channel, users: [user1, user2, user3]) }
-      fab!(:dmChannel3) { Fabricate(:chat_channel, chatable: dm3) }
-
-      # DM between user2 and user3
-      fab!(:dm4) { Fabricate(:direct_message_channel, users: [user2, user3]) }
-      fab!(:dmChannel4) { Fabricate(:chat_channel, chatable: dm4) }
-
-      it "returns correct DMs for user1" do
-        sign_in(user1)
-
-        get "/chat/index.json"
-        expect(response.parsed_body["direct_message_channels"].map { |c| c["id"] })
-          .to match_array([dmChannel1.id, dmChannel2.id, dmChannel3.id])
-      end
-
-      it "returns correct DMs for user2" do
-        sign_in(user2)
-
-        get "/chat/index.json"
-        expect(response.parsed_body["direct_message_channels"].map { |c| c["id"] })
-          .to match_array([dmChannel1.id, dmChannel3.id, dmChannel4.id])
-      end
-
-      it "returns correct DMs for user3" do
-        sign_in(user3)
-
-        get "/chat/index.json"
-        expect(response.parsed_body["direct_message_channels"].map { |c| c["id"] })
-          .to match_array([dmChannel2.id, dmChannel3.id, dmChannel4.id])
-      end
-    end
-  end
-
   describe "#update_user_last_read" do
     fab!(:chat_channel) { Fabricate(:chat_channel, chatable: topic) }
     fab!(:chat_message) { Fabricate(:chat_message, chat_channel: chat_channel, user: user) }
@@ -514,67 +382,19 @@ RSpec.describe DiscourseChat::ChatController do
     before { sign_in(user) }
 
     it "updates timing records" do
-      existing_record = UserChatChannelLastRead.create(
+      existing_record = UserChatChannelMembership.create(
         chat_channel: chat_channel,
-        chat_message_id: 0,
+        last_read_message_id: 0,
         user: user
       )
 
       expect {
         put "/chat/#{chat_channel.id}/read/#{chat_message.id}.json"
-      }.to change { UserChatChannelLastRead.count }.by(0)
+      }.to change { UserChatChannelMembership.count }.by(0)
       existing_record.reload
       expect(existing_record.chat_channel_id).to eq(chat_channel.id)
-      expect(existing_record.chat_message_id).to eq(chat_message.id)
+      expect(existing_record.last_read_message_id).to eq(chat_message.id)
       expect(existing_record.user_id).to eq(user.id)
-    end
-  end
-
-  # CurrentUserSerializer specs. Need signed_in user so moving these to requests spec
-  describe "current_user_serializer" do
-    fab!(:chat_channel_0) { Fabricate(:chat_channel, chatable: Fabricate(:topic)) }
-    fab!(:chat_channel_1) { Fabricate(:chat_channel, chatable: Fabricate(:topic)) }
-    fab!(:chat_channel_2) { Fabricate(:chat_channel, chatable: Fabricate(:topic)) }
-
-    before do
-      sign_in(user)
-    end
-
-    let :serializer do
-      CurrentUserSerializer.new(user, scope: Guardian.new(user), root: false)
-    end
-
-    describe "chat_channel_tracking_state" do
-      it 'creates new UserChatChannelLastRead records for each unseen channel' do
-        expect(UserChatChannelLastRead.count).to eq(0)
-        payload = serializer.as_json
-        expect(UserChatChannelLastRead.count).to eq(3)
-        UserChatChannelLastRead.where(user: user).each do |timing|
-          expect(timing.chat_message_id).to be_nil
-        end
-      end
-
-      it 'has correct unread_counts for each channel' do
-        2.times do |n|
-          ChatMessage.create(
-            chat_channel: chat_channel_0,
-            user: admin,
-            message: "message #{n}",
-          )
-        end
-        ChatMessage.create(
-          chat_channel: chat_channel_1,
-          user: admin,
-          message: "asd",
-        )
-        payload = serializer.as_json
-        channel_0_state = payload[:chat_channel_tracking_state][chat_channel_0.id.to_s]
-        channel_1_state = payload[:chat_channel_tracking_state][chat_channel_1.id.to_s]
-        channel_2_state = payload[:chat_channel_tracking_state][chat_channel_2.id.to_s]
-        expect(channel_0_state["unread_count"]).to eq(2)
-        expect(channel_1_state["unread_count"]).to eq(1)
-        expect(channel_2_state["unread_count"]).to eq(0)
-      end
     end
   end
 end

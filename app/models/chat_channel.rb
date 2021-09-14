@@ -3,10 +3,16 @@
 class ChatChannel < ActiveRecord::Base
   include Trashable
   attribute :chat_channels, default: []
+  attribute :muted, default: false
+  attribute :desktop_notification_level, default: UserChatChannelMembership::DEFAULT_NOTIFICATION_LEVEL
+  attribute :mobile_notification_level, default: UserChatChannelMembership::DEFAULT_NOTIFICATION_LEVEL
+  attribute :following, default: false
+  attribute :unread_count, default: 0
+  attribute :last_read_message_id, default: nil
 
   belongs_to :chatable, polymorphic: true
   has_many :chat_messages
-  has_many :user_chat_channel_last_reads
+  has_many :user_chat_channel_memberships
 
   def chatable_url
     return nil if direct_message_channel?
@@ -30,6 +36,19 @@ class ChatChannel < ActiveRecord::Base
 
   def site_channel?
     chatable_type == DiscourseChat::SITE_CHAT_TYPE
+  end
+
+  def title(user)
+    case chatable_type
+    when "Topic"
+      chatable.title.parameterize
+    when "Category"
+      chatable.name
+    when "Site"
+      I18n.t("chat.site_chat_name")
+    when "DirectMessageChannel"
+      chatable.chat_channel_title_for_user(self, user)
+    end
   end
 
   def self.public_channels

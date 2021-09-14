@@ -39,9 +39,12 @@ after_initialize do
   SeedFu.fixture_paths << Rails.root.join("plugins", "discourse-topic-chat", "db", "fixtures").to_s
 
   load File.expand_path('../app/controllers/admin/admin_incoming_chat_webhooks_controller.rb', __FILE__)
+  load File.expand_path('../app/controllers/chat_base_controller.rb', __FILE__)
   load File.expand_path('../app/controllers/chat_controller.rb', __FILE__)
+  load File.expand_path('../app/controllers/chat_channels_controller.rb', __FILE__)
   load File.expand_path('../app/controllers/direct_messages_controller.rb', __FILE__)
   load File.expand_path('../app/controllers/incoming_chat_webhooks_controller.rb', __FILE__)
+  load File.expand_path('../app/models/user_chat_channel_membership.rb', __FILE__)
   load File.expand_path('../app/models/chat_channel.rb', __FILE__)
   load File.expand_path('../app/models/chat_message.rb', __FILE__)
   load File.expand_path('../app/models/chat_message_revision.rb', __FILE__)
@@ -49,19 +52,21 @@ after_initialize do
   load File.expand_path('../app/models/direct_message_channel.rb', __FILE__)
   load File.expand_path('../app/models/direct_message_user.rb', __FILE__)
   load File.expand_path('../app/models/incoming_chat_webhook.rb', __FILE__)
-  load File.expand_path('../app/models/user_chat_channel_last_read.rb', __FILE__)
   load File.expand_path('../app/serializers/chat_webhook_event_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/chat_base_message_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/chat_channel_serializer.rb', __FILE__)
+  load File.expand_path('../app/serializers/chat_channel_settings_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/chat_channel_index_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/chat_view_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/direct_message_channel_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/incoming_chat_webhook_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/admin_chat_index_serializer.rb', __FILE__)
+  load File.expand_path('../app/serializers/user_chat_channel_membership_serializer.rb', __FILE__)
   load File.expand_path('../lib/chat_channel_fetcher.rb', __FILE__)
   load File.expand_path('../lib/chat_message_creator.rb', __FILE__)
   load File.expand_path('../lib/chat_message_updater.rb', __FILE__)
   load File.expand_path('../lib/chat_view.rb', __FILE__)
+  load File.expand_path('../lib/direct_message_channel_creator.rb', __FILE__)
   load File.expand_path('../lib/guardian_extensions.rb', __FILE__)
   load File.expand_path('../app/services/chat_publisher.rb', __FILE__)
 
@@ -129,46 +134,6 @@ after_initialize do
     @can_chat = SiteSetting.topic_chat_enabled && scope.can_chat?(object)
   end
 
-  add_to_serializer(:current_user, :chat_channel_tracking_state) do
-    chat_channel_ids = DiscourseChat::ChatChannelFetcher.unstructured(scope).map(&:id)
-    timings = UserChatChannelLastRead
-      .includes(chat_channel: :chat_messages)
-      .where(user_id: object.id)
-      .where(chat_channel_id: chat_channel_ids)
-      .map { |timing|
-        timing.unread_count = timing.chat_channel.chat_messages.count { |message|
-          message.user_id != object.id && message.id > (timing.chat_message_id || 0)
-        }
-        timing
-      }
-
-    # Start tracking channels that haven't been tracked yet
-    untracked_channel_ids = chat_channel_ids - timings.map(&:chat_channel_id)
-    if untracked_channel_ids.any?
-      ChatChannel
-        .includes(:chat_messages)
-        .where(id: untracked_channel_ids)
-        .each { |channel|
-          timings << UserChatChannelLastRead.create(
-            chat_channel_id: channel.id,
-            unread_count: channel.chat_messages.count,
-            user_id: object.id,
-            chat_message_id: nil
-          )
-        }
-    end
-    timings_hash = {}
-    timings.each do |timing|
-      timings_hash[timing.chat_channel_id] = {
-        unread_count: timing.unread_count,
-        user_id: timing.id,
-        chat_message_id: timing.chat_message_id,
-        chatable_type: timing.chat_channel.chatable_type,
-      }
-    end
-    timings_hash.as_json
-  end
-
   add_to_serializer(:current_user, :include_chat_channel_tracking_state?) do
     include_can_chat?
   end
@@ -193,6 +158,10 @@ after_initialize do
         @chat_channel = object.topic.chat_channel
       end
     end
+
+    class ::User
+      has_many :user_chat_channel_memberships, dependent: :destroy
+    end
   end
 
   register_presence_channel_prefix("chat") do |channel|
@@ -207,12 +176,19 @@ after_initialize do
   end
 
   DiscourseChat::Engine.routes.draw do
+    # chat_channel_controller routes
+    get '/chat_channels' => 'chat_channels#index'
+    get '/chat_channels/all' => 'chat_channels#all'
+    post '/chat_channels/:chat_channel_id/notification_settings' => 'chat_channels#notification_settings'
+    post '/chat_channels/:chat_channel_id/follow' => 'chat_channels#follow'
+    post '/chat_channels/:chat_channel_id/unfollow' => 'chat_channels#unfollow'
+    get '/chat_channels/:chat_channel_id' => 'chat_channels#show'
+
+    # chat_controller routes
     get '/' => 'chat#respond'
     get '/channel/:channel_title' => 'chat#respond'
-    get '/index' => 'chat#index'
     post '/enable' => 'chat#enable_chat'
     post '/disable' => 'chat#disable_chat'
-    get '/:chat_channel_id' => 'chat#channel_details'
     get '/:chat_channel_id/messages' => 'chat#messages'
     post '/:chat_channel_id' => 'chat#create_message'
     put ':chat_channel_id/edit/:message_id' => 'chat#edit_message'
@@ -222,8 +198,10 @@ after_initialize do
     get '/lookup/:message_id' => 'chat#lookup_message'
     put '/:chat_channel_id/read/:message_id' => 'chat#update_user_last_read'
 
+    # direct_messages_controller routes
     post '/direct_messages/create' => 'direct_messages#create'
 
+    # incoming_webhooks_controller routes
     post '/hooks/:key' => 'incoming_chat_webhooks#create_message'
   end
 

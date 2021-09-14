@@ -147,7 +147,7 @@ $float-height: 530px;
     padding: 0 0.25em;
     white-space: nowrap;
     text-overflow: ellipsis;
-    overflow-x: hidden;
+    overflow: hidden;
     color: var(--primary);
     display: flex;
     align-items: center;
@@ -692,6 +692,9 @@ $float-height: 530px;
     }
   }
 
+  &.muted {
+    opacity: 0.65;
+  }
   &.active {
     font-weight: bold;
   }
@@ -784,10 +787,10 @@ $float-height: 530px;
       }
     }
 
-    .new-dm {
+    .new-dm, .edit-channel-membership-btn {
       position: absolute;
       right: 2em;
-      top: 0;
+      top: 2px;
       padding: 0.5em;
       border-radius: 0.25em;
 
@@ -836,6 +839,60 @@ $float-height: 530px;
   }
 }
 
+.chat-settings-modal {
+  .chat-channel-settings-row {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    align-content: center;
+    justify-content: space-between;
+    width: 650px;
+    padding: 0.75em 0;
+    border-bottom: 1px solid var(--primary-low);
+
+    .btn-container {
+      display: flex;
+      align-content: center;
+
+      .btn {
+        margin-left: 0.5em;
+      }
+    }
+
+    .chat-channel-title {
+      color: var(--primary-very-high);
+    }
+
+    .chat-channel-row-controls {
+      width: 100%;
+      padding: 1em 0;
+
+      .controls {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        margin-top: 0.5em;
+
+        label {
+          margin-right: 1em;
+          width: 170px;
+        }
+      }
+
+      .save-container {
+        .btn {
+          display: inline-block;
+        }
+
+        .notification-settings-saved {
+          margin-left: 0.5em;
+          color: var(--success);
+        }
+      }
+    }
+  }
+}
+
 .full-page-chat {
   font-family: "Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
@@ -843,11 +900,6 @@ $float-height: 530px;
   display: grid;
   grid-template-columns: var(--full-page-sidebar-width) 1fr;
   grid-template-rows: var(--full-page-chat-height);
-
-  .exit-chat-btn {
-    margin-left: auto;
-    color: var(--primary-high);
-  }
 
   .tc-channels {
     background: var(--primary-very-low);
@@ -861,6 +913,28 @@ $float-height: 530px;
     display: flex;
     align-items: center;
     border-bottom: 1px solid var(--primary-low);
+
+    .exit-chat-btn {
+      margin-left: auto;
+      color: var(--primary-high);
+    }
+    .chat-channel-title {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    &.previewing {
+      .chat-channel-title {
+        max-width: calc(100% - 200px);
+      }
+      .join-channel-btn {
+        margin-left: auto;
+        width: 110px;
+      }
+      .exit-chat-btn {
+        margin-left: 0.25em;
+      }
+    }
   }
   .tc-live-pane,
   .tc-messages-scroll,

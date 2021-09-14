@@ -8,6 +8,7 @@ RSpec.describe DiscourseChat::DirectMessagesController do
   fab!(:user1) { Fabricate(:user) }
   fab!(:user2) { Fabricate(:user) }
   fab!(:user3) { Fabricate(:user) }
+
   before do
     SiteSetting.topic_chat_enabled = true
     SiteSetting.topic_chat_restrict_to_staff = false # Change this per-test to false if needed
@@ -19,7 +20,7 @@ RSpec.describe DiscourseChat::DirectMessagesController do
     user_ids.each do |user_id|
       direct_messages_channel.direct_message_users.create!(user_id: user_id)
     end
-    chat_channel = ChatChannel.create!(chatable: direct_messages_channel)
+    ChatChannel.create!(chatable: direct_messages_channel)
   end
 
   describe "#create" do
@@ -65,6 +66,14 @@ RSpec.describe DiscourseChat::DirectMessagesController do
       expect(DirectMessageChannel.last.direct_message_users.map(&:user_id))
         .to match_array([user.id, user2.id])
 
+    end
+
+    it "creates UserChatChannelMembership records" do
+      users = [user2, user3]
+      usernames = users.map(&:username).join(",")
+      expect {
+        post "/chat/direct_messages/create.json", params: { usernames: usernames }
+      }.to change { UserChatChannelMembership.count }.by(3)
     end
   end
 end

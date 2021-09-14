@@ -2,30 +2,28 @@
 
 class ChatChannelSerializer < ApplicationSerializer
   attributes :id,
+             :chatable,
              :chatable_id,
              :chatable_type,
              :chatable_url,
+             :last_read_message_id,
+             :muted,
              :title,
-             :chatable,
+             :unread_count,
              :updated_at
 
   has_many :chat_channels, serializer: ChatChannelSerializer, embed: :objects
+
+  def include_muted?
+    !object.direct_message_channel?
+  end
 
   def chatable_url
     object.chatable_url
   end
 
   def title
-    case object.chatable_type
-    when "Topic"
-      object.chatable.title.parameterize
-    when "Category"
-      object.chatable.name
-    when "Site"
-      I18n.t("chat.site_chat_name")
-    when "DirectMessageChannel"
-      object.chatable.chat_channel_title_for_user(object, scope.user)
-    end
+    object.title(scope.user)
   end
 
   def chatable

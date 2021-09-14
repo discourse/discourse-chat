@@ -166,8 +166,6 @@ export default Service.extend({
         this._fetchingChannels = this._refreshChannels().finally(
           () => (this._fetchingChannels = null)
         );
-      } else {
-        console.log("reusing promise");
       }
 
       this._fetchingChannels.then(() => resolve(this._channelObject()));

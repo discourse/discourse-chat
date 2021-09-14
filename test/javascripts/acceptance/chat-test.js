@@ -17,6 +17,7 @@ import {
   siteChannel,
 } from "discourse/plugins/discourse-topic-chat/chat-fixtures";
 import { next } from "@ember/runloop";
+import { cloneJSON } from "discourse-common/lib/object"
 
 const baseChatPretenders = (server, helper) => {
   server.get("/chat/:chatChannelId/messages.json", () =>
@@ -40,7 +41,7 @@ function siteChannelPretender(
   helper,
   opts = { unread_count: 0, muted: false }
 ) {
-  let copy = Object.assign({}, siteChannel);
+  let copy = cloneJSON(siteChannel);
   copy.chat_channel.unread_count = opts.unread_count;
   copy.chat_channel.muted = opts.muted;
   server.get("/chat/chat_channels/9.json", () => helper.response(copy));
@@ -51,7 +52,7 @@ function directMessageChannelPretender(
   helper,
   opts = { unread_count: 0, muted: false }
 ) {
-  let copy = Object.assign({}, directMessageChannel);
+  let copy = cloneJSON(directMessageChannel);
   copy.chat_channel.unread_count = opts.unread_count;
   copy.chat_channel.muted = opts.muted;
   server.get("/chat/chat_channels/75.json", () => helper.response(copy));
@@ -59,7 +60,7 @@ function directMessageChannelPretender(
 
 function chatChannelPretender(server, helper, changes = []) {
   // changes is [{ id: X, unread_count: Y, muted: true}]
-  let copy = Object.assign({}, chatChannels);
+  let copy = cloneJSON(chatChannels);
   changes.forEach((change) => {
     let found = false;
     found = copy.public_channels.find((c) => c.id === change.id);
@@ -297,16 +298,15 @@ acceptance("Discourse Chat - without unread", function (needs) {
       message_id: 201,
       user_id: 2,
     });
-    assert.timeout(1000);
     const done = assert.async();
     next(() => {
+      assert.ok(
+        exists(".header-dropdown-toggle.open-chat .unread-dm-indicator-number")
+      );
       assert.notOk(
         exists(
           ".header-dropdown-toggle.open-chat .unread-chat-messages-indicator"
         )
-      );
-      assert.ok(
-        exists(".header-dropdown-toggle.open-chat .unread-dm-indicator-number")
       );
       done();
     });

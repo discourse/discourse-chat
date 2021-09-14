@@ -21,5 +21,13 @@ class CreateUserChatChannelMembership < ActiveRecord::Migration[6.1]
         :following
       ],
       name: "user_chat_channel_memberships_index"
+
+    add_index :user_chat_channel_memberships,
+      [
+        :user_id,
+        :chat_channel_id,
+      ],
+      unique: true,
+      name: "user_chat_channel_unique_memberships"
   end
 end

@@ -39,7 +39,7 @@ module DiscourseChat::ChatChannelFetcher
   def self.secured_public_channels(guardian, memberships, include_chatables: true, scope_with_membership: true)
     channels = ChatChannel
     if include_chatables
-      channels = channels.includes([:chat_messages])
+      channels = channels.includes(:chat_messages)
     end
 
     channels = channels.where(chatable_type: [DiscourseChat::SITE_CHAT_TYPE, "Topic", "Category"])

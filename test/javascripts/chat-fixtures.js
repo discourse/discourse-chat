@@ -1,3 +1,4 @@
+import { cloneJSON } from "discourse-common/lib/object"
 export const messageContents = ["Hello world", "What up"];
 export const siteChannel = {
   chat_channel: {
@@ -99,7 +100,7 @@ function addSettingsAttrs(channel) {
 }
 
 export function allChannels() {
-  let channels = Object.assign({}, chatChannels);
+  let channels = cloneJSON(chatChannels);
 
   channels.public_channels.forEach((c) => {
     addSettingsAttrs(c);

@@ -160,7 +160,7 @@ after_initialize do
     end
 
     class ::User
-      has_many :user_chat_channel_memberships
+      has_many :user_chat_channel_memberships, dependent: :destroy
     end
   end
 

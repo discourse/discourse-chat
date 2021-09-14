@@ -149,66 +149,68 @@ export default Service.extend({
     return this.unreadDirectMessageCount;
   },
 
-  async getChannels() {
-    return await this._waitForChannelsToBeFetched();
+  _channelObject() {
+    return {
+      publicChannels: this.publicChannels,
+      directMessageChannels: this.directMessageChannels,
+    };
   },
 
-  async _waitForChannelsToBeFetched() {
-    if (this.hasFetchedChannels) {
-      return Promise.resolve({
-        publicChannels: this.publicChannels,
-        directMessageChannels: this.directMessageChannels,
-      });
-    }
+  getChannels() {
+    return new Promise((resolve) => {
+      if (this.hasFetchedChannels) {
+        return resolve(this._channelObject());
+      }
 
-    if (this.loading) {
-      // Ajax is in process. return a rejected promise after some time
-      await new Promise((resolve) => later(resolve, 20));
-      return this._waitForChannelsToBeFetched();
-    }
+      if (!this._fetchingChannels) {
+        this._fetchingChannels = this._refreshChannels().finally(
+          () => (this._fetchingChannels = null)
+        );
+      } else {
+        console.log("reusing promise");
+      }
 
-    return this._refreshChannels();
+      this._fetchingChannels.then(() => resolve(this._channelObject()));
+    });
   },
 
   forceRefreshChannels() {
     this.set("hasFetchChannels", false);
     this._unsubscribeFromAllChatChannels();
-    return this._refreshChannels();
+    return this.getChannels();
   },
 
-  async _refreshChannels() {
-    if (!this.currentUser || !this.currentUser.can_chat) {
-      return Promise.reject();
-    }
-
-    this.set("loading", true);
-    this.currentUser.chat_channel_tracking_state = {};
-    return ajax("/chat/chat_channels.json").then((channels) => {
-      this.setProperties({
-        publicChannels: A(
-          channels.public_channels.map((channel) => {
-            return this.processChannel(channel);
-          })
-        ),
-        directMessageChannels: A(
-          channels.direct_message_channels.map((channel) => {
-            return this.processChannel(channel);
-          })
-        ),
-        hasFetchedChannels: true,
-        loading: false,
+  _refreshChannels() {
+    return new Promise((resolve, reject) => {
+      if (!this.currentUser || !this.currentUser.can_chat) {
+        return reject();
+      }
+      this.set("loading", true);
+      this.currentUser.chat_channel_tracking_state = {};
+      ajax("/chat/chat_channels.json").then((channels) => {
+        this.setProperties({
+          publicChannels: A(
+            channels.public_channels.map((channel) =>
+              this.processChannel(channel)
+            )
+          ),
+          directMessageChannels: A(
+            channels.direct_message_channels.map((channel) =>
+              this.processChannel(channel)
+            )
+          ),
+          hasFetchedChannels: true,
+          loading: false,
+        });
+        const idToTitleMap = {};
+        this.allChannels.forEach((c) => {
+          idToTitleMap[c.id] = c.title;
+        });
+        this.set("idToTitleMap", idToTitleMap);
+        this.presenceChannel.subscribe(channels.global_presence_channel_state);
+        this.currentUser.notifyPropertyChange("chat_channel_tracking_state");
+        resolve(this._channelObject());
       });
-      const idToTitleMap = {};
-      this.allChannels.forEach((c) => {
-        idToTitleMap[c.id] = c.title;
-      });
-      this.set("idToTitleMap", idToTitleMap);
-      this.presenceChannel.subscribe(channels.global_presence_channel_state);
-      this.currentUser.notifyPropertyChange("chat_channel_tracking_state");
-      return {
-        publicChannels: this.publicChannels,
-        directMessageChannels: this.directMessageChannels,
-      };
     });
   },
 

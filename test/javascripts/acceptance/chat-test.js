@@ -17,7 +17,7 @@ import {
   siteChannel,
 } from "discourse/plugins/discourse-topic-chat/chat-fixtures";
 import { next } from "@ember/runloop";
-import { cloneJSON } from "discourse-common/lib/object"
+import { cloneJSON } from "discourse-common/lib/object";
 
 const baseChatPretenders = (server, helper) => {
   server.get("/chat/:chatChannelId/messages.json", () =>

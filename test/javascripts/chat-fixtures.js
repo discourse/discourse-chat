@@ -1,4 +1,4 @@
-import { cloneJSON } from "discourse-common/lib/object"
+import { cloneJSON } from "discourse-common/lib/object";
 export const messageContents = ["Hello world", "What up"];
 export const siteChannel = {
   chat_channel: {

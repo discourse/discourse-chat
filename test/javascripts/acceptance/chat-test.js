@@ -461,8 +461,7 @@ acceptance("Discourse Chat - chat channel settings", function (needs) {
   });
 
   test("Chat channel settings modal", async function (assert) {
-    await visit("/t/internationalization-localization/280");
-    await click(".header-dropdown-toggle.open-chat");
+    await visit("/chat/channel/Site");
     await click(".edit-channel-membership-btn");
     assert.ok(
       exists(".chat-channel-settings-modal"),

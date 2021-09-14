@@ -151,6 +151,7 @@ $float-height: 530px;
     color: var(--primary);
     display: flex;
     align-items: center;
+    width: 100%;
     .chat-channel-title {
       display: flex;
       width: calc(95% - 0.5em);
@@ -585,6 +586,10 @@ $float-height: 530px;
       padding: 0 0.75em;
       display: grid;
 
+      > .tc-composer-input {
+        width: 100%;
+      }
+
       &::after {
         content: attr(data-replicated-value) " ";
         white-space: pre-wrap;
@@ -612,12 +617,13 @@ $float-height: 530px;
 
     .tc-composer-row > .tc-composer-input,
     .tc-composer-row::after {
+      // after pseudoelement should match input styling exactly
+      // via https://css-tricks.com/the-cleanest-trick-for-autogrowing-textareas/
       grid-area: 1 / 1 / 2 / 2;
       margin-bottom: 0;
       resize: none;
       max-height: 125px;
       padding: 8px 40px 8px 8px;
-      width: calc(100% - (40px + 8px));
       border-radius: 4px;
       border: 1px solid var(--primary-low-mid);
       word-break: break-word;
@@ -734,6 +740,7 @@ $float-height: 530px;
   .tc-avatar-container {
     display: inline-block;
     width: 1.5em;
+    height: auto;
     margin-right: 0.25em;
   }
   .dm-multi-count {

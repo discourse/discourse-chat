@@ -150,9 +150,7 @@ export default Service.extend({
   },
 
   async getChannels() {
-    return await this._waitForChannelsToBeFetched().then((channels) => {
-      return channels;
-    });
+    return await this._waitForChannelsToBeFetched();
   },
 
   async _waitForChannelsToBeFetched() {

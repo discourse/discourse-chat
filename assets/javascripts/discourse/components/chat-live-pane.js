@@ -339,8 +339,7 @@ export default Component.extend({
       this.set("stickyScroll", true);
 
       if (this._scrollerEl) {
-        this._scrollerEl.scrollTop =
-          this._scrollerEl.scrollHeight - this._scrollerEl.clientHeight;
+        this._scrollerEl.scrollTop = 0;
       }
     });
   },
@@ -355,7 +354,13 @@ export default Component.extend({
       return;
     }
 
-    if (this._scrollerEl.scrollTop === 0) {
+    const atTop =
+      Math.abs(
+        this._scrollerEl.scrollHeight -
+          this._scrollerEl.clientHeight +
+          this._scrollerEl.scrollTop
+      ) <= STICKY_SCROLL_LENIENCE;
+    if (atTop) {
       this._fetchMorePastMessages();
       return;
     }
@@ -364,12 +369,8 @@ export default Component.extend({
   },
 
   _calculateStickScroll() {
-    // Stick to bottom if scroll is at the bottom
     const shouldStick =
-      this._scrollerEl.scrollHeight -
-        this._scrollerEl.scrollTop -
-        this._scrollerEl.clientHeight <=
-      STICKY_SCROLL_LENIENCE;
+      Math.abs(this._scrollerEl.scrollTop) < STICKY_SCROLL_LENIENCE;
     if (shouldStick !== this.stickyScroll) {
       if (shouldStick) {
         this._stickScrollToBottom();
@@ -383,7 +384,6 @@ export default Component.extend({
   resolveURLs() {
     schedule("afterRender", this, () => {
       resolveAllShortUrls(ajax, this.siteSettings, this.element);
-      this._reScrollAfterImagesLoad();
     });
   },
 
@@ -576,33 +576,6 @@ export default Component.extend({
 
   _stopLastReadRunner() {
     cancel(this._updateReadTimer);
-  },
-
-  _reScrollAfterImagesLoad() {
-    const images = this.element.querySelectorAll("img:not(.avatar)");
-    if (!images.length) {
-      return;
-    }
-
-    let count = 0;
-    images.forEach((image) => {
-      if (image.complete) {
-        count++;
-        if (count === images.length) {
-          return this.reStickScrollIfNeeded();
-        }
-      } else {
-        const afterImageLoad = () => {
-          // closure here so we can remove the listener with the local var 'image'
-          count++;
-          if (count === images.length) {
-            this.reStickScrollIfNeeded();
-            image.removeEventListener("load", afterImageLoad);
-          }
-        };
-        image.addEventListener("load", afterImageLoad);
-      }
-    });
   },
 
   @action

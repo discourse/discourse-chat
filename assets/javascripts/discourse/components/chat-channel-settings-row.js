@@ -30,15 +30,17 @@ export default Component.extend({
     this.set("loading", true);
     return ajax(`/chat/chat_channels/${this.channel.id}/follow`, {
       method: "POST",
-    }).then((membership) => {
-      this.channel.setProperties({
-        following: true,
-        muted: membership.muted,
-        desktop_notification_level: membership.desktop_notification_level,
-        mobile_notification_level: membership.mobile_notification_level,
-      });
-      this.set("loading", false);
-    }).catch(popupAjaxError);
+    })
+      .then((membership) => {
+        this.channel.setProperties({
+          following: true,
+          muted: membership.muted,
+          desktop_notification_level: membership.desktop_notification_level,
+          mobile_notification_level: membership.mobile_notification_level,
+        });
+        this.set("loading", false);
+      })
+      .catch(popupAjaxError);
   },
 
   @action
@@ -46,13 +48,15 @@ export default Component.extend({
     this.set("loading", true);
     return ajax(`/chat/chat_channels/${this.channel.id}/unfollow`, {
       method: "POST",
-    }).then(() => {
-      this.channel.setProperties({
-        expanded: false,
-        following: false,
-      });
-      this.set("loading", false);
-    }).catch(popupAjaxError);
+    })
+      .then(() => {
+        this.channel.setProperties({
+          expanded: false,
+          following: false,
+        });
+        this.set("loading", false);
+      })
+      .catch(popupAjaxError);
   },
 
   @action
@@ -80,17 +84,19 @@ export default Component.extend({
           mobile_notification_level: this.channel.mobile_notification_level,
         },
       }
-    ).then(() => {
-      this.setProperties({
-        loading: false,
-        showSaveSuccess: true,
-      });
-      later(() => {
-        if (!this.isDestroying && !this.isDestroyed) {
-          this.set("showSaveSuccess", false);
-        }
-      }, 2000);
-    }).catch(popupAjaxError);
+    )
+      .then(() => {
+        this.setProperties({
+          loading: false,
+          showSaveSuccess: true,
+        });
+        later(() => {
+          if (!this.isDestroying && !this.isDestroyed) {
+            this.set("showSaveSuccess", false);
+          }
+        }, 2000);
+      })
+      .catch(popupAjaxError);
   },
 
   @action

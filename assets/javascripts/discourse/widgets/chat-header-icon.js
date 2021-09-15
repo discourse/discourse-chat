@@ -49,7 +49,7 @@ export default createWidget("header-chat-link", {
       return;
     }
 
-    if (this.chat.getSidebarActive()) {
+    if (this.site.mobileView || this.chat.getSidebarActive()) {
       DiscourseURL.routeTo("/chat");
     } else {
       this.appEvents.trigger("chat:toggle-open");

@@ -335,6 +335,17 @@ acceptance(
       ]);
     });
 
+    test("Expand button takes you to full page chat on the correct channel", async function (assert) {
+      await visit("/t/internationalization-localization/280");
+      this.container.lookup("service:chat").setSidebarActive(false);
+      await visit(".header-dropdown-toggle.open-chat");
+      await click(".tc-full-screen-btn");
+      const channelWithUnread = chatChannels.public_channels.find(
+        (c) => c.id === 7
+      );
+      assert.equal(currentURL(), `/chat/channel/${channelWithUnread.title}`);
+    });
+
     test("Chat opens to full-page channel with unread messages when sidebar is installed", async function (assert) {
       await visit("/t/internationalization-localization/280");
       this.container.lookup("service:chat").setSidebarActive(true);

@@ -210,12 +210,15 @@ export default Component.extend({
 
   @action
   openInFullPage() {
+    const channel = this.activeChannel;
+    // Set activeChannel to null to avoid a moment where the chat composer is rendered twice.
+    // Since the mobile-file-upload button has an ID, a JS error will break things otherwise.
     this.setProperties({
       hidden: true,
       activeChannel: null,
     });
-    if (this.activeChannel) {
-      return this.router.transitionTo("chat.channel", this.activeChannel.title);
+    if (channel) {
+      return this.router.transitionTo("chat.channel", channel.title);
     }
 
     this.router.transitionTo("chat");

@@ -579,7 +579,7 @@ export default Component.extend({
   },
 
   _reScrollAfterImagesLoad() {
-    const images = this.element.querySelectorAll("img:not(.avatar, .emoji)");
+    const images = this.element.querySelectorAll("img:not(.avatar)");
     if (!images.length) {
       return;
     }

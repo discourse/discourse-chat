@@ -337,10 +337,10 @@ export default Component.extend({
         return;
       }
       this.set("stickyScroll", true);
+      console.log('scroll')
 
       if (this._scrollerEl) {
-        this._scrollerEl.scrollTop =
-          this._scrollerEl.scrollHeight - this._scrollerEl.clientHeight;
+        this._scrollerEl.scrollTop = 0;
       }
     });
   },
@@ -355,7 +355,7 @@ export default Component.extend({
       return;
     }
 
-    if (this._scrollerEl.scrollTop === 0) {
+    if (this._scrollerEl.scrollTop === this._scrollerEl.scrollHeight - this._scrollerEl.clientHeight) {
       this._fetchMorePastMessages();
       return;
     }
@@ -366,10 +366,7 @@ export default Component.extend({
   _calculateStickScroll() {
     // Stick to bottom if scroll is at the bottom
     const shouldStick =
-      this._scrollerEl.scrollHeight -
-        this._scrollerEl.scrollTop -
-        this._scrollerEl.clientHeight <=
-      STICKY_SCROLL_LENIENCE;
+      this._scrollerEl.scrollTop === 0;
     if (shouldStick !== this.stickyScroll) {
       if (shouldStick) {
         this._stickScrollToBottom();
@@ -589,6 +586,7 @@ export default Component.extend({
       if (image.complete) {
         count++;
         if (count === images.length) {
+          console.log("ALL")
           return this.reStickScrollIfNeeded();
         }
       } else {
@@ -596,11 +594,14 @@ export default Component.extend({
           // closure here so we can remove the listener with the local var 'image'
           count++;
           if (count === images.length) {
+            console.log("ALL")
             this.reStickScrollIfNeeded();
             image.removeEventListener("load", afterImageLoad);
+            image.removeEventListener("error", afterImageLoad);
           }
         };
         image.addEventListener("load", afterImageLoad);
+        image.addEventListener("error", afterImageLoad);
       }
     });
   },
@@ -746,6 +747,7 @@ export default Component.extend({
 
   @action
   reStickScrollIfNeeded() {
+    console.log(`should stick ${this.stickyScroll}`)
     if (this.stickyScroll) {
       this._stickScrollToBottom();
     }

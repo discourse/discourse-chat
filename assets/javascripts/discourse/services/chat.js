@@ -252,7 +252,7 @@ export default Service.extend({
       if (channelId) {
         return this.idToTitleMap[channelId];
       } else {
-        return this.publicChannels[0].title;
+        return this.publicChannels[0]?.title;
       }
     });
   },

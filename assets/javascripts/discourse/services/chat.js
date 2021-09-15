@@ -173,7 +173,7 @@ export default Service.extend({
   },
 
   forceRefreshChannels() {
-    this.set("hasFetchChannels", false);
+    this.set("hasFetchedChannels", false);
     this._unsubscribeFromAllChatChannels();
     return this.getChannels();
   },

@@ -128,6 +128,18 @@ $float-height: 530px;
       height: calc(85vh - var(--composer-height, 0px) - #{$header-height});
     }
   }
+  .unread-dm-indicator {
+    width: 4px;
+    height: 8px;
+    position: absolute;
+    left: -2px;
+    border-radius: 0;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+    .unread-dm-indicator-number-wrap {
+      display: none;
+    }
+  }
 }
 
 .topic-chat-drawer-header {
@@ -679,8 +691,7 @@ $float-height: 530px;
 
 .chat-channel-row {
   display: flex;
-  flex-direction: column;
-  align-items: baseline;
+  align-items: center;
   padding: 0.5em;
   position: relative;
   cursor: pointer;
@@ -696,7 +707,7 @@ $float-height: 530px;
 
     .chat-channel-title {
       opacity: 1;
-      .d-icon {
+      .d-icon-lock {
         background-color: var(--primary-low);
       }
     }
@@ -729,7 +740,7 @@ $float-height: 530px;
     margin-right: 0;
   }
 
-  .unread-dm-indicator,
+  // .unread-dm-indicator,
   .unread-chat-messages-indicator {
     width: 4px;
     height: 8px;
@@ -822,6 +833,17 @@ $float-height: 530px;
       }
     }
 
+    .category-chat-private {
+      .d-icon {
+        background-color: var(--primary-very-low);
+      }
+    }
+
+    .unread-dm-indicator {
+      margin-left: -2.25em;
+      margin-right: 0.25em;
+    }
+
     .new-dm, .edit-channel-membership-btn {
       position: absolute;
       right: 2em;
@@ -842,9 +864,13 @@ $float-height: 530px;
 
       &:hover {
         background-color: var(--tertiary-low);
+        .d-icon {
+          background-color: var(--tertiary-low);
+        }
       }
       .chat-channel-title {
         width: 100%;
+        font-weight: unset;
       }
       .chat-channel-row-unread-count {
         display: none;

@@ -5,7 +5,7 @@ $float-height: 530px;
   --small-message-left-width: 28px;
   --large-message-left-width: 38px;
   --full-page-border-radius: 12px;
-  --full-page-sidebar-width: 250px;
+  --full-page-sidebar-width: 275px;
 }
 
 .tc-composer {
@@ -158,6 +158,7 @@ $float-height: 530px;
       margin-right: 0.5em;
       flex-grow: 1;
       flex-shrink: 1;
+      opacity: 1;
       .badge-wrapper.bullet {
         margin-right: 0px;
       }
@@ -690,6 +691,22 @@ $float-height: 530px;
     .unread-chat-messages-indicator {
       border-color: var(--primary-low);
     }
+
+    .chat-channel-title {
+      opacity: 1;
+      .d-icon {
+        background-color: var(--primary-low);
+      }
+    }
+  }
+
+  &.active {
+    .chat-channel-title {
+      .category-chat-name, .topic-chat-name, .chat-name {
+        opacity: 1;
+        font-weight: 700;
+      }
+    }
   }
 
   &.muted {
@@ -710,14 +727,18 @@ $float-height: 530px;
     margin-right: 0;
   }
 
-  .unread-chat-messages-indicator {
-    width: 12px;
-    height: 12px;
-  }
   .unread-dm-indicator,
   .unread-chat-messages-indicator {
+    width: 4px;
+    height: 8px;
+    background: var(--primary-medium);
     position: absolute;
-    left: 0.5em;
+    border-radius: 0px;
+    border: 0;
+    left: 0;
+    top: 0.75em;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
   }
 
   .chat-channel-row-unread-count {
@@ -731,6 +752,19 @@ $float-height: 530px;
 .chat-channel-title {
   display: flex;
   align-items: center;
+  font-weight: 600;
+  .category-chat-name, .topic-chat-name, .chat-name {
+    color: var(--primary);
+    opacity: 0.70;
+  }
+  .topic-chat-name {
+    margin: 0 0 0 0.25em;
+  }
+  &.has-unread {
+    .category-chat-name, .topic-chat-name, .chat-name {
+      opacity: 1;
+    }
+  }
   .d-icon-lock {
     margin-right: 0.25em;
   }
@@ -744,7 +778,6 @@ $float-height: 530px;
   }
   .topic-chat-icon {
     color: var(--primary-medium);
-    margin-right: 0.25em;
   }
   .tc-avatar-container {
     display: inline-block;
@@ -907,6 +940,20 @@ $float-height: 530px;
     border-right: 1px solid var(--primary-low);
     border-radius: var(--full-page-border-radius) 0 0
       var(--full-page-border-radius);
+    .chat-channel-row {
+      padding: 0.5em 1em;
+      &.nested {
+        padding: 0.5em 2em;
+      }
+      .category-chat-private .d-icon {
+        background-color: var(--primary-very-low);
+      }
+      &:hover {
+        .category-chat-private .d-icon {
+          background-color: var(--primary-low);
+        }
+      }
+    }
   }
 
   .tc-full-page-header {
@@ -922,6 +969,9 @@ $float-height: 530px;
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
+      .category-chat-name, .topic-chat-name, .chat-name {
+        opacity: 1;
+      }
     }
     &.previewing {
       .chat-channel-title {
@@ -956,6 +1006,23 @@ $float-height: 530px;
   }
 }
 
+.tc-full-page-header {
+  .chat-channel-title {
+    position: relative;
+  }
+  .category-chat-private .d-icon {
+    background-color: var(--secondary);
+    position: absolute;
+    border-radius: 5px;
+    padding: 2px 2px 3px;
+    color: var(--primary-high);
+    height: 0.5em;
+    width: 0.5em;
+    left: 8px;
+    top: -1px;
+  }
+}
+
 .tc-channels {
   .chat-channel-title {
     position: relative;
@@ -970,14 +1037,10 @@ $float-height: 530px;
 
   .category-chat-private .d-icon {
     background-color: var(--secondary);
-    border: 1px solid var(--secondary);
     position: absolute;
     border-radius: 5px;
-    padding: 2px 1px;
+    padding: 3px 2px;
     color: var(--primary-high);
-  }
-
-  .category-chat-private .d-icon {
     height: 0.5em;
     width: 0.5em;
     left: calc(0.6125em + 2px);
@@ -986,6 +1049,7 @@ $float-height: 530px;
 
   .chat-channel-row.nested {
     position: relative;
+    overflow: hidden;
     .topic-chat-icon::before {
       content: "";
       display: block;
@@ -1004,9 +1068,9 @@ $float-height: 530px;
       position: absolute;
       border-left: 2px solid var(--primary-low-mid);
       left: -8px;
-      bottom: 0em;
+      bottom: -0.5em;
       width: 5px;
-      height: 100%;
+      height: calc(100% + 1em);
     }
   }
 
@@ -1025,8 +1089,4 @@ $float-height: 530px;
   .topic-chat-name {
     margin: 0 0 0 0.5em;
   }
-}
-
-.topic-chat-name, .category-chat-name {
-  color: var(--primary-high);
 }

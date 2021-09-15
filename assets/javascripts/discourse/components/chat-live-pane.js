@@ -337,7 +337,6 @@ export default Component.extend({
         return;
       }
       this.set("stickyScroll", true);
-      console.log('scroll')
 
       if (this._scrollerEl) {
         this._scrollerEl.scrollTop = 0;
@@ -355,7 +354,13 @@ export default Component.extend({
       return;
     }
 
-    if (this._scrollerEl.scrollTop === this._scrollerEl.scrollHeight - this._scrollerEl.clientHeight) {
+    const atTop =
+      Math.abs(
+        this._scrollerEl.scrollHeight -
+          this._scrollerEl.clientHeight +
+          this._scrollerEl.scrollTop
+      ) <= STICKY_SCROLL_LENIENCE;
+    if (atTop) {
       this._fetchMorePastMessages();
       return;
     }
@@ -364,9 +369,8 @@ export default Component.extend({
   },
 
   _calculateStickScroll() {
-    // Stick to bottom if scroll is at the bottom
     const shouldStick =
-      this._scrollerEl.scrollTop === 0;
+      Math.abs(this._scrollerEl.scrollTop) < STICKY_SCROLL_LENIENCE;
     if (shouldStick !== this.stickyScroll) {
       if (shouldStick) {
         this._stickScrollToBottom();
@@ -380,7 +384,6 @@ export default Component.extend({
   resolveURLs() {
     schedule("afterRender", this, () => {
       resolveAllShortUrls(ajax, this.siteSettings, this.element);
-      this._reScrollAfterImagesLoad();
     });
   },
 
@@ -575,37 +578,6 @@ export default Component.extend({
     cancel(this._updateReadTimer);
   },
 
-  _reScrollAfterImagesLoad() {
-    const images = this.element.querySelectorAll("img:not(.avatar)");
-    if (!images.length) {
-      return;
-    }
-
-    let count = 0;
-    images.forEach((image) => {
-      if (image.complete) {
-        count++;
-        if (count === images.length) {
-          console.log("ALL")
-          return this.reStickScrollIfNeeded();
-        }
-      } else {
-        const afterImageLoad = () => {
-          // closure here so we can remove the listener with the local var 'image'
-          count++;
-          if (count === images.length) {
-            console.log("ALL")
-            this.reStickScrollIfNeeded();
-            image.removeEventListener("load", afterImageLoad);
-            image.removeEventListener("error", afterImageLoad);
-          }
-        };
-        image.addEventListener("load", afterImageLoad);
-        image.addEventListener("error", afterImageLoad);
-      }
-    });
-  },
-
   @action
   sendMessage(message) {
     if (this.sendingloading) {
@@ -747,7 +719,6 @@ export default Component.extend({
 
   @action
   reStickScrollIfNeeded() {
-    console.log(`should stick ${this.stickyScroll}`)
     if (this.stickyScroll) {
       this._stickScrollToBottom();
     }

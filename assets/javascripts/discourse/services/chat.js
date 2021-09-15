@@ -173,7 +173,7 @@ export default Service.extend({
   },
 
   forceRefreshChannels() {
-    this.set("hasFetchChannels", false);
+    this.set("hasFetchedChannels", false);
     this._unsubscribeFromAllChatChannels();
     return this.getChannels();
   },
@@ -252,7 +252,7 @@ export default Service.extend({
       if (channelId) {
         return this.idToTitleMap[channelId];
       } else {
-        return this.publicChannels[0].title;
+        return this.publicChannels[0]?.title;
       }
     });
   },

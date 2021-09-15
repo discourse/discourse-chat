@@ -1034,6 +1034,23 @@ $float-height: 530px;
   }
 }
 
+.topic-chat-drawer-header {
+  .chat-channel-title {
+    position: relative;
+  }
+  .category-chat-private .d-icon {
+    background-color: var(--secondary);
+    position: absolute;
+    border-radius: 5px;
+    padding: 2px 2px 3px;
+    color: var(--primary-high);
+    height: 0.5em;
+    width: 0.5em;
+    left: 8px;
+    top: -1px;
+  }
+}
+
 .tc-full-page-header {
   .chat-channel-title {
     position: relative;

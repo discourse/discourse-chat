@@ -16,7 +16,7 @@
 
   {{/if}}
 {{else if (eq channel.chatable_type "Category")}}
-  <span class="category-chat-badge" style="color: #{{html-safe channel.chatable.color}}">
+  <span class="category-chat-badge" style={{html-safe (concat "color: " channel.chatable.color}}>>
     {{d-icon "hashtag"}}
     {{#if channel.chatable.read_restricted}}
       <span class="category-chat-private">

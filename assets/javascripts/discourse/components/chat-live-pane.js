@@ -88,6 +88,7 @@ export default Component.extend({
     this._super(...arguments);
 
     this.set("targetMessageId", this.chat.getMessageId());
+    console.log(`TARGET ${this.chat.getMessageId()}`)
     if (this.registeredChatChannelId !== this.chatChannel.id) {
       if (this.registeredChatChannelId) {
         this.messageBus.unsubscribe(`/chat/${this.registeredChatChannelId}`);

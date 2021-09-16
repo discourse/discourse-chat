@@ -10,6 +10,7 @@ import { formatUsername } from "discourse/lib/utilities";
 import { iconNode } from "discourse-common/lib/icon-library";
 
 createWidgetFrom(DefaultNotificationItem, "chat-mention-notification-item", {
+  services: ["chat", "router"],
   text(notificationName, data) {
     const username = formatUsername(data.mentioned_by_username);
     return I18n.t(data.message, { username });
@@ -37,12 +38,35 @@ createWidgetFrom(DefaultNotificationItem, "chat-mention-notification-item", {
     cookie("cn", id, { path: getURL("/") });
 
     e.preventDefault();
-
     this.sendWidgetEvent("linkClicked");
+    this.chat.setMessageId(this.attrs.data.chat_message_id);
+    if (
+      this.site.mobileView ||
+      this.router.currentRouteName === "chat" ||
+      this.router.currentRouteName === "chat.channel"
+    ) {
+      this.router.transitionTo(
+        "chat.channel",
+        this.attrs.data.chat_channel_title,
+      ).then((e) => {
+        this.fireOpenMessageAppEvent()
+        this.appEvents.trigger(
+          "chat:open-message",
+          this.attrs.data.chat_channel_id,
+          this.attrs.data.chat_message_id
+        );
+      });
+    } else {
+        this.fireOpenMessageAppEvent(true)
+    }
+  },
+
+  fireOpenMessageAppEvent(openFloat = false) {
     this.appEvents.trigger(
       "chat:open-message",
       this.attrs.data.chat_channel_id,
-      this.attrs.data.chat_message_id
+      this.attrs.data.chat_message_id,
+      openFloat
     );
-  },
+  }
 });

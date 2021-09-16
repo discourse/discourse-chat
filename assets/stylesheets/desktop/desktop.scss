@@ -135,6 +135,9 @@
       &.tc-message-selected, &:hover {
         background: var(--primary-low);
       }
+      &.highlighted {
+        background-color: var(--tertiary-low);
+      }
       padding-left: 2em;
     }
     .tc-messages-container .tc-message-deleted {

@@ -117,6 +117,7 @@ class DiscourseChat::ChatMessageCreator
         message: 'chat.mention_notification',
         chat_message_id: chat_message.id,
         chat_channel_id: chat_channel.id,
+        chat_channel_title: chat_channel.title(mentioned_user),
         mentioned_by_username: creator_username,
       }.to_json
     )

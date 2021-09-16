@@ -14,7 +14,7 @@ import { resolveAllShortUrls } from "pretty-text/upload-short-url";
 const MAX_RECENT_MSGS = 100;
 const STICKY_SCROLL_LENIENCE = 4;
 const READ_INTERVAL = 2000;
-const PAGE_SIZE = 30; // Same constant in chat_controller.rb. Update both together!
+const PAGE_SIZE = 50; // Same constant in chat_controller.rb. Update both together!
 
 export default Component.extend({
   classNameBindings: [":tc-live-pane", "sendingloading", "loading"],
@@ -87,7 +87,6 @@ export default Component.extend({
   didReceiveAttrs() {
     this._super(...arguments);
 
-    console.log(this.registeredChatChannelId)
     this.set("targetMessageId", this.chat.getMessageId());
     if (this.registeredChatChannelId !== this.chatChannel.id) {
       if (this.registeredChatChannelId) {

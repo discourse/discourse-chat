@@ -90,7 +90,7 @@ class DiscourseChat::ChatMessageCreator
           chat_channel: @chat_channel,
           chat_message: @chat_message,
         )
-        mentioned_user_ids = target_user.id
+        mentioned_user_ids.push(target_user.id)
       end
     end
     mentioned_user_ids

@@ -306,7 +306,7 @@ export default Service.extend({
   },
 
   _unsubscribeFromAllChatChannels() {
-    [this.allChannels || []].forEach((channel) => {
+    (this.allChannels || []).forEach((channel) => {
       this.messageBus.unsubscribe(`/chat/${channel.id}/new-messages`);
     });
   },

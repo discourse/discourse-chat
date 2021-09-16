@@ -97,6 +97,10 @@ acceptance("Discourse Chat - without unread", function (needs) {
     chatChannelPretender(server, helper);
   });
 
+  test("", async function (assert) {
+
+  });
+
   test("Chat messages are populated when a channel is entered", async function (assert) {
     await visit("/chat/channel/Site");
     const messages = queryAll(".tc-message .tc-text");

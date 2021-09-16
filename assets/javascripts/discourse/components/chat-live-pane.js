@@ -87,8 +87,8 @@ export default Component.extend({
   didReceiveAttrs() {
     this._super(...arguments);
 
+    console.log(this.registeredChatChannelId)
     this.set("targetMessageId", this.chat.getMessageId());
-    console.log(`TARGET ${this.chat.getMessageId()}`)
     if (this.registeredChatChannelId !== this.chatChannel.id) {
       if (this.registeredChatChannelId) {
         this.messageBus.unsubscribe(`/chat/${this.registeredChatChannelId}`);
@@ -104,6 +104,11 @@ export default Component.extend({
   },
 
   fetchMessages() {
+    if (this.loading) {
+      return;
+    }
+
+    console.log(`Fetch messages with target ${this.targetMessageId}`)
     this.set("loading", true);
     const url = this.targetMessageId
       ? `/chat/lookup/${this.targetMessageId}.json`
@@ -118,6 +123,7 @@ export default Component.extend({
           }
           this.setMessageProps(data.topic_chat_view);
           this.resolveURLs();
+          this.onScroll();
         })
         .catch((err) => {
           throw err;
@@ -196,6 +202,7 @@ export default Component.extend({
         this._markLastReadMessage();
       }
     });
+    console.log(`subscribe  to /chat/${this.chatChannel.id}`)
     this.messageBus.subscribe(`/chat/${this.chatChannel.id}`, (busData) => {
       this.handleMessage(busData);
     });

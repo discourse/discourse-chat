@@ -100,14 +100,7 @@
       background: var(--primary-very-low);
       border-radius: unset;
       .chat-channel-divider {
-        padding: 1em 1.5em 0.5em 1.5em;
-      }
-      .chat-channel-row {
-        padding: 0.5em 1.5em;
-        .unread-dm-indicator {
-          position: absolute;
-          left: 0.25em;
-        }
+        padding: 1em 1em 0.5em 1em;
       }
       .loading-container {
         padding-bottom: 1em;

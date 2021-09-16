@@ -110,11 +110,11 @@ $float-height: 530px;
   }
 
 
-.tc-channels {
-  .unread-dm-indicator {
-    left: -1px;
+  .tc-channels {
+    .unread-dm-indicator, .unread-chat-messages-indicator {
+      left: -1px;
+    }
   }
-}
 }
 .tc-drawer {
   align-self: flex-end;
@@ -853,11 +853,6 @@ $float-height: 530px;
       .d-icon {
         background-color: var(--primary-very-low);
       }
-    }
-
-    .unread-dm-indicator {
-      margin-left: -2.25em;
-      margin-right: 0.25em;
     }
 
     .new-dm, .edit-channel-membership-btn {

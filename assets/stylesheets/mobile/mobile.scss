@@ -74,10 +74,9 @@ body.has-full-page-chat .footer-nav {
 }
 
 body.has-full-page-chat {
-  // background-color: var(--primary-very-low);
+  background-color: var(--primary-very-low);
   #main-outlet {
     padding: 0;
-    // background-color: var(--primary-very-low);
   }
 }
 
@@ -101,5 +100,14 @@ body.has-full-page-chat {
   .tc-full-page-header {
     padding: 0.5em 1em;
     font-weight: bold;
+  }
+  .tc-channels .category-chat-private .d-icon {
+    background-color: var(--secondary);
+  }
+  .chat-channel-row .unread-chat-messages-indicator {
+    width: 5px;
+    height: 10px;
+    left: 0px;
+    top: 12px;
   }
 }

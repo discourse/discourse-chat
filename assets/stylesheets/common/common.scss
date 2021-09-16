@@ -256,7 +256,7 @@ $float-height: 530px;
     font-weight: bold;
     padding: 0.5em;
     text-transform: uppercase;
-    font-family: "Open Sans";
+    font-family: var(--heading-font-family);
     font-size: 13px;
   }
 }

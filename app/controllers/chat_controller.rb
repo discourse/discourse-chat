@@ -109,6 +109,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     messages = ChatMessage
       .includes(:in_reply_to)
       .includes(:revisions)
+      .includes(:user)
       .includes(chat_webhook_event: :incoming_chat_webhook)
       .where(chat_channel: @chat_channel)
 
@@ -186,22 +187,30 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
       guardian.ensure_can_see!(chatable)
       include_deleted = guardian.can_moderate_chat?(chatable)
     end
+    base_query = ChatMessage
+      .includes(:in_reply_to)
+      .includes(:revisions)
+      .includes(:user)
+      .includes(chat_webhook_event: :incoming_chat_webhook)
 
-    past_messages = ChatMessage
-      .where(chat_channel: chat_channel)
+    unless chat_channel.site_channel?
+      base_query = base_query.includes(chat_channel: :chatable)
+    end
+
+    base_query = base_query.where(chat_channel: chat_channel)
+    base_query = base_query.with_deleted if include_deleted
+
+    past_messages = base_query
       .where("created_at < ?", @message.created_at)
       .order(created_at: :desc).limit(20)
-    past_messages = past_messages.with_deleted if include_deleted
 
     # .with_deleted if include_deleted
-    future_messages = ChatMessage
+    future_messages = base_query
       .where(chat_channel: chat_channel)
       .where("created_at > ?", @message.created_at)
       .order(created_at: :asc)
-    future_messages = future_messages.with_deleted if include_deleted
 
     messages = [past_messages.reverse, [@message], future_messages].reduce([], :concat)
-
     chat_view = ChatView.new(
       chat_channel: chat_channel,
       chatable: chatable,

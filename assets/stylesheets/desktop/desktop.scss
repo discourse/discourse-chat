@@ -95,7 +95,7 @@
     border: 1px solid var(--primary-low-mid);
     border-radius: var(--full-page-border-radius);
     overflow: hidden;
-    box-shadow: 6px 6px 0px 0px rgba(var(--primary-rgb),0.125);
+    box-shadow: 6px 6px 0px 0px rgba(var(--primary-rgb), 0.125);
     .tc-channels {
       background: var(--primary-very-low);
       border-radius: unset;
@@ -110,11 +110,13 @@
       padding: 0 0 1em;
       border-radius: unset;
     }
-    .tc-live-pane, .tc-messages-scroll, .tc-message {
+    .tc-live-pane,
+    .tc-messages-scroll,
+    .tc-message {
       background-color: var(--secondary);
     }
   }
-  @media screen and (max-width:1100px) {
+  @media screen and (max-width: 1100px) {
     #main-outlet {
       padding: 0;
     }
@@ -143,7 +145,8 @@
       background: transparent;
     }
     .tc-message {
-      &.tc-message-selected, &:hover {
+      &.tc-message-selected,
+      &:hover {
         background: var(--primary-low);
       }
       padding-left: 2em;

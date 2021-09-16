@@ -1037,6 +1037,7 @@ $float-height: 530px;
 .topic-chat-drawer-header {
   .chat-channel-title {
     position: relative;
+    max-width: 100%;
   }
   .category-chat-private .d-icon {
     background-color: var(--secondary);
@@ -1054,6 +1055,11 @@ $float-height: 530px;
 .tc-full-page-header {
   .chat-channel-title {
     position: relative;
+    max-width: 100%;
+    .dm-usernames {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
   }
   .category-chat-private .d-icon {
     background-color: var(--secondary);

@@ -14,7 +14,7 @@ import { resolveAllShortUrls } from "pretty-text/upload-short-url";
 const MAX_RECENT_MSGS = 100;
 const STICKY_SCROLL_LENIENCE = 4;
 const READ_INTERVAL = 2000;
-const PAGE_SIZE = 30; // Same constant in chat_controller.rb. Update both together!
+const PAGE_SIZE = 50;
 
 export default Component.extend({
   classNameBindings: [":tc-live-pane", "sendingloading", "loading"],
@@ -104,6 +104,10 @@ export default Component.extend({
   },
 
   fetchMessages() {
+    if (this.loading) {
+      return;
+    }
+
     this.set("loading", true);
     const url = this.targetMessageId
       ? `/chat/lookup/${this.targetMessageId}.json`
@@ -118,6 +122,7 @@ export default Component.extend({
           }
           this.setMessageProps(data.topic_chat_view);
           this.resolveURLs();
+          this.onScroll();
         })
         .catch((err) => {
           throw err;

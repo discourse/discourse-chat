@@ -1036,6 +1036,9 @@ $float-height: 530px;
   .tc-messages-scroll,
   .tc-message {
     background: var(--primary-very-low);
+    &.highlighted {
+      background-color: var(--tertiary-low);
+    }
   }
   .tc-live-pane {
     padding: 0 0 1em;

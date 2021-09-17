@@ -201,7 +201,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     base_query = base_query.with_deleted if include_deleted
     past_messages = base_query
       .where("created_at < ?", @message.created_at)
-      .order(created_at: :desc).limit(20)
+      .order(created_at: :desc).limit(40)
 
     # .with_deleted if include_deleted
     future_messages = base_query

@@ -34,6 +34,34 @@ const baseChatPretenders = (server, helper) => {
   server.get("/presence/get", () => {
     return helper.response({ count: 0, users: [], next_message_id: 0 });
   });
+  server.get("/notifications", () => {
+    return helper.response({
+      notifications: [
+        {
+          id: 42,
+          user_id: 1,
+          notification_type: 29,
+          high_priority: true,
+          read: false,
+          high_priority: true,
+          created_at: "2021-01-01 12:00:00 UTC",
+          fancy_title: "First notification",
+          post_number: null,
+          topic_id: null,
+          slug: null,
+          data: {
+            message: "chat.mention_notification",
+            chat_message_id: 174,
+            chat_channel_id: 9,
+            chat_channel_title: "Site",
+            mentioned_by_username: "hawk",
+          },
+        },
+      ],
+      seen_notification_id: null,
+    });
+  });
+  server.get("/chat/lookup/:message_id.json", () => helper.response(chatView));
 };
 
 function siteChannelPretender(
@@ -95,6 +123,21 @@ acceptance("Discourse Chat - without unread", function (needs) {
     siteChannelPretender(server, helper);
     directMessageChannelPretender(server, helper);
     chatChannelPretender(server, helper);
+  });
+
+  test("Clicking mention notification from outside chat opens the float", async function (assert) {
+    await visit("/t/internationalization-localization/280");
+    await click(".header-dropdown-toggle.current-user");
+    await click("#quick-access-notifications .chat-mention");
+    assert.ok(visible(".topic-chat-float-container"), "chat float is open");
+    assert.ok(query(".topic-chat-container").classList.contains("channel-9"));
+  });
+
+  test("Clicking mention notification inside other full page channel switches the channel", async function (assert) {
+    await visit("/chat/channel/@hawk");
+    await click(".header-dropdown-toggle.current-user");
+    await click("#quick-access-notifications .chat-mention");
+    assert.equal(currentURL(), `/chat/channel/Site`);
   });
 
   test("Chat messages are populated when a channel is entered", async function (assert) {

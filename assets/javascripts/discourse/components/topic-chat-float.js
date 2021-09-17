@@ -108,8 +108,11 @@ export default Component.extend({
     }
   },
 
-  openChannelAtMessage(chatChannelId, messageId) {
-    this.chat.setMessageId(messageId);
+  openChannelAtMessage(chatChannelId, messageId, openFloat) {
+    if (!openFloat) {
+      return;
+    }
+
     this.chat.getChannelBy("id", chatChannelId).then((channel) => {
       this.switchChannel(channel);
     });

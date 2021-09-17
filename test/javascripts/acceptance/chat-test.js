@@ -128,7 +128,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
 
   test("Clicking mention notification from outside chat opens the float", async function (assert) {
     await visit("/t/internationalization-localization/280");
-    await click(".header-dropdown-toggle.current-user"); // Open notifications
+    await click(".header-dropdown-toggle.current-user");
     await click("#quick-access-notifications .chat-mention");
     assert.ok(visible(".topic-chat-float-container"), "chat float is open");
     assert.ok(query(".topic-chat-container").classList.contains("channel-9"));
@@ -136,7 +136,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
 
   test("Clicking mention notification inside other full page channel switches the channel", async function (assert) {
     await visit("/chat/channel/@hawk");
-    await click(".header-dropdown-toggle.current-user"); // Open notifications
+    await click(".header-dropdown-toggle.current-user");
     await click("#quick-access-notifications .chat-mention");
     assert.equal(currentURL(), `/chat/channel/Site`);
   });

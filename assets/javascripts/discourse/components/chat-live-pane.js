@@ -107,7 +107,6 @@ export default Component.extend({
       return;
     }
 
-    console.log(`Fetch messages with target ${this.targetMessageId}`)
     this.set("loading", true);
     const url = this.targetMessageId
       ? `/chat/lookup/${this.targetMessageId}.json`
@@ -201,7 +200,6 @@ export default Component.extend({
         this._markLastReadMessage();
       }
     });
-    console.log(`subscribe  to /chat/${this.chatChannel.id}`)
     this.messageBus.subscribe(`/chat/${this.chatChannel.id}`, (busData) => {
       this.handleMessage(busData);
     });

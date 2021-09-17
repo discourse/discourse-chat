@@ -36,11 +36,17 @@ createWidgetFrom(DefaultNotificationItem, "chat-mention-notification-item", {
     const id = this.attrs.id;
     setTransientHeader("Discourse-Clear-Notifications", id);
     cookie("cn", id, { path: getURL("/") });
-
     e.preventDefault();
     this.sendWidgetEvent("linkClicked");
     this.chat.setMessageId(this.attrs.data.chat_message_id);
+
     if (
+      this.router.currentRouteName === "chat.channel" &&
+      this.router.currentRoute.params.channelTitle ===
+        this.attrs.data.chat_channel_title
+    ) {
+      this.fireOpenMessageAppEvent();
+    } else if (
       this.site.mobileView ||
       this.router.currentRouteName === "chat" ||
       this.router.currentRouteName === "chat.channel"
@@ -48,25 +54,19 @@ createWidgetFrom(DefaultNotificationItem, "chat-mention-notification-item", {
       this.router.transitionTo(
         "chat.channel",
         this.attrs.data.chat_channel_title,
-      ).then((e) => {
-        this.fireOpenMessageAppEvent()
-        this.appEvents.trigger(
-          "chat:open-message",
-          this.attrs.data.chat_channel_id,
-          this.attrs.data.chat_message_id
-        );
-      });
+        { queryParams: { messageId: this.attrs.data.chat_message_id } }
+      );
     } else {
-        this.fireOpenMessageAppEvent(true)
+      this.fireOpenMessageAppEvent({ openFloat: true });
     }
   },
 
-  fireOpenMessageAppEvent(openFloat = false) {
+  fireOpenMessageAppEvent(opts = { openFloat: false }) {
     this.appEvents.trigger(
       "chat:open-message",
       this.attrs.data.chat_channel_id,
       this.attrs.data.chat_message_id,
-      openFloat
+      opts.openFloat
     );
-  }
+  },
 });

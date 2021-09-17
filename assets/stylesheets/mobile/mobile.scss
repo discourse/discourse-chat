@@ -20,6 +20,9 @@
 
   .tc-channels {
     border: none;
+    border-top: 1px solid var(--primary-low);
+    height: calc(100% - 1px);
+    background-color: var(--primary-very-low);
   }
 }
 

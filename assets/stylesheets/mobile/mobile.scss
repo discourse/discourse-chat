@@ -15,11 +15,14 @@
 
   .tc-channels,
   .tc-live-pane {
-    border-radius: var(--full-page-border-radius);
+    border-radius: 0px;
   }
 
   .tc-channels {
     border: none;
+    border-top: 1px solid var(--primary-low);
+    height: calc(100% - 1px);
+    background-color: var(--primary-very-low);
   }
 }
 

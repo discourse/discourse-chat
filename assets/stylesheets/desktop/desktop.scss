@@ -19,6 +19,7 @@
 
   .tc-full-page-header {
     padding: 0.5em 1em;
+    min-height: 2em;
   }
 
   .tc-live-pane {
@@ -152,9 +153,6 @@
       &.tc-message-selected,
       &:hover {
         background: var(--primary-low);
-      }
-      &.highlighted {
-        background-color: var(--tertiary-low);
       }
       padding-left: 2em;
     }

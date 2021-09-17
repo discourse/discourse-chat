@@ -31,13 +31,14 @@ export default Component.extend(
   ComposerUploadUppy,
   {
     classNames: ["tc-composer"],
-    value: "",
     emojiStore: service("emoji-store"),
-    mediaOptimizationWorker: service(),
     editingMessage: null,
-    timer: null,
+    fullPage: false,
     inputDisabled: not("canChat"),
+    mediaOptimizationWorker: service(),
     onValueChange: null,
+    timer: null,
+    value: "",
 
     // Composer Uppy values
     ready: true,
@@ -45,7 +46,6 @@ export default Component.extend(
     composerModel: null,
     composerModelContentKey: "value",
     editorInputClass: ".tc-composer-input",
-    fileUploadElementId: "file-uploader",
     showCancelBtn: or("isUploading", "isProcessingUpload"),
     uploadCancelled: false,
     uploadProcessorActions: null,
@@ -53,6 +53,18 @@ export default Component.extend(
     uploadMarkdownResolvers: null,
     uploadType: "chat-composer",
     uppyId: "chat-composer-uppy",
+
+    @discourseComputed("fullPage")
+    fileUploadElementId(fullPage) {
+      return fullPage ? "chat-full-page-uploader" : "chat-widget-uploader";
+    },
+
+    @discourseComputed("fullPage")
+    mobileFileUploaderId(fullPage) {
+      return fullPage
+        ? "chat-full-page-mobile-uploader"
+        : "chat-widget-mobile-uploader";
+    },
 
     init() {
       this._super(...arguments);

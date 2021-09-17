@@ -30,7 +30,7 @@
   {{flat-button
     action=(action "uploadClicked")
     class="upload-btn"
-    id="mobile-file-upload"
+    id=mobileFileUploaderId
     icon="far-image"
     title="chat.upload"
   }}
@@ -51,4 +51,4 @@
   <span class="btn uploading-indicator {{unless isProcessingUpload "hidden"}}">{{i18n "upload_selector.processing"}}</span>
   <span role="button" onClick={{action "cancelUploads"}} class="btn btn-danger cancel-btn {{unless showCancelBtn "hidden"}}">{{i18n "cancel"}}</span>
 </div>
-<input type="file" id="file-uploader" accept={{acceptedFormats}} multiple>
+<input type="file" id={{fileUploadElementId}} accept={{acceptedFormats}} multiple>

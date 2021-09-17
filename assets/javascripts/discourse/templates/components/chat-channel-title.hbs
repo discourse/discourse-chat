@@ -1,28 +1,38 @@
-<span class="chat-channel-title">
-  {{#if (eq channel.chatable_type "DirectMessageChannel")}}
-    {{#if multiDm}}
-      <span class="dm-multi-count">
-        {{channel.chatable.users.length}}
-      </span>
-      <span class="dm-usernames">{{usernames}}</span>
+{{#if (eq channel.chatable_type "DirectMessageChannel")}}
+  {{#if multiDm}}
+    <span class="dm-multi-count">
+      {{channel.chatable.users.length}}
+    </span>
+    <span class="dm-usernames">{{usernames}}</span>
 
-    {{else}}
-      <div class="dm-single-user">
-        <div class="tc-avatar-container">
-          {{avatar channel.chatable.users.firstObject imageSize="medium"}}
-          {{tc-user-presence-flair user=channel.chatable.users.firstObject}}
-        </div>
-        <span class="dm-username">{{channel.chatable.users.firstObject.username}}</span>
-      </div>
-
-    {{/if}}
-  {{else if (eq channel.chatable_type "Category")}}
-    {{category-badge channel.chatable hideParent=true allowUncategorized=true}}
-  {{else if (eq channel.chatable_type "Topic")}}
-    <span class="topic-chat-icon">{{d-icon "far-comments"}}</span>
-    <p class="chat-name">{{replace-emoji channel.chatable.fancy_title}}</p>
   {{else}}
-    {{d-icon "lock"}}
-    <p class="chat-name">{{i18n "chat.channels.staff"}}</p>
+    <div class="dm-single-user">
+      <div class="tc-avatar-container">
+        {{avatar channel.chatable.users.firstObject imageSize="medium"}}
+        {{tc-user-presence-flair user=channel.chatable.users.firstObject}}
+      </div>
+      <span class="dm-username">{{channel.chatable.users.firstObject.username}}</span>
+    </div>
+
   {{/if}}
-</span>
+{{else if (eq channel.chatable_type "Category")}}
+  <span class="category-chat-badge" style={{html-safe (concat "color: #" channel.chatable.color)}}>
+    {{d-icon "hashtag"}}
+    {{#if channel.chatable.read_restricted}}
+      <span class="category-chat-private">
+        {{d-icon "lock"}}
+      </span>
+    {{/if}}
+    <span class="category-chat-name">
+      {{channel.chatable.slug}}
+    </span>
+  </span>
+{{else if (eq channel.chatable_type "Topic")}}
+  <span class="topic-chat-badge">
+    <span class="topic-chat-icon">{{d-icon "far-comments"}}</span>
+  </span>
+  <p class="topic-chat-name">{{replace-emoji channel.chatable.fancy_title}}</p>
+{{else}}
+  {{d-icon "lock"}}
+  <p class="chat-name">{{i18n "chat.channels.staff"}}</p>
+{{/if}}

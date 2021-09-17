@@ -10,9 +10,13 @@
   {{else if unreadCount}}
     <span class="unread-chat-messages-indicator"></span>
   {{/if}}
-  {{chat-channel-title channel=channel}}
+  {{chat-channel-title channel=channel unreadCount=unreadCount}}
 </div>
 
-{{#each channel.chat_channels as |nested_channel|}}
-  {{chat-channel-row channel=nested_channel switchChannel=switchChannel nested=true}}
-{{/each}}
+{{#if channel.chat_channels}}
+  <div class="nested-container">
+    {{#each channel.chat_channels as |nested_channel|}}
+      {{chat-channel-row channel=nested_channel switchChannel=switchChannel nested=true}}
+    {{/each}}
+  </div>
+{{/if}}

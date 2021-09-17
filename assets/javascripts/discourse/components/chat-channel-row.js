@@ -13,6 +13,9 @@ export default Component.extend({
   @discourseComputed("nested", "active", "channel.muted")
   rowClassNames(nested, active, muted) {
     const classes = ["chat-channel-row"];
+    if (this.channel.chat_channels.length) {
+      classes.push("has-children");
+    }
     if (nested) {
       classes.push("nested");
     }

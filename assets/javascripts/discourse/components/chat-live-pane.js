@@ -20,6 +20,7 @@ export default Component.extend({
   classNameBindings: [":tc-live-pane", "sendingloading", "loading"],
   topicId: null, // ?Number
   chatChannel: null,
+  fullPage: false,
   registeredChatChannelId: null, // ?Number
   loading: false,
   loadingMore: false,

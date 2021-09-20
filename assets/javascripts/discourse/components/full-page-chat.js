@@ -38,7 +38,6 @@ export default Component.extend({
     this._super(...arguments);
     this.appEvents.on("chat:refresh-channels", this, "refreshModel");
     this.chat.setMessageId(this.messageId);
-    this.set("teamsSidebarOn", this.chat.getSidebarActive());
   },
 
   didInsertElement() {
@@ -57,6 +56,11 @@ export default Component.extend({
     window.removeEventListener("resize", this._calculateHeight, false);
     document.body.classList.remove("has-full-page-chat");
     this.chat.setFullScreenChatOpenStatus(false);
+  },
+
+  willRender() {
+    this._super(...arguments);
+    this.set("teamsSidebarOn", this.chat.getSidebarActive());
   },
 
   didRender() {

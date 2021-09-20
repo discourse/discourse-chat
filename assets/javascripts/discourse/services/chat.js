@@ -413,7 +413,7 @@ const MARKDOWN_OPTIONS = {
     linkify: true,
     mentions: true,
     newline: true,
-    onebox: false,
+    onebox: true,
     paragraph: false,
     policy: false,
     poll: false,

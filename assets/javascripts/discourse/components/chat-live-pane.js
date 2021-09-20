@@ -1,13 +1,14 @@
+import Component from "@ember/component";
+import discourseDebounce from "discourse-common/lib/debounce";
+import EmberObject, { action } from "@ember/object";
 import { A } from "@ember/array";
 import { isTesting } from "discourse-common/config/environment";
-import EmberObject, { action } from "@ember/object";
 import { ajax } from "discourse/lib/ajax";
-import Component from "@ember/component";
 import { observes } from "discourse-common/utils/decorators";
-import discourseDebounce from "discourse-common/lib/debounce";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { cancel, later, next, schedule } from "@ember/runloop";
 import { inject as service } from "@ember/service";
+import { loadOneboxes } from "discourse/lib/load-oneboxes";
 import { Promise } from "rsvp";
 import { resolveAllShortUrls } from "pretty-text/upload-short-url";
 
@@ -389,6 +390,14 @@ export default Component.extend({
   @action
   resolveURLs() {
     schedule("afterRender", this, () => {
+      loadOneboxes(
+        this.element,
+        ajax,
+        null,
+        null,
+        this.siteSettings.max_oneboxes_per_post,
+        false
+      );
       resolveAllShortUrls(ajax, this.siteSettings, this.element);
     });
   },

@@ -9,7 +9,8 @@ $float-height: 530px;
 }
 
 .tc-composer {
-  #chat-full-page-uploader, #chat-widget-uploader {
+  #chat-full-page-uploader,
+  #chat-widget-uploader {
     display: none;
   }
 }
@@ -1161,5 +1162,52 @@ $float-height: 530px;
 
   .topic-chat-name {
     margin: 0 0 0 0.5em;
+  }
+}
+
+.has-full-page-chat .tc-message .onebox,
+.topic-chat-float-container .tc-message .onebox {
+  width: 50%;
+  .onebox-body {
+    display: grid;
+    grid-template-rows: auto auto 150px;
+    grid-template-areas: "link" "description" "image";
+  }
+  img {
+    grid-area: image;
+    max-height: 100%;
+  }
+  h3 {
+    grid-area: link;
+    color: var(--tertiary);
+  }
+  p {
+    grid-area: description;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+.topic-chat-float-container .tc-message .onebox {
+  width: 85%;
+  border: 2px solid var(--primary-low);
+  header {
+    margin-bottom: 0.5em;
+  }
+  .onebox-body {
+    grid-template-rows: auto auto auto;
+  }
+  h3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-weight: 500;
+    font-size: var(--font-down-1);
+  }
+  p {
+    display: none;
   }
 }

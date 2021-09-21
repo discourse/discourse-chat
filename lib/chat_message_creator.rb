@@ -98,12 +98,39 @@ class DiscourseChat::ChatMessageCreator
 
   def self.mentioned_users(chat_message:, creator:)
     mention_matches = chat_message.message.scan(MENTION_REGEX)
-    mention_matches.reject! { |match| ["@#{creator.username}", "@system"].include?(match) }
-    User
-      .includes(:do_not_disturb_timings, :user_chat_channel_memberships) # Avoid n+1 for push notifications
+    if mention_matches.include?("@all")
+      users = users_for_channel(chat_message.chat_channel_id)
+    else
+      users = mention_matches.include?("@here") ?
+        users_here(chat_message.chat_channel_id, mention_matches) :
+        users = users_for_channel(chat_message.chat_channel_id, mention_matches.map { |match| match[1..-1] })
+    end
+    users.reject { |user| user == creator }
+  end
+
+  def self.users_here(chat_channel_id, mention_matches)
+    users = users_for_channel(chat_channel_id)
+      .where("last_seen_at > ?", 5.minutes.ago)
+    usernames = users.map(&:username)
+    other_mentioned_usernames = mention_matches
+      .map { |match| match[1..-1] }
+      .reject { |username| username == "here" || usernames.include?(username) }
+
+    other_mentioned_usernames.any? ?
+      users.or(users_for_channel(chat_channel_id, other_mentioned_usernames)) :
+      users
+  end
+
+  def self.users_for_channel(chat_channel_id, usernames = nil)
+    users = User
+      .includes(:do_not_disturb_timings, :user_chat_channel_memberships, :push_subscriptions)
       .joins(:user_chat_channel_memberships)
-      .where(user_chat_channel_memberships: { chat_channel_id: chat_message.chat_channel_id })
-      .where(username: mention_matches.map { |match| match[1..-1] })
+      .where(user_chat_channel_memberships: { chat_channel_id: chat_channel_id })
+    if usernames
+      users = users.where(username: usernames)
+    end
+
+    users
   end
 
   def self.create_mention_notification(creator_username:, mentioned_user:, chat_channel:, chat_message:)

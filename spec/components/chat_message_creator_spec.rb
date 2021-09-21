@@ -51,6 +51,61 @@ describe DiscourseChat::ChatMessageCreator do
     }.to change { Notification.count }.by(2)
   end
 
+  it "notifies @all properly" do
+    expect {
+      DiscourseChat::ChatMessageCreator.create(
+        chat_channel: public_chat_channel,
+        user: user1,
+        in_reply_to_id: nil,
+        content: "@all"
+      )
+    }.to change { Notification.count }.by(4)
+  end
+
+  it "notifies @here properly" do
+    admin1.update(last_seen_at: 1.year.ago)
+    admin2.update(last_seen_at: 1.year.ago)
+    user1.update(last_seen_at: Time.now)
+    user2.update(last_seen_at: Time.now)
+    user3.update(last_seen_at: Time.now)
+    expect {
+      DiscourseChat::ChatMessageCreator.create(
+        chat_channel: public_chat_channel,
+        user: user1,
+        in_reply_to_id: nil,
+        content: "@here"
+      )
+    }.to change { Notification.count }.by(2)
+  end
+
+  it "doesn't sent double notifications when '@here' is mentioned" do
+    user2.update(last_seen_at: Time.now)
+    expect {
+      DiscourseChat::ChatMessageCreator.create(
+        chat_channel: public_chat_channel,
+        user: user1,
+        in_reply_to_id: nil,
+        content: "@here @#{user2.username}"
+      )
+    }.to change { Notification.where(user: user2).count }.by(1)
+  end
+
+  it "notifies @here plus other mentions" do
+    admin1.update(last_seen_at: Time.now)
+    admin2.update(last_seen_at: 1.year.ago)
+    user1.update(last_seen_at: 1.year.ago)
+    user2.update(last_seen_at: 1.year.ago)
+    user3.update(last_seen_at: 1.year.ago)
+    expect {
+      DiscourseChat::ChatMessageCreator.create(
+        chat_channel: public_chat_channel,
+        user: user1,
+        in_reply_to_id: nil,
+        content: "@here plus @#{user3.username}"
+      )
+    }.to change { Notification.where(user: user3).count }.by(1)
+  end
+
   it "doesn't create mention notifications for users without a membership record" do
     expect {
       DiscourseChat::ChatMessageCreator.create(

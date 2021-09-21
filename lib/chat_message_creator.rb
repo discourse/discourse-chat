@@ -98,12 +98,44 @@ class DiscourseChat::ChatMessageCreator
 
   def self.mentioned_users(chat_message:, creator:)
     mention_matches = chat_message.message.scan(MENTION_REGEX)
-    mention_matches.reject! { |match| ["@#{creator.username}", "@system"].include?(match) }
-    User
-      .includes(:do_not_disturb_timings, :user_chat_channel_memberships) # Avoid n+1 for push notifications
+    if mention_matches.include?("@all")
+      return users_for_channel(chat_message.chat_channel_id, exclude: creator.username)
+    end
+
+    mention_matches.include?("@here") ?
+      users_here(chat_message.chat_channel_id, creator.username, mention_matches) :
+      users_for_channel(
+        chat_message.chat_channel_id,
+        exclude: creator.username,
+        usernames: mention_matches.map { |match| match[1..-1] }
+      )
+  end
+
+  def self.users_here(chat_channel_id, creator_username, mention_matches)
+    users = users_for_channel(chat_channel_id, exclude: creator_username).where("last_seen_at > ?", 5.minutes.ago)
+    usernames = users.map(&:username)
+    other_mentioned_usernames = mention_matches
+      .map { |match| match[1..-1] }
+      .reject { |username| username == "here" || usernames.include?(username) }
+    return users if other_mentioned_usernames.empty?
+
+    users.or(
+      users_for_channel(
+        chat_channel_id,
+        exclude: creator_username,
+        usernames: other_mentioned_usernames
+      )
+    )
+  end
+
+  def self.users_for_channel(chat_channel_id, exclude:, usernames: nil)
+    users = User
+      .includes(:do_not_disturb_timings, :user_chat_channel_memberships, :push_subscriptions)
       .joins(:user_chat_channel_memberships)
-      .where(user_chat_channel_memberships: { chat_channel_id: chat_message.chat_channel_id })
-      .where(username: mention_matches.map { |match| match[1..-1] })
+      .where(user_chat_channel_memberships: { chat_channel_id: chat_channel_id })
+      .where.not(username: exclude)
+    users = users.where(username: usernames) if usernames
+    users
   end
 
   def self.create_mention_notification(creator_username:, mentioned_user:, chat_channel:, chat_message:)

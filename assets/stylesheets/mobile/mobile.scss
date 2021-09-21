@@ -83,6 +83,30 @@ body.has-full-page-chat {
   }
 }
 
+.chat-channel-settings-modal .modal-inner-container {
+  max-width: 90vw;
+  .chat-channel-settings-row {
+    max-width: 100%;
+    .chat-channel-expand-settings {
+      .d-icon {
+        margin-right: 0;
+      }
+      .d-button-label {
+        display: none;
+      }
+    }
+    .chat-channel-preview {
+      display: none;
+    }
+    .chat-channel-title {
+      max-width: 80%;
+    }
+    .controls.save-container {
+      justify-content: end;
+    }
+  }
+}
+
 .full-page-chat {
   .tc-drawer {
     width: 100%;

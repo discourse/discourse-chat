@@ -104,7 +104,6 @@ describe DiscourseChat::ChatMessageCreator do
         content: "@here plus @#{user3.username}"
       )
     }.to change { Notification.where(user: user3).count }.by(1)
-
   end
 
   it "doesn't create mention notifications for users without a membership record" do

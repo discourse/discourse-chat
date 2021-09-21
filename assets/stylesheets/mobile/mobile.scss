@@ -123,18 +123,24 @@ body.has-full-page-chat {
   .tc-channels {
     font-weight: 500;
     background-color: var(--secondary);
+    .topic-chat-badge {
+      .d-icon {
+        background-color: var(--secondary);
+      }
+    }
   }
   .tc-full-page-header {
     padding: 0.5em 1em;
     font-weight: bold;
   }
-  .tc-channels .category-chat-private .d-icon {
+  .tc-channels .chat-channel-row .category-chat-private .d-icon {
     background-color: var(--secondary);
   }
-  .chat-channel-row .unread-chat-messages-indicator {
-    width: 5px;
-    height: 10px;
-    left: 0px;
-    top: 12px;
+  .chat-channel-row .unread-chat-messages-indicator,
+  .chat-channel-row .unread-dm-indicator {
+    width: 6px;
+    height: 6px;
+    left: 5px;
+    top: calc(50% - 3px);
   }
 }

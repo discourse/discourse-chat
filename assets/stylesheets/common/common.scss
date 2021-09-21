@@ -111,9 +111,25 @@ $float-height: 530px;
   }
 
   .tc-channels {
+    .chat-channel-row {
+      padding-left: 1em;
+      .topic-chat-badge .d-icon {
+        background-color: var(--secondary);
+      }
+      &.nested {
+        .unread-chat-messages-indicator {
+          top: calc(50% - 8px);
+        }
+      }
+    }
     .unread-dm-indicator,
     .unread-chat-messages-indicator {
-      left: -1px;
+      left: 3px;
+      width: 8px;
+      height: 8px;
+      border-radius: 7px;
+      opacity: 0.5;
+      top: calc(50% - 5px);
     }
   }
 }
@@ -122,16 +138,16 @@ $float-height: 530px;
 }
 
 .tc-channels {
-  .unread-dm-indicator {
-    width: 5px;
+  .unread-dm-indicator,
+  .unread-chat-messages-indicator {
+    width: 10px;
     height: 10px;
-    position: absolute;
-    left: 0px;
-    top: calc(1em + 2px);
-    border-radius: 0;
-    border-top-right-radius: 7px;
-    border-bottom-right-radius: 7px;
-    border: 0px;
+    opacity: 0.4;
+    margin-left: 0.5em;
+    border-radius: 10px;
+    border: 0;
+    right: 7px;
+    top: calc(50% - 5px);
     .unread-dm-indicator-number-wrap {
       display: none;
     }
@@ -721,6 +737,12 @@ $float-height: 530px;
   &:hover {
     background: var(--primary-low);
 
+    .topic-chat-badge .topic-chat-icon {
+      .d-icon {
+        background-color: var(--primary-low);
+      }
+    }
+
     .unread-dm-indicator,
     .unread-chat-messages-indicator {
       border-color: var(--primary-low);
@@ -753,7 +775,9 @@ $float-height: 530px;
     font-weight: bold;
   }
   &.nested {
-    padding-left: 1.5em;
+    .unread-chat-messages-indicator {
+      top: calc(50% - 8px)
+    }
     .chat-channel-title {
       align-items: baseline;
     }
@@ -764,18 +788,8 @@ $float-height: 530px;
     margin-right: 0;
   }
 
-  // .unread-dm-indicator,
   .unread-chat-messages-indicator {
-    width: 5px;
-    height: 10px;
     background: var(--primary-medium);
-    position: absolute;
-    border-radius: 0px;
-    border: 0;
-    left: 0;
-    top: 0.75em;
-    border-top-right-radius: 6px;
-    border-bottom-right-radius: 6px;
   }
 
   .chat-channel-row-unread-count {
@@ -790,7 +804,7 @@ $float-height: 530px;
   display: flex;
   align-items: baseline;
   font-weight: 500;
-  max-width: 100%;
+  max-width: calc(100% - 10px - 0.5em);
   .category-chat-name,
   .topic-chat-name,
   .chat-name {
@@ -891,14 +905,13 @@ $float-height: 530px;
         }
       }
       .chat-channel-title {
-        width: 100%;
         font-weight: unset;
       }
       .chat-channel-row-unread-count {
         display: none;
       }
       &.nested {
-        padding-left: 3em;
+        padding-left: 2em;
       }
     }
   }
@@ -986,10 +999,7 @@ $float-height: 530px;
     border-radius: var(--full-page-border-radius) 0 0
       var(--full-page-border-radius);
     .chat-channel-row {
-      padding: 0.5em 1em;
-      &.nested {
-        padding: 0.5em 2em;
-      }
+      padding: 0.5em 1.5em;
       .category-chat-private .d-icon {
         background-color: var(--primary-very-low);
       }
@@ -1109,6 +1119,13 @@ $float-height: 530px;
     }
   }
 
+  .topic-chat-badge {
+    .d-icon {
+      background-color: var(--primary-very-low);
+      z-index: 1;
+    }
+  }
+
   .category-chat-private .d-icon {
     background-color: var(--secondary);
     position: absolute;
@@ -1124,39 +1141,22 @@ $float-height: 530px;
   .chat-channel-row.nested {
     position: relative;
     overflow: hidden;
-    .topic-chat-icon::before {
-      content: "";
-      display: block;
-      position: absolute;
-      border-left: 2px solid var(--primary-low-mid);
-      border-bottom: 2px solid var(--primary-low-mid);
-      border-bottom-left-radius: 0.5em;
-      left: -8px;
-      bottom: calc(100% - (1.125em / 2));
-      width: 5px;
-      height: calc(100% + 2px);
-    }
     .topic-chat-icon::after {
       content: "";
       display: block;
       position: absolute;
       border-left: 2px solid var(--primary-low-mid);
-      left: -8px;
+      left: 5px;
       bottom: -0.5em;
-      width: 5px;
       height: calc(100% + 1em);
-    }
-  }
-
-  .nested-container div:first-of-type .chat-channel-row.nested {
-    .topic-chat-icon::before {
-      height: calc(1em - 2px);
+      z-index: 0;
     }
   }
 
   .nested-container div:last-of-type .chat-channel-row.nested {
     .topic-chat-icon::after {
-      all: unset;
+      height: 2em;
+      bottom: 0.25em;
     }
   }
 

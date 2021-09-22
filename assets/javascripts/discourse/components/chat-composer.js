@@ -432,6 +432,13 @@ export default Component.extend(
       }
     },
 
+    addText(text) {
+      const selected = this._getSelected(null, {
+        lineVal: true,
+      });
+      this._addText(selected, text);
+    },
+
     @discourseComputed("canChat")
     placeholder(canChat) {
       return I18n.t(canChat ? "chat.placeholder" : "chat.placeholder_log_in");

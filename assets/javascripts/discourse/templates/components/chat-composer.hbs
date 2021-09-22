@@ -14,7 +14,23 @@
     title="chat.reply_edit"
   }}
 {{/if}}
+
+
 <div class="tc-composer-row">
+  {{#if showToolbar}}
+    <div class="chat-composer-toolbar">
+      {{#each toolbarButtons as |toolbarButton|}}
+        {{flat-button
+          action=(action toolbarButton.action)
+          class=toolbarButton.class
+          id=toolbarButton.id
+          icon=toolbarButton.icon
+          title=toolbarButton.title
+        }}
+      {{/each}}
+    </div>
+  {{/if}}
+
   {{d-textarea
     value=(readonly value)
     input=(action "onTextareaInput" value="target.value")
@@ -28,11 +44,9 @@
   }}
 
   {{flat-button
-    action=(action "uploadClicked")
-    class="upload-btn"
-    id=mobileFileUploaderId
-    icon="far-image"
-    title="chat.upload"
+    action=(action "toggleToolbar")
+    class="open-toolbar-btn"
+    icon=(if showToolbar "minus" "plus")
   }}
 
   {{#if site.mobileView}}

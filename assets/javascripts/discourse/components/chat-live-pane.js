@@ -2,8 +2,9 @@ import Component from "@ember/component";
 import discourseDebounce from "discourse-common/lib/debounce";
 import EmberObject, { action } from "@ember/object";
 import { A } from "@ember/array";
-import { isTesting } from "discourse-common/config/environment";
+import { applyLocalDates } from "discourse/plugins/discourse-local-dates/initializers/discourse-local-dates";
 import { ajax } from "discourse/lib/ajax";
+import { isTesting } from "discourse-common/config/environment";
 import { observes } from "discourse-common/utils/decorators";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { cancel, later, next, schedule } from "@ember/runloop";
@@ -122,7 +123,7 @@ export default Component.extend({
             return;
           }
           this.setMessageProps(data.topic_chat_view);
-          this.resolveURLs();
+          this.decorateMessages();
           this.onScroll();
         })
         .catch((err) => {
@@ -161,7 +162,7 @@ export default Component.extend({
         if (newMessages.length) {
           this.set("messages", newMessages.concat(this.messages));
           this.scrollToMessage(firstMessageId);
-          this.resolveURLs();
+          this.decorateMessages();
         } else {
           this.set("allPastMessagesLoaded", true);
         }
@@ -388,7 +389,7 @@ export default Component.extend({
   },
 
   @action
-  resolveURLs() {
+  decorateMessages() {
     schedule("afterRender", this, () => {
       loadOneboxes(
         this.element,
@@ -399,6 +400,10 @@ export default Component.extend({
         false
       );
       resolveAllShortUrls(ajax, this.siteSettings, this.element);
+      applyLocalDates(
+        this.element.querySelectorAll(".discourse-local-date"),
+        this.siteSettings
+      );
     });
   },
 
@@ -437,7 +442,7 @@ export default Component.extend({
         this.handleRestoreMessage(data);
         break;
     }
-    this.resolveURLs();
+    this.decorateMessages();
   },
 
   handleSentMessage(data) {

@@ -24,6 +24,12 @@ import { Promise } from "rsvp";
 import { translations } from "pretty-text/emoji/data";
 
 const THROTTLE_MS = 150;
+let outsideToolbarClick;
+
+const toolbarButtons = [];
+export function addChatToolbarButton(toolbarButton) {
+  toolbarButtons.push(toolbarButton);
+}
 
 export default Component.extend(
   TextareaTextManipulation,
@@ -37,6 +43,7 @@ export default Component.extend(
     inputDisabled: not("canChat"),
     mediaOptimizationWorker: service(),
     onValueChange: null,
+    showToolbar: false,
     timer: null,
     value: "",
 
@@ -74,6 +81,21 @@ export default Component.extend(
         uploadPreProcessors: [],
         uploadMarkdownResolvers: [],
       });
+      outsideToolbarClick = this.toggleToolbar.bind(this);
+
+      this.set(
+        "toolbarButtons",
+        [
+          {
+            action: this.uploadClicked,
+            class: "upload-btn",
+            id: this.mobileFileUploaderId,
+            icon: "far-image",
+            title: "chat.upload",
+          },
+        ].concat(toolbarButtons)
+      );
+
       if (this.siteSettings.composer_media_optimization_image_enabled) {
         // TODO:
         // This whole deal really is not ideal, maybe we need some sort
@@ -118,6 +140,8 @@ export default Component.extend(
 
     willDestroyElement() {
       this._super(...arguments);
+      window.removeEventListener("click", outsideToolbarClick);
+
       if (this.timer) {
         cancel(this.timer);
         this.timer = null;
@@ -497,6 +521,17 @@ export default Component.extend(
     @action
     cancelUploads() {
       this.set("uploadCancelled", true);
+    },
+
+    @action
+    toggleToolbar() {
+      this.set("showToolbar", !this.showToolbar);
+      if (this.showToolbar) {
+        window.addEventListener("click", outsideToolbarClick);
+      } else {
+        window.removeEventListener("click", outsideToolbarClick);
+      }
+      return false;
     },
   }
 );

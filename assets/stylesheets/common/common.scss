@@ -661,12 +661,14 @@ $float-height: 530px;
         }
       }
 
-      .upload-btn {
+      .open-toolbar-btn {
         position: absolute;
         right: 20px;
         top: 50%;
         transform: translateY(-50%);
-        padding: 10px;
+        padding: 0.4em;
+        border-radius: 100%;
+        background: var(--primary-low);
       }
     }
 
@@ -704,6 +706,24 @@ $float-height: 530px;
     .d-icon {
       animation: color 0.2s ease-in-out;
       color: var(--primary-low-mid);
+    }
+  }
+  .chat-composer-toolbar {
+    position: absolute;
+    top: -36px;
+    right: 0.75em;
+    padding: 0 0.25em;
+    border-radius: 6px;
+    border: 1px solid var(--primary-low-mid);
+    background: var(--secondary);
+
+    .btn-flat {
+      padding: 0.5em;
+
+      .d-icon {
+        font-size: var(--font-0);
+        color: var(--primary-medium);
+      }
     }
   }
 }

@@ -58,6 +58,9 @@
       &::after {
         width: calc(100% - 40px + 8px);
       }
+      .chat-composer-toolbar {
+        right: 1em;
+      }
     }
   }
 }

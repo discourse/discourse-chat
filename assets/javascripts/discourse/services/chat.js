@@ -6,6 +6,7 @@ import { generateCookFunction } from "discourse/lib/text";
 import { observes } from "discourse-common/utils/decorators";
 import { Promise } from "rsvp";
 import simpleCategoryHashMentionTransform from "discourse/plugins/discourse-topic-chat/discourse/lib/simple-category-hash-mention-transform";
+import { addChatToolbarButton } from "discourse/plugins/discourse-topic-chat/discourse/components/chat-composer";
 import { defaultHomepage } from "discourse/lib/utilities";
 
 export const LIST_VIEW = "list_view";
@@ -386,6 +387,10 @@ export default Service.extend({
       chat_message_id: channel.last_read_message_id,
     };
   },
+
+  addToolbarButton(toolbarButton) {
+    addChatToolbarButton(toolbarButton);
+  },
 });
 
 const MARKDOWN_OPTIONS = {
@@ -403,7 +408,7 @@ const MARKDOWN_OPTIONS = {
     "custom-typographer-replacements": false,
     "d-wrap": false,
     details: false,
-    "discourse-local-dates": false,
+    "discourse-local-dates": true,
     emoji: true,
     emojiShortcuts: true,
     html: false,

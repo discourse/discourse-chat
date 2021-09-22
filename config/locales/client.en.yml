@@ -38,6 +38,9 @@ en:
       upload: "Attach a file"
       exit: "back"
 
+      composer:
+        toggle_toolbar: "Toggle toolbar"
+
       notification_levels:
         never: "Never"
         mention: "Only for mentions"

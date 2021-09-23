@@ -21,6 +21,23 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     render_serialized(@chat_channel, ChatChannelSerializer)
   end
 
+  def get_by_title
+    params.require(:title)
+    all_channels = ChatChannel.all
+    channel = all_channels.detect { |channel| channel.title(current_user) == params[:title] }
+    raise Discourse::NotFound unless channel
+
+    chatable = nil
+    if channel.site_channel?
+      guardian.ensure_can_access_site_chat!
+    else
+      chatable = channel.chatable
+      guardian.ensure_can_see!(chatable)
+    end
+
+    render_serialized(channel, ChatChannelSerializer)
+  end
+
   def follow
     params.require(:chat_channel_id)
 

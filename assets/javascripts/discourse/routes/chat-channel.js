@@ -23,16 +23,26 @@ export default DiscourseRoute.extend({
   },
 
   async getChannel(params) {
-    if (params.previewing && params.id) {
-      // We are previewing a channel, so we don't have it in the chat service
-      // Fetch it using ajax.
-      return ajax(`/chat/chat_channels/${params.id}`).then((response) => {
-        return response.chat_channel;
-      });
-    } else {
-      // Since we aren't previewing can safely assume the channel is in chat service
-      return this.chat.getChannelBy("title", params.channelTitle);
+    let channel = await this.chat.getChannelBy("title", params.channelTitle);
+    if (!channel) {
+      channel = await this.getChannelFromServer(params.channelTitle);
     }
+    return channel;
+    // if (params.previewing) {
+    // We are previewing a channel, so we don't have it in the chat service
+    // Fetch it using ajax.
+    // return getChannelFromServer(params.channelTitle)
+    // } else {
+    // Since we aren't previewing can safely assume the channel is in chat service
+    // return this.chat.getChannelBy("title", params.channelTitle);
+  },
+
+  async getChannelFromServer(title) {
+    return ajax(`/chat/chat_channels/by_title/${title}`)
+      .then((response) => {
+        return response.chat_channel;
+      })
+      .catch(() => this.replaceWith("/404"));
   },
 
   afterModel() {

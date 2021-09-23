@@ -213,7 +213,7 @@ export default Service.extend({
     });
   },
 
-  getChannelBy(key, value) {
+  async getChannelBy(key, value) {
     return this.getChannels().then(() => {
       if (!isNaN(value)) {
         value = parseInt(value, 10);

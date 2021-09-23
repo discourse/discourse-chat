@@ -151,7 +151,6 @@ RSpec.describe DiscourseChat::ChatController do
         sign_in(user)
         UserChatChannelMembership.create(user: user, chat_channel: chat_channel, following: true)
 
-
         expect {
           post "/chat/#{chat_channel.id}.json", params: { message: message }
         }.to change { ChatMessage.count }.by(1)
@@ -384,20 +383,6 @@ RSpec.describe DiscourseChat::ChatController do
         expect(deleted_message.reload.deleted_at).to eq(nil)
       end
     end
-  end
-
-  describe "#get_by_title" do
-    fab!(:chat_channel) { Fabricate(:chat_channel, chatable: topic) }
-
-    before { sign_in(user) }
-
-    it "returns the correct channel" do
-      get "/chat/chat_channels/by_title/#{chat_channel.title(user)}.json"
-      expect(response.status).to eq(200)
-      puts response.parsed_body.inspect
-      expect(response.parsed_body["chat_channel"]["id"]).to eq(chat_channel.id)
-    end
-
   end
 
   describe "#update_user_last_read" do

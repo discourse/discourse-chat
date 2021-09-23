@@ -52,6 +52,12 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
 
   def create_message
     set_channel_and_chatable
+    @user_chat_channel_membership = UserChatChannelMembership.find_by(
+      chat_channel: @chat_channel,
+      user: current_user,
+      following: true
+    )
+    raise Discourse::InvalidAccess unless @user_chat_channel_membership
 
     reply_to_msg_id = params[:in_reply_to_id]
     if reply_to_msg_id
@@ -74,7 +80,14 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     end
 
     @chat_channel.touch
-    set_user_last_read
+    @user_chat_channel_membership.update(
+      last_read_message_id: chat_message_creator.chat_message.id
+    )
+    ChatPublisher.publish_user_tracking_state(
+      current_user,
+      @chat_channel.id,
+      chat_message_creator.chat_message.id
+    )
     render json: success_json
   end
 

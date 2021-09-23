@@ -140,8 +140,17 @@ RSpec.describe DiscourseChat::ChatController do
         expect(response.status).to eq(403)
       end
 
-      it "sends a message for regular user when staff-only is false" do
+      it "errors when the user isn't following the channel" do
         sign_in(user)
+
+        post "/chat/#{chat_channel.id}.json", params: { message: message }
+        expect(response.status).to eq(403)
+      end
+
+      it "sends a message for regular user when staff-only is and they are following channel" do
+        sign_in(user)
+        UserChatChannelMembership.create(user: user, chat_channel: chat_channel, following: true)
+
 
         expect {
           post "/chat/#{chat_channel.id}.json", params: { message: message }
@@ -153,6 +162,8 @@ RSpec.describe DiscourseChat::ChatController do
 
     describe "for site chat" do
       fab!(:chat_channel) { Fabricate(:site_chat_channel) }
+      fab!(:user_chat_channel_membership) { Fabricate(:user_chat_channel_membership, chat_channel: chat_channel, user: user) }
+      fab!(:admin_chat_channel_membership) { Fabricate(:user_chat_channel_membership, chat_channel: chat_channel, user: admin) }
 
       it "errors for regular user" do
         sign_in(user)

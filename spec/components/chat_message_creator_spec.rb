@@ -28,7 +28,7 @@ describe DiscourseChat::ChatMessageCreator do
     @direct_message_channel = DiscourseChat::DirectMessageChannelCreator.create([user1, user2])
   end
 
-  it "it creates messages for users who can see the channel" do
+  it "creates messages for users who can see the channel" do
     expect {
       DiscourseChat::ChatMessageCreator.create(
         chat_channel: public_chat_channel,
@@ -51,7 +51,7 @@ describe DiscourseChat::ChatMessageCreator do
     }.to change { Notification.count }.by(2)
   end
 
-  it "works with the wrong casing" do
+  it "mentions are case insensitive" do
     expect {
       DiscourseChat::ChatMessageCreator.create(
         chat_channel: public_chat_channel,

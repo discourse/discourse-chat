@@ -147,7 +147,7 @@ RSpec.describe DiscourseChat::ChatController do
         expect(response.status).to eq(403)
       end
 
-      it "sends a message for regular user when staff-only is and they are following channel" do
+      it "sends a message for regular user when staff-only is disabled and they are following channel" do
         sign_in(user)
         UserChatChannelMembership.create(user: user, chat_channel: chat_channel, following: true)
 

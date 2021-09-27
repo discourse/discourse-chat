@@ -48,6 +48,7 @@ export default {
     }
 
     withPluginApi("0.12.1", (api) => {
+      api.addDocumentTitleCounter(() => chat.getChatDocumentTitleCount());
       api.addCardClickListenerSelector(".topic-chat-float-container");
       api.addPostSmallActionIcon("chat.enabled", "comment");
       api.addPostSmallActionIcon("chat.disabled", "comment");

@@ -1,6 +1,6 @@
 import DiscourseRoute from "discourse/routes/discourse";
 import Promise from "rsvp";
-import { action } from "@ember/object";
+import EmberObject, { action } from "@ember/object";
 import { ajax } from "discourse/lib/ajax";
 import { inject as service } from "@ember/service";
 
@@ -14,25 +14,30 @@ export default DiscourseRoute.extend({
   },
 
   async model(params) {
-    let [chatChannel, channels] = await Promise.all([
-      this.getChannel(params),
+    let [[chatChannel, previewing], channels] = await Promise.all([
+      this.getChannel(params.channelTitle),
       this.chat.getChannels(),
     ]);
 
-    return { chatChannel, channels };
+    return EmberObject.create({ chatChannel, channels, previewing });
   },
 
-  async getChannel(params) {
-    if (params.previewing && params.id) {
-      // We are previewing a channel, so we don't have it in the chat service
-      // Fetch it using ajax.
-      return ajax(`/chat/chat_channels/${params.id}`).then((response) => {
-        return response.chat_channel;
-      });
-    } else {
-      // Since we aren't previewing can safely assume the channel is in chat service
-      return this.chat.getChannelBy("title", params.channelTitle);
+  async getChannel(title) {
+    let channel = await this.chat.getChannelBy("title", title);
+    let previewing = false;
+    if (!channel) {
+      channel = await this.getChannelFromServer(title);
+      previewing = true;
     }
+    return [channel, previewing];
+  },
+
+  async getChannelFromServer(title) {
+    return ajax(`/chat/chat_channels/by_title/${title}`)
+      .then((response) => {
+        return response.chat_channel;
+      })
+      .catch(() => this.replaceWith("/404"));
   },
 
   afterModel() {

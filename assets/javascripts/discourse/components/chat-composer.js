@@ -17,7 +17,7 @@ import { findRawTemplate } from "discourse-common/lib/raw-templates";
 import { emojiSearch, isSkinTonableEmoji } from "pretty-text/emoji";
 import { emojiUrlFor } from "discourse/lib/text";
 import { inject as service } from "@ember/service";
-import { not, or } from "@ember/object/computed";
+import { or } from "@ember/object/computed";
 import { search as searchCategoryTag } from "discourse/lib/category-tag-search";
 import { SKIP } from "discourse/lib/autocomplete";
 import { Promise } from "rsvp";
@@ -40,9 +40,9 @@ export default Component.extend(
     emojiStore: service("emoji-store"),
     editingMessage: null,
     fullPage: false,
-    inputDisabled: not("canChat"),
     mediaOptimizationWorker: service(),
     onValueChange: null,
+    previewing: false,
     showToolbar: false,
     timer: null,
     value: "",
@@ -439,19 +439,22 @@ export default Component.extend(
       this._addText(selected, text);
     },
 
-    @discourseComputed("canChat")
-    placeholder(canChat) {
-      return I18n.t(canChat ? "chat.placeholder" : "chat.placeholder_log_in");
+    @discourseComputed("previewing")
+    placeholder(previewing) {
+      return I18n.t(
+        previewing ? "chat.placeholder_previewing" : "chat.placeholder"
+      );
     },
 
     @discourseComputed(
       "canChat",
       "loading",
       "isUploading",
-      "isProcessingUpload"
+      "isProcessingUpload",
+      "previewing"
     )
-    sendDisabled(canChat, loading, uploading, processingUpload) {
-      return !canChat || loading || uploading || processingUpload;
+    sendDisabled(canChat, loading, uploading, processingUpload, previewing) {
+      return !canChat || loading || uploading || processingUpload || previewing;
     },
 
     @action

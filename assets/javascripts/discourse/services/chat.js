@@ -1,13 +1,13 @@
 import EmberObject from "@ember/object";
 import Service, { inject as service } from "@ember/service";
+import { addChatToolbarButton } from "discourse/plugins/discourse-topic-chat/discourse/components/chat-composer";
 import { ajax } from "discourse/lib/ajax";
 import { A } from "@ember/array";
+import { defaultHomepage } from "discourse/lib/utilities";
 import { generateCookFunction } from "discourse/lib/text";
 import { observes } from "discourse-common/utils/decorators";
 import { Promise } from "rsvp";
 import simpleCategoryHashMentionTransform from "discourse/plugins/discourse-topic-chat/discourse/lib/simple-category-hash-mention-transform";
-import { addChatToolbarButton } from "discourse/plugins/discourse-topic-chat/discourse/components/chat-composer";
-import { defaultHomepage } from "discourse/lib/utilities";
 
 export const LIST_VIEW = "list_view";
 export const CHAT_VIEW = "chat_view";
@@ -26,6 +26,7 @@ export default Service.extend({
   presence: service(),
   presenceChannel: null,
   publicChannels: null,
+  router: service(),
   sidebarActive: false,
   unreadDirectMessageCount: null,
   _fetchingChannels: null,
@@ -58,6 +59,18 @@ export default Service.extend({
   _onSettingsModalClosed(modal) {
     if (modal.name !== "chat-channel-settings") {
       return;
+    }
+
+    // Check the route the modal was opened on. If it was opened
+    // on full page chat for a channel that is not followed, navigate
+    // home.
+    if (modal.controller.openedOnRouteName === "chat.channel") {
+      const currentChannel = modal.controller.channels.find(
+        (c) => c.title === this.router.currentRoute.params.channelTitle
+      );
+      if (currentChannel && !currentChannel.following) {
+        this.router.transitionTo(`discovery.${defaultHomepage()}`);
+      }
     }
 
     this.forceRefreshChannels().then(() => {
@@ -213,7 +226,7 @@ export default Service.extend({
     });
   },
 
-  getChannelBy(key, value) {
+  async getChannelBy(key, value) {
     return this.getChannels().then(() => {
       if (!isNaN(value)) {
         value = parseInt(value, 10);

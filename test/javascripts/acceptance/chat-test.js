@@ -507,6 +507,40 @@ acceptance("Discourse Chat - chat channel settings", function (needs) {
     server.post("/chat/chat_channels/:chatChannelId/follow", () => {
       return helper.response(siteChannel.chat_channel);
     });
+
+    server.get("/chat/chat_channels/by_title/preview-me", () => {
+      return helper.response({
+        chat_channel: {
+          id: 5,
+          chatable_id: 70,
+          chatable_type: "Topic",
+          chatable_url: "http://localhost:3000/t/preview-me/112",
+          title: "preview-me",
+          chatable: {
+            id: 12,
+            title: "preview-me",
+            fancy_title: "preview-me",
+            slug: "preview-me",
+            posts_count: 1,
+          },
+          chat_channels: [],
+        },
+      });
+    });
+  });
+
+  test("unfollowing a channel while you're viewing it takes you home", async function (assert) {
+    await visit("/chat/channel/Site");
+    await click(".edit-channel-membership-btn");
+    await click(".chat-channel-unfollow");
+    await click(".modal-close");
+    assert.equal(currentURL(), "/latest");
+  });
+
+  test("previewing channel", async function (assert) {
+    await visit("/chat/channel/preview-me");
+    assert.ok(exists(".join-channel-btn"), "Join channel button is present");
+    assert.equal(query(".tc-composer-row textarea").disabled, true);
   });
 
   test("Chat channel settings modal", async function (assert) {
@@ -547,14 +581,5 @@ acceptance("Discourse Chat - chat channel settings", function (needs) {
       settingsRow.querySelector(".chat-channel-follow"),
       "Follow button is present"
     );
-
-    // Click preview button!
-    await click(".chat-channel-preview");
-    assert.equal(currentURL(), "/chat/channel/Site?id=9&previewing=true");
-    assert.ok(exists(".join-channel-btn"), "Join channel button is present");
-
-    await click(".join-channel-btn");
-    assert.equal(currentURL(), "/chat/channel/Site");
-    assert.notOk(exists(".join-channel-btn"), "Join channel button is gone");
   });
 });

@@ -261,4 +261,14 @@ RSpec.describe DiscourseChat::ChatChannelsController do
       end
     end
   end
+
+  describe "#get_by_title" do
+    before { sign_in(user) }
+
+    it "returns the correct channel" do
+      get "/chat/chat_channels/by_title/#{chat_channel.title(user)}.json"
+      expect(response.status).to eq(200)
+      expect(response.parsed_body["chat_channel"]["id"]).to eq(chat_channel.id)
+    end
+  end
 end

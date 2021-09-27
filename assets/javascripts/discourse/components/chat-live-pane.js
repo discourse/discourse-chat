@@ -27,6 +27,7 @@ export default Component.extend({
   loading: false,
   loadingMore: false,
   allPastMessagesLoaded: false,
+  previewing: false,
   sendingloading: false,
   stickyScroll: true,
   stickyScrollTimer: null,

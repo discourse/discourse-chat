@@ -26,7 +26,7 @@ en:
       mention_notification: "<span>%{username} mentioned you in chat</span>"
       open_full_page: "Open full-screen chat"
       placeholder: "chat..."
-      placeholder_log_in: "Log in to chat"
+      placeholder_previewing: "Join the channel to send a message."
       reply: "Reply"
       restore: "Restore deleted message"
       return_to_list: "Return to channel list"

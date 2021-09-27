@@ -359,9 +359,11 @@ export default Service.extend({
 
     Object.values(this.currentUser.chat_channel_tracking_state).forEach(
       (state) => {
-        state.chatable_type === "DirectMessageChannel"
-          ? (unreadDmCount += state.unread_count || 0)
-          : (unreadPublicCount += state.unread_count || 0);
+        if (!state.muted) {
+          state.chatable_type === "DirectMessageChannel"
+            ? (unreadDmCount += state.unread_count || 0)
+            : (unreadPublicCount += state.unread_count || 0);
+        }
       }
     );
 
@@ -378,6 +380,7 @@ export default Service.extend({
 
     if (headerNeedsRerender) {
       this.appEvents.trigger("chat:rerender-header");
+      this.appEvents.trigger("notifications:changed");
     }
   },
 
@@ -403,6 +406,10 @@ export default Service.extend({
 
   addToolbarButton(toolbarButton) {
     addChatToolbarButton(toolbarButton);
+  },
+
+  getChatDocumentTitleCount() {
+    return this.unreadDirectMessageCount;
   },
 });
 

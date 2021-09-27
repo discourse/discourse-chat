@@ -458,7 +458,7 @@ export default Component.extend(
 
     @discourseComputed("value", "loading")
     sendDisabled(value, loading) {
-      return (value || "").trim() == "" || loading || this.inputDisabled;
+      return (value || "").trim() === "" || loading || this.inputDisabled;
     },
 
     @action

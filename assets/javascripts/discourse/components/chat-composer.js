@@ -448,13 +448,17 @@ export default Component.extend(
 
     @discourseComputed(
       "canChat",
-      "loading",
       "isUploading",
       "isProcessingUpload",
       "previewing"
     )
-    sendDisabled(canChat, loading, uploading, processingUpload, previewing) {
-      return !canChat || loading || uploading || processingUpload || previewing;
+    inputDisabled(canChat, uploading, processingUpload, previewing) {
+      return !canChat || uploading || processingUpload || previewing;
+    },
+
+    @discourseComputed("loading")
+    sendDisabled(loading) {
+      return loading || this.inputDisabled;
     },
 
     @action

@@ -24,7 +24,7 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
   def get_by_title
     params.require(:title)
     all_channels = ChatChannel.all
-    channel = all_channels.detect { |channel| channel.title(current_user) == params[:title] }
+    channel = all_channels.detect { |c| c.title(current_user) == params[:title] }
     raise Discourse::NotFound unless channel
 
     chatable = nil

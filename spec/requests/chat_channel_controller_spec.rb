@@ -260,18 +260,15 @@ RSpec.describe DiscourseChat::ChatChannelsController do
 
       end
     end
+  end
 
-    describe "#get_by_title" do
-      fab!(:chat_channel) { Fabricate(:chat_channel, chatable: topic) }
+  describe "#get_by_title" do
+    before { sign_in(user) }
 
-      before { sign_in(user) }
-
-      it "returns the correct channel" do
-        get "/chat/chat_channels/by_title/#{chat_channel.title(user)}.json"
-        expect(response.status).to eq(200)
-        puts response.parsed_body.inspect
-        expect(response.parsed_body["chat_channel"]["id"]).to eq(chat_channel.id)
-      end
+    it "returns the correct channel" do
+      get "/chat/chat_channels/by_title/#{chat_channel.title(user)}.json"
+      expect(response.status).to eq(200)
+      expect(response.parsed_body["chat_channel"]["id"]).to eq(chat_channel.id)
     end
   end
 end

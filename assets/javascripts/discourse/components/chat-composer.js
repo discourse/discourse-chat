@@ -456,9 +456,9 @@ export default Component.extend(
       return !canChat || uploading || processingUpload || previewing;
     },
 
-    @discourseComputed("loading")
-    sendDisabled(loading) {
-      return loading || this.inputDisabled;
+    @discourseComputed("value", "loading")
+    sendDisabled(value, loading) {
+      return (value || "").trim() === "" || loading || this.inputDisabled;
     },
 
     @action

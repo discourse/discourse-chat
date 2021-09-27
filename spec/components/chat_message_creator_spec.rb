@@ -51,6 +51,17 @@ describe DiscourseChat::ChatMessageCreator do
     }.to change { Notification.count }.by(2)
   end
 
+  it "works with the wrong casing" do
+    expect {
+      DiscourseChat::ChatMessageCreator.create(
+        chat_channel: public_chat_channel,
+        user: user1,
+        in_reply_to_id: nil,
+        content: "Hey @#{user2.username.upcase}"
+      )
+    }.to change { Notification.where(user: user2).count }.by(1)
+  end
+
   it "notifies @all properly" do
     expect {
       DiscourseChat::ChatMessageCreator.create(

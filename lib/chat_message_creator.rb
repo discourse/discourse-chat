@@ -134,7 +134,7 @@ class DiscourseChat::ChatMessageCreator
       .joins(:user_chat_channel_memberships)
       .where(user_chat_channel_memberships: { chat_channel_id: chat_channel_id })
       .where.not(username: exclude)
-    users = users.where(username: usernames) if usernames
+    users = users.where(username_lower: usernames.map(&:downcase)) if usernames
     users
   end
 

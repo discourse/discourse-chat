@@ -28,7 +28,7 @@ describe DiscourseChat::ChatMessageCreator do
     @direct_message_channel = DiscourseChat::DirectMessageChannelCreator.create([user1, user2])
   end
 
-  it "it creates messages for users who can see the channel" do
+  it "creates messages for users who can see the channel" do
     expect {
       DiscourseChat::ChatMessageCreator.create(
         chat_channel: public_chat_channel,
@@ -49,6 +49,17 @@ describe DiscourseChat::ChatMessageCreator do
       )
       # Only 2 mentions are created because user mentioned themselves, system, and an invalid username.
     }.to change { Notification.count }.by(2)
+  end
+
+  it "mentions are case insensitive" do
+    expect {
+      DiscourseChat::ChatMessageCreator.create(
+        chat_channel: public_chat_channel,
+        user: user1,
+        in_reply_to_id: nil,
+        content: "Hey @#{user2.username.upcase}"
+      )
+    }.to change { Notification.where(user: user2).count }.by(1)
   end
 
   it "notifies @all properly" do

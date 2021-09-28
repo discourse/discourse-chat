@@ -75,10 +75,14 @@ class DiscourseChat::ChatMessageCreator
           MessageBus.publish("/notification-alert/#{user.id}", payload, user_ids: [user.id])
         end
 
-        if membership.mobile_notifications_always?
+        if membership.mobile_notifications_always? && !online_user_ids.include?(user.id)
           PostAlerter.push_notification(user, payload)
         end
       end
+  end
+
+  def online_user_ids
+    @online_user_ids ||= PresenceChannel.new("/chat/online").user_ids
   end
 
   def create_mention_notifications

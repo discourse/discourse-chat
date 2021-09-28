@@ -145,7 +145,7 @@ describe DiscourseChat::ChatMessageCreator do
   describe "push notifications" do
     before do
       UserChatChannelMembership
-        .where(user: user1, chat_channel: site_chat_channel)
+        .where(user: user1, chat_channel: public_chat_channel)
         .update(mobile_notification_level: UserChatChannelMembership::NOTIFICATION_LEVELS[:always])
       PresenceChannel.clear_all!
     end
@@ -153,7 +153,7 @@ describe DiscourseChat::ChatMessageCreator do
     it "sends a push notification to watching users who are not in chat" do
       PostAlerter.expects(:push_notification).once
       DiscourseChat::ChatMessageCreator.create(
-        chat_channel: @direct_message_channel,
+        chat_channel: public_chat_channel,
         user: user2,
         content: "Beep boop"
       )
@@ -163,7 +163,7 @@ describe DiscourseChat::ChatMessageCreator do
       PresenceChannel.new("/chat/online").present(user_id: user1.id, client_id: 1)
       PostAlerter.expects(:push_notification).never
       DiscourseChat::ChatMessageCreator.create(
-        chat_channel: @direct_message_channel,
+        chat_channel: public_chat_channel,
         user: user2,
         content: "Beep boop"
       )

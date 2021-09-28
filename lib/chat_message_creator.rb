@@ -73,8 +73,8 @@ class DiscourseChat::ChatMessageCreator
           MessageBus.publish("/notification-alert/#{user.id}", payload, user_ids: [user.id])
         end
 
-        if membership.mobile_notifications_always? && user.push_subscriptions.exists?
-          Jobs.enqueue(:send_push_notification, user_id: user.id, payload: payload)
+        if membership.mobile_notifications_always?
+          PostAlerter.push_notification(user, payload)
         end
       end
   end
@@ -177,8 +177,8 @@ class DiscourseChat::ChatMessageCreator
       MessageBus.publish("/notification-alert/#{mentioned.id}", payload, user_ids: [mentioned.id])
     end
 
-    if !membership.mobile_notifications_never? && mentioned.push_subscriptions.exists?
-      Jobs.enqueue(:send_push_notification, user_id: mentioned.id, payload: payload)
+    unless membership.mobile_notifications_never?
+      PostAlerter.push_notification(mentioned, payload)
     end
   end
 end

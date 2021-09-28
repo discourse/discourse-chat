@@ -33,7 +33,6 @@ describe DiscourseChat::ChatMessageCreator do
       DiscourseChat::ChatMessageCreator.create(
         chat_channel: public_chat_channel,
         user: user1,
-        in_reply_to_id: nil,
         content: "this is a message"
       )
     }.to change { ChatMessage.count }.by(1)
@@ -44,7 +43,6 @@ describe DiscourseChat::ChatMessageCreator do
       DiscourseChat::ChatMessageCreator.create(
         chat_channel: public_chat_channel,
         user: user1,
-        in_reply_to_id: nil,
         content: "this is a @#{user1.username} message with @system @mentions @#{user2.username} and @#{user3.username}"
       )
       # Only 2 mentions are created because user mentioned themselves, system, and an invalid username.
@@ -56,7 +54,6 @@ describe DiscourseChat::ChatMessageCreator do
       DiscourseChat::ChatMessageCreator.create(
         chat_channel: public_chat_channel,
         user: user1,
-        in_reply_to_id: nil,
         content: "Hey @#{user2.username.upcase}"
       )
     }.to change { Notification.where(user: user2).count }.by(1)
@@ -67,7 +64,6 @@ describe DiscourseChat::ChatMessageCreator do
       DiscourseChat::ChatMessageCreator.create(
         chat_channel: public_chat_channel,
         user: user1,
-        in_reply_to_id: nil,
         content: "@all"
       )
     }.to change { Notification.count }.by(4)
@@ -83,7 +79,6 @@ describe DiscourseChat::ChatMessageCreator do
       DiscourseChat::ChatMessageCreator.create(
         chat_channel: public_chat_channel,
         user: user1,
-        in_reply_to_id: nil,
         content: "@here"
       )
     }.to change { Notification.count }.by(2)
@@ -95,7 +90,6 @@ describe DiscourseChat::ChatMessageCreator do
       DiscourseChat::ChatMessageCreator.create(
         chat_channel: public_chat_channel,
         user: user1,
-        in_reply_to_id: nil,
         content: "@here @#{user2.username}"
       )
     }.to change { Notification.where(user: user2).count }.by(1)
@@ -111,7 +105,6 @@ describe DiscourseChat::ChatMessageCreator do
       DiscourseChat::ChatMessageCreator.create(
         chat_channel: public_chat_channel,
         user: user1,
-        in_reply_to_id: nil,
         content: "@here plus @#{user3.username}"
       )
     }.to change { Notification.where(user: user3).count }.by(1)
@@ -122,7 +115,6 @@ describe DiscourseChat::ChatMessageCreator do
       DiscourseChat::ChatMessageCreator.create(
         chat_channel: public_chat_channel,
         user: user1,
-        in_reply_to_id: nil,
         content: "hello #{user_without_memberships.username}"
       )
     }.to change { Notification.count }.by(0)
@@ -133,7 +125,6 @@ describe DiscourseChat::ChatMessageCreator do
       DiscourseChat::ChatMessageCreator.create(
         chat_channel: site_chat_channel,
         user: admin1,
-        in_reply_to_id: nil,
         content: "Hey @#{admin2.username}, @#{user2.username} and @#{user3.username}"
       )
     }.to change { Notification.count }.by(1)
@@ -144,11 +135,38 @@ describe DiscourseChat::ChatMessageCreator do
       DiscourseChat::ChatMessageCreator.create(
         chat_channel: @direct_message_channel,
         user: user1,
-        in_reply_to_id: nil,
         content: "hello there @#{user2.username} and @#{user3.username}"
       )
       # Only user2 should be notified
     }.to change { Notification.count }.by(1)
     expect(Notification.last.user_id).to eq(user2.id)
+  end
+
+  describe "push notifications" do
+    before do
+      UserChatChannelMembership
+        .where(user: user1, chat_channel: public_chat_channel)
+        .update(mobile_notification_level: UserChatChannelMembership::NOTIFICATION_LEVELS[:always])
+      PresenceChannel.clear_all!
+    end
+
+    it "sends a push notification to watching users who are not in chat" do
+      PostAlerter.expects(:push_notification).once
+      DiscourseChat::ChatMessageCreator.create(
+        chat_channel: public_chat_channel,
+        user: user2,
+        content: "Beep boop"
+      )
+    end
+
+    it "does not send a push notification to watching users who are in chat" do
+      PresenceChannel.new("/chat/online").present(user_id: user1.id, client_id: 1)
+      PostAlerter.expects(:push_notification).never
+      DiscourseChat::ChatMessageCreator.create(
+        chat_channel: public_chat_channel,
+        user: user2,
+        content: "Beep boop"
+      )
+    end
   end
 end

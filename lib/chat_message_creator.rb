@@ -67,7 +67,8 @@ class DiscourseChat::ChatMessageCreator
           post_url: "/chat/channel/#{@chat_channel.title(user)}",
           translated_title: I18n.t("discourse_push_notifications.popup.chat_message",
                                    chat_channel_title: @chat_channel.title(membership.user)
-                                  )
+                                  ),
+          excerpt: chat_message.message[0..399]
         }
         if membership.desktop_notifications_always?
           MessageBus.publish("/notification-alert/#{user.id}", payload, user_ids: [user.id])
@@ -168,6 +169,7 @@ class DiscourseChat::ChatMessageCreator
       translated_title: I18n.t("discourse_push_notifications.popup.chat_mention",
                                username: mentioner_username
                               ),
+      excerpt: chat_message.message[0..399],
       post_url: "/chat/channel/#{chat_channel.title(mentioned)}?messageId=#{chat_message.id}"
     }
     membership = mentioned.user_chat_channel_memberships.detect { |m| m.chat_channel_id == chat_channel.id }

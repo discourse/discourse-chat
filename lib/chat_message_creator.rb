@@ -63,6 +63,7 @@ class DiscourseChat::ChatMessageCreator
       .each do |membership|
         user = membership.user
         payload = {
+          username: @user.username,
           notification_type: Notification.types[:chat_message],
           post_url: "/chat/channel/#{@chat_channel.title(user)}",
           translated_title: I18n.t("discourse_push_notifications.popup.chat_message",

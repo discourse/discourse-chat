@@ -34,6 +34,7 @@ en:
       send: "Send Chat Message"
       send_error: "Something went wrong"
       title: "chat"
+      title_capitalized: "Chat"
       unread_count: "(%{count} new)"
       upload: "Attach a file"
       exit: "back"

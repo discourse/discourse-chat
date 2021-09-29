@@ -101,8 +101,7 @@ export default Component.extend({
 
   @action
   previewChannel() {
-    this.router.transitionTo("chat.channel", this.channel.title, {
-      queryParams: { previewing: true, id: this.channel.id },
-    });
+    this.closeModal();
+    this.router.transitionTo("chat.channel", this.channel.title);
   },
 });

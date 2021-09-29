@@ -273,25 +273,15 @@ export default Component.extend({
     const lastReadId = this.currentUser.chat_channel_tracking_state[
       this.chatChannel.id
     ]?.chat_message_id;
-    if (lastReadId) {
-      this.set("lastSendReadMessageId", lastReadId);
-      let message = this.messageLookup[lastReadId] || this.messages[0];
-      if (!message) {
-        return this._stickScrollToBottom();
-      }
+    if (!lastReadId) {
+      return;
+    }
 
-      // If user has not read last message, scroll to the last message they have read,
-      // and mark it as the last read so indicator will show up below.
-      // If user _has_ read last message stick scroll to bottom
-      if (message === this.messages[this.messages.length - 1]) {
-        this._stickScrollToBottom();
-      } else {
-        message.set("lastRead", true);
-        this.scrollToMessage(message.id);
-      }
-    } else {
-      // This is the user's first visit to the channel. Scroll them to the bottom
-      this._stickScrollToBottom();
+    this.set("lastSendReadMessageId", lastReadId);
+    let message = this.messageLookup[lastReadId] || this.messages[0];
+    if (message && message !== this.messages[this.messages.length - 1]) {
+      message.set("lastRead", true);
+      this.scrollToMessage(message.id);
     }
   },
 
@@ -348,7 +338,9 @@ export default Component.extend({
       this.set("stickyScroll", true);
 
       if (this._scrollerEl) {
-        this._scrollerEl.scrollTop = 0;
+        // Set scrollTop to 0 isn't always enough for some reason. 10 makes sure
+        // that the scroll is at the bottom. (it's reversed because flex-direction: column-reverse)
+        this._scrollerEl.scrollTop = 10;
       }
     });
   },
@@ -357,12 +349,6 @@ export default Component.extend({
     if (this._selfDeleted()) {
       return;
     }
-    if (!this.expanded) {
-      // Force to bottom when collapsed
-      this.set("stickyScroll", true);
-      return;
-    }
-
     const atTop =
       Math.abs(
         this._scrollerEl.scrollHeight -
@@ -406,13 +392,6 @@ export default Component.extend({
         this.siteSettings
       );
     });
-  },
-
-  @observes("expanded")
-  restickOnExpand() {
-    if (this.expanded) {
-      this._stickScrollToBottom();
-    }
   },
 
   @observes("floatHidden")
@@ -648,7 +627,6 @@ export default Component.extend({
     if (stagedMessage) {
       stagedMessage.set("error", true);
       this._resetAfterSend();
-      this._stickScrollToBottom();
     }
   },
 
@@ -708,7 +686,6 @@ export default Component.extend({
     } else {
       this.set("replyToMsg", null);
     }
-    this._stickScrollToBottom();
   },
 
   @action

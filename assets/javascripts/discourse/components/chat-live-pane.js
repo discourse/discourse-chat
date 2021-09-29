@@ -358,6 +358,11 @@ export default Component.extend({
     if (this._selfDeleted()) {
       return;
     }
+    if (!this.expanded) {
+      // Force to bottom when collapsed
+      this.set("stickyScroll", true);
+      return;
+    }
     resetIdle();
 
     const atTop =

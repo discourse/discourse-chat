@@ -11,6 +11,7 @@ import { cancel, later, next, schedule } from "@ember/runloop";
 import { inject as service } from "@ember/service";
 import { loadOneboxes } from "discourse/lib/load-oneboxes";
 import { Promise } from "rsvp";
+import { resetIdle } from "discourse/lib/desktop-notifications";
 import { resolveAllShortUrls } from "pretty-text/upload-short-url";
 
 const MAX_RECENT_MSGS = 100;
@@ -349,6 +350,8 @@ export default Component.extend({
     if (this._selfDeleted()) {
       return;
     }
+    resetIdle();
+
     const atTop =
       Math.abs(
         this._scrollerEl.scrollHeight -
@@ -580,6 +583,8 @@ export default Component.extend({
 
   @action
   sendMessage(message) {
+    resetIdle();
+
     if (this.sendingloading) {
       return;
     }

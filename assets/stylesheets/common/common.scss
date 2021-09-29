@@ -1184,19 +1184,34 @@ $float-height: 530px;
 
 .has-full-page-chat .tc-message .onebox,
 .topic-chat-float-container .tc-message .onebox {
-  width: 50%;
+  width: 75%;
+  margin: 0.5em 0;
+  border-width: 2px;
   .onebox-body {
     display: grid;
-    grid-template-rows: auto auto 150px;
+    grid-template-rows: auto auto auto;
     grid-template-areas: "link" "description" "image";
+  }
+  header {
+    margin-bottom: 0.5em;
   }
   img {
     grid-area: image;
-    max-height: 100%;
+    max-height: 150px;
   }
-  h3 {
+  h3 a, h4 a {
+    font-size: 14px;
     grid-area: link;
     color: var(--tertiary);
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  pre {
+    max-height: 150px;
+    width: 100%;
+    margin: 0 0 0.5em 0;
   }
   p {
     grid-area: description;

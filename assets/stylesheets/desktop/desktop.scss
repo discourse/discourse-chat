@@ -85,7 +85,7 @@
     width: 100%;
 
     .tc-text {
-      max-width: calc(100% - (#{var(--large-message-left-width)} + 1em));
+      width: calc(100% - (#{var(--large-message-left-width)} + 1em));
     }
   }
 }

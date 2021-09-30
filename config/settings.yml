@@ -6,7 +6,7 @@ plugins:
     client: true
     type: group_list
     list_type: compact
-    default: "3" # 1 is staff
+    default: "3" # 3 is staff group id
     allow_any: false
     refresh: true
   topic_chat_max_messages_per_post:

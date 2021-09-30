@@ -11,6 +11,7 @@ export default {
   initialize(container) {
     const appEvents = container.lookup("service:app-events");
     const currentUser = container.lookup("current-user:main");
+    console.log(currentUser)
     const chat = container.lookup("service:chat");
     chat.getChannels();
     RawTopicStatus.reopen({
@@ -112,9 +113,13 @@ export default {
         },
       });
 
-      if (currentUser?.can_chat) {
+      if (currentUser?.chat_on) {
         api.addToHeaderIcons("header-chat-link");
       }
+
+      api.decorateWidget("hamburger-menu:generalLinks", (helper) => {
+        return helper.widget.attach("hamburger-chat-toggle");
+      });
     });
   },
 };

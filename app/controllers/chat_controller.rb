@@ -230,6 +230,10 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     render_serialized(chat_view, ChatViewSerializer, root: :topic_chat_view)
   end
 
+  def set_user_chat_status
+
+  end
+
   private
 
   def set_user_last_read

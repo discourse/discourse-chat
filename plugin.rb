@@ -138,8 +138,16 @@ after_initialize do
     @can_chat = SiteSetting.topic_chat_enabled && scope.can_chat?(object)
   end
 
-  add_to_serializer(:current_user, :include_chat_channel_tracking_state?) do
-    include_can_chat?
+  add_to_serializer(:current_user, :has_chat_enabled) do
+    true
+  end
+
+  add_to_serializer(:current_user, :include_has_chat_enabled?) do
+    include_can_chat? && object.user_option.chat_enabled
+  end
+
+  add_to_serializer(:current_user, :chat_on) do
+    include_has_chat_enabled? && include_can_chat?
   end
 
   reloadable_patch do |plugin|
@@ -198,6 +206,7 @@ after_initialize do
     put '/:chat_channel_id/restore/:message_id' => 'chat#restore'
     get '/lookup/:message_id' => 'chat#lookup_message'
     put '/:chat_channel_id/read/:message_id' => 'chat#update_user_last_read'
+    put '/user_chat_enabled/:user_id' => 'chat#set_user_chat_status'
 
     # direct_messages_controller routes
     post '/direct_messages/create' => 'direct_messages#create'

@@ -104,7 +104,6 @@ export default Component.extend({
   showReplyButton(message, deletedAt) {
     return (
       !message.chat_webhook_event &&
-      this.details.can_chat &&
       !message.action_code &&
       !deletedAt
     );
@@ -113,7 +112,6 @@ export default Component.extend({
   @discourseComputed("message", "message.deleted_at")
   showEditButton(message, deletedAt) {
     return (
-      this.details.can_chat &&
       !message.action_code &&
       !deletedAt &&
       this.currentUser.id === message.user.id

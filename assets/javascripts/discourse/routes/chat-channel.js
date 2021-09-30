@@ -8,7 +8,7 @@ export default DiscourseRoute.extend({
   chat: service(),
 
   beforeModel() {
-    if (!this.currentUser?.can_chat || !this.siteSettings.topic_chat_enabled) {
+    if (!this.currentUser?.chat_on || !this.siteSettings.topic_chat_enabled) {
       this.transitionTo("discovery");
     }
   },

@@ -11,7 +11,7 @@ export default DiscourseRoute.extend({
   },
 
   beforeModel(params) {
-    if (!this.currentUser?.can_chat || !this.siteSettings.topic_chat_enabled) {
+    if (!this.currentUser?.chat_on || !this.siteSettings.topic_chat_enabled) {
       return this.transitionTo(`discovery.${defaultHomepage()}`);
     }
     if (params.to.name === "chat.channel") {

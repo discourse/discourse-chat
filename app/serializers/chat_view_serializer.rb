@@ -8,15 +8,6 @@ class ChatViewSerializer < ApplicationSerializer
 
   has_many :messages, serializer: ChatBaseMessageSerializer, embed: :objects
 
-  def include_can_chat?
-    object.chat_channel.site_channel? ||
-      scope.can_chat_in_chatable?(object.chatable)
-  end
-
-  def can_chat
-    true
-  end
-
   def include_can_flag?
     scope.can_flag_chats?
   end

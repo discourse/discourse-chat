@@ -6,7 +6,7 @@ require_relative '../fabricators/chat_fabricator'
 describe DiscourseChat::ChatMessageCreator do
   fab!(:admin1) { Fabricate(:admin) }
   fab!(:admin2) { Fabricate(:admin) }
-  fab!(:user1) { Fabricate(:admin) }
+  fab!(:user1) { Fabricate(:user, group_ids: [Group::AUTO_GROUPS[:everyone]]) }
   fab!(:user2) { Fabricate(:user) }
   fab!(:user3) { Fabricate(:user) }
   fab!(:user_without_memberships) { Fabricate(:user) }
@@ -16,7 +16,7 @@ describe DiscourseChat::ChatMessageCreator do
 
   before do
     SiteSetting.topic_chat_enabled = true
-    SiteSetting.topic_chat_restrict_to_staff = false
+    SiteSetting.topic_chat_allowed_groups = Group::AUTO_GROUPS[:everyone]
 
     # Create channel memberships
     [admin1, admin2].each do |user|
@@ -116,6 +116,18 @@ describe DiscourseChat::ChatMessageCreator do
         chat_channel: public_chat_channel,
         user: user1,
         content: "hello #{user_without_memberships.username}"
+      )
+    }.to change { Notification.count }.by(0)
+  end
+
+  it "doesn't create mention notifications for users who cannot chat" do
+    new_group = Group.create
+    SiteSetting.topic_chat_allowed_groups = new_group.id
+    expect {
+      DiscourseChat::ChatMessageCreator.create(
+        chat_channel: public_chat_channel,
+        user: user1,
+        content: "hi @#{user2.username} @#{user3.username}"
       )
     }.to change { Notification.count }.by(0)
   end

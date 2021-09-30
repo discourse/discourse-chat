@@ -13,7 +13,7 @@ RSpec.describe DiscourseChat::ChatChannelsController do
 
   before do
     SiteSetting.topic_chat_enabled = true
-    SiteSetting.topic_chat_restrict_to_staff = false # Change this per-test to false if needed
+    SiteSetting.topic_chat_allowed_groups = Group::AUTO_GROUPS[:everyone]
   end
 
   describe "#index" do
@@ -51,9 +51,9 @@ RSpec.describe DiscourseChat::ChatChannelsController do
         end
       end
 
-      it "errors for regular user when chat is staff-only" do
+      it "errors for user that is not allowed to chat" do
         sign_in(user)
-        SiteSetting.topic_chat_restrict_to_staff = true
+        SiteSetting.topic_chat_allowed_groups = Group::AUTO_GROUPS[:staff]
 
         get "/chat/chat_channels.json"
 

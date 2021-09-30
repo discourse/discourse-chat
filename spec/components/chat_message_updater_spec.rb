@@ -16,7 +16,7 @@ describe DiscourseChat::ChatMessageUpdater do
 
   before do
     SiteSetting.topic_chat_enabled = true
-    SiteSetting.topic_chat_restrict_to_staff = false
+    SiteSetting.topic_chat_allowed_groups = Group::AUTO_GROUPS[:everyone] # Change this per-test to false if needed
 
     [admin1, admin2].each do |user|
       Fabricate(:user_chat_channel_membership, chat_channel: site_chat_channel, user: user)

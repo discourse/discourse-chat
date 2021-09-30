@@ -12,7 +12,12 @@ module DiscourseChat::GuardianExtensions
   end
 
   def can_chat?(user)
-    SiteSetting.topic_chat_restrict_to_staff ? user&.staff? : true
+    return false unless user
+
+    allowed_group_ids = SiteSetting.topic_chat_allowed_groups.to_s.split("|").map(&:to_i)
+    return true if allowed_group_ids.include?(Group::AUTO_GROUPS[:everyone])
+
+    (allowed_group_ids & user.group_ids).any?
   end
 
   def can_see_direct_message_channel?(direct_message_channel)

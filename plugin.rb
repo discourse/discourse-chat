@@ -167,11 +167,7 @@ after_initialize do
   register_presence_channel_prefix("chat") do |channel|
     next nil unless channel == "/chat/online"
     config = PresenceChannel::Config.new
-    if SiteSetting.topic_chat_restrict_to_staff
-      config.allowed_group_ids = [::Group::AUTO_GROUPS[:staff]]
-    else
-      config.public = true
-    end
+    config.allowed_group_ids = SiteSetting.topic_chat_allowed_groups.to_s.split("|").map(&:to_i)
     config
   end
 

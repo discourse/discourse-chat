@@ -35,14 +35,14 @@ class DiscourseChat::ChatMessageCreator
   end
 
   def create
-    begin
+    # begin
       @chat_message.save!
       mentioned_user_ids = create_mention_notifications
       notify_watching_users(except: [@user.id] + mentioned_user_ids)
       ChatPublisher.publish_new!(@chat_channel, @chat_message, @staged_id)
-    rescue => error
-      @error = error
-    end
+    # rescue => error
+      # @error = error
+    # end
   end
 
   def failed?
@@ -54,7 +54,7 @@ class DiscourseChat::ChatMessageCreator
   def notify_watching_users(except: [])
     always_notification_level = UserChatChannelMembership::NOTIFICATION_LEVELS[:always]
     UserChatChannelMembership
-      .includes(:user)
+      .includes(user: :groups)
       .where.not(user_id: except)
       .where(chat_channel_id: @chat_channel.id)
       .where(following: true)
@@ -62,6 +62,7 @@ class DiscourseChat::ChatMessageCreator
              always_notification_level, always_notification_level)
       .each do |membership|
         user = membership.user
+        next unless Guardian.new.can_chat?(user)
         payload = {
           username: @user.username,
           notification_type: Notification.types[:chat_message],
@@ -105,16 +106,17 @@ class DiscourseChat::ChatMessageCreator
   def self.mentioned_users(chat_message:, creator:)
     mention_matches = chat_message.message.scan(MENTION_REGEX)
     if mention_matches.include?("@all")
-      return users_for_channel(chat_message.chat_channel_id, exclude: creator.username)
+      users = users_for_channel(chat_message.chat_channel_id, exclude: creator.username)
+    else
+      users = mention_matches.include?("@here") ?
+        users_here(chat_message.chat_channel_id, creator.username, mention_matches) :
+        users_for_channel(
+          chat_message.chat_channel_id,
+          exclude: creator.username,
+          usernames: mention_matches.map { |match| match[1..-1] }
+        )
     end
-
-    mention_matches.include?("@here") ?
-      users_here(chat_message.chat_channel_id, creator.username, mention_matches) :
-      users_for_channel(
-        chat_message.chat_channel_id,
-        exclude: creator.username,
-        usernames: mention_matches.map { |match| match[1..-1] }
-      )
+    filter_users_who_can_chat(users)
   end
 
   def self.users_here(chat_channel_id, creator_username, mention_matches)
@@ -123,25 +125,32 @@ class DiscourseChat::ChatMessageCreator
     other_mentioned_usernames = mention_matches
       .map { |match| match[1..-1] }
       .reject { |username| username == "here" || usernames.include?(username) }
-    return users if other_mentioned_usernames.empty?
-
-    users.or(
-      users_for_channel(
-        chat_channel_id,
-        exclude: creator_username,
-        usernames: other_mentioned_usernames
+    if other_mentioned_usernames.any?
+      users = users.or(
+        users_for_channel(
+          chat_channel_id,
+          exclude: creator_username,
+          usernames: other_mentioned_usernames
+        )
       )
-    )
+    end
+
+    filter_users_who_can_chat(users)
   end
 
   def self.users_for_channel(chat_channel_id, exclude:, usernames: nil)
     users = User
-      .includes(:do_not_disturb_timings, :user_chat_channel_memberships, :push_subscriptions)
+      .includes(:do_not_disturb_timings, :user_chat_channel_memberships, :push_subscriptions, :groups)
       .joins(:user_chat_channel_memberships)
       .where(user_chat_channel_memberships: { chat_channel_id: chat_channel_id })
       .where.not(username: exclude)
     users = users.where(username_lower: usernames.map(&:downcase)) if usernames
     users
+  end
+
+  def self.filter_users_who_can_chat(users)
+    guardian = Guardian.new
+    users.select { |user| guardian.can_chat?(user) }
   end
 
   def self.create_mention_notification(creator_username:, mentioned_user:, chat_channel:, chat_message:)

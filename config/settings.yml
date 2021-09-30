@@ -2,11 +2,16 @@ plugins:
   topic_chat_enabled:
     default: false
     client: true
+  topic_chat_allowed_groups:
+    client: true
+    type: group_list
+    list_type: compact
+    default: "3" # 1 is staff
+    allow_any: false
+    refresh: true
   topic_chat_max_messages_per_post:
     default: 1000
     min: -1
   topic_chat_excerpt_maxlength:
     default: 30
     min: 0
-  topic_chat_restrict_to_staff:
-    default: true

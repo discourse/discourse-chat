@@ -11,7 +11,7 @@ RSpec.describe DiscourseChat::ChatController do
 
   before do
     SiteSetting.topic_chat_enabled = true
-    SiteSetting.topic_chat_restrict_to_staff = false # Change this per-test to false if needed
+    SiteSetting.topic_chat_allowed_groups = Group::AUTO_GROUPS[:everyone] # Change this per-test to false if needed
   end
 
   describe "#messages" do
@@ -30,8 +30,8 @@ RSpec.describe DiscourseChat::ChatController do
       sign_in(user)
     end
 
-    it "errors for regular user when chat is restricts to staff" do
-      SiteSetting.topic_chat_restrict_to_staff = true
+    it "errors for user when they are not allowed to chat" do
+      SiteSetting.topic_chat_allowed_groups = Group::AUTO_GROUPS[:staff]
       get "/chat/#{chat_channel.id}/messages.json", params: { page_size: page_size }
       expect(response.status).to eq(403)
     end
@@ -134,7 +134,7 @@ RSpec.describe DiscourseChat::ChatController do
 
       it "errors for regular user when chat is staff-only" do
         sign_in(user)
-        SiteSetting.topic_chat_restrict_to_staff = true
+        SiteSetting.topic_chat_allowed_groups = Group::AUTO_GROUPS[:staff]
 
         post "/chat/#{chat_channel.id}.json", params: { message: message }
         expect(response.status).to eq(403)
@@ -166,7 +166,6 @@ RSpec.describe DiscourseChat::ChatController do
 
       it "errors for regular user" do
         sign_in(user)
-        SiteSetting.topic_chat_restrict_to_staff = false
 
         post "/chat/#{chat_channel.id}.json", params: { message: message }
         expect(response.status).to eq(403)

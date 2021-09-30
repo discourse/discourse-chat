@@ -6,7 +6,7 @@ require_relative '../fabricators/chat_fabricator'
 describe DiscourseChat::ChatMessageCreator do
   fab!(:admin1) { Fabricate(:admin) }
   fab!(:admin2) { Fabricate(:admin) }
-  fab!(:user1) { Fabricate(:user) }
+  fab!(:user1) { Fabricate(:user, group_ids: [Group::AUTO_GROUPS[:everyone]]) }
   fab!(:user2) { Fabricate(:user) }
   fab!(:user3) { Fabricate(:user) }
   fab!(:user_without_memberships) { Fabricate(:user) }

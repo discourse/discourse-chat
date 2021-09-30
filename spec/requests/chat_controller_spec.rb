@@ -11,7 +11,7 @@ RSpec.describe DiscourseChat::ChatController do
 
   before do
     SiteSetting.topic_chat_enabled = true
-    SiteSetting.topic_chat_allowed_groups = Group::AUTO_GROUPS[:everyone] # Change this per-test to false if needed
+    SiteSetting.topic_chat_allowed_groups = Group::AUTO_GROUPS[:everyone]
   end
 
   describe "#messages" do

@@ -30,7 +30,7 @@ export default Component.extend({
 
   didInsertElement() {
     this._super(...arguments);
-    if (!this.currentUser || !this.currentUser.chat_on) {
+    if (!this.currentUser?.has_chat_enabled) {
       return;
     }
 
@@ -58,7 +58,7 @@ export default Component.extend({
   },
   willDestroyElement() {
     this._super(...arguments);
-    if (!this.currentUser || !this.currentUser.chat_on) {
+    if (!this.currentUser?.has_chat_enabled) {
       return;
     }
 

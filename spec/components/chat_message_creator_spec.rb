@@ -132,6 +132,17 @@ describe DiscourseChat::ChatMessageCreator do
     }.to change { Notification.count }.by(0)
   end
 
+  it "doesn't create mention notifications for users with chat disabled" do
+    user2.user_option.update(chat_enabled: false)
+    expect {
+      DiscourseChat::ChatMessageCreator.create(
+        chat_channel: public_chat_channel,
+        user: user1,
+        content: "hi @#{user2.username}"
+      )
+    }.to change { Notification.count }.by(0)
+  end
+
   it "created mention notifications only for staff in site channel" do
     expect {
       DiscourseChat::ChatMessageCreator.create(

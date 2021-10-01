@@ -1,6 +1,7 @@
 import I18n from "I18n";
 import RawTopicStatus from "discourse/raw-views/topic-status";
 import { ajax } from "discourse/lib/ajax";
+import { h } from "virtual-dom";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { withPluginApi } from "discourse/lib/plugin-api";
 
@@ -17,10 +18,10 @@ function toggleChatForTopic(topic, appEvents) {
       chatable_id: topic.id,
     },
   })
-  .then(() => {
-    appEvents.trigger(`topic-chat-${action}`, topic);
-  })
-  .catch(popupAjaxError);
+    .then(() => {
+      appEvents.trigger(`topic-chat-${action}`, topic);
+    })
+    .catch(popupAjaxError);
 }
 
 export default {
@@ -30,13 +31,15 @@ export default {
     const appEvents = container.lookup("service:app-events");
 
     withPluginApi("0.12.1", (api) => {
-      api.decorateWidget("menu-links:after", (helper) => {
-        if (helper.attrs.name === "general-links") {
-          return helper.widget.attach("hamburger-chat-toggle");
-        }
-      });
+      if (currentUser.can_chat) {
+        api.decorateWidget("menu-links:before", (helper) => {
+          if (helper.attrs.name === "footer-links") {
+            return [helper.widget.attach("hamburger-chat-toggle"), h("hr")];
+          }
+        });
+      }
 
-      if (currentUser.chat_on) {
+      if (currentUser.has_chat_enabled) {
         const chat = container.lookup("service:chat");
         chat.getChannels();
 

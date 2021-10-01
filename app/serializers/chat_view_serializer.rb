@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 class ChatViewSerializer < ApplicationSerializer
-  attributes :can_chat,
-             :can_flag,
+  attributes :can_flag,
              :can_delete_self,
              :can_delete_others
 

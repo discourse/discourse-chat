@@ -446,11 +446,7 @@ export default Component.extend(
       );
     },
 
-    @discourseComputed(
-      "isUploading",
-      "isProcessingUpload",
-      "previewing"
-    )
+    @discourseComputed("isUploading", "isProcessingUpload", "previewing")
     inputDisabled(uploading, processingUpload, previewing) {
       return uploading || processingUpload || previewing;
     },

@@ -33,27 +33,22 @@ export default Service.extend({
 
   init() {
     this._super(...arguments);
-    if (this.currentUser?.chat_on) {
-      this.set("allChannels", []);
-      this._subscribeToNewDmChannelUpdates();
-      this._subscribeToUserTrackingChannel();
-      this.presenceChannel = this.presence.getChannel("/chat/online");
-      this.appEvents.on("page:changed", this, "_storeLastNonChatRouteInfo");
-      this.appEvents.on("modal:closed", this, "_onSettingsModalClosed");
-    }
+    this.set("allChannels", []);
+    this._subscribeToNewDmChannelUpdates();
+    this._subscribeToUserTrackingChannel();
+    this.presenceChannel = this.presence.getChannel("/chat/online");
+    this.appEvents.on("page:changed", this, "_storeLastNonChatRouteInfo");
+    this.appEvents.on("modal:closed", this, "_onSettingsModalClosed");
   },
 
   willDestroy() {
     this._super(...arguments);
-
-    if (this.currentUser?.chat_on) {
-      this.set("allChannels", null);
-      this._unsubscribeFromNewDmChannelUpdates();
-      this._unsubscribeFromUserTrackingChannel();
-      this._unsubscribeFromAllChatChannels();
-      this.appEvents.off("page:changed", this, "_storeLastNonChatRouteInfo");
-      this.appEvents.off("modal:closed", this, "_onSettingsModalClosed");
-    }
+    this.set("allChannels", null);
+    this._unsubscribeFromNewDmChannelUpdates();
+    this._unsubscribeFromUserTrackingChannel();
+    this._unsubscribeFromAllChatChannels();
+    this.appEvents.off("page:changed", this, "_storeLastNonChatRouteInfo");
+    this.appEvents.off("modal:closed", this, "_onSettingsModalClosed");
   },
 
   _onSettingsModalClosed(modal) {
@@ -194,9 +189,6 @@ export default Service.extend({
 
   _refreshChannels() {
     return new Promise((resolve, reject) => {
-      if (!this.currentUser || !this.currentUser.chat_on) {
-        return reject();
-      }
       this.set("loading", true);
       this.currentUser.chat_channel_tracking_state = {};
       ajax("/chat/chat_channels.json").then((channels) => {

@@ -102,11 +102,7 @@ export default Component.extend({
 
   @discourseComputed("message", "message.deleted_at")
   showReplyButton(message, deletedAt) {
-    return (
-      !message.chat_webhook_event &&
-      !message.action_code &&
-      !deletedAt
-    );
+    return !message.chat_webhook_event && !message.action_code && !deletedAt;
   },
 
   @discourseComputed("message", "message.deleted_at")

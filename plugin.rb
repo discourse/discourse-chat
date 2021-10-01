@@ -146,10 +146,6 @@ after_initialize do
     include_can_chat? && object.user_option.chat_enabled
   end
 
-  add_to_serializer(:current_user, :chat_on) do
-    include_has_chat_enabled? && include_can_chat?
-  end
-
   reloadable_patch do |plugin|
     require_dependency 'topic_view_serializer'
     class ::TopicViewSerializer

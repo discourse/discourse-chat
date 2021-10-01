@@ -5,19 +5,14 @@ import { iconNode } from "discourse-common/lib/icon-library";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 
 export default createWidget("hamburger-chat-toggle", {
-  tagName: "div.hamburger-chat-toggle",
-  text() {
-    return I18n.t(
-    this.currentUser.has_chat_enabled ? "chat.disable" : "chat.enable"
-  )
-  },
-  title() { this.text() },
-
+  tagName: "a.widget-link.hamburger-chat-toggle",
+  title: "chat.toggle_enabled",
 
   html() {
-    return this.text();
+    return I18n.t(
+      this.currentUser.has_chat_enabled ? "chat.disable" : "chat.enable"
+    );
   },
-
 
   click() {
     ajax(`/chat/user_chat_enabled/${this.currentUser.id}`, {

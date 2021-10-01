@@ -110,7 +110,6 @@ export function allChannels() {
 
 export const chatView = {
   topic_chat_view: {
-    can_chat: true,
     can_flag: true,
     can_delete_self: true,
     can_delete_others: false,

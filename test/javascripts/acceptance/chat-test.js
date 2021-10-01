@@ -107,6 +107,24 @@ function chatChannelPretender(server, helper, changes = []) {
   server.get("/chat/chat_channels.json", () => helper.response(copy));
 }
 
+acceptance("Discourse Chat - user with chat disabled", function (needs) {
+  needs.user({
+    admin: false,
+    moderator: false,
+    username: "eviltrout",
+    id: 1,
+    can_chat: true,
+    has_chat_enabled: false,
+  });
+  needs.settings({
+    topic_chat_enabled: true,
+  });
+
+  test("Chat header icon is not present", async function (assert) {
+    await visit("/");
+    assert.notOk(query(".header-dropdown-toggle.open-chat"));
+  });
+});
 acceptance("Discourse Chat - without unread", function (needs) {
   needs.user({
     admin: false,
@@ -114,6 +132,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     username: "eviltrout",
     id: 1,
     can_chat: true,
+    has_chat_enabled: true,
   });
   needs.settings({
     topic_chat_enabled: true,
@@ -365,6 +384,7 @@ acceptance(
       username: "eviltrout",
       id: 1,
       can_chat: true,
+      has_chat_enabled: true,
     });
     needs.settings({
       topic_chat_enabled: true,
@@ -435,6 +455,7 @@ acceptance(
       username: "eviltrout",
       id: 1,
       can_chat: true,
+      has_chat_enabled: true,
     });
     needs.settings({
       topic_chat_enabled: true,
@@ -486,6 +507,7 @@ acceptance("Discourse Chat - chat channel settings", function (needs) {
     username: "eviltrout",
     id: 1,
     can_chat: true,
+    has_chat_enabled: true,
   });
   needs.settings({
     topic_chat_enabled: true,

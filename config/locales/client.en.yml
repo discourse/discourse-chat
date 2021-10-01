@@ -37,6 +37,7 @@ en:
       send_error: "Something went wrong"
       title: "chat"
       title_capitalized: "Chat"
+      toggle_enabled: "Toggle chat enabled"
       unread_count: "(%{count} new)"
       upload: "Attach a file"
       exit: "back"

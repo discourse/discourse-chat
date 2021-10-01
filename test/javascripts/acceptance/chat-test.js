@@ -116,7 +116,7 @@ acceptance("Discourse Chat - anonymouse user", function (needs) {
     await visit("");
     assert.ok(true, "no errors on homepage");
   });
-})
+});
 
 acceptance("Discourse Chat - without unread", function (needs) {
   needs.user({

@@ -1,6 +1,7 @@
 import I18n from "I18n";
 import { ajax } from "discourse/lib/ajax";
 import { createWidget } from "discourse/widgets/widget";
+import { iconNode } from "discourse-common/lib/icon-library";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 
 export default createWidget("hamburger-chat-toggle", {
@@ -8,9 +9,12 @@ export default createWidget("hamburger-chat-toggle", {
   title: "chat.toggle_enabled",
 
   html() {
-    return I18n.t(
-      this.currentUser.has_chat_enabled ? "chat.disable" : "chat.enable"
-    );
+    return [
+      iconNode("comment"),
+      I18n.t(
+        this.currentUser.has_chat_enabled ? "chat.disable" : "chat.enable"
+      ),
+    ];
   },
 
   click() {

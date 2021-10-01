@@ -107,6 +107,17 @@ function chatChannelPretender(server, helper, changes = []) {
   server.get("/chat/chat_channels.json", () => helper.response(copy));
 }
 
+acceptance("Discourse Chat - anonymouse user", function (needs) {
+  needs.settings({
+    topic_chat_enabled: true,
+  });
+
+  test("doesn't error for anonymous users", async function (assert) {
+    await visit("");
+    assert.ok(true, "no errors on homepage");
+  });
+})
+
 acceptance("Discourse Chat - without unread", function (needs) {
   needs.user({
     admin: false,

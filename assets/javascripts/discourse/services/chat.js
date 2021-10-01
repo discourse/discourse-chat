@@ -188,7 +188,7 @@ export default Service.extend({
   },
 
   _refreshChannels() {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       this.set("loading", true);
       this.currentUser.chat_channel_tracking_state = {};
       ajax("/chat/chat_channels.json").then((channels) => {

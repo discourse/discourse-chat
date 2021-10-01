@@ -35,7 +35,7 @@ export default Component.extend({
 
   editingMessage: null, // ?Message
   replyToMsg: null, // ?Message
-  details: null, // Object { chat_channel_id, can_chat, ... }
+  details: null, // Object { chat_channel_id,  ... }
   messages: null, // Array
   messageLookup: null, // Object<Number, Message>
   _unloadedReplyIds: null, // Array
@@ -186,7 +186,6 @@ export default Component.extend({
       messages: this._prepareMessages(chatView.messages),
       details: {
         chat_channel_id: this.chatChannel.id,
-        can_chat: chatView.can_chat,
         can_flag: chatView.can_flag,
         can_delete_self: chatView.can_delete_self,
         can_delete_others: chatView.can_delete_others,

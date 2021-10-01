@@ -33,7 +33,8 @@ export default Service.extend({
 
   init() {
     this._super(...arguments);
-    if (this.currentUser?.can_chat) {
+
+    if (this.currentUser?.has_chat_enabled) {
       this.set("allChannels", []);
       this._subscribeToNewDmChannelUpdates();
       this._subscribeToUserTrackingChannel();
@@ -45,8 +46,7 @@ export default Service.extend({
 
   willDestroy() {
     this._super(...arguments);
-
-    if (this.currentUser?.can_chat) {
+    if (this.currentUser?.has_chat_enabled) {
       this.set("allChannels", null);
       this._unsubscribeFromNewDmChannelUpdates();
       this._unsubscribeFromUserTrackingChannel();
@@ -193,10 +193,7 @@ export default Service.extend({
   },
 
   _refreshChannels() {
-    return new Promise((resolve, reject) => {
-      if (!this.currentUser || !this.currentUser.can_chat) {
-        return reject();
-      }
+    return new Promise((resolve) => {
       this.set("loading", true);
       this.currentUser.chat_channel_tracking_state = {};
       ajax("/chat/chat_channels.json").then((channels) => {

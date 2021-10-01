@@ -230,6 +230,13 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     render_serialized(chat_view, ChatViewSerializer, root: :topic_chat_view)
   end
 
+  def set_user_chat_status
+    params.require(:chat_enabled)
+
+    current_user.user_option.update(chat_enabled: params[:chat_enabled])
+    render json: { chat_enabled: current_user.user_option.chat_enabled }
+  end
+
   private
 
   def set_user_last_read

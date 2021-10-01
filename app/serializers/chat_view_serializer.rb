@@ -1,21 +1,11 @@
 # frozen_string_literal: true
 
 class ChatViewSerializer < ApplicationSerializer
-  attributes :can_chat,
-             :can_flag,
+  attributes :can_flag,
              :can_delete_self,
              :can_delete_others
 
   has_many :messages, serializer: ChatBaseMessageSerializer, embed: :objects
-
-  def include_can_chat?
-    object.chat_channel.site_channel? ||
-      scope.can_chat_in_chatable?(object.chatable)
-  end
-
-  def can_chat
-    true
-  end
 
   def include_can_flag?
     scope.can_flag_chats?

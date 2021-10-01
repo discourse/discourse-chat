@@ -55,6 +55,8 @@ class DiscourseChat::ChatMessageCreator
     always_notification_level = UserChatChannelMembership::NOTIFICATION_LEVELS[:always]
     UserChatChannelMembership
       .includes(user: :groups)
+      .joins(user: :user_option)
+      .where(user_option: { chat_enabled: true })
       .where.not(user_id: except)
       .where(chat_channel_id: @chat_channel.id)
       .where(following: true)
@@ -140,8 +142,10 @@ class DiscourseChat::ChatMessageCreator
 
   def self.users_for_channel(chat_channel_id, exclude:, usernames: nil)
     users = User
-      .includes(:do_not_disturb_timings, :user_chat_channel_memberships, :push_subscriptions, :groups)
+      .includes(:do_not_disturb_timings, :push_subscriptions, :groups)
       .joins(:user_chat_channel_memberships)
+      .joins(:user_option)
+      .where(user_options: { chat_enabled: true })
       .where(user_chat_channel_memberships: { chat_channel_id: chat_channel_id })
       .where.not(username: exclude)
     users = users.where(username_lower: usernames.map(&:downcase)) if usernames

@@ -167,7 +167,7 @@ export default Component.extend(
 
     didRender() {
       this._super(...arguments);
-      if (this.canChat && this._messageIsEmpty() && !this.site.mobileView) {
+      if (this._messageIsEmpty() && !this.site.mobileView) {
         this._focusTextArea();
       }
     },
@@ -446,14 +446,9 @@ export default Component.extend(
       );
     },
 
-    @discourseComputed(
-      "canChat",
-      "isUploading",
-      "isProcessingUpload",
-      "previewing"
-    )
-    inputDisabled(canChat, uploading, processingUpload, previewing) {
-      return !canChat || uploading || processingUpload || previewing;
+    @discourseComputed("isUploading", "isProcessingUpload", "previewing")
+    inputDisabled(uploading, processingUpload, previewing) {
+      return uploading || processingUpload || previewing;
     },
 
     @discourseComputed("value", "loading")
@@ -489,7 +484,7 @@ export default Component.extend(
     },
 
     _messageIsValid() {
-      return this.canChat && !this._messageIsEmpty();
+      return !this._messageIsEmpty();
     },
 
     _messageIsEmpty() {

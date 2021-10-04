@@ -165,6 +165,17 @@ describe DiscourseChat::ChatMessageCreator do
     expect(Notification.last.user_id).to eq(user2.id)
   end
 
+  it "does not create mentions for suspended users" do
+    user2.update(suspended_till: Time.now + 10.years)
+    expect {
+      DiscourseChat::ChatMessageCreator.create(
+        chat_channel: @direct_message_channel,
+        user: user1,
+        content: "hello @#{user2.username}"
+      )
+    }.to change { Notification.where(user: user2).count }.by(0)
+  end
+
   describe "push notifications" do
     before do
       UserChatChannelMembership

@@ -62,6 +62,7 @@ class DiscourseChat::ChatMessageCreator
       .where(following: true)
       .where("desktop_notification_level = ? OR mobile_notification_level = ?",
              always_notification_level, always_notification_level)
+      .merge(User.not_suspended)
       .each do |membership|
         user = membership.user
         next unless Guardian.new.can_chat?(user)
@@ -145,6 +146,7 @@ class DiscourseChat::ChatMessageCreator
       .includes(:do_not_disturb_timings, :push_subscriptions, :groups)
       .joins(:user_chat_channel_memberships)
       .joins(:user_option)
+      .not_suspended
       .where(user_options: { chat_enabled: true })
       .where(user_chat_channel_memberships: { chat_channel_id: chat_channel_id })
       .where.not(username: exclude)

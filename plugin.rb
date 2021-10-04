@@ -80,6 +80,7 @@ after_initialize do
   TopicList.preloaded_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
   CategoryList.preloaded_topic_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
   Search.preloaded_topic_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
+  UserUpdater::OPTION_ATTR.push(:chat_enabled)
 
   on(:category_updated) do |category|
     next if !SiteSetting.topic_chat_enabled
@@ -144,6 +145,10 @@ after_initialize do
 
   add_to_serializer(:current_user, :include_has_chat_enabled?) do
     include_can_chat? && object.user_option.chat_enabled
+  end
+
+  add_to_serializer(:user_option, :chat_enabled) do
+    object.chat_enabled
   end
 
   reloadable_patch do |plugin|

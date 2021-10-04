@@ -1,4 +1,3 @@
-import { h } from "virtual-dom";
 import { withPluginApi } from "discourse/lib/plugin-api";
 
 export default {

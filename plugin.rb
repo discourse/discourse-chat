@@ -185,6 +185,10 @@ after_initialize do
   end
 
   DiscourseChat::Engine.routes.draw do
+    # chat_base routes
+    get "/manifest.webmanifest" => "chat_base#manifest", as: :chat_manifest
+    get "/manifest.json" => "chat_base#manifest"
+
     # chat_channel_controller routes
     get '/chat_channels' => 'chat_channels#index'
     get '/chat_channels/all' => 'chat_channels#all'

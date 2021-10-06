@@ -298,9 +298,12 @@ export default Service.extend({
         ].chat_message_id = busData.message_id;
       } else {
         // Message from other user. Incriment trackings state
-        this.currentUser.chat_channel_tracking_state[channel.id].unread_count =
-          this.currentUser.chat_channel_tracking_state[channel.id]
-            .unread_count + 1;
+        const trackingState = this.currentUser.chat_channel_tracking_state[
+          channel.id
+        ];
+        if (busData.message_id > trackingState.chat_message_id) {
+          trackingState.unread_count = trackingState.unread_count + 1;
+        }
       }
       this.currentUser.notifyPropertyChange("chat_channel_tracking_state");
 

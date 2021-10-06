@@ -301,7 +301,7 @@ export default Service.extend({
         const trackingState = this.currentUser.chat_channel_tracking_state[
           channel.id
         ];
-        if (busData.message_id > trackingState.chat_message_id) {
+        if (busData.message_id > (trackingState.chat_message_id || 0)) {
           trackingState.unread_count = trackingState.unread_count + 1;
         }
       }

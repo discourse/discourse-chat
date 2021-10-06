@@ -304,7 +304,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     );
 
     publishToMessageBus("/chat/9/new-messages", {
-      message_id: 200,
+      message_id: 201,
       user_id: 2,
     });
     const done = assert.async();
@@ -325,7 +325,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     );
 
     publishToMessageBus("/chat/75/new-messages", {
-      message_id: 200,
+      message_id: 201,
       user_id: 2,
     });
     const done = assert.async();
@@ -346,11 +346,11 @@ acceptance("Discourse Chat - without unread", function (needs) {
   test("Unread DM count overrides the public unread indicator", async function (assert) {
     await visit("/t/internationalization-localization/280");
     publishToMessageBus("/chat/9/new-messages", {
-      message_id: 200,
+      message_id: 201,
       user_id: 2,
     });
     publishToMessageBus("/chat/75/new-messages", {
-      message_id: 201,
+      message_id: 202,
       user_id: 2,
     });
     const done = assert.async();

@@ -452,6 +452,7 @@ export default Component.extend({
     if (this.messages.length >= MAX_RECENT_MSGS) {
       this.removeMessage(this.messages.shiftObject());
     }
+    this.reStickScrollIfNeeded();
   },
 
   handleEditMessage(data) {

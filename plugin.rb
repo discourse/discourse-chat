@@ -73,6 +73,7 @@ after_initialize do
   load File.expand_path('../lib/direct_message_channel_creator.rb', __FILE__)
   load File.expand_path('../lib/guardian_extensions.rb', __FILE__)
   load File.expand_path('../app/services/chat_publisher.rb', __FILE__)
+  ::ActionController::Base.prepend_view_path File.expand_path('../app/views', __FILE__)
 
   register_topic_custom_field_type(DiscourseChat::HAS_CHAT_ENABLED, :boolean)
   register_category_custom_field_type(DiscourseChat::HAS_CHAT_ENABLED, :boolean)
@@ -187,9 +188,9 @@ after_initialize do
 
   DiscourseChat::Engine.routes.draw do
     # chat_base routes
-    get "/manifest.webmanifest" => "chat_base#manifest", as: :chat_manifest
-    get "/manifest.json" => "chat_base#manifest"
-    get "/service-worker.js" => "chat_base#service_worker_asset", format: :js
+    get "/manifest.webmanifest" => "chat_base#manifest", as: :chat_manifest, format: :json
+    get "/manifest.json" => "chat_base#manifest", format: :json
+    get "/service-worker.js" => "chat_base#service_worker", format: :js
 
     # chat_channel_controller routes
     get '/chat_channels' => 'chat_channels#index'

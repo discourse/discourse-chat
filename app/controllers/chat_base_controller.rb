@@ -4,40 +4,19 @@ class DiscourseChat::ChatBaseController < ::ApplicationController
   before_action :ensure_logged_in
   before_action :ensure_can_chat
 
-  skip_before_action :check_xhr, only: [:service_worker_asset]
-  skip_before_action :verify_authenticity_token, only: [:service_worker_asset]
-  skip_before_action :preload_json, only: [:service_worker_asset]
-  skip_before_action :handle_theme, only: [:service_worker_asset]
-  before_action :apply_cdn_headers, only: [:service_worker_asset]
+  skip_before_action :check_xhr, only: [:service_worker, :manifest]
+  skip_before_action :verify_authenticity_token, only: [:service_worker, :manifest]
+  skip_before_action :preload_json, only: [:service_worker, :manifest]
+  skip_before_action :handle_theme, only: [:service_worker, :manifest]
+  before_action :apply_cdn_headers, only: [:service_worker, :manifest]
 
   def manifest
     expires_in 1.minutes
     render json: chat_manifest.to_json, content_type: 'application/manifest+json'
   end
 
-  def service_worker_asset
-    is_asset_path
-
-    respond_to do |format|
-      format.js do
-        # https://github.com/w3c/ServiceWorker/blob/master/explainer.md#updating-a-service-worker
-        # Maximum cache that the service worker will respect is 24 hours.
-        # However, ensure that these may be cached and served for longer on servers.
-        # immutable_for 1.year
-
-        if Rails.application.assets_manifest.assets['chat-service-worker.js']
-          path = File.expand_path(Rails.root + "public/assets/#{Rails.application.assets_manifest.assets['chat-service-worker.js']}")
-          response.headers["Last-Modified"] = File.ctime(path).httpdate
-        end
-        puts '#####################'
-        puts Rails.application.assets_manifest.find_sources('chat-service-worker.js').first.inspect
-        puts '#####################'
-        render(
-          plain: Rails.application.assets_manifest.find_sources('chat-service-worker.js').first,
-          content_type: 'application/javascript'
-        )
-      end
-    end
+  def service_worker
+    render
   end
 
   private

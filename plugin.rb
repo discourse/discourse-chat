@@ -176,6 +176,7 @@ after_initialize do
       has_many :user_chat_channel_memberships, dependent: :destroy
     end
   end
+  register_asset("javascripts/chat-service-worker.js")
 
   register_presence_channel_prefix("chat") do |channel|
     next nil unless channel == "/chat/online"
@@ -188,6 +189,7 @@ after_initialize do
     # chat_base routes
     get "/manifest.webmanifest" => "chat_base#manifest", as: :chat_manifest
     get "/manifest.json" => "chat_base#manifest"
+    get "/service-worker.js" => "chat_base#service_worker_asset", format: :js
 
     # chat_channel_controller routes
     get '/chat_channels' => 'chat_channels#index'

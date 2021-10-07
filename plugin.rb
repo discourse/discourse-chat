@@ -11,6 +11,7 @@ enabled_site_setting :topic_chat_enabled
 
 register_asset 'stylesheets/common/common.scss'
 register_asset 'stylesheets/common/incoming-chat-webhooks.scss'
+register_asset 'stylesheets/common/pwa.scss'
 register_asset 'stylesheets/mobile/mobile.scss', :mobile
 register_asset 'stylesheets/desktop/desktop.scss', :desktop
 

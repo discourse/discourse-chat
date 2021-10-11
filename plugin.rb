@@ -84,10 +84,6 @@ after_initialize do
   Search.preloaded_topic_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
   UserUpdater::OPTION_ATTR.push(:chat_enabled)
 
-  register_notification_channel(:chat) do |user|
-    Guardian.new.can_chat?(user) && user.user_option.chat_enabled
-  end
-
   on(:category_updated) do |category|
     next if !SiteSetting.topic_chat_enabled
 

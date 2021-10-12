@@ -1,10 +1,4 @@
 'use strict';
-<%- puts '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$' %>
-<%- puts '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$' %>
-<%- puts '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$' %>
-<%- puts '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$' %>
-<%- puts '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$' %>
-<%- puts '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$' %>
 
 importScripts("<%= "#{Discourse.asset_host}#{Discourse.base_path}/javascripts/workbox/workbox-sw.js" %>");
 
@@ -121,22 +115,6 @@ function showNotification(title, body, icon, badge, tag, baseUrl, url) {
   }
   return self.registration.showNotification(title, notificationOptions);
 }
-self.addEventListener('push', function(event) {
-  var payload = event.data.json();
-  if(!isIdle() && payload.hide_when_active) {
-    return false;
-  }
-  event.waitUntil(
-    self.registration.getNotifications({ tag: payload.tag }).then(function(notifications) {
-      if (notifications && notifications.length > 0) {
-        notifications.forEach(function(notification) {
-          notification.close();
-        });
-      }
-      return showNotification(payload.title, payload.body, payload.icon, payload.badge, payload.tag, payload.base_url, payload.url);
-    })
-  );
-});
 self.addEventListener('notificationclick', function(event) {
   // Android doesn't close the notification when you click on it
   // See: http://crbug.com/463146
@@ -169,29 +147,3 @@ self.addEventListener('message', function(event) {
     lastAction = event.data.lastAction;
   }
 });
-self.addEventListener('pushsubscriptionchange', function(event) {
-  event.waitUntil(
-    Promise.all(
-      fetch('<%= Discourse.base_url %>/push_notifications/subscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
-        body: new URLSearchParams({
-          "subscription[endpoint]": event.newSubscription.endpoint,
-          "subscription[keys][auth]": event.newSubscription.toJSON().keys.auth,
-          "subscription[keys][p256dh]": event.newSubscription.toJSON().keys.p256dh,
-          "send_confirmation": false
-        })
-      }),
-      fetch('<%= Discourse.base_url %>/push_notifications/unsubscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
-        body: new URLSearchParams({
-          "subscription[endpoint]": event.oldSubscription.endpoint,
-          "subscription[keys][auth]": event.oldSubscription.toJSON().keys.auth,
-          "subscription[keys][p256dh]": event.oldSubscription.toJSON().keys.p256dh
-        })
-      })
-    )
-  );
-});
-

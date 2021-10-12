@@ -13,8 +13,8 @@ export default {
       api.onPageChange((url) => {
         const manifest = document.getElementById("manifest-link")
         if (!manifest) return;
-
-        const manifestHref = (url === "/chat" || url.startsWith("/chat/channel/"))
+        const site = container.lookup("site:main");
+        const manifestHref = (url === "/chat" || url.startsWith("/chat/channel/")) && !site.mobileView
           ? "/chat/manifest.webmanifest"
           : "/manifest.webmanifest";
         manifest.href = getURL(manifestHref);

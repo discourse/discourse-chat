@@ -11,6 +11,7 @@ enabled_site_setting :topic_chat_enabled
 
 register_asset 'stylesheets/common/common.scss'
 register_asset 'stylesheets/common/incoming-chat-webhooks.scss'
+register_asset 'stylesheets/common/pwa.scss'
 register_asset 'stylesheets/mobile/mobile.scss', :mobile
 register_asset 'stylesheets/desktop/desktop.scss', :desktop
 
@@ -73,6 +74,7 @@ after_initialize do
   load File.expand_path('../lib/direct_message_channel_creator.rb', __FILE__)
   load File.expand_path('../lib/guardian_extensions.rb', __FILE__)
   load File.expand_path('../app/services/chat_publisher.rb', __FILE__)
+  ::ActionController::Base.prepend_view_path File.expand_path('../app/views', __FILE__)
 
   register_topic_custom_field_type(DiscourseChat::HAS_CHAT_ENABLED, :boolean)
   register_category_custom_field_type(DiscourseChat::HAS_CHAT_ENABLED, :boolean)
@@ -176,6 +178,7 @@ after_initialize do
       has_many :user_chat_channel_memberships, dependent: :destroy
     end
   end
+  register_asset("javascripts/chat-service-worker.js")
 
   register_presence_channel_prefix("chat") do |channel|
     next nil unless channel == "/chat/online"
@@ -185,6 +188,11 @@ after_initialize do
   end
 
   DiscourseChat::Engine.routes.draw do
+    # chat_base routes
+    get "/manifest.webmanifest" => "chat_base#manifest", as: :chat_manifest, format: :json
+    get "/manifest.json" => "chat_base#manifest", format: :json
+    get "/service-worker.js" => "chat_base#service_worker", format: :js
+
     # chat_channel_controller routes
     get '/chat_channels' => 'chat_channels#index'
     get '/chat_channels/all' => 'chat_channels#all'

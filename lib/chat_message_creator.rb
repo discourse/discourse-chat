@@ -76,7 +76,7 @@ class DiscourseChat::ChatMessageCreator
           excerpt: chat_message.message[0..399]
         }
         if membership.desktop_notifications_always?
-          MessageBus.publish("/notification-alert/#{user.id}", payload, user_ids: [user.id])
+          MessageBus.publish("/chat/notification-alert/#{user.id}", payload, user_ids: [user.id])
         end
 
         if membership.mobile_notifications_always? && !online_user_ids.include?(user.id)
@@ -196,7 +196,7 @@ class DiscourseChat::ChatMessageCreator
     return if !membership || membership.muted
 
     unless membership.desktop_notifications_never?
-      MessageBus.publish("/notification-alert/#{mentioned.id}", payload, user_ids: [mentioned.id])
+      MessageBus.publish("/chat/notification-alert/#{mentioned.id}", payload, user_ids: [mentioned.id])
     end
 
     unless membership.mobile_notifications_never?

@@ -947,6 +947,9 @@ $float-height: 530px;
   }
 }
 
+.chat-channel-settings-modal {
+  z-index: 999999;
+}
 .chat-settings-modal {
   .chat-channel-settings-row {
     display: flex;

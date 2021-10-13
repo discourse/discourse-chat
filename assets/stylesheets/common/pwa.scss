@@ -1,0 +1,10 @@
+body.chat-pwa {
+  .d-header, .custom-nav-list, .sidebar {
+    display: none;
+  }
+  .sidebar-container {
+    .custom-nav-list, .sidebar-settings-link, .toggle-resize {
+      display: none;
+    }
+  }
+}

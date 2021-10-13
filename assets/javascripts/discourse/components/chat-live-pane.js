@@ -32,6 +32,7 @@ export default Component.extend({
   sendingloading: false,
   stickyScroll: true,
   stickyScrollTimer: null,
+  isPWA: false,
 
   editingMessage: null, // ?Message
   replyToMsg: null, // ?Message
@@ -51,6 +52,11 @@ export default Component.extend({
   _updateReadTimer: null,
   lastSendReadMessageId: null,
   _scrollerEl: null,
+
+  init() {
+    this._super(...arguments);
+    this.set("isPWA", this.chat.getIsPWA());
+  },
 
   didInsertElement() {
     this._super(...arguments);
@@ -554,10 +560,15 @@ export default Component.extend({
     return later(
       this,
       () => {
-        const messageId = this.messages[this.messages.length - 1]?.id;
+        let messageId;
+        if (this.messages?.length) {
+          messageId = this.messages[this.messages.length - 1]?.id;
+        }
+
         // Make sure new messages have come in. Do not keep pinging server with read updates
         // if no new messages came in since last read update was sent.
         if (
+          document.hasFocus() &&
           this.expanded &&
           !this.floatHidden &&
           messageId &&

@@ -1,4 +1,20 @@
 import { withPluginApi } from "discourse/lib/plugin-api";
+import {
+  alertChannel,
+  init as initDesktopNotifications,
+  onNotification,
+} from "discourse/lib/desktop-notifications";
+
+function subscribeToChatNotifications(container, user) {
+  const messageBus = container.lookup("message-bus:main");
+  const siteSettings = container.lookup("site-settings:main");
+  const appEvents = container.lookup("service:app-events");
+
+  messageBus.subscribe(`/chat${alertChannel(user)}`, (data) =>
+    onNotification(data, siteSettings, user)
+  );
+  initDesktopNotifications(messageBus, appEvents);
+}
 
 export default {
   name: "chat-setup",
@@ -7,6 +23,7 @@ export default {
     if (!currentUser?.has_chat_enabled) {
       return;
     }
+    subscribeToChatNotifications(container, currentUser);
 
     withPluginApi("0.12.1", (api) => {
       const chat = container.lookup("service:chat");

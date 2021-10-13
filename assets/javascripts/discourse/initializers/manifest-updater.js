@@ -11,14 +11,19 @@ export default {
 
     withPluginApi("0.12.1", (api) => {
       api.onPageChange((url) => {
-        const manifest = document.getElementById("manifest-link")
-        if (!manifest) return;
+        const manifest = document.getElementById("manifest-link");
+        if (!manifest) {
+          return;
+        }
+
         const site = container.lookup("site:main");
-        const manifestHref = (url === "/chat" || url.startsWith("/chat/channel/")) && !site.mobileView
-          ? "/chat/manifest.webmanifest"
-          : "/manifest.webmanifest";
+        const manifestHref =
+          (url === "/chat" || url.startsWith("/chat/channel/")) &&
+          !site.mobileView
+            ? "/chat/manifest.webmanifest"
+            : "/manifest.webmanifest";
         manifest.href = getURL(manifestHref);
-      })
-    })
-  }
-}
+      });
+    });
+  },
+};

@@ -1,7 +1,6 @@
 import { withPluginApi } from "discourse/lib/plugin-api";
 import {
   alertChannel,
-  disable as disableDesktopNotifications,
   init as initDesktopNotifications,
   onNotification,
 } from "discourse/lib/desktop-notifications";

@@ -7,10 +7,6 @@ import { inject as service } from "@ember/service";
 
 export default DiscourseRoute.extend({
   chat: service(),
-  willTransition(t) {
-    console.log("WE ARE HERE")
-    console.log("here", t)
-  },
 
   beforeModel() {
     if (

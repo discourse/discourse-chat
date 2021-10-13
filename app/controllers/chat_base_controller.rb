@@ -11,6 +11,13 @@ class DiscourseChat::ChatBaseController < ::ApplicationController
   before_action :apply_cdn_headers, only: [:service_worker, :manifest]
 
   def manifest
+    if view_context.mobile_view? # Do not give mobile devices the chat manifest.
+      metadata_controller = MetadataController.new
+      metadata_controller.request = request
+      metadata_controller.response = response
+      return metadata_controller.manifest
+    end
+
     expires_in 1.minutes
     render json: chat_manifest.to_json, content_type: 'application/manifest+json'
   end
@@ -40,11 +47,11 @@ class DiscourseChat::ChatBaseController < ::ApplicationController
   end
 
   def chat_manifest
-    display = "standalone"
+    display = :standalone
     if request.user_agent
       regex = Regexp.new(SiteSetting.pwa_display_browser_regex)
       if regex.match(request.user_agent)
-        display = "browser"
+        display = :browser
       end
     end
 
@@ -72,7 +79,7 @@ class DiscourseChat::ChatBaseController < ::ApplicationController
         type: MiniMime.lookup_by_filename(logo)&.content_type || "image/png"
       }
       manifest[:icons] << icon_entry.dup
-      icon_entry[:purpose] = "maskable"
+      icon_entry[:purpose] = :maskable
       manifest[:icons] << icon_entry
     end
 

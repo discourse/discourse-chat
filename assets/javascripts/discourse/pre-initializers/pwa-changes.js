@@ -29,6 +29,7 @@ export default {
 
           @action
           willTransition(transition) {
+            this._super(...arguments);
             if (
               transition.to.name !== "chat" &&
               transition.to.name !== "chat.channel"

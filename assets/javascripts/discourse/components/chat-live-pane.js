@@ -32,6 +32,7 @@ export default Component.extend({
   sendingloading: false,
   stickyScroll: true,
   stickyScrollTimer: null,
+  isPWA: false,
 
   editingMessage: null, // ?Message
   replyToMsg: null, // ?Message
@@ -51,6 +52,11 @@ export default Component.extend({
   _updateReadTimer: null,
   lastSendReadMessageId: null,
   _scrollerEl: null,
+
+  init() {
+    this._super(...arguments);
+    this.set("isPWA", this.chat.getIsPWA());
+  },
 
   didInsertElement() {
     this._super(...arguments);

@@ -1,12 +1,6 @@
 import { action } from "@ember/object";
 import { PLUGIN_ID } from "discourse/plugins/discourse-topic-chat/discourse/initializers/chat-topic-changes";
 import { withPluginApi } from "discourse/lib/plugin-api";
-import {
-  alertChannel,
-  disable as disableDesktopNotifications,
-  init as initDesktopNotifications,
-  onNotification,
-} from "discourse/lib/desktop-notifications";
 
 export default {
   name: "chat-pwa-changes",
@@ -17,8 +11,6 @@ export default {
     if (!currentUser?.has_chat_enabled) {
       return;
     }
-    subscribeToChatNotifications(container, currentUser);
-
     withPluginApi("0.12.6", (api) => {
       const chat = container.lookup("service:chat");
       const isPWA =
@@ -50,17 +42,6 @@ export default {
     });
   },
 };
-
-function subscribeToChatNotifications(container, user) {
-  const messageBus = container.lookup("message-bus:main");
-  const siteSettings = container.lookup("site-settings:main");
-  const appEvents = container.lookup("service:app-events");
-
-  messageBus.subscribe(`/chat${alertChannel(user)}`, (data) =>
-    onNotification(data, siteSettings, user)
-  );
-  initDesktopNotifications(messageBus, appEvents);
-}
 
 function addBadgingUpdates(container) {
   container.lookup("service:app-events").on("chat:rerender-header", () => {

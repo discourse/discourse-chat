@@ -65,7 +65,7 @@ class DiscourseChat::ChatBaseController < ::ApplicationController
       short_name: "#{I18n.t('chat.title')} - #{SiteSetting.short_title.presence || SiteSetting.title.truncate(12, separator: ' ', omission: '')}",
       description: SiteSetting.site_description,
       display: display,
-      start_url: Discourse.base_path.present? ? "#{Discourse.base_path}/chat" : '/chat',
+      start_url: Discourse.base_path.present? ? "#{Discourse.base_path}/chat?isChatPWA=true" : '/chat?isChatPWA=true',
       background_color: "##{ColorScheme.hex_for_name('secondary', scheme_id)}",
       theme_color: "##{ColorScheme.hex_for_name('header_background', scheme_id)}",
       icons: []

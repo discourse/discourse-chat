@@ -17,9 +17,12 @@ export default {
         window.matchMedia("(display-mode: standalone)").matches ||
         window.navigator.standalone ||
         document.referrer.includes("android-app://");
-      chat.setIsPWA(isPWA);
+      const queryParams = Object.fromEntries(
+        new URLSearchParams(window.location.search).entries()
+      );
 
-      if (isPWA) {
+      if (isPWA && queryParams?.isChatPWA === "true") {
+        chat.setIsPWA(true);
         document.body.classList.add("chat-pwa");
         api.disableDefaultBadging();
         api.unsubscribeFromNotifications();

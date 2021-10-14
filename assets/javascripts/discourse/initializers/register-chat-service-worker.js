@@ -4,6 +4,6 @@ export default {
   name: "register-chat-service-worker",
 
   initialize(container) {
-    registerServiceWorker(container, "chat/service-worker.js");
+    registerServiceWorker(container, "chat/service-worker.js", "/chat/");
   },
 };

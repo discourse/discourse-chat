@@ -21,7 +21,6 @@ export default Service.extend({
   hasFetchedChannels: false,
   hasUnreadPublicMessages: false,
   idToTitleMap: null,
-  isPWA: false,
   lastNonChatRoute: null,
   messageId: null,
   presence: service(),
@@ -100,14 +99,6 @@ export default Service.extend({
 
   setSidebarActive(on) {
     this.set("sidebarActive", on);
-  },
-
-  getIsPWA() {
-    return this.isPWA;
-  },
-
-  setIsPWA(isPWA) {
-    this.set("isPWA", isPWA);
   },
 
   loadCookFunction(categories) {

@@ -15,14 +15,12 @@
         label="chat.join_channel"
       }}
     {{/if}}
-    {{#unless isPWA}}
-      {{d-button
-        action=(action "exitChat")
-        class="btn-flat exit-chat-btn"
-        icon="times"
-        title="chat.exit"
-      }}
-    {{/unless}}
+    {{d-button
+      action=(action "exitChat")
+      class="btn-flat exit-chat-btn"
+      icon="times"
+      title="chat.exit"
+    }}
   </div>
 {{/if}}
 

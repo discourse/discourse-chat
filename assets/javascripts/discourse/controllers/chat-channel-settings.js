@@ -1,5 +1,5 @@
 import Controller from "@ember/controller";
-import EmberObject, { action } from "@ember/object";
+import EmberObject from "@ember/object";
 import ModalFunctionality from "discourse/mixins/modal-functionality";
 import { ajax } from "discourse/lib/ajax";
 import { inject as service } from "@ember/service";
@@ -28,9 +28,4 @@ export default Controller.extend(ModalFunctionality, {
       });
     });
   },
-
-  @action
-  close() {
-    this.send("closeModal");
-  }
 });

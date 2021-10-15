@@ -9,11 +9,8 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     :edit_message
   ]
 
-  skip_before_action :check_xhr, only: [:respond]
-
   def respond
-    @manifest_url = "#{Discourse.base_path}/chat/manifest.webmanifest"
-    raise ApplicationController::RenderEmpty.new
+    render
   end
 
   def enable_chat

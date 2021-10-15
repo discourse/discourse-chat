@@ -12,7 +12,6 @@ en:
     enabled_chat: "Enabled chat"
     disabled_chat: "Disabled chat"
     site_chat_name: "Staff-only"
-    title: "Chat"
 
     notifications:
       mention: "@%{username} mentioned you in chat"

@@ -86,8 +86,5 @@
 </div>
 
 {{#each channel.chat_channels as |nestedChannel|}}
-  {{chat-channel-settings-row
-    channel=nestedChannel
-    close=close
-  }}
+  {{chat-channel-settings-row channel=nestedChannel}}
 {{/each}}

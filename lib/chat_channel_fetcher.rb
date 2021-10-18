@@ -49,10 +49,20 @@ module DiscourseChat::ChatChannelFetcher
         .where(user_chat_channel_memberships: { user_id: guardian.user.id, following: true })
     end
 
+
     filter_public_channels(channels, memberships, guardian)
   end
 
   def self.filter_public_channels(channels, memberships, guardian)
+    mention_notifications = Notification.unread.where(
+      user_id: guardian.user.id,
+      notification_type: Notification.types[:chat_mention],
+    )
+    mention_notifications.each { |m| m.data = JSON.parse(m.data) }
+    puts '33333333333333333'
+    puts mention_notifications.inspect
+    puts '33333333333333333'
+
     secured = []
     channels.each do |channel|
       next unless can_see_channel?(channel, guardian)
@@ -66,6 +76,13 @@ module DiscourseChat::ChatChannelFetcher
             message.user_id != guardian.user.id && message.id > (membership.last_read_message_id || 0)
           }
         end
+        channel.unread_mentions = mention_notifications.count { |mention_notification|
+          puts '##############'
+          puts mention_notification.data.inspect
+          puts '##############'
+          mention_notification.data[:chat_channel_id] == channel.id &&
+            mention_notification.data[:chat_message_id] > membership.last_read_message_id
+        }
         channel.following = membership.following
         channel.desktop_notification_level = membership.desktop_notification_level
         channel.mobile_notification_level = membership.mobile_notification_level

@@ -122,10 +122,6 @@ RSpec.describe DiscourseChat::ChatChannelsController do
           content: "Hi @#{admin.username}"
         )
           get "/chat/chat_channels.json"
-          puts "#############"
-          puts public_category_cc.id
-          puts response.parsed_body.inspect
-          puts "#############"
           chat_channel = response.parsed_body["public_channels"].detect { |c| c["id"] == public_category_cc.id }
           expect(chat_channel["unread_mentions"]).to eq(1)
       end

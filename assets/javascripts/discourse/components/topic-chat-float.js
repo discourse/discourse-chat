@@ -34,7 +34,6 @@ export default Component.extend({
       return;
     }
 
-    this.chat.calculateHasUnreadMessages();
     this._checkSize();
     this.appEvents.on("chat:navigated-to-full-page", this, "close");
     this.appEvents.on("chat:toggle-open", this, "toggleChat");

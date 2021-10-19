@@ -41,6 +41,14 @@ module ChatPublisher
     )
   end
 
+  def self.publish_new_mention(user, chat_channel_id, chat_message_id)
+    MessageBus.publish(
+      "/chat/#{chat_channel_id}/new-mentions",
+      { message_id: chat_message_id }.as_json,
+      user_ids: [user.id]
+    )
+  end
+
   def self.publish_new_direct_message_channel(chat_channel, users)
     users.each do |user|
       content = ChatChannelSerializer.new(

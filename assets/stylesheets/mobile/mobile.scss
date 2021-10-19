@@ -136,8 +136,8 @@ body.has-full-page-chat {
   .tc-channels .chat-channel-row .category-chat-private .d-icon {
     background-color: var(--secondary);
   }
-  .chat-channel-row .unread-chat-messages-indicator,
-  .chat-channel-row .unread-dm-indicator {
+  .chat-channel-row .chat-unread-indicator,
+  .chat-channel-row .chat-unread-urgent-indicator {
     width: 6px;
     height: 6px;
     left: 5px;

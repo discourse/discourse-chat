@@ -35,14 +35,14 @@ class DiscourseChat::ChatMessageCreator
   end
 
   def create
-    begin
+    # begin
       @chat_message.save!
       mentioned_user_ids = create_mention_notifications
       notify_watching_users(except: [@user.id] + mentioned_user_ids)
       ChatPublisher.publish_new!(@chat_channel, @chat_message, @staged_id)
-    rescue => error
-      @error = error
-    end
+    # rescue => error
+      # @error = error
+    # end
   end
 
   def failed?
@@ -101,6 +101,7 @@ class DiscourseChat::ChatMessageCreator
           chat_message: @chat_message,
         )
         mentioned_user_ids.push(target_user.id)
+        ChatPublisher.publish_new_mention(target_user, @chat_channel.id, @chat_message.id)
       end
     end
     mentioned_user_ids

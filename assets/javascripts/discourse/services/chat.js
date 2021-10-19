@@ -331,7 +331,7 @@ export default Service.extend({
   },
 
   _subscribeToMentionChannel(channel) {
-    this.messageBus.subscribe(`/chat/${channel.id}/new-mentions`, (busData) => {
+    this.messageBus.subscribe(`/chat/${channel.id}/new-mentions`, () => {
       const trackingState = this.currentUser.chat_channel_tracking_state[
         channel.id
       ];

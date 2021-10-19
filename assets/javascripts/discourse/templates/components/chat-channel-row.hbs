@@ -1,10 +1,7 @@
 <div class={{rowClassNames}}>
   {{chat-channel-title channel=channel unreadCount=unreadCount}}
-  {{#if (and unreadCount isDirectMessageRow)}}
-    <div class="unread-dm-indicator">
-    </div>
-  {{else if unreadCount}}
-    <span class="unread-chat-messages-indicator"></span>
+  {{#if hasUnread}}
+    <span class={{unreadIndicatorClassName}}></span>
   {{/if}}
 </div>
 

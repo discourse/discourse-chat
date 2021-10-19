@@ -42,6 +42,12 @@ class DiscourseChat::ChatMessageCreator
       ChatPublisher.publish_new!(@chat_channel, @chat_message, @staged_id)
     rescue => error
       @error = error
+      if Rails.env.test?
+        puts "#" * 50
+        puts "Chat message creation error:"
+        puts @error.inspect
+        puts "#" * 50
+      end
     end
   end
 
@@ -101,6 +107,7 @@ class DiscourseChat::ChatMessageCreator
           chat_message: @chat_message,
         )
         mentioned_user_ids.push(target_user.id)
+        ChatPublisher.publish_new_mention(target_user, @chat_channel.id, @chat_message.id)
       end
     end
     mentioned_user_ids

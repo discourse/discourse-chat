@@ -12,7 +12,7 @@ export default {
       const chat = container.lookup("service:chat");
       chat.getChannels();
 
-      api.addDocumentTitleCounter(() => chat.getChatDocumentTitleCount());
+      api.addDocumentTitleCounter(() => chat.getUnreadUrgentCount());
       api.addCardClickListenerSelector(".topic-chat-float-container");
 
       api.dispatchWidgetAppEvent(

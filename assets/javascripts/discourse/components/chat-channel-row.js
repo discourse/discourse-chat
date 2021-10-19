@@ -45,7 +45,15 @@ export default Component.extend({
   },
 
   @discourseComputed("currentUser.chat_channel_tracking_state")
-  unreadCount(trackingState) {
+  unreadIndicatorClassName(trackingState) {
+    return this.isDirectMessageRow ||
+      trackingState[this.channel.id]?.unread_mentions > 0
+      ? "chat-unread-urgent-indicator"
+      : "chat-unread-indicator";
+  },
+
+  @discourseComputed("currentUser.chat_channel_tracking_state")
+  hasUnread(trackingState) {
     return trackingState[this.channel.id]?.unread_count || 0;
   },
 });

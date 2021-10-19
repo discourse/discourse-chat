@@ -10,6 +10,7 @@ class ChatChannelSerializer < ApplicationSerializer
              :muted,
              :title,
              :unread_count,
+             :unread_mentions,
              :updated_at
 
   has_many :chat_channels, serializer: ChatChannelSerializer, embed: :objects

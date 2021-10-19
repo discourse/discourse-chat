@@ -114,6 +114,18 @@ RSpec.describe DiscourseChat::ChatChannelsController do
         expect(response.status).to eq(200)
       end
 
+      it "serializes unread_mentions properly" do
+        sign_in(admin)
+        DiscourseChat::ChatMessageCreator.create(
+          chat_channel: public_category_cc,
+          user: user,
+          content: "Hi @#{admin.username}"
+        )
+          get "/chat/chat_channels.json"
+          chat_channel = response.parsed_body["public_channels"].detect { |c| c["id"] == public_category_cc.id }
+          expect(chat_channel["unread_mentions"]).to eq(1)
+      end
+
       describe "direct messages" do
         fab!(:user1) { Fabricate(:user) }
         fab!(:user2) { Fabricate(:user) }
@@ -151,114 +163,114 @@ RSpec.describe DiscourseChat::ChatChannelsController do
         end
       end
     end
+  end
 
-    describe "#follow" do
-      it "creates a user_chat_channel_membership record if one doesn't exist" do
-        sign_in(user)
-        expect {
-          post "/chat/chat_channels/#{chat_channel.id}/follow.json"
-        }.to change {
-          UserChatChannelMembership.where(user_id: user.id, following: true).count
-        }.by(1)
-        expect(response.status).to eq(200)
-      end
-
-      it "updates 'following' to true for existing record" do
-        sign_in(user)
-        membership_record = UserChatChannelMembership.create!(
-          chat_channel_id: chat_channel.id,
-          user_id: user.id,
-          following: false
-        )
-
-        expect {
-          post "/chat/chat_channels/#{chat_channel.id}/follow.json"
-        }.to change {
-          membership_record.reload.following
-        }.to(true).from(false)
-        expect(response.status).to eq(200)
-      end
+  describe "#follow" do
+    it "creates a user_chat_channel_membership record if one doesn't exist" do
+      sign_in(user)
+      expect {
+        post "/chat/chat_channels/#{chat_channel.id}/follow.json"
+      }.to change {
+        UserChatChannelMembership.where(user_id: user.id, following: true).count
+      }.by(1)
+      expect(response.status).to eq(200)
     end
 
-    describe "#unfollow" do
-      it "updates 'following' to false for existing record" do
-        sign_in(user)
-        membership_record = UserChatChannelMembership.create!(
-          chat_channel_id: chat_channel.id,
-          user_id: user.id,
-          following: true
-        )
+    it "updates 'following' to true for existing record" do
+      sign_in(user)
+      membership_record = UserChatChannelMembership.create!(
+        chat_channel_id: chat_channel.id,
+        user_id: user.id,
+        following: false
+      )
 
-        expect {
-          post "/chat/chat_channels/#{chat_channel.id}/unfollow.json"
-        }.to change {
-          membership_record.reload.following
-        }.to(false).from(true)
-        expect(response.status).to eq(200)
-      end
+      expect {
+        post "/chat/chat_channels/#{chat_channel.id}/follow.json"
+      }.to change {
+        membership_record.reload.following
+      }.to(true).from(false)
+      expect(response.status).to eq(200)
+    end
+  end
 
-      it "errors when you try to unfollow a direct_message_channel" do
-        sign_in(user)
-        membership_record = UserChatChannelMembership.create!(
-          chat_channel_id: dm_chat_channel.id,
-          user_id: user.id,
-          following: true,
-          desktop_notification_level: 2,
-          mobile_notification_level: 2,
-        )
+  describe "#unfollow" do
+    it "updates 'following' to false for existing record" do
+      sign_in(user)
+      membership_record = UserChatChannelMembership.create!(
+        chat_channel_id: chat_channel.id,
+        user_id: user.id,
+        following: true
+      )
 
-        post "/chat/chat_channels/#{dm_chat_channel.id}/unfollow.json"
-        expect(response.status).to eq(422)
-        expect(membership_record.reload.following).to eq(true)
-      end
+      expect {
+        post "/chat/chat_channels/#{chat_channel.id}/unfollow.json"
+      }.to change {
+        membership_record.reload.following
+      }.to(false).from(true)
+      expect(response.status).to eq(200)
     end
 
-    describe "#notification_settings" do
-      fab!(:membership) { Fabricate(:user_chat_channel_membership, user: user, chat_channel: chat_channel) }
+    it "errors when you try to unfollow a direct_message_channel" do
+      sign_in(user)
+      membership_record = UserChatChannelMembership.create!(
+        chat_channel_id: dm_chat_channel.id,
+        user_id: user.id,
+        following: true,
+        desktop_notification_level: 2,
+        mobile_notification_level: 2,
+      )
 
-      it "returns a 404 when the user isn't logged in" do
-        post "/chat/chat_channels/#{chat_channel.id}/notification_settings.json", params: {
-          muted: true,
-          desktop_notification_level: "mention",
-          mobile_notification_level: "mention"
-        }
-        expect(response.status).to eq(403)
+      post "/chat/chat_channels/#{dm_chat_channel.id}/unfollow.json"
+      expect(response.status).to eq(422)
+      expect(membership_record.reload.following).to eq(true)
+    end
+  end
 
-      end
+  describe "#notification_settings" do
+    fab!(:membership) { Fabricate(:user_chat_channel_membership, user: user, chat_channel: chat_channel) }
 
-      it "requires the correct params" do
-        sign_in(user)
-        post "/chat/chat_channels/#{chat_channel.id}/notification_settings.json", params: {
-          muted: true,
-          desktop_notification_level: "mention"
-        }
-        expect(response.status).to eq(400)
-        post "/chat/chat_channels/#{chat_channel.id}/notification_settings.json", params: {
-          muted: true,
-          mobile_notification_level: "mention"
-        }
-        expect(response.status).to eq(400)
-        post "/chat/chat_channels/#{chat_channel.id}/notification_settings.json", params: {
-          mobile_notification_level: "mention",
-          desktop_notification_level: "mention"
-        }
-        expect(response.status).to eq(400)
-      end
+    it "returns a 404 when the user isn't logged in" do
+      post "/chat/chat_channels/#{chat_channel.id}/notification_settings.json", params: {
+        muted: true,
+        desktop_notification_level: "mention",
+        mobile_notification_level: "mention"
+      }
+      expect(response.status).to eq(403)
 
-      it "saves all the correct fields" do
-        sign_in(user)
-        post "/chat/chat_channels/#{chat_channel.id}/notification_settings.json", params: {
-          muted: true,
-          desktop_notification_level: "always",
-          mobile_notification_level: "never"
-        }
-        expect(response.status).to eq(200)
-        membership = UserChatChannelMembership.find_by(user: user, chat_channel: chat_channel)
-        expect(membership.muted).to eq(true)
-        expect(membership.desktop_notification_level).to eq("always")
-        expect(membership.mobile_notification_level).to eq("never")
+    end
 
-      end
+    it "requires the correct params" do
+      sign_in(user)
+      post "/chat/chat_channels/#{chat_channel.id}/notification_settings.json", params: {
+        muted: true,
+        desktop_notification_level: "mention"
+      }
+      expect(response.status).to eq(400)
+      post "/chat/chat_channels/#{chat_channel.id}/notification_settings.json", params: {
+        muted: true,
+        mobile_notification_level: "mention"
+      }
+      expect(response.status).to eq(400)
+      post "/chat/chat_channels/#{chat_channel.id}/notification_settings.json", params: {
+        mobile_notification_level: "mention",
+        desktop_notification_level: "mention"
+      }
+      expect(response.status).to eq(400)
+    end
+
+    it "saves all the correct fields" do
+      sign_in(user)
+      post "/chat/chat_channels/#{chat_channel.id}/notification_settings.json", params: {
+        muted: true,
+        desktop_notification_level: "always",
+        mobile_notification_level: "never"
+      }
+      expect(response.status).to eq(200)
+      membership = UserChatChannelMembership.find_by(user: user, chat_channel: chat_channel)
+      expect(membership.muted).to eq(true)
+      expect(membership.desktop_notification_level).to eq("always")
+      expect(membership.mobile_notification_level).to eq("never")
+
     end
   end
 

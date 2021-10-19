@@ -5,7 +5,6 @@ import { ajax } from "discourse/lib/ajax";
 import { A } from "@ember/array";
 import { defaultHomepage } from "discourse/lib/utilities";
 import { generateCookFunction } from "discourse/lib/text";
-import { observes } from "discourse-common/utils/decorators";
 import { Promise } from "rsvp";
 import simpleCategoryHashMentionTransform from "discourse/plugins/discourse-topic-chat/discourse/lib/simple-category-hash-mention-transform";
 
@@ -28,7 +27,7 @@ export default Service.extend({
   publicChannels: null,
   router: service(),
   sidebarActive: false,
-  unreadDirectMessageCount: null,
+  unreadUrgentCount: null,
   _fetchingChannels: null,
 
   init() {
@@ -156,11 +155,11 @@ export default Service.extend({
     return this.hasUnreadMessages;
   },
 
-  setUnreadDirectMessageCount(count) {
-    this.set("unreadDirectMessageCount", count);
+  setUnreadUrgentCount(count) {
+    this.set("unreadUrgentCount", count);
   },
-  getUnreadDirectMessageCount() {
-    return this.unreadDirectMessageCount;
+  getUnreadUrgentCount() {
+    return this.unreadUrgentCount;
   },
 
   _channelObject() {
@@ -195,7 +194,7 @@ export default Service.extend({
   _refreshChannels() {
     return new Promise((resolve) => {
       this.set("loading", true);
-      this.currentUser.chat_channel_tracking_state = {};
+      this.currentUser.set("chat_channel_tracking_state", {});
       ajax("/chat/chat_channels.json").then((channels) => {
         this.setProperties({
           publicChannels: A(
@@ -217,7 +216,7 @@ export default Service.extend({
         });
         this.set("idToTitleMap", idToTitleMap);
         this.presenceChannel.subscribe(channels.global_presence_channel_state);
-        this.currentUser.notifyPropertyChange("chat_channel_tracking_state");
+        this.userChatChannelTrackingStateChanged();
         resolve(this._channelObject());
       });
     });
@@ -233,11 +232,14 @@ export default Service.extend({
   },
 
   getIdealFirstChannelId() {
-    // Returns the channel ID of the first direct message channel with unread messages if one exists.
-    // Otherwise returns the ID of the first public channel with unread messages.
-    // If there is no channel ID to enter, return null and handle the fallback in the consumer.
+    // When user opens chat we need to give them the 'best' channel when they enter.
+    // Look for public channels with mentions. If one exists, enter that.
+    // Next best is a DM channel with unread messages.
+    // Next best is a public channel with unread messages.
+    // If there is no ideal channel ID, return null and handle the fallback in the consumer.
     return this.getChannels().then(() => {
-      let publicChannelIdWithUnread;
+      let publicChannelId;
+      let publicChannelIdWithMention;
       let dmChannelIdWithUnread;
 
       for (const [channelId, state] of Object.entries(
@@ -246,15 +248,19 @@ export default Service.extend({
         if (state.chatable_type === "DirectMessageChannel") {
           if (!dmChannelIdWithUnread && state.unread_count > 0) {
             dmChannelIdWithUnread = channelId;
-            break;
           }
         } else {
-          if (!publicChannelIdWithUnread && state.unread_count > 0) {
-            publicChannelIdWithUnread = channelId;
+          if (!publicChannelIdWithMention && state.unread_mentions > 0) {
+            publicChannelIdWithMention = channelId;
+            break; // <- We have a public channel with a mention. Break and return this.
+          } else if (!publicChannelId && state.unread_count > 0) {
+            publicChannelId = channelId;
           }
         }
       }
-      return dmChannelIdWithUnread || publicChannelIdWithUnread;
+      return (
+        publicChannelIdWithMention || dmChannelIdWithUnread || publicChannelId
+      );
     });
   },
 
@@ -275,9 +281,10 @@ export default Service.extend({
       );
       this.currentUser.chat_channel_tracking_state[busData.chat_channel.id] = {
         unread_count: 0,
+        unread_mentions: 0,
         chatable_type: "DirectMessageChannel",
       };
-      this.currentUser.notifyPropertyChange("chat_channel_tracking_state");
+      this.userChatChannelTrackingStateChanged();
     });
   },
 
@@ -288,6 +295,10 @@ export default Service.extend({
   _subscribeToSingleUpdateChannel(channel) {
     if (channel.muted) {
       return;
+    }
+
+    if (channel.chatable_type !== "DirectMessageChannel") {
+      this._subscribeToMentionChannel(channel);
     }
 
     this.messageBus.subscribe(`/chat/${channel.id}/new-messages`, (busData) => {
@@ -305,7 +316,7 @@ export default Service.extend({
           trackingState.unread_count = trackingState.unread_count + 1;
         }
       }
-      this.currentUser.notifyPropertyChange("chat_channel_tracking_state");
+      this.userChatChannelTrackingStateChanged();
 
       // Update updated_at timestamp for channel if direct message
       const dmChatChannel = (this.directMessageChannels || []).findBy(
@@ -319,9 +330,25 @@ export default Service.extend({
     });
   },
 
+  _subscribeToMentionChannel(channel) {
+    this.messageBus.subscribe(`/chat/${channel.id}/new-mentions`, () => {
+      const trackingState = this.currentUser.chat_channel_tracking_state[
+        channel.id
+      ];
+      if (trackingState) {
+        trackingState.unread_mentions =
+          (trackingState.unread_mentions || 0) + 1;
+        this.userChatChannelTrackingStateChanged();
+      }
+    });
+  },
+
   _unsubscribeFromAllChatChannels() {
     (this.allChannels || []).forEach((channel) => {
       this.messageBus.unsubscribe(`/chat/${channel.id}/new-messages`);
+      if (channel.chatable_type !== "DirectMessageChannel") {
+        this.messageBus.unsubscribe(`/chat/${channel.id}/new-mentions`);
+      }
     });
   },
 
@@ -329,13 +356,14 @@ export default Service.extend({
     this.messageBus.subscribe(
       `/chat/user-tracking-state/${this.currentUser.id}`,
       (busData) => {
-        const channelData = this.currentUser.chat_channel_tracking_state[
+        const trackingState = this.currentUser.chat_channel_tracking_state[
           busData.chat_channel_id
         ];
-        if (channelData) {
-          channelData.chat_message_id = busData.chat_message_id;
-          channelData.unread_count = 0;
-          this.currentUser.notifyPropertyChange("chat_channel_tracking_state");
+        if (trackingState) {
+          trackingState.chat_message_id = busData.chat_message_id;
+          trackingState.unread_count = 0;
+          trackingState.unread_mentions = 0;
+          this.userChatChannelTrackingStateChanged();
         }
       }
     );
@@ -347,22 +375,26 @@ export default Service.extend({
     );
   },
 
-  @observes("currentUser.chat_channel_tracking_state")
-  _listenForUnreadMessageChanges() {
-    this.calculateHasUnreadMessages();
+  userChatChannelTrackingStateChanged() {
+    this._recalculateUnreadMessages();
   },
 
-  calculateHasUnreadMessages() {
+  _recalculateUnreadMessages() {
     let unreadPublicCount = 0;
-    let unreadDmCount = 0;
+    let unreadUrgentCount = 0;
     let headerNeedsRerender = false;
 
     Object.values(this.currentUser.chat_channel_tracking_state).forEach(
       (state) => {
-        if (!state.muted) {
-          state.chatable_type === "DirectMessageChannel"
-            ? (unreadDmCount += state.unread_count || 0)
-            : (unreadPublicCount += state.unread_count || 0);
+        if (state.muted) {
+          return;
+        }
+
+        if (state.chatable_type === "DirectMessageChannel") {
+          unreadUrgentCount += state.unread_count || 0;
+        } else {
+          unreadUrgentCount += state.unread_mentions || 0;
+          unreadPublicCount += state.unread_count || 0;
         }
       }
     );
@@ -373,11 +405,12 @@ export default Service.extend({
       this.setHasUnreadMessages(hasUnreadPublic);
     }
 
-    if (unreadDmCount !== this.getUnreadDirectMessageCount()) {
+    if (unreadUrgentCount !== this.getUnreadUrgentCount()) {
       headerNeedsRerender = true;
-      this.setUnreadDirectMessageCount(unreadDmCount);
+      this.setUnreadUrgentCount(unreadUrgentCount);
     }
 
+    this.currentUser.notifyPropertyChange("chat_channel_tracking_state");
     if (headerNeedsRerender) {
       this.appEvents.trigger("chat:rerender-header");
       this.appEvents.trigger("notifications:changed");
@@ -399,6 +432,7 @@ export default Service.extend({
     this.currentUser.chat_channel_tracking_state[channel.id] = {
       muted: channel.muted,
       unread_count: channel.unread_count,
+      unread_mentions: channel.unread_mentions,
       chatable_type: channel.chatable_type,
       chat_message_id: channel.last_read_message_id,
     };
@@ -406,10 +440,6 @@ export default Service.extend({
 
   addToolbarButton(toolbarButton) {
     addChatToolbarButton(toolbarButton);
-  },
-
-  getChatDocumentTitleCount() {
-    return this.unreadDirectMessageCount;
   },
 });
 

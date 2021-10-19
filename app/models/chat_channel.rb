@@ -8,6 +8,7 @@ class ChatChannel < ActiveRecord::Base
   attribute :mobile_notification_level, default: UserChatChannelMembership::DEFAULT_NOTIFICATION_LEVEL
   attribute :following, default: false
   attribute :unread_count, default: 0
+  attribute :unread_mentions, default: 0
   attribute :last_read_message_id, default: nil
 
   belongs_to :chatable, polymorphic: true

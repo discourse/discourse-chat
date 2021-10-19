@@ -11,20 +11,20 @@ export default createWidget("header-chat-link", {
   services: ["chat", "router"],
 
   html() {
-    const unreadDmCount = this.chat.getUnreadDirectMessageCount();
+    const unreadUrgentCount = this.chat.getUnreadUrgentCount();
     let indicator;
-    if (unreadDmCount) {
+    if (unreadUrgentCount) {
       indicator = h(
-        "div.unread-dm-indicator",
+        "div.chat-unread-urgent-indicator",
         {},
         h(
-          "div.unread-dm-indicator-number-wrap",
+          "div.chat-unread-urgent-indicator-number-wrap",
           {},
-          h("div.unread-dm-indicator-number", {}, unreadDmCount)
+          h("div.chat-unread-urgent-indicator-number", {}, unreadUrgentCount)
         )
       );
     } else if (this.chat.getHasUnreadMessages()) {
-      indicator = h("div.unread-chat-messages-indicator");
+      indicator = h("div.chat-unread-indicator");
     }
 
     return [

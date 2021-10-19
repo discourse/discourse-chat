@@ -232,11 +232,14 @@ export default Service.extend({
   },
 
   getIdealFirstChannelId() {
-    // Returns the channel ID of the first direct message channel with unread messages if one exists.
-    // Otherwise returns the ID of the first public channel with unread messages.
-    // If there is no channel ID to enter, return null and handle the fallback in the consumer.
+    // When user opens chat we need to give them the 'best' channel when they enter.
+    // Look for public channels with mentions. If one exists, enter that.
+    // Next best is a DM channel with unread messages.
+    // Next best is a public channel with unread messages.
+    // If there is no ideal channel ID, return null and handle the fallback in the consumer.
     return this.getChannels().then(() => {
-      let publicChannelIdWithUnread;
+      let publicChannelId;
+      let publicChannelIdWithMention;
       let dmChannelIdWithUnread;
 
       for (const [channelId, state] of Object.entries(
@@ -245,15 +248,19 @@ export default Service.extend({
         if (state.chatable_type === "DirectMessageChannel") {
           if (!dmChannelIdWithUnread && state.unread_count > 0) {
             dmChannelIdWithUnread = channelId;
-            break;
           }
         } else {
-          if (!publicChannelIdWithUnread && state.unread_count > 0) {
-            publicChannelIdWithUnread = channelId;
+          if (!publicChannelIdWithMention && state.unread_mentions > 0) {
+            publicChannelIdWithMention = channelId;
+            break; // <- We have a public channel with a mention. Break and return this.
+          } else if (!publicChannelId && state.unread_count > 0) {
+            publicChannelId = channelId;
           }
         }
       }
-      return dmChannelIdWithUnread || publicChannelIdWithUnread;
+      return (
+        publicChannelIdWithMention || dmChannelIdWithUnread || publicChannelId
+      );
     });
   },
 

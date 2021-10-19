@@ -49,7 +49,6 @@ module DiscourseChat::ChatChannelFetcher
         .where(user_chat_channel_memberships: { user_id: guardian.user.id, following: true })
     end
 
-
     filter_public_channels(channels, memberships, guardian)
   end
 

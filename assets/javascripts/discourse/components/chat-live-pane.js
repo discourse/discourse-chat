@@ -1,6 +1,8 @@
 import Component from "@ember/component";
 import discourseDebounce from "discourse-common/lib/debounce";
 import EmberObject, { action } from "@ember/object";
+import I18n from "I18n";
+import loadScript from "discourse/lib/load-script";
 import { A } from "@ember/array";
 import { applyLocalDates } from "discourse/plugins/discourse-local-dates/initializers/discourse-local-dates";
 import { ajax } from "discourse/lib/ajax";
@@ -13,6 +15,7 @@ import { loadOneboxes } from "discourse/lib/load-oneboxes";
 import { Promise } from "rsvp";
 import { resetIdle } from "discourse/lib/desktop-notifications";
 import { resolveAllShortUrls } from "pretty-text/upload-short-url";
+import { spinnerHTML } from "discourse/helpers/loading-spinner";
 
 const MAX_RECENT_MSGS = 100;
 const STICKY_SCROLL_LENIENCE = 4;
@@ -389,6 +392,10 @@ export default Component.extend({
         false
       );
       resolveAllShortUrls(ajax, this.siteSettings, this.element);
+      lightbox(
+        this.element.querySelectorAll("img:not(.emoji, .avatar)"),
+        this.siteSettings
+      );
       applyLocalDates(
         this.element.querySelectorAll(".discourse-local-date"),
         this.siteSettings
@@ -739,3 +746,23 @@ export default Component.extend({
     return this.router.transitionTo(this.chat.getLastNonChatRoute());
   },
 });
+
+function lightbox(images) {
+  loadScript("/javascripts/jquery.magnific-popup.min.js").then(function () {
+    $(images).magnificPopup({
+      type: "image",
+      closeOnContentClick: false,
+      mainClass: "mfp-zoom-in",
+      tClose: I18n.t("lightbox.close"),
+      tLoading: spinnerHTML,
+      image: {
+        verticalFit: true,
+      },
+      callbacks: {
+        elementParse: (item) => {
+          item.src = item.el[0].src;
+        },
+      },
+    });
+  });
+}

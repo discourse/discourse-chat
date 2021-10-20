@@ -74,6 +74,15 @@
 
     .tc-text {
       width: 100%;
+      img:not(.emoji):not(.avatar) {
+        -webkit-transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+        transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+        &:hover {
+          cursor: pointer;
+          border-radius: 5px;
+          box-shadow: 0 2px 5px 0 rgba(var(--always-black-rgb), 0.1),0 2px 10px 0 rgba(var(--always-black-rgb), 0.1);
+        }
+      }
     }
   }
 }

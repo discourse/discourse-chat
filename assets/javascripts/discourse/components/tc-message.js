@@ -9,9 +9,9 @@ import I18n from "I18n";
 
 export default Component.extend({
   tagName: "div",
+  classNames: "chat-message",
   lastRead: false,
   isHovered: false,
-  isSelected: false,
 
   @discourseComputed("message.deleted_at", "message.expanded")
   deletedAndCollapsed(deletedAt, expanded) {
@@ -176,7 +176,8 @@ export default Component.extend({
 
   @action
   selectMessage() {
-    this.onStartSelectingMessages(this)
+    this.message.set("selected", true);
+    this.onStartSelectingMessages(this);
   },
 
   @action

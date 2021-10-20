@@ -1,6 +1,7 @@
 import Component from "@ember/component";
 import discourseDebounce from "discourse-common/lib/debounce";
 import EmberObject, { action } from "@ember/object";
+import showModal from "discourse/lib/show-modal";
 import { A } from "@ember/array";
 import { applyLocalDates } from "discourse/plugins/discourse-local-dates/initializers/discourse-local-dates";
 import { ajax } from "discourse/lib/ajax";
@@ -72,6 +73,8 @@ export default Component.extend({
       },
       { passive: true }
     );
+
+    this.appEvents.on("chat:cancel-message-selection", this, "cancelSelecting");
   },
 
   willDestroyElement() {
@@ -88,6 +91,11 @@ export default Component.extend({
       this.registeredChatChannelId = null;
     }
     this._unloadedReplyIds = null;
+    this.appEvents.off(
+      "chat:cancel-message-selection",
+      this,
+      "cancelSelecting"
+    );
   },
 
   didReceiveAttrs() {
@@ -715,18 +723,23 @@ export default Component.extend({
 
   @action
   onStartSelectingMessages(message) {
-    message.set("isSelected", true);
     this.set("selectingMessages", true);
   },
 
   @action
   cancelSelecting() {
     this.set("selectingMessages", false);
+    this.messages.forEach((message) => {
+      message.set("selected", false);
+    });
   },
 
   @action
   moveMessagesToTopic() {
-    console.log("MOVE TO TOPIC")
+    showModal("move-chat-to-topic").set(
+      "messages",
+      this.messages.filter((message) => message.selected)
+    );
   },
 
   @action

@@ -10,6 +10,7 @@ import I18n from "I18n";
 export default Component.extend({
   tagName: "div",
   lastRead: false,
+  isHovered: false,
   isSelected: false,
 
   @discourseComputed("message.deleted_at", "message.expanded")
@@ -28,7 +29,7 @@ export default Component.extend({
 
   click() {
     if (this.site.mobileView) {
-      this.toggleProperty("isSelected");
+      this.toggleProperty("isHovered");
     }
   },
 
@@ -43,9 +44,9 @@ export default Component.extend({
     "message.deleted_at",
     "message.in_reply_to",
     "message.action_code",
-    "isSelected"
+    "isHovered"
   )
-  messageClasses(id, staged, deletedAt, inReplyTo, actionCode, isSelected) {
+  messageClasses(id, staged, deletedAt, inReplyTo, actionCode, isHovered) {
     let classNames = ["tc-message"];
     classNames.push(
       staged ? "tc-message-staged" : `tc-message-${this.message.id}`
@@ -64,7 +65,7 @@ export default Component.extend({
     if (this.hideUserInfo) {
       classNames.push("user-info-hidden");
     }
-    if (isSelected) {
+    if (isHovered) {
       classNames.push("tc-message-selected");
     }
     return classNames.join(" ");
@@ -171,6 +172,11 @@ export default Component.extend({
   @action
   edit() {
     this.editButtonClicked(this.message.id);
+  },
+
+  @action
+  selectMessage() {
+    this.onStartSelectingMessages(this)
   },
 
   @action

@@ -100,6 +100,10 @@ en:
         username: "Username"
         username_instructions: "Username of bot that posts to channel. Defaults to 'system' when left blank."
 
+      selection:
+        cancel: "Cancel"
+        move_to_topic: "Move to topic"
+
     notifications:
       popup:
         chat_mention: "@%{username} mentioned you in chat"

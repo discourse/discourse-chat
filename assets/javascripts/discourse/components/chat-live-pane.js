@@ -30,6 +30,7 @@ export default Component.extend({
   allPastMessagesLoaded: false,
   previewing: false,
   sendingloading: false,
+  selectingMessages: false,
   stickyScroll: true,
   stickyScrollTimer: null,
 
@@ -710,6 +711,22 @@ export default Component.extend({
     const message = this.messageLookup[messageId];
     this.set("editingMessage", message);
     next(this.reStickScrollIfNeeded.bind(this));
+  },
+
+  @action
+  onStartSelectingMessages(message) {
+    message.set("isSelected", true);
+    this.set("selectingMessages", true);
+  },
+
+  @action
+  cancelSelecting() {
+    this.set("selectingMessages", false);
+  },
+
+  @action
+  moveMessagesToTopic() {
+    console.log("MOVE TO TOPIC")
   },
 
   @action

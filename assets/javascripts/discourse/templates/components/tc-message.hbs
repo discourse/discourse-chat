@@ -1,4 +1,10 @@
 {{#if show}}
+  {{#if selectingMessages}}
+    {{input
+      type="checkbox"
+      checked=isSelected
+    }}
+  {{/if}}
   {{#if deletedAndCollapsed}}
     <div class="tc-message-deleted">
       {{d-button
@@ -26,6 +32,13 @@
                 icon="pencil-alt"
               }}
             {{/if}}
+            {{#unless selectingMessages}}
+              {{d-button
+                class="btn-flat select-btn"
+                action=(action "selectMessage")
+                icon="tasks"
+              }}
+            {{/unless}}
             {{#if showFlagButton}}
               {{d-button
                 class="btn-flat flag-btn"

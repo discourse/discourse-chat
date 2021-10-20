@@ -392,10 +392,7 @@ export default Component.extend({
         false
       );
       resolveAllShortUrls(ajax, this.siteSettings, this.element);
-      lightbox(
-        this.element.querySelectorAll("img:not(.emoji, .avatar)"),
-        this.siteSettings
-      );
+      lightbox(this.element.querySelectorAll("img:not(.emoji, .avatar)"));
       applyLocalDates(
         this.element.querySelectorAll(".discourse-local-date"),
         this.siteSettings

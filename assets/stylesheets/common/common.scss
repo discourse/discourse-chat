@@ -746,6 +746,15 @@ $float-height: 530px;
       }
     }
   }
+
+  .chat-selection-management-buttons {
+    padding: 0.5em;
+    border-top: 1px solid var(--primary-low);
+
+    .cancel-btn {
+      margin-left: 0.5em;
+    }
+  }
 }
 
 .topic-title-chat-icon {

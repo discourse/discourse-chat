@@ -103,6 +103,7 @@ en:
       selection:
         cancel: "Cancel"
         move_to_topic: "Move to topic"
+        error: "There was an error moving the chat messages"
         title: "Move Chat to Topic"
         new_topic:
           title: "Move to New Topic"

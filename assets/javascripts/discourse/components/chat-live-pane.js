@@ -736,10 +736,10 @@ export default Component.extend({
 
   @action
   moveMessagesToTopic() {
-    showModal("move-chat-to-topic").set(
-      "messages",
-      this.messages.filter((message) => message.selected)
-    );
+    showModal("move-chat-to-topic").setProperties({
+      chatMessageIds: this.messages.filter((message) => message.selected).map((message) => message.id),
+      chatChannelId: this.chatChannel.id
+    });
   },
 
   @action

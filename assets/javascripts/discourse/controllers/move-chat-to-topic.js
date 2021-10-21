@@ -1,10 +1,12 @@
 import Controller from "@ember/controller";
 import discourseComputed from "discourse-common/utils/decorators";
+import DiscourseURL from "discourse/lib/url";
 import I18n from "I18n";
 import ModalFunctionality from "discourse/mixins/modal-functionality";
 import { action } from "@ember/object";
 import { alias, equal } from "@ember/object/computed";
 import { ajax } from "discourse/lib/ajax";
+import { extractError } from "discourse/lib/ajax-error";
 import { isEmpty } from "@ember/utils";
 
 const NEW_TOPIC_SELECTION = "newTopic";
@@ -67,23 +69,38 @@ export default Controller.extend(ModalFunctionality, {
     this.send("closeModal");
   },
 
+  _data() {
+    const data = {
+      type: this.selection,
+      chat_message_ids: this.chatMessageIds,
+      chat_channel_id: this.chatChannelId,
+    };
+    if (this.newTopic || this.newMessage) {
+      data.title = this.topicName;
+    }
+    if (this.newTopic) {
+      data.category_id = this.categoryId;
+      data.tags = this.tags;
+    }
+    if (this.existingTopic) {
+      data.topic_id = this.selectedTopicId;
+    }
+    return data;
+  },
+
   @action
   perform() {
-    let promise = "x";
-    return;
-    promise;
-    // .then((result) => {
-    // this.send("closeModal");
-    // this.topicController.send("toggleMultiSelect");
-    // DiscourseURL.routeTo(result.url);
-    // })
-    // .catch((xhr) => {
-    // this.flash(extractError(xhr, I18n.t("topic.move_to.error")));
-    // })
-    // .finally(() => {
-    // this.set("saving", false);
-    // });
-
-    return false;
+    this.set("saving", true);
+    return ajax("/chat/move_to_topic", { method: "POST", data: this._data() })
+      .then((response) => {
+        this.send("closeModal");
+        DiscourseURL.routeTo(response.url);
+      })
+      .catch((xhr) => {
+        this.flash(extractError(xhr, I18n.t("chat.selection.error")));
+      })
+      .finally(() => {
+        this.set("saving", false);
+      });
   },
 });

@@ -56,6 +56,7 @@ after_initialize do
   load File.expand_path('../app/models/direct_message_channel.rb', __FILE__)
   load File.expand_path('../app/models/direct_message_user.rb', __FILE__)
   load File.expand_path('../app/models/incoming_chat_webhook.rb', __FILE__)
+  load File.expand_path('../app/models/chat_message_post_connection.rb', __FILE__)
   load File.expand_path('../app/serializers/chat_webhook_event_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/chat_base_message_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/chat_channel_serializer.rb', __FILE__)
@@ -175,6 +176,11 @@ after_initialize do
     class ::User
       has_many :user_chat_channel_memberships, dependent: :destroy
     end
+
+    class ::Post
+      has_many :chat_message_post_connections, dependent: :destroy
+      has_many :chat_messages, through: :chat_message_post_connections
+    end
   end
 
   register_presence_channel_prefix("chat") do |channel|
@@ -197,10 +203,10 @@ after_initialize do
     # chat_controller routes
     get '/' => 'chat#respond'
     get '/channel/:channel_title' => 'chat#respond'
+    post '/move_to_topic' => 'chat#move_to_topic'
     post '/enable' => 'chat#enable_chat'
     post '/disable' => 'chat#disable_chat'
     get '/:chat_channel_id/messages' => 'chat#messages'
-    post '/:chat_channel_id' => 'chat#create_message'
     put ':chat_channel_id/edit/:message_id' => 'chat#edit_message'
     delete '/:chat_channel_id/:message_id' => 'chat#delete'
     post '/:chat_channel_id/:message_id/flag' => 'chat#flag'
@@ -208,6 +214,7 @@ after_initialize do
     get '/lookup/:message_id' => 'chat#lookup_message'
     put '/:chat_channel_id/read/:message_id' => 'chat#update_user_last_read'
     put '/user_chat_enabled/:user_id' => 'chat#set_user_chat_status'
+    post '/:chat_channel_id' => 'chat#create_message'
 
     # direct_messages_controller routes
     post '/direct_messages/create' => 'direct_messages#create'

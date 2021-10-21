@@ -59,16 +59,16 @@
   {{#if selectingMessages}}
     <div class="chat-selection-management-buttons">
       {{d-button
-        class="btn-flat"
-        label="chat.selection.cancel"
-        title="chat.selection.cancel"
-        action=(action "cancelSelecting")
-      }}
-      {{d-button
         class="btn-primary"
         label="chat.selection.move_to_topic"
         title="chat.selection.move_to_topic"
         action=(action "moveMessagesToTopic")
+      }}
+      {{d-button
+        class="btn-secondary cancel-btn"
+        label="chat.selection.cancel"
+        title="chat.selection.cancel"
+        action=(action "cancelSelecting")
       }}
     </div>
   {{else}}

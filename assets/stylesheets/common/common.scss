@@ -1298,3 +1298,13 @@ $float-height: 530px;
     width: 100%;
   }
 }
+
+.topic-meta-data .post-chat-link {
+  margin: 0 0.75em 0 auto;
+  color: var(--tertiary);
+
+  .d-icon {
+    margin-right: 0.25em;
+    color: var(--tertiary);
+  }
+}

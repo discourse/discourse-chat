@@ -162,7 +162,7 @@
     }
     .tc-live-pane,
     .tc-messages-scroll,
-    .tc-message {
+    .tc-message:not(.highlighted) {
       background: transparent;
     }
     .tc-message {

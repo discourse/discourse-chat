@@ -92,6 +92,13 @@ function makeTopicChanges(api, appEvents) {
       return toggleChatForTopic(this.topic, appEvents);
     },
   });
+
+  api.includePostAttributes("chat_connection");
+  api.decorateWidget("poster-name:after", (helper) => {
+    if (helper.attrs.chat_connection) {
+      return helper.attach("post-chat-link");
+    }
+  });
 }
 
 export default {

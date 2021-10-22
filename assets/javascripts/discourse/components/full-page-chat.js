@@ -8,8 +8,6 @@ export default Component.extend({
   tagName: "",
   teamsSidebarOn: false,
   showingChannels: false,
-  messageId: null,
-  clearMessageIdQueryParam: null,
   router: service(),
   chat: service(),
 
@@ -37,7 +35,6 @@ export default Component.extend({
   init() {
     this._super(...arguments);
     this.appEvents.on("chat:refresh-channels", this, "refreshModel");
-    this.chat.setMessageId(this.messageId);
   },
 
   didInsertElement() {
@@ -61,11 +58,6 @@ export default Component.extend({
   willRender() {
     this._super(...arguments);
     this.set("teamsSidebarOn", this.chat.getSidebarActive());
-  },
-
-  didRender() {
-    this._super(...arguments);
-    this.clearMessageIdQueryParam();
   },
 
   _scrollSidebarToBotton() {

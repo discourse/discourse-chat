@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 # name: discourse-topic-chat
-# about: Topic or category scoped chat for Discourse sites
-# version: 0.1
-# authors: Kane York
+# about: Chat inside Discourse
+# version: 0.3
+# authors: Kane York, Mark VanLandingham
 # url: https://github.com/discourse-org/discourse-topic-chat
 # transpile_js: true
 
@@ -73,6 +73,7 @@ after_initialize do
   load File.expand_path('../lib/chat_view.rb', __FILE__)
   load File.expand_path('../lib/direct_message_channel_creator.rb', __FILE__)
   load File.expand_path('../lib/guardian_extensions.rb', __FILE__)
+  load File.expand_path('../lib/extensions/topic_view_serializer_extension.rb', __FILE__)
   load File.expand_path('../app/services/chat_publisher.rb', __FILE__)
 
   register_topic_custom_field_type(DiscourseChat::HAS_CHAT_ENABLED, :boolean)
@@ -105,11 +106,19 @@ after_initialize do
 
   reloadable_patch do |plugin|
     Guardian.class_eval { include DiscourseChat::GuardianExtensions }
+    TopicViewSerializer.class_eval { prepend DiscourseChat::TopicViewSerializerExtension }
     Topic.class_eval {
       has_one :chat_channel, as: :chatable
     }
     Category.class_eval {
       has_one :chat_channel, as: :chatable
+    }
+    User.class_eval {
+      has_many :user_chat_channel_memberships, dependent: :destroy
+    }
+    Post.class_eval {
+      has_many :chat_message_post_connections, dependent: :destroy
+      has_many :chat_messages, through: :chat_message_post_connections
     }
   end
 
@@ -120,14 +129,23 @@ after_initialize do
     results
   end
 
-  add_to_serializer('listable_topic', :has_chat_live) do
+  add_to_serializer(:listable_topic, :has_chat_live) do
     true
   end
 
-  add_to_serializer('listable_topic', :include_has_chat_live?) do
+  add_to_serializer(:listable_topic, :include_has_chat_live?) do
     SiteSetting.topic_chat_enabled &&
       scope.can_chat?(scope.user) &&
       object.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]
+  end
+
+  add_to_serializer(:post, :chat_connection) do
+    if object.chat_message_post_connections.any?
+      {
+        chat_channel_id: object.chat_message_post_connections.first.chat_message.chat_channel_id,
+        chat_message_ids: object.chat_message_post_connections.map(&:chat_message_id)
+      }
+    end
   end
 
   add_to_serializer(:current_user, :can_chat) do
@@ -171,15 +189,6 @@ after_initialize do
 
         @chat_channel = object.topic.chat_channel
       end
-    end
-
-    class ::User
-      has_many :user_chat_channel_memberships, dependent: :destroy
-    end
-
-    class ::Post
-      has_many :chat_message_post_connections, dependent: :destroy
-      has_many :chat_messages, through: :chat_message_post_connections
     end
   end
 

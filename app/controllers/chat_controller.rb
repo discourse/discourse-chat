@@ -278,9 +278,9 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     end
 
     topic = case params[:type]
-      when "newTopic" then create_new_topic_from_messages(Archetype.default, post_attributes)
-      when "existingTopic" then add_posts_to_existing_topic(post_attributes)
-      when "newMessage" then create_new_topic_from_messages(Archetype.private_message, post_attributes)
+            when "newTopic" then create_new_topic_from_messages(Archetype.default, post_attributes)
+            when "existingTopic" then add_posts_to_existing_topic(post_attributes)
+            when "newMessage" then create_new_topic_from_messages(Archetype.private_message, post_attributes)
       else raise Discourse::InvalidParameters.new("Invalid type")
     end
     render json: { url: topic.url, id: topic.id }

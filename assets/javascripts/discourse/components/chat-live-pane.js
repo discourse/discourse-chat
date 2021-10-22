@@ -726,7 +726,7 @@ export default Component.extend({
   },
 
   @action
-  onStartSelectingMessages(message) {
+  onStartSelectingMessages() {
     this.set("selectingMessages", true);
   },
 

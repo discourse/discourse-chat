@@ -177,7 +177,7 @@ export default Component.extend({
   @action
   selectMessage() {
     this.message.set("selected", true);
-    this.onStartSelectingMessages(this);
+    this.onStartSelectingMessages();
   },
 
   @action

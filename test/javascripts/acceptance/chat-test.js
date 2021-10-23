@@ -6,7 +6,12 @@ import {
   queryAll,
   visible,
 } from "discourse/tests/helpers/qunit-helpers";
-import { click, triggerKeyEvent, visit } from "@ember/test-helpers";
+import {
+  click,
+  triggerEvent,
+  triggerKeyEvent,
+  visit,
+} from "@ember/test-helpers";
 import { test } from "qunit";
 import {
   allChannels,
@@ -376,6 +381,40 @@ acceptance("Discourse Chat - without unread", function (needs) {
       );
       done();
     });
+  });
+
+  test("message selection for 'move to topic'", async function (assert) {
+    await visit("/chat/channel/Site");
+
+    const firstMessage = query(".chat-message");
+    await click(firstMessage.querySelector(".tc-msgactions-hover .select-btn"));
+
+    assert.ok(firstMessage.classList.contains("selecting-messages"));
+    const moveToTopicBtn = query(".tc-live-pane #chat-move-to-topic-btn");
+    assert.equal(
+      moveToTopicBtn.disabled,
+      false,
+      "button is enabled as a message is selected"
+    );
+
+    await click(firstMessage.querySelector("input[type='checkbox'"));
+    assert.equal(
+      moveToTopicBtn.disabled,
+      true,
+      "button is disabled when no messages are selected"
+    );
+
+    await click(firstMessage.querySelector("input[type='checkbox'"));
+    const allCheckboxes = queryAll(".chat-message input[type='checkbox']");
+
+    await triggerEvent(allCheckboxes[allCheckboxes.length - 1], "click", {
+      shiftKey: true,
+    });
+    assert.equal(
+      queryAll(".chat-message input:checked").length,
+      3,
+      "Bulk message select works"
+    );
   });
 });
 

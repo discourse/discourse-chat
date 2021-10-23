@@ -1,15 +1,14 @@
-import { ajax } from "discourse/lib/ajax";
-import { popupAjaxError } from "discourse/lib/ajax-error";
 import Component from "@ember/component";
 import discourseComputed from "discourse-common/utils/decorators";
+import I18n from "I18n";
+import { ajax } from "discourse/lib/ajax";
+import { popupAjaxError } from "discourse/lib/ajax-error";
 import { prioritizeNameInUx } from "discourse/lib/settings";
 import { action } from "@ember/object";
 import { autoUpdatingRelativeAge } from "discourse/lib/formatter";
-import I18n from "I18n";
+import { schedule } from "@ember/runloop";
 
 export default Component.extend({
-  tagName: "div",
-  classNames: "chat-message",
   lastRead: false,
   isHovered: false,
 
@@ -175,12 +174,6 @@ export default Component.extend({
   },
 
   @action
-  selectMessage() {
-    this.message.set("selected", true);
-    this.onStartSelectingMessages();
-  },
-
-  @action
   flag() {
     // TODO showModal
     bootbox.alert("unimplemented");
@@ -207,5 +200,22 @@ export default Component.extend({
     return ajax(`/chat/${this.details.chat_channel_id}/${this.message.id}`, {
       type: "DELETE",
     }).catch(popupAjaxError);
+  },
+
+  @action
+  selectMessage() {
+    this.message.set("selected", true);
+    this.onStartSelectingMessages(this.message);
+  },
+
+  @action
+  toggleChecked(e) {
+    schedule("afterRender", this, () => {
+      if (e.shiftKey) {
+        this.bulkSelectMessages(this.message, e.target.checked);
+      }
+
+      this.onSelectMessage(this.message);
+    });
   },
 });

@@ -5,6 +5,7 @@
         type="checkbox"
         class="chat-message-selector"
         checked=message.selected
+        click=(action "toggleChecked")
       }}
     {{/if}}
     {{#if deletedAndCollapsed}}

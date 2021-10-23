@@ -1,5 +1,5 @@
 import { cloneJSON } from "discourse-common/lib/object";
-export const messageContents = ["Hello world", "What up"];
+export const messageContents = ["Hello world", "What up", "heyo!"];
 export const siteChannel = {
   chat_channel: {
     chat_channels: [],
@@ -132,6 +132,20 @@ export const chatView = {
         message: messageContents[1],
         action_code: null,
         created_at: "2021-07-20T08:14:22.043Z",
+        in_reply_to_id: 174,
+        flag_count: 0,
+        user: {
+          id: 2,
+          username: "hawk",
+          name: null,
+          avatar_template: "/letter_avatar_proxy/v4/letter/m/48db29/{size}.png",
+        },
+      },
+      {
+        id: 176,
+        message: messageContents[2],
+        action_code: null,
+        created_at: "2021-07-20T08:14:25.043Z",
         in_reply_to_id: 174,
         flag_count: 0,
         user: {

@@ -1,4 +1,5 @@
 import Component from "@ember/component";
+import discourseComputed from "discourse-common/utils/decorators";
 import discourseDebounce from "discourse-common/lib/debounce";
 import EmberObject, { action } from "@ember/object";
 import I18n from "I18n";
@@ -45,6 +46,7 @@ export default Component.extend({
   messageLookup: null, // Object<Number, Message>
   _unloadedReplyIds: null, // Array
   _nextStagedMessageId: 0, // Iterate on every new message
+  _lastSelectedMessage: null,
   targetMessageId: null,
 
   chat: service(),
@@ -725,8 +727,14 @@ export default Component.extend({
     next(this.reStickScrollIfNeeded.bind(this));
   },
 
+  @discourseComputed("messages.@each.selected")
+  moveToTopicDisabled(messages) {
+    return !messages.filter((m) => m.selected).length;
+  },
+
   @action
-  onStartSelectingMessages() {
+  onStartSelectingMessages(message) {
+    this._lastSelectedMessage = message;
     this.set("selectingMessages", true);
   },
 
@@ -739,10 +747,36 @@ export default Component.extend({
   },
 
   @action
+  onSelectMessage(message) {
+    this._lastSelectedMessage = message;
+  },
+
+  @action
+  bulkSelectMessages(message, checked) {
+    const lastSelectedIndex = this._findIndexOfMessage(
+      this._lastSelectedMessage
+    );
+    const newlySelectedIndex = this._findIndexOfMessage(message);
+    const sortedIndices = [lastSelectedIndex, newlySelectedIndex].sort(
+      (a, b) => a - b
+    );
+
+    for (let i = sortedIndices[0]; i <= sortedIndices[1]; i++) {
+      this.messages[i].set("selected", checked);
+    }
+  },
+
+  _findIndexOfMessage(message) {
+    return this.messages.findIndex((m) => m.id === message.id);
+  },
+
+  @action
   moveMessagesToTopic() {
     showModal("move-chat-to-topic").setProperties({
-      chatMessageIds: this.messages.filter((message) => message.selected).map((message) => message.id),
-      chatChannelId: this.chatChannel.id
+      chatMessageIds: this.messages
+        .filter((message) => message.selected)
+        .map((message) => message.id),
+      chatChannelId: this.chatChannel.id,
     });
   },
 

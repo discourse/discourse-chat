@@ -415,6 +415,9 @@ acceptance("Discourse Chat - without unread", function (needs) {
       3,
       "Bulk message select works"
     );
+
+    await click("#chat-move-to-topic-btn");
+    assert.ok(exists(".move-chat-to-topic-modal"));
   });
 });
 

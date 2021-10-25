@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class DiscourseChat::MoveToTopicController < DiscourseChat::ChatBaseController
-  def move
+  def create
     raise Discourse::NotFound unless SiteSetting.topic_chat_enabled
 
     params.require([:type, :chat_message_ids, :chat_channel_id])

@@ -186,7 +186,7 @@ after_initialize do
     post '/hooks/:key' => 'incoming_chat_webhooks#create_message'
 
     # move_to_topic_controller routes
-    post '/move_to_topic' => 'move_to_topic#move'
+    resources :move_to_topic
 
     # chat_channel_controller routes
     get '/chat_channels' => 'chat_channels#index'

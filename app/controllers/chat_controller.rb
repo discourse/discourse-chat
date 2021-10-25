@@ -288,7 +288,19 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
 
   private
 
+  def validate_topic_title!
+    return if params[:type] == "newMessage"
+
+    topic = Topic.new(title: params[:title])
+    topic.valid?
+    if topic.errors[:title].any?
+      raise Discourse::InvalidParameters.new("title #{topic.errors[:title].join(", ")}")
+    end
+  end
+
   def create_new_topic_from_messages(archetype, post_attributes)
+    # Validate topic title separately since we need `skip_validations: true` for short chat messages
+    validate_topic_title!
     post_creator_args = {
       title: params[:title],
       archetype: archetype,

@@ -26,7 +26,7 @@ export default Controller.extend(ModalFunctionality, {
   canTagMessages: alias("site.can_tag_pms"),
 
   saving: false,
-  topicName: null,
+  topicTitle: null,
   categoryId: null,
   tags: null,
   selectedTopicId: null,
@@ -35,12 +35,16 @@ export default Controller.extend(ModalFunctionality, {
     this.set("selection", NEW_TOPIC_SELECTION);
   },
 
-  @discourseComputed("saving", "selectedTopicId", "topicName", "selection")
-  buttonDisabled(saving, selectedTopicId, topicName) {
+  @discourseComputed("saving", "selectedTopicId", "topicTitle", "selection")
+  buttonDisabled(saving, selectedTopicId, topicTitle) {
     if (saving) {
       return true;
     }
-    if ((this.newTopic || this.newMessage) && isEmpty(topicName)) {
+    if (
+      ((this.newTopic || this.newMessage) && !topicTitle) ||
+      topicTitle.length < this.siteSettings.min_topic_title_length ||
+      topicTitle.length > this.siteSettings.max_topic_title_length
+    ) {
       return true;
     }
 
@@ -76,7 +80,7 @@ export default Controller.extend(ModalFunctionality, {
       chat_channel_id: this.chatChannelId,
     };
     if (this.newTopic || this.newMessage) {
-      data.title = this.topicName;
+      data.title = this.topicTitle;
     }
     if (this.newTopic) {
       data.category_id = this.categoryId;

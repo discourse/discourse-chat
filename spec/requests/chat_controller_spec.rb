@@ -451,6 +451,21 @@ RSpec.describe DiscourseChat::ChatController do
       expect(response.parsed_body["errors"].first).to include("Must include at least one chat message id")
     end
 
+    it "errors when the topic title is invalid" do
+      SiteSetting.min_topic_title_length = 15
+      topic_title = "title 2 short"
+      post "/chat/move_to_topic.json",
+        params: build_params(
+          5,
+          {
+            type: "newTopic",
+            title: topic_title,
+            category_id: category.id,
+          })
+      expect(response.status).to eq(400)
+      expect(response.parsed_body["errors"].first).to include("title is too short")
+    end
+
     it "creates a new topic with the correct properties" do
       topic_title = "This is a new topic that is created via chat!"
       tag_names = ["ctag1", "ctag2"]

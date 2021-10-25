@@ -22,9 +22,4 @@ export default Controller.extend({
       });
     });
   },
-
-  @action
-  clearMessageId() {
-    this.set("messageId", null);
-  },
 });

@@ -1,126 +1,143 @@
-{{#if show}}
-  {{#if deletedAndCollapsed}}
-    <div class="tc-message-deleted">
-      {{d-button
-        class="btn-flat tc-message-expand-deleted"
-        action=(action "expand")
-        label="chat.deleted"
+<div class="chat-message {{if selectingMessages "selecting-messages"}}">
+  {{#if show}}
+    {{#if selectingMessages}}
+      {{input
+        type="checkbox"
+        class="chat-message-selector"
+        checked=message.selected
+        click=(action "toggleChecked")
       }}
-    </div>
-  {{else}}
-    <div class={{messageClasses}}>
-      {{#unless message.staged}}
-        <div class="tc-msgactions-hover">
-          <div class="tc-msgactions">
-            {{#if showReplyButton}}
-              {{d-button
-                class="btn-flat reply-btn"
-                action=(action "reply")
-                icon="reply"
-              }}
-            {{/if}}
-            {{#if showEditButton}}
-              {{d-button
-                class="btn-flat edit-btn"
-                action=(action "edit")
-                icon="pencil-alt"
-              }}
-            {{/if}}
-            {{#if showFlagButton}}
-              {{d-button
-                class="btn-flat flag-btn"
-                action=(action "flag")
-                icon="flag"
-              }}
-            {{/if}}
-            {{#if showDeleteButton}}
-              {{d-button
-                class="btn-flat delete-btn"
-                action=(action "deleteMessage")
-                icon="trash-alt"
-              }}
-            {{/if}}
-            {{#if showRestoreButton}}
-              {{d-button
-                class="btn-flat restore-btn"
-                action=(action "restore")
-                icon="undo"
-              }}
-            {{/if}}
+    {{/if}}
+    {{#if deletedAndCollapsed}}
+      <div class="tc-message-deleted">
+        {{d-button
+          class="btn-flat tc-message-expand-deleted"
+          action=(action "expand")
+          label="chat.deleted"
+        }}
+      </div>
+    {{else}}
+      <div class={{messageClasses}}>
+        {{#unless message.staged}}
+          <div class="tc-msgactions-hover">
+            <div class="tc-msgactions">
+              {{#if showReplyButton}}
+                {{d-button
+                  class="btn-flat reply-btn"
+                  action=(action "reply")
+                  icon="reply"
+                }}
+              {{/if}}
+              {{#if showEditButton}}
+                {{d-button
+                  class="btn-flat edit-btn"
+                  action=(action "edit")
+                  icon="pencil-alt"
+                }}
+              {{/if}}
+              {{#unless selectingMessages}}
+                {{d-button
+                  class="btn-flat select-btn"
+                  action=(action "selectMessage")
+                  icon="tasks"
+                }}
+              {{/unless}}
+              {{#if showFlagButton}}
+                {{d-button
+                  class="btn-flat flag-btn"
+                  action=(action "flag")
+                  icon="flag"
+                }}
+              {{/if}}
+              {{#if showDeleteButton}}
+                {{d-button
+                  class="btn-flat delete-btn"
+                  action=(action "deleteMessage")
+                  icon="trash-alt"
+                }}
+              {{/if}}
+              {{#if showRestoreButton}}
+                {{d-button
+                  class="btn-flat restore-btn"
+                  action=(action "restore")
+                  icon="undo"
+                }}
+              {{/if}}
+            </div>
           </div>
-        </div>
-      {{/unless}}
+        {{/unless}}
 
-      {{#if message.in_reply_to}}
-        <div role="button" onclick={{action "viewReply"}} class="tc-reply-display">
-          {{d-icon "share" title="chat.in_reply_to"}}
-          <span class="tc-reply-av">
-            {{avatar message.in_reply_to.user imageSize="tiny"}}
-          </span>
-          <span class="tc-reply-msg">
-            {{html-safe message.in_reply_to.cookedMessage}}
+        {{#if message.in_reply_to}}
+          <div role="button" onclick={{action "viewReply"}} class="tc-reply-display">
+            {{d-icon "share" title="chat.in_reply_to"}}
+            <span class="tc-reply-av">
+              {{avatar message.in_reply_to.user imageSize="tiny"}}
+            </span>
+            <span class="tc-reply-msg">
+              {{html-safe message.in_reply_to.cookedMessage}}
+            </span>
+          </div>
+        {{/if}}
+
+        {{#unless hideUserInfo}}
+          {{#if message.chat_webhook_event.emoji}}
+            <div class="tc-avatar">{{replace-emoji message.chat_webhook_event.emoji}}</div>
+          {{else}}
+            <div class="tc-avatar" data-user-card={{message.user.username}}>
+              <div class="tc-avatar-container">
+                {{avatar message.user imageSize="medium"}}
+                {{tc-user-presence-flair user=message.user}}
+              </div>
+            </div>
+          {{/if}}
+        {{/unless}}
+
+        <div class="tc-message-container">
+
+          <div class="tc-meta-data">
+            {{#unless hideUserInfo}}
+              <span class={{usernameClasses}}>
+                {{#if message.chat_webhook_event.username}}
+                  {{message.chat_webhook_event.username}}
+                {{else}}
+                  {{name}}
+                {{/if}}
+              </span>
+              {{#if message.chat_webhook_event}}
+                <span class="tc-bot-indicator">{{i18n "chat.bot"}}</span>
+              {{/if}}
+            {{/unless}}
+            {{format-date message.created_at format="tiny"}}
+          </div>
+          {{#if message.action_code}}
+            <span class="tc-action-text">
+              {{html-safe actionCodeText}}
+            </span>
+          {{else}}
+            <p class="tc-text">
+              {{html-safe message.cookedMessage}}
+              {{#if message.edited}}
+                <div class="tc-message-edited">
+                  {{i18n "chat.edited"}}
+                </div>
+              {{/if}}
+            </p>
+          {{/if}}
+          {{#if message.error}}
+            <div class="tc-send-error">
+              {{i18n "chat.send_error"}}
+            </div>
+          {{/if}}
+        </div>
+      </div>
+      {{#if message.lastRead}}
+        <div class="tc-new-messages">
+          <div class="new-message-separator"></div>
+          <span class="new-message-indicator">
+            {{i18n "chat.new_messages"}}
           </span>
         </div>
       {{/if}}
-
-      {{#unless hideUserInfo}}
-        {{#if message.chat_webhook_event.emoji}}
-          <div class="tc-avatar">{{replace-emoji message.chat_webhook_event.emoji}}</div>
-        {{else}}
-          <div class="tc-avatar" data-user-card={{message.user.username}}>
-            <div class="tc-avatar-container">
-              {{avatar message.user imageSize="medium"}}
-              {{tc-user-presence-flair user=message.user}}
-            </div>
-          </div>
-        {{/if}}
-      {{/unless}}
-
-      <div class="tc-message-container">
-
-        <div class="tc-meta-data">
-          {{#unless hideUserInfo}}
-            <span class={{usernameClasses}}>
-              {{#if message.chat_webhook_event.username}}
-                {{message.chat_webhook_event.username}}
-              {{else}}
-                {{name}}
-              {{/if}}
-            </span>
-            {{#if message.chat_webhook_event}}
-              <span class="tc-bot-indicator">{{i18n "chat.bot"}}</span>
-            {{/if}}
-          {{/unless}}
-          {{format-date message.created_at format="tiny"}}
-        </div>
-        {{#if message.action_code}}
-          <span class="tc-action-text">
-            {{html-safe actionCodeText}}
-          </span>
-        {{else}}
-          <p class="tc-text">
-            {{html-safe message.cookedMessage}}
-            {{#if message.edited}}
-              <div class="tc-message-edited">
-                {{i18n "chat.edited"}}
-              </div>
-            {{/if}}
-          </p>
-        {{/if}}
-        {{#if message.error}}
-          <div class="tc-send-error">
-            {{i18n "chat.send_error"}}
-          </div>
-        {{/if}}
-      </div>
-    </div>
-    {{#if message.lastRead}}
-      <div class="tc-new-messages">
-        <div class="new-message-separator"></div>
-        <span class="new-message-indicator">
-          {{i18n "chat.new_messages"}}
-        </span>
-      </div>
     {{/if}}
   {{/if}}
-{{/if}}
+</div>

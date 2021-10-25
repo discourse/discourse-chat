@@ -20,14 +20,24 @@ module DiscourseChat::GuardianExtensions
     (allowed_group_ids & user.group_ids).any?
   end
 
-  def can_see_direct_message_channel?(direct_message_channel)
-    direct_message_channel.user_can_access?(user)
-  end
+  def can_see_chat_channel?(chat_channel)
+    if chat_channel.topic_channel?
+      return false unless chat_channel.chatable
 
-  def can_chat_in_chatable?(chatable)
-    chatable.class.name == "Topic" ?
-      can_create_post?(chatable) && !chatable.closed? && !chatable.archived? :
+      !chat_channel.chatable.closed &&
+        !chat_channel.chatable.archived &&
+        can_see_topic?(chat_channel.chatable)
+    elsif chat_channel.direct_message_channel?
+      chat_channel.chatable.user_can_access?(user)
+    elsif chat_channel.category_channel?
+      return false unless chat_channel.chatable
+
+      can_see_category?(chat_channel.chatable)
+    elsif chat_channel.site_channel?
+      can_access_site_chat?
+    else
       true
+    end
   end
 
   def can_flag_chats?
@@ -93,12 +103,5 @@ module DiscourseChat::GuardianExtensions
 
   def can_edit_chat?(message)
     message.user_id == @user.id
-  end
-
-  def can_see_chat_channel?(chat_channel)
-    return false unless @user
-    return @user.staff? if chat_channel.site_channel?
-
-    can_see?(chat_channel.chatable)
   end
 end

@@ -1,5 +1,6 @@
 import EmberObject from "@ember/object";
 import Service, { inject as service } from "@ember/service";
+import Site from "discourse/models/site";
 import { addChatToolbarButton } from "discourse/plugins/discourse-topic-chat/discourse/components/chat-composer";
 import { ajax } from "discourse/lib/ajax";
 import { A } from "@ember/array";
@@ -272,6 +273,48 @@ export default Service.extend({
         return this.publicChannels[0]?.title;
       }
     });
+  },
+
+  async openChannelAtMessage(channelId, messageId) {
+    let channel = await this.getChannelBy("id", channelId);
+    if (channel) {
+      return this._openFoundChannelAtMessage(channel, messageId);
+    }
+
+    return ajax(`/chat/chat_channels/${channelId}`).then((response) => {
+      this.router.transitionTo("chat.channel", response.chat_channel.title, {
+        queryParams: { messageId },
+      });
+    });
+  },
+
+  _openFoundChannelAtMessage(channel, messageId) {
+    if (
+      this.router.currentRouteName === "chat.channel" &&
+      this.router.currentRoute.params.channelTitle === channel.title
+    ) {
+      this._fireOpenMessageAppEvent(channel.id, messageId);
+    } else if (
+      Site.currentProp("mobileView") ||
+      this.router.currentRouteName === "chat" ||
+      this.router.currentRouteName === "chat.channel"
+    ) {
+      this.router.transitionTo("chat.channel", channel.title, {
+        queryParams: { messageId: messageId },
+      });
+    } else {
+      this.setMessageId(messageId);
+      this._fireOpenMessageAppEvent(channel.id, messageId, { openFloat: true });
+    }
+  },
+
+  _fireOpenMessageAppEvent(channelId, messageId, opts = { openFloat: false }) {
+    this.appEvents.trigger(
+      "chat:open-message",
+      channelId,
+      messageId,
+      opts.openFloat
+    );
   },
 
   _subscribeToNewDmChannelUpdates() {

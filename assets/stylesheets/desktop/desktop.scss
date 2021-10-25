@@ -129,8 +129,11 @@
     }
     .tc-live-pane,
     .tc-messages-scroll,
-    .tc-message {
+    .tc-message:not(.highlighted) {
       background-color: var(--secondary);
+    }
+    .tc-message:hover {
+      background-color: var(--primary-very-low);
     }
   }
   @media screen and (max-width: 1366px) {
@@ -162,15 +165,14 @@
     }
     .tc-live-pane,
     .tc-messages-scroll,
-    .tc-message {
+    .tc-message:not(.highlighted) {
       background: transparent;
     }
     .tc-message {
-      &.tc-message-selected,
-      &:hover {
-        background: var(--primary-low);
-      }
       padding-left: 2em;
+      &:hover {
+        background-color: var(--primary-very-low);
+      }
     }
     .tc-messages-container .tc-message-deleted {
       padding: 0.25em 2em;

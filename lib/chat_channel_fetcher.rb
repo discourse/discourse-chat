@@ -61,7 +61,7 @@ module DiscourseChat::ChatChannelFetcher
 
     secured = []
     channels.each do |channel|
-      next unless can_see_channel?(channel, guardian)
+      next unless guardian.can_see_chat_channel?(channel)
 
       membership = memberships.detect { |m| m.chat_channel_id == channel.id }
       if membership
@@ -95,23 +95,5 @@ module DiscourseChat::ChatChannelFetcher
       .where(chatable_type: "DirectMessageChannel")
       .order(updated_at: :desc)
       .limit(10)
-  end
-
-  def self.can_see_channel?(channel, guardian)
-    if channel.topic_channel?
-      return false unless channel.chatable
-
-      !channel.chatable.closed &&
-        !channel.chatable.archived &&
-        guardian.can_see_topic?(channel.chatable)
-    elsif channel.category_channel?
-      return false unless channel.chatable
-
-      guardian.can_see_category?(channel.chatable)
-    elsif channel.site_channel?
-      guardian.can_access_site_chat?
-    else
-      true
-    end
   end
 end

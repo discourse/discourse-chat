@@ -34,6 +34,10 @@
         replyMessageClicked=(action "replyMessageClicked")
         editButtonClicked=(action "editButtonClicked")
         afterExpand=(action "decorateMessages")
+        selectingMessages=selectingMessages
+        onStartSelectingMessages=onStartSelectingMessages
+        onSelectMessage=onSelectMessage
+        bulkSelectMessages=bulkSelectMessages
       }}
     {{/each}}
   {{/conditional-loading-spinner}}
@@ -54,18 +58,37 @@
 </div>
 
 {{#if expanded}}
-  {{chat-composer
-    sendMessage=(action "sendMessage")
-    editMessage=(action "editMessage")
-    setReplyTo=(action "setReplyTo")
-    loading=sendingloading
-    replyToMsg=this.replyToMsg
-    editingMessage=(readonly this.editingMessage)
-    onCancelEditing=this.cancelEditing
-    onEditLastMessageRequested=this.editLastMessageRequested
-    onValueChange=(action "reStickScrollIfNeeded")
-    previewing=previewing
-    fullPage=fullPage
-  }}
+  {{#if selectingMessages}}
+    <div class="chat-selection-management-buttons">
+      {{d-button
+        id="chat-move-to-topic-btn"
+        class="btn-primary"
+        label="chat.selection.move_to_topic"
+        title="chat.selection.move_to_topic"
+        disabled=moveToTopicDisabled
+        action=(action "moveMessagesToTopic")
+      }}
+      {{d-button
+        class="btn-secondary cancel-btn"
+        label="chat.selection.cancel"
+        title="chat.selection.cancel"
+        action=(action "cancelSelecting")
+      }}
+    </div>
+  {{else}}
+    {{chat-composer
+      sendMessage=(action "sendMessage")
+      editMessage=(action "editMessage")
+      setReplyTo=(action "setReplyTo")
+      loading=sendingloading
+      replyToMsg=this.replyToMsg
+      editingMessage=(readonly this.editingMessage)
+      onCancelEditing=this.cancelEditing
+      onEditLastMessageRequested=this.editLastMessageRequested
+      onValueChange=(action "reStickScrollIfNeeded")
+      previewing=previewing
+      fullPage=fullPage
+    }}
+  {{/if}}
 {{/if}}
 

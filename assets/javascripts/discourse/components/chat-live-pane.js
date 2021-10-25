@@ -1,13 +1,14 @@
 import Component from "@ember/component";
+import discourseComputed, { observes } from "discourse-common/utils/decorators";
 import discourseDebounce from "discourse-common/lib/debounce";
 import EmberObject, { action } from "@ember/object";
 import I18n from "I18n";
 import loadScript from "discourse/lib/load-script";
+import showModal from "discourse/lib/show-modal";
 import { A } from "@ember/array";
 import { applyLocalDates } from "discourse/plugins/discourse-local-dates/initializers/discourse-local-dates";
 import { ajax } from "discourse/lib/ajax";
 import { isTesting } from "discourse-common/config/environment";
-import { observes } from "discourse-common/utils/decorators";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { cancel, later, next, schedule } from "@ember/runloop";
 import { inject as service } from "@ember/service";
@@ -33,6 +34,7 @@ export default Component.extend({
   allPastMessagesLoaded: false,
   previewing: false,
   sendingloading: false,
+  selectingMessages: false,
   stickyScroll: true,
   stickyScrollTimer: null,
 
@@ -43,6 +45,7 @@ export default Component.extend({
   messageLookup: null, // Object<Number, Message>
   _unloadedReplyIds: null, // Array
   _nextStagedMessageId: 0, // Iterate on every new message
+  _lastSelectedMessage: null,
   targetMessageId: null,
 
   chat: service(),
@@ -74,6 +77,8 @@ export default Component.extend({
       },
       { passive: true }
     );
+
+    this.appEvents.on("chat:cancel-message-selection", this, "cancelSelecting");
   },
 
   willDestroyElement() {
@@ -90,6 +95,11 @@ export default Component.extend({
       this.registeredChatChannelId = null;
     }
     this._unloadedReplyIds = null;
+    this.appEvents.off(
+      "chat:cancel-message-selection",
+      this,
+      "cancelSelecting"
+    );
   },
 
   didReceiveAttrs() {
@@ -714,6 +724,57 @@ export default Component.extend({
     const message = this.messageLookup[messageId];
     this.set("editingMessage", message);
     next(this.reStickScrollIfNeeded.bind(this));
+  },
+
+  @discourseComputed("messages.@each.selected")
+  moveToTopicDisabled(messages) {
+    return !messages.filter((m) => m.selected).length;
+  },
+
+  @action
+  onStartSelectingMessages(message) {
+    this._lastSelectedMessage = message;
+    this.set("selectingMessages", true);
+  },
+
+  @action
+  cancelSelecting() {
+    this.set("selectingMessages", false);
+    this.messages.setEach("selected", false);
+  },
+
+  @action
+  onSelectMessage(message) {
+    this._lastSelectedMessage = message;
+  },
+
+  @action
+  bulkSelectMessages(message, checked) {
+    const lastSelectedIndex = this._findIndexOfMessage(
+      this._lastSelectedMessage
+    );
+    const newlySelectedIndex = this._findIndexOfMessage(message);
+    const sortedIndices = [lastSelectedIndex, newlySelectedIndex].sort(
+      (a, b) => a - b
+    );
+
+    for (let i = sortedIndices[0]; i <= sortedIndices[1]; i++) {
+      this.messages[i].set("selected", checked);
+    }
+  },
+
+  _findIndexOfMessage(message) {
+    return this.messages.findIndex((m) => m.id === message.id);
+  },
+
+  @action
+  moveMessagesToTopic() {
+    showModal("move-chat-to-topic").setProperties({
+      chatMessageIds: this.messages
+        .filter((message) => message.selected)
+        .map((message) => message.id),
+      chatChannelId: this.chatChannel.id,
+    });
   },
 
   @action

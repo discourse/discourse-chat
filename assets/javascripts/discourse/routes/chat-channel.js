@@ -48,6 +48,15 @@ export default DiscourseRoute.extend({
     this.appEvents.trigger("chat:navigated-to-full-page");
   },
 
+  setupController(controller) {
+    this._super(...arguments);
+
+    if (controller.messageId) {
+      this.chat.set("messageId", controller.messageId);
+      this.controller.set("messageId", null);
+    }
+  },
+
   @action
   refreshModel() {
     this.refresh();

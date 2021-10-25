@@ -38,35 +38,9 @@ createWidgetFrom(DefaultNotificationItem, "chat-mention-notification-item", {
     cookie("cn", id, { path: getURL("/") });
     e.preventDefault();
     this.sendWidgetEvent("linkClicked");
-    this.chat.setMessageId(this.attrs.data.chat_message_id);
-
-    if (
-      this.router.currentRouteName === "chat.channel" &&
-      this.router.currentRoute.params.channelTitle ===
-        this.attrs.data.chat_channel_title
-    ) {
-      this.fireOpenMessageAppEvent();
-    } else if (
-      this.site.mobileView ||
-      this.router.currentRouteName === "chat" ||
-      this.router.currentRouteName === "chat.channel"
-    ) {
-      this.router.transitionTo(
-        "chat.channel",
-        this.attrs.data.chat_channel_title,
-        { queryParams: { messageId: this.attrs.data.chat_message_id } }
-      );
-    } else {
-      this.fireOpenMessageAppEvent({ openFloat: true });
-    }
-  },
-
-  fireOpenMessageAppEvent(opts = { openFloat: false }) {
-    this.appEvents.trigger(
-      "chat:open-message",
+    this.chat.openChannelAtMessage(
       this.attrs.data.chat_channel_id,
-      this.attrs.data.chat_message_id,
-      opts.openFloat
+      this.attrs.data.chat_message_id
     );
   },
 });

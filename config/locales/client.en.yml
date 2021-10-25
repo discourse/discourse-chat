@@ -21,12 +21,15 @@ en:
       edit_channels: "Edit channels"
       enable: "Enable chat"
       flag: "Flag"
+      from_chat: "from chat"
+      invalid_access: "You don't have access to view this chat channel"
       in_reply_to: "In reply to"
       heading: "Chat"
       join_channel: "Join channel"
       new_messages: "new messages"
       mention_notification: "<span>%{username} mentioned you in chat</span>"
       open_full_page: "Open full-screen chat"
+      open: "Open message in chat"
       placeholder: "chat..."
       placeholder_previewing: "Join the channel to send a message."
       reply: "Reply"
@@ -99,6 +102,27 @@ en:
         url: "URL"
         username: "Username"
         username_instructions: "Username of bot that posts to channel. Defaults to 'system' when left blank."
+
+      selection:
+        cancel: "Cancel"
+        move_to_topic: "Move to topic"
+        error: "There was an error moving the chat messages"
+        title: "Move Chat to Topic"
+        new_topic:
+          title: "Move to New Topic"
+          instructions:
+            one: "You are about to create a new topic and populate it with the chat message you've selected."
+            other: "You are about to create a new topic and populate it with the <b>%{count}</b> chat messages you've selected."
+        existing_topic:
+          title: "Move to Existing Topic"
+          instructions:
+            one: "Please choose the topic you'd like to move that chat message to."
+            other: "Please choose the topic you'd like to move those <b>%{count}</b> chat messages to."
+        new_message:
+          title: "Move to New Message"
+          instructions:
+            one: "You are about to create a new message and populate it with the chat message you've selected."
+            other: "You are about to create a new message and populate it with the <b>%{count}</b> chat messages you've selected."
 
     notifications:
       popup:

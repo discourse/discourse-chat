@@ -1,16 +1,16 @@
-import { ajax } from "discourse/lib/ajax";
-import { popupAjaxError } from "discourse/lib/ajax-error";
 import Component from "@ember/component";
 import discourseComputed from "discourse-common/utils/decorators";
+import I18n from "I18n";
+import { ajax } from "discourse/lib/ajax";
+import { popupAjaxError } from "discourse/lib/ajax-error";
 import { prioritizeNameInUx } from "discourse/lib/settings";
 import { action } from "@ember/object";
 import { autoUpdatingRelativeAge } from "discourse/lib/formatter";
-import I18n from "I18n";
+import { schedule } from "@ember/runloop";
 
 export default Component.extend({
-  tagName: "div",
   lastRead: false,
-  isSelected: false,
+  isHovered: false,
 
   @discourseComputed("message.deleted_at", "message.expanded")
   deletedAndCollapsed(deletedAt, expanded) {
@@ -28,7 +28,7 @@ export default Component.extend({
 
   click() {
     if (this.site.mobileView) {
-      this.toggleProperty("isSelected");
+      this.toggleProperty("isHovered");
     }
   },
 
@@ -43,9 +43,9 @@ export default Component.extend({
     "message.deleted_at",
     "message.in_reply_to",
     "message.action_code",
-    "isSelected"
+    "isHovered"
   )
-  messageClasses(id, staged, deletedAt, inReplyTo, actionCode, isSelected) {
+  messageClasses(id, staged, deletedAt, inReplyTo, actionCode, isHovered) {
     let classNames = ["tc-message"];
     classNames.push(
       staged ? "tc-message-staged" : `tc-message-${this.message.id}`
@@ -64,7 +64,7 @@ export default Component.extend({
     if (this.hideUserInfo) {
       classNames.push("user-info-hidden");
     }
-    if (isSelected) {
+    if (isHovered) {
       classNames.push("tc-message-selected");
     }
     return classNames.join(" ");
@@ -200,5 +200,22 @@ export default Component.extend({
     return ajax(`/chat/${this.details.chat_channel_id}/${this.message.id}`, {
       type: "DELETE",
     }).catch(popupAjaxError);
+  },
+
+  @action
+  selectMessage() {
+    this.message.set("selected", true);
+    this.onStartSelectingMessages(this.message);
+  },
+
+  @action
+  toggleChecked(e) {
+    schedule("afterRender", this, () => {
+      if (e.shiftKey) {
+        this.bulkSelectMessages(this.message, e.target.checked);
+      }
+
+      this.onSelectMessage(this.message);
+    });
   },
 });

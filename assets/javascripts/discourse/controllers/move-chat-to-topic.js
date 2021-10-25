@@ -41,9 +41,10 @@ export default Controller.extend(ModalFunctionality, {
       return true;
     }
     if (
-      ((this.newTopic || this.newMessage) && !topicTitle) ||
-      topicTitle.length < this.siteSettings.min_topic_title_length ||
-      topicTitle.length > this.siteSettings.max_topic_title_length
+      (this.newTopic || this.newMessage) &&
+      (!topicTitle ||
+        topicTitle.length < this.siteSettings.min_topic_title_length ||
+        topicTitle.length > this.siteSettings.max_topic_title_length)
     ) {
       return true;
     }

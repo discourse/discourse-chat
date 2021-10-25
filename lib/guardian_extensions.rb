@@ -20,10 +20,6 @@ module DiscourseChat::GuardianExtensions
     (allowed_group_ids & user.group_ids).any?
   end
 
-  def can_see_direct_message_channel?(direct_message_channel)
-    direct_message_channel.user_can_access?(user)
-  end
-
   def can_see_chat_channel?(chat_channel)
     if chat_channel.topic_channel?
       return false unless chat_channel.chatable
@@ -31,6 +27,8 @@ module DiscourseChat::GuardianExtensions
       !chat_channel.chatable.closed &&
         !chat_channel.chatable.archived &&
         can_see_topic?(chat_channel.chatable)
+    elsif chat_channel.direct_message_channel?
+      chat_channel.chatable.user_can_access?(user)
     elsif chat_channel.category_channel?
       return false unless chat_channel.chatable
 

@@ -48,6 +48,7 @@ after_initialize do
   load File.expand_path('../app/controllers/chat_channels_controller.rb', __FILE__)
   load File.expand_path('../app/controllers/direct_messages_controller.rb', __FILE__)
   load File.expand_path('../app/controllers/incoming_chat_webhooks_controller.rb', __FILE__)
+  load File.expand_path('../app/controllers/move_to_topic_controller.rb', __FILE__)
   load File.expand_path('../app/models/user_chat_channel_membership.rb', __FILE__)
   load File.expand_path('../app/models/chat_channel.rb', __FILE__)
   load File.expand_path('../app/models/chat_message.rb', __FILE__)
@@ -170,28 +171,6 @@ after_initialize do
     object.chat_enabled
   end
 
-  reloadable_patch do |plugin|
-    require_dependency 'topic_view_serializer'
-    class ::TopicViewSerializer
-      has_one :chat_channel, serializer: ChatChannelSerializer, root: false, embed: :objects
-      attributes :has_chat_live
-
-      def has_chat_live
-        true
-      end
-
-      def include_has_chat_live?
-        chat_channel.present?
-      end
-
-      def chat_channel
-        return @chat_channel if defined?(@chat_channel)
-
-        @chat_channel = object.topic.chat_channel
-      end
-    end
-  end
-
   register_presence_channel_prefix("chat") do |channel|
     next nil unless channel == "/chat/online"
     config = PresenceChannel::Config.new
@@ -200,6 +179,15 @@ after_initialize do
   end
 
   DiscourseChat::Engine.routes.draw do
+    # direct_messages_controller routes
+    post '/direct_messages/create' => 'direct_messages#create'
+
+    # incoming_webhooks_controller routes
+    post '/hooks/:key' => 'incoming_chat_webhooks#create_message'
+
+    # move_to_topic_controller routes
+    post '/move_to_topic' => 'move_to_topic#move'
+
     # chat_channel_controller routes
     get '/chat_channels' => 'chat_channels#index'
     get '/chat_channels/all' => 'chat_channels#all'
@@ -212,7 +200,6 @@ after_initialize do
     # chat_controller routes
     get '/' => 'chat#respond'
     get '/channel/:channel_title' => 'chat#respond'
-    post '/move_to_topic' => 'chat#move_to_topic'
     post '/enable' => 'chat#enable_chat'
     post '/disable' => 'chat#disable_chat'
     get '/:chat_channel_id/messages' => 'chat#messages'
@@ -224,12 +211,6 @@ after_initialize do
     put '/:chat_channel_id/read/:message_id' => 'chat#update_user_last_read'
     put '/user_chat_enabled/:user_id' => 'chat#set_user_chat_status'
     post '/:chat_channel_id' => 'chat#create_message'
-
-    # direct_messages_controller routes
-    post '/direct_messages/create' => 'direct_messages#create'
-
-    # incoming_webhooks_controller routes
-    post '/hooks/:key' => 'incoming_chat_webhooks#create_message'
   end
 
   Discourse::Application.routes.append do

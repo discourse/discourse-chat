@@ -16,11 +16,10 @@ class DiscourseChat::ChatBaseController < ::ApplicationController
     raise Discourse::NotFound unless @chat_channel
 
     @chatable = nil
-    if @chat_channel.site_channel?
-      guardian.ensure_can_access_site_chat!
-    else
+    if !@chat_channel.site_channel?
       @chatable = @chat_channel.chatable
-      guardian.ensure_can_see!(@chatable)
     end
+
+    guardian.ensure_can_see_chat_channel!(@chat_channel)
   end
 end

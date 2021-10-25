@@ -740,9 +740,7 @@ export default Component.extend({
   @action
   cancelSelecting() {
     this.set("selectingMessages", false);
-    this.messages.forEach((message) => {
-      message.set("selected", false);
-    });
+    this.messages.setEach("selected", false);
   },
 
   @action

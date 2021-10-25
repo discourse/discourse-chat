@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 class DiscourseChat::MoveToTopicController < DiscourseChat::ChatBaseController
+  NEW_TOPIC = "newTopic"
+  EXISTING_TOPIC = "existingTopic"
+  NEW_MESSAGE = "newMessage"
   def create
     raise Discourse::NotFound unless SiteSetting.topic_chat_enabled
 
@@ -10,7 +13,7 @@ class DiscourseChat::MoveToTopicController < DiscourseChat::ChatBaseController
       raise Discourse::InvalidParameters.new(:chat_channel_id)
     end
 
-    chat_messages = ChatMessage.includes(:user).where(id: params[:chat_message_ids]).order(:id)
+    chat_messages = chat_channel.chat_messages.includes(:user).where(id: params[:chat_message_ids]).order(:id)
     raise Discourse::InvalidParameters.new("Must include at least one chat message id") if chat_messages.empty?
 
     first_chat_message = chat_messages.first
@@ -23,11 +26,6 @@ class DiscourseChat::MoveToTopicController < DiscourseChat::ChatBaseController
 
     # Consolidate subsequent chat messages from the same user into 1 post
     chat_messages[1..-1].each do |chat_message|
-      if chat_message.chat_channel_id != chat_channel.id
-        # Make sure all chat messages are from the same chat channel
-        raise Discourse::InvalidParameters.new("Chat messages must be from the same channel")
-      end
-
       if chat_message.user_id == last_user_id
         post_attributes.last[:raw] += "\n\n#{chat_message.message}"
         post_attributes.last[:chat_message_ids].push(chat_message.id)
@@ -42,9 +40,9 @@ class DiscourseChat::MoveToTopicController < DiscourseChat::ChatBaseController
     end
 
     topic = case params[:type]
-            when "newTopic" then create_new_topic_from_messages(Archetype.default, post_attributes)
-            when "existingTopic" then add_posts_to_existing_topic(post_attributes)
-            when "newMessage" then create_new_topic_from_messages(Archetype.private_message, post_attributes)
+            when NEW_TOPIC then create_new_topic_from_messages(Archetype.default, post_attributes)
+            when EXISTING_TOPIC then add_posts_to_existing_topic(post_attributes)
+            when NEW_MESSAGE then create_new_topic_from_messages(Archetype.private_message, post_attributes)
       else raise Discourse::InvalidParameters.new("Invalid type")
     end
     render json: { url: topic.url, id: topic.id }
@@ -53,7 +51,7 @@ class DiscourseChat::MoveToTopicController < DiscourseChat::ChatBaseController
   private
 
   def validate_topic_title!
-    return if params[:type] == "newMessage"
+    return if params[:type] == NEW_MESSAGE
 
     topic = Topic.new(title: params[:title])
     topic.valid?

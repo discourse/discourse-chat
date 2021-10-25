@@ -416,7 +416,6 @@ RSpec.describe DiscourseChat::ChatController do
     fab!(:other_user_message_1) { Fabricate(:chat_message, chat_channel: chat_channel, user: other_user) }
     fab!(:other_user_message_2) { Fabricate(:chat_message, chat_channel: chat_channel, user: other_user) }
     fab!(:admin_message_1) { Fabricate(:chat_message, chat_channel: chat_channel, user: admin) }
-    fab!(:outside_chat_message) { Fabricate(:chat_message, chat_channel: Fabricate(:site_chat_channel), user: admin) }
 
     before do
       sign_in(user)
@@ -439,11 +438,6 @@ RSpec.describe DiscourseChat::ChatController do
       expect(response.status).to eq(400)
     end
 
-    it "errors when chat messages are from different chat channels" do
-      post "/chat/move_to_topic.json", params: build_params(5, { type: "existingTopic", topic_id: topic.id, chat_message_ids: [user_message_1.id, outside_chat_message.id] })
-      expect(response.status).to eq(400)
-      expect(response.parsed_body["errors"].first).to include("Chat messages must be from the same channel")
-    end
 
     it "errors when chat_message_ids are empty" do
       post "/chat/move_to_topic.json", params: build_params(5, { type: "existingTopic", topic_id: topic.id, chat_message_ids: [] })

@@ -438,7 +438,6 @@ RSpec.describe DiscourseChat::ChatController do
       expect(response.status).to eq(400)
     end
 
-
     it "errors when chat_message_ids are empty" do
       post "/chat/move_to_topic.json", params: build_params(5, { type: "existingTopic", topic_id: topic.id, chat_message_ids: [] })
       expect(response.status).to eq(400)

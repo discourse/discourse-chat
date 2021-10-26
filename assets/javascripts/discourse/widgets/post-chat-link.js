@@ -10,7 +10,7 @@ export default createWidget("post-chat-link", {
   loadingChat: false,
 
   html() {
-    return [iconNode("comment"), I18n.t("chat.from_chat")];
+    return iconNode("comment");
   },
 
   click() {

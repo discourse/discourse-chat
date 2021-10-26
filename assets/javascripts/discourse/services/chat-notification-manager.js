@@ -4,7 +4,6 @@ import { withPluginApi } from "discourse/lib/plugin-api";
 import { isTesting } from "discourse-common/config/environment";
 import {
   alertChannel,
-  init as initDesktopNotifications,
   onNotification,
 } from "discourse/lib/desktop-notifications";
 import { observes } from "discourse-common/utils/decorators";

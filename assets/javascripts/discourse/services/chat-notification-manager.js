@@ -49,14 +49,14 @@ export default Service.extend({
     this._corePresenceChannel.leave();
   },
 
-  async _pageChanged(path) {
+  _pageChanged(path) {
     this.set("inChat", path.startsWith("/chat/channel/"));
     if (this.inChat) {
-      await this._chatPresenceChannel.enter();
-      await this._corePresenceChannel.leave();
+      this._chatPresenceChannel.enter();
+      this._corePresenceChannel.leave();
     } else {
-      await this._chatPresenceChannel.leave();
-      await this._corePresenceChannel.enter();
+      this._chatPresenceChannel.leave();
+      this._corePresenceChannel.enter();
     }
   },
 

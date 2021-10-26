@@ -39,6 +39,24 @@ class ChatChannel < ActiveRecord::Base
     chatable_type == DiscourseChat::SITE_CHAT_TYPE
   end
 
+  def allowed_user_ids
+    direct_message_channel? ?
+      chatable.user_ids :
+      nil
+  end
+
+  def allowed_group_ids
+    if site_channel?
+      [Group::AUTO_GROUPS[:staff]]
+    elsif category_channel?
+      chatable.secure_group_ids
+    elsif topic_channel? && chatable.category
+      chatable.category.secure_group_ids
+    else
+      nil
+    end
+  end
+
   def title(user)
     case chatable_type
     when "Topic"

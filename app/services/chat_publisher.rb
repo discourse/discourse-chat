@@ -5,14 +5,19 @@ module ChatPublisher
     content = ChatBaseMessageSerializer.new(msg, { scope: anonymous_guardian, root: :topic_chat_message }).as_json
     content[:typ] = :sent
     content[:stagedId] = staged_id
-    MessageBus.publish("/chat/#{chat_channel.id}", content.as_json)
-    MessageBus.publish("/chat/#{chat_channel.id}/new-messages", { message_id: msg.id, user_id: msg.user_id })
+    permissions = { user_ids: chat_channel.allowed_user_ids, group_ids: chat_channel.allowed_group_ids }
+    MessageBus.publish("/chat/#{chat_channel.id}", content.as_json, permissions)
+    MessageBus.publish("/chat/#{chat_channel.id}/new-messages", { message_id: msg.id, user_id: msg.user_id }, permissions)
   end
 
   def self.publish_edit!(chat_channel, msg)
     content = ChatBaseMessageSerializer.new(msg, { scope: anonymous_guardian, root: :topic_chat_message }).as_json
     content[:typ] = :edit
-    MessageBus.publish("/chat/#{chat_channel.id}", content.as_json)
+    MessageBus.publish(
+      "/chat/#{chat_channel.id}",
+      content.as_json,
+      { user_ids: chat_channel.allowed_user_ids, group_ids: chat_channel.allowed_group_ids }
+    )
   end
 
   def self.publish_presence!(chat_channel, user, typ)
@@ -20,13 +25,21 @@ module ChatPublisher
   end
 
   def self.publish_delete!(chat_channel, msg)
-    MessageBus.publish("/chat/#{chat_channel.id}", { typ: "delete", deleted_id: msg.id, deleted_at: msg.deleted_at })
+    MessageBus.publish(
+      "/chat/#{chat_channel.id}",
+      { typ: "delete", deleted_id: msg.id, deleted_at: msg.deleted_at },
+      { user_ids: chat_channel.allowed_user_ids, group_ids: chat_channel.allowed_group_ids }
+    )
   end
 
   def self.publish_restore!(chat_channel, msg)
     content = ChatBaseMessageSerializer.new(msg, { scope: anonymous_guardian, root: :topic_chat_message }).as_json
     content[:typ] = :restore
-    MessageBus.publish("/chat/#{chat_channel.id}", content.as_json)
+    MessageBus.publish(
+      "/chat/#{chat_channel.id}",
+      content.as_json,
+      { user_ids: chat_channel.allowed_user_ids, group_ids: chat_channel.allowed_group_ids }
+    )
   end
 
   def self.publish_flag!(msg)

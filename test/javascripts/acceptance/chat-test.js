@@ -25,7 +25,6 @@ import { next } from "@ember/runloop";
 import { cloneJSON } from "discourse-common/lib/object";
 import {
   joinChannel,
-  leaveChannel,
   presentUserIds,
 } from "discourse/tests/helpers/presence-pretender";
 import User from "discourse/models/user";

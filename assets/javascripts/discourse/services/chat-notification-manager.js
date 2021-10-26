@@ -10,8 +10,6 @@ import { observes } from "discourse-common/utils/decorators";
 
 export default Service.extend({
   presence: service(),
-  subscribedToCore: true,
-  subscribedToChat: false,
   inChat: false,
 
   start() {

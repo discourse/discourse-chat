@@ -21,7 +21,6 @@ en:
       edit_channels: "Edit channels"
       enable: "Enable chat"
       flag: "Flag"
-      from_chat: "from chat"
       invalid_access: "You don't have access to view this chat channel"
       in_reply_to: "In reply to"
       heading: "Chat"

@@ -17,7 +17,7 @@ export default {
       );
       chatNotificationManager.start();
 
-      api.addDocumentTitleCounter(() => chat.getUnreadUrgentCount());
+      api.addDocumentTitleCounter(() => chat.getDocumentTitleCount());
       api.addCardClickListenerSelector(".topic-chat-float-container");
 
       api.dispatchWidgetAppEvent(

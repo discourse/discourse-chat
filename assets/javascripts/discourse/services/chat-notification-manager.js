@@ -10,7 +10,10 @@ import { observes } from "discourse-common/utils/decorators";
 
 export default Service.extend({
   presence: service(),
-  inChat: false,
+  _inChat: false,
+  _subscribedToCore: true,
+  _subscribedToChat: false,
+  _countChatInDocTitle: true,
 
   start() {
     if (!this._shouldRun()) {
@@ -46,9 +49,13 @@ export default Service.extend({
     this._corePresenceChannel.leave();
   },
 
+  shouldCountChatInDocTitle() {
+    return this._countChatInDocTitle;
+  },
+
   _pageChanged(path) {
-    this.set("inChat", path.startsWith("/chat/channel/"));
-    if (this.inChat) {
+    this.set("_inChat", path.startsWith("/chat/channel/"));
+    if (this._inChat) {
       this._chatPresenceChannel.enter();
       this._corePresenceChannel.leave();
     } else {
@@ -71,21 +78,16 @@ export default Service.extend({
   },
 
   _subscribeToCorrectNotifications() {
-    this._unsubscribeFromBoth();
-
     const oneTabForEachOpen =
       this._chatPresenceChannel.count > 0 &&
       this._corePresenceChannel.count > 0;
     if (oneTabForEachOpen) {
-      this.inChat ? this._subscribeToChat() : this._subscribeToCore();
+      this._inChat
+        ? this._subscribeToChat()
+        : this._subscribeToCore({ only: true });
     } else {
       this._subscribeToBoth();
     }
-  },
-
-  _unsubscribeFromBoth() {
-    this.messageBus.unsubscribe(this._coreAlertChannel());
-    this.messageBus.unsubscribe(this._chatAlertChannel());
   },
 
   _subscribeToBoth() {
@@ -94,15 +96,33 @@ export default Service.extend({
   },
 
   _subscribeToChat() {
-    this.messageBus.subscribe(this._chatAlertChannel(), (data) =>
-      onNotification(data, this.siteSettings, this.currentUser)
-    );
+    this.set("_countChatInDocTitle", true);
+    if (!this._subscribedToChat) {
+      this.messageBus.subscribe(this._chatAlertChannel(), (data) =>
+        onNotification(data, this.siteSettings, this.currentUser)
+      );
+    }
+
+    if (this._subscribedToCore) {
+      this.messageBus.unsubscribe(this._coreAlertChannel());
+      this.set("_subscribedToCore", false);
+    }
   },
 
-  _subscribeToCore() {
-    this.messageBus.subscribe(this._coreAlertChannel(), (data) =>
-      onNotification(data, this.siteSettings, this.currentUser)
-    );
+  _subscribeToCore(opts = { only: false }) {
+    if (opts.only) {
+      this.set("_countChatInDocTitle", false);
+    }
+    if (!this._subscribedToCore) {
+      this.messageBus.subscribe(this._coreAlertChannel(), (data) =>
+        onNotification(data, this.siteSettings, this.currentUser)
+      );
+    }
+
+    if (this._subscribedToChat) {
+      this.messageBus.unsubscribe(this._chatAlertChannel());
+      this.set("_subscribedToChat", false);
+    }
   },
 
   _shouldRun() {

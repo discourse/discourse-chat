@@ -16,6 +16,7 @@ export default Service.extend({
   allChannels: null,
   appEvents: service(),
   chatOpen: false,
+  chatNotificationManager: service(),
   cook: null,
   directMessageChannels: null,
   hasFetchedChannels: false,
@@ -161,6 +162,12 @@ export default Service.extend({
   },
   getUnreadUrgentCount() {
     return this.unreadUrgentCount;
+  },
+
+  getDocumentTitleCount() {
+    return this.chatNotificationManager.shouldCountChatInDocTitle()
+      ? this.unreadUrgentCount
+      : 0;
   },
 
   _channelObject() {

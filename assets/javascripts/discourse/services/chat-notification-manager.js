@@ -76,10 +76,10 @@ export default Service.extend({
   _subscribeToCorrectNotifications() {
     this._unsubscribeFromBoth();
 
-    const inBoth =
+    const oneTabForEachOpen =
       this._chatPresenceChannel.count > 0 &&
       this._corePresenceChannel.count > 0;
-    if (inBoth) {
+    if (oneTabForEachOpen) {
       this.inChat ? this._subscribeToChat() : this._subscribeToCore();
     } else {
       this._subscribeToBoth();

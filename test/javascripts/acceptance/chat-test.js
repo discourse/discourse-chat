@@ -23,6 +23,12 @@ import {
 } from "discourse/plugins/discourse-topic-chat/chat-fixtures";
 import { next } from "@ember/runloop";
 import { cloneJSON } from "discourse-common/lib/object";
+import {
+  joinChannel,
+  leaveChannel,
+  presentUserIds,
+} from "discourse/tests/helpers/presence-pretender";
+import User from "discourse/models/user";
 
 const baseChatPretenders = (server, helper) => {
   server.get("/chat/:chatChannelId/messages.json", () =>
@@ -104,7 +110,7 @@ function chatChannelPretender(server, helper, changes = []) {
   server.get("/chat/chat_channels.json", () => helper.response(copy));
 }
 
-acceptance("Discourse Chat - anonymouse user", function (needs) {
+acceptance("Discourse Chat - anonymouse 🐭 user", function (needs) {
   needs.settings({
     topic_chat_enabled: true,
   });
@@ -229,12 +235,28 @@ acceptance("Discourse Chat - without unread", function (needs) {
     await visit("/chat/channel/Site");
     const messageContent = "Here's a message";
     const composerInput = query(".tc-composer-input");
+    assert.deepEqual(
+      presentUserIds("/chat-reply/9"),
+      [],
+      "is not present before typing"
+    );
     await fillIn(composerInput, messageContent);
+    assert.deepEqual(
+      presentUserIds("/chat-reply/9"),
+      [User.current().id],
+      "is present after typing"
+    );
     await focus(composerInput);
+
     await triggerKeyEvent(composerInput, "keydown", 13); // 13 is enter keycode
 
-    // Composer input is cleared
-    assert.equal(composerInput.innerText.trim(), "");
+    assert.equal(composerInput.innerText.trim(), "", "composer input cleared");
+
+    assert.deepEqual(
+      presentUserIds("/chat-reply/9"),
+      [],
+      "stops being present after sending message"
+    );
 
     let messages = queryAll(".tc-message");
     let lastMessage = messages[messages.length - 1];
@@ -290,6 +312,63 @@ acceptance("Discourse Chat - without unread", function (needs) {
       );
       done();
     });
+  });
+
+  test("replying presence indicators", async function (assert) {
+    await visit("/chat/channel/Site");
+    assert.equal(
+      queryAll(".tc-replying-indicator .replying-text").text().trim(),
+      "",
+      "no replying indicator"
+    );
+
+    await joinChannel("/chat-reply/9", {
+      id: 124,
+      avatar_template: "/a/b/c.jpg",
+      username: "myusername",
+    });
+
+    assert.equal(
+      queryAll(".tc-replying-indicator .replying-text").text().trim(),
+      "myusername is typing...",
+      "one user replying"
+    );
+
+    await joinChannel("/chat-reply/9", {
+      id: 125,
+      avatar_template: "/a/b/c.jpg",
+      username: "myusername2",
+    });
+
+    assert.equal(
+      queryAll(".tc-replying-indicator .replying-text").text().trim(),
+      "myusername and myusername2 are typing...",
+      "two users replying"
+    );
+
+    await joinChannel("/chat-reply/9", {
+      id: 126,
+      avatar_template: "/a/b/c.jpg",
+      username: "myusername3",
+    });
+
+    assert.equal(
+      queryAll(".tc-replying-indicator .replying-text").text().trim(),
+      "myusername, myusername2 and myusername3 are typing...",
+      "three users replying"
+    );
+
+    await joinChannel("/chat-reply/9", {
+      id: 127,
+      avatar_template: "/a/b/c.jpg",
+      username: "myusername4",
+    });
+
+    assert.equal(
+      queryAll(".tc-replying-indicator .replying-text").text().trim(),
+      "myusername, myusername2 and 2 others are typing...",
+      "four users replying"
+    );
   });
 
   test("Unread indicator increments for public channels when messages come in", async function (assert) {

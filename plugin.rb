@@ -178,6 +178,17 @@ after_initialize do
     config
   end
 
+  register_presence_channel_prefix("chat-reply") do |channel_name|
+    if chat_channel_id = channel_name[/\/chat-reply\/(\d+)/, 1]
+      chat_channel = ChatChannel.find(chat_channel_id)
+      config = PresenceChannel::Config.new
+      config.allowed_group_ids = DiscourseChat.allowed_group_ids # TODO: per-channel permissions
+      config
+    end
+  rescue ActiveRecord::RecordNotFound
+    nil
+  end
+
   register_presence_channel_prefix("chat-user") do |channel_name|
     if user_id = channel_name[/\/chat-user\/(chat|core)\/(\d+)/, 2]
       user = User.find(user_id)

@@ -245,7 +245,7 @@ export default Component.extend(
         () => {
           this._resizeTextArea();
           this._applyUserAutocomplete();
-          this.onValueChange();
+          this.onValueChange(value);
         },
         THROTTLE_MS
       );

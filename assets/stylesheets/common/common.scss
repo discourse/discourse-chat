@@ -106,10 +106,6 @@ $float-height: 530px;
   transition: all 100ms ease-in;
   transition-property: bottom, padding-bottom;
 
-  .tc-composer {
-    margin-bottom: 0.75em;
-  }
-
   .tc-channels {
     .chat-channel-row {
       padding-left: 1em;
@@ -743,6 +739,46 @@ $float-height: 530px;
       .d-icon {
         font-size: var(--font-0);
         color: var(--primary-medium);
+      }
+    }
+  }
+
+  .tc-replying-indicator {
+    padding: 0 0.75em 0.5em 0.75em;
+
+    .replying-text {
+      font-size: var(--font-down-2);
+
+      &:before {
+        // unicode zero width space character
+        // Ensures the span height is consistent even when empty
+        content: "\200b";
+      }
+    }
+
+    .wave {
+      flex: 0 0 auto;
+
+      .dot {
+        display: inline-block;
+        animation: tc-reply-wave 1.8s linear infinite;
+        &:nth-child(2) {
+          animation-delay: -1.6s;
+        }
+        &:nth-child(3) {
+          animation-delay: -1.4s;
+        }
+      }
+
+      @keyframes tc-reply-wave {
+        0%,
+        60%,
+        100% {
+          transform: initial;
+        }
+        30% {
+          transform: translateY(-0.2em);
+        }
       }
     }
   }

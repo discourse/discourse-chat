@@ -793,11 +793,11 @@ export default Component.extend({
 
   @action
   composerValueChanged(composerValue) {
-    this._reStickScrollIfNeeded();
+    this.reStickScrollIfNeeded();
     this._reportReplyingPresence(composerValue);
   },
 
-  _reStickScrollIfNeeded() {
+  reStickScrollIfNeeded() {
     if (this.stickyScroll) {
       this._stickScrollToBottom();
     }

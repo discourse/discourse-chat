@@ -13,11 +13,7 @@ module ChatPublisher
   def self.publish_edit!(chat_channel, msg)
     content = ChatBaseMessageSerializer.new(msg, { scope: anonymous_guardian, root: :topic_chat_message }).as_json
     content[:typ] = :edit
-    MessageBus.publish(
-      "/chat/#{chat_channel.id}",
-      content.as_json,
-      permissions(chat_channel)
-    )
+    MessageBus.publish("/chat/#{chat_channel.id}", content.as_json, permissions(chat_channel))
   end
 
   def self.publish_presence!(chat_channel, user, typ)
@@ -35,11 +31,7 @@ module ChatPublisher
   def self.publish_restore!(chat_channel, msg)
     content = ChatBaseMessageSerializer.new(msg, { scope: anonymous_guardian, root: :topic_chat_message }).as_json
     content[:typ] = :restore
-    MessageBus.publish(
-      "/chat/#{chat_channel.id}",
-      content.as_json,
-      permissions(chat_channel)
-    )
+    MessageBus.publish("/chat/#{chat_channel.id}", content.as_json, permissions(chat_channel))
   end
 
   def self.publish_flag!(msg)
@@ -55,11 +47,7 @@ module ChatPublisher
   end
 
   def self.publish_new_mention(user, chat_channel_id, chat_message_id)
-    MessageBus.publish(
-      "/chat/#{chat_channel_id}/new-mentions",
-      { message_id: chat_message_id }.as_json,
-      user_ids: [user.id]
-    )
+    MessageBus.publish("/chat/#{chat_channel_id}/new-mentions", { message_id: chat_message_id }.as_json, user_ids: [user.id])
   end
 
   def self.publish_new_direct_message_channel(chat_channel, users)
@@ -69,11 +57,7 @@ module ChatPublisher
         scope: Guardian.new(user), # We need a guardian here for direct messages
         root: :chat_channel
       )
-      MessageBus.publish(
-        "/chat/new-direct-message-channel",
-        content.as_json,
-        user_ids: [user.id]
-      )
+      MessageBus.publish("/chat/new-direct-message-channel", content.as_json, user_ids: [user.id])
     end
   end
 

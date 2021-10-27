@@ -73,7 +73,7 @@ export default Component.extend(
         : "chat-widget-mobile-uploader";
     },
 
-    _findMatchingUploadHandler(_) {
+    _findMatchingUploadHandler() {
       return;
     },
 

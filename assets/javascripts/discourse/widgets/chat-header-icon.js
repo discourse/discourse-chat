@@ -44,6 +44,13 @@ export default createWidget("header-chat-link", {
     );
   },
 
+  mouseDown(e) {
+    if (e.which === 2) {
+      // Middle mouse click
+      window.open("/chat", "_blank").focus();
+    }
+  },
+
   click() {
     if (this.onChatPage()) {
       return;

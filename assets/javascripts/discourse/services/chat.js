@@ -23,6 +23,7 @@ export default Service.extend({
   hasUnreadPublicMessages: false,
   idToTitleMap: null,
   lastNonChatRoute: null,
+  lastUserTrackingMessageId: null,
   messageId: null,
   presence: service(),
   presenceChannel: null,
@@ -405,7 +406,16 @@ export default Service.extend({
   _subscribeToUserTrackingChannel() {
     this.messageBus.subscribe(
       `/chat/user-tracking-state/${this.currentUser.id}`,
-      (busData) => {
+      (busData, _, messageId) => {
+        if (
+          this.lastUserTrackingMessageId &&
+          messageId !== this.lastUserTrackingMessageId + 1
+        ) {
+          return this.forceRefreshChannels();
+        } else {
+          this.lastUserTrackingMessageId = messageId;
+        }
+
         const trackingState = this.currentUser.chat_channel_tracking_state[
           busData.chat_channel_id
         ];

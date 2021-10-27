@@ -51,7 +51,7 @@ export default createWidget("header-chat-link", {
     }
   },
 
-  click(e) {
+  click() {
     if (this.onChatPage()) {
       return;
     }

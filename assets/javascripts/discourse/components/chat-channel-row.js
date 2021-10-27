@@ -28,6 +28,13 @@ export default Component.extend({
     return classes.join(" ");
   },
 
+  mouseDown(e) {
+    if (e.which === 2) {
+      // Middle mouse click
+      window.open(`/chat/channel/${this.channel.title}`, "_blank").focus();
+    }
+  },
+
   click() {
     if (this.switchChannel) {
       return this.switchChannel(this.channel);

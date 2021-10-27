@@ -85,10 +85,12 @@
       editingMessage=(readonly this.editingMessage)
       onCancelEditing=this.cancelEditing
       onEditLastMessageRequested=this.editLastMessageRequested
-      onValueChange=(action "reStickScrollIfNeeded")
+      onValueChange=(action "composerValueChanged")
       previewing=previewing
       fullPage=fullPage
     }}
   {{/if}}
+
+  {{chat-replying-indicator chatChannelId=chatChannel.id}}
 {{/if}}
 

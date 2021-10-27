@@ -50,6 +50,7 @@ export default Component.extend({
 
   chat: service(),
   router: service(),
+  chatComposerPresenceManager: service(),
 
   getCachedChannelDetails: null,
   clearCachedChannelDetails: null,
@@ -679,6 +680,7 @@ export default Component.extend({
       replyToMsg: null,
       editingMessage: null,
     });
+    this.chatComposerPresenceManager.notifyState(this.chatChannel.id, false);
   },
 
   @action
@@ -790,10 +792,20 @@ export default Component.extend({
   },
 
   @action
+  composerValueChanged(composerValue) {
+    this.reStickScrollIfNeeded();
+    this._reportReplyingPresence(composerValue);
+  },
+
   reStickScrollIfNeeded() {
     if (this.stickyScroll) {
       this._stickScrollToBottom();
     }
+  },
+
+  _reportReplyingPresence(composerValue) {
+    const replying = !this.editingMessage && !!composerValue;
+    this.chatComposerPresenceManager.notifyState(this.chatChannel.id, replying);
   },
 
   @action

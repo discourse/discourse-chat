@@ -5,7 +5,7 @@ module ChatPublisher
     content = ChatBaseMessageSerializer.new(msg, { scope: anonymous_guardian, root: :topic_chat_message }).as_json
     content[:typ] = :sent
     content[:stagedId] = staged_id
-    permissions = { user_ids: chat_channel.allowed_user_ids, group_ids: chat_channel.allowed_group_ids }
+    permissions = permissions(chat_channel)
     MessageBus.publish("/chat/#{chat_channel.id}", content.as_json, permissions)
     MessageBus.publish("/chat/#{chat_channel.id}/new-messages", { message_id: msg.id, user_id: msg.user_id }, permissions)
   end
@@ -16,7 +16,7 @@ module ChatPublisher
     MessageBus.publish(
       "/chat/#{chat_channel.id}",
       content.as_json,
-      { user_ids: chat_channel.allowed_user_ids, group_ids: chat_channel.allowed_group_ids }
+      permissions(chat_channel)
     )
   end
 
@@ -28,7 +28,7 @@ module ChatPublisher
     MessageBus.publish(
       "/chat/#{chat_channel.id}",
       { typ: "delete", deleted_id: msg.id, deleted_at: msg.deleted_at },
-      { user_ids: chat_channel.allowed_user_ids, group_ids: chat_channel.allowed_group_ids }
+      permissions(chat_channel)
     )
   end
 
@@ -38,7 +38,7 @@ module ChatPublisher
     MessageBus.publish(
       "/chat/#{chat_channel.id}",
       content.as_json,
-      { user_ids: chat_channel.allowed_user_ids, group_ids: chat_channel.allowed_group_ids }
+      permissions(chat_channel)
     )
   end
 
@@ -78,6 +78,10 @@ module ChatPublisher
   end
 
   private
+
+  def self.permissions(chat_channel)
+    { user_ids: chat_channel.allowed_user_ids, group_ids: chat_channel.allowed_group_ids }
+  end
 
   def self.anonymous_guardian
     Guardian.new(nil)

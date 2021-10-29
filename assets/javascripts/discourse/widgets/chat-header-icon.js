@@ -55,7 +55,7 @@ export default createWidget("header-chat-link", {
       return;
     }
 
-    if (this.site.mobileView || this.chat.getSidebarActive()) {
+    if (this.site.mobileView || this.chat.getSidebarActive() || this.currentUser.chat_isolated) {
       DiscourseURL.routeTo("/chat");
     } else {
       this.appEvents.trigger("chat:toggle-open");

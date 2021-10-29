@@ -50,6 +50,10 @@ export default Service.extend({
   },
 
   shouldCountChatInDocTitle() {
+    if (this.currentUser.chat_isolated) {
+      return false;
+    }
+
     return this._countChatInDocTitle;
   },
 

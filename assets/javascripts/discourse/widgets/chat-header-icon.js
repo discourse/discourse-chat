@@ -11,7 +11,10 @@ export default createWidget("header-chat-link", {
   services: ["chat", "router"],
 
   html() {
-    if (this.currentUser.isInDoNotDisturb() || this.currentUser.chat_isolated && !this.chat.onChatPage()) {
+    if (
+      this.currentUser.isInDoNotDisturb() ||
+      (this.currentUser.chat_isolated && !this.chat.onChatPage())
+    ) {
       return this.chatLinkHtml();
     }
 
@@ -37,10 +40,10 @@ export default createWidget("header-chat-link", {
   chatLinkHtml(indicatorNode) {
     return h(
       `a.icon${
-      this.chat.onChatPage() || this.chat.getChatOpenStatus() ? ".active" : ""
+        this.chat.onChatPage() || this.chat.getChatOpenStatus() ? ".active" : ""
       }`,
       [iconNode("comment"), indicatorNode].filter(Boolean)
-    )
+    );
   },
 
   mouseDown(e) {
@@ -55,7 +58,11 @@ export default createWidget("header-chat-link", {
       return;
     }
 
-    if (this.site.mobileView || this.chat.getSidebarActive() || this.currentUser.chat_isolated) {
+    if (
+      this.site.mobileView ||
+      this.chat.getSidebarActive() ||
+      this.currentUser.chat_isolated
+    ) {
       DiscourseURL.routeTo("/chat");
     } else {
       this.appEvents.trigger("chat:toggle-open");

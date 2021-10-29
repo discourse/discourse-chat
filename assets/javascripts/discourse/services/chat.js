@@ -96,7 +96,10 @@ export default Service.extend({
   },
 
   onChatPage() {
-    return this.router.currentRouteName === "chat" || this.router.currentRouteName === "chat.channel"
+    return (
+      this.router.currentRouteName === "chat" ||
+      this.router.currentRouteName === "chat.channel"
+    );
   },
 
   getSidebarActive() {

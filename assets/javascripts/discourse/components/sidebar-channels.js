@@ -24,8 +24,8 @@ export default Component.extend({
     withPluginApi("0.12.1", (api) => {
       api.onPageChange(() => {
         this.calcShouldShow();
-      })
-    })
+      });
+    });
   },
 
   willDestoryElement() {

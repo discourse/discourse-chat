@@ -165,7 +165,17 @@ after_initialize do
   end
 
   add_to_serializer(:current_user, :include_has_chat_enabled?) do
-    include_can_chat? && object.user_option.chat_enabled
+    return @has_chat_enabled if defined?(@has_chat_enabled)
+
+    @has_chat_enabled = include_can_chat? && object.user_option.chat_enabled
+  end
+
+  add_to_serializer(:current_user, :chat_isolated) do
+    true
+  end
+
+  add_to_serializer(:current_user, :include_chat_isolated?) do
+    include_has_chat_enabled? && object.user_option.chat_isolated
   end
 
   add_to_serializer(:user_option, :chat_enabled) do

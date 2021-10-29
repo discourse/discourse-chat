@@ -95,6 +95,10 @@ export default Service.extend({
       : `discovery.${defaultHomepage()}`;
   },
 
+  onChatPage() {
+    return this.router.currentRouteName === "chat" || this.router.currentRouteName === "chat.channel"
+  },
+
   getSidebarActive() {
     return this.sidebarActive;
   },

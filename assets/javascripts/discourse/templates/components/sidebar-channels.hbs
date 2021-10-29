@@ -1,7 +1,9 @@
-{{channel-list
-  publicChannels=publicChannels
-  directMessageChannels=directMessageChannels
-  onSelect=(action "switchChannel")
-  toggleSection=toggleSection
-  inSidebar=true
-}}
+{{#if show}}
+  {{channel-list
+    publicChannels=publicChannels
+    directMessageChannels=directMessageChannels
+    onSelect=(action "switchChannel")
+    toggleSection=toggleSection
+    inSidebar=true
+  }}
+{{/if}}

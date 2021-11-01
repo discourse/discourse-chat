@@ -312,7 +312,8 @@ export default Service.extend({
     } else if (
       Site.currentProp("mobileView") ||
       this.router.currentRouteName === "chat" ||
-      this.router.currentRouteName === "chat.channel"
+      this.router.currentRouteName === "chat.channel" ||
+      this.currentUser.chat_isolated
     ) {
       this.router.transitionTo("chat.channel", channel.title, {
         queryParams: { messageId: messageId },

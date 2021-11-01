@@ -10,6 +10,7 @@ import { observes } from "discourse-common/utils/decorators";
 
 export default Service.extend({
   presence: service(),
+  chat: service(),
   _inChat: false,
   _subscribedToCore: true,
   _subscribedToChat: false,
@@ -50,7 +51,7 @@ export default Service.extend({
   },
 
   shouldCountChatInDocTitle() {
-    if (this.currentUser.chat_isolated) {
+    if (this.currentUser.chat_isolated && !this.chat.onChatPage()) {
       return false;
     }
 

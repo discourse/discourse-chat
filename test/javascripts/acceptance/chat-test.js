@@ -627,7 +627,8 @@ acceptance(
 
     test("Unread indicator does show on chat page when use has chat_isolated", async function (assert) {
       updateCurrentUser({ chat_isolated: true });
-      await visit("/chat");
+      await visit("/chat/channel/Site");
+      await click(".header-dropdown-toggle.open-chat") // Force re-render. Flakey otherwise.
       assert.ok(
         exists(
           ".header-dropdown-toggle.open-chat .chat-unread-urgent-indicator"

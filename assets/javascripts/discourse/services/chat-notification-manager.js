@@ -113,7 +113,7 @@ export default Service.extend({
       );
     }
 
-    if (this.opts.only && this._subscribedToCore) {
+    if (opts.only && this._subscribedToCore) {
       this.messageBus.unsubscribe(this._coreAlertChannel());
       this.set("_subscribedToCore", false);
     }

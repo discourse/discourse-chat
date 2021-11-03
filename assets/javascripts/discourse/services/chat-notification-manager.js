@@ -10,6 +10,7 @@ import { observes } from "discourse-common/utils/decorators";
 
 export default Service.extend({
   presence: service(),
+  chat: service(),
   _inChat: false,
   _subscribedToCore: true,
   _subscribedToChat: false,
@@ -50,6 +51,10 @@ export default Service.extend({
   },
 
   shouldCountChatInDocTitle() {
+    if (this.currentUser.chat_isolated && !this.chat.onChatPage()) {
+      return false;
+    }
+
     return this._countChatInDocTitle;
   },
 
@@ -83,7 +88,7 @@ export default Service.extend({
       this._corePresenceChannel.count > 0;
     if (oneTabForEachOpen) {
       this._inChat
-        ? this._subscribeToChat()
+        ? this._subscribeToChat({ only: true })
         : this._subscribeToCore({ only: true });
     } else {
       this._subscribeToBoth();
@@ -95,15 +100,20 @@ export default Service.extend({
     this._subscribeToCore();
   },
 
-  _subscribeToChat() {
+  _subscribeToChat(opts = { only: false }) {
     this.set("_countChatInDocTitle", true);
+
+    if (this.currentUser.chat_isolated && !this.chat.onChatPage()) {
+      return;
+    }
+
     if (!this._subscribedToChat) {
       this.messageBus.subscribe(this._chatAlertChannel(), (data) =>
         onNotification(data, this.siteSettings, this.currentUser)
       );
     }
 
-    if (this._subscribedToCore) {
+    if (opts.only && this._subscribedToCore) {
       this.messageBus.unsubscribe(this._coreAlertChannel());
       this.set("_subscribedToCore", false);
     }
@@ -119,7 +129,7 @@ export default Service.extend({
       );
     }
 
-    if (this._subscribedToChat) {
+    if (this.only && this._subscribedToChat) {
       this.messageBus.unsubscribe(this._chatAlertChannel());
       this.set("_subscribedToChat", false);
     }

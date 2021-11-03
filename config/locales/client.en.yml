@@ -23,6 +23,7 @@ en:
       flag: "Flag"
       invalid_access: "You don't have access to view this chat channel"
       in_reply_to: "In reply to"
+      isolate: "Isolate chat"
       heading: "Chat"
       join_channel: "Join channel"
       new_messages: "new messages"
@@ -122,12 +123,12 @@ en:
           instructions:
             one: "You are about to create a new message and populate it with the chat message you've selected."
             other: "You are about to create a new message and populate it with the <b>%{count}</b> chat messages you've selected."
-      
+
       replying_indicator:
         single_user: "%{username} is typing"
         multiple_users: "%{commaSeparatedUsernames} and %{lastUsername} are typing"
         many_users: "%{commaSeparatedUsernames} and %{count} others are typing"
-    
+
     notifications:
       popup:
         chat_mention: "@%{username} mentioned you in chat"

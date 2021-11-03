@@ -4,6 +4,7 @@ import {
   publishToMessageBus,
   query,
   queryAll,
+  updateCurrentUser,
   visible,
 } from "discourse/tests/helpers/qunit-helpers";
 import {
@@ -149,6 +150,14 @@ acceptance("Discourse Chat - without unread", function (needs) {
 
   test("Clicking mention notification inside other full page channel switches the channel", async function (assert) {
     await visit("/chat/channel/@hawk");
+    await click(".header-dropdown-toggle.current-user");
+    await click("#quick-access-notifications .chat-mention");
+    assert.equal(currentURL(), `/chat/channel/Site`);
+  });
+
+  test("Clicking mention notification with `chat_isolated` takes user to full-page chat", async function (assert) {
+    updateCurrentUser({ chat_isolated: true });
+    await visit("/t/internationalization-localization/280");
     await click(".header-dropdown-toggle.current-user");
     await click("#quick-access-notifications .chat-mention");
     assert.equal(currentURL(), `/chat/channel/Site`);
@@ -591,6 +600,40 @@ acceptance(
         { id: 9, unread_count: 2, muted: false },
         { id: 75, unread_count: 2, muted: false },
       ]);
+    });
+
+    test("Unread indicator doesn't show when user is in do not disturb", async function (assert) {
+      let now = new Date();
+      let later = new Date();
+      later.setTime(now.getTime() + 600000);
+      updateCurrentUser({ do_not_disturb_until: later.toUTCString() });
+      await visit("/t/internationalization-localization/280");
+      assert.notOk(
+        exists(
+          ".header-dropdown-toggle.open-chat .chat-unread-urgent-indicator"
+        )
+      );
+    });
+
+    test("Unread indicator doesn't show on homepage when user has chat_isolated", async function (assert) {
+      updateCurrentUser({ chat_isolated: true });
+      await visit("/t/internationalization-localization/280");
+      assert.notOk(
+        exists(
+          ".header-dropdown-toggle.open-chat .chat-unread-urgent-indicator"
+        )
+      );
+    });
+
+    test("Unread indicator does show on chat page when use has chat_isolated", async function (assert) {
+      updateCurrentUser({ chat_isolated: true });
+      await visit("/chat/channel/Site");
+      await click(".header-dropdown-toggle.open-chat"); // Force re-render. Flakey otherwise.
+      assert.ok(
+        exists(
+          ".header-dropdown-toggle.open-chat .chat-unread-urgent-indicator"
+        )
+      );
     });
 
     test("Chat float open to DM channel with unread messages with sidebar off", async function (assert) {

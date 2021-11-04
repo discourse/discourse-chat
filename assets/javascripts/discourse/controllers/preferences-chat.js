@@ -1,5 +1,4 @@
 import { action } from "@ember/object";
-import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import Controller from "@ember/controller";
 

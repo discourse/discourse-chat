@@ -221,7 +221,6 @@ after_initialize do
     nil
   end
 
-
   CHAT_NOTIFICATION_TYPES = [
     Notification.types[:chat_mention],
     Notification.types[:chat_message],

@@ -1,8 +1,10 @@
 import RestrictedUserRoute from "discourse/routes/restricted-user";
 import { defaultHomepage } from "discourse/lib/utilities";
+import { inject as service } from "@ember/service";
 
 export default RestrictedUserRoute.extend({
   showFooter: true,
+  chat: service(),
 
   setupController(controller, user) {
     if (!user?.can_chat) {
@@ -13,6 +15,9 @@ export default RestrictedUserRoute.extend({
       "minimalChatView",
       localStorage.getItem("minimalChatView") || false
     );
-    controller.set("model", user);
+    controller.setProperties({
+      model: user,
+      sidebarActive: this.chat.getSidebarActive(),
+    });
   },
 });

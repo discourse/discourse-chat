@@ -32,15 +32,17 @@
   <span class="control-instructions">{{i18n "chat.isolate.description"}}</span>
 </div>
 
-<div class="control-group chat-setting">
-  <label class="controls">
-    {{input
-      type="checkbox"
-      checked=model.minimalChatView
-    }}
-    {{i18n "chat.minimal_view.title"}}
-  </label>
-  <span class="control-instructions">{{i18n "chat.minimal_view.description"}}</span>
-</div>
+{{#if sidebarActive}}
+  <div class="control-group chat-setting">
+    <label class="controls">
+      {{input
+        type="checkbox"
+        checked=model.minimalChatView
+      }}
+      {{i18n "chat.minimal_view.title"}}
+    </label>
+    <span class="control-instructions">{{i18n "chat.minimal_view.description"}}</span>
+  </div>
+{{/if}}
 
 {{save-controls model=model action=(action "save") saved=saved}}

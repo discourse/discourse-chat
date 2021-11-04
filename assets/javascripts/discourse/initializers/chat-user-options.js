@@ -1,5 +1,4 @@
 import { withPluginApi } from "discourse/lib/plugin-api";
-import { PLUGIN_ID } from "discourse/plugins/discourse-topic-chat/discourse/initializers/chat-topic-changes";
 
 const CHAT_ENABLED_FIELD = "chat_enabled";
 const CHAT_ISOLATED_FIELD = "chat_isolated";

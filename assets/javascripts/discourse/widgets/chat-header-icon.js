@@ -62,10 +62,13 @@ export default createWidget("header-chat-link", {
       return;
     }
 
+    if (this.currentUser.chat_isolated) {
+      return window.open("/chat", "_blank").focus();
+    }
+
     if (
       this.site.mobileView ||
-      this.chat.getSidebarActive() ||
-      this.currentUser.chat_isolated
+      this.chat.getSidebarActive()
     ) {
       DiscourseURL.routeTo("/chat");
     } else {

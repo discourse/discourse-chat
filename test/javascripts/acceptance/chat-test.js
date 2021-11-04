@@ -155,14 +155,6 @@ acceptance("Discourse Chat - without unread", function (needs) {
     assert.equal(currentURL(), `/chat/channel/Site`);
   });
 
-  test("Clicking mention notification with `chat_isolated` takes user to full-page chat", async function (assert) {
-    updateCurrentUser({ chat_isolated: true });
-    await visit("/t/internationalization-localization/280");
-    await click(".header-dropdown-toggle.current-user");
-    await click("#quick-access-notifications .chat-mention");
-    assert.equal(currentURL(), `/chat/channel/Site`);
-  });
-
   test("Chat messages are populated when a channel is entered", async function (assert) {
     await visit("/chat/channel/Site");
     const messages = queryAll(".tc-message .tc-text");

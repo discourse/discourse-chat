@@ -1,4 +1,5 @@
 import DiscourseURL from "discourse/lib/url";
+import getURL from "discourse-common/lib/get-url";
 import { createWidget } from "discourse/widgets/widget";
 import { h } from "virtual-dom";
 import { iconNode } from "discourse-common/lib/icon-library";
@@ -53,7 +54,7 @@ export default createWidget("header-chat-link", {
   mouseDown(e) {
     if (e.which === 2) {
       // Middle mouse click
-      window.open("/chat", "_blank").focus();
+      window.open(getURL("/chat"), "_blank").focus();
     }
   },
 
@@ -62,10 +63,13 @@ export default createWidget("header-chat-link", {
       return;
     }
 
+    if (this.currentUser.chat_isolated) {
+      return window.open(getURL("/chat"), "_blank").focus();
+    }
+
     if (
       this.site.mobileView ||
-      this.chat.getSidebarActive() ||
-      this.currentUser.chat_isolated
+      this.chat.getSidebarActive()
     ) {
       DiscourseURL.routeTo("/chat");
     } else {

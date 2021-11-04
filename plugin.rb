@@ -85,6 +85,7 @@ after_initialize do
   Search.preloaded_topic_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
   UserUpdater::OPTION_ATTR.push(:chat_enabled)
   UserUpdater::OPTION_ATTR.push(:chat_isolated)
+  UserUpdater::OPTION_ATTR.push(:only_chat_push_notifications)
 
   on(:category_updated) do |category|
     next if !SiteSetting.topic_chat_enabled
@@ -186,6 +187,10 @@ after_initialize do
     object.chat_isolated
   end
 
+  add_to_serializer(:user_option, :only_chat_push_notifications) do
+    object.only_chat_push_notifications
+  end
+
   register_presence_channel_prefix("chat") do |channel|
     next nil unless channel == "/chat/online"
     config = PresenceChannel::Config.new
@@ -214,6 +219,18 @@ after_initialize do
     end
   rescue ActiveRecord::RecordNotFound
     nil
+  end
+
+  CHAT_NOTIFICATION_TYPES = [
+    Notification.types[:chat_mention],
+    Notification.types[:chat_message],
+  ]
+  register_push_notification_filter do |user, payload|
+    if user.user_option.only_chat_push_notifications && user.user_option.chat_enabled
+      CHAT_NOTIFICATION_TYPES.include?(payload[:notification_type])
+    else
+      true
+    end
   end
 
   DiscourseChat::Engine.routes.draw do
@@ -257,5 +274,6 @@ after_initialize do
     post '/admin/plugins/chat/hooks' => 'discourse_chat/admin_incoming_chat_webhooks#create', constraints: StaffConstraint.new
     put '/admin/plugins/chat/hooks/:incoming_chat_webhook_id' => 'discourse_chat/admin_incoming_chat_webhooks#update', constraints: StaffConstraint.new
     delete '/admin/plugins/chat/hooks/:incoming_chat_webhook_id' => 'discourse_chat/admin_incoming_chat_webhooks#destroy', constraints: StaffConstraint.new
+    get "u/:username/preferences/chat" => "users#preferences", constraints: { username: RouteFormat.username }
   end
 end

@@ -155,14 +155,6 @@ acceptance("Discourse Chat - without unread", function (needs) {
     assert.equal(currentURL(), `/chat/channel/Site`);
   });
 
-  test("Clicking mention notification with `chat_isolated` takes user to full-page chat", async function (assert) {
-    updateCurrentUser({ chat_isolated: true });
-    await visit("/t/internationalization-localization/280");
-    await click(".header-dropdown-toggle.current-user");
-    await click("#quick-access-notifications .chat-mention");
-    assert.equal(currentURL(), `/chat/channel/Site`);
-  });
-
   test("Chat messages are populated when a channel is entered", async function (assert) {
     await visit("/chat/channel/Site");
     const messages = queryAll(".tc-message .tc-text");
@@ -768,5 +760,46 @@ acceptance("Discourse Chat - chat channel settings", function (needs) {
       settingsRow.querySelector(".chat-channel-follow"),
       "Follow button is present"
     );
+  });
+});
+
+acceptance("Discourse Chat - chat preferences", function (needs) {
+  needs.user({
+    admin: false,
+    moderator: false,
+    username: "eviltrout",
+    id: 1,
+    can_chat: true,
+    has_chat_enabled: true,
+  });
+  needs.settings({
+    topic_chat_enabled: true,
+  });
+  needs.pretender((server, helper) => {
+    baseChatPretenders(server, helper);
+    siteChannelPretender(server, helper);
+    directMessageChannelPretender(server, helper);
+    chatChannelPretender(server, helper);
+  });
+
+  test("Chat preferences route takes user to homepage when can_chat is false", async function (assert) {
+    updateCurrentUser({ can_chat: false });
+    await visit("/u/eviltrout/preferences/chat");
+    assert.equal(currentURL(), "/latest");
+  });
+
+  test("There are all 4 settings shown when sidebar is active", async function (assert) {
+    this.container.lookup("service:chat").setSidebarActive(true);
+    await visit("/u/eviltrout/preferences/chat");
+    assert.equal(currentURL(), "/u/eviltrout/preferences/chat");
+    assert.equal(queryAll(".chat-setting input").length, 4);
+  });
+
+  test("The 4th setting is hidden when sidebar isn't active", async function (assert) {
+    await visit("/");
+    this.container.lookup("service:chat").setSidebarActive(false);
+    await visit("/u/eviltrout/preferences/chat");
+    assert.equal(currentURL(), "/u/eviltrout/preferences/chat");
+    assert.equal(queryAll(".chat-setting input").length, 3);
   });
 });

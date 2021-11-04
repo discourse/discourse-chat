@@ -79,6 +79,7 @@ class DiscourseChat::ChatMessageCreator
           translated_title: I18n.t("discourse_push_notifications.popup.chat_message",
                                    chat_channel_title: @chat_channel.title(membership.user)
                                   ),
+          tag: self.class.push_notification_tag(:message, @chat_channel),
           excerpt: chat_message.message[0..399]
         }
         if membership.desktop_notifications_always?
@@ -196,6 +197,7 @@ class DiscourseChat::ChatMessageCreator
       translated_title: I18n.t("discourse_push_notifications.popup.chat_mention",
                                username: mentioner_username
                               ),
+      tag: push_notification_tag(:mention, chat_channel),
       excerpt: chat_message.message[0..399],
       post_url: "/chat/channel/#{chat_channel.title(mentioned)}?messageId=#{chat_message.id}"
     }
@@ -209,5 +211,9 @@ class DiscourseChat::ChatMessageCreator
     unless membership.mobile_notifications_never?
       PostAlerter.push_notification(mentioned, payload)
     end
+  end
+
+  def self.push_notification_tag(type, chat_channel)
+    "#{Discourse.current_hostname}-chat-#{type}-#{chat_channel.id}"
   end
 end

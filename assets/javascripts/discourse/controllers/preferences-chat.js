@@ -6,7 +6,7 @@ import Controller from "@ember/controller";
 const chatAttrs = [
   "chat_enabled",
   "chat_isolated",
-  "only_chat_push_notifications"
+  "only_chat_push_notifications",
 ];
 export default Controller.extend({
   setMinimalChatView() {

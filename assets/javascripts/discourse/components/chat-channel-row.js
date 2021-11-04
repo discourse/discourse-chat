@@ -1,5 +1,6 @@
 import Component from "@ember/component";
 import discourseComputed from "discourse-common/utils/decorators";
+import getURL from "discourse-common/lib/get-url";
 import { equal } from "@ember/object/computed";
 import { inject as service } from "@ember/service";
 
@@ -31,7 +32,7 @@ export default Component.extend({
   mouseDown(e) {
     if (e.which === 2) {
       // Middle mouse click
-      window.open(`/chat/channel/${this.channel.title}`, "_blank").focus();
+      window.open(getURL(`/chat/channel/${this.channel.title}`), "_blank").focus();
     }
   },
 

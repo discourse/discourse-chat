@@ -32,7 +32,7 @@ en:
       mention_notification: "<span>%{username} mentioned you in chat</span>"
       minimal_view:
         title: "Minimal chat view"
-        description: "Hides all non-chat related sidebar items when on the chat page."
+        description: "Hides all non-chat related sidebar items when on the chat page. Applies only to the current browser."
       only_chat_push_notifications:
         title: "Only send chat push notifications"
         description: "Block all non-chat push notifications from being sent"

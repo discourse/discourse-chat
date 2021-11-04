@@ -23,11 +23,19 @@ en:
       flag: "Flag"
       invalid_access: "You don't have access to view this chat channel"
       in_reply_to: "In reply to"
-      isolate: "Isolate chat"
+      isolate:
+        title: "Isolate chat"
+        description: "Always open chat in a new tab"
       heading: "Chat"
       join_channel: "Join channel"
       new_messages: "new messages"
       mention_notification: "<span>%{username} mentioned you in chat</span>"
+      minimal_view:
+        title: "Minimal chat view"
+        description: "Hides all non-chat related sidebar items when on the chat page."
+      only_chat_push_notifications:
+        title: "Only send chat push notifications"
+        description: "Block all non-chat push notifications from being sent"
       open_full_page: "Open full-screen chat"
       open: "Open message in chat"
       placeholder: "chat..."

@@ -1,0 +1,46 @@
+<label class="control-label">{{i18n "chat.title_capitalized"}}</label>
+
+<div class="control-group chat-setting">
+  <label class="controls">
+    {{input
+      type="checkbox"
+      checked=model.user_option.chat_enabled
+    }}
+    {{i18n "chat.enable"}}
+  </label>
+</div>
+
+<div class="control-group chat-setting">
+  <label class="controls">
+    {{input
+      type="checkbox"
+      checked=model.user_option.only_chat_push_notifications
+    }}
+    {{i18n "chat.only_chat_push_notifications.title"}}
+  </label>
+  <span class="control-instructions">{{i18n "chat.only_chat_push_notifications.description"}}</span>
+</div>
+
+<div class="control-group chat-setting">
+  <label class="controls">
+    {{input
+      type="checkbox"
+      checked=model.user_option.chat_isolated
+    }}
+    {{i18n "chat.isolate.title"}}
+  </label>
+  <span class="control-instructions">{{i18n "chat.isolate.description"}}</span>
+</div>
+
+<div class="control-group chat-setting">
+  <label class="controls">
+    {{input
+      type="checkbox"
+      checked=model.minimalChatView
+    }}
+    {{i18n "chat.minimal_view.title"}}
+  </label>
+  <span class="control-instructions">{{i18n "chat.minimal_view.description"}}</span>
+</div>
+
+{{save-controls model=model action=(action "save") saved=saved}}

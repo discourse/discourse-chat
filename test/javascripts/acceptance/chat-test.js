@@ -770,3 +770,35 @@ acceptance("Discourse Chat - chat channel settings", function (needs) {
     );
   });
 });
+
+acceptance("Discourse Chat - chat preferences", function (needs) {
+  needs.user({
+    admin: false,
+    moderator: false,
+    username: "eviltrout",
+    id: 1,
+    can_chat: true,
+    has_chat_enabled: true,
+  });
+  needs.settings({
+    topic_chat_enabled: true,
+  });
+  needs.pretender((server, helper) => {
+    baseChatPretenders(server, helper);
+    siteChannelPretender(server, helper);
+    directMessageChannelPretender(server, helper);
+    chatChannelPretender(server, helper);
+  });
+
+  test("Chat preferences route takes user to homepage when can_chat is false", async function (assert) {
+    updateCurrentUser({ can_chat: false });
+    await visit("/u/eviltrout/preferences/chat");
+    assert.equal(currentURL(), "/latest");
+  });
+
+  test("Chat preferences route works when can_chat is true", async function (assert) {
+    await visit("/u/eviltrout/preferences/chat");
+    assert.equal(currentURL(), "/u/eviltrout/preferences/chat");
+    assert.equal(queryAll(".chat-setting input").length, 4);
+  });
+});

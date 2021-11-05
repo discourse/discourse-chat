@@ -77,7 +77,13 @@ export default Service.extend({
 
     this.forceRefreshChannels().then(() => {
       this.appEvents.trigger("chat:refresh-channels");
+
+      // Check if modal was opened from the chat index. If so and there is a newly tracked channel, navigate to it
+      if (modal.controller.openedOnRouteName === "chat.index" && modal.controller.newlyFollowedChannel) {
+        this.router.transitionTo("chat.channel", modal.controller.newlyFollowedChannel.title);
+      }
     });
+
   },
 
   _storeLastNonChatRouteInfo(data) {

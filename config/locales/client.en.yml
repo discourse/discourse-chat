@@ -25,10 +25,9 @@ en:
         create_personal_chat: "Create a personal chat"
         no_public_available: "There are no public channels available for you to follow at this time."
         public_available: "There are public channels available for you to follow."
-        to_get_started: "to get started."
         start_direct_message: "You don't need to follow a public channel to start chatting."
-
         title: "You are not following any chat channels"
+        to_get_started: "to get started."
       enable: "Enable chat"
       flag: "Flag"
       invalid_access: "You don't have access to view this chat channel"

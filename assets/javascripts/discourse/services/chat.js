@@ -77,7 +77,13 @@ export default Service.extend({
 
     this.forceRefreshChannels().then(() => {
       this.appEvents.trigger("chat:refresh-channels");
+
+      // Check if modal was opened from the chat index. If so and there is a newly tracked channel, navigate to it
+      if (modal.controller.openedOnRouteName === "chat.index" && modal.controller.newlyFollowedChannel) {
+        this.router.transitionTo("chat.channel", modal.controller.newlyFollowedChannel.title);
+      }
     });
+
   },
 
   _storeLastNonChatRouteInfo(data) {
@@ -257,6 +263,7 @@ export default Service.extend({
       let publicChannelId;
       let publicChannelIdWithMention;
       let dmChannelIdWithUnread;
+      let dmChannelId;
 
       for (const [channelId, state] of Object.entries(
         this.currentUser.chat_channel_tracking_state
@@ -264,6 +271,8 @@ export default Service.extend({
         if (state.chatable_type === "DirectMessageChannel") {
           if (!dmChannelIdWithUnread && state.unread_count > 0) {
             dmChannelIdWithUnread = channelId;
+          } else if (!dmChannelId) {
+            dmChannelId = channelId;
           }
         } else {
           if (!publicChannelIdWithMention && state.unread_mentions > 0) {
@@ -275,7 +284,7 @@ export default Service.extend({
         }
       }
       return (
-        publicChannelIdWithMention || dmChannelIdWithUnread || publicChannelId
+        publicChannelIdWithMention || dmChannelIdWithUnread || publicChannelId || dmChannelId
       );
     });
   },

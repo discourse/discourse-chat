@@ -1,5 +1,5 @@
 import Controller from "@ember/controller";
-import EmberObject from "@ember/object";
+import EmberObject, { action } from "@ember/object";
 import ModalFunctionality from "discourse/mixins/modal-functionality";
 import { ajax } from "discourse/lib/ajax";
 import { inject as service } from "@ember/service";
@@ -12,8 +12,9 @@ function convertToEmberObject(channel) {
   return channel;
 }
 export default Controller.extend(ModalFunctionality, {
-  loadingChannels: false,
   channels: null,
+  loadingChannels: false,
+  newlyFollowedChannel: null,
   router: service(),
 
   onShow() {
@@ -27,5 +28,10 @@ export default Controller.extend(ModalFunctionality, {
         loadingChannels: false,
       });
     });
+  },
+
+  @action
+  onFollowChannel(channel) {
+    this.set("newlyFollowedChannel", channel);
   },
 });

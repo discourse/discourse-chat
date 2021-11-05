@@ -18,6 +18,16 @@ export default Component.extend({
   toggleSection: null,
   chat: service(),
 
+  didInsertElement() {
+    this._super(...arguments);
+    this.appEvents.on("chat:start-new-dm", this, "startCreatingDmChannel");
+  },
+
+  willDestroyElement() {
+    this._super(...arguments);
+    this.appEvents.off("chat:start-new-dm", this, "startCreatingDmChannel");
+  },
+
   sortedDirectMessageChannels: computed(
     "directMessageChannels.@each.updated_at",
     function () {
@@ -44,8 +54,12 @@ export default Component.extend({
   startCreatingDmChannel() {
     this.set("creatingDmChannel", true);
     schedule("afterRender", () => {
+      if (!this.element || this.isDestroying || this.isDestroyed) {
+        return;
+      }
+
       const userChooser = this.element.querySelector(
-        ".dm-creation-row .dm-user-chooser .select-kit-header-wrapper"
+        ".dm-creation-row .dm-user-chooser .select-kit-header"
       );
       if (userChooser) {
         userChooser.click();

@@ -32,7 +32,9 @@ export default Component.extend({
   mouseDown(e) {
     if (e.which === 2) {
       // Middle mouse click
-      window.open(getURL(`/chat/channel/${this.channel.title}`), "_blank").focus();
+      window
+        .open(getURL(`/chat/channel/${this.channel.title}`), "_blank")
+        .focus();
     }
   },
 

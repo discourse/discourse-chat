@@ -21,6 +21,7 @@ export default Component.extend({
   channel: null,
   loading: false,
   showSaveSuccess: false,
+  onFollowChannel: null,
   notificationLevels: NOTIFICATION_LEVELS,
   mutedOptions: MUTED_OPTIONS,
   router: service(),
@@ -38,6 +39,7 @@ export default Component.extend({
           desktop_notification_level: membership.desktop_notification_level,
           mobile_notification_level: membership.mobile_notification_level,
         });
+        this.onFollowChannel(this.channel);
         this.set("loading", false);
       })
       .catch(popupAjaxError);

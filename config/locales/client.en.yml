@@ -19,6 +19,13 @@ en:
       disable: "Disable chat"
       edited: "(edited)"
       edit_channels: "Edit channels"
+      empty_state:
+        create_personal_chat: "Start a Personal Chat"
+        follow_channels: "Follow Channels"
+        no_public_available: "There are no public channels available for you to follow at this time."
+        public_available: "There are public channels available for you to follow."
+        start_direct_message: "You can also start a personal chat with one or more users."
+        title: "You are not following any chat channels"
       enable: "Enable chat"
       flag: "Flag"
       invalid_access: "You don't have access to view this chat channel"

@@ -13,6 +13,7 @@ export default DiscourseRoute.extend({
   },
 
   beforeModel(params) {
+    this.set("foundChannel", false);
     if (
       !this.currentUser?.has_chat_enabled ||
       !this.siteSettings.topic_chat_enabled

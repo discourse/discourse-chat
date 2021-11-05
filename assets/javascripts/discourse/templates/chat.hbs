@@ -1,8 +1,22 @@
 {{#if blankPage}}
-  {{#if hasAvailableChannel}}
-    AVAILABLE
-  {{else}}
-    NOT AVBAIL
-  {{/if}}
+  <div class="empty-state">
+    <span class="empty-state-title">{{i18n "chat.empty_state.title"}}</span>
+    <div class="empty-state-body">
+      <p>
+        {{#if hasAvailableChannel}}
+          {{i18n "chat.empty_state.public_available"}}
+          <a href {{action "openFollowModal"}}>{{i18n "chat.empty_state.click_here"}}</a>
+          {{i18n "chat.empty_state.to_get_started"}}
+        {{else}}
+          {{i18n "chat.empty_state.no_public_available"}}
+        {{/if}}
+      </p>
+      <p>
+        {{i18n "chat.empty_state.start_direct_message"}}
+        <a href {{action "startCreatingDm"}}>{{i18n "chat.empty_state.create_personal_chat"}}</a>
+        {{i18n "chat.empty_state.between_users"}}
+      </p>
+    </div>
+  </div>
 {{/if}}
 {{outlet}}

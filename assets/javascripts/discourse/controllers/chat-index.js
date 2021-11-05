@@ -9,7 +9,7 @@ export default Controller.extend({
   },
 
   @action
-  startCreatingDm(e) {
+  startCreatingDm() {
     this.appEvents.trigger("chat:start-new-dm");
     return false;
   },

@@ -348,6 +348,7 @@ $float-height: 530px;
     padding: 0.25em 0.5em 0.25em 0.75em;
     background-color: var(--secondary);
     display: flex;
+    min-width: 0;
 
     &.tc-action {
       background-color: var(--highlight-medium);
@@ -431,9 +432,8 @@ $float-height: 530px;
         max-width: 100%;
         height: unset;
       }
-      pre {
-        width: 90%;
-        overflow: scroll;
+      code {
+        font-size: var(--font-down-1);
       }
       > p {
         margin: 0;

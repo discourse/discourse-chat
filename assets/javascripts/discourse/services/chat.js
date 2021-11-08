@@ -265,7 +265,11 @@ export default Service.extend({
     // Next best is a public channel with unread messages.
     return this.getChannels().then(() => {
       // Defined in order of significance.
-      let publicChannelWithMention, dmChannelWithUnread, publicChannelWithUnread, publicChannel, dmChannel;
+      let publicChannelWithMention,
+        dmChannelWithUnread,
+        publicChannelWithUnread,
+        publicChannel,
+        dmChannel;
 
       for (const [channel, state] of Object.entries(
         this.currentUser.chat_channel_tracking_state
@@ -283,7 +287,7 @@ export default Service.extend({
           } else if (!publicChannelWithUnread && state.unread_count > 0) {
             publicChannelWithUnread = channel;
           } else if (!publicChannel) {
-            publicChannel = channel
+            publicChannel = channel;
           }
         }
       }

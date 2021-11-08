@@ -1,5 +1,4 @@
 import EmberObject from "@ember/object";
-import optionalService from "discourse/lib/optional-service";
 import Service, { inject as service } from "@ember/service";
 import Site from "discourse/models/site";
 import { addChatToolbarButton } from "discourse/plugins/discourse-topic-chat/discourse/components/chat-composer";

@@ -2,7 +2,6 @@ import Component from "@ember/component";
 import discourseComputed from "discourse-common/utils/decorators";
 import showModal from "discourse/lib/show-modal";
 import { action, computed } from "@ember/object";
-import { ajax } from "discourse/lib/ajax";
 import { schedule } from "@ember/runloop";
 import { inject as service } from "@ember/service";
 

@@ -282,6 +282,7 @@ $float-height: 530px;
   align-items: center;
   margin: 0 0.5em;
   justify-content: space-between;
+  max-width: 400px;
 
   .dm-user-chooser {
     width: calc(100% - 90px);

@@ -79,11 +79,16 @@ export default Service.extend({
       this.appEvents.trigger("chat:refresh-channels");
 
       // Check if modal was opened from the chat index. If so and there is a newly tracked channel, navigate to it
-      if (modal.controller.openedOnRouteName === "chat.index" && modal.controller.newlyFollowedChannel) {
-        this.router.transitionTo("chat.channel", modal.controller.newlyFollowedChannel.title);
+      if (
+        modal.controller.openedOnRouteName === "chat.index" &&
+        modal.controller.newlyFollowedChannel
+      ) {
+        this.router.transitionTo(
+          "chat.channel",
+          modal.controller.newlyFollowedChannel.title
+        );
       }
     });
-
   },
 
   _storeLastNonChatRouteInfo(data) {
@@ -258,33 +263,40 @@ export default Service.extend({
     // Look for public channels with mentions. If one exists, enter that.
     // Next best is a DM channel with unread messages.
     // Next best is a public channel with unread messages.
-    // If there is no ideal channel ID, return null and handle the fallback in the consumer.
     return this.getChannels().then(() => {
-      let publicChannelId;
-      let publicChannelIdWithMention;
-      let dmChannelIdWithUnread;
-      let dmChannelId;
+      // Defined in order of significance.
+      let publicChannelWithMention,
+        dmChannelWithUnread,
+        publicChannelWithUnread,
+        publicChannel,
+        dmChannel;
 
-      for (const [channelId, state] of Object.entries(
+      for (const [channel, state] of Object.entries(
         this.currentUser.chat_channel_tracking_state
       )) {
         if (state.chatable_type === "DirectMessageChannel") {
-          if (!dmChannelIdWithUnread && state.unread_count > 0) {
-            dmChannelIdWithUnread = channelId;
-          } else if (!dmChannelId) {
-            dmChannelId = channelId;
+          if (!dmChannelWithUnread && state.unread_count > 0) {
+            dmChannelWithUnread = channel;
+          } else if (!dmChannel) {
+            dmChannel = channel;
           }
         } else {
-          if (!publicChannelIdWithMention && state.unread_mentions > 0) {
-            publicChannelIdWithMention = channelId;
+          if (!publicChannelWithMention && state.unread_mentions > 0) {
+            publicChannelWithMention = channel;
             break; // <- We have a public channel with a mention. Break and return this.
-          } else if (!publicChannelId && state.unread_count > 0) {
-            publicChannelId = channelId;
+          } else if (!publicChannelWithUnread && state.unread_count > 0) {
+            publicChannelWithUnread = channel;
+          } else if (!publicChannel) {
+            publicChannel = channel;
           }
         }
       }
       return (
-        publicChannelIdWithMention || dmChannelIdWithUnread || publicChannelId || dmChannelId
+        publicChannelWithMention ||
+        dmChannelWithUnread ||
+        publicChannelWithUnread ||
+        publicChannel ||
+        dmChannel
       );
     });
   },
@@ -344,6 +356,9 @@ export default Service.extend({
 
   _subscribeToNewDmChannelUpdates() {
     this.messageBus.subscribe("/chat/new-direct-message-channel", (busData) => {
+      if (this.directMessageChannels.findBy("id", busData.chat_channel.id)) {
+        return; // User is already tracking this channel. return!
+      }
       this.directMessageChannels.pushObject(
         this.processChannel(busData.chat_channel)
       );

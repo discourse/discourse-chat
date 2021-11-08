@@ -46,7 +46,7 @@
     {{i18n "chat.direct_messages.title"}}
     {{#unless creatingDmChannel}}
       {{flat-button
-        class="new-dm"
+        class="new-dm keep-mobile-sidebar-open"
         icon="plus"
         action=(action "startCreatingDmChannel")
         title="chat.direct_messages.new"
@@ -54,29 +54,10 @@
     {{/unless}}
   </div>
   {{#if creatingDmChannel}}
-    <div class="dm-creation-row">
-      {{user-chooser
-        class="dm-user-chooser"
-        value=newDmUsernames
-        onChange=(action "onChangeNewDmUsernames")
-        options=(hash
-          excludeCurrentUser=true
-        )
-      }}
-      {{d-button
-        class="create-dm btn-primary"
-        disabled=newDmUsernamesEmpty
-        label="chat.direct_messages.create"
-        action=(action "createDmChannel")
-        title="chat.direct_messages.create"
-      }}
-      {{d-button
-        class="create-dm"
-        icon="times"
-        action=(action "resetDmCreation")
-        title="chat.cancel"
-      }}
-    </div>
+    {{dm-creator
+      afterCreate=(action "afterDmCreation")
+      onCancel=(action "cancelDmCreation")
+    }}
   {{/if}}
 
   <div id="direct-message-channels" class={{directMessageChannelClasses}}>

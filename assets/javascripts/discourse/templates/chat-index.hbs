@@ -13,10 +13,17 @@
     {{/if}}
     <hr>
     <p>{{i18n "chat.empty_state.start_direct_message"}}</p>
-    {{d-button
-      class="btn-primary"
-      action=(action "startCreatingDm")
-      label="chat.empty_state.create_personal_chat"
-    }}
+    {{#if creatingDm}}
+      {{dm-creator
+        afterCreate=(action "afterDmCreation")
+        onCancel=(action "cancelDmCreation")
+      }}
+    {{else}}
+      {{d-button
+        class="btn-primary"
+        action=(action "startCreatingDm")
+        label="chat.empty_state.create_personal_chat"
+      }}
+    {{/if}}
   </div>
 </div>

@@ -1,4 +1,5 @@
 import EmberObject from "@ember/object";
+import optionalService from "discourse/lib/optional-service";
 import Service, { inject as service } from "@ember/service";
 import Site from "discourse/models/site";
 import { addChatToolbarButton } from "discourse/plugins/discourse-topic-chat/discourse/components/chat-composer";
@@ -25,6 +26,7 @@ export default Service.extend({
   lastNonChatRoute: null,
   lastUserTrackingMessageId: null,
   messageId: null,
+  mobileSidebar: optionalService(),
   presence: service(),
   presenceChannel: null,
   publicChannels: null,
@@ -43,6 +45,11 @@ export default Service.extend({
       this.presenceChannel = this.presence.getChannel("/chat/online");
       this.appEvents.on("page:changed", this, "_storeLastNonChatRouteInfo");
       this.appEvents.on("modal:closed", this, "_onSettingsModalClosed");
+
+      if (this.mobileSidebar) {
+        this.mobileSidebar.addIgnoredMobileCollapseSelector(".new-dm");
+        this.mobileSidebar.addIgnoredMobileCollapseSelector(".dm-creation-row");
+      }
     }
   },
 
@@ -79,11 +86,16 @@ export default Service.extend({
       this.appEvents.trigger("chat:refresh-channels");
 
       // Check if modal was opened from the chat index. If so and there is a newly tracked channel, navigate to it
-      if (modal.controller.openedOnRouteName === "chat.index" && modal.controller.newlyFollowedChannel) {
-        this.router.transitionTo("chat.channel", modal.controller.newlyFollowedChannel.title);
+      if (
+        modal.controller.openedOnRouteName === "chat.index" &&
+        modal.controller.newlyFollowedChannel
+      ) {
+        this.router.transitionTo(
+          "chat.channel",
+          modal.controller.newlyFollowedChannel.title
+        );
       }
     });
-
   },
 
   _storeLastNonChatRouteInfo(data) {
@@ -284,7 +296,10 @@ export default Service.extend({
         }
       }
       return (
-        publicChannelIdWithMention || dmChannelIdWithUnread || publicChannelId || dmChannelId
+        publicChannelIdWithMention ||
+        dmChannelIdWithUnread ||
+        publicChannelId ||
+        dmChannelId
       );
     });
   },
@@ -344,6 +359,9 @@ export default Service.extend({
 
   _subscribeToNewDmChannelUpdates() {
     this.messageBus.subscribe("/chat/new-direct-message-channel", (busData) => {
+      if (this.directMessageChannels.findBy("id", busData.chat_channel.id)) {
+        return; // User is already tracking this channel. return!
+      }
       this.directMessageChannels.pushObject(
         this.processChannel(busData.chat_channel)
       );

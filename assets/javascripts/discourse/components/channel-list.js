@@ -3,7 +3,6 @@ import discourseComputed from "discourse-common/utils/decorators";
 import showModal from "discourse/lib/show-modal";
 import { action, computed } from "@ember/object";
 import { ajax } from "discourse/lib/ajax";
-import { empty } from "@ember/object/computed";
 import { schedule } from "@ember/runloop";
 import { inject as service } from "@ember/service";
 
@@ -12,8 +11,6 @@ export default Component.extend({
   publicChannels: null,
   directMessageChannels: null,
   creatingDmChannel: false,
-  newDmUsernames: null,
-  newDmUsernamesEmpty: empty("newDmUsernames"),
   inSidebar: false,
   toggleSection: null,
   chat: service(),
@@ -68,31 +65,14 @@ export default Component.extend({
   },
 
   @action
-  onChangeNewDmUsernames(usernames) {
-    this.set("newDmUsernames", usernames);
+  afterDmCreation(chatChannel) {
+    this.cancelDmCreation();
+    this.onSelect(chatChannel);
   },
 
   @action
-  createDmChannel() {
-    if (this.newDmUsernamesEmpty) {
-      return;
-    }
-
-    return ajax("/chat/direct_messages/create.json", {
-      method: "POST",
-      data: { usernames: this.newDmUsernames.uniq().join(",") },
-    }).then((response) => {
-      this.resetDmCreation();
-      this.onSelect(response.chat_channel);
-    });
-  },
-
-  @action
-  resetDmCreation() {
-    this.setProperties({
-      newDmUsernames: null,
-      creatingDmChannel: false,
-    });
+  cancelDmCreation() {
+    this.set("creatingDmChannel", false);
   },
 
   @action

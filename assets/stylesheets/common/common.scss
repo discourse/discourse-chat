@@ -265,23 +265,26 @@ $float-height: 530px;
 .tc-channels {
   overflow-y: auto;
   height: calc(#{$float-height} - #{$header-height});
-
-  .dm-creation-row {
-    display: flex;
-    align-items: center;
-    margin: 0 0.5em;
-    justify-content: space-between;
-
-    .dm-user-chooser {
-      width: calc(100% - 75px);
-    }
-  }
   .chat-channel-divider {
     font-weight: bold;
     padding: 0.5em;
     text-transform: uppercase;
     font-family: var(--heading-font-family);
     font-size: 13px;
+  }
+  .dm-creation-row .dm-user-chooser {
+    width: calc(100% - 75px);
+  }
+}
+
+.dm-creation-row {
+  display: flex;
+  align-items: center;
+  margin: 0 0.5em;
+  justify-content: space-between;
+
+  .dm-user-chooser {
+    width: calc(100% - 90px);
   }
 }
 
@@ -937,7 +940,7 @@ $float-height: 530px;
   .tc-channels {
     color: var(--primary);
     font-size: var(--font-down-1);
-    height: unset;
+    // height: unset;
     padding-bottom: 2em;
     width: 100%;
     overflow-x: hidden;

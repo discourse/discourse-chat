@@ -1,0 +1,23 @@
+<div class="dm-creation-row">
+  {{user-chooser
+    class="dm-user-chooser"
+    value=usernames
+    onChange=(action "onUsernamesChange")
+    options=(hash
+      excludeCurrentUser=true
+    )
+  }}
+  {{d-button
+    class="create-dm btn-primary"
+    disabled=usernamesEmpty
+    label="chat.direct_messages.create"
+    action=(action "createDmChannel")
+    title="chat.direct_messages.create"
+  }}
+  {{d-button
+    class="create-dm"
+    icon="times"
+    action=(action "cancel")
+    title="chat.cancel"
+  }}
+</div>

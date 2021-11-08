@@ -26,7 +26,6 @@ export default Service.extend({
   lastNonChatRoute: null,
   lastUserTrackingMessageId: null,
   messageId: null,
-  mobileSidebar: optionalService(),
   presence: service(),
   presenceChannel: null,
   publicChannels: null,
@@ -45,11 +44,6 @@ export default Service.extend({
       this.presenceChannel = this.presence.getChannel("/chat/online");
       this.appEvents.on("page:changed", this, "_storeLastNonChatRouteInfo");
       this.appEvents.on("modal:closed", this, "_onSettingsModalClosed");
-
-      if (this.mobileSidebar) {
-        this.mobileSidebar.addIgnoredMobileCollapseSelector(".new-dm");
-        this.mobileSidebar.addIgnoredMobileCollapseSelector(".dm-creation-row");
-      }
     }
   },
 
@@ -270,36 +264,36 @@ export default Service.extend({
     // Look for public channels with mentions. If one exists, enter that.
     // Next best is a DM channel with unread messages.
     // Next best is a public channel with unread messages.
-    // If there is no ideal channel ID, return null and handle the fallback in the consumer.
     return this.getChannels().then(() => {
-      let publicChannelId;
-      let publicChannelIdWithMention;
-      let dmChannelIdWithUnread;
-      let dmChannelId;
+      // Defined in order of significance.
+      let publicChannelWithMention, dmChannelWithUnread, publicChannelWithUnread, publicChannel, dmChannel;
 
-      for (const [channelId, state] of Object.entries(
+      for (const [channel, state] of Object.entries(
         this.currentUser.chat_channel_tracking_state
       )) {
         if (state.chatable_type === "DirectMessageChannel") {
-          if (!dmChannelIdWithUnread && state.unread_count > 0) {
-            dmChannelIdWithUnread = channelId;
-          } else if (!dmChannelId) {
-            dmChannelId = channelId;
+          if (!dmChannelWithUnread && state.unread_count > 0) {
+            dmChannelWithUnread = channel;
+          } else if (!dmChannel) {
+            dmChannel = channel;
           }
         } else {
-          if (!publicChannelIdWithMention && state.unread_mentions > 0) {
-            publicChannelIdWithMention = channelId;
+          if (!publicChannelWithMention && state.unread_mentions > 0) {
+            publicChannelWithMention = channel;
             break; // <- We have a public channel with a mention. Break and return this.
-          } else if (!publicChannelId && state.unread_count > 0) {
-            publicChannelId = channelId;
+          } else if (!publicChannelWithUnread && state.unread_count > 0) {
+            publicChannelWithUnread = channel;
+          } else if (!publicChannel) {
+            publicChannel = channel
           }
         }
       }
       return (
-        publicChannelIdWithMention ||
-        dmChannelIdWithUnread ||
-        publicChannelId ||
-        dmChannelId
+        publicChannelWithMention ||
+        dmChannelWithUnread ||
+        publicChannelWithUnread ||
+        publicChannel ||
+        dmChannel
       );
     });
   },

@@ -1252,13 +1252,13 @@ $float-height: 530px;
 
 .has-full-page-chat .tc-message .onebox,
 .topic-chat-float-container .tc-message .onebox {
-  width: 75%;
   margin: 0.5em 0;
   border-width: 2px;
   .onebox-body {
     display: grid;
     grid-template-rows: auto auto auto;
     grid-template-areas: "link" "description" "image";
+    overflow: auto;
   }
   header {
     margin-bottom: 0.5em;
@@ -1294,11 +1294,13 @@ $float-height: 530px;
 .topic-chat-float-container .tc-message .onebox {
   width: 85%;
   border: 2px solid var(--primary-low);
+
   header {
     margin-bottom: 0.5em;
   }
   .onebox-body {
     grid-template-rows: auto auto auto;
+    overflow: auto;
   }
   h3 {
     display: -webkit-box;

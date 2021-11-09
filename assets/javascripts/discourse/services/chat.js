@@ -358,6 +358,9 @@ export default Service.extend({
   },
 
   addDirectMessageChannel(channel) {
+    if (this.directMessageChannels.findBy("id", channel.id)) {
+      return; // User is already tracking this channel. return!
+    }
     this.directMessageChannels.pushObject(this.processChannel(channel));
     this.currentUser.chat_channel_tracking_state[channel.id] = {
       unread_count: 0,
@@ -369,9 +372,6 @@ export default Service.extend({
 
   _subscribeToNewDmChannelUpdates() {
     this.messageBus.subscribe("/chat/new-direct-message-channel", (busData) => {
-      if (this.directMessageChannels.findBy("id", busData.chat_channel.id)) {
-        return; // User is already tracking this channel. return!
-      }
       this.addDirectMessageChannel(busData.chat_channel);
     });
   },

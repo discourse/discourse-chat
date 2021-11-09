@@ -709,7 +709,7 @@ acceptance(
       });
     });
 
-    test("creating a new direct message channel adds the channel to the list", async function (assert) {
+    test("creating a new direct message channel works", async function (assert) {
       await visit("/chat/channel/Site");
       await click(".new-dm");
       let users = selectKit(".dm-user-chooser");

@@ -6,6 +6,7 @@ import { ajax } from "discourse/lib/ajax";
 import { A } from "@ember/array";
 import { defaultHomepage } from "discourse/lib/utilities";
 import { generateCookFunction } from "discourse/lib/text";
+import { next } from "@ember/runloop";
 import { Promise } from "rsvp";
 import simpleCategoryHashMentionTransform from "discourse/plugins/discourse-topic-chat/discourse/lib/simple-category-hash-mention-transform";
 
@@ -162,11 +163,13 @@ export default Service.extend({
   },
 
   _updatePresence() {
-    if (this.fullScreenChatOpen || this.chatOpen) {
-      this.presenceChannel.enter();
-    } else {
-      this.presenceChannel.leave();
-    }
+    next(() => {
+      if (this.fullScreenChatOpen || this.chatOpen) {
+        this.presenceChannel.enter();
+      } else {
+        this.presenceChannel.leave();
+      }
+    });
   },
 
   setHasUnreadMessages(value) {
@@ -355,9 +358,7 @@ export default Service.extend({
   },
 
   addDirectMessageChannel(channel) {
-    this.directMessageChannels.pushObject(
-      this.processChannel(channel)
-    );
+    this.directMessageChannels.pushObject(this.processChannel(channel));
     this.currentUser.chat_channel_tracking_state[channel.id] = {
       unread_count: 0,
       unread_mentions: 0,

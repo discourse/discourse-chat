@@ -8,6 +8,7 @@ RSpec.describe DiscourseChat::ChatController do
   fab!(:admin) { Fabricate(:admin) }
   fab!(:category) { Fabricate(:category) }
   fab!(:topic) { Fabricate(:topic, category: category) }
+  fab!(:tag) { Fabricate(:tag) }
 
   before do
     SiteSetting.topic_chat_enabled = true
@@ -66,63 +67,87 @@ RSpec.describe DiscourseChat::ChatController do
   end
 
   describe "#enable_chat" do
-    it "errors for non-staff" do
-      sign_in(user)
-      Fabricate(:chat_channel, chatable: topic)
-      post "/chat/enable.json", params: { chatable_type: "topic", chatable_id: topic.id }
-      expect(response.status).to eq(403)
+    describe "for topic" do
+      it "errors for non-staff" do
+        sign_in(user)
+        Fabricate(:chat_channel, chatable: topic)
+        post "/chat/enable.json", params: { chatable_type: "topic", chatable_id: topic.id }
+        expect(response.status).to eq(403)
 
-      expect(topic.reload.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]).to eq(nil)
+        expect(topic.reload.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]).to eq(nil)
+      end
+
+      it "Returns a 422 when chat is already enabled" do
+        sign_in(admin)
+        Fabricate(:chat_channel, chatable: topic)
+        post "/chat/enable.json", params: { chatable_type: "topic", chatable_id: topic.id }
+        expect(response.status).to eq(422)
+
+        expect(topic.reload.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]).to eq(nil)
+      end
+
+      it "Enables chat" do
+        sign_in(admin)
+        post "/chat/enable.json", params: { chatable_type: "topic", chatable_id: topic.id }
+        expect(response.status).to eq(200)
+        expect(topic.chat_channel).to be_present
+
+        expect(topic.reload.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]).to eq(true)
+      end
     end
 
-    it "Returns a 422 when chat is already enabled" do
-      sign_in(admin)
-      Fabricate(:chat_channel, chatable: topic)
-      post "/chat/enable.json", params: { chatable_type: "topic", chatable_id: topic.id }
-      expect(response.status).to eq(422)
-
-      expect(topic.reload.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]).to eq(nil)
-    end
-
-    it "Enables chat" do
-      sign_in(admin)
-      post "/chat/enable.json", params: { chatable_type: "topic", chatable_id: topic.id }
-      expect(response.status).to eq(200)
-      expect(topic.chat_channel).to be_present
-
-      expect(topic.reload.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]).to eq(true)
+    describe "for tag" do
+      it "enables chat" do
+        sign_in(admin)
+        post "/chat/enable.json", params: { chatable_type: "tag", chatable_id: tag.id }
+        expect(response.status).to eq(200)
+        expect(ChatChannel.where(chatable: tag)).to be_present
+      end
     end
   end
 
   describe "#disable_chat" do
-    it "errors for non-staff" do
-      sign_in(user)
-      Fabricate(:chat_channel, chatable: topic)
+    describe "for topic" do
+      it "errors for non-staff" do
+        sign_in(user)
+        Fabricate(:chat_channel, chatable: topic)
 
-      post "/chat/disable.json", params: { chatable_type: "topic", chatable_id: topic.id }
-      expect(response.status).to eq(403)
+        post "/chat/disable.json", params: { chatable_type: "topic", chatable_id: topic.id }
+        expect(response.status).to eq(403)
+      end
+
+      it "Returns a 200 and does nothing when chat is already disabled" do
+        sign_in(admin)
+        chat_channel = Fabricate(:chat_channel, chatable: topic)
+        chat_channel.update(deleted_at: Time.now, deleted_by_id: admin.id)
+
+        post "/chat/disable.json", params: { chatable_type: "topic", chatable_id: topic.id }
+        expect(response.status).to eq(200)
+        expect(chat_channel.reload.deleted_at).not_to be_nil
+      end
+
+      it "disables chat" do
+        sign_in(admin)
+        chat_channel = Fabricate(:chat_channel, chatable: topic)
+
+        topic.custom_fields[DiscourseChat::HAS_CHAT_ENABLED] = true
+        topic.save!
+
+        post "/chat/disable.json", params: { chatable_type: "topic", chatable_id: topic.id }
+        expect(response.status).to eq(200)
+        expect(chat_channel.reload.deleted_by_id).to eq(admin.id)
+        expect(topic.reload.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]).to eq(nil)
+      end
     end
 
-    it "Returns a 422 when chat is already disabled" do
-      sign_in(admin)
-      chat_channel = Fabricate(:chat_channel, chatable: topic)
-      chat_channel.update(deleted_at: Time.now, deleted_by_id: admin.id)
-
-      post "/chat/disable.json", params: { chatable_type: "topic", chatable_id: topic.id }
-      expect(response.status).to eq(422)
-    end
-
-    it "disables chat" do
-      sign_in(admin)
-      chat_channel = Fabricate(:chat_channel, chatable: topic)
-
-      topic.custom_fields[DiscourseChat::HAS_CHAT_ENABLED] = true
-      topic.save!
-
-      post "/chat/disable.json", params: { chatable_type: "topic", chatable_id: topic.id }
-      expect(response.status).to eq(200)
-      expect(chat_channel.reload.deleted_by_id).to eq(admin.id)
-      expect(topic.reload.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]).to eq(nil)
+    describe "for tag" do
+      it "disables chat" do
+        sign_in(admin)
+        chat_channel = Fabricate(:chat_channel, chatable: tag)
+        post "/chat/disable.json", params: { chatable_type: "tag", chatable_id: tag.id }
+        expect(response.status).to eq(200)
+        expect(chat_channel.reload.deleted_by_id).to eq(admin.id)
+      end
     end
   end
 

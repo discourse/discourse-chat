@@ -10,6 +10,7 @@ RSpec.describe DiscourseChat::ChatChannelsController do
   fab!(:topic) { Fabricate(:topic, category: category) }
   fab!(:chat_channel) { Fabricate(:chat_channel, chatable: topic) }
   fab!(:dm_chat_channel) { Fabricate(:chat_channel, chatable: Fabricate(:direct_message_channel, users: [user, admin])) }
+  fab!(:tag_channel) { Fabricate(:chat_channel, chatable: Fabricate(:tag))}
 
   before do
     SiteSetting.topic_chat_enabled = true
@@ -66,7 +67,7 @@ RSpec.describe DiscourseChat::ChatChannelsController do
 
         expect(response.status).to eq(200)
         expect(response.parsed_body["public_channels"].map { |channel| channel["chatable_id"] })
-          .to match_array([public_category_cc.chatable_id, one_off_cc.chatable_id])
+          .to match_array([public_category_cc.chatable_id, one_off_cc.chatable_id, tag_channel.chatable_id])
 
         expect(response.parsed_body["public_channels"].detect { |channel| channel["id"] == public_category_cc.id }["chat_channels"].first["chatable_id"]).to eq(public_topic_cc.chatable_id)
       end
@@ -80,7 +81,8 @@ RSpec.describe DiscourseChat::ChatChannelsController do
           .to match_array([
             public_category_cc.chatable_id,
             one_off_cc.chatable_id,
-            private_category_cc.chatable_id
+            private_category_cc.chatable_id,
+            tag_channel.chatable_id
           ])
 
         expect(response.parsed_body["public_channels"].detect { |channel| channel["id"] == public_category_cc.id }["chat_channels"].first["chatable_id"]).to eq(public_topic_cc.chatable_id)
@@ -97,7 +99,8 @@ RSpec.describe DiscourseChat::ChatChannelsController do
             DiscourseChat::SITE_CHAT_ID,
             public_category_cc.chatable_id,
             private_category_cc.chatable_id,
-            one_off_cc.chatable_id
+            one_off_cc.chatable_id,
+            tag_channel.chatable_id
           ])
 
         expect(response.parsed_body["public_channels"].detect { |channel| channel["id"] == public_category_cc.id }["chat_channels"].first["chatable_id"]).to eq(public_topic_cc.chatable_id)

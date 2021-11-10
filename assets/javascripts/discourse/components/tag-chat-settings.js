@@ -10,18 +10,17 @@ export default Component.extend({
   @action
   toggleChatEnabled() {
     this.set("loading", true);
-    const action = this.tag.chat_enabled ? "disable" : "enable";
-    return ajax(`/chat/${action}`, {
+    return ajax(`/chat/${this.tag.chat_enabled ? "disable" : "enable"}`, {
       type: "POST",
       data: {
         chatable_type: "tag",
         chatable_id: this.tag.id,
       },
     })
-    .then(() => {
-      this.tag.set("chat_enabled", !this.tag.chat_enabled);
-    })
-    .catch(popupAjaxError)
-    .finally(() => this.set("loading", false));
+      .then(() => {
+        this.tag.set("chat_enabled", !this.tag.chat_enabled);
+      })
+      .catch(popupAjaxError)
+      .finally(() => this.set("loading", false));
   },
-})
+});

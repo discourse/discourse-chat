@@ -10,11 +10,11 @@ RSpec.describe DiscourseChat::ChatChannelsController do
   fab!(:topic) { Fabricate(:topic, category: category) }
   fab!(:chat_channel) { Fabricate(:chat_channel, chatable: topic) }
   fab!(:dm_chat_channel) { Fabricate(:chat_channel, chatable: Fabricate(:direct_message_channel, users: [user, admin])) }
-  fab!(:tag_channel) { Fabricate(:chat_channel, chatable: Fabricate(:tag))}
+  fab!(:tag_channel) { Fabricate(:chat_channel, chatable: Fabricate(:tag)) }
 
   fab!(:staff_tag) { Fabricate(:tag) }
   let!(:staff_tag_group) { Fabricate(:tag_group, permissions: { "staff" => 1 }, tag_names: [staff_tag.name]) }
-  fab!(:staff_tag_channel) { Fabricate(:chat_channel, chatable: staff_tag)}
+  fab!(:staff_tag_channel) { Fabricate(:chat_channel, chatable: staff_tag) }
 
   before do
     SiteSetting.topic_chat_enabled = true

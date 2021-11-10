@@ -12,6 +12,10 @@ RSpec.describe DiscourseChat::ChatChannelsController do
   fab!(:dm_chat_channel) { Fabricate(:chat_channel, chatable: Fabricate(:direct_message_channel, users: [user, admin])) }
   fab!(:tag_channel) { Fabricate(:chat_channel, chatable: Fabricate(:tag))}
 
+  fab!(:staff_tag) { Fabricate(:tag) }
+  let!(:staff_tag_group) { Fabricate(:tag_group, permissions: { "staff" => 1 }, tag_names: [staff_tag.name]) }
+  fab!(:staff_tag_channel) { Fabricate(:chat_channel, chatable: staff_tag)}
+
   before do
     SiteSetting.topic_chat_enabled = true
     SiteSetting.topic_chat_allowed_groups = Group::AUTO_GROUPS[:everyone]
@@ -100,7 +104,8 @@ RSpec.describe DiscourseChat::ChatChannelsController do
             public_category_cc.chatable_id,
             private_category_cc.chatable_id,
             one_off_cc.chatable_id,
-            tag_channel.chatable_id
+            tag_channel.chatable_id,
+            staff_tag_channel.chatable_id
           ])
 
         expect(response.parsed_body["public_channels"].detect { |channel| channel["id"] == public_category_cc.id }["chat_channels"].first["chatable_id"]).to eq(public_topic_cc.chatable_id)

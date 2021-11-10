@@ -24,7 +24,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     end
 
     success = chat_channel.save
-    if success
+    if success && chat_channel.chatable_has_custom_fields?
       @chatable.custom_fields[DiscourseChat::HAS_CHAT_ENABLED] = true
       @chatable.save!
 
@@ -36,12 +36,12 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
   def disable_chat
     chat_channel = ChatChannel.with_deleted.find_by(chatable: @chatable)
     if chat_channel.trashed?
-      return render_json_error I18n.t("chat.already_disabled")
+      return render json: success_json
     end
     chat_channel.trash!(current_user)
 
     success = chat_channel.save
-    if success &&
+    if success && chat_channel.chatable_has_custom_fields?
       @chatable.custom_fields.delete(DiscourseChat::HAS_CHAT_ENABLED)
       @chatable.save!
 
@@ -252,9 +252,12 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
   end
 
   def find_chatable
-    @chatable = params[:chatable_type].downcase == "topic" ?
-      Topic.find(params[:chatable_id]) :
-      Category.find(params[:chatable_id])
+    chatable_class = case params[:chatable_type].downcase
+      when "topic" then Topic
+      when "category" then Category
+      when "tag" then Tag
+    end
+    @chatable = chatable_class.find_by(id: params[:chatable_id])
 
     guardian.ensure_can_see!(@chatable)
     guardian.ensure_can_moderate_chat!(@chatable)

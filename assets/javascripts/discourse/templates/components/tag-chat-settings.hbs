@@ -1,0 +1,9 @@
+{{#if siteSettings.topic_chat_enabled}}
+  {{d-button
+    class="tag-chat-toggle"
+    icon="comment"
+    action=(action "toggleChatEnabled")
+    label=(if tag.chat_enabled "chat.disable" "chat.enable")
+    disabled=loading
+  }}
+{{/if}}

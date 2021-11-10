@@ -29,6 +29,7 @@ import {
   presentUserIds,
 } from "discourse/tests/helpers/presence-pretender";
 import User from "discourse/models/user";
+import selectKit from "discourse/tests/helpers/select-kit-helper";
 
 const baseChatPretenders = (server, helper) => {
   server.get("/chat/:chatChannelId/messages.json", () =>
@@ -138,6 +139,36 @@ acceptance("Discourse Chat - without unread", function (needs) {
     siteChannelPretender(server, helper);
     directMessageChannelPretender(server, helper);
     chatChannelPretender(server, helper);
+    const hawkAsJson = {
+      username: "hawk",
+      id: 2,
+      name: "hawk",
+      avatar_template:
+        "https://avatars.discourse.org/v3/letter/t/41988e/{size}.png",
+    };
+    server.get("/u/search/users", () => {
+      return helper.response({
+        users: [hawkAsJson],
+      });
+    });
+
+    server.post("/chat/direct_messages/create.json", () => {
+      return helper.response({
+        chat_channel: {
+          chat_channels: [],
+          chatable: { users: [hawkAsJson] },
+          chatable_id: 16,
+          chatable_type: "DirectMessageChannel",
+          chatable_url: null,
+          id: 18,
+          last_read_message_id: null,
+          title: "@hawk",
+          unread_count: 0,
+          unread_mentions: 0,
+          updated_at: "2021-11-08T21:26:05.710Z",
+        },
+      });
+    });
   });
 
   test("Clicking mention notification from outside chat opens the float", async function (assert) {
@@ -497,6 +528,22 @@ acceptance("Discourse Chat - without unread", function (needs) {
 
     await click("#chat-move-to-topic-btn");
     assert.ok(exists(".move-chat-to-topic-modal"));
+  });
+
+  test("creating a new direct message channel works", async function (assert) {
+    await visit("/chat/channel/Site");
+    await click(".new-dm");
+    let users = selectKit(".dm-user-chooser");
+    await click(".dm-user-chooser");
+    await users.expand();
+    await fillIn(".dm-user-chooser input.filter-input", "hawk");
+    await users.selectRowByValue("hawk");
+    await click("button.create-dm");
+    assert.equal(currentURL(), "/chat/channel/@hawk");
+    assert.notOk(
+      query(".join-channel-btn"),
+      "Join channel button is not present"
+    );
   });
 });
 

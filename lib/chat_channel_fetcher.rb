@@ -18,9 +18,10 @@ module DiscourseChat::ChatChannelFetcher
     category_channels = channels.select(&:category_channel?)
     topic_channels = channels.select(&:topic_channel?)
     site_channel = channels.detect(&:site_channel?)
+    tag_channels = channels.select(&:tag_channel?)
     added_channel_ids = category_channels.map(&:id)
 
-    structured = category_channels.map do |category_channel|
+    structured = tag_channels + category_channels.map do |category_channel|
       category_channel.chat_channels = channels.select do |channel|
         add = channel.topic_channel? && channel.chatable.category_id == category_channel.chatable.id
         added_channel_ids << channel.id if add
@@ -42,7 +43,7 @@ module DiscourseChat::ChatChannelFetcher
       channels = channels.includes(:chat_messages)
     end
 
-    channels = channels.where(chatable_type: [DiscourseChat::SITE_CHAT_TYPE, "Topic", "Category"])
+    channels = channels.where(chatable_type: [DiscourseChat::SITE_CHAT_TYPE, "Topic", "Category", "Tag"])
     if scope_with_membership
       channels = channels
         .joins(:user_chat_channel_memberships)
@@ -60,8 +61,11 @@ module DiscourseChat::ChatChannelFetcher
     mention_notification_data = mention_notifications.map { |m| JSON.parse(m.data) }
 
     secured = []
+    hidden_tag_names = DiscourseTagging.hidden_tag_names(guardian)
+
     channels.each do |channel|
       next unless guardian.can_see_chat_channel?(channel)
+      next if channel.tag_channel? && hidden_tag_names.include?(channel.chatable.name)
 
       membership = memberships.detect { |m| m.chat_channel_id == channel.id }
       if membership

@@ -75,6 +75,7 @@ after_initialize do
   load File.expand_path('../lib/direct_message_channel_creator.rb', __FILE__)
   load File.expand_path('../lib/guardian_extensions.rb', __FILE__)
   load File.expand_path('../lib/extensions/topic_view_serializer_extension.rb', __FILE__)
+  load File.expand_path('../lib/extensions/detailed_tag_serializer_extension.rb', __FILE__)
   load File.expand_path('../app/services/chat_publisher.rb', __FILE__)
 
   register_topic_custom_field_type(DiscourseChat::HAS_CHAT_ENABLED, :boolean)
@@ -110,6 +111,7 @@ after_initialize do
   reloadable_patch do |plugin|
     Guardian.class_eval { include DiscourseChat::GuardianExtensions }
     TopicViewSerializer.class_eval { prepend DiscourseChat::TopicViewSerializerExtension }
+    DetailedTagSerializer.class_eval { prepend DiscourseChat::DetailedTagSerializerExtension }
     Topic.class_eval {
       has_one :chat_channel, as: :chatable
     }

@@ -900,10 +900,11 @@ $float-height: 530px;
   max-width: calc(100% - 10px - 0.5em);
   .category-chat-name,
   .topic-chat-name,
+  .tag-chat-name,
   .chat-name {
     color: var(--primary-high);
   }
-  .topic-chat-name {
+  .topic-chat-name, .tag-chat-name {
     margin: 0 0 0 0.25em;
   }
   .d-icon-lock {
@@ -1356,4 +1357,8 @@ $float-height: 530px;
 
 .user-preferences .chat-setting .controls {
   margin-bottom: 0;
+}
+
+.tag-info .tag-chat-toggle {
+  margin-bottom: 0.5em;
 }

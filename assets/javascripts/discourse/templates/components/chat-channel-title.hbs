@@ -15,6 +15,11 @@
     </div>
 
   {{/if}}
+{{else if (eq channel.chatable_type "Tag")}}
+  <span class="tag-chat-badge">
+    {{d-icon "tag"}}
+    <span class="tag-chat-name">{{channel.title}}</span>
+  </span>
 {{else if (eq channel.chatable_type "Category")}}
   <span class="category-chat-badge" style={{html-safe (concat "color: #" channel.chatable.color)}}>
     {{d-icon "hashtag"}}

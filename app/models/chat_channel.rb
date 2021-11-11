@@ -23,6 +23,10 @@ class ChatChannel < ActiveRecord::Base
       chatable.url
   end
 
+  def tag_channel?
+    chatable_type == "Tag"
+  end
+
   def topic_channel?
     chatable_type == "Topic"
   end
@@ -37,6 +41,10 @@ class ChatChannel < ActiveRecord::Base
 
   def site_channel?
     chatable_type == DiscourseChat::SITE_CHAT_TYPE
+  end
+
+  def chatable_has_custom_fields?
+    topic_channel? || category_channel?
   end
 
   def allowed_user_ids
@@ -62,6 +70,8 @@ class ChatChannel < ActiveRecord::Base
     when "Topic"
       chatable.title.parameterize
     when "Category"
+      chatable.name
+    when "Tag"
       chatable.name
     when "Site"
       I18n.t("chat.site_chat_name")

@@ -472,6 +472,16 @@ export default Service.extend({
     );
   },
 
+  resetTrackingStateForChannel(channelId) {
+    const trackingState = this.currentUser.chat_channel_tracking_state[
+      channelId
+    ];
+    if (trackingState) {
+      trackingState.unread_count = 0;
+      this.userChatChannelTrackingStateChanged();
+    }
+  },
+
   userChatChannelTrackingStateChanged() {
     this._recalculateUnreadMessages();
   },

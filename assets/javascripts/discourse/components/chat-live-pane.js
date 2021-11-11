@@ -575,13 +575,13 @@ export default Component.extend({
         }
         // Make sure new messages have come in. Do not keep pinging server with read updates
         // if no new messages came in since last read update was sent.
-        if (
-          document.hasFocus() &&
-          this.expanded &&
-          !this.floatHidden &&
+        const hasUnreadMessage =
           messageId &&
-          messageId !== this.lastSendReadMessageId
-        ) {
+          (messageId !== this.lastSendReadMessageId ||
+            this.currentUser.chat_channel_tracking_state[this.chatChannel]
+              .unread_count > 0);
+
+        if (this.floatOpenAndFocused() && hasUnreadMessage) {
           this.set("lastSendReadMessageId", messageId);
           ajax(`/chat/${this.chatChannel.id}/read/${messageId}.json`, {
             method: "PUT",
@@ -594,6 +594,10 @@ export default Component.extend({
       },
       READ_INTERVAL
     );
+  },
+
+  _floatOpenAndFocused() {
+    return document.hasFocus() && this.expanded && !this.floatHidden;
   },
 
   _stopLastReadRunner() {

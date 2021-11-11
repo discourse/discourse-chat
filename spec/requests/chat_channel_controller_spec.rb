@@ -169,6 +169,18 @@ RSpec.describe DiscourseChat::ChatChannelsController do
           expect(response.parsed_body["direct_message_channels"].map { |c| c["id"] })
             .to match_array([@dm2.id, @dm3.id, @dm4.id])
         end
+
+        it "correctly set unread_count for DMs" do
+          sign_in(user3)
+          DiscourseChat::ChatMessageCreator.create(
+            chat_channel: @dm2,
+            user: user1,
+            content: "What's going on?!"
+          )
+          get "/chat/chat_channels.json"
+          dm2_response = response.parsed_body["direct_message_channels"].detect { |c| c["id"] == @dm2.id }
+          expect(dm2_response["unread_count"]).to eq(1)
+        end
       end
     end
   end

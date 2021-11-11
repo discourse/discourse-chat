@@ -573,15 +573,21 @@ export default Component.extend({
         if (this.messages?.length) {
           messageId = this.messages[this.messages.length - 1]?.id;
         }
+        const hasUnreadMessage =
+          messageId && messageId !== this.lastSendReadMessageId;
+
+        if (
+          !hasUnreadMessage &&
+          this.currentUser.chat_channel_tracking_state[this.chatChannel.id]
+            .unread_count > 0
+        ) {
+          // Weird state here where the chat_channel_tracking_state is wrong. Need to reset it.
+          this.chat.resetTrackingStateForChannel(this.chatChannel.id);
+        }
+
         // Make sure new messages have come in. Do not keep pinging server with read updates
         // if no new messages came in since last read update was sent.
-        if (
-          document.hasFocus() &&
-          this.expanded &&
-          !this.floatHidden &&
-          messageId &&
-          messageId !== this.lastSendReadMessageId
-        ) {
+        if (this._floatOpenAndFocused() && hasUnreadMessage) {
           this.set("lastSendReadMessageId", messageId);
           ajax(`/chat/${this.chatChannel.id}/read/${messageId}.json`, {
             method: "PUT",
@@ -594,6 +600,10 @@ export default Component.extend({
       },
       READ_INTERVAL
     );
+  },
+
+  _floatOpenAndFocused() {
+    return document.hasFocus() && this.expanded && !this.floatHidden;
   },
 
   _stopLastReadRunner() {

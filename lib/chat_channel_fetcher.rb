@@ -69,20 +69,12 @@ module DiscourseChat::ChatChannelFetcher
 
       membership = memberships.detect { |m| m.chat_channel_id == channel.id }
       if membership
-        channel.last_read_message_id = membership.last_read_message_id
-        channel.muted = membership.muted
-        if (!channel.muted)
-          channel.unread_count = channel.chat_messages.count { |message|
-            message.user_id != guardian.user.id && message.id > (membership.last_read_message_id || 0)
-          }
-        end
-        channel.unread_mentions = mention_notification_data.count { |data|
-          data["chat_channel_id"] == channel.id &&
-            data["chat_message_id"] > (membership.last_read_message_id || 0)
-        }
-        channel.following = membership.following
-        channel.desktop_notification_level = membership.desktop_notification_level
-        channel.mobile_notification_level = membership.mobile_notification_level
+        channel = decorate_channel_from_membership(
+          guardian.user.id,
+          channel,
+          membership,
+          mention_notification_data
+        )
       end
 
       secured.push(channel)
@@ -90,14 +82,43 @@ module DiscourseChat::ChatChannelFetcher
     secured
   end
 
+  def self.decorate_channel_from_membership(user_id, channel, membership, mention_notification_data = nil)
+    channel.last_read_message_id = membership.last_read_message_id
+    channel.muted = membership.muted
+    if (!channel.muted)
+      channel.unread_count = channel.chat_messages.count { |message|
+        message.user_id != user_id && message.id > (membership.last_read_message_id || 0)
+      }
+    end
+    if mention_notification_data
+      channel.unread_mentions = mention_notification_data.count { |data|
+        data["chat_channel_id"] == channel.id &&
+          data["chat_message_id"] > (membership.last_read_message_id || 0)
+      }
+    end
+    channel.following = membership.following
+    channel.desktop_notification_level = membership.desktop_notification_level
+    channel.mobile_notification_level = membership.mobile_notification_level
+    channel
+  end
+
   def self.secured_direct_message_channels(user_id, memberships, include_chatables: false)
-    channels = ChatChannel
+    channels = ChatChannel.includes(:chat_messages)
     channels = channels.includes(chatable: { direct_message_users: :user }) if include_chatables
-    channels
+    channels = channels
       .joins(:user_chat_channel_memberships)
       .where(user_chat_channel_memberships: { user_id: user_id, following: true })
       .where(chatable_type: "DirectMessageChannel")
       .order(updated_at: :desc)
       .limit(10)
+      .to_a
+
+    channels.map do |channel|
+      decorate_channel_from_membership(
+        user_id,
+        channel,
+        memberships.detect { |m| m.user_id == user_id && m.chat_channel_id == channel.id }
+      )
+    end
   end
 end

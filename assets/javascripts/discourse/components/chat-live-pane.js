@@ -578,10 +578,10 @@ export default Component.extend({
         const hasUnreadMessage =
           messageId &&
           (messageId !== this.lastSendReadMessageId ||
-            this.currentUser.chat_channel_tracking_state[this.chatChannel]
+            this.currentUser.chat_channel_tracking_state[this.chatChannel.id]
               .unread_count > 0);
 
-        if (this.floatOpenAndFocused() && hasUnreadMessage) {
+        if (this._floatOpenAndFocused() && hasUnreadMessage) {
           this.set("lastSendReadMessageId", messageId);
           ajax(`/chat/${this.chatChannel.id}/read/${messageId}.json`, {
             method: "PUT",

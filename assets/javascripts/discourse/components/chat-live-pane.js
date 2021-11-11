@@ -582,7 +582,7 @@ export default Component.extend({
             .unread_count > 0
         ) {
           // Weird state here where the chat_channel_tracking_state is wrong. Need to reset it.
-          this.chat.tesetTrackingStateForChannel(this.chatChannel.id);
+          this.chat.resetTrackingStateForChannel(this.chatChannel.id);
         }
 
         // Make sure new messages have come in. Do not keep pinging server with read updates

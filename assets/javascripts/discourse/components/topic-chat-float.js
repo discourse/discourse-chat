@@ -1,5 +1,6 @@
 import Component from "@ember/component";
 import discourseComputed, { observes } from "discourse-common/utils/decorators";
+import getURL from "discourse-common/lib/get-url";
 import { action } from "@ember/object";
 import {
   CHAT_VIEW,
@@ -211,8 +212,14 @@ export default Component.extend({
   },
 
   @action
-  openInFullPage() {
+  openInFullPage(e) {
     const channel = this.activeChannel;
+    if (e.which === 2) {
+      // Middle mouse click
+      window.open(getURL(`/chat/channel/${channel.title}`), "_blank").focus();
+      return false;
+    }
+
     // Set activeChannel to null to avoid a moment where the chat composer is rendered twice.
     // Since the mobile-file-upload button has an ID, a JS error will break things otherwise.
     this.setProperties({

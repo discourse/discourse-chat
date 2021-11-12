@@ -216,7 +216,9 @@ export default Component.extend({
     const channel = this.activeChannel;
     if (e.which === 2) {
       // Middle mouse click
-      window.open(getURL(`/chat/channel/${channel.id}/${channel.title}`), "_blank").focus();
+      window
+        .open(getURL(`/chat/channel/${channel.id}/${channel.title}`), "_blank")
+        .focus();
       return false;
     }
 
@@ -227,7 +229,11 @@ export default Component.extend({
       activeChannel: null,
     });
     if (channel) {
-      return this.router.transitionTo("chat.channel", channel.id, channel.title);
+      return this.router.transitionTo(
+        "chat.channel",
+        channel.id,
+        channel.title
+      );
     }
 
     this.router.transitionTo("chat");

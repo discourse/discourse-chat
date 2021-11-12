@@ -25,7 +25,11 @@ export default DiscourseRoute.extend({
 
     return this.chat.getIdealFirstChannelIdAndTitle().then((channelInfo) => {
       if (channelInfo) {
-        return this.transitionTo("chat.channel", channelInfo.id, channelInfo.title);
+        return this.transitionTo(
+          "chat.channel",
+          channelInfo.id,
+          channelInfo.title
+        );
       }
     });
   },

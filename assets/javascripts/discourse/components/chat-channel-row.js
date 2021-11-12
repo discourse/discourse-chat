@@ -33,7 +33,10 @@ export default Component.extend({
     if (e.which === 2) {
       // Middle mouse click
       window
-        .open(getURL(`/chat/channel/${this.channel.id}/${this.channel.title}`), "_blank")
+        .open(
+          getURL(`/chat/channel/${this.channel.id}/${this.channel.title}`),
+          "_blank"
+        )
         .focus();
     }
   },

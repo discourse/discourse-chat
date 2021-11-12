@@ -312,8 +312,8 @@ export default Service.extend({
       }
       return {
         id: channelId,
-        title:this.idToTitleMap[channelId]
-      }
+        title: this.idToTitleMap[channelId],
+      };
     });
   },
 
@@ -324,9 +324,14 @@ export default Service.extend({
     }
 
     return ajax(`/chat/chat_channels/${channelId}`).then((response) => {
-      this.router.transitionTo("chat.channel", response.chat_channel.id, response.chat_channel.title, {
-        queryParams: { messageId },
-      });
+      this.router.transitionTo(
+        "chat.channel",
+        response.chat_channel.id,
+        response.chat_channel.title,
+        {
+          queryParams: { messageId },
+        }
+      );
     });
   },
 

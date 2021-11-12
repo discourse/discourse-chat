@@ -180,21 +180,21 @@ acceptance("Discourse Chat - without unread", function (needs) {
   });
 
   test("Clicking mention notification inside other full page channel switches the channel", async function (assert) {
-    await visit("/chat/channel/@hawk");
+    await visit("/chat/channel/75/@hawk");
     await click(".header-dropdown-toggle.current-user");
     await click("#quick-access-notifications .chat-mention");
-    assert.equal(currentURL(), `/chat/channel/Site`);
+    assert.equal(currentURL(), `/chat/channel/9/Site`);
   });
 
   test("Chat messages are populated when a channel is entered", async function (assert) {
-    await visit("/chat/channel/Site");
+    await visit("/chat/channel/9/Site");
     const messages = queryAll(".tc-message .tc-text");
     assert.equal(messages[0].textContent.trim(), messageContents[0]);
     assert.equal(messages[1].textContent.trim(), messageContents[1]);
   });
 
   test("Message controls are present and correct for permissions", async function (assert) {
-    await visit("/chat/channel/Site");
+    await visit("/chat/channel/9/Site");
     const messages = queryAll(".tc-message");
 
     // User created this message
@@ -235,7 +235,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
   });
 
   test("pressing the reply button adds the indicator to the composer", async function (assert) {
-    await visit("/chat/channel/Site");
+    await visit("/chat/channel/9/Site");
     await click(".reply-btn");
     assert.ok(
       exists(".tc-composer-message-details .d-icon-reply"),
@@ -248,7 +248,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
   });
 
   test("pressing the edit button fills the composer and indicates edit", async function (assert) {
-    await visit("/chat/channel/Site");
+    await visit("/chat/channel/9/Site");
     await click(".edit-btn");
     assert.ok(
       exists(".tc-composer-message-details .d-icon-pencil-alt"),
@@ -263,7 +263,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
   });
 
   test("Sending a message", async function (assert) {
-    await visit("/chat/channel/Site");
+    await visit("/chat/channel/9/Site");
     const messageContent = "Here's a message";
     const composerInput = query(".tc-composer-input");
     assert.deepEqual(
@@ -346,7 +346,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
   });
 
   test("replying presence indicators", async function (assert) {
-    await visit("/chat/channel/Site");
+    await visit("/chat/channel/9/Site");
     assert.equal(
       queryAll(".tc-replying-indicator .replying-text").text().trim(),
       "",
@@ -494,7 +494,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
   });
 
   test("message selection for 'move to topic'", async function (assert) {
-    await visit("/chat/channel/Site");
+    await visit("/chat/channel/9/Site");
 
     const firstMessage = query(".chat-message");
     await click(firstMessage.querySelector(".tc-msgactions-hover .select-btn"));
@@ -531,7 +531,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
   });
 
   test("creating a new direct message channel works", async function (assert) {
-    await visit("/chat/channel/Site");
+    await visit("/chat/channel/9/Site");
     await click(".new-dm");
     let users = selectKit(".dm-user-chooser");
     await click(".dm-user-chooser");
@@ -539,7 +539,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     await fillIn(".dm-user-chooser input.filter-input", "hawk");
     await users.selectRowByValue("hawk");
     await click("button.create-dm");
-    assert.equal(currentURL(), "/chat/channel/@hawk");
+    assert.equal(currentURL(), "/chat/channel/18/@hawk");
     assert.notOk(
       query(".join-channel-btn"),
       "Join channel button is not present"
@@ -578,7 +578,7 @@ acceptance(
       const channelWithUnread = chatChannels.public_channels.find(
         (c) => c.id === 7
       );
-      assert.equal(currentURL(), `/chat/channel/${channelWithUnread.title}`);
+      assert.equal(currentURL(), `/chat/channel/${channelWithUnread.id}/${channelWithUnread.title}`);
     });
 
     test("Chat opens to full-page channel with unread messages when sidebar is installed", async function (assert) {
@@ -589,7 +589,7 @@ acceptance(
       const channelWithUnread = chatChannels.public_channels.find(
         (c) => c.id === 7
       );
-      assert.equal(currentURL(), `/chat/channel/${channelWithUnread.title}`);
+      assert.equal(currentURL(), `/chat/channel/${channelWithUnread.id}/${channelWithUnread.title}`);
       assert.notOk(
         visible(".topic-chat-float-container"),
         "chat float is not open"
@@ -666,7 +666,7 @@ acceptance(
 
     test("Unread indicator does show on chat page when use has chat_isolated", async function (assert) {
       updateCurrentUser({ chat_isolated: true });
-      await visit("/chat/channel/Site");
+      await visit("/chat/channel/9/Site");
       await click(".header-dropdown-toggle.open-chat"); // Force re-render. Flakey otherwise.
       assert.ok(
         exists(
@@ -690,14 +690,14 @@ acceptance(
       const channelWithUnread = chatChannels.direct_message_channels.find(
         (c) => c.id === 75
       );
-      assert.equal(currentURL(), `/chat/channel/${channelWithUnread.title}`);
+      assert.equal(currentURL(), `/chat/channel/${channelWithUnread.id}/${channelWithUnread.title}`);
     });
 
     test("Exit full screen chat button takes you to previous non-chat location", async function (assert) {
       const nonChatPath = "/t/internationalization-localization/280";
       await visit(nonChatPath);
-      await visit("/chat/channel/@hawk");
-      await visit("/chat/channel/Site");
+      await visit("/chat/channel/75/@hawk");
+      await visit("/chat/channel/9/Site");
       await click(".exit-chat-btn");
       assert.equal(currentURL(), nonChatPath);
     });
@@ -733,30 +733,10 @@ acceptance("Discourse Chat - chat channel settings", function (needs) {
     server.post("/chat/chat_channels/:chatChannelId/follow", () => {
       return helper.response(siteChannel.chat_channel);
     });
-
-    server.get("/chat/chat_channels/by_title/preview-me", () => {
-      return helper.response({
-        chat_channel: {
-          id: 5,
-          chatable_id: 70,
-          chatable_type: "Topic",
-          chatable_url: "http://localhost:3000/t/preview-me/112",
-          title: "preview-me",
-          chatable: {
-            id: 12,
-            title: "preview-me",
-            fancy_title: "preview-me",
-            slug: "preview-me",
-            posts_count: 1,
-          },
-          chat_channels: [],
-        },
-      });
-    });
   });
 
   test("unfollowing a channel while you're viewing it takes you home", async function (assert) {
-    await visit("/chat/channel/Site");
+    await visit("/chat/channel/9/Site");
     await click(".edit-channel-membership-btn");
     await click(".chat-channel-unfollow");
     await click(".modal-close");
@@ -764,13 +744,13 @@ acceptance("Discourse Chat - chat channel settings", function (needs) {
   });
 
   test("previewing channel", async function (assert) {
-    await visit("/chat/channel/preview-me");
+    await visit("/chat/channel/70/preview-me");
     assert.ok(exists(".join-channel-btn"), "Join channel button is present");
     assert.equal(query(".tc-composer-row textarea").disabled, true);
   });
 
   test("Chat channel settings modal", async function (assert) {
-    await visit("/chat/channel/@hawk");
+    await visit("/chat/channel/75/@hawk");
     await click(".edit-channel-membership-btn");
     assert.ok(
       exists(".chat-channel-settings-modal"),

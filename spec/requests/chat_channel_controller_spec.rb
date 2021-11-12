@@ -290,17 +290,6 @@ RSpec.describe DiscourseChat::ChatChannelsController do
       expect(membership.muted).to eq(true)
       expect(membership.desktop_notification_level).to eq("always")
       expect(membership.mobile_notification_level).to eq("never")
-
-    end
-  end
-
-  describe "#get_by_title" do
-    before { sign_in(user) }
-
-    it "returns the correct channel" do
-      get "/chat/chat_channels/by_title/#{chat_channel.title(user)}.json"
-      expect(response.status).to eq(200)
-      expect(response.parsed_body["chat_channel"]["id"]).to eq(chat_channel.id)
     end
   end
 end

@@ -20,7 +20,7 @@ export default Controller.extend({
   @action
   afterDmCreation(chatChannel) {
     this.cancelDmCreation();
-    this.router.transitionTo("chat.channel", chatChannel.title);
+    this.router.transitionTo("chat.channel", chatChannel.id, chatChannel.title);
   },
 
   @action

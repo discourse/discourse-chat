@@ -252,11 +252,11 @@ after_initialize do
     post '/chat_channels/:chat_channel_id/follow' => 'chat_channels#follow'
     post '/chat_channels/:chat_channel_id/unfollow' => 'chat_channels#unfollow'
     get '/chat_channels/:chat_channel_id' => 'chat_channels#show'
-    get '/chat_channels/by_title/:title' => 'chat_channels#get_by_title'
 
     # chat_controller routes
     get '/' => 'chat#respond'
-    get '/channel/:channel_title' => 'chat#respond'
+    get '/channel/:channel_id' => 'chat#respond'
+    get '/channel/:channel_id/:channel_title' => 'chat#respond'
     post '/enable' => 'chat#enable_chat'
     post '/disable' => 'chat#disable_chat'
     get '/:chat_channel_id/messages' => 'chat#messages'

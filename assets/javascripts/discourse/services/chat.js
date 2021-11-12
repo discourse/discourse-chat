@@ -69,7 +69,7 @@ export default Service.extend({
     // home.
     if (modal.controller.openedOnRouteName === "chat.channel") {
       const currentChannel = modal.controller.channels.find(
-        (c) => c.title === this.router.currentRoute.params.channelTitle
+        (c) => c.id.toString(10) === this.router.currentRoute.params.channelId
       );
       if (currentChannel && !currentChannel.following) {
         this.router.transitionTo(`discovery.${defaultHomepage()}`);
@@ -86,6 +86,7 @@ export default Service.extend({
       ) {
         this.router.transitionTo(
           "chat.channel",
+          modal.controller.newlyFollowedChannel.id,
           modal.controller.newlyFollowedChannel.title
         );
       }
@@ -304,12 +305,14 @@ export default Service.extend({
     });
   },
 
-  getIdealFirstChannelTitle() {
+  getIdealFirstChannelIdAndTitle() {
     return this.getIdealFirstChannelId().then((channelId) => {
-      if (channelId) {
-        return this.idToTitleMap[channelId];
-      } else {
-        return this.publicChannels[0]?.title;
+      if (!channelId) {
+        return;
+      }
+      return {
+        id: channelId,
+        title:this.idToTitleMap[channelId]
       }
     });
   },
@@ -321,7 +324,7 @@ export default Service.extend({
     }
 
     return ajax(`/chat/chat_channels/${channelId}`).then((response) => {
-      this.router.transitionTo("chat.channel", response.chat_channel.title, {
+      this.router.transitionTo("chat.channel", response.chat_channel.id, response.chat_channel.title, {
         queryParams: { messageId },
       });
     });
@@ -339,7 +342,7 @@ export default Service.extend({
       this.router.currentRouteName === "chat.channel" ||
       this.currentUser.chat_isolated
     ) {
-      this.router.transitionTo("chat.channel", channel.title, {
+      this.router.transitionTo("chat.channel", channel.id, channel.title, {
         queryParams: { messageId: messageId },
       });
     } else {

@@ -33,7 +33,10 @@ export default Component.extend({
     if (e.which === 2) {
       // Middle mouse click
       window
-        .open(getURL(`/chat/channel/${this.channel.title}`), "_blank")
+        .open(
+          getURL(`/chat/channel/${this.channel.id}/${this.channel.title}`),
+          "_blank"
+        )
         .focus();
     }
   },
@@ -50,7 +53,7 @@ export default Component.extend({
   active(channel, currentRoute) {
     return (
       currentRoute?.name === "chat.channel" &&
-      currentRoute?.params?.channelTitle === channel.title.toString(10)
+      currentRoute?.params?.channelId === channel.id.toString(10)
     );
   },
 

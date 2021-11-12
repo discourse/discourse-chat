@@ -104,6 +104,10 @@ export default Component.extend({
   @action
   previewChannel() {
     this.closeModal();
-    this.router.transitionTo("chat.channel", this.channel.title);
+    this.router.transitionTo(
+      "chat.channel",
+      this.channel.id,
+      this.channel.title
+    );
   },
 });

@@ -92,7 +92,7 @@ export default Component.extend({
     this.set("showingChannels", false);
 
     if (channel.id !== this.chatChannel.id) {
-      this.router.transitionTo("chat.channel", channel.title);
+      this.router.transitionTo("chat.channel", channel.id, channel.title);
     }
     return false;
   },

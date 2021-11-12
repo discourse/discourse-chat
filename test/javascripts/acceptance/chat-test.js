@@ -578,7 +578,10 @@ acceptance(
       const channelWithUnread = chatChannels.public_channels.find(
         (c) => c.id === 7
       );
-      assert.equal(currentURL(), `/chat/channel/${channelWithUnread.id}/${channelWithUnread.title}`);
+      assert.equal(
+        currentURL(),
+        `/chat/channel/${channelWithUnread.id}/${channelWithUnread.title}`
+      );
     });
 
     test("Chat opens to full-page channel with unread messages when sidebar is installed", async function (assert) {
@@ -589,7 +592,10 @@ acceptance(
       const channelWithUnread = chatChannels.public_channels.find(
         (c) => c.id === 7
       );
-      assert.equal(currentURL(), `/chat/channel/${channelWithUnread.id}/${channelWithUnread.title}`);
+      assert.equal(
+        currentURL(),
+        `/chat/channel/${channelWithUnread.id}/${channelWithUnread.title}`
+      );
       assert.notOk(
         visible(".topic-chat-float-container"),
         "chat float is not open"
@@ -690,7 +696,10 @@ acceptance(
       const channelWithUnread = chatChannels.direct_message_channels.find(
         (c) => c.id === 75
       );
-      assert.equal(currentURL(), `/chat/channel/${channelWithUnread.id}/${channelWithUnread.title}`);
+      assert.equal(
+        currentURL(),
+        `/chat/channel/${channelWithUnread.id}/${channelWithUnread.title}`
+      );
     });
 
     test("Exit full screen chat button takes you to previous non-chat location", async function (assert) {

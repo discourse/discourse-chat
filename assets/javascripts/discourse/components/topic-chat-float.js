@@ -247,7 +247,10 @@ export default Component.extend({
 
   @action
   close() {
-    this.set("hidden", true);
+    this.setProperties({
+      hidden: true,
+      expanded: true,
+    });
     this.appEvents.trigger("chat:float-toggled", this.hidden);
   },
 

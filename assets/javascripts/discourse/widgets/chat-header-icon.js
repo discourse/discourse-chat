@@ -67,10 +67,7 @@ export default createWidget("header-chat-link", {
       return window.open(getURL("/chat"), "_blank").focus();
     }
 
-    if (
-      this.site.mobileView ||
-      this.chat.getSidebarActive()
-    ) {
+    if (this.site.mobileView || this.chat.getSidebarActive()) {
       DiscourseURL.routeTo("/chat");
     } else {
       this.appEvents.trigger("chat:toggle-open");

@@ -111,8 +111,7 @@ jobs:
         id: check_spec
         shell: bash
         run: |
-          shopt -s extglob
-          if ls plugins/${{ github.event.repository.name }}/spec/**/*.@(rb) &> /dev/null; then
+          if [ 0 -lt $(find plugins/${{ github.event.repository.name }}/spec -type f -name "*.rb" 2> /dev/null | wc -l) ]; then
             echo "::set-output name=files_exist::true"
           fi
 
@@ -124,8 +123,7 @@ jobs:
         id: check_qunit
         shell: bash
         run: |
-          shopt -s extglob
-          if ls plugins/${{ github.event.repository.name }}/test/javascripts/**/*.@(js|es6) &> /dev/null; then
+          if [ 0 -lt $(find plugins/${{ github.event.repository.name }}/test/javascripts -type f \( -name "*.js" -or -name "*.es6" \) 2> /dev/null | wc -l) ]; then
             echo "::set-output name=files_exist::true"
           fi
 

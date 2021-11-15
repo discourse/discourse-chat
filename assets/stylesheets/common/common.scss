@@ -905,7 +905,8 @@ $float-height: 530px;
   .chat-name {
     color: var(--primary-high);
   }
-  .topic-chat-name, .tag-chat-name {
+  .topic-chat-name,
+  .tag-chat-name {
     margin: 0 0 0 0.25em;
   }
   .d-icon-lock {

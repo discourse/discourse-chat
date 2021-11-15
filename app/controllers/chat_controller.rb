@@ -30,7 +30,21 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
 
       create_action_whisper(@chatable, 'enabled') if chat_channel.topic_channel?
     end
-    success ? (render json: success_json) : render_json_error(chat_channel)
+
+    if success
+      membership = UserChatChannelMembership.find_or_initialize_by(
+        chat_channel: chat_channel,
+        user: current_user
+      )
+      membership.following = true
+      membership.save!
+      if chat_channel.topic_channel?
+        ChatPublisher.publish_chat_changed_for_topic(@chatable.id)
+      end
+      render_serialized(chat_channel, ChatChannelSerializer)
+    else
+      render_json_error(chat_channel)
+    end
   end
 
   def disable_chat
@@ -41,13 +55,20 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     chat_channel.trash!(current_user)
 
     success = chat_channel.save
-    if success && chat_channel.chatable_has_custom_fields?
-      @chatable.custom_fields.delete(DiscourseChat::HAS_CHAT_ENABLED)
-      @chatable.save!
+    if success
+      if chat_channel.chatable_has_custom_fields?
+        @chatable.custom_fields.delete(DiscourseChat::HAS_CHAT_ENABLED)
+        @chatable.save!
+      end
 
-      create_action_whisper(@chatable, 'disabled') if chat_channel.topic_channel?
+      if chat_channel.topic_channel?
+        create_action_whisper(@chatable, 'disabled')
+        ChatPublisher.publish_chat_changed_for_topic(@chatable.id)
+      end
+      render json: success_json
+    else
+      render_json_error(chat_channel)
     end
-    success ? (render json: success_json) : (render_json_error(chat_channel))
   end
 
   def create_message

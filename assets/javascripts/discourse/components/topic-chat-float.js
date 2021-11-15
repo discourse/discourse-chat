@@ -103,6 +103,7 @@ export default Component.extend({
   },
 
   openChannelFor(chatable) {
+    debugger
     if (chatable.chat_channel) {
       this.switchChannel(chatable.chat_channel);
     }
@@ -129,6 +130,7 @@ export default Component.extend({
   },
 
   chatDisabledForTopic(topic) {
+    console.log("HERE!")
     if (
       this.expanded &&
       this.activeChannel &&

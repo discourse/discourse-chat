@@ -365,22 +365,42 @@ export default Service.extend({
     );
   },
 
-  addDirectMessageChannel(channel) {
-    if (this.directMessageChannels.findBy("id", channel.id)) {
+  startTrackingChannel(channel) {
+    const existingChannels = channel.chatable_type === "DirectMessageChannel" ?
+      this.directMessageChannels :
+      this.publicChannels
+
+    if (existingChannels.findBy("id", channel.id)) {
       return; // User is already tracking this channel. return!
     }
-    this.directMessageChannels.pushObject(this.processChannel(channel));
+    existingChannels.pushObject(this.processChannel(channel));
     this.currentUser.chat_channel_tracking_state[channel.id] = {
       unread_count: 0,
       unread_mentions: 0,
-      chatable_type: "DirectMessageChannel",
+      chatable_type: channel.chatable_type,
     };
+    this.userChatChannelTrackingStateChanged();
+  },
+
+  stopTrackingChannel(channel) {
+    const existingChannels = channel.chatable_type === "DirectMessageChannel" ?
+      this.directMessageChannels :
+      this.publicChannels
+
+    const trackedChannel = existingChannels.findBy("id", channel.id)
+    debugger
+    if (!trackedChannel) {
+      return; // User is not tracking this channel... return!
+    }
+
+    this.messageBus.unsubscribe(`/chat/${channel.id}/new-messages`)
+    delete this.currentUser.chat_channel_tracking_state[channel.id]
     this.userChatChannelTrackingStateChanged();
   },
 
   _subscribeToNewDmChannelUpdates() {
     this.messageBus.subscribe("/chat/new-direct-message-channel", (busData) => {
-      this.addDirectMessageChannel(busData.chat_channel);
+      this.startTrackingChannel(busData.chat_channel);
     });
   },
 

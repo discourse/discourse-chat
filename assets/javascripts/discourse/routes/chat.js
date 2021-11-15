@@ -13,7 +13,7 @@ export default DiscourseRoute.extend({
   beforeModel(params) {
     if (
       !this.currentUser?.has_chat_enabled ||
-      !this.siteSettings.topic_chat_enabled
+      !this.siteSettings.chat_enabled
     ) {
       return this.transitionTo(`discovery.${defaultHomepage()}`);
     }

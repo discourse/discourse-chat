@@ -10,7 +10,7 @@ This plugin allows moderators to turn any topic into a chatroom. Users can chat 
 
 ### Getting started
 
-Enable the `topic_chat_enabled` site setting, and use the 'Enable Chat' option in the topic wrench menu.
+Enable the `chat_enabled` site setting, and use the 'Enable Chat' option in the topic wrench menu.
 
 [image: enable chat]
 

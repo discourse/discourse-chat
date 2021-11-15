@@ -10,8 +10,8 @@ RSpec.describe DiscourseChat::DirectMessagesController do
   fab!(:user3) { Fabricate(:user) }
 
   before do
-    SiteSetting.topic_chat_enabled = true
-    SiteSetting.topic_chat_allowed_groups = Group::AUTO_GROUPS[:everyone]
+    SiteSetting.chat_enabled = true
+    SiteSetting.chat_allowed_groups = Group::AUTO_GROUPS[:everyone]
     sign_in(user)
   end
 

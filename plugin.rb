@@ -7,7 +7,7 @@
 # url: https://github.com/discourse-org/discourse-topic-chat
 # transpile_js: true
 
-enabled_site_setting :topic_chat_enabled
+enabled_site_setting :chat_enabled
 
 register_asset 'stylesheets/common/common.scss'
 register_asset 'stylesheets/common/incoming-chat-webhooks.scss'
@@ -24,7 +24,7 @@ add_admin_route 'chat.admin.title', 'chat'
 
 after_initialize do
   module ::DiscourseChat
-    PLUGIN_NAME = "discourse-topic-chat"
+    PLUGIN_NAME = "discourse-chat"
     HAS_CHAT_ENABLED = "has_chat_enabled"
 
     SITE_CHAT_ID = -1
@@ -36,11 +36,11 @@ after_initialize do
     end
 
     def self.allowed_group_ids
-      SiteSetting.topic_chat_allowed_groups.to_s.split("|").map(&:to_i)
+      SiteSetting.chat_allowed_groups.to_s.split("|").map(&:to_i)
     end
   end
 
-  SeedFu.fixture_paths << Rails.root.join("plugins", "discourse-topic-chat", "db", "fixtures").to_s
+  SeedFu.fixture_paths << Rails.root.join("plugins", "discourse-chat", "db", "fixtures").to_s
 
   load File.expand_path('../app/controllers/admin/admin_incoming_chat_webhooks_controller.rb', __FILE__)
   load File.expand_path('../app/controllers/chat_base_controller.rb', __FILE__)
@@ -89,7 +89,7 @@ after_initialize do
   UserUpdater::OPTION_ATTR.push(:only_chat_push_notifications)
 
   on(:category_updated) do |category|
-    next if !SiteSetting.topic_chat_enabled
+    next if !SiteSetting.chat_enabled
 
     chat_channel = ChatChannel.with_deleted.find_by(chatable: category)
 
@@ -128,7 +128,7 @@ after_initialize do
   end
 
   TopicQuery.add_custom_filter(::DiscourseChat::PLUGIN_NAME) do |results, topic_query|
-    if SiteSetting.topic_chat_enabled
+    if SiteSetting.chat_enabled
       results = results.includes(:chat_channel)
     end
     results
@@ -139,7 +139,7 @@ after_initialize do
   end
 
   add_to_serializer(:listable_topic, :include_has_chat_live?) do
-    SiteSetting.topic_chat_enabled &&
+    SiteSetting.chat_enabled &&
       scope.can_chat?(scope.user) &&
       object.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]
   end
@@ -160,7 +160,7 @@ after_initialize do
   add_to_serializer(:current_user, :include_can_chat?) do
     return @can_chat if defined?(@can_chat)
 
-    @can_chat = SiteSetting.topic_chat_enabled && scope.can_chat?(object)
+    @can_chat = SiteSetting.chat_enabled && scope.can_chat?(object)
   end
 
   add_to_serializer(:current_user, :has_chat_enabled) do

@@ -113,7 +113,7 @@ function chatChannelPretender(server, helper, changes = []) {
 
 acceptance("Discourse Chat - anonymouse 🐭 user", function (needs) {
   needs.settings({
-    topic_chat_enabled: true,
+    chat_enabled: true,
   });
 
   test("doesn't error for anonymous users", async function (assert) {
@@ -132,7 +132,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     has_chat_enabled: true,
   });
   needs.settings({
-    topic_chat_enabled: true,
+    chat_enabled: true,
   });
   needs.pretender((server, helper) => {
     baseChatPretenders(server, helper);
@@ -559,7 +559,7 @@ acceptance(
       has_chat_enabled: true,
     });
     needs.settings({
-      topic_chat_enabled: true,
+      chat_enabled: true,
     });
     needs.pretender((server, helper) => {
       baseChatPretenders(server, helper);
@@ -634,7 +634,7 @@ acceptance(
       has_chat_enabled: true,
     });
     needs.settings({
-      topic_chat_enabled: true,
+      chat_enabled: true,
     });
     needs.pretender((server, helper) => {
       baseChatPretenders(server, helper);
@@ -723,7 +723,7 @@ acceptance("Discourse Chat - chat channel settings", function (needs) {
     has_chat_enabled: true,
   });
   needs.settings({
-    topic_chat_enabled: true,
+    chat_enabled: true,
   });
   needs.pretender((server, helper) => {
     baseChatPretenders(server, helper);
@@ -809,7 +809,7 @@ acceptance("Discourse Chat - chat preferences", function (needs) {
     has_chat_enabled: true,
   });
   needs.settings({
-    topic_chat_enabled: true,
+    chat_enabled: true,
   });
   needs.pretender((server, helper) => {
     baseChatPretenders(server, helper);

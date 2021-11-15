@@ -15,8 +15,8 @@ describe DiscourseChat::ChatMessageCreator do
   fab!(:direct_message_channel) { Fabricate(:chat_channel, chatable: Fabricate(:direct_message_channel, users: [user1, user2])) }
 
   before do
-    SiteSetting.topic_chat_enabled = true
-    SiteSetting.topic_chat_allowed_groups = Group::AUTO_GROUPS[:everyone]
+    SiteSetting.chat_enabled = true
+    SiteSetting.chat_allowed_groups = Group::AUTO_GROUPS[:everyone]
 
     # Create channel memberships
     [admin1, admin2].each do |user|
@@ -122,7 +122,7 @@ describe DiscourseChat::ChatMessageCreator do
 
   it "doesn't create mention notifications for users who cannot chat" do
     new_group = Group.create
-    SiteSetting.topic_chat_allowed_groups = new_group.id
+    SiteSetting.chat_allowed_groups = new_group.id
     expect {
       DiscourseChat::ChatMessageCreator.create(
         chat_channel: public_chat_channel,

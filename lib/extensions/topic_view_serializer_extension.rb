@@ -7,7 +7,7 @@ module DiscourseChat::TopicViewSerializerExtension
   end
 
   def posts
-    if SiteSetting.topic_chat_enabled
+    if SiteSetting.chat_enabled
       posts = object.posts.includes(chat_message_post_connections: :chat_message)
       object.instance_variable_set(:@posts, posts)
     end

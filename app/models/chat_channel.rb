@@ -89,7 +89,7 @@ class ChatChannel < ActiveRecord::Base
   end
 
   def self.is_enabled?(t)
-    return false if !SiteSetting.topic_chat_enabled
+    return false if !SiteSetting.chat_enabled
 
     ChatChannel.where(chatable: topic).exists?
   end

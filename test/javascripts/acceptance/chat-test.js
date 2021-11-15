@@ -21,7 +21,7 @@ import {
   directMessageChannel,
   messageContents,
   siteChannel,
-} from "discourse/plugins/discourse-topic-chat/chat-fixtures";
+} from "discourse/plugins/discourse-chat/chat-fixtures";
 import { next } from "@ember/runloop";
 import { cloneJSON } from "discourse-common/lib/object";
 import {

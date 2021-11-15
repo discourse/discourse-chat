@@ -5,7 +5,7 @@ import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { withPluginApi } from "discourse/lib/plugin-api";
 
-export const PLUGIN_ID = "discourse-topic-chat";
+export const PLUGIN_ID = "discourse-chat";
 
 function toggleChatForTopic(topic, appEvents) {
   topic.set("has_chat_live", !topic.has_chat_live);

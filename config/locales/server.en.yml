@@ -1,6 +1,6 @@
 en:
   site_settings:
-    chat_enabled: "Enable the discourse-topic-chat plugin. Use the per-topic 'Enable Chat' action to set up."
+    chat_enabled: "Enable the discourse-chat plugin. Use the per-topic 'Enable Chat' action to set up."
     chat_allowed_groups: "Users in these groups can chat."
   chat:
     separator_post_day:

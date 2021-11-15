@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-# name: discourse-topic-chat
+# name: discourse-chat
 # about: Chat inside Discourse
 # version: 0.3
 # authors: Kane York, Mark VanLandingham
-# url: https://github.com/discourse-org/discourse-topic-chat
+# url: https://github.com/discourse/discourse-chat
 # transpile_js: true
 
 enabled_site_setting :chat_enabled

@@ -4,7 +4,7 @@ This plugin is currently in an experimental state and not for use on production 
 
 <!--
 
-## discourse-topic-chat
+## discourse-chat
 
 This plugin allows moderators to turn any topic into a chatroom. Users can chat back and forth in a side conversation, following the topic as it advances. Historical chat messages are displayed in a dropdown below each post.
 

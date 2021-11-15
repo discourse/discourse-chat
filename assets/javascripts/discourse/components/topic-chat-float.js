@@ -5,7 +5,7 @@ import { action } from "@ember/object";
 import {
   CHAT_VIEW,
   LIST_VIEW,
-} from "discourse/plugins/discourse-topic-chat/discourse/services/chat";
+} from "discourse/plugins/discourse-chat/discourse/services/chat";
 
 import { ajax } from "discourse/lib/ajax";
 import { equal } from "@ember/object/computed";

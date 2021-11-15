@@ -1,8 +1,8 @@
 {
-  "name": "discourse-topic-chat",
+  "name": "discourse-chat",
   "version": "0.1",
-  "repository": "https://github.com/discourse-org/discourse-topic-chat",
-  "author": "Kane York",
+  "repository": "https://github.com/discourse/discourse-chat",
+  "author": "Kane York, Mark VanLandingham",
   "license": "MIT",
   "devDependencies": {
     "eslint-config-discourse": "^1.1.8"

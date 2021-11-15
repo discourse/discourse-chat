@@ -147,7 +147,7 @@ en:
     notifications:
       popup:
         chat_mention: "@%{username} mentioned you in chat"
-        chat_mention: "New chat message"
+        chat_message: "New chat message"
     topic:
       actions:
         chat_enable: "Enable Chat"

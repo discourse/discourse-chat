@@ -7,7 +7,7 @@ class DiscourseChat::ChatBaseController < ::ApplicationController
   private
 
   def ensure_can_chat
-    raise Discourse::NotFound unless SiteSetting.topic_chat_enabled
+    raise Discourse::NotFound unless SiteSetting.chat_enabled
     guardian.ensure_can_chat!(current_user)
   end
 

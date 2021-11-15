@@ -10,7 +10,7 @@ RSpec.describe DiscourseChat::AdminIncomingChatWebhooksController do
   fab!(:chat_channel2) { Fabricate(:chat_channel, chatable: Fabricate(:topic)) }
 
   before do
-    SiteSetting.topic_chat_enabled = true
+    SiteSetting.chat_enabled = true
   end
 
   describe "#index" do

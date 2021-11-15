@@ -17,8 +17,8 @@ RSpec.describe DiscourseChat::ChatChannelsController do
   fab!(:staff_tag_channel) { Fabricate(:chat_channel, chatable: staff_tag) }
 
   before do
-    SiteSetting.topic_chat_enabled = true
-    SiteSetting.topic_chat_allowed_groups = Group::AUTO_GROUPS[:everyone]
+    SiteSetting.chat_enabled = true
+    SiteSetting.chat_allowed_groups = Group::AUTO_GROUPS[:everyone]
   end
 
   describe "#index" do
@@ -58,7 +58,7 @@ RSpec.describe DiscourseChat::ChatChannelsController do
 
       it "errors for user that is not allowed to chat" do
         sign_in(user)
-        SiteSetting.topic_chat_allowed_groups = Group::AUTO_GROUPS[:staff]
+        SiteSetting.chat_allowed_groups = Group::AUTO_GROUPS[:staff]
 
         get "/chat/chat_channels.json"
 

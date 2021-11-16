@@ -177,6 +177,10 @@ export default Component.extend(
     },
 
     keyDown(event) {
+      if (this.site.mobileView) {
+        return;
+      }
+
       if (event.keyCode === 13) {
         // keyCode for 'Enter'
         if (event.shiftKey) {

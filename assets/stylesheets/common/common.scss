@@ -919,8 +919,7 @@ $float-height: 530px;
   .topic-chat-name,
   .category-chat-name,
   .tag-chat-name,
-  .dm-usernames,
-  .dm-username {
+  .dm-usernames {
     margin: 0 0 0 0.25em;
     font-size: var(--font-0);
     @include ellipsis;

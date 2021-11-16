@@ -65,6 +65,11 @@
   }
 }
 
+.tc-composer-row .emoji-picker.opened {
+  position: absolute;
+  bottom: 40px;
+}
+
 .tc-message:not(.user-info-hidden) {
   padding: 0.15em 1em;
   margin-top: 0.5em;

@@ -49,6 +49,13 @@
     icon=(if showToolbar "minus" "plus")
   }}
 
+  {{emoji-picker
+    isActive=emojiPickerIsActive
+    isEditorFocused=isEditorFocused
+    emojiSelected=(action "onEmojiSelected")
+    onEmojiPickerClose=(action (mut emojiPickerIsActive) false)
+  }}
+
   {{#if site.mobileView}}
     {{flat-button
       action=(action "sendClicked")
@@ -59,13 +66,6 @@
     }}
   {{/if}}
 </div>
-
-{{emoji-picker
-  isActive=emojiPickerIsActive
-  isEditorFocused=isEditorFocused
-  emojiSelected=(action "onEmojiSelected")
-  onEmojiPickerClose=(action (mut emojiPickerIsActive) false)
-}}
 
 <div class="tc-composer-uploads-container">
   <span class="btn uploading-indicator {{unless isUploading "hidden"}}">{{i18n "upload_selector.uploading"}} {{uploadProgress}}%</span>

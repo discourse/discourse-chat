@@ -447,6 +447,12 @@ export default Component.extend(
       this._addText(selected, text);
     },
 
+    @action
+    onEmojiSelected(code) {
+      this.emojiSelected(code);
+      this.set("emojiPickerIsActive", false);
+    },
+
     @discourseComputed("previewing")
     placeholder(previewing) {
       return I18n.t(

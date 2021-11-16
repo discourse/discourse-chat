@@ -75,7 +75,7 @@ class DiscourseChat::ChatMessageCreator
         payload = {
           username: @user.username,
           notification_type: Notification.types[:chat_message],
-          post_url: "/chat/channel/#{@chat_channel.title(user)}",
+          post_url: "/chat/channel/#{@chat_channel.id}/#{@chat_channel.title(user)}",
           translated_title: I18n.t("discourse_push_notifications.popup.chat_message",
                                    chat_channel_title: @chat_channel.title(membership.user)
                                   ),
@@ -199,7 +199,7 @@ class DiscourseChat::ChatMessageCreator
                               ),
       tag: push_notification_tag(:mention, chat_channel),
       excerpt: chat_message.message[0..399],
-      post_url: "/chat/channel/#{chat_channel.title(mentioned)}?messageId=#{chat_message.id}"
+      post_url: "/chat/channel/#{@chat_channel.id}/#{chat_channel.title(mentioned)}?messageId=#{chat_message.id}"
     }
     membership = mentioned.user_chat_channel_memberships.detect { |m| m.chat_channel_id == chat_channel.id }
     return if !membership || membership.muted

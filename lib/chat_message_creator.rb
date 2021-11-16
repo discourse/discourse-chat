@@ -199,7 +199,7 @@ class DiscourseChat::ChatMessageCreator
                               ),
       tag: push_notification_tag(:mention, chat_channel),
       excerpt: chat_message.message[0..399],
-      post_url: "/chat/channel/#{@chat_channel.id}/#{chat_channel.title(mentioned)}?messageId=#{chat_message.id}"
+      post_url: "/chat/channel/#{chat_channel.id}/#{chat_channel.title(mentioned)}?messageId=#{chat_message.id}"
     }
     membership = mentioned.user_chat_channel_memberships.detect { |m| m.chat_channel_id == chat_channel.id }
     return if !membership || membership.muted

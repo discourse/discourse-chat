@@ -41,7 +41,6 @@ class ChatBaseMessageSerializer < ApplicationSerializer
   end
 
   def include_flag_count?
-    object.chat_channel.site_channel? ||
-      scope.can_see_flags?(object.chat_channel.chatable) && (false && object.flag_count > 0)
+    scope.can_see_flags?(object.chat_channel.chatable) && (false && object.flag_count > 0)
   end
 end

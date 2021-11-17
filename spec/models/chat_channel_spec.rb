@@ -7,7 +7,6 @@ describe ChatChannel do
   fab!(:user1) { Fabricate(:user) }
   fab!(:user2) { Fabricate(:user) }
   fab!(:group) { Fabricate(:group) }
-  fab!(:site_channel) { Fabricate(:site_chat_channel) }
   fab!(:public_topic_channel) { Fabricate(:chat_channel, chatable: Fabricate(:topic)) }
   fab!(:private_category) { Fabricate(:private_category, group: group) }
   fab!(:private_category_channel) { Fabricate(:chat_channel, chatable: private_category) }
@@ -16,7 +15,6 @@ describe ChatChannel do
 
   describe "#allowed_user_ids" do
     it "is correct for each channel type" do
-      expect(site_channel.allowed_user_ids).to eq(nil)
       expect(private_category_channel.allowed_user_ids).to eq(nil)
       expect(private_topic_channel.allowed_user_ids).to eq(nil)
       expect(public_topic_channel.allowed_user_ids).to eq(nil)
@@ -26,7 +24,6 @@ describe ChatChannel do
 
   describe "#allowed_group_ids" do
     it "is correct for each channel type" do
-      expect(site_channel.allowed_group_ids).to eq([Group::AUTO_GROUPS[:staff]])
       expect(private_category_channel.allowed_group_ids).to eq([group.id])
       expect(private_topic_channel.allowed_group_ids).to eq([group.id])
       expect(public_topic_channel.allowed_group_ids).to eq(nil)

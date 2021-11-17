@@ -1,12 +1,7 @@
 # frozen_string_literal: true
 
 Fabricator(:chat_channel) do
-  chatable nil
-end
-
-Fabricator(:site_chat_channel, from: :chat_channel) do
-  chatable_id DiscourseChat::SITE_CHAT_ID
-  chatable_type DiscourseChat::SITE_CHAT_TYPE
+  chatable { Fabricate(:topic) }
 end
 
 Fabricator(:chat_message) do
@@ -22,7 +17,7 @@ end
 Fabricator(:incoming_chat_webhook) do
   name { sequence(:name) { |i| "#{i + 1}" } }
   key { sequence(:key) { |i| "#{i + 1}" } }
-  chat_channel { Fabricate(:site_chat_channel) }
+  chat_channel { Fabricate(:chat_channel, chatable: Fabricate(:topic)) }
 end
 
 Fabricator(:user_chat_channel_membership) do

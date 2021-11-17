@@ -12,15 +12,11 @@ describe DiscourseChat::ChatMessageUpdater do
   fab!(:user4) { Fabricate(:user) }
   fab!(:user_without_memberships) { Fabricate(:user) }
   fab!(:public_chat_channel) { Fabricate(:chat_channel, chatable: Fabricate(:topic)) }
-  fab!(:site_chat_channel) { Fabricate(:site_chat_channel) }
 
   before do
     SiteSetting.chat_enabled = true
     SiteSetting.chat_allowed_groups = Group::AUTO_GROUPS[:everyone]
 
-    [admin1, admin2].each do |user|
-      Fabricate(:user_chat_channel_membership, chat_channel: site_chat_channel, user: user)
-    end
     [admin1, admin2, user1, user2, user3, user4].each do |user|
       Fabricate(:user_chat_channel_membership, chat_channel: public_chat_channel, user: user)
     end
@@ -118,17 +114,6 @@ describe DiscourseChat::ChatMessageUpdater do
       .where(user_id: user4)
       .where("data LIKE ?", "%\"chat_message_id\":#{chat_message.id}%")
     ).to be_present
-  end
-
-  it "does not create new mentions in staff chat for regular users" do
-    chat_message = create_chat_message(admin1, "ping nobody" , site_chat_channel)
-    expect {
-      DiscourseChat::ChatMessageUpdater.update(
-        chat_message: chat_message,
-        new_content: "ping @#{admin2.username} @#{user3.username} @#{user4.username}"
-      )
-    }.to change { Notification.count }.by(1)
-    expect(Notification.last.user_id).to eq(admin2.id)
   end
 
   it "does not create new mentions in direct message for users who don't have access" do

@@ -12,14 +12,10 @@ class DiscourseChat::ChatBaseController < ::ApplicationController
   end
 
   def set_channel_and_chatable
-    @chat_channel = ChatChannel.find_by(id: params[:chat_channel_id])
+    @chat_channel = ChatChannel.includes(:chatable).find_by(id: params[:chat_channel_id])
     raise Discourse::NotFound unless @chat_channel
 
-    @chatable = nil
-    if !@chat_channel.site_channel?
-      @chatable = @chat_channel.chatable
-    end
-
+    @chatable = @chat_channel.chatable
     guardian.ensure_can_see_chat_channel!(@chat_channel)
   end
 end

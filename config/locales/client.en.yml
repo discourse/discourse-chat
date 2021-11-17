@@ -90,9 +90,6 @@ en:
         new: "New personal chat"
         create: "Go"
 
-      channels:
-        staff: "Staff-only"
-
       incoming_webhooks:
         back: "Back"
         channel: "Channel"

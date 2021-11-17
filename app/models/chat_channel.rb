@@ -18,9 +18,7 @@ class ChatChannel < ActiveRecord::Base
   def chatable_url
     return nil if direct_message_channel?
 
-    site_channel? ?
-      Discourse.base_url :
-      chatable.url
+    chatable.url
   end
 
   def tag_channel?
@@ -39,10 +37,6 @@ class ChatChannel < ActiveRecord::Base
     chatable_type == "DirectMessageChannel"
   end
 
-  def site_channel?
-    chatable_type == DiscourseChat::SITE_CHAT_TYPE
-  end
-
   def chatable_has_custom_fields?
     topic_channel? || category_channel?
   end
@@ -54,9 +48,7 @@ class ChatChannel < ActiveRecord::Base
   end
 
   def allowed_group_ids
-    if site_channel?
-      [Group::AUTO_GROUPS[:staff]]
-    elsif category_channel?
+    if category_channel?
       chatable.secure_group_ids
     elsif topic_channel? && chatable.category
       chatable.category.secure_group_ids
@@ -73,19 +65,13 @@ class ChatChannel < ActiveRecord::Base
       chatable.name
     when "Tag"
       chatable.name
-    when "Site"
-      I18n.t("chat.site_chat_name")
     when "DirectMessageChannel"
       chatable.chat_channel_title_for_user(self, user)
     end
   end
 
   def self.public_channels
-    where(chatable_type: ["Topic", "Category", DiscourseChat::SITE_CHAT_TYPE])
-  end
-
-  def self.site_channel
-    find_by(chatable_id: DiscourseChat::SITE_CHAT_ID)
+    where(chatable_type: ["Topic", "Category", "Tag"])
   end
 
   def self.is_enabled?(t)

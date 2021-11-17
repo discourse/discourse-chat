@@ -186,33 +186,10 @@ RSpec.describe DiscourseChat::ChatController do
         expect(ChatMessage.last.message).to eq(message)
       end
     end
-
-    describe "for site chat" do
-      fab!(:chat_channel) { Fabricate(:site_chat_channel) }
-      fab!(:user_chat_channel_membership) { Fabricate(:user_chat_channel_membership, chat_channel: chat_channel, user: user) }
-      fab!(:admin_chat_channel_membership) { Fabricate(:user_chat_channel_membership, chat_channel: chat_channel, user: admin) }
-
-      it "errors for regular user" do
-        sign_in(user)
-
-        post "/chat/#{chat_channel.id}.json", params: { message: message }
-        expect(response.status).to eq(403)
-      end
-
-      it "sends a message for staff" do
-        sign_in(admin)
-
-        expect {
-          post "/chat/#{chat_channel.id}.json", params: { message: message }
-        }.to change { ChatMessage.count }.by(1)
-        expect(response.status).to eq(200)
-        expect(ChatMessage.last.message).to eq(message)
-      end
-    end
   end
 
   describe "#edit_message" do
-    fab!(:chat_channel) { Fabricate(:site_chat_channel) }
+    fab!(:chat_channel) { Fabricate(:chat_channel) }
     fab!(:chat_message) { Fabricate(:chat_message, chat_channel: chat_channel, user: user) }
 
     it "errors when a user tries to edit another user's message" do
@@ -296,21 +273,6 @@ RSpec.describe DiscourseChat::ChatController do
         expect(response.status).to eq(200)
       end
     end
-
-    describe "for site" do
-      fab!(:chat_channel) { Fabricate(:site_chat_channel) }
-
-      it_behaves_like "chat_message_deletion" do
-        let(:other_user) { second_user }
-      end
-
-      it "Doesn't allows regular users to delete their own messages" do
-        sign_in(user)
-
-        delete "/chat/#{chat_channel.id}/#{ChatMessage.last.id}.json"
-        expect(response.status).to eq(403)
-      end
-    end
   end
 
   RSpec.shared_examples "chat_message_restoration" do
@@ -377,37 +339,6 @@ RSpec.describe DiscourseChat::ChatController do
 
       it_behaves_like "chat_message_restoration" do
         let(:other_user) { second_user }
-      end
-    end
-
-    describe "for site" do
-      fab!(:chat_channel) { Fabricate(:site_chat_channel) }
-
-      it "doesn't allow regular users to restore their own posts" do
-        sign_in(user)
-
-        deleted_message = ChatMessage.unscoped.last
-        put "/chat/#{chat_channel.id}/restore/#{deleted_message.id}.json"
-        expect(response.status).to eq(403)
-      end
-
-      it "allows admin to restore their own" do
-        admin_message = ChatMessage.create(user: admin, message: "this is a message", chat_channel: chat_channel)
-        admin_message.update(deleted_at: Time.now, deleted_by_id: user.id)
-        sign_in(admin)
-
-        put "/chat/#{chat_channel.id}/restore/#{admin_message.id}.json"
-        expect(response.status).to eq(200)
-        expect(admin_message.reload.deleted_at).to eq(nil)
-      end
-
-      it "allows admin to restore others' posts" do
-        sign_in(admin)
-
-        deleted_message = ChatMessage.unscoped.last
-        put "/chat/#{chat_channel.id}/restore/#{deleted_message.id}.json"
-        expect(response.status).to eq(200)
-        expect(deleted_message.reload.deleted_at).to eq(nil)
       end
     end
   end

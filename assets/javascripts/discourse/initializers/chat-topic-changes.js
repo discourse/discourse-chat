@@ -3,7 +3,6 @@ import I18n from "I18n";
 import RawTopicStatus from "discourse/raw-views/topic-status";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
-import { set } from "@ember/object";
 import { withPluginApi } from "discourse/lib/plugin-api";
 
 export const PLUGIN_ID = "discourse-chat";

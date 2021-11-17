@@ -77,8 +77,6 @@ export default Service.extend({
     }
 
     this.forceRefreshChannels().then(() => {
-      this.appEvents.trigger("chat:refresh-channels");
-
       // Check if modal was opened from the chat index. If so and there is a newly tracked channel, navigate to it
       if (
         modal.controller.openedOnRouteName === "chat.index" &&
@@ -200,6 +198,10 @@ export default Service.extend({
     };
   },
 
+  isChannelFollowed(channel) {
+    return this.getChannelBy("id", channel.id);
+  },
+
   getChannels() {
     return new Promise((resolve) => {
       if (this.hasFetchedChannels) {
@@ -224,7 +226,10 @@ export default Service.extend({
 
   _refreshChannels() {
     return new Promise((resolve) => {
-      this.set("loading", true);
+      this.setProperties({
+        loading: true,
+        allChannels: [],
+      });
       this.currentUser.set("chat_channel_tracking_state", {});
       ajax("/chat/chat_channels.json").then((channels) => {
         this.setProperties({
@@ -248,6 +253,7 @@ export default Service.extend({
         this.set("idToTitleMap", idToTitleMap);
         this.presenceChannel.subscribe(channels.global_presence_channel_state);
         this.userChatChannelTrackingStateChanged();
+        this.appEvents.trigger("chat:refresh-channels");
         resolve(this._channelObject());
       });
     });
@@ -366,13 +372,15 @@ export default Service.extend({
   },
 
   startTrackingChannel(channel) {
-    const existingChannels = channel.chatable_type === "DirectMessageChannel" ?
-      this.directMessageChannels :
-      this.publicChannels
-
-    if (existingChannels.findBy("id", channel.id)) {
+    if (this.allChannels.findBy("id", channel.id)) {
       return; // User is already tracking this channel. return!
     }
+
+    const existingChannels =
+      channel.chatable_type === "DirectMessageChannel"
+        ? this.directMessageChannels
+        : this.publicChannels;
+
     existingChannels.pushObject(this.processChannel(channel));
     this.currentUser.chat_channel_tracking_state[channel.id] = {
       unread_count: 0,
@@ -380,22 +388,14 @@ export default Service.extend({
       chatable_type: channel.chatable_type,
     };
     this.userChatChannelTrackingStateChanged();
+    this.appEvents.trigger("chat:refresh-channels");
   },
 
   stopTrackingChannel(channel) {
-    const existingChannels = channel.chatable_type === "DirectMessageChannel" ?
-      this.directMessageChannels :
-      this.publicChannels
-
-    const trackedChannel = existingChannels.findBy("id", channel.id)
-    debugger
-    if (!trackedChannel) {
-      return; // User is not tracking this channel... return!
+    const trackedChannel = this.allChannels.findBy("id", channel.id);
+    if (trackedChannel) {
+      this.forceRefreshChannels();
     }
-
-    this.messageBus.unsubscribe(`/chat/${channel.id}/new-messages`)
-    delete this.currentUser.chat_channel_tracking_state[channel.id]
-    this.userChatChannelTrackingStateChanged();
   },
 
   _subscribeToNewDmChannelUpdates() {

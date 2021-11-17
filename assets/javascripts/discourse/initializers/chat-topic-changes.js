@@ -25,7 +25,7 @@ function toggleChatForTopic(topic, appEvents, chat) {
         topic.set("chat_channel", response.chat_channel);
         chat.startTrackingChannel(response.chat_channel);
       } else {
-        chat.stopTrackingChannel(topic.chat_channel)
+        chat.stopTrackingChannel(topic.chat_channel);
       }
       appEvents.trigger(`topic-chat-${action}`, topic);
     })
@@ -97,7 +97,7 @@ function makeTopicChanges(api, appEvents, chat) {
   api.modifyClass("component:topic-timeline", {
     pluginId: PLUGIN_ID,
     toggleChat() {
-      return toggleChatForTopic(this.topic, appEvents);
+      return toggleChatForTopic(this.topic, appEvents, chat);
     },
   });
 

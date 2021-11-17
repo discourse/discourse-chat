@@ -10,6 +10,9 @@ export default createWidget("topic-title-chat-link", {
   },
 
   click() {
-    this.appEvents.trigger("chat:open-channel-for", this.attrs);
+    this.appEvents.trigger(
+      "chat:open-channel-for-topic",
+      this.attrs.chat_channel
+    );
   },
 });

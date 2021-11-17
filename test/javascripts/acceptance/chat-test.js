@@ -160,7 +160,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
           chatable_id: 16,
           chatable_type: "DirectMessageChannel",
           chatable_url: null,
-          id: 18,
+          id: 75,
           last_read_message_id: null,
           title: "@hawk",
           unread_count: 0,
@@ -185,9 +185,10 @@ acceptance("Discourse Chat - without unread", function (needs) {
 
   test("enabling chat on a topic opens the channel in chat", async function (assert) {
     await visit("/t/internationalization-localization/280");
+    assert.notOk(exists(".topic-chat-container.channel-12"));
     await click(".topic-timeline .toggle-admin-menu");
     await click(".topic-admin-popup-menu .topic-admin-chat .popup-menu-btn");
-    assert.ok(exists(".topic-chat-container.expanded.channel-12"));
+    assert.ok(exists(".topic-chat-container.channel-12"));
   });
 
   test("Clicking mention notification from outside chat opens the float", async function (assert) {
@@ -558,7 +559,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     await fillIn(".dm-user-chooser input.filter-input", "hawk");
     await users.selectRowByValue("hawk");
     await click("button.create-dm");
-    assert.equal(currentURL(), "/chat/channel/18/@hawk");
+    assert.equal(currentURL(), "/chat/channel/75/@hawk");
     assert.notOk(
       query(".join-channel-btn"),
       "Join channel button is not present"

@@ -264,7 +264,7 @@ export default Service.extend({
       if (!isNaN(value)) {
         value = parseInt(value, 10);
       }
-      return this.allChannels.findBy(key, value);
+      return (this.allChannels || []).findBy(key, value);
     });
   },
 
@@ -371,8 +371,9 @@ export default Service.extend({
     );
   },
 
-  startTrackingChannel(channel) {
-    if (this.allChannels.findBy("id", channel.id)) {
+  async startTrackingChannel(channel) {
+    const existingChannel = await this.getChannelBy("id", channel.id);
+    if (existingChannel) {
       return; // User is already tracking this channel. return!
     }
 
@@ -391,9 +392,9 @@ export default Service.extend({
     this.appEvents.trigger("chat:refresh-channels");
   },
 
-  stopTrackingChannel(channel) {
-    const trackedChannel = this.allChannels.findBy("id", channel.id);
-    if (trackedChannel) {
+  async stopTrackingChannel(channel) {
+    const existingChannel = await this.getChannelBy("id", channel.id);
+    if (existingChannel) {
       this.forceRefreshChannels();
     }
   },

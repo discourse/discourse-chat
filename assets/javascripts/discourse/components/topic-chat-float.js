@@ -144,16 +144,16 @@ export default Component.extend({
   chatEnabledForTopic(topic) {
     if (
       !this.activeChannel ||
-      this.activeChannel.id === topic.chat_channel_id
+      this.activeChannel.id === topic.chat_channel.id
     ) {
       // Don't do anything if viewing another topic
-      this.openChannelForTopic(topic);
+      this.switchChannel(topic.chat_channel);
     }
   },
 
   chatDisabledForTopic(topic) {
     if (
-      this.expanded &&
+      !this.hidden &&
       this.activeChannel &&
       this.activeChannel.id === topic.chat_channel.id
     ) {

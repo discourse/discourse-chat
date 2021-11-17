@@ -133,23 +133,6 @@ $float-height: 530px;
   align-self: flex-end;
 }
 
-.tc-channels {
-  .chat-unread-urgent-indicator,
-  .chat-unread-indicator {
-    width: 10px;
-    height: 10px;
-    opacity: 0.4;
-    margin-left: 0.5em;
-    border-radius: 10px;
-    border: 0;
-    right: 7px;
-    top: calc(50% - 5px);
-    .chat-unread-urgent-indicator-number-wrap {
-      display: none;
-    }
-  }
-}
-
 .topic-chat-container {
   background: var(--secondary);
   border: 1px solid var(--primary-low-mid);
@@ -269,6 +252,24 @@ $float-height: 530px;
   overflow-y: auto;
   height: 100%;
 
+  .chat-unread-urgent-indicator,
+  .chat-unread-indicator {
+    width: 10px;
+    height: 10px;
+    opacity: 0.4;
+    margin-left: 0.5em;
+    border-radius: 10px;
+    border: 0;
+    right: 7px;
+    top: calc(50% - 5px);
+    .chat-unread-urgent-indicator-number-wrap {
+      display: none;
+    }
+  }
+
+  .public-channel-empty-message {
+    margin: 0 0.5em 0.5em 0.5em;
+  }
   .chat-channel-divider {
     font-weight: bold;
     padding: 0.5em;
@@ -967,6 +968,11 @@ $float-height: 530px;
         position: absolute;
         top: 0;
       }
+    }
+
+    .public-channel-empty-message {
+      margin: 0;
+      padding: 0em 2em 0.5em;
     }
 
     .category-chat-private {

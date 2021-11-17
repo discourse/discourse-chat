@@ -3,7 +3,9 @@
 require 'rails_helper'
 
 describe ChatSeeder do
-  fab!(:category) { Fabricate(:category) }
+  fab!(:category) { Fabricate(:private_category, group: Group[:staff]) }
+  fab!(:staff_user1) { Fabricate(:user, groups: [Group[:staff]]) }
+  fab!(:staff_user2) { Fabricate(:user, groups: [Group[:staff]]) }
 
   before do
     SiteSetting.staff_category_id = category.id
@@ -14,6 +16,9 @@ describe ChatSeeder do
     }.to change {
       ChatChannel.where(chatable: category).count
     }.by(1)
+      .and change {
+        UserChatChannelMembership.where(following: true).count
+      }.by(2)
 
     expect(category.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]).to eq(true)
     expect(SiteSetting.needs_chat_seeded).to eq(false)

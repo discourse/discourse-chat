@@ -25,9 +25,18 @@
     }}
   </div>
   <div id="public-channels" class={{publicChannelClasses}}>
-    {{#each publicChannels as |channel|}}
-      {{chat-channel-row channel=channel switchChannel=onSelect}}
-    {{/each}}
+    {{#if publicChannelsEmpty}}
+      <div class="public-channel-empty-message">
+        {{i18n "chat.no_public_channels"}}
+        <a href {{action "openChannelSettingsModal"}}>
+          {{i18n "chat.click_to_join"}}
+        </a>
+      </div>
+    {{else}}
+      {{#each publicChannels as |channel|}}
+        {{chat-channel-row channel=channel switchChannel=onSelect}}
+      {{/each}}
+    {{/if}}
   </div>
 
   <div class="chat-channel-divider">

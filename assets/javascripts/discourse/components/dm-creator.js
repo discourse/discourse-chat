@@ -20,7 +20,7 @@ export default Component.extend({
       data: { usernames: this.usernames.uniq().join(",") },
     }).then((response) => {
       this.set("usernames", null);
-      this.chat.addDirectMessageChannel(response.chat_channel);
+      this.chat.startTrackingChannel(response.chat_channel);
       this.afterCreate(response.chat_channel);
     });
   },

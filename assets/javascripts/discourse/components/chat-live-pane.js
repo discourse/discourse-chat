@@ -579,7 +579,7 @@ export default Component.extend({
         if (
           !hasUnreadMessage &&
           this.currentUser.chat_channel_tracking_state[this.chatChannel.id]
-            .unread_count > 0
+            ?.unread_count > 0
         ) {
           // Weird state here where the chat_channel_tracking_state is wrong. Need to reset it.
           this.chat.resetTrackingStateForChannel(this.chatChannel.id);

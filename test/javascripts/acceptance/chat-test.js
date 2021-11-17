@@ -160,7 +160,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
           chatable_id: 16,
           chatable_type: "DirectMessageChannel",
           chatable_url: null,
-          id: 18,
+          id: 75,
           last_read_message_id: null,
           title: "@hawk",
           unread_count: 0,
@@ -539,7 +539,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     await fillIn(".dm-user-chooser input.filter-input", "hawk");
     await users.selectRowByValue("hawk");
     await click("button.create-dm");
-    assert.equal(currentURL(), "/chat/channel/18/@hawk");
+    assert.equal(currentURL(), "/chat/channel/75/@hawk");
     assert.notOk(
       query(".join-channel-btn"),
       "Join channel button is not present"

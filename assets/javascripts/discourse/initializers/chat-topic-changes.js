@@ -7,7 +7,7 @@ import { withPluginApi } from "discourse/lib/plugin-api";
 
 export const PLUGIN_ID = "discourse-chat";
 
-function toggleChatForTopic(topic, appEvents) {
+function toggleChatForTopic(topic, appEvents, chat) {
   topic.set("has_chat_live", !topic.has_chat_live);
 
   const action = topic.has_chat_live ? "enable" : "disable";
@@ -18,13 +18,19 @@ function toggleChatForTopic(topic, appEvents) {
       chatable_id: topic.id,
     },
   })
-    .then(() => {
+    .then((response) => {
+      if (topic.has_chat_live) {
+        topic.set("chat_channel", response.chat_channel);
+        chat.startTrackingChannel(response.chat_channel);
+      } else {
+        chat.stopTrackingChannel(topic.chat_channel);
+      }
       appEvents.trigger(`topic-chat-${action}`, topic);
     })
     .catch(popupAjaxError);
 }
 
-function makeTopicChanges(api, appEvents) {
+function makeTopicChanges(api, appEvents, chat) {
   RawTopicStatus.reopen({
     @discourseComputed
     statuses() {
@@ -82,14 +88,14 @@ function makeTopicChanges(api, appEvents) {
   api.modifyClass("component:topic-admin-menu-button", {
     pluginId: PLUGIN_ID,
     toggleChat() {
-      return toggleChatForTopic(this.topic, appEvents);
+      return toggleChatForTopic(this.topic, appEvents, chat);
     },
   });
 
   api.modifyClass("component:topic-timeline", {
     pluginId: PLUGIN_ID,
     toggleChat() {
-      return toggleChatForTopic(this.topic, appEvents);
+      return toggleChatForTopic(this.topic, appEvents, chat);
     },
   });
 
@@ -107,8 +113,9 @@ export default {
     const currentUser = container.lookup("current-user:main");
     if (currentUser?.has_chat_enabled) {
       const appEvents = container.lookup("service:app-events");
+      const chat = container.lookup("service:chat");
       withPluginApi("0.12.1", (api) => {
-        makeTopicChanges(api, appEvents);
+        makeTopicChanges(api, appEvents, chat);
       });
     }
   },

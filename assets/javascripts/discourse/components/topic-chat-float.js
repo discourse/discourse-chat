@@ -1,6 +1,7 @@
 import Component from "@ember/component";
 import discourseComputed, { observes } from "discourse-common/utils/decorators";
 import getURL from "discourse-common/lib/get-url";
+import popupAjaxError from "discourse/lib/ajax-error";
 import { action } from "@ember/object";
 import {
   CHAT_VIEW,
@@ -38,10 +39,14 @@ export default Component.extend({
     this._checkSize();
     this.appEvents.on("chat:navigated-to-full-page", this, "close");
     this.appEvents.on("chat:toggle-open", this, "toggleChat");
-    this.appEvents.on("chat:open-channel-for", this, "openChannelFor");
+    this.appEvents.on(
+      "chat:open-channel-for-topic",
+      this,
+      "openChannelForTopic"
+    );
     this.appEvents.on("chat:open-channel", this, "switchChannel");
     this.appEvents.on("chat:open-message", this, "openChannelAtMessage");
-    this.appEvents.on("chat:refresh-channels", this, "fetchChannels");
+    this.appEvents.on("chat:refresh-channels", this, "refreshChannels");
     this.appEvents.on("topic-chat-enable", this, "chatEnabledForTopic");
     this.appEvents.on("topic-chat-disable", this, "chatDisabledForTopic");
     this.appEvents.on("composer:closed", this, "_checkSize");
@@ -65,10 +70,14 @@ export default Component.extend({
     if (this.appEvents) {
       this.appEvents.off("chat:navigated-to-full-page", this, "close");
       this.appEvents.off("chat:toggle-open", this, "toggleChat");
-      this.appEvents.off("chat:open-channel-for", this, "openChannelFor");
+      this.appEvents.off(
+        "chat:open-channel-for-topic",
+        this,
+        "openChannelForTopic"
+      );
       this.appEvents.off("chat:open-channel", this, "switchChannel");
       this.appEvents.off("chat:open-message", this, "openChannelAtMessage");
-      this.appEvents.off("chat:refresh-channels", this, "fetchChannels");
+      this.appEvents.off("chat:refresh-channels", this, "refreshChannels");
       this.appEvents.off("topic-chat-enable", this, "chatEnabledForTopic");
       this.appEvents.off("topic-chat-disable", this, "chatDisabledForTopic");
       this.appEvents.off("composer:closed", this, "_checkSize");
@@ -102,9 +111,23 @@ export default Component.extend({
     this.appEvents.trigger("chat:rerender-header");
   },
 
-  openChannelFor(chatable) {
-    if (chatable.chat_channel) {
-      this.switchChannel(chatable.chat_channel);
+  async openChannelForTopic(channel) {
+    if (!channel) {
+      return;
+    }
+
+    // Check to see if channel is followed or not.
+    // If it is, switch channel. If not, start following then switch.
+    const isFollowed = await this.chat.isChannelFollowed(channel);
+    if (!isFollowed) {
+      ajax(`/chat/chat_channels/${channel.id}/follow`, { method: "POST" })
+        .then(() => {
+          this.chat.startTrackingChannel(channel);
+          this.switchChannel(channel);
+        })
+        .catch(popupAjaxError);
+    } else {
+      this.switchChannel(channel);
     }
   },
 
@@ -121,19 +144,20 @@ export default Component.extend({
   chatEnabledForTopic(topic) {
     if (
       !this.activeChannel ||
-      this.activeChannel.id === topic.chat_channel_id
+      this.activeChannel.id === topic.chat_channel.id
     ) {
       // Don't do anything if viewing another topic
-      this.openChannelFor(topic);
+      this.switchChannel(topic.chat_channel);
     }
   },
 
   chatDisabledForTopic(topic) {
     if (
-      this.expanded &&
+      !this.hidden &&
       this.activeChannel &&
-      this.activeChannel.id === topic.chat_channel_id
+      this.activeChannel.id === topic.chat_channel.id
     ) {
+      this.set("activeChannel", null);
       this.close();
     }
   },
@@ -280,6 +304,13 @@ export default Component.extend({
         this.fetchChannels();
       }
     });
+  },
+
+  @action
+  refreshChannels() {
+    if (this.view === LIST_VIEW) {
+      this.fetchChannels();
+    }
   },
 
   @action

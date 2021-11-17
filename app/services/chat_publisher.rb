@@ -61,6 +61,10 @@ module ChatPublisher
     end
   end
 
+  def self.publish_chat_changed_for_topic(topic_id)
+    MessageBus.publish("/topic/#{topic_id}", reload_topic: true)
+  end
+
   private
 
   def self.permissions(chat_channel)

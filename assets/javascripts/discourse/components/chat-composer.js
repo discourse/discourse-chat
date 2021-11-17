@@ -270,6 +270,7 @@ export default Component.extend(
           template: findRawTemplate("user-selector-autocomplete"),
           key: "@",
           width: "100%",
+          treatAsTextarea: true,
           autoSelectFirstSuggestion: true,
           transformComplete: (v) => v.username || v.name,
           dataSource: (term) => userSearch({ term, includeGroups: false }),
@@ -283,6 +284,7 @@ export default Component.extend(
       $textarea.autocomplete({
         template: findRawTemplate("category-tag-autocomplete"),
         key: "#",
+        treatAsTextarea: true,
         afterComplete: (value) => {
           this.set("value", value);
           return this._focusTextArea();
@@ -314,6 +316,7 @@ export default Component.extend(
           this.set("value", text);
           this._focusTextArea();
         },
+        treatAsTextarea: true,
 
         onKeyUp: (text, cp) => {
           const matches = /(?:^|[\s.\?,@\/#!%&*;:\[\]{}=\-_()])(:(?!:).?[\w-]*:?(?!:)(?:t\d?)?:?) ?$/gi.exec(

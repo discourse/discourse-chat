@@ -57,7 +57,7 @@ export default Component.extend({
     this.appEvents.on(
       "composer:resize-started",
       this,
-      "_startDynamicCheckSiz-topice"
+      "_startDynamicCheckSize"
     );
     this.appEvents.on("composer:resize-ended", this, "_clearDynamicCheckSize");
   },

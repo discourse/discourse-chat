@@ -198,7 +198,7 @@ export default Service.extend({
     };
   },
 
-  isChannelFollowed(channel) {
+  async isChannelFollowed(channel) {
     return this.getChannelBy("id", channel.id);
   },
 

@@ -10,7 +10,6 @@ export const PLUGIN_ID = "discourse-chat";
 
 function toggleChatForTopic(topic, appEvents, chat) {
   topic.set("has_chat_live", !topic.has_chat_live);
-  topic.notifyPropertyChange("has_chat_live");
 
   const action = topic.has_chat_live ? "enable" : "disable";
   return ajax(`/chat/${action}`, {

@@ -86,12 +86,15 @@ RSpec.describe DiscourseChat::ChatController do
         expect(topic.reload.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]).to eq(nil)
       end
 
-      it "Enables chat" do
+      it "Enables chat and follows the channel" do
         sign_in(admin)
-        post "/chat/enable.json", params: { chatable_type: "topic", chatable_id: topic.id }
+        expect {
+          post "/chat/enable.json", params: { chatable_type: "topic", chatable_id: topic.id }
+        }.to change {
+          admin.user_chat_channel_memberships.count
+        }.by(1)
         expect(response.status).to eq(200)
         expect(topic.chat_channel).to be_present
-
         expect(topic.reload.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]).to eq(true)
       end
     end

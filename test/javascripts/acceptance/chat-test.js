@@ -169,26 +169,6 @@ acceptance("Discourse Chat - without unread", function (needs) {
         },
       });
     });
-
-    server.post("/chat/enable", () => {
-      return helper.response({
-        chat_channel: {
-          id: 12,
-          chatable_id: 280,
-          chatable_type: "Topic",
-          chat_channels: [],
-          title: "internationalization localization",
-        },
-      });
-    });
-  });
-
-  test("enabling chat on a topic opens the channel in chat", async function (assert) {
-    await visit("/t/internationalization-localization/280");
-    assert.notOk(exists(".topic-chat-container.channel-12"));
-    await click(".topic-timeline .toggle-admin-menu");
-    await click(".topic-admin-popup-menu .topic-admin-chat .popup-menu-btn");
-    assert.ok(exists(".topic-chat-container.channel-12"));
   });
 
   test("Clicking mention notification from outside chat opens the float", async function (assert) {

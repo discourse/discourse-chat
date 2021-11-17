@@ -20,7 +20,7 @@ describe ChatChannel do
       expect(private_category_channel.allowed_user_ids).to eq(nil)
       expect(private_topic_channel.allowed_user_ids).to eq(nil)
       expect(public_topic_channel.allowed_user_ids).to eq(nil)
-      expect(direct_message_channel.allowed_user_ids).to match([user1.id, user2.id])
+      expect(direct_message_channel.allowed_user_ids).to match_array([user1.id, user2.id])
     end
   end
 

@@ -25,7 +25,7 @@ describe ChatSeeder do
   end
 
   it "does nothing when 'SiteSetting.needs_chat_seeded' is false" do
-    SiteSetting.needs_chat_seeded = false;
+    SiteSetting.needs_chat_seeded = false
     expect {
       ChatSeeder.new.execute
     }.to change {

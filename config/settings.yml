@@ -9,3 +9,6 @@ plugins:
     default: "3" # 3 is staff group id
     allow_any: false
     refresh: true
+  needs_chat_seeded:
+    default: true
+    hidden: true

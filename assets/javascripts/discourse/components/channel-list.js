@@ -4,6 +4,7 @@ import showModal from "discourse/lib/show-modal";
 import { action, computed } from "@ember/object";
 import { schedule } from "@ember/runloop";
 import { inject as service } from "@ember/service";
+import { empty } from "@ember/object/computed";
 
 export default Component.extend({
   classNames: "tc-channels",
@@ -12,6 +13,7 @@ export default Component.extend({
   creatingDmChannel: false,
   inSidebar: false,
   toggleSection: null,
+  publicChannelsEmpty: empty("publicChannels"),
   chat: service(),
 
   didInsertElement() {

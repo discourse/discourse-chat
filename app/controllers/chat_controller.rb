@@ -153,7 +153,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
 
     messages = messages.order(created_at: :desc).limit(params[:page_size])
 
-    if @chat_channel.site_channel? || guardian.can_moderate_chat?(@chatable)
+    if guardian.can_moderate_chat?(@chatable)
       messages = messages.with_deleted
     end
 
@@ -170,14 +170,9 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
 
   def delete
     chat_channel = @message.chat_channel
-
-    if chat_channel.site_channel?
-      guardian.ensure_can_access_site_chat!
-    else
-      chatable = chat_channel.chatable
-      guardian.ensure_can_see!(chatable)
-      guardian.ensure_can_delete_chat!(@message, chatable)
-    end
+    chatable = chat_channel.chatable
+    guardian.ensure_can_see!(chatable)
+    guardian.ensure_can_delete_chat!(@message, chatable)
 
     updated = @message.update(deleted_at: Time.now, deleted_by_id: current_user.id)
     if updated
@@ -190,13 +185,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
 
   def restore
     chat_channel = @message.chat_channel
-
-    if chat_channel.site_channel?
-      guardian.ensure_can_access_site_chat!
-    else
-      guardian.ensure_can_restore_chat!(@message, chat_channel.chatable)
-    end
-
+    guardian.ensure_can_restore_chat!(@message, chat_channel.chatable)
     updated = @message.update(deleted_at: nil, deleted_by_id: nil)
     if updated
       ChatPublisher.publish_restore!(chat_channel, @message)
@@ -213,25 +202,17 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
   def lookup_message
     chat_channel = @message.chat_channel
     chatable = nil
-    if chat_channel.site_channel?
-      include_deleted = true
-      guardian.ensure_can_access_site_chat!
-    else
-      chatable = chat_channel.chatable
-      guardian.ensure_can_see!(chatable)
-      include_deleted = guardian.can_moderate_chat?(chatable)
-    end
+    chatable = chat_channel.chatable
+    guardian.ensure_can_see!(chatable)
+    include_deleted = guardian.can_moderate_chat?(chatable)
     base_query = ChatMessage
       .includes(:in_reply_to)
       .includes(:revisions)
       .includes(:user)
       .includes(chat_webhook_event: :incoming_chat_webhook)
+      .includes(chat_channel: :chatable)
+      .where(chat_channel: chat_channel)
 
-    unless chat_channel.site_channel?
-      base_query = base_query.includes(chat_channel: :chatable)
-    end
-
-    base_query = base_query.where(chat_channel: chat_channel)
     base_query = base_query.with_deleted if include_deleted
     past_messages = base_query
       .where("created_at < ?", @message.created_at)

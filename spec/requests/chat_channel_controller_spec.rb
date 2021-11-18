@@ -93,14 +93,13 @@ RSpec.describe DiscourseChat::ChatChannelsController do
         expect(response.parsed_body["public_channels"].detect { |channel| channel["id"] == private_category_cc.id }["chat_channels"].first["chatable_id"]).to eq(private_topic_cc.chatable_id)
       end
 
-      it "returns all channels for admin, including site chat" do
+      it "returns all channels for admin" do
         sign_in(admin)
         get "/chat/chat_channels.json"
 
         expect(response.status).to eq(200)
         expect(response.parsed_body["public_channels"].map { |channel| channel["chatable_id"] })
           .to match_array([
-            DiscourseChat::SITE_CHAT_ID,
             public_category_cc.chatable_id,
             private_category_cc.chatable_id,
             one_off_cc.chatable_id,

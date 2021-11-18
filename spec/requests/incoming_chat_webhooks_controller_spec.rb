@@ -4,7 +4,7 @@ require 'rails_helper'
 require_relative '../fabricators/chat_fabricator'
 
 RSpec.describe DiscourseChat::IncomingChatWebhooksController do
-  fab!(:chat_channel) { Fabricate(:site_chat_channel) }
+  fab!(:chat_channel) { Fabricate(:chat_channel) }
   fab!(:webhook) { Fabricate(:incoming_chat_webhook, chat_channel: chat_channel) }
 
   describe "#create_message" do

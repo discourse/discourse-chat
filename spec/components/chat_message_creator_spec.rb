@@ -10,7 +10,6 @@ describe DiscourseChat::ChatMessageCreator do
   fab!(:user2) { Fabricate(:user) }
   fab!(:user3) { Fabricate(:user) }
   fab!(:user_without_memberships) { Fabricate(:user) }
-  fab!(:site_chat_channel) { Fabricate(:site_chat_channel) }
   fab!(:public_chat_channel) { Fabricate(:chat_channel, chatable: Fabricate(:topic)) }
   fab!(:direct_message_channel) { Fabricate(:chat_channel, chatable: Fabricate(:direct_message_channel, users: [user1, user2])) }
 
@@ -19,9 +18,6 @@ describe DiscourseChat::ChatMessageCreator do
     SiteSetting.chat_allowed_groups = Group::AUTO_GROUPS[:everyone]
 
     # Create channel memberships
-    [admin1, admin2].each do |user|
-      Fabricate(:user_chat_channel_membership, chat_channel: site_chat_channel, user: user)
-    end
     [admin1, admin2, user1, user2, user3].each do |user|
       Fabricate(:user_chat_channel_membership, chat_channel: public_chat_channel, user: user)
     end
@@ -141,16 +137,6 @@ describe DiscourseChat::ChatMessageCreator do
         content: "hi @#{user2.username}"
       )
     }.to change { Notification.count }.by(0)
-  end
-
-  it "created mention notifications only for staff in site channel" do
-    expect {
-      DiscourseChat::ChatMessageCreator.create(
-        chat_channel: site_chat_channel,
-        user: admin1,
-        content: "Hey @#{admin2.username}, @#{user2.username} and @#{user3.username}"
-      )
-    }.to change { Notification.count }.by(1)
   end
 
   it "creates only mention notifications for users with access in private chat " do

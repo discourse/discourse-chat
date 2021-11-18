@@ -12,6 +12,7 @@ en:
       category_chat_enabled: "Chat enabled for category"
       chat_channels: "Channels"
       chat_channels_with_count: "Channels (%{count} online)"
+      click_to_join: "Click here to view available channels."
       close: "Close"
       collapse: "Collapse Chat Drawer"
       deleted: "A message was deleted. [view]"
@@ -40,6 +41,7 @@ en:
       minimal_view:
         title: "Minimal chat view"
         description: "Hides all non-chat related sidebar items when on the chat page. Applies only to the current browser."
+      no_public_channels: "You have not joined any channels."
       only_chat_push_notifications:
         title: "Only send chat push notifications"
         description: "Block all non-chat push notifications from being sent"
@@ -89,9 +91,6 @@ en:
         title: "Personal chat"
         new: "New personal chat"
         create: "Go"
-
-      channels:
-        staff: "Staff-only"
 
       incoming_webhooks:
         back: "Back"

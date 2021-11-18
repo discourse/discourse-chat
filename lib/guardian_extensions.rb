@@ -1,10 +1,6 @@
 # frozen_string_literal: true
 
 module DiscourseChat::GuardianExtensions
-  def can_access_site_chat?
-    @user.staff?
-  end
-
   def can_moderate_chat?(chatable)
     chatable.class.name == "Topic" ?
       can_perform_action_available_to_group_moderators?(chatable) :
@@ -33,8 +29,6 @@ module DiscourseChat::GuardianExtensions
       return false unless chat_channel.chatable
 
       can_see_category?(chat_channel.chatable)
-    elsif chat_channel.site_channel?
-      can_access_site_chat?
     else
       true
     end

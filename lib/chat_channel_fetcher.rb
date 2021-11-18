@@ -7,8 +7,7 @@ module DiscourseChat::ChatChannelFetcher
       public_channels: structured_public_channels(guardian, memberships),
       direct_message_channels: secured_direct_message_channels(
         guardian.user.id,
-        memberships,
-        include_chatables: true
+        memberships
       ),
     }
   end
@@ -17,7 +16,6 @@ module DiscourseChat::ChatChannelFetcher
     channels = secured_public_channels(guardian, memberships, scope_with_membership: scope_with_membership)
     category_channels = channels.select(&:category_channel?)
     topic_channels = channels.select(&:topic_channel?)
-    site_channel = channels.detect(&:site_channel?)
     tag_channels = channels.select(&:tag_channel?)
     added_channel_ids = category_channels.map(&:id)
 
@@ -32,18 +30,13 @@ module DiscourseChat::ChatChannelFetcher
 
     remaining_channels = topic_channels.select { |channel| !added_channel_ids.include?(channel.id) }
     structured = structured.concat(remaining_channels)
-    structured.prepend(site_channel) if site_channel
-
     structured
   end
 
-  def self.secured_public_channels(guardian, memberships, include_chatables: true, scope_with_membership: true)
-    channels = ChatChannel
-    if include_chatables
-      channels = channels.includes(:chat_messages)
-    end
+  def self.secured_public_channels(guardian, memberships, scope_with_membership: true)
+    channels = ChatChannel.includes(:chatable, :chat_messages)
 
-    channels = channels.where(chatable_type: [DiscourseChat::SITE_CHAT_TYPE, "Topic", "Category", "Tag"])
+    channels = channels.where(chatable_type: ["Topic", "Category", "Tag"])
     if scope_with_membership
       channels = channels
         .joins(:user_chat_channel_memberships)
@@ -102,10 +95,10 @@ module DiscourseChat::ChatChannelFetcher
     channel
   end
 
-  def self.secured_direct_message_channels(user_id, memberships, include_chatables: false)
-    channels = ChatChannel.includes(:chat_messages)
-    channels = channels.includes(chatable: { direct_message_users: :user }) if include_chatables
-    channels = channels
+  def self.secured_direct_message_channels(user_id, memberships)
+    channels = ChatChannel
+      .includes(chatable: { direct_message_users: :user })
+      .includes(:chat_messages)
       .joins(:user_chat_channel_memberships)
       .where(user_chat_channel_memberships: { user_id: user_id, following: true })
       .where(chatable_type: "DirectMessageChannel")

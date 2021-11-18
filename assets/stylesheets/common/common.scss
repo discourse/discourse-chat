@@ -1210,8 +1210,11 @@ $float-height: 530px;
     position: relative;
   }
 
+  .tag-chat-badge,
   .category-chat-badge,
   .topic-chat-badge {
+    display: flex;
+
     .d-icon {
       height: 1.125em;
       width: 1.125em;

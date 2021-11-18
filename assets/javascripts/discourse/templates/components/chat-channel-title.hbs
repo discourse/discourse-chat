@@ -4,7 +4,6 @@
       {{channel.chatable.users.length}}
     </span>
     <span class="dm-usernames">{{usernames}}</span>
-
   {{else}}
     <div class="dm-single-user">
       <div class="tc-avatar-container">
@@ -13,7 +12,6 @@
       </div>
       <span class="dm-usernames">{{channel.chatable.users.firstObject.username}}</span>
     </div>
-
   {{/if}}
 {{else if (eq channel.chatable_type "Tag")}}
   <span class="tag-chat-badge">

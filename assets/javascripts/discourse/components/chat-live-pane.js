@@ -241,9 +241,9 @@ export default Component.extend({
         // Reply to message has already been added
         messageData.in_reply_to = inReplyToMessage;
       } else {
-        messageData.in_reply_to.cookedMessage = this.cook(
-          messageData.in_reply_to.message
-        );
+        // messageData.in_reply_to.cookedMessage = this.cook(
+        // messageData.in_reply_to.message
+        // );
         inReplyToMessage = EmberObject.create(messageData.in_reply_to);
         this._unloadedReplyIds.push(inReplyToMessage.id);
         this.messageLookup[inReplyToMessage.id] = inReplyToMessage;
@@ -265,7 +265,7 @@ export default Component.extend({
       }
     }
     messageData.expanded = !messageData.deleted_at;
-    messageData.cookedMessage = this.cook(messageData.message);
+    // messageData.cookedMessage = this.cook(messageData.message);
     messageData.messageLookupId = this._generateMessageLookupId(messageData);
     const prepared = EmberObject.create(messageData);
     this.messageLookup[messageData.messageLookupId] = prepared;
@@ -451,6 +451,7 @@ export default Component.extend({
         stagedMessage.setProperties({
           staged: false,
           id: data.topic_chat_message.id,
+          excerpt: data.topic_chat_message.excerpt,
         });
         this.messageLookup[data.topic_chat_message.id] = stagedMessage;
         delete this.messageLookup[`staged-${data.stagedId}`];
@@ -475,7 +476,8 @@ export default Component.extend({
     if (message) {
       message.setProperties({
         message: data.topic_chat_message.message,
-        cookedMessage: this.cook(data.topic_chat_message.message),
+        cooked: data.topic_chat_message.cooked,
+        excerpt: data.topic_chat_message.excerpt,
         edited: true,
       });
     }
@@ -619,7 +621,11 @@ export default Component.extend({
     }
     this.set("sendingloading", true);
     this.set("_nextStagedMessageId", this._nextStagedMessageId + 1);
-    let data = { message, stagedId: this._nextStagedMessageId };
+    let data = {
+      message,
+      cooked: this.cook(message),
+      stagedId: this._nextStagedMessageId,
+    };
     if (this.replyToMsg) {
       data.in_reply_to_id = this.replyToMsg.id;
     }

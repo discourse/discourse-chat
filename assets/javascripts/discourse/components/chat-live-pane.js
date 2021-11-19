@@ -241,9 +241,6 @@ export default Component.extend({
         // Reply to message has already been added
         messageData.in_reply_to = inReplyToMessage;
       } else {
-        // messageData.in_reply_to.cookedMessage = this.cook(
-        // messageData.in_reply_to.message
-        // );
         inReplyToMessage = EmberObject.create(messageData.in_reply_to);
         this._unloadedReplyIds.push(inReplyToMessage.id);
         this.messageLookup[inReplyToMessage.id] = inReplyToMessage;
@@ -265,7 +262,6 @@ export default Component.extend({
       }
     }
     messageData.expanded = !messageData.deleted_at;
-    // messageData.cookedMessage = this.cook(messageData.message);
     messageData.messageLookupId = this._generateMessageLookupId(messageData);
     const prepared = EmberObject.create(messageData);
     this.messageLookup[messageData.messageLookupId] = prepared;

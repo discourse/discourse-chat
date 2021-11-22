@@ -109,7 +109,7 @@ export function allChannels() {
 }
 
 export const chatView = {
-  topic_chat_view: {
+  chat_view: {
     can_flag: true,
     can_delete_self: true,
     can_delete_others: false,
@@ -117,6 +117,7 @@ export const chatView = {
       {
         id: 174,
         message: messageContents[0],
+        cooked: messageContents[0],
         action_code: null,
         created_at: "2021-07-20T08:14:16.950Z",
         flag_count: 0,
@@ -130,6 +131,7 @@ export const chatView = {
       {
         id: 175,
         message: messageContents[1],
+        cooked: messageContents[1],
         action_code: null,
         created_at: "2021-07-20T08:14:22.043Z",
         in_reply_to_id: 174,
@@ -144,6 +146,7 @@ export const chatView = {
       {
         id: 176,
         message: messageContents[2],
+        cooked: messageContents[2],
         action_code: null,
         created_at: "2021-07-20T08:14:25.043Z",
         in_reply_to_id: 174,

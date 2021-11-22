@@ -12,6 +12,7 @@ module Jobs
             cooked: processor.html,
             cooked_version: ChatMessage::BAKED_VERSION
           )
+          ChatPublisher.publish_processed!(chat_message)
         end
       end
     end

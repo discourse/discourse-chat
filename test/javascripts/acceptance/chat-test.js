@@ -189,8 +189,13 @@ acceptance("Discourse Chat - without unread", function (needs) {
   test("Chat messages are populated when a channel is entered", async function (assert) {
     await visit("/chat/channel/9/Site");
     const messages = queryAll(".tc-message .tc-text");
-    assert.equal(messages[0].textContent.trim(), messageContents[0]);
-    assert.equal(messages[1].textContent.trim(), messageContents[1]);
+
+    const done = assert.async();
+    next(async () => {
+      assert.equal(messages[0].textContent.trim(), messageContents[0]);
+      assert.equal(messages[1].textContent.trim(), messageContents[1]);
+      done();
+    });
   });
 
   test("Message controls are present and correct for permissions", async function (assert) {
@@ -306,7 +311,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     publishToMessageBus("/chat/9", {
       typ: "sent",
       stagedId: 1,
-      topic_chat_message: {
+      chat_message: {
         id: 202,
         user: {
           id: 1,
@@ -341,6 +346,25 @@ acceptance("Discourse Chat - without unread", function (needs) {
         lastMessage.querySelector(".tc-text").innerText.trim(),
         nextMessageContent
       );
+      done();
+    });
+  });
+
+  test("cooked processing messages are handled properly", async function (assert) {
+    await visit("/chat/channel/9/Site");
+
+    const cooked = "<h1>hello there</h1>";
+    publishToMessageBus(`/chat/9`, {
+      typ: "processed",
+      chat_message: {
+        cooked,
+        id: 175,
+      },
+    });
+
+    const done = assert.async();
+    next(async () => {
+      assert.ok(query(".tc-message-175 .tc-text").innerHTML.includes(cooked));
       done();
     });
   });

@@ -165,7 +165,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
       chatable: @chatable,
       messages: messages
     )
-    render_serialized(chat_view, ChatViewSerializer, root: :topic_chat_view)
+    render_serialized(chat_view, ChatViewSerializer, root: :chat_view)
   end
 
   def delete
@@ -229,7 +229,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
       chatable: chatable,
       messages: messages
     )
-    render_serialized(chat_view, ChatViewSerializer, root: :topic_chat_view)
+    render_serialized(chat_view, ChatViewSerializer, root: :chat_view)
   end
 
   def set_user_chat_status

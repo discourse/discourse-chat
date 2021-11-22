@@ -2,7 +2,7 @@
 
 module ChatPublisher
   def self.publish_new!(chat_channel, msg, staged_id)
-    content = ChatBaseMessageSerializer.new(msg, { scope: anonymous_guardian, root: :topic_chat_message }).as_json
+    content = ChatBaseMessageSerializer.new(msg, { scope: anonymous_guardian, root: :chat_message }).as_json
     content[:typ] = :sent
     content[:stagedId] = staged_id
     permissions = permissions(chat_channel)
@@ -10,8 +10,20 @@ module ChatPublisher
     MessageBus.publish("/chat/#{chat_channel.id}/new-messages", { message_id: msg.id, user_id: msg.user_id }, permissions)
   end
 
+  def self.publish_processed!(chat_message)
+    chat_channel = chat_message.chat_channel
+    content = {
+      typ: :processed,
+      chat_message: {
+        id: chat_message.id,
+        cooked: chat_message.cooked
+      }
+    }
+    MessageBus.publish("/chat/#{chat_channel.id}", content.as_json, permissions(chat_channel))
+  end
+
   def self.publish_edit!(chat_channel, msg)
-    content = ChatBaseMessageSerializer.new(msg, { scope: anonymous_guardian, root: :topic_chat_message }).as_json
+    content = ChatBaseMessageSerializer.new(msg, { scope: anonymous_guardian, root: :chat_message }).as_json
     content[:typ] = :edit
     MessageBus.publish("/chat/#{chat_channel.id}", content.as_json, permissions(chat_channel))
   end
@@ -29,7 +41,7 @@ module ChatPublisher
   end
 
   def self.publish_restore!(chat_channel, msg)
-    content = ChatBaseMessageSerializer.new(msg, { scope: anonymous_guardian, root: :topic_chat_message }).as_json
+    content = ChatBaseMessageSerializer.new(msg, { scope: anonymous_guardian, root: :chat_message }).as_json
     content[:typ] = :restore
     MessageBus.publish("/chat/#{chat_channel.id}", content.as_json, permissions(chat_channel))
   end

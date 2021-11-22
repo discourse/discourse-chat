@@ -134,6 +134,14 @@ after_initialize do
     results
   end
 
+  add_to_serializer(:site, :chat_pretty_text_features) do
+    ChatMessage::COOK_FEATURES.as_json
+  end
+
+  add_to_serializer(:site, :include_chat_pretty_text_features?) do
+    SiteSetting.chat_enabled && scope.can_chat?(scope.user)
+  end
+
   add_to_serializer(:listable_topic, :has_chat_live) do
     true
   end

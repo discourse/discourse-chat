@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 class DiscourseChat::ChatMessageProcessor
-  include ::PostProcessorMixin
+  include ::CookedProcessorMixin
 
   def initialize(chat_message, has_oneboxes: false)
-    @post = chat_message
+    @model = chat_message
     @has_oneboxes = has_oneboxes
     @previous_cooked = (chat_message.cooked || "").dup
     @cateogry_id = nil

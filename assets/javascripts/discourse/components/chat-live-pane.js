@@ -412,7 +412,6 @@ export default Component.extend({
   },
 
   handleMessage(data) {
-    console.log(data);
     switch (data.typ) {
       case "sent":
         this.handleSentMessage(data);

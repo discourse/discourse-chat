@@ -17,7 +17,7 @@ def rebake_uncooked_chat_messages_all_sites
 end
 
 def rebake_uncooked_chat_messages
-  puts "Rebaking uncooked posts on #{RailsMultisite::ConnectionManagement.current_db}"
+  puts "Rebaking uncooked chat messages on #{RailsMultisite::ConnectionManagement.current_db}"
   uncooked = ChatMessage.uncooked
 
   rebaked = 0
@@ -38,7 +38,7 @@ def rebake_uncooked_chat_messages
     print_status(rebaked += 1, total)
   end
 
-  puts "", "#{rebaked} posts done!", ""
+  puts "", "#{rebaked} chat messages done!", ""
 end
 
 def rebake_chat_message(chat_message, opts = {})

@@ -189,13 +189,8 @@ acceptance("Discourse Chat - without unread", function (needs) {
   test("Chat messages are populated when a channel is entered", async function (assert) {
     await visit("/chat/channel/9/Site");
     const messages = queryAll(".tc-message .tc-text");
-
-    const done = assert.async();
-    next(async () => {
-      assert.equal(messages[0].textContent.trim(), messageContents[0]);
-      assert.equal(messages[1].textContent.trim(), messageContents[1]);
-      done();
-    });
+    assert.equal(messages[0].textContent.trim(), messageContents[0]);
+    assert.equal(messages[1].textContent.trim(), messageContents[1]);
   });
 
   test("Message controls are present and correct for permissions", async function (assert) {

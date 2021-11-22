@@ -28,15 +28,14 @@ class ChatMessage < ActiveRecord::Base
     where('cooked_version <> ? or cooked_version IS NULL', BAKED_VERSION)
   end
 
-  def self.cook(message, opts = { features: COOK_FEATURES })
-    cooked = PrettyText.cook(message, opts)
+  def self.cook(message, opts = {})
+    cooked = PrettyText.cook(message, features: COOK_FEATURES)
     result = Oneboxer.apply(cooked) do |url|
       if opts[:invalidate_oneboxes]
         Oneboxer.invalidate(url)
         InlineOneboxer.invalidate(url)
       end
       onebox = Oneboxer.cached_onebox(url)
-      @has_oneboxes = true if onebox.present?
       onebox
     end
 
@@ -44,19 +43,23 @@ class ChatMessage < ActiveRecord::Base
     cooked
   end
 
-  def cook(opts = { features: COOK_FEATURES })
-    self.cooked = PrettyText.cook(self.message, opts)
+  def cook
+    self.cooked = self.class.cook(self.message)
     self.cooked_version = BAKED_VERSION
   end
 
-  def rebake!(invalidate_broken_images: false, invalidate_oneboxes: false, priority: nil)
-    new_cooked = self.class.cook(message, invalidate_oneboxes: invalidate_oneboxes, features: COOK_FEATURES)
-    old_cooked = cooked
-
+  def rebake!(invalidate_oneboxes: false, priority: nil)
+    new_cooked = self.class.cook(message, invalidate_oneboxes: invalidate_oneboxes)
     update_columns(
       cooked: new_cooked,
       cooked_version: BAKED_VERSION
     )
+    args = {
+      chat_message_id: self.id,
+    }
+    args[:queue] = priority.to_s if priority && priority != :normal
+
+    Jobs.enqueue(:process_chat_message, args)
   end
 
   COOK_FEATURES = {

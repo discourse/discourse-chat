@@ -25,7 +25,7 @@ class DiscourseChat::ChatMessageUpdater
       save_revision
       update_mention_notifications
       ChatPublisher.publish_edit!(@chat_channel, @chat_message)
-      Jobs.enqueue(:process_chat_message, { chat_message_id: @chat_message.id, has_oneboxes: @chat_message.has_oneboxes })
+      Jobs.enqueue(:process_chat_message, { chat_message_id: @chat_message.id })
     rescue => error
       puts error.inspect
       @error = error

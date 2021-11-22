@@ -41,7 +41,7 @@ class DiscourseChat::ChatMessageCreator
       mentioned_user_ids = create_mention_notifications
       notify_watching_users(except: [@user.id] + mentioned_user_ids)
       ChatPublisher.publish_new!(@chat_channel, @chat_message, @staged_id)
-      Jobs.enqueue(:process_chat_message, { chat_message_id: @chat_message.id, has_oneboxes: @chat_message.has_oneboxes })
+      Jobs.enqueue(:process_chat_message, { chat_message_id: @chat_message.id })
     rescue => error
       @error = error
       if Rails.env.test?

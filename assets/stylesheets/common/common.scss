@@ -1122,8 +1122,10 @@ $float-height: 530px;
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
+      color: var(--primary);
       .category-chat-name,
       .topic-chat-name,
+      .tag-chat-name,
       .chat-name {
         color: var(--primary);
       }

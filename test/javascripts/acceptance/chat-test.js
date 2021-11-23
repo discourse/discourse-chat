@@ -306,7 +306,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     publishToMessageBus("/chat/9", {
       typ: "sent",
       stagedId: 1,
-      topic_chat_message: {
+      chat_message: {
         id: 202,
         user: {
           id: 1,
@@ -341,6 +341,25 @@ acceptance("Discourse Chat - without unread", function (needs) {
         lastMessage.querySelector(".tc-text").innerText.trim(),
         nextMessageContent
       );
+      done();
+    });
+  });
+
+  test("cooked processing messages are handled properly", async function (assert) {
+    await visit("/chat/channel/9/Site");
+
+    const cooked = "<h1>hello there</h1>";
+    publishToMessageBus(`/chat/9`, {
+      typ: "processed",
+      chat_message: {
+        cooked,
+        id: 175,
+      },
+    });
+
+    const done = assert.async();
+    next(async () => {
+      assert.ok(query(".tc-message-175 .tc-text").innerHTML.includes(cooked));
       done();
     });
   });

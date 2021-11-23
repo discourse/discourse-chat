@@ -20,10 +20,12 @@ class DiscourseChat::ChatMessageUpdater
   def update
     begin
       @chat_message.message = @new_content
+      @chat_message.cook
       @chat_message.save!
       save_revision
       update_mention_notifications
       ChatPublisher.publish_edit!(@chat_channel, @chat_message)
+      Jobs.enqueue(:process_chat_message, { chat_message_id: @chat_message.id })
     rescue => error
       puts error.inspect
       @error = error

@@ -74,7 +74,7 @@
               {{avatar message.in_reply_to.user imageSize="tiny"}}
             </span>
             <span class="tc-reply-msg">
-              {{html-safe message.in_reply_to.cookedMessage}}
+              {{html-safe message.in_reply_to.excerpt}}
             </span>
           </div>
         {{/if}}
@@ -115,7 +115,7 @@
             </span>
           {{else}}
             <p class="tc-text">
-              {{html-safe message.cookedMessage}}
+              {{html-safe message.cooked}}
               {{#if message.edited}}
                 <div class="tc-message-edited">
                   {{i18n "chat.edited"}}

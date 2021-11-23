@@ -3,8 +3,10 @@
 class ChatBaseMessageSerializer < ApplicationSerializer
   attributes :id,
     :message,
+    :cooked,
     :action_code,
     :created_at,
+    :excerpt,
     :in_reply_to_id,
     :deleted_at,
     :deleted_by_id,

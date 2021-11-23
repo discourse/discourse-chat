@@ -67,6 +67,7 @@ after_initialize do
   load File.expand_path('../app/serializers/user_chat_channel_membership_serializer.rb', __FILE__)
   load File.expand_path('../lib/chat_channel_fetcher.rb', __FILE__)
   load File.expand_path('../lib/chat_message_creator.rb', __FILE__)
+  load File.expand_path('../lib/chat_message_processor.rb', __FILE__)
   load File.expand_path('../lib/chat_message_updater.rb', __FILE__)
   load File.expand_path('../lib/chat_seeder.rb', __FILE__)
   load File.expand_path('../lib/chat_view.rb', __FILE__)
@@ -74,6 +75,7 @@ after_initialize do
   load File.expand_path('../lib/guardian_extensions.rb', __FILE__)
   load File.expand_path('../lib/extensions/topic_view_serializer_extension.rb', __FILE__)
   load File.expand_path('../lib/extensions/detailed_tag_serializer_extension.rb', __FILE__)
+  load File.expand_path('../app/jobs/regular/process_chat_message.rb', __FILE__)
   load File.expand_path('../app/services/chat_publisher.rb', __FILE__)
 
   register_topic_custom_field_type(DiscourseChat::HAS_CHAT_ENABLED, :boolean)
@@ -130,6 +132,14 @@ after_initialize do
       results = results.includes(:chat_channel)
     end
     results
+  end
+
+  add_to_serializer(:site, :chat_pretty_text_features) do
+    ChatMessage::COOK_FEATURES.as_json
+  end
+
+  add_to_serializer(:site, :include_chat_pretty_text_features?) do
+    SiteSetting.chat_enabled && scope.can_chat?(scope.user)
   end
 
   add_to_serializer(:listable_topic, :has_chat_live) do

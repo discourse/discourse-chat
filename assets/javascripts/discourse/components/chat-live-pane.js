@@ -12,7 +12,6 @@ import { isTesting } from "discourse-common/config/environment";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { cancel, later, next, schedule } from "@ember/runloop";
 import { inject as service } from "@ember/service";
-import { loadOneboxes } from "discourse/lib/load-oneboxes";
 import { Promise } from "rsvp";
 import { resetIdle } from "discourse/lib/desktop-notifications";
 import { resolveAllShortUrls } from "pretty-text/upload-short-url";
@@ -138,7 +137,7 @@ export default Component.extend({
           if (this._selfDeleted()) {
             return;
           }
-          this.setMessageProps(data.topic_chat_view);
+          this.setMessageProps(data.chat_view);
           this.decorateMessages();
           this.onScroll();
         })
@@ -173,7 +172,7 @@ export default Component.extend({
           return;
         }
         const newMessages = this._prepareMessages(
-          data.topic_chat_view.messages || []
+          data.chat_view.messages || []
         );
         if (newMessages.length) {
           this.set("messages", newMessages.concat(this.messages));
@@ -241,9 +240,6 @@ export default Component.extend({
         // Reply to message has already been added
         messageData.in_reply_to = inReplyToMessage;
       } else {
-        messageData.in_reply_to.cookedMessage = this.cook(
-          messageData.in_reply_to.message
-        );
         inReplyToMessage = EmberObject.create(messageData.in_reply_to);
         this._unloadedReplyIds.push(inReplyToMessage.id);
         this.messageLookup[inReplyToMessage.id] = inReplyToMessage;
@@ -265,7 +261,6 @@ export default Component.extend({
       }
     }
     messageData.expanded = !messageData.deleted_at;
-    messageData.cookedMessage = this.cook(messageData.message);
     messageData.messageLookupId = this._generateMessageLookupId(messageData);
     const prepared = EmberObject.create(messageData);
     this.messageLookup[messageData.messageLookupId] = prepared;
@@ -394,14 +389,6 @@ export default Component.extend({
   @action
   decorateMessages() {
     schedule("afterRender", this, () => {
-      loadOneboxes(
-        this.element,
-        ajax,
-        null,
-        null,
-        this.siteSettings.max_oneboxes_per_post,
-        false
-      );
       resolveAllShortUrls(ajax, this.siteSettings, this.element);
       lightbox(this.element.querySelectorAll("img:not(.emoji, .avatar)"));
       applyLocalDates(
@@ -429,6 +416,9 @@ export default Component.extend({
       case "sent":
         this.handleSentMessage(data);
         break;
+      case "processed":
+        this.handleProcessedMessage(data);
+        break;
       case "edit":
         this.handleEditMessage(data);
         break;
@@ -443,23 +433,24 @@ export default Component.extend({
   },
 
   handleSentMessage(data) {
-    if (data.topic_chat_message.user.id === this.currentUser.id) {
+    if (data.chat_message.user.id === this.currentUser.id) {
       // User sent this message. Check staged messages to see if this client sent the message.
       // If so, need to update the staged message with and id.
       const stagedMessage = this.messageLookup[`staged-${data.stagedId}`];
       if (stagedMessage) {
         stagedMessage.setProperties({
           staged: false,
-          id: data.topic_chat_message.id,
+          id: data.chat_message.id,
+          excerpt: data.chat_message.excerpt,
         });
-        this.messageLookup[data.topic_chat_message.id] = stagedMessage;
+        this.messageLookup[data.chat_message.id] = stagedMessage;
         delete this.messageLookup[`staged-${data.stagedId}`];
         return;
       }
     }
     this.messages.pushObject(
       this._prepareSingleMessage(
-        data.topic_chat_message,
+        data.chat_message,
         this.messages[this.messages.length - 1]
       )
     );
@@ -470,12 +461,21 @@ export default Component.extend({
     this.reStickScrollIfNeeded();
   },
 
+  handleProcessedMessage(data) {
+    const message = this.messageLookup[data.chat_message.id];
+    if (message) {
+      message.set("cooked", data.chat_message.cooked);
+      this.reStickScrollIfNeeded();
+    }
+  },
+
   handleEditMessage(data) {
-    const message = this.messageLookup[data.topic_chat_message.id];
+    const message = this.messageLookup[data.chat_message.id];
     if (message) {
       message.setProperties({
-        message: data.topic_chat_message.message,
-        cookedMessage: this.cook(data.topic_chat_message.message),
+        message: data.chat_message.message,
+        cooked: data.chat_message.cooked,
+        excerpt: data.chat_message.excerpt,
         edited: true,
       });
     }
@@ -496,7 +496,7 @@ export default Component.extend({
   },
 
   handleRestoreMessage(data) {
-    let message = this.messageLookup[data.topic_chat_message.id];
+    let message = this.messageLookup[data.chat_message.id];
     if (message) {
       message.set("deleted_at", null);
     } else {
@@ -508,10 +508,7 @@ export default Component.extend({
       );
       const previousMessage =
         newMessageIndex > 0 ? this.messages[newMessageIndex - 1] : null;
-      message = this._prepareSingleMessage(
-        data.topic_chat_message,
-        previousMessage
-      );
+      message = this._prepareSingleMessage(data.chat_message, previousMessage);
       if (newMessageIndex === 0) {
         return;
       } // Restored post is too old to show
@@ -619,7 +616,11 @@ export default Component.extend({
     }
     this.set("sendingloading", true);
     this.set("_nextStagedMessageId", this._nextStagedMessageId + 1);
-    let data = { message, stagedId: this._nextStagedMessageId };
+    let data = {
+      message,
+      cooked: this.cook(message),
+      stagedId: this._nextStagedMessageId,
+    };
     if (this.replyToMsg) {
       data.in_reply_to_id = this.replyToMsg.id;
     }

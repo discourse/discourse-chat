@@ -126,7 +126,10 @@ export default Service.extend({
       return Promise.resolve(this.cook);
     }
 
-    return generateCookFunction(MARKDOWN_OPTIONS).then((cookFunction) => {
+    const prettyTextFeatures = {
+      features: Site.currentProp("chat_pretty_text_features"),
+    };
+    return generateCookFunction(prettyTextFeatures).then((cookFunction) => {
       return this.set("cook", (raw) => {
         return simpleCategoryHashMentionTransform(
           cookFunction(raw),
@@ -578,43 +581,3 @@ export default Service.extend({
     addChatToolbarButton(toolbarButton);
   },
 });
-
-const MARKDOWN_OPTIONS = {
-  features: {
-    anchor: true,
-    "auto-link": true,
-    bbcode: true,
-    "bbcode-block": true,
-    "bbcode-inline": true,
-    "bold-italics": true,
-    "category-hashtag": true,
-    censored: true,
-    checklist: false,
-    code: true,
-    "custom-typographer-replacements": false,
-    "d-wrap": false,
-    details: false,
-    "discourse-local-dates": true,
-    emoji: true,
-    emojiShortcuts: true,
-    html: false,
-    "html-img": true,
-    "inject-line-number": true,
-    inlineEmoji: true,
-    linkify: true,
-    mentions: true,
-    newline: true,
-    onebox: true,
-    paragraph: false,
-    policy: false,
-    poll: false,
-    quote: true,
-    quotes: true,
-    "resize-controls": false,
-    table: true,
-    "text-post-process": true,
-    unicodeUsernames: false,
-    "upload-protocol": true,
-    "watched-words": true,
-  },
-};

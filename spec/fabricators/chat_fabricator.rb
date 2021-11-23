@@ -8,6 +8,8 @@ Fabricator(:chat_message) do
   chat_channel
   user
   message "Beep boop"
+  cooked "<p>Beep boop</p>"
+  cooked_version ChatMessage::BAKED_VERSION
 end
 
 Fabricator(:direct_message_channel) do

@@ -49,7 +49,7 @@ RSpec.describe DiscourseChat::ChatController do
 
     it "returns the latest messages" do
       get "/chat/#{chat_channel.id}/messages.json", params: { page_size: page_size }
-      messages = response.parsed_body["topic_chat_view"]["messages"]
+      messages = response.parsed_body["chat_view"]["messages"]
       expect(messages.count).to eq(page_size)
       expect(messages.first["id"]).to be < messages.last["id"]
     end
@@ -61,7 +61,7 @@ RSpec.describe DiscourseChat::ChatController do
         .id
 
       get "/chat/#{chat_channel.id}/messages.json", params: { before_message_id: before_message_id, page_size: page_size }
-      messages = response.parsed_body["topic_chat_view"]["messages"]
+      messages = response.parsed_body["chat_view"]["messages"]
       expect(messages.count).to eq(message_count - page_size)
     end
   end

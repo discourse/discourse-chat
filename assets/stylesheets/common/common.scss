@@ -445,7 +445,13 @@ $float-height: 530px;
         font-size: var(--font-down-1);
       }
       > p {
-        margin: 0;
+        margin: 0.5em 0 0.5em;
+      }
+      > p:first-of-type {
+        margin: 0.1em 0;
+      }
+      > p:last-of-type {
+        margin: 0.1em 0 0.1em;
       }
     }
     .tc-message-edited {

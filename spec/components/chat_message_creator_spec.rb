@@ -46,8 +46,7 @@ describe DiscourseChat::ChatMessageCreator do
   end
 
   it "mentions are case insensitive" do
-    expect {
-      DiscourseChat::ChatMessageCreator.create(
+    expect { DiscourseChat::ChatMessageCreator.create(
         chat_channel: public_chat_channel,
         user: user1,
         content: "Hey @#{user2.username.upcase}"
@@ -160,6 +159,18 @@ describe DiscourseChat::ChatMessageCreator do
         content: "hello @#{user2.username}"
       )
     }.to change { Notification.where(user: user2).count }.by(0)
+  end
+
+  it "enqueues a `process_chat_message` job" do
+    expect_enqueued_with(
+      job: :process_chat_message
+    ) do
+      DiscourseChat::ChatMessageCreator.create(
+        chat_channel: public_chat_channel,
+        user: user1,
+        content: "this is a message"
+      )
+    end
   end
 
   describe "push notifications" do

@@ -291,4 +291,69 @@ RSpec.describe DiscourseChat::ChatChannelsController do
       expect(membership.mobile_notification_level).to eq("never")
     end
   end
+
+  describe "#for_tag" do
+    fab!(:tag_with_channel) { Fabricate(:tag) }
+    fab!(:tag_without_channel) { Fabricate(:tag) }
+    fab!(:tag_channel) { Fabricate(:chat_channel, chatable: tag_with_channel) }
+
+    it "errors for anon" do
+      get "/chat/chat_channels/for_tag/#{tag_with_channel.name}.json"
+      expect(response.status).to eq(403)
+    end
+
+    it "returns the tag's chat channel" do
+      sign_in(user)
+      get "/chat/chat_channels/for_tag/#{tag_with_channel.name}.json"
+      expect(response.status).to eq(200)
+      expect(response.parsed_body["chat_channel"]["id"]).to eq(tag_channel.id)
+    end
+
+    it "returns nil if a chat channel doesn't exist for tag" do
+      sign_in(user)
+      get "/chat/chat_channels/for_tag/#{tag_without_channel.name}.json"
+      expect(response.status).to eq(200)
+      expect(response.parsed_body["chat_channel"]).to eq(nil)
+    end
+  end
+
+  describe "#for_category" do
+    fab!(:category_without_channel) { Fabricate(:category) }
+    fab!(:category_channel) { Fabricate(:chat_channel, chatable: category) }
+
+    fab!(:private_category) { Fabricate(:private_category, group: Fabricate(:group)) }
+    fab!(:private_category_channel) { Fabricate(:chat_channel, chatable: private_category) }
+
+    it "errors for anon" do
+      get "/chat/chat_channels/for_category/#{category.id}.json"
+      expect(response.status).to eq(403)
+    end
+
+    it "returns the categories's chat channel" do
+      sign_in(user)
+      get "/chat/chat_channels/for_category/#{category.id}.json"
+      expect(response.status).to eq(200)
+      expect(response.parsed_body["chat_channel"]["id"]).to eq(category_channel.id)
+    end
+
+    it "errors when user trys to access staff channel" do
+      sign_in(user)
+      get "/chat/chat_channels/for_category/#{private_category.id}.json"
+      expect(response.status).to eq(403)
+    end
+
+    it "returns private channel for admin" do
+      sign_in(admin)
+      get "/chat/chat_channels/for_category/#{private_category.id}.json"
+      expect(response.status).to eq(200)
+      expect(response.parsed_body["chat_channel"]["id"]).to eq(private_category_channel.id)
+    end
+
+    it "returns nil if a chat channel doesn't exist for category" do
+      sign_in(user)
+      get "/chat/chat_channels/for_category/#{category_without_channel.id}.json"
+      expect(response.status).to eq(200)
+      expect(response.parsed_body["chat_channel"]).to eq(nil)
+    end
+  end
 end

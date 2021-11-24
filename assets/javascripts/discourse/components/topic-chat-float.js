@@ -40,9 +40,9 @@ export default Component.extend({
     this.appEvents.on("chat:navigated-to-full-page", this, "close");
     this.appEvents.on("chat:toggle-open", this, "toggleChat");
     this.appEvents.on(
-      "chat:open-channel-for-topic",
+      "chat:open-channel-for-chatable",
       this,
-      "openChannelForTopic"
+      "openChannelForChatable"
     );
     this.appEvents.on("chat:open-channel", this, "switchChannel");
     this.appEvents.on("chat:open-message", this, "openChannelAtMessage");
@@ -71,9 +71,9 @@ export default Component.extend({
       this.appEvents.off("chat:navigated-to-full-page", this, "close");
       this.appEvents.off("chat:toggle-open", this, "toggleChat");
       this.appEvents.off(
-        "chat:open-channel-for-topic",
+        "chat:open-channel-for-chatable",
         this,
-        "openChannelForTopic"
+        "openChannelForChatable"
       );
       this.appEvents.off("chat:open-channel", this, "switchChannel");
       this.appEvents.off("chat:open-message", this, "openChannelAtMessage");
@@ -111,9 +111,15 @@ export default Component.extend({
     this.appEvents.trigger("chat:rerender-header");
   },
 
-  async openChannelForTopic(channel) {
+  async openChannelForChatable(channel) {
     if (!channel) {
       return;
+    }
+
+    if (this.currentUser.chat_isolated) {
+      return window
+        .open(getURL(`/chat/channel/${channel.id}/${channel.title}`), "_blank")
+        .focus();
     }
 
     // Check to see if channel is followed or not.

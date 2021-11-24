@@ -10,9 +10,9 @@ import {
 } from "discourse/tests/helpers/qunit-helpers";
 import {
   click,
+  currentURL,
   triggerEvent,
   triggerKeyEvent,
-  currentURL,
   visit,
 } from "@ember/test-helpers";
 import { test } from "qunit";

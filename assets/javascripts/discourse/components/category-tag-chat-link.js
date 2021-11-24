@@ -12,7 +12,7 @@ export default Component.extend({
   init() {
     this._super(...arguments);
 
-    if (!this.currentUser.has_chat_enabled) {
+    if (!this.currentUser?.has_chat_enabled) {
       return;
     }
 

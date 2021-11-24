@@ -35,7 +35,7 @@ export default Component.extend({
           this.appEvents.trigger("sidebar:recalculate-button-width");
         });
       }
-    }).catch;
+    });
   },
 
   @action

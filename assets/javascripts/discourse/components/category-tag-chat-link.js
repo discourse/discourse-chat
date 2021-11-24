@@ -1,5 +1,4 @@
 import Component from "@ember/component";
-import discourseComputed from "discourse-common/utils/decorators";
 import { ajax } from "discourse/lib/ajax";
 import { action } from "@ember/object";
 import { schedule } from "@ember/runloop";

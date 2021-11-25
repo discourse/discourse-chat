@@ -320,7 +320,7 @@ RSpec.describe DiscourseChat::ChatChannelsController do
       let(:hidden_tag_name) { "hidden1" }
       before do
         create_hidden_tags([hidden_tag_name])
-        ChatChannel.create(chatable: Tag.find_by(name: hidden_tag_name))
+        ChatChannel.create!(chatable: Tag.find_by(name: hidden_tag_name))
       end
 
       it "does not return the channel for normal user" do
@@ -333,7 +333,9 @@ RSpec.describe DiscourseChat::ChatChannelsController do
         sign_in(admin)
         get "/chat/chat_channels/for_tag/#{hidden_tag_name}.json"
         expect(response.status).to eq(200)
-        expect(response.parsed_body["chat_channel"]).not_to be_nil
+        expect(response.parsed_body["chat_channel"]["id"]).to eq(
+          ChatChannel.find_by(chatable: Tag.find_by(name: hidden_tag_name)).id
+        )
       end
     end
 
@@ -358,7 +360,7 @@ RSpec.describe DiscourseChat::ChatChannelsController do
       expect(response.parsed_body["chat_channel"]["id"]).to eq(category_channel.id)
     end
 
-    it "errors when user trys to access staff channel" do
+    it "errors when user tries to access staff channel" do
       sign_in(user)
       get "/chat/chat_channels/for_category/#{private_category.id}.json"
       expect(response.status).to eq(403)

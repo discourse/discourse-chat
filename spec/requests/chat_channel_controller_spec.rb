@@ -313,8 +313,30 @@ RSpec.describe DiscourseChat::ChatChannelsController do
       sign_in(user)
       get "/chat/chat_channels/for_tag/#{tag_without_channel.name}.json"
       expect(response.status).to eq(200)
-      expect(response.parsed_body["chat_channel"]).to eq(nil)
+      expect(response.parsed_body["chat_channel"]).to be_nil
     end
+
+    describe "hidden tag" do
+      let(:hidden_tag_name) { "hidden1" }
+      before do
+        create_hidden_tags([hidden_tag_name])
+        ChatChannel.create(chatable: Tag.find_by(name: hidden_tag_name))
+      end
+
+      it "does not return the channel for normal user" do
+        sign_in(user)
+        get "/chat/chat_channels/for_tag/#{hidden_tag_name}.json"
+        expect(response.status).to eq(403)
+      end
+
+      it "returns the channel for admin" do
+        sign_in(admin)
+        get "/chat/chat_channels/for_tag/#{hidden_tag_name}.json"
+        expect(response.status).to eq(200)
+        expect(response.parsed_body["chat_channel"]).not_to be_nil
+      end
+    end
+
   end
 
   describe "#for_category" do

@@ -21,16 +21,15 @@ module DiscourseChat::GuardianExtensions
   end
 
   def can_see_chat_channel?(chat_channel)
-    if chat_channel.topic_channel?
-      return false unless chat_channel.chatable
+    return false unless chat_channel.chatable
 
+    if chat_channel.topic_channel?
       !chat_channel.chatable.closed &&
         !chat_channel.chatable.archived &&
         can_see_topic?(chat_channel.chatable)
     elsif chat_channel.direct_message_channel?
       chat_channel.chatable.user_can_access?(user)
     elsif chat_channel.category_channel?
-      return false unless chat_channel.chatable
 
       can_see_category?(chat_channel.chatable)
     elsif chat_channel.tag_channel?

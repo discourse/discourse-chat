@@ -329,18 +329,18 @@ export default Component.extend({
 
   @action
   switchChannel(channel) {
-    if (this.currentUser.chat_isolated) {
-      return window
-        .open(getURL(`/chat/channel/${channel.id}/${channel.title}`), "_blank")
-        .focus();
-    }
-
     if (this.site.mobileView) {
       return this.router.transitionTo(
         "chat.channel",
         channel.id,
         channel.title
       );
+    }
+
+    if (this.currentUser.chat_isolated) {
+      return window
+        .open(getURL(`/chat/channel/${channel.id}/${channel.title}`), "_blank")
+        .focus();
     }
 
     let channelInfo = {

@@ -129,7 +129,16 @@ export default Component.extend({
       ajax(`/chat/chat_channels/${channel.id}/follow`, { method: "POST" })
         .then(() => {
           this.chat.startTrackingChannel(channel);
-          this.switchChannel(channel);
+
+          if (this.site.mobileView) {
+            return this.router.transitionTo(
+              "chat.channel",
+              channel.id,
+              channel.title
+            );
+          } else {
+            this.switchChannel(channel);
+          }
         })
         .catch(popupAjaxError);
     } else {

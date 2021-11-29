@@ -139,7 +139,7 @@ export default Component.extend({
           }
           this.setMessageProps(data.chat_view);
           this.decorateMessages();
-          this.onScroll();
+          this._stickScrollToBottom();
         })
         .catch((err) => {
           throw err;
@@ -349,7 +349,7 @@ export default Component.extend({
       if (this._scrollerEl) {
         // Set scrollTop to 0 isn't always enough for some reason. 10 makes sure
         // that the scroll is at the bottom. (it's reversed because flex-direction: column-reverse)
-        this._scrollerEl.scrollTop = 10;
+        this._scrollerEl.scrollTop = -1;
       }
     });
   },
@@ -358,6 +358,7 @@ export default Component.extend({
     if (this._selfDeleted()) {
       return;
     }
+
     resetIdle();
 
     const atTop =

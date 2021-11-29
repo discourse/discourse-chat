@@ -50,6 +50,7 @@ after_initialize do
   load File.expand_path('../app/models/chat_channel.rb', __FILE__)
   load File.expand_path('../app/models/chat_message.rb', __FILE__)
   load File.expand_path('../app/models/chat_message_revision.rb', __FILE__)
+  load File.expand_path('../app/models/chat_upload.rb', __FILE__)
   load File.expand_path('../app/models/chat_webhook_event.rb', __FILE__)
   load File.expand_path('../app/models/direct_message_channel.rb', __FILE__)
   load File.expand_path('../app/models/direct_message_user.rb', __FILE__)

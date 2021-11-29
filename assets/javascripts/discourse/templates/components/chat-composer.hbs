@@ -68,6 +68,19 @@
 </div>
 
 <div class="tc-composer-uploads-container">
+  {{#each inProgressUploads as |upload|}}
+    <span class="tc-composer-in-progress-upload">
+      {{upload.fileName}}
+      {{upload.progress}}
+    </span>
+  {{/each}}
+
+  {{#each uploads as |upload|}}
+    <span class="tc-composer-completed-upload">
+      {{upload.original_filename}}
+    </span>
+  {{/each}}
+
   <span class="btn uploading-indicator {{unless isUploading "hidden"}}">{{i18n "upload_selector.uploading"}} {{uploadProgress}}%</span>
   <span class="btn uploading-indicator {{unless isProcessingUpload "hidden"}}">{{i18n "upload_selector.processing"}}</span>
   <span role="button" onClick={{action "cancelUploads"}} class="btn btn-danger cancel-btn {{unless showCancelBtn "hidden"}}">{{i18n "cancel"}}</span>

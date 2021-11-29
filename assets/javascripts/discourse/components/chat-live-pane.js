@@ -608,7 +608,7 @@ export default Component.extend({
   },
 
   @action
-  sendMessage(message) {
+  sendMessage(message, uploads) {
     resetIdle();
 
     if (this.sendingloading) {
@@ -620,7 +620,9 @@ export default Component.extend({
       message,
       cooked: this.cook(message),
       stagedId: this._nextStagedMessageId,
+      upload_ids: (uploads || []).map((upload) => upload.id),
     };
+    console.log(data)
     if (this.replyToMsg) {
       data.in_reply_to_id = this.replyToMsg.id;
     }

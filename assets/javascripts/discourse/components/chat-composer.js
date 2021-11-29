@@ -1,7 +1,7 @@
 import Component from "@ember/component";
 import UppyMediaOptimization from "discourse/lib/uppy-media-optimization-plugin";
 import ComposerUploadUppy from "discourse/mixins/composer-upload-uppy";
-import discourseComputed from "discourse-common/utils/decorators";
+import discourseComputed, { observes } from "discourse-common/utils/decorators";
 import I18n from "I18n";
 import TextareaTextManipulation from "discourse/mixins/textarea-text-manipulation";
 import userSearch from "discourse/lib/user-search";
@@ -79,6 +79,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
       uploadProcessorActions: {},
       uploadPreProcessors: [],
       uploadMarkdownResolvers: [],
+      uploads: [],
     });
     outsideToolbarClick = this.toggleToolbar.bind(this);
 
@@ -124,8 +125,16 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     this._applyEmojiAutocomplete(this._$textarea);
     this._bindUploadTarget();
 
-    this.appEvents.on(`${this.eventPrefix}:insert-text`, this, "_insertText");
-    this.appEvents.on(`${this.eventPrefix}:replace-text`, this, "_replaceText");
+    this.appEvents.on(
+      `${this.eventPrefix}:upload-success`,
+      this,
+      "_insertUpload"
+    );
+    this.appEvents.on(
+      `${this.eventPrefix}:uploads-error`,
+      this,
+      "_onUploadError"
+    );
   },
 
   willDestroyElement() {
@@ -143,11 +152,15 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
       uploadMarkdownResolvers: null,
     });
 
-    this.appEvents.off(`${this.eventPrefix}:insert-text`, this, "_insertText");
     this.appEvents.off(
-      `${this.eventPrefix}:replace-text`,
+      `${this.eventPrefix}:upload-success`,
       this,
-      "_replaceText"
+      "_insertUpload"
+    );
+    this.appEvents.off(
+      `${this.eventPrefix}:upload-error`,
+      this,
+      "_onUploadError"
     );
   },
 
@@ -156,6 +169,14 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     if (this._messageIsEmpty() && !this.site.mobileView) {
       this._focusTextArea();
     }
+  },
+
+  _insertUpload(_, upload) {
+    this.uploads.pushObject(upload);
+  },
+
+  _onUploadError(file) {
+    console.log("ERROR!", file);
   },
 
   keyDown(event) {
@@ -447,9 +468,13 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     return uploading || processingUpload || previewing;
   },
 
-  @discourseComputed("value", "loading")
-  sendDisabled(value, loading) {
-    return (value || "").trim() === "" || loading || this.inputDisabled;
+  @discourseComputed("value", "loading", "uploads")
+  sendDisabled(value, loading, uploads) {
+    if (this.inputDisabled) {
+      return true;
+    }
+
+    return !uploads.length && ((value || "").trim() === "" || loading);
   },
 
   @action
@@ -466,7 +491,9 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   @action
   internalSendMessage() {
     if (this._messageIsValid()) {
-      return this.sendMessage(this.value).then(() => this._resetTextarea());
+      return this.sendMessage(this.value, this.uploads).then(() =>
+        this._resetComposer()
+      );
     }
   },
 
@@ -474,7 +501,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   internalEditMessage() {
     if (this._messageIsValid()) {
       return this.editMessage(this.editingMessage, this.value).then(() =>
-        this._resetTextarea()
+        this._resetComposer()
       );
     }
   },
@@ -487,8 +514,9 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     return (this.value || "").trim() === "";
   },
 
-  _resetTextarea() {
+  _resetComposer() {
     this.set("value", "");
+    this.set("uploads", []);
     this.onCancelEditing();
     this._focusTextArea();
   },

@@ -200,4 +200,50 @@ describe DiscourseChat::ChatMessageCreator do
       )
     end
   end
+
+  describe "with uploads" do
+    fab!(:upload1) { Fabricate(:upload, user: user1) }
+    fab!(:upload2) { Fabricate(:upload, user: user1) }
+    fab!(:private_upload) { Fabricate(:upload, user: user2) }
+
+    it "can attach 1 upload to a new message" do
+      expect {
+        DiscourseChat::ChatMessageCreator.create(
+          chat_channel: public_chat_channel,
+          user: user1,
+          content: "Beep boop",
+          upload_ids: [upload1.id]
+        )
+      }.to change { ChatUpload.where(upload_id: upload1.id).count }.by(1)
+    end
+
+    it "can attach multiple uploads to a new message" do
+      expect {
+        DiscourseChat::ChatMessageCreator.create(
+          chat_channel: public_chat_channel,
+          user: user1,
+          content: "Beep boop",
+          upload_ids: [upload1.id, upload2.id]
+        )
+      }.to change {
+        ChatUpload.where(upload_id: upload1.id).count
+      }.by(1)
+        .and change {
+          ChatUpload.where(upload_id: upload2.id).count
+        }.by(1)
+    end
+
+    it "filters out uploads that weren't uplaoded by the user" do
+      expect {
+        DiscourseChat::ChatMessageCreator.create(
+          chat_channel: public_chat_channel,
+          user: user1,
+          content: "Beep boop",
+          upload_ids: [private_upload.id]
+        )
+      }.to change {
+        ChatUpload.where(upload_id: private_upload.id).count
+      }.by(0)
+    end
+  end
 end

@@ -620,9 +620,8 @@ export default Component.extend({
       message,
       cooked: this.cook(message),
       stagedId: this._nextStagedMessageId,
-      upload_ids: (uploads || []).map((upload) => upload.id),
+      uploadIds: (uploads || []).map((upload) => upload.id),
     };
-    console.log(data)
     if (this.replyToMsg) {
       data.in_reply_to_id = this.replyToMsg.id;
     }
@@ -650,6 +649,7 @@ export default Component.extend({
         user: this.currentUser,
         in_reply_to: this.replyToMsg,
         created_at: new Date(),
+        uploads,
       }),
       this.messages[this.messages.length - 1]
     );

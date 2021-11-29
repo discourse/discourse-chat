@@ -93,7 +93,8 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
       user: current_user,
       in_reply_to_id: reply_to_msg_id,
       content: content,
-      staged_id: params[:stagedId]
+      staged_id: params[:stagedId],
+      upload_ids: params[:uploadIds]
     )
 
     if chat_message_creator.failed?
@@ -145,6 +146,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
       .includes(:revisions)
       .includes(:user)
       .includes(chat_webhook_event: :incoming_chat_webhook)
+      .includes(:uploads)
       .where(chat_channel: @chat_channel)
 
     if params[:before_message_id]
@@ -210,6 +212,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
       .includes(:revisions)
       .includes(:user)
       .includes(chat_webhook_event: :incoming_chat_webhook)
+      .includes(:uploads)
       .includes(chat_channel: :chatable)
       .where(chat_channel: chat_channel)
 

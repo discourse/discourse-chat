@@ -141,12 +141,8 @@ export default Component.extend(
         this,
         "_insertUpload"
       );
-      // this.appEvents.on(`${this.eventPrefix}:insert-text`, this, "_insertText");
-      // this.appEvents.on(
-      // `${this.eventPrefix}:replace-text`,
-      // this,
-      // "_replaceText"
-      // );
+
+      this.appEvents.on(`${this.eventPrefix}:uploads-error`, this, "_onUploadError");
     },
 
     willDestroyElement() {
@@ -163,17 +159,13 @@ export default Component.extend(
         uploadProcessorActions: null,
         uploadMarkdownResolvers: null,
       });
+      this.appEvents.off(
+        `${this.eventPrefix}:upload-success`,
+        this,
+        "_insertUpload"
+      );
 
-      // this.appEvents.off(
-      // `${this.eventPrefix}:insert-text`,
-      // this,
-      // "_insertText"
-      // );
-      // this.appEvents.off(
-      // `${this.eventPrefix}:replace-text`,
-      // this,
-      // "_replaceText"
-      // );
+      this.appEvents.off(`${this.eventPrefix}:upload-error`, this, "_onUploadError");
     },
 
     didRender() {
@@ -183,8 +175,12 @@ export default Component.extend(
       }
     },
 
-    _insertUpload(filename, upload) {
+    _insertUpload(_, upload) {
       this.uploads.pushObject(upload);
+    },
+
+    _onUploadError(file) {
+      console.log("ERROR!", file)
     },
 
     keyDown(event) {
@@ -503,7 +499,7 @@ export default Component.extend(
     internalSendMessage() {
       if (this._messageIsValid()) {
         return this.sendMessage(this.value, this.uploads).then(() =>
-          this._resetTextarea()
+          this._resetComposer()
         );
       }
     },
@@ -512,7 +508,7 @@ export default Component.extend(
     internalEditMessage() {
       if (this._messageIsValid()) {
         return this.editMessage(this.editingMessage, this.value).then(() =>
-          this._resetTextarea()
+          this._resetComposer()
         );
       }
     },
@@ -525,8 +521,9 @@ export default Component.extend(
       return (this.value || "").trim() === "";
     },
 
-    _resetTextarea() {
+    _resetComposer() {
       this.set("value", "");
+      this.set("uploads", []);
       this.onCancelEditing();
       this._focusTextArea();
     },

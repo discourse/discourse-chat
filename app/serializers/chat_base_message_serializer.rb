@@ -16,6 +16,7 @@ class ChatBaseMessageSerializer < ApplicationSerializer
   has_one :user, serializer: BasicUserSerializer, embed: :objects
   has_one :chat_webhook_event, serializer: ChatWebhookEventSerializer, embed: :objects
   has_one :in_reply_to, serializer: ChatBaseMessageSerializer, embed: :objects
+  has_many :uploads, serializer: UploadSerializer, embed: :objects
 
   def edited
     true

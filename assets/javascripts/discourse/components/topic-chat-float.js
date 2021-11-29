@@ -115,13 +115,6 @@ export default Component.extend({
     if (!channel) {
       return;
     }
-
-    if (this.currentUser.chat_isolated) {
-      return window
-        .open(getURL(`/chat/channel/${channel.id}/${channel.title}`), "_blank")
-        .focus();
-    }
-
     // Check to see if channel is followed or not.
     // If it is, switch channel. If not, start following then switch.
     const isFollowed = await this.chat.isChannelFollowed(channel);
@@ -336,6 +329,20 @@ export default Component.extend({
 
   @action
   switchChannel(channel) {
+    if (this.site.mobileView) {
+      return this.router.transitionTo(
+        "chat.channel",
+        channel.id,
+        channel.title
+      );
+    }
+
+    if (this.currentUser.chat_isolated) {
+      return window
+        .open(getURL(`/chat/channel/${channel.id}/${channel.title}`), "_blank")
+        .focus();
+    }
+
     let channelInfo = {
       activeChannel: channel,
       expanded: this.expectPageChange ? true : this.expanded,

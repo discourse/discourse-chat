@@ -1,6 +1,7 @@
 import {
   acceptance,
   exists,
+  loggedInUser,
   publishToMessageBus,
   query,
   queryAll,
@@ -14,7 +15,7 @@ import {
   triggerKeyEvent,
   visit,
 } from "@ember/test-helpers";
-import { test } from "qunit";
+import { skip, test } from "qunit";
 import {
   allChannels,
   chatChannels,
@@ -859,3 +860,85 @@ acceptance("Discourse Chat - chat preferences", function (needs) {
     assert.equal(queryAll(".chat-setting input").length, 3);
   });
 });
+
+acceptance("Discourse Chat - image uploads", function (needs) {
+  needs.user({
+    admin: false,
+    moderator: false,
+    username: "eviltrout",
+    id: 1,
+    can_chat: true,
+    has_chat_enabled: true,
+  });
+  needs.settings({
+    chat_enabled: true,
+  });
+  needs.pretender((server, helper) => {
+    baseChatPretenders(server, helper);
+    siteChannelPretender(server, helper);
+    directMessageChannelPretender(server, helper);
+    chatChannelPretender(server, helper);
+
+    server.post(
+      "/uploads.json",
+      () => {
+        return helper.response({
+          extension: "jpeg",
+          filesize: 126177,
+          height: 800,
+          human_filesize: "123 KB",
+          id: 202,
+          original_filename: "avatar.PNG.jpg",
+          retain_hours: null,
+          short_path: "/uploads/short-url/yoj8pf9DdIeHRRULyw7i57GAYdz.jpeg",
+          short_url: "upload://yoj8pf9DdIeHRRULyw7i57GAYdz.jpeg",
+          thumbnail_height: 320,
+          thumbnail_width: 690,
+          url:
+            "//testbucket.s3.dualstack.us-east-2.amazonaws.com/original/1X/f1095d89269ff22e1818cf54b73e857261851019.jpeg",
+          width: 1920,
+        });
+      },
+      500 // this delay is important to slow down the uploads a bit so we can click elements in the UI like the cancel button
+    );
+  });
+
+  // this times out in CI...of course
+  skip("uploading files in chat works", async function (assert) {
+    await visit("/t/internationalization-localization/280");
+    this.container.lookup("service:chat").setSidebarActive(false);
+    await click(".header-dropdown-toggle.open-chat");
+
+    assert.ok(visible(".topic-chat-float-container"), "chat float is open");
+
+    const appEvents = loggedInUser().appEvents;
+    const done = assert.async();
+
+    appEvents.on("chat-composer:all-uploads-complete", () => {
+      assert.strictEqual(
+        queryAll(".tc-composer-input").val(),
+        "![avatar.PNG|690x320](upload://yoj8pf9DdIeHRRULyw7i57GAYdz.jpeg)\n"
+      );
+      done();
+    });
+
+    appEvents.on("chat-composer:upload-started", () => {
+      assert.strictEqual(
+        queryAll(".tc-composer-input").val(),
+        "[Uploading: avatar.png...]()\n"
+      );
+    });
+
+    const image = createFile("avatar.png");
+    appEvents.trigger("chat-composer:add-files", image);
+  });
+});
+
+function createFile(name, type = "image/png") {
+  // the blob content doesn't matter at all, just want it to be random-ish
+  const file = new Blob([(Math.random() + 1).toString(36).substring(2)], {
+    type,
+  });
+  file.name = name;
+  return file;
+}

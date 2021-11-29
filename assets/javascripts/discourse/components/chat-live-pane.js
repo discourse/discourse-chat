@@ -139,7 +139,7 @@ export default Component.extend({
           }
           this.setMessageProps(data.chat_view);
           this.decorateMessages();
-          this.onScroll();
+          this._stickScrollToBottom();
         })
         .catch((err) => {
           throw err;
@@ -347,9 +347,13 @@ export default Component.extend({
       this.set("stickyScroll", true);
 
       if (this._scrollerEl) {
-        // Set scrollTop to 0 isn't always enough for some reason. 10 makes sure
-        // that the scroll is at the bottom. (it's reversed because flex-direction: column-reverse)
-        this._scrollerEl.scrollTop = 10;
+        // Trigger a tiny scrollTop change so Safari scrollbar is placed at bottom.
+        // Setting to just 0 doesn't work (it's at 0 by default, so there is no change)
+        // Very hacky, but no way to get around this Safari bug
+        this._scrollerEl.scrollTop = -1;
+        later(() => {
+          this._scrollerEl.scrollTop = 0;
+        }, 40);
       }
     });
   },
@@ -804,7 +808,6 @@ export default Component.extend({
 
   @action
   composerValueChanged(composerValue) {
-    this.reStickScrollIfNeeded();
     this._reportReplyingPresence(composerValue);
   },
 

@@ -76,4 +76,34 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
       render_json_error(membership)
     end
   end
+
+  def for_tag
+    params.require(:tag_name)
+
+    tag = Tag.find_by(name: params[:tag_name])
+    raise Discourse::NotFound unless tag
+
+    render_channel_for_chatable(
+      ChatChannel.find_by(chatable: tag)
+    )
+  end
+
+  def for_category
+    params.require(:category_id)
+
+    render_channel_for_chatable(
+      ChatChannel.find_by(chatable_id: params[:category_id], chatable_type: "Category")
+    )
+  end
+
+  private
+
+  def render_channel_for_chatable(channel)
+    if channel
+      guardian.ensure_can_see_chat_channel!(channel)
+      render_serialized(channel, ChatChannelSerializer)
+    else
+      render json: { chat_channel: nil }
+    end
+  end
 end

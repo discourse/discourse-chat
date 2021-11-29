@@ -758,7 +758,7 @@ $float-height: 530px;
   }
 
   .tc-replying-indicator {
-    padding: 0 0.75em 0.5em 0.75em;
+    padding: 0 0.75em 0.25em 0.75em;
 
     .replying-text {
       font-size: var(--font-down-2);
@@ -1152,10 +1152,8 @@ $float-height: 530px;
     }
   }
   .tc-live-pane {
-    padding: 0 0 1em;
-    height: 100%;
     box-sizing: border-box;
-    height: var(--full-page-chat-height);
+    height: 100%;
     border-radius: 0 var(--full-page-border-radius)
       var(--full-page-border-radius) 0;
   }
@@ -1371,4 +1369,12 @@ $float-height: 530px;
 
 .tag-info .tag-chat-toggle {
   margin-bottom: 0.5em;
+}
+
+.before-create-topic-button-outlet.category-tag-chat-link-connector {
+  margin: 0;
+
+  .category-tag-chat-link {
+    margin-left: 0.5em;
+  }
 }

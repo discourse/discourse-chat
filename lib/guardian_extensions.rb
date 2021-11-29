@@ -16,19 +16,24 @@ module DiscourseChat::GuardianExtensions
     (allowed_group_ids & user.group_ids).any?
   end
 
-  def can_see_chat_channel?(chat_channel)
-    if chat_channel.topic_channel?
-      return false unless chat_channel.chatable
+  def hidden_tag_names
+    @hidden_tag_names ||= DiscourseTagging.hidden_tag_names(self)
+  end
 
+  def can_see_chat_channel?(chat_channel)
+    return false unless chat_channel.chatable
+
+    if chat_channel.topic_channel?
       !chat_channel.chatable.closed &&
         !chat_channel.chatable.archived &&
         can_see_topic?(chat_channel.chatable)
     elsif chat_channel.direct_message_channel?
       chat_channel.chatable.user_can_access?(user)
     elsif chat_channel.category_channel?
-      return false unless chat_channel.chatable
 
       can_see_category?(chat_channel.chatable)
+    elsif chat_channel.tag_channel?
+      !hidden_tag_names.include?(chat_channel.chatable.name)
     else
       true
     end

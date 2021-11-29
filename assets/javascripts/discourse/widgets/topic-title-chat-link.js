@@ -11,7 +11,7 @@ export default createWidget("topic-title-chat-link", {
 
   click() {
     this.appEvents.trigger(
-      "chat:open-channel-for-topic",
+      "chat:open-channel-for-chatable",
       this.attrs.chat_channel
     );
   },

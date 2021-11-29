@@ -45,8 +45,9 @@ en:
       only_chat_push_notifications:
         title: "Only send chat push notifications"
         description: "Block all non-chat push notifications from being sent"
+      open: "Open chat"
       open_full_page: "Open full-screen chat"
-      open: "Open message in chat"
+      open_message: "Open message in chat"
       placeholder: "chat..."
       placeholder_previewing: "Join the channel to send a message."
       reply: "Reply"

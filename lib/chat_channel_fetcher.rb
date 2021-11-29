@@ -54,11 +54,8 @@ module DiscourseChat::ChatChannelFetcher
     mention_notification_data = mention_notifications.map { |m| JSON.parse(m.data) }
 
     secured = []
-    hidden_tag_names = DiscourseTagging.hidden_tag_names(guardian)
-
     channels.each do |channel|
       next unless guardian.can_see_chat_channel?(channel)
-      next if channel.tag_channel? && hidden_tag_names.include?(channel.chatable.name)
 
       membership = memberships.detect { |m| m.chat_channel_id == channel.id }
       if membership

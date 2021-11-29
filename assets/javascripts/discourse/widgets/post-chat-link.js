@@ -5,7 +5,7 @@ import { iconNode } from "discourse-common/lib/icon-library";
 
 export default createWidget("post-chat-link", {
   tagName: "a.post-chat-link",
-  title: "chat.open",
+  title: "chat.open_message",
   services: ["chat"],
   loadingChat: false,
 

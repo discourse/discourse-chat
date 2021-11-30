@@ -686,9 +686,6 @@ $float-height: 530px;
       .tc-composer-input:focus {
         border: 1px solid var(--primary-medium);
         outline: none;
-        + .mobile-send-btn .d-icon {
-          color: var(--tertiary);
-        }
       }
 
       .open-toolbar-btn {

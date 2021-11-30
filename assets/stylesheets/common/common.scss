@@ -176,11 +176,8 @@ $float-height: 530px;
     align-items: center;
     width: 100%;
     .chat-channel-title {
-      display: flex;
       width: calc(95% - 0.5em);
       margin-right: 0.5em;
-      flex-grow: 1;
-      flex-shrink: 1;
       .chat-name,
       .topic-chat-name,
       .category-chat-name {
@@ -937,7 +934,7 @@ $float-height: 530px;
     font-weight: bold;
     font-size: var(--font-down-1);
     margin-right: 0.5em;
-    line-height: 25px;
+    line-height: 20px;
     width: 100%;
   }
 }

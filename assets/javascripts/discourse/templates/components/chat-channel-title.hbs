@@ -5,19 +5,17 @@
     </span>
     <span class="dm-usernames">{{usernames}}</span>
   {{else}}
-    <div class="dm-single-user">
-      <div class="tc-avatar-container">
-        {{avatar channel.chatable.users.firstObject imageSize="medium"}}
-        {{tc-user-presence-flair user=channel.chatable.users.firstObject}}
-      </div>
-      <span class="dm-usernames">{{channel.chatable.users.firstObject.username}}</span>
-    </div>
+    <span class="tc-avatar-container">
+      {{avatar channel.chatable.users.firstObject imageSize="medium"}}
+      {{tc-user-presence-flair user=channel.chatable.users.firstObject}}
+    </span>
+    <span class="dm-usernames">{{channel.chatable.users.firstObject.username}}</span>
   {{/if}}
 {{else if (eq channel.chatable_type "Tag")}}
   <span class="tag-chat-badge">
     {{d-icon "tag"}}
-    <span class="tag-chat-name">{{channel.title}}</span>
   </span>
+  <span class="tag-chat-name">{{channel.title}}</span>
 {{else if (eq channel.chatable_type "Category")}}
   <span class="category-chat-badge" style={{html-safe (concat "color: #" channel.chatable.color)}}>
     {{d-icon "hashtag"}}
@@ -26,9 +24,9 @@
         {{d-icon "lock"}}
       </span>
     {{/if}}
-    <span class="category-chat-name">
-      {{channel.chatable.slug}}
-    </span>
+  </span>
+  <span class="category-chat-name">
+    {{channel.chatable.slug}}
   </span>
 {{else if (eq channel.chatable_type "Topic")}}
   <span class="topic-chat-badge">

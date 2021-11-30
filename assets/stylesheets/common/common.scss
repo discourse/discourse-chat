@@ -898,7 +898,7 @@ $float-height: 530px;
 
 .chat-channel-title {
   display: grid;
-  grid-template-columns: 25px 1fr;
+  grid-template-columns: 20px 1fr;
   grid-column-gap: 0.5em;
   align-items: center;
   font-weight: 500;
@@ -1221,8 +1221,8 @@ $float-height: 530px;
     align-items: center;
 
     .d-icon {
-      height: 1.25em;
-      width: 1.25em;
+      height: 1.125em;
+      width: 1.125em;
       margin: 0 auto;
     }
   }
@@ -1254,7 +1254,7 @@ $float-height: 530px;
       display: block;
       position: absolute;
       border-left: 2px solid var(--primary-low-mid);
-      left: 11px;
+      left: 9px;
       bottom: -0.5em;
       height: calc(100% + 1em);
       z-index: 0;

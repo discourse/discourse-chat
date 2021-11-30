@@ -176,11 +176,8 @@ $float-height: 530px;
     align-items: center;
     width: 100%;
     .chat-channel-title {
-      display: flex;
       width: calc(95% - 0.5em);
       margin-right: 0.5em;
-      flex-grow: 1;
-      flex-shrink: 1;
       .chat-name,
       .topic-chat-name,
       .category-chat-name {
@@ -683,9 +680,6 @@ $float-height: 530px;
       .tc-composer-input:focus {
         border: 1px solid var(--primary-medium);
         outline: none;
-        + .mobile-send-btn .d-icon {
-          color: var(--tertiary);
-        }
       }
 
       .open-toolbar-btn {
@@ -938,9 +932,9 @@ $float-height: 530px;
     background: rgba(var(--primary-rgb), 0.1);
     text-align: center;
     font-weight: bold;
-    font-size: $font-down-1;
+    font-size: var(--font-down-1);
     margin-right: 0.5em;
-    line-height: 25px;
+    line-height: 20px;
     width: 100%;
   }
 }

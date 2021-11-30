@@ -40,6 +40,9 @@
     right: 12px;
     top: 50%;
     transform: translateY(-50%);
+    &:not([disabled]) .d-icon {
+      color: var(--tertiary);
+    }
   }
 }
 

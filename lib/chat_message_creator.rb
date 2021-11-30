@@ -10,14 +10,14 @@ class DiscourseChat::ChatMessageCreator
     instance
   end
 
-  def initialize(chat_channel:, in_reply_to_id: nil, user:, content:, staged_id: nil, incoming_chat_webhook: nil, upload_ids: [])
+  def initialize(chat_channel:, in_reply_to_id: nil, user:, content:, staged_id: nil, incoming_chat_webhook: nil, upload_ids: nil)
     @chat_channel = chat_channel
     @user = user
     @in_reply_to_id = in_reply_to_id
     @content = content
     @staged_id = staged_id
     @incoming_chat_webhook = incoming_chat_webhook
-    @upload_ids = upload_ids
+    @upload_ids = upload_ids || []
     @error = nil
 
     @chat_message = ChatMessage.new(
@@ -39,7 +39,7 @@ class DiscourseChat::ChatMessageCreator
     begin
       @chat_message.cook
       @chat_message.save!
-      attach_uploads! unless @upload_ids.blank?
+      attach_uploads
       mentioned_user_ids = create_mention_notifications
       notify_watching_users(except: [@user.id] + mentioned_user_ids)
       ChatPublisher.publish_new!(@chat_channel, @chat_message, @staged_id)
@@ -61,23 +61,11 @@ class DiscourseChat::ChatMessageCreator
 
   private
 
-  def attach_uploads!
-    now = Time.now
-    uploads = Upload.where(id: @upload_ids)
-    # Don't allow user to expose other uploads by passing random integers in `uploadIds` param.
-    # They can still do this, but filter out any uploads that were not created by this user.
-    filtered_uploads = uploads.select { |upload| upload.user_id == @user.id }
-    if filtered_uploads.any?
-      record_attrs = filtered_uploads.map do |upload|
-        {
-          upload_id: upload.id,
-          chat_message_id: @chat_message.id,
-          created_at: now,
-          updated_at: now
-        }
-      end
-      ChatUpload.insert_all!(record_attrs)
-    end
+  def attach_uploads
+    return if @upload_ids.blank?
+
+    uploads = Upload.where(id: @upload_ids, user_id: @user.id)
+    self.class.attach_uploads(@chat_message.id, uploads)
   end
 
   def notify_watching_users(except: [])
@@ -238,5 +226,20 @@ class DiscourseChat::ChatMessageCreator
 
   def self.push_notification_tag(type, chat_channel)
     "#{Discourse.current_hostname}-chat-#{type}-#{chat_channel.id}"
+  end
+
+  def self.attach_uploads(chat_message_id, uploads)
+    return if uploads.blank?
+
+    now = Time.now
+    record_attrs = uploads.map do |upload|
+      {
+        upload_id: upload.id,
+        chat_message_id: chat_message_id,
+        created_at: now,
+        updated_at: now
+      }
+    end
+    ChatUpload.insert_all!(record_attrs)
   end
 end

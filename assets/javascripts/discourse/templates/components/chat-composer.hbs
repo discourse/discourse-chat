@@ -10,7 +10,7 @@
   {{chat-composer-message-details
     message=editingMessage
     icon="pencil-alt"
-    action=(action "cancelEditing")
+    action=(action "reset")
     title="chat.reply_edit"
   }}
 {{/if}}
@@ -63,26 +63,26 @@
       icon="play"
       disabled=sendDisabled
       title=sendTitle
-    }}
+      }}
   {{/if}}
 </div>
 
-<div class="tc-composer-uploads-container">
-  {{#each inProgressUploads as |upload|}}
-    <span class="tc-composer-in-progress-upload">
-      {{upload.fileName}}
-      {{upload.progress}}
-    </span>
-  {{/each}}
-
+<div class="chat-composer-uploads-container">
   {{#each uploads as |upload|}}
-    <span class="tc-composer-completed-upload">
-      {{upload.original_filename}}
-    </span>
+    {{chat-composer-upload
+      upload=upload
+      done=true
+      cancel=(action "removeUpload" upload)
+      fileName=upload.original_filename
+    }}
   {{/each}}
 
-  <span class="btn uploading-indicator {{unless isUploading "hidden"}}">{{i18n "upload_selector.uploading"}} {{uploadProgress}}%</span>
-  <span class="btn uploading-indicator {{unless isProcessingUpload "hidden"}}">{{i18n "upload_selector.processing"}}</span>
-  <span role="button" onClick={{action "cancelUploads"}} class="btn btn-danger cancel-btn {{unless showCancelBtn "hidden"}}">{{i18n "cancel"}}</span>
+  {{#each inProgressUploads as |upload|}}
+    {{chat-composer-upload
+      upload=upload
+      cancel=(action "cancelUploading" upload)
+      fileName=upload.fileName
+    }}
+  {{/each}}
 </div>
 <input type="file" id={{fileUploadElementId}} accept={{acceptedFormats}} multiple>

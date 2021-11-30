@@ -480,6 +480,7 @@ export default Component.extend({
         message: data.chat_message.message,
         cooked: data.chat_message.cooked,
         excerpt: data.chat_message.excerpt,
+        uploads: data.chat_message.uploads,
         edited: true,
       });
     }
@@ -672,9 +673,12 @@ export default Component.extend({
   },
 
   @action
-  editMessage(chatMessage, newContent) {
+  editMessage(chatMessage, newContent, uploads) {
     this.set("sendingloading", true);
-    let data = { new_message: newContent };
+    let data = {
+      newMessage: newContent,
+      uploadIds: (uploads || []).map((upload) => upload.id),
+    };
     return ajax(`/chat/${this.chatChannel.id}/edit/${chatMessage.id}`, {
       type: "PUT",
       data,

@@ -117,7 +117,8 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     guardian.ensure_can_edit_chat!(@message)
     chat_message_updater = DiscourseChat::ChatMessageUpdater.update(
       chat_message: @message,
-      new_content: params[:new_message],
+      new_content: params[:newMessage],
+      upload_ids: params[:uploadIds] || []
     )
 
     if chat_message_updater.failed?

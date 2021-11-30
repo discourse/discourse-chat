@@ -23,12 +23,13 @@ describe DiscourseChat::ChatMessageUpdater do
     @direct_message_channel = DiscourseChat::DirectMessageChannelCreator.create([user1, user2])
   end
 
-  def create_chat_message(user, message, channel)
+  def create_chat_message(user, message, channel, upload_ids: nil)
     creator = DiscourseChat::ChatMessageCreator.create(
       chat_channel: channel,
       user: user,
       in_reply_to_id: nil,
       content: message,
+      upload_ids: upload_ids
     )
     creator.chat_message
   end
@@ -137,5 +138,76 @@ describe DiscourseChat::ChatMessageUpdater do
     revision = chat_message.revisions.last
     expect(revision.old_message).to eq(old_message)
     expect(revision.new_message).to eq(new_message)
+  end
+
+  describe "uploads" do
+    fab!(:upload1) { Fabricate(:upload, user: user1) }
+    fab!(:upload2) { Fabricate(:upload, user: user1) }
+
+    it "does nothing if the passed in upload_ids match the existing upload_ids" do
+      chat_message = create_chat_message(user1, "something", public_chat_channel, upload_ids: [upload1.id, upload2.id])
+      expect {
+        DiscourseChat::ChatMessageUpdater.update(
+          chat_message: chat_message,
+          new_content: "I guess this is different",
+          upload_ids: [upload2.id, upload1.id]
+        )
+      }.to change { ChatUpload.count }.by(0)
+    end
+
+    it "removes uploads that should be removed" do
+      chat_message = create_chat_message(user1, "something", public_chat_channel, upload_ids: [upload1.id, upload2.id])
+      expect {
+        DiscourseChat::ChatMessageUpdater.update(
+          chat_message: chat_message,
+          new_content: "I guess this is different",
+          upload_ids: [upload1.id]
+        )
+      }.to change { ChatUpload.where(upload_id: upload2.id).count }.by(-1)
+    end
+
+    it "removes all uploads if they should be removed" do
+      chat_message = create_chat_message(user1, "something", public_chat_channel, upload_ids: [upload1.id, upload2.id])
+      expect {
+        DiscourseChat::ChatMessageUpdater.update(
+          chat_message: chat_message,
+          new_content: "I guess this is different",
+          upload_ids: []
+        )
+      }.to change { ChatUpload.where(chat_message: chat_message).count }.by(-2)
+    end
+
+    it "adds one upload if none exist" do
+      chat_message = create_chat_message(user1, "something", public_chat_channel)
+      expect {
+        DiscourseChat::ChatMessageUpdater.update(
+          chat_message: chat_message,
+          new_content: "I guess this is different",
+          upload_ids: [upload1.id]
+        )
+      }.to change { ChatUpload.where(chat_message: chat_message).count }.by(1)
+    end
+
+    it "adds multiple uploads if none exist" do
+      chat_message = create_chat_message(user1, "something", public_chat_channel)
+      expect {
+        DiscourseChat::ChatMessageUpdater.update(
+          chat_message: chat_message,
+          new_content: "I guess this is different",
+          upload_ids: [upload1.id, upload2.id]
+        )
+      }.to change { ChatUpload.where(chat_message: chat_message).count }.by(2)
+    end
+
+    it "doesn't remove existins uploads when BS upload ids are passed in" do
+      chat_message = create_chat_message(user1, "something", public_chat_channel, upload_ids: [upload1.id])
+      expect {
+        DiscourseChat::ChatMessageUpdater.update(
+          chat_message: chat_message,
+          new_content: "I guess this is different",
+          upload_ids: [0]
+        )
+      }.to change { ChatUpload.where(chat_message: chat_message).count }.by(0)
+    end
   end
 end

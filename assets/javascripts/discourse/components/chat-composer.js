@@ -1,7 +1,7 @@
 import Component from "@ember/component";
 import UppyMediaOptimization from "discourse/lib/uppy-media-optimization-plugin";
 import ComposerUploadUppy from "discourse/mixins/composer-upload-uppy";
-import discourseComputed, { observes } from "discourse-common/utils/decorators";
+import discourseComputed from "discourse-common/utils/decorators";
 import I18n from "I18n";
 import TextareaTextManipulation from "discourse/mixins/textarea-text-manipulation";
 import userSearch from "discourse/lib/user-search";
@@ -12,6 +12,7 @@ import {
 import { action } from "@ember/object";
 import { cancel, schedule, throttle } from "@ember/runloop";
 import { categoryHashtagTriggerRule } from "discourse/lib/category-hashtags";
+import { cloneJSON } from "discourse-common/lib/object";
 import { findRawTemplate } from "discourse-common/lib/raw-templates";
 import { emojiSearch, isSkinTonableEmoji } from "pretty-text/emoji";
 import { emojiUrlFor } from "discourse/lib/text";
@@ -130,11 +131,6 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
       this,
       "_insertUpload"
     );
-    this.appEvents.on(
-      `${this.eventPrefix}:uploads-error`,
-      this,
-      "_onUploadError"
-    );
   },
 
   willDestroyElement() {
@@ -157,11 +153,6 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
       this,
       "_insertUpload"
     );
-    this.appEvents.off(
-      `${this.eventPrefix}:upload-error`,
-      this,
-      "_onUploadError"
-    );
   },
 
   didRender() {
@@ -173,10 +164,6 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
 
   _insertUpload(_, upload) {
     this.uploads.pushObject(upload);
-  },
-
-  _onUploadError(file) {
-    console.log("ERROR!", file);
   },
 
   keyDown(event) {
@@ -220,7 +207,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
       } else if (this.editingMessage) {
         event.preventDefault();
         this.set("replyToMsg", null);
-        this.cancelEditing();
+        this.reset();
       } else {
         this._textarea.blur();
       }
@@ -234,16 +221,12 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
       this.setProperties({
         replyToMsg: null,
         value: this.editingMessage.message,
+        uploads: this.editingMessage.uploads
+          ? cloneJSON(this.editingMessage.uploads)
+          : [],
       });
       this._focusTextArea({ ensureAtEnd: true, resizeTextArea: true });
     }
-  },
-
-  @action
-  cancelEditing() {
-    this.set("value", "");
-    this.onCancelEditing();
-    this._focusTextArea({ ensureAtEnd: true, resizeTextArea: true });
   },
 
   @action
@@ -492,7 +475,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   internalSendMessage() {
     if (this._messageIsValid()) {
       return this.sendMessage(this.value, this.uploads).then(() =>
-        this._resetComposer()
+        this.reset()
       );
     }
   },
@@ -500,9 +483,11 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   @action
   internalEditMessage() {
     if (this._messageIsValid()) {
-      return this.editMessage(this.editingMessage, this.value).then(() =>
-        this._resetComposer()
-      );
+      return this.editMessage(
+        this.editingMessage,
+        this.value,
+        this.uploads
+      ).then(() => this.reset());
     }
   },
 
@@ -514,11 +499,12 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     return (this.value || "").trim() === "";
   },
 
-  _resetComposer() {
+  @action
+  reset() {
     this.set("value", "");
     this.set("uploads", []);
     this.onCancelEditing();
-    this._focusTextArea();
+    this._focusTextArea({ ensureAtEnd: true, resizeTextArea: true });
   },
 
   @action
@@ -565,5 +551,17 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
       window.removeEventListener("click", outsideToolbarClick);
     }
     return false;
+  },
+
+  @action
+  cancelUploading(upload) {
+    this.appEvents.trigger(`${this.eventPrefix}:cancel-upload`, {
+      fileId: upload.id,
+    });
+  },
+
+  @action
+  removeUpload(upload) {
+    this.uploads.removeObject(upload);
   },
 });

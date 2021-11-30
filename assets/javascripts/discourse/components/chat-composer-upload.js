@@ -5,6 +5,11 @@ import { IMAGES_EXTENSIONS_REGEX } from "discourse/lib/uploads";
 export default Component.extend({
   IMAGE_TYPE: "image",
 
+  tagName: "",
+  done: false,
+  upload: null,
+  cancel: null,
+
   @discourseComputed("upload.extension")
   type(extension) {
     if (IMAGES_EXTENSIONS_REGEX.test(extension)) {

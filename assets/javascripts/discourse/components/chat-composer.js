@@ -453,11 +453,11 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
 
   @discourseComputed("value", "loading", "uploads")
   sendDisabled(value, loading, uploads) {
-    if (this.inputDisabled) {
+    if (this.inputDisabled || loading) {
       return true;
     }
 
-    return !uploads.length && ((value || "").trim() === "" || loading);
+    return !this._messageIsValid();
   },
 
   @action
@@ -492,7 +492,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   },
 
   _messageIsValid() {
-    return !this._messageIsEmpty();
+    return !this._messageIsEmpty() || this.uploads.length;
   },
 
   _messageIsEmpty() {

@@ -266,7 +266,6 @@ $float-height: 530px;
       display: none;
     }
   }
-
   .public-channel-empty-message {
     margin: 0 0.5em 0.5em 0.5em;
   }
@@ -898,7 +897,9 @@ $float-height: 530px;
 }
 
 .chat-channel-title {
-  display: flex;
+  display: grid;
+  grid-template-columns: 25px 1fr;
+  grid-column-gap: 0.5em;
   align-items: center;
   font-weight: 500;
   max-width: calc(100% - 10px - 0.5em);
@@ -919,28 +920,30 @@ $float-height: 530px;
   .category-chat-name,
   .tag-chat-name,
   .dm-usernames {
-    margin: 0 0 0 0.5em;
+    margin: 0;
     font-size: var(--font-0);
     @include ellipsis;
   }
   .topic-chat-icon {
     color: var(--primary-medium);
+    width: 100%;
     display: flex;
   }
   .tc-avatar-container {
     display: inline-block;
-    width: 1.5em;
+    width: 100%;
     height: auto;
-    margin-right: 0.25em;
   }
   .dm-multi-count {
     display: inline-block;
     border-radius: 3px;
     background: rgba(var(--primary-rgb), 0.1);
-    padding: 0.1em 0.5em;
     text-align: center;
     font-weight: bold;
+    font-size: $font-down-1;
     margin-right: 0.5em;
+    line-height: 25px;
+    width: 100%;
   }
 }
 
@@ -1218,8 +1221,9 @@ $float-height: 530px;
     align-items: center;
 
     .d-icon {
-      height: 1.125em;
-      width: 1.125em;
+      height: 1.25em;
+      width: 1.25em;
+      margin: 0 auto;
     }
   }
 
@@ -1250,7 +1254,7 @@ $float-height: 530px;
       display: block;
       position: absolute;
       border-left: 2px solid var(--primary-low-mid);
-      left: 6px;
+      left: 11px;
       bottom: -0.5em;
       height: calc(100% + 1em);
       z-index: 0;

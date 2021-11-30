@@ -61,11 +61,11 @@ export default Service.extend({
   _pageChanged(path) {
     this.set("_inChat", path.startsWith("/chat/channel/"));
     if (this._inChat) {
-      this._chatPresenceChannel.enter();
+      this._chatPresenceChannel.enter({ onlyWhileActive: false });
       this._corePresenceChannel.leave();
     } else {
       this._chatPresenceChannel.leave();
-      this._corePresenceChannel.enter();
+      this._corePresenceChannel.enter({ onlyWhileActive: false });
     }
   },
 

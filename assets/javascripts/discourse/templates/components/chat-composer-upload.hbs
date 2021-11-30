@@ -1,8 +1,8 @@
 <span class="chat-upload">
-{{!--  {{(if done "completed" "in-progress")}}  --}}
   <span class="preview">
     {{#if (eq type IMAGE_TYPE)}}
       {{#if done}}
+        {{!--  TODO: CHANGE THIS TO IMG TAG  --}}
         <div class="preview-img" style="background-image: url('{{upload.short_path}}');"></div>
       {{else}}
         {{d-icon "far-image"}}

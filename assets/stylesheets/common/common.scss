@@ -30,7 +30,7 @@ $float-height: 530px;
   user-select: none;
 }
 .chat-unread-indicator {
-  background: var(--primary-low);
+  background: var(--tertiary-med-or-tertiary);
 }
 .chat-unread-urgent-indicator {
   background: var(--success);
@@ -124,7 +124,6 @@ $float-height: 530px;
       width: 8px;
       height: 8px;
       border-radius: 7px;
-      opacity: 0.5;
       top: calc(50% - 5px);
     }
   }
@@ -256,7 +255,6 @@ $float-height: 530px;
   .chat-unread-indicator {
     width: 10px;
     height: 10px;
-    opacity: 0.4;
     margin-left: 0.5em;
     border-radius: 10px;
     border: 0;
@@ -885,7 +883,7 @@ $float-height: 530px;
   }
 
   .chat-unread-indicator {
-    background: var(--primary-medium);
+    background: var(--tertiary-med-or-tertiary);
   }
 
   .chat-channel-row-unread-count {

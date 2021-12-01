@@ -3,7 +3,7 @@
     {{#if (eq type IMAGE_TYPE)}}
       {{#if done}}
         {{!--  TODO: CHANGE THIS TO IMG TAG  --}}
-        <div class="preview-img" style="background-image: url('{{upload.short_path}}');"></div>
+        <img class="preview-img" src={{upload.short_path}}>
       {{else}}
         {{d-icon "far-image"}}
       {{/if}}

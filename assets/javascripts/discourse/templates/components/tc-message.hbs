@@ -116,11 +116,13 @@
           {{else}}
             <p class="tc-text">
               {{html-safe message.cooked}}
-              <div class="tc-uploads">
-                {{#each message.uploads as |upload|}}
-                  {{chat-upload upload=upload}}
-                {{/each}}
-              </div>
+              {{#if message.uploads.length}}
+                <div class="tc-uploads">
+                  {{#each message.uploads as |upload|}}
+                    {{chat-upload upload=upload}}
+                  {{/each}}
+                </div>
+              {{/if}}
               {{#if message.edited}}
                 <div class="tc-message-edited">
                   {{i18n "chat.edited"}}

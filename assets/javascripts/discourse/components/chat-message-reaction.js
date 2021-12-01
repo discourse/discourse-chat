@@ -7,10 +7,10 @@ export default Component.extend({
   classNames: "chat-message-reaction",
   classNameBindings: ["active"],
 
-  // @discourseComputed("emoji")
-  // emojiString(emoji) {
-    // return `:${emoji}:`;
-  // },
+  @discourseComputed("emoji")
+  emojiString(emoji) {
+    return `:${emoji}:`;
+  },
 
   click() {
     if (this.loading) {

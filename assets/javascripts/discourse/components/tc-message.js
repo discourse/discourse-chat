@@ -13,6 +13,11 @@ export default Component.extend({
   isHovered: false,
   emojiPickerIsActive: false,
 
+  init() {
+    this._super(...arguments);
+    this.message.set('reactions', EmberObject.create(this.message.reactions));
+  },
+
   @discourseComputed("message.deleted_at", "message.expanded")
   deletedAndCollapsed(deletedAt, expanded) {
     return deletedAt && !expanded;
@@ -179,15 +184,12 @@ export default Component.extend({
     this.message.users_reactions.push(emoji)
 
     if (this.message.reactions[emoji]) {
-      this.message.reactions[emoji].set("count", this.message.reactions[emoji].count + 1);
+      this.message.reactions.set(`${emoji}.count`, this.message.reactions[emoji].count + 1);
     } else {
-      this.message.reactions[emoji] = {
+      this.message.reactions.set(emoji, {
         count: 1
-      }
+      })
     }
-    this.message.notifyPropertyChange("reactions")
-
-    console.log(this.message.users_reactions, emoji);
   },
 
   @action

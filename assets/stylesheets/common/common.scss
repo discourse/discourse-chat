@@ -1031,9 +1031,8 @@ $float-height: 530px;
   overflow-x: auto;
 
   .chat-upload {
-    display: inline-block;
-    height: 50px;
     display: inline-flex;
+    height: 50px;
     padding: 0.5em 0.75em;
     border: 1px solid var(--primary-low);
     border-radius: 6px;

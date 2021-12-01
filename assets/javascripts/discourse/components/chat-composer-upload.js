@@ -5,7 +5,8 @@ import { IMAGES_EXTENSIONS_REGEX } from "discourse/lib/uploads";
 export default Component.extend({
   IMAGE_TYPE: "image",
 
-  tagName: "",
+  tagName: "span",
+  classNames: "chat-upload",
   done: false,
   upload: null,
   cancel: null,

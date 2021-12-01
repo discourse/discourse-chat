@@ -621,11 +621,13 @@ export default Component.extend({
     }
     this.set("sendingloading", true);
     this.set("_nextStagedMessageId", this._nextStagedMessageId + 1);
+    const cooked = this.cook(message);
+    const stagedId = this._nextStagedMessageId;
     let data = {
       message,
-      cooked: this.cook(message),
-      stagedId: this._nextStagedMessageId,
-      uploadIds: (uploads || []).map((upload) => upload.id),
+      cooked,
+      staged_id: stagedId,
+      upload_ids: (uploads || []).map((upload) => upload.id),
     };
     if (this.replyToMsg) {
       data.in_reply_to_id = this.replyToMsg.id;
@@ -649,13 +651,16 @@ export default Component.extend({
 
     const stagedMessage = this._prepareSingleMessage(
       // We need to add the user and created at for presentation of staged message
-      Object.assign({}, data, {
+      {
+        message,
+        cooked,
+        stagedId,
+        uploads,
         staged: true,
         user: this.currentUser,
         in_reply_to: this.replyToMsg,
         created_at: new Date(),
-        uploads,
-      }),
+      },
       this.messages[this.messages.length - 1]
     );
     this.messages.pushObject(stagedMessage);
@@ -676,8 +681,8 @@ export default Component.extend({
   editMessage(chatMessage, newContent, uploads) {
     this.set("sendingloading", true);
     let data = {
-      newMessage: newContent,
-      uploadIds: (uploads || []).map((upload) => upload.id),
+      new_message: newContent,
+      upload_ids: (uploads || []).map((upload) => upload.id),
     };
     return ajax(`/chat/${this.chatChannel.id}/edit/${chatMessage.id}`, {
       type: "PUT",

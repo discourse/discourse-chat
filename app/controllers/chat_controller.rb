@@ -93,8 +93,8 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
       user: current_user,
       in_reply_to_id: reply_to_msg_id,
       content: content,
-      staged_id: params[:stagedId],
-      upload_ids: params[:uploadIds]
+      staged_id: params[:staged_id],
+      upload_ids: params[:upload_ids]
     )
 
     if chat_message_creator.failed?
@@ -117,8 +117,8 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     guardian.ensure_can_edit_chat!(@message)
     chat_message_updater = DiscourseChat::ChatMessageUpdater.update(
       chat_message: @message,
-      new_content: params[:newMessage],
-      upload_ids: params[:uploadIds] || []
+      new_content: params[:new_message],
+      upload_ids: params[:upload_ids] || []
     )
 
     if chat_message_updater.failed?

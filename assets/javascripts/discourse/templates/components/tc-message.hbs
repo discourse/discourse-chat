@@ -1,3 +1,9 @@
+{{emoji-picker
+  isActive=emojiPickerIsActive
+  isEditorFocused=true
+  emojiSelected=(action "selectReaction")
+  onEmojiPickerClose=(action (mut emojiPickerIsActive) false)
+}}
 <div class="chat-message {{if selectingMessages "selecting-messages"}}">
   {{#if show}}
     {{#if selectingMessages}}
@@ -21,6 +27,11 @@
         {{#unless message.staged}}
           <div class="tc-msgactions-hover">
             <div class="tc-msgactions">
+              {{d-button
+                class="btn-flat react-btn"
+                action=(action "startReaction")
+                icon="discourse-emojis"
+              }}
               {{#if showReplyButton}}
                 {{d-button
                   class="btn-flat reply-btn"
@@ -123,7 +134,7 @@
               {{/if}}
             </p>
             {{#if message.reactions}}
-              {{chat-message-reactions message=message}}
+              {{chat-message-reaction-list message=message}}
             {{/if}}
           {{/if}}
           {{#if message.error}}

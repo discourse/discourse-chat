@@ -1,0 +1,4 @@
+{{#each-in message.reactions as |emoji attrs|}}
+  {{log attrs}}
+  {{chat-message-reaction emoji=emoji count=attrs.count users=attrs.users}}
+{{/each-in}}

@@ -453,6 +453,22 @@ $float-height: 530px;
       color: var(--primary-medium);
       font-size: var(--font-down-1);
     }
+    .chat-message-reaction-list {
+
+      .chat-message-reaction {
+        display: inline-block;
+        padding: 0.25em 0.5em;
+        border-radius: 4px;
+        border: 2px solid var(--primary-low);
+        cursor: pointer;
+        user-select: none;
+
+        &.active {
+          border-color: var(--tertiary);
+          background: rgba(var(--tertiary-rgb), 0.2);
+        }
+      }
+    }
     .tc-send-error {
       text-align: center;
       color: var(--danger-medium);

@@ -4,13 +4,14 @@ import I18n from "I18n";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { prioritizeNameInUx } from "discourse/lib/settings";
-import { action } from "@ember/object";
+import EmberObject, { action } from "@ember/object";
 import { autoUpdatingRelativeAge } from "discourse/lib/formatter";
 import { schedule } from "@ember/runloop";
 
 export default Component.extend({
   lastRead: false,
   isHovered: false,
+  emojiPickerIsActive: false,
 
   @discourseComputed("message.deleted_at", "message.expanded")
   deletedAndCollapsed(deletedAt, expanded) {
@@ -156,6 +157,37 @@ export default Component.extend({
       when,
       who: "[INVALID]",
     });
+  },
+
+  @action
+  startReaction() {
+    this.set("emojiPickerIsActive", true);
+  },
+
+  @action
+  selectReaction(emoji) {
+    this.set("emojiPickerIsActive", false);
+    this.react(emoji);
+  },
+
+  @action
+  react(emoji) {
+    if (this.message.users_reactions.includes(emoji)) {
+      return false;
+    }
+
+    this.message.users_reactions.push(emoji)
+
+    if (this.message.reactions[emoji]) {
+      this.message.reactions[emoji].set("count", this.message.reactions[emoji].count + 1);
+    } else {
+      this.message.reactions[emoji] = {
+        count: 1
+      }
+    }
+    this.message.notifyPropertyChange("reactions")
+
+    console.log(this.message.users_reactions, emoji);
   },
 
   @action

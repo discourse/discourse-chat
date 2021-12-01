@@ -139,7 +139,6 @@ export default Component.extend({
           }
           this.setMessageProps(data.chat_view);
           this.decorateMessages();
-          this._stickScrollToBottom();
         })
         .catch((err) => {
           throw err;
@@ -291,6 +290,8 @@ export default Component.extend({
     if (message && message !== this.messages[this.messages.length - 1]) {
       message.set("lastRead", true);
       this.scrollToMessage(message.id);
+    } else {
+      this._stickScrollToBottom();
     }
   },
 

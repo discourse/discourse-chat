@@ -49,6 +49,7 @@ after_initialize do
   load File.expand_path('../app/models/user_chat_channel_membership.rb', __FILE__)
   load File.expand_path('../app/models/chat_channel.rb', __FILE__)
   load File.expand_path('../app/models/chat_message.rb', __FILE__)
+  load File.expand_path('../app/models/chat_message_reaction.rb', __FILE__)
   load File.expand_path('../app/models/chat_message_revision.rb', __FILE__)
   load File.expand_path('../app/models/chat_webhook_event.rb', __FILE__)
   load File.expand_path('../app/models/direct_message_channel.rb', __FILE__)
@@ -120,6 +121,7 @@ after_initialize do
     }
     User.class_eval {
       has_many :user_chat_channel_memberships, dependent: :destroy
+      has_many :chat_message_reactions, dependent: :destroy
     }
     Post.class_eval {
       has_many :chat_message_post_connections, dependent: :destroy

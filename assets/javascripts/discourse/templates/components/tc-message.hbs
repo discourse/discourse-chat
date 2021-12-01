@@ -122,6 +122,9 @@
                 </div>
               {{/if}}
             </p>
+            {{#if message.reactions}}
+              {{chat-message-reactions message=message}}
+            {{/if}}
           {{/if}}
           {{#if message.error}}
             <div class="tc-send-error">

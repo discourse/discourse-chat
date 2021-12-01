@@ -68,6 +68,9 @@ const baseChatPretenders = (server, helper) => {
     });
   });
   server.get("/chat/lookup/:message_id.json", () => helper.response(chatView));
+  server.post("/uploads/lookup-urls", () => {
+    return helper.response([]);
+  });
 };
 
 function siteChannelPretender(
@@ -188,11 +191,15 @@ acceptance("Discourse Chat - without unread", function (needs) {
     assert.equal(currentURL(), `/chat/channel/9/Site`);
   });
 
-  test("Chat messages are populated when a channel is entered", async function (assert) {
+  test("Chat messages are populated when a channel is entered and images are rendered", async function (assert) {
     await visit("/chat/channel/9/Site");
     const messages = queryAll(".tc-message .tc-text");
     assert.equal(messages[0].textContent.trim(), messageContents[0]);
-    assert.equal(messages[1].textContent.trim(), messageContents[1]);
+
+    assert.ok(messages[1].querySelector("a.chat-other-upload"));
+
+    assert.equal(messages[2].textContent.trim(), messageContents[2]);
+    assert.ok(messages[2].querySelector("img.chat-img-upload"));
   });
 
   test("Message controls are present and correct for permissions", async function (assert) {

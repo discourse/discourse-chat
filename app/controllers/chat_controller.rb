@@ -93,7 +93,8 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
       user: current_user,
       in_reply_to_id: reply_to_msg_id,
       content: content,
-      staged_id: params[:stagedId]
+      staged_id: params[:staged_id],
+      upload_ids: params[:upload_ids]
     )
 
     if chat_message_creator.failed?
@@ -117,6 +118,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     chat_message_updater = DiscourseChat::ChatMessageUpdater.update(
       chat_message: @message,
       new_content: params[:new_message],
+      upload_ids: params[:upload_ids] || []
     )
 
     if chat_message_updater.failed?
@@ -145,6 +147,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
       .includes(:revisions)
       .includes(:user)
       .includes(chat_webhook_event: :incoming_chat_webhook)
+      .includes(:uploads)
       .where(chat_channel: @chat_channel)
 
     if params[:before_message_id]
@@ -159,13 +162,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
 
     # Reverse messages so they are in the correct order. Need the order on the query with the
     # limit to fetch the correct messages.
-    messages = messages.to_a.reverse
-    chat_view = ChatView.new(
-      chat_channel: @chat_channel,
-      chatable: @chatable,
-      messages: messages
-    )
-    render_serialized(chat_view, ChatViewSerializer, root: :chat_view)
+    render_serialized(messages.to_a.reverse, ChatBaseMessageSerializer, root: :chat_messages, rest_serializer: true)
   end
 
   def delete
@@ -210,6 +207,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
       .includes(:revisions)
       .includes(:user)
       .includes(chat_webhook_event: :incoming_chat_webhook)
+      .includes(:uploads)
       .includes(chat_channel: :chatable)
       .where(chat_channel: chat_channel)
 
@@ -224,12 +222,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
       .order(created_at: :asc)
 
     messages = [past_messages.reverse, [@message], future_messages].reduce([], :concat)
-    chat_view = ChatView.new(
-      chat_channel: chat_channel,
-      chatable: chatable,
-      messages: messages
-    )
-    render_serialized(chat_view, ChatViewSerializer, root: :chat_view)
+    render_serialized(messages, ChatBaseMessageSerializer, root: :chat_messages, rest_serializer: true)
   end
 
   def set_user_chat_status

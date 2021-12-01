@@ -12,6 +12,7 @@ import {
 import { action } from "@ember/object";
 import { cancel, schedule, throttle } from "@ember/runloop";
 import { categoryHashtagTriggerRule } from "discourse/lib/category-hashtags";
+import { cloneJSON } from "discourse-common/lib/object";
 import { findRawTemplate } from "discourse-common/lib/raw-templates";
 import { emojiSearch, isSkinTonableEmoji } from "pretty-text/emoji";
 import { emojiUrlFor } from "discourse/lib/text";
@@ -79,6 +80,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
       uploadProcessorActions: {},
       uploadPreProcessors: [],
       uploadMarkdownResolvers: [],
+      uploads: [],
     });
     outsideToolbarClick = this.toggleToolbar.bind(this);
 
@@ -124,8 +126,11 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     this._applyEmojiAutocomplete(this._$textarea);
     this._bindUploadTarget();
 
-    this.appEvents.on(`${this.eventPrefix}:insert-text`, this, "_insertText");
-    this.appEvents.on(`${this.eventPrefix}:replace-text`, this, "_replaceText");
+    this.appEvents.on(
+      `${this.eventPrefix}:upload-success`,
+      this,
+      "_insertUpload"
+    );
   },
 
   willDestroyElement() {
@@ -143,11 +148,10 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
       uploadMarkdownResolvers: null,
     });
 
-    this.appEvents.off(`${this.eventPrefix}:insert-text`, this, "_insertText");
     this.appEvents.off(
-      `${this.eventPrefix}:replace-text`,
+      `${this.eventPrefix}:upload-success`,
       this,
-      "_replaceText"
+      "_insertUpload"
     );
   },
 
@@ -156,6 +160,10 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     if (this._messageIsEmpty() && !this.site.mobileView) {
       this._focusTextArea();
     }
+  },
+
+  _insertUpload(_, upload) {
+    this.uploads.pushObject(upload);
   },
 
   keyDown(event) {
@@ -199,7 +207,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
       } else if (this.editingMessage) {
         event.preventDefault();
         this.set("replyToMsg", null);
-        this.cancelEditing();
+        this.reset();
       } else {
         this._textarea.blur();
       }
@@ -213,16 +221,12 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
       this.setProperties({
         replyToMsg: null,
         value: this.editingMessage.message,
+        uploads: this.editingMessage.uploads
+          ? cloneJSON(this.editingMessage.uploads)
+          : [],
       });
       this._focusTextArea({ ensureAtEnd: true, resizeTextArea: true });
     }
-  },
-
-  @action
-  cancelEditing() {
-    this.set("value", "");
-    this.onCancelEditing();
-    this._focusTextArea({ ensureAtEnd: true, resizeTextArea: true });
   },
 
   @action
@@ -449,7 +453,11 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
 
   @discourseComputed("value", "loading")
   sendDisabled(value, loading) {
-    return (value || "").trim() === "" || loading || this.inputDisabled;
+    if (this.inputDisabled || loading) {
+      return true;
+    }
+
+    return !this._messageIsValid();
   },
 
   @action
@@ -466,31 +474,37 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   @action
   internalSendMessage() {
     if (this._messageIsValid()) {
-      return this.sendMessage(this.value).then(() => this._resetTextarea());
+      return this.sendMessage(this.value, this.uploads).then(() =>
+        this.reset()
+      );
     }
   },
 
   @action
   internalEditMessage() {
     if (this._messageIsValid()) {
-      return this.editMessage(this.editingMessage, this.value).then(() =>
-        this._resetTextarea()
-      );
+      return this.editMessage(
+        this.editingMessage,
+        this.value,
+        this.uploads
+      ).then(() => this.reset());
     }
   },
 
   _messageIsValid() {
-    return !this._messageIsEmpty();
+    return !this._messageIsEmpty() || this.uploads.length;
   },
 
   _messageIsEmpty() {
     return (this.value || "").trim() === "";
   },
 
-  _resetTextarea() {
+  @action
+  reset() {
     this.set("value", "");
+    this.set("uploads", []);
     this.onCancelEditing();
-    this._focusTextArea();
+    this._focusTextArea({ ensureAtEnd: true, resizeTextArea: true });
   },
 
   @action
@@ -537,5 +551,17 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
       window.removeEventListener("click", outsideToolbarClick);
     }
     return false;
+  },
+
+  @action
+  cancelUploading(upload) {
+    this.appEvents.trigger(`${this.eventPrefix}:cancel-upload`, {
+      fileId: upload.id,
+    });
+  },
+
+  @action
+  removeUpload(upload) {
+    this.uploads.removeObject(upload);
   },
 });

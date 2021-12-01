@@ -14,6 +14,8 @@ class ChatMessage < ActiveRecord::Base
   has_many :reactions, class_name: "ChatMessageReaction"
   has_many :chat_message_post_connections
   has_many :posts, through: :chat_message_post_connections
+  has_many :chat_uploads
+  has_many :uploads, through: :chat_uploads
   has_one :chat_webhook_event
 
   def reviewable_flag

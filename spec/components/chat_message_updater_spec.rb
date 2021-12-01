@@ -199,7 +199,7 @@ describe DiscourseChat::ChatMessageUpdater do
       }.to change { ChatUpload.where(chat_message: chat_message).count }.by(2)
     end
 
-    it "doesn't remove existins uploads when BS upload ids are passed in" do
+    it "doesn't remove existing uploads when BS upload ids are passed in" do
       chat_message = create_chat_message(user1, "something", public_chat_channel, upload_ids: [upload1.id])
       expect {
         DiscourseChat::ChatMessageUpdater.update(

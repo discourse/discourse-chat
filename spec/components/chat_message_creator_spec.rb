@@ -233,7 +233,7 @@ describe DiscourseChat::ChatMessageCreator do
         }.by(1)
     end
 
-    it "filters out uploads that weren't uplaoded by the user" do
+    it "filters out uploads that weren't uploaded by the user" do
       expect {
         DiscourseChat::ChatMessageCreator.create(
           chat_channel: public_chat_channel,

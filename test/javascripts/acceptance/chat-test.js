@@ -200,7 +200,6 @@ acceptance("Discourse Chat - without unread", function (needs) {
 
     assert.equal(messages[2].textContent.trim(), messageContents[2]);
     assert.ok(messages[2].querySelector("img.chat-img-upload"));
-
   });
 
   test("Message controls are present and correct for permissions", async function (assert) {

@@ -481,6 +481,7 @@ export default Component.extend({
         message: data.chat_message.message,
         cooked: data.chat_message.cooked,
         excerpt: data.chat_message.excerpt,
+        uploads: data.chat_message.uploads,
         edited: true,
       });
     }
@@ -613,7 +614,7 @@ export default Component.extend({
   },
 
   @action
-  sendMessage(message) {
+  sendMessage(message, uploads) {
     resetIdle();
 
     if (this.sendingloading) {
@@ -621,10 +622,13 @@ export default Component.extend({
     }
     this.set("sendingloading", true);
     this.set("_nextStagedMessageId", this._nextStagedMessageId + 1);
+    const cooked = this.cook(message);
+    const stagedId = this._nextStagedMessageId;
     let data = {
       message,
-      cooked: this.cook(message),
-      stagedId: this._nextStagedMessageId,
+      cooked,
+      staged_id: stagedId,
+      upload_ids: (uploads || []).map((upload) => upload.id),
     };
     if (this.replyToMsg) {
       data.in_reply_to_id = this.replyToMsg.id;
@@ -648,12 +652,16 @@ export default Component.extend({
 
     const stagedMessage = this._prepareSingleMessage(
       // We need to add the user and created at for presentation of staged message
-      Object.assign({}, data, {
+      {
+        message,
+        cooked,
+        stagedId,
+        uploads,
         staged: true,
         user: this.currentUser,
         in_reply_to: this.replyToMsg,
         created_at: new Date(),
-      }),
+      },
       this.messages[this.messages.length - 1]
     );
     this.messages.pushObject(stagedMessage);
@@ -671,9 +679,12 @@ export default Component.extend({
   },
 
   @action
-  editMessage(chatMessage, newContent) {
+  editMessage(chatMessage, newContent, uploads) {
     this.set("sendingloading", true);
-    let data = { new_message: newContent };
+    let data = {
+      new_message: newContent,
+      upload_ids: (uploads || []).map((upload) => upload.id),
+    };
     return ajax(`/chat/${this.chatChannel.id}/edit/${chatMessage.id}`, {
       type: "PUT",
       data,

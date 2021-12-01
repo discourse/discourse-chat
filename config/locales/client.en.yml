@@ -50,6 +50,7 @@ en:
       open_message: "Open message in chat"
       placeholder: "chat..."
       placeholder_previewing: "Join the channel to send a message."
+      remove_upload: "Remove file"
       reply: "Reply"
       restore: "Restore deleted message"
       return_to_list: "Return to channel list"

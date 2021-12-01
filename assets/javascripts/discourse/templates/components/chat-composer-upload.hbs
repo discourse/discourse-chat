@@ -1,0 +1,31 @@
+<span class="preview">
+  {{#if (eq type IMAGE_TYPE)}}
+    {{#if done}}
+      <img class="preview-img" src={{upload.short_path}}>
+    {{else}}
+      {{d-icon "far-image"}}
+    {{/if}}
+  {{else}}
+    {{d-icon "file-alt"}}
+  {{/if}}
+</span>
+
+<span class="data">
+  <div class="top-data">
+    <span class="file-name">{{fileName}}</span>
+    {{d-button
+      class="btn-flat"
+      action=cancel
+      icon="times"
+      title="chat.remove_upload"
+    }}
+  </div>
+  <div class="bottom-data">
+    {{#if done}}
+      <span class="extension-pill">{{upload.extension}}</span>
+    {{else}}
+      <span class="uploading">{{i18n "uploading"}}</span>
+      <progress class="upload-progress" id="file" max="100" value={{upload.progress}}></progress>
+    {{/if}}
+  </div>
+</span>

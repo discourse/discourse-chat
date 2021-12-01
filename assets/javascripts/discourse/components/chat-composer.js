@@ -451,8 +451,8 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     return uploading || processingUpload || previewing;
   },
 
-  @discourseComputed("value", "loading", "uploads")
-  sendDisabled(value, loading, uploads) {
+  @discourseComputed("value", "loading")
+  sendDisabled(value, loading) {
     if (this.inputDisabled || loading) {
       return true;
     }

@@ -162,13 +162,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
 
     # Reverse messages so they are in the correct order. Need the order on the query with the
     # limit to fetch the correct messages.
-    messages = messages.to_a.reverse
-    chat_view = ChatView.new(
-      chat_channel: @chat_channel,
-      chatable: @chatable,
-      messages: messages
-    )
-    render_serialized(chat_view, ChatViewSerializer, root: :chat_view)
+    render_serialized(messages.to_a.reverse, ChatBaseMessageSerializer, root: :chat_messages, rest_serializer: true)
   end
 
   def delete
@@ -228,12 +222,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
       .order(created_at: :asc)
 
     messages = [past_messages.reverse, [@message], future_messages].reduce([], :concat)
-    chat_view = ChatView.new(
-      chat_channel: chat_channel,
-      chatable: chatable,
-      messages: messages
-    )
-    render_serialized(chat_view, ChatViewSerializer, root: :chat_view)
+    render_serialized(messages, ChatBaseMessageSerializer, root: :chat_messages, rest_serializer: true)
   end
 
   def set_user_chat_status

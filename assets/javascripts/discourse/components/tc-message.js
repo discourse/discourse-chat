@@ -1,5 +1,5 @@
 import Component from "@ember/component";
-import discourseComputed from "discourse-common/utils/decorators";
+import discourseComputed, { bind } from "discourse-common/utils/decorators";
 import I18n from "I18n";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
@@ -7,7 +7,6 @@ import { prioritizeNameInUx } from "discourse/lib/settings";
 import EmberObject, { action } from "@ember/object";
 import { autoUpdatingRelativeAge } from "discourse/lib/formatter";
 import { schedule } from "@ember/runloop";
-import { bind } from "discourse-common/utils/decorators";
 
 export default Component.extend({
   ADD_REACTION: "add",

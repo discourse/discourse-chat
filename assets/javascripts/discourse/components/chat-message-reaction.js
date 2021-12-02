@@ -1,7 +1,6 @@
 import Component from "@ember/component";
-import discourseComputed, { observes } from "discourse-common/utils/decorators";
+import discourseComputed from "discourse-common/utils/decorators";
 import { action } from "@ember/object";
-import { emojiUnescape } from "discourse/lib/text";
 import { cancel, later } from "@ember/runloop";
 
 export default Component.extend({
@@ -40,6 +39,6 @@ export default Component.extend({
   @action
   handleMouseLeave() {
     cancel(this._hoverTimer);
-    this.hideUsersList(this);
+    this.hideUsersList();
   },
 });

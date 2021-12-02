@@ -148,12 +148,12 @@
                       {{replace-emoji reactionLabel}}
                     </div>
                   {{/if}}
-                  {{#each-in message.reactions as |emoji attrs|}}
+                  {{#each-in message.reactions as |emoji reactionAttrs|}}
                     {{chat-message-reaction
                       emoji=emoji
-                      count=attrs.count
-                      users=attrs.users
-                      reacted=attrs.reacted
+                      count=reactionAttrs.count
+                      users=reactionAttrs.users
+                      reacted=reactionAttrs.reacted
                       react=(action "react")
                       showUsersList=(action "showUsersList")
                       hideUsersList=(action "hideUsersList")

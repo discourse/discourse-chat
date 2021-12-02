@@ -199,11 +199,11 @@ acceptance("Discourse Chat - without unread", function (needs) {
   test("Chat messages are populated when a channel is entered and images are rendered", async function (assert) {
     await visit("/chat/channel/9/Site");
     const messages = queryAll(".tc-message .tc-text");
-    assert.equal(messages[0].textContent.trim(), messageContents[0]);
+    assert.equal(messages[0].innerText.trim(), messageContents[0]);
 
     assert.ok(messages[1].querySelector("a.chat-other-upload"));
 
-    assert.equal(messages[2].textContent.trim(), messageContents[2]);
+    assert.equal(messages[2].innerText.trim().split("\n")[0], messageContents[2]);
     assert.ok(messages[2].querySelector("img.chat-img-upload"));
   });
 

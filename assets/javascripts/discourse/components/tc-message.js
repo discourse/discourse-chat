@@ -240,7 +240,7 @@ export default Component.extend({
   },
 
   @action
-  hideUsersList(reaction) {
+  hideUsersList() {
     this.set("reactionLabel", null);
   },
 
@@ -300,22 +300,22 @@ export default Component.extend({
   },
 
   @action
-  react(emoji, action) {
+  react(emoji, reactAction) {
     if (this._loadingReactions.includes(emoji)) {
       return;
     }
 
     this._loadingReactions.push(emoji);
-    this._updateReactionsList(emoji, action, this.currentUser);
-    this._publishReaction(emoji, action);
+    this._updateReactionsList(emoji, reactAction, this.currentUser);
+    this._publishReaction(emoji, reactAction);
   },
 
-  _updateReactionsList(emoji, action, user) {
-    const selfReacted = this.currentUser.id == user.id;
+  _updateReactionsList(emoji, reactAction, user) {
+    const selfReacted = this.currentUser.id === user.id;
     if (this.message.reactions[emoji]) {
       if (
         selfReacted &&
-        action === this.ADD_REACTION &&
+        reactAction === this.ADD_REACTION &&
         this.message.reactions[emoji].reacted
       ) {
         // User is already has reaction added; do nothing
@@ -323,7 +323,7 @@ export default Component.extend({
       }
 
       let newCount =
-        action === this.ADD_REACTION
+        reactAction === this.ADD_REACTION
           ? this.message.reactions[emoji].count + 1
           : this.message.reactions[emoji].count - 1;
 
@@ -331,13 +331,13 @@ export default Component.extend({
       if (selfReacted) {
         this.message.reactions.set(
           `${emoji}.reacted`,
-          action === this.ADD_REACTION
+          reactAction === this.ADD_REACTION
         );
       } else {
         this.message.reactions[emoji].users.pushObject(user);
       }
     } else {
-      if (action === this.ADD_REACTION) {
+      if (reactAction === this.ADD_REACTION) {
         this.message.reactions.set(emoji, {
           count: 1,
           reacted: selfReacted,
@@ -348,13 +348,13 @@ export default Component.extend({
     this.message.notifyPropertyChange("reactions");
   },
 
-  _publishReaction(emoji, react_action) {
+  _publishReaction(emoji, reactAction) {
     return ajax(
       `/chat/${this.details.chat_channel_id}/react/${this.message.id}`,
       {
         type: "PUT",
         data: {
-          react_action,
+          react_action: reactAction,
           emoji,
         },
       }

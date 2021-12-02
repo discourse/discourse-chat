@@ -203,7 +203,10 @@ acceptance("Discourse Chat - without unread", function (needs) {
 
     assert.ok(messages[1].querySelector("a.chat-other-upload"));
 
-    assert.equal(messages[2].innerText.trim().split("\n")[0], messageContents[2]);
+    assert.equal(
+      messages[2].innerText.trim().split("\n")[0],
+      messageContents[2]
+    );
     assert.ok(messages[2].querySelector("img.chat-img-upload"));
   });
 

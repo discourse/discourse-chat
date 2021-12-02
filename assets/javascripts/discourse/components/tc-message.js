@@ -28,9 +28,7 @@ export default Component.extend({
     );
     this.messageBus.subscribe(
       `/chat/message-reactions/${this.message.id}`,
-      (busData) => {
-        this._handleReactionMessage(busData);
-      }
+      this._handleReactionMessage
     );
   },
 
@@ -41,7 +39,10 @@ export default Component.extend({
       this,
       "_reactionPickerOpened"
     );
-    this.messageBus.unsubscribe(`/chat/message-reactions/${this.message.id}`);
+    this.messageBus.unsubscribe(
+      `/chat/message-reactions/${this.message.id}`,
+      this._handleReactionMessage
+    );
   },
 
   _reactionPickerOpened(messageId) {
@@ -290,6 +291,7 @@ export default Component.extend({
     this.react(emoji, this.ADD_REACTION);
   },
 
+  @action
   _handleReactionMessage(busData) {
     const loadingReactionIndex = this._loadingReactions.indexOf(busData.emoji);
     if (loadingReactionIndex > -1) {
@@ -358,9 +360,7 @@ export default Component.extend({
           emoji,
         },
       }
-    )
-      .then()
-      .catch(popupAjaxError);
+    ).catch(popupAjaxError);
   },
 
   @action

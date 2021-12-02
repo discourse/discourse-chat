@@ -1,10 +1,10 @@
-{{emoji-picker
-  isActive=emojiPickerIsActive
-  isEditorFocused=true
-  emojiSelected=(action "selectReaction")
-  onEmojiPickerClose=(action (mut emojiPickerIsActive) false)
-}}
 <div class="chat-message {{if selectingMessages "selecting-messages"}}">
+  {{emoji-picker
+    isActive=emojiPickerIsActive
+    isEditorFocused=true
+    emojiSelected=(action "selectReaction")
+    onEmojiPickerClose=(action (mut emojiPickerIsActive) false)
+  }}
   {{#if show}}
     {{#if selectingMessages}}
       {{input
@@ -29,8 +29,9 @@
             <div class="tc-msgactions">
               {{d-button
                 class="btn-flat react-btn"
-                action=(action "startReaction")
+                action=(action "startReaction" ".react-btn" SHOW_LEFT)
                 icon="discourse-emojis"
+                title="chat.react"
               }}
               {{#if showReplyButton}}
                 {{d-button
@@ -139,10 +140,34 @@
                   {{i18n "chat.edited"}}
                 </div>
               {{/if}}
+
+              {{#if hasReactions}}
+                <div class="chat-message-reaction-list">
+                  {{#if reactionLabel}}
+                    <div class="reaction-users-list">
+                      {{replace-emoji reactionLabel}}
+                    </div>
+                  {{/if}}
+                  {{#each-in message.reactions as |emoji attrs|}}
+                    {{chat-message-reaction
+                      emoji=emoji
+                      count=attrs.count
+                      users=attrs.users
+                      reacted=attrs.reacted
+                      react=(action "react")
+                      showUsersList=(action "showUsersList")
+                      hideUsersList=(action "hideUsersList")
+                    }}
+                  {{/each-in}}
+                  {{d-button
+                    class="chat-message-react-btn"
+                    action=(action "startReaction" ".chat-message-react-btn" SHOW_RIGHT)
+                    icon="discourse-emojis"
+                    title="chat.react"
+                  }}
+                </div>
+              {{/if}}
             </p>
-            {{#if message.reactions}}
-              {{chat-message-reaction-list message=message}}
-            {{/if}}
           {{/if}}
           {{#if message.error}}
             <div class="tc-send-error">

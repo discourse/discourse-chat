@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
+  ADD_REACTION = :add
+  REMOVE_REACTION = :remove
+
   before_action :find_chatable, only: [:enable_chat, :disable_chat]
   before_action :find_chat_message, only: [
     :delete,
@@ -147,7 +150,9 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
       .includes(:revisions)
       .includes(:user)
       .includes(chat_webhook_event: :incoming_chat_webhook)
+      .includes(reactions: :user)
       .includes(:uploads)
+      .includes(chat_channel: :chatable)
       .where(chat_channel: @chat_channel)
 
     if params[:before_message_id]
@@ -163,6 +168,39 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     # Reverse messages so they are in the correct order. Need the order on the query with the
     # limit to fetch the correct messages.
     render_serialized(messages.to_a.reverse, ChatBaseMessageSerializer, root: :chat_messages, rest_serializer: true)
+  end
+
+  def react
+    params.require([:emoji, :react_action])
+    if ![ADD_REACTION, REMOVE_REACTION].include?(params[:react_action].to_sym) || !Emoji.exists?(params[:emoji])
+      raise Discourse::InvalidParameters
+    end
+
+    set_channel_and_chatable
+    @user_chat_channel_membership = UserChatChannelMembership.find_by(
+      chat_channel: @chat_channel,
+      user: current_user,
+      following: true
+    )
+    raise Discourse::InvalidAccess unless @user_chat_channel_membership
+
+    chat_message = ChatMessage.find_by(id: params[:message_id], chat_channel: @chat_channel)
+    raise Discourse::NotFound unless chat_message
+
+    if params[:react_action].to_sym == ADD_REACTION
+      chat_message.reactions.find_or_create_by(user: current_user, emoji: params[:emoji])
+    else
+      chat_message.reactions.where(user: current_user, emoji: params[:emoji]).destroy_all
+    end
+
+    ChatPublisher.publish_reaction!(
+      @chat_channel,
+      chat_message,
+      params[:react_action],
+      current_user,
+      params[:emoji]
+    )
+    render json: success_json
   end
 
   def delete
@@ -207,6 +245,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
       .includes(:revisions)
       .includes(:user)
       .includes(chat_webhook_event: :incoming_chat_webhook)
+      .includes(reactions: :user)
       .includes(:uploads)
       .includes(chat_channel: :chatable)
       .where(chat_channel: chat_channel)

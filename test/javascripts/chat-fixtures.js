@@ -189,6 +189,23 @@ export const chatView = {
           width: 1209,
         },
       ],
+      reactions: {
+        heart: {
+          count: 1,
+          reacted: false,
+          users: [{ id: 99, username: "im-penar" }],
+        },
+        kiwi_fruit: {
+          count: 2,
+          reacted: true,
+          users: [{ id: 99, username: "im-penar" }],
+        },
+        tada: {
+          count: 1,
+          reacted: true,
+          users: [],
+        },
+      },
     },
   ],
 };

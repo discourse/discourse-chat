@@ -12,8 +12,7 @@ class ChatBaseMessageSerializer < ApplicationSerializer
     :deleted_by_id,
     :flag_count,
     :edited,
-    :reactions,
-    :users_reactions
+    :reactions
 
   has_one :user, serializer: BasicUserSerializer, embed: :objects
   has_one :chat_webhook_event, serializer: ChatWebhookEventSerializer, embed: :objects
@@ -23,17 +22,22 @@ class ChatBaseMessageSerializer < ApplicationSerializer
   def reactions
     reactions_hash = {}
     object.reactions.group_by(&:emoji).each do |emoji, reactions|
-      users = reactions[0..11].map(&:user).filter { |user| user.id != scope.user.id }[0..10]
+      users = reactions[0..6].map(&:user).filter { |user| user.id != scope.user.id }[0..5]
       reactions_hash[emoji] = {
         count: reactions.count,
-        users: ActiveModel::ArraySerializer.new(users, each_serializer: BasicUserSerializer).as_json
+        users: ActiveModel::ArraySerializer.new(users, each_serializer: BasicUserSerializer).as_json,
+        reacted: users_reactions.include?(emoji)
       }
     end
     reactions_hash
   end
 
+  def include_reactions?
+    object.reactions.any?
+  end
+
   def users_reactions
-    object.reactions.select { |reaction| reaction.user_id == scope.user.id }.map(&:emoji)
+    @users_reactions ||= object.reactions.select { |reaction| reaction.user_id == scope.user.id }.map(&:emoji)
   end
 
   def edited

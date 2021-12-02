@@ -272,6 +272,7 @@ after_initialize do
     post '/disable' => 'chat#disable_chat'
     get '/:chat_channel_id/messages' => 'chat#messages'
     put ':chat_channel_id/edit/:message_id' => 'chat#edit_message'
+    put ':chat_channel_id/react/:message_id' => 'chat#react'
     delete '/:chat_channel_id/:message_id' => 'chat#delete'
     post '/:chat_channel_id/:message_id/flag' => 'chat#flag'
     put '/:chat_channel_id/restore/:message_id' => 'chat#restore'

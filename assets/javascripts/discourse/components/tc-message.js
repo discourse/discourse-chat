@@ -9,13 +9,47 @@ import { autoUpdatingRelativeAge } from "discourse/lib/formatter";
 import { schedule } from "@ember/runloop";
 
 export default Component.extend({
+  ADD_REACTION: "add",
+  REMOVE_REACTION: "remove",
+  SHOW_LEFT: "showLeft",
+  SHOW_RIGHT: "showRight",
   lastRead: false,
   isHovered: false,
   emojiPickerIsActive: false,
 
   init() {
     this._super(...arguments);
-    this.message.set('reactions', EmberObject.create(this.message.reactions));
+    this.set("_loadingReactions", []);
+    this.message.set("reactions", EmberObject.create(this.message.reactions));
+    this.appEvents.on(
+      "chat-message:reaction-picker-opened",
+      this,
+      "_reactionPickerOpened"
+    );
+    this.messageBus.subscribe(
+      `/chat/message-reactions/${this.message.id}`,
+      (busData) => {
+        this._handleReactionMessage(busData);
+      }
+    );
+  },
+
+  willDestroyElement() {
+    this._super(...arguments);
+    this.appEvents.off(
+      "chat-message:reaction-picker-opened",
+      this,
+      "_reactionPickerOpened"
+    );
+    this.messageBus.unsubscribe(`/chat/message-reactions/${this.message.id}`);
+  },
+
+  _reactionPickerOpened(messageId) {
+    if (this.message.id === messageId || !this.emojiPickerIsActive) {
+      return;
+    }
+
+    this.set("emojiPickerIsActive", false);
   },
 
   @discourseComputed("message.deleted_at", "message.expanded")
@@ -164,32 +198,169 @@ export default Component.extend({
     });
   },
 
+  @discourseComputed("message.reactions.@each")
+  hasReactions(reactions) {
+    return Object.values(reactions).some((r) => r.count > 0);
+  },
+
   @action
-  startReaction() {
+  showUsersList(reaction) {
+    let list;
+    let usernames = reaction.users.map((u) => u.username).join(", ");
+    if (reaction.reacted) {
+      if (reaction.count === 1) {
+        list = I18n.t("chat.reactions.only_you", { emoji: reaction.emoji });
+      } else if (reaction.count > 1 && reaction.count < 6) {
+        list = I18n.t("chat.reactions.and_others", {
+          usernames,
+          emoji: reaction.emoji,
+        });
+      } else if (reaction.count >= 6) {
+        list = I18n.t("chat.reactions.you_others_and_more", {
+          usernames,
+          emoji: reaction.emoji,
+          more: reaction.count - 5,
+        });
+      }
+    } else {
+      if (reaction.count > 0 && reaction.count < 6) {
+        list = I18n.t("chat.reactions.only_others", {
+          usernames,
+          emoji: reaction.emoji,
+        });
+      } else if (reaction.count >= 6) {
+        list = I18n.t("chat.reactions.others_and_more", {
+          usernames,
+          emoji: reaction.emoji,
+          more: reaction.count - 5,
+        });
+      }
+    }
+    this.set("reactionLabel", list);
+  },
+
+  @action
+  hideUsersList(reaction) {
+    this.set("reactionLabel", null);
+  },
+
+  @action
+  startReaction(btnSelector, position) {
     this.set("emojiPickerIsActive", true);
+    this.appEvents.trigger(
+      "chat-message:reaction-picker-opened",
+      this.message.id
+    );
+
+    schedule("afterRender", () => {
+      this._repositionEmojiPicker(btnSelector, position);
+    });
+  },
+
+  _repositionEmojiPicker(btnSelector, position) {
+    if (!this.element) {
+      return;
+    }
+
+    const emojiPicker = this.element.querySelector(".emoji-picker");
+    const btn = this.element.querySelector(btnSelector);
+    if (!emojiPicker || !btn) {
+      return;
+    }
+    const bounds = btn.getBoundingClientRect();
+    const btnPositions = {
+      top: bounds.top + window.pageYOffset,
+      left: bounds.left + window.pageXOffset,
+    };
+    const xAdjustment =
+      position === this.SHOW_RIGHT && this.fullPage
+        ? btn.offsetWidth + 10
+        : (emojiPicker.offsetWidth + 10) * -1;
+
+    const yHeight =
+      window.innerHeight - btnPositions.top - emojiPicker.offsetHeight;
+    const yAdjustment = yHeight < 0 ? -yHeight + 20 : 20;
+    emojiPicker.style.top = `${btnPositions.top - yAdjustment}px`;
+    emojiPicker.style.left = `${btnPositions.left + xAdjustment}px`;
   },
 
   @action
   selectReaction(emoji) {
     this.set("emojiPickerIsActive", false);
-    this.react(emoji);
+    this.react(emoji, this.ADD_REACTION);
+  },
+
+  _handleReactionMessage(busData) {
+    const loadingReactionIndex = this._loadingReactions.indexOf(busData.emoji);
+    if (loadingReactionIndex > -1) {
+      return this._loadingReactions.splice(loadingReactionIndex, 1);
+    }
+
+    this._updateReactionsList(busData.emoji, busData.action, busData.user);
   },
 
   @action
-  react(emoji) {
-    if (this.message.users_reactions.includes(emoji)) {
-      return false;
+  react(emoji, action) {
+    if (this._loadingReactions.includes(emoji)) {
+      return;
     }
 
-    this.message.users_reactions.push(emoji)
+    this._loadingReactions.push(emoji);
+    this._updateReactionsList(emoji, action, this.currentUser);
+    this._publishReaction(emoji, action);
+  },
 
+  _updateReactionsList(emoji, action, user) {
+    const selfReacted = this.currentUser.id == user.id;
     if (this.message.reactions[emoji]) {
-      this.message.reactions.set(`${emoji}.count`, this.message.reactions[emoji].count + 1);
+      if (
+        selfReacted &&
+        action === this.ADD_REACTION &&
+        this.message.reactions[emoji].reacted
+      ) {
+        // User is already has reaction added; do nothing
+        return false;
+      }
+
+      let newCount =
+        action === this.ADD_REACTION
+          ? this.message.reactions[emoji].count + 1
+          : this.message.reactions[emoji].count - 1;
+
+      this.message.reactions.set(`${emoji}.count`, newCount);
+      if (selfReacted) {
+        this.message.reactions.set(
+          `${emoji}.reacted`,
+          action === this.ADD_REACTION
+        );
+      } else {
+        this.message.reactions[emoji].users.pushObject(user);
+      }
     } else {
-      this.message.reactions.set(emoji, {
-        count: 1
-      })
+      if (action === this.ADD_REACTION) {
+        this.message.reactions.set(emoji, {
+          count: 1,
+          reacted: selfReacted,
+          users: selfReacted ? [] : [user],
+        });
+      }
     }
+    this.message.notifyPropertyChange("reactions");
+  },
+
+  _publishReaction(emoji, react_action) {
+    return ajax(
+      `/chat/${this.details.chat_channel_id}/react/${this.message.id}`,
+      {
+        type: "PUT",
+        data: {
+          react_action,
+          emoji,
+        },
+      }
+    )
+      .then()
+      .catch(popupAjaxError);
   },
 
   @action

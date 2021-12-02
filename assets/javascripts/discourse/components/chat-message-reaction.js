@@ -27,7 +27,9 @@ export default Component.extend({
     this._super(...arguments);
     this.element.removeEventListener("mouseenter", this.handleMouseEnter);
     this.element.removeEventListener("mouseleave", this.handleMouseLeave);
-    cancel(this._hoverTimer);
+    if (this._hoverTimer) {
+      cancel(this._hoverTimer);
+    }
   },
 
   @action

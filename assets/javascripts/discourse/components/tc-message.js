@@ -7,6 +7,7 @@ import { prioritizeNameInUx } from "discourse/lib/settings";
 import EmberObject, { action } from "@ember/object";
 import { autoUpdatingRelativeAge } from "discourse/lib/formatter";
 import { schedule } from "@ember/runloop";
+import { bind } from "discourse-common/utils/decorators";
 
 export default Component.extend({
   ADD_REACTION: "add",
@@ -291,7 +292,7 @@ export default Component.extend({
     this.react(emoji, this.ADD_REACTION);
   },
 
-  @action
+  @bind
   _handleReactionMessage(busData) {
     const loadingReactionIndex = this._loadingReactions.indexOf(busData.emoji);
     if (loadingReactionIndex > -1) {

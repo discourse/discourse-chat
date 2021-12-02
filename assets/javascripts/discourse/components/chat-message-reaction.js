@@ -1,6 +1,6 @@
 import Component from "@ember/component";
 import discourseComputed from "discourse-common/utils/decorators";
-import { action } from "@ember/object";
+import { bind } from "discourse-common/utils/decorators";
 import { cancel, later } from "@ember/runloop";
 
 export default Component.extend({
@@ -32,14 +32,14 @@ export default Component.extend({
     }
   },
 
-  @action
+  @bind
   handleMouseEnter() {
     this._hoverTimer = later(() => {
       this.showUsersList(this);
     }, 500);
   },
 
-  @action
+  @bind
   handleMouseLeave() {
     cancel(this._hoverTimer);
     this.hideUsersList();

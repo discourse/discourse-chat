@@ -248,7 +248,7 @@ export default Component.extend({
   @action
   startReactionForMsgActions() {
     const btn = this.element.querySelector(".tc-msgactions-hover .react-btn");
-    this.startReaction(btn, this.SHOW_LEFT);
+    this._startReaction(btn, this.SHOW_LEFT);
   },
 
   @action
@@ -256,11 +256,10 @@ export default Component.extend({
     const btn = this.element.querySelector(
       ".chat-message-reaction-list .chat-message-react-btn"
     );
-    this.startReaction(btn, this.SHOW_RIGHT);
+    this._startReaction(btn, this.SHOW_RIGHT);
   },
 
-  @action
-  startReaction(btn, position) {
+  _startReaction(btn, position) {
     this.set("emojiPickerIsActive", true);
     this.appEvents.trigger(
       "chat-message:reaction-picker-opened",

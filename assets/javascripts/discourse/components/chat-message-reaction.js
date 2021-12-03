@@ -13,29 +13,35 @@ export default Component.extend({
   },
 
   click() {
+    cancel(this._hoverTimer);
     this.react(this.emoji, this.reacted ? "remove" : "add");
   },
 
   didInsertElement() {
     this._super(...arguments);
-    this.element.addEventListener("mouseenter", this.handleMouseEnter);
-    this.element.addEventListener("mouseleave", this.handleMouseLeave);
+    this.setProperties({
+      enterEvent: this.site.mobileView ? "mouseover" : "mouseenter",
+      leaveEvent: this.site.mobileView ? "mouseout" : "mouseleave",
+    });
+    this.element.addEventListener(this.enterEvent, this.handleMouseEnter);
+    this.element.addEventListener(this.leaveEvent, this.handleMouseLeave);
   },
 
   willDestroyElement() {
     this._super(...arguments);
-    this.element.removeEventListener("mouseenter", this.handleMouseEnter);
-    this.element.removeEventListener("mouseleave", this.handleMouseLeave);
+    this.element.removeEventListener(this.enterEvent, this.handleMouseEnter);
+    this.element.removeEventListener(this.leaveEvent, this.handleMouseLeave);
     if (this._hoverTimer) {
       cancel(this._hoverTimer);
     }
   },
 
   @bind
-  handleMouseEnter() {
+  handleMouseEnter(e) {
     this._hoverTimer = later(() => {
       this.showUsersList(this);
     }, 500);
+    e.preventDefault();
   },
 
   @bind

@@ -477,8 +477,7 @@ $float-height: 530px;
         max-width: 300px;
       }
 
-      .chat-message-reaction,
-      .chat-message-react-btn {
+      .chat-message-reaction {
         display: inline-block;
         vertical-align: top;
         padding: 0.25em 0.5em;
@@ -496,24 +495,30 @@ $float-height: 530px;
           }
         }
       }
-    }
-    .chat-message-reaction {
-      font-size: var(--font-down-1);
-      &:not(.show) {
-        display: none;
-      }
+      .chat-message-reaction {
+        font-size: var(--font-down-1);
+        &:not(.show) {
+          display: none;
+        }
 
-      &.reacted {
-        border-color: var(--tertiary);
-        background: rgba(var(--tertiary-rgb), 0.2);
+        &.reacted {
+          border-color: var(--tertiary);
+          background: rgba(var(--tertiary-rgb), 0.2);
+        }
       }
-    }
-    .chat-message-react-btn {
-      font-size: var(--font-up-1);
+      .chat-message-react-btn {
+        display: inline-block;
+        vertical-align: top;
+        font-size: var(--font-0);
+        margin: 2px 0;
+        padding: 0.325em 0.5em;
+        background: none;
+        border: none;
 
-      &:hover {
-        .d-icon {
-          color: var(--primary);
+        &:hover {
+          .d-icon {
+            color: var(--primary);
+          }
         }
       }
     }

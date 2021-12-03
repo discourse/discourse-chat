@@ -282,7 +282,9 @@ export default Component.extend({
       window.innerHeight - btnPositions.top - emojiPicker.offsetHeight;
     const yAdjustment = yHeight < 0 ? -yHeight + 20 : 20;
     emojiPicker.style.top = `${btnPositions.top - yAdjustment}px`;
-    emojiPicker.style.left = `${btnPositions.left + xAdjustment}px`;
+    emojiPicker.style.left = this.site.mobileView
+      ? "0"
+      : `${btnPositions.left + xAdjustment}px`;
   },
 
   @action

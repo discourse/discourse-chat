@@ -246,7 +246,21 @@ export default Component.extend({
   },
 
   @action
-  startReaction(btnSelector, position) {
+  startReactionForMsgActions() {
+    const btn = this.element.querySelector(".tc-msgactions-hover .react-btn");
+    this.startReaction(btn, this.SHOW_LEFT);
+  },
+
+  @action
+  startReactionForReactionList() {
+    const btn = this.element.querySelector(
+      ".chat-message-reaction-list .chat-message-react-btn"
+    );
+    this.startReaction(btn, this.SHOW_RIGHT);
+  },
+
+  @action
+  startReaction(btn, position) {
     this.set("emojiPickerIsActive", true);
     this.appEvents.trigger(
       "chat-message:reaction-picker-opened",
@@ -254,17 +268,16 @@ export default Component.extend({
     );
 
     schedule("afterRender", () => {
-      this._repositionEmojiPicker(btnSelector, position);
+      this._repositionEmojiPicker(btn, position);
     });
   },
 
-  _repositionEmojiPicker(btnSelector, position) {
+  _repositionEmojiPicker(btn, position) {
     if (!this.element) {
       return;
     }
 
     const emojiPicker = this.element.querySelector(".emoji-picker");
-    const btn = this.element.querySelector(btnSelector);
     if (!emojiPicker || !btn) {
       return;
     }

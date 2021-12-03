@@ -29,7 +29,7 @@
             <div class="tc-msgactions">
               {{d-button
                 class="btn-flat react-btn"
-                action=(action "startReaction" ".react-btn" SHOW_LEFT)
+                action=(action "startReactionForMsgActions")
                 icon="discourse-emojis"
                 title="chat.react"
               }}
@@ -161,7 +161,7 @@
                   {{/each-in}}
                   {{d-button
                     class="chat-message-react-btn"
-                    action=(action "startReaction" ".chat-message-react-btn" SHOW_RIGHT)
+                    action=(action "startReactionForReactionList" this)
                     icon="discourse-emojis"
                     title="chat.react"
                   }}

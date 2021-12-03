@@ -49,7 +49,7 @@ RSpec.describe DiscourseChat::ChatController do
 
     it "returns the latest messages" do
       get "/chat/#{chat_channel.id}/messages.json", params: { page_size: page_size }
-      messages = response.parsed_body["chat_view"]["messages"]
+      messages = response.parsed_body["chat_messages"]
       expect(messages.count).to eq(page_size)
       expect(messages.first["id"]).to be < messages.last["id"]
     end
@@ -61,7 +61,7 @@ RSpec.describe DiscourseChat::ChatController do
         .id
 
       get "/chat/#{chat_channel.id}/messages.json", params: { before_message_id: before_message_id, page_size: page_size }
-      messages = response.parsed_body["chat_view"]["messages"]
+      messages = response.parsed_body["chat_messages"]
       expect(messages.count).to eq(message_count - page_size)
     end
   end
@@ -484,6 +484,62 @@ RSpec.describe DiscourseChat::ChatController do
       expect(topic.title).to eq(topic_title)
       expect(topic.archetype).to eq(Archetype.private_message)
       expect(topic.topic_users.map(&:user_id)).to match_array([user.id, other_user.id, admin.id])
+    end
+  end
+
+  describe "react" do
+    fab!(:chat_channel) { Fabricate(:chat_channel) }
+    fab!(:chat_message) { Fabricate(:chat_message, chat_channel: chat_channel, user: user) }
+    fab!(:user_membership) { Fabricate(:user_chat_channel_membership, chat_channel: chat_channel, user: user) }
+
+    fab!(:private_chat_channel) { Fabricate(:chat_channel, chatable: Fabricate(:private_category, group: Fabricate(:group))) }
+    fab!(:private_chat_message) { Fabricate(:chat_message, chat_channel: private_chat_channel, user: admin) }
+    fab!(:priate_user_membership) { Fabricate(:user_chat_channel_membership, chat_channel: private_chat_channel, user: user) }
+
+    fab!(:chat_channel_no_memberships) { Fabricate(:chat_channel) }
+    fab!(:chat_message_no_memberships) { Fabricate(:chat_message, chat_channel: chat_channel_no_memberships, user: user) }
+
+    it "errors with invalid emoji" do
+      sign_in(user)
+      put "/chat/#{chat_channel.id}/react/#{chat_message.id}.json", params: { emoji: 12, react_action: "add" }
+      expect(response.status).to eq(400)
+    end
+
+    it "errors with invalid action" do
+      sign_in(user)
+      put "/chat/#{chat_channel.id}/react/#{chat_message.id}.json", params: { emoji: ":heart:", react_action: "sdf" }
+      expect(response.status).to eq(400)
+    end
+
+    it "errors when user tries to react to channel without a membership record" do
+      sign_in(user)
+      put "/chat/#{chat_channel_no_memberships.id}/react/#{chat_message_no_memberships.id}.json", params: { emoji: ":heart:", react_action: "add" }
+      expect(response.status).to eq(403)
+    end
+
+    it "errors when user tries to react to private channel they can't access" do
+      sign_in(user)
+      put "/chat/#{private_chat_channel.id}/react/#{private_chat_message.id}.json", params: { emoji: ":heart:", react_action: "add" }
+      expect(response.status).to eq(403)
+    end
+
+    it "adds a reaction record correctly" do
+      sign_in(user)
+      emoji = ":heart:"
+      expect {
+        put "/chat/#{chat_channel.id}/react/#{chat_message.id}.json", params: { emoji: emoji, react_action: "add" }
+      }.to change { chat_message.reactions.where(user: user, emoji: emoji).count }.by(1)
+      expect(response.status).to eq(200)
+    end
+
+    it "removes a reaction record correctly" do
+      sign_in(user)
+      emoji = ":heart:"
+      chat_message.reactions.create(user: user, emoji: emoji)
+      expect {
+        put "/chat/#{chat_channel.id}/react/#{chat_message.id}.json", params: { emoji: emoji, react_action: "remove" }
+      }.to change { chat_message.reactions.where(user: user, emoji: emoji).count }.by(-1)
+      expect(response.status).to eq(200)
     end
   end
 end

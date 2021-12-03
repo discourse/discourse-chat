@@ -49,6 +49,7 @@ after_initialize do
   load File.expand_path('../app/models/user_chat_channel_membership.rb', __FILE__)
   load File.expand_path('../app/models/chat_channel.rb', __FILE__)
   load File.expand_path('../app/models/chat_message.rb', __FILE__)
+  load File.expand_path('../app/models/chat_message_reaction.rb', __FILE__)
   load File.expand_path('../app/models/chat_message_revision.rb', __FILE__)
   load File.expand_path('../app/models/chat_upload.rb', __FILE__)
   load File.expand_path('../app/models/chat_webhook_event.rb', __FILE__)
@@ -61,7 +62,6 @@ after_initialize do
   load File.expand_path('../app/serializers/chat_channel_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/chat_channel_settings_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/chat_channel_index_serializer.rb', __FILE__)
-  load File.expand_path('../app/serializers/chat_view_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/direct_message_channel_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/incoming_chat_webhook_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/admin_chat_index_serializer.rb', __FILE__)
@@ -71,7 +71,6 @@ after_initialize do
   load File.expand_path('../lib/chat_message_processor.rb', __FILE__)
   load File.expand_path('../lib/chat_message_updater.rb', __FILE__)
   load File.expand_path('../lib/chat_seeder.rb', __FILE__)
-  load File.expand_path('../lib/chat_view.rb', __FILE__)
   load File.expand_path('../lib/direct_message_channel_creator.rb', __FILE__)
   load File.expand_path('../lib/guardian_extensions.rb', __FILE__)
   load File.expand_path('../lib/extensions/topic_view_serializer_extension.rb', __FILE__)
@@ -121,6 +120,7 @@ after_initialize do
     }
     User.class_eval {
       has_many :user_chat_channel_memberships, dependent: :destroy
+      has_many :chat_message_reactions, dependent: :destroy
     }
     Post.class_eval {
       has_many :chat_message_post_connections, dependent: :destroy
@@ -272,6 +272,7 @@ after_initialize do
     post '/disable' => 'chat#disable_chat'
     get '/:chat_channel_id/messages' => 'chat#messages'
     put ':chat_channel_id/edit/:message_id' => 'chat#edit_message'
+    put ':chat_channel_id/react/:message_id' => 'chat#react'
     delete '/:chat_channel_id/:message_id' => 'chat#delete'
     post '/:chat_channel_id/:message_id/flag' => 'chat#flag'
     put '/:chat_channel_id/restore/:message_id' => 'chat#restore'

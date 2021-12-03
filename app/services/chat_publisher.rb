@@ -28,6 +28,15 @@ module ChatPublisher
     MessageBus.publish("/chat/#{chat_channel.id}", content.as_json, permissions(chat_channel))
   end
 
+  def self.publish_reaction!(chat_channel, chat_message, action, user, emoji)
+    content = {
+      action: action,
+      user: BasicUserSerializer.new(user, root: false).as_json,
+      emoji: emoji
+    }
+    MessageBus.publish("/chat/message-reactions/#{chat_message.id}", content.as_json, permissions(chat_channel))
+  end
+
   def self.publish_presence!(chat_channel, user, typ)
     raise NotImplementedError
   end

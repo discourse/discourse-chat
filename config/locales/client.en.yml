@@ -51,6 +51,7 @@ en:
       placeholder: "chat..."
       placeholder_previewing: "Join the channel to send a message."
       remove_upload: "Remove file"
+      react: "React with emoji"
       reply: "Reply"
       restore: "Restore deleted message"
       return_to_list: "Return to channel list"
@@ -62,7 +63,15 @@ en:
       toggle_enabled: "Toggle chat enabled"
       unread_count: "(%{count} new)"
       upload: "Attach a file"
+      you: "You, %{usernames} reacted with %{emoji}"
       exit: "back"
+
+      reactions:
+        only_you: "You reacted with :%{emoji}:"
+        and_others: "You, %{usernames} reacted with :%{emoji}:"
+        only_others: "%{usernames} reacted with :%{emoji}:"
+        others_and_more: "%{usernames} and %{more} others reacted with :%{emoji}:"
+        you_others_and_more: "You, %{usernames} and %{more} others reacted with :%{emoji}:"
 
       composer:
         toggle_toolbar: "Toggle toolbar"

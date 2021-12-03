@@ -1,4 +1,10 @@
 <div class="chat-message {{if selectingMessages "selecting-messages"}}">
+  {{emoji-picker
+    isActive=emojiPickerIsActive
+    isEditorFocused=true
+    emojiSelected=(action "selectReaction")
+    onEmojiPickerClose=(action (mut emojiPickerIsActive) false)
+  }}
   {{#if show}}
     {{#if selectingMessages}}
       {{input
@@ -21,6 +27,12 @@
         {{#unless message.staged}}
           <div class="tc-msgactions-hover">
             <div class="tc-msgactions">
+              {{d-button
+                class="btn-flat react-btn"
+                action=(action "startReactionForMsgActions")
+                icon="discourse-emojis"
+                title="chat.react"
+              }}
               {{#if showReplyButton}}
                 {{d-button
                   class="btn-flat reply-btn"
@@ -126,6 +138,33 @@
               {{#if message.edited}}
                 <div class="tc-message-edited">
                   {{i18n "chat.edited"}}
+                </div>
+              {{/if}}
+
+              {{#if hasReactions}}
+                <div class="chat-message-reaction-list">
+                  {{#if reactionLabel}}
+                    <div class="reaction-users-list">
+                      {{replace-emoji reactionLabel}}
+                    </div>
+                  {{/if}}
+                  {{#each-in message.reactions as |emoji reactionAttrs|}}
+                    {{chat-message-reaction
+                      emoji=emoji
+                      count=reactionAttrs.count
+                      users=reactionAttrs.users
+                      reacted=reactionAttrs.reacted
+                      react=(action "react")
+                      showUsersList=(action "showUsersList")
+                      hideUsersList=(action "hideUsersList")
+                    }}
+                  {{/each-in}}
+                  {{d-button
+                    class="chat-message-react-btn"
+                    action=(action "startReactionForReactionList")
+                    icon="discourse-emojis"
+                    title="chat.react"
+                  }}
                 </div>
               {{/if}}
             </p>

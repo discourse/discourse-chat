@@ -174,6 +174,11 @@ acceptance("Discourse Chat - without unread", function (needs) {
         },
       });
     });
+
+    server.put(
+      "/chat/:chat_channel_id/react/:message_id.json",
+      helper.response
+    );
   });
 
   test("Clicking mention notification from outside chat opens the float", async function (assert) {
@@ -194,11 +199,14 @@ acceptance("Discourse Chat - without unread", function (needs) {
   test("Chat messages are populated when a channel is entered and images are rendered", async function (assert) {
     await visit("/chat/channel/9/Site");
     const messages = queryAll(".tc-message .tc-text");
-    assert.equal(messages[0].textContent.trim(), messageContents[0]);
+    assert.equal(messages[0].innerText.trim(), messageContents[0]);
 
     assert.ok(messages[1].querySelector("a.chat-other-upload"));
 
-    assert.equal(messages[2].textContent.trim(), messageContents[2]);
+    assert.equal(
+      messages[2].innerText.trim().split("\n")[0],
+      messageContents[2]
+    );
     assert.ok(messages[2].querySelector("img.chat-img-upload"));
   });
 
@@ -572,6 +580,81 @@ acceptance("Discourse Chat - without unread", function (needs) {
       query(".join-channel-btn"),
       "Join channel button is not present"
     );
+  });
+
+  test("Reacting works with no existing reactions", async function (assert) {
+    await visit("/chat/channel/9/Site");
+    const message = query(".chat-message");
+    assert.notOk(message.querySelector("chat-message-reaction-list"));
+    await click(message.querySelector(".tc-msgactions .react-btn"));
+    await click(message.querySelector(".emoji-picker .section-group .emoji"));
+
+    assert.ok(message.querySelector(".chat-message-reaction-list"));
+    const reaction = message.querySelector(".chat-message-reaction.reacted");
+    assert.ok(reaction);
+    assert.equal(reaction.innerText.trim(), 1);
+  });
+
+  test("Reacting works with existing reactions", async function (assert) {
+    await visit("/chat/channel/9/Site");
+    const messages = queryAll(".chat-message");
+
+    // First 2 messages have no reactions; make sure the list isn't rendered
+    assert.notOk(messages[0].querySelector(".chat-message-reaction-list"));
+    assert.notOk(messages[1].querySelector(".chat-message-reaction-list"));
+
+    const lastMessage = messages[2];
+    assert.ok(lastMessage.querySelector(".chat-message-reaction-list"));
+    assert.equal(
+      lastMessage.querySelectorAll(".chat-message-reaction.reacted").length,
+      2
+    );
+    assert.equal(
+      lastMessage.querySelectorAll(".chat-message-reaction:not(.reacted)")
+        .length,
+      1
+    );
+
+    // React with a heart and make sure the count inciments and class is added
+    const heartReaction = lastMessage.querySelector(
+      ".chat-message-reaction.heart"
+    );
+    assert.equal(heartReaction.innerText.trim(), "1");
+    await click(heartReaction);
+    assert.equal(heartReaction.innerText.trim(), "2");
+    assert.ok(heartReaction.classList.contains("reacted"));
+
+    publishToMessageBus("/chat/message-reactions/176", {
+      action: "add",
+      user: { id: 1, username: "eviltrout" },
+      emoji: "heart",
+    });
+
+    // Click again make sure count goes down
+    await click(heartReaction);
+    assert.equal(heartReaction.innerText.trim(), "1");
+    assert.notOk(heartReaction.classList.contains("reacted"));
+
+    // Message from another user coming in!
+    publishToMessageBus("/chat/message-reactions/176", {
+      action: "add",
+      user: { id: 77, username: "rando" },
+      emoji: "sneezing_face",
+    });
+    const done = assert.async();
+    next(async () => {
+      const sneezingFaceReaction = lastMessage.querySelector(
+        ".chat-message-reaction.sneezing_face"
+      );
+      assert.ok(sneezingFaceReaction);
+      assert.equal(sneezingFaceReaction.innerText.trim(), "1");
+      assert.notOk(sneezingFaceReaction.classList.contains("reacted"));
+      await click(sneezingFaceReaction);
+      assert.equal(sneezingFaceReaction.innerText.trim(), "2");
+      assert.ok(sneezingFaceReaction.classList.contains("reacted"));
+
+      done();
+    });
   });
 });
 

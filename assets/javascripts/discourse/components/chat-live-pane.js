@@ -126,18 +126,20 @@ export default Component.extend({
     }
 
     this.set("loading", true);
-    const url = this.targetMessageId
-      ? `/chat/lookup/${this.targetMessageId}.json`
-      : `/chat/${this.chatChannel.id}/messages.json`;
-
     this.chat.loadCookFunction(this.site.categories).then((cook) => {
       this.set("cook", cook);
-      return ajax(url, { data: { page_size: PAGE_SIZE } })
-        .then((data) => {
+      const findArgs = {
+        channelId: this.chatChannel.id,
+        targetMessageId: this.targetMessageId,
+        pageSize: PAGE_SIZE,
+      };
+      return this.store
+        .findAll("chat-message", findArgs)
+        .then((messages) => {
           if (this._selfDeleted()) {
             return;
           }
-          this.setMessageProps(data.chat_view);
+          this.setMessageProps(messages);
           this.decorateMessages();
         })
         .catch((err) => {
@@ -162,17 +164,18 @@ export default Component.extend({
 
     this.set("loadingMore", true);
     const firstMessageId = this.messages[0].id;
-
-    ajax(`/chat/${this.chatChannel.id}/messages`, {
-      data: { before_message_id: firstMessageId, page_size: PAGE_SIZE },
-    })
-      .then((data) => {
+    const findArgs = {
+      channelId: this.chatChannel.id,
+      beforeMessageId: firstMessageId,
+      pageSize: PAGE_SIZE,
+    };
+    return this.store
+      .findAll("chat-message", findArgs)
+      .then((messages) => {
         if (this._selfDeleted()) {
           return;
         }
-        const newMessages = this._prepareMessages(
-          data.chat_view.messages || []
-        );
+        const newMessages = this._prepareMessages(messages || []);
         if (newMessages.length) {
           this.set("messages", newMessages.concat(this.messages));
           this.scrollToMessage(firstMessageId);
@@ -192,15 +195,15 @@ export default Component.extend({
       });
   },
 
-  setMessageProps(chatView) {
+  setMessageProps(messages) {
     this._unloadedReplyIds = [];
     this.setProperties({
-      messages: this._prepareMessages(chatView.messages),
+      messages: this._prepareMessages(messages),
       details: {
         chat_channel_id: this.chatChannel.id,
-        can_flag: chatView.can_flag,
-        can_delete_self: chatView.can_delete_self,
-        can_delete_others: chatView.can_delete_others,
+        can_flag: true,
+        can_delete_self: true,
+        can_delete_others: this.currentUser.staff,
       },
       registeredChatChannelId: this.chatChannel.id,
     });

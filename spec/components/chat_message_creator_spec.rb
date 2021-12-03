@@ -62,6 +62,15 @@ describe DiscourseChat::ChatMessageCreator do
         content: "@all"
       )
     }.to change { Notification.count }.by(4)
+
+    UserChatChannelMembership.where(user: user2, chat_channel: public_chat_channel).update_all(following: false)
+    expect {
+      DiscourseChat::ChatMessageCreator.create(
+        chat_channel: public_chat_channel,
+        user: user1,
+        content: "agian! @all"
+      )
+    }.to change { Notification.count }.by(3)
   end
 
   it "notifies @here properly" do

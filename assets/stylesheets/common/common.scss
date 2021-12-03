@@ -515,11 +515,9 @@ $float-height: 530px;
         }
       }
       .chat-message-react-btn {
-        display: inline-block;
         vertical-align: top;
         font-size: var(--font-0);
-        margin: 2px 0;
-        padding: 0.325em 0.5em;
+        padding: 0.4em 0.5em;
         background: none;
         border: none;
 
@@ -608,6 +606,20 @@ $float-height: 530px;
   .user-info-hidden.tc-message-selected {
     .tc-meta-data .relative-date {
       visibility: visible;
+    }
+  }
+
+  .not-mobile-device & .chat-message-reaction-list .chat-message-react-btn {
+    display: none;
+  }
+  .not-mobile-device & .tc-message:hover {
+    .chat-message-reaction-list .chat-message-react-btn {
+      display: inline-block;
+    }
+  }
+  &:hover {
+    .chat-.chat-message-react-btn {
+      display: inline-block;
     }
   }
 }

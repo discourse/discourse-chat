@@ -10,18 +10,15 @@
             title="chat.return_to_list"
           }}
         {{/if}}
-        <a href={{activeChannel.chatable_url}} class="tc-title-seg">
-          {{#if activeChannel}}
-            {{chat-channel-title channel=activeChannel}}
-            {{#if (and (not expanded) unreadCount)}}
-              <span class="tc-unread-count">{{unreadCount}}</span>
-            {{/if}}
+
+        {{#if activeChannel}}
+          {{chat-channel-title channel=activeChannel onClick=(action "onChannelTitleClick")}}
+          {{#if (and (not expanded) unreadCount)}}
+            <span class="tc-unread-count">{{unreadCount}}</span>
           {{/if}}
-        </a>
+        {{/if}}
       {{else}}
-        <div class="tc-title-seg">
-          <span class="tc-branding">{{i18n "chat.heading"}}</span>
-        </div>
+        <span class="no-channel-title">{{i18n "chat.heading"}}</span>
       {{/if}}
 
       <button

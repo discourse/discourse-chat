@@ -12,4 +12,10 @@ export default Component.extend({
   usernames(users) {
     return users.map((user) => user.username).join(", ");
   },
+
+  click() {
+    if (this.onClick) {
+      return this.onClick();
+    }
+  },
 });

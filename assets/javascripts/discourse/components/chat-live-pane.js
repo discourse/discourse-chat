@@ -804,6 +804,11 @@ export default Component.extend({
   },
 
   @action
+  onChannelTitleClick() {
+    return this.router.transitionTo(this.chatChannel.chatable_url);
+  },
+
+  @action
   moveMessagesToTopic() {
     showModal("move-chat-to-topic").setProperties({
       chatMessageIds: this.messages

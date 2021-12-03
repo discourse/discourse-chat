@@ -805,7 +805,9 @@ export default Component.extend({
 
   @action
   onChannelTitleClick() {
-    return this.router.transitionTo(this.chatChannel.chatable_url);
+    if (this.chatChannel.chatable_url) {
+      return this.router.transitionTo(this.chatChannel.chatable_url);
+    }
   },
 
   @action

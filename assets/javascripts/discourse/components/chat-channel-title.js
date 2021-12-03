@@ -14,8 +14,6 @@ export default Component.extend({
   },
 
   click() {
-    if (this.onClick) {
-      return this.onClick();
-    }
+    return this.onClick?.();
   },
 });

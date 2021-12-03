@@ -264,7 +264,7 @@ export default Component.extend({
 
   @action
   onChannelTitleClick() {
-    if (this.expanded) {
+    if (this.expanded && this.activeChannel.chatable_url) {
       this.router.transitionTo(this.activeChannel.chatable_url);
     } else {
       this.set("expanded", true);

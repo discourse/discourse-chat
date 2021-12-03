@@ -7,9 +7,9 @@
         action=onBackClick
       }}
     {{/if}}
-    <a href={{chatChannel.chatable_url}}>
-      {{chat-channel-title channel=chatChannel}}
-    </a>
+
+    {{chat-channel-title onClick=(action "onChannelTitleClick") channel=chatChannel}}
+
     {{#if previewing}}
       {{d-button
         class="btn-primary join-channel-btn"

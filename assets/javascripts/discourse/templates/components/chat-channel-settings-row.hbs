@@ -1,5 +1,5 @@
 <div class="chat-channel-settings-row">
-  {{chat-channel-title channel=channel}}
+  {{chat-channel-title channel=channel onClick=(action "previewChannel")}}
 
   <div class="btn-container">
     {{#if channel.following}}

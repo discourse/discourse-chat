@@ -263,6 +263,15 @@ export default Component.extend({
   },
 
   @action
+  onChannelTitleClick() {
+    if (this.expanded && this.activeChannel.chatable_url) {
+      this.router.transitionTo(this.activeChannel.chatable_url);
+    } else {
+      this.set("expanded", true);
+    }
+  },
+
+  @action
   toggleExpand() {
     this.set("expanded", !this.expanded);
     this.appEvents.trigger("chat:toggle-expand", this.expanded);
@@ -348,6 +357,7 @@ export default Component.extend({
       expanded: this.expectPageChange ? true : this.expanded,
       loading: false,
       hidden: false,
+      expanded: true,
       expectPageChange: false,
       view: CHAT_VIEW,
     };

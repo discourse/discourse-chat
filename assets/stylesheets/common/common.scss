@@ -101,7 +101,8 @@ $float-height: 530px;
     pointer-events: auto;
   }
   bottom: 0;
-  .tc-branding {
+
+  .no-channel-title {
     font-weight: 900;
   }
   &.composer-draft-collapsed {
@@ -171,40 +172,31 @@ $float-height: 530px;
   justify-content: space-between;
   align-items: center;
 
-  button {
+  .btn {
     height: 100%;
   }
-  .tc-title-seg {
-    padding: 0 0.25em;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    color: var(--primary);
-    display: flex;
-    align-items: center;
-    width: 100%;
-    .chat-channel-title {
-      width: calc(95% - 0.5em);
-      margin-right: 0.5em;
-      .chat-name,
-      .topic-chat-name,
-      .category-chat-name {
-        color: var(--primary);
-      }
-      .badge-wrapper.bullet {
-        margin-right: 0px;
-      }
-      .dm-usernames {
-        max-width: 100%;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      .d-icon:not(.d-icon-hashtag) {
-        color: var(--primary-high);
-      }
-      .category-hashtag {
-        padding: 2px 4px;
-      }
+
+  .chat-channel-title {
+    width: calc(95% - 0.5em);
+    margin-right: 0.5em;
+    .chat-name,
+    .topic-chat-name,
+    .category-chat-name {
+      color: var(--primary);
+    }
+    .badge-wrapper.bullet {
+      margin-right: 0px;
+    }
+    .dm-usernames {
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .d-icon:not(.d-icon-hashtag) {
+      color: var(--primary-high);
+    }
+    .category-hashtag {
+      padding: 2px 4px;
     }
   }
   .tc-unread-count {
@@ -982,12 +974,27 @@ $float-height: 530px;
 }
 
 .chat-channel-title {
+  position: relative;
   display: grid;
   grid-template-columns: 20px 1fr;
   grid-column-gap: 0.5em;
   align-items: center;
   font-weight: 500;
   max-width: calc(100% - 10px - 0.5em);
+  cursor: pointer;
+
+  .category-chat-private .d-icon {
+    background-color: var(--secondary);
+    position: absolute;
+    border-radius: 5px;
+    padding: 2px 2px 3px;
+    color: var(--primary-high);
+    height: 0.5em;
+    width: 0.5em;
+    left: 8px;
+    top: -1px;
+  }
+
   .category-chat-name,
   .topic-chat-name,
   .tag-chat-name,
@@ -1176,6 +1183,8 @@ $float-height: 530px;
 }
 
 .chat-settings-modal {
+  max-height: 600px;
+
   .chat-channel-settings-row {
     display: flex;
     flex-wrap: wrap;
@@ -1311,51 +1320,17 @@ $float-height: 530px;
   }
 }
 
-.topic-chat-drawer-header {
-  .chat-channel-title {
-    position: relative;
-    max-width: 100%;
-  }
-  .category-chat-private .d-icon {
-    background-color: var(--secondary);
-    position: absolute;
-    border-radius: 5px;
-    padding: 2px 2px 3px;
-    color: var(--primary-high);
-    height: 0.5em;
-    width: 0.5em;
-    left: 8px;
-    top: -1px;
-  }
-}
-
 .tc-full-page-header {
   .chat-channel-title {
-    position: relative;
     max-width: 100%;
     .dm-usernames {
       overflow: hidden;
       text-overflow: ellipsis;
     }
   }
-  .category-chat-private .d-icon {
-    background-color: var(--secondary);
-    position: absolute;
-    border-radius: 5px;
-    padding: 2px 2px 3px;
-    color: var(--primary-high);
-    height: 0.5em;
-    width: 0.5em;
-    left: 8px;
-    top: -1px;
-  }
 }
 
 .tc-channels {
-  .chat-channel-title {
-    position: relative;
-  }
-
   .tag-chat-badge,
   .category-chat-badge,
   .topic-chat-badge {

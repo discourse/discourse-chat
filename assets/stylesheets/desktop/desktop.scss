@@ -52,12 +52,10 @@
       padding-left: 1em;
       padding-right: 1.5em;
     }
+
     .tc-composer-row {
-      padding: 0 1em;
-      width: calc(100% - 40px + 8px);
-      &::after {
-        width: calc(100% - 40px + 8px);
-      }
+      padding: 0 0.5em;
+
       .chat-composer-toolbar {
         right: 1em;
       }
@@ -75,7 +73,7 @@
   margin-top: 0.5em;
 
   .tc-message-container {
-    max-width: calc(100% - (#{var(--large-message-left-width)} + 1em));
+    max-width: calc(100% - (var(--large-message-left-width) + 1em));
 
     .tc-text {
       width: 100%;
@@ -103,7 +101,7 @@
     width: 100%;
 
     .tc-text {
-      width: calc(100% - (#{var(--large-message-left-width)} + 1em));
+      width: calc(100% - (var(--large-message-left-width) + 1em));
     }
   }
 }

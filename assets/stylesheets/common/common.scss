@@ -416,9 +416,12 @@ $float-height: 530px;
       word-break: break-word;
       overflow-wrap: break-word;
     }
+
     .tc-avatar-container {
-      width: var(--small-message-left-width);
+      display: flex;
       cursor: pointer;
+      justify-content: center;
+      width: var(--small-message-left-width);
     }
 
     .tc-bot-indicator {

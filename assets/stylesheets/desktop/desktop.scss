@@ -132,7 +132,7 @@
     .tc-live-pane,
     .tc-messages-scroll,
     .tc-message:not(.highlighted) {
-      background-color: var(--secondary);
+      background-color: transparent;
     }
     .tc-message:hover {
       background-color: var(--primary-very-low);

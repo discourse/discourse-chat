@@ -478,9 +478,8 @@ $float-height: 530px;
       }
 
       .chat-message-reaction {
-        display: inline-block;
-        vertical-align: top;
-        padding: 0.25em 0.5em;
+        display: inline-flex;
+        padding: 0.3em 0.6em;
         margin: 1px 2px 1px 0;
         font-size: var(--font-down-2);
         border-radius: 4px;
@@ -504,6 +503,8 @@ $float-height: 530px;
         }
 
         .emoji {
+          height: 15px;
+          margin-right: 4px;
           width: 15px;
         }
       }

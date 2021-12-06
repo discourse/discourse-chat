@@ -2,6 +2,7 @@ import Component from "@ember/component";
 import discourseComputed from "discourse-common/utils/decorators";
 import { action } from "@ember/object";
 import { inject as service } from "@ember/service";
+import { next } from "@ember/runloop";
 
 export default Component.extend({
   tagName: "",
@@ -76,6 +77,10 @@ export default Component.extend({
     if (channel.id !== this.chatChannel.id) {
       this.router.transitionTo("chat.channel", channel.id, channel.title);
     }
+
+    next(() => {
+      document.querySelector(".tc-composer-input")?.focus();
+    });
     return false;
   },
 });

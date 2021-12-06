@@ -7,7 +7,6 @@ class ChatBaseMessageSerializer < ApplicationSerializer
     :action_code,
     :created_at,
     :excerpt,
-    :in_reply_to_id,
     :deleted_at,
     :deleted_by_id,
     :flag_count,
@@ -56,7 +55,7 @@ class ChatBaseMessageSerializer < ApplicationSerializer
     !object.deleted_at.nil?
   end
 
-  def include_in_reply_to_id?
+  def include_in_reply_to?
     object.in_reply_to_id.presence
   end
 

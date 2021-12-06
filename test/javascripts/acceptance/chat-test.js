@@ -210,6 +210,14 @@ acceptance("Discourse Chat - without unread", function (needs) {
     assert.ok(messages[2].querySelector("img.chat-img-upload"));
   });
 
+  test("Reply-to line is present", async function (assert) {
+    await visit("/chat/channel/9/Site");
+    const messages = queryAll(".chat-message");
+    const replyTo = messages[2].querySelector(".tc-reply-msg");
+    assert.ok(replyTo);
+    assert.equal(replyTo.innerText.trim(), messageContents[1]);
+  });
+
   test("Message controls are present and correct for permissions", async function (assert) {
     await visit("/chat/channel/9/Site");
     const messages = queryAll(".tc-message");

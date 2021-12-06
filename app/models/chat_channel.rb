@@ -17,6 +17,7 @@ class ChatChannel < ActiveRecord::Base
 
   def chatable_url
     return nil if direct_message_channel?
+    return chatable.relative_url if topic_channel?
 
     chatable.url
   end

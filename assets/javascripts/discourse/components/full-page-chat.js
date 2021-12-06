@@ -76,6 +76,10 @@ export default Component.extend({
     if (channel.id !== this.chatChannel.id) {
       this.router.transitionTo("chat.channel", channel.id, channel.title);
     }
+
+    next(() => {
+      document.querySelector(".tc-composer-input")?.focus();
+    });
     return false;
   },
 });

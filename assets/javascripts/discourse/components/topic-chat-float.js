@@ -10,7 +10,7 @@ import {
 
 import { ajax } from "discourse/lib/ajax";
 import { equal } from "@ember/object/computed";
-import { cancel, schedule, throttle } from "@ember/runloop";
+import { cancel, schedule, next, throttle } from "@ember/runloop";
 import { inject as service } from "@ember/service";
 
 export default Component.extend({
@@ -362,6 +362,9 @@ export default Component.extend({
       view: CHAT_VIEW,
     };
     this.setProperties(channelInfo);
+    next(() => {
+      document.querySelector(".tc-composer-input")?.focus();
+    });
   },
 
   @action

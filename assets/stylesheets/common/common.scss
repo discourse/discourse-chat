@@ -1383,28 +1383,6 @@ body.has-full-page-chat #main-outlet {
     left: calc(0.6125em + 6px);
     top: -4px;
   }
-
-  .chat-channel-row.nested {
-    position: relative;
-    overflow: hidden;
-    .topic-chat-icon::after {
-      content: "";
-      display: block;
-      position: absolute;
-      border-left: 2px solid var(--primary-low-mid);
-      left: 9px;
-      bottom: -0.5em;
-      height: calc(100% + 1em);
-      z-index: 0;
-    }
-  }
-
-  .nested-container div:last-of-type .chat-channel-row.nested {
-    .topic-chat-icon::after {
-      height: 2em;
-      bottom: 0.25em;
-    }
-  }
 }
 
 .has-full-page-chat .tc-message .onebox,

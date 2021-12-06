@@ -93,7 +93,11 @@
 
         {{#unless hideUserInfo}}
           {{#if message.chat_webhook_event.emoji}}
-            <div class="tc-avatar">{{replace-emoji message.chat_webhook_event.emoji}}</div>
+            <div class="tc-avatar">
+              <div class="tc-avatar-container">
+                {{replace-emoji message.chat_webhook_event.emoji}}
+              </div>
+            </div>
           {{else}}
             <div class="tc-avatar">
               <div class="tc-avatar-container" data-user-card={{message.user.username}}>

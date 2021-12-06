@@ -13,7 +13,7 @@ class DiscourseChat::MoveToTopicController < DiscourseChat::ChatBaseController
       raise Discourse::InvalidParameters.new(:chat_channel_id)
     end
 
-    chat_messages = chat_channel.chat_messages.includes(:user).where(id: params[:chat_message_ids]).order(:id)
+    chat_messages = chat_channel.chat_messages.includes(:user, :uploads).where(id: params[:chat_message_ids]).order(:id)
     raise Discourse::InvalidParameters.new("Must include at least one chat message id") if chat_messages.empty?
 
     first_chat_message = chat_messages.first
@@ -21,7 +21,8 @@ class DiscourseChat::MoveToTopicController < DiscourseChat::ChatBaseController
     post_attributes = [{
       user: first_chat_message.user,
       raw: first_chat_message.message,
-      chat_message_ids: [first_chat_message.id]
+      chat_message_ids: [first_chat_message.id],
+      uploads: first_chat_message.uploads.to_a
     }]
 
     # Consolidate subsequent chat messages from the same user into 1 post
@@ -29,11 +30,13 @@ class DiscourseChat::MoveToTopicController < DiscourseChat::ChatBaseController
       if chat_message.user_id == last_user_id
         post_attributes.last[:raw] += "\n\n#{chat_message.message}"
         post_attributes.last[:chat_message_ids].push(chat_message.id)
+        post_attributes.last[:uploads] = post_attributes.last[:uploads].to_a.concat(chat_message.uploads.to_a)
       else
         post_attributes.push({
           user: chat_message.user,
           raw: chat_message.message,
-          chat_message_ids: [chat_message.id]
+          chat_message_ids: [chat_message.id],
+          uploads: chat_message.uploads
         })
       end
       last_user_id = chat_message.user_id
@@ -67,7 +70,7 @@ class DiscourseChat::MoveToTopicController < DiscourseChat::ChatBaseController
       title: params[:title],
       archetype: archetype,
       skip_validations: true,
-      raw: post_attributes.first[:raw],
+      raw: raw_with_uploads(post_attributes.first[:raw], post_attributes.first[:uploads]),
       tags: params[:tags],
     }
 
@@ -87,8 +90,28 @@ class DiscourseChat::MoveToTopicController < DiscourseChat::ChatBaseController
   end
 
   def create_post(attrs, topic_id)
-    post = PostCreator.create(attrs[:user], raw: attrs[:raw], topic_id: topic_id, skip_validations: true)
+    puts '#########'
+    puts raw.inspect
+    puts '#########'
+
+    post = PostCreator.create(
+      attrs[:user],
+      raw: raw_with_uploads(attrs[:raw], attrs[:uploads]),
+      topic_id: topic_id,
+      skip_validations: true
+    )
     create_post_connections(attrs[:chat_message_ids], post.id)
+  end
+
+  def raw_with_uploads(raw, uploads)
+    uploads.each do |upload|
+      raw = raw + upload_raw(upload)
+    end
+    raw
+  end
+
+  def upload_raw(upload)
+    "\n[#{upload.original_filename}](#{upload.short_url})"
   end
 
   def create_post_connections(chat_message_ids, post_id)

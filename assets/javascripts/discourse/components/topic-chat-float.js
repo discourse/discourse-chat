@@ -362,9 +362,11 @@ export default Component.extend({
       view: CHAT_VIEW,
     };
     this.setProperties(channelInfo);
-    next(() => {
-      document.querySelector(".tc-composer-input")?.focus();
-    });
+    if (!this.site.mobileView) {
+      next(() => {
+        document.querySelector(".tc-composer-input")?.focus();
+      });
+    }
   },
 
   @action

@@ -215,6 +215,9 @@ after_initialize do
       config = PresenceChannel::Config.new
       config.allowed_group_ids = chat_channel.allowed_group_ids
       config.allowed_user_ids = chat_channel.allowed_user_ids
+      if config.allowed_group_ids.nil? && config.allowed_user_ids.nil?
+        config.public = true
+      end
       config
     end
   rescue ActiveRecord::RecordNotFound

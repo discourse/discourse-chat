@@ -150,6 +150,7 @@
       border: none;
       box-shadow: none;
       grid-template-columns: 250px 1fr;
+      grid-template-rows: calc(var(--full-page-chat-height) + 10px);
     }
   }
 }

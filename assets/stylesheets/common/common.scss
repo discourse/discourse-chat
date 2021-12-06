@@ -1245,9 +1245,11 @@ $float-height: 530px;
 }
 
 body.has-full-page-chat #main-outlet {
+  align-self: stretch;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
+  flex-grow: 1;
   height: calc(100vh - var(--header-offset));
 }
 
@@ -1258,6 +1260,7 @@ body.has-full-page-chat #main-outlet {
   display: grid;
   flex-grow: 1;
   grid-template-columns: var(--full-page-sidebar-width) 1fr;
+  min-height: 0;
 
   .tc-channels {
     background: var(--primary-very-low);

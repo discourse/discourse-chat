@@ -14,7 +14,7 @@ export default Component.extend({
 
   @discourseComputed("upload.width", "upload.height")
   size(width, height) {
-    var ratio = Math.min(
+    const ratio = Math.min(
       this.siteSettings.max_image_width / width,
       this.siteSettings.max_image_height / height
     );

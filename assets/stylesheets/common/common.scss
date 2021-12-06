@@ -466,6 +466,7 @@ $float-height: 530px;
       position: relative;
       margin-top: 0.25em;
       display: flex;
+      flex-wrap: wrap;
 
       .reaction-users-list {
         position: absolute;

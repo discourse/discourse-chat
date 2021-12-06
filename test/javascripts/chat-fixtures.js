@@ -108,62 +108,66 @@ export function allChannels() {
   return channels.public_channels;
 }
 
+const messages = [
+  {
+    id: 174,
+    message: messageContents[0],
+    cooked: messageContents[0],
+    excerpt: messageContents[0],
+    action_code: null,
+    created_at: "2021-07-20T08:14:16.950Z",
+    flag_count: 0,
+    user: {
+      id: 1,
+      username: "markvanlan",
+      name: null,
+      avatar_template: "/letter_avatar_proxy/v4/letter/m/48db29/{size}.png",
+    },
+  },
+  {
+    id: 175,
+    message: messageContents[1],
+    cooked: messageContents[1],
+    excerpt: messageContents[1],
+    action_code: null,
+    created_at: "2021-07-20T08:14:22.043Z",
+    flag_count: 0,
+    user: {
+      id: 2,
+      username: "hawk",
+      name: null,
+      avatar_template: "/letter_avatar_proxy/v4/letter/m/48db29/{size}.png",
+    },
+    uploads: [
+      {
+        extension: "pdf",
+        filesize: 861550,
+        height: null,
+        human_filesize: "841 KB",
+        id: 38,
+        original_filename: "Chat message PDF!",
+        retain_hours: null,
+        short_path: "/uploads/short-url/vYozObYao54I6G3x8wvOf73epfX.pdf",
+        short_url: "upload://vYozObYao54I6G3x8wvOf73epfX.pdf",
+        thumbnail_height: null,
+        thumbnail_width: null,
+        url:
+          "//localhost:3000/uploads/default/original/1X/e0172973d7eff927b875995eb86b162da961b9e1.pdf",
+        width: null,
+      },
+    ],
+  },
+];
+
 export const chatView = {
-  chat_messages: [
-    {
-      id: 174,
-      message: messageContents[0],
-      cooked: messageContents[0],
-      action_code: null,
-      created_at: "2021-07-20T08:14:16.950Z",
-      flag_count: 0,
-      user: {
-        id: 1,
-        username: "markvanlan",
-        name: null,
-        avatar_template: "/letter_avatar_proxy/v4/letter/m/48db29/{size}.png",
-      },
-    },
-    {
-      id: 175,
-      message: messageContents[1],
-      cooked: messageContents[1],
-      action_code: null,
-      created_at: "2021-07-20T08:14:22.043Z",
-      in_reply_to_id: 174,
-      flag_count: 0,
-      user: {
-        id: 2,
-        username: "hawk",
-        name: null,
-        avatar_template: "/letter_avatar_proxy/v4/letter/m/48db29/{size}.png",
-      },
-      uploads: [
-        {
-          extension: "pdf",
-          filesize: 861550,
-          height: null,
-          human_filesize: "841 KB",
-          id: 38,
-          original_filename: "Chat message PDF!",
-          retain_hours: null,
-          short_path: "/uploads/short-url/vYozObYao54I6G3x8wvOf73epfX.pdf",
-          short_url: "upload://vYozObYao54I6G3x8wvOf73epfX.pdf",
-          thumbnail_height: null,
-          thumbnail_width: null,
-          url:
-            "//localhost:3000/uploads/default/original/1X/e0172973d7eff927b875995eb86b162da961b9e1.pdf",
-          width: null,
-        },
-      ],
-    },
+  chat_messages: messages.concat([
     {
       id: 176,
       message: messageContents[2],
       cooked: messageContents[2],
+      excerpt: messageContents[2],
       action_code: null,
       created_at: "2021-07-20T08:14:25.043Z",
-      in_reply_to_id: 174,
       flag_count: 0,
       user: {
         id: 2,
@@ -171,6 +175,7 @@ export const chatView = {
         name: null,
         avatar_template: "/letter_avatar_proxy/v4/letter/m/48db29/{size}.png",
       },
+      in_reply_to: messages[1],
       uploads: [
         {
           extension: "png",
@@ -207,5 +212,5 @@ export const chatView = {
         },
       },
     },
-  ],
+  ]),
 };

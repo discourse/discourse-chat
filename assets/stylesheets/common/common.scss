@@ -348,6 +348,7 @@ $float-height: 530px;
   }
 
   .tc-message {
+    align-items: flex-start;
     position: relative;
     padding: 0.25em 0.5em 0.25em 0.75em;
     background-color: var(--secondary);
@@ -1024,6 +1025,11 @@ $float-height: 530px;
     width: 100%;
     display: flex;
   }
+
+  .tc-avatar {
+    display: flex;
+  }
+
   .tc-avatar-container {
     display: inline-block;
     width: 100%;

@@ -568,4 +568,9 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   removeUpload(upload) {
     this.uploads.removeObject(upload);
   },
+
+  @discourseComputed("uploads.[]", "inProgressUploads.[]")
+  showUploadsContainer() {
+    return this.uploads?.length > 0 || this.inProgressUploads?.length > 0;
+  },
 });

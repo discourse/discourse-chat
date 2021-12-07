@@ -276,8 +276,8 @@ export default Component.extend({
   _markLastReadMessage(opts = { reRender: false }) {
     if (opts.reRender) {
       this.messages.forEach((m) => {
-        if (m.lastRead) {
-          m.set("lastRead", false);
+        if (m.newestMessage) {
+          m.set("newestMessage", false);
         }
       });
     }
@@ -289,13 +289,17 @@ export default Component.extend({
     }
 
     this.set("lastSendReadMessageId", lastReadId);
-    let message = this.messageLookup[lastReadId] || this.messages[0];
-    if (message && message !== this.messages[this.messages.length - 1]) {
-      message.set("lastRead", true);
-      this.scrollToMessage(message.id);
-    } else {
-      this._stickScrollToBottom();
+    const indexOfLastReadyMessage =
+      this.messages.findIndex((m) => m.id === lastReadId) || 0;
+    const newestUnreadMessage = this.messages[indexOfLastReadyMessage + 1];
+
+    if (newestUnreadMessage) {
+      newestUnreadMessage.set("newestMessage", true);
+      // We have the last read message from lookup, but now we need the index of the message,
+      // so that we can scroll to the message directly after it.
+      return this.scrollToMessage(newestUnreadMessage.id);
     }
+    this._stickScrollToBottom();
   },
 
   highlightOrFetchMessage(_, messageId) {
@@ -318,7 +322,7 @@ export default Component.extend({
     }
 
     const messageEl = this._scrollerEl.querySelector(
-      `.tc-message-${messageId}`
+      `.chat-message-${messageId}`
     );
     if (messageEl) {
       next(() => {
@@ -833,6 +837,7 @@ export default Component.extend({
     this._reportReplyingPresence(composerValue);
   },
 
+  @action
   reStickScrollIfNeeded() {
     if (this.stickyScroll) {
       this._stickScrollToBottom();

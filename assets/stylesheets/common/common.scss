@@ -550,6 +550,7 @@ $float-height: 530px;
     background-color: var(--secondary);
     border: 1px solid var(--primary-low);
     border-radius: 0.25em;
+    z-index: 2;
 
     button {
       padding: 0.4em 0.5em;

@@ -13,7 +13,6 @@ export default Component.extend({
   REMOVE_REACTION: "remove",
   SHOW_LEFT: "showLeft",
   SHOW_RIGHT: "showRight",
-  lastRead: false,
   isHovered: false,
   emojiPickerIsActive: false,
 
@@ -78,20 +77,26 @@ export default Component.extend({
     return hide && !webhookEvent;
   },
 
+  @discourseComputed("selectingMessages", "message.id")
+  messageContainerClasses(selecting, id) {
+    return `chat-message chat-message-${id} ${
+      selecting ? "selecting-messages" : ""
+    }`.trim();
+  },
+
   @discourseComputed(
-    "message.id",
     "message.staged",
     "message.deleted_at",
     "message.in_reply_to",
     "message.action_code",
     "isHovered"
   )
-  messageClasses(id, staged, deletedAt, inReplyTo, actionCode, isHovered) {
+  innerMessageClasses(staged, deletedAt, inReplyTo, actionCode, isHovered) {
     let classNames = ["tc-message"];
-    classNames.push(
-      staged ? "tc-message-staged" : `tc-message-${this.message.id}`
-    );
 
+    if (staged) {
+      classNames.push("tc-message-staged");
+    }
     if (actionCode) {
       classNames.push("tc-action");
       classNames.push(`tc-action-${actionCode}`);
@@ -313,6 +318,7 @@ export default Component.extend({
     }
 
     this._updateReactionsList(busData.emoji, busData.action, busData.user);
+    this.afterReactionAdded();
   },
 
   @action
@@ -324,6 +330,7 @@ export default Component.extend({
     this._loadingReactions.push(emoji);
     this._updateReactionsList(emoji, reactAction, this.currentUser);
     this._publishReaction(emoji, reactAction);
+    this.afterReactionAdded();
   },
 
   _updateReactionsList(emoji, reactAction, user) {

@@ -342,7 +342,11 @@ acceptance("Discourse Chat - without unread", function (needs) {
     const done = assert.async();
     next(async () => {
       // Wait for DOM to rerender. Message should be un-staged
-      assert.ok(lastMessage.classList.contains("tc-message-202"));
+      assert.ok(
+        lastMessage
+          .closest(".chat-message")
+          .classList.contains("chat-message-202")
+      );
       assert.notOk(lastMessage.classList.contains("tc-message-staged"));
 
       const nextMessageContent = "What up what up!";
@@ -384,7 +388,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
 
     const done = assert.async();
     next(async () => {
-      assert.ok(query(".tc-message-175 .tc-text").innerHTML.includes(cooked));
+      assert.ok(query(".chat-message-175 .tc-text").innerHTML.includes(cooked));
       done();
     });
   });

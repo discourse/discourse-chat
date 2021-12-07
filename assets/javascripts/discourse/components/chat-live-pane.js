@@ -1,6 +1,7 @@
 import Component from "@ember/component";
 import discourseComputed, { observes } from "discourse-common/utils/decorators";
 import discourseDebounce from "discourse-common/lib/debounce";
+import DiscourseURL from "discourse/lib/url";
 import EmberObject, { action } from "@ember/object";
 import I18n from "I18n";
 import loadScript from "discourse/lib/load-script";
@@ -15,6 +16,7 @@ import { inject as service } from "@ember/service";
 import { Promise } from "rsvp";
 import { resetIdle } from "discourse/lib/desktop-notifications";
 import { resolveAllShortUrls } from "pretty-text/upload-short-url";
+import { samePrefix } from "discourse-common/lib/get-url";
 import { spinnerHTML } from "discourse/helpers/loading-spinner";
 
 const MAX_RECENT_MSGS = 100;
@@ -402,6 +404,7 @@ export default Component.extend({
   decorateMessages() {
     schedule("afterRender", this, () => {
       resolveAllShortUrls(ajax, this.siteSettings, this.element);
+      forceLinksToOpenNewTab(this.element);
       lightbox(this.element.querySelectorAll("img:not(.emoji, .avatar)"));
       applyLocalDates(
         this.element.querySelectorAll(".discourse-local-date"),
@@ -880,4 +883,18 @@ function lightbox(images) {
       },
     });
   });
+}
+
+function forceLinksToOpenNewTab(livePane) {
+  if (!livePane) {
+    return;
+  }
+
+  const links = livePane.querySelectorAll(".tc-text a:not([target='_blank'])");
+  for (let linkIndex = 0; linkIndex < links.length; linkIndex++) {
+    const link = links[linkIndex];
+    if (!DiscourseURL.isInternal(link.href) || !samePrefix(link.href)) {
+      link.setAttribute("target", "_blank");
+    }
+  }
 }

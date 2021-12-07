@@ -83,7 +83,11 @@ export default Component.extend({
         .getBoundingClientRect();
 
     const elHeight =
-      window.innerHeight - chatContainerCoords.y - parseInt(padBottom, 10) - 10;
+      window.innerHeight -
+      chatContainerCoords.y -
+      window.pageYOffset -
+      parseInt(padBottom, 10);
+
     document.body.style.setProperty("--full-page-chat-height", `${elHeight}px`);
   },
 

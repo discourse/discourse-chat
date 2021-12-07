@@ -168,3 +168,15 @@ en:
         disabled: "%{who} closed chat %{when}"
         post_created: "created a new post: %{excerpt}"
         generic_small_action: "performed a topic management action"
+    discourse_automation:
+      scriptables:
+        send_chat_message:
+          title: Send chat message
+          fields:
+            chat_channel_id:
+              label: Chat channel ID
+            message:
+              label: Message
+            sender:
+              label: Sender
+              description: Defaults to system

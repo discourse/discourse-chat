@@ -16,3 +16,8 @@ en:
     popup:
       chat_message: "New chat message in %{chat_channel_title}"
       chat_mention: "@%{username} mentioned you in chat"
+
+  discourse_automation:
+    scriptables:
+      send_chat_message:
+        title: Send chat message

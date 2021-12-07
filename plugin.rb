@@ -293,4 +293,22 @@ after_initialize do
     delete '/admin/plugins/chat/hooks/:incoming_chat_webhook_id' => 'discourse_chat/admin_incoming_chat_webhooks#destroy', constraints: StaffConstraint.new
     get "u/:username/preferences/chat" => "users#preferences", constraints: { username: RouteFormat.username }
   end
+
+  if defined?(DiscourseAutomation)
+    add_automation_scriptable('send_chat_message') do
+      field :chat_channel_id, component: :text, required: true
+      field :message, component: :message, required: true
+      field :sender, component: :user
+
+      script do |context, fields, automation|
+        sender = User.find_by(username: fields.dig('sender', 'value')) || Discourse.system_user
+        channel = ChatChannel.find_by(id: fields.dig('chat_channel_id', 'value'))
+        DiscourseChat::ChatMessageCreator.create(
+          chat_channel: channel,
+          user: sender,
+          content: fields.dig('message', 'value')
+        )
+      end
+    end
+  end
 end

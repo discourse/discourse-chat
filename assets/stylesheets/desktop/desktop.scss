@@ -116,9 +116,10 @@
     border-radius: var(--full-page-border-radius);
     overflow: hidden;
     box-shadow: 6px 6px 0px 0px rgba(var(--primary-rgb), 0.125);
+
     .tc-channels {
       background: var(--primary-very-low);
-      border-radius: unset;
+
       .chat-channel-divider {
         padding: 1em 1em 0.5em 1em;
       }
@@ -138,6 +139,7 @@
       background-color: var(--primary-very-low);
     }
   }
+
   @media screen and (max-width: 1366px) {
     #main-outlet {
       padding: 0;
@@ -145,11 +147,16 @@
         max-width: 100%;
       }
     }
+
     .full-page-chat {
-      border-radius: 0px;
+      border-radius: 0;
       border: none;
       box-shadow: none;
       grid-template-columns: 250px 1fr;
+
+      .tc-channels {
+        border-radius: 0;
+      }
     }
   }
 }

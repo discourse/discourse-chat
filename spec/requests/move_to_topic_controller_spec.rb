@@ -12,15 +12,14 @@ RSpec.describe DiscourseChat::MoveToTopicController do
     fab!(:topic) { Fabricate(:topic, category: category) }
     fab!(:chat_channel) { Fabricate(:chat_channel, chatable: topic) }
 
-    fab!(:image_1) {Fabricate(:image_upload) }
-    fab!(:image_2) {Fabricate(:image_upload) }
+    fab!(:image_1) { Fabricate(:image_upload) }
+    fab!(:image_2) { Fabricate(:image_upload) }
 
-    fab!(:user_message_1) { Fabricate(:chat_message, chat_channel: chat_channel, user: user, uploads: [image_1, image_2]) }
+    fab!(:user_message_1) { Fabricate(:chat_message, chat_channel: chat_channel, user: user) }
     fab!(:user_message_2) { Fabricate(:chat_message, chat_channel: chat_channel, user: user) }
     fab!(:other_user_message_1) { Fabricate(:chat_message, chat_channel: chat_channel, user: other_user) }
     fab!(:other_user_message_2) { Fabricate(:chat_message, chat_channel: chat_channel, user: other_user) }
     fab!(:admin_message_1) { Fabricate(:chat_message, chat_channel: chat_channel, user: admin) }
-
 
     before do
       sign_in(user)
@@ -69,6 +68,9 @@ RSpec.describe DiscourseChat::MoveToTopicController do
     it "creates a new topic with the correct properties" do
       topic_title = "This is a new topic that is created via chat!"
       tag_names = ["ctag1", "ctag2"]
+
+      user_message_1.uploads << [image_1, image_2]
+      admin_message_1.uploads << image_2
       expect {
         post "/chat/move_to_topic.json",
           params: build_params(
@@ -91,25 +93,13 @@ RSpec.describe DiscourseChat::MoveToTopicController do
       expect(topic.tags.map(&:name)).to eq(tag_names)
 
       expect(topic.ordered_posts.first.user).to eq(user)
-      puts '################'
-      topic.ordered_posts.first.raw.inspect
-      puts '################'
       expect(topic.ordered_posts.second.user).to eq(other_user)
       expect(topic.ordered_posts.third.user).to eq(admin)
-    end
 
-    it "adds uploads to posts" do
-      expect {
-        post "/chat/move_to_topic.json",
-          params: build_params(
-            5,
-            {
-              type: "newTopic",
-              title: "This is a new topic title beep boop",
-              category_id: category.id
-            })
-      }
-
+      # Check images
+      expect(topic.ordered_posts.first.raw).to include(image_1.short_url)
+      expect(topic.ordered_posts.first.raw).to include(image_2.short_url)
+      expect(topic.ordered_posts.third.raw).to include(image_2.short_url)
     end
 
     it "creates posts for existing topics" do

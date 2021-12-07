@@ -90,10 +90,6 @@ class DiscourseChat::MoveToTopicController < DiscourseChat::ChatBaseController
   end
 
   def create_post(attrs, topic_id)
-    puts '#########'
-    puts raw.inspect
-    puts '#########'
-
     post = PostCreator.create(
       attrs[:user],
       raw: raw_with_uploads(attrs[:raw], attrs[:uploads]),
@@ -111,7 +107,7 @@ class DiscourseChat::MoveToTopicController < DiscourseChat::ChatBaseController
   end
 
   def upload_raw(upload)
-    "\n[#{upload.original_filename}](#{upload.short_url})"
+    "\n\n![#{upload.original_filename}](#{upload.short_url})"
   end
 
   def create_post_connections(chat_message_ids, post_id)

@@ -13,6 +13,11 @@ import simpleCategoryHashMentionTransform from "discourse/plugins/discourse-chat
 export const LIST_VIEW = "list_view";
 export const CHAT_VIEW = "chat_view";
 
+const CHAT_ONLINE_OPTIONS = {
+  userUnseenTime: 60000, // 60 seconds with no interaction
+  browserHiddenTime: 60000, // Or the browser has been in the background for 60 seconds
+};
+
 export default Service.extend({
   allChannels: null,
   appEvents: service(),
@@ -167,7 +172,7 @@ export default Service.extend({
   _updatePresence() {
     next(() => {
       if (this.fullScreenChatOpen || this.chatOpen) {
-        this.presenceChannel.enter();
+        this.presenceChannel.enter({ activeOptions: CHAT_ONLINE_OPTIONS });
       } else {
         this.presenceChannel.leave();
       }

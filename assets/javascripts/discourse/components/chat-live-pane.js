@@ -1,5 +1,8 @@
 import Component from "@ember/component";
-import discourseComputed, { observes } from "discourse-common/utils/decorators";
+import discourseComputed, {
+  bind,
+  observes,
+} from "discourse-common/utils/decorators";
 import discourseDebounce from "discourse-common/lib/debounce";
 import DiscourseURL from "discourse/lib/url";
 import EmberObject, { action } from "@ember/object";
@@ -404,7 +407,7 @@ export default Component.extend({
   decorateMessages() {
     schedule("afterRender", this, () => {
       resolveAllShortUrls(ajax, this.siteSettings, this.element);
-      forceLinksToOpenNewTab(this.element);
+      this.forceLinksToOpenNewTab();
       lightbox(this.element.querySelectorAll("img:not(.emoji, .avatar)"));
       applyLocalDates(
         this.element.querySelectorAll(".discourse-local-date"),
@@ -863,6 +866,27 @@ export default Component.extend({
   exitChat() {
     return this.router.transitionTo(this.chat.getLastNonChatRoute());
   },
+
+  @bind
+  forceLinksToOpenNewTab() {
+    if (this._selfDeleted()) {
+      return;
+    }
+
+    const links = this.element.querySelectorAll(
+      ".tc-text a:not([target='_blank'])"
+    );
+    for (let linkIndex = 0; linkIndex < links.length; linkIndex++) {
+      const link = links[linkIndex];
+      if (
+        this.currentUser.chat_isolated ||
+        !DiscourseURL.isInternal(link.href) ||
+        !samePrefix(link.href)
+      ) {
+        link.setAttribute("target", "_blank");
+      }
+    }
+  },
 });
 
 function lightbox(images) {
@@ -883,18 +907,4 @@ function lightbox(images) {
       },
     });
   });
-}
-
-function forceLinksToOpenNewTab(livePane) {
-  if (!livePane) {
-    return;
-  }
-
-  const links = livePane.querySelectorAll(".tc-text a:not([target='_blank'])");
-  for (let linkIndex = 0; linkIndex < links.length; linkIndex++) {
-    const link = links[linkIndex];
-    if (!DiscourseURL.isInternal(link.href) || !samePrefix(link.href)) {
-      link.setAttribute("target", "_blank");
-    }
-  }
 }

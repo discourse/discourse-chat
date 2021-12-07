@@ -64,7 +64,11 @@ export default createWidget("header-chat-link", {
     }
 
     if (this.currentUser.chat_isolated) {
-      return window.open(getURL("/chat"), "_blank").focus();
+      if (this.capabilities.isPwa) {
+        return DiscourseURL.routeTo("/chat");
+      } else {
+        return window.open(getURL("/chat"), "_blank").focus();
+      }
     }
 
     if (this.site.mobileView || this.chat.getSidebarActive()) {

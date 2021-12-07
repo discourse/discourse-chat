@@ -101,7 +101,7 @@ class DiscourseChat::MoveToTopicController < DiscourseChat::ChatBaseController
 
   def raw_with_uploads(raw, uploads)
     uploads.each do |upload|
-      raw = raw + upload_raw(upload)
+      raw << upload_raw(upload)
     end
     raw
   end

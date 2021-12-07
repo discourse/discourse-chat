@@ -841,6 +841,7 @@ $float-height: 530px;
   }
 
   .tc-replying-indicator {
+    color: var(--primary-medium);
     padding: 0.25em 0.75em;
 
     .replying-text {
@@ -1253,7 +1254,6 @@ $float-height: 530px;
 .full-page-chat {
   font-family: "Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
-  -moz-osx-font-smoothing: grayscale;
   display: grid;
   grid-template-columns: var(--full-page-sidebar-width) 1fr;
   grid-template-rows: var(--full-page-chat-height);

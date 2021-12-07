@@ -289,7 +289,6 @@ export default Component.extend({
     }
 
     this.set("lastSendReadMessageId", lastReadId);
-    // let message = this.messageLookup[lastReadId] || this.messages[0];
     const indexOfLastReadyMessage =
       this.messages.findIndex((m) => m.id === lastReadId) || 0;
     const newestUnreadMessage = this.messages[indexOfLastReadyMessage + 1];

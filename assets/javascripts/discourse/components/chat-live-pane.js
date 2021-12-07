@@ -19,7 +19,7 @@ import { spinnerHTML } from "discourse/helpers/loading-spinner";
 
 const MAX_RECENT_MSGS = 100;
 const STICKY_SCROLL_LENIENCE = 4;
-const READ_INTERVAL = 2000;
+const READ_INTERVAL = 1000;
 const PAGE_SIZE = 50;
 
 export default Component.extend({

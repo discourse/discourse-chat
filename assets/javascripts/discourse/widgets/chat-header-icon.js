@@ -64,7 +64,7 @@ export default createWidget("header-chat-link", {
     }
 
     if (this.currentUser.chat_isolated) {
-      if (this.isInPwa()) {
+      if (this.capabilities.isPwa) {
         return DiscourseURL.routeTo("/chat");
       } else {
         return window.open(getURL("/chat"), "_blank").focus();
@@ -76,14 +76,6 @@ export default createWidget("header-chat-link", {
     } else {
       this.appEvents.trigger("chat:toggle-open");
     }
-  },
-
-  isInPwa() {
-    return (
-      window.matchMedia("(display-mode: standalone)").matches ||
-      window.navigator.standalone ||
-      document.referrer.includes("android-app://")
-    );
   },
 
   chatRerenderHeader() {

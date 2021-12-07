@@ -204,7 +204,7 @@ class DiscourseChat::ChatMessageCreator
   def self.send_mentioned_os_notifications(chat_channel:, chat_message:, mentioned:, mentioner_username:)
     payload = {
       notification_type: Notification.types[:chat_mention],
-      username: mentioned.username,
+      username: mentioner_username,
       translated_title: I18n.t("discourse_push_notifications.popup.chat_mention",
                                username: mentioner_username
                               ),

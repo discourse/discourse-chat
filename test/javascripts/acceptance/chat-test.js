@@ -488,13 +488,12 @@ acceptance("Discourse Chat - without unread", function (needs) {
 
   test("Pressing escape cancels editing", async function (assert) {
     await visit("/chat/channel/9/Site");
-    const chatMessage = query(".chat-message");
-    await click(chatMessage.querySelector(".edit-btn"));
-    assert.ok(query(".tc-composer .tc-composer-message-details"));
+    await click(".chat-message .edit-btn");
+    assert.ok(exists(".tc-composer .tc-composer-message-details"));
     await triggerKeyEvent(".tc-composer", "keydown", 27); // 27 is escape
 
     // tc-composer-message-details will be gone as no message is being edited
-    assert.notOk(query(".tc-composer .tc-composer-message-details"));
+    assert.notOk(exists(".tc-composer .tc-composer-message-details"));
   });
 
   test("Unread indicator increments for public channels when messages come in", async function (assert) {

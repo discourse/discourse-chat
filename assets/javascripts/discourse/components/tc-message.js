@@ -453,8 +453,10 @@ export default Component.extend({
       ?.classList?.add("copied");
 
     const { protocol, host } = window.location;
-    const endpoint = `/chat/channel/${this.details.chat_channel_id}/chat?messageId=${this.message.id}`;
-    const url = `${protocol}//${host}${getURL(endpoint)}`;
+    let url = getURL(
+      `/chat/channel/${this.details.chat_channel_id}/chat?messageId=${this.message.id}`
+    );
+    url = url.indexOf("/") === 0 ? protocol + "//" + host + url : url;
 
     const textArea = document.createElement("textarea");
     textArea.style.position = "absolute";

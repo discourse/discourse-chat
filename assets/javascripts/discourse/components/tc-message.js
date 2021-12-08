@@ -7,7 +7,7 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 import { prioritizeNameInUx } from "discourse/lib/settings";
 import EmberObject, { action } from "@ember/object";
 import { autoUpdatingRelativeAge } from "discourse/lib/formatter";
-import { schedule, later } from "@ember/runloop";
+import { later, schedule } from "@ember/runloop";
 
 export default Component.extend({
   ADD_REACTION: "add",
@@ -448,8 +448,9 @@ export default Component.extend({
 
   @action
   copyLinkToMessage() {
-    const button = this.element.querySelector(".link-to-message-btn");
-    button.classList.add("copied");
+    this.element
+      .querySelector(".link-to-message-btn")
+      ?.classList?.add("copied");
 
     const { protocol, host } = window.location;
     const endpoint = `/chat/channel/${this.details.chat_channel_id}/chat?messageId=${this.message.id}`;
@@ -466,10 +467,9 @@ export default Component.extend({
     document.body.removeChild(textArea);
 
     later(() => {
-      if (this.element) {
-        const button = this.element.querySelector(".link-to-message-btn");
-        button.classList.remove("copied");
-      }
+      this.element
+        ?.querySelector(".link-to-message-btn")
+        ?.classList?.remove("copied");
     }, 250);
   },
 });

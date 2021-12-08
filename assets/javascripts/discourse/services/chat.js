@@ -1,4 +1,5 @@
 import EmberObject from "@ember/object";
+import KeyValueStore from "discourse/lib/key-value-store";
 import Service, { inject as service } from "@ember/service";
 import Site from "discourse/models/site";
 import { addChatToolbarButton } from "discourse/plugins/discourse-chat/discourse/components/chat-composer";
@@ -13,6 +14,7 @@ import simpleCategoryHashMentionTransform from "discourse/plugins/discourse-chat
 export const LIST_VIEW = "list_view";
 export const CHAT_VIEW = "chat_view";
 
+const DRAFT_STORE_NAMESPACE = "discourse_chat_drafts_";
 const CHAT_ONLINE_OPTIONS = {
   userUnseenTime: 60000, // 60 seconds with no interaction
   browserHiddenTime: 60000, // Or the browser has been in the background for 60 seconds
@@ -24,7 +26,6 @@ export default Service.extend({
   chatOpen: false,
   chatNotificationManager: service(),
   cook: null,
-  drafts: null,
   directMessageChannels: null,
   hasFetchedChannels: false,
   hasUnreadPublicMessages: false,
@@ -44,26 +45,19 @@ export default Service.extend({
     this._super(...arguments);
 
     if (this.currentUser?.has_chat_enabled) {
-      this.setProperties({
-        allChannels: [],
-        drafts: {},
-      });
-      this._subscribeToNewDmChannelUpdates();
+      this.set("allChannels", []), this._subscribeToNewDmChannelUpdates();
       this._subscribeToUserTrackingChannel();
-      this.presenceChannel = this.presence.getChannel("/chat/online");
       this.appEvents.on("page:changed", this, "_storeLastNonChatRouteInfo");
       this.appEvents.on("modal:closed", this, "_onSettingsModalClosed");
+      this.presenceChannel = this.presence.getChannel("/chat/online");
+      this._draftStore = new KeyValueStore(DRAFT_STORE_NAMESPACE);
     }
   },
 
   willDestroy() {
     this._super(...arguments);
     if (this.currentUser?.has_chat_enabled) {
-      this.setProperties({
-        allChannels: null,
-        drafts: null,
-      });
-      this._unsubscribeFromNewDmChannelUpdates();
+      this.set("allChannels", null), this._unsubscribeFromNewDmChannelUpdates();
       this._unsubscribeFromUserTrackingChannel();
       this._unsubscribeFromAllChatChannels();
       this.appEvents.off("page:changed", this, "_storeLastNonChatRouteInfo");
@@ -587,11 +581,11 @@ export default Service.extend({
   },
 
   setDraftForChannel(channelId, draft) {
-    this.drafts[channelId] = draft;
+    this._draftStore.setObject({ key: channelId, value: draft });
   },
 
   getDraftForChannel(channelId) {
-    return this.drafts[channelId];
+    return this._draftStore.getObject(channelId) || { value: "", uploads: [] };
   },
 
   addToolbarButton(toolbarButton) {

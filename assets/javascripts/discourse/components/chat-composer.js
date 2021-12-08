@@ -456,20 +456,23 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     );
   },
 
-  @discourseComputed("loading", "previewing")
-  inputDisabled(loading, previewing) {
-    return loading || previewing;
-  },
-
   @discourseComputed(
     "value",
-    "inputDisabled",
+    "loading",
+    "previewing",
     "uploads.@each",
     "uploading",
     "processingUpload"
   )
-  sendDisabled(value, inputDisabled, uploads, uploading, processingUpload) {
-    if (inputDisabled || uploading || processingUpload) {
+  sendDisabled(
+    value,
+    loading,
+    previewing,
+    uploads,
+    uploading,
+    processingUpload
+  ) {
+    if (loading || previewing || uploading || processingUpload) {
       return true;
     }
 

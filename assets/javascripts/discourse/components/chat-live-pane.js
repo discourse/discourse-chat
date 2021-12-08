@@ -165,13 +165,7 @@ export default Component.extend({
   },
 
   loadDraftForChannel() {
-    this.set(
-      "draft",
-      this.chat.getDraftForChannel(this.chatChannel.id) || {
-        value: "",
-        uploads: [],
-      }
-    );
+    this.set("draft", this.chat.getDraftForChannel(this.chatChannel.id));
   },
 
   _fetchMorePastMessages() {

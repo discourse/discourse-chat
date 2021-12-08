@@ -45,6 +45,8 @@ class DiscourseChat::IncomingChatWebhooksController < ApplicationController
     hijack do
       process_webhook_payload(text: text, key: params[:key])
     end
+  rescue JSON::ParserError
+    raise Discourse::InvalidParameters
   end
 
   private

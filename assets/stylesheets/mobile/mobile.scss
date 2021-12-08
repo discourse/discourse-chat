@@ -50,34 +50,36 @@
   padding: 0.25em 0.75em;
 }
 
-.tc-message:not(.user-info-hidden) {
-  padding: 0.25em 1em 0.1em;
-  margin-top: 0.5em;
+.chat-message {
+  .tc-message:not(.user-info-hidden) {
+    padding: 0.25em 1em 0.1em;
+    margin-top: 0.5em;
 
-  .tc-message-container {
-    max-width: calc(100% - (var(--small-message-left-width) + 1em));
-
-    .tc-text {
-      width: 100%;
-    }
-  }
-}
-
-.tc-message.user-info-hidden {
-  padding: 0.1em 1em;
-
-  .tc-message-container {
-    width: 100%;
-
-    .tc-text {
+    .tc-message-container {
       max-width: calc(100% - (var(--small-message-left-width) + 1em));
+
+      .tc-text {
+        width: 100%;
+      }
     }
   }
-}
 
-.tc-messages-container {
-  .tc-message-deleted {
-    margin-left: calc(var(--small-message-left-width) + 1em);
+  .tc-message.user-info-hidden {
+    padding: 0.1em 1em;
+
+    .tc-message-container {
+      width: 100%;
+
+      .tc-text {
+        max-width: calc(100% - (var(--small-message-left-width) + 1em));
+      }
+    }
+  }
+
+  .tc-messages-container {
+    .tc-message-deleted {
+      margin-left: calc(var(--small-message-left-width) + 1em);
+    }
   }
 }
 

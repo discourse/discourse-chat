@@ -121,6 +121,7 @@ export default Component.extend({
 
       if (this.chatChannel.id != null) {
         this.fetchMessages();
+        this.loadDraftForChannel();
       }
     }
   },
@@ -161,6 +162,10 @@ export default Component.extend({
           this.set("loading", false);
         });
     });
+  },
+
+  loadDraftForChannel() {
+    this.set("draft", this.chat.getDraftForChannel(this.chatChannel.id));
   },
 
   _fetchMorePastMessages() {
@@ -635,6 +640,8 @@ export default Component.extend({
       return;
     }
     this.set("sendingloading", true);
+    this._setDraftForChannel(null);
+
     this.set("_nextStagedMessageId", this._nextStagedMessageId + 1);
     const cooked = this.cook(message);
     const stagedId = this._nextStagedMessageId;
@@ -833,15 +840,21 @@ export default Component.extend({
 
   @action
   cancelEditing() {
-    this.setProperties({
-      editingMessage: null,
-      value: "",
-    });
+    this.set("editingMessage", null);
   },
 
   @action
-  composerValueChanged(composerValue) {
-    this._reportReplyingPresence(composerValue);
+  _setDraftForChannel(draft) {
+    this.chat.setDraftForChannel(this.chatChannel.id, draft);
+    this.set("draft", draft);
+  },
+
+  @action
+  composerValueChanged(value, uploads) {
+    if (!this.editingMessage) {
+      this._setDraftForChannel({ value, uploads });
+    }
+    this._reportReplyingPresence(value);
   },
 
   @action

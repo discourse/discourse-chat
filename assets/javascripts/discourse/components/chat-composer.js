@@ -32,6 +32,7 @@ export function addChatToolbarButton(toolbarButton) {
 }
 
 export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
+  chat: service(),
   classNames: ["tc-composer"],
   emojiStore: service("emoji-store"),
   editingMessage: null,
@@ -164,6 +165,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
 
   _insertUpload(_, upload) {
     this.uploads.pushObject(upload);
+    this.onValueChange(this.value, this.uploads);
   },
 
   keyDown(event) {
@@ -217,6 +219,10 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   didReceiveAttrs() {
     this._super(...arguments);
 
+    if (!this.editingMessage && !this.replyToMsg && this.draft) {
+      this.setProperties(this.draft);
+    }
+
     if (this.editingMessage) {
       this.setProperties({
         replyToMsg: null,
@@ -239,7 +245,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
       () => {
         this._resizeTextArea();
         this._applyUserAutocomplete();
-        this.onValueChange(value);
+        this.onValueChange(value, this.uploads);
       },
       THROTTLE_MS
     );
@@ -450,14 +456,23 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     );
   },
 
-  @discourseComputed("isUploading", "isProcessingUpload", "previewing")
-  inputDisabled(uploading, processingUpload, previewing) {
-    return uploading || processingUpload || previewing;
-  },
-
-  @discourseComputed("value", "loading")
-  sendDisabled(value, loading) {
-    if (this.inputDisabled || loading) {
+  @discourseComputed(
+    "value",
+    "loading",
+    "previewing",
+    "uploads.@each",
+    "uploading",
+    "processingUpload"
+  )
+  sendDisabled(
+    value,
+    loading,
+    previewing,
+    uploads,
+    uploading,
+    processingUpload
+  ) {
+    if (loading || previewing || uploading || processingUpload) {
       return true;
     }
 
@@ -507,13 +522,18 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   reset() {
     this.set("value", "");
     this.set("uploads", []);
-    this.onCancelEditing();
     this._focusTextArea({ ensureAtEnd: true, resizeTextArea: true });
   },
 
   @action
   cancelReplyTo() {
     this.set("replyToMsg", null);
+  },
+
+  @action
+  cancelEditing() {
+    this.onCancelEditing();
+    this._focusTextArea({ ensureAtEnd: true, resizeTextArea: true });
   },
 
   @discourseComputed()
@@ -542,11 +562,6 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   },
 
   @action
-  cancelUploads() {
-    this.set("uploadCancelled", true);
-  },
-
-  @action
   toggleToolbar() {
     this.set("showToolbar", !this.showToolbar);
     if (this.showToolbar) {
@@ -562,6 +577,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     this.appEvents.trigger(`${this.eventPrefix}:cancel-upload`, {
       fileId: upload.id,
     });
+    this.onValueChange(this.value, this.uploads);
   },
 
   @action

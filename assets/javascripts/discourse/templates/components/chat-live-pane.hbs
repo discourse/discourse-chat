@@ -83,6 +83,7 @@
     </div>
   {{else}}
     {{chat-composer
+      draft=draft
       sendMessage=(action "sendMessage")
       editMessage=(action "editMessage")
       setReplyTo=(action "setReplyTo")

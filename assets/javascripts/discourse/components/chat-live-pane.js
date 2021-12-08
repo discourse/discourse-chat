@@ -157,6 +157,7 @@ export default Component.extend({
           if (this.targetMessageId) {
             this.chat.clearMessageId();
           }
+          this.focusComposer();
           this.set("loading", false);
         });
     });
@@ -886,6 +887,16 @@ export default Component.extend({
         link.setAttribute("target", "_blank");
       }
     }
+  },
+
+  focusComposer() {
+    if (this._selfDeleted() || this.site.mobileView) {
+      return;
+    }
+
+    next(() => {
+      document.querySelector(".tc-composer-input")?.focus();
+    });
   },
 });
 

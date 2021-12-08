@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # Processes slack-formatted text messages, as Mattermost does with
 # Slack incoming webhook interopability, for example links in the
@@ -40,7 +42,7 @@ class DiscourseChat::SlackCompatibility
         end
       end
 
-      return text
+      text
     end
   end
 end

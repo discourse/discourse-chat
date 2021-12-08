@@ -587,7 +587,7 @@ export default Service.extend({
   },
 
   setDraftForChannel(channelId, draft) {
-    this.drafts[channelId] = draft
+    this.drafts[channelId] = draft;
   },
 
   getDraftForChannel(channelId) {

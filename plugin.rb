@@ -75,6 +75,7 @@ after_initialize do
   load File.expand_path('../lib/guardian_extensions.rb', __FILE__)
   load File.expand_path('../lib/extensions/topic_view_serializer_extension.rb', __FILE__)
   load File.expand_path('../lib/extensions/detailed_tag_serializer_extension.rb', __FILE__)
+  load File.expand_path('../lib/slack_compatibility.rb', __FILE__)
   load File.expand_path('../app/jobs/regular/process_chat_message.rb', __FILE__)
   load File.expand_path('../app/services/chat_publisher.rb', __FILE__)
 
@@ -253,6 +254,9 @@ after_initialize do
 
     # incoming_webhooks_controller routes
     post '/hooks/:key' => 'incoming_chat_webhooks#create_message'
+
+    # incoming_webhooks_controller routes
+    post '/hooks/:key/slack' => 'incoming_chat_webhooks#create_message_slack_compatable'
 
     # move_to_topic_controller routes
     resources :move_to_topic

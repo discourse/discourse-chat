@@ -26,7 +26,12 @@ class DiscourseChat::IncomingChatWebhooksController < ApplicationController
 
     # See note in validate_payload on why this is needed
     attachments = if params[:payload].present?
-      params[:payload][:attachments]
+      payload = params[:payload]
+      if String === payload
+        payload = JSON.parse(payload)
+        payload.deep_symbolize_keys!
+      end
+      payload[:attachments]
     else
       params[:attachments]
     end

@@ -87,5 +87,23 @@ RSpec.describe DiscourseChat::IncomingChatWebhooksController do
         post "/chat/hooks/#{webhook.key}/slack.json", params: { payload: payload_data }
       }.to change { ChatMessage.where(chat_channel: chat_channel).count }.by(1)
     end
+
+    it "can process the payload when it's a JSON string" do
+      payload_data = {
+        attachments: [
+          {
+            color: "#F4511E",
+            title: "New+alert:+#46353",
+            text: "\"[StatusCake]+https://www.test_notification.com+(StatusCake+Test+Alert):+Down,\"",
+            fallback: "New+alert:+\"[StatusCake]+https://www.test_notification.com+(StatusCake+Test+Alert):+Down,\"+<https://eu.opsg.in/a/i/test/blahguid|46353>\nTags:+",
+            title_link: "https://eu.opsg.in/a/i/test/blahguid"
+          }
+        ],
+      }
+      expect {
+        post "/chat/hooks/#{webhook.key}/slack.json", params: { payload: payload_data.to_json }
+      }.to change { ChatMessage.where(chat_channel: chat_channel).count }.by(1)
+      expect(ChatMessage.last.message).to eq("New alert: \"[StatusCake] https://www.test_notification.com (StatusCake Test Alert): Down,\" [46353](https://eu.opsg.in/a/i/test/blahguid)\nTags: ")
+    end
   end
 end

@@ -18,11 +18,21 @@ RSpec.describe DiscourseChat::IncomingChatWebhooksController do
     end
 
     it "errors when the body is over 1000 characters" do
-      post "/chat/hooks/#{webhook.key}.json", params: { body: "$" * 1001 }
+      post "/chat/hooks/#{webhook.key}.json", params: { text: "$" * 1001 }
       expect(response.status).to eq(400)
     end
 
     it "creates a new chat message" do
+      expect {
+        post "/chat/hooks/#{webhook.key}.json", params: { text: "A new signup woo!" }
+      }.to change { ChatMessage.where(chat_channel: chat_channel).count }.by(1)
+      expect(response.status).to eq(200)
+      chat_webhook_event = ChatWebhookEvent.last
+      expect(chat_webhook_event.incoming_chat_webhook_id).to eq(webhook.id)
+      expect(chat_webhook_event.chat_message_id).to eq(ChatMessage.last.id)
+    end
+
+    it "creates a new chat message with the old body param for backwards compat" do
       expect {
         post "/chat/hooks/#{webhook.key}.json", params: { body: "A new signup woo!" }
       }.to change { ChatMessage.where(chat_channel: chat_channel).count }.by(1)
@@ -36,12 +46,22 @@ RSpec.describe DiscourseChat::IncomingChatWebhooksController do
       RateLimiter.enable
       RateLimiter.clear_all!
       10.times do
-        post "/chat/hooks/#{webhook.key}.json", params: { body: "A new signup woo!" }
+        post "/chat/hooks/#{webhook.key}.json", params: { text: "A new signup woo!" }
       end
       expect(response.status).to eq(200)
 
-      post "/chat/hooks/#{webhook.key}.json", params: { body: "A new signup woo!" }
+      post "/chat/hooks/#{webhook.key}.json", params: { text: "A new signup woo!" }
       expect(response.status).to eq(429)
+    end
+  end
+
+  describe "#create_message_slack_compatable" do
+    it "processes the text param with SlackCompatibility" do
+      expect {
+        post "/chat/hooks/#{webhook.key}/slack.json", params: { text: "A new signup woo <!here>!" }
+      }.to change { ChatMessage.where(chat_channel: chat_channel).count }.by(1)
+      expect(response.status).to eq(200)
+      expect(ChatMessage.last.message).to eq("A new signup woo @here!")
     end
   end
 end

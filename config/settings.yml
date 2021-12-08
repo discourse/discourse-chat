@@ -12,3 +12,6 @@ plugins:
   needs_chat_seeded:
     default: true
     hidden: true
+  chat_debug_webhook_payloads:
+    default: false
+    hidden: true

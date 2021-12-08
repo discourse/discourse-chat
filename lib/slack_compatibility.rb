@@ -44,5 +44,17 @@ class DiscourseChat::SlackCompatibility
 
       text
     end
+
+    # TODO: This is quite hacky and is only here to support a single
+    # attachment for our OpsGenie integration. In future we would
+    # want to iterate through this attachments array and extract
+    # things properly.
+    #
+    # See https://api.slack.com/reference/messaging/attachments for
+    # more details on what fields are here.
+    def process_legacy_attachments(attachments)
+      text = CGI.unescape(attachments[0][:fallback])
+      process_text(text)
+    end
   end
 end

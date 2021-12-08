@@ -20,7 +20,18 @@ class DiscourseChat::IncomingChatWebhooksController < ApplicationController
   # text param, which we preprocess lightly to remove the slack-isms
   # in the formatting.
   def create_message_slack_compatable
-    text = DiscourseChat::SlackCompatibility.process_text(params[:text])
+    # See note in validate_payload on why this is needed
+    attachments = if params[:payload].present?
+      params[:payload][:attachments]
+    else
+      params[:attachments]
+    end
+
+    if params[:text].present?
+      text = DiscourseChat::SlackCompatibility.process_text(params[:text])
+    else
+      text = DiscourseChat::SlackCompatibility.process_legacy_attachments(attachments)
+    end
 
     hijack do
       process_webhook_payload(text: text, key: params[:key])
@@ -30,6 +41,7 @@ class DiscourseChat::IncomingChatWebhooksController < ApplicationController
   private
 
   def process_webhook_payload(text:, key:)
+    debug_payload
     validate_message_length(text)
     webhook = find_and_rate_limit_webhook(key)
 
@@ -66,6 +78,21 @@ class DiscourseChat::IncomingChatWebhooksController < ApplicationController
       params[:text] = params[:body]
     end
 
-    params.require([:key, :text])
+    params.require([:key])
+
+    # TODO (martin) It is not clear whether the :payload key is actually
+    # present in the webhooks sent from OpsGenie, so once it is confirmed
+    # in production what we are actually getting then we can remove this.
+    if !params[:text] && !params[:payload] && !params[:attachments]
+      raise Discourse::InvalidParameters
+    end
+  end
+
+  def debug_payload
+    return if !SiteSetting.chat_debug_webhook_payloads
+    Rails.logger.warn(
+      "Debugging chat webhook payload: " + \
+      JSON.dump({ payload: params[:payload], attachments: params[:attachments], text: params[:text] })
+    )
   end
 end

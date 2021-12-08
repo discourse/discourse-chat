@@ -493,16 +493,12 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
 
   @action
   internalSendMessage() {
-    if (this._messageIsValid()) {
-      return this.sendMessage(this.value, this.uploads).then(() =>
-        this.reset()
-      );
-    }
+    return this.sendMessage(this.value, this.uploads).then(this.reset);
   },
 
   @action
   internalEditMessage() {
-    this.editMessage(this.editingMessage, this.value, this.uploads).then(
+    return this.editMessage(this.editingMessage, this.value, this.uploads).then(
       this.reset
     );
   },

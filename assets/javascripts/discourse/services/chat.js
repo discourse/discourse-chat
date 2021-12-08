@@ -24,6 +24,7 @@ export default Service.extend({
   chatOpen: false,
   chatNotificationManager: service(),
   cook: null,
+  drafts: null,
   directMessageChannels: null,
   hasFetchedChannels: false,
   hasUnreadPublicMessages: false,
@@ -43,7 +44,10 @@ export default Service.extend({
     this._super(...arguments);
 
     if (this.currentUser?.has_chat_enabled) {
-      this.set("allChannels", []);
+      this.setProperties({
+        allChannels: [],
+        drafts: {},
+      });
       this._subscribeToNewDmChannelUpdates();
       this._subscribeToUserTrackingChannel();
       this.presenceChannel = this.presence.getChannel("/chat/online");
@@ -55,7 +59,10 @@ export default Service.extend({
   willDestroy() {
     this._super(...arguments);
     if (this.currentUser?.has_chat_enabled) {
-      this.set("allChannels", null);
+      this.setProperties({
+        allChannels: null,
+        drafts: null,
+      });
       this._unsubscribeFromNewDmChannelUpdates();
       this._unsubscribeFromUserTrackingChannel();
       this._unsubscribeFromAllChatChannels();
@@ -577,6 +584,14 @@ export default Service.extend({
       chatable_type: channel.chatable_type,
       chat_message_id: channel.last_read_message_id,
     };
+  },
+
+  setDraftForChannel(channelId, draft) {
+    this.drafts[channelId] = draft
+  },
+
+  getDraftForChannel(channelId) {
+    return this.drafts[channelId];
   },
 
   addToolbarButton(toolbarButton) {

@@ -32,6 +32,8 @@ export function addChatToolbarButton(toolbarButton) {
 }
 
 export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
+  chat: service(),
+  chatChannel: null,
   classNames: ["tc-composer"],
   emojiStore: service("emoji-store"),
   editingMessage: null,
@@ -164,6 +166,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
 
   _insertUpload(_, upload) {
     this.uploads.pushObject(upload);
+    this.onValueChange(this.value, this.uploads);
   },
 
   keyDown(event) {
@@ -216,6 +219,13 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
 
   didReceiveAttrs() {
     this._super(...arguments);
+    if (!this.editingMessage && !this.replyToMsg) {
+      const draft = this.draft?.value || this.draft?.uploads?.length ?
+        this.draft : { value: "", uploads: [] }
+      console.log(draft)
+      this.setProperties(draft);
+    }
+
 
     if (this.editingMessage) {
       this.setProperties({
@@ -239,7 +249,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
       () => {
         this._resizeTextArea();
         this._applyUserAutocomplete();
-        this.onValueChange(value);
+        this.onValueChange(value, this.uploads);
       },
       THROTTLE_MS
     );
@@ -542,11 +552,6 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   },
 
   @action
-  cancelUploads() {
-    this.set("uploadCancelled", true);
-  },
-
-  @action
   toggleToolbar() {
     this.set("showToolbar", !this.showToolbar);
     if (this.showToolbar) {
@@ -562,6 +567,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     this.appEvents.trigger(`${this.eventPrefix}:cancel-upload`, {
       fileId: upload.id,
     });
+    this.onValueChange(this.value, this.uploads);
   },
 
   @action

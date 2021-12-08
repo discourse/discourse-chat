@@ -9,6 +9,8 @@ class DiscourseChat::IncomingChatWebhooksController < ApplicationController
   before_action :validate_payload
 
   def create_message
+    debug_payload
+
     hijack do
       process_webhook_payload(text: params[:text], key: params[:key])
     end
@@ -20,6 +22,8 @@ class DiscourseChat::IncomingChatWebhooksController < ApplicationController
   # text param, which we preprocess lightly to remove the slack-isms
   # in the formatting.
   def create_message_slack_compatable
+    debug_payload
+
     # See note in validate_payload on why this is needed
     attachments = if params[:payload].present?
       params[:payload][:attachments]
@@ -41,7 +45,6 @@ class DiscourseChat::IncomingChatWebhooksController < ApplicationController
   private
 
   def process_webhook_payload(text:, key:)
-    debug_payload
     validate_message_length(text)
     webhook = find_and_rate_limit_webhook(key)
 

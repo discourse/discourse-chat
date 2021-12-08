@@ -341,6 +341,9 @@ $float-height: 530px;
       }
     }
   }
+  .chat-message.highlighted .tc-message {
+    background-color: var(--tertiary-low) !important;
+  }
 
   .tc-message {
     align-items: flex-start;
@@ -355,9 +358,6 @@ $float-height: 530px;
     }
     &.deleted {
       background-color: var(--danger-medium);
-    }
-    &.highlighted {
-      background-color: var(--tertiary-low);
     }
     &.transition-slow {
       transition: 2s linear background-color;
@@ -565,6 +565,19 @@ $float-height: 530px;
 
   .tc-msgactions {
     display: flex;
+
+    .link-to-message-btn {
+      .d-icon {
+        transition: all 0.25s ease-in-out;
+      }
+
+      &.copied {
+        .d-icon {
+          transform: scale(1.1);
+          color: var(--tertiary);
+        }
+      }
+    }
   }
 
   .tc-meta-data {
@@ -1307,9 +1320,6 @@ $float-height: 530px;
   .tc-messages-scroll,
   .tc-message {
     background: var(--primary-very-low);
-    &.highlighted {
-      background-color: var(--tertiary-low);
-    }
   }
   .tc-live-pane {
     box-sizing: border-box;

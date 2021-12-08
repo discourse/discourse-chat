@@ -99,11 +99,6 @@ export default Component.extend({
       this.router.transitionTo("chat.channel", channel.id, channel.title);
     }
 
-    if (!this.site.mobileView) {
-      next(() => {
-        document.querySelector(".tc-composer-input")?.focus();
-      });
-    }
     return false;
   },
 });

@@ -42,6 +42,12 @@
                 icon="discourse-emojis"
                 title="chat.react"
               }}
+              {{d-button
+                class="btn-flat link-to-message-btn"
+                action=(action "copyLinkToMessage")
+                icon="link"
+                title="chat.link_to_message"
+              }}
               {{#if showReplyButton}}
                 {{d-button
                   class="btn-flat reply-btn"

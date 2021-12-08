@@ -7,19 +7,12 @@ import { inject as service } from "@ember/service";
 export default Component.extend({
   channel: null,
   switchChannel: null,
-  nested: false,
   isDirectMessageRow: equal("channel.chatable_type", "DirectMessageChannel"),
   router: service(),
 
-  @discourseComputed("nested", "active", "channel.muted")
-  rowClassNames(nested, active, muted) {
+  @discourseComputed("active", "channel.muted")
+  rowClassNames(active, muted) {
     const classes = ["chat-channel-row"];
-    if (this.channel.chat_channels.length) {
-      classes.push("has-children");
-    }
-    if (nested) {
-      classes.push("nested");
-    }
     if (active) {
       classes.push("active");
     }

@@ -1,6 +1,11 @@
 # frozen_string_literal: true
 
 module DiscourseChat::ChatChannelFetcher
+  CHANNEL_PRIORITIES = {
+    Category: 0,
+    Tag: 1,
+    Topic: 2
+  }
   def self.structured(guardian)
     memberships = UserChatChannelMembership.where(user_id: guardian.user.id)
     {
@@ -14,23 +19,7 @@ module DiscourseChat::ChatChannelFetcher
 
   def self.structured_public_channels(guardian, memberships, scope_with_membership: true)
     channels = secured_public_channels(guardian, memberships, scope_with_membership: scope_with_membership)
-    category_channels = channels.select(&:category_channel?)
-    topic_channels = channels.select(&:topic_channel?)
-    tag_channels = channels.select(&:tag_channel?)
-    added_channel_ids = category_channels.map(&:id)
-
-    structured = tag_channels + category_channels.map do |category_channel|
-      category_channel.chat_channels = channels.select do |channel|
-        add = channel.topic_channel? && channel.chatable.category_id == category_channel.chatable.id
-        added_channel_ids << channel.id if add
-        add
-      end
-      category_channel
-    end
-
-    remaining_channels = topic_channels.select { |channel| !added_channel_ids.include?(channel.id) }
-    structured = structured.concat(remaining_channels)
-    structured
+    channels.sort_by { |a| [ CHANNEL_PRIORITIES[a.chatable_type.to_sym], a.public_channel_title ] }
   end
 
   def self.secured_public_channels(guardian, memberships, scope_with_membership: true)

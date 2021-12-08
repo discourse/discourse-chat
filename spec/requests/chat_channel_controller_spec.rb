@@ -69,10 +69,8 @@ RSpec.describe DiscourseChat::ChatChannelsController do
         get "/chat/chat_channels.json"
 
         expect(response.status).to eq(200)
-        expect(response.parsed_body["public_channels"].map { |channel| channel["chatable_id"] })
-          .to match_array([public_category_cc.chatable_id, one_off_cc.chatable_id, tag_channel.chatable_id])
-
-        expect(response.parsed_body["public_channels"].detect { |channel| channel["id"] == public_category_cc.id }["chat_channels"].first["chatable_id"]).to eq(public_topic_cc.chatable_id)
+        expect(response.parsed_body["public_channels"].map { |channel| channel["id"] })
+          .to match_array([public_category_cc.id, public_topic_cc.id, one_off_cc.id, tag_channel.id, chat_channel.id])
       end
 
       it "returns channels visible to user with private access" do
@@ -80,16 +78,16 @@ RSpec.describe DiscourseChat::ChatChannelsController do
         get "/chat/chat_channels.json"
 
         expect(response.status).to eq(200)
-        expect(response.parsed_body["public_channels"].map { |channel| channel["chatable_id"] })
+        expect(response.parsed_body["public_channels"].map { |channel| channel["id"] })
           .to match_array([
-            public_category_cc.chatable_id,
-            one_off_cc.chatable_id,
-            private_category_cc.chatable_id,
-            tag_channel.chatable_id
+            public_category_cc.id,
+            public_topic_cc.id,
+            one_off_cc.id,
+            tag_channel.id,
+            chat_channel.id,
+            private_category_cc.id,
+            private_topic_cc.id
           ])
-
-        expect(response.parsed_body["public_channels"].detect { |channel| channel["id"] == public_category_cc.id }["chat_channels"].first["chatable_id"]).to eq(public_topic_cc.chatable_id)
-        expect(response.parsed_body["public_channels"].detect { |channel| channel["id"] == private_category_cc.id }["chat_channels"].first["chatable_id"]).to eq(private_topic_cc.chatable_id)
       end
 
       it "returns all channels for admin" do
@@ -97,18 +95,17 @@ RSpec.describe DiscourseChat::ChatChannelsController do
         get "/chat/chat_channels.json"
 
         expect(response.status).to eq(200)
-        expect(response.parsed_body["public_channels"].map { |channel| channel["chatable_id"] })
+        expect(response.parsed_body["public_channels"].map { |channel| channel["id"] })
           .to match_array([
-            public_category_cc.chatable_id,
-            private_category_cc.chatable_id,
-            one_off_cc.chatable_id,
-            tag_channel.chatable_id,
-            staff_tag_channel.chatable_id
+            public_category_cc.id,
+            public_topic_cc.id,
+            one_off_cc.id,
+            tag_channel.id,
+            chat_channel.id,
+            private_category_cc.id,
+            private_topic_cc.id,
+            staff_tag_channel.id
           ])
-
-        expect(response.parsed_body["public_channels"].detect { |channel| channel["id"] == public_category_cc.id }["chat_channels"].first["chatable_id"]).to eq(public_topic_cc.chatable_id)
-
-        expect(response.parsed_body["public_channels"].detect { |channel| channel["id"] == private_category_cc.id }["chat_channels"].first["chatable_id"]).to eq(private_topic_cc.chatable_id)
       end
 
       it "doesn't error when a chat channel's chatable is destroyed" do

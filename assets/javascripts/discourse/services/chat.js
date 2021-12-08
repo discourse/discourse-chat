@@ -565,9 +565,6 @@ export default Service.extend({
     channel = EmberObject.create(channel);
     this._subscribeToSingleUpdateChannel(channel);
     this._updateUserTrackingState(channel);
-    channel.chat_channels = channel.chat_channels.map((nested_channel) => {
-      return this.processChannel(nested_channel);
-    });
     this.allChannels.push(channel);
     return channel;
   },

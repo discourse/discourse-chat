@@ -209,7 +209,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
       } else if (this.editingMessage) {
         event.preventDefault();
         this.set("replyToMsg", null);
-        this.reset();
+        this.cancelEditing();
       } else {
         this._textarea.blur();
       }

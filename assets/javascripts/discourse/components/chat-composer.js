@@ -219,11 +219,8 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
 
   didReceiveAttrs() {
     this._super(...arguments);
-    if (!this.editingMessage && !this.replyToMsg) {
-      const draft = this.draft?.value || this.draft?.uploads?.length ?
-        this.draft : { value: "", uploads: [] }
-      console.log(draft)
-      this.setProperties(draft);
+    if (!this.editingMessage && !this.replyToMsg && this.draft) {
+      this.setProperties(this.draft);
     }
 
 

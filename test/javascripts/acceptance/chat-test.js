@@ -228,6 +228,10 @@ acceptance("Discourse Chat - without unread", function (needs) {
       "it shows the reply button"
     );
     assert.ok(
+      messages[0].querySelector(".link-to-message-btn"),
+      "it shows the link to button"
+    );
+    assert.ok(
       messages[0].querySelector(".edit-btn"),
       "it shows the edit button"
     );
@@ -244,6 +248,10 @@ acceptance("Discourse Chat - without unread", function (needs) {
     assert.ok(
       messages[1].querySelector(".reply-btn"),
       "it shows the reply button"
+    );
+    assert.ok(
+      messages[0].querySelector(".link-to-message-btn"),
+      "it shows the link to button"
     );
     assert.notOk(
       messages[1].querySelector(".edit-btn"),

@@ -501,8 +501,8 @@ $float-height: 530px;
           display: none;
         }
         &.reacted {
-          border-color: var(--tertiary);
-          background: rgba(var(--tertiary-rgb), 0.2);
+          border-color: var(--tertiary-medium);
+          background: var(--tertiary-very-low);
         }
 
         .emoji {

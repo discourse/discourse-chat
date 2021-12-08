@@ -462,11 +462,11 @@ export default Component.extend({
     textArea.style.position = "absolute";
     textArea.style.left = "-99999px";
     textArea.value = url;
-    document.body.append(textArea);
+    this.element.append(textArea);
     textArea.focus();
     textArea.setSelectionRange(0, url.length);
     document.execCommand("copy");
-    document.body.removeChild(textArea);
+    this.element.removeChild(textArea);
 
     later(() => {
       this.element

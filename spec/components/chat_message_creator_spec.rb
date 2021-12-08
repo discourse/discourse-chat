@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
-require_relative '../fabricators/chat_fabricator'
 
 describe DiscourseChat::ChatMessageCreator do
   fab!(:admin1) { Fabricate(:admin) }

@@ -4,13 +4,6 @@ import ModalFunctionality from "discourse/mixins/modal-functionality";
 import { ajax } from "discourse/lib/ajax";
 import { inject as service } from "@ember/service";
 
-function convertToEmberObject(channel) {
-  channel = EmberObject.create(channel);
-  channel.chat_channels = channel.chat_channels.map((c) =>
-    EmberObject.create(c)
-  );
-  return channel;
-}
 export default Controller.extend(ModalFunctionality, {
   channels: null,
   loadingChannels: false,
@@ -24,7 +17,7 @@ export default Controller.extend(ModalFunctionality, {
     });
     ajax("/chat/chat_channels/all.json").then((channels) => {
       this.setProperties({
-        channels: channels.map((channel) => convertToEmberObject(channel)),
+        channels: channels.map((channel) => EmberObject.create(channel)),
         loadingChannels: false,
       });
     });

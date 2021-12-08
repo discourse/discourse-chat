@@ -4,11 +4,3 @@
     <span class={{unreadIndicatorClassName}}></span>
   {{/if}}
 </div>
-
-{{#if channel.chat_channels}}
-  <div class="nested-container">
-    {{#each channel.chat_channels as |nested_channel|}}
-      {{chat-channel-row channel=nested_channel switchChannel=switchChannel nested=true}}
-    {{/each}}
-  </div>
-{{/if}}

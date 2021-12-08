@@ -2,7 +2,6 @@ import { cloneJSON } from "discourse-common/lib/object";
 export const messageContents = ["Hello world", "What up", "heyo!"];
 export const siteChannel = {
   chat_channel: {
-    chat_channels: [],
     chatable: null,
     chatable_id: -1,
     chatable_type: "Site",
@@ -15,7 +14,6 @@ export const siteChannel = {
 };
 export const directMessageChannel = {
   chat_channel: {
-    chat_channels: [],
     chatable: {
       users: [
         { id: 1, username: "markvanlan" },
@@ -50,43 +48,40 @@ export const chatChannels = {
         text_color: "FFFFFF",
         slug: "uncategorized",
       },
-      chat_channels: [
-        {
-          id: 4,
-          chatable_id: 12,
-          chatable_type: "Topic",
-          chatable_url: "http://localhost:3000/t/small-action-testing-topic/12",
-          title: "Small action - testing topic",
-          unread_count: 0,
-          muted: false,
-          chatable: {
-            id: 12,
-            title: "Small action - testing topic",
-            fancy_title: "Small action - testing topic",
-            slug: "small-action-testing-topic",
-            posts_count: 1,
-          },
-          chat_channels: [],
-        },
-        {
-          id: 11,
-          chatable_id: 80,
-          chatable_type: "Topic",
-          chatable_url:
-            "http://localhost:3000/t/coolest-thing-you-have-seen-today/80",
-          title: "Coolest thing you have seen today",
-          unread_count: 0,
-          muted: false,
-          chatable: {
-            id: 80,
-            title: "Coolest thing you have seen today",
-            fancy_title: "Coolest thing you have seen today",
-            slug: "coolest-thing-you-have-seen-today",
-            posts_count: 100,
-          },
-          chat_channels: [],
-        },
-      ],
+    },
+
+    {
+      id: 4,
+      chatable_id: 12,
+      chatable_type: "Topic",
+      chatable_url: "http://localhost:3000/t/small-action-testing-topic/12",
+      title: "Small action - testing topic",
+      unread_count: 0,
+      muted: false,
+      chatable: {
+        id: 12,
+        title: "Small action - testing topic",
+        fancy_title: "Small action - testing topic",
+        slug: "small-action-testing-topic",
+        posts_count: 1,
+      },
+    },
+    {
+      id: 11,
+      chatable_id: 80,
+      chatable_type: "Topic",
+      chatable_url:
+        "http://localhost:3000/t/coolest-thing-you-have-seen-today/80",
+      title: "Coolest thing you have seen today",
+      unread_count: 0,
+      muted: false,
+      chatable: {
+        id: 80,
+        title: "Coolest thing you have seen today",
+        fancy_title: "Coolest thing you have seen today",
+        slug: "coolest-thing-you-have-seen-today",
+        posts_count: 100,
+      },
     },
   ],
   direct_message_channels: [directMessageChannel.chat_channel],
@@ -96,7 +91,6 @@ function addSettingsAttrs(channel) {
   channel.following = true;
   channel.desktop_notification_level = "mention";
   channel.mobile_notification_level = "mention";
-  channel.chat_channels.forEach((c) => addSettingsAttrs(c));
 }
 
 export function allChannels() {

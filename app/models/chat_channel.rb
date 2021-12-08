@@ -2,7 +2,6 @@
 
 class ChatChannel < ActiveRecord::Base
   include Trashable
-  attribute :chat_channels, default: []
   attribute :muted, default: false
   attribute :desktop_notification_level, default: UserChatChannelMembership::DEFAULT_NOTIFICATION_LEVEL
   attribute :mobile_notification_level, default: UserChatChannelMembership::DEFAULT_NOTIFICATION_LEVEL
@@ -56,6 +55,12 @@ class ChatChannel < ActiveRecord::Base
     else
       nil
     end
+  end
+
+  def public_channel_title
+    return chatable.title.parameterize if topic_channel?
+
+    chatable.name
   end
 
   def title(user)

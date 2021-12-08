@@ -13,8 +13,6 @@ class ChatChannelSerializer < ApplicationSerializer
              :unread_mentions,
              :updated_at
 
-  has_many :chat_channels, serializer: ChatChannelSerializer, embed: :objects
-
   def include_muted?
     !object.direct_message_channel?
   end

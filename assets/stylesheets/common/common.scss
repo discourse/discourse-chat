@@ -121,11 +121,6 @@ $float-height: 530px;
       .topic-chat-badge .d-icon {
         background-color: var(--secondary);
       }
-      &.nested {
-        .chat-unread-indicator {
-          top: calc(50% - 8px);
-        }
-      }
     }
     .chat-unread-urgent-indicator,
     .chat-unread-indicator {
@@ -950,13 +945,6 @@ $float-height: 530px;
   &.muted {
     opacity: 0.65;
   }
-
-  &.nested {
-    .chat-unread-indicator {
-      top: calc(50% - 8px);
-    }
-  }
-
   .badge-wrapper {
     align-items: center;
     margin-right: 0;
@@ -1115,9 +1103,6 @@ $float-height: 530px;
       }
       .chat-channel-title {
         font-weight: unset;
-      }
-      &.nested {
-        padding-left: 2em;
       }
     }
   }

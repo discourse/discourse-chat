@@ -219,10 +219,10 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
 
   didReceiveAttrs() {
     this._super(...arguments);
+
     if (!this.editingMessage && !this.replyToMsg && this.draft) {
       this.setProperties(this.draft);
     }
-
 
     if (this.editingMessage) {
       this.setProperties({
@@ -457,14 +457,20 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     );
   },
 
-  @discourseComputed("isUploading", "isProcessingUpload", "previewing")
-  inputDisabled(uploading, processingUpload, previewing) {
-    return uploading || processingUpload || previewing;
+  @discourseComputed("loading", "previewing")
+  inputDisabled(loading, previewing) {
+    return loading || previewing;
   },
 
-  @discourseComputed("value", "loading")
-  sendDisabled(value, loading) {
-    if (this.inputDisabled || loading) {
+  @discourseComputed(
+    "value",
+    "inputDisabled",
+    "uploads.@each",
+    "uploading",
+    "processingUpload"
+  )
+  sendDisabled(value, inputDisabled, uploads, uploading, processingUpload) {
+    if (inputDisabled || uploading || processingUpload) {
       return true;
     }
 
@@ -514,13 +520,18 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   reset() {
     this.set("value", "");
     this.set("uploads", []);
-    this.onCancelEditing();
     this._focusTextArea({ ensureAtEnd: true, resizeTextArea: true });
   },
 
   @action
   cancelReplyTo() {
     this.set("replyToMsg", null);
+  },
+
+  @action
+  cancelEditing() {
+    this.onCancelEditing();
+    this._focusTextArea({ ensureAtEnd: true, resizeTextArea: true });
   },
 
   @discourseComputed()

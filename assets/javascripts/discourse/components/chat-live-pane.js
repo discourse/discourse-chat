@@ -121,7 +121,7 @@ export default Component.extend({
 
       if (this.chatChannel.id != null) {
         this.fetchMessages();
-        this.getDraftForChannel()
+        this.loadDraftForChannel();
       }
     }
   },
@@ -164,8 +164,14 @@ export default Component.extend({
     });
   },
 
-  getDraftForChannel() {
-    this.set('draft', this.chat.getDraftForChannel(this.chatChannel.id) || { value: "", uploads: [] })
+  loadDraftForChannel() {
+    this.set(
+      "draft",
+      this.chat.getDraftForChannel(this.chatChannel.id) || {
+        value: "",
+        uploads: [],
+      }
+    );
   },
 
   _fetchMorePastMessages() {
@@ -640,8 +646,7 @@ export default Component.extend({
       return;
     }
     this.set("sendingloading", true);
-    this.chat.setDraftForChannel(this.chatChannel.id, null);
-    this.set("draft", null)
+    this._setDraftForChannel(null);
 
     this.set("_nextStagedMessageId", this._nextStagedMessageId + 1);
     const cooked = this.cook(message);
@@ -841,15 +846,20 @@ export default Component.extend({
 
   @action
   cancelEditing() {
-    this.setProperties({
-      editingMessage: null,
-      value: "",
-    });
+    this.set("editingMessage", null);
+  },
+
+  @action
+  _setDraftForChannel(draft) {
+    this.chat.setDraftForChannel(this.chatChannel.id, draft);
+    this.set("draft", draft);
   },
 
   @action
   composerValueChanged(value, uploads) {
-    this.chat.setDraftForChannel(this.chatChannel.id, { value, uploads });
+    if (!this.editingMessage) {
+      this._setDraftForChannel({ value, uploads });
+    }
     this._reportReplyingPresence(value);
   },
 

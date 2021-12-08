@@ -458,6 +458,34 @@ acceptance("Discourse Chat - without unread", function (needs) {
     );
   });
 
+  test("Drafts are saved and reloaded", async function (assert) {
+    await visit("/chat/channel/9/Site");
+    await fillIn(".tc-composer-input", "Hi people");
+
+    await visit("/chat/channel/75/@hawk");
+    assert.equal(query(".tc-composer-input").value.trim(), "");
+    await fillIn(".tc-composer-input", "What up what up");
+
+    await visit("/chat/channel/9/Site");
+    assert.equal(query(".tc-composer-input").value.trim(), "Hi people");
+    await fillIn(".tc-composer-input", "");
+
+    await visit("/chat/channel/75/@hawk");
+    assert.equal(query(".tc-composer-input").value.trim(), "What up what up");
+
+    // Send a message
+    const composerTextarea = query(".tc-composer-input");
+    await focus(composerTextarea);
+    await triggerKeyEvent(composerTextarea, "keydown", 13); // 13 is enter keycode
+
+    assert.equal(query(".tc-composer-input").value.trim(), "");
+
+    // Navigate away and back to make sure input didn't re-fill
+    await visit("/chat/channel/9/Site");
+    await visit("/chat/channel/75/@hawk");
+    assert.equal(query(".tc-composer-input").value.trim(), "");
+  });
+
   test("Unread indicator increments for public channels when messages come in", async function (assert) {
     await visit("/t/internationalization-localization/280");
     assert.notOk(

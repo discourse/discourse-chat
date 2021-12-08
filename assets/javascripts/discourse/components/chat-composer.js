@@ -202,7 +202,8 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
       this.onEditLastMessageRequested();
     }
 
-    if (event.code === "Escape") {
+    if (event.keyCode === 27) {
+      // keyCode for 'Escape'
       if (this.replyToMsg) {
         event.preventDefault();
         this.set("replyToMsg", null);

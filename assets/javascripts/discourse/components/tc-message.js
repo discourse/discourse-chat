@@ -1,3 +1,4 @@
+import getURL from "discourse-common/lib/get-url";
 import Component from "@ember/component";
 import discourseComputed, { bind } from "discourse-common/utils/decorators";
 import I18n from "I18n";
@@ -6,7 +7,7 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 import { prioritizeNameInUx } from "discourse/lib/settings";
 import EmberObject, { action } from "@ember/object";
 import { autoUpdatingRelativeAge } from "discourse/lib/formatter";
-import { schedule } from "@ember/runloop";
+import { schedule, later } from "@ember/runloop";
 
 export default Component.extend({
   ADD_REACTION: "add",
@@ -443,5 +444,32 @@ export default Component.extend({
 
       this.onSelectMessage(this.message);
     });
+  },
+
+  @action
+  copyLinkToMessage() {
+    const button = this.element.querySelector(".link-to-message-btn");
+    button.classList.add("copied");
+
+    const { protocol, host } = window.location;
+    const endpoint = `/chat/channel/${this.details.chat_channel_id}/chat?messageId=${this.message.id}`;
+    const url = `${protocol}//${host}${getURL(endpoint)}`;
+
+    const textArea = document.createElement("textarea");
+    textArea.style.position = "absolute";
+    textArea.style.left = "-99999px";
+    textArea.value = url;
+    document.body.append(textArea);
+    textArea.focus();
+    textArea.setSelectionRange(0, url.length);
+    document.execCommand("copy");
+    document.body.removeChild(textArea);
+
+    later(() => {
+      if (this.element) {
+        const button = this.element.querySelector(".link-to-message-btn");
+        button.classList.remove("copied");
+      }
+    }, 250);
   },
 });

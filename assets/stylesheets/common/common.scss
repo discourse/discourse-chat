@@ -570,6 +570,19 @@ $float-height: 530px;
 
   .tc-msgactions {
     display: flex;
+
+    .link-to-message-btn {
+      .d-icon {
+        transition: all 0.25s ease-in-out;
+      }
+
+      &.copied {
+        .d-icon {
+          transform: scale(1.1);
+          color: var(--tertiary);
+        }
+      }
+    }
   }
 
   .tc-meta-data {

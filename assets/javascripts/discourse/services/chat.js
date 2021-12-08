@@ -45,7 +45,8 @@ export default Service.extend({
     this._super(...arguments);
 
     if (this.currentUser?.has_chat_enabled) {
-      this.set("allChannels", []), this._subscribeToNewDmChannelUpdates();
+      this.set("allChannels", []);
+      this._subscribeToNewDmChannelUpdates();
       this._subscribeToUserTrackingChannel();
       this.appEvents.on("page:changed", this, "_storeLastNonChatRouteInfo");
       this.appEvents.on("modal:closed", this, "_onSettingsModalClosed");
@@ -57,7 +58,8 @@ export default Service.extend({
   willDestroy() {
     this._super(...arguments);
     if (this.currentUser?.has_chat_enabled) {
-      this.set("allChannels", null), this._unsubscribeFromNewDmChannelUpdates();
+      this.set("allChannels", null);
+      this._unsubscribeFromNewDmChannelUpdates();
       this._unsubscribeFromUserTrackingChannel();
       this._unsubscribeFromAllChatChannels();
       this.appEvents.off("page:changed", this, "_storeLastNonChatRouteInfo");

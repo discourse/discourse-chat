@@ -70,7 +70,6 @@ after_initialize do
   load File.expand_path('../lib/chat_message_creator.rb', __FILE__)
   load File.expand_path('../lib/chat_message_processor.rb', __FILE__)
   load File.expand_path('../lib/chat_message_updater.rb', __FILE__)
-  load File.expand_path('../lib/chat_notifier.rb', __FILE__)
   load File.expand_path('../lib/chat_seeder.rb', __FILE__)
   load File.expand_path('../lib/direct_message_channel_creator.rb', __FILE__)
   load File.expand_path('../lib/guardian_extensions.rb', __FILE__)
@@ -78,6 +77,7 @@ after_initialize do
   load File.expand_path('../lib/extensions/detailed_tag_serializer_extension.rb', __FILE__)
   load File.expand_path('../lib/slack_compatibility.rb', __FILE__)
   load File.expand_path('../app/jobs/regular/process_chat_message.rb', __FILE__)
+  load File.expand_path('../app/jobs/regular/send_chat_notifications.rb', __FILE__)
   load File.expand_path('../app/services/chat_publisher.rb', __FILE__)
 
   register_topic_custom_field_type(DiscourseChat::HAS_CHAT_ENABLED, :boolean)

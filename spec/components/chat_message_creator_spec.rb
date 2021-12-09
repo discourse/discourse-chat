@@ -15,6 +15,7 @@ describe DiscourseChat::ChatMessageCreator do
   before do
     SiteSetting.chat_enabled = true
     SiteSetting.chat_allowed_groups = Group::AUTO_GROUPS[:everyone]
+    Jobs.run_immediately!
 
     # Create channel memberships
     [admin1, admin2, user1, user2, user3].each do |user|
@@ -167,18 +168,6 @@ describe DiscourseChat::ChatMessageCreator do
         content: "hello @#{user2.username}"
       )
     }.to change { Notification.where(user: user2).count }.by(0)
-  end
-
-  it "enqueues a `process_chat_message` job" do
-    expect_enqueued_with(
-      job: :process_chat_message
-    ) do
-      DiscourseChat::ChatMessageCreator.create(
-        chat_channel: public_chat_channel,
-        user: user1,
-        content: "this is a message"
-      )
-    end
   end
 
   describe "push notifications" do

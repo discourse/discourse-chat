@@ -28,7 +28,7 @@ module DiscourseChat::GuardianExtensions
         !chat_channel.chatable.archived &&
         can_see_topic?(chat_channel.chatable)
     elsif chat_channel.direct_message_channel?
-      chat_channel.chatable.user_can_access?(user)
+      chat_channel.chatable.user_can_access?(@user)
     elsif chat_channel.category_channel?
 
       can_see_category?(chat_channel.chatable)

@@ -15,6 +15,7 @@ describe DiscourseChat::ChatMessageUpdater do
   before do
     SiteSetting.chat_enabled = true
     SiteSetting.chat_allowed_groups = Group::AUTO_GROUPS[:everyone]
+    Jobs.run_immediately!
 
     [admin1, admin2, user1, user2, user3, user4].each do |user|
       Fabricate(:user_chat_channel_membership, chat_channel: public_chat_channel, user: user)

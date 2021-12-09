@@ -27,7 +27,7 @@ class DiscourseChat::ChatMessageUpdater
       update_uploads!
       ChatPublisher.publish_edit!(@chat_channel, @chat_message)
       Jobs.enqueue(:process_chat_message, { chat_message_id: @chat_message.id })
-      Jobs.enqueue(:send_chat_notifications, { type: :edit, chat_message_id: @chat_message.id })
+      Jobs.enqueue_in(5.seconds, :send_chat_notifications, { type: :edit, chat_message_id: @chat_message.id })
     rescue => error
       puts error.inspect
       @error = error

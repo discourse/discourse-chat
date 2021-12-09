@@ -105,7 +105,7 @@ module Jobs
 
     def users_for_channel(exclude:, usernames: nil)
       users = User
-        .includes(:do_not_disturb_timings, :push_subscriptions, :groups)
+        .includes(:do_not_disturb_timings, :push_subscriptions, :groups, :user_chat_channel_memberships)
         .joins(:user_chat_channel_memberships)
         .joins(:user_option)
         .not_suspended
@@ -124,7 +124,7 @@ module Jobs
     end
 
     def create_mention_notification_for_user(mentioned_user)
-      return if mentioned_user.do_not_disturb?
+      return if mentioned_user.do_not_disturb? || user_has_seen_message(mentioned_user)
 
       Notification.create!(
         notification_type: Notification.types[:chat_mention],
@@ -180,6 +180,7 @@ module Jobs
           user = membership.user
           guardian = Guardian.new(user)
           next unless guardian.can_chat?(user) && guardian.can_see_chat_channel?(@chat_channel)
+          next if user_has_seen_message(user)
 
           payload = {
             username: @user.username,
@@ -199,6 +200,14 @@ module Jobs
             PostAlerter.push_notification(user, payload)
           end
         end
+    end
+
+    def user_has_seen_message(user)
+      membership = user.user_chat_channel_memberships.detect do |membership|
+        membership.chat_channel_id == @chat_channel.id
+      end
+
+      (membership.last_read_message_id || 0) >= @chat_message.id
     end
 
     def online_user_ids

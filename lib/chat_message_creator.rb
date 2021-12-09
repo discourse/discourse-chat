@@ -40,7 +40,7 @@ class DiscourseChat::ChatMessageCreator
       attach_uploads
       ChatPublisher.publish_new!(@chat_channel, @chat_message, @staged_id)
       Jobs.enqueue(:process_chat_message, { chat_message_id: @chat_message.id })
-      Jobs.enqueue(:send_chat_notifications, { type: :new, chat_message_id: @chat_message.id })
+      Jobs.enqueue_in(5.seconds, :send_chat_notifications, { type: :new, chat_message_id: @chat_message.id })
     rescue => error
       @error = error
       if Rails.env.test?

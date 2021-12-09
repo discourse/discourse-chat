@@ -206,5 +206,22 @@ export const chatView = {
         },
       },
     },
+    {
+      id: 177,
+      message: "gg @osama @mark @here",
+      cooked:
+        '<p>gg <a class="mention" href="/u/osama">@osama</a> <a class="mention" href="/u/mark">@mark</a> <a class="mention" href="/u/here">@here</a></p>',
+      excerpt:
+        '<p>gg <a class="mention" href="/u/osama">@osama</a> <a class="mention" href="/u/mark">@mark</a> <a class="mention" href="/u/here">@here</a></p>',
+      action_code: null,
+      created_at: "2021-07-20T08:14:16.950Z",
+      flag_count: 0,
+      user: {
+        id: 1,
+        username: "markvanlan",
+        name: null,
+        avatar_template: "/letter_avatar_proxy/v4/letter/m/48db29/{size}.png",
+      },
+    },
   ]),
 };

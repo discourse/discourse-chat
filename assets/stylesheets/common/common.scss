@@ -456,6 +456,10 @@ $float-height: 530px;
           margin-bottom: 1em;
         }
       }
+      .mention.highlighted {
+        background: var(--highlight);
+        color: var(--primary-high-or-secondary-low);
+      }
     }
     .tc-message-edited {
       display: inline-block;

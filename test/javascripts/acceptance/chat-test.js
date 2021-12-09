@@ -196,6 +196,32 @@ acceptance("Discourse Chat - without unread", function (needs) {
     assert.equal(currentURL(), `/chat/channel/9/Site`);
   });
 
+  test("notifications for current user and here/all are highlighted", async function (assert) {
+    updateCurrentUser({ username: "osama" });
+    await visit("/chat/channel/9/Site");
+    // 177 is message id from fixture
+    const highlighted = [];
+    const notHighlighted = [];
+    query(".chat-message-177")
+      .querySelectorAll(".mention.highlighted")
+      .forEach((node) => {
+        highlighted.push(node.textContent.trim());
+      });
+    query(".chat-message-177")
+      .querySelectorAll(".mention:not(.highlighted)")
+      .forEach((node) => {
+        notHighlighted.push(node.textContent.trim());
+      });
+    assert.equal(highlighted.length, 2, "2 mentions are highlighted");
+    assert.equal(notHighlighted.length, 1, "1 mention is regular mention");
+    assert.ok(highlighted.includes("@here"), "@here mention is highlighted");
+    assert.ok(highlighted.includes("@osama"), "@osama mention is highlighted");
+    assert.ok(
+      notHighlighted.includes("@mark"),
+      "@mark mention is not highlighted"
+    );
+  });
+
   test("Chat messages are populated when a channel is entered and images are rendered", async function (assert) {
     await visit("/chat/channel/9/Site");
     const messages = queryAll(".tc-message .tc-text");

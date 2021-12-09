@@ -32,6 +32,23 @@ export default Component.extend({
     );
   },
 
+  didInsertElement() {
+    this._super(...arguments);
+    if (!this.currentUser) {
+      return;
+    }
+    this.element
+      .querySelector(".tc-text")
+      .querySelectorAll(".mention")
+      .forEach((node) => {
+        const mention = node.textContent.trim().substr(1);
+        const highlightable = [this.currentUser.username, "here", "all"];
+        if (highlightable.includes(mention)) {
+          node.classList.add("highlighted");
+        }
+      });
+  },
+
   willDestroyElement() {
     this._super(...arguments);
     this.appEvents.off(

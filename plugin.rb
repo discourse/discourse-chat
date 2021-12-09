@@ -70,6 +70,7 @@ after_initialize do
   load File.expand_path('../lib/chat_message_creator.rb', __FILE__)
   load File.expand_path('../lib/chat_message_processor.rb', __FILE__)
   load File.expand_path('../lib/chat_message_updater.rb', __FILE__)
+  load File.expand_path('../lib/chat_notifier.rb', __FILE__)
   load File.expand_path('../lib/chat_seeder.rb', __FILE__)
   load File.expand_path('../lib/direct_message_channel_creator.rb', __FILE__)
   load File.expand_path('../lib/guardian_extensions.rb', __FILE__)

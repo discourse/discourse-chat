@@ -379,7 +379,7 @@ $float-height: 530px;
       }
 
       .tc-msgactions-hover {
-        top: -1.75em;
+        top: -2em;
       }
     }
     &.is-reply {
@@ -550,12 +550,11 @@ $float-height: 530px;
   .tc-msgactions-hover {
     position: absolute;
     opacity: 0;
+    padding-left: 4em;
+    padding-top: 0.25em;
     pointer-events: none;
     right: 0.25em;
-    top: -0.5em;
-    background-color: var(--secondary);
-    border: 1px solid var(--primary-low);
-    border-radius: 0.25em;
+    top: -0.75em;
     z-index: 2;
 
     button {
@@ -569,10 +568,13 @@ $float-height: 530px;
   }
 
   .tc-message.is-reply .tc-msgactions-hover {
-    top: 0.75em;
+    top: 0.5em;
   }
 
   .tc-msgactions {
+    background-color: var(--secondary);
+    border: 1px solid var(--primary-low);
+    border-radius: 0.25em;
     display: flex;
 
     .link-to-message-btn {

@@ -460,6 +460,11 @@ $float-height: 530px;
         background: var(--highlight);
         color: var(--primary-high-or-secondary-low);
       }
+      .valid-mention {
+        padding: 0 4px 1px;
+        border-radius: 8px;
+        display: inline-block;
+      }
     }
     .tc-message-edited {
       display: inline-block;

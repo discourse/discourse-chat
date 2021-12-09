@@ -48,6 +48,7 @@ export default Component.extend({
         const highlightable = [this.currentUser.username, HERE, ALL];
         if (highlightable.includes(mention)) {
           node.classList.add("highlighted");
+          node.classList.add("valid-mention");
         }
       });
   },

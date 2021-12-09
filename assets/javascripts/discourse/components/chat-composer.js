@@ -127,6 +127,10 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     this._applyEmojiAutocomplete(this._$textarea);
     this._bindUploadTarget();
 
+    if (!this.site.mobileView) {
+      this._focusTextArea();
+    }
+
     this.appEvents.on(
       `${this.eventPrefix}:upload-success`,
       this,
@@ -154,13 +158,6 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
       this,
       "_insertUpload"
     );
-  },
-
-  didRender() {
-    this._super(...arguments);
-    if (this._messageIsEmpty() && !this.site.mobileView) {
-      this._focusTextArea();
-    }
   },
 
   _insertUpload(_, upload) {
@@ -432,7 +429,6 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
         return;
       }
 
-      this._textarea.blur();
       this._textarea.focus();
 
       if (opts.resizeTextArea) {

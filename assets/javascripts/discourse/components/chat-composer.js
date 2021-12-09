@@ -1,7 +1,7 @@
 import Component from "@ember/component";
 import UppyMediaOptimization from "discourse/lib/uppy-media-optimization-plugin";
 import ComposerUploadUppy from "discourse/mixins/composer-upload-uppy";
-import discourseComputed from "discourse-common/utils/decorators";
+import discourseComputed, { bind } from "discourse-common/utils/decorators";
 import I18n from "I18n";
 import TextareaTextManipulation from "discourse/mixins/textarea-text-manipulation";
 import userSearch from "discourse/lib/user-search";
@@ -238,15 +238,14 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     this.set("value", value);
 
     // throttle, not debounce, because we do eventually want to react during the typing
-    this.timer = throttle(
-      this,
-      () => {
-        this._resizeTextArea();
-        this._applyUserAutocomplete();
-        this.onValueChange(value, this.uploads);
-      },
-      THROTTLE_MS
-    );
+    this.timer = throttle(this, this._handleTextareaInput, THROTTLE_MS);
+  },
+
+  @bind
+  _handleTextareaInput() {
+    this._resizeTextArea();
+    this._applyUserAutocomplete();
+    this.onValueChange(this.value, this.uploads);
   },
 
   @action

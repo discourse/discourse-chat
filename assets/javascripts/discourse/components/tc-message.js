@@ -9,6 +9,9 @@ import EmberObject, { action } from "@ember/object";
 import { autoUpdatingRelativeAge } from "discourse/lib/formatter";
 import { later, schedule } from "@ember/runloop";
 
+const HERE = "here";
+const ALL = "all";
+
 export default Component.extend({
   ADD_REACTION: "add",
   REMOVE_REACTION: "remove",
@@ -42,7 +45,7 @@ export default Component.extend({
       .querySelectorAll(".mention")
       .forEach((node) => {
         const mention = node.textContent.trim().substr(1);
-        const highlightable = [this.currentUser.username, "here", "all"];
+        const highlightable = [this.currentUser.username, HERE, ALL];
         if (highlightable.includes(mention)) {
           node.classList.add("highlighted");
         }

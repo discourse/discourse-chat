@@ -36,7 +36,6 @@ createWidgetFrom(DefaultNotificationItem, "chat-mention-notification-item", {
     const id = this.attrs.id;
     setTransientHeader("Discourse-Clear-Notifications", id);
     cookie("cn", id, { path: getURL("/") });
-    e.preventDefault();
     this.sendWidgetEvent("linkClicked");
     this.chat.openChannelAtMessage(
       this.attrs.data.chat_channel_id,

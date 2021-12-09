@@ -341,7 +341,23 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
           const full = `:${term}`;
           term = term.toLowerCase();
 
-          if (term.length < this.siteSettings.emoji_autocomplete_min_chars) {
+          // We need to avoid quick emoji autocomplete cause it can interfere with quick
+          // typing, set minimal length to 2
+          let minLength = Math.max(
+            this.siteSettings.emoji_autocomplete_min_chars,
+            2
+          );
+
+          if (term.length < minLength) {
+            return resolve(SKIP);
+          }
+
+          // bypass :-p and other common typed smileys
+          if (
+            !term.match(
+              /[^-\{\}\[\]\(\)\*_\<\>\\\/].*[^-\{\}\[\]\(\)\*_\<\>\\\/]/
+            )
+          ) {
             return resolve(SKIP);
           }
 

@@ -104,10 +104,14 @@
           <div role="button" onclick={{action "viewReply"}} class="tc-reply-display">
             {{d-icon "share" title="chat.in_reply_to"}}
             <span class="tc-reply-av">
-              {{avatar message.in_reply_to.user imageSize="tiny"}}
+              {{#if message.in_reply_to.chat_webhook_event.emoji}}
+                {{replace-emoji message.in_reply_to.chat_webhook_event.emoji}}
+              {{else}}
+                {{avatar message.in_reply_to.user imageSize="tiny"}}
+              {{/if}}
             </span>
             <span class="tc-reply-msg">
-              {{html-safe message.in_reply_to.excerpt}}
+              {{replace-emoji message.in_reply_to.excerpt}}
             </span>
           </div>
         {{/if}}

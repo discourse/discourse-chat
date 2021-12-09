@@ -642,7 +642,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     });
     assert.equal(
       queryAll(".chat-message input:checked").length,
-      3,
+      4,
       "Bulk message select works"
     );
 

@@ -46,13 +46,14 @@
                 class="btn-flat link-to-message-btn"
                 action=(action "copyLinkToMessage")
                 icon="link"
-                title="chat.link_to_message"
+                title="chat.copy_link"
               }}
               {{#if showReplyButton}}
                 {{d-button
                   class="btn-flat reply-btn"
                   action=(action "reply")
                   icon="reply"
+                  title="chat.reply"
                 }}
               {{/if}}
               {{#if showEditButton}}
@@ -60,6 +61,7 @@
                   class="btn-flat edit-btn"
                   action=(action "edit")
                   icon="pencil-alt"
+                  title="chat.edit"
                 }}
               {{/if}}
               {{#unless selectingMessages}}
@@ -67,6 +69,7 @@
                   class="btn-flat select-btn"
                   action=(action "selectMessage")
                   icon="tasks"
+                  title="chat.select"
                 }}
               {{/unless}}
               {{#if showFlagButton}}
@@ -74,6 +77,7 @@
                   class="btn-flat flag-btn"
                   action=(action "flag")
                   icon="flag"
+                  title="chat.flag"
                 }}
               {{/if}}
               {{#if showDeleteButton}}
@@ -81,6 +85,7 @@
                   class="btn-flat delete-btn"
                   action=(action "deleteMessage")
                   icon="trash-alt"
+                  title="chat.delete"
                 }}
               {{/if}}
               {{#if showRestoreButton}}
@@ -88,6 +93,7 @@
                   class="btn-flat restore-btn"
                   action=(action "restore")
                   icon="undo"
+                  title="chat.restore"
                 }}
               {{/if}}
             </div>

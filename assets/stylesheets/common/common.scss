@@ -457,8 +457,8 @@ $float-height: 530px;
         }
       }
       .mention.highlighted {
-        background: var(--highlight);
-        color: var(--primary-high-or-secondary-low);
+        background: var(--tertiary-low);
+        color: var(--primary-very-high);
       }
       .valid-mention {
         padding: 0 4px 1px;

@@ -31,7 +31,7 @@ createWidgetFrom(DefaultNotificationItem, "chat-mention-notification-item", {
     return h("a", { attributes: { title } }, contents);
   },
 
-  click(e) {
+  click() {
     this.attrs.set("read", true);
     const id = this.attrs.id;
     setTransientHeader("Discourse-Clear-Notifications", id);

@@ -48,14 +48,14 @@
                 icon="link"
                 title="chat.copy_link"
               }}
-              {{#if showReplyButton}}
+              {{#unless message.deleted_at}}
                 {{d-button
                   class="btn-flat reply-btn"
                   action=(action "reply")
                   icon="reply"
                   title="chat.reply"
                 }}
-              {{/if}}
+              {{/unless}}
               {{#if showEditButton}}
                 {{d-button
                   class="btn-flat edit-btn"

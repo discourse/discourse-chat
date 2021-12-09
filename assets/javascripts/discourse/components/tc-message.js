@@ -42,7 +42,7 @@ export default Component.extend({
     }
     this.element
       .querySelector(".tc-text")
-      .querySelectorAll(".mention")
+      ?.querySelectorAll(".mention")
       .forEach((node) => {
         const mention = node.textContent.trim().substr(1);
         const highlightable = [this.currentUser.username, HERE, ALL];

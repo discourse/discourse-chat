@@ -19,19 +19,24 @@ class DiscourseChat::ChatMessageUpdater
   end
 
   def update
-    # begin
-    @chat_message.message = @new_content
-      @chat_message.cook
-      @chat_message.save!
-      revision = save_revision!
-      update_uploads!
-      ChatPublisher.publish_edit!(@chat_channel, @chat_message)
-      Jobs.enqueue(:process_chat_message, { chat_message_id: @chat_message.id })
-      DiscourseChat::ChatNotifier.notify_edit(chat_message: @chat_message, timestamp: revision.created_at)
-    # rescue => error
-    # puts error.inspect
-    # @error = error
-    # end
+    begin
+      @chat_message.message = @new_content
+        @chat_message.cook
+        @chat_message.save!
+        revision = save_revision!
+        update_uploads!
+        ChatPublisher.publish_edit!(@chat_channel, @chat_message)
+        Jobs.enqueue(:process_chat_message, { chat_message_id: @chat_message.id })
+        DiscourseChat::ChatNotifier.notify_edit(chat_message: @chat_message, timestamp: revision.created_at)
+      rescue => error
+        @error = error
+        if Rails.env.test?
+          puts "#" * 50
+          puts "Chat message update error:"
+          puts @error.inspect
+          puts "#" * 50
+        end
+    end
   end
 
   def failed?

@@ -48,7 +48,6 @@ class DiscourseChat::ChatMessageCreator
         puts "Chat message creation error:"
         puts @error.inspect
         puts "#" * 50
-        end
       end
     end
   end

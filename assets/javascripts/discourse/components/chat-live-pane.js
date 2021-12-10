@@ -415,10 +415,7 @@ export default Component.extend({
       resolveAllShortUrls(ajax, this.siteSettings, this.element);
       this.forceLinksToOpenNewTab();
       lightbox(this.element.querySelectorAll("img:not(.emoji, .avatar)"));
-      applyLocalDates(
-        this.element.querySelectorAll(".discourse-local-date"),
-        this.siteSettings
-      );
+      this._pluginsDecorators();
     });
   },
 
@@ -910,6 +907,24 @@ export default Component.extend({
     next(() => {
       document.querySelector(".tc-composer-input")?.focus();
     });
+  },
+
+  _pluginsDecorators() {
+    applyLocalDates(
+      this.element.querySelectorAll(".discourse-local-date"),
+      this.siteSettings
+    );
+
+    if (this.siteSettings.spoiler_enabled) {
+      const applySpoiler = requirejs(
+        "discourse/plugins/discourse-spoiler-alert/lib/apply-spoiler"
+      ).default;
+      this.element.querySelectorAll(".spoiler").forEach((spoiler) => {
+        spoiler.classList.remove("spoiler");
+        spoiler.classList.add("spoiled");
+        applySpoiler(spoiler);
+      });
+    }
   },
 });
 

@@ -1019,16 +1019,8 @@ acceptance("Discourse Chat - chat preferences", function (needs) {
     assert.equal(currentURL(), "/latest");
   });
 
-  test("There are all 4 settings shown when sidebar is active", async function (assert) {
+  test("There are all 3 settings shown", async function (assert) {
     this.container.lookup("service:chat").setSidebarActive(true);
-    await visit("/u/eviltrout/preferences/chat");
-    assert.equal(currentURL(), "/u/eviltrout/preferences/chat");
-    assert.equal(queryAll(".chat-setting input").length, 4);
-  });
-
-  test("The 4th setting is hidden when sidebar isn't active", async function (assert) {
-    await visit("/");
-    this.container.lookup("service:chat").setSidebarActive(false);
     await visit("/u/eviltrout/preferences/chat");
     assert.equal(currentURL(), "/u/eviltrout/preferences/chat");
     assert.equal(queryAll(".chat-setting input").length, 3);

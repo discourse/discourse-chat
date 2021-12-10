@@ -8,12 +8,6 @@ const chatAttrs = [
   "only_chat_push_notifications",
 ];
 export default Controller.extend({
-  setMinimalChatView() {
-    this.model.minimalChatView
-      ? localStorage.setItem("minimalChatView", true)
-      : localStorage.removeItem("minimalChatView");
-  },
-
   @action
   save() {
     this.set("saved", false);
@@ -21,7 +15,6 @@ export default Controller.extend({
       .save(chatAttrs)
       .then(() => {
         this.set("saved", true);
-        this.setMinimalChatView();
         location.reload();
       })
       .catch(popupAjaxError);

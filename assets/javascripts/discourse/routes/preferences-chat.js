@@ -11,13 +11,6 @@ export default RestrictedUserRoute.extend({
       return this.transitionTo(`discovery.${defaultHomepage()}`);
     }
 
-    user.set(
-      "minimalChatView",
-      localStorage.getItem("minimalChatView") || false
-    );
-    controller.setProperties({
-      model: user,
-      sidebarActive: this.chat.getSidebarActive(),
-    });
+    controller.set("model", user);
   },
 });

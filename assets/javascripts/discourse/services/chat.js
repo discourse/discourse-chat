@@ -484,13 +484,18 @@ export default Service.extend({
     this.messageBus.subscribe(
       `/chat/user-tracking-state/${this.currentUser.id}`,
       (busData, _, messageId) => {
-        if (
-          this.lastUserTrackingMessageId &&
-          messageId !== this.lastUserTrackingMessageId + 1
-        ) {
-          return this.forceRefreshChannels();
-        } else {
+        const lastId = this.lastUserTrackingMessageId;
+
+        // we don't want this state to go backwards, only catch
+        // up if messages from messagebus were missed
+        if (!lastId || messageId > lastId) {
           this.lastUserTrackingMessageId = messageId;
+        }
+
+        // we are too far out of sync, we should resync everything.
+        // this will trigger a route transition and blur the chat input
+        if (lastId && messageId > lastId + 1) {
+          return this.forceRefreshChannels();
         }
 
         const trackingState = this.currentUser.chat_channel_tracking_state[

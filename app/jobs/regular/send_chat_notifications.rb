@@ -5,7 +5,8 @@ module Jobs
     MENTION_REGEX = /\@\w+/
 
     def execute(args = {})
-      return unless [:new, :edit].include?(args[:type])
+      type = args[:type]&.to_sym
+      return unless [:new, :edit].include?(type)
 
       @chat_message = ChatMessage.includes(:user, chat_channel: :chatable).find_by(id: args[:chat_message_id])
       return if @chat_message.nil? || @chat_message.revisions.where("created_at > ?", args[:timestamp]).any?
@@ -13,10 +14,10 @@ module Jobs
       @chat_channel = @chat_message.chat_channel
       @user = @chat_message.user
 
-      if args[:type] == :new
+      if type == :new
         mentioned_user_ids = create_mention_notifications
         notify_watching_users(except: [@user.id] + mentioned_user_ids)
-      elsif args[:type] == :edit
+      elsif type == :edit
         update_mention_notifications
       end
     end

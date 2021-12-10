@@ -38,9 +38,6 @@ en:
       join_channel: "Join channel"
       new_messages: "new messages"
       mention_notification: "<span>%{username} mentioned you in chat</span>"
-      minimal_view:
-        title: "Minimal chat view"
-        description: "Hides all non-chat related sidebar items when on the chat page. Applies only to the current browser."
       no_public_channels: "You have not joined any channels."
       only_chat_push_notifications:
         title: "Only send chat push notifications"

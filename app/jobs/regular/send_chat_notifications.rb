@@ -203,11 +203,11 @@ module Jobs
     end
 
     def user_has_seen_message(user)
-      membership = user.user_chat_channel_memberships.detect do |membership|
+      channel_membership = user.user_chat_channel_memberships.detect do |membership|
         membership.chat_channel_id == @chat_channel.id
       end
 
-      (membership.last_read_message_id || 0) >= @chat_message.id
+      (channel_membership.last_read_message_id || 0) >= @chat_message.id
     end
 
     def online_user_ids

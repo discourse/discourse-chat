@@ -3,8 +3,10 @@
 require 'rails_helper'
 
 describe Jobs::SendChatNotifications do
-  # General spec for this job are found in ChatMessageCreator and ChatMessageUpdater specs.
-  # Here we are just testing the delay, to make sure unnecissary notifications don't go out.
+  # The notification logic for this job is integration tested in ChatMessageCreator and
+  # ChatMessageUpdater specs, where jobs are run immediately.
+  # Here we are testing if notifications are blocked when users have already read messages,
+  # and if new revisions are created in between inqueueing the job and it running.
 
   fab!(:chat_channel) { Fabricate(:chat_channel) }
   fab!(:user1) { Fabricate(:user) }

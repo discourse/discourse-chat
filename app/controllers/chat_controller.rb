@@ -281,6 +281,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     mention_notifications = Notification
       .where(user: current_user)
       .where(notification_type: Notification.types[:chat_mention])
+      .where(read: false)
       .where("data LIKE ?", "%\"chat_channel_id\":#{@chat_channel.id}%")
 
     mention_notifications.each do |mention|

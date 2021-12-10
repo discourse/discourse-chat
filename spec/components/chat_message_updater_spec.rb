@@ -52,7 +52,10 @@ describe DiscourseChat::ChatMessageUpdater do
         chat_message: chat_message,
         new_content: "this is a message with @system @mentions @#{user2.username} and @#{user3.username}"
       )
-    }.to change { Notification.count }.by(2)
+    }.to change { user2.chat_mentions.count }.by(1)
+      .and change {
+        user3.chat_mentions.count
+      }.by(1)
   end
 
   it "doesn't create mentions for already mentioned users" do
@@ -63,7 +66,7 @@ describe DiscourseChat::ChatMessageUpdater do
         chat_message: chat_message,
         new_content: message + " editedddd"
       )
-    }.to change { Notification.count }.by(0)
+    }.to change { ChatMention.count }.by(0)
   end
 
   it "doesn't create mentions for users without access" do
@@ -75,7 +78,7 @@ describe DiscourseChat::ChatMessageUpdater do
         chat_message: chat_message,
         new_content: message + " @#{user_without_memberships.username}"
       )
-    }.to change { Notification.count }.by(0)
+    }.to change { ChatMention.count }.by(0)
   end
 
   it "destroys mention notifications that should be removed" do
@@ -85,7 +88,10 @@ describe DiscourseChat::ChatMessageUpdater do
         chat_message: chat_message,
         new_content: "ping @#{user3.username}"
       )
-    }.to change { Notification.count }.by(-1)
+    }.to change { user2.chat_mentions.count }.by(-1)
+      .and change {
+        user3.chat_mentions.count
+      }.by(0)
   end
 
   it "creates new, leaves existing, and removes old mentions all at once" do
@@ -95,26 +101,9 @@ describe DiscourseChat::ChatMessageUpdater do
       new_content: "ping @#{user3.username} @#{user4.username}"
     )
 
-    expect(
-      Notification
-      .where(notification_type: Notification.types[:chat_mention])
-      .where(user_id: user2)
-      .where("data LIKE ?", "%\"chat_message_id\":#{chat_message.id}%")
-    ).not_to be_present
-
-    expect(
-      Notification
-      .where(notification_type: Notification.types[:chat_mention])
-      .where(user_id: user3)
-      .where("data LIKE ?", "%\"chat_message_id\":#{chat_message.id}%")
-    ).to be_present
-
-    expect(
-      Notification
-      .where(notification_type: Notification.types[:chat_mention])
-      .where(user_id: user4)
-      .where("data LIKE ?", "%\"chat_message_id\":#{chat_message.id}%")
-    ).to be_present
+    expect(user2.chat_mentions.where(chat_message: chat_message)).not_to be_present
+    expect(user3.chat_mentions.where(chat_message: chat_message)).to be_present
+    expect(user4.chat_mentions.where(chat_message: chat_message)).to be_present
   end
 
   it "does not create new mentions in direct message for users who don't have access" do
@@ -124,7 +113,7 @@ describe DiscourseChat::ChatMessageUpdater do
         chat_message: chat_message,
         new_content: "ping @#{admin1.username}"
       )
-    }.to change { Notification.count }.by(0)
+    }.to change { ChatMention.count }.by(0)
   end
 
   it "creates a chat_message_revision record" do

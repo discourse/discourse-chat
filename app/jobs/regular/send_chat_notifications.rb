@@ -8,8 +8,7 @@ module Jobs
       return unless [:new, :edit].include?(args[:type])
 
       @chat_message = ChatMessage.includes(:user, chat_channel: :chatable).find_by(id: args[:chat_message_id])
-      return if @chat_message.nil?
-      return if @chat_message.revisions.where("created_at > ?", args[:timestamp]).any?
+      return if @chat_message.nil? || @chat_message.revisions.where("created_at > ?", args[:timestamp]).any?
 
       @chat_channel = @chat_message.chat_channel
       @user = @chat_message.user

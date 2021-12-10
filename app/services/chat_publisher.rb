@@ -32,9 +32,12 @@ module ChatPublisher
     content = {
       action: action,
       user: BasicUserSerializer.new(user, root: false).as_json,
-      emoji: emoji
+      emoji: emoji,
+      typ: :reaction,
+      chat_message_id: chat_message.id
     }
     MessageBus.publish("/chat/message-reactions/#{chat_message.id}", content.as_json, permissions(chat_channel))
+    MessageBus.publish("/chat/#{chat_channel.id}", content.as_json, permissions(chat_channel))
   end
 
   def self.publish_presence!(chat_channel, user, typ)

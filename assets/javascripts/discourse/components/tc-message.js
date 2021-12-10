@@ -29,9 +29,10 @@ export default Component.extend({
       this,
       "_reactionPickerOpened"
     );
-    this.messageBus.subscribe(
-      `/chat/message-reactions/${this.message.id}`,
-      this._handleReactionMessage
+    this.appEvents.on(
+      `chat-message-${this.message.id}:reaction`,
+      this,
+      "_handleReactionMessage"
     );
   },
 
@@ -60,9 +61,10 @@ export default Component.extend({
       this,
       "_reactionPickerOpened"
     );
-    this.messageBus.unsubscribe(
-      `/chat/message-reactions/${this.message.id}`,
-      this._handleReactionMessage
+    this.appEvents.off(
+      `chat-message-${this.message.id}:reaction`,
+      this,
+      "_handleReactionMessage"
     );
   },
 

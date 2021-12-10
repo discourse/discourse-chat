@@ -304,23 +304,41 @@ export default Component.extend({
     if (!emojiPicker || !btn) {
       return;
     }
-    const bounds = btn.getBoundingClientRect();
-    const btnPositions = {
-      top: bounds.top + window.pageYOffset,
-      left: bounds.left + window.pageXOffset,
+    const reactBtnBounds = btn.getBoundingClientRect();
+    const reactBtnPositions = {
+      bottom: window.innerHeight - reactBtnBounds.bottom,
+      left: reactBtnBounds.left + window.pageXOffset,
     };
-    const xAdjustment =
-      position === this.SHOW_RIGHT && this.fullPage
-        ? btn.offsetWidth + 10
-        : (emojiPicker.offsetWidth + 10) * -1;
 
-    const yHeight =
-      window.innerHeight - btnPositions.top - emojiPicker.offsetHeight;
-    const yAdjustment = yHeight < 0 ? -yHeight + 20 : 20;
-    emojiPicker.style.top = `${btnPositions.top - yAdjustment}px`;
-    emojiPicker.style.left = this.site.mobileView
-      ? "0"
-      : `${btnPositions.left + xAdjustment}px`;
+    // Calculate left pixel value
+    let leftValue = 0;
+
+    if (!this.site.mobileView) {
+      const xAdjustment =
+        position === this.SHOW_RIGHT && this.fullPage
+          ? btn.offsetWidth + 10
+          : (emojiPicker.offsetWidth + 10) * -1;
+      leftValue = reactBtnPositions.left + xAdjustment;
+      if (
+        leftValue < 0 ||
+        leftValue + emojiPicker.getBoundingClientRect().width >
+          window.innerWidth
+      ) {
+        leftValue = 0;
+      }
+    }
+
+    // Calculate bottom pixel value
+    let bottomValue = reactBtnPositions.bottom - emojiPicker.offsetHeight + 50;
+    const messageContainer = document.querySelector(".tc-messages-scroll");
+    const bottomOfMessageContainer =
+      window.innerHeight - messageContainer.getBoundingClientRect().bottom;
+    if (bottomValue < bottomOfMessageContainer) {
+      bottomValue = bottomOfMessageContainer;
+    }
+
+    emojiPicker.style.bottom = `${bottomValue}px`;
+    emojiPicker.style.left = `${leftValue}px`;
   },
 
   @action

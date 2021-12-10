@@ -447,6 +447,9 @@ export default Component.extend({
       case "delete":
         this.handleDeleteMessage(data);
         break;
+      case "reaction":
+        this.handleReactionMessage(data);
+        break;
       case "restore":
         this.handleRestoreMessage(data);
         break;
@@ -516,6 +519,13 @@ export default Component.extend({
       this.messages.removeObject(targetMsg);
       this.messageLookup[deletedId] = null;
     }
+  },
+
+  handleReactionMessage(data) {
+    this.appEvents.trigger(
+      `chat-message-${data.chat_message_id}:reaction`,
+      data
+    );
   },
 
   handleRestoreMessage(data) {

@@ -708,10 +708,12 @@ acceptance("Discourse Chat - without unread", function (needs) {
     assert.equal(heartReaction.innerText.trim(), "2");
     assert.ok(heartReaction.classList.contains("reacted"));
 
-    publishToMessageBus("/chat/message-reactions/176", {
+    publishToMessageBus("/chat/9", {
       action: "add",
       user: { id: 1, username: "eviltrout" },
       emoji: "heart",
+      typ: "reaction",
+      chat_message_id: 176,
     });
 
     // Click again make sure count goes down
@@ -720,10 +722,12 @@ acceptance("Discourse Chat - without unread", function (needs) {
     assert.notOk(heartReaction.classList.contains("reacted"));
 
     // Message from another user coming in!
-    publishToMessageBus("/chat/message-reactions/176", {
+    publishToMessageBus("/chat/9", {
       action: "add",
       user: { id: 77, username: "rando" },
       emoji: "sneezing_face",
+      typ: "reaction",
+      chat_message_id: 176,
     });
     const done = assert.async();
     next(async () => {

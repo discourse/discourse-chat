@@ -415,6 +415,7 @@ export default Component.extend({
       resolveAllShortUrls(ajax, this.siteSettings, this.element);
       this.forceLinksToOpenNewTab();
       lightbox(this.element.querySelectorAll("img:not(.emoji, .avatar)"));
+      this._scrollGithubOneboxes();
       applyLocalDates(
         this.element.querySelectorAll(".discourse-local-date"),
         this.siteSettings
@@ -910,6 +911,14 @@ export default Component.extend({
     next(() => {
       document.querySelector(".tc-composer-input")?.focus();
     });
+  },
+
+  _scrollGithubOneboxes() {
+    this.element
+      .querySelectorAll(".onebox.githubblob li.selected")
+      .forEach((line) => {
+        line.scrollIntoView({ block: "center" });
+      });
   },
 });
 

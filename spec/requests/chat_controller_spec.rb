@@ -363,6 +363,29 @@ RSpec.describe DiscourseChat::ChatController do
       expect(existing_record.last_read_message_id).to eq(chat_message.id)
       expect(existing_record.user_id).to eq(user.id)
     end
+
+    it "marks mention notifications as read" do
+      existing_record = UserChatChannelMembership.create(
+        chat_channel: chat_channel,
+        last_read_message_id: 0,
+        user: user
+      )
+      mention = Notification.create!(
+        notification_type: Notification.types[:chat_mention],
+        user: user,
+        high_priority: true,
+        data: {
+          message: 'chat.mention_notification',
+          chat_message_id: chat_message.id,
+          chat_channel_id: chat_channel.id,
+          chat_channel_title: chat_channel.title(user),
+          mentioned_by_username: user.username,
+        }.to_json
+      )
+      put "/chat/#{chat_channel.id}/read/#{chat_message.id}.json"
+      expect(response.status).to eq(200)
+      expect(mention.reload.read).to eq(true)
+    end
   end
 
   describe "react" do

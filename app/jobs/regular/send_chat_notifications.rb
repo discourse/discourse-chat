@@ -5,10 +5,11 @@ module Jobs
     MENTION_REGEX = /\@\w+/
 
     def execute(args = {})
-      return unless validate_args(args)
+      return unless [:new, :edit].include?(args[:type])
 
       @chat_message = ChatMessage.includes(:user, chat_channel: :chatable).find_by(id: args[:chat_message_id])
       return if @chat_message.nil?
+      return if @chat_message.revisions.where("created_at > ?", args[:timestamp]).any?
 
       @chat_channel = @chat_message.chat_channel
       @user = @chat_message.user
@@ -19,16 +20,9 @@ module Jobs
       elsif args[:type] == :edit
         update_mention_notifications
       end
-
     end
 
     private
-
-    def validate_args(args)
-      return false unless [:new, :edit].include?(args[:type])
-
-      true
-    end
 
     def update_mention_notifications
       existing_notifications = Notification

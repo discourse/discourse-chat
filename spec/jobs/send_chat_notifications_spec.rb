@@ -29,7 +29,7 @@ describe Jobs::SendChatNotifications do
     )
 
     expect {
-      described_class.new.execute(type: :new, chat_message_id: chat_message.id)
+      described_class.new.execute(type: :new, chat_message_id: chat_message.id, timestamp: chat_message.created_at)
     }.not_to change { Notification.where(user: user2).count }
   end
 
@@ -49,6 +49,34 @@ describe Jobs::SendChatNotifications do
     )
 
     PostAlerter.expects(:push_notification).never
-    described_class.new.execute(type: :new, chat_message_id: chat_message.id)
+    described_class.new.execute(type: :new, chat_message_id: chat_message.id, timestamp: chat_message.created_at)
+  end
+
+  it "does nothing if there has been a revision in between enqueueing and running" do
+    chat_message = DiscourseChat::ChatMessageCreator.create(
+      chat_channel: chat_channel,
+      user: user1,
+      content: "Hi"
+    ).chat_message
+
+    user2.user_chat_channel_memberships.create(
+      following: true,
+      chat_channel: chat_channel,
+      last_read_message_id: nil
+    )
+
+    DiscourseChat::ChatMessageUpdater.update(
+      chat_message: chat_message,
+      new_content: "hi there @#{user2.username}"
+    )
+
+    expect {
+      described_class.new.execute(type: :new, chat_message_id: chat_message.id, timestamp: chat_message.created_at)
+    }.not_to change { Notification.where(user: user2).count }
+
+    # Now run again with the revision timestamp and the user will be notified
+    expect {
+      described_class.new.execute(type: :new, chat_message_id: chat_message.id, timestamp: chat_message.revisions.last.created_at)
+    }.to change { Notification.where(user: user2).count }.by(1)
   end
 end

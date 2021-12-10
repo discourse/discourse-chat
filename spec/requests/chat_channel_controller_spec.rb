@@ -119,6 +119,7 @@ RSpec.describe DiscourseChat::ChatChannelsController do
 
       it "serializes unread_mentions properly" do
         sign_in(admin)
+        Jobs.run_immediately!
         DiscourseChat::ChatMessageCreator.create(
           chat_channel: public_category_cc,
           user: user,

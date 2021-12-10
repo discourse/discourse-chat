@@ -278,14 +278,14 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
       .where(user: current_user, chat_channel: @chat_channel)
       .update_all(last_read_message_id: params[:message_id])
 
-    mention_notifications = Notification
+    chat_mentions = ChatMention
+      .joins(:notification)
       .where(user: current_user)
-      .where(notification_type: Notification.types[:chat_mention])
-      .where(read: false)
-      .where("data LIKE ?", "%\"chat_channel_id\":#{@chat_channel.id}%")
+      .where(chat_message: params[:message_id])
+      .where(notification: { read: false })
 
-    mention_notifications.each do |mention|
-      mention.update(read: true)
+    chat_mentions.each do |chat_mention|
+      chat_mention.notification.update(read: true)
     end
 
     ChatPublisher.publish_user_tracking_state(

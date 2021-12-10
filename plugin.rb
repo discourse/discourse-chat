@@ -51,6 +51,7 @@ after_initialize do
   load File.expand_path('../app/models/chat_message.rb', __FILE__)
   load File.expand_path('../app/models/chat_message_reaction.rb', __FILE__)
   load File.expand_path('../app/models/chat_message_revision.rb', __FILE__)
+  load File.expand_path('../app/models/chat_mention.rb', __FILE__)
   load File.expand_path('../app/models/chat_upload.rb', __FILE__)
   load File.expand_path('../app/models/chat_webhook_event.rb', __FILE__)
   load File.expand_path('../app/models/direct_message_channel.rb', __FILE__)
@@ -70,6 +71,7 @@ after_initialize do
   load File.expand_path('../lib/chat_message_creator.rb', __FILE__)
   load File.expand_path('../lib/chat_message_processor.rb', __FILE__)
   load File.expand_path('../lib/chat_message_updater.rb', __FILE__)
+  load File.expand_path('../lib/chat_notifier.rb', __FILE__)
   load File.expand_path('../lib/chat_seeder.rb', __FILE__)
   load File.expand_path('../lib/direct_message_channel_creator.rb', __FILE__)
   load File.expand_path('../lib/guardian_extensions.rb', __FILE__)
@@ -77,7 +79,8 @@ after_initialize do
   load File.expand_path('../lib/extensions/detailed_tag_serializer_extension.rb', __FILE__)
   load File.expand_path('../lib/slack_compatibility.rb', __FILE__)
   load File.expand_path('../app/jobs/regular/process_chat_message.rb', __FILE__)
-  load File.expand_path('../app/jobs/regular/send_chat_notifications.rb', __FILE__)
+  load File.expand_path('../app/jobs/regular/create_chat_mention_notifications.rb', __FILE__)
+  load File.expand_path('../app/jobs/regular/notify_users_watching_chat.rb', __FILE__)
   load File.expand_path('../app/services/chat_publisher.rb', __FILE__)
 
   register_topic_custom_field_type(DiscourseChat::HAS_CHAT_ENABLED, :boolean)
@@ -123,6 +126,7 @@ after_initialize do
     User.class_eval {
       has_many :user_chat_channel_memberships, dependent: :destroy
       has_many :chat_message_reactions, dependent: :destroy
+      has_many :chat_mentions
     }
     Post.class_eval {
       has_many :chat_message_post_connections, dependent: :destroy

@@ -370,7 +370,7 @@ RSpec.describe DiscourseChat::ChatController do
         last_read_message_id: 0,
         user: user
       )
-      mention = Notification.create!(
+      notification = Notification.create!(
         notification_type: Notification.types[:chat_mention],
         user: user,
         high_priority: true,
@@ -382,9 +382,15 @@ RSpec.describe DiscourseChat::ChatController do
           mentioned_by_username: user.username,
         }.to_json
       )
+      ChatMention.create(
+        user: user,
+        chat_message: chat_message,
+        notification: notification
+      )
+
       put "/chat/#{chat_channel.id}/read/#{chat_message.id}.json"
       expect(response.status).to eq(200)
-      expect(mention.reload.read).to eq(true)
+      expect(notification.reload.read).to eq(true)
     end
   end
 

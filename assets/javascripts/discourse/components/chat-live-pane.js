@@ -415,6 +415,7 @@ export default Component.extend({
       resolveAllShortUrls(ajax, this.siteSettings, this.element);
       this.forceLinksToOpenNewTab();
       lightbox(this.element.querySelectorAll("img:not(.emoji, .avatar)"));
+      this._scrollGithubOneboxes();
       this._pluginsDecorators();
     });
   },
@@ -925,6 +926,14 @@ export default Component.extend({
         applySpoiler(spoiler);
       });
     }
+  },
+
+  _scrollGithubOneboxes() {
+    this.element
+      .querySelectorAll(".onebox.githubblob li.selected")
+      .forEach((line) => {
+        line.scrollIntoView({ block: "center" });
+      });
   },
 });
 

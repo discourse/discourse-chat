@@ -328,7 +328,6 @@ export default Component.extend({
 
     // Calculate bottom pixel value
     let bottomValue = reactBtnPositions.bottom - emojiPicker.offsetHeight + 50;
-
     const messageContainer = document.querySelector(".tc-messages-scroll");
     const bottomOfMessageContainer =
       window.innerHeight - messageContainer.getBoundingClientRect().bottom;

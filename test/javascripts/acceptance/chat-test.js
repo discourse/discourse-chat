@@ -1027,7 +1027,7 @@ acceptance("Discourse Chat - chat preferences", function (needs) {
     this.container.lookup("service:chat").setSidebarActive(true);
     await visit("/u/eviltrout/preferences/chat");
     assert.equal(currentURL(), "/u/eviltrout/preferences/chat");
-    assert.equal(queryAll(".chat-setting input").length, 4);
+    assert.equal(queryAll(".chat-setting").length, 4);
   });
 });
 

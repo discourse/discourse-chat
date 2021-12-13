@@ -10,7 +10,6 @@ export default RestrictedUserRoute.extend({
     if (!user?.can_chat) {
       return this.transitionTo(`discovery.${defaultHomepage()}`);
     }
-
     controller.set("model", user);
   },
 });

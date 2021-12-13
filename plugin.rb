@@ -92,6 +92,7 @@ after_initialize do
   UserUpdater::OPTION_ATTR.push(:chat_enabled)
   UserUpdater::OPTION_ATTR.push(:chat_isolated)
   UserUpdater::OPTION_ATTR.push(:only_chat_push_notifications)
+  UserUpdater::OPTION_ATTR.push(:chat_sound)
 
   on(:category_updated) do |category|
     next if !SiteSetting.chat_enabled

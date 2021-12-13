@@ -67,7 +67,7 @@ class DiscourseChat::ChatNotifier
   end
 
   def enqueue_mentioned_job(user_ids)
-    Jobs.enqueue_in(5.seconds, :create_chat_mention_notifications, {
+    Jobs.enqueue_in(3.seconds, :create_chat_mention_notifications, {
       chat_message_id: @chat_message.id,
       user_ids: user_ids,
       timestamp: @timestamp
@@ -130,7 +130,7 @@ class DiscourseChat::ChatNotifier
   end
 
   def notify_watching_users(except: [])
-    Jobs.enqueue_in(5.seconds, :notify_users_watching_chat, {
+    Jobs.enqueue_in(3.seconds, :notify_users_watching_chat, {
       chat_message_id: @chat_message.id,
       except_user_ids: except,
       timestamp: @timestamp

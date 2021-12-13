@@ -64,6 +64,7 @@ en:
       sounds:
         none: "None"
         bell: "Bell"
+        ding: "Ding"
       title: "chat"
       title_capitalized: "Chat"
       toggle_enabled: "Toggle chat enabled"

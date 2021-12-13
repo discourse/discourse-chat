@@ -170,8 +170,8 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
       return;
     }
 
+    // keyCode for 'Enter'
     if (event.keyCode === 13) {
-      // keyCode for 'Enter'
       if (event.shiftKey) {
         // Shift+Enter: insert newline
         return;
@@ -184,7 +184,15 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
         // Super+Enter: no action
         return;
       }
+
       // Ctrl+Enter, plain Enter: send
+      if (!event.ctrlKey) {
+        // if we are inside a code block just insert newline
+        const { pre } = this._getSelected(null, { lineVal: true });
+        if (this._isInside(pre, /(^|\n)```/g)) {
+          return;
+        }
+      }
 
       event.preventDefault();
       this.sendClicked();

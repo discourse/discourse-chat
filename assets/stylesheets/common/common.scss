@@ -465,6 +465,15 @@ $float-height: 530px;
         border-radius: 8px;
         display: inline-block;
       }
+
+      img.ytp-thumbnail-image {
+        height: 100%;
+        max-height: unset;
+
+        &:hover {
+          border-radius: 0;
+        }
+      }
     }
     .tc-message-edited {
       display: inline-block;

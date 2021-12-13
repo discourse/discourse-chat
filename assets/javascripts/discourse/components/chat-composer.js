@@ -411,11 +411,13 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
 
           return resolve(options);
         })
-          .then((list) =>
-            list.map((code) => {
-              return { code, src: emojiUrlFor(code) };
-            })
-          )
+          .then((list) => {
+            if (list) {
+              list.map((code) => {
+                return { code, src: emojiUrlFor(code) };
+              });
+            }
+          })
           .then((list) => {
             if (list.length) {
               list.push({ label: I18n.t("composer.more_emoji"), term });

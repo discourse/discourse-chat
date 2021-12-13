@@ -412,7 +412,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
           return resolve(options);
         })
           .then((list) =>
-            list.map((code) => {
+            (list || []).map((code) => {
               return { code, src: emojiUrlFor(code) };
             })
           )

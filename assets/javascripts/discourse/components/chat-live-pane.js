@@ -936,6 +936,10 @@ export default Component.extend({
         applySpoiler(spoiler);
       });
     }
+
+    this.element.querySelectorAll(".lazyYT").forEach((iframe) => {
+      $(iframe).lazyYT();
+    });
   },
 
   _scrollGithubOneboxes() {

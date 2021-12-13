@@ -16,7 +16,7 @@ export default {
     withPluginApi("0.12.1", (api) => {
       api.registerDesktopNotificationHandler((data, siteSettings, user) => {
         // chat_mention and chat_message are notification_types of 29 and 30.
-        if (data.notification_type === 29 || data.notification_type === 30) {
+        if ([29, 30].includes(data.notification_type)) {
           const audio = new Audio(CHAT_SOUNDS[user.chat_sound]);
           audio.play();
         }

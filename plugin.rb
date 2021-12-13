@@ -196,12 +196,28 @@ after_initialize do
     include_has_chat_enabled? && object.user_option.chat_isolated
   end
 
+  add_to_serializer(:current_user, :chat_sound) do
+    object.user_option.chat_sound
+  end
+
+  add_to_serializer(:current_user, :include_chat_sound?) do
+    include_has_chat_enabled? && object.user_option.chat_sound
+  end
+
   add_to_serializer(:user_option, :chat_enabled) do
     object.chat_enabled
   end
 
   add_to_serializer(:user_option, :chat_isolated) do
     object.chat_isolated
+  end
+
+  add_to_serializer(:user_option, :chat_sound) do
+    object.chat_sound
+  end
+
+  add_to_serializer(:user_option, :include_chat_sound?) do
+    !object.chat_sound.blank?
   end
 
   add_to_serializer(:user_option, :only_chat_push_notifications) do

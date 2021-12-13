@@ -58,6 +58,12 @@ en:
       scroll_to_bottom: "Scroll to bottom"
       send: "Send Chat Message"
       send_error: "Something went wrong"
+      sound:
+        title: "Sound"
+        description: "something"
+      sounds:
+        none: "None"
+        bell: "Bell"
       title: "chat"
       title_capitalized: "Chat"
       toggle_enabled: "Toggle chat enabled"

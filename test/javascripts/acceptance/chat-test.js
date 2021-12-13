@@ -1023,11 +1023,11 @@ acceptance("Discourse Chat - chat preferences", function (needs) {
     assert.equal(currentURL(), "/latest");
   });
 
-  test("There are all 3 settings shown", async function (assert) {
+  test("There are all 4 settings shown", async function (assert) {
     this.container.lookup("service:chat").setSidebarActive(true);
     await visit("/u/eviltrout/preferences/chat");
     assert.equal(currentURL(), "/u/eviltrout/preferences/chat");
-    assert.equal(queryAll(".chat-setting input").length, 3);
+    assert.equal(queryAll(".chat-setting input").length, 4);
   });
 });
 

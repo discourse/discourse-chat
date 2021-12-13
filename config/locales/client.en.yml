@@ -30,6 +30,7 @@ en:
       enable: "Enable chat"
       flag: "Flag"
       invalid_access: "You don't have access to view this chat channel"
+      invitation_notification: "<span>%{username} invited you to join a chat channel</span>"
       in_reply_to: "In reply to"
       isolate:
         title: "Isolate chat"
@@ -38,6 +39,15 @@ en:
       join_channel: "Join channel"
       new_messages: "new messages"
       mention_notification: "<span>%{username} mentioned you in chat</span>"
+      mention_warning:
+        cannot_see:
+          one: "%{usernames} cannot access this channel and was not notified."
+          other: "%{usernames} cannot access this channel and were not notified."
+        invite: "Invite users to channel"
+        without_membership:
+          one: "%{usernames} has not joined this channel."
+          other: "%{usernames} have not joined this channel."
+
       no_public_channels: "You have not joined any channels."
       only_chat_push_notifications:
         title: "Only send chat push notifications"
@@ -164,6 +174,10 @@ en:
       popup:
         chat_mention: "@%{username} mentioned you in chat"
         chat_message: "New chat message"
+
+      titles:
+        chat_mention: "Chat mention"
+        chat_invitation: "Chat invitation"
     topic:
       actions:
         chat_enable: "Enable Chat"

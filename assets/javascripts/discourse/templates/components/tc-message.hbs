@@ -204,6 +204,22 @@
               {{i18n "chat.send_error"}}
             </div>
           {{/if}}
+
+          {{#if message.mentionWarning}}
+            <div class="alert alert-info chat-message-mention-warning">
+              {{#if message.mentionWarning.cannot_see}}
+                <p>{{mentionedCannotSeeText}}</p>
+              {{/if}}
+
+              {{#if message.mentionWarning.without_membership}}
+                <p>
+                  {{mentionedWithoutMembershipText}}
+                  <div role="button" onclick={{action "inviteMentioned"}}>{{i18n "chat.mention_warning.invite"}}</div>
+                </p>
+              {{/if}}
+            </div>
+          {{/if}}
+
         </div>
       </div>
     {{/if}}

@@ -546,6 +546,10 @@ $float-height: 530px;
       text-align: center;
       color: var(--danger-medium);
     }
+
+    .chat-message-mention-warning {
+      font-size: var(--font-down-1);
+    }
   }
 
   .emoji-picker {

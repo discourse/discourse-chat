@@ -452,6 +452,9 @@ export default Component.extend({
       case "restore":
         this.handleRestoreMessage(data);
         break;
+      case "mention_warning":
+        this.handleMentionWarning(data);
+        break;
     }
     this.decorateMessages();
   },
@@ -584,6 +587,14 @@ export default Component.extend({
       return -1;
     }
     return 0;
+  },
+
+  handleMentionWarning(data) {
+    const message = this.messageLookup[data.chat_message_id];
+    console.log(data);
+    if (message) {
+      message.set("mentionWarning", data);
+    }
   },
 
   _selfDeleted() {

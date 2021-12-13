@@ -19,6 +19,7 @@ export default Component.extend({
   SHOW_RIGHT: "showRight",
   isHovered: false,
   emojiPickerIsActive: false,
+  mentionWarning: null,
 
   init() {
     this._super(...arguments);
@@ -226,6 +227,35 @@ export default Component.extend({
   @discourseComputed("message.reactions.@each")
   hasReactions(reactions) {
     return Object.values(reactions).some((r) => r.count > 0);
+  },
+
+  @discourseComputed("message.mentionWarning.cannot_see")
+  mentionedCannotSeeText(users) {
+    return I18n.t("chat.mention_warning.cannot_see", {
+      usernames: users.map((u) => u.username).join(", "),
+      count: users.length,
+    });
+  },
+
+  @discourseComputed("message.mentionWarning.without_membership")
+  mentionedWithoutMembershipText(users) {
+    return I18n.t("chat.mention_warning.without_membership", {
+      usernames: users.map((u) => u.username).join(", "),
+      count: users.length,
+    });
+  },
+
+  @action
+  inviteMentioned() {
+    const user_ids = this.message.mentionWarning.without_membership.map(
+      (u) => u.id
+    );
+    return ajax(`/chat/${this.details.chat_channel_id}/invite`, {
+      method: "PUT",
+      data: { user_ids, chat_message_id: this.message.id },
+    }).then(() => {
+      this.message.set("mentionWarning", null);
+    });
   },
 
   @action

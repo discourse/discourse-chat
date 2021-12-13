@@ -449,4 +449,46 @@ RSpec.describe DiscourseChat::ChatController do
       expect(response.status).to eq(200)
     end
   end
+
+  describe "invite_users" do
+    fab!(:chat_channel) { Fabricate(:chat_channel) }
+    fab!(:chat_message) { Fabricate(:chat_message, chat_channel: chat_channel, user: admin) }
+    fab!(:user2) { Fabricate(:user) }
+
+    before do
+      sign_in(admin)
+
+      [user, user2].each do |u|
+        u.user_option.update(chat_enabled: true)
+      end
+    end
+
+    it "doesn't invite users who cannot chat" do
+      SiteSetting.chat_allowed_groups = Group::AUTO_GROUPS[:admin]
+      expect {
+        put "/chat/#{chat_channel.id}/invite.json", params: { user_ids: [user.id] }
+      }.to change { user.notifications.where(notification_type: Notification.types[:chat_invitation]).count }.by(0)
+    end
+
+    it "creates an invitation notification for users who can chat" do
+      expect {
+        put "/chat/#{chat_channel.id}/invite.json", params: { user_ids: [user.id] }
+      }.to change { user.notifications.where(notification_type: Notification.types[:chat_invitation]).count }.by(1)
+    end
+
+    it "creates multiple invitations" do
+      expect {
+        put "/chat/#{chat_channel.id}/invite.json", params: { user_ids: [user.id, user2.id] }
+      }.to change {
+        Notification.where(notification_type: Notification.types[:chat_invitation], user_id: [user.id, user2.id]).count
+      }.by(2)
+    end
+
+    it "adds chat_message_id when param is present" do
+      sign_in(admin)
+      put "/chat/#{chat_channel.id}/invite.json", params: { user_ids: [user.id], chat_message_id: chat_message.id }
+      puts Notification.last.data.inspect
+      expect(JSON.parse(Notification.last.data)["chat_message_id"]).to eq(chat_message.id.to_s)
+    end
+  end
 end

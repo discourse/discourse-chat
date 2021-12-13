@@ -59,8 +59,7 @@ en:
       send: "Send Chat Message"
       send_error: "Something went wrong"
       sound:
-        title: "Sound"
-        description: "something"
+        title: "Desktop chat notification sound"
       sounds:
         none: "None"
         bell: "Bell"

@@ -10,7 +10,6 @@ import I18n from "I18n";
 import loadScript from "discourse/lib/load-script";
 import showModal from "discourse/lib/show-modal";
 import { A } from "@ember/array";
-import { applyLocalDates } from "discourse/plugins/discourse-local-dates/initializers/discourse-local-dates";
 import { ajax } from "discourse/lib/ajax";
 import { isTesting } from "discourse-common/config/environment";
 import { popupAjaxError } from "discourse/lib/ajax-error";
@@ -921,10 +920,16 @@ export default Component.extend({
   },
 
   _pluginsDecorators() {
-    applyLocalDates(
-      this.element.querySelectorAll(".discourse-local-date"),
-      this.siteSettings
-    );
+    if (this.siteSettings.discourse_local_dates_enabled) {
+      const applyLocalDates = requirejs(
+        "discourse/plugins/discourse-local-dates/initializers/discourse-local-dates"
+      ).applyLocalDates;
+
+      applyLocalDates(
+        this.element.querySelectorAll(".discourse-local-date"),
+        this.siteSettings
+      );
+    }
 
     if (this.siteSettings.spoiler_enabled) {
       const applySpoiler = requirejs(

@@ -271,6 +271,39 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     render json: { chat_enabled: current_user.user_option.chat_enabled }
   end
 
+  def invite_users
+    params.require(:user_ids)
+
+    set_channel_and_chatable
+    users = User
+      .includes(:groups)
+      .joins(:user_option)
+      .where(user_options: { chat_enabled: true })
+      .not_suspended
+      .where(id: params[:user_ids])
+    users.each do |user|
+      guardian = Guardian.new(user)
+      if guardian.can_chat?(user) && guardian.can_see_chat_channel?(@chat_channel)
+        data = {
+          message: 'chat.invitation_notification',
+          chat_channel_id: @chat_channel.id,
+          chat_channel_title: @chat_channel.title(user),
+          invited_by_username: current_user.username,
+        }
+        if params[:chat_message_id]
+          data[:chat_message_id] = params[:chat_message_id]
+        end
+        user.notifications.create(
+          notification_type: Notification.types[:chat_invitation],
+          high_priority: true,
+          data: data.to_json
+        )
+      end
+    end
+
+    render json: success_json
+  end
+
   private
 
   def set_user_last_read

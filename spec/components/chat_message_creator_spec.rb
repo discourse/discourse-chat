@@ -168,6 +168,35 @@ describe DiscourseChat::ChatMessageCreator do
              }.by(0)
     end
 
+    it "publishes inaccessible mentions when user isn't aren't a part of the channel" do
+      user3.user_chat_channel_memberships.where(chat_channel: public_chat_channel).update(following: false)
+      ChatPublisher.expects(:publish_inaccessible_mentions).once
+      DiscourseChat::ChatMessageCreator.create(
+        chat_channel: public_chat_channel,
+        user: admin1,
+        content: "hello @#{user3.username}"
+      )
+    end
+
+    it "publishes inaccessible mentions when user doesn't have chat access" do
+      SiteSetting.chat_allowed_groups = Group::AUTO_GROUPS[:staff]
+      ChatPublisher.expects(:publish_inaccessible_mentions).once
+      DiscourseChat::ChatMessageCreator.create(
+        chat_channel: public_chat_channel,
+        user: admin1,
+        content: "hello @#{user3.username}"
+      )
+    end
+
+    it "doesn't publish inaccessible mentions when user is following channel" do
+      ChatPublisher.expects(:publish_inaccessible_mentions).never
+      DiscourseChat::ChatMessageCreator.create(
+        chat_channel: public_chat_channel,
+        user: admin1,
+        content: "hello @#{admin2.username}"
+      )
+    end
+
     it "does not create mentions for suspended users" do
       user2.update(suspended_till: Time.now + 10.years)
       expect {

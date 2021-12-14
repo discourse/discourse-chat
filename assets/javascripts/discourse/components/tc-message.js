@@ -7,7 +7,7 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 import { prioritizeNameInUx } from "discourse/lib/settings";
 import EmberObject, { action } from "@ember/object";
 import { autoUpdatingRelativeAge } from "discourse/lib/formatter";
-import { later, schedule } from "@ember/runloop";
+import { cancel, later, schedule } from "@ember/runloop";
 
 const HERE = "here";
 const ALL = "all";
@@ -19,6 +19,7 @@ export default Component.extend({
   SHOW_RIGHT: "showRight",
   isHovered: false,
   emojiPickerIsActive: false,
+  mentionWarning: null,
 
   init() {
     this._super(...arguments);
@@ -66,6 +67,8 @@ export default Component.extend({
       this,
       "_handleReactionMessage"
     );
+
+    cancel(this._invitationSentTimer);
   },
 
   _reactionPickerOpened(messageId) {
@@ -226,6 +229,42 @@ export default Component.extend({
   @discourseComputed("message.reactions.@each")
   hasReactions(reactions) {
     return Object.values(reactions).some((r) => r.count > 0);
+  },
+
+  @discourseComputed("message.mentionWarning.cannot_see")
+  mentionedCannotSeeText(users) {
+    return I18n.t("chat.mention_warning.cannot_see", {
+      usernames: users.mapBy("username").join(", "),
+      count: users.length,
+    });
+  },
+
+  @discourseComputed("message.mentionWarning.without_membership")
+  mentionedWithoutMembershipText(users) {
+    return I18n.t("chat.mention_warning.without_membership", {
+      usernames: users.mapBy("username").join(", "),
+      count: users.length,
+    });
+  },
+
+  @action
+  inviteMentioned() {
+    const user_ids = this.message.mentionWarning.without_membership.mapBy("id");
+    ajax(`/chat/${this.details.chat_channel_id}/invite`, {
+      method: "PUT",
+      data: { user_ids, chat_message_id: this.message.id },
+    }).then(() => {
+      this.message.set("mentionWarning.invitationSent", true);
+      this._invitationSentTimer = later(() => {
+        this.message.set("mentionWarning", null);
+      }, 3000);
+    });
+    return false;
+  },
+
+  @action
+  dismissMentionWarning() {
+    this.message.set("mentionWarning", null);
   },
 
   @action

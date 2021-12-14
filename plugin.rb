@@ -308,6 +308,7 @@ after_initialize do
     get '/lookup/:message_id' => 'chat#lookup_message'
     put '/:chat_channel_id/read/:message_id' => 'chat#update_user_last_read'
     put '/user_chat_enabled/:user_id' => 'chat#set_user_chat_status'
+    put '/:chat_channel_id/invite' => 'chat#invite_users'
     post '/:chat_channel_id' => 'chat#create_message'
   end
 

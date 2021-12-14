@@ -204,6 +204,38 @@
               {{i18n "chat.send_error"}}
             </div>
           {{/if}}
+
+          {{#if message.mentionWarning}}
+            <div class="alert alert-info chat-message-mention-warning">
+              {{#if message.mentionWarning.invitationSent}}
+                {{d-icon "check"}}
+                <span>
+                  {{i18n "chat.mention_warning.invitations_sent" count=message.mentionWarning.without_membership.length}}
+                </span>
+              {{else}}
+                {{flat-button
+                  class="dismiss-mention-warning"
+                  title="chat.mention_warning.dismiss"
+                  action=(action "dismissMentionWarning")
+                  icon="times"
+                }}
+
+                {{#if message.mentionWarning.cannot_see}}
+                  <p class="cannot-see">{{mentionedCannotSeeText}}</p>
+                {{/if}}
+
+                {{#if message.mentionWarning.without_membership}}
+                  <p class="without-membership">
+                    <span>{{mentionedWithoutMembershipText}}</span>
+                    <a class="invite-link" href onclick={{action "inviteMentioned"}}>
+                      {{i18n "chat.mention_warning.invite"}}
+                    </a>
+                  </p>
+                {{/if}}
+              {{/if}}
+            </div>
+          {{/if}}
+
         </div>
       </div>
     {{/if}}

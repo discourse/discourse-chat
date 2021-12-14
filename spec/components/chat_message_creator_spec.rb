@@ -168,7 +168,7 @@ describe DiscourseChat::ChatMessageCreator do
              }.by(0)
     end
 
-    it "publishes inaccessible mentinos when user isn't aren't a part of the channel" do
+    it "publishes inaccessible mentions when user isn't aren't a part of the channel" do
       user3.user_chat_channel_memberships.where(chat_channel: public_chat_channel).update(following: false)
       ChatPublisher.expects(:publish_inaccessible_mentions).once
       DiscourseChat::ChatMessageCreator.create(

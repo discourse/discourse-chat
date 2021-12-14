@@ -549,7 +549,7 @@ $float-height: 530px;
 
     .chat-message-mention-warning {
       position: relative;
-      margin-top: 0.25em;
+      margin-top: 0.25em 0 0;
       font-size: var(--font-down-1);
 
       .dismiss-mention-warning {

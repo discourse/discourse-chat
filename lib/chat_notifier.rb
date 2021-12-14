@@ -122,16 +122,9 @@ class DiscourseChat::ChatNotifier
   end
 
   def filter_with_and_without_membership(users)
-    with_membership = []
-    without_membership = []
-    users.each do |user|
-      if user.user_chat_channel_memberships.detect { |m| m.chat_channel_id == @chat_channel.id && m.following == true }
-        with_membership << user
-      else
-        without_membership << user
-      end
+    users.partition do |user|
+      user.user_chat_channel_memberships.any? { |m| m.chat_channel_id == @chat_channel.id && m.following == true }
     end
-    [with_membership, without_membership]
   end
 
   def mentioned_by_username(exclude:, usernames:)
@@ -156,17 +149,10 @@ class DiscourseChat::ChatNotifier
   end
 
   def filter_users_who_can_chat(users)
-    can_chat = []
-    cannot_chat = []
-    users.each do |user|
+    users.partition do |user|
       guardian = Guardian.new(user)
-      if guardian.can_chat?(user) && guardian.can_see_chat_channel?(@chat_channel)
-        can_chat << user
-      else
-        cannot_chat << user
-      end
+      guardian.can_chat?(user) && guardian.can_see_chat_channel?(@chat_channel)
     end
-    [can_chat, cannot_chat]
   end
 
   def notify_watching_users(except: [])

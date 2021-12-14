@@ -27,6 +27,10 @@ class ChatMessage < ActiveRecord::Base
     PrettyText.excerpt(cooked, 50, {})
   end
 
+  def push_notification_excerpt
+    message[0...400]
+  end
+
   def self.uncooked
     where('cooked_version <> ? or cooked_version IS NULL', BAKED_VERSION)
   end

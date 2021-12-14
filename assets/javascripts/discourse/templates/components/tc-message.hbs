@@ -207,17 +207,29 @@
 
           {{#if message.mentionWarning}}
             <div class="alert alert-info chat-message-mention-warning">
-              {{#if message.mentionWarning.cannot_see}}
-                <p class="cannot-see">{{mentionedCannotSeeText}}</p>
-              {{/if}}
+              {{#if message.mentionWarning.invitationSent}}
+                {{d-icon "check"}}
+                {{i18n "chat.mention_warning.invitations_sent" count=message.mentionWarning.without_membership.length}}
+              {{else}}
+                {{flat-button
+                  class="dismiss-mention-warning"
+                  title="chat.mention_warning.dismiss"
+                  action=(action "dismissMentionWarning")
+                  icon="times"
+                }}
 
-              {{#if message.mentionWarning.without_membership}}
-                <p class="without-membership">
-                  {{mentionedWithoutMembershipText}}
-                  <div class="invite-link" role="button" onclick={{action "inviteMentioned"}}>
-                    {{i18n "chat.mention_warning.invite"}}
-                  </div>
-                </p>
+                {{#if message.mentionWarning.cannot_see}}
+                  <p class="cannot-see">{{mentionedCannotSeeText}}</p>
+                {{/if}}
+
+                {{#if message.mentionWarning.without_membership}}
+                  <p class="without-membership">
+                    {{mentionedWithoutMembershipText}}
+                    <span class="invite-link" role="button" onclick={{action "inviteMentioned"}}>
+                      {{i18n "chat.mention_warning.invite"}}
+                    </span>
+                  </p>
+                {{/if}}
               {{/if}}
             </div>
           {{/if}}

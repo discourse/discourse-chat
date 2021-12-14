@@ -548,7 +548,25 @@ $float-height: 530px;
     }
 
     .chat-message-mention-warning {
+      position: relative;
+      margin-top: 0.25em;
       font-size: var(--font-down-1);
+
+      .dismiss-mention-warning {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        cursor: pointer;
+      }
+
+      .cannot-see,
+      .without-membership {
+        margin: 0.25em 0;
+      }
+      .invite-link {
+        color: var(--tertiary);
+        cursor: pointer;
+      }
     }
   }
 

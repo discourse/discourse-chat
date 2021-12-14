@@ -7,7 +7,7 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 import { prioritizeNameInUx } from "discourse/lib/settings";
 import EmberObject, { action } from "@ember/object";
 import { autoUpdatingRelativeAge } from "discourse/lib/formatter";
-import { later, schedule } from "@ember/runloop";
+import { cancel, later, schedule } from "@ember/runloop";
 
 const HERE = "here";
 const ALL = "all";
@@ -67,6 +67,10 @@ export default Component.extend({
       this,
       "_handleReactionMessage"
     );
+
+    if (this._invitationSentTimer) {
+      cancel(this._invitationSentTimer);
+    }
   },
 
   _reactionPickerOpened(messageId) {
@@ -254,8 +258,16 @@ export default Component.extend({
       method: "PUT",
       data: { user_ids, chat_message_id: this.message.id },
     }).then(() => {
-      this.message.set("mentionWarning", null);
+      this.message.set("mentionWarning.invitationSent", true);
+      this._invitationSentTimer = later(() => {
+        this.message.set("mentionWarning", null);
+      }, 5000);
     });
+  },
+
+  @action
+  dismissMentionWarning() {
+    this.message.set("mentionWarning", null);
   },
 
   @action

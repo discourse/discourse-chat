@@ -20,14 +20,11 @@ createWidgetFrom(DefaultNotificationItem, "chat-invitation-notification-item", {
     const notificationType = attrs.notification_type;
     const lookup = this.site.get("notificationLookup");
     const notificationName = lookup[notificationType];
-
-    let { data } = attrs;
-    let text = this.text(data);
+    const { data } = attrs;
+    const text = this.text(data);
     const title = this.notificationTitle(notificationName, data);
-    let html = new RawHtml({ html: `<div>${text}</div>` });
-
-    let contents = [iconNode("envelope"), html];
-
+    const html = new RawHtml({ html: `<div>${text}</div>` });
+    const contents = [iconNode("link"), html];
     return h("a", { attributes: { title } }, contents);
   },
 

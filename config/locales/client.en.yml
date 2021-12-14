@@ -43,7 +43,11 @@ en:
         cannot_see:
           one: "%{usernames} cannot access this channel and was not notified."
           other: "%{usernames} cannot access this channel and were not notified."
-        invite: "Invite users to channel"
+        dismiss: "dismiss"
+        invitations_sent:
+          one: "Invitation sent"
+          other: "Invitations sent"
+        invite: "Invite to channel"
         without_membership:
           one: "%{usernames} has not joined this channel."
           other: "%{usernames} have not joined this channel."

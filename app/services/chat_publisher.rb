@@ -90,11 +90,13 @@ module ChatPublisher
   end
 
   def self.publish_inaccessible_mentions(user, chat_message, cannot_chat_users, without_membership)
-    MessageBus.publish("/chat/#{chat_message.chat_channel_id}",
-      typ: :mention_warning,
-      chat_message_id: chat_message.id,
-      cannot_see: ActiveModel::ArraySerializer.new(cannot_chat_users, each_serializer: BasicUserSerializer).as_json,
-      without_membership: ActiveModel::ArraySerializer.new(without_membership, each_serializer: BasicUserSerializer).as_json,
+    MessageBus.publish("/chat/#{chat_message.chat_channel_id}", {
+        typ: :mention_warning,
+        chat_message_id: chat_message.id,
+        cannot_see: ActiveModel::ArraySerializer.new(cannot_chat_users, each_serializer: BasicUserSerializer).as_json,
+        without_membership: ActiveModel::ArraySerializer.new(without_membership, each_serializer: BasicUserSerializer).as_json,
+      },
+      user_ids: [user.id]
     )
   end
 

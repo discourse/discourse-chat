@@ -29,9 +29,25 @@ export default Component.extend({
   sortedDirectMessageChannels: computed(
     "directMessageChannels.@each.updated_at",
     function () {
+      if (!this.directMessageChannels?.length) {
+        return [];
+      }
+
       return this.directMessageChannels
-        ? this.directMessageChannels.sortBy("updated_at").reverse()
-        : [];
+        .sort((a, b) => {
+          const unreadCountA =
+            this.currentUser.chat_channel_tracking_state[a.id]?.unread_count ||
+            0;
+          const unreadCountB =
+            this.currentUser.chat_channel_tracking_state[b.id]?.unread_count ||
+            0;
+          if (unreadCountA === unreadCountB) {
+            return new Date(a.updated_at) > new Date(b.updated_at) ? -1 : 1;
+          } else {
+            return unreadCountA > unreadCountB ? -1 : 1;
+          }
+        })
+        .slice(0, 10);
     }
   ),
 

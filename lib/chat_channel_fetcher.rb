@@ -89,7 +89,6 @@ module DiscourseChat::ChatChannelFetcher
       .where(user_chat_channel_memberships: { user_id: user_id, following: true })
       .where(chatable_type: "DirectMessageChannel")
       .order(updated_at: :desc)
-      .limit(10)
       .to_a
 
     channels.map do |channel|

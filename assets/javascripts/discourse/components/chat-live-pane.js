@@ -119,7 +119,8 @@ export default Component.extend({
       this.registeredChatChannelId = null;
 
       if (this.chatChannel.id != null) {
-        this.fetchMessages();
+        cancel(this._fetchMessagePromise);
+        this._fetchMessagePromise = this.fetchMessages();
         this.loadDraftForChannel();
       }
     }

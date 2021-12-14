@@ -591,7 +591,6 @@ export default Component.extend({
 
   handleMentionWarning(data) {
     const message = this.messageLookup[data.chat_message_id];
-    console.log(data);
     if (message) {
       message.set("mentionWarning", data);
     }

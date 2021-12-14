@@ -208,13 +208,15 @@
           {{#if message.mentionWarning}}
             <div class="alert alert-info chat-message-mention-warning">
               {{#if message.mentionWarning.cannot_see}}
-                <p>{{mentionedCannotSeeText}}</p>
+                <p class="cannot-see">{{mentionedCannotSeeText}}</p>
               {{/if}}
 
               {{#if message.mentionWarning.without_membership}}
-                <p>
+                <p class="without-membership">
                   {{mentionedWithoutMembershipText}}
-                  <div role="button" onclick={{action "inviteMentioned"}}>{{i18n "chat.mention_warning.invite"}}</div>
+                  <div class="invite-link" role="button" onclick={{action "inviteMentioned"}}>
+                    {{i18n "chat.mention_warning.invite"}}
+                  </div>
                 </p>
               {{/if}}
             </div>

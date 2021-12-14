@@ -179,6 +179,8 @@ acceptance("Discourse Chat - without unread", function (needs) {
       "/chat/:chat_channel_id/react/:message_id.json",
       helper.response
     );
+
+    server.put("/chat/:chat_channel_id/invite", helper.response);
   });
 
   test("Clicking mention notification from outside chat opens the float", async function (assert) {
@@ -741,6 +743,40 @@ acceptance("Discourse Chat - without unread", function (needs) {
       assert.equal(sneezingFaceReaction.innerText.trim(), "2");
       assert.ok(sneezingFaceReaction.classList.contains("reacted"));
 
+      done();
+    });
+  });
+
+  test("mention warning is rendered", async function (assert) {
+    await visit("/chat/channel/9/Site");
+    publishToMessageBus("/chat/9", {
+      typ: "mention_warning",
+      cannot_see: [{ id: 75, username: "hawk" }],
+      without_membership: [
+        { id: 76, username: "eviltrout" },
+        { id: 77, username: "sam" },
+      ],
+      chat_message_id: 176,
+    });
+    const done = assert.async();
+    next(async () => {
+      assert.ok(exists(".chat-message-176 .chat-message-mention-warning"));
+      assert.ok(
+        query(
+          ".chat-message-176 .chat-message-mention-warning .cannot-see"
+        ).innerText.includes("hawk")
+      );
+
+      const withoutMembershipText = query(
+        ".chat-message-176 .chat-message-mention-warning .without-membership"
+      ).innerText;
+      assert.ok(withoutMembershipText.includes("eviltrout"));
+      assert.ok(withoutMembershipText.includes("sam"));
+
+      await click(
+        ".chat-message-176 .chat-message-mention-warning .invite-link"
+      );
+      assert.notOk(exists(".chat-message-176 .chat-message-mention-warning"));
       done();
     });
   });

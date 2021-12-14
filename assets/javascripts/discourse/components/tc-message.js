@@ -261,7 +261,7 @@ export default Component.extend({
       this.message.set("mentionWarning.invitationSent", true);
       this._invitationSentTimer = later(() => {
         this.message.set("mentionWarning", null);
-      }, 5000);
+      }, 3000);
     });
   },
 

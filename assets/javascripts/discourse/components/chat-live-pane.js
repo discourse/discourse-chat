@@ -119,30 +119,29 @@ export default Component.extend({
       this.registeredChatChannelId = null;
 
       if (this.chatChannel.id != null) {
-        cancel(this._fetchMessagePromise);
-        this._fetchMessagePromise = this.fetchMessages();
+        this.fetchMessages(this.chatChannel.id);
         this.loadDraftForChannel();
       }
     }
   },
 
-  fetchMessages() {
+  fetchMessages(channelId) {
     if (this.loading) {
       return;
     }
 
     this.set("loading", true);
-    this.chat.loadCookFunction(this.site.categories).then((cook) => {
+    return this.chat.loadCookFunction(this.site.categories).then((cook) => {
       this.set("cook", cook);
       const findArgs = {
-        channelId: this.chatChannel.id,
+        channelId,
         targetMessageId: this.targetMessageId,
         pageSize: PAGE_SIZE,
       };
       return this.store
         .findAll("chat-message", findArgs)
         .then((messages) => {
-          if (this._selfDeleted()) {
+          if (this._selfDeleted() || this.chatChannel.id !== channelId) {
             return;
           }
           this.setMessageProps(messages);
@@ -152,7 +151,7 @@ export default Component.extend({
           throw err;
         })
         .finally(() => {
-          if (this._selfDeleted()) {
+          if (this._selfDeleted() || this.chatChannel.id !== channelId) {
             return;
           }
           if (this.targetMessageId) {

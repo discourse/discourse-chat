@@ -7,8 +7,11 @@ export default {
     if (!currentUser?.has_chat_enabled) {
       return;
     }
-
     withPluginApi("0.12.1", (api) => {
+      if (api.container.lookup("site:main").mobileView) {
+        currentUser.chat_isolated = false;
+      }
+
       const chat = container.lookup("service:chat");
       chat.getChannels();
 

@@ -16,8 +16,8 @@ export const CHAT_VIEW = "chat_view";
 
 const DRAFT_STORE_NAMESPACE = "discourse_chat_drafts_";
 const CHAT_ONLINE_OPTIONS = {
-  userUnseenTime: 60000, // 60 seconds with no interaction
-  browserHiddenTime: 60000, // Or the browser has been in the background for 60 seconds
+  userUnseenTime: 300000, // 5 minutes seconds with no interaction
+  browserHiddenTime: 300000, // Or the browser has been in the background for 5 minutes
 };
 
 export default Service.extend({

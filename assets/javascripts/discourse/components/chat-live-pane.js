@@ -590,10 +590,7 @@ export default Component.extend({
   },
 
   handleMentionWarning(data) {
-    const message = this.messageLookup[data.chat_message_id];
-    if (message) {
-      message.set("mentionWarning", data);
-    }
+    this.messageLookup[data.chat_message_id]?.set("mentionWarning", data);
   },
 
   _selfDeleted() {

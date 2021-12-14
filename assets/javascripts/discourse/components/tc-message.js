@@ -68,9 +68,7 @@ export default Component.extend({
       "_handleReactionMessage"
     );
 
-    if (this._invitationSentTimer) {
-      cancel(this._invitationSentTimer);
-    }
+    cancel(this._invitationSentTimer);
   },
 
   _reactionPickerOpened(messageId) {
@@ -236,7 +234,7 @@ export default Component.extend({
   @discourseComputed("message.mentionWarning.cannot_see")
   mentionedCannotSeeText(users) {
     return I18n.t("chat.mention_warning.cannot_see", {
-      usernames: users.map((u) => u.username).join(", "),
+      usernames: users.mapBy("username").join(", "),
       count: users.length,
     });
   },
@@ -244,17 +242,15 @@ export default Component.extend({
   @discourseComputed("message.mentionWarning.without_membership")
   mentionedWithoutMembershipText(users) {
     return I18n.t("chat.mention_warning.without_membership", {
-      usernames: users.map((u) => u.username).join(", "),
+      usernames: users.mapBy("username").join(", "),
       count: users.length,
     });
   },
 
   @action
   inviteMentioned() {
-    const user_ids = this.message.mentionWarning.without_membership.map(
-      (u) => u.id
-    );
-    return ajax(`/chat/${this.details.chat_channel_id}/invite`, {
+    const user_ids = this.message.mentionWarning.without_membership.mapBy("id");
+    ajax(`/chat/${this.details.chat_channel_id}/invite`, {
       method: "PUT",
       data: { user_ids, chat_message_id: this.message.id },
     }).then(() => {
@@ -263,6 +259,7 @@ export default Component.extend({
         this.message.set("mentionWarning", null);
       }, 3000);
     });
+    return false;
   },
 
   @action

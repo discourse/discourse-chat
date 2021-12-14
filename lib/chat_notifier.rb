@@ -134,28 +134,25 @@ class DiscourseChat::ChatNotifier
     [with_membership, without_membership]
   end
 
-  def mentioned_by_username(exclude:, usernames: nil)
+  def mentioned_by_username(exclude:, usernames:)
+    users_preloaded_query.where(username_lower: (usernames.map(&:downcase) - [exclude.downcase]))
+  end
+
+  def members_of_channel(exclude:, usernames: nil)
+    users = users_preloaded_query
+      .where(user_chat_channel_memberships: { following: true, chat_channel_id: @chat_channel.id })
+      .where.not(username_lower: exclude.downcase)
+    users = users.where(username_lower: usernames.map(&:downcase)) if usernames
+    users
+  end
+
+  def users_preloaded_query
     User
       .includes(:do_not_disturb_timings, :push_subscriptions, :groups, :user_chat_channel_memberships)
       .joins(:user_chat_channel_memberships)
       .joins(:user_option)
       .not_suspended
       .where(user_options: { chat_enabled: true })
-      .where.not(username_lower: exclude.downcase)
-      .where(username_lower: usernames.map(&:downcase)) if usernames
-  end
-
-  def members_of_channel(exclude:, usernames: nil)
-    users = User
-      .includes(:do_not_disturb_timings, :push_subscriptions, :groups, :user_chat_channel_memberships)
-      .joins(:user_chat_channel_memberships)
-      .joins(:user_option)
-      .not_suspended
-      .where(user_options: { chat_enabled: true })
-      .where(user_chat_channel_memberships: { following: true, chat_channel_id: @chat_channel.id })
-      .where.not(username_lower: exclude.downcase)
-    users = users.where(username_lower: usernames.map(&:downcase)) if usernames
-    users
   end
 
   def filter_users_who_can_chat(users)

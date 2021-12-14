@@ -209,7 +209,9 @@
             <div class="alert alert-info chat-message-mention-warning">
               {{#if message.mentionWarning.invitationSent}}
                 {{d-icon "check"}}
-                {{i18n "chat.mention_warning.invitations_sent" count=message.mentionWarning.without_membership.length}}
+                <span>
+                  {{i18n "chat.mention_warning.invitations_sent" count=message.mentionWarning.without_membership.length}}
+                </span>
               {{else}}
                 {{flat-button
                   class="dismiss-mention-warning"
@@ -224,10 +226,10 @@
 
                 {{#if message.mentionWarning.without_membership}}
                   <p class="without-membership">
-                    {{mentionedWithoutMembershipText}}
-                    <span class="invite-link" role="button" onclick={{action "inviteMentioned"}}>
+                    <span>{{mentionedWithoutMembershipText}}</span>
+                    <a class="invite-link" href onclick={{action "inviteMentioned"}}>
                       {{i18n "chat.mention_warning.invite"}}
-                    </span>
+                    </a>
                   </p>
                 {{/if}}
               {{/if}}

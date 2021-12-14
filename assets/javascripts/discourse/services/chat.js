@@ -453,7 +453,6 @@ export default Service.extend({
       );
       if (dmChatChannel) {
         dmChatChannel.set("updated_at", new Date());
-        this.notifyPropertyChange("directMessageChannels");
       }
     });
   },

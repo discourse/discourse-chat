@@ -323,16 +323,23 @@ after_initialize do
   if defined?(DiscourseAutomation)
     add_automation_scriptable('send_chat_message') do
       field :chat_channel_id, component: :text, required: true
-      field :message, component: :message, required: true
+      field :message, component: :message, required: true, accepts_placeholders: true
       field :sender, component: :user
+
+      placeholder :channel_name
 
       script do |context, fields, automation|
         sender = User.find_by(username: fields.dig('sender', 'value')) || Discourse.system_user
         channel = ChatChannel.find_by(id: fields.dig('chat_channel_id', 'value'))
+
+        placeholders = {
+          channel_name: channel.public_channel_title
+        }.merge(context['placeholders'] || {})
+
         DiscourseChat::ChatMessageCreator.create(
           chat_channel: channel,
           user: sender,
-          content: fields.dig('message', 'value')
+          content: utils.apply_placeholders(fields.dig('message', 'value'), placeholders)
         )
       end
     end

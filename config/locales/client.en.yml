@@ -11,7 +11,6 @@ en:
       cancel_edit: "Cancel edit"
       category_chat_enabled: "Chat enabled for category"
       chat_channels: "Channels"
-      chat_channels_with_count: "Channels (%{count} online)"
       click_to_join: "Click here to view available channels."
       close: "Close"
       collapse: "Collapse Chat Drawer"

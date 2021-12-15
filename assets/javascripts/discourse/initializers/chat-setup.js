@@ -1,6 +1,4 @@
-import { action } from "@ember/object";
 import { withPluginApi } from "discourse/lib/plugin-api";
-export const PLUGIN_ID = "discourse-chat";
 
 export default {
   name: "chat-setup",
@@ -37,30 +35,6 @@ export default {
         "chat:rerender-header"
       );
       api.addToHeaderIcons("header-chat-link");
-
-      if (currentUser.chat_isolated) {
-        api.modifyClass("route:application", {
-          pluginId: PLUGIN_ID,
-
-          @action
-          willTransition(transition) {
-            this._super(...arguments);
-
-            if (!currentUser.chat_isolated) {
-              return;
-            }
-
-            const fromInsideChat = transition.from.name === "chat.channel";
-            const toOutsideChat =
-              transition.to.name !== "chat" &&
-              transition.to.name !== "chat.channel";
-            if (fromInsideChat && toOutsideChat) {
-              window.open(transition.intent.url);
-              transition.abort();
-            }
-          },
-        });
-      }
     });
   },
 };

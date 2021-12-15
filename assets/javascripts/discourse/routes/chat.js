@@ -23,6 +23,10 @@ export default DiscourseRoute.extend({
       return;
     }
 
+    if (this.site.mobileView) {
+      return this.transitionTo("chat.index");
+    }
+
     return this.chat.getIdealFirstChannelIdAndTitle().then((channelInfo) => {
       if (channelInfo) {
         return this.transitionTo(

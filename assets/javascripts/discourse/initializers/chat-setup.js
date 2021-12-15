@@ -46,11 +46,16 @@ export default {
           willTransition(transition) {
             this._super(...arguments);
 
+            if (!currentUser.chat_isolated) {
+              return;
+            }
+
             const fromInsideChat = transition.from.name === "chat.channel";
             const toOutsideChat =
               transition.to.name !== "chat" &&
               transition.to.name !== "chat.channel";
             if (fromInsideChat && toOutsideChat) {
+              console.log("WE ARE HERE");
               window.open(transition.intent.url);
               transition.abort();
             }

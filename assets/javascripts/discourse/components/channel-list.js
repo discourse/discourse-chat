@@ -47,7 +47,7 @@ export default Component.extend({
             return unreadCountA > unreadCountB ? -1 : 1;
           }
         })
-        .slice(0, 10);
+        .slice(0, this.currentUser.chat_isolated ? 20 : 10);
     }
   ),
 

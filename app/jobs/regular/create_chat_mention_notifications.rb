@@ -48,7 +48,7 @@ module Jobs
                                  username: @creator.username
                                 ),
         tag: DiscourseChat::ChatNotifier.push_notification_tag(:mention, @chat_channel.id),
-        excerpt: @chat_message.excerpt,
+        excerpt: @chat_message.push_notification_excerpt,
         post_url: "/chat/channel/#{@chat_channel.id}/#{@chat_channel.title(membership.user)}?messageId=#{@chat_message.id}"
       }
 

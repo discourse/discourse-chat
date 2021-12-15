@@ -41,7 +41,7 @@ module Jobs
                                  chat_channel_title: @chat_channel.title(membership.user)
                                 ),
         tag: DiscourseChat::ChatNotifier.push_notification_tag(:message, @chat_channel.id),
-        excerpt: @chat_message.excerpt
+        excerpt: @chat_message.push_notification_excerpt
       }
       if membership.desktop_notifications_always?
         MessageBus.publish("/chat/notification-alert/#{user.id}", payload, user_ids: [user.id])

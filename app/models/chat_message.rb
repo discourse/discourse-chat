@@ -77,7 +77,7 @@ class ChatMessage < ActiveRecord::Base
     checklist: false,
     code: true,
     "custom-typographer-replacements": false,
-    "d-wrap": false,
+    "d-wrap": true,
     details: false,
     "discourse-local-dates": true,
     emoji: true,

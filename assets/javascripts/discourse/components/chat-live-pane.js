@@ -16,6 +16,7 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 import { cancel, later, next, schedule } from "@ember/runloop";
 import { inject as service } from "@ember/service";
 import { Promise } from "rsvp";
+import BlockKit from "discourse/plugins/discourse-chat/discourse/lib/block-kit";
 import { resetIdle } from "discourse/lib/desktop-notifications";
 import { resolveAllShortUrls } from "pretty-text/upload-short-url";
 import { samePrefix } from "discourse-common/lib/get-url";
@@ -416,6 +417,7 @@ export default Component.extend({
       lightbox(this.element.querySelectorAll("img:not(.emoji, .avatar)"));
       this._scrollGithubOneboxes();
       this._pluginsDecorators();
+      this._blockKitDecorator();
     });
   },
 
@@ -924,6 +926,10 @@ export default Component.extend({
     next(() => {
       document.querySelector(".tc-composer-input")?.focus();
     });
+  },
+
+  _blockKitDecorator() {
+    BlockKit.decorate(this.element);
   },
 
   _pluginsDecorators() {

@@ -6,6 +6,7 @@ import { inject as service } from "@ember/service";
 export default Controller.extend({
   creatingDm: false,
   router: service(),
+  blankPage: false,
 
   @action
   openFollowModal() {
@@ -26,5 +27,10 @@ export default Controller.extend({
   @action
   cancelDmCreation() {
     this.set("creatingDm", false);
+  },
+
+  @action
+  selectChannel(channel) {
+    return this.router.transitionTo("chat.channel", channel.id, channel.title);
   },
 });

@@ -336,7 +336,8 @@ export default Component.extend({
     );
     if (messageEl) {
       next(() => {
-        messageEl.scrollIntoView();
+        this._scrollerEl.scrollTop =
+          messageEl.offsetTop - this._scrollerEl.offsetTop - 20;
       });
       if (opts.highlight) {
         messageEl.classList.add("highlighted");

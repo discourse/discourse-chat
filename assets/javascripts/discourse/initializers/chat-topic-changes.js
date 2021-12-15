@@ -4,8 +4,7 @@ import RawTopicStatus from "discourse/raw-views/topic-status";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { withPluginApi } from "discourse/lib/plugin-api";
-
-export const PLUGIN_ID = "discourse-chat";
+import { PLUGIN_ID } from "discourse/plugins/discourse-chat/discourse/initializers/chat-setup";
 
 function toggleChatForTopic(topic, appEvents, chat) {
   topic.set("has_chat_live", !topic.has_chat_live);

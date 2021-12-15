@@ -144,6 +144,7 @@ class DiscourseChat::ChatNotifier
       .includes(:do_not_disturb_timings, :push_subscriptions, :groups, :user_chat_channel_memberships)
       .joins(:user_chat_channel_memberships)
       .joins(:user_option)
+      .real
       .not_suspended
       .where(user_options: { chat_enabled: true })
   end

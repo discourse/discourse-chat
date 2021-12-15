@@ -55,7 +55,6 @@ export default {
               transition.to.name !== "chat" &&
               transition.to.name !== "chat.channel";
             if (fromInsideChat && toOutsideChat) {
-              console.log("WE ARE HERE");
               window.open(transition.intent.url);
               transition.abort();
             }

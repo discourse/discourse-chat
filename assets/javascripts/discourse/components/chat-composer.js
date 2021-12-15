@@ -456,6 +456,16 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     }
   },
 
+  _uploadDropTargetOptions() {
+    const targetEl = document.querySelector(".tc-live-pane");
+    if (!targetEl) {
+      return this._super();
+    }
+    return {
+      target: targetEl,
+    };
+  },
+
   addText(text) {
     const selected = this._getSelected(null, {
       lineVal: true,

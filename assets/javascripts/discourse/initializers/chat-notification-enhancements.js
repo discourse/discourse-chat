@@ -5,8 +5,8 @@ export const CHAT_SOUNDS = {
   ding: "/plugins/discourse-chat/audio/ding.mp3",
 };
 
-function sendTauriNotification(tauri, data) {
-  tauri.notification.sendNotification({
+function sendTauriNotification(tauriNotification, data) {
+  tauriNotification.sendNotification({
     "title": data.translated_title,
     "body": data.excerpt
   });
@@ -32,13 +32,13 @@ export default {
           }
 
           // Desktop app notifications
-          const tauri = window.__TAURI__;
-          if (tauri.notification) {
-            if (await tauri.notification.isPermissionGranted()) {
-              sendTauriNotification(tauri, data);
+          const tauriNotification = window?.__TAURI__?.notification;
+          if (tauriNotification) {
+            if (await tauriNotification.isPermissionGranted()) {
+              sendTauriNotification(tauriNotification, data);
             } else {
               tauri.requestPermission().then(
-                sendTauriNotification(tauri, data)
+                sendTauriNotification(tauriNotification, data)
               );
             }
           }

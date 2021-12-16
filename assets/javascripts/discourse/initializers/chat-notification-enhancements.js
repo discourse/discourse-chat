@@ -21,7 +21,7 @@ export default {
     }
 
     withPluginApi("0.12.1", (api) => {
-      api.registerDesktopNotificationHandler((data, siteSettings, user) => {
+      api.registerDesktopNotificationHandler(async (data, siteSettings, user) => {
         // chat_mention and chat_message are notification_types of 29 and 30.
         if ([29, 30].includes(data.notification_type)) {
 

@@ -1,3 +1,4 @@
+import { afterRender } from "discourse-common/utils/decorators";
 import Component from "@ember/component";
 import discourseComputed, {
   bind,
@@ -768,9 +769,8 @@ export default Component.extend({
   setReplyTo(messageId) {
     if (messageId) {
       this.set("editingMessage", null);
-      this.setProperties({
-        replyToMsg: this.messageLookup[messageId],
-      });
+      this.set("replyToMsg", this.messageLookup[messageId]);
+      this._focusComposer();
     } else {
       this.set("replyToMsg", null);
     }
@@ -985,6 +985,11 @@ export default Component.extend({
           top: linePosition - onebox.offsetHeight / 2,
         });
       });
+  },
+
+  @afterRender
+  _focusComposer() {
+    this.appEvents.trigger("chat:focus-composer");
   },
 });
 

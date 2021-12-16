@@ -126,6 +126,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     this._applyCategoryHashtagAutocomplete(this._$textarea);
     this._applyEmojiAutocomplete(this._$textarea);
     this._bindUploadTarget();
+    this.appEvents.on("chat:focus-composer", this, "_focusTextArea");
 
     if (!this.site.mobileView) {
       this._focusTextArea();
@@ -158,6 +159,8 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
       this,
       "_insertUpload"
     );
+
+    this.appEvents.off("chat:focus-composer", this, "_focusTextArea");
   },
 
   _insertUpload(_, upload) {

@@ -38,7 +38,7 @@ export default {
               if (tauriNotificationPermission) {
                 sendTauriNotification(tauriNotification, data);
               } else {
-                tauri
+                tauriNotification
                   .requestPermission()
                   .then(sendTauriNotification(tauriNotification, data));
               }

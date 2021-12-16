@@ -13,12 +13,9 @@
       </span>
     {{/if}}
     {{i18n "chat.chat_channels"}}
-    {{flat-button
-      class="edit-channel-membership-btn"
-      icon="pencil-alt"
-      action=(action "openChannelSettingsModal")
-      title="chat.edit_channels"
-    }}
+    {{#link-to "chat.browse" class="edit-channel-membership-btn" title=(i18n "chat.edit_channels")}}
+      {{d-icon "pencil-alt"}}
+    {{/link-to}}
   </div>
   <div id="public-channels" class={{publicChannelClasses}}>
     {{#if publicChannelsEmpty}}

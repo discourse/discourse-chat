@@ -1238,16 +1238,13 @@ $float-height: 530px;
   }
 }
 
-.chat-settings-modal {
-  max-height: 600px;
-
+.chat-browse {
   .chat-channel-settings-row {
     display: flex;
     flex-wrap: wrap;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    width: 650px;
     padding: 0.75em 0;
     border-bottom: 1px solid var(--primary-low);
 

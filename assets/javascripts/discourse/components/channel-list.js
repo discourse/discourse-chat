@@ -33,21 +33,7 @@ export default Component.extend({
         return [];
       }
 
-      return this.directMessageChannels
-        .sort((a, b) => {
-          const unreadCountA =
-            this.currentUser.chat_channel_tracking_state[a.id]?.unread_count ||
-            0;
-          const unreadCountB =
-            this.currentUser.chat_channel_tracking_state[b.id]?.unread_count ||
-            0;
-          if (unreadCountA === unreadCountB) {
-            return new Date(a.updated_at) > new Date(b.updated_at) ? -1 : 1;
-          } else {
-            return unreadCountA > unreadCountB ? -1 : 1;
-          }
-        })
-        .slice(0, this.currentUser.chat_isolated ? 20 : 10);
+      return this.chat.sortDirectMessageChannels(this.directMessageChannels).slice(0, this.currentUser.chat_isolated ? 20 : 10);
     }
   ),
 

@@ -295,6 +295,7 @@ after_initialize do
 
     # chat_controller routes
     get '/' => 'chat#respond'
+    get '/browse' => 'chat#respond'
     get '/channel/:channel_id' => 'chat#respond'
     get '/channel/:channel_id/:channel_title' => 'chat#respond'
     post '/enable' => 'chat#enable_chat'

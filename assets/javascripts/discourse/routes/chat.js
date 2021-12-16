@@ -17,7 +17,7 @@ export default DiscourseRoute.extend({
     ) {
       return this.transitionTo(`discovery.${defaultHomepage()}`);
     }
-    if (params.to.name === "chat.channel") {
+    if (params.to.name === "chat.channel" || params.to.name == "chat.browse") {
       // The target is a specific chat channel, so return and let
       // the chat-channel route handle it.
       return;

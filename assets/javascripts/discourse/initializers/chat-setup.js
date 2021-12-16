@@ -1,4 +1,3 @@
-import { action } from "@ember/object";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import { next } from "@ember/runloop";
 export const PLUGIN_ID = "discourse-chat";

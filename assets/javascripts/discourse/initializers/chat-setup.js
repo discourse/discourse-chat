@@ -1,5 +1,6 @@
 import { action } from "@ember/object";
 import { withPluginApi } from "discourse/lib/plugin-api";
+import { next } from "@ember/runloop";
 export const PLUGIN_ID = "discourse-chat";
 
 export default {
@@ -39,26 +40,35 @@ export default {
       api.addToHeaderIcons("header-chat-link");
 
       if (currentUser.chat_isolated) {
-        api.modifyClass("route:application", {
-          pluginId: PLUGIN_ID,
+        const router = container.lookup("service:router");
+        router.on("routeWillChange", (transition) => {
+          if (!currentUser.chat_isolated) {
+            return;
+          }
+          const from = transition?.from;
+          if (from?.name !== "chat.channel") {
+            return;
+          }
 
-          @action
-          willTransition(transition) {
-            this._super(...arguments);
-
-            if (!currentUser.chat_isolated) {
-              return;
-            }
-
-            const fromInsideChat = transition.from.name === "chat.channel";
-            const toOutsideChat =
-              transition.to.name !== "chat" &&
-              transition.to.name !== "chat.channel";
-            if (fromInsideChat && toOutsideChat) {
-              window.open(transition.intent.url);
-              transition.abort();
-            }
-          },
+          const to = transition.to;
+          if (
+            to.name &&
+            !to.name.startsWith("chat.") &&
+            !to.name.startsWith("preferences.")
+          ) {
+            transition.abort();
+            window.open(transition.intent.url);
+            next(() => {
+              let originalUrl;
+              if (to.paramNames.length > 0) {
+                originalUrl = router.urlFor(from.name, from.params);
+              } else {
+                originalUrl = router.urlFor(from.name);
+              }
+              history.replaceState({}, "", originalUrl);
+            });
+            return false;
+          }
         });
       }
     });

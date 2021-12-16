@@ -7,8 +7,8 @@ export const CHAT_SOUNDS = {
 
 function sendTauriNotification(tauriNotification, data) {
   tauriNotification.sendNotification({
-    "title": data.translated_title,
-    "body": data.excerpt
+    title: data.translated_title,
+    body: data.excerpt,
   });
 }
 
@@ -21,31 +21,31 @@ export default {
     }
 
     withPluginApi("0.12.1", (api) => {
-      api.registerDesktopNotificationHandler(async (data, siteSettings, user) => {
-        // chat_mention and chat_message are notification_types of 29 and 30.
-        if ([29, 30].includes(data.notification_type)) {
+      api.registerDesktopNotificationHandler(
+        async (data, siteSettings, user) => {
+          // chat_mention and chat_message are notification_types of 29 and 30.
+          if ([29, 30].includes(data.notification_type)) {
+            // Opt-in Sounds Notifications
+            if (!currentUser?.chat_sound) {
+              const audio = new Audio(CHAT_SOUNDS[user.chat_sound]);
+              audio.play();
+            }
 
-          // Opt-in Sounds Notifications
-          if (!currentUser?.chat_sound) {
-            const audio = new Audio(CHAT_SOUNDS[user.chat_sound]);
-            audio.play();
-          }
-
-          // Desktop app notifications
-          const tauriNotification = window?.__TAURI__?.notification;
-          if (tauriNotification) {
-            const tauriNotificationPermission = await tauriNotification.isPermissionGranted();
-            if (tauriNotificationPermission) {
-              sendTauriNotification(tauriNotification, data);
-            } else {
-              tauri.requestPermission().then(
-                sendTauriNotification(tauriNotification, data)
-              );
+            // Desktop app notifications
+            const tauriNotification = window?.__TAURI__?.notification;
+            if (tauriNotification) {
+              const tauriNotificationPermission = await tauriNotification.isPermissionGranted();
+              if (tauriNotificationPermission) {
+                sendTauriNotification(tauriNotification, data);
+              } else {
+                tauri
+                  .requestPermission()
+                  .then(sendTauriNotification(tauriNotification, data));
+              }
             }
           }
         }
-      });
+      );
     });
   },
 };
-

@@ -1133,10 +1133,11 @@ $float-height: 530px;
 
     .new-dm,
     .edit-channel-membership-btn {
+      display: flex;
       position: absolute;
       right: 2em;
       top: 2px;
-      padding: 0.5em;
+      padding: 0.25em;
       border-radius: 0.25em;
 
       &:hover {
@@ -1144,6 +1145,7 @@ $float-height: 530px;
       }
       .d-icon {
         color: var(--primary-medium);
+        padding: 0.25em;
       }
     }
 
@@ -1238,54 +1240,52 @@ $float-height: 530px;
   }
 }
 
-.chat-browse {
-  .chat-channel-settings-row {
+.chat-channel-settings-row {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75em 0;
+  border-bottom: 1px solid var(--primary-very-low);
+
+  .btn-container {
     display: flex;
-    flex-wrap: wrap;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.75em 0;
-    border-bottom: 1px solid var(--primary-low);
+    align-content: center;
 
-    .btn-container {
+    .btn {
+      margin-left: 0.5em;
+    }
+  }
+
+  .chat-channel-title {
+    color: var(--primary-very-high);
+  }
+
+  .chat-channel-row-controls {
+    width: 100%;
+    padding: 1em 0;
+
+    .controls {
       display: flex;
-      align-content: center;
+      flex-direction: in lieu ofrow;
+      align-items: center;
+      margin-top: 0.5em;
 
+      label {
+        margin-right: 1em;
+        width: 170px;
+      }
+    }
+
+    .save-container {
       .btn {
+        display: inline-block;
+      }
+
+      .notification-settings-saved {
         margin-left: 0.5em;
-      }
-    }
-
-    .chat-channel-title {
-      color: var(--primary-very-high);
-    }
-
-    .chat-channel-row-controls {
-      width: 100%;
-      padding: 1em 0;
-
-      .controls {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        margin-top: 0.5em;
-
-        label {
-          margin-right: 1em;
-          width: 170px;
-        }
-      }
-
-      .save-container {
-        .btn {
-          display: inline-block;
-        }
-
-        .notification-settings-saved {
-          margin-left: 0.5em;
-          color: var(--success);
-        }
+        color: var(--success);
       }
     }
   }

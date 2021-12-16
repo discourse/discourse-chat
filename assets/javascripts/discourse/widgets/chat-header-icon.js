@@ -1,4 +1,3 @@
-import DiscourseURL from "discourse/lib/url";
 import getURL from "discourse-common/lib/get-url";
 import { createWidget } from "discourse/widgets/widget";
 import { h } from "virtual-dom";
@@ -65,14 +64,14 @@ export default createWidget("header-chat-link", {
 
     if (this.currentUser.chat_isolated) {
       if (this.capabilities.isPwa) {
-        return DiscourseURL.routeTo("/chat");
+        return this.router.transitionTo("chat");
       } else {
         return window.open(getURL("/chat"), "_blank").focus();
       }
     }
 
     if (this.site.mobileView || this.chat.getSidebarActive()) {
-      DiscourseURL.routeTo("/chat");
+      return this.router.transitionTo("chat");
     } else {
       this.appEvents.trigger("chat:toggle-open");
     }

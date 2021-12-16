@@ -17,24 +17,5 @@ export default DiscourseRoute.extend({
     ) {
       return this.transitionTo(`discovery.${defaultHomepage()}`);
     }
-    if (params.to.name === "chat.channel" || params.to.name === "chat.browse") {
-      // The target is a specific chat channel, so return and let
-      // the chat-channel route handle it.
-      return;
-    }
-
-    if (this.site.mobileView) {
-      return this.transitionTo("chat.index");
-    }
-
-    return this.chat.getIdealFirstChannelIdAndTitle().then((channelInfo) => {
-      if (channelInfo) {
-        return this.transitionTo(
-          "chat.channel",
-          channelInfo.id,
-          channelInfo.title
-        );
-      }
-    });
   },
 });

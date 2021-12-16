@@ -10,7 +10,7 @@ export default DiscourseRoute.extend({
     return I18n.t("chat.title_capitalized");
   },
 
-  beforeModel(params) {
+  beforeModel() {
     if (
       !this.currentUser?.has_chat_enabled ||
       !this.siteSettings.chat_enabled

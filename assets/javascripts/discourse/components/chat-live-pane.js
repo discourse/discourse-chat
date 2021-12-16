@@ -1,6 +1,6 @@
-import { afterRender } from "discourse-common/utils/decorators";
 import Component from "@ember/component";
 import discourseComputed, {
+  afterRender,
   bind,
   observes,
 } from "discourse-common/utils/decorators";

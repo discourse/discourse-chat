@@ -405,7 +405,6 @@ export default Service.extend({
     if (!isDirectMessageChannel) {
       this.set("publicChannels", this.sortPublicChannels(this.publicChannels));
     }
-    this.existing;
     this.appEvents.trigger("chat:refresh-channels");
   },
 

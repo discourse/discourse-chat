@@ -44,27 +44,22 @@ export default {
           if (!currentUser.chat_isolated) {
             return;
           }
+          const currentUrl = window.location.href;
           const from = transition?.from;
-          if (from?.name !== "chat.channel") {
+          const to = transition.to;
+          if (from?.name !== "chat.channel" || to.name === "loading") {
             return;
           }
 
-          const to = transition.to;
-          if (
-            to.name &&
-            !to.name.startsWith("chat.") &&
-            !to.name.startsWith("preferences.")
-          ) {
+          if (to.name && !to.name.startsWith("chat.")) {
+            const destinationUrl =
+              to.paramNames.length > 0
+                ? router.urlFor(to.name, to.params)
+                : router.urlFor(to.name);
             transition.abort();
-            window.open(transition.intent.url);
+            window.open(destinationUrl);
             next(() => {
-              let originalUrl;
-              if (to.paramNames.length > 0) {
-                originalUrl = router.urlFor(from.name, from.params);
-              } else {
-                originalUrl = router.urlFor(from.name);
-              }
-              history.replaceState({}, "", originalUrl);
+              history.replaceState({}, "", currentUrl);
             });
             return false;
           }

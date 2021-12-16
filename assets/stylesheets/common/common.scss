@@ -256,6 +256,15 @@ $float-height: 530px;
       display: none;
     }
   }
+  .edit-channel-membership-btn,
+  .new-dm {
+    padding: 0.5em;
+    color: var(--primary-medium);
+
+    .d-icon {
+      color: var(--primary-medium);
+    }
+  }
   .public-channel-empty-message {
     margin: 0 0.5em 0.5em 0.5em;
   }
@@ -1241,7 +1250,8 @@ $float-height: 530px;
 }
 
 .chat-channel-settings-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 210px;
   flex-wrap: wrap;
   flex-direction: row;
   align-items: center;

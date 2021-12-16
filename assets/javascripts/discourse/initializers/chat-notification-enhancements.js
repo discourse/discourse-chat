@@ -34,7 +34,8 @@ export default {
           // Desktop app notifications
           const tauriNotification = window?.__TAURI__?.notification;
           if (tauriNotification) {
-            if (await tauriNotification.isPermissionGranted()) {
+            const tauriNotificationPermission = await tauriNotification.isPermissionGranted();
+            if (tauriNotificationPermission) {
               sendTauriNotification(tauriNotification, data);
             } else {
               tauri.requestPermission().then(

@@ -53,6 +53,12 @@ export default Component.extend({
   },
 
   @action
+  openCreateChannelModal() {
+    showModal("create-channel-modal");
+    return false;
+  },
+
+  @action
   startCreatingDmChannel() {
     this.set("creatingDmChannel", true);
     schedule("afterRender", () => {
@@ -83,10 +89,5 @@ export default Component.extend({
   @action
   toggleChannelSection(section) {
     this.toggleSection(section);
-  },
-
-  @action
-  openChannelSettingsModal() {
-    showModal("chat-channel-settings");
   },
 });

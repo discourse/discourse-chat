@@ -85,6 +85,21 @@ en:
       you: "You, %{usernames} reacted with %{emoji}"
       exit: "back"
 
+      create_channel:
+        add: "Add channels"
+        add_suffix: "Add suffix to channel name"
+        choose_category: "Choose the category"
+        choose_tag: "Choose the tag"
+        create: "Create channel"
+        name: "Name"
+        remove_suffix: "Remove suffix"
+        suffix: "Suffix"
+        title: "Add a channel"
+        type: "Type"
+        types:
+          tag: "Tag"
+          category: "Category"
+
       reactions:
         only_you: "You reacted with :%{emoji}:"
         and_others: "You, %{usernames} reacted with :%{emoji}:"

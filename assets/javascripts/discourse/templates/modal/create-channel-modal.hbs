@@ -1,0 +1,67 @@
+{{#d-modal-body title="chat.create_channel.title"}}
+  <label class="">{{i18n "chat.create_channel.type"}}</label>
+  {{combo-box
+    value=type
+    content=types
+    onChange=(action (mut type))
+  }}
+
+  {{#if (eq type "category")}}
+    <label class="">{{i18n "chat.create_channel.choose_category"}}</label>
+    {{category-chooser
+      value=categoryId
+      onChange=(action (mut categoryId))
+    }}
+  {{else if (eq type "tag")}}
+    <label class="">{{i18n "chat.create_channel.choose_tag"}}</label>
+    {{tag-chooser
+      tags=tags
+      allowCreate=false
+      everyTag=true
+      options=(hash
+        limit=1
+      )
+    }}
+  {{/if}}
+
+
+  {{#if (or (and (eq type "tag") tag) (and (eq type "category") category))}}
+    <div class="chat-channel-title">
+      {{#if (and (eq type "tag") tag)}}
+        <span class="tag-chat-badge">
+          {{d-icon "tag"}}
+        </span>
+        <span class="tag-chat-name">{{name}}</span>
+      {{else if (and (eq type "category") category)}}
+        {{log category}}
+        <span class="category-chat-badge" style={{html-safe (concat "color: #" category.color)}}>
+          {{d-icon "hashtag"}}
+          {{#if category.read_restricted}}
+            <span class="category-chat-private">
+              {{d-icon "lock"}}
+            </span>
+          {{/if}}
+        </span>
+        <span class="category-chat-name">
+          {{name}}
+        </span>
+      {{/if}}
+    </div>
+  {{/if}}
+
+  {{#if suffixEnabled}}
+    {{input type="text" value=suffix}}
+  {{/if}}
+
+  <a href onClick={{action "toggleSuffix"}}>
+    {{i18n (if suffixEnabled "chat.create_channel.remove_suffix" "chat.create_channel.add_suffix")}}
+  </a>
+
+  {{d-button
+    class="btn-primary"
+    action=(action "create")
+    label="chat.create_channel.create"
+  }}
+
+
+{{/d-modal-body}}

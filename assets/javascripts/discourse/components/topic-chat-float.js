@@ -45,7 +45,11 @@ export default Component.extend({
       "openChannelForChatable"
     );
     this.appEvents.on("chat:open-channel", this, "switchChannel");
-    this.appEvents.on("chat:open-message", this, "openChannelAtMessage");
+    this.appEvents.on(
+      "chat:open-channel-at-message",
+      this,
+      "openChannelAtMessage"
+    );
     this.appEvents.on("chat:refresh-channels", this, "refreshChannels");
     this.appEvents.on("topic-chat-enable", this, "chatEnabledForTopic");
     this.appEvents.on("topic-chat-disable", this, "chatDisabledForTopic");
@@ -76,7 +80,11 @@ export default Component.extend({
         "openChannelForChatable"
       );
       this.appEvents.off("chat:open-channel", this, "switchChannel");
-      this.appEvents.off("chat:open-message", this, "openChannelAtMessage");
+      this.appEvents.off(
+        "chat:open-channel-at-message",
+        this,
+        "openChannelAtMessage"
+      );
       this.appEvents.off("chat:refresh-channels", this, "refreshChannels");
       this.appEvents.off("topic-chat-enable", this, "chatEnabledForTopic");
       this.appEvents.off("topic-chat-disable", this, "chatDisabledForTopic");
@@ -130,14 +138,15 @@ export default Component.extend({
     }
   },
 
-  openChannelAtMessage(chatChannelId, messageId, openFloat) {
-    if (!openFloat) {
-      return;
-    }
-
-    this.chat.getChannelBy("id", chatChannelId).then((channel) => {
+  openChannelAtMessage(channel, messageId) {
+    if (this.activeChannel?.id === channel.id) {
+      // Already have this channel open. Fire app event to notify chat-live-pane
+      // to highlight or fetch the message.
+      this.appEvents.trigger("chat-live-pane:highlight-message", messageId);
+    } else {
+      this.chat.setTargetMessageId(messageId);
       this.switchChannel(channel);
-    });
+    }
   },
 
   chatEnabledForTopic(topic) {

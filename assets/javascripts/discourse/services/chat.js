@@ -123,15 +123,15 @@ export default Service.extend({
     });
   },
 
-  setMessageId(messageId) {
+  setTargetMessageId(messageId) {
     this.set("messageId", messageId);
   },
 
-  getMessageId() {
+  getTargetMessageId() {
     return this.messageId;
   },
 
-  clearMessageId() {
+  clearTargetMessageId() {
     this.set("messageId", null);
   },
 
@@ -362,7 +362,7 @@ export default Service.extend({
       this.router.currentRouteName === "chat.channel" &&
       this.router.currentRoute.params.channelTitle === channel.title
     ) {
-      this._fireOpenMessageAppEvent(channel.id, messageId);
+      this._fireOpenMessageAppEvent(messageId);
     } else if (
       Site.currentProp("mobileView") ||
       this.router.currentRouteName === "chat" ||
@@ -373,18 +373,16 @@ export default Service.extend({
         queryParams: { messageId: messageId },
       });
     } else {
-      this.setMessageId(messageId);
-      this._fireOpenMessageAppEvent(channel.id, messageId, { openFloat: true });
+      this._fireOpenFloatAppEvent(channel, messageId);
     }
   },
 
-  _fireOpenMessageAppEvent(channelId, messageId, opts = { openFloat: false }) {
-    this.appEvents.trigger(
-      "chat:open-message",
-      channelId,
-      messageId,
-      opts.openFloat
-    );
+  _fireOpenFloatAppEvent(channel, messageId) {
+    this.appEvents.trigger("chat:open-channel-at-message", channel, messageId);
+  },
+
+  _fireOpenMessageAppEvent(messageId) {
+    this.appEvents.trigger("chat-live-pane:highlight-message", messageId);
   },
 
   async startTrackingChannel(channel) {

@@ -33,13 +33,17 @@ module Jobs
       return if DiscourseChat::ChatNotifier.user_has_seen_message?(membership, @chat_message.id)
       return if online_user_ids.include?(user.id)
 
+      translated_title = @chat_channel.group_direct_message_channel? ?
+        I18n.t("discourse_push_notifications.popup.group_chat_message") :
+        I18n.t("discourse_push_notifications.popup.chat_message",
+               chat_channel_title: @chat_channel.title(user)
+              )
+
       payload = {
         username: @creator.username,
         notification_type: Notification.types[:chat_message],
         post_url: "/chat/channel/#{@chat_channel.id}/#{@chat_channel.title(user)}",
-        translated_title: I18n.t("discourse_push_notifications.popup.chat_message",
-                                 chat_channel_title: @chat_channel.title(membership.user)
-                                ),
+        translated_title: translated_title,
         tag: DiscourseChat::ChatNotifier.push_notification_tag(:message, @chat_channel.id),
         excerpt: @chat_message.push_notification_excerpt
       }

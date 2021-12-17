@@ -68,7 +68,12 @@ export default Component.extend({
     this._super(...arguments);
 
     this._unloadedReplyIds = [];
-    this.appEvents.on("chat:open-message", this, "highlightOrFetchMessage");
+    this.appEvents.on(
+      "chat-live-pane:highlight-message",
+      this,
+      "highlightOrFetchMessage"
+    );
+
     if (!isTesting()) {
       next(this, () => {
         this._updateReadTimer = this._updateLastReadMessage();
@@ -88,7 +93,11 @@ export default Component.extend({
   },
 
   willDestroyElement() {
-    this.appEvents.off("chat:open-message", this, "highlightOrFetchMessage");
+    this.appEvents.off(
+      "chat-live-pane:highlight-message",
+      this,
+      "highlightOrFetchMessage"
+    );
     this._stopLastReadRunner();
 
     // don't need to removeEventListener from scroller as the DOM element goes away
@@ -111,7 +120,7 @@ export default Component.extend({
   didReceiveAttrs() {
     this._super(...arguments);
 
-    this.set("targetMessageId", this.chat.getMessageId());
+    this.set("targetMessageId", this.chat.getTargetMessageId());
     if (this.registeredChatChannelId !== this.chatChannel.id) {
       if (this.registeredChatChannelId) {
         this.messageBus.unsubscribe(`/chat/${this.registeredChatChannelId}`);
@@ -153,11 +162,14 @@ export default Component.extend({
           throw err;
         })
         .finally(() => {
-          if (this._selfDeleted() || this.chatChannel.id !== channelId) {
+          if (this._selfDeleted()) {
             return;
           }
-          if (this.targetMessageId) {
-            this.chat.clearMessageId();
+
+          this.chat.clearTargetMessageId();
+
+          if (this.chatChannel.id !== channelId) {
+            return;
           }
           this.focusComposer();
           this.set("loading", false);
@@ -227,6 +239,7 @@ export default Component.extend({
     schedule("afterRender", this, () => {
       if (this.targetMessageId) {
         this.scrollToMessage(this.targetMessageId, { highlight: true });
+        this.set("targetMessageId", null);
       } else {
         this._markLastReadMessage();
       }
@@ -314,7 +327,7 @@ export default Component.extend({
     this._stickScrollToBottom();
   },
 
-  highlightOrFetchMessage(_, messageId) {
+  highlightOrFetchMessage(messageId) {
     if (this._selfDeleted()) {
       return;
     }
@@ -324,7 +337,7 @@ export default Component.extend({
       this.scrollToMessage(messageId, { highlight: true });
     } else {
       this.set("targetMessageId", messageId);
-      this.fetchMessages();
+      this.fetchMessages(this.chatChannel.id);
     }
   },
 
@@ -783,7 +796,7 @@ export default Component.extend({
     if (this._unloadedReplyIds.includes(message.id)) {
       // Message is not present in the loaded messages. Fetch it!
       this.set("targetMessageId", message.id);
-      this.fetchMessages();
+      this.fetchMessages(this.chatChannel.id);
     } else {
       this.scrollToMessage(replyMessageFromLookup.id, { highlight: true });
     }

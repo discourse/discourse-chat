@@ -93,6 +93,10 @@ export default Service.extend({
     );
   },
 
+  onBrowsePage() {
+    return this.router.currentRouteName === "chat.browse";
+  },
+
   getSidebarActive() {
     return this.sidebarActive;
   },

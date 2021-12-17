@@ -20,6 +20,12 @@ const CHAT_ONLINE_OPTIONS = {
   browserHiddenTime: 300000, // Or the browser has been in the background for 5 minutes
 };
 
+const PUBLIC_CHANNEL_SORT_PRIOS = {
+  Category: 0,
+  Tag: 1,
+  Topic: 2,
+};
+
 export default Service.extend({
   allChannels: null,
   appEvents: service(),
@@ -49,7 +55,6 @@ export default Service.extend({
       this._subscribeToNewDmChannelUpdates();
       this._subscribeToUserTrackingChannel();
       this.appEvents.on("page:changed", this, "_storeLastNonChatRouteInfo");
-      this.appEvents.on("modal:closed", this, "_onSettingsModalClosed");
       this.presenceChannel = this.presence.getChannel("/chat/online");
       this._draftStore = new KeyValueStore(DRAFT_STORE_NAMESPACE);
     }
@@ -63,40 +68,7 @@ export default Service.extend({
       this._unsubscribeFromUserTrackingChannel();
       this._unsubscribeFromAllChatChannels();
       this.appEvents.off("page:changed", this, "_storeLastNonChatRouteInfo");
-      this.appEvents.off("modal:closed", this, "_onSettingsModalClosed");
     }
-  },
-
-  _onSettingsModalClosed(modal) {
-    if (modal.name !== "chat-channel-settings") {
-      return;
-    }
-
-    // Check the route the modal was opened on. If it was opened
-    // on full page chat for a channel that is not followed, navigate
-    // home.
-    if (modal.controller.openedOnRouteName === "chat.channel") {
-      const currentChannel = modal.controller.channels.find(
-        (c) => c.id.toString(10) === this.router.currentRoute.params.channelId
-      );
-      if (currentChannel && !currentChannel.following) {
-        this.router.transitionTo(`discovery.${defaultHomepage()}`);
-      }
-    }
-
-    this.forceRefreshChannels().then(() => {
-      // Check if modal was opened from the chat index. If so and there is a newly tracked channel, navigate to it
-      if (
-        modal.controller.openedOnRouteName === "chat.index" &&
-        modal.controller.newlyFollowedChannel
-      ) {
-        this.router.transitionTo(
-          "chat.channel",
-          modal.controller.newlyFollowedChannel.id,
-          modal.controller.newlyFollowedChannel.title
-        );
-      }
-    });
   },
 
   _storeLastNonChatRouteInfo(data) {
@@ -245,10 +217,14 @@ export default Service.extend({
       ajax("/chat/chat_channels.json").then((channels) => {
         this.setProperties({
           publicChannels: A(
-            channels.public_channels.map((channel) =>
-              this.processChannel(channel)
+            this.sortPublicChannels(
+              channels.public_channels.map((channel) =>
+                this.processChannel(channel)
+              )
             )
           ),
+          // We don't need to sort direct message channels, as the channel list
+          // uses a computed property to keep them ordered by `updated_at`.
           directMessageChannels: A(
             channels.direct_message_channels.map((channel) =>
               this.processChannel(channel)
@@ -321,6 +297,31 @@ export default Service.extend({
       );
     });
   },
+  sortPublicChannels(channels) {
+    return channels.sort((a, b) => {
+      const typeA = PUBLIC_CHANNEL_SORT_PRIOS[a.chatable_type];
+      const typeB = PUBLIC_CHANNEL_SORT_PRIOS[b.chatable_type];
+      if (typeA === typeB) {
+        return a.title.localeCompare(b.title);
+      } else {
+        return typeA < typeB ? -1 : 1;
+      }
+    });
+  },
+
+  sortDirectMessageChannels(channels) {
+    return channels.sort((a, b) => {
+      const unreadCountA =
+        this.currentUser.chat_channel_tracking_state[a.id]?.unread_count || 0;
+      const unreadCountB =
+        this.currentUser.chat_channel_tracking_state[b.id]?.unread_count || 0;
+      if (unreadCountA === unreadCountB) {
+        return new Date(a.updated_at) > new Date(b.updated_at) ? -1 : 1;
+      } else {
+        return unreadCountA > unreadCountB ? -1 : 1;
+      }
+    });
+  },
 
   getIdealFirstChannelIdAndTitle() {
     return this.getIdealFirstChannelId().then((channelId) => {
@@ -388,10 +389,11 @@ export default Service.extend({
       return; // User is already tracking this channel. return!
     }
 
-    const existingChannels =
-      channel.chatable_type === "DirectMessageChannel"
-        ? this.directMessageChannels
-        : this.publicChannels;
+    const isDirectMessageChannel =
+      channel.chatable_type === "DirectMessageChannel";
+    const existingChannels = isDirectMessageChannel
+      ? this.directMessageChannels
+      : this.publicChannels;
 
     existingChannels.pushObject(this.processChannel(channel));
     this.currentUser.chat_channel_tracking_state[channel.id] = {
@@ -400,6 +402,9 @@ export default Service.extend({
       chatable_type: channel.chatable_type,
     };
     this.userChatChannelTrackingStateChanged();
+    if (!isDirectMessageChannel) {
+      this.set("publicChannels", this.sortPublicChannels(this.publicChannels));
+    }
     this.appEvents.trigger("chat:refresh-channels");
   },
 

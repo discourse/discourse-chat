@@ -21,9 +21,9 @@ export default Component.extend({
   channel: null,
   loading: false,
   showSaveSuccess: false,
-  onFollowChannel: null,
   notificationLevels: NOTIFICATION_LEVELS,
   mutedOptions: MUTED_OPTIONS,
+  chat: service(),
   router: service(),
 
   @action
@@ -39,7 +39,7 @@ export default Component.extend({
           desktop_notification_level: membership.desktop_notification_level,
           mobile_notification_level: membership.mobile_notification_level,
         });
-        this.onFollowChannel(this.channel);
+        this.chat.startTrackingChannel(this.channel);
         this.set("loading", false);
       })
       .catch(popupAjaxError);
@@ -56,6 +56,7 @@ export default Component.extend({
           expanded: false,
           following: false,
         });
+        this.chat.stopTrackingChannel(this.channel);
         this.set("loading", false);
       })
       .catch(popupAjaxError);
@@ -103,7 +104,6 @@ export default Component.extend({
 
   @action
   previewChannel() {
-    this.closeModal();
     this.router.transitionTo(
       "chat.channel",
       this.channel.id,

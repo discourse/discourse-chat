@@ -979,27 +979,14 @@ acceptance("Discourse Chat - chat channel settings", function (needs) {
     });
   });
 
-  test("unfollowing a channel while you're viewing it takes you home", async function (assert) {
-    await visit("/chat/channel/9/Site");
-    await click(".edit-channel-membership-btn");
-    await click(".chat-channel-unfollow");
-    await click(".modal-close");
-    assert.equal(currentURL(), "/latest");
-  });
-
   test("previewing channel", async function (assert) {
     await visit("/chat/channel/70/preview-me");
     assert.ok(exists(".join-channel-btn"), "Join channel button is present");
     assert.equal(query(".tc-composer-row textarea").disabled, true);
   });
 
-  test("Chat channel settings modal", async function (assert) {
-    await visit("/chat/channel/75/@hawk");
-    await click(".edit-channel-membership-btn");
-    assert.ok(
-      exists(".chat-channel-settings-modal"),
-      "Chat channel settings modal is open"
-    );
+  test("Chat browse page", async function (assert) {
+    await visit("/chat/browse");
     const settingsRow = query(".chat-channel-settings-row");
     assert.ok(
       settingsRow.querySelector(".chat-channel-expand-settings"),

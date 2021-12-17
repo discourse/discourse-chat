@@ -10,31 +10,12 @@ export default DiscourseRoute.extend({
     return I18n.t("chat.title_capitalized");
   },
 
-  beforeModel(params) {
+  beforeModel() {
     if (
       !this.currentUser?.has_chat_enabled ||
       !this.siteSettings.chat_enabled
     ) {
       return this.transitionTo(`discovery.${defaultHomepage()}`);
     }
-    if (params.to.name === "chat.channel") {
-      // The target is a specific chat channel, so return and let
-      // the chat-channel route handle it.
-      return;
-    }
-
-    if (this.site.mobileView) {
-      return this.transitionTo("chat.index");
-    }
-
-    return this.chat.getIdealFirstChannelIdAndTitle().then((channelInfo) => {
-      if (channelInfo) {
-        return this.transitionTo(
-          "chat.channel",
-          channelInfo.id,
-          channelInfo.title
-        );
-      }
-    });
   },
 });

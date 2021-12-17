@@ -1,25 +1,18 @@
 # frozen_string_literal: true
 
 module DiscourseChat::ChatChannelFetcher
-  CHANNEL_PRIORITIES = {
-    Category: 0,
-    Tag: 1,
-    Topic: 2
-  }
   def self.structured(guardian)
     memberships = UserChatChannelMembership.where(user_id: guardian.user.id)
     {
-      public_channels: structured_public_channels(guardian, memberships),
+      public_channels: secured_public_channels(
+        guardian,
+        memberships
+      ),
       direct_message_channels: secured_direct_message_channels(
         guardian.user.id,
         memberships
       ),
     }
-  end
-
-  def self.structured_public_channels(guardian, memberships, scope_with_membership: true)
-    channels = secured_public_channels(guardian, memberships, scope_with_membership: scope_with_membership)
-    channels.sort_by { |a| [ CHANNEL_PRIORITIES[a.chatable_type.to_sym], a.public_channel_title ] }
   end
 
   def self.secured_public_channels(guardian, memberships, scope_with_membership: true)

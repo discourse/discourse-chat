@@ -1,14 +1,11 @@
-{{#if (eq mode "blankPage")}}
+{{#if blankPage}}
   <div class="empty-state">
     <span class="empty-state-title">{{i18n "chat.empty_state.title"}}</span>
     <div class="empty-state-body">
       {{#if model.length}}
-        <p>{{i18n "chat.empty_state.public_available"}}</p>
-        {{d-button
-          class="btn-primary"
-          action=(action "openFollowModal")
-          label="chat.empty_state.follow_channels"
-        }}
+        {{#each model as |channel|}}
+          {{chat-channel-settings-row channel=channel}}
+        {{/each}}
       {{else}}
         <p>{{i18n "chat.empty_state.no_public_available"}}</p>
       {{/if}}

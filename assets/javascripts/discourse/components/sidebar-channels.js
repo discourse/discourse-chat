@@ -34,7 +34,12 @@ export default Component.extend({
   },
 
   calcShouldShow() {
-    this.set("show", !this.currentUser.chat_isolated || this.chat.onChatPage());
+    this.set(
+      "show",
+      !this.currentUser.chat_isolated ||
+        this.chat.onChatPage() ||
+        this.chat.onBrowsePage()
+    );
     if (this.show && !this.fetchedChannels) {
       this.fetchChannels();
     }

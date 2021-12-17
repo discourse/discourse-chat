@@ -3,7 +3,7 @@ import discourseComputed from "discourse-common/utils/decorators";
 import I18n from "I18n";
 import { action } from "@ember/object";
 import { popupAjaxError } from "discourse/lib/ajax-error";
-import { CHAT_SOUNDS } from "discourse/plugins/discourse-chat/discourse/initializers/chat-notification-enhancements";
+import { CHAT_SOUNDS } from "discourse/plugins/discourse-chat/discourse/initializers/chat-notification-sounds";
 
 const chatAttrs = [
   "chat_enabled",

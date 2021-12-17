@@ -1,68 +1,59 @@
 import Controller from "@ember/controller";
 import discourseComputed from "discourse-common/utils/decorators";
-import I18n from "I18n";
 import ModalFunctionality from "discourse/mixins/modal-functionality";
 import { ajax } from "discourse/lib/ajax";
 import { action } from "@ember/object";
-import { inject as service } from "@ember/service";
 
 export default Controller.extend(ModalFunctionality, {
-  chat: service(),
-
   type: "category",
-  topic: null,
-  category: null,
   categoryId: null,
-  name: "",
-  description: "",
+  tags: null,
+  suffixEnabled: false,
+  suffix: "",
 
-  @discourseComputed("type", "topic", "category")
-  entitySelected(type, topic, category) {
-    return (type === "topic" && topic) || (type === "category" && category);
+  @discourseComputed("tags")
+  tag(tags) {
+    return tags?.[0];
+  },
+
+  @discourseComputed("categoryId")
+  category(categoryId) {
+    return this.site.categories.findBy("id", categoryId);
+  },
+
+  @discourseComputed("type", "tag", "category", "suffix", "suffixEnabled")
+  name(type, tag, category, suffix, suffixEnabled) {
+    let name = type === "category" ? category.slug : tag;
+    if (suffixEnabled && suffix.length) {
+      name += ` - ${suffix}`
+    }
+    return name;
   },
 
   @discourseComputed
   types() {
-    return ["category", "topic"].map((id) => {
+    return [
+      "category",
+      "tag",
+    ].map((id) => {
       return { id, name: I18n.t(`chat.create_channel.types.${id}`) };
     });
   },
 
-  @discourseComputed("type", "topic", "category", "name")
-  createDisabled(type, topic, category, name) {
-    return !this.entitySelected || !name?.length > 0;
+  @discourseComputed("type")
+  namePlaceholder(type) {
+    return ""
   },
 
   @action
-  onCategoryChange(categoryId) {
-    let category = categoryId
-      ? this.site.categories.findBy("id", categoryId)
-      : null;
-    this.setProperties({
-      categoryId,
-      category,
-      name: category?.name || "",
-    });
-  },
-
-  @action
-  onTopicChange(topic) {
-    this.setProperties({
-      topic,
-      name: topic.fancy_title,
-    });
-  },
-
-  @action
-  onTopicCleared() {
-    this.setProperties({
-      topic: null,
-      name: "",
-    });
+  toggleSuffix() {
+    this.set("suffixEnabled", !this.suffixEnabled);
+    return false;
   },
 
   @action
   create() {
+<<<<<<< HEAD
     if (this.createDisabled) {
       return;
     }
@@ -96,3 +87,8 @@ export default Controller.extend(ModalFunctionality, {
     });
   },
 });
+=======
+
+  }
+})
+>>>>>>> WIP!

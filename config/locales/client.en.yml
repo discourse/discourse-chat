@@ -92,17 +92,19 @@ en:
       exit: "back"
 
       create_channel:
-        choose_category:
-          label: "Choose a category to manage who can access the channel"
-          none: "select one..."
+        add: "Add channels"
+        add_suffix: "Add suffix to channel name"
+        choose_category: "Choose the category"
+        choose_tag: "Choose the tag"
         create: "Create channel"
-        description: "Description (optional)"
-        name: "Channel name"
+        name: "Name"
+        remove_suffix: "Remove suffix"
+        suffix: "Suffix"
         title: "Add a channel"
         type: "Type"
         types:
+          tag: "Tag"
           category: "Category"
-          topic: "Topic"
 
       reactions:
         only_you: "You reacted with :%{emoji}:"

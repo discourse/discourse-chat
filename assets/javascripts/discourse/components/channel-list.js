@@ -55,34 +55,6 @@ export default Component.extend({
   },
 
   @action
-  browseChannels() {
-    this.router.transitionTo("chat.browse");
-    return false;
-  },
-
-  @action
-  pencilClicked() {
-    if (this.currentUser.staff) {
-      this.togglePopupMenu();
-    } else {
-      this.browseChannels();
-    }
-    return false;
-  },
-
-  @bind
-  togglePopupMenu() {
-    this.set("showPopup", !this.showPopup);
-    next(() => {
-      if (this.showPopup) {
-        window.addEventListener("click", this.togglePopupMenu);
-      } else {
-        window.removeEventListener("click", this.togglePopupMenu);
-      }
-    });
-  },
-
-  @action
   openCreateChannelModal() {
     showModal("create-channel-modal");
     return false;

@@ -1,20 +1,42 @@
-<div class="chat-channel-divider">
-  {{#if inSidebar}}
-    <span
-      class="title-caret"
-      id="public-channels-caret"
-      role="button"
-      title="toggle nav list"
-      {{action "toggleChannelSection" "public-channels"}}
-      data-toggleable="public-channels"
-    >
-      {{d-icon "angle-up"}}
-    </span>
-  {{/if}}
-  {{i18n "chat.chat_channels"}}
-  <a href onClick={{action "pencilClicked"}} class="edit-channel-membership-btn title-action">
-    {{d-icon "pencil-alt"}}
-  </a>
+{{#conditional-loading-spinner condition=this.loading}}
+  <div class="chat-channel-divider">
+    {{#if inSidebar}}
+      <span
+        class="title-caret"
+        id="public-channels-caret"
+        role="button"
+        title="toggle nav list"
+        {{action "toggleChannelSection" "public-channels"}}
+        data-toggleable="public-channels"
+      >
+        {{d-icon "angle-up"}}
+      </span>
+    {{/if}}
+    {{i18n "chat.chat_channels"}}
+    {{#link-to "chat.browse" class="edit-channel-membership-btn title-action" title=(i18n "chat.edit_channels")}}
+      {{d-icon "pencil-alt"}}
+    {{/link-to}}
+  </div>
+  <div id="public-channels" class={{publicChannelClasses}}>
+    {{#if publicChannelsEmpty}}
+      <div class="public-channel-empty-message">
+        {{i18n "chat.no_public_channels"}}
+        {{#link-to "chat.index"}}
+          {{i18n "chat.click_to_join"}}
+        {{/link-to}}
+      </div>
+    {{else}}
+      {{#each publicChannels as |channel|}}
+        {{chat-channel-row channel=channel switchChannel=onSelect}}
+      {{/each}}
+      {{#if currentUser.staff}}
+        <a href onclick={{action "openCreateChannelModal"}}>
+          {{d-icon "plus"}}
+          {{i18n "chat.create_channel.add"}}
+        </a>
+      {{/if}}
+    {{/if}}
+  </div>
 
   {{#if showPopup}}
     <div class="channel-list-popup">

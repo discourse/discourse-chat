@@ -1,39 +1,39 @@
 {{#d-modal-body title="chat.create_channel.title"}}
-  <label class="create-channel-label">{{i18n "chat.create_channel.type"}}</label>
+  <label class="">{{i18n "chat.create_channel.type"}}</label>
   {{combo-box
-    class="type-chooser"
     value=type
     content=types
     onChange=(action (mut type))
   }}
 
   {{#if (eq type "category")}}
-    <label class="create-channel-label">{{i18n "chat.create_channel.choose_category.label"}}</label>
+    <label class="">{{i18n "chat.create_channel.choose_category"}}</label>
     {{category-chooser
       value=categoryId
-      onChange=(action "onCategoryChange")
+      onChange=(action (mut categoryId))
+    }}
+  {{else if (eq type "tag")}}
+    <label class="">{{i18n "chat.create_channel.choose_tag"}}</label>
+    {{tag-chooser
+      tags=tags
+      allowCreate=false
+      everyTag=true
       options=(hash
-        none="chat.create_channel.choose_category.none"
+        limit=1
       )
     }}
-  {{else if (eq type "topic")}}
-    {{choose-topic onSearchEmptied=(action "onTopicCleared") topicChangedCallback=(action "onTopicChange") selectedTopicId=selectedTopicId}}
   {{/if}}
 
-  <label class="create-channel-label">{{i18n "chat.create_channel.name"}}</label>
-  {{input class="create-channel-name-input" type="text" value=name}}
 
-  <label class="create-channel-label">{{i18n "chat.create_channel.description"}}</label>
-  {{input class="create-channel-description-input" type="textarea" value=description}}
-
-  {{#if entitySelected}}
+  {{#if (or (and (eq type "tag") tag) (and (eq type "category") category))}}
     <div class="chat-channel-title">
-      {{#if (and (eq type "topic") topic)}}
-        <span class="topic-chat-badge">
-          {{d-icon "far-comments"}}
+      {{#if (and (eq type "tag") tag)}}
+        <span class="tag-chat-badge">
+          {{d-icon "tag"}}
         </span>
-        <span class="topic-chat-name">{{replace-emoji name}}</span>
+        <span class="tag-chat-name">{{name}}</span>
       {{else if (and (eq type "category") category)}}
+        {{log category}}
         <span class="category-chat-badge" style={{html-safe (concat "color: #" category.color)}}>
           {{d-icon "hashtag"}}
           {{#if category.read_restricted}}
@@ -43,18 +43,25 @@
           {{/if}}
         </span>
         <span class="category-chat-name">
-          {{replace-emoji name}}
+          {{name}}
         </span>
       {{/if}}
     </div>
   {{/if}}
-{{/d-modal-body}}
 
-<div class="modal-footer">
+  {{#if suffixEnabled}}
+    {{input type="text" value=suffix}}
+  {{/if}}
+
+  <a href onClick={{action "toggleSuffix"}}>
+    {{i18n (if suffixEnabled "chat.create_channel.remove_suffix" "chat.create_channel.add_suffix")}}
+  </a>
+
   {{d-button
-    class="btn-primary create"
+    class="btn-primary"
     action=(action "create")
     label="chat.create_channel.create"
-    disabled=createDisabled
   }}
-</div>
+
+
+{{/d-modal-body}}

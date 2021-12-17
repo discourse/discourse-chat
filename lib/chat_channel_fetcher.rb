@@ -4,16 +4,15 @@ module DiscourseChat::ChatChannelFetcher
   def self.structured(guardian)
     memberships = UserChatChannelMembership.where(user_id: guardian.user.id)
     {
-      public_channels: structured_public_channels(guardian, memberships),
+      public_channels: secured_public_channels(
+        guardian,
+        memberships
+      ),
       direct_message_channels: secured_direct_message_channels(
         guardian.user.id,
         memberships
       ),
     }
-  end
-
-  def self.structured_public_channels(guardian, memberships, scope_with_membership: true)
-    secured_public_channels(guardian, memberships, scope_with_membership: scope_with_membership)
   end
 
   def self.secured_public_channels(guardian, memberships, scope_with_membership: true)

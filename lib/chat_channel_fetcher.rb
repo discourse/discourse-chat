@@ -16,7 +16,7 @@ module DiscourseChat::ChatChannelFetcher
   end
 
   def self.secured_public_channels(guardian, memberships, scope_with_membership: true)
-    channels = ChatChannel.includes(:chatable, :chat_messages)
+    channels = ChatChannel.includes(:chatable)
 
     channels = channels.where(chatable_type: ["Topic", "Category", "Tag"])
     if scope_with_membership
@@ -77,7 +77,6 @@ module DiscourseChat::ChatChannelFetcher
   def self.secured_direct_message_channels(user_id, memberships)
     channels = ChatChannel
       .includes(chatable: { direct_message_users: :user })
-      .includes(:chat_messages)
       .joins(:user_chat_channel_memberships)
       .where(user_chat_channel_memberships: { user_id: user_id, following: true })
       .where(chatable_type: "DirectMessageChannel")

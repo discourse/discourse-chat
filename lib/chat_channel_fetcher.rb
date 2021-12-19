@@ -35,8 +35,9 @@ module DiscourseChat::ChatChannelFetcher
     )
     mention_notification_data = mention_notifications.map { |m| JSON.parse(m.data) }
 
-    secured = []
-    channels.each do |channel|
+    unread_counts_per_channel = unread_counts(channels, guardian.user.id)
+
+    channels.filter_map do |channel|
       next unless guardian.can_see_chat_channel?(channel)
 
       membership = memberships.detect { |m| m.chat_channel_id == channel.id }
@@ -47,21 +48,19 @@ module DiscourseChat::ChatChannelFetcher
           membership,
           mention_notification_data
         )
+
+        if !channel.muted
+          channel.unread_count = unread_counts_per_channel[channel.id]
+        end
       end
 
-      secured.push(channel)
+      channel
     end
-    secured
   end
 
   def self.decorate_channel_from_membership(user_id, channel, membership, mention_notification_data = nil)
     channel.last_read_message_id = membership.last_read_message_id
     channel.muted = membership.muted
-    if (!channel.muted)
-      channel.unread_count = channel.chat_messages.count { |message|
-        message.user_id != user_id && message.id > (membership.last_read_message_id || 0)
-      }
-    end
     if mention_notification_data
       channel.unread_mentions = mention_notification_data.count { |data|
         data["chat_channel_id"] == channel.id &&
@@ -83,12 +82,33 @@ module DiscourseChat::ChatChannelFetcher
       .order(updated_at: :desc)
       .to_a
 
+    unread_counts_per_channel = unread_counts(channels, user_id)
+
     channels.map do |channel|
-      decorate_channel_from_membership(
+      channel = decorate_channel_from_membership(
         user_id,
         channel,
         memberships.detect { |m| m.user_id == user_id && m.chat_channel_id == channel.id }
       )
+
+      if !channel.muted
+        channel.unread_count = unread_counts_per_channel[channel.id]
+      end
+
+      channel
     end
+  end
+
+  def self.unread_counts(channels, user_id)
+    unread_counts = DB.query(<<~SQL, channel_ids: channels.map(&:id), user_id: user_id)
+      SELECT cc.id, COUNT(*) as count
+      FROM chat_messages cm
+      JOIN chat_channels cc ON cc.id = cm.chat_channel_id
+      JOIN user_chat_channel_memberships uccm ON uccm.chat_channel_id = cc.id
+      WHERE cc.id IN (:channel_ids) AND cm.user_id != :user_id AND uccm.user_id = :user_id AND cm.id > COALESCE(uccm.last_read_message_id, 0)
+      GROUP BY cc.id
+    SQL
+
+    unread_counts.each.with_object({}) { |row, map| map[row.id] = row.count }
   end
 end

@@ -186,7 +186,7 @@ en:
         chat_disable: "Close Chat"
     action_codes:
       chat:
-        enabled: "%{who} enabled chat %{when}"
+        enabled: '%{who} enabled <a href class="open-chat">chat</a> %{when}'
         disabled: "%{who} closed chat %{when}"
         post_created: "created a new post: %{excerpt}"
         generic_small_action: "performed a topic management action"

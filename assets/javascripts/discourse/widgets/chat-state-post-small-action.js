@@ -10,10 +10,13 @@ export default createWidget("chat-state-post-small-action", {
       event.preventDefault();
 
       const topicController = this.container.lookup("controller:topic");
-      this.appEvents.trigger(
-        "chat:open-channel-for-chatable",
-        topicController.model.chat_channel
-      );
+      const chatChannel = topicController.model.chat_channel;
+
+      if (chatChannel) {
+        this.appEvents.trigger("chat:open-channel-for-chatable", chatChannel);
+      } else {
+        bootbox.alert(I18n.t("chat.disabled_for_topic"));
+      }
     }
   },
 

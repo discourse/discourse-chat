@@ -60,7 +60,7 @@ function makeTopicChanges(api, appEvents, chat) {
       transformed.canEdit = false;
 
       if (transformed.actionCode === "chat.enabled") {
-        transformed.actionDecriptionWidget = "chat-state-post-small-action";
+        transformed.actionDescriptionWidget = "chat-state-post-small-action";
       }
     }
   });

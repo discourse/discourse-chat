@@ -1539,3 +1539,11 @@ $float-height: 530px;
     margin-left: 0.5em;
   }
 }
+
+.small-action {
+  .open-chat {
+    text-transform: uppercase;
+    font-weight: 700;
+    font-size-adjust: var(--font-down-0);
+  }
+}

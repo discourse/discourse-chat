@@ -11,6 +11,10 @@ en:
       cancel_edit: "Cancel edit"
       category_chat_enabled: "Chat enabled for category"
       chat_channels: "Channels"
+      channel_list_popup:
+        browse: "Browse channels"
+        create: "Create a channel"
+
       click_to_join: "Click here to view available channels."
       close: "Close"
       collapse: "Collapse Chat Drawer"
@@ -86,19 +90,16 @@ en:
       exit: "back"
 
       create_channel:
-        add: "Add channels"
-        add_suffix: "Add suffix to channel name"
-        choose_category: "Choose the category"
-        choose_tag: "Choose the tag"
+        choose_category:
+          label: "Choose a category to manage who can access the channel"
+          none: "select one..."
         create: "Create channel"
-        name: "Name"
-        remove_suffix: "Remove suffix"
-        suffix: "Suffix"
+        name: "Channel name"
         title: "Add a channel"
         type: "Type"
         types:
-          tag: "Tag"
           category: "Category"
+          topic: "Topic"
 
       reactions:
         only_you: "You reacted with :%{emoji}:"

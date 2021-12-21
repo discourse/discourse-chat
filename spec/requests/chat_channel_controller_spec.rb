@@ -377,4 +377,77 @@ RSpec.describe DiscourseChat::ChatChannelsController do
       expect(response.parsed_body["chat_channel"]).to eq(nil)
     end
   end
+
+  describe "#create" do
+    fab!(:category2) { Fabricate(:category) }
+    fab!(:topic2) { Fabricate(:topic) }
+
+    it "errors for non-staff" do
+      sign_in(user)
+      put "/chat/chat_channels.json", params: { type: "category", id: category2.id, name: "hi" }
+      expect(response.status).to eq(404)
+    end
+
+    it "errors when type is not category/topic" do
+      sign_in(admin)
+      put "/chat/chat_channels.json", params: { type: "beeep", id: category2.id, name: "hi" }
+      expect(response.status).to eq(400)
+    end
+
+    it "errors when chatable doesn't exist" do
+      sign_in(admin)
+      put "/chat/chat_channels.json", params: { type: "category", id: Category.last.id + 1, name: "hi" }
+      expect(response.status).to eq(404)
+    end
+
+    it "errors when the name is over SiteSetting.max_topic_title_length" do
+      sign_in(admin)
+      SiteSetting.max_topic_title_length = 10
+      put "/chat/chat_channels.json", params: { type: "topic", id: topic2.id, name: "Hi, this is over 10 characters" }
+      expect(response.status).to eq(400)
+    end
+
+    it "errors when channel for topic already exists" do
+      sign_in(admin)
+      ChatChannel.create!(chatable: topic2, name: "hihihi")
+
+      put "/chat/chat_channels.json", params: { type: "topic", id: topic2.id, name: "hi" }
+      expect(response.status).to eq(400)
+    end
+
+    it "creates a channel for topic that doesn't already have a channel" do
+      sign_in(admin)
+      expect {
+        put "/chat/chat_channels.json", params: { type: "topic", id: topic2.id, name: "Different name!" }
+      }.to change { ChatChannel.where(chatable: topic2).count }.by(1)
+      expect(response.status).to eq(200)
+    end
+
+    it "errors when channel for category and same name already exists" do
+      sign_in(admin)
+      name = "beep boop hi"
+      ChatChannel.create!(chatable: category2, name: name)
+
+      put "/chat/chat_channels.json", params: { type: "category", id: category2.id, name: name }
+      expect(response.status).to eq(400)
+    end
+
+    it "creates a channel for category and if name is unique" do
+      sign_in(admin)
+      ChatChannel.create!(chatable: category2, name: "this is a name")
+
+      expect {
+        put "/chat/chat_channels.json", params: { type: "category", id: category2.id, name: "Different name!" }
+      }.to change { ChatChannel.where(chatable: category2).count }.by(1)
+      expect(response.status).to eq(200)
+    end
+
+    it "creates a user_chat_channel_membership when the channel is created" do
+      sign_in(admin)
+      expect {
+        put "/chat/chat_channels.json", params: { type: "category", id: category2.id, name: "hi hi" }
+      }.to change { UserChatChannelMembership.where(user: admin).count }.by(1)
+      expect(response.status).to eq(200)
+    end
+  end
 end

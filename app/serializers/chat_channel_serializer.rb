@@ -22,7 +22,7 @@ class ChatChannelSerializer < ApplicationSerializer
   end
 
   def title
-    object.title(scope.user)
+    object.name || object.title(scope.user)
   end
 
   def chatable

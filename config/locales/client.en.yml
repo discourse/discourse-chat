@@ -4,6 +4,7 @@ en:
       all_loaded: "Showing all messages"
       already_enabled: "Chat is already enabled on this topic. Please refresh."
       already_disabled: "Chat is already closed on this topic. Please refresh."
+      disabled_for_topic: "Chat is disabled on this topic."
       bot: "bot"
       create: "Create"
       cancel: "Cancel"
@@ -202,7 +203,7 @@ en:
         chat_disable: "Close Chat"
     action_codes:
       chat:
-        enabled: "%{who} enabled chat %{when}"
+        enabled: '%{who} enabled <button class="btn-link open-chat">chat</button> %{when}'
         disabled: "%{who} closed chat %{when}"
         post_created: "created a new post: %{excerpt}"
         generic_small_action: "performed a topic management action"

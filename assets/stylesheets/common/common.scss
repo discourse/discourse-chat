@@ -1569,6 +1569,7 @@ $float-height: 530px;
   }
 }
 
+<<<<<<< HEAD
 .create-channel-modal-modal {
   // I know `-modal-modal`.. but I like the JS file name
   .modal-inner-container {
@@ -1599,5 +1600,13 @@ $float-height: 530px;
   .chat-channel-title {
     margin: 1em 0 0 0;
     grid-column-gap: 0.25em;
+  }
+}
+
+.small-action {
+  .open-chat {
+    text-transform: uppercase;
+    font-weight: 700;
+    font-size-adjust: var(--font-down-0);
   }
 }

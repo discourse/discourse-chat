@@ -31,7 +31,6 @@
         </span>
         <span class="topic-chat-name">{{replace-emoji name}}</span>
       {{else if (and (eq type "category") category)}}
-        {{log category}}
         <span class="category-chat-badge" style={{html-safe (concat "color: #" category.color)}}>
           {{d-icon "hashtag"}}
           {{#if category.read_restricted}}

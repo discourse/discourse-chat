@@ -156,7 +156,7 @@
               {{html-safe actionCodeText}}
             </span>
           {{else}}
-            <p class="tc-text">
+            <div class="tc-text">
               {{html-safe message.cooked}}
               {{#if message.uploads.length}}
                 <div class="tc-uploads">
@@ -197,7 +197,7 @@
                   }}
                 </div>
               {{/if}}
-            </p>
+            </div>
           {{/if}}
           {{#if message.error}}
             <div class="tc-send-error">

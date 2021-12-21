@@ -1,0 +1,20 @@
+# WARNING: Never edit this file.
+# It will be overwritten when translations are pulled from Crowdin.
+#
+# To work with us on translations, join this project:
+# https://translate.discourse.org/
+
+he:
+  site_settings:
+    chat_allowed_groups: "משתמשים בקבוצות אלו יכולים להשתתף בצ׳אט."
+  chat:
+    enabled_chat: "הופעל צ׳אט"
+    disabled_chat: "הושבת צ׳אט"
+  discourse_push_notifications:
+    popup:
+      chat_message: "הודעת צ׳אט חדשה תחת %{chat_channel_title}"
+      group_chat_message: "הודעת צ׳אט חדשה בערוץ צ׳אט אישי"
+  discourse_automation:
+    scriptables:
+      send_chat_message:
+        title: שליחת הודעת צ׳אט

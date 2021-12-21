@@ -1585,18 +1585,6 @@ $float-height: 530px;
   margin-bottom: 0;
 }
 
-.tag-info .tag-chat-toggle {
-  margin-bottom: 0.5em;
-}
-
-.before-create-topic-button-outlet.category-tag-chat-link-connector {
-  margin: 0;
-
-  .category-tag-chat-link {
-    margin-left: 0.5em;
-  }
-}
-
 .create-channel-modal-modal {
   // I know `-modal-modal`.. but I like the JS file name
   .modal-inner-container {

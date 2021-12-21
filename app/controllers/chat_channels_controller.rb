@@ -77,28 +77,9 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     end
   end
 
-  def for_tag
-    params.require(:tag_name)
-
-    tag = Tag.find_by(name: params[:tag_name])
-    raise Discourse::NotFound unless tag
-
-    render_channel_for_chatable(
-      ChatChannel.find_by(chatable: tag)
-    )
-  end
-
-  def for_category
-    params.require(:category_id)
-
-    render_channel_for_chatable(
-      ChatChannel.find_by(chatable_id: params[:category_id], chatable_type: "Category")
-    )
-  end
-
   def create
     params.require([:type, :id, :name])
-    raise Discourse::NotFound unless guardian.is_staff?
+    guardian.ensure_can_create_chat_channel!
     raise Discourse::InvalidParameters unless ["topic", "category"].include?(params[:type].downcase)
     raise Discourse::InvalidParameters.new(:name) if params[:name].length > SiteSetting.max_topic_title_length
 

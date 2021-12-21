@@ -3,57 +3,67 @@ import discourseComputed from "discourse-common/utils/decorators";
 import ModalFunctionality from "discourse/mixins/modal-functionality";
 import { ajax } from "discourse/lib/ajax";
 import { action } from "@ember/object";
+import { bind, debounce } from "@ember/runloop";
+import { inject as service } from "@ember/service";
 
 export default Controller.extend(ModalFunctionality, {
+  chat: service(),
+
   type: "category",
+  topic: null,
+  category: null,
   categoryId: null,
-  tags: null,
-  suffixEnabled: false,
-  suffix: "",
+  name: "",
 
-  @discourseComputed("tags")
-  tag(tags) {
-    return tags?.[0];
-  },
-
-  @discourseComputed("categoryId")
-  category(categoryId) {
-    return this.site.categories.findBy("id", categoryId);
-  },
-
-  @discourseComputed("type", "tag", "category", "suffix", "suffixEnabled")
-  name(type, tag, category, suffix, suffixEnabled) {
-    let name = type === "category" ? category.slug : tag;
-    if (suffixEnabled && suffix.length) {
-      name += ` - ${suffix}`
-    }
-    return name;
+  @discourseComputed("type", "topic", "category")
+  entitySelected(type, topic, category) {
+    return (
+      type && ((type === "topic" && topic) || (type === "category" && category))
+    );
   },
 
   @discourseComputed
   types() {
-    return [
-      "category",
-      "tag",
-    ].map((id) => {
+    return ["category", "topic"].map((id) => {
       return { id, name: I18n.t(`chat.create_channel.types.${id}`) };
     });
   },
 
-  @discourseComputed("type")
-  namePlaceholder(type) {
-    return ""
+  @discourseComputed("type", "topic", "category", "name")
+  createDisabled(type, topic, category, name) {
+    return !this.entitySelected || !name?.length > 0;
   },
 
   @action
-  toggleSuffix() {
-    this.set("suffixEnabled", !this.suffixEnabled);
-    return false;
+  onCategoryChange(categoryId) {
+    let category = categoryId
+      ? this.site.categories.findBy("id", categoryId)
+      : null;
+    this.setProperties({
+      categoryId: categoryId,
+      category: category,
+      name: category?.name || "",
+    });
+  },
+
+  @action
+  onTopicChange(topic) {
+    this.setProperties({
+      topic: topic,
+      name: topic.fancy_title,
+    });
+  },
+
+  @action
+  onTopicCleared() {
+    this.setProperties({
+      topic: null,
+      name: "",
+    });
   },
 
   @action
   create() {
-<<<<<<< HEAD
     if (this.createDisabled) {
       return;
     }
@@ -87,8 +97,36 @@ export default Controller.extend(ModalFunctionality, {
     });
   },
 });
-=======
 
   }
 })
->>>>>>> WIP!
+    if (this.createDisabled) {
+      return;
+    }
+
+    const data = {
+      type: this.type,
+      id: this.type === "topic" ? this.topic.id : this.categoryId,
+      name: this.name,
+    };
+    ajax("/chat/chat_channels", { method: "PUT", data })
+      .then((response) => {
+        this.chat.startTrackingChannel(response.chat_channel);
+        this.send("closeModal");
+        this.appEvents.trigger("chat:open-channel", response.chat_channel);
+      })
+      .catch((e) => {
+        this.flash(e.jqXHR.responseJSON.errors[0], "error");
+      });
+  },
+
+  onClose() {
+    this.setProperties({
+      type: "category",
+      categoryId: null,
+      category: null,
+      topic: null,
+      name: "",
+    });
+  },
+});

@@ -105,6 +105,34 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     render_serialized(chat_channel, ChatChannelSerializer)
   end
 
+  def create
+    params.require([:type, :id, :name])
+    raise Discourse::NotFound unless guardian.is_staff?
+    raise Discourse::InvalidParameters unless ["topic", "category"].include?(params[:type].downcase)
+    raise Discourse::InvalidParameters.new(:name) if params[:name].length > SiteSetting.max_topic_title_length
+
+    creating_topic_channel = params[:type].downcase === "topic"
+    chatable_type = creating_topic_channel ? "Topic" : "Category"
+    existing_args = {
+      chatable_type: chatable_type,
+      chatable_id: params[:id]
+    }
+    existing_args[:name] = params[:name] unless creating_topic_channel
+    exists = ChatChannel.exists?(existing_args)
+
+    if exists
+      translation_key = creating_topic_channel ? "channel_exists_for_topic" : "channel_exists_for_category"
+      raise Discourse::InvalidParameters.new(I18n.t("chat.errors.#{translation_key}"))
+    end
+
+    chatable = chatable_type.constantize.find_by(id: params[:id])
+    raise Discourse::NotFound unless chatable
+
+    chat_channel = ChatChannel.create!(chatable: chatable, name: params[:name])
+    chat_channel.user_chat_channel_memberships.create!(user: current_user, following: true)
+    render_serialized(chat_channel, ChatChannelSerializer)
+  end
+
   private
 
   def render_channel_for_chatable(channel)

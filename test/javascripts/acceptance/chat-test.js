@@ -1089,7 +1089,11 @@ acceptance(
       assert.notOk(query(".create-channel-modal-modal .btn.create").disabled);
 
       await click(".create-channel-modal-modal .btn.create");
-      assert.equal(currentURL(), "/chat/channel/88/Something");
+      const done = assert.async();
+      next(async () => {
+        assert.equal(currentURL(), "/chat/channel/88/Something");
+        done();
+      });
     });
   }
 );

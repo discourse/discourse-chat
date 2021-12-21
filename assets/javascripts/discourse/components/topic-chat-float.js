@@ -10,7 +10,7 @@ import {
 
 import { ajax } from "discourse/lib/ajax";
 import { equal } from "@ember/object/computed";
-import { cancel, schedule, throttle } from "@ember/runloop";
+import { cancel, next, schedule, throttle } from "@ember/runloop";
 import { inject as service } from "@ember/service";
 
 export default Component.extend({
@@ -348,11 +348,13 @@ export default Component.extend({
   @action
   switchChannel(channel) {
     if (this.site.mobileView || this.chat.onChatPage()) {
-      return this.router.transitionTo(
-        "chat.channel",
-        channel.id,
-        channel.title
-      );
+      next(() => {
+        return this.router.transitionTo(
+          "chat.channel",
+          channel.id,
+          channel.title
+        );
+      });
     }
 
     if (this.currentUser.chat_isolated) {

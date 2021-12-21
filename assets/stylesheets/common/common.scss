@@ -1626,3 +1626,36 @@ $float-height: 530px;
     font-size-adjust: var(--font-down-0);
   }
 }
+
+.create-channel-modal-modal {
+  // I know `-modal-modal`.. but I like the JS file name
+  .modal-inner-container {
+    width: 500px;
+  }
+  .choose-topic-results-list {
+    max-height: 200px;
+    overflow-y: scroll;
+  }
+  .select-kit.combo-box,
+  .create-channel-name-input,
+  #choose-topic-title {
+    width: 100%;
+    margin-bottom: 0;
+  }
+  .category-chooser {
+    .select-kit-selected-name.selected-name.choice {
+      color: var(
+        --primary-high
+      ); // Make consistent with color of placeholder text when choosing topic
+    }
+  }
+
+  .create-channel-label,
+  label[for="choose-topic-title"] {
+    margin: 1em 0 0.35em;
+  }
+  .chat-channel-title {
+    margin: 1em 0 0 0;
+    grid-column-gap: 0.25em;
+  }
+}

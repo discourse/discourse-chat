@@ -123,7 +123,7 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     chat_channel.description = params[:description] if params[:description]
     chat_channel.save!
 
-    ChatPublisher.publish_channel_name_update(chat_channel)
+    ChatPublisher.publish_channel_edit(chat_channel)
     render_serialized(chat_channel, ChatChannelSerializer)
   end
 

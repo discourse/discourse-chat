@@ -907,7 +907,7 @@ export default Component.extend({
 
   @action
   exitChat() {
-    return this.router.transitionTo(this.chat.getLastNonChatRoute());
+    return this.router.transitionTo(this.chat.lastNonChatRoute);
   },
 
   @bind

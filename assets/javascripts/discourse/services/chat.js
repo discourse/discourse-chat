@@ -34,7 +34,7 @@ export default Service.extend({
   cook: null,
   directMessageChannels: null,
   hasFetchedChannels: false,
-  hasUnreadPublicMessages: false,
+  hasUnreadMessages: false,
   idToTitleMap: null,
   lastNonChatRoute: null,
   lastUserTrackingMessageId: null,
@@ -62,6 +62,7 @@ export default Service.extend({
 
   willDestroy() {
     this._super(...arguments);
+
     if (this.currentUser?.has_chat_enabled) {
       this.set("allChannels", null);
       this._unsubscribeFromNewDmChannelUpdates();
@@ -80,29 +81,21 @@ export default Service.extend({
     }
   },
 
-  getLastNonChatRoute() {
+  get lastNonChatRoute() {
     return this.lastNonChatRoute && this.lastNonChatRoute !== "/"
       ? this.lastNonChatRoute
       : `discovery.${defaultHomepage()}`;
   },
 
-  onChatPage() {
+  get isChatPage() {
     return (
       this.router.currentRouteName === "chat" ||
       this.router.currentRouteName === "chat.channel"
     );
   },
 
-  onBrowsePage() {
+  get isBrowsePage() {
     return this.router.currentRouteName === "chat.browse";
-  },
-
-  getSidebarActive() {
-    return this.sidebarActive;
-  },
-
-  setSidebarActive(on) {
-    this.set("sidebarActive", on);
   },
 
   loadCookFunction(categories) {
@@ -156,20 +149,6 @@ export default Service.extend({
         this.presenceChannel.leave();
       }
     });
-  },
-
-  setHasUnreadMessages(value) {
-    this.set("hasUnreadMessages", value);
-  },
-  getHasUnreadMessages() {
-    return this.hasUnreadMessages;
-  },
-
-  setUnreadUrgentCount(count) {
-    this.set("unreadUrgentCount", count);
-  },
-  getUnreadUrgentCount() {
-    return this.unreadUrgentCount;
   },
 
   getDocumentTitleCount() {
@@ -566,14 +545,14 @@ export default Service.extend({
     );
 
     let hasUnreadPublic = unreadPublicCount > 0;
-    if (hasUnreadPublic !== this.getHasUnreadMessages()) {
+    if (hasUnreadPublic !== this.hasUnreadMessages) {
       headerNeedsRerender = true;
-      this.setHasUnreadMessages(hasUnreadPublic);
+      this.set("hasUnreadMessages", hasUnreadPublic);
     }
 
-    if (unreadUrgentCount !== this.getUnreadUrgentCount()) {
+    if (unreadUrgentCount !== this.unreadUrgentCount) {
       headerNeedsRerender = true;
-      this.setUnreadUrgentCount(unreadUrgentCount);
+      this.set("unreadUrgentCount", unreadUrgentCount);
     }
 
     this.currentUser.notifyPropertyChange("chat_channel_tracking_state");

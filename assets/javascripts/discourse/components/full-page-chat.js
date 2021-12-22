@@ -57,7 +57,7 @@ export default Component.extend({
 
   willRender() {
     this._super(...arguments);
-    this.set("teamsSidebarOn", this.chat.getSidebarActive());
+    this.set("teamsSidebarOn", this.chat.sidebarActive);
   },
 
   _scrollSidebarToBotton() {

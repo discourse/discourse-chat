@@ -14,12 +14,11 @@ export default Controller.extend(ModalFunctionality, {
   category: null,
   categoryId: null,
   name: "",
+  description: "",
 
   @discourseComputed("type", "topic", "category")
   entitySelected(type, topic, category) {
-    return (
-      type && ((type === "topic" && topic) || (type === "category" && category))
-    );
+    return (type === "topic" && topic) || (type === "category" && category);
   },
 
   @discourseComputed
@@ -40,8 +39,8 @@ export default Controller.extend(ModalFunctionality, {
       ? this.site.categories.findBy("id", categoryId)
       : null;
     this.setProperties({
-      categoryId: categoryId,
-      category: category,
+      categoryId,
+      category,
       name: category?.name || "",
     });
   },
@@ -49,7 +48,7 @@ export default Controller.extend(ModalFunctionality, {
   @action
   onTopicChange(topic) {
     this.setProperties({
-      topic: topic,
+      topic,
       name: topic.fancy_title,
     });
   },
@@ -94,39 +93,6 @@ export default Controller.extend(ModalFunctionality, {
       topic: null,
       name: "",
       description: "",
-    });
-  },
-});
-
-  }
-})
-    if (this.createDisabled) {
-      return;
-    }
-
-    const data = {
-      type: this.type,
-      id: this.type === "topic" ? this.topic.id : this.categoryId,
-      name: this.name,
-    };
-    ajax("/chat/chat_channels", { method: "PUT", data })
-      .then((response) => {
-        this.chat.startTrackingChannel(response.chat_channel);
-        this.send("closeModal");
-        this.appEvents.trigger("chat:open-channel", response.chat_channel);
-      })
-      .catch((e) => {
-        this.flash(e.jqXHR.responseJSON.errors[0], "error");
-      });
-  },
-
-  onClose() {
-    this.setProperties({
-      type: "category",
-      categoryId: null,
-      category: null,
-      topic: null,
-      name: "",
     });
   },
 });

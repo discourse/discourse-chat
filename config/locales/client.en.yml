@@ -96,6 +96,7 @@ en:
           label: "Choose a category to manage who can access the channel"
           none: "select one..."
         create: "Create channel"
+        description: "Description (optional)"
         name: "Channel name"
         title: "Add a channel"
         type: "Type"

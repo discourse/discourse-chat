@@ -100,7 +100,7 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     chatable = chatable_type.constantize.find_by(id: params[:id])
     raise Discourse::NotFound unless chatable
 
-    chat_channel = ChatChannel.create!(chatable: chatable, name: params[:name])
+    chat_channel = ChatChannel.create!(chatable: chatable, name: params[:name], description: params[:description])
     chat_channel.user_chat_channel_memberships.create!(user: current_user, following: true)
     render_serialized(chat_channel, ChatChannelSerializer)
   end

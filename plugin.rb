@@ -94,26 +94,6 @@ after_initialize do
   UserUpdater::OPTION_ATTR.push(:only_chat_push_notifications)
   UserUpdater::OPTION_ATTR.push(:chat_sound)
 
-  on(:category_updated) do |category|
-    next if !SiteSetting.chat_enabled
-
-    chat_channel = ChatChannel.with_deleted.find_by(chatable: category)
-
-    if category.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]
-      if chat_channel && chat_channel.trashed?
-        chat_channel.recover!
-      elsif chat_channel.nil?
-        chat_channel = ChatChannel.new(chatable: category)
-        chat_channel.save!
-      end
-
-    else
-      if chat_channel && !chat_channel.trashed?
-        chat_channel.trash!
-      end
-    end
-  end
-
   reloadable_patch do |plugin|
     Guardian.class_eval { include DiscourseChat::GuardianExtensions }
     TopicViewSerializer.class_eval { prepend DiscourseChat::TopicViewSerializerExtension }

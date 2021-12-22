@@ -1,5 +1,17 @@
 <div class="chat-browse">
-  {{#each model.channels as |channel|}}
-    {{chat-channel-settings-row channel=channel}}
-  {{/each}}
+  {{#if model.categoryChannels}}
+    <div class="category-channels">
+      {{#each model.categoryChannels as |channel|}}
+        {{chat-channel-settings-row channel=channel categoryChannel=true}}
+      {{/each}}
+    </div>
+  {{/if}}
+
+  {{#if model.topicChannels}}
+    <div class="topic-channels">
+      {{#each model.topicChannels as |channel|}}
+        {{chat-channel-settings-row channel=channel}}
+      {{/each}}
+    </div>
+  {{/if}}
 </div>

@@ -1,86 +1,90 @@
-<div class="chat-channel-settings-row">
-  {{chat-channel-title channel=channel onClick=(action "previewChannel")}}
+{{chat-channel-title channel=channel onClick=(action "previewChannel")}}
 
-  <div class="btn-container">
-    {{#if channel.following}}
-      {{d-button
-        class="chat-channel-expand-settings"
-        icon=(if channel.expanded "chevron-up" "cog")
-        action=(action "toggleExpanded")
-        disabled=loading
-        label="chat.settings.notifications"
-      }}
-      {{d-button
-        class="btn-danger chat-channel-unfollow"
-        action=(action "unfollow")
-        disabled=loading
-        label="chat.settings.unfollow"
-      }}
-    {{else}}
-      {{d-button
-        class="chat-channel-preview"
-        action=(action "previewChannel")
-        disabled=loading
-        label="chat.settings.preview"
-      }}
-      {{d-button
-        class="btn-primary chat-channel-follow"
-        action=(action "follow")
-        disabled=loading
-        label="chat.settings.follow"
-      }}
-    {{/if}}
+{{#if (and channel.description categoryChannel)}}
+  <div class="chat-channel-description">
+    {{channel.description}}
   </div>
+{{/if}}
 
-  {{#if channel.expanded}}
-    <div class="chat-channel-row-controls">
+<div class="btn-container">
+  {{#if channel.following}}
+    {{d-button
+      class="chat-channel-expand-settings"
+      icon=(if channel.expanded "chevron-up" "cog")
+      action=(action "toggleExpanded")
+      disabled=loading
+      label="chat.settings.notifications"
+    }}
+    {{d-button
+      class="btn-danger chat-channel-unfollow"
+      action=(action "unfollow")
+      disabled=loading
+      label="chat.settings.unfollow"
+    }}
+  {{else}}
+    {{d-button
+      class="chat-channel-preview"
+      action=(action "previewChannel")
+      disabled=loading
+      label="chat.settings.preview"
+    }}
+    {{d-button
+      class="btn-primary chat-channel-follow"
+      action=(action "follow")
+      disabled=loading
+      label="chat.settings.follow"
+    }}
+  {{/if}}
+</div>
 
+{{#if channel.expanded}}
+  <div class="chat-channel-row-controls">
+
+    <div class="controls">
+      <label>{{i18n "chat.settings.mute"}}</label>
+      {{combo-box
+        content=mutedOptions
+        value=channel.muted
+        valueProperty="value"
+        onChange=(action (mut channel.muted))
+      }}
+    </div>
+
+    {{#unless channel.muted}}
       <div class="controls">
-        <label>{{i18n "chat.settings.mute"}}</label>
+        <label>{{i18n "chat.settings.desktop_notification_level"}}</label>
         {{combo-box
-          content=mutedOptions
-          value=channel.muted
+          content=notificationLevels
+          value=channel.desktop_notification_level
           valueProperty="value"
-          onChange=(action (mut channel.muted))
+          onChange=(action (mut channel.desktop_notification_level))
         }}
       </div>
 
-      {{#unless channel.muted}}
-        <div class="controls">
-          <label>{{i18n "chat.settings.desktop_notification_level"}}</label>
-          {{combo-box
-            content=notificationLevels
-            value=channel.desktop_notification_level
-            valueProperty="value"
-            onChange=(action (mut channel.desktop_notification_level))
-          }}
-        </div>
-
-        <div class="controls">
-          <label>{{i18n "chat.settings.mobile_notification_level"}}</label>
-          {{combo-box
-            content=notificationLevels
-            value=channel.mobile_notification_level
-            valueProperty="value"
-            onChange=(action (mut channel.mobile_notification_level))
-          }}
-        </div>
-      {{/unless}}
-      <div class="controls save-container">
-        <label></label>
-        {{d-button
-          class="btn-primary"
-          action=(action "save")
-          disabled=loading
-          label="chat.settings.save"
-          }}
-        {{#if showSaveSuccess}}
-          <span class="notification-settings-saved">
-            {{d-icon "check"}}
-            {{i18n "chat.settings.saved"}}
-          </span>
-        {{/if}}
+      <div class="controls">
+        <label>{{i18n "chat.settings.mobile_notification_level"}}</label>
+        {{combo-box
+          content=notificationLevels
+          value=channel.mobile_notification_level
+          valueProperty="value"
+          onChange=(action (mut channel.mobile_notification_level))
+        }}
       </div>
+    {{/unless}}
+    <div class="controls save-container">
+      <label></label>
+      {{d-button
+        class="btn-primary"
+        action=(action "save")
+        disabled=loading
+        label="chat.settings.save"
+        }}
+      {{#if showSaveSuccess}}
+        <span class="notification-settings-saved">
+          {{d-icon "check"}}
+          {{i18n "chat.settings.saved"}}
+        </span>
+      {{/if}}
     </div>
-  {{/if}}
-</div>
+  </div>
+{{/if}}

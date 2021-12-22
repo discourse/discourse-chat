@@ -1,9 +1,9 @@
 {{chat-channel-title channel=channel onClick=(action "previewChannel")}}
 
 {{#if (and (eq channel.chatable_type "Category") channel.description)}}
- <div class="chat-channel-description">
-   {{channel.description}}
- </div>
+  <div class="chat-channel-description">
+    {{channel.description}}
+  </div>
 {{/if}}
 
 <div class="btn-container">

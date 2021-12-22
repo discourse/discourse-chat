@@ -2,35 +2,33 @@ import { registerUnbound } from "discourse-common/lib/helpers";
 import { htmlSafe } from "@ember/template";
 import getURL from "discourse-common/lib/get-url";
 import I18n from "I18n";
+import User from "discourse/models/user";
 
 registerUnbound("format-chat-date", function (message, details, mode) {
-  let date = new Date(message.created_at);
-  let hours = date.getHours();
-  let amPm = "";
+  let currentUser = User.current();
 
-  if (mode !== "tiny") {
-    amPm = hours > 11 ? " PM" : " AM";
-  }
+  let tz = currentUser
+    ? currentUser.resolvedTimezone(currentUser)
+    : moment.tz.guess();
 
-  hours = hours % 12;
-  if (hours === 0) {
-    hours = 12;
-  }
+  let date = moment(new Date(message.created_at), tz);
 
-  let minutes = date.getMinutes().toString().padStart(2, "0");
   let url = "";
 
   if (details) {
-    url = `chat/${details.chat_channel_id}/`;
     url = getURL(
       `/chat/channel/${details.chat_channel_id}/chat?messageId=${message.id}`
     );
   }
 
-  // not super happy to be calling moment here, maybe we should move to an attribute
-  let title = moment(date).format(I18n.t("dates.long_with_year"));
+  let title = date.format(I18n.t("dates.long_with_year"));
+
+  let display =
+    mode === "tiny"
+      ? date.format(I18n.t("chat.dates.time_tiny"))
+      : date.format(I18n.t("dates.time"));
 
   return htmlSafe(
-    `<a title='${title}' class='tc-time' href='${url}'>${hours}:${minutes} ${amPm}</a>`
+    `<a title='${title}' class='tc-time' href='${url}'>${display}</a>`
   );
 });

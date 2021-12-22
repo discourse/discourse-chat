@@ -499,6 +499,8 @@ $float-height: 530px;
     }
 
     .tc-text {
+      min-width: 0;
+
       img {
         max-width: 100%;
         height: unset;

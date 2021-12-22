@@ -811,21 +811,18 @@ $float-height: 530px;
   .scroll-stick-wrap {
     position: relative;
   }
-  .scroll-stick-wrap2 {
-    position: absolute;
-    bottom: 0;
-    margin-bottom: 1em;
-    display: flex;
-    width: 100%;
-    justify-content: center;
-  }
 
   .chat-scroll-to-bottom {
     background: var(--primary-medium);
-    padding: 0.5em;
+    bottom: 1em;
     border-radius: 100%;
+    left: 50%;
     opacity: 20%;
+    padding: 0.5em;
+    position: absolute;
+    transform: translateX(-50%);
     z-index: 2;
+
     &:hover {
       opacity: 75%;
     }

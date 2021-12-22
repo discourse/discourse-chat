@@ -655,7 +655,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
   test("message selection is not present for regular user", async function (assert) {
     updateCurrentUser({ admin: false, moderator: false });
     await visit("/chat/channel/9/Site");
-    assert.notOk(query(".chat-message .tc-msgactions-hover .select-btn"));
+    assert.notOk(exists(".chat-message .tc-msgactions-hover .select-btn"));
   });
 
   test("creating a new direct message channel works", async function (assert) {

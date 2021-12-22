@@ -18,9 +18,7 @@ export default Controller.extend(ModalFunctionality, {
 
   @discourseComputed("type", "topic", "category")
   entitySelected(type, topic, category) {
-    return (
-      type && ((type === "topic" && topic) || (type === "category" && category))
-    );
+    return (type === "topic" && topic) || (type === "category" && category);
   },
 
   @discourseComputed
@@ -41,8 +39,8 @@ export default Controller.extend(ModalFunctionality, {
       ? this.site.categories.findBy("id", categoryId)
       : null;
     this.setProperties({
-      categoryId: categoryId,
-      category: category,
+      categoryId,
+      category,
       name: category?.name || "",
     });
   },

@@ -15,7 +15,7 @@ class ChatChannelSerializer < ApplicationSerializer
              :updated_at
 
   def include_description?
-    !object.description.blank?
+    object.description.present?
   end
 
   def include_muted?

@@ -36,7 +36,6 @@ export default Service.extend({
   hasFetchedChannels: false,
   hasUnreadMessages: false,
   idToTitleMap: null,
-  lastNonChatRoute: null,
   lastUserTrackingMessageId: null,
   messageId: null,
   presence: service(),
@@ -46,6 +45,7 @@ export default Service.extend({
   sidebarActive: false,
   unreadUrgentCount: null,
   _fetchingChannels: null,
+  _lastNonChatRoute: null,
 
   init() {
     this._super(...arguments);
@@ -77,13 +77,13 @@ export default Service.extend({
       data.currentRouteName !== "chat" &&
       data.currentRouteName !== "chat.channel"
     ) {
-      this.set("lastNonChatRoute", data.url);
+      this.set("_lastNonChatRoute", data.url);
     }
   },
 
   get lastNonChatRoute() {
-    return this.lastNonChatRoute && this.lastNonChatRoute !== "/"
-      ? this.lastNonChatRoute
+    return this._lastNonChatRoute && this._lastNonChatRoute !== "/"
+      ? this._lastNonChatRoute
       : `discovery.${defaultHomepage()}`;
   },
 

@@ -1,4 +1,8 @@
 <div class="chat-browse">
+  {{#if showChatLink}}
+    {{#link-to "chat.index" class="go-to-chat"}}{{i18n "chat.go_to_chat"}}{{/link-to}}
+  {{/if}}
+
   {{#if model.categoryChannels}}
     <div class="category-channels">
       {{#each model.categoryChannels as |channel|}}

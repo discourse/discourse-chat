@@ -1,2 +1,12 @@
 import Controller from "@ember/controller";
-export default Controller.extend({});
+import discourseComputed from "discourse-common/utils/decorators";
+import { inject as service } from "@ember/service";
+
+export default Controller.extend({
+  chat: service(),
+
+  @discourseComputed
+  showChatLink() {
+    return this.site.mobileView || !this.chat.getSidebarActive();
+  },
+});

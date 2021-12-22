@@ -1308,6 +1308,10 @@ $float-height: 530px;
 }
 
 .chat-browse {
+  .go-to-chat {
+    display: block;
+    margin-bottom: 0.5em;
+  }
   .category-chat-name,
   .topic-chat-name {
     color: var(--primary);

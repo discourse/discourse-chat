@@ -34,6 +34,7 @@ en:
         title: "Get started by joining a channel"
       enable: "Enable chat"
       flag: "Flag"
+      go_to_chat: "Go to chat"
       invalid_access: "You don't have access to view this chat channel"
       invitation_notification: "<span>%{username} invited you to join a chat channel</span>"
       in_reply_to: "In reply to"

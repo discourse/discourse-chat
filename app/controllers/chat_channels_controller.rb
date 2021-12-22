@@ -102,6 +102,11 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
 
     chat_channel = ChatChannel.create!(chatable: chatable, name: params[:name], description: params[:description])
     chat_channel.user_chat_channel_memberships.create!(user: current_user, following: true)
+
+    if creating_topic_channel
+      chatable.custom_fields[DiscourseChat::HAS_CHAT_ENABLED] = true
+      chatable.save
+    end
     render_serialized(chat_channel, ChatChannelSerializer)
   end
 

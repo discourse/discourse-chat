@@ -75,9 +75,10 @@ export default Controller.extend(ModalFunctionality, {
     };
     ajax("/chat/chat_channels", { method: "PUT", data })
       .then((response) => {
-        this.chat.startTrackingChannel(response.chat_channel);
-        this.send("closeModal");
-        this.appEvents.trigger("chat:open-channel", response.chat_channel);
+        this.chat.startTrackingChannel(response.chat_channel).then(() => {
+          this.send("closeModal");
+          this.appEvents.trigger("chat:open-channel", response.chat_channel);
+        });
       })
       .catch((e) => {
         this.flash(e.jqXHR.responseJSON.errors[0], "error");

@@ -348,13 +348,11 @@ export default Component.extend({
   @action
   switchChannel(channel) {
     if (this.site.mobileView || this.chat.onChatPage()) {
-      next(() => {
-        return this.router.transitionTo(
-          "chat.channel",
-          channel.id,
-          channel.title
-        );
-      });
+      return this.router.transitionTo(
+        "chat.channel",
+        channel.id,
+        channel.title
+      );
     }
 
     if (this.currentUser.chat_isolated) {

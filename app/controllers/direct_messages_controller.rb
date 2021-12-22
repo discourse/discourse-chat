@@ -6,7 +6,7 @@ class DiscourseChat::DirectMessagesController < DiscourseChat::ChatBaseControlle
     params.require(:usernames)
 
     users = [current_user]
-    users += User.where(username: params[:usernames].split(",")).to_a if current_user.username != params[:usernames]
+    users.concat(User.where(username: params[:usernames].split(",")).to_a) if current_user.username != params[:usernames]
     user_ids = users.map(&:id).uniq
 
     direct_messages_channel = DirectMessageChannel.for_user_ids(user_ids)

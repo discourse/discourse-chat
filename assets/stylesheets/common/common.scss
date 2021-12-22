@@ -1278,6 +1278,26 @@ $float-height: 530px;
   }
 }
 
+.category-channels {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-gap: 1em;
+  .category-chat-channel {
+    padding: 1em;
+    grid-template-rows: auto auto;
+    grid-template-columns: 1fr;
+    grid-gap: 1em;
+    background: var(--secondary);
+    border: 2px solid var(--primary-low);
+    border-left: transparent;
+    .chat-channel-row-controls {
+      bottom: -235px;
+      right: unset;
+      top: unset;
+    }
+  }
+}
+
 .chat-channel-settings-row {
   display: grid;
   grid-template-columns: 1fr 210px;
@@ -1287,6 +1307,7 @@ $float-height: 530px;
   justify-content: space-between;
   padding: 0.75em 0;
   border-bottom: 1px solid var(--primary-very-low);
+  position: relative;
 
   .btn-container {
     display: flex;
@@ -1302,8 +1323,17 @@ $float-height: 530px;
   }
 
   .chat-channel-row-controls {
-    width: 100%;
-    padding: 1em 0;
+    width: auto;
+    padding: 1em;
+    position: absolute;
+    right: 0;
+    background: var(--secondary);
+    z-index: z("usercard");
+    top: 59px;
+    border: 1px solid var(--primary-low);
+    border-radius: 0.25em;
+    box-shadow: 0 12px 12px rgba(0, 0, 0, 0.15);
+    right: 1.5em;
 
     .controls {
       display: flex;

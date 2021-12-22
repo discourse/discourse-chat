@@ -48,7 +48,7 @@ export default Controller.extend(ModalFunctionality, {
   @action
   onTopicChange(topic) {
     this.setProperties({
-      topic: topic,
+      topic,
       name: topic.fancy_title,
     });
   },

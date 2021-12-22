@@ -361,4 +361,51 @@ RSpec.describe DiscourseChat::ChatChannelsController do
       expect(response.status).to eq(200)
     end
   end
+
+  describe "#edit" do
+    it "errors for non-staff" do
+      sign_in(user)
+      post "/chat/chat_channels/#{chat_channel.id}.json", params: { name: "hello" }
+      expect(response.status).to eq(403)
+    end
+
+    it "returns a 404 when chat_channel doesn't exist" do
+      sign_in(admin)
+      chat_channel.destroy!
+      post "/chat/chat_channels/#{chat_channel.id}.json", params: { name: "hello" }
+      expect(response.status).to eq(404)
+    end
+
+    it "updates name correctly and leaves description alone" do
+      sign_in(admin)
+      new_name = "newwwwwwwww name"
+      description = "this is something"
+      chat_channel.update(description: description)
+      post "/chat/chat_channels/#{chat_channel.id}.json", params: { name: new_name }
+      expect(response.status).to eq(200)
+      expect(chat_channel.reload.name).to eq(new_name)
+      expect(chat_channel.description).to eq(description)
+    end
+
+    it "updates name correctly and leaves description alone" do
+      sign_in(admin)
+      name = "beep boop"
+      new_description = "this is something"
+      chat_channel.update(name: name)
+      post "/chat/chat_channels/#{chat_channel.id}.json", params: { description: new_description }
+      expect(response.status).to eq(200)
+      expect(chat_channel.reload.name).to eq(name)
+      expect(chat_channel.description).to eq(new_description)
+    end
+
+    it "updates name and description together" do
+      sign_in(admin)
+      new_name = "beep boop"
+      new_description = "this is something"
+      post "/chat/chat_channels/#{chat_channel.id}.json", params: { name: new_name, description: new_description }
+      expect(response.status).to eq(200)
+      expect(chat_channel.reload.name).to eq(new_name)
+      expect(chat_channel.description).to eq(new_description)
+    end
+  end
 end

@@ -162,11 +162,15 @@ body.has-full-page-chat {
   .topic-chat-channel,
   .category-chat-channel {
     display: flex;
+
+    .channel-title-container {
+      width: 100%;
+    }
     .chat-channel-description {
       display: none;
     }
-    .chat-channel-title {
-      max-width: 50%;
+    .btn-container {
+      justify-self: flex-end;
     }
   }
   .chat-channel-expand-settings {

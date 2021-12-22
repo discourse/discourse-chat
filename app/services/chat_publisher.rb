@@ -100,6 +100,16 @@ module ChatPublisher
     )
   end
 
+  def self.publish_channel_name_update(chat_channel)
+    MessageBus.publish("/chat/channel-edits", {
+        chat_channel_id: chat_channel.id,
+        name: chat_channel.name,
+        description: chat_channel.description,
+      },
+      permissions(chat_channel)
+    )
+  end
+
   private
 
   def self.permissions(chat_channel)

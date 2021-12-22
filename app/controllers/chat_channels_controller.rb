@@ -110,6 +110,23 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     render_serialized(chat_channel, ChatChannelSerializer)
   end
 
+  def edit
+    guardian.ensure_can_edit_chat_channel!
+    if (params[:name]&.length || 0) > SiteSetting.max_topic_title_length
+      raise Discourse::InvalidParameters.new(:name)
+    end
+
+    chat_channel = ChatChannel.find_by(id: params[:chat_channel_id])
+    raise Discourse::NotFound unless chat_channel
+
+    chat_channel.name = params[:name] if params[:name]
+    chat_channel.description = params[:description] if params[:description]
+    chat_channel.save!
+
+    ChatPublisher.publish_channel_name_update(chat_channel)
+    render_serialized(chat_channel, ChatChannelSerializer)
+  end
+
   private
 
   def render_channel_for_chatable(channel)

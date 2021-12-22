@@ -14,20 +14,11 @@ export default Controller.extend(ModalFunctionality, {
   category: null,
   categoryId: null,
   name: "",
-<<<<<<< HEAD
-
-  @discourseComputed("type", "topic", "category")
-  entitySelected(type, topic, category) {
-    return (
-      type && ((type === "topic" && topic) || (type === "category" && category))
-    );
-=======
   description: "",
 
   @discourseComputed("type", "topic", "category")
   entitySelected(type, topic, category) {
     return (type === "topic" && topic) || (type === "category" && category);
->>>>>>> 1944e0a85de73b3c2c531a2a275d84e3f0e1b988
   },
 
   @discourseComputed
@@ -48,13 +39,8 @@ export default Controller.extend(ModalFunctionality, {
       ? this.site.categories.findBy("id", categoryId)
       : null;
     this.setProperties({
-<<<<<<< HEAD
-      categoryId: categoryId,
-      category: category,
-=======
       categoryId,
       category,
->>>>>>> 1944e0a85de73b3c2c531a2a275d84e3f0e1b988
       name: category?.name || "",
     });
   },
@@ -62,11 +48,7 @@ export default Controller.extend(ModalFunctionality, {
   @action
   onTopicChange(topic) {
     this.setProperties({
-<<<<<<< HEAD
-      topic: topic,
-=======
       topic,
->>>>>>> 1944e0a85de73b3c2c531a2a275d84e3f0e1b988
       name: topic.fancy_title,
     });
   },
@@ -89,14 +71,6 @@ export default Controller.extend(ModalFunctionality, {
       type: this.type,
       id: this.type === "topic" ? this.topic.id : this.categoryId,
       name: this.name,
-<<<<<<< HEAD
-    };
-    ajax("/chat/chat_channels", { method: "PUT", data })
-      .then((response) => {
-        this.chat.startTrackingChannel(response.chat_channel);
-        this.send("closeModal");
-        this.appEvents.trigger("chat:open-channel", response.chat_channel);
-=======
       description: this.description,
     };
     ajax("/chat/chat_channels", { method: "PUT", data })
@@ -105,7 +79,6 @@ export default Controller.extend(ModalFunctionality, {
           this.send("closeModal");
           this.appEvents.trigger("chat:open-channel", response.chat_channel);
         });
->>>>>>> 1944e0a85de73b3c2c531a2a275d84e3f0e1b988
       })
       .catch((e) => {
         this.flash(e.jqXHR.responseJSON.errors[0], "error");
@@ -119,10 +92,7 @@ export default Controller.extend(ModalFunctionality, {
       category: null,
       topic: null,
       name: "",
-<<<<<<< HEAD
-=======
       description: "",
->>>>>>> 1944e0a85de73b3c2c531a2a275d84e3f0e1b988
     });
   },
 });

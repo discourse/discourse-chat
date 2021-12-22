@@ -28,7 +28,7 @@ export default Component.extend({
     });
   },
 
-  willDestoryElement() {
+  willDestroyElement() {
     this._super(...arguments);
     this.appEvents.off("chat:refresh-channels", this, "fetchChannels");
   },

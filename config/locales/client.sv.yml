@@ -1,0 +1,86 @@
+# WARNING: Never edit this file.
+# It will be overwritten when translations are pulled from Crowdin.
+#
+# To work with us on translations, join this project:
+# https://translate.discourse.org/
+
+sv:
+  js:
+    chat:
+      all_loaded: "Visar alla meddelanden"
+      already_enabled: "Chatt är redan aktiverat för detta ämne. Vänligen uppdatera."
+      already_disabled: "Chatt är redan stängd för detta ämne. Vänligen uppdatera."
+      disabled_for_topic: "Chatt är inaktiverat för detta ämne."
+      bot: "bot"
+      create: "Skapa"
+      cancel: "Avbryt"
+      cancel_reply: "Avbryt svar"
+      cancel_edit: "Avbryt redigering"
+      category_chat_enabled: "Chatt aktiverad för kategori"
+      chat_channels: "Kanaler"
+      click_to_join: "Klicka här för att se tillgängliga kanaler."
+      close: "Stäng"
+      collapse: "Komprimera chattruta"
+      deleted: "Ett meddelande raderades. [view]"
+      delete: "Radera"
+      disable: "Inaktivera chatt"
+      edited: "(redigerad)"
+      edit_channels: "Redigera kanaler"
+      empty_state:
+        create_personal_chat: "Starta en personlig chatt"
+        follow_channels: "Följ kanaler"
+        no_public_available: "Det finns inga offentliga kanaler tillgängliga för dig att följa just nu."
+        public_available: "Det finns offentliga kanaler tillgängliga för dig att följa."
+        start_direct_message: "Du kan också starta en personlig chatt med en eller flera användare."
+        title: "Kom igång genom att gå med i en kanal"
+      enable: "Aktivera chatt"
+      flag: "Flagga"
+      invalid_access: "Du har inte tillgång till den här chattkanalen"
+      invitation_notification: "<span>%{username} bjöd in dig att gå med i en chattkanal</span>"
+      in_reply_to: "Som svar på"
+      isolate:
+        title: "Isolera chatt"
+        description: "Öppna alltid chatt i en ny flik"
+      heading: "Chatt"
+      join_channel: "Gå med i kanal"
+      new_messages: "nya meddelanden"
+      mention_notification: "<span>%{username} nämnde dig i chatt</span>"
+      mention_warning:
+        cannot_see:
+          one: "%{usernames} kan inte komma åt den här kanalen och har inte blivit meddelad."
+          other: "%{usernames} kan inte komma åt den här kanalen och har inte blivit meddelade."
+        dismiss: "avfärda"
+        invitations_sent:
+          one: "Inbjudan skickad"
+          other: "Inbjudningar skickade"
+        invite: "Bjud in till kanal"
+        without_membership:
+          one: "%{usernames} har inte gått med i den här kanalen."
+          other: "%{usernames} har inte gått med i den här kanalen."
+      no_public_channels: "Du har inte gått med i några kanaler."
+      only_chat_push_notifications:
+        title: "Skicka bara push-meddelanden för chatt"
+        description: "Blockera alla push-meddelanden som inte är chattmeddelanden från att skickas"
+      open: "Öppna chatt"
+      open_full_page: "Öppna chatt i helskärmsläge"
+      open_message: "Öppna meddelande i chatten"
+      placeholder: "chatt..."
+      placeholder_previewing: "Gå med i kanalen för att skicka ett meddelande."
+      remove_upload: "Ta bort fil"
+      incoming_webhooks:
+        description: "Beskrivning"
+        delete: "Radera"
+        emoji: "Emoji"
+        name: "Namn"
+        name_placeholder: "namn..."
+        new: "Ny inkommande webhook"
+        none: "Inga befintliga inkommande webhooks har skapats."
+        no_emoji: "Ingen emoji har valts"
+        post_to: "Posta till"
+        reset_emoji: "Återställ emoji"
+        save: "Spara"
+        select_emoji: "Välj emoji"
+        system: "system"
+        title: "Inkommande webhooks"
+        url: "URL"
+        username: "Användarnamn"

@@ -1,0 +1,153 @@
+# WARNING: Never edit this file.
+# It will be overwritten when translations are pulled from Crowdin.
+#
+# To work with us on translations, join this project:
+# https://translate.discourse.org/
+
+he:
+  js:
+    chat:
+      all_loaded: "כל ההודעות מוצגות"
+      already_enabled: "כבר מופעל צ׳אט בנושא הזה. נא לרענן."
+      already_disabled: "כבר נסגר צ׳אט בנושא הזה. נא לרענן."
+      disabled_for_topic: "הצ׳אט מושבת בנושא הזה."
+      bot: "בוט"
+      create: "יצירה"
+      cancel: "ביטול"
+      cancel_reply: "ביטול תגובה"
+      cancel_edit: "ביטול עריכה"
+      category_chat_enabled: "צ׳אט מופעל לקטגוריה"
+      chat_channels: "ערוצים"
+      click_to_join: "לחיצה כאן תציג את הערוצים הזמינים."
+      close: "סגירה"
+      collapse: "צמצום מגירת צ׳אט"
+      deleted: "הודעה נמחקה. [צפייה]"
+      delete: "מחיקה"
+      disable: "השבתת צ׳אט"
+      edited: "(נערך)"
+      edit_channels: "עריכת ערוצים"
+      empty_state:
+        create_personal_chat: "התחלת צ׳אט אישי"
+        follow_channels: "מעקב אחר ערוצים"
+        start_direct_message: "אפשר לפתוח בצ׳אט אישי עם משתמש אחד או יותר."
+        title: "אפשר להתחיל על ידי הצטרפות לערוץ"
+      enable: "הפעלת צ׳אט"
+      invalid_access: "אין לך גישה לצפות בערוץ הצ׳אט הזה"
+      in_reply_to: "בתגובה אל"
+      isolate:
+        title: "בידוד צ׳אט"
+        description: "תמיד לפתוח צ׳אט בלשונית חדשה"
+      join_channel: "הצטרפות לערוץ"
+      new_messages: "הודעות חדשות"
+      mention_notification: "<span>אוזכרת בצ׳אט על ידי %{username}</span>"
+      mention_warning:
+        cannot_see:
+          one: "ל־%{usernames} אין גישה לערוץ הזה ולא נשלחה הודעה."
+          two: "ל־%{usernames} אין גישה לערוץ הזה ולא נשלחה הודעה."
+          many: "ל־%{usernames} אין גישה לערוץ הזה ולא נשלחה הודעה."
+          other: "ל־%{usernames} אין גישה לערוץ הזה ולא נשלחה הודעה."
+        invitations_sent:
+          one: "נשלחה הזמנה"
+          two: "נשלחו הזמנות"
+          many: "נשלחו הזמנות"
+          other: "נשלחו הזמנות"
+        invite: "הזמנה לערוץ"
+      open: "פתיחת צ׳אט"
+      open_full_page: "פתיחת צ׳אט במסך מלא"
+      open_message: "פתיחת הודעה בצ׳אט"
+      placeholder: "צ׳אט…"
+      placeholder_previewing: "יש להצטרף לערוץ כדי לשלוח הודעה."
+      remove_upload: "הסרת קובץ"
+      react: "להגיב עם אמוג׳י"
+      reply: "תגובה"
+      edit: "עריכה"
+      copy_link: "העתקת קישור"
+      restore: "שחזור הודעה שנמחקה"
+      select: "בחירה"
+      return_to_list: "חזרה לרשימת הערוצים"
+      scroll_to_bottom: "גלילה לתחתית"
+      send: "שליחת הודעה בצ׳אט"
+      send_error: "משהו השתבש"
+      sound:
+        title: "צליל התראת צ׳אט שולחן עבודה"
+      sounds:
+        none: "בלי"
+        bell: "פעמון"
+        ding: "דינג"
+      title: "צ׳אט"
+      title_capitalized: "צ׳אט"
+      upload: "צירוף קובץ"
+      composer:
+        toggle_toolbar: "החלפת מצב סרגל כלים"
+      notification_levels:
+        never: "לעולם לא"
+        mention: "רק אזכורים"
+        always: "לכל פעילות"
+      settings:
+        desktop_notification_level: "התראות שולחן עבודה"
+        follow: "הצטרפות"
+        mobile_notification_level: "התראות בדחיפה לנייד"
+        mute: "השתקת ערוץ"
+        muted_on: "פעילה"
+        muted_off: "כבויה"
+        notifications: "התראות"
+        preview: "תצוגה מקדימה"
+        save: "שמירה"
+        saved: "נשמרו"
+        unfollow: "לעזוב"
+      admin:
+        title: "צ׳אט"
+      direct_messages:
+        title: "צ׳אט אישי"
+        new: "צ׳אט אישי חדש"
+        create: "קדימה"
+      incoming_webhooks:
+        back: "חזרה"
+        channel: "ערוץ"
+        channel_placeholder: "בחירת ערוץ"
+        confirm_destroy: "למחוק את ההתלייה הנכנסת? אי אפשר לבטל את זה."
+        current_emoji: "ה־Emoji הנוכחי"
+        description: "תיאור"
+        delete: "מחיקה"
+        emoji: "אמוג׳י"
+        name: "שם"
+        name_placeholder: "שם…"
+        new: "התליה נכנסת חדשה"
+        no_emoji: "לא נבחר אמוג׳י"
+        post_to: "פרסום אל"
+        reset_emoji: "איפוס אמוג׳י"
+        save: "שמירה"
+        select_emoji: "בחירת אמוג׳י"
+        system: "מערכת"
+        title: "התליות נכנסות"
+        url: "כתובת"
+        username: "שם משתמש"
+      selection:
+        cancel: "ביטול"
+        move_to_topic: "העברה לנושא"
+        error: "אירעה שגיאה בהעברת הודעות הצ׳אט"
+        title: "העברת צ׳אט לנושא"
+        new_topic:
+          title: "העברה לנושא חדש"
+        existing_topic:
+          title: "העברה לנושא קיים"
+        new_message:
+          title: "העברה להודעה חדשה"
+    notifications:
+      popup:
+        chat_message: "הודעת צ׳אט חדשה"
+    topic:
+      actions:
+        chat_enable: "הפעלת צ׳אט"
+        chat_disable: "סגירת צ׳אט"
+    discourse_automation:
+      scriptables:
+        send_chat_message:
+          fields:
+            chat_channel_id:
+              label: מזהה ערוץ צ׳אט
+            message:
+              label: הודעה
+            sender:
+              label: מוען
+              description: ברירת המחדל כמו המערכת

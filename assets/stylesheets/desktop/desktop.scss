@@ -27,19 +27,17 @@
       .tc-message {
         &.user-info-hidden {
           .tc-meta-data {
-            width: var(--large-message-left-width);
-            padding-right: 0.3em;
+            justify-content: flex-start;
+            width: var(--message-left-width);
           }
         }
-        &.is-reply {
-          grid-template-columns: var(--large-message-left-width) 1fr;
 
-          .tc-avatar {
-            width: var(--large-message-left-width);
-          }
+        &.is-reply {
+          grid-template-columns: var(--message-left-width) 1fr;
         }
+
         .tc-avatar {
-          width: var(--large-message-left-width);
+          width: var(--message-left-width);
         }
       }
     }
@@ -71,20 +69,13 @@
 .tc-message:not(.user-info-hidden) {
   padding: 0.15em 1em;
   margin-top: 0.5em;
-
-  .tc-message-container {
-    max-width: calc(100% - (var(--large-message-left-width) + 1em));
-
-    .tc-text {
-      width: 100%;
-    }
-  }
 }
 
 .tc-text {
   img:not(.emoji):not(.avatar) {
     -webkit-transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
     transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+
     &:hover {
       cursor: pointer;
       border-radius: 5px;
@@ -96,14 +87,6 @@
 
 .tc-message.user-info-hidden {
   padding: 0.15em 1em;
-
-  .tc-message-container {
-    width: 100%;
-
-    .tc-text {
-      width: calc(100% - (var(--large-message-left-width) + 1em));
-    }
-  }
 }
 
 // Full Page Styling in Core
@@ -132,10 +115,10 @@
     }
     .tc-live-pane,
     .tc-messages-scroll,
-    .tc-message:not(.highlighted) {
+    .tc-message:not(.highlighted):not(.deleted) {
       background-color: transparent;
     }
-    .tc-message:hover {
+    .tc-message:not(.highlighted):not(.deleted):hover {
       background-color: var(--primary-very-low);
     }
   }

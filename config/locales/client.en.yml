@@ -1,6 +1,8 @@
 en:
   js:
     chat:
+      dates:
+        time_tiny: "h:mm"
       all_loaded: "Showing all messages"
       already_enabled: "Chat is already enabled on this topic. Please refresh."
       already_disabled: "Chat is already closed on this topic. Please refresh."

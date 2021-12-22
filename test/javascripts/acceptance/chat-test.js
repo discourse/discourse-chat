@@ -33,7 +33,7 @@ import {
 import User from "discourse/models/user";
 import selectKit from "discourse/tests/helpers/select-kit-helper";
 
-const baseChatPretenders = (server, helper) => {
+export const baseChatPretenders = (server, helper) => {
   server.get("/chat/:chatChannelId/messages.json", () =>
     helper.response(chatView)
   );
@@ -47,7 +47,6 @@ const baseChatPretenders = (server, helper) => {
           id: 42,
           user_id: 1,
           notification_type: 29,
-          high_priority: true,
           read: false,
           high_priority: true,
           created_at: "2021-01-01 12:00:00 UTC",
@@ -95,11 +94,11 @@ function directMessageChannelPretender(
   server.get("/chat/chat_channels/75.json", () => helper.response(copy));
 }
 
-function chatChannelPretender(server, helper, changes = []) {
+export function chatChannelPretender(server, helper, changes = []) {
   // changes is [{ id: X, unread_count: Y, muted: true}]
   let copy = cloneJSON(chatChannels);
   changes.forEach((change) => {
-    let found = false;
+    let found;
     found = copy.public_channels.find((c) => c.id === change.id);
     if (found) {
       found.unread_count = change.unread_count;
@@ -398,7 +397,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
         "Avatar is not shown"
       );
       assert.notOk(
-        lastMessage.querySelector("full-name"),
+        lastMessage.querySelector(".full-name"),
         "Username is not shown"
       );
       assert.equal(
@@ -628,14 +627,14 @@ acceptance("Discourse Chat - without unread", function (needs) {
       "button is enabled as a message is selected"
     );
 
-    await click(firstMessage.querySelector("input[type='checkbox'"));
+    await click(firstMessage.querySelector("input[type='checkbox']"));
     assert.equal(
       moveToTopicBtn.disabled,
       true,
       "button is disabled when no messages are selected"
     );
 
-    await click(firstMessage.querySelector("input[type='checkbox'"));
+    await click(firstMessage.querySelector("input[type='checkbox']"));
     const allCheckboxes = queryAll(".chat-message input[type='checkbox']");
 
     await triggerEvent(allCheckboxes[allCheckboxes.length - 1], "click", {
@@ -670,7 +669,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
   test("Reacting works with no existing reactions", async function (assert) {
     await visit("/chat/channel/9/Site");
     const message = query(".chat-message");
-    assert.notOk(message.querySelector("chat-message-reaction-list"));
+    assert.notOk(message.querySelector(".chat-message-reaction-list"));
     await click(message.querySelector(".tc-msgactions .react-btn"));
     await click(message.querySelector(".emoji-picker .section-group .emoji"));
 

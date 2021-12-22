@@ -137,7 +137,9 @@
         <div class="tc-message-container">
 
           <div class="tc-meta-data">
-            {{#unless hideUserInfo}}
+            {{#if hideUserInfo}}
+              {{format-chat-date message details "tiny"}}
+            {{else}}
               <span class={{usernameClasses}}>
                 {{#if message.chat_webhook_event.username}}
                   {{message.chat_webhook_event.username}}
@@ -148,15 +150,15 @@
               {{#if message.chat_webhook_event}}
                 <span class="tc-bot-indicator">{{i18n "chat.bot"}}</span>
               {{/if}}
-            {{/unless}}
-            {{format-date message.created_at format="tiny"}}
+              {{format-chat-date message details}}
+            {{/if}}
           </div>
           {{#if message.action_code}}
             <span class="tc-action-text">
               {{html-safe actionCodeText}}
             </span>
           {{else}}
-            <p class="tc-text">
+            <div class="tc-text">
               {{html-safe message.cooked}}
               {{#if message.uploads.length}}
                 <div class="tc-uploads">
@@ -197,7 +199,7 @@
                   }}
                 </div>
               {{/if}}
-            </p>
+            </div>
           {{/if}}
           {{#if message.error}}
             <div class="tc-send-error">

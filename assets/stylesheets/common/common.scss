@@ -2,8 +2,7 @@ $header-height: 2.5rem;
 $float-height: 530px;
 
 :root {
-  --small-message-left-width: 28px;
-  --large-message-left-width: 38px;
+  --message-left-width: 38px;
   --full-page-border-radius: 12px;
   --full-page-sidebar-width: 275px;
 }
@@ -323,22 +322,30 @@ $float-height: 530px;
 
 .tc-avatar-container {
   position: relative;
+
   .avatar {
     width: 100%;
     height: auto;
   }
+
   .tc-presence-flair {
+    box-sizing: border-box;
     display: none;
     position: absolute;
-    right: 0;
-    bottom: 0;
-
+    right: -2px;
+    bottom: -2px;
     background-color: var(--success);
-    width: 30%;
-    height: 30%;
-
+    width: 8px;
+    height: 8px;
     border: 1px solid var(--secondary);
     border-radius: 50%;
+
+    .tc-messages-container & {
+      right: -1px;
+      bottom: -1px;
+      width: 10px;
+      height: 10px;
+    }
 
     &.online {
       display: block;
@@ -366,8 +373,8 @@ $float-height: 530px;
   white-space: normal;
 
   .tc-message-deleted {
-    margin-left: calc(var(--large-message-left-width) + 1em);
-    padding: 0.25em;
+    margin-left: calc(var(--message-left-width) + 0.75em);
+    padding: 0;
 
     .tc-message-expand-deleted {
       color: var(--primary-low-mid);
@@ -383,6 +390,10 @@ $float-height: 530px;
     background-color: var(--tertiary-low) !important;
   }
 
+  .tc-time {
+    color: var(--primary-high);
+  }
+
   .tc-message {
     align-items: flex-start;
     position: relative;
@@ -394,39 +405,54 @@ $float-height: 530px;
     &.tc-action {
       background-color: var(--highlight-medium);
     }
+
     &.deleted {
-      background-color: var(--danger-medium);
+      background-color: var(--danger-low);
     }
+
+    .not-mobile-device &.deleted:hover {
+      background-color: var(--danger-hover);
+    }
+
     &.transition-slow {
       transition: 2s linear background-color;
     }
+
+    .tc-avatar {
+      flex-shrink: 0;
+      width: var(--message-left-width);
+    }
+
     &.user-info-hidden {
       .tc-meta-data {
-        display: inline-block;
-        width: var(--small-message-left-width);
-        padding-right: 0.2em;
-        vertical-align: top;
+        display: flex;
+        flex-shrink: 0;
+        justify-content: center;
+        padding-top: 0.3em;
+        width: var(--message-left-width);
 
-        .relative-date {
+        .tc-time {
           visibility: hidden;
         }
       }
 
       .tc-message-container {
-        margin-left: 0;
+        flex-direction: row;
       }
 
       .tc-msgactions-hover {
         top: -2em;
       }
     }
+
     &.is-reply {
       display: grid;
-      grid-template-columns: var(--small-message-left-width) 1fr;
+      grid-template-columns: var(--message-left-width) 1fr;
       grid-template-rows: 30px auto;
       grid-template-areas:
         "replyto replyto"
         "avatar message";
+
       .tc-reply-display {
         grid-area: replyto;
         cursor: pointer;
@@ -439,24 +465,28 @@ $float-height: 530px;
         grid-area: avatar;
         width: 100%;
       }
+
       .tc-message-container {
         grid-area: message;
-        width: 100%;
       }
     }
+
     .tc-message-container {
-      margin-left: 0.5em;
+      display: flex;
+      flex-direction: column;
       flex-grow: 1;
       word-break: break-word;
       overflow-wrap: break-word;
+      min-width: 0;
     }
 
     .tc-avatar-container {
       align-items: flex-start;
       display: flex;
       cursor: pointer;
+      flex-shrink: 0;
       justify-content: center;
-      width: var(--small-message-left-width);
+      width: 28px;
     }
 
     .tc-bot-indicator {
@@ -467,9 +497,8 @@ $float-height: 530px;
       font-size: var(--font-down-2);
       margin-left: -0.25em;
     }
+
     .tc-text {
-      display: inline-block;
-      margin: 0;
       img {
         max-width: 100%;
         height: unset;
@@ -662,18 +691,19 @@ $float-height: 530px;
 
   .tc-meta-data {
     color: var(--secondary-medium);
+    width: 100%;
 
     .names {
       color: var(--secondary-low);
       display: inline-block;
       vertical-align: bottom;
-      margin-left: 0;
-      margin-right: 4px;
+      margin-right: 0.25em;
+
       &.first {
         font-weight: bold;
       }
     }
-    .relative-date {
+    .tc-time {
       font-size: var(--font-down-2);
     }
   }
@@ -694,7 +724,7 @@ $float-height: 530px;
 
   .not-mobile-device & .user-info-hidden:hover,
   .user-info-hidden.tc-message-selected {
-    .tc-meta-data .relative-date {
+    .tc-meta-data .tc-time {
       visibility: visible;
     }
   }
@@ -715,21 +745,22 @@ $float-height: 530px;
 }
 
 .tc-reply-display {
-  height: 2em;
+  display: flex;
   align-items: center;
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
   font-size: var(--font-down-1);
-  margin-bottom: -0.5em;
+  padding-left: 0.5em;
 
   .tc-reply-av {
-    padding: 0 0.5em 0 0.3em;
+    padding: 0 0.5em;
   }
 
   .tc-reply-username {
     padding: 0 0.5em 0 0;
   }
+
   .tc-reply-msg {
     align-self: baseline;
     color: var(--primary-high);
@@ -809,21 +840,18 @@ $float-height: 530px;
   .scroll-stick-wrap {
     position: relative;
   }
-  .scroll-stick-wrap2 {
-    position: absolute;
-    bottom: 0;
-    margin-bottom: 1em;
-    display: flex;
-    width: 100%;
-    justify-content: center;
-  }
 
   .chat-scroll-to-bottom {
     background: var(--primary-medium);
-    padding: 0.5em;
+    bottom: 1em;
     border-radius: 100%;
+    left: 50%;
     opacity: 20%;
+    padding: 0.5em;
+    position: absolute;
+    transform: translateX(-50%);
     z-index: 2;
+
     &:hover {
       opacity: 75%;
     }

@@ -10,7 +10,7 @@ import {
 
 import { ajax } from "discourse/lib/ajax";
 import { equal } from "@ember/object/computed";
-import { cancel, next, schedule, throttle } from "@ember/runloop";
+import { cancel, schedule, throttle } from "@ember/runloop";
 import { inject as service } from "@ember/service";
 
 export default Component.extend({

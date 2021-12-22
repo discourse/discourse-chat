@@ -1113,7 +1113,6 @@ $float-height: 530px;
   .chat-name {
     align-items: center;
     color: var(--primary-high);
-    display: flex;
 
     .emoji {
       margin: 0 0.3em;
@@ -1308,6 +1307,49 @@ $float-height: 530px;
   }
 }
 
+.chat-browse {
+  .category-chat-name,
+  .topic-chat-name {
+    color: var(--primary);
+    font-size: var(--font-up-1);
+  }
+  .category-channels {
+    .btn-container {
+      align-self: end;
+      .btn {
+        margin-left: 0;
+        margin-right: 0.5em;
+      }
+    }
+  }
+  .topic-channels {
+    margin-top: 1em;
+  }
+}
+
+.category-channels {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-gap: 1em;
+  @media screen and (max-width: 1100px) {
+    grid-template-columns: 1fr 1fr;
+  }
+  .category-chat-channel {
+    padding: 1em;
+    grid-template-rows: auto auto;
+    grid-template-columns: 1fr;
+    grid-gap: 1em;
+    background: var(--secondary);
+    border: 2px solid var(--primary-low);
+    border-left: transparent;
+    .chat-channel-row-controls {
+      bottom: -235px;
+      right: unset;
+      top: unset;
+    }
+  }
+}
+
 .chat-channel-settings-row {
   display: grid;
   grid-template-columns: 1fr 210px;
@@ -1317,6 +1359,7 @@ $float-height: 530px;
   justify-content: space-between;
   padding: 0.75em 0;
   border-bottom: 1px solid var(--primary-very-low);
+  position: relative;
 
   .btn-container {
     display: flex;
@@ -1332,8 +1375,17 @@ $float-height: 530px;
   }
 
   .chat-channel-row-controls {
-    width: 100%;
-    padding: 1em 0;
+    width: auto;
+    padding: 1em;
+    position: absolute;
+    right: 0;
+    background: var(--secondary);
+    z-index: z("usercard");
+    top: 59px;
+    border: 1px solid var(--primary-low);
+    border-radius: 0.25em;
+    box-shadow: 0 12px 12px rgba(0, 0, 0, 0.15);
+    right: 1.5em;
 
     .controls {
       display: flex;

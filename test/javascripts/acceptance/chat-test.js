@@ -615,6 +615,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
   });
 
   test("message selection for 'move to topic'", async function (assert) {
+    updateCurrentUser({ admin: true, moderator: true });
     await visit("/chat/channel/9/Site");
 
     const firstMessage = query(".chat-message");
@@ -649,6 +650,12 @@ acceptance("Discourse Chat - without unread", function (needs) {
 
     await click("#chat-move-to-topic-btn");
     assert.ok(exists(".move-chat-to-topic-modal"));
+  });
+
+  test("message selection is not present for regular user", async function (assert) {
+    updateCurrentUser({ admin: false, moderator: false });
+    await visit("/chat/channel/9/Site");
+    assert.notOk(query(".chat-message .tc-msgactions-hover .select-btn"));
   });
 
   test("creating a new direct message channel works", async function (assert) {

@@ -65,14 +65,14 @@
                   title="chat.edit"
                 }}
               {{/if}}
-              {{#unless selectingMessages}}
+              {{#if (and currentUser.staff (not selectingMessages))}}
                 {{d-button
                   class="btn-flat select-btn"
                   action=(action "selectMessage")
                   icon="tasks"
                   title="chat.select"
                 }}
-              {{/unless}}
+              {{/if}}
               {{#if showFlagButton}}
                 {{d-button
                   class="btn-flat flag-btn"

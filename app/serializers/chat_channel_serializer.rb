@@ -6,12 +6,17 @@ class ChatChannelSerializer < ApplicationSerializer
              :chatable_id,
              :chatable_type,
              :chatable_url,
+             :description,
              :last_read_message_id,
              :muted,
              :title,
              :unread_count,
              :unread_mentions,
              :updated_at
+
+  def include_description?
+    object.description.present?
+  end
 
   def include_muted?
     !object.direct_message_channel?
@@ -22,7 +27,7 @@ class ChatChannelSerializer < ApplicationSerializer
   end
 
   def title
-    object.title(scope.user)
+    object.name || object.title(scope.user)
   end
 
   def chatable

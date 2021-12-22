@@ -241,6 +241,7 @@ $float-height: 530px;
 .tc-channels {
   overflow-y: auto;
   height: 100%;
+  position: relative;
 
   .chat-unread-urgent-indicator,
   .chat-unread-indicator {
@@ -268,6 +269,9 @@ $float-height: 530px;
     margin: 0 0.5em 0.5em 0.5em;
   }
   .chat-channel-divider {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     font-weight: bold;
     padding: 0.5em;
     text-transform: uppercase;
@@ -276,6 +280,31 @@ $float-height: 530px;
   }
   .dm-creation-row .dm-user-chooser {
     width: calc(100% - 75px);
+  }
+
+  .channel-list-popup {
+    position: absolute;
+    top: 30px;
+    right: 10px;
+    padding: 0.5em 0;
+    border-radius: 6px;
+    background: var(--secondary);
+    border: 1px solid var(--primary-low);
+    z-index: 2;
+
+    .popup-link {
+      display: block;
+      text-transform: none;
+      color: var(--primary);
+      font-weight: 500;
+      font-size: var(--font-up-1);
+      padding: 0.35em 1em;
+      cursor: pointer;
+
+      &:hover {
+        background: var(--primary-very-low);
+      }
+    }
   }
 }
 
@@ -1556,15 +1585,37 @@ $float-height: 530px;
   margin-bottom: 0;
 }
 
-.tag-info .tag-chat-toggle {
-  margin-bottom: 0.5em;
-}
+.create-channel-modal-modal {
+  // I know `-modal-modal`.. but I like the JS file name
+  .modal-inner-container {
+    width: 500px;
+  }
+  .choose-topic-results-list {
+    max-height: 200px;
+    overflow-y: scroll;
+  }
+  .select-kit.combo-box,
+  .create-channel-name-input,
+  .create-channel-description-input,
+  #choose-topic-title {
+    width: 100%;
+    margin-bottom: 0;
+  }
+  .category-chooser {
+    .select-kit-selected-name.selected-name.choice {
+      color: var(
+        --primary-high
+      ); // Make consistent with color of placeholder text when choosing topic
+    }
+  }
 
-.before-create-topic-button-outlet.category-tag-chat-link-connector {
-  margin: 0;
-
-  .category-tag-chat-link {
-    margin-left: 0.5em;
+  .create-channel-label,
+  label[for="choose-topic-title"] {
+    margin: 1em 0 0.35em;
+  }
+  .chat-channel-title {
+    margin: 1em 0 0 0;
+    grid-column-gap: 0.25em;
   }
 }
 

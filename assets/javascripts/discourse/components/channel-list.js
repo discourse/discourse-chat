@@ -1,8 +1,8 @@
 import Component from "@ember/component";
-import discourseComputed from "discourse-common/utils/decorators";
+import discourseComputed, { bind } from "discourse-common/utils/decorators";
 import showModal from "discourse/lib/show-modal";
 import { action, computed } from "@ember/object";
-import { schedule } from "@ember/runloop";
+import { next, schedule } from "@ember/runloop";
 import { inject as service } from "@ember/service";
 import { empty } from "@ember/object/computed";
 
@@ -14,7 +14,9 @@ export default Component.extend({
   inSidebar: false,
   toggleSection: null,
   publicChannelsEmpty: empty("publicChannels"),
+  showPopup: false,
   chat: service(),
+  router: service(),
 
   didInsertElement() {
     this._super(...arguments);
@@ -53,6 +55,40 @@ export default Component.extend({
   },
 
   @action
+  browseChannels() {
+    this.router.transitionTo("chat.browse");
+    return false;
+  },
+
+  @action
+  pencilClicked() {
+    if (this.currentUser.staff) {
+      this.togglePopupMenu();
+    } else {
+      this.browseChannels();
+    }
+    return false;
+  },
+
+  @bind
+  togglePopupMenu() {
+    this.set("showPopup", !this.showPopup);
+    next(() => {
+      if (this.showPopup) {
+        window.addEventListener("click", this.togglePopupMenu);
+      } else {
+        window.removeEventListener("click", this.togglePopupMenu);
+      }
+    });
+  },
+
+  @action
+  openCreateChannelModal() {
+    showModal("create-channel-modal");
+    return false;
+  },
+
+  @action
   startCreatingDmChannel() {
     this.set("creatingDmChannel", true);
     schedule("afterRender", () => {
@@ -83,10 +119,5 @@ export default Component.extend({
   @action
   toggleChannelSection(section) {
     this.toggleSection(section);
-  },
-
-  @action
-  openChannelSettingsModal() {
-    showModal("chat-channel-settings");
   },
 });

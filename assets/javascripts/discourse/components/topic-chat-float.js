@@ -347,7 +347,7 @@ export default Component.extend({
 
   @action
   switchChannel(channel) {
-    if (this.site.mobileView) {
+    if (this.site.mobileView || this.chat.onChatPage()) {
       return this.router.transitionTo(
         "chat.channel",
         channel.id,

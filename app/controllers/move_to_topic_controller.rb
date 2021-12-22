@@ -5,6 +5,7 @@ class DiscourseChat::MoveToTopicController < DiscourseChat::ChatBaseController
   EXISTING_TOPIC = "existingTopic"
   NEW_MESSAGE = "newMessage"
   def create
+    guardian.ensure_can_move_chat_to_topic!
     raise Discourse::NotFound unless SiteSetting.chat_enabled
 
     params.require([:type, :chat_message_ids, :chat_channel_id])

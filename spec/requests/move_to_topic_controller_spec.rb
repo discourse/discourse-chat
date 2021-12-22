@@ -21,7 +21,7 @@ RSpec.describe DiscourseChat::MoveToTopicController do
     fab!(:admin_message_1) { Fabricate(:chat_message, chat_channel: chat_channel, user: admin) }
 
     before do
-      sign_in(user)
+      sign_in(admin)
       SiteSetting.chat_enabled = true
       SiteSetting.chat_allowed_groups = Group::AUTO_GROUPS[:everyone]
       SiteSetting.min_trust_to_create_tag = 0
@@ -35,6 +35,19 @@ RSpec.describe DiscourseChat::MoveToTopicController do
         chat_message_ids: all_messages[0..number_of_messages].map(&:id),
         chat_channel_id: chat_channel.id,
       }.merge(opts)
+    end
+
+    it "errors for regular user" do
+      sign_in(user)
+
+      post "/chat/move_to_topic.json",
+        params: build_params(
+          5,
+          {
+            type: "existingTopic",
+            topic_id: topic.id
+          })
+      expect(response.status).to eq(403)
     end
 
     it "errors when type param is invalid" do

@@ -11,6 +11,9 @@ en:
     disabled_chat: "Disabled chat"
     notifications:
       mention: "@%{username} mentioned you in chat"
+    errors:
+     channel_exists_for_category: "A channel already exists for this category and name"
+     channel_exists_for_topic: "A channel already exists for this topic"
 
   discourse_push_notifications:
     popup:

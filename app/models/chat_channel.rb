@@ -70,7 +70,7 @@ class ChatChannel < ActiveRecord::Base
   def title(user)
     case chatable_type
     when "Topic"
-      chatable.title.parameterize
+      chatable.fancy_title
     when "Category"
       chatable.name
     when "Tag"

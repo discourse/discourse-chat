@@ -1,6 +1,6 @@
 {{chat-channel-title channel=channel onClick=(action "previewChannel")}}
 
-{{#if categoryChannel}}
+{{#if (and channel.description categoryChannel)}}
   <div class="chat-channel-description">
     {{channel.description}}
   </div>

@@ -38,7 +38,7 @@ export default Component.extend({
 
   @discourseComputed("channel.chatable_type")
   chatChannelClass(channelType) {
-    return channelType.toLowerCase() + "-chat-" + "channel";
+    return `${channelType.toLowerCase()}-chat-channel`;
   },
 
   @action

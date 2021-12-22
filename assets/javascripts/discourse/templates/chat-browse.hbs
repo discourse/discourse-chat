@@ -2,7 +2,7 @@
   {{#if model.categoryChannels}}
     <div class="category-channels">
       {{#each model.categoryChannels as |channel|}}
-        {{chat-channel-settings-row channel=channel}}
+        {{chat-channel-settings-row channel=channel categoryChannel=true}}
       {{/each}}
     </div>
   {{/if}}

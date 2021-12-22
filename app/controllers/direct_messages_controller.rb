@@ -5,21 +5,19 @@ class DiscourseChat::DirectMessagesController < DiscourseChat::ChatBaseControlle
     guardian.ensure_can_chat!(current_user)
     params.require(:usernames)
 
-    users = User
-      .where(username: params[:usernames].split(","))
-      .to_a
-      .concat([current_user])
-    user_ids = users.map(&:id).uniq
-    raise Discourse::InvalidParameters if user_ids.count < 2
+    ActiveRecord::Base.transaction do
+      users = [current_user]
+      users += User.where(username: params[:usernames].split(",")).to_a if current_user.username != params[:usernames]
+      user_ids = users.map(&:id).uniq
 
-    direct_messages_channel = DirectMessageChannel.for_user_ids(user_ids)
-    if direct_messages_channel
-      chat_channel = ChatChannel.find_by(chatable: direct_messages_channel)
-    else
-      chat_channel = DiscourseChat::DirectMessageChannelCreator.create(users)
-      ChatPublisher.publish_new_direct_message_channel(chat_channel, users)
+      direct_messages_channel = DirectMessageChannel.for_user_ids(user_ids)
+      if direct_messages_channel
+        chat_channel = ChatChannel.find_by(chatable: direct_messages_channel)
+      else
+        chat_channel = DiscourseChat::DirectMessageChannelCreator.create(users)
+        ChatPublisher.publish_new_direct_message_channel(chat_channel, users)
+      end
+      render_serialized(chat_channel, ChatChannelSerializer, root: "chat_channel")
     end
-
-    render_serialized(chat_channel, ChatChannelSerializer, root: "chat_channel")
   end
 end

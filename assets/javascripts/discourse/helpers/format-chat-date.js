@@ -1,6 +1,7 @@
 import { registerUnbound } from "discourse-common/lib/helpers";
 import { htmlSafe } from "@ember/template";
 import getURL from "discourse-common/lib/get-url";
+import I18n from "I18n";
 
 registerUnbound("format-chat-date", function (message, details, mode) {
   let date = new Date(message.created_at);

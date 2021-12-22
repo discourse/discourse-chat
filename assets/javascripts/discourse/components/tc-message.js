@@ -46,7 +46,7 @@ export default Component.extend({
       .querySelector(".tc-text")
       ?.querySelectorAll(".mention")
       .forEach((node) => {
-        const mention = node.textContent.trim().substr(1);
+        const mention = node.textContent.trim().substring(1);
         const highlightable = [this.currentUser.username, HERE, ALL];
         if (highlightable.includes(mention)) {
           node.classList.add("highlighted");

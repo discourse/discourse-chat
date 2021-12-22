@@ -120,7 +120,7 @@ export default Component.extend({
   didReceiveAttrs() {
     this._super(...arguments);
 
-    this.set("targetMessageId", this.chat.getTargetMessageId());
+    this.set("targetMessageId", this.chat.messageId);
     if (this.registeredChatChannelId !== this.chatChannel.id) {
       if (this.registeredChatChannelId) {
         this.messageBus.unsubscribe(`/chat/${this.registeredChatChannelId}`);
@@ -166,7 +166,7 @@ export default Component.extend({
             return;
           }
 
-          this.chat.clearTargetMessageId();
+          this.chat.set("messageId", null);
 
           if (this.chatChannel.id !== channelId) {
             return;

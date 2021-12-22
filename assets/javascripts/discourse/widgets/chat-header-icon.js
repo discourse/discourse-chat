@@ -43,9 +43,7 @@ export default createWidget("header-chat-link", {
 
   chatLinkHtml(indicatorNode) {
     return h(
-      `a.icon${
-        this.chat.isChatPage || this.chat.getChatOpenStatus() ? ".active" : ""
-      }`,
+      `a.icon${this.chat.isChatPage || this.chat.chatOpen ? ".active" : ""}`,
       [iconNode("comment"), indicatorNode].filter(Boolean)
     );
   },

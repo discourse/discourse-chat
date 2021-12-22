@@ -1,7 +1,7 @@
 import Controller from "@ember/controller";
 import bootbox from "bootbox";
 import discourseComputed from "discourse-common/utils/decorators";
-import EmberObject, { action, computed } from "@ember/object";
+import EmberObject, { action } from "@ember/object";
 import I18n from "I18n";
 import { and } from "@ember/object/computed";
 import { ajax } from "discourse/lib/ajax";
@@ -17,14 +17,10 @@ export default Controller.extend({
   nameAndChannelValid: and("newWebhookName", "newWebhookChannelId"),
   emojiPickerIsActive: false,
 
-  sortedWebhooks: computed(
-    "model.incoming_chat_webhooks.@each.updated_at",
-    function () {
-      return this.model.incoming_chat_webhooks
-        ? this.model.incoming_chat_webhooks.sortBy("updated_at").reverse()
-        : [];
-    }
-  ),
+  @discourseComputed("model.incoming_chat_webhooks.@each.updated_at")
+  sortedWebhooks(webhooks) {
+    return webhooks?.sortBy("updated_at").reverse() || [];
+  },
 
   @discourseComputed("selectedWebhookId")
   selectedWebhook(id) {
@@ -46,12 +42,14 @@ export default Controller.extend({
     if (this.loading) {
       return;
     }
+
     this.set("loading", true);
     const data = {
       name: this.newWebhookName,
       chat_channel_id: this.newWebhookChannelId,
     };
-    ajax("/admin/plugins/chat/hooks", { data, type: "POST" })
+
+    return ajax("/admin/plugins/chat/hooks", { data, type: "POST" })
       .then((webhook) => {
         const newWebhook = EmberObject.create(webhook);
         this.set(

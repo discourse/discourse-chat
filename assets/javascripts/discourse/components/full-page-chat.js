@@ -40,10 +40,10 @@ export default Component.extend({
   didInsertElement() {
     this._super(...arguments);
 
-    this._scrollSidebarToBotton();
+    this._scrollSidebarToBottom();
     window.addEventListener("resize", this._calculateHeight, false);
     document.body.classList.add("has-full-page-chat");
-    this.chat.setFullScreenChatOpenStatus(true);
+    this.chat.set("fullScreenChatOpen", true);
     next(this._calculateHeight);
   },
 
@@ -52,7 +52,7 @@ export default Component.extend({
     this.appEvents.off("chat:refresh-channels", this, "refreshModel");
     window.removeEventListener("resize", this._calculateHeight, false);
     document.body.classList.remove("has-full-page-chat");
-    this.chat.setFullScreenChatOpenStatus(false);
+    this.chat.set("fullScreenChatOpen", false);
   },
 
   willRender() {
@@ -60,7 +60,7 @@ export default Component.extend({
     this.set("teamsSidebarOn", this.chat.sidebarActive);
   },
 
-  _scrollSidebarToBotton() {
+  _scrollSidebarToBottom() {
     if (!this.teamsSidebarOn) {
       return;
     }

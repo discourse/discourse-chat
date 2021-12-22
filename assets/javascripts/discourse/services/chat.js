@@ -29,7 +29,6 @@ const PUBLIC_CHANNEL_SORT_PRIOS = {
 export default Service.extend({
   allChannels: null,
   appEvents: service(),
-  chatOpen: false,
   chatNotificationManager: service(),
   cook: null,
   directMessageChannels: null,
@@ -44,7 +43,9 @@ export default Service.extend({
   router: service(),
   sidebarActive: false,
   unreadUrgentCount: null,
+  _chatOpen: false,
   _fetchingChannels: null,
+  _fullScreenChatOpen: false,
   _lastNonChatRoute: null,
 
   init() {
@@ -116,29 +117,22 @@ export default Service.extend({
     });
   },
 
-  setTargetMessageId(messageId) {
-    this.set("messageId", messageId);
+  get fullScreenChatOpen() {
+    return this._fullScreenChatOpen;
   },
 
-  getTargetMessageId() {
-    return this.messageId;
-  },
-
-  clearTargetMessageId() {
-    this.set("messageId", null);
-  },
-
-  setFullScreenChatOpenStatus(status) {
-    this.set("fullScreenChatOpen", status);
+  set fullScreenChatOpen(status) {
+    this.set("_fullScreenChatOpen", status);
     this._updatePresence();
   },
 
-  setChatOpenStatus(status) {
-    this.set("chatOpen", status);
-    this._updatePresence();
+  get chatOpen() {
+    return this._chatOpen;
   },
-  getChatOpenStatus() {
-    return this.chatOpen;
+
+  set chatOpen(status) {
+    this.set("_chatOpen", status);
+    this._updatePresence();
   },
 
   _updatePresence() {
@@ -280,6 +274,7 @@ export default Service.extend({
       );
     });
   },
+
   sortPublicChannels(channels) {
     return channels.sort((a, b) => {
       const typeA = PUBLIC_CHANNEL_SORT_PRIOS[a.chatable_type];
@@ -430,7 +425,7 @@ export default Service.extend({
           channel.id
         ].chat_message_id = busData.message_id;
       } else {
-        // Message from other user. Incriment trackings state
+        // Message from other user. Increment trackings state
         const trackingState = this.currentUser.chat_channel_tracking_state[
           channel.id
         ];

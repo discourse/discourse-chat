@@ -1111,7 +1111,6 @@ $float-height: 530px;
   .chat-name {
     align-items: center;
     color: var(--primary-high);
-    display: flex;
 
     .emoji {
       margin: 0 0.3em;
@@ -1306,10 +1305,32 @@ $float-height: 530px;
   }
 }
 
+.chat-browse {
+  .category-chat-name, .topic-chat-name {
+    color: var(--primary);
+    font-size: var(--font-up-1);
+  }
+  .category-channels {
+    .btn-container {
+      align-self: end;
+      .btn {
+        margin-left: 0;
+        margin-right: 0.5em;
+      }
+    }
+  }
+  .topic-channels {
+    margin-top: 1em;
+  }
+}
+
 .category-channels {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   grid-gap: 1em;
+  @media screen and (max-width: 1100px ) {
+    grid-template-columns: 1fr 1fr;
+  }
   .category-chat-channel {
     padding: 1em;
     grid-template-rows: auto auto;

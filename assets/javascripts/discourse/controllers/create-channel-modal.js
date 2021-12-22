@@ -14,6 +14,7 @@ export default Controller.extend(ModalFunctionality, {
   category: null,
   categoryId: null,
   name: "",
+  description: "",
 
   @discourseComputed("type", "topic", "category")
   entitySelected(type, topic, category) {
@@ -72,6 +73,7 @@ export default Controller.extend(ModalFunctionality, {
       type: this.type,
       id: this.type === "topic" ? this.topic.id : this.categoryId,
       name: this.name,
+      description: this.description,
     };
     ajax("/chat/chat_channels", { method: "PUT", data })
       .then((response) => {
@@ -91,6 +93,7 @@ export default Controller.extend(ModalFunctionality, {
       category: null,
       topic: null,
       name: "",
+      description: "",
     });
   },
 });

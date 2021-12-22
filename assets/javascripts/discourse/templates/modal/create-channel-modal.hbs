@@ -23,6 +23,9 @@
   <label class="create-channel-label">{{i18n "chat.create_channel.name"}}</label>
   {{input class="create-channel-name-input" type="text" value=name}}
 
+  <label class="create-channel-label">{{i18n "chat.create_channel.description"}}</label>
+  {{input class="create-channel-description-input" type="textarea" value=description}}
+
   {{#if entitySelected}}
     <div class="chat-channel-title">
       {{#if (and (eq type "topic") topic)}}

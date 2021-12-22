@@ -1,4 +1,5 @@
 import { cloneJSON } from "discourse-common/lib/object";
+
 export const messageContents = ["Hello world", "What up", "heyo!"];
 export const siteChannel = {
   chat_channel: {
@@ -12,12 +13,13 @@ export const siteChannel = {
     muted: false,
   },
 };
+
 export const directMessageChannel = {
   chat_channel: {
     chatable: {
       users: [
-        { id: 1, username: "markvanlan" },
-        { id: 2, username: "hawk" },
+        { id: 2, username: "markvanlan" },
+        { id: 3, username: "hawk" },
       ],
     },
     chatable_id: 58,
@@ -28,6 +30,19 @@ export const directMessageChannel = {
     unread_count: 0,
     muted: false,
   },
+};
+
+const otherDirectMessageChannel = {
+  chatable: {
+    users: [{ id: 1, username: "zeviltrout" }],
+  },
+  chatable_id: 58,
+  chatable_type: "DirectMessageChannel",
+  chatable_url: null,
+  id: 76,
+  title: "@zeviltrout",
+  unread_count: 0,
+  muted: false,
 };
 
 export const chatChannels = {
@@ -84,7 +99,10 @@ export const chatChannels = {
       },
     },
   ],
-  direct_message_channels: [directMessageChannel.chat_channel],
+  direct_message_channels: [
+    directMessageChannel.chat_channel,
+    otherDirectMessageChannel,
+  ],
 };
 
 function addSettingsAttrs(channel) {

@@ -319,6 +319,14 @@ export default Service.extend({
         this.currentUser.chat_channel_tracking_state[a.id]?.unread_count || 0;
       const unreadCountB =
         this.currentUser.chat_channel_tracking_state[b.id]?.unread_count || 0;
+
+      const userAIsSelf = a.chatable.users[0].id === this.currentUser.id;
+      const userBIsSelf = b.chatable.users[0].id === this.currentUser.id;
+
+      if (userAIsSelf || userBIsSelf) {
+        return userAIsSelf ? -1 : 1;
+      }
+
       if (unreadCountA === unreadCountB) {
         return new Date(a.updated_at) > new Date(b.updated_at) ? -1 : 1;
       } else {

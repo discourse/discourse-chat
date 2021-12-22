@@ -361,6 +361,10 @@ $float-height: 530px;
     background-color: var(--tertiary-low) !important;
   }
 
+  .tc-time {
+    color: var(--primary-high);
+  }
+
   .tc-message {
     align-items: flex-start;
     position: relative;
@@ -398,7 +402,7 @@ $float-height: 530px;
         padding-top: 0.3em;
         width: var(--message-left-width);
 
-        .relative-date {
+        .tc-time {
           visibility: hidden;
         }
       }
@@ -670,7 +674,7 @@ $float-height: 530px;
         font-weight: bold;
       }
     }
-    .relative-date {
+    .tc-time {
       font-size: var(--font-down-2);
     }
   }
@@ -691,7 +695,7 @@ $float-height: 530px;
 
   .not-mobile-device & .user-info-hidden:hover,
   .user-info-hidden.tc-message-selected {
-    .tc-meta-data .relative-date {
+    .tc-meta-data .tc-time {
       visibility: visible;
     }
   }

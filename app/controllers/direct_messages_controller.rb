@@ -5,12 +5,9 @@ class DiscourseChat::DirectMessagesController < DiscourseChat::ChatBaseControlle
     guardian.ensure_can_chat!(current_user)
     params.require(:usernames)
 
-    users = User
-      .where(username: params[:usernames].split(","))
-      .to_a
-      .concat([current_user])
+    users = [current_user]
+    users.concat(User.where(username: params[:usernames].split(",")).to_a) if current_user.username != params[:usernames]
     user_ids = users.map(&:id).uniq
-    raise Discourse::InvalidParameters if user_ids.count < 2
 
     direct_messages_channel = DirectMessageChannel.for_user_ids(user_ids)
     if direct_messages_channel

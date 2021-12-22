@@ -31,7 +31,7 @@ export default Component.extend({
 
   didInsertElement() {
     this._super(...arguments);
-    if (this.channel.chatable_type === "Category") {
+    if (this.categoryChannel) {
       this.element.style = `box-shadow: -4px 0px 0px #${this.channel.chatable.color}`;
     }
   },

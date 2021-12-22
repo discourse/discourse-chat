@@ -16,9 +16,9 @@ export default DiscourseRoute.extend({
 
       allChannels.forEach((channel) => {
         if (channel.chatable_type === "Category") {
-          categoryChannels.push(channel)
+          categoryChannels.push(channel);
         } else {
-          topicChannels.push(channel)
+          topicChannels.push(channel);
         }
       });
 

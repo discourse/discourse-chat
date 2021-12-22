@@ -1306,7 +1306,8 @@ $float-height: 530px;
 }
 
 .chat-browse {
-  .category-chat-name, .topic-chat-name {
+  .category-chat-name,
+  .topic-chat-name {
     color: var(--primary);
     font-size: var(--font-up-1);
   }
@@ -1328,7 +1329,7 @@ $float-height: 530px;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   grid-gap: 1em;
-  @media screen and (max-width: 1100px ) {
+  @media screen and (max-width: 1100px) {
     grid-template-columns: 1fr 1fr;
   }
   .category-chat-channel {

@@ -27,7 +27,7 @@ export default Component.extend({
   chat: service(),
   router: service(),
   tagName: "div",
-  classNameBindings: ["chatChannelClass",":chat-channel-settings-row"],
+  classNameBindings: ["chatChannelClass", ":chat-channel-settings-row"],
 
   didInsertElement() {
     this._super(...arguments);
@@ -38,7 +38,7 @@ export default Component.extend({
 
   @discourseComputed("channel.chatable_type")
   chatChannelClass(channelType) {
-    return channelType.toLowerCase() + "-chat-" + "channel"
+    return channelType.toLowerCase() + "-chat-" + "channel";
   },
 
   @action

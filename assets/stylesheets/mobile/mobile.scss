@@ -159,7 +159,8 @@ body.has-full-page-chat {
       margin-right: 0;
     }
   }
-  .topic-chat-channel, .category-chat-channel {
+  .topic-chat-channel,
+  .category-chat-channel {
     display: flex;
     .chat-channel-description {
       display: none;

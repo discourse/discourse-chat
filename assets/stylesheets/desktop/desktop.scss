@@ -170,17 +170,15 @@
   }
 }
 
-.chat-browse {
-  .chat-channel-settings-row {
-    .edit-btn {
-      opacity: 0;
-      transition: opacity .1s;
-    }
+.chat-browse .chat-channel-settings-row {
+  .edit-btn {
+    opacity: 0;
+    transition: opacity .1s;
+  }
 
-    &:hover {
-      .edit-btn {
-        opacity: 1;
-      }
+  &:hover {
+    .edit-btn {
+      opacity: 1;
     }
   }
 }

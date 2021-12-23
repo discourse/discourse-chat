@@ -673,8 +673,6 @@ $float-height: 530px;
 
   .tc-msgactions {
     background-color: var(--secondary);
-    border: 1px solid var(--primary-low);
-    border-radius: 0.25em;
     display: flex;
 
     .link-to-message-btn {
@@ -692,6 +690,11 @@ $float-height: 530px;
 
     .react-btn,
     .reply-btn {
+      border: 1px solid transparent;
+      border-bottom: 1px solid var(--primary-low);
+      border-right-width: 0;
+      border-top: 1px solid var(--primary-low);
+      margin-right: -1px;
       padding: 0.5em 0;
       width: 2.5em;
     }
@@ -699,6 +702,11 @@ $float-height: 530px;
     .more-buttons {
       .select-kit-header {
         background: none;
+        border-bottom: 1px solid var(--primary-low);
+        border-bottom-right-radius: 0.25em;
+        border-right: 1px solid var(--primary-low);
+        border-top: 1px solid var(--primary-low);
+        border-top-right-radius: 0.25em;
         padding: 0.5em 0;
         width: 2.5em;
 
@@ -725,8 +733,9 @@ $float-height: 530px;
 
     .chat-message-reaction {
       align-items: center;
-      border: none;
       border-radius: 0;
+      border-left-color: transparent;
+      border-right-color: transparent;
       box-sizing: border-box;
       font-size: var(--font-0);
       justify-content: center;
@@ -736,7 +745,13 @@ $float-height: 530px;
 
       &:first-child {
         border-bottom-left-radius: 0.25em;
+        border-left-color: var(--primary-low);
         border-top-left-radius: 0.25em;
+      }
+
+      &.reacted {
+        border-left-color: var(--tertiary-medium);
+        z-index: 1;
       }
 
       .emoji {

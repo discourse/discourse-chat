@@ -109,7 +109,7 @@ export default Component.extend({
       });
     }
 
-    if (!this.selectingMessages) {
+    if (this.currentUser.staff && !this.selectingMessages) {
       buttons.push({
         id: "selectMessage",
         name: I18n.t("chat.select"),

@@ -54,14 +54,12 @@
                   {{/d-button}}
                 {{/if}}
               {{/each}}
-              
               {{d-button
                 class="btn-flat react-btn"
                 action=(action "startReactionForMsgActions")
                 icon="discourse-emojis"
                 title="chat.react"
               }}
-
               {{#unless message.deleted_at}}
                 {{d-button
                   class="btn-flat reply-btn"

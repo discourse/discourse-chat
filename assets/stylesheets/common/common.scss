@@ -672,9 +672,8 @@ $float-height: 530px;
   }
 
   .tc-msgactions {
-    background-color: var(--secondary);
-    border: 1px solid var(--primary-low);
     border-radius: 0.25em;
+    background-color: var(--secondary);
     display: flex;
 
     .link-to-message-btn {
@@ -692,18 +691,37 @@ $float-height: 530px;
 
     .react-btn,
     .reply-btn {
-      padding: 0.5em 0.75em;
-      margin: 1px;
+      border: 1px solid transparent;
+      border-bottom-color: var(--primary-low);
+      border-right-width: 0;
+      border-top-color: var(--primary-low);
+      margin-right: -1px;
+      padding: 0.5em 0;
+      width: 2.5em;
+
+      &:first-child {
+        border-bottom-left-radius: 0.25em;
+        border-left-color: var(--primary-low);
+        border-top-left-radius: 0.25em;
+      }
     }
 
     .more-buttons {
       .select-kit-header {
         background: none;
-        padding: 0.5em 0.75em;
-        margin: 1px;
+        border-bottom: 1px solid var(--primary-low);
+        border-bottom-right-radius: 0.25em;
+        border-right: 1px solid var(--primary-low);
+        border-top: 1px solid var(--primary-low);
+        border-top-right-radius: 0.25em;
+        padding: 0.5em 0;
+        width: 2.5em;
 
         .select-kit-header-wrapper {
+          justify-content: center;
+
           .d-icon {
+            color: var(--primary-low-mid);
             margin: 0;
           }
         }
@@ -721,10 +739,28 @@ $float-height: 530px;
     }
 
     .chat-message-reaction {
-      padding: 0 0.75em;
-      margin: 1px;
       align-items: center;
+      border-radius: 0;
+      border-left-color: transparent;
+      border-right-color: transparent;
+      box-sizing: border-box;
+      font-size: var(--font-0);
       justify-content: center;
+      margin: 0;
+      margin-right: -1px;
+      padding: 0.5em 0;
+      width: 2.5em;
+
+      &:first-child {
+        border-bottom-left-radius: 0.25em;
+        border-left-color: var(--primary-low);
+        border-top-left-radius: 0.25em;
+      }
+
+      &.reacted {
+        border-left-color: var(--tertiary-medium);
+        z-index: 1;
+      }
 
       .emoji {
         height: 15px;

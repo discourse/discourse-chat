@@ -24,6 +24,10 @@ module DiscourseChat::GuardianExtensions
     is_staff?
   end
 
+  def can_edit_chat_channel?
+    is_staff?
+  end
+
   def can_move_chat_to_topic?
     is_staff?
   end

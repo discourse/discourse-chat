@@ -55,6 +55,7 @@ export default Service.extend({
       this.set("allChannels", []);
       this._subscribeToNewDmChannelUpdates();
       this._subscribeToUserTrackingChannel();
+      this._subscribeToChannelEdits();
       this.appEvents.on("page:changed", this, "_storeLastNonChatRouteInfo");
       this.presenceChannel = this.presence.getChannel("/chat/online");
       this._draftStore = new KeyValueStore(DRAFT_STORE_NAMESPACE);
@@ -68,6 +69,7 @@ export default Service.extend({
       this.set("allChannels", null);
       this._unsubscribeFromNewDmChannelUpdates();
       this._unsubscribeFromUserTrackingChannel();
+      this._unsubscribeFromChannelEdits();
       this._unsubscribeFromAllChatChannels();
       this.appEvents.off("page:changed", this, "_storeLastNonChatRouteInfo");
     }
@@ -293,14 +295,6 @@ export default Service.extend({
         this.currentUser.chat_channel_tracking_state[a.id]?.unread_count || 0;
       const unreadCountB =
         this.currentUser.chat_channel_tracking_state[b.id]?.unread_count || 0;
-
-      const userAIsSelf = a.chatable.users[0].id === this.currentUser.id;
-      const userBIsSelf = b.chatable.users[0].id === this.currentUser.id;
-
-      if (userAIsSelf || userBIsSelf) {
-        return userAIsSelf ? -1 : 1;
-      }
-
       if (unreadCountA === unreadCountB) {
         return new Date(a.updated_at) > new Date(b.updated_at) ? -1 : 1;
       } else {
@@ -397,6 +391,23 @@ export default Service.extend({
     if (existingChannel) {
       this.forceRefreshChannels();
     }
+  },
+
+  _subscribeToChannelEdits() {
+    this.messageBus.subscribe("/chat/channel-edits", (busData) => {
+      this.getChannelBy("id", busData.chat_channel_id).then((channel) => {
+        if (channel) {
+          channel.setProperties({
+            title: busData.name,
+            description: busData.description,
+          });
+        }
+      });
+    });
+  },
+
+  _unsubscribeFromChannelEdits() {
+    this.messageBus.unsubscribe("/chat/channel-edits");
   },
 
   _subscribeToNewDmChannelUpdates() {

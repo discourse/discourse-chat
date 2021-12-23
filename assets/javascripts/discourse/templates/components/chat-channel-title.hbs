@@ -9,7 +9,12 @@
       {{avatar channel.chatable.users.firstObject imageSize="medium"}}
       {{tc-user-presence-flair user=channel.chatable.users.firstObject}}
     </span>
-    <span class="dm-usernames">{{channel.chatable.users.firstObject.username}}</span>
+    <span class="dm-usernames">
+      {{#let channel.chatable.users.firstObject as |user|}}
+        <span class="dm-username">{{user.username}}</span>
+        {{plugin-outlet name="after-chat-channel-username" args=(hash user=user) connectorTagName=""}}
+      {{/let}}
+    </span>
   {{/if}}
 {{else if (eq channel.chatable_type "Tag")}}
   <span class="tag-chat-badge">

@@ -20,6 +20,18 @@ module DiscourseChat::GuardianExtensions
     @hidden_tag_names ||= DiscourseTagging.hidden_tag_names(self)
   end
 
+  def can_create_chat_channel?
+    is_staff?
+  end
+
+  def can_edit_chat_channel?
+    is_staff?
+  end
+
+  def can_move_chat_to_topic?
+    is_staff?
+  end
+
   def can_see_chat_channel?(chat_channel)
     return false unless chat_channel.chatable
 

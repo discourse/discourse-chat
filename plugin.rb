@@ -94,26 +94,6 @@ after_initialize do
   UserUpdater::OPTION_ATTR.push(:only_chat_push_notifications)
   UserUpdater::OPTION_ATTR.push(:chat_sound)
 
-  on(:category_updated) do |category|
-    next if !SiteSetting.chat_enabled
-
-    chat_channel = ChatChannel.with_deleted.find_by(chatable: category)
-
-    if category.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]
-      if chat_channel && chat_channel.trashed?
-        chat_channel.recover!
-      elsif chat_channel.nil?
-        chat_channel = ChatChannel.new(chatable: category)
-        chat_channel.save!
-      end
-
-    else
-      if chat_channel && !chat_channel.trashed?
-        chat_channel.trash!
-      end
-    end
-  end
-
   reloadable_patch do |plugin|
     Guardian.class_eval { include DiscourseChat::GuardianExtensions }
     TopicViewSerializer.class_eval { prepend DiscourseChat::TopicViewSerializerExtension }
@@ -285,12 +265,12 @@ after_initialize do
 
     # chat_channel_controller routes
     get '/chat_channels' => 'chat_channels#index'
+    put '/chat_channels' => 'chat_channels#create'
     get '/chat_channels/all' => 'chat_channels#all'
+    post '/chat_channels/:chat_channel_id' => 'chat_channels#edit'
     post '/chat_channels/:chat_channel_id/notification_settings' => 'chat_channels#notification_settings'
     post '/chat_channels/:chat_channel_id/follow' => 'chat_channels#follow'
     post '/chat_channels/:chat_channel_id/unfollow' => 'chat_channels#unfollow'
-    get '/chat_channels/for_tag/:tag_name' => 'chat_channels#for_tag'
-    get '/chat_channels/for_category/:category_id' => 'chat_channels#for_category'
     get '/chat_channels/:chat_channel_id' => 'chat_channels#show'
 
     # chat_controller routes

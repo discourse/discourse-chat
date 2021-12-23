@@ -1,4 +1,5 @@
 import Component from "@ember/component";
+import discourseComputed from "discourse-common/utils/decorators";
 import I18n from "I18n";
 import { action } from "@ember/object";
 import { ajax } from "discourse/lib/ajax";
@@ -25,6 +26,57 @@ export default Component.extend({
   mutedOptions: MUTED_OPTIONS,
   chat: service(),
   router: service(),
+  tagName: "div",
+  classNameBindings: ["chatChannelClass", ":chat-channel-settings-row"],
+
+  didInsertElement() {
+    this._super(...arguments);
+    if (this.categoryChannel) {
+      this.element.style = `box-shadow: -4px 0px 0px #${this.channel.chatable.color}`;
+    }
+  },
+
+  @discourseComputed("channel.chatable_type")
+  chatChannelClass(channelType) {
+    return `${channelType.toLowerCase()}-chat-channel`;
+  },
+
+  @action
+  startEditingName() {
+    this.setProperties({
+      newName: this.channel.title,
+      editingName: true,
+    });
+    return false;
+  },
+
+  @discourseComputed("newName")
+  saveNameEditDisabled(name) {
+    return !name || name.trim() === "";
+  },
+
+  @action
+  cancelNameChange() {
+    this.set("editingName", false);
+  },
+
+  @action
+  saveNameChange() {
+    return ajax(`/chat/chat_channels/${this.channel.id}`, {
+      method: "POST",
+      data: {
+        name: this.newName,
+      },
+    })
+      .then((response) => {
+        this.set("editingName", false);
+        this.channel.setProperties({
+          title: response.chat_channel.title,
+          description: response.chat_channel.description,
+        });
+      })
+      .catch(popupAjaxError);
+  },
 
   @action
   follow() {

@@ -1,0 +1,209 @@
+# WARNING: Never edit this file.
+# It will be overwritten when translations are pulled from Crowdin.
+#
+# To work with us on translations, join this project:
+# https://translate.discourse.org/
+
+ru:
+  js:
+    chat:
+      all_loaded: "Отобразить все сообщения"
+      already_enabled: "Чат по этой теме уже включён . Пожалуйста, обновите страницу."
+      already_disabled: "Чат по этой теме уже отключён . Пожалуйста, обновите страницу."
+      disabled_for_topic: "Чат по этой теме отключён."
+      bot: "Бот"
+      create: "Создать"
+      cancel: "Отменить"
+      cancel_reply: "Отменить ответ"
+      cancel_edit: "Отменить изменение"
+      category_chat_enabled: "Чат включён для раздела"
+      chat_channels: "Каналы"
+      click_to_join: "Нажмите здесь для просмотра доступных каналов."
+      close: "Закрыть"
+      deleted: "Сообщение было удалено. [view]"
+      delete: "Удалить"
+      disable: "Отключить чат"
+      edited: "(изменено)"
+      edit_channels: "Редактировать каналы"
+      empty_state:
+        create_personal_chat: "Начать личный чат"
+        follow_channels: "Подписаться на каналы"
+        no_public_available: "В данный момент нет доступных для подписки каналов."
+        public_available: "Есть доступные для подписки каналы."
+        start_direct_message: "Вы также можете начать личный чат с одним или несколькими пользователями."
+        title: "Начните с присоединения к каналу"
+      enable: "Включить чат"
+      invalid_access: "У вас нет доступа для просмотра этого канала"
+      invitation_notification: "<span>%{username} пригласил вас присоединиться к каналу</span>"
+      in_reply_to: "В ответ на"
+      isolate:
+        title: "Изолировать чат"
+        description: "Всегда открывать чат в новой вкладке"
+      heading: "Чат"
+      join_channel: "Присоединиться к каналу"
+      new_messages: "Новые сообщения"
+      mention_notification: "<span>Пользователь %{username} упомянул вас в чате</span>"
+      mention_warning:
+        cannot_see:
+          one: "Пользователь %{usernames} не может получить доступ к этому каналу и не был уведомлён."
+          few: "Пользователи %{usernames} не могут получить доступ к этому каналу и не были уведомлены."
+          many: "Пользователи %{usernames} не могут получить доступ к этому каналу и не были уведомлены."
+          other: "Пользователи %{usernames} не могут получить доступ к этому каналу и не были уведомлены."
+        dismiss: "Отклонить"
+        invitations_sent:
+          one: "Приглашение отправлено"
+          few: "Приглашения отправлены"
+          many: "Приглашений отправлены"
+          other: "Приглашений отправлены"
+        invite: "Пригласить в канал"
+        without_membership:
+          one: "Пользователь %{usernames} не присоединился к этому каналу."
+          few: "Пользователи %{usernames} не присоединились к этому каналу."
+          many: "Пользователи %{usernames} не присоединились к этому каналу."
+          other: "Пользователи %{usernames} не присоединились к этому каналу."
+      no_public_channels: "Вы не присоединились ни к одному каналу."
+      only_chat_push_notifications:
+        title: "Отправлять только push-уведомления в чате"
+        description: "Запретить отправку всех push-уведомлений, не связанных с чатом"
+      open: "Открыть чат"
+      open_full_page: "Открыть полноэкранный чат"
+      open_message: "Открыть сообщение в чате"
+      placeholder: "чат..."
+      placeholder_previewing: "Присоединись к каналу, чтобы отправить сообщение."
+      remove_upload: "Удалить файл"
+      react: "Реакция с помощью эмодзи"
+      reply: "Ответить"
+      edit: "Изменить"
+      copy_link: "Копировать ссылку"
+      restore: "Восстановить удаленное сообщение"
+      select: "Выбрать"
+      return_to_list: "Вернуться к списку каналов"
+      scroll_to_bottom: "Прокрутка вниз"
+      send: "Отправить сообщение в чат"
+      send_error: "Что-то пошло не так"
+      sound:
+        title: "Звук уведомления"
+      sounds:
+        none: "Нет"
+        bell: "Колокольчик"
+        ding: "Звонок"
+      title: "чат"
+      title_capitalized: "Чат"
+      toggle_enabled: "Переключить состояние чата"
+      unread_count: "(%{count} новых)"
+      upload: "Прикрепить файл"
+      you: "Вы, %{usernames}, отреагировали при помощи эмодзи %{emoji}"
+      exit: "Назад"
+      reactions:
+        only_you: "Вы отреагировали при помощи эмодзи :%{emoji}:"
+        and_others: "Вы, %{usernames}, отреагировали при помощи эмодзи :%{emoji}:"
+        only_others: "Пользователи %{usernames} отреагировали при помощи эмодзи %{emoji}:"
+        others_and_more: "Пользователи %{usernames} и %{more} отреагировали при помощи эмодзи %{emoji}:"
+        you_others_and_more: "Вы, %{usernames} и %{more}, отреагировали при помощи эмодзи %{emoji}:"
+      composer:
+        toggle_toolbar: "Переключить панель инструментов"
+      notification_levels:
+        never: "Никогда"
+        mention: "Только для упоминаний"
+        always: "Для всех действий"
+      settings:
+        desktop_notification_level: "Уведомления на рабочем столе"
+        follow: "Подписаться"
+        mobile_notification_level: "Мобильные push-уведомления"
+        mute: "Отключение канала"
+        muted_on: "Включено"
+        muted_off: "Выключено"
+        notifications: "Уведомления"
+        preview: "Предпросмотр"
+        save: "Сохранить"
+        saved: "Сохранено"
+        unfollow: "Отписаться"
+      admin:
+        title: "Чат"
+      direct_messages:
+        title: "Личный чат"
+        new: "Новый личный чат"
+        create: "Создать"
+      incoming_webhooks:
+        back: "Назад"
+        channel: "Канал"
+        channel_placeholder: "Выберите канал"
+        confirm_destroy: "Вы действительно хотите удалить этот входящий вебхук? Это действие не может быть отменено."
+        current_emoji: "Текущие эмодзи"
+        description: "Описание"
+        delete: "Удалить"
+        emoji: "Эмодзи"
+        emoji_instructions: "Если оставить эмодзи пустым, будет использоваться системный аватар."
+        name: "Наименование"
+        name_placeholder: "наименование..."
+        new: "Новый входящий вебхук"
+        none: "Входящие вебхуки не созданы."
+        no_emoji: "Эмодзи не выбрано"
+        post_to: "Отправить в"
+        reset_emoji: "Сброс эмодзи"
+        save: "Сохранить"
+        select_emoji: "Выберите эмодзи"
+        system: "Системный"
+        title: "Входящие вебхуки"
+        url: "URL"
+        username: "Имя пользователя"
+        username_instructions: "Имя бота, отправляющего сообщения на канал. Если оставить поле пустым, по умолчанию используется 'Системный'."
+      selection:
+        cancel: "Отменить"
+        move_to_topic: "Перейти к теме"
+        error: "При перемещении сообщений чата произошла ошибка"
+        title: "Переместить чат в тему"
+        new_topic:
+          title: "Переместить в новую тему"
+          instructions:
+            one: "Вы собираетесь создать новую тему и заполнить её сообщением, которое вы выбрали."
+            few: "Вы собираетесь создать новую тему и заполнить её <b>%{count}</b> сообщениями, которые вы выбрали."
+            many: "Вы собираетесь создать новую тему и заполнить её <b>%{count}</b> сообщениями, которые вы выбрали."
+            other: "Вы собираетесь создать новую тему и заполнить её <b>%{count}</b> сообщениями, которые вы выбрали."
+        existing_topic:
+          title: "Переместить в существующую тему"
+          instructions:
+            one: "Пожалуйста, выберите тему, в которую вы хотите переместить это сообщение."
+            few: "Пожалуйста, выберите тему, в которую вы хотите переместить эти <b>%{count}</b> сообщения."
+            many: "Пожалуйста, выберите тему, в которую вы хотите переместить эти <b>%{count}</b> сообщений."
+            other: "Пожалуйста, выберите тему, в которую вы хотите переместить эти <b>%{count}</b> сообщений."
+        new_message:
+          title: "Переместить в новое сообщение"
+          instructions:
+            one: "Вы собираетесь создать новое сообщение и заполнить её сообщением чата, которое вы выбрали."
+            few: "Вы собираетесь создать новое сообщение и заполнить её <b>%{count}</b> сообщениями чата, которые вы выбрали."
+            many: "Вы собираетесь создать новое сообщение и заполнить её <b>%{count}</b> сообщениями чата, которые вы выбрали."
+            other: "Вы собираетесь создать новое сообщение и заполнить её <b>%{count}</b> сообщениями чата, которые вы выбрали."
+      replying_indicator:
+        single_user: "%{username} печатает"
+        multiple_users: "%{commaSeparatedUsernames} и %{lastUsername} печатают"
+        many_users: "%{commaSeparatedUsernames} и %{count} других печатают"
+    notifications:
+      popup:
+        chat_mention: "Пользователь @%{username} упомянул вас в чате"
+        chat_message: "Новое сообщение в чате"
+      titles:
+        chat_mention: "Упоминание в чате"
+        chat_invitation: "Приглашение в чат"
+    topic:
+      actions:
+        chat_enable: "Включить чат"
+        chat_disable: "Отключить чат"
+    action_codes:
+      chat:
+        enabled: '%{who} включил <button class="btn-link open-chat">чат</button> %{when}'
+        disabled: "%{who} закрыл чат %{when}"
+        post_created: "создал новое сообщение: %{excerpt}"
+        generic_small_action: "выполнил действие по управлению темой"
+    discourse_automation:
+      scriptables:
+        send_chat_message:
+          title: Отправить сообщение в чат
+          fields:
+            chat_channel_id:
+              label: ID канала чата
+            message:
+              label: Сообщение
+            sender:
+              label: Отправитель
+              description: Системные значения по умолчанию

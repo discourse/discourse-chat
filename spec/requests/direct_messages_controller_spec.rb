@@ -23,48 +23,42 @@ RSpec.describe DiscourseChat::DirectMessagesController do
   end
 
   describe "#create" do
-    it "creates a new dm channel with one username provided" do
-      expect {
-        post "/chat/direct_messages/create.json", params: { usernames: user1.username }
-      }.to change { DirectMessageChannel.count }.by(1)
-      expect(DirectMessageChannel.last.direct_message_users.map(&:user_id))
-        .to match_array([user.id, user1.id])
+    shared_examples "creating dms" do
+      it "creates a new dm channel with username(s) provided" do
+        expect {
+          post "/chat/direct_messages/create.json", params: { usernames: usernames }
+        }.to change { DirectMessageChannel.count }.by(1)
+        expect(DirectMessageChannel.last.direct_message_users.map(&:user_id))
+          .to match_array(direct_message_user_ids)
+      end
+
+      it "returns existing dm channel if one exists for username(s)" do
+        create_dm_channel(direct_message_user_ids)
+        expect {
+          post "/chat/direct_messages/create.json", params: { usernames: usernames }
+        }.to change { DirectMessageChannel.count }.by(0)
+      end
     end
 
-    it "returns existing dm channel if one exists for 2 users" do
-      create_dm_channel([user.id, user1.id])
-      expect {
-        post "/chat/direct_messages/create.json", params: { usernames: user1.username }
-      }.to change { DirectMessageChannel.count }.by(0)
+    describe "dm with one other user" do
+      let(:usernames) { user1.username }
+      let(:direct_message_user_ids) { [user.id, user1.id] }
+
+      include_examples "creating dms"
     end
 
-    it "creates a new dm channel with multiple username provided" do
-      usernames = [user1, user2, user3].map(&:username).join(",")
-      expect {
-        post "/chat/direct_messages/create.json", params: { usernames: usernames }
-      }.to change { DirectMessageChannel.count }.by(1)
-      expect(DirectMessageChannel.last.direct_message_users.map(&:user_id))
-        .to match_array([user.id, user1.id, user2.id, user3.id])
+    describe "dm with myself" do
+      let(:usernames) { user.username }
+      let(:direct_message_user_ids) { [user.id] }
+
+      include_examples "creating dms"
     end
 
-    it "returns existing dm channel if one exists for multiple users" do
-      users = [user, user1, user2, user3]
-      create_dm_channel(users.map(&:id))
-      usernames = users.map(&:username).join(",")
-      expect {
-        post "/chat/direct_messages/create.json", params: { usernames: usernames }
-      }.to change { DirectMessageChannel.count }.by(0)
-    end
+    describe "dm with two other users" do
+      let(:usernames) { [user1, user2, user3].map(&:username).join(",") }
+      let(:direct_message_user_ids) { [user.id, user1.id, user2.id, user3.id] }
 
-    it "creates a new dm channel when a multi-channel exists with 2 of the users" do
-      users = [user, user1, user2]
-      create_dm_channel(users.map(&:id))
-      expect {
-        post "/chat/direct_messages/create.json", params: { usernames: user2.username }
-      }.to change { DirectMessageChannel.count }.by(1)
-      expect(DirectMessageChannel.last.direct_message_users.map(&:user_id))
-        .to match_array([user.id, user2.id])
-
+      include_examples "creating dms"
     end
 
     it "creates UserChatChannelMembership records" do

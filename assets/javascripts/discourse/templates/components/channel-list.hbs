@@ -1,70 +1,81 @@
-{{#conditional-loading-spinner condition=this.loading}}
-  <div class="chat-channel-divider">
-    {{#if inSidebar}}
-      <span
-        class="title-caret"
-        id="public-channels-caret"
-        role="button"
-        title="toggle nav list"
-        {{action "toggleChannelSection" "public-channels"}}
-        data-toggleable="public-channels"
-      >
-        {{d-icon "angle-up"}}
-      </span>
-    {{/if}}
-    {{i18n "chat.chat_channels"}}
-    {{#link-to "chat.browse" class="edit-channel-membership-btn title-action" title=(i18n "chat.edit_channels")}}
-      {{d-icon "pencil-alt"}}
-    {{/link-to}}
-  </div>
-  <div id="public-channels" class={{publicChannelClasses}}>
-    {{#if publicChannelsEmpty}}
-      <div class="public-channel-empty-message">
-        {{i18n "chat.no_public_channels"}}
-        {{#link-to "chat.index"}}
-          {{i18n "chat.click_to_join"}}
-        {{/link-to}}
-      </div>
-    {{else}}
-      {{#each publicChannels as |channel|}}
-        {{chat-channel-row channel=channel switchChannel=onSelect}}
-      {{/each}}
-    {{/if}}
-  </div>
-
-  <div class="chat-channel-divider">
-    {{#if inSidebar}}
-      <span
-        class="title-caret"
-        id="direct-message-channels-caret"
-        role="button"
-        title="toggle nav list"
-        {{action "toggleChannelSection" "direct-message-channels"}}
-        data-toggleable="direct-message-channels"
-      >
-        {{d-icon "angle-up"}}
-      </span>
-    {{/if}}
-    {{i18n "chat.direct_messages.title"}}
-    {{#unless creatingDmChannel}}
-      {{flat-button
-        class="new-dm keep-mobile-sidebar-open"
-        icon="plus"
-        action=(action "startCreatingDmChannel")
-        title="chat.direct_messages.new"
-      }}
-    {{/unless}}
-  </div>
-  {{#if creatingDmChannel}}
-    {{dm-creator
-      afterCreate=(action "afterDmCreation")
-      onCancel=(action "cancelDmCreation")
-    }}
+<div class="chat-channel-divider">
+  {{#if inSidebar}}
+    <span
+      class="title-caret"
+      id="public-channels-caret"
+      role="button"
+      title="toggle nav list"
+      {{action "toggleChannelSection" "public-channels"}}
+      data-toggleable="public-channels"
+    >
+      {{d-icon "angle-up"}}
+    </span>
   {{/if}}
+  {{i18n "chat.chat_channels"}}
+  <a href onClick={{action "pencilClicked"}} class="edit-channel-membership-btn title-action">
+    {{d-icon "pencil-alt"}}
+  </a>
 
-  <div id="direct-message-channels" class={{directMessageChannelClasses}}>
-    {{#each sortedDirectMessageChannels as |channel|}}
+  {{#if showPopup}}
+    <div class="channel-list-popup">
+      <a href onClick={{action "browseChannels"}} class="popup-link browse">
+        {{i18n "chat.channel_list_popup.browse"}}
+      </a>
+      <a href onClick={{action "openCreateChannelModal"}} class="popup-link create">
+        {{i18n "chat.channel_list_popup.create"}}
+      </a>
+    </div>
+  {{/if}}
+</div>
+
+<div id="public-channels" class={{publicChannelClasses}}>
+  {{#if publicChannelsEmpty}}
+    <div class="public-channel-empty-message">
+      {{i18n "chat.no_public_channels"}}
+      {{#link-to "chat.index"}}
+        {{i18n "chat.click_to_join"}}
+      {{/link-to}}
+    </div>
+  {{else}}
+    {{#each publicChannels as |channel|}}
       {{chat-channel-row channel=channel switchChannel=onSelect}}
     {{/each}}
-  </div>
-{{/conditional-loading-spinner}}
+  {{/if}}
+</div>
+
+<div class="chat-channel-divider">
+  {{#if inSidebar}}
+    <span
+      class="title-caret"
+      id="direct-message-channels-caret"
+      role="button"
+      title="toggle nav list"
+      {{action "toggleChannelSection" "direct-message-channels"}}
+      data-toggleable="direct-message-channels"
+    >
+      {{d-icon "angle-up"}}
+    </span>
+  {{/if}}
+  {{i18n "chat.direct_messages.title"}}
+  {{#unless creatingDmChannel}}
+    {{flat-button
+      class="new-dm keep-mobile-sidebar-open"
+      icon="plus"
+      action=(action "startCreatingDmChannel")
+      title="chat.direct_messages.new"
+    }}
+  {{/unless}}
+</div>
+
+{{#if creatingDmChannel}}
+  {{dm-creator
+    afterCreate=(action "afterDmCreation")
+    onCancel=(action "cancelDmCreation")
+  }}
+{{/if}}
+
+<div id="direct-message-channels" class={{directMessageChannelClasses}}>
+  {{#each sortedDirectMessageChannels as |channel|}}
+    {{chat-channel-row channel=channel switchChannel=onSelect}}
+  {{/each}}
+</div>

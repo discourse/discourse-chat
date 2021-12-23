@@ -289,92 +289,123 @@ RSpec.describe DiscourseChat::ChatChannelsController do
     end
   end
 
-  describe "#for_tag" do
-    fab!(:tag_with_channel) { Fabricate(:tag) }
-    fab!(:tag_without_channel) { Fabricate(:tag) }
-    fab!(:tag_channel) { Fabricate(:chat_channel, chatable: tag_with_channel) }
+  describe "#create" do
+    fab!(:category2) { Fabricate(:category) }
+    fab!(:topic2) { Fabricate(:topic) }
 
-    it "errors for anon" do
-      get "/chat/chat_channels/for_tag/#{tag_with_channel.name}.json"
+    it "errors for non-staff" do
+      sign_in(user)
+      put "/chat/chat_channels.json", params: { type: "category", id: category2.id, name: "hi" }
       expect(response.status).to eq(403)
     end
 
-    it "returns the tag's chat channel" do
-      sign_in(user)
-      get "/chat/chat_channels/for_tag/#{tag_with_channel.name}.json"
+    it "errors when type is not category/topic" do
+      sign_in(admin)
+      put "/chat/chat_channels.json", params: { type: "beeep", id: category2.id, name: "hi" }
+      expect(response.status).to eq(400)
+    end
+
+    it "errors when chatable doesn't exist" do
+      sign_in(admin)
+      put "/chat/chat_channels.json", params: { type: "category", id: Category.last.id + 1, name: "hi" }
+      expect(response.status).to eq(404)
+    end
+
+    it "errors when the name is over SiteSetting.max_topic_title_length" do
+      sign_in(admin)
+      SiteSetting.max_topic_title_length = 10
+      put "/chat/chat_channels.json", params: { type: "topic", id: topic2.id, name: "Hi, this is over 10 characters" }
+      expect(response.status).to eq(400)
+    end
+
+    it "errors when channel for topic already exists" do
+      sign_in(admin)
+      ChatChannel.create!(chatable: topic2, name: "hihihi")
+
+      put "/chat/chat_channels.json", params: { type: "topic", id: topic2.id, name: "hi" }
+      expect(response.status).to eq(400)
+    end
+
+    it "creates a channel for topic that doesn't already have a channel" do
+      sign_in(admin)
+      expect {
+        put "/chat/chat_channels.json", params: { type: "topic", id: topic2.id, name: "Different name!" }
+      }.to change { ChatChannel.where(chatable: topic2).count }.by(1)
       expect(response.status).to eq(200)
-      expect(response.parsed_body["chat_channel"]["id"]).to eq(tag_channel.id)
     end
 
-    it "returns nil if a chat channel doesn't exist for tag" do
-      sign_in(user)
-      get "/chat/chat_channels/for_tag/#{tag_without_channel.name}.json"
+    it "errors when channel for category and same name already exists" do
+      sign_in(admin)
+      name = "beep boop hi"
+      ChatChannel.create!(chatable: category2, name: name)
+
+      put "/chat/chat_channels.json", params: { type: "category", id: category2.id, name: name }
+      expect(response.status).to eq(400)
+    end
+
+    it "creates a channel for category and if name is unique" do
+      sign_in(admin)
+      ChatChannel.create!(chatable: category2, name: "this is a name")
+
+      expect {
+        put "/chat/chat_channels.json", params: { type: "category", id: category2.id, name: "Different name!" }
+      }.to change { ChatChannel.where(chatable: category2).count }.by(1)
       expect(response.status).to eq(200)
-      expect(response.parsed_body["chat_channel"]).to be_nil
     end
 
-    describe "hidden tag" do
-      let(:hidden_tag_name) { "hidden1" }
-      before do
-        create_hidden_tags([hidden_tag_name])
-        ChatChannel.create!(chatable: Tag.find_by(name: hidden_tag_name))
-      end
-
-      it "does not return the channel for normal user" do
-        sign_in(user)
-        get "/chat/chat_channels/for_tag/#{hidden_tag_name}.json"
-        expect(response.status).to eq(403)
-      end
-
-      it "returns the channel for admin" do
-        sign_in(admin)
-        get "/chat/chat_channels/for_tag/#{hidden_tag_name}.json"
-        expect(response.status).to eq(200)
-        expect(response.parsed_body["chat_channel"]["id"]).to eq(
-          ChatChannel.find_by(chatable: Tag.find_by(name: hidden_tag_name)).id
-        )
-      end
+    it "creates a user_chat_channel_membership when the channel is created" do
+      sign_in(admin)
+      expect {
+        put "/chat/chat_channels.json", params: { type: "category", id: category2.id, name: "hi hi" }
+      }.to change { UserChatChannelMembership.where(user: admin).count }.by(1)
+      expect(response.status).to eq(200)
     end
-
   end
 
-  describe "#for_category" do
-    fab!(:category_without_channel) { Fabricate(:category) }
-    fab!(:category_channel) { Fabricate(:chat_channel, chatable: category) }
-
-    fab!(:private_category) { Fabricate(:private_category, group: Fabricate(:group)) }
-    fab!(:private_category_channel) { Fabricate(:chat_channel, chatable: private_category) }
-
-    it "errors for anon" do
-      get "/chat/chat_channels/for_category/#{category.id}.json"
+  describe "#edit" do
+    it "errors for non-staff" do
+      sign_in(user)
+      post "/chat/chat_channels/#{chat_channel.id}.json", params: { name: "hello" }
       expect(response.status).to eq(403)
     end
 
-    it "returns the categories's chat channel" do
-      sign_in(user)
-      get "/chat/chat_channels/for_category/#{category.id}.json"
-      expect(response.status).to eq(200)
-      expect(response.parsed_body["chat_channel"]["id"]).to eq(category_channel.id)
-    end
-
-    it "errors when user tries to access staff channel" do
-      sign_in(user)
-      get "/chat/chat_channels/for_category/#{private_category.id}.json"
-      expect(response.status).to eq(403)
-    end
-
-    it "returns private channel for admin" do
+    it "returns a 404 when chat_channel doesn't exist" do
       sign_in(admin)
-      get "/chat/chat_channels/for_category/#{private_category.id}.json"
-      expect(response.status).to eq(200)
-      expect(response.parsed_body["chat_channel"]["id"]).to eq(private_category_channel.id)
+      chat_channel.destroy!
+      post "/chat/chat_channels/#{chat_channel.id}.json", params: { name: "hello" }
+      expect(response.status).to eq(404)
     end
 
-    it "returns nil if a chat channel doesn't exist for category" do
-      sign_in(user)
-      get "/chat/chat_channels/for_category/#{category_without_channel.id}.json"
+    it "updates name correctly and leaves description alone" do
+      sign_in(admin)
+      new_name = "newwwwwwwww name"
+      description = "this is something"
+      chat_channel.update(description: description)
+      post "/chat/chat_channels/#{chat_channel.id}.json", params: { name: new_name }
       expect(response.status).to eq(200)
-      expect(response.parsed_body["chat_channel"]).to eq(nil)
+      expect(chat_channel.reload.name).to eq(new_name)
+      expect(chat_channel.description).to eq(description)
+    end
+
+    it "updates name correctly and leaves description alone" do
+      sign_in(admin)
+      name = "beep boop"
+      new_description = "this is something"
+      chat_channel.update(name: name)
+      post "/chat/chat_channels/#{chat_channel.id}.json", params: { description: new_description }
+      expect(response.status).to eq(200)
+      expect(chat_channel.reload.name).to eq(name)
+      expect(chat_channel.description).to eq(new_description)
+    end
+
+    it "updates name and description together" do
+      sign_in(admin)
+      new_name = "beep boop"
+      new_description = "this is something"
+      post "/chat/chat_channels/#{chat_channel.id}.json", params: { name: new_name, description: new_description }
+      expect(response.status).to eq(200)
+      expect(chat_channel.reload.name).to eq(new_name)
+      expect(chat_channel.description).to eq(new_description)
     end
   end
 end

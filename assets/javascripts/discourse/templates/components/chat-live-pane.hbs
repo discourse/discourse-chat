@@ -56,11 +56,14 @@
 </div>
 
 <div class="scroll-stick-wrap">
-  <div class="scroll-stick-wrap2">
-    <a href title={{i18n "chat.scroll_to_bottom"}} class="btn btn-flat chat-scroll-to-bottom {{if this.stickyScroll "hidden"}}" {{on "click" (action "restickScrolling")}}>
-      {{d-icon "arrow-down"}}
-    </a>
-  </div>
+  <a
+    href
+    title={{i18n "chat.scroll_to_bottom"}}
+    class="btn btn-flat chat-scroll-to-bottom {{if this.stickyScroll "hidden"}}"
+    {{on "click" (action "restickScrolling")}}
+  >
+    {{d-icon "arrow-down"}}
+  </a>
 </div>
 
 {{#if expanded}}
@@ -95,9 +98,9 @@
       onValueChange=(action "composerValueChanged")
       previewing=previewing
       fullPage=fullPage
+      chatChannel=chatChannel
     }}
   {{/if}}
 
   {{chat-replying-indicator chatChannelId=chatChannel.id}}
 {{/if}}
-

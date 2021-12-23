@@ -54,6 +54,7 @@ export default Service.extend({
       this.set("allChannels", []);
       this._subscribeToNewDmChannelUpdates();
       this._subscribeToUserTrackingChannel();
+      this._subscribeToChannelEdits();
       this.appEvents.on("page:changed", this, "_storeLastNonChatRouteInfo");
       this.presenceChannel = this.presence.getChannel("/chat/online");
       this._draftStore = new KeyValueStore(DRAFT_STORE_NAMESPACE);
@@ -66,6 +67,7 @@ export default Service.extend({
       this.set("allChannels", null);
       this._unsubscribeFromNewDmChannelUpdates();
       this._unsubscribeFromUserTrackingChannel();
+      this._unsubscribeFromChannelEdits();
       this._unsubscribeFromAllChatChannels();
       this.appEvents.off("page:changed", this, "_storeLastNonChatRouteInfo");
     }
@@ -415,6 +417,23 @@ export default Service.extend({
     if (existingChannel) {
       this.forceRefreshChannels();
     }
+  },
+
+  _subscribeToChannelEdits() {
+    this.messageBus.subscribe("/chat/channel-edits", (busData) => {
+      this.getChannelBy("id", busData.chat_channel_id).then((channel) => {
+        if (channel) {
+          channel.setProperties({
+            title: busData.name,
+            description: busData.description,
+          });
+        }
+      });
+    });
+  },
+
+  _unsubscribeFromChannelEdits() {
+    this.messageBus.unsubscribe("/chat/channel-edits");
   },
 
   _subscribeToNewDmChannelUpdates() {

@@ -47,7 +47,6 @@ const baseChatPretenders = (server, helper) => {
           id: 42,
           user_id: 1,
           notification_type: 29,
-          high_priority: true,
           read: false,
           high_priority: true,
           created_at: "2021-01-01 12:00:00 UTC",
@@ -99,7 +98,7 @@ function chatChannelPretender(server, helper, changes = []) {
   // changes is [{ id: X, unread_count: Y, muted: true}]
   let copy = cloneJSON(chatChannels);
   changes.forEach((change) => {
-    let found = false;
+    let found;
     found = copy.public_channels.find((c) => c.id === change.id);
     if (found) {
       found.unread_count = change.unread_count;
@@ -157,6 +156,12 @@ acceptance("Discourse Chat - without unread", function (needs, hooks) {
       });
     });
 
+    server.put(
+      "/chat/:chat_channel_id/react/:message_id.json",
+      helper.response
+    );
+
+    server.put("/chat/:chat_channel_id/invite", helper.response);
     server.post("/chat/direct_messages/create.json", () => {
       return helper.response({
         chat_channel: {
@@ -174,13 +179,6 @@ acceptance("Discourse Chat - without unread", function (needs, hooks) {
         },
       });
     });
-
-    server.put(
-      "/chat/:chat_channel_id/react/:message_id.json",
-      helper.response
-    );
-
-    server.put("/chat/:chat_channel_id/invite", helper.response);
   });
 
   test("Clicking mention notification from outside chat opens the float", async function (assert) {
@@ -417,7 +415,7 @@ acceptance("Discourse Chat - without unread", function (needs, hooks) {
         "Avatar is not shown"
       );
       assert.notOk(
-        lastMessage.querySelector("full-name"),
+        lastMessage.querySelector(".full-name"),
         "Username is not shown"
       );
       assert.equal(
@@ -638,6 +636,7 @@ acceptance("Discourse Chat - without unread", function (needs, hooks) {
   });
 
   test("message selection for 'move to topic'", async function (assert) {
+    updateCurrentUser({ admin: true, moderator: true });
     await visit("/chat/channel/9/Site");
 
     const firstMessage = query(".chat-message");
@@ -653,14 +652,14 @@ acceptance("Discourse Chat - without unread", function (needs, hooks) {
       "button is enabled as a message is selected"
     );
 
-    await click(firstMessage.querySelector("input[type='checkbox'"));
+    await click(firstMessage.querySelector("input[type='checkbox']"));
     assert.equal(
       moveToTopicBtn.disabled,
       true,
       "button is disabled when no messages are selected"
     );
 
-    await click(firstMessage.querySelector("input[type='checkbox'"));
+    await click(firstMessage.querySelector("input[type='checkbox']"));
     const allCheckboxes = queryAll(".chat-message input[type='checkbox']");
 
     await triggerEvent(allCheckboxes[allCheckboxes.length - 1], "click", {
@@ -674,6 +673,12 @@ acceptance("Discourse Chat - without unread", function (needs, hooks) {
 
     await click("#chat-move-to-topic-btn");
     assert.ok(exists(".move-chat-to-topic-modal"));
+  });
+
+  test("message selection is not present for regular user", async function (assert) {
+    updateCurrentUser({ admin: false, moderator: false });
+    await visit("/chat/channel/9/Site");
+    assert.notOk(exists(".chat-message .tc-msgactions-hover .select-btn"));
   });
 
   test("creating a new direct message channel works", async function (assert) {
@@ -695,7 +700,7 @@ acceptance("Discourse Chat - without unread", function (needs, hooks) {
   test("Reacting works with no existing reactions", async function (assert) {
     await visit("/chat/channel/9/Site");
     const message = query(".chat-message");
-    assert.notOk(message.querySelector("chat-message-reaction-list"));
+    assert.notOk(message.querySelector(".chat-message-reaction-list"));
     await click(message.querySelector(".tc-msgactions .react-btn"));
     await click(message.querySelector(".emoji-picker .section-group .emoji"));
 
@@ -975,78 +980,193 @@ acceptance(
   }
 );
 
-acceptance("Discourse Chat - chat channel settings", function (needs) {
-  needs.user({
-    admin: false,
-    moderator: false,
-    username: "eviltrout",
-    id: 1,
-    can_chat: true,
-    has_chat_enabled: true,
-  });
-  needs.settings({
-    chat_enabled: true,
-  });
-  needs.pretender((server, helper) => {
-    baseChatPretenders(server, helper);
-    siteChannelPretender(server, helper);
-    directMessageChannelPretender(server, helper);
-    chatChannelPretender(server, helper);
-    server.get("/chat/chat_channels/all.json", () => {
-      return helper.response(allChannels());
+const edittedChannelName = "this is an edit test!";
+acceptance(
+  "Discourse Chat - chat channel settings and creation",
+  function (needs) {
+    needs.user({
+      admin: true,
+      moderator: true,
+      username: "eviltrout",
+      id: 1,
+      can_chat: true,
+      has_chat_enabled: true,
     });
-    server.post("/chat/chat_channels/:chatChannelId/unfollow", () => {
-      return helper.response({ success: "OK" });
+    needs.settings({
+      chat_enabled: true,
     });
-    server.get("/chat/chat_channels/:chatChannelId", () => {
-      return helper.response(siteChannel);
+    needs.pretender((server, helper) => {
+      baseChatPretenders(server, helper);
+      siteChannelPretender(server, helper);
+      directMessageChannelPretender(server, helper);
+      chatChannelPretender(server, helper);
+      server.get("/chat/chat_channels/all.json", () => {
+        return helper.response(allChannels());
+      });
+      server.post("/chat/chat_channels/:chatChannelId/unfollow", () => {
+        return helper.response({ success: "OK" });
+      });
+      server.get("/chat/chat_channels/:chatChannelId", () => {
+        return helper.response(siteChannel);
+      });
+      server.post("/chat/chat_channels/:chatChannelId/follow", () => {
+        return helper.response(siteChannel.chat_channel);
+      });
+      server.put("/chat/chat_channels", () => {
+        return helper.response({
+          chat_channel: {
+            chatable: {},
+            chatable_id: 88,
+            chatable_type: "Category",
+            chatable_url: null,
+            id: 88,
+            last_read_message_id: null,
+            title: "Something",
+            unread_count: 0,
+            unread_mentions: 0,
+            updated_at: "2021-11-08T21:26:05.710Z",
+          },
+        });
+      });
+      server.post("/chat/chat_channels/:chat_channel_id", () => {
+        return helper.response({
+          chat_channel: {
+            chat_channels: [],
+            chatable: {},
+            chatable_id: 16,
+            chatable_type: "Category",
+            chatable_url: null,
+            id: 75,
+            last_read_message_id: null,
+            title: edittedChannelName,
+            unread_count: 0,
+            unread_mentions: 0,
+            updated_at: "2021-11-08T21:26:05.710Z",
+          },
+        });
+      });
     });
-    server.post("/chat/chat_channels/:chatChannelId/follow", () => {
-      return helper.response(siteChannel.chat_channel);
+
+    test("previewing channel", async function (assert) {
+      await visit("/chat/channel/70/preview-me");
+      assert.ok(exists(".join-channel-btn"), "Join channel button is present");
+      assert.equal(query(".tc-composer-row textarea").disabled, true);
     });
-  });
 
-  test("previewing channel", async function (assert) {
-    await visit("/chat/channel/70/preview-me");
-    assert.ok(exists(".join-channel-btn"), "Join channel button is present");
-    assert.equal(query(".tc-composer-row textarea").disabled, true);
-  });
+    test("Chat browse controls", async function (assert) {
+      await visit("/chat/browse");
+      const settingsRow = query(".chat-channel-settings-row");
+      assert.ok(
+        settingsRow.querySelector(".chat-channel-expand-settings"),
+        "Expand notifications button is present"
+      );
+      assert.ok(
+        settingsRow.querySelector(".chat-channel-unfollow"),
+        "Unfollow button is present"
+      );
+      await click(".chat-channel-expand-settings");
+      assert.ok(exists(".chat-channel-row-controls"), "Controls are present");
 
-  test("Chat browse page", async function (assert) {
-    await visit("/chat/browse");
-    const settingsRow = query(".chat-channel-settings-row");
-    assert.ok(
-      settingsRow.querySelector(".chat-channel-expand-settings"),
-      "Expand notifications button is present"
-    );
-    assert.ok(
-      settingsRow.querySelector(".chat-channel-unfollow"),
-      "Unfollow button is present"
-    );
-    await click(".chat-channel-expand-settings");
-    assert.ok(exists(".chat-channel-row-controls"), "Controls are present");
+      // Click unfollow!
+      await click(".chat-channel-unfollow");
+      assert.notOk(
+        settingsRow.querySelector(".chat-channel-expand-settings"),
+        "Expand notifications button is gone"
+      );
+      assert.notOk(
+        settingsRow.querySelector(".chat-channel-unfollow"),
+        "Unfollow button is gone"
+      );
 
-    // Click unfollow!
-    await click(".chat-channel-unfollow");
-    assert.notOk(
-      settingsRow.querySelector(".chat-channel-expand-settings"),
-      "Expand notifications button is gone"
-    );
-    assert.notOk(
-      settingsRow.querySelector(".chat-channel-unfollow"),
-      "Unfollow button is gone"
-    );
+      assert.ok(
+        settingsRow.querySelector(".chat-channel-preview"),
+        "Preview channel button is present"
+      );
+      assert.ok(
+        settingsRow.querySelector(".chat-channel-follow"),
+        "Follow button is present"
+      );
+    });
 
-    assert.ok(
-      settingsRow.querySelector(".chat-channel-preview"),
-      "Preview channel button is present"
-    );
-    assert.ok(
-      settingsRow.querySelector(".chat-channel-follow"),
-      "Follow button is present"
-    );
-  });
-});
+    test("Chat browse - edit name is present for staff", async function (assert) {
+      updateCurrentUser({ admin: true, moderator: true });
+      await visit("/chat/browse");
+      const settingsRow = query(".chat-channel-settings-row");
+      await click(
+        settingsRow.querySelector(".channel-title-container .edit-btn")
+      );
+      assert.ok(exists(".channel-name-edit-container"));
+      await fillIn(
+        ".channel-name-edit-container .name-input",
+        edittedChannelName
+      );
+      await click(
+        settingsRow.querySelector(".channel-name-edit-container .save-btn")
+      );
+      assert.equal(
+        settingsRow.querySelector(".chat-channel-title").innerText.trim(),
+        edittedChannelName
+      );
+    });
+
+    test("Chat browse - edit name is hidden for normal user", async function (assert) {
+      updateCurrentUser({ admin: false, moderator: false });
+      await visit("/chat/browse");
+      assert.notOk(
+        exists(".chat-channel-settings-row .channel-title-container .edit-btn")
+      );
+    });
+
+    test("Create channel modal", async function (assert) {
+      await visit("/chat/channel/9/Site");
+      await click(".edit-channel-membership-btn");
+      assert.ok(exists(".channel-list-popup"));
+      assert.ok(exists(".channel-list-popup .popup-link.browse"));
+      assert.ok(exists(".channel-list-popup .popup-link.create"));
+      await click(".channel-list-popup .popup-link.browse");
+      assert.equal(currentURL(), "/chat/browse");
+      await visit("/chat/channel/9/Site");
+      await click(".edit-channel-membership-btn");
+      await click(".channel-list-popup .popup-link.create");
+      assert.ok(exists(".create-channel-modal-modal"));
+
+      assert.ok(query(".create-channel-modal-modal .btn.create").disabled);
+      let categories = selectKit(
+        ".create-channel-modal-modal .category-chooser"
+      );
+      await categories.expand();
+      await categories.selectRowByValue("6"); // Category 6 is "support"
+      assert.equal(
+        query(
+          ".create-channel-modal-modal .create-channel-name-input"
+        ).value.trim(),
+        "support"
+      );
+      assert.notOk(query(".create-channel-modal-modal .btn.create").disabled);
+
+      let types = selectKit(".create-channel-modal-modal .type-chooser");
+      await types.expand();
+      await types.selectRowByValue("topic");
+
+      await fillIn("#choose-topic-title", "This is a test");
+      const topicRow = query(".controls.existing-topic label");
+      await click(topicRow);
+      const topicTitle = topicRow
+        .querySelector(".topic-title")
+        .innerText.trim();
+      assert.equal(
+        query(
+          ".create-channel-modal-modal .create-channel-name-input"
+        ).value.trim(),
+        topicTitle
+      );
+      assert.notOk(query(".create-channel-modal-modal .btn.create").disabled);
+
+      await click(".create-channel-modal-modal .btn.create");
+      assert.equal(currentURL(), "/chat/channel/88/Something");
+    });
+  }
+);
 
 acceptance("Discourse Chat - chat preferences", function (needs) {
   needs.user({

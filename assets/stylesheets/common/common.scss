@@ -2,8 +2,7 @@ $header-height: 2.5rem;
 $float-height: 530px;
 
 :root {
-  --small-message-left-width: 28px;
-  --large-message-left-width: 38px;
+  --message-left-width: 38px;
   --full-page-border-radius: 12px;
   --full-page-sidebar-width: 275px;
 }
@@ -242,6 +241,7 @@ $float-height: 530px;
 .tc-channels {
   overflow-y: auto;
   height: 100%;
+  position: relative;
 
   .chat-unread-urgent-indicator,
   .chat-unread-indicator {
@@ -269,6 +269,9 @@ $float-height: 530px;
     margin: 0 0.5em 0.5em 0.5em;
   }
   .chat-channel-divider {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     font-weight: bold;
     padding: 0.5em;
     text-transform: uppercase;
@@ -277,6 +280,31 @@ $float-height: 530px;
   }
   .dm-creation-row .dm-user-chooser {
     width: calc(100% - 75px);
+  }
+
+  .channel-list-popup {
+    position: absolute;
+    top: 30px;
+    right: 10px;
+    padding: 0.5em 0;
+    border-radius: 6px;
+    background: var(--secondary);
+    border: 1px solid var(--primary-low);
+    z-index: 2;
+
+    .popup-link {
+      display: block;
+      text-transform: none;
+      color: var(--primary);
+      font-weight: 500;
+      font-size: var(--font-up-1);
+      padding: 0.35em 1em;
+      cursor: pointer;
+
+      &:hover {
+        background: var(--primary-very-low);
+      }
+    }
   }
 }
 
@@ -294,22 +322,30 @@ $float-height: 530px;
 
 .tc-avatar-container {
   position: relative;
+
   .avatar {
     width: 100%;
     height: auto;
   }
+
   .tc-presence-flair {
+    box-sizing: border-box;
     display: none;
     position: absolute;
-    right: 0;
-    bottom: 0;
-
+    right: -2px;
+    bottom: -2px;
     background-color: var(--success);
-    width: 30%;
-    height: 30%;
-
+    width: 8px;
+    height: 8px;
     border: 1px solid var(--secondary);
     border-radius: 50%;
+
+    .tc-messages-container & {
+      right: -1px;
+      bottom: -1px;
+      width: 10px;
+      height: 10px;
+    }
 
     &.online {
       display: block;
@@ -337,8 +373,8 @@ $float-height: 530px;
   white-space: normal;
 
   .tc-message-deleted {
-    margin-left: calc(var(--large-message-left-width) + 1em);
-    padding: 0.25em;
+    margin-left: calc(var(--message-left-width) + 0.75em);
+    padding: 0;
 
     .tc-message-expand-deleted {
       color: var(--primary-low-mid);
@@ -354,6 +390,10 @@ $float-height: 530px;
     background-color: var(--tertiary-low) !important;
   }
 
+  .tc-time {
+    color: var(--primary-high);
+  }
+
   .tc-message {
     align-items: flex-start;
     position: relative;
@@ -365,39 +405,54 @@ $float-height: 530px;
     &.tc-action {
       background-color: var(--highlight-medium);
     }
+
     &.deleted {
-      background-color: var(--danger-medium);
+      background-color: var(--danger-low);
     }
+
+    .not-mobile-device &.deleted:hover {
+      background-color: var(--danger-hover);
+    }
+
     &.transition-slow {
       transition: 2s linear background-color;
     }
+
+    .tc-avatar {
+      flex-shrink: 0;
+      width: var(--message-left-width);
+    }
+
     &.user-info-hidden {
       .tc-meta-data {
-        display: inline-block;
-        width: var(--small-message-left-width);
-        padding-right: 0.2em;
-        vertical-align: top;
+        display: flex;
+        flex-shrink: 0;
+        justify-content: center;
+        padding-top: 0.3em;
+        width: var(--message-left-width);
 
-        .relative-date {
+        .tc-time {
           visibility: hidden;
         }
       }
 
       .tc-message-container {
-        margin-left: 0;
+        flex-direction: row;
       }
 
       .tc-msgactions-hover {
         top: -2em;
       }
     }
+
     &.is-reply {
       display: grid;
-      grid-template-columns: var(--small-message-left-width) 1fr;
+      grid-template-columns: var(--message-left-width) 1fr;
       grid-template-rows: 30px auto;
       grid-template-areas:
         "replyto replyto"
         "avatar message";
+
       .tc-reply-display {
         grid-area: replyto;
         cursor: pointer;
@@ -410,24 +465,28 @@ $float-height: 530px;
         grid-area: avatar;
         width: 100%;
       }
+
       .tc-message-container {
         grid-area: message;
-        width: 100%;
       }
     }
+
     .tc-message-container {
-      margin-left: 0.5em;
+      display: flex;
+      flex-direction: column;
       flex-grow: 1;
       word-break: break-word;
       overflow-wrap: break-word;
+      min-width: 0;
     }
 
     .tc-avatar-container {
       align-items: flex-start;
       display: flex;
       cursor: pointer;
+      flex-shrink: 0;
       justify-content: center;
-      width: var(--small-message-left-width);
+      width: 28px;
     }
 
     .tc-bot-indicator {
@@ -438,9 +497,10 @@ $float-height: 530px;
       font-size: var(--font-down-2);
       margin-left: -0.25em;
     }
+
     .tc-text {
-      display: inline-block;
-      margin: 0;
+      min-width: 0;
+
       img {
         max-width: 100%;
         height: unset;
@@ -687,18 +747,19 @@ $float-height: 530px;
 
   .tc-meta-data {
     color: var(--secondary-medium);
+    width: 100%;
 
     .names {
       color: var(--secondary-low);
       display: inline-block;
       vertical-align: bottom;
-      margin-left: 0;
-      margin-right: 4px;
+      margin-right: 0.25em;
+
       &.first {
         font-weight: bold;
       }
     }
-    .relative-date {
+    .tc-time {
       font-size: var(--font-down-2);
     }
   }
@@ -719,7 +780,7 @@ $float-height: 530px;
 
   .not-mobile-device & .user-info-hidden:hover,
   .user-info-hidden.tc-message-selected {
-    .tc-meta-data .relative-date {
+    .tc-meta-data .tc-time {
       visibility: visible;
     }
   }
@@ -740,21 +801,22 @@ $float-height: 530px;
 }
 
 .tc-reply-display {
-  height: 2em;
+  display: flex;
   align-items: center;
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
   font-size: var(--font-down-1);
-  margin-bottom: -0.5em;
+  padding-left: 0.5em;
 
   .tc-reply-av {
-    padding: 0 0.5em 0 0.3em;
+    padding: 0 0.5em;
   }
 
   .tc-reply-username {
     padding: 0 0.5em 0 0;
   }
+
   .tc-reply-msg {
     align-self: baseline;
     color: var(--primary-high);
@@ -834,21 +896,18 @@ $float-height: 530px;
   .scroll-stick-wrap {
     position: relative;
   }
-  .scroll-stick-wrap2 {
-    position: absolute;
-    bottom: 0;
-    margin-bottom: 1em;
-    display: flex;
-    width: 100%;
-    justify-content: center;
-  }
 
   .chat-scroll-to-bottom {
     background: var(--primary-medium);
-    padding: 0.5em;
+    bottom: 1em;
     border-radius: 100%;
+    left: 50%;
     opacity: 20%;
+    padding: 0.5em;
+    position: absolute;
+    transform: translateX(-50%);
     z-index: 2;
+
     &:hover {
       opacity: 75%;
     }
@@ -1108,7 +1167,6 @@ $float-height: 530px;
   .chat-name {
     align-items: center;
     color: var(--primary-high);
-    display: flex;
 
     .emoji {
       margin: 0 0.3em;
@@ -1303,6 +1361,49 @@ $float-height: 530px;
   }
 }
 
+.chat-browse {
+  .category-chat-name,
+  .topic-chat-name {
+    color: var(--primary);
+    font-size: var(--font-up-1);
+  }
+  .category-channels {
+    .btn-container {
+      align-self: end;
+      .btn {
+        margin-left: 0;
+        margin-right: 0.5em;
+      }
+    }
+  }
+  .topic-channels {
+    margin-top: 1em;
+  }
+}
+
+.category-channels {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-gap: 1em;
+  @media screen and (max-width: 1100px) {
+    grid-template-columns: 1fr 1fr;
+  }
+  .category-chat-channel {
+    padding: 1em;
+    grid-template-rows: auto auto;
+    grid-template-columns: 1fr;
+    grid-gap: 1em;
+    background: var(--secondary);
+    border: 2px solid var(--primary-low);
+    border-left: transparent;
+    .chat-channel-row-controls {
+      bottom: -235px;
+      right: unset;
+      top: unset;
+    }
+  }
+}
+
 .chat-channel-settings-row {
   display: grid;
   grid-template-columns: 1fr 210px;
@@ -1312,6 +1413,7 @@ $float-height: 530px;
   justify-content: space-between;
   padding: 0.75em 0;
   border-bottom: 1px solid var(--primary-very-low);
+  position: relative;
 
   .btn-container {
     display: flex;
@@ -1322,13 +1424,43 @@ $float-height: 530px;
     }
   }
 
-  .chat-channel-title {
-    color: var(--primary-very-high);
+  .channel-title-container {
+    .edit-btn {
+      color: var(--primary-medium);
+      margin-left: 0.25em;
+    }
+    .chat-channel-title {
+      display: inline-grid;
+      max-width: calc(100% - 40px);
+      color: var(--primary-very-high);
+    }
+  }
+  .channel-name-edit-container {
+    display: flex;
+    align-items: center;
+
+    .name-input {
+      margin: 0;
+    }
+
+    .save-btn,
+    .cancel-btn {
+      margin-left: 0.25em;
+    }
   }
 
   .chat-channel-row-controls {
-    width: 100%;
-    padding: 1em 0;
+    width: auto;
+    padding: 1em;
+    position: absolute;
+    right: 0;
+    background: var(--secondary);
+    z-index: z("usercard");
+    top: 59px;
+    border: 1px solid var(--primary-low);
+    border-radius: 0.25em;
+    box-shadow: 0 12px 12px rgba(0, 0, 0, 0.15);
+    right: 1.5em;
 
     .controls {
       display: flex;
@@ -1582,15 +1714,37 @@ $float-height: 530px;
   margin-bottom: 0;
 }
 
-.tag-info .tag-chat-toggle {
-  margin-bottom: 0.5em;
-}
+.create-channel-modal-modal {
+  // I know `-modal-modal`.. but I like the JS file name
+  .modal-inner-container {
+    width: 500px;
+  }
+  .choose-topic-results-list {
+    max-height: 200px;
+    overflow-y: scroll;
+  }
+  .select-kit.combo-box,
+  .create-channel-name-input,
+  .create-channel-description-input,
+  #choose-topic-title {
+    width: 100%;
+    margin-bottom: 0;
+  }
+  .category-chooser {
+    .select-kit-selected-name.selected-name.choice {
+      color: var(
+        --primary-high
+      ); // Make consistent with color of placeholder text when choosing topic
+    }
+  }
 
-.before-create-topic-button-outlet.category-tag-chat-link-connector {
-  margin: 0;
-
-  .category-tag-chat-link {
-    margin-left: 0.5em;
+  .create-channel-label,
+  label[for="choose-topic-title"] {
+    margin: 1em 0 0.35em;
+  }
+  .chat-channel-title {
+    margin: 1em 0 0 0;
+    grid-column-gap: 0.25em;
   }
 }
 

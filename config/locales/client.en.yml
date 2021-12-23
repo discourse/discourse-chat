@@ -1,6 +1,8 @@
 en:
   js:
     chat:
+      dates:
+        time_tiny: "h:mm"
       all_loaded: "Showing all messages"
       already_enabled: "Chat is already enabled on this topic. Please refresh."
       already_disabled: "Chat is already closed on this topic. Please refresh."
@@ -10,8 +12,11 @@ en:
       cancel: "Cancel"
       cancel_reply: "Cancel reply"
       cancel_edit: "Cancel edit"
-      category_chat_enabled: "Chat enabled for category"
       chat_channels: "Channels"
+      channel_list_popup:
+        browse: "Browse channels"
+        create: "Create a channel"
+
       click_to_join: "Click here to view available channels."
       close: "Close"
       collapse: "Collapse Chat Drawer"
@@ -59,7 +64,8 @@ en:
       open: "Open chat"
       open_full_page: "Open full-screen chat"
       open_message: "Open message in chat"
-      placeholder: "chat..."
+      placeholder_self: "Jot something down"
+      placeholder: "Send a message to %{messageRecipient}"
       placeholder_previewing: "Join the channel to send a message."
       remove_upload: "Remove file"
       react: "React with emoji"
@@ -67,6 +73,7 @@ en:
       edit: "Edit"
       copy_link: "Copy link"
       restore: "Restore deleted message"
+      save: "Save"
       select: "Select"
       return_to_list: "Return to channel list"
       scroll_to_bottom: "Scroll to bottom"
@@ -85,6 +92,19 @@ en:
       upload: "Attach a file"
       you: "You, %{usernames} reacted with %{emoji}"
       exit: "back"
+
+      create_channel:
+        choose_category:
+          label: "Choose a category to manage who can access the channel"
+          none: "select one..."
+        create: "Create channel"
+        description: "Description (optional)"
+        name: "Channel name"
+        title: "Add a channel"
+        type: "Type"
+        types:
+          category: "Category"
+          topic: "Topic"
 
       reactions:
         only_you: "You reacted with :%{emoji}:"

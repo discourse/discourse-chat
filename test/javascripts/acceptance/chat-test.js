@@ -705,7 +705,9 @@ acceptance("Discourse Chat - without unread", function (needs) {
     await click(message.querySelector(".emoji-picker .section-group .emoji"));
 
     assert.ok(message.querySelector(".chat-message-reaction-list"));
-    const reaction = message.querySelector(".chat-message-reaction.reacted");
+    const reaction = message.querySelector(
+      ".chat-message-reaction-list .chat-message-reaction.reacted"
+    );
     assert.ok(reaction);
     assert.equal(reaction.innerText.trim(), 1);
   });

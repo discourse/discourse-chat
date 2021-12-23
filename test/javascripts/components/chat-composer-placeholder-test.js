@@ -11,9 +11,7 @@ discourseModule(
     setupRenderingTest(hooks);
 
     componentTest("direct message to self shows Jot something down", {
-      template: hbs`{{chat-composer
-      chatChannel=chatChannel
-    }}`,
+      template: hbs`{{chat-composer chatChannel=chatChannel}}`,
 
       beforeEach() {
         set(this.currentUser, "id", 1);
@@ -34,9 +32,7 @@ discourseModule(
     });
 
     componentTest("direct message to multiple folks shows their names", {
-      template: hbs`{{chat-composer
-      chatChannel=chatChannel
-    }}`,
+      template: hbs`{{chat-composer chatChannel=chatChannel}}`,
 
       beforeEach() {
         this.set("chatChannel", {
@@ -60,9 +56,7 @@ discourseModule(
     });
 
     componentTest("message to channel shows send message to channel name", {
-      template: hbs`{{chat-composer
-      chatChannel=chatChannel
-    }}`,
+      template: hbs`{{chat-composer chatChannel=chatChannel}}`,
 
       beforeEach() {
         this.set("chatChannel", {

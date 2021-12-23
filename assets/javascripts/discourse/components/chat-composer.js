@@ -33,6 +33,8 @@ export function addChatToolbarButton(toolbarButton) {
 }
 
 export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
+  chatChannel: null,
+
   chat: service(),
   classNames: ["tc-composer"],
   emojiStore: service("emoji-store"),

@@ -672,6 +672,7 @@ $float-height: 530px;
   }
 
   .tc-msgactions {
+    border-radius: 0.25em;
     background-color: var(--secondary);
     display: flex;
 
@@ -740,6 +741,7 @@ $float-height: 530px;
       font-size: var(--font-0);
       justify-content: center;
       margin: 0;
+      margin-right: -1px;
       padding: 0.5em 0;
       width: 2.5em;
 

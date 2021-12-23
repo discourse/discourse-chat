@@ -485,6 +485,10 @@ export default Component.extend({
     this._updateReactionsList(emoji, reactAction, this.currentUser);
     this._publishReaction(emoji, reactAction);
     this.notifyPropertyChange("favoritesEmojis");
+
+    if (this.site.mobileView) {
+      this.toggleProperty("isHovered");
+    }
   },
 
   _updateReactionsList(emoji, reactAction, user) {

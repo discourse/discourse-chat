@@ -38,21 +38,12 @@
           <div class="tc-msgactions-hover">
             <div class="tc-msgactions">
               {{#each favoritesEmojis as |favorite|}}
-                {{#if favorite.reacted}}
-                  {{#d-button
-                    action=(action "deselectReaction" favorite.emoji)
-                    class="btn-flat react-btn favorite-reaction reacted"
-                  }}
-                    {{replace-emoji (concat ":" favorite.emoji ":")}}
-                  {{/d-button}}
-                {{else}}
-                  {{#d-button
-                    action=(action "selectReaction" favorite.emoji)
-                    class="btn-flat react-btn favorite-reaction"
-                  }}
-                    {{replace-emoji (concat ":" favorite.emoji ":")}}
-                  {{/d-button}}
-                {{/if}}
+                {{chat-message-reaction
+                  emoji=favorite.emoji
+                  reacted=favorite.reacted
+                  react=(action "react")
+                  class="show"
+                }}
               {{/each}}
               {{d-button
                 class="btn-flat react-btn"

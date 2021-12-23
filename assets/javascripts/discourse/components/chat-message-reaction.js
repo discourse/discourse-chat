@@ -1,51 +1,65 @@
 import Component from "@ember/component";
-import discourseComputed, { bind } from "discourse-common/utils/decorators";
+import { bind } from "discourse-common/utils/decorators";
 import { cancel, later } from "@ember/runloop";
+import { fmt } from "discourse/lib/computed";
 
 export default Component.extend({
   classNames: "chat-message-reaction",
   classNameBindings: ["reacted", "count:show", "emoji"],
+  attributeBindings: ["role"],
+  role: "button",
+  emoji: null,
+  showUsersList: null,
+  hideUsersList: null,
+  reacted: null,
+  enterEvent: null,
+  leaveEvent: null,
+  count: null,
   _hoverTimer: null,
 
-  @discourseComputed("emoji")
-  emojiString(emoji) {
-    return `:${emoji}:`;
-  },
+  emojiString: fmt("emoji", ":%@:"),
 
   click() {
     cancel(this._hoverTimer);
     this.react(this.emoji, this.reacted ? "remove" : "add");
+    return false;
   },
 
   didInsertElement() {
     this._super(...arguments);
-    this.setProperties({
-      enterEvent: this.site.mobileView ? "mouseover" : "mouseenter",
-      leaveEvent: this.site.mobileView ? "mouseout" : "mouseleave",
-    });
-    this.element.addEventListener(this.enterEvent, this.handleMouseEnter);
-    this.element.addEventListener(this.leaveEvent, this.handleMouseLeave);
+
+    if (this.showUsersList && this.hideUsersList) {
+      this.setProperties({
+        enterEvent: this.site.mobileView ? "mouseover" : "mouseenter",
+        leaveEvent: this.site.mobileView ? "mouseout" : "mouseleave",
+      });
+      this.element.addEventListener(this.enterEvent, this._handleMouseEnter);
+      this.element.addEventListener(this.leaveEvent, this._handleMouseLeave);
+    }
   },
 
   willDestroyElement() {
     this._super(...arguments);
-    this.element.removeEventListener(this.enterEvent, this.handleMouseEnter);
-    this.element.removeEventListener(this.leaveEvent, this.handleMouseLeave);
-    if (this._hoverTimer) {
+
+    if (this.showUsersList && this.hideUsersList) {
+      this.element.removeEventListener(this.enterEvent, this._handleMouseEnter);
+      this.element.removeEventListener(this.leaveEvent, this._handleMouseLeave);
       cancel(this._hoverTimer);
     }
   },
 
   @bind
-  handleMouseEnter(e) {
+  _handleMouseEnter(event) {
+    cancel(this._hoverTimer);
+
     this._hoverTimer = later(() => {
       this.showUsersList(this);
     }, 500);
-    e.preventDefault();
+    event.preventDefault();
   },
 
   @bind
-  handleMouseLeave() {
+  _handleMouseLeave() {
     cancel(this._hoverTimer);
     this.hideUsersList();
   },

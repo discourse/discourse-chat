@@ -28,7 +28,7 @@ export default Component.extend({
     });
   },
 
-  willDestoryElement() {
+  willDestroyElement() {
     this._super(...arguments);
     this.appEvents.off("chat:refresh-channels", this, "fetchChannels");
   },
@@ -37,8 +37,8 @@ export default Component.extend({
     this.set(
       "show",
       !this.currentUser.chat_isolated ||
-        this.chat.onChatPage() ||
-        this.chat.onBrowsePage()
+        this.chat.isChatPage ||
+        this.chat.isBrowsePage
     );
     if (this.show && !this.fetchedChannels) {
       this.fetchChannels();

@@ -732,7 +732,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
       1
     );
 
-    // React with a heart and make sure the count inciments and class is added
+    // React with a heart and make sure the count increments and class is added
     const heartReaction = lastMessage.querySelector(
       ".chat-message-reaction.heart"
     );
@@ -841,7 +841,7 @@ acceptance(
 
     test("Expand button takes you to full page chat on the correct channel", async function (assert) {
       await visit("/t/internationalization-localization/280");
-      this.chatService.setSidebarActive(false);
+      this.chatService.set("sidebarActive", false);
       await visit(".header-dropdown-toggle.open-chat");
       await click(".tc-full-screen-btn");
       const channelWithUnread = chatChannels.public_channels.findBy("id", 7);
@@ -853,7 +853,7 @@ acceptance(
 
     test("Chat opens to full-page channel with unread messages when sidebar is installed", async function (assert) {
       await visit("/t/internationalization-localization/280");
-      this.container.lookup("service:chat").setSidebarActive(true);
+      this.chatService.set("sidebarActive", true);
 
       await click(".header-dropdown-toggle.open-chat");
 
@@ -870,7 +870,7 @@ acceptance(
 
     test("Chat float opens on header icon click when sidebar is not installed", async function (assert) {
       await visit("/t/internationalization-localization/280");
-      this.chatService.setSidebarActive(false);
+      this.chatService.set("sidebarActive", false);
       await click(".header-dropdown-toggle.open-chat");
 
       assert.ok(visible(".topic-chat-float-container"), "chat float is open");
@@ -952,7 +952,7 @@ acceptance(
 
     test("Chat float open to DM channel with unread messages with sidebar off", async function (assert) {
       await visit("/t/internationalization-localization/280");
-      this.chatService.setSidebarActive(false);
+      this.chatService.set("sidebarActive", false);
       await click(".header-dropdown-toggle.open-chat");
       const chatContainer = query(".topic-chat-container");
       assert.ok(chatContainer.classList.contains("channel-75"));
@@ -960,7 +960,7 @@ acceptance(
 
     test("Chat full page open to DM channel with unread messages with sidebar on", async function (assert) {
       await visit("/t/internationalization-localization/280");
-      this.chatService.setSidebarActive(true);
+      this.chatService.set("sidebarActive", true);
       await click(".header-dropdown-toggle.open-chat");
       const channelWithUnread = chatChannels.direct_message_channels.find(
         (c) => c.id === 75
@@ -982,7 +982,7 @@ acceptance(
   }
 );
 
-const edittedChannelName = "this is an edit test!";
+const editedChannelName = "this is an edit test!";
 acceptance(
   "Discourse Chat - chat channel settings and creation",
   function (needs) {
@@ -1040,7 +1040,7 @@ acceptance(
             chatable_url: null,
             id: 75,
             last_read_message_id: null,
-            title: edittedChannelName,
+            title: editedChannelName,
             unread_count: 0,
             unread_mentions: 0,
             updated_at: "2021-11-08T21:26:05.710Z",
@@ -1100,14 +1100,14 @@ acceptance(
       assert.ok(exists(".channel-name-edit-container"));
       await fillIn(
         ".channel-name-edit-container .name-input",
-        edittedChannelName
+        editedChannelName
       );
       await click(
         settingsRow.querySelector(".channel-name-edit-container .save-btn")
       );
       assert.equal(
         settingsRow.querySelector(".chat-channel-title").innerText.trim(),
-        edittedChannelName
+        editedChannelName
       );
     });
 
@@ -1199,7 +1199,7 @@ acceptance("Discourse Chat - chat preferences", function (needs) {
   });
 
   test("There are all 4 settings shown", async function (assert) {
-    this.chatService.setSidebarActive(true);
+    this.chatService.set("sidebarActive", true);
     await visit("/u/eviltrout/preferences/chat");
     assert.equal(currentURL(), "/u/eviltrout/preferences/chat");
     assert.equal(queryAll(".chat-setting").length, 4);
@@ -1251,7 +1251,7 @@ acceptance("Discourse Chat - image uploads", function (needs) {
   // this times out in CI...of course
   skip("uploading files in chat works", async function (assert) {
     await visit("/t/internationalization-localization/280");
-    this.container.lookup("service:chat").setSidebarActive(false);
+    this.container.lookup("service:chat").set("sidebarActive", false);
     await click(".header-dropdown-toggle.open-chat");
 
     assert.ok(visible(".topic-chat-float-container"), "chat float is open");

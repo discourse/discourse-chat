@@ -121,7 +121,7 @@ export default Component.extend({
       ".chat-channel-expand-settings"
     );
     if (expandBtn) {
-      expandBtn.blur(); // Button isn't lossing focus naturally.
+      expandBtn.blur(); // Button isn't losing focus naturally.
     }
     return false;
   },

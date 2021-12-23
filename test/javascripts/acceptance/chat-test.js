@@ -33,7 +33,7 @@ import {
 import User from "discourse/models/user";
 import selectKit from "discourse/tests/helpers/select-kit-helper";
 
-export const baseChatPretenders = (server, helper) => {
+const baseChatPretenders = (server, helper) => {
   server.get("/chat/:chatChannelId/messages.json", () =>
     helper.response(chatView)
   );
@@ -94,7 +94,7 @@ function directMessageChannelPretender(
   server.get("/chat/chat_channels/75.json", () => helper.response(copy));
 }
 
-export function chatChannelPretender(server, helper, changes = []) {
+function chatChannelPretender(server, helper, changes = []) {
   // changes is [{ id: X, unread_count: Y, muted: true}]
   let copy = cloneJSON(chatChannels);
   changes.forEach((change) => {

@@ -1370,8 +1370,29 @@ $float-height: 530px;
     }
   }
 
-  .chat-channel-title {
-    color: var(--primary-very-high);
+  .channel-title-container {
+    .edit-btn {
+      color: var(--primary-medium);
+      margin-left: 0.25em;
+    }
+    .chat-channel-title {
+      display: inline-grid;
+      max-width: calc(100% - 40px);
+      color: var(--primary-very-high);
+    }
+  }
+  .channel-name-edit-container {
+    display: flex;
+    align-items: center;
+
+    .name-input {
+      margin: 0;
+    }
+
+    .save-btn,
+    .cancel-btn {
+      margin-left: 0.25em;
+    }
   }
 
   .chat-channel-row-controls {

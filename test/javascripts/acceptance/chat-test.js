@@ -953,6 +953,7 @@ acceptance(
   }
 );
 
+const edittedChannelName = "this is an edit test!";
 acceptance(
   "Discourse Chat - chat channel settings and creation",
   function (needs) {
@@ -1000,6 +1001,23 @@ acceptance(
           },
         });
       });
+      server.post("/chat/chat_channels/:chat_channel_id", () => {
+        return helper.response({
+          chat_channel: {
+            chat_channels: [],
+            chatable: {},
+            chatable_id: 16,
+            chatable_type: "Category",
+            chatable_url: null,
+            id: 75,
+            last_read_message_id: null,
+            title: edittedChannelName,
+            unread_count: 0,
+            unread_mentions: 0,
+            updated_at: "2021-11-08T21:26:05.710Z",
+          },
+        });
+      });
     });
 
     test("previewing channel", async function (assert) {
@@ -1008,7 +1026,7 @@ acceptance(
       assert.equal(query(".tc-composer-row textarea").disabled, true);
     });
 
-    test("Chat browse page", async function (assert) {
+    test("Chat browse controls", async function (assert) {
       await visit("/chat/browse");
       const settingsRow = query(".chat-channel-settings-row");
       assert.ok(
@@ -1040,6 +1058,35 @@ acceptance(
       assert.ok(
         settingsRow.querySelector(".chat-channel-follow"),
         "Follow button is present"
+      );
+    });
+
+    test("Chat browse - edit name is present for staff", async function (assert) {
+      updateCurrentUser({ admin: true, moderator: true });
+      await visit("/chat/browse");
+      const settingsRow = query(".chat-channel-settings-row");
+      await click(
+        settingsRow.querySelector(".channel-title-container .edit-btn")
+      );
+      assert.ok(exists(".channel-name-edit-container"));
+      await fillIn(
+        ".channel-name-edit-container .name-input",
+        edittedChannelName
+      );
+      await click(
+        settingsRow.querySelector(".channel-name-edit-container .save-btn")
+      );
+      assert.equal(
+        settingsRow.querySelector(".chat-channel-title").innerText.trim(),
+        edittedChannelName
+      );
+    });
+
+    test("Chat browse - edit name is hidden for normal user", async function (assert) {
+      updateCurrentUser({ admin: false, moderator: false });
+      await visit("/chat/browse");
+      assert.notOk(
+        exists(".chat-channel-settings-row .channel-title-container .edit-btn")
       );
     });
 

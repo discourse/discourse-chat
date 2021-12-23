@@ -1,4 +1,30 @@
-{{chat-channel-title channel=channel onClick=(action "previewChannel")}}
+{{#if editingName}}
+  <div class="channel-name-edit-container">
+    {{input class="name-input" type="text" value=newName}}
+    {{d-button
+      class="btn-primary save-btn"
+      title="chat.save"
+      action=(action "saveNameChange")
+      disabled=saveNameEditDisabled
+      icon="check"
+    }}
+    {{d-button
+      class="cancel-btn"
+      title="chat.cancel"
+      action=(action "cancelNameChange")
+      icon="times"
+    }}
+  </div>
+{{else}}
+  <div class="channel-title-container">
+    {{chat-channel-title channel=channel onClick=(action "previewChannel")}}
+    {{#if currentUser.staff}}
+      <a href class="edit-btn" onClick={{action "startEditingName"}}>
+        {{d-icon "pencil-alt"}}
+      </a>
+    {{/if}}
+  </div>
+{{/if}}
 
 {{#if (and channel.description categoryChannel)}}
   <div class="chat-channel-description">

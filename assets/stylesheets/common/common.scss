@@ -692,12 +692,18 @@ $float-height: 530px;
     .react-btn,
     .reply-btn {
       border: 1px solid transparent;
-      border-bottom: 1px solid var(--primary-low);
+      border-bottom-color: var(--primary-low);
       border-right-width: 0;
-      border-top: 1px solid var(--primary-low);
+      border-top-color: var(--primary-low);
       margin-right: -1px;
       padding: 0.5em 0;
       width: 2.5em;
+
+      &:first-child {
+        border-bottom-left-radius: 0.25em;
+        border-left-color: var(--primary-low);
+        border-top-left-radius: 0.25em;
+      }
     }
 
     .more-buttons {

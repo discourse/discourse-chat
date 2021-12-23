@@ -33,7 +33,7 @@ discourseModule(
       },
     });
 
-    componentTest("direct message to multiple folks shows their usernames", {
+    componentTest("direct message to multiple folks shows their names", {
       template: hbs`{{chat-composer
       chatChannel=chatChannel
     }}`,
@@ -42,7 +42,11 @@ discourseModule(
         this.set("chatChannel", {
           chatable_type: "DirectMessageChannel",
           chatable: {
-            users: [{ username: "tomtom" }, { username: "steaky" }],
+            users: [
+              { name: "Tomtom" },
+              { name: "Steaky" },
+              { username: "zorro" },
+            ],
           },
         });
       },
@@ -50,7 +54,7 @@ discourseModule(
       async test(assert) {
         assert.equal(
           query(".tc-composer-input").placeholder,
-          "Send a message to @tomtom, @steaky"
+          "Send a message to Tomtom, Steaky, @zorro"
         );
       },
     });

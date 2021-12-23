@@ -502,7 +502,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
 
       return I18n.t("chat.placeholder", {
         messageRecipient: directMessageRecipients
-          .map((u) => `@${u.username}`)
+          .map((u) => u.name || `@${u.username}`)
           .join(", "),
       });
     } else {

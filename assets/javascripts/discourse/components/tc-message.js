@@ -484,7 +484,7 @@ export default Component.extend({
     this._loadingReactions.push(emoji);
     this._updateReactionsList(emoji, reactAction, this.currentUser);
     this._publishReaction(emoji, reactAction);
-    this.afterReactionAdded();
+    this.notifyPropertyChange("favoritesEmojis");
   },
 
   _updateReactionsList(emoji, reactAction, user) {

@@ -58,6 +58,10 @@ export default createWidget("header-chat-link", {
   },
 
   click() {
+    if (this.site.mobileView || this.chat.onBrowsePage()) {
+      return this.router.transitionTo("chat.index");
+    }
+
     if (this.chat.onChatPage()) {
       return;
     }
@@ -70,7 +74,7 @@ export default createWidget("header-chat-link", {
       }
     }
 
-    if (this.site.mobileView || this.chat.getSidebarActive()) {
+    if (this.chat.getSidebarActive()) {
       return this.router.transitionTo("chat");
     } else {
       this.appEvents.trigger("chat:toggle-open");

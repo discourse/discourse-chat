@@ -26,6 +26,7 @@ export default Component.extend({
   willDestroyElement() {
     this._super(...arguments);
     this.appEvents.off("chat:start-new-dm", this, "startCreatingDmChannel");
+    window.removeEventListener("click", this.togglePopupMenu);
   },
 
   sortedDirectMessageChannels: computed(

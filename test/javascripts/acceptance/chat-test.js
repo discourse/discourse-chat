@@ -126,7 +126,7 @@ acceptance("Discourse Chat - anonymouse 🐭 user", function (needs) {
   });
 });
 
-acceptance("Discourse Chat - without unread", function (needs, hooks) {
+acceptance("Discourse Chat - without unread", function (needs) {
   needs.user({
     admin: false,
     moderator: false,

@@ -253,20 +253,27 @@ acceptance("Discourse Chat - without unread", function (needs) {
       messages[0].querySelector(".reply-btn"),
       "it shows the reply button"
     );
+
+    const currentUserDropdown = selectKit(".chat-message-174 .more-buttons");
+    await currentUserDropdown.expand();
+
     assert.ok(
-      messages[0].querySelector(".link-to-message-btn"),
+      currentUserDropdown.rowByValue("copyLinkToMessage").exists(),
       "it shows the link to button"
     );
+
     assert.ok(
-      messages[0].querySelector(".edit-btn"),
+      currentUserDropdown.rowByValue("edit").exists(),
       "it shows the edit button"
     );
+
     assert.notOk(
-      messages[0].querySelector(".flag-btn"),
+      currentUserDropdown.rowByValue("flag").exists(),
       "it hides the flag button"
     );
+
     assert.ok(
-      messages[0].querySelector(".delete-btn"),
+      currentUserDropdown.rowByValue("deleteMessage").exists(),
       "it shows the delete button"
     );
 
@@ -275,20 +282,27 @@ acceptance("Discourse Chat - without unread", function (needs) {
       messages[1].querySelector(".reply-btn"),
       "it shows the reply button"
     );
+
+    const notCurrentUserDropdown = selectKit(".chat-message-175 .more-buttons");
+    await notCurrentUserDropdown.expand();
+
     assert.ok(
-      messages[0].querySelector(".link-to-message-btn"),
+      notCurrentUserDropdown.rowByValue("copyLinkToMessage").exists(),
       "it shows the link to button"
     );
+
     assert.notOk(
-      messages[1].querySelector(".edit-btn"),
+      notCurrentUserDropdown.rowByValue("edit").exists(),
       "it hides the edit button"
     );
+
     assert.ok(
-      messages[1].querySelector(".flag-btn"),
+      notCurrentUserDropdown.rowByValue("flag").exists(),
       "it shows the flag button"
     );
+
     assert.notOk(
-      messages[1].querySelector(".delete-btn"),
+      notCurrentUserDropdown.rowByValue("deleteMessage").exists(),
       "it hides the delete button"
     );
   });
@@ -308,7 +322,11 @@ acceptance("Discourse Chat - without unread", function (needs) {
 
   test("pressing the edit button fills the composer and indicates edit", async function (assert) {
     await visit("/chat/channel/9/Site");
-    await click(".edit-btn");
+
+    const dropdown = selectKit(".more-buttons");
+    await dropdown.expand();
+    await dropdown.selectRowByValue("edit");
+
     assert.ok(
       exists(".tc-composer-message-details .d-icon-pencil-alt"),
       "Edit icon is present"
@@ -514,7 +532,11 @@ acceptance("Discourse Chat - without unread", function (needs) {
 
   test("Pressing escape cancels editing", async function (assert) {
     await visit("/chat/channel/9/Site");
-    await click(".chat-message .edit-btn");
+
+    const dropdown = selectKit(".more-buttons");
+    await dropdown.expand();
+    await dropdown.selectRowByValue("edit");
+
     assert.ok(exists(".tc-composer .tc-composer-message-details"));
     await triggerKeyEvent(".tc-composer", "keydown", 27); // 27 is escape
 
@@ -618,7 +640,9 @@ acceptance("Discourse Chat - without unread", function (needs) {
     await visit("/chat/channel/9/Site");
 
     const firstMessage = query(".chat-message");
-    await click(firstMessage.querySelector(".tc-msgactions-hover .select-btn"));
+    const dropdown = selectKit(firstMessage.querySelector(".more-button"));
+    await dropdown.expand();
+    await dropdown.selectRowByValue("selectMessage");
 
     assert.ok(firstMessage.classList.contains("selecting-messages"));
     const moveToTopicBtn = query(".tc-live-pane #chat-move-to-topic-btn");
@@ -809,15 +833,16 @@ acceptance(
         { id: 7, unread_count: 2, muted: false },
       ]);
     });
+    needs.hooks.beforeEach(function () {
+      this.chatService = this.container.lookup("service:chat");
+    });
 
     test("Expand button takes you to full page chat on the correct channel", async function (assert) {
       await visit("/t/internationalization-localization/280");
-      this.container.lookup("service:chat").setSidebarActive(false);
+      this.chatService.setSidebarActive(false);
       await visit(".header-dropdown-toggle.open-chat");
       await click(".tc-full-screen-btn");
-      const channelWithUnread = chatChannels.public_channels.find(
-        (c) => c.id === 7
-      );
+      const channelWithUnread = chatChannels.public_channels.findBy("id", 7);
       assert.equal(
         currentURL(),
         `/chat/channel/${channelWithUnread.id}/${channelWithUnread.title}`
@@ -827,11 +852,10 @@ acceptance(
     test("Chat opens to full-page channel with unread messages when sidebar is installed", async function (assert) {
       await visit("/t/internationalization-localization/280");
       this.container.lookup("service:chat").setSidebarActive(true);
+
       await click(".header-dropdown-toggle.open-chat");
 
-      const channelWithUnread = chatChannels.public_channels.find(
-        (c) => c.id === 7
-      );
+      const channelWithUnread = chatChannels.public_channels.findBy("id", 7);
       assert.equal(
         currentURL(),
         `/chat/channel/${channelWithUnread.id}/${channelWithUnread.title}`
@@ -844,7 +868,7 @@ acceptance(
 
     test("Chat float opens on header icon click when sidebar is not installed", async function (assert) {
       await visit("/t/internationalization-localization/280");
-      this.container.lookup("service:chat").setSidebarActive(false);
+      this.chatService.setSidebarActive(false);
       await click(".header-dropdown-toggle.open-chat");
 
       assert.ok(visible(".topic-chat-float-container"), "chat float is open");
@@ -886,6 +910,9 @@ acceptance(
         { id: 75, unread_count: 2, muted: false },
       ]);
     });
+    needs.hooks.beforeEach(function () {
+      this.chatService = this.container.lookup("service:chat");
+    });
 
     test("Unread indicator doesn't show when user is in do not disturb", async function (assert) {
       let now = new Date();
@@ -923,7 +950,7 @@ acceptance(
 
     test("Chat float open to DM channel with unread messages with sidebar off", async function (assert) {
       await visit("/t/internationalization-localization/280");
-      this.container.lookup("service:chat").setSidebarActive(false);
+      this.chatService.setSidebarActive(false);
       await click(".header-dropdown-toggle.open-chat");
       const chatContainer = query(".topic-chat-container");
       assert.ok(chatContainer.classList.contains("channel-75"));
@@ -931,7 +958,7 @@ acceptance(
 
     test("Chat full page open to DM channel with unread messages with sidebar on", async function (assert) {
       await visit("/t/internationalization-localization/280");
-      this.container.lookup("service:chat").setSidebarActive(true);
+      this.chatService.setSidebarActive(true);
       await click(".header-dropdown-toggle.open-chat");
       const channelWithUnread = chatChannels.direct_message_channels.find(
         (c) => c.id === 75
@@ -1159,6 +1186,9 @@ acceptance("Discourse Chat - chat preferences", function (needs) {
     directMessageChannelPretender(server, helper);
     chatChannelPretender(server, helper);
   });
+  needs.hooks.beforeEach(function () {
+    this.chatService = this.container.lookup("service:chat");
+  });
 
   test("Chat preferences route takes user to homepage when can_chat is false", async function (assert) {
     updateCurrentUser({ can_chat: false });
@@ -1167,7 +1197,7 @@ acceptance("Discourse Chat - chat preferences", function (needs) {
   });
 
   test("There are all 4 settings shown", async function (assert) {
-    this.container.lookup("service:chat").setSidebarActive(true);
+    this.chatService.setSidebarActive(true);
     await visit("/u/eviltrout/preferences/chat");
     assert.equal(currentURL(), "/u/eviltrout/preferences/chat");
     assert.equal(queryAll(".chat-setting").length, 4);

@@ -1,3 +1,4 @@
+import { inject as service } from "@ember/service";
 import getURL from "discourse-common/lib/get-url";
 import Component from "@ember/component";
 import discourseComputed, { bind } from "discourse-common/utils/decorators";
@@ -5,7 +6,7 @@ import I18n from "I18n";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { prioritizeNameInUx } from "discourse/lib/settings";
-import EmberObject, { action } from "@ember/object";
+import EmberObject, { action, computed } from "@ember/object";
 import { autoUpdatingRelativeAge } from "discourse/lib/formatter";
 import { cancel, later, schedule } from "@ember/runloop";
 
@@ -20,6 +21,7 @@ export default Component.extend({
   isHovered: false,
   emojiPickerIsActive: false,
   mentionWarning: null,
+  emojiStore: service("emoji-store"),
 
   init() {
     this._super(...arguments);
@@ -82,6 +84,69 @@ export default Component.extend({
   @discourseComputed("message.deleted_at", "message.expanded")
   deletedAndCollapsed(deletedAt, expanded) {
     return deletedAt && !expanded;
+  },
+  @computed(
+    "selectingMessages",
+    "showFlagButton",
+    "showDeleteButton",
+    "showRestoreButton",
+    "showEditButton"
+  )
+  get moreButtons() {
+    const buttons = [];
+
+    buttons.push({
+      id: "copyLinkToMessage",
+      name: I18n.t("chat.copy_link"),
+      icon: "link",
+    });
+
+    if (this.showEditButton) {
+      buttons.push({
+        id: "edit",
+        name: I18n.t("chat.edit"),
+        icon: "pencil-alt",
+      });
+    }
+
+    if (this.currentUser.staff && !this.selectingMessages) {
+      buttons.push({
+        id: "selectMessage",
+        name: I18n.t("chat.select"),
+        icon: "tasks",
+      });
+    }
+
+    if (this.showFlagButton) {
+      buttons.push({
+        id: "flag",
+        name: I18n.t("chat.flag"),
+        icon: "flag",
+      });
+    }
+
+    if (this.showDeleteButton) {
+      buttons.push({
+        id: "deleteMessage",
+        name: I18n.t("chat.delete"),
+        icon: "trash-alt",
+      });
+    }
+
+    if (this.showRestoreButton) {
+      buttons.push({
+        id: "restore",
+        name: I18n.t("chat.restore"),
+        icon: "undo",
+      });
+    }
+
+    return buttons;
+  },
+
+  @action
+  handleMoreButtons(value) {
+    this[value].call();
   },
 
   @discourseComputed("message")
@@ -323,15 +388,20 @@ export default Component.extend({
   },
 
   _startReaction(btn, position) {
-    this.set("emojiPickerIsActive", true);
-    this.appEvents.trigger(
-      "chat-message:reaction-picker-opened",
-      this.message.id
-    );
+    if (this.emojiPickerIsActive) {
+      this.set("emojiPickerIsActive", false);
+      document.activeElement?.blur();
+    } else {
+      this.set("emojiPickerIsActive", true);
+      this.appEvents.trigger(
+        "chat-message:reaction-picker-opened",
+        this.message.id
+      );
 
-    schedule("afterRender", () => {
-      this._repositionEmojiPicker(btn, position);
-    });
+      schedule("afterRender", () => {
+        this._repositionEmojiPicker(btn, position);
+      });
+    }
   },
 
   _repositionEmojiPicker(btn, position) {
@@ -381,9 +451,17 @@ export default Component.extend({
   },
 
   @action
+  deselectReaction(emoji) {
+    this.set("emojiPickerIsActive", false);
+    this.react(emoji, this.REMOVE_REACTION);
+    this.notifyPropertyChange("favoritesEmojis");
+  },
+
+  @action
   selectReaction(emoji) {
     this.set("emojiPickerIsActive", false);
     this.react(emoji, this.ADD_REACTION);
+    this.notifyPropertyChange("favoritesEmojis");
   },
 
   @bind
@@ -406,7 +484,7 @@ export default Component.extend({
     this._loadingReactions.push(emoji);
     this._updateReactionsList(emoji, reactAction, this.currentUser);
     this._publishReaction(emoji, reactAction);
-    this.afterReactionAdded();
+    this.notifyPropertyChange("favoritesEmojis");
   },
 
   _updateReactionsList(emoji, reactAction, user) {
@@ -548,5 +626,20 @@ export default Component.extend({
         ?.querySelector(".link-to-message-btn")
         ?.classList?.remove("copied");
     }, 250);
+  },
+
+  @discourseComputed("emojiStore.favorites.[]")
+  favoritesEmojis(favorites) {
+    const userReactions = Object.keys(this.message.reactions).filter((key) => {
+      return this.message.reactions[key].reacted;
+    });
+
+    return favorites.slice(0, 3).map((emoji) => {
+      if (userReactions.includes(emoji)) {
+        return { emoji, reacted: true };
+      } else {
+        return { emoji, reacted: false };
+      }
+    });
   },
 });

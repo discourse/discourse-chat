@@ -37,17 +37,28 @@
         {{#unless message.staged}}
           <div class="tc-msgactions-hover">
             <div class="tc-msgactions">
+              {{#each favoritesEmojis as |favorite|}}
+                {{#if favorite.reacted}}
+                  {{#d-button
+                    action=(action "deselectReaction" favorite.emoji)
+                    class="btn-flat react-btn favorite-reaction reacted"
+                  }}
+                    {{replace-emoji (concat ":" favorite.emoji ":")}}
+                  {{/d-button}}
+                {{else}}
+                  {{#d-button
+                    action=(action "selectReaction" favorite.emoji)
+                    class="btn-flat react-btn favorite-reaction"
+                  }}
+                    {{replace-emoji (concat ":" favorite.emoji ":")}}
+                  {{/d-button}}
+                {{/if}}
+              {{/each}}
               {{d-button
                 class="btn-flat react-btn"
                 action=(action "startReactionForMsgActions")
                 icon="discourse-emojis"
                 title="chat.react"
-              }}
-              {{d-button
-                class="btn-flat link-to-message-btn"
-                action=(action "copyLinkToMessage")
-                icon="link"
-                title="chat.copy_link"
               }}
               {{#unless message.deleted_at}}
                 {{d-button
@@ -57,44 +68,12 @@
                   title="chat.reply"
                 }}
               {{/unless}}
-              {{#if showEditButton}}
-                {{d-button
-                  class="btn-flat edit-btn"
-                  action=(action "edit")
-                  icon="pencil-alt"
-                  title="chat.edit"
-                }}
-              {{/if}}
-              {{#if (and currentUser.staff (not selectingMessages))}}
-                {{d-button
-                  class="btn-flat select-btn"
-                  action=(action "selectMessage")
-                  icon="tasks"
-                  title="chat.select"
-                }}
-              {{/if}}
-              {{#if showFlagButton}}
-                {{d-button
-                  class="btn-flat flag-btn"
-                  action=(action "flag")
-                  icon="flag"
-                  title="chat.flag"
-                }}
-              {{/if}}
-              {{#if showDeleteButton}}
-                {{d-button
-                  class="btn-flat delete-btn"
-                  action=(action "deleteMessage")
-                  icon="trash-alt"
-                  title="chat.delete"
-                }}
-              {{/if}}
-              {{#if showRestoreButton}}
-                {{d-button
-                  class="btn-flat restore-btn"
-                  action=(action "restore")
-                  icon="undo"
-                  title="chat.restore"
+              {{#if moreButtons.length}}
+                {{dropdown-select-box
+                  class="more-buttons"
+                  options=(hash icon="ellipsis-h")
+                  content=moreButtons
+                  onChange=(action "handleMoreButtons")
                 }}
               {{/if}}
             </div>

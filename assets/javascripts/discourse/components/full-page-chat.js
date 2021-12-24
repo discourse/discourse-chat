@@ -96,20 +96,7 @@ export default Component.extend({
     this.set("showingChannels", false);
 
     if (channel.id !== this.chatChannel.id) {
-      if (this.siteSettings.chat_channel_placeholders) {
-        // eslint-disable-next-line no-console
-        console.log(
-          `full-page-chat.switchChannels from: ${this.chatChannel.id} -> ${channel.id}`
-        );
-      }
-
       this.router.transitionTo("chat.channel", channel.id, channel.title);
-      if (this.siteSettings.chat_channel_placeholders) {
-        // eslint-disable-next-line no-console
-        console.log(
-          `full-page-chat.switchChannels router.transitionedTo ${channel.id}`
-        );
-      }
     }
 
     return false;

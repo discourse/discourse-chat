@@ -15,7 +15,3 @@ plugins:
   chat_debug_webhook_payloads:
     default: false
     hidden: true
-  chat_channel_placeholders:
-    default: false
-    hidden: true
-    client: true

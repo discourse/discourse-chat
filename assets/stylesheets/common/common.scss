@@ -401,6 +401,7 @@ $float-height: 530px;
     min-width: 0;
 
     .chat-message-reaction {
+      align-items: center;
       display: inline-flex;
       padding: 0.3em 0.6em;
       margin: 1px 0.25em 1px 0;
@@ -410,11 +411,12 @@ $float-height: 530px;
       background: transparent;
       cursor: pointer;
       user-select: none;
-      transition: background 0.2s;
+      transition: background 0.2s, border-color 0.2s;
 
       &:not(.reacted) {
         &:hover {
           background: var(--primary-low);
+          border-color: var(--primary-low-mid);
         }
       }
       &:not(.show) {
@@ -423,6 +425,11 @@ $float-height: 530px;
       &.reacted {
         border-color: var(--tertiary-medium);
         background: var(--tertiary-very-low);
+        color: var(--tertiary-hover);
+
+        &:hover {
+          background: var(--tertiary-low);
+        }
       }
 
       .emoji {

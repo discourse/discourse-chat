@@ -485,13 +485,11 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     this.set("emojiPickerIsActive", false);
   },
 
-  @discourseComputed("previewing")
-  placeholder(previewing) {
+  @discourseComputed("previewing", "chatChannel")
+  placeholder(previewing, chatChannel) {
     return previewing
       ? I18n.t("chat.placeholder_previewing")
-      : this.siteSettings.chat_channel_placeholders
-      ? this.messageRecipient(this.chatChannel)
-      : I18n.t("chat.placeholder");
+      : this.messageRecipient(chatChannel);
   },
 
   messageRecipient(chatChannel) {

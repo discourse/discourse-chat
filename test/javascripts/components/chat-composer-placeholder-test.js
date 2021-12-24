@@ -14,7 +14,6 @@ discourseModule(
       template: hbs`{{chat-composer chatChannel=chatChannel}}`,
 
       beforeEach() {
-        set(this.siteSettings, "chat_channel_placeholders", true);
         set(this.currentUser, "id", 1);
         this.set("chatChannel", {
           chatable_type: "DirectMessageChannel",
@@ -36,7 +35,6 @@ discourseModule(
       template: hbs`{{chat-composer chatChannel=chatChannel}}`,
 
       beforeEach() {
-        set(this.siteSettings, "chat_channel_placeholders", true);
         this.set("chatChannel", {
           chatable_type: "DirectMessageChannel",
           chatable: {
@@ -61,7 +59,6 @@ discourseModule(
       template: hbs`{{chat-composer chatChannel=chatChannel}}`,
 
       beforeEach() {
-        set(this.siteSettings, "chat_channel_placeholders", true);
         this.set("chatChannel", {
           chatable_type: "Category",
           title: "just-cats",
@@ -73,22 +70,6 @@ discourseModule(
           query(".tc-composer-input").placeholder,
           "Send a message to #just-cats"
         );
-      },
-    });
-
-    componentTest("site setting off so message to channel shows 'chat...'", {
-      template: hbs`{{chat-composer chatChannel=chatChannel}}`,
-
-      beforeEach() {
-        set(this.siteSettings, "chat_channel_placeholders", false);
-        this.set("chatChannel", {
-          chatable_type: "Category",
-          title: "just-cats",
-        });
-      },
-
-      async test(assert) {
-        assert.equal(query(".tc-composer-input").placeholder, "chat...");
       },
     });
   }

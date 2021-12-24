@@ -253,8 +253,10 @@ export default Service.extend({
   },
 
   async getChannelBy(key, value) {
-    if (this.siteSettings.chat_channel_placeholders)
+    if (this.siteSettings.chat_channel_placeholders) {
+      // eslint-disable-next-line no-console
       console.log(`chat.getChannelBy ${key} ${value}`);
+    }
     return this.getChannels().then(() => {
       if (!isNaN(value)) {
         value = parseInt(value, 10);

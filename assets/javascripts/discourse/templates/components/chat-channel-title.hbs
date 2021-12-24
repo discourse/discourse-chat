@@ -12,7 +12,7 @@
     <span class="dm-usernames">
       {{#let channel.chatable.users.firstObject as |user|}}
         <span class="dm-username">{{user.username}}</span>
-        {{plugin-outlet name="after-chat-channel-username" args=(hash user=user) connectorTagName=""}}
+        {{plugin-outlet name="after-chat-channel-username" args=(hash user=user) tagName="" connectorTagName=""}}
       {{/let}}
     </span>
   {{/if}}

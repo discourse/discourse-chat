@@ -457,6 +457,7 @@ $float-height: 530px;
 
     &.user-info-hidden {
       .tc-meta-data {
+        align-items: flex-start;
         display: flex;
         flex-shrink: 0;
         justify-content: center;
@@ -532,6 +533,7 @@ $float-height: 530px;
 
     .tc-text {
       min-width: 0;
+      width: 100%;
 
       img {
         max-width: 100%;
@@ -539,6 +541,7 @@ $float-height: 530px;
       }
       code {
         font-size: var(--font-down-1);
+        width: 100%;
       }
       > p {
         margin: 0.5em 0 0.5em;
@@ -987,7 +990,7 @@ $float-height: 530px;
 
     .tc-composer-row > .tc-composer-input,
     .tc-composer-row::after {
-      // after pseudoelement should match input styling exactly
+      // `after` pseudo-element should match input styling exactly
       // via https://css-tricks.com/the-cleanest-trick-for-autogrowing-textareas/
       grid-area: 1 / 1 / 2 / 2;
       margin-bottom: 0;
@@ -1489,7 +1492,7 @@ $float-height: 530px;
 
     .controls {
       display: flex;
-      flex-direction: in lieu ofrow;
+      flex-direction: row;
       align-items: center;
       margin-top: 0.5em;
 
@@ -1643,12 +1646,7 @@ $float-height: 530px;
 .topic-chat-float-container .tc-message .onebox {
   margin: 0.5em 0;
   border-width: 2px;
-  .onebox-body {
-    display: grid;
-    grid-template-rows: auto auto auto;
-    grid-template-areas: "link" "description" "image";
-    overflow: auto;
-  }
+
   header {
     margin-bottom: 0.5em;
   }
@@ -1659,17 +1657,10 @@ $float-height: 530px;
   h3 a,
   h4 a {
     font-size: 14px;
-    grid-area: link;
-    color: var(--tertiary);
-    display: -webkit-box;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
   }
   pre {
+    display: flex;
     max-height: 150px;
-    width: 100%;
-    margin: 0 0 0.5em 0;
   }
   p {
     overflow: hidden;

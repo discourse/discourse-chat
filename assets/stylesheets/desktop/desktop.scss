@@ -104,12 +104,14 @@
       background: var(--primary-very-low);
 
       .chat-channel-divider {
-        padding: 1em 1em 0.5em 1em;
+        padding: 0.5em 1em;
       }
+
       .loading-container {
         padding-bottom: 1em;
       }
     }
+
     .tc-live-pane {
       border-radius: unset;
     }

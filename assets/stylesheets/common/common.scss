@@ -117,10 +117,8 @@ $float-height: 530px;
   .tc-channels {
     .chat-channel-row {
       padding-left: 1em;
-      .topic-chat-badge .d-icon {
-        background-color: var(--secondary);
-      }
     }
+
     .chat-unread-urgent-indicator,
     .chat-unread-indicator {
       left: 3px;
@@ -1171,10 +1169,10 @@ $float-height: 530px;
   position: relative;
   display: grid;
   grid-template-columns: 20px 1fr;
-  grid-column-gap: 0.5em;
+  grid-column-gap: 0.75em;
   align-items: center;
   font-weight: 500;
-  max-width: calc(100% - 10px - 0.5em);
+  max-width: calc(100% - 10px - 0.75em);
   cursor: pointer;
 
   .category-chat-private .d-icon {
@@ -1189,33 +1187,41 @@ $float-height: 530px;
     top: -4px;
   }
 
+  .chat-name,
   .category-chat-name,
   .topic-chat-name,
   .tag-chat-name,
-  .chat-name {
+  .dm-usernames {
+    @include ellipsis;
     align-items: center;
     color: var(--primary-high);
+    display: flex;
+    font-size: var(--font-0);
+    margin: 0;
 
     .emoji {
-      margin: 0 0.3em;
+      height: 1.2em;
+      margin: 0 0.5em;
+      width: 1.2em;
+
+      &:first-child {
+        margin-left: 0;
+      }
+
+      &:last-child {
+        margin-right: 0;
+      }
     }
   }
 
   .d-icon-lock {
     margin-right: 0.25em;
   }
+
   .badge-category {
     font-size: var(--font-up-1);
   }
-  .chat-name,
-  .topic-chat-name,
-  .category-chat-name,
-  .tag-chat-name,
-  .dm-usernames {
-    margin: 0;
-    font-size: var(--font-0);
-    @include ellipsis;
-  }
+
   .topic-chat-icon {
     color: var(--primary-medium);
     width: 100%;
@@ -1624,7 +1630,6 @@ $float-height: 530px;
 
   .topic-chat-badge {
     .d-icon {
-      background-color: var(--primary-very-low);
       z-index: 1;
     }
   }

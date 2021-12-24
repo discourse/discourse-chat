@@ -27,6 +27,8 @@ export default DiscourseRoute.extend({
   },
 
   async getChannel(id) {
+    if (this.siteSettings.chat_channel_placeholders)
+      console.log("chat-channel.getChannel " + id);
     let channel = await this.chat.getChannelBy("id", id);
     let previewing = false;
     if (!channel) {

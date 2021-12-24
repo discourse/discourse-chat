@@ -27,6 +27,10 @@ export default DiscourseRoute.extend({
   },
 
   async getChannel(id) {
+    if (this.siteSettings.chat_channel_placeholders) {
+      // eslint-disable-next-line no-console
+      console.log("chat-channel.getChannel " + id);
+    }
     let channel = await this.chat.getChannelBy("id", id);
     let previewing = false;
     if (!channel) {

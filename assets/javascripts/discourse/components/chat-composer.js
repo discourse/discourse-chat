@@ -27,11 +27,14 @@ const THROTTLE_MS = 150;
 let outsideToolbarClick;
 
 const toolbarButtons = [];
+
 export function addChatToolbarButton(toolbarButton) {
   toolbarButtons.push(toolbarButton);
 }
 
 export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
+  chatChannel: null,
+
   chat: service(),
   classNames: ["tc-composer"],
   emojiStore: service("emoji-store"),
@@ -484,9 +487,33 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
 
   @discourseComputed("previewing")
   placeholder(previewing) {
-    return I18n.t(
-      previewing ? "chat.placeholder_previewing" : "chat.placeholder"
-    );
+    return previewing
+      ? I18n.t("chat.placeholder_previewing")
+      : this.siteSettings.chat_channel_placeholders
+      ? this.messageRecipient(this.chatChannel)
+      : I18n.t("chat.placeholder");
+  },
+
+  messageRecipient(chatChannel) {
+    if (chatChannel.chatable_type === "DirectMessageChannel") {
+      const directMessageRecipients = chatChannel.chatable.users;
+      if (
+        directMessageRecipients.length === 1 &&
+        directMessageRecipients[0].id === this.currentUser.id
+      ) {
+        return I18n.t("chat.placeholder_self");
+      }
+
+      return I18n.t("chat.placeholder_others", {
+        messageRecipient: directMessageRecipients
+          .map((u) => u.name || `@${u.username}`)
+          .join(", "),
+      });
+    } else {
+      return I18n.t("chat.placeholder_others", {
+        messageRecipient: `#${chatChannel.title}`,
+      });
+    }
   },
 
   @discourseComputed(

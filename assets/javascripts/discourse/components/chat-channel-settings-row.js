@@ -42,6 +42,43 @@ export default Component.extend({
   },
 
   @action
+  startEditingName() {
+    this.setProperties({
+      newName: this.channel.title,
+      editingName: true,
+    });
+    return false;
+  },
+
+  @discourseComputed("newName")
+  saveNameEditDisabled(name) {
+    return !name || name.trim() === "";
+  },
+
+  @action
+  cancelNameChange() {
+    this.set("editingName", false);
+  },
+
+  @action
+  saveNameChange() {
+    return ajax(`/chat/chat_channels/${this.channel.id}`, {
+      method: "POST",
+      data: {
+        name: this.newName,
+      },
+    })
+      .then((response) => {
+        this.set("editingName", false);
+        this.channel.setProperties({
+          title: response.chat_channel.title,
+          description: response.chat_channel.description,
+        });
+      })
+      .catch(popupAjaxError);
+  },
+
+  @action
   follow() {
     this.set("loading", true);
     return ajax(`/chat/chat_channels/${this.channel.id}/follow`, {
@@ -84,7 +121,7 @@ export default Component.extend({
       ".chat-channel-expand-settings"
     );
     if (expandBtn) {
-      expandBtn.blur(); // Button isn't lossing focus naturally.
+      expandBtn.blur(); // Button isn't losing focus naturally.
     }
     return false;
   },

@@ -117,10 +117,8 @@ $float-height: 530px;
   .tc-channels {
     .chat-channel-row {
       padding-left: 1em;
-      .topic-chat-badge .d-icon {
-        background-color: var(--secondary);
-      }
     }
+
     .chat-unread-urgent-indicator,
     .chat-unread-indicator {
       left: 3px;
@@ -402,6 +400,45 @@ $float-height: 530px;
     display: flex;
     min-width: 0;
 
+    .chat-message-reaction {
+      align-items: center;
+      display: inline-flex;
+      padding: 0.3em 0.6em;
+      margin: 1px 0.25em 1px 0;
+      font-size: var(--font-down-2);
+      border-radius: 4px;
+      border: 1px solid var(--primary-low);
+      background: transparent;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.2s, border-color 0.2s;
+
+      &:not(.reacted) {
+        &:hover {
+          background: var(--primary-low);
+          border-color: var(--primary-low-mid);
+        }
+      }
+      &:not(.show) {
+        display: none;
+      }
+      &.reacted {
+        border-color: var(--tertiary-medium);
+        background: var(--tertiary-very-low);
+        color: var(--tertiary-hover);
+
+        &:hover {
+          background: var(--tertiary-low);
+        }
+      }
+
+      .emoji {
+        height: 15px;
+        margin-right: 4px;
+        width: auto;
+      }
+    }
+
     &.tc-action {
       background-color: var(--highlight-medium);
     }
@@ -425,6 +462,7 @@ $float-height: 530px;
 
     &.user-info-hidden {
       .tc-meta-data {
+        align-items: flex-start;
         display: flex;
         flex-shrink: 0;
         justify-content: center;
@@ -499,12 +537,16 @@ $float-height: 530px;
     }
 
     .tc-text {
+      min-width: 0;
+      width: 100%;
+
       img {
         max-width: 100%;
         height: unset;
       }
       code {
         font-size: var(--font-down-1);
+        width: 100%;
       }
       > p {
         margin: 0.5em 0 0.5em;
@@ -563,38 +605,6 @@ $float-height: 530px;
         background: var(--primary-very-low);
         max-width: 300px;
         z-index: 3;
-      }
-
-      .chat-message-reaction {
-        display: inline-flex;
-        padding: 0.3em 0.6em;
-        margin: 1px 0.25em 1px 0;
-        font-size: var(--font-down-2);
-        border-radius: 4px;
-        border: 1px solid var(--primary-low);
-        background: transparent;
-        cursor: pointer;
-        user-select: none;
-        transition: background 0.2s;
-
-        &:not(.reacted) {
-          &:hover {
-            background: var(--primary-low);
-          }
-        }
-        &:not(.show) {
-          display: none;
-        }
-        &.reacted {
-          border-color: var(--tertiary-medium);
-          background: var(--tertiary-very-low);
-        }
-
-        .emoji {
-          height: 15px;
-          margin-right: 4px;
-          width: auto;
-        }
       }
       .chat-message-react-btn {
         vertical-align: top;
@@ -670,9 +680,8 @@ $float-height: 530px;
   }
 
   .tc-msgactions {
-    background-color: var(--secondary);
-    border: 1px solid var(--primary-low);
     border-radius: 0.25em;
+    background-color: var(--secondary);
     display: flex;
 
     .link-to-message-btn {
@@ -685,6 +694,86 @@ $float-height: 530px;
           transform: scale(1.1);
           color: var(--tertiary);
         }
+      }
+    }
+
+    .react-btn,
+    .reply-btn {
+      border: 1px solid transparent;
+      border-bottom-color: var(--primary-low);
+      border-right-width: 0;
+      border-top-color: var(--primary-low);
+      margin-right: -1px;
+      padding: 0.5em 0;
+      width: 2.5em;
+
+      &:first-child {
+        border-bottom-left-radius: 0.25em;
+        border-left-color: var(--primary-low);
+        border-top-left-radius: 0.25em;
+      }
+    }
+
+    .more-buttons {
+      .select-kit-header {
+        background: none;
+        border-bottom: 1px solid var(--primary-low);
+        border-bottom-right-radius: 0.25em;
+        border-right: 1px solid var(--primary-low);
+        border-top: 1px solid var(--primary-low);
+        border-top-right-radius: 0.25em;
+        padding: 0.5em 0;
+        width: 2.5em;
+
+        .select-kit-header-wrapper {
+          justify-content: center;
+
+          .d-icon {
+            color: var(--primary-low-mid);
+            margin: 0;
+          }
+        }
+
+        &:hover {
+          background: var(--primary-low);
+
+          .select-kit-header-wrapper {
+            .d-icon {
+              color: var(--primary);
+            }
+          }
+        }
+      }
+    }
+
+    .chat-message-reaction {
+      align-items: center;
+      border-radius: 0;
+      border-left-color: transparent;
+      border-right-color: transparent;
+      box-sizing: border-box;
+      font-size: var(--font-0);
+      justify-content: center;
+      margin: 0;
+      margin-right: -1px;
+      padding: 0.5em 0;
+      width: 2.5em;
+
+      &:first-child {
+        border-bottom-left-radius: 0.25em;
+        border-left-color: var(--primary-low);
+        border-top-left-radius: 0.25em;
+      }
+
+      &.reacted {
+        border-left-color: var(--tertiary-medium);
+        z-index: 1;
+      }
+
+      .emoji {
+        height: 15px;
+        width: auto;
+        margin: 0;
       }
     }
   }
@@ -906,7 +995,7 @@ $float-height: 530px;
 
     .tc-composer-row > .tc-composer-input,
     .tc-composer-row::after {
-      // after pseudoelement should match input styling exactly
+      // `after` pseudo-element should match input styling exactly
       // via https://css-tricks.com/the-cleanest-trick-for-autogrowing-textareas/
       grid-area: 1 / 1 / 2 / 2;
       margin-bottom: 0;
@@ -1087,10 +1176,10 @@ $float-height: 530px;
   position: relative;
   display: grid;
   grid-template-columns: 20px 1fr;
-  grid-column-gap: 0.5em;
+  grid-column-gap: 0.75em;
   align-items: center;
   font-weight: 500;
-  max-width: calc(100% - 10px - 0.5em);
+  max-width: calc(100% - 10px - 0.75em);
   cursor: pointer;
 
   .category-chat-private .d-icon {
@@ -1105,33 +1194,41 @@ $float-height: 530px;
     top: -4px;
   }
 
+  .chat-name,
   .category-chat-name,
   .topic-chat-name,
   .tag-chat-name,
-  .chat-name {
+  .dm-usernames {
+    @include ellipsis;
     align-items: center;
     color: var(--primary-high);
+    display: flex;
+    font-size: var(--font-0);
+    margin: 0;
 
     .emoji {
-      margin: 0 0.3em;
+      height: 1.2em;
+      margin: 0 0.5em;
+      width: 1.2em;
+
+      &:first-child {
+        margin-left: 0;
+      }
+
+      &:last-child {
+        margin-right: 0;
+      }
     }
   }
 
   .d-icon-lock {
     margin-right: 0.25em;
   }
+
   .badge-category {
     font-size: var(--font-up-1);
   }
-  .chat-name,
-  .topic-chat-name,
-  .category-chat-name,
-  .tag-chat-name,
-  .dm-usernames {
-    margin: 0;
-    font-size: var(--font-0);
-    @include ellipsis;
-  }
+
   .topic-chat-icon {
     color: var(--primary-medium);
     width: 100%;
@@ -1368,8 +1465,29 @@ $float-height: 530px;
     }
   }
 
-  .chat-channel-title {
-    color: var(--primary-very-high);
+  .channel-title-container {
+    .edit-btn {
+      color: var(--primary-medium);
+      margin-left: 0.25em;
+    }
+    .chat-channel-title {
+      display: inline-grid;
+      max-width: calc(100% - 40px);
+      color: var(--primary-very-high);
+    }
+  }
+  .channel-name-edit-container {
+    display: flex;
+    align-items: center;
+
+    .name-input {
+      margin: 0;
+    }
+
+    .save-btn,
+    .cancel-btn {
+      margin-left: 0.25em;
+    }
   }
 
   .chat-channel-row-controls {
@@ -1387,7 +1505,7 @@ $float-height: 530px;
 
     .controls {
       display: flex;
-      flex-direction: in lieu ofrow;
+      flex-direction: row;
       align-items: center;
       margin-top: 0.5em;
 
@@ -1519,7 +1637,6 @@ $float-height: 530px;
 
   .topic-chat-badge {
     .d-icon {
-      background-color: var(--primary-very-low);
       z-index: 1;
     }
   }
@@ -1541,12 +1658,7 @@ $float-height: 530px;
 .topic-chat-float-container .tc-message .onebox {
   margin: 0.5em 0;
   border-width: 2px;
-  .onebox-body {
-    display: grid;
-    grid-template-rows: auto auto auto;
-    grid-template-areas: "link" "description" "image";
-    overflow: auto;
-  }
+
   header {
     margin-bottom: 0.5em;
   }
@@ -1557,17 +1669,10 @@ $float-height: 530px;
   h3 a,
   h4 a {
     font-size: 14px;
-    grid-area: link;
-    color: var(--tertiary);
-    display: -webkit-box;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
   }
   pre {
+    display: flex;
     max-height: 150px;
-    width: 100%;
-    margin: 0 0 0.5em 0;
   }
   p {
     overflow: hidden;

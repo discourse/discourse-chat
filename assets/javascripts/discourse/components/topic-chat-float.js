@@ -7,7 +7,6 @@ import {
   CHAT_VIEW,
   LIST_VIEW,
 } from "discourse/plugins/discourse-chat/discourse/services/chat";
-
 import { ajax } from "discourse/lib/ajax";
 import { equal } from "@ember/object/computed";
 import { cancel, schedule, throttle } from "@ember/runloop";
@@ -115,7 +114,7 @@ export default Component.extend({
 
   @observes("hidden")
   _fireHiddenAppEvents() {
-    this.chat.setChatOpenStatus(!this.hidden);
+    this.chat.set("chatOpen", !this.hidden);
     this.appEvents.trigger("chat:rerender-header");
   },
 
@@ -144,7 +143,7 @@ export default Component.extend({
       // to highlight or fetch the message.
       this.appEvents.trigger("chat-live-pane:highlight-message", messageId);
     } else {
-      this.chat.setTargetMessageId(messageId);
+      this.chat.set("messageId", messageId);
       this.switchChannel(channel);
     }
   },
@@ -347,7 +346,7 @@ export default Component.extend({
 
   @action
   switchChannel(channel) {
-    if (this.site.mobileView || this.chat.onChatPage()) {
+    if (this.site.mobileView || this.chat.isChatPage) {
       return this.router.transitionTo(
         "chat.channel",
         channel.id,

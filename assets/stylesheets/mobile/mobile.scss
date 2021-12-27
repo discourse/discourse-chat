@@ -29,7 +29,14 @@
 .tc-live-pane .tc-composer .tc-composer-row {
   .tc-composer-input {
     padding-right: 75px;
+
+    &::-webkit-input-placeholder {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
   }
+
   .open-toolbar-btn {
     right: 50px;
   }
@@ -51,8 +58,7 @@
 }
 
 .tc-message:not(.user-info-hidden) {
-  padding: 0.25em 1em 0.1em;
-  margin-top: 0.5em;
+  padding: 0.75em 1em 0.1em;
 }
 
 .tc-message.user-info-hidden {
@@ -162,11 +168,15 @@ body.has-full-page-chat {
   .topic-chat-channel,
   .category-chat-channel {
     display: flex;
+
+    .channel-title-container {
+      width: 100%;
+    }
     .chat-channel-description {
       display: none;
     }
-    .chat-channel-title {
-      max-width: 50%;
+    .btn-container {
+      justify-self: flex-end;
     }
   }
   .chat-channel-expand-settings {

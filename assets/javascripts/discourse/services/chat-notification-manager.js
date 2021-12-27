@@ -6,7 +6,7 @@ import {
   alertChannel,
   onNotification,
 } from "discourse/lib/desktop-notifications";
-import { observes } from "discourse-common/utils/decorators";
+import { bind, observes } from "discourse-common/utils/decorators";
 
 export default Service.extend({
   presence: service(),
@@ -31,10 +31,9 @@ export default Service.extend({
     );
     this._chatPresenceChannel.subscribe();
     this._corePresenceChannel.subscribe();
-    const boundOnPageChange = this._pageChanged.bind(this);
 
     withPluginApi("0.12.1", (api) => {
-      api.onPageChange(boundOnPageChange);
+      api.onPageChange(this._pageChanged);
     });
   },
 
@@ -51,13 +50,14 @@ export default Service.extend({
   },
 
   shouldCountChatInDocTitle() {
-    if (this.currentUser.chat_isolated && !this.chat.onChatPage()) {
+    if (this.currentUser.chat_isolated && !this.chat.isChatPage) {
       return false;
     }
 
     return this._countChatInDocTitle;
   },
 
+  @bind
   _pageChanged(path) {
     this.set("_inChat", path.startsWith("/chat/channel/"));
     if (this._inChat) {
@@ -103,7 +103,7 @@ export default Service.extend({
   _subscribeToChat(opts = { only: false }) {
     this.set("_countChatInDocTitle", true);
 
-    if (this.currentUser.chat_isolated && !this.chat.onChatPage()) {
+    if (this.currentUser.chat_isolated && !this.chat.isChatPage) {
       return;
     }
 

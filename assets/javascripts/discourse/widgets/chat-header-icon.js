@@ -17,13 +17,13 @@ export default createWidget("header-chat-link", {
 
     if (
       this.currentUser.isInDoNotDisturb() ||
-      (this.currentUser.chat_isolated && !this.chat.onChatPage())
+      (this.currentUser.chat_isolated && !this.chat.isChatPage)
     ) {
       return this.chatLinkHtml();
     }
 
     let indicator;
-    let unreadUrgentCount = this.chat.getUnreadUrgentCount();
+    let unreadUrgentCount = this.chat.unreadUrgentCount;
     if (unreadUrgentCount) {
       indicator = h(
         "div.chat-unread-urgent-indicator",
@@ -34,7 +34,7 @@ export default createWidget("header-chat-link", {
           h("div.chat-unread-urgent-indicator-number", {}, unreadUrgentCount)
         )
       );
-    } else if (this.chat.getHasUnreadMessages()) {
+    } else if (this.chat.hasUnreadMessages) {
       indicator = h("div.chat-unread-indicator");
     }
 
@@ -43,9 +43,7 @@ export default createWidget("header-chat-link", {
 
   chatLinkHtml(indicatorNode) {
     return h(
-      `a.icon${
-        this.chat.onChatPage() || this.chat.getChatOpenStatus() ? ".active" : ""
-      }`,
+      `a.icon${this.chat.isChatPage || this.chat.chatOpen ? ".active" : ""}`,
       [iconNode("comment"), indicatorNode].filter(Boolean)
     );
   },
@@ -58,7 +56,7 @@ export default createWidget("header-chat-link", {
   },
 
   click() {
-    if (this.chat.onChatPage()) {
+    if (this.chat.isChatPage) {
       return;
     }
 
@@ -70,7 +68,7 @@ export default createWidget("header-chat-link", {
       }
     }
 
-    if (this.site.mobileView || this.chat.getSidebarActive()) {
+    if (this.site.mobileView || this.chat.sidebarActive) {
       return this.router.transitionTo("chat");
     } else {
       this.appEvents.trigger("chat:toggle-open");

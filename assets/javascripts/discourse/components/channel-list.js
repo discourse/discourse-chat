@@ -1,7 +1,7 @@
 import Component from "@ember/component";
 import discourseComputed, { bind } from "discourse-common/utils/decorators";
 import showModal from "discourse/lib/show-modal";
-import { action, computed } from "@ember/object";
+import { action } from "@ember/object";
 import { next, schedule } from "@ember/runloop";
 import { inject as service } from "@ember/service";
 import { empty } from "@ember/object/computed";
@@ -28,18 +28,16 @@ export default Component.extend({
     this.appEvents.off("chat:start-new-dm", this, "startCreatingDmChannel");
   },
 
-  sortedDirectMessageChannels: computed(
-    "directMessageChannels.@each.updated_at",
-    function () {
-      if (!this.directMessageChannels?.length) {
-        return [];
-      }
-
-      return this.chat
-        .sortDirectMessageChannels(this.directMessageChannels)
-        .slice(0, this.currentUser.chat_isolated ? 20 : 10);
+  @discourseComputed("directMessageChannels.@each.updated_at")
+  sortedDirectMessageChannels(channels) {
+    if (!channels?.length) {
+      return [];
     }
-  ),
+
+    return this.chat
+      .sortDirectMessageChannels(channels)
+      .slice(0, this.currentUser.chat_isolated ? 20 : 10);
+  },
 
   @discourseComputed("inSidebar")
   publicChannelClasses(inSidebar) {

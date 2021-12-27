@@ -67,8 +67,7 @@
 }
 
 .tc-message:not(.user-info-hidden) {
-  padding: 0.15em 1em;
-  margin-top: 0.5em;
+  padding: 0.65em 1em 0.15em;
 }
 
 .tc-text {
@@ -104,12 +103,14 @@
       background: var(--primary-very-low);
 
       .chat-channel-divider {
-        padding: 1em 1em 0.5em 1em;
+        padding: 0.5em 1em;
       }
+
       .loading-container {
         padding-bottom: 1em;
       }
     }
+
     .tc-live-pane {
       border-radius: unset;
     }
@@ -166,6 +167,19 @@
     }
     .tc-messages-container .tc-message-deleted {
       padding: 0.25em 2em;
+    }
+  }
+}
+
+.chat-browse .chat-channel-settings-row {
+  .edit-btn {
+    opacity: 0;
+    transition: opacity 0.1s;
+  }
+
+  &:hover {
+    .edit-btn {
+      opacity: 1;
     }
   }
 }

@@ -29,14 +29,12 @@ const PUBLIC_CHANNEL_SORT_PRIOS = {
 export default Service.extend({
   allChannels: null,
   appEvents: service(),
-  chatOpen: false,
   chatNotificationManager: service(),
   cook: null,
   directMessageChannels: null,
   hasFetchedChannels: false,
-  hasUnreadPublicMessages: false,
+  hasUnreadMessages: false,
   idToTitleMap: null,
-  lastNonChatRoute: null,
   lastUserTrackingMessageId: null,
   messageId: null,
   presence: service(),
@@ -45,7 +43,10 @@ export default Service.extend({
   router: service(),
   sidebarActive: false,
   unreadUrgentCount: null,
+  _chatOpen: false,
   _fetchingChannels: null,
+  _fullScreenChatOpen: false,
+  _lastNonChatRoute: null,
 
   init() {
     this._super(...arguments);
@@ -54,6 +55,7 @@ export default Service.extend({
       this.set("allChannels", []);
       this._subscribeToNewDmChannelUpdates();
       this._subscribeToUserTrackingChannel();
+      this._subscribeToChannelEdits();
       this.appEvents.on("page:changed", this, "_storeLastNonChatRouteInfo");
       this.presenceChannel = this.presence.getChannel("/chat/online");
       this._draftStore = new KeyValueStore(DRAFT_STORE_NAMESPACE);
@@ -62,10 +64,12 @@ export default Service.extend({
 
   willDestroy() {
     this._super(...arguments);
+
     if (this.currentUser?.has_chat_enabled) {
       this.set("allChannels", null);
       this._unsubscribeFromNewDmChannelUpdates();
       this._unsubscribeFromUserTrackingChannel();
+      this._unsubscribeFromChannelEdits();
       this._unsubscribeFromAllChatChannels();
       this.appEvents.off("page:changed", this, "_storeLastNonChatRouteInfo");
     }
@@ -76,33 +80,25 @@ export default Service.extend({
       data.currentRouteName !== "chat" &&
       data.currentRouteName !== "chat.channel"
     ) {
-      this.set("lastNonChatRoute", data.url);
+      this.set("_lastNonChatRoute", data.url);
     }
   },
 
-  getLastNonChatRoute() {
-    return this.lastNonChatRoute && this.lastNonChatRoute !== "/"
-      ? this.lastNonChatRoute
+  get lastNonChatRoute() {
+    return this._lastNonChatRoute && this._lastNonChatRoute !== "/"
+      ? this._lastNonChatRoute
       : `discovery.${defaultHomepage()}`;
   },
 
-  onChatPage() {
+  get isChatPage() {
     return (
       this.router.currentRouteName === "chat" ||
       this.router.currentRouteName === "chat.channel"
     );
   },
 
-  onBrowsePage() {
+  get isBrowsePage() {
     return this.router.currentRouteName === "chat.browse";
-  },
-
-  getSidebarActive() {
-    return this.sidebarActive;
-  },
-
-  setSidebarActive(on) {
-    this.set("sidebarActive", on);
   },
 
   loadCookFunction(categories) {
@@ -123,29 +119,22 @@ export default Service.extend({
     });
   },
 
-  setTargetMessageId(messageId) {
-    this.set("messageId", messageId);
+  get fullScreenChatOpen() {
+    return this._fullScreenChatOpen;
   },
 
-  getTargetMessageId() {
-    return this.messageId;
-  },
-
-  clearTargetMessageId() {
-    this.set("messageId", null);
-  },
-
-  setFullScreenChatOpenStatus(status) {
-    this.set("fullScreenChatOpen", status);
+  set fullScreenChatOpen(status) {
+    this.set("_fullScreenChatOpen", status);
     this._updatePresence();
   },
 
-  setChatOpenStatus(status) {
-    this.set("chatOpen", status);
-    this._updatePresence();
+  get chatOpen() {
+    return this._chatOpen;
   },
-  getChatOpenStatus() {
-    return this.chatOpen;
+
+  set chatOpen(status) {
+    this.set("_chatOpen", status);
+    this._updatePresence();
   },
 
   _updatePresence() {
@@ -156,20 +145,6 @@ export default Service.extend({
         this.presenceChannel.leave();
       }
     });
-  },
-
-  setHasUnreadMessages(value) {
-    this.set("hasUnreadMessages", value);
-  },
-  getHasUnreadMessages() {
-    return this.hasUnreadMessages;
-  },
-
-  setUnreadUrgentCount(count) {
-    this.set("unreadUrgentCount", count);
-  },
-  getUnreadUrgentCount() {
-    return this.unreadUrgentCount;
   },
 
   getDocumentTitleCount() {
@@ -301,6 +276,7 @@ export default Service.extend({
       );
     });
   },
+
   sortPublicChannels(channels) {
     return channels.sort((a, b) => {
       const typeA = PUBLIC_CHANNEL_SORT_PRIOS[a.chatable_type];
@@ -319,14 +295,6 @@ export default Service.extend({
         this.currentUser.chat_channel_tracking_state[a.id]?.unread_count || 0;
       const unreadCountB =
         this.currentUser.chat_channel_tracking_state[b.id]?.unread_count || 0;
-
-      const userAIsSelf = a.chatable.users[0].id === this.currentUser.id;
-      const userBIsSelf = b.chatable.users[0].id === this.currentUser.id;
-
-      if (userAIsSelf || userBIsSelf) {
-        return userAIsSelf ? -1 : 1;
-      }
-
       if (unreadCountA === unreadCountB) {
         return new Date(a.updated_at) > new Date(b.updated_at) ? -1 : 1;
       } else {
@@ -425,6 +393,23 @@ export default Service.extend({
     }
   },
 
+  _subscribeToChannelEdits() {
+    this.messageBus.subscribe("/chat/channel-edits", (busData) => {
+      this.getChannelBy("id", busData.chat_channel_id).then((channel) => {
+        if (channel) {
+          channel.setProperties({
+            title: busData.name,
+            description: busData.description,
+          });
+        }
+      });
+    });
+  },
+
+  _unsubscribeFromChannelEdits() {
+    this.messageBus.unsubscribe("/chat/channel-edits");
+  },
+
   _subscribeToNewDmChannelUpdates() {
     this.messageBus.subscribe("/chat/new-direct-message-channel", (busData) => {
       this.startTrackingChannel(busData.chat_channel);
@@ -451,7 +436,7 @@ export default Service.extend({
           channel.id
         ].chat_message_id = busData.message_id;
       } else {
-        // Message from other user. Incriment trackings state
+        // Message from other user. Increment trackings state
         const trackingState = this.currentUser.chat_channel_tracking_state[
           channel.id
         ];
@@ -566,14 +551,14 @@ export default Service.extend({
     );
 
     let hasUnreadPublic = unreadPublicCount > 0;
-    if (hasUnreadPublic !== this.getHasUnreadMessages()) {
+    if (hasUnreadPublic !== this.hasUnreadMessages) {
       headerNeedsRerender = true;
-      this.setHasUnreadMessages(hasUnreadPublic);
+      this.set("hasUnreadMessages", hasUnreadPublic);
     }
 
-    if (unreadUrgentCount !== this.getUnreadUrgentCount()) {
+    if (unreadUrgentCount !== this.unreadUrgentCount) {
       headerNeedsRerender = true;
-      this.setUnreadUrgentCount(unreadUrgentCount);
+      this.set("unreadUrgentCount", unreadUrgentCount);
     }
 
     this.currentUser.notifyPropertyChange("chat_channel_tracking_state");

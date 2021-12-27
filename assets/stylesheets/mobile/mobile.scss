@@ -165,12 +165,14 @@ body.has-full-page-chat {
       margin-right: 0;
     }
   }
+  .chat-channel-settings-row {
+    grid-template-columns: 2fr 1fr;
+    grid-template-rows: unset;
+  }
   .topic-chat-channel,
   .category-chat-channel {
-    display: flex;
-
     .channel-title-container {
-      width: 100%;
+      width: auto;
     }
     .chat-channel-description {
       display: none;

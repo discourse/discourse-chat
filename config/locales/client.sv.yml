@@ -7,6 +7,8 @@
 sv:
   js:
     chat:
+      dates:
+        time_tiny: "h:mm"
       all_loaded: "Visar alla meddelanden"
       already_enabled: "Chatt är redan aktiverat för detta ämne. Vänligen uppdatera."
       already_disabled: "Chatt är redan stängd för detta ämne. Vänligen uppdatera."
@@ -16,8 +18,10 @@ sv:
       cancel: "Avbryt"
       cancel_reply: "Avbryt svar"
       cancel_edit: "Avbryt redigering"
-      category_chat_enabled: "Chatt aktiverad för kategori"
       chat_channels: "Kanaler"
+      channel_list_popup:
+        browse: "Bläddra bland kanaler"
+        create: "Skapa en kanal"
       click_to_join: "Klicka här för att se tillgängliga kanaler."
       close: "Stäng"
       collapse: "Komprimera chattruta"
@@ -64,13 +68,87 @@ sv:
       open: "Öppna chatt"
       open_full_page: "Öppna chatt i helskärmsläge"
       open_message: "Öppna meddelande i chatten"
+      placeholder_self: "Gör en anteckning"
+      placeholder_others: "Skicka ett meddelande till %{messageRecipient}"
       placeholder: "chatt..."
       placeholder_previewing: "Gå med i kanalen för att skicka ett meddelande."
       remove_upload: "Ta bort fil"
+      react: "Reagera med emoji"
+      reply: "Svara"
+      edit: "Redigera"
+      copy_link: "Kopiera länk"
+      restore: "Återställ raderat meddelande"
+      save: "Spara"
+      select: "Välj"
+      return_to_list: "Återgå till kanallistan"
+      scroll_to_bottom: "Scrolla till botten"
+      send: "Skicka chattmeddelande"
+      send_error: "Något gick fel"
+      sound:
+        title: "Meddelandeljud för chatt via dator"
+      sounds:
+        none: "Ingen"
+        bell: "Bell"
+        ding: "Ding"
+      title: "chatt"
+      title_capitalized: "Chatt"
+      toggle_enabled: "Växla chatt aktiverad"
+      unread_count: "(%{count} nya)"
+      upload: "Bifoga en fil"
+      you: "Du, %{usernames} reagerade med %{emoji}"
+      exit: "tillbaka"
+      create_channel:
+        choose_category:
+          label: "Välj en kategori för att hantera vem som kan komma åt kanalen"
+          none: "Välj en..."
+        create: "Skapa kanal"
+        description: "Beskrivning (valfritt)"
+        name: "Kanalnamn"
+        title: "Lägg till en kanal"
+        type: "Typ"
+        types:
+          category: "Kategori"
+          topic: "Ämne"
+      reactions:
+        only_you: "Du reagerade med :%{emoji}:"
+        and_others: "Du, %{usernames} reagerade med :%{emoji}:"
+        only_others: "%{usernames} reagerade med :%{emoji}:"
+        others_and_more: "%{usernames} och %{more} andra reagerade med :%{emoji}:"
+        you_others_and_more: "Du, %{usernames} och %{more} andra reagerade med :%{emoji}:"
+      composer:
+        toggle_toolbar: "Växla verktygsfält"
+      notification_levels:
+        never: "Aldrig"
+        mention: "Endast för omnämnanden"
+        always: "För all aktivitet"
+      settings:
+        desktop_notification_level: "Skrivbordsaviseringar"
+        follow: "Gå med"
+        mobile_notification_level: "Mobila push-meddelanden"
+        mute: "Tysta kanal"
+        muted_on: "På"
+        muted_off: "Av"
+        notifications: "Aviseringar"
+        preview: "Förhandsgranska"
+        save: "Spara"
+        saved: "Sparad"
+        unfollow: "Lämna"
+      admin:
+        title: "Chatt"
+      direct_messages:
+        title: "Personlig chatt"
+        new: "Ny personlig chatt"
+        create: "Kör"
       incoming_webhooks:
+        back: "Tillbaka"
+        channel: "Kanal"
+        channel_placeholder: "Välj en kanal"
+        confirm_destroy: "Är du säker på att du vill ta bort denna inkommande webhook? Detta kan inte ångras."
+        current_emoji: "Nuvarande emoji"
         description: "Beskrivning"
         delete: "Radera"
         emoji: "Emoji"
+        emoji_instructions: "Systemavatar kommer att användas om emoji lämnas tom."
         name: "Namn"
         name_placeholder: "namn..."
         new: "Ny inkommande webhook"
@@ -84,3 +162,57 @@ sv:
         title: "Inkommande webhooks"
         url: "URL"
         username: "Användarnamn"
+        username_instructions: "Användarnamn på bot som gör inlägg på kanalen. Standardinställning är 'system' när det lämnas tomt."
+      selection:
+        cancel: "Avbryt"
+        move_to_topic: "Flytta till ämne"
+        error: "Det uppstod ett fel när chattmeddelanden skulle flyttas"
+        title: "Flytta chatt till ämne"
+        new_topic:
+          title: "Flytta till nytt ämne"
+          instructions:
+            one: "Du håller på att skapa ett nytt ämne och fylla det med chattmeddelandet du har valt."
+            other: "Du håller på att skapa ett nytt ämne och fylla det med de <b>%{count}</b> chattmeddelanden du har valt."
+        existing_topic:
+          title: "Flytta till befintligt ämne"
+          instructions:
+            one: "Välj det ämne du vill flytta chattmeddelandet till."
+            other: "Välj det ämne du vill flytta dessa <b>%{count}</b> chattmeddelanden till."
+        new_message:
+          title: "Flytta till nytt meddelande"
+          instructions:
+            one: "Du håller på att skapa ett nytt meddelande och fylla det med chattmeddelandet du har valt."
+            other: "Du håller på att skapa ett nytt ämne och fylla det med de <b>%{count}</b> chattmeddelanden du har valt."
+      replying_indicator:
+        single_user: "%{username} skriver"
+        multiple_users: "%{commaSeparatedUsernames} och %{lastUsername} skriver"
+        many_users: "%{commaSeparatedUsernames} och %{count} andra skriver"
+    notifications:
+      popup:
+        chat_mention: "@%{username} nämnde dig i chatten"
+        chat_message: "Nytt chattmeddelande"
+      titles:
+        chat_mention: "Chatt omnämnande"
+        chat_invitation: "Chattinbjudan"
+    topic:
+      actions:
+        chat_enable: "Aktivera chatt"
+        chat_disable: "Stäng chatt"
+    action_codes:
+      chat:
+        enabled: '%{who} aktiverade <button class="btn-link open-chat">chatt</button> %{when}'
+        disabled: "%{who} stängde chatten %{when}"
+        post_created: "skapade ett nytt inlägg: %{excerpt}"
+        generic_small_action: "utförde en åtgärd för ämneshantering"
+    discourse_automation:
+      scriptables:
+        send_chat_message:
+          title: Skicka chattmeddelande
+          fields:
+            chat_channel_id:
+              label: Chattkanal-ID
+            message:
+              label: Meddelande
+            sender:
+              label: Avsändare
+              description: Standard är system

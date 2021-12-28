@@ -5,3 +5,27 @@
 # https://translate.discourse.org/
 
 sv:
+  site_settings:
+    chat_enabled: "Aktivera insticksprogrammet för discourse-chatt. Använd åtgärden 'Aktivera chatt' per ämne för att konfigurera."
+    chat_allowed_groups: "Användare i dessa grupper kan chatta."
+  chat:
+    separator_post_day:
+      content: "Separera chattinlägg efter %{date}."
+    separator_post_hour:
+      content: "Separera chattinlägg efter %{date}."
+    enabled_chat: "Aktiverad chatt"
+    disabled_chat: "Inaktiverad chatt"
+    notifications:
+      mention: "@%{username} nämnde dig i chatten"
+    errors:
+      channel_exists_for_category: "En kanal finns redan för denna kategori och namn"
+      channel_exists_for_topic: "En kanal finns redan för detta ämne"
+  discourse_push_notifications:
+    popup:
+      chat_mention: "@%{username} nämnde dig i chatten"
+      chat_message: "Nytt chattmeddelande i %{chat_channel_title}"
+      group_chat_message: "Nytt chattmeddelande i en personlig chattkanal"
+  discourse_automation:
+    scriptables:
+      send_chat_message:
+        title: Skicka chattmeddelande

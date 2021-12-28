@@ -7,6 +7,8 @@
 ru:
   js:
     chat:
+      dates:
+        time_tiny: "ч:мм"
       all_loaded: "Отобразить все сообщения"
       already_enabled: "Чат по этой теме уже включён . Пожалуйста, обновите страницу."
       already_disabled: "Чат по этой теме уже отключён . Пожалуйста, обновите страницу."
@@ -16,10 +18,13 @@ ru:
       cancel: "Отменить"
       cancel_reply: "Отменить ответ"
       cancel_edit: "Отменить изменение"
-      category_chat_enabled: "Чат включён для раздела"
       chat_channels: "Каналы"
+      channel_list_popup:
+        browse: "Просмотр каналов"
+        create: "Создать канал"
       click_to_join: "Нажмите здесь для просмотра доступных каналов."
       close: "Закрыть"
+      collapse: "Свернуть чат"
       deleted: "Сообщение было удалено. [view]"
       delete: "Удалить"
       disable: "Отключить чат"
@@ -68,6 +73,8 @@ ru:
       open: "Открыть чат"
       open_full_page: "Открыть полноэкранный чат"
       open_message: "Открыть сообщение в чате"
+      placeholder_self: "Напишите что-нибудь"
+      placeholder_others: "Отправить сообщение %{messageRecipient}"
       placeholder: "чат..."
       placeholder_previewing: "Присоединись к каналу, чтобы отправить сообщение."
       remove_upload: "Удалить файл"
@@ -76,6 +83,7 @@ ru:
       edit: "Изменить"
       copy_link: "Копировать ссылку"
       restore: "Восстановить удаленное сообщение"
+      save: "Сохранить"
       select: "Выбрать"
       return_to_list: "Вернуться к списку каналов"
       scroll_to_bottom: "Прокрутка вниз"
@@ -94,6 +102,18 @@ ru:
       upload: "Прикрепить файл"
       you: "Вы, %{usernames}, отреагировали при помощи эмодзи %{emoji}"
       exit: "Назад"
+      create_channel:
+        choose_category:
+          label: "Выберите раздел для управления доступом к каналу"
+          none: "выберите раздел..."
+        create: "Создать канал"
+        description: "Описание (необязательно)"
+        name: "Название канала"
+        title: "Добавить канал"
+        type: "Тип"
+        types:
+          category: "Раздел"
+          topic: "Тема"
       reactions:
         only_you: "Вы отреагировали при помощи эмодзи :%{emoji}:"
         and_others: "Вы, %{usernames}, отреагировали при помощи эмодзи :%{emoji}:"

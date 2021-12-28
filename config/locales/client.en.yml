@@ -5,13 +5,11 @@ en:
         time_tiny: "h:mm"
       all_loaded: "Showing all messages"
       already_enabled: "Chat is already enabled on this topic. Please refresh."
-      already_disabled: "Chat is already closed on this topic. Please refresh."
       disabled_for_topic: "Chat is disabled on this topic."
       bot: "bot"
       create: "Create"
       cancel: "Cancel"
       cancel_reply: "Cancel reply"
-      cancel_edit: "Cancel edit"
       chat_channels: "Channels"
       channel_list_popup:
         browse: "Browse channels"
@@ -22,12 +20,9 @@ en:
       collapse: "Collapse Chat Drawer"
       deleted: "A message was deleted. [view]"
       delete: "Delete"
-      disable: "Disable chat"
       edited: "(edited)"
-      edit_channels: "Edit channels"
       empty_state:
         create_personal_chat: "Start a Personal Chat"
-        follow_channels: "Follow Channels"
         no_public_available: "There are no public channels available for you to follow at this time."
         public_available: "There are public channels available for you to follow."
         start_direct_message: "You can also start a personal chat with one or more users."
@@ -66,7 +61,6 @@ en:
       open_message: "Open message in chat"
       placeholder_self: "Jot something down"
       placeholder_others: "Send a message to %{messageRecipient}"
-      placeholder: "chat..."
       placeholder_previewing: "Join the channel to send a message."
       remove_upload: "Remove file"
       react: "React with emoji"
@@ -78,7 +72,6 @@ en:
       select: "Select"
       return_to_list: "Return to channel list"
       scroll_to_bottom: "Scroll to bottom"
-      send: "Send Chat Message"
       send_error: "Something went wrong"
       sound:
         title: "Desktop chat notification sound"
@@ -88,10 +81,7 @@ en:
         ding: "Ding"
       title: "chat"
       title_capitalized: "Chat"
-      toggle_enabled: "Toggle chat enabled"
-      unread_count: "(%{count} new)"
       upload: "Attach a file"
-      you: "You, %{usernames} reacted with %{emoji}"
       exit: "back"
 
       create_channel:
@@ -145,7 +135,6 @@ en:
 
       incoming_webhooks:
         back: "Back"
-        channel: "Channel"
         channel_placeholder: "Select a channel"
         confirm_destroy: "Are you sure you want to delete this incoming webhook? This cannot be un-done."
         current_emoji: "Current Emoji"

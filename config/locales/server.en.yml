@@ -3,14 +3,6 @@ en:
     chat_enabled: "Enable the discourse-chat plugin. Use the per-topic 'Enable Chat' action to set up."
     chat_allowed_groups: "Users in these groups can chat."
   chat:
-    separator_post_day:
-      content: "Chat separation post for %{date}."
-    separator_post_hour:
-      content: "Chat separation post for %{date}."
-    enabled_chat: "Enabled chat"
-    disabled_chat: "Disabled chat"
-    notifications:
-      mention: "@%{username} mentioned you in chat"
     errors:
      channel_exists_for_category: "A channel already exists for this category and name"
      channel_exists_for_topic: "A channel already exists for this topic"

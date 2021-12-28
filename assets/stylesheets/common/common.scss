@@ -81,6 +81,10 @@ $float-height: 530px;
   }
 }
 
+body.composer-open.topic-chat-floar-container {
+  bottom: 11px; // prevent height of grippie from obscuring ...is typing indicator
+}
+
 .topic-chat-float-container {
   font-family: "Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;

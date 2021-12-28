@@ -7,6 +7,8 @@
 he:
   js:
     chat:
+      dates:
+        time_tiny: "h:mm"
       all_loaded: "כל ההודעות מוצגות"
       already_enabled: "כבר מופעל צ׳אט בנושא הזה. נא לרענן."
       already_disabled: "כבר נסגר צ׳אט בנושא הזה. נא לרענן."
@@ -16,7 +18,6 @@ he:
       cancel: "ביטול"
       cancel_reply: "ביטול תגובה"
       cancel_edit: "ביטול עריכה"
-      category_chat_enabled: "צ׳אט מופעל לקטגוריה"
       chat_channels: "ערוצים"
       click_to_join: "לחיצה כאן תציג את הערוצים הזמינים."
       close: "סגירה"
@@ -55,6 +56,8 @@ he:
       open: "פתיחת צ׳אט"
       open_full_page: "פתיחת צ׳אט במסך מלא"
       open_message: "פתיחת הודעה בצ׳אט"
+      placeholder_self: "לקשקש משהו"
+      placeholder_others: "לשלוח הודעה אל %{messageRecipient}"
       placeholder: "צ׳אט…"
       placeholder_previewing: "יש להצטרף לערוץ כדי לשלוח הודעה."
       remove_upload: "הסרת קובץ"
@@ -63,6 +66,7 @@ he:
       edit: "עריכה"
       copy_link: "העתקת קישור"
       restore: "שחזור הודעה שנמחקה"
+      save: "שמירה"
       select: "בחירה"
       return_to_list: "חזרה לרשימת הערוצים"
       scroll_to_bottom: "גלילה לתחתית"
@@ -77,6 +81,7 @@ he:
       title: "צ׳אט"
       title_capitalized: "צ׳אט"
       upload: "צירוף קובץ"
+      exit: "חזרה"
       composer:
         toggle_toolbar: "החלפת מצב סרגל כלים"
       notification_levels:
@@ -113,6 +118,7 @@ he:
         name: "שם"
         name_placeholder: "שם…"
         new: "התליה נכנסת חדשה"
+        none: "לא נוצרו התליות נכנסות קיימות."
         no_emoji: "לא נבחר אמוג׳י"
         post_to: "פרסום אל"
         reset_emoji: "איפוס אמוג׳י"
@@ -136,13 +142,20 @@ he:
     notifications:
       popup:
         chat_message: "הודעת צ׳אט חדשה"
+      titles:
+        chat_mention: "איזכור בצ׳אט"
+        chat_invitation: "הזמנה לצ׳אט"
     topic:
       actions:
         chat_enable: "הפעלת צ׳אט"
         chat_disable: "סגירת צ׳אט"
+    action_codes:
+      chat:
+        post_created: "נוצר פוסט חדש: %{excerpt}"
     discourse_automation:
       scriptables:
         send_chat_message:
+          title: שליחת הודעת צ׳אט
           fields:
             chat_channel_id:
               label: מזהה ערוץ צ׳אט

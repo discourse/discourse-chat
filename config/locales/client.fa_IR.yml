@@ -5,3 +5,164 @@
 # https://translate.discourse.org/
 
 fa_IR:
+  js:
+    chat:
+      dates:
+        time_tiny: "HH:mm"
+      all_loaded: "نمایش همه پیام‌ها"
+      already_enabled: "گفتگو در حال حاضر در این موضوع فعال شده است. لطفا صفحه جاری را تازه‌سازی کنید."
+      already_disabled: "گفتگو در حال حاضر در این موضوع بسته شده است. لطفا صفحه جاری را تازه‌سازی کنید."
+      disabled_for_topic: "گفتگو در این موضوع غیرفعال است."
+      bot: "ربات"
+      create: "ایجاد"
+      cancel: "لغو"
+      cancel_reply: "لغو پاسخ"
+      cancel_edit: "لغو ویرایش"
+      chat_channels: "کانال‌ها"
+      channel_list_popup:
+        browse: "مرور کانال‌ها"
+        create: "ایجاد کانال"
+      click_to_join: "برای مشاهده کانال‌های موجود، اینجا را کلیک کنید."
+      close: "بستن"
+      deleted: "یک پیام حذف شد. [view]"
+      delete: "حذف"
+      disable: "غیرفعال کردن گفتگو"
+      edited: "«ویرایش شده»"
+      edit_channels: "ویرایش کانال‌ها"
+      empty_state:
+        create_personal_chat: "شروع گفتگوی شخصی"
+        follow_channels: "کانال‌ها را دنبال کنید"
+        no_public_available: "هیچ کانال عمومی برای دنبال کردن شما در این زمان وجود ندارد."
+        public_available: "کانال‌های عمومی در دسترس شما برای دنبال کردن وجود دارد."
+        start_direct_message: "شما همچنین می‌توانید یک گفتگو شخصی را با یک یا چند کاربر شروع کنید."
+      enable: "فعال کردن گفتگو"
+      flag: "پرچم"
+      invalid_access: "شما برای مشاهده گفتگوی این کانال دسترسی ندارید"
+      invitation_notification: "<span>%{username} شما را دعوت کرده است که به این کانال گفتگو بپیوندید</span>"
+      in_reply_to: "در پاسخ به"
+      isolate:
+        description: "همیشه گفتگو را در یک برگه جدید باز کن"
+      heading: "گفتگو"
+      join_channel: "پیوستن به کانال"
+      new_messages: "پیام‌های جدید"
+      mention_notification: "<span>%{username} در گفتگو به شما اشاره کرده است</span>"
+      mention_warning:
+        invitations_sent:
+          one: "دعوت‌نامه ارسال شد"
+          other: "دعوت‌نامه‌ها ارسال شد"
+        invite: "دعوت به کانال"
+        without_membership:
+          one: "%{usernames} هنوز در این کانال عضو نشده است."
+          other: "%{usernames} هنوز در این کانال عضو نشده است."
+      no_public_channels: "شما هنوز عضو هیچ کانالی نشده‌اید."
+      open: "باز کردن گفتگو..."
+      open_message: "پیام را در گفتگو باز کن"
+      placeholder: "گفتگو..."
+      placeholder_previewing: "برای ارسال پیام، به کانال بپیوندید."
+      remove_upload: "حذف پرونده"
+      react: "واکنش با شکلک"
+      reply: "پاسخ"
+      edit: "ویرایش"
+      copy_link: "کپی پیوند"
+      restore: "بازگرداندن پیام حذف شده"
+      save: "ذخیره"
+      select: "انتخاب کنید"
+      return_to_list: "بازگشت به فهرست کانال"
+      scroll_to_bottom: "حرکت به پایین"
+      send: "ارسال پیام"
+      send_error: "یه مشکلی پیش آمده"
+      sound:
+        title: "صدای آگاه‌سازی گفتگوی دسکتاپ"
+      sounds:
+        none: "هیچکدام"
+        bell: "زنگ"
+        ding: "دینگ"
+      title: "گفتگو"
+      title_capitalized: "گفتگو"
+      unread_count: "«%{count} جدید»"
+      upload: "پیوست کردن یک پرونده"
+      exit: "بازگشت"
+      create_channel:
+        choose_category:
+          none: "یکی را انتخاب کنید..."
+        create: "ایجاد کانال"
+        description: "توضیحات «اختیاری»"
+        name: "نام کانال"
+        title: "افزودن کانال"
+        type: "نوع"
+        types:
+          category: "دسته‌بندی"
+          topic: "موضوع"
+      reactions:
+        only_you: "شما با :%{emoji}: واکنش نشان دادید"
+      notification_levels:
+        never: "هرگز"
+        mention: "فقط برای اشاره کردن"
+        always: "برای تمام فعالیت‌ها"
+      settings:
+        desktop_notification_level: "آگاه‌سازی‌های دسکتاپ"
+        follow: "پیوستن"
+        mute: "بی‌صدا کردن کانال"
+        muted_on: "روشن"
+        muted_off: "خاموش"
+        notifications: "آگاه‌سازی"
+        preview: "پیش‌نمایش"
+        save: "ذخیره"
+        saved: "ذخیره شد"
+      admin:
+        title: "گفتگو"
+      direct_messages:
+        title: "گفتگوی شخصی"
+        new: "گفتگوی شخصی جدید"
+        create: "برو"
+      incoming_webhooks:
+        back: "بازگشت"
+        channel: "کانال"
+        channel_placeholder: "یک کانال را انتخاب کنید"
+        current_emoji: "شکلک کنونی"
+        description: "توضیحات"
+        delete: "حذف"
+        emoji: "شکلک"
+        name: "نام"
+        name_placeholder: "نام..."
+        no_emoji: "هیچ شکلکی انتخاب نشده"
+        reset_emoji: "تنظیم مجدد شکلک"
+        save: "ذخیره"
+        select_emoji: "انتخاب شکلک"
+        system: "سیستم"
+        username: "نام‌کاربری"
+      selection:
+        cancel: "انصراف"
+        move_to_topic: "انتقال به موضوع"
+        error: "در انتقال پیام‌های گفتگو خطایی رخ داده"
+        title: "انتقال گفتگو به موضوع"
+        new_topic:
+          title: "انتقال به موضوع جدید"
+      replying_indicator:
+        single_user: "%{username} در حال نوشتن"
+        multiple_users: "%{commaSeparatedUsernames} و %{lastUsername} در حال نوشتن"
+        many_users: "%{commaSeparatedUsernames} و %{count} نفر دیگر در حال نوشتن هستند"
+    notifications:
+      popup:
+        chat_mention: "@%{username} در گفتگو به شما اشاره کرده است"
+    topic:
+      actions:
+        chat_enable: "فعال کردن گفتگو"
+        chat_disable: "بستن گفتگو"
+    action_codes:
+      chat:
+        enabled: '%{who} فعال شد <button class="btn-link open-chat">گفتگو</button> %{when}'
+        disabled: "%{who} گفتگو بسته شد %{when}"
+        post_created: "یک نوشته جدید ایجاد کرد: %{excerpt}"
+    discourse_automation:
+      scriptables:
+        send_chat_message:
+          title: ارسال پیام
+          fields:
+            chat_channel_id:
+              label: شناسه کانال گفتگو
+            message:
+              label: پیام
+            sender:
+              label: فرستنده
+              description: پیش‌فرض‌های سیستم

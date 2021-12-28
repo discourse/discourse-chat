@@ -5,3 +5,23 @@
 # https://translate.discourse.org/
 
 fa_IR:
+  site_settings:
+    chat_enabled: "افزونه discourse-chat را فعال کنید. برای راه‌اندازی از عملکرد «فعال کردن گفتگو» در هر موضوع استفاده کنید."
+    chat_allowed_groups: "کاربران این گروه‌ها می‌توانند در گفتگو شرکت کنند."
+  chat:
+    enabled_chat: "فعال کردن گفتگو"
+    disabled_chat: "غیرفعال کردن گفتگو"
+    notifications:
+      mention: "@%{username} در گفتگو به شما اشاره کرده است"
+    errors:
+      channel_exists_for_category: "یک کانال دیگر از قبل برای این دسته‌بندی و نام وجود دارد"
+      channel_exists_for_topic: "یک کانال دیگر از قبل برای این موضوع وجود دارد"
+  discourse_push_notifications:
+    popup:
+      chat_mention: "@%{username} در گفتگو به شما اشاره کرده است"
+      chat_message: "پیام جدید در %{chat_channel_title}"
+      group_chat_message: "پیام جدید در کانال گفتگوی شخصی"
+  discourse_automation:
+    scriptables:
+      send_chat_message:
+        title: ارسال پیام

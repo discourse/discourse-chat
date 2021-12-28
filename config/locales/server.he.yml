@@ -8,6 +8,10 @@ he:
   site_settings:
     chat_allowed_groups: "משתמשים בקבוצות אלו יכולים להשתתף בצ׳אט."
   chat:
+    separator_post_day:
+      content: "פוסט הפרדת צ׳אט ל־%{date}."
+    separator_post_hour:
+      content: "פוסט הפרדת צ׳אט ל־%{date}."
     enabled_chat: "הופעל צ׳אט"
     disabled_chat: "הושבת צ׳אט"
   discourse_push_notifications:

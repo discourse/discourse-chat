@@ -5,3 +5,214 @@
 # https://translate.discourse.org/
 
 hu:
+  js:
+    chat:
+      dates:
+        time_tiny: "h:mm"
+      all_loaded: "Összes üzenet megjelenítése"
+      already_enabled: "A csevegés már engedélyezve van ebben a témában. Frissítsen."
+      already_disabled: "A csevegés már lezárult van ebben a témában. Frissítsen."
+      disabled_for_topic: "A csevegés le van tiltva ebben a témában."
+      bot: "bot"
+      create: "Létrehozás"
+      cancel: "Mégse"
+      cancel_reply: "Válasz elvetése"
+      cancel_edit: "Szerkesztés elvetése"
+      chat_channels: "Csatornák"
+      channel_list_popup:
+        browse: "Csatornák böngészése"
+        create: "Csatorna létrehozása"
+      click_to_join: "Kattintson ide az elérhető csatornák megtekintéséhez."
+      close: "Bezárás"
+      collapse: "Csevegőfiók összecsukása"
+      deleted: "Egy üzenet törölve lett. [megtekintés]"
+      delete: "Törlés"
+      disable: "Csevegés letiltása"
+      edited: "(szerkesztve)"
+      edit_channels: "Csatornák szerkesztése"
+      empty_state:
+        create_personal_chat: "Személyes csevegés indítása"
+        follow_channels: "Csatornák követése"
+        no_public_available: "Jelenleg nem állnak rendelkezésre nyilvános csatornák, melyeket követhetne."
+        public_available: "Vannak nyilvános csatornák, melyeket követhet."
+        start_direct_message: "Személyes csevegést is indíthat egy vagy több felhasználóval."
+        title: "Kezdje azzal, hogy csatlakozik egy csatornához"
+      enable: "Csevegés engedélyezése"
+      flag: "Jelentés"
+      invalid_access: "Nincs hozzáférése ennek a csevegőcsatornának a megtekintéséhez"
+      invitation_notification: "<span>%{username} meghívta, hogy csatlakozzon egy csevegőcsatornához</span>"
+      in_reply_to: "Válaszul erre:"
+      isolate:
+        title: "Csevegés elkülönítése"
+        description: "A csevegést mindig új lapon nyissa meg"
+      heading: "Csevegés"
+      join_channel: "Csatlakozás a csatornához"
+      new_messages: "új üzenetek"
+      mention_notification: "<span>%{username} megemlítette a csevegésben</span>"
+      mention_warning:
+        cannot_see:
+          one: "%{usernames} nem fér hozzá ehhez a csatornához, és nem lett értesítve."
+          other: "%{usernames} nem fér hozzá ehhez a csatornához, és nem lettek értesítve."
+        dismiss: "eltüntetés"
+        invitations_sent:
+          one: "Meghívó elküldve"
+          other: "Meghívók elküldve"
+        invite: "Meghívás a csatornára"
+        without_membership:
+          one: "%{usernames} nem csatlakozott ehhez a csatornához."
+          other: "%{usernames} nem csatlakozott ehhez a csatornához."
+      no_public_channels: "Nem csatlakozott egyetlen csatornához sem."
+      only_chat_push_notifications:
+        title: "Csak csevegési leküldéses értesítések küldése"
+        description: "Az összes nem csevegési leküldéses értesítés elküldésének letiltása"
+      open: "Csevegés megnyitása"
+      open_full_page: "Teljes képernyős csevegés megnyitása"
+      open_message: "Üzenet megnyitása a csevegésben"
+      placeholder_self: "Jegyezzen le valamit"
+      placeholder_others: "Üzenet küldése %{messageRecipient} számára"
+      placeholder: "csevegés…"
+      placeholder_previewing: "Üzenet küldéséhez csatlakozzon a csatornához."
+      remove_upload: "Fájl eltávolítása"
+      react: "Reagálás emodzsival"
+      reply: "Válasz"
+      edit: "Szerkesztés"
+      copy_link: "Hivatkozás másolása"
+      restore: "Törölt üzenet helyreállítása"
+      save: "Mentés"
+      select: "Válasszon"
+      return_to_list: "Vissza a csatornákhoz"
+      scroll_to_bottom: "Görgetés lefelé"
+      send: "Csevegőüzenet küldése"
+      send_error: "Valami hiba történt"
+      sound:
+        title: "Asztali csevegőértesítés hangja"
+      sounds:
+        none: "Nincs"
+        bell: "Harang"
+        ding: "Csengettyű"
+      title: "csevegés"
+      title_capitalized: "Csevegés"
+      toggle_enabled: "Csevegés be/ki"
+      unread_count: "(%{count} új)"
+      upload: "Fájl csatolása"
+      you: "Ön, %{usernames} %{emoji} emodzsival reagált"
+      exit: "vissza"
+      create_channel:
+        choose_category:
+          label: "Válasszon egy kategóriát annak kezeléséhez, hogy ki férhet hozzá a csatornához"
+          none: "válasszon egyet…"
+        create: "Csatorna létrehozása"
+        description: "Leírás (nem kötelező)"
+        name: "Csatorna neve"
+        title: "Csatorna hozzáadása"
+        type: "Típus"
+        types:
+          category: "Kategória"
+          topic: "Téma"
+      reactions:
+        only_you: "Ezzel reagált: :%{emoji}:"
+        and_others: "Ön, %{usernames} ezzel reagált: :%{emoji}:"
+        only_others: "%{usernames} ezzel reagált: :%{emoji}:"
+        others_and_more: "%{usernames} és még %{more} valaki ezzel reagált: :%{emoji}:"
+        you_others_and_more: "Ön, %{usernames} és még %{more} valaki ezzel reagált: :%{emoji}:"
+      composer:
+        toggle_toolbar: "Eszköztár be/ki"
+      notification_levels:
+        never: "Soha"
+        mention: "Csak megemlítésnél"
+        always: "Összes tevékenységnél"
+      settings:
+        desktop_notification_level: "Asztali értesítések"
+        follow: "Csatlakozás"
+        mobile_notification_level: "Mobilos leküldéses értesítések"
+        mute: "Csatorna némítása"
+        muted_on: "Be"
+        muted_off: "Ki"
+        notifications: "Értesítések"
+        preview: "Előnézet"
+        save: "Mentés"
+        saved: "Mentve"
+        unfollow: "Elhagyás"
+      admin:
+        title: "Csevegés"
+      direct_messages:
+        title: "Személyes csevegés"
+        new: "Új személyes csevegés"
+        create: "Ugrás"
+      incoming_webhooks:
+        back: "Vissza"
+        channel: "Csatorna"
+        channel_placeholder: "Válasszon csatornát"
+        confirm_destroy: "Biztos, hogy törli ezt a bejövő webhookot? Ezt nem lehet visszavonni."
+        current_emoji: "Jelenlegi emodzsi"
+        description: "Leírás"
+        delete: "Törlés"
+        emoji: "Emodzsi"
+        emoji_instructions: "A rendszerben használt profilképe lesz használva, ha az emodzsi üresen marad."
+        name: "Név"
+        name_placeholder: "név…"
+        new: "Új bejövő webhook"
+        none: "Nincs meglévő bejövő webhoook létrehozva."
+        no_emoji: "Nincs emodzsi kiválasztva"
+        post_to: "Közzététel ide:"
+        reset_emoji: "Emodzsi visszaállítása"
+        save: "Mentés"
+        select_emoji: "Válasszon emodzsit"
+        system: "rendszer"
+        title: "Bejövő webhookok"
+        url: "URL"
+        username: "Felhasználónév"
+        username_instructions: "A csatornán közzétevő bot felhasználóneve. Ha üresen marad, akkor alapértelmezés szerint „rendszer”."
+      selection:
+        cancel: "Mégse"
+        move_to_topic: "Áthelyezés a témához"
+        error: "Hiba történt a csevegőüzenetek áthelyezésekor"
+        title: "Csevegés áthelyezése a témához"
+        new_topic:
+          title: "Áthelyezés új témához"
+          instructions:
+            one: "Arra készül, hogy új témát hozzon létre, és feltöltse azt a kiválasztott csevegőüzenettel."
+            other: "Arra készül, hogy új témát hozzon létre, és feltöltse azt <b>%{count}</b> kiválasztott csevegőüzenettel."
+        existing_topic:
+          title: "Áthelyezés meglévő témához"
+          instructions:
+            one: "Válassza ki azt a témát, amelyhez áthelyezi a csevegőüzenetet."
+            other: "Válassza ki azt a témát, amelyhez áthelyez <b>%{count}</b> csevegőüzenetet."
+        new_message:
+          title: "Ugrás az új üzenethez"
+          instructions:
+            one: "Arra készül, hogy új üzenet hozzon létre, és feltöltse azt a kiválasztott csevegőüzenettel."
+            other: "Arra készül, hogy új üzenetet hozzon létre, és feltöltse azt <b>%{count}</b> kiválasztott csevegőüzenettel."
+      replying_indicator:
+        single_user: "%{username} gépel"
+        multiple_users: "%{commaSeparatedUsernames} és %{lastUsername} gépel"
+        many_users: "%{commaSeparatedUsernames} és még %{count} valaki gépel"
+    notifications:
+      popup:
+        chat_mention: "@%{username} megemlítette a csevegésben"
+        chat_message: "Új csevegőüzenet"
+      titles:
+        chat_mention: "Csevegési megemlítés"
+        chat_invitation: "Csevegési meghívó"
+    topic:
+      actions:
+        chat_enable: "Csevegés engedélyezése"
+        chat_disable: "Csevegés bezárása"
+    action_codes:
+      chat:
+        enabled: '%{who} engedélyezte a <button class="btn-link open-chat">csevegést</button> %{when}'
+        disabled: "%{who} lezárta a csevegést %{when}"
+        post_created: "új bejegyzést hozott létre: %{excerpt}"
+        generic_small_action: "témakezelési műveletet hajtott végre"
+    discourse_automation:
+      scriptables:
+        send_chat_message:
+          title: Csevegőüzenet küldése
+          fields:
+            chat_channel_id:
+              label: Csevegőcsatorna azonosítója
+            message:
+              label: Üzenet
+            sender:
+              label: Feladó
+              description: Alapértelmezés szerint a rendszer

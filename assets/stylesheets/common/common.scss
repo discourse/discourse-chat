@@ -234,6 +234,9 @@ $float-height: 530px;
 }
 .topic-chat-drawer-content {
   height: calc(#{$float-height} - #{$header-height});
+  .tc-channels .chat-channel-divider {
+    padding: 0.25em 0.5em 0.3em;
+  }
 }
 
 .tc-channels {
@@ -271,10 +274,13 @@ $float-height: 530px;
     align-items: center;
     justify-content: space-between;
     font-weight: bold;
-    padding: 0.5em;
+    padding: 0.25em 0.5em 0.3em 2em;
     text-transform: uppercase;
     font-family: var(--heading-font-family);
     font-size: 13px;
+  }
+  .chat-channels-container {
+    margin-bottom: 1em;
   }
   .dm-creation-row .dm-user-chooser {
     width: calc(100% - 75px);

@@ -282,7 +282,7 @@ export default Component.extend({
         messageData.firstMessageOfTheDayAt = moment(
           messageData.created_at
         ).calendar(moment(), {
-          sameDay: "dddd",
+          sameDay: "[Today]",
           lastDay: "[Yesterday]",
           lastWeek: "[Last] dddd",
           sameElse: "LL",

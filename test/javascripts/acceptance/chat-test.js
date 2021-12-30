@@ -814,7 +814,10 @@ acceptance("Discourse Chat - without unread", function (needs) {
 
   test("It displays a separator between days", async function (assert) {
     await visit("/chat/channel/9/Site");
-    assert.equal(query(".date-indicator").innerText.trim(), "July 22, 2021");
+    assert.equal(
+      query(".first-daily-message").innerText.trim(),
+      "July 22, 2021"
+    );
   });
 });
 

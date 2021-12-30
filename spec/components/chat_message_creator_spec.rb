@@ -20,7 +20,7 @@ describe DiscourseChat::ChatMessageCreator do
     [admin1, admin2, user1, user2, user3].each do |user|
       Fabricate(:user_chat_channel_membership, chat_channel: public_chat_channel, user: user)
     end
-    @direct_message_channel = DiscourseChat::DirectMessageChannelCreator.create([user1, user2])
+    @direct_message_channel = DiscourseChat::DirectMessageChannelCreator.create!([user1, user2])
   end
 
   describe "Integration tests with jobs running immediately" do

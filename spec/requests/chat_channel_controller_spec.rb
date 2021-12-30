@@ -136,10 +136,10 @@ RSpec.describe DiscourseChat::ChatChannelsController do
         fab!(:user3) { Fabricate(:user) }
 
         before do
-          @dm1 = DiscourseChat::DirectMessageChannelCreator.create([user1, user2])
-          @dm2 = DiscourseChat::DirectMessageChannelCreator.create([user1, user3])
-          @dm3 = DiscourseChat::DirectMessageChannelCreator.create([user1, user2, user3])
-          @dm4 = DiscourseChat::DirectMessageChannelCreator.create([user2, user3])
+          @dm1 = DiscourseChat::DirectMessageChannelCreator.create!([user1, user2])
+          @dm2 = DiscourseChat::DirectMessageChannelCreator.create!([user1, user3])
+          @dm3 = DiscourseChat::DirectMessageChannelCreator.create!([user1, user2, user3])
+          @dm4 = DiscourseChat::DirectMessageChannelCreator.create!([user2, user3])
         end
 
         it "returns correct DMs for user1" do
@@ -226,7 +226,7 @@ RSpec.describe DiscourseChat::ChatChannelsController do
       expect(response.status).to eq(200)
     end
 
-    it "errors when you try to unfollow a direct_message_channel" do
+    it "allows to unfollow a direct_message_channel" do
       sign_in(user)
       membership_record = UserChatChannelMembership.create!(
         chat_channel_id: dm_chat_channel.id,
@@ -237,8 +237,8 @@ RSpec.describe DiscourseChat::ChatChannelsController do
       )
 
       post "/chat/chat_channels/#{dm_chat_channel.id}/unfollow.json"
-      expect(response.status).to eq(422)
-      expect(membership_record.reload.following).to eq(true)
+      expect(response.status).to eq(200)
+      expect(membership_record.reload.following).to eq(false)
     end
   end
 

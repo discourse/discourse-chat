@@ -1,14 +1,18 @@
+import { ajax } from "discourse/lib/ajax";
+import { popupAjaxError } from "discourse/lib/ajax-error";
 import Component from "@ember/component";
 import discourseComputed from "discourse-common/utils/decorators";
 import getURL from "discourse-common/lib/get-url";
 import { equal } from "@ember/object/computed";
 import { inject as service } from "@ember/service";
+import { action } from "@ember/object";
 
 export default Component.extend({
   channel: null,
   switchChannel: null,
   isDirectMessageRow: equal("channel.chatable_type", "DirectMessageChannel"),
   router: service(),
+  chat: service(),
 
   @discourseComputed("active", "channel.muted")
   rowClassNames(active, muted) {
@@ -61,5 +65,16 @@ export default Component.extend({
   @discourseComputed("currentUser.chat_channel_tracking_state")
   hasUnread(trackingState) {
     return trackingState[this.channel.id]?.unread_count || 0;
+  },
+
+  @action
+  leaveChatChannel() {
+    return ajax(`/chat/chat_channels/${this.channel.id}/unfollow`, {
+      method: "POST",
+    })
+      .then(() => {
+        this.chat.stopTrackingChannel(this.channel);
+      })
+      .catch(popupAjaxError);
   },
 });

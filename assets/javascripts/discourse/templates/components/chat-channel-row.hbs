@@ -3,4 +3,12 @@
   {{#if hasUnread}}
     <span class={{unreadIndicatorClassName}}></span>
   {{/if}}
+
+  {{#if isDirectMessageRow}}
+    {{d-button
+      icon="times"
+      action=(action "leaveChatChannel")
+      class="btn-flat leave-channel-btn"
+    }}
+  {{/if}}
 </div>

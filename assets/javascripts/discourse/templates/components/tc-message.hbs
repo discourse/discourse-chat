@@ -5,6 +5,13 @@
       {{i18n "chat.new_messages"}}
     </span>
   </div>
+{{else if message.firstMessageOfTheDayAt}}
+  <div class="tc-new-messages">
+    <div class="date-separator"></div>
+    <span class="date-indicator">
+      {{message.firstMessageOfTheDayAt}}
+    </span>
+  </div>
 {{/if}}
 
 <div class={{messageContainerClasses}}>

@@ -214,7 +214,7 @@ export const chatView = {
       excerpt:
         '<p>gg <a class="mention" href="/u/osama">@osama</a> <a class="mention" href="/u/mark">@mark</a> <a class="mention" href="/u/here">@here</a></p>',
       action_code: null,
-      created_at: "2021-07-20T08:14:16.950Z",
+      created_at: "2021-07-22T08:14:16.950Z",
       flag_count: 0,
       user: {
         id: 1,

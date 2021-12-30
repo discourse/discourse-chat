@@ -811,6 +811,11 @@ acceptance("Discourse Chat - without unread", function (needs) {
       done();
     });
   });
+
+  test("It displays a separator between days", async function (assert) {
+    await visit("/chat/channel/9/Site");
+    assert.equal(query(".date-indicator").innerText.trim(), "July 22, 2021");
+  });
 });
 
 acceptance(

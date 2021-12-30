@@ -251,16 +251,44 @@ export default Component.extend({
 
   _prepareMessages(messages) {
     const preparedMessages = A();
-    let lastMessage;
+    let previousMessage;
     messages.forEach((currentMessage) => {
-      let prepared = this._prepareSingleMessage(currentMessage, lastMessage);
+      let prepared = this._prepareSingleMessage(
+        currentMessage,
+        previousMessage
+      );
       preparedMessages.push(prepared);
-      lastMessage = prepared;
+      previousMessage = prepared;
     });
     return preparedMessages;
   },
 
+  _areDatesOnSameDay(a, b) {
+    return (
+      a.getFullYear() === b.getFullYear() &&
+      a.getMonth() === b.getMonth() &&
+      a.getDate() === b.getDate()
+    );
+  },
+
   _prepareSingleMessage(messageData, previousMessageData) {
+    if (previousMessageData) {
+      if (
+        !this._areDatesOnSameDay(
+          new Date(previousMessageData.created_at),
+          new Date(messageData.created_at)
+        )
+      ) {
+        messageData.firstMessageOfTheDayAt = moment(
+          messageData.created_at
+        ).calendar(moment(), {
+          sameDay: "[Today]",
+          lastDay: "[Yesterday]",
+          lastWeek: "[Last] dddd",
+          sameElse: "LL",
+        });
+      }
+    }
     if (messageData.in_reply_to) {
       let inReplyToMessage = this.messageLookup[messageData.in_reply_to.id];
       if (inReplyToMessage) {

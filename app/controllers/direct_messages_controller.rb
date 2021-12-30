@@ -7,8 +7,7 @@ class DiscourseChat::DirectMessagesController < DiscourseChat::ChatBaseControlle
 
     users = [current_user]
     users.concat(User.where(username: params[:usernames].split(",")).to_a) if current_user.username != params[:usernames]
-    DiscourseChat::DirectMessageChannelCreator.create!(users)
-
+    chat_channel = DiscourseChat::DirectMessageChannelCreator.create!(users)
     render_serialized(chat_channel, ChatChannelSerializer, root: "chat_channel")
   end
 end

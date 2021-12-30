@@ -378,7 +378,7 @@ export default Component.extend({
       `.chat-message-${messageId}`
     );
     if (messageEl) {
-      next(() => {
+      schedule("afterRender", () => {
         this._scrollerEl.scrollTop =
           messageEl.offsetTop - this._scrollerEl.offsetTop - 20;
       });

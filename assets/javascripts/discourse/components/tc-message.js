@@ -45,7 +45,7 @@ export default Component.extend({
       return;
     }
     this.element
-      .querySelector(".tc-text")
+      .querySelector(".tc-message-container .tc-text")
       ?.querySelectorAll(".mention")
       .forEach((node) => {
         const mention = node.textContent.trim().substring(1);

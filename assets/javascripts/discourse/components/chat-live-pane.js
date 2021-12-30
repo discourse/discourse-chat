@@ -284,7 +284,7 @@ export default Component.extend({
         ).calendar(moment(), {
           sameDay: "[Today]",
           lastDay: "[Yesterday]",
-          lastWeek: "[Last] dddd",
+          lastWeek: "LL",
           sameElse: "LL",
         });
       }

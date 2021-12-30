@@ -132,6 +132,7 @@ en:
         title: "Personal chat"
         new: "New personal chat"
         create: "Go"
+        leave: "Leave this personal chat"
 
       incoming_webhooks:
         back: "Back"

@@ -6,7 +6,7 @@ import { fmt } from "discourse/lib/computed";
 export default Component.extend({
   classNames: "chat-message-reaction",
   classNameBindings: ["reacted", "count:show", "emoji"],
-  attributeBindings: ["role"],
+  attributeBindings: ["role", "tabindex"],
   role: "button",
   emoji: null,
   showUsersList: null,
@@ -16,6 +16,7 @@ export default Component.extend({
   leaveEvent: null,
   count: null,
   _hoverTimer: null,
+  tabindex: 0,
 
   emojiString: fmt("emoji", ":%@:"),
 

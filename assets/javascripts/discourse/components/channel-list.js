@@ -1,30 +1,33 @@
 import Component from "@ember/component";
-import discourseComputed, { bind } from "discourse-common/utils/decorators";
+import discourseComputed from "discourse-common/utils/decorators";
 import showModal from "discourse/lib/show-modal";
-import { action } from "@ember/object";
-import { next, schedule } from "@ember/runloop";
+import { action, computed } from "@ember/object";
+import { schedule } from "@ember/runloop";
 import { inject as service } from "@ember/service";
 import { empty } from "@ember/object/computed";
+import I18n from "I18n";
 
 export default Component.extend({
-  classNames: "tc-channels",
+  tagName: "",
   publicChannels: null,
   directMessageChannels: null,
   creatingDmChannel: false,
   inSidebar: false,
   toggleSection: null,
   publicChannelsEmpty: empty("publicChannels"),
-  showPopup: false,
   chat: service(),
   router: service(),
+  onSelect: null,
 
   didInsertElement() {
     this._super(...arguments);
+
     this.appEvents.on("chat:start-new-dm", this, "startCreatingDmChannel");
   },
 
   willDestroyElement() {
     this._super(...arguments);
+
     this.appEvents.off("chat:start-new-dm", this, "startCreatingDmChannel");
   },
 
@@ -58,26 +61,20 @@ export default Component.extend({
     return false;
   },
 
-  @action
-  pencilClicked() {
-    if (this.currentUser.staff) {
-      this.togglePopupMenu();
-    } else {
-      this.browseChannels();
-    }
-    return false;
+  @computed
+  get channelsActions() {
+    return [
+      { id: "browseChannels", name: I18n.t("chat.channel_list_popup.browse") },
+      {
+        id: "openCreateChannelModal",
+        name: I18n.t("chat.channel_list_popup.create"),
+      },
+    ];
   },
 
-  @bind
-  togglePopupMenu() {
-    this.set("showPopup", !this.showPopup);
-    next(() => {
-      if (this.showPopup) {
-        window.addEventListener("click", this.togglePopupMenu);
-      } else {
-        window.removeEventListener("click", this.togglePopupMenu);
-      }
-    });
+  @action
+  handleChannelAction(id) {
+    this[id]();
   },
 
   @action
@@ -97,9 +94,7 @@ export default Component.extend({
       const userChooser = this.element.querySelector(
         ".dm-creation-row .dm-user-chooser .select-kit-header"
       );
-      if (userChooser) {
-        userChooser.click();
-      }
+      userChooser?.click();
     });
   },
 

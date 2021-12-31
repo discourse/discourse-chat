@@ -1129,15 +1129,14 @@ acceptance(
 
     test("Create channel modal", async function (assert) {
       await visit("/chat/channel/9/Site");
-      await click(".edit-channel-membership-btn");
-      assert.ok(exists(".channel-list-popup"));
-      assert.ok(exists(".channel-list-popup .popup-link.browse"));
-      assert.ok(exists(".channel-list-popup .popup-link.create"));
-      await click(".channel-list-popup .popup-link.browse");
+      const dropdown = selectKit(".edit-channels-dropdown");
+      await dropdown.expand();
+      await dropdown.selectRowByValue("browseChannels");
+
       assert.equal(currentURL(), "/chat/browse");
       await visit("/chat/channel/9/Site");
-      await click(".edit-channel-membership-btn");
-      await click(".channel-list-popup .popup-link.create");
+      await dropdown.expand();
+      await dropdown.selectRowByValue("openCreateChannelModal");
       assert.ok(exists(".create-channel-modal-modal"));
 
       assert.ok(query(".create-channel-modal-modal .btn.create").disabled);

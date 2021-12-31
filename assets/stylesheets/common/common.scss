@@ -674,15 +674,6 @@ body.composer-open .topic-chat-floar-container {
     right: 0.25em;
     top: -0.75em;
     z-index: 2;
-
-    button {
-      padding: 0.4em 0.5em;
-
-      &:hover {
-        background-color: var(--primary-low);
-        color: var(--primary-medium);
-      }
-    }
   }
 
   .tc-message.is-reply .tc-msgactions-hover {
@@ -711,16 +702,25 @@ body.composer-open .topic-chat-floar-container {
     .reply-btn {
       border: 1px solid transparent;
       border-bottom-color: var(--primary-low);
-      border-right-width: 0;
       border-top-color: var(--primary-low);
-      margin-right: -1px;
       padding: 0.5em 0;
       width: 2.5em;
+      transition: background 0.2s, border-color 0.2s;
+
+      &:hover {
+        background: var(--primary-low);
+        border-color: var(--primary-low-mid);
+        color: var(--primary-medium);
+      }
 
       &:first-child {
         border-bottom-left-radius: 0.25em;
-        border-left-color: var(--primary-low);
         border-top-left-radius: 0.25em;
+      }
+
+      &:not(:hover):first-child {
+        border-color: var(--primary-low);
+        border-right-color: transparent;
       }
     }
 
@@ -734,6 +734,12 @@ body.composer-open .topic-chat-floar-container {
         border-top-right-radius: 0.25em;
         padding: 0.5em 0;
         width: 2.5em;
+        transition: background 0.2s, border-color 0.2s;
+
+        &:focus {
+          border-left-color: transparent;
+          background: var(--primary-low);
+        }
 
         .select-kit-header-wrapper {
           justify-content: center;
@@ -746,6 +752,7 @@ body.composer-open .topic-chat-floar-container {
 
         &:hover {
           background: var(--primary-low);
+          border-color: var(--primary-low-mid);
 
           .select-kit-header-wrapper {
             .d-icon {

@@ -640,7 +640,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     await visit("/chat/channel/9/Site");
 
     const firstMessage = query(".chat-message");
-    const dropdown = selectKit(firstMessage.querySelector(".more-button"));
+    const dropdown = selectKit(".chat-message .more-buttons");
     await dropdown.expand();
     await dropdown.selectRowByValue("selectMessage");
 

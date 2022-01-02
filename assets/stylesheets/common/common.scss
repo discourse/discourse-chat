@@ -279,9 +279,12 @@ body.composer-open .topic-chat-floar-container {
     justify-content: space-between;
     font-weight: bold;
     padding: 0.25em 0.5em 0.3em 2em;
-    text-transform: uppercase;
     font-family: var(--heading-font-family);
     font-size: 13px;
+
+    .channel-title {
+      text-transform: uppercase;
+    }
   }
   .chat-channels-container {
     margin-bottom: 1em;
@@ -290,28 +293,23 @@ body.composer-open .topic-chat-floar-container {
     width: calc(100% - 75px);
   }
 
-  .channel-list-popup {
-    position: absolute;
-    top: 30px;
-    right: 10px;
-    padding: 0.5em 0;
-    border-radius: 6px;
-    background: var(--secondary);
-    border: 1px solid var(--primary-low);
-    z-index: 2;
+  .edit-channels-dropdown {
+    .select-kit-header {
+      background: none;
 
-    .popup-link {
-      display: block;
-      text-transform: none;
-      color: var(--primary);
-      font-weight: 500;
-      font-size: var(--font-up-1);
-      padding: 0.35em 1em;
-      cursor: pointer;
-
-      &:hover {
-        background: var(--primary-very-low);
+      .d-icon {
+        margin: 0;
       }
+
+      &:focus .d-icon,
+      &:hover .d-icon {
+        color: var(--primary);
+      }
+    }
+  }
+  .edit-channel-membership-btn {
+    &:hover {
+      background: none;
     }
   }
 }
@@ -1299,7 +1297,6 @@ body.composer-open .topic-chat-floar-container {
 
     .chat-channel-divider {
       position: relative;
-      text-transform: uppercase;
       padding-left: 2em;
 
       &:hover {

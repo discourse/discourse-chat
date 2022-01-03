@@ -5,11 +5,11 @@ module DiscourseChat::DirectMessageChannelCreator
 
   def self.create!(users)
     direct_messages_channel = DirectMessageChannel.for_user_ids(users.map(&:id).uniq)
-    unless direct_messages_channel
+    if direct_messages_channel
+      chat_channel = ChatChannel.find_by!(chatable_id: direct_messages_channel.id)
+    else
       direct_messages_channel = DirectMessageChannel.create!(users: users)
       chat_channel = ChatChannel.create!(chatable: direct_messages_channel)
-    else
-      chat_channel = ChatChannel.find_by!(chatable_id: direct_messages_channel.id)
     end
 
     update_memberships(users, chat_channel.id)

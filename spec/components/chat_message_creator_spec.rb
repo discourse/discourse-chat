@@ -10,7 +10,6 @@ describe DiscourseChat::ChatMessageCreator do
   fab!(:user3) { Fabricate(:user) }
   fab!(:user_without_memberships) { Fabricate(:user) }
   fab!(:public_chat_channel) { Fabricate(:chat_channel, chatable: Fabricate(:topic)) }
-  fab!(:direct_message_channel) { Fabricate(:chat_channel, chatable: Fabricate(:direct_message_channel, users: [user1, user2])) }
 
   before do
     SiteSetting.chat_enabled = true
@@ -20,6 +19,7 @@ describe DiscourseChat::ChatMessageCreator do
     [admin1, admin2, user1, user2, user3].each do |user|
       Fabricate(:user_chat_channel_membership, chat_channel: public_chat_channel, user: user)
     end
+
     @direct_message_channel = DiscourseChat::DirectMessageChannelCreator.create!([user1, user2])
   end
 
@@ -75,7 +75,7 @@ describe DiscourseChat::ChatMessageCreator do
         DiscourseChat::ChatMessageCreator.create(
           chat_channel: public_chat_channel,
           user: user1,
-          content: "agian! @all"
+          content: "again! @all"
         )
       }.to change { ChatMention.count }.by(3)
     end
@@ -154,7 +154,7 @@ describe DiscourseChat::ChatMessageCreator do
       }.to change { ChatMention.count }.by(0)
     end
 
-    it "creates only mention notifications for users with access in private chat " do
+    it "creates only mention notifications for users with access in private chat" do
       expect {
         DiscourseChat::ChatMessageCreator.create(
           chat_channel: @direct_message_channel,

@@ -506,7 +506,6 @@ RSpec.describe DiscourseChat::ChatController do
     end
 
     it "adds chat_message_id when param is present" do
-      sign_in(admin)
       put "/chat/#{chat_channel.id}/invite.json", params: { user_ids: [user.id], chat_message_id: chat_message.id }
       expect(JSON.parse(Notification.last.data)["chat_message_id"]).to eq(chat_message.id.to_s)
     end

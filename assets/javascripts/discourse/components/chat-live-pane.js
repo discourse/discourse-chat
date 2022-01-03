@@ -966,7 +966,7 @@ export default Component.extend({
     }
 
     this.element.querySelectorAll(".lazyYT").forEach((iframe) => {
-      $(iframe).lazyYT({ collapsible: true });
+      $(iframe).lazyYT();
       collapseLazyYT(iframe);
     });
 

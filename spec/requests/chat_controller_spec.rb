@@ -185,6 +185,27 @@ RSpec.describe DiscourseChat::ChatController do
         expect(ChatMessage.last.message).to eq(message)
       end
     end
+
+    describe 'for direct message' do
+      fab!(:user1) { Fabricate(:user) }
+      fab!(:user2) { Fabricate(:user) }
+      fab!(:chatable) { Fabricate(:direct_message_channel, users: [user1, user2]) }
+      fab!(:direct_message_channel) { Fabricate(:chat_channel, chatable: chatable) }
+
+      it 'forces users to follow the channel' do
+        UserChatChannelMembership.create!(user: user1, chat_channel: direct_message_channel, following: true, desktop_notification_level: UserChatChannelMembership::NOTIFICATION_LEVELS[:always], mobile_notification_level: UserChatChannelMembership::NOTIFICATION_LEVELS[:always])
+        UserChatChannelMembership.create!(user: user2, chat_channel: direct_message_channel, following: false, desktop_notification_level: UserChatChannelMembership::NOTIFICATION_LEVELS[:always], mobile_notification_level: UserChatChannelMembership::NOTIFICATION_LEVELS[:always])
+
+        expect(UserChatChannelMembership.find_by(user_id: user2.id).following).to eq(false)
+
+        ChatPublisher.expects(:publish_new_direct_message_channel).once
+
+        sign_in(user1)
+        post "/chat/#{direct_message_channel.id}.json", params: { message: message }
+
+        expect(UserChatChannelMembership.find_by(user_id: user2.id).following).to eq(true)
+      end
+    end
   end
 
   describe "#edit_message" do

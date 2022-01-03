@@ -1176,6 +1176,18 @@ body.composer-open .topic-chat-floar-container {
   cursor: pointer;
   color: var(--primary-high);
 
+  .leave-channel-btn {
+    margin-left: auto;
+    background: none;
+    visibility: hidden;
+  }
+
+  &:hover {
+    .leave-channel-btn {
+      visibility: visible;
+    }
+  }
+
   &:hover,
   &.active {
     background: var(--primary-low);

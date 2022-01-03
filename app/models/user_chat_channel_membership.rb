@@ -27,7 +27,6 @@ class UserChatChannelMembership < ActiveRecord::Base
   def changes_for_direct_message_channels
     needs_validation = VALIDATED_ATTRS.any? { |attr| changed_attribute_names_to_save.include?(attr.to_s) }
     if needs_validation && chat_channel.direct_message_channel?
-      errors.add(:following) if !following
       errors.add(:muted) if muted
       errors.add(:desktop_notification_level) if desktop_notification_level.to_sym != :always
       errors.add(:mobile_notification_level) if mobile_notification_level.to_sym != :always

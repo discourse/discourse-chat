@@ -81,7 +81,7 @@ $float-height: 530px;
   }
 }
 
-body.composer-open .topic-chat-floar-container {
+body.composer-open .topic-chat-float-container {
   bottom: 11px; // prevent height of grippie from obscuring ...is typing indicator
 }
 
@@ -1187,8 +1187,9 @@ body.composer-open .topic-chat-floar-container {
 }
 
 .chat-channel-row {
-  display: flex;
   align-items: center;
+  box-sizing: border-box;
+  display: flex;
   padding: 0.5rem;
   position: relative;
   cursor: pointer;
@@ -1343,18 +1344,17 @@ body.composer-open .topic-chat-floar-container {
     overflow-x: hidden;
 
     .chat-channel-divider {
-      position: relative;
-      padding-left: 2rem;
+      padding: 0 1.75rem;
 
       &:hover {
         .title-caret {
           opacity: 1;
         }
       }
-      .title-caret {
-        position: absolute;
-        top: 0;
-      }
+    }
+
+    .chat-channels-container {
+      margin-bottom: 1rem;
     }
 
     .public-channel-empty-message {
@@ -1369,11 +1369,10 @@ body.composer-open .topic-chat-floar-container {
     }
 
     .new-dm,
-    .edit-channel-membership-btn {
+    .edit-channel-membership-btn,
+    .edit-channels-dropdown .select-kit-header,
+    .leave-channel-btn {
       display: flex;
-      position: absolute;
-      right: 2em;
-      top: 2px;
       padding: 0.25em;
       border-radius: 0.25em;
 
@@ -1382,21 +1381,25 @@ body.composer-open .topic-chat-floar-container {
       }
       .d-icon {
         color: var(--primary-medium);
+        font-size: var(--font-down-1);
         padding: 0.25em;
       }
     }
 
+    .leave-channel-btn:hover {
+      background-color: var(--tertiary-medium);
+    }
+
     .chat-channel-row {
-      padding: 0.5em 2em;
+      padding: 0.35em 1.8rem;
+      min-height: 28px;
 
       &:hover {
         background-color: var(--tertiary-low);
-        .d-icon {
-          background-color: var(--tertiary-low);
-        }
       }
       .chat-channel-title {
         font-weight: unset;
+        margin: 0;
       }
     }
   }

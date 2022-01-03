@@ -912,12 +912,10 @@ body.composer-open .topic-chat-floar-container {
   }
 
   &.first-daily-message {
-    color: var(--primary-high);
-
     .tc-text {
       border: 1px solid var(--secondary-high);
       border-radius: 3px;
-      color: var(--primary);
+      color: var(--primary-high);
       font-weight: 600;
       padding: 2px 10px;
     }
@@ -1023,20 +1021,10 @@ body.composer-open .topic-chat-floar-container {
       padding: 0 0.5em;
       display: grid;
 
-      > .tc-composer-input {
-        width: 100%;
-      }
-
       &::after {
         content: attr(data-replicated-value) " ";
         white-space: pre-wrap;
         visibility: hidden;
-        outline: none;
-      }
-
-      &:focus,
-      .tc-composer-input:focus {
-        border: 1px solid var(--primary-medium);
         outline: none;
       }
 
@@ -1051,6 +1039,11 @@ body.composer-open .topic-chat-floar-container {
       }
     }
 
+    .tc-composer-row > .tc-composer-input:focus {
+      border-color: var(--primary-medium);
+      outline: none;
+    }
+
     .tc-composer-row > .tc-composer-input,
     .tc-composer-row::after {
       // `after` pseudo-element should match input styling exactly
@@ -1060,9 +1053,9 @@ body.composer-open .topic-chat-floar-container {
       resize: none;
       max-height: 125px;
       padding: 8px 40px 8px 8px;
-      border-radius: 4px;
       border: 1px solid var(--primary-low-mid);
       word-break: break-word;
+      width: 100%;
     }
 
     .tc-composer-message-details {
@@ -1586,8 +1579,6 @@ body.composer-open .topic-chat-floar-container {
     background: var(--primary-very-low);
     height: 100%;
     border-right: 1px solid var(--primary-low);
-    border-radius: var(--full-page-border-radius) 0 0
-      var(--full-page-border-radius);
 
     .chat-channel-row {
       padding: 0.5em 1.5em;

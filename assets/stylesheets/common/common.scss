@@ -236,10 +236,12 @@ body.composer-open .topic-chat-floar-container {
     }
   }
 }
+
 .topic-chat-drawer-content {
   height: calc(#{$float-height} - #{$header-height});
+
   .tc-channels .chat-channel-divider {
-    padding: 0.25em 0.5em 0.3em;
+    padding: 0.25rem 0.5rem 0.3rem;
   }
 }
 
@@ -261,31 +263,41 @@ body.composer-open .topic-chat-floar-container {
       display: none;
     }
   }
+
   .edit-channel-membership-btn,
   .new-dm {
-    padding: 0.5em;
+    background: transparent;
     color: var(--primary-medium);
+    font-size: var(--font-1-down-rem);
+    padding: 0.5rem;
+
+    &:hover {
+      background: transparent;
+    }
 
     .d-icon {
       color: var(--primary-medium);
     }
   }
+
   .public-channel-empty-message {
     margin: 0 0.5em 0.5em 0.5em;
   }
+
   .chat-channel-divider {
     display: flex;
     align-items: center;
     justify-content: space-between;
     font-weight: bold;
-    padding: 0.25em 0.5em 0.3em 2em;
+    padding: 0.25rem 0.5rem 0.3rem 2rem;
     font-family: var(--heading-font-family);
-    font-size: 13px;
+    font-size: var(--font-down-1-rem);
 
     .channel-title {
       text-transform: uppercase;
     }
   }
+
   .chat-channels-container {
     margin-bottom: 1em;
   }
@@ -296,8 +308,10 @@ body.composer-open .topic-chat-floar-container {
   .edit-channels-dropdown {
     .select-kit-header {
       background: none;
+      padding: 0.5rem;
 
       .d-icon {
+        color: var(--primary-medium);
         margin: 0;
       }
 
@@ -1177,7 +1191,7 @@ body.composer-open .topic-chat-floar-container {
 .chat-channel-row {
   display: flex;
   align-items: center;
-  padding: 0.5em;
+  padding: 0.5rem;
   position: relative;
   cursor: pointer;
   color: var(--primary-high);
@@ -1185,11 +1199,13 @@ body.composer-open .topic-chat-floar-container {
   .leave-channel-btn {
     margin-left: auto;
     background: none;
+    padding: 0.5rem;
     visibility: hidden;
   }
 
   &:hover {
     .leave-channel-btn {
+      background: transparent;
       visibility: visible;
     }
   }
@@ -1211,7 +1227,8 @@ body.composer-open .topic-chat-floar-container {
 
     .chat-channel-title {
       &,
-      .category-chat-name {
+      .category-chat-name,
+      .dm-usernames {
         color: var(--primary);
       }
 
@@ -1250,6 +1267,7 @@ body.composer-open .topic-chat-floar-container {
   font-weight: 500;
   max-width: calc(100% - 10px - 0.75em);
   cursor: pointer;
+  margin: 0.5rem 0;
 
   .category-chat-private .d-icon {
     background-color: var(--secondary);
@@ -1299,10 +1317,11 @@ body.composer-open .topic-chat-floar-container {
   }
 
   .tc-avatar-container {
-    display: inline-block;
+    display: inline-flex;
     width: 100%;
     height: auto;
   }
+
   .dm-multi-count {
     display: inline-block;
     border-radius: 3px;
@@ -1327,7 +1346,7 @@ body.composer-open .topic-chat-floar-container {
 
     .chat-channel-divider {
       position: relative;
-      padding-left: 2em;
+      padding-left: 2rem;
 
       &:hover {
         .title-caret {
@@ -1599,7 +1618,8 @@ body.composer-open .topic-chat-floar-container {
     border-right: 1px solid var(--primary-low);
 
     .chat-channel-row {
-      padding: 0.5em 1.5em;
+      padding: 0 0.5rem 0 1.5rem;
+
       .category-chat-private .d-icon {
         background-color: var(--primary-very-low);
       }

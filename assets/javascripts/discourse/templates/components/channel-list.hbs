@@ -60,8 +60,8 @@
     {{/if}}
     <span class="channel-title">{{i18n "chat.direct_messages.title"}}</span>
     {{#unless creatingDmChannel}}
-      {{flat-button
-        class="new-dm keep-mobile-sidebar-open"
+      {{d-button
+        class="btn-flat new-dm keep-mobile-sidebar-open"
         icon="plus"
         action=(action "startCreatingDmChannel")
         title="chat.direct_messages.new"

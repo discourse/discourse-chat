@@ -701,6 +701,7 @@ body.composer-open .topic-chat-floar-container {
       border: 1px solid transparent;
       border-bottom-color: var(--primary-low);
       border-top-color: var(--primary-low);
+      margin-right: -1px;
       padding: 0.5em 0;
       width: 2.5em;
       transition: background 0.2s, border-color 0.2s;
@@ -709,6 +710,7 @@ body.composer-open .topic-chat-floar-container {
         background: var(--primary-low);
         border-color: var(--primary-low-mid);
         color: var(--primary-medium);
+        z-index: 1;
       }
 
       &:first-child {
@@ -716,7 +718,7 @@ body.composer-open .topic-chat-floar-container {
         border-top-left-radius: 0.25em;
       }
 
-      &:not(:hover):first-child {
+      &:first-child:not(:hover) {
         border-color: var(--primary-low);
         border-right-color: transparent;
       }
@@ -737,6 +739,10 @@ body.composer-open .topic-chat-floar-container {
         &:focus {
           border-left-color: transparent;
           background: var(--primary-low);
+
+          .select-kit-header-wrapper .d-icon {
+            color: var(--primary);
+          }
         }
 
         .select-kit-header-wrapper {
@@ -774,6 +780,15 @@ body.composer-open .topic-chat-floar-container {
       padding: 0.5em 0;
       width: 2.5em;
 
+      &:hover {
+        z-index: 2;
+      }
+
+      &:focus {
+        background: var(--primary-low);
+        outline: none;
+      }
+
       &:first-child {
         border-bottom-left-radius: 0.25em;
         border-left-color: var(--primary-low);
@@ -783,6 +798,10 @@ body.composer-open .topic-chat-floar-container {
       &.reacted {
         border-left-color: var(--tertiary-medium);
         z-index: 1;
+
+        &:focus {
+          background: var(--tertiary-low);
+        }
       }
 
       .emoji {

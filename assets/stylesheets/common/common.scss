@@ -1263,13 +1263,13 @@ body.composer-open .topic-chat-floar-container {
   .tag-chat-name,
   .dm-usernames {
     @include ellipsis;
-    align-items: center;
     color: var(--primary-high);
     font-size: var(--font-0);
     margin: 0;
 
     .emoji {
       height: 1.2em;
+      vertical-align: text-bottom;
       width: 1.2em;
     }
   }

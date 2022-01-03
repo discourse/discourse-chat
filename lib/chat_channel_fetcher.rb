@@ -10,7 +10,8 @@ module DiscourseChat::ChatChannelFetcher
       ),
       direct_message_channels: secured_direct_message_channels(
         guardian.user.id,
-        memberships
+        memberships,
+        guardian
       ),
     }
   end
@@ -73,14 +74,17 @@ module DiscourseChat::ChatChannelFetcher
     channel
   end
 
-  def self.secured_direct_message_channels(user_id, memberships)
+  def self.secured_direct_message_channels(user_id, memberships, guardian)
     channels = ChatChannel
-      .includes(chatable: { direct_message_users: :user })
+      .includes(chatable: [{ direct_message_users: :user }, :users ])
       .joins(:user_chat_channel_memberships)
       .where(user_chat_channel_memberships: { user_id: user_id, following: true })
       .where(chatable_type: "DirectMessageChannel")
       .order(updated_at: :desc)
       .to_a
+
+    preload_fields = User.allowed_user_custom_fields(guardian) + UserField.all.pluck(:id).map { |fid| "#{User::USER_FIELD_PREFIX}#{fid}" }
+    User.preload_custom_fields(channels.map { |c| c.chatable.users }.flatten, preload_fields)
 
     unread_counts_per_channel = unread_counts(channels, user_id)
 

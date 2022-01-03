@@ -84,7 +84,7 @@ module DiscourseChat::ChatChannelFetcher
       .to_a
 
     preload_fields = User.allowed_user_custom_fields(guardian) + UserField.all.pluck(:id).map { |fid| "#{User::USER_FIELD_PREFIX}#{fid}" }
-    User.preload_custom_fields(channels.map { |c| c.chatable.users }.flatten , preload_fields)
+    User.preload_custom_fields(channels.map { |c| c.chatable.users }.flatten, preload_fields)
 
     unread_counts_per_channel = unread_counts(channels, user_id)
 

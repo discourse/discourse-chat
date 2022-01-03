@@ -120,7 +120,7 @@ body.composer-open .topic-chat-float-container {
 
   .tc-channels {
     .chat-channel-row {
-      padding-left: 1em;
+      padding: 0 0.5rem 0 1rem;
     }
 
     .chat-unread-urgent-indicator,
@@ -140,10 +140,11 @@ body.composer-open .topic-chat-float-container {
 .topic-chat-container {
   background: var(--secondary);
   border: 1px solid var(--primary-low-mid);
-  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
   border-bottom: 0;
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  box-sizing: border-box;
   height: 2.5em;
 
   &.expanded {
@@ -238,10 +239,12 @@ body.composer-open .topic-chat-float-container {
 }
 
 .topic-chat-drawer-content {
-  height: calc(#{$float-height} - #{$header-height});
+  box-sizing: border-box;
+  height: 100%;
+  padding-bottom: 0.25em;
 
   .tc-channels .chat-channel-divider {
-    padding: 0.25rem 0.5rem 0.3rem;
+    padding: 0.25rem 0.5rem;
   }
 }
 
@@ -265,7 +268,8 @@ body.composer-open .topic-chat-float-container {
   }
 
   .edit-channel-membership-btn,
-  .new-dm {
+  .new-dm,
+  .leave-channel-btn {
     background: transparent;
     color: var(--primary-medium);
     font-size: var(--font-0-rem);
@@ -289,7 +293,7 @@ body.composer-open .topic-chat-float-container {
     align-items: center;
     justify-content: space-between;
     font-weight: bold;
-    padding: 0.25rem 0.5rem 0.3rem 2rem;
+    padding: 0.25rem 0.5rem 0.25rem 2rem;
     font-family: var(--heading-font-family);
     font-size: var(--font-down-1-rem);
 
@@ -1191,21 +1195,17 @@ body.composer-open .topic-chat-float-container {
   align-items: center;
   box-sizing: border-box;
   display: flex;
-  padding: 0.5rem;
   position: relative;
   cursor: pointer;
   color: var(--primary-high);
 
   .leave-channel-btn {
     margin-left: auto;
-    background: none;
-    padding: 0.6rem;
     visibility: hidden;
   }
 
   &:hover {
     .leave-channel-btn {
-      background: transparent;
       visibility: visible;
     }
   }

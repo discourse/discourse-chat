@@ -22,6 +22,7 @@ import { resolveAllShortUrls } from "pretty-text/upload-short-url";
 import { samePrefix } from "discourse-common/lib/get-url";
 import { spinnerHTML } from "discourse/helpers/loading-spinner";
 import { decorateGithubOneboxBody } from "discourse/initializers/onebox-decorators";
+import collapseLazyYT from "discourse/plugins/discourse-chat/discourse/lib/collapse-lazy-yt";
 
 const MAX_RECENT_MSGS = 100;
 const STICKY_SCROLL_LENIENCE = 4;
@@ -965,7 +966,8 @@ export default Component.extend({
     }
 
     this.element.querySelectorAll(".lazyYT").forEach((iframe) => {
-      $(iframe).lazyYT();
+      $(iframe).lazyYT({ collapsible: true });
+      collapseLazyYT(iframe);
     });
 
     decorateGithubOneboxBody(this.element);

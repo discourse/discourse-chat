@@ -21,7 +21,6 @@ RSpec.describe DiscourseChat::MoveToTopicController do
     fab!(:admin_message_1) { Fabricate(:chat_message, chat_channel: chat_channel, user: admin) }
 
     before do
-      sign_in(admin)
       SiteSetting.chat_enabled = true
       SiteSetting.chat_allowed_groups = Group::AUTO_GROUPS[:everyone]
       SiteSetting.min_trust_to_create_tag = 0
@@ -51,12 +50,14 @@ RSpec.describe DiscourseChat::MoveToTopicController do
     end
 
     it "errors when type param is invalid" do
+      sign_in(admin)
       post "/chat/move_to_topic.json", params: build_params(5, { type: "invalid", topic_id: topic.id })
       expect(response.parsed_body["errors"].first).to include("Invalid type")
       expect(response.status).to eq(400)
     end
 
     it "errors when chat_message_ids are empty" do
+      sign_in(admin)
       post "/chat/move_to_topic.json", params: build_params(5, { type: "existingTopic", topic_id: topic.id, chat_message_ids: [] })
       expect(response.status).to eq(400)
       expect(response.parsed_body["errors"].first).to include("Must include at least one chat message id")
@@ -65,6 +66,7 @@ RSpec.describe DiscourseChat::MoveToTopicController do
     it "errors when the topic title is invalid" do
       SiteSetting.min_topic_title_length = 15
       topic_title = "title 2 short"
+      sign_in(admin)
       post "/chat/move_to_topic.json",
         params: build_params(
           5,
@@ -78,6 +80,7 @@ RSpec.describe DiscourseChat::MoveToTopicController do
     end
 
     it "creates a new topic with the correct properties" do
+      sign_in(admin)
       topic_title = "This is a new topic that is created via chat!"
       tag_names = ["ctag1", "ctag2"]
 
@@ -115,6 +118,7 @@ RSpec.describe DiscourseChat::MoveToTopicController do
     end
 
     it "creates posts for existing topics" do
+      sign_in(admin)
       topic_title = "This is a new topic that is created via chat!"
       tag_names = ["ctag1", "ctag2"]
       expect {
@@ -132,6 +136,7 @@ RSpec.describe DiscourseChat::MoveToTopicController do
     end
 
     it "creates a new private message properly" do
+      sign_in(admin)
       topic_title = "This is a new private message that is created via chat!"
       expect {
         post "/chat/move_to_topic.json",

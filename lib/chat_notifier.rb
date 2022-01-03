@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 class DiscourseChat::ChatNotifier
-  MENTION_REGEX = /\@\w+/
-
   def self.user_has_seen_message?(membership, chat_message_id)
     (membership.last_read_message_id || 0) >= chat_message_id
   end
@@ -86,16 +84,24 @@ class DiscourseChat::ChatNotifier
     })
   end
 
+  def cooked_mentions
+    @cooked_mentions ||= Nokogiri::HTML5.fragment(@chat_message.cooked).css(".mention").map(&:text)
+  end
+
+  def mentioned_usernames
+    # Drop the `@` character from start of each mention
+    @mentioned_usernames ||= cooked_mentions.map { |mention| mention[1..-1] }
+  end
+
   def set_mentioned_users
-    mention_matches = @chat_message.message.scan(MENTION_REGEX)
-    if mention_matches.include?("@all")
+    if cooked_mentions.include?("@all")
       users = members_of_channel(exclude: @user.username)
     else
-      users = mention_matches.include?("@here") ?
-        users_here(mention_matches) :
+      users = cooked_mentions.include?("@here") ?
+        users_here :
         mentioned_by_username(
           exclude: @user.username,
-          usernames: mention_matches.map { |match| match[1..-1] }
+          usernames: mentioned_usernames
         )
     end
 
@@ -103,11 +109,10 @@ class DiscourseChat::ChatNotifier
     @mentioned_with_membership, @mentioned_without_membership = filter_with_and_without_membership(can_chat_users)
   end
 
-  def users_here(mention_matches)
+  def users_here
     users = members_of_channel(exclude: @user.username).where("last_seen_at > ?", 5.minutes.ago)
     usernames = users.map(&:username)
-    other_mentioned_usernames = mention_matches
-      .map { |match| match[1..-1] }
+    other_mentioned_usernames = mentioned_usernames
       .reject { |username| username == "here" || usernames.include?(username) }
     if other_mentioned_usernames.any?
       users = users.or(

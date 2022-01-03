@@ -268,8 +268,8 @@ body.composer-open .topic-chat-floar-container {
   .new-dm {
     background: transparent;
     color: var(--primary-medium);
-    font-size: var(--font-1-down-rem);
-    padding: 0.5rem;
+    font-size: var(--font-0-rem);
+    padding: 0.6rem;
 
     &:hover {
       background: transparent;
@@ -308,7 +308,8 @@ body.composer-open .topic-chat-floar-container {
   .edit-channels-dropdown {
     .select-kit-header {
       background: none;
-      padding: 0.5rem;
+      font-size: var(--font-0-rem);
+      padding: 0.6rem;
 
       .d-icon {
         color: var(--primary-medium);
@@ -1199,7 +1200,7 @@ body.composer-open .topic-chat-floar-container {
   .leave-channel-btn {
     margin-left: auto;
     background: none;
-    padding: 0.5rem;
+    padding: 0.6rem;
     visibility: hidden;
   }
 
@@ -1267,7 +1268,7 @@ body.composer-open .topic-chat-floar-container {
   font-weight: 500;
   max-width: calc(100% - 10px - 0.75em);
   cursor: pointer;
-  margin: 0.5rem 0;
+  margin: 0.6rem 0;
 
   .category-chat-private .d-icon {
     background-color: var(--secondary);

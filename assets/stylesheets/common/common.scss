@@ -1055,11 +1055,12 @@ body.composer-open .topic-chat-floar-container {
       // `after` pseudo-element should match input styling exactly
       // via https://css-tricks.com/the-cleanest-trick-for-autogrowing-textareas/
       grid-area: 1 / 1 / 2 / 2;
-      margin-bottom: 0;
+      margin: 0;
       resize: none;
       max-height: 125px;
       padding: 8px 40px 8px 8px;
       border: 1px solid var(--primary-low-mid);
+      box-sizing: border-box;
       word-break: break-word;
       width: 100%;
     }

@@ -591,6 +591,12 @@ body.composer-open .topic-chat-floar-container {
           border-radius: 0;
         }
       }
+
+      .lazyYT-collapsible[hidden],
+      .lazyYT-collapsible-open[hidden],
+      .lazyYT-collapsible-closed[hidden] {
+        display: none;
+      }
     }
     .tc-message-edited {
       display: inline-block;

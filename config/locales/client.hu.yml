@@ -11,13 +11,11 @@ hu:
         time_tiny: "h:mm"
       all_loaded: "Összes üzenet megjelenítése"
       already_enabled: "A csevegés már engedélyezve van ebben a témában. Frissítsen."
-      already_disabled: "A csevegés már lezárult van ebben a témában. Frissítsen."
       disabled_for_topic: "A csevegés le van tiltva ebben a témában."
       bot: "bot"
       create: "Létrehozás"
       cancel: "Mégse"
       cancel_reply: "Válasz elvetése"
-      cancel_edit: "Szerkesztés elvetése"
       chat_channels: "Csatornák"
       channel_list_popup:
         browse: "Csatornák böngészése"
@@ -27,12 +25,9 @@ hu:
       collapse: "Csevegőfiók összecsukása"
       deleted: "Egy üzenet törölve lett. [megtekintés]"
       delete: "Törlés"
-      disable: "Csevegés letiltása"
       edited: "(szerkesztve)"
-      edit_channels: "Csatornák szerkesztése"
       empty_state:
         create_personal_chat: "Személyes csevegés indítása"
-        follow_channels: "Csatornák követése"
         no_public_available: "Jelenleg nem állnak rendelkezésre nyilvános csatornák, melyeket követhetne."
         public_available: "Vannak nyilvános csatornák, melyeket követhet."
         start_direct_message: "Személyes csevegést is indíthat egy vagy több felhasználóval."
@@ -70,7 +65,6 @@ hu:
       open_message: "Üzenet megnyitása a csevegésben"
       placeholder_self: "Jegyezzen le valamit"
       placeholder_others: "Üzenet küldése %{messageRecipient} számára"
-      placeholder: "csevegés…"
       placeholder_previewing: "Üzenet küldéséhez csatlakozzon a csatornához."
       remove_upload: "Fájl eltávolítása"
       react: "Reagálás emodzsival"
@@ -82,7 +76,6 @@ hu:
       select: "Válasszon"
       return_to_list: "Vissza a csatornákhoz"
       scroll_to_bottom: "Görgetés lefelé"
-      send: "Csevegőüzenet küldése"
       send_error: "Valami hiba történt"
       sound:
         title: "Asztali csevegőértesítés hangja"
@@ -92,10 +85,7 @@ hu:
         ding: "Csengettyű"
       title: "csevegés"
       title_capitalized: "Csevegés"
-      toggle_enabled: "Csevegés be/ki"
-      unread_count: "(%{count} új)"
       upload: "Fájl csatolása"
-      you: "Ön, %{usernames} %{emoji} emodzsival reagált"
       exit: "vissza"
       create_channel:
         choose_category:
@@ -141,7 +131,6 @@ hu:
         create: "Ugrás"
       incoming_webhooks:
         back: "Vissza"
-        channel: "Csatorna"
         channel_placeholder: "Válasszon csatornát"
         confirm_destroy: "Biztos, hogy törli ezt a bejövő webhookot? Ezt nem lehet visszavonni."
         current_emoji: "Jelenlegi emodzsi"

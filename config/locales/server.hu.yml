@@ -9,14 +9,6 @@ hu:
     chat_enabled: "Engedélyezze a discourse-chat bővítményt. A beállításhoz használja a témánkénti „Csevegés engedélyezése” műveletet."
     chat_allowed_groups: "Ezen csoportok felhasználói cseveghetnek."
   chat:
-    separator_post_day:
-      content: "Csevegési elválasztó bejegyzés ekkor: %{date}."
-    separator_post_hour:
-      content: "Csevegési elválasztó bejegyzés ekkor: %{date}."
-    enabled_chat: "Csevegés engedélyezve"
-    disabled_chat: "Csevegés letiltva"
-    notifications:
-      mention: "@%{username} megemlítette a csevegésben"
     errors:
       channel_exists_for_category: "Már létezik csatorna ehhez a kategóriával, és ezzel a névvel"
       channel_exists_for_topic: "Már létezik csatorna ehhez a témához"

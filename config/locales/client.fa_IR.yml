@@ -11,13 +11,11 @@ fa_IR:
         time_tiny: "HH:mm"
       all_loaded: "نمایش همه پیام‌ها"
       already_enabled: "گفتگو در حال حاضر در این موضوع فعال شده است. لطفا صفحه جاری را تازه‌سازی کنید."
-      already_disabled: "گفتگو در حال حاضر در این موضوع بسته شده است. لطفا صفحه جاری را تازه‌سازی کنید."
       disabled_for_topic: "گفتگو در این موضوع غیرفعال است."
       bot: "ربات"
       create: "ایجاد"
       cancel: "لغو"
       cancel_reply: "لغو پاسخ"
-      cancel_edit: "لغو ویرایش"
       chat_channels: "کانال‌ها"
       channel_list_popup:
         browse: "مرور کانال‌ها"
@@ -26,12 +24,9 @@ fa_IR:
       close: "بستن"
       deleted: "یک پیام حذف شد. [view]"
       delete: "حذف"
-      disable: "غیرفعال کردن گفتگو"
       edited: "«ویرایش شده»"
-      edit_channels: "ویرایش کانال‌ها"
       empty_state:
         create_personal_chat: "شروع گفتگوی شخصی"
-        follow_channels: "کانال‌ها را دنبال کنید"
         no_public_available: "هیچ کانال عمومی برای دنبال کردن شما در این زمان وجود ندارد."
         public_available: "کانال‌های عمومی در دسترس شما برای دنبال کردن وجود دارد."
         start_direct_message: "شما همچنین می‌توانید یک گفتگو شخصی را با یک یا چند کاربر شروع کنید."
@@ -57,7 +52,6 @@ fa_IR:
       no_public_channels: "شما هنوز عضو هیچ کانالی نشده‌اید."
       open: "باز کردن گفتگو..."
       open_message: "پیام را در گفتگو باز کن"
-      placeholder: "گفتگو..."
       placeholder_previewing: "برای ارسال پیام، به کانال بپیوندید."
       remove_upload: "حذف پرونده"
       react: "واکنش با شکلک"
@@ -69,7 +63,6 @@ fa_IR:
       select: "انتخاب کنید"
       return_to_list: "بازگشت به فهرست کانال"
       scroll_to_bottom: "حرکت به پایین"
-      send: "ارسال پیام"
       send_error: "یه مشکلی پیش آمده"
       sound:
         title: "صدای آگاه‌سازی گفتگوی دسکتاپ"
@@ -79,7 +72,6 @@ fa_IR:
         ding: "دینگ"
       title: "گفتگو"
       title_capitalized: "گفتگو"
-      unread_count: "«%{count} جدید»"
       upload: "پیوست کردن یک پرونده"
       exit: "بازگشت"
       create_channel:
@@ -117,7 +109,6 @@ fa_IR:
         create: "برو"
       incoming_webhooks:
         back: "بازگشت"
-        channel: "کانال"
         channel_placeholder: "یک کانال را انتخاب کنید"
         current_emoji: "شکلک کنونی"
         description: "توضیحات"

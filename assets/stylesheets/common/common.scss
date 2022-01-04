@@ -607,17 +607,6 @@ body.composer-open .topic-chat-float-container {
           border-radius: 0;
         }
       }
-
-      .tc-message-collapsible-button {
-        background: transparent;
-        padding: unset;
-
-        &:hover {
-          .d-icon {
-            color: var(--primary);
-          }
-        }
-      }
     }
     .tc-message-edited {
       display: inline-block;
@@ -1864,5 +1853,25 @@ body.composer-open .topic-chat-float-container {
     text-transform: uppercase;
     font-weight: 700;
     font-size-adjust: var(--font-down-0);
+  }
+}
+
+.tc-message-collapsible {
+  .tc-message-collapsible-header {
+    display: flex;
+    align-items: center;
+  }
+
+  .tc-message-collapsible-button {
+    background: none;
+    padding: unset;
+    margin-left: 0.5em;
+
+    &:hover {
+      background: none;
+      .d-icon {
+        color: var(--primary);
+      }
+    }
   }
 }

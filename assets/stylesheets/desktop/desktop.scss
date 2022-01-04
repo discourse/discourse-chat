@@ -89,14 +89,27 @@
 // Full Page Styling in Core
 .has-full-page-chat:not(.discourse-sidebar) {
   #main-outlet {
-    padding: 1.5em 0em;
+    padding: 0em;
+    &.wrap {
+      max-width: 1200px;
+    }
+  }
+  .alert-info:last-of-type {
+    margin-bottom: 0;
+    border-bottom: 1px solid var(--primary-low);
   }
   .full-page-chat {
-    border: 1px solid var(--primary-low);
+    border-right: 1px solid var(--primary-low);
+    border-left: 1px solid var(--primary-low);
     overflow: hidden;
+
+    .tc-full-page-header {
+      padding: 1em 1em 0.5em;
+    }
 
     .tc-channels {
       background: var(--primary-very-low);
+      padding-top: 1em;
 
       .chat-channel-divider {
         padding: 0.5rem 0.5rem 0.5rem 1rem;

@@ -248,6 +248,16 @@ body.composer-open .topic-chat-float-container {
   }
 }
 
+.btn.exit-chat-btn {
+  background: transparent;
+  color: var(--primary-medium);
+  font-size: var(--font-0-rem);
+  padding: 0.6rem;
+  &:hover {
+    background: transparent;
+  }
+}
+
 .tc-channels {
   overflow-y: auto;
   height: 100%;

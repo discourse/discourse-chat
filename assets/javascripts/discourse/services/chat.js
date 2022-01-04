@@ -478,7 +478,7 @@ export default Service.extend({
       .then(async () => {
         this._unsubscribeFromChatChannel(channel);
         return this._refreshChannels().then(() => {
-          return this.getIdealFirstChannelIdAndTitle().then((channelInfo) => {
+          return this.getIdealFirstChannelId().then((channelInfo) => {
             if (channelInfo) {
               return this.router.transitionTo(
                 "chat.channel",

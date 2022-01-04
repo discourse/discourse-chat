@@ -68,13 +68,7 @@ export default Component.extend({
   },
 
   @action
-  leaveChatChannel() {
-    return ajax(`/chat/chat_channels/${this.channel.id}/unfollow`, {
-      method: "POST",
-    })
-      .then(() => {
-        this.chat.stopTrackingChannel(this.channel);
-      })
-      .catch(popupAjaxError);
+  async leaveChatChannel() {
+    return this.chat.unfollowDirectMessageChannel(this.channel);
   },
 });

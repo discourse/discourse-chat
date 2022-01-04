@@ -9,14 +9,6 @@ ru:
     chat_enabled: "Включить плагин discourse-chat. Для настройки используйте действие 'Включить чат', отображаемое в каждой теме."
     chat_allowed_groups: "Пользователи этих групп могут использовать чат."
   chat:
-    separator_post_day:
-      content: "Сообщение, разделяющее чат для %{date}."
-    separator_post_hour:
-      content: "Сообщение, разделяющее чат для %{date}."
-    enabled_chat: "Чат включён"
-    disabled_chat: "Чат отключён"
-    notifications:
-      mention: "Пользователь @%{username} упомянул вас в чате"
     errors:
       channel_exists_for_category: "Канал для этого раздела уже существует"
       channel_exists_for_topic: "Канал для этой темы уже существует"

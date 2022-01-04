@@ -11,33 +11,36 @@ he:
         time_tiny: "h:mm"
       all_loaded: "כל ההודעות מוצגות"
       already_enabled: "כבר מופעל צ׳אט בנושא הזה. נא לרענן."
-      already_disabled: "כבר נסגר צ׳אט בנושא הזה. נא לרענן."
       disabled_for_topic: "הצ׳אט מושבת בנושא הזה."
       bot: "בוט"
       create: "יצירה"
       cancel: "ביטול"
       cancel_reply: "ביטול תגובה"
-      cancel_edit: "ביטול עריכה"
       chat_channels: "ערוצים"
+      channel_list_popup:
+        browse: "עיון בערוצים"
+        create: "יצירת ערוץ"
       click_to_join: "לחיצה כאן תציג את הערוצים הזמינים."
       close: "סגירה"
       collapse: "צמצום מגירת צ׳אט"
       deleted: "הודעה נמחקה. [צפייה]"
       delete: "מחיקה"
-      disable: "השבתת צ׳אט"
       edited: "(נערך)"
-      edit_channels: "עריכת ערוצים"
       empty_state:
         create_personal_chat: "התחלת צ׳אט אישי"
-        follow_channels: "מעקב אחר ערוצים"
+        no_public_available: "אין ערוצים ציבוריים שזמינים למעקב על ידיך כרגע."
+        public_available: "יש ערוצים ציבוריים שזמינים למעקב על ידיך."
         start_direct_message: "אפשר לפתוח בצ׳אט אישי עם משתמש אחד או יותר."
         title: "אפשר להתחיל על ידי הצטרפות לערוץ"
       enable: "הפעלת צ׳אט"
+      flag: "סימון בדגל"
       invalid_access: "אין לך גישה לצפות בערוץ הצ׳אט הזה"
+      invitation_notification: "<span>הוזמנת להצטרף לערוץ צ׳אט על ידי %{username}</span>"
       in_reply_to: "בתגובה אל"
       isolate:
         title: "בידוד צ׳אט"
         description: "תמיד לפתוח צ׳אט בלשונית חדשה"
+      heading: "צ׳אט"
       join_channel: "הצטרפות לערוץ"
       new_messages: "הודעות חדשות"
       mention_notification: "<span>אוזכרת בצ׳אט על ידי %{username}</span>"
@@ -47,18 +50,19 @@ he:
           two: "ל־%{usernames} אין גישה לערוץ הזה ולא נשלחה הודעה."
           many: "ל־%{usernames} אין גישה לערוץ הזה ולא נשלחה הודעה."
           other: "ל־%{usernames} אין גישה לערוץ הזה ולא נשלחה הודעה."
+        dismiss: "התעלמות"
         invitations_sent:
           one: "נשלחה הזמנה"
           two: "נשלחו הזמנות"
           many: "נשלחו הזמנות"
           other: "נשלחו הזמנות"
         invite: "הזמנה לערוץ"
+      no_public_channels: "לא הצטרפת לאף ערוץ."
       open: "פתיחת צ׳אט"
       open_full_page: "פתיחת צ׳אט במסך מלא"
       open_message: "פתיחת הודעה בצ׳אט"
       placeholder_self: "לקשקש משהו"
       placeholder_others: "לשלוח הודעה אל %{messageRecipient}"
-      placeholder: "צ׳אט…"
       placeholder_previewing: "יש להצטרף לערוץ כדי לשלוח הודעה."
       remove_upload: "הסרת קובץ"
       react: "להגיב עם אמוג׳י"
@@ -70,7 +74,6 @@ he:
       select: "בחירה"
       return_to_list: "חזרה לרשימת הערוצים"
       scroll_to_bottom: "גלילה לתחתית"
-      send: "שליחת הודעה בצ׳אט"
       send_error: "משהו השתבש"
       sound:
         title: "צליל התראת צ׳אט שולחן עבודה"
@@ -82,6 +85,19 @@ he:
       title_capitalized: "צ׳אט"
       upload: "צירוף קובץ"
       exit: "חזרה"
+      create_channel:
+        choose_category:
+          none: "נא לבחור אחד…"
+        create: "יצירת ערוץ"
+        description: "תיאור (רשות)"
+        name: "שם הערוץ"
+        title: "הוספת ערוץ"
+        type: "סוג"
+        types:
+          category: "קטגוריה"
+          topic: "נושא"
+      reactions:
+        only_you: "הגבת עם :%{emoji}:"
       composer:
         toggle_toolbar: "החלפת מצב סרגל כלים"
       notification_levels:
@@ -106,9 +122,9 @@ he:
         title: "צ׳אט אישי"
         new: "צ׳אט אישי חדש"
         create: "קדימה"
+        leave: "יציאה מהצ׳אט האישי הזה"
       incoming_webhooks:
         back: "חזרה"
-        channel: "ערוץ"
         channel_placeholder: "בחירת ערוץ"
         confirm_destroy: "למחוק את ההתלייה הנכנסת? אי אפשר לבטל את זה."
         current_emoji: "ה־Emoji הנוכחי"
@@ -128,6 +144,7 @@ he:
         title: "התליות נכנסות"
         url: "כתובת"
         username: "שם משתמש"
+        username_instructions: "שם משתמש הבוט שמפרסם לערוץ. ברירת המחדל היא ‚מערכת’ כשזה נשאר ריק."
       selection:
         cancel: "ביטול"
         move_to_topic: "העברה לנושא"
@@ -135,12 +152,23 @@ he:
         title: "העברת צ׳אט לנושא"
         new_topic:
           title: "העברה לנושא חדש"
+          instructions:
+            one: "פעולה זו תיצור נושא חדש ותמלא בו את הודעת הצ׳אט שבחרת."
+            two: "פעולה זו תיצור נושא חדש ותמלא בו את <b>%{count}</b> הודעות הצ׳אט שבחרת."
+            many: "פעולה זו תיצור נושא חדש ותמלא בו את <b>%{count}</b> הודעות הצ׳אט שבחרת."
+            other: "פעולה זו תיצור נושא חדש ותמלא בו את <b>%{count}</b> הודעות הצ׳אט שבחרת."
         existing_topic:
           title: "העברה לנושא קיים"
         new_message:
           title: "העברה להודעה חדשה"
+          instructions:
+            one: "פעולה זו תיצור הודעה חדשה ותמלא בה את הודעת הצ׳אט שבחרת."
+            two: "פעולה זו תיצור הודעה חדשה ותמלא בה את <b>%{count}</b> הודעות הצ׳אט שבחרת."
+            many: "פעולה זו תיצור הודעה חדשה ותמלא בה את <b>%{count}</b> הודעות הצ׳אט שבחרת."
+            other: "פעולה זו תיצור הודעה חדשה ותמלא בה את <b>%{count}</b> הודעות הצ׳אט שבחרת."
     notifications:
       popup:
+        chat_mention: "אוזכרת על ידי ‎@%{username} בצ׳אט"
         chat_message: "הודעת צ׳אט חדשה"
       titles:
         chat_mention: "איזכור בצ׳אט"
@@ -151,7 +179,10 @@ he:
         chat_disable: "סגירת צ׳אט"
     action_codes:
       chat:
+        enabled: 'ה<button class="btn-link open-chat">צ׳אט</button>הופעל על ידי%{who} ב־%{when}'
+        disabled: "הצ׳אט %{when} נסגר על ידי %{who}"
         post_created: "נוצר פוסט חדש: %{excerpt}"
+        generic_small_action: "בוצעה פעילות ניהול על הנושא"
     discourse_automation:
       scriptables:
         send_chat_message:

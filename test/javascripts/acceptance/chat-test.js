@@ -179,6 +179,9 @@ acceptance("Discourse Chat - without unread", function (needs) {
         },
       });
     });
+    server.post("/chat/chat_channels/:chatChannelId/unfollow", () => {
+      return helper.response({ success: "OK" });
+    });
   });
 
   test("Clicking mention notification from outside chat opens the float", async function (assert) {
@@ -242,6 +245,13 @@ acceptance("Discourse Chat - without unread", function (needs) {
     const replyTo = messages[2].querySelector(".tc-reply-msg");
     assert.ok(replyTo);
     assert.equal(replyTo.innerText.trim(), messageContents[1]);
+  });
+
+  test("Unfollowing a direct message channel transitions to another channel", async function (assert) {
+    await visit("/chat/channel/75/@hawk");
+    await click(".chat-channel-row.chat-channel-75 .leave-channel-btn");
+
+    assert.true(/^\/chat\/channel\/4/.test(currentURL()));
   });
 
   test("Message controls are present and correct for permissions", async function (assert) {

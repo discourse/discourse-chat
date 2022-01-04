@@ -12,13 +12,13 @@ export default Component.extend({
   router: service(),
   chat: service(),
 
-  @discourseComputed("active", "channel.muted")
-  rowClassNames(active, muted) {
-    const classes = ["chat-channel-row"];
+  @discourseComputed("active", "channel.{id,muted}")
+  rowClassNames(active, channel) {
+    const classes = ["chat-channel-row", `chat-channel-${channel.id}`];
     if (active) {
       classes.push("active");
     }
-    if (muted) {
+    if (channel.muted) {
       classes.push("muted");
     }
     return classes.join(" ");

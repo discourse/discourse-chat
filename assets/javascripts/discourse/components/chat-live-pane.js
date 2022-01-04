@@ -167,12 +167,13 @@ export default Component.extend({
           }
 
           this.chat.set("messageId", null);
+          this.set("loading", false);
 
           if (this.chatChannel.id !== channelId) {
             return;
           }
+
           this.focusComposer();
-          this.set("loading", false);
         });
     });
   },

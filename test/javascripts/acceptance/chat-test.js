@@ -20,7 +20,7 @@ import {
   allChannels,
   chatChannels,
   chatView,
-  directMessageChannel,
+  directMessageChannels,
   messageContents,
   siteChannel,
 } from "discourse/plugins/discourse-chat/chat-fixtures";
@@ -88,7 +88,7 @@ function directMessageChannelPretender(
   helper,
   opts = { unread_count: 0, muted: false }
 ) {
-  let copy = cloneJSON(directMessageChannel);
+  let copy = cloneJSON(directMessageChannels[0]);
   copy.chat_channel.unread_count = opts.unread_count;
   copy.chat_channel.muted = opts.muted;
   server.get("/chat/chat_channels/75.json", () => helper.response(copy));
@@ -249,6 +249,10 @@ acceptance("Discourse Chat - without unread", function (needs) {
 
   test("Unfollowing a direct message channel transitions to another channel", async function (assert) {
     await visit("/chat/channel/75/@hawk");
+    await click(".chat-channel-row.chat-channel-76 .leave-channel-btn");
+
+    assert.ok(/^\/chat\/channel\/75/.test(currentURL()));
+
     await click(".chat-channel-row.chat-channel-75 .leave-channel-btn");
 
     assert.ok(/^\/chat\/channel\/4/.test(currentURL()));

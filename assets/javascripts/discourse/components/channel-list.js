@@ -92,10 +92,9 @@ export default Component.extend({
         return;
       }
 
-      const userChooser = document.querySelector(
-        ".dm-creation-row .dm-user-chooser .select-kit-header"
-      );
-      userChooser?.click();
+      document
+        .querySelector(".dm-creation-row .dm-user-chooser .select-kit-header")
+        ?.click();
     });
   },
 

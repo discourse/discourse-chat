@@ -86,15 +86,15 @@ export default Component.extend({
   @action
   startCreatingDmChannel() {
     this.set("creatingDmChannel", true);
+
     schedule("afterRender", () => {
-      if (!this.element || this.isDestroying || this.isDestroyed) {
+      if (this.isDestroying || this.isDestroyed) {
         return;
       }
 
-      const userChooser = this.element.querySelector(
-        ".dm-creation-row .dm-user-chooser .select-kit-header"
-      );
-      userChooser?.click();
+      document
+        .querySelector(".dm-creation-row .dm-user-chooser .select-kit-header")
+        ?.click();
     });
   },
 

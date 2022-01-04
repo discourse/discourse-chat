@@ -1521,9 +1521,8 @@ body.composer-open .topic-chat-float-container {
     border: 2px solid var(--primary-low);
     border-left: transparent;
     .chat-channel-row-controls {
-      bottom: -235px;
       right: unset;
-      top: unset;
+      top: calc(100% - 10px);
     }
   }
 }

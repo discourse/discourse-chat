@@ -208,6 +208,13 @@ export default Component.extend({
     return classNames.join(" ");
   },
 
+  @computed("message.cooked")
+  get isCollapsible() {
+    return /^<div class="onebox lazyYT lazyYT-container"/.test(
+      this.message.cooked
+    );
+  },
+
   @discourseComputed("message.user")
   name(user) {
     return this.prioritizeName ? user.name : user.username;

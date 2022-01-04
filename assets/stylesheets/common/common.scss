@@ -608,10 +608,15 @@ body.composer-open .topic-chat-float-container {
         }
       }
 
-      .lazyYT-collapsible[hidden],
-      .lazyYT-collapsible-open[hidden],
-      .lazyYT-collapsible-closed[hidden] {
-        display: none;
+      .tc-message-collapsible-button {
+        background: transparent;
+        padding: unset;
+
+        &:hover {
+          .d-icon {
+            color: var(--primary);
+          }
+        }
       }
     }
     .tc-message-edited {

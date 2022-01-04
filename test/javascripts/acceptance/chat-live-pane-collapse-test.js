@@ -55,26 +55,26 @@ acceptance("Discourse Chat - Chat live pane", function (needs) {
   });
 
   test("can collapse and expand youtube chat", async function (assert) {
-    const youtubeContainerSelector = ".lazyYT-collapsible .lazyYT-container";
-    const closed = ".lazyYT-collapsible-closed";
-    const open = ".lazyYT-collapsible-open";
+    const youtubeContainerSelector = ".lazyYT";
+    const close = ".tc-message-collapsible-close";
+    const open = ".tc-message-collapsible-open";
 
     await visit("/chat/channel/1/cat");
 
     assert.ok(visible(youtubeContainerSelector));
-    assert.ok(exists(`${closed}[hidden]`), "the closed arrow is hidden");
-    assert.notOk(exists(`${open}[hidden]`), "the open arrow is not hidden");
+    assert.ok(visible(open), "the open arrow is shown");
+    assert.notOk(exists(close), "the close arrow is hidden");
 
-    await click(".lazyYT-collapsible-open");
+    await click(open);
 
-    assert.notOk(visible(youtubeContainerSelector));
-    assert.ok(exists(`${open}[hidden]`), "the open arrow is hidden");
-    assert.notOk(exists(`${closed}[hidden]`), "the closed arrow is not hidden");
+    assert.notOk(exists(youtubeContainerSelector));
+    assert.ok(visible(close), "the close arrow is shown");
+    assert.notOk(exists(open), "the open arrow is hidden");
 
-    await click(".lazyYT-collapsible-closed");
+    await click(close);
 
     assert.ok(visible(youtubeContainerSelector));
-    assert.ok(exists(`${closed}[hidden]`), "the closed arrow is hidden again");
-    assert.notOk(exists(`${open}[hidden]`), "the open arrow is shown again");
+    assert.ok(visible(open), "the open arrow is shown again");
+    assert.notOk(exists(close), "the close arrow is hidden again");
   });
 });

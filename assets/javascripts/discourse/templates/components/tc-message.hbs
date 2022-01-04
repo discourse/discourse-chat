@@ -136,7 +136,11 @@
             </span>
           {{else}}
             <div class="tc-text">
-              {{html-safe message.cooked}}
+              {{#if isCollapsible}}
+                {{tc-message-collapser cooked=message.cooked}}
+              {{else}}
+                {{html-safe message.cooked}}
+              {{/if}}
               {{#if message.uploads.length}}
                 <div class="tc-uploads">
                   {{#each message.uploads as |upload|}}

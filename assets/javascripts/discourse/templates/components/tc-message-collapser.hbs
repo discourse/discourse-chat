@@ -1,0 +1,24 @@
+<div class="tc-message-collapsible">
+  <a
+    target="_blank"
+    class="tc-message-collapsible-link"
+    rel="noopener noreferrer"
+    href={{link}}
+  >
+    {{title}}
+  </a>
+  {{#if collapsed}}
+    {{d-button
+      action=(action "open")
+      icon="caret-right"
+      class="tc-message-collapsible-button tc-message-collapsible-close"
+    }}
+  {{else}}
+    {{d-button
+      action=(action "close")
+      icon="caret-down"
+      class="tc-message-collapsible-button tc-message-collapsible-open"
+    }}
+    {{html-safe cooked}}
+  {{/if}}
+</div>

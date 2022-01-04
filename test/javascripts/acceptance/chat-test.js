@@ -88,10 +88,10 @@ function directMessageChannelPretender(
   helper,
   opts = { unread_count: 0, muted: false }
 ) {
-  let copy = cloneJSON(directMessageChannels);
-  copy[0].chat_channel.unread_count = opts.unread_count;
-  copy[0].chat_channel.muted = opts.muted;
-  server.get("/chat/chat_channels/75.json", () => helper.response(copy[0]));
+  let copy = cloneJSON(directMessageChannels[0]);
+  copy.chat_channel.unread_count = opts.unread_count;
+  copy.chat_channel.muted = opts.muted;
+  server.get("/chat/chat_channels/75.json", () => helper.response(copy));
 }
 
 function chatChannelPretender(server, helper, changes = []) {

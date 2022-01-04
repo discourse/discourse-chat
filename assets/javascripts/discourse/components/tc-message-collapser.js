@@ -1,6 +1,7 @@
 import Component from "@ember/component";
 import { action } from "@ember/object";
 import escape from "discourse-common/lib/escape";
+import domFromString from "discourse-common/lib/dom-from-string";
 
 export default Component.extend({
   collapsed: false,
@@ -11,14 +12,12 @@ export default Component.extend({
   init() {
     this._super(...arguments);
 
-    const cookedElement = new DOMParser().parseFromString(
-      this.cooked,
-      "text/xml"
-    ).firstChild;
-    const title = cookedElement.getAttribute("data-youtube-title");
-    const id = cookedElement.getAttribute("data-youtube-id");
+    const cookedElement = domFromString(this.cooked);
 
+    const title = cookedElement.dataset.youtubeTitle;
     this.set("title", title);
+
+    const id = cookedElement.dataset.youtubeId;
     this.set("link", `https://www.youtube.com/watch?v=${escape(id)}`);
   },
 

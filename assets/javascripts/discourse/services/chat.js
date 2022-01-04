@@ -278,7 +278,7 @@ export default Service.extend({
   },
 
   sortPublicChannels(channels) {
-    return channels.sort((a, b) => {
+    return channels.uniqBy("id").sort((a, b) => {
       const typeA = PUBLIC_CHANNEL_SORT_PRIOS[a.chatable_type];
       const typeB = PUBLIC_CHANNEL_SORT_PRIOS[b.chatable_type];
       if (typeA === typeB) {
@@ -290,7 +290,7 @@ export default Service.extend({
   },
 
   sortDirectMessageChannels(channels) {
-    return channels.sort((a, b) => {
+    return channels.uniqBy("id").sort((a, b) => {
       const unreadCountA =
         this.currentUser.chat_channel_tracking_state[a.id]?.unread_count || 0;
       const unreadCountB =

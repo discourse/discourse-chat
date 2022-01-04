@@ -1,3 +1,4 @@
+import { popupAjaxError } from "discourse/lib/ajax-error";
 import EmberObject from "@ember/object";
 import KeyValueStore from "discourse/lib/key-value-store";
 import Service, { inject as service } from "@ember/service";
@@ -470,13 +471,40 @@ export default Service.extend({
     });
   },
 
+  async unfollowDirectMessageChannel(channel) {
+    return ajax(`/chat/chat_channels/${channel.id}/unfollow`, {
+      method: "POST",
+    })
+      .then(async () => {
+        this._unsubscribeFromChatChannel(channel);
+        return this._refreshChannels().then(() => {
+          return this.getIdealFirstChannelIdAndTitle().then((channelInfo) => {
+            if (channelInfo) {
+              return this.router.transitionTo(
+                "chat.channel",
+                channelInfo.id,
+                channelInfo.title
+              );
+            } else {
+              return this.router.transitionTo("chat");
+            }
+          });
+        });
+      })
+      .catch(popupAjaxError);
+  },
+
   _unsubscribeFromAllChatChannels() {
     (this.allChannels || []).forEach((channel) => {
-      this.messageBus.unsubscribe(`/chat/${channel.id}/new-messages`);
-      if (channel.chatable_type !== "DirectMessageChannel") {
-        this.messageBus.unsubscribe(`/chat/${channel.id}/new-mentions`);
-      }
+      this._unsubscribeFromChatChannel(channel);
     });
+  },
+
+  _unsubscribeFromChatChannel(channel) {
+    this.messageBus.unsubscribe(`/chat/${channel.id}/new-messages`);
+    if (channel.chatable_type !== "DirectMessageChannel") {
+      this.messageBus.unsubscribe(`/chat/${channel.id}/new-mentions`);
+    }
   },
 
   _subscribeToUserTrackingChannel() {

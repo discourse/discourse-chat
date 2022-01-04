@@ -1,5 +1,3 @@
-import { ajax } from "discourse/lib/ajax";
-import { popupAjaxError } from "discourse/lib/ajax-error";
 import Component from "@ember/component";
 import discourseComputed from "discourse-common/utils/decorators";
 import getURL from "discourse-common/lib/get-url";
@@ -14,13 +12,13 @@ export default Component.extend({
   router: service(),
   chat: service(),
 
-  @discourseComputed("active", "channel.muted")
-  rowClassNames(active, muted) {
-    const classes = ["chat-channel-row"];
+  @discourseComputed("active", "channel.{id,muted}")
+  rowClassNames(active, channel) {
+    const classes = ["chat-channel-row", `chat-channel-${channel.id}`];
     if (active) {
       classes.push("active");
     }
-    if (muted) {
+    if (channel.muted) {
       classes.push("muted");
     }
     return classes.join(" ");
@@ -68,13 +66,7 @@ export default Component.extend({
   },
 
   @action
-  leaveChatChannel() {
-    return ajax(`/chat/chat_channels/${this.channel.id}/unfollow`, {
-      method: "POST",
-    })
-      .then(() => {
-        this.chat.stopTrackingChannel(this.channel);
-      })
-      .catch(popupAjaxError);
+  async leaveChatChannel() {
+    return this.chat.unfollowDirectMessageChannel(this.channel);
   },
 });

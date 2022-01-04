@@ -12,23 +12,42 @@ export const siteChannel = {
     muted: false,
   },
 };
-export const directMessageChannel = {
-  chat_channel: {
-    chatable: {
-      users: [
-        { id: 1, username: "markvanlan" },
-        { id: 2, username: "hawk" },
-      ],
+export const directMessageChannels = [
+  {
+    chat_channel: {
+      chatable: {
+        users: [
+          { id: 1, username: "markvanlan" },
+          { id: 2, username: "hawk" },
+        ],
+      },
+      chatable_id: 58,
+      chatable_type: "DirectMessageChannel",
+      chatable_url: null,
+      id: 75,
+      title: "@hawk",
+      unread_count: 0,
+      muted: false,
     },
-    chatable_id: 58,
-    chatable_type: "DirectMessageChannel",
-    chatable_url: null,
-    id: 75,
-    title: "@hawk",
-    unread_count: 0,
-    muted: false,
   },
-};
+  {
+    chat_channel: {
+      chatable: {
+        users: [
+          { id: 1, username: "markvanlan" },
+          { id: 3, username: "eviltrout" },
+        ],
+      },
+      chatable_id: 59,
+      chatable_type: "DirectMessageChannel",
+      chatable_url: null,
+      id: 76,
+      title: "@eviltrout",
+      unread_count: 0,
+      muted: false,
+    },
+  },
+];
 
 export const chatChannels = {
   public_channels: [
@@ -84,7 +103,7 @@ export const chatChannels = {
       },
     },
   ],
-  direct_message_channels: [directMessageChannel.chat_channel],
+  direct_message_channels: directMessageChannels.mapBy("chat_channel"),
 };
 
 function addSettingsAttrs(channel) {

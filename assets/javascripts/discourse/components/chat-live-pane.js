@@ -169,6 +169,11 @@ export default Component.extend({
           this.chat.set("messageId", null);
 
           if (this.chatChannel.id !== channelId) {
+            this.router.transitionTo(
+              "chat.channel",
+              this.chatChannel.id,
+              this.chatChannel.title
+            );
             return;
           }
           this.focusComposer();

@@ -12,7 +12,10 @@ class DirectMessageChannel < ActiveRecord::Base
     return chat_channel.id if users.count > 2
 
     users = direct_message_users.map(&:user) - [user]
+
     return "@#{user.username}" if users.empty?
+    return chat_channel.id if !users.first
+
     "@#{users.first.username}"
   end
 

@@ -251,7 +251,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     await visit("/chat/channel/75/@hawk");
     await click(".chat-channel-row.chat-channel-75 .leave-channel-btn");
 
-    assert.true(/^\/chat\/channel\/4/.test(currentURL()));
+    assert.ok(/^\/chat\/channel\/4/.test(currentURL()));
   });
 
   test("Message controls are present and correct for permissions", async function (assert) {

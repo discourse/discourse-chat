@@ -90,3 +90,25 @@ class ChatChannel < ActiveRecord::Base
     ChatChannel.where(chatable: topic).exists?
   end
 end
+
+# == Schema Information
+#
+# Table name: chat_channels
+#
+#  id                      :bigint           not null, primary key
+#  chatable_id             :integer          not null
+#  deleted_at              :datetime
+#  deleted_by_id           :integer
+#  featured_in_category_id :integer
+#  delete_after_seconds    :integer
+#  chatable_type           :string           not null
+#  created_at              :datetime         not null
+#  updated_at              :datetime         not null
+#  name                    :string
+#  description             :text
+#
+# Indexes
+#
+#  index_chat_channels_on_chatable_id                    (chatable_id)
+#  index_chat_channels_on_chatable_id_and_chatable_type  (chatable_id,chatable_type)
+#

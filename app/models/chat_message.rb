@@ -107,3 +107,26 @@ class ChatMessage < ActiveRecord::Base
     "watched-words": true,
   }
 end
+
+# == Schema Information
+#
+# Table name: chat_messages
+#
+#  id              :bigint           not null, primary key
+#  chat_channel_id :integer          not null
+#  user_id         :integer
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
+#  deleted_at      :datetime
+#  deleted_by_id   :integer
+#  in_reply_to_id  :integer
+#  message         :text
+#  action_code     :string
+#  cooked          :text
+#  cooked_version  :integer
+#
+# Indexes
+#
+#  index_chat_messages_on_chat_channel_id_and_created_at  (chat_channel_id,created_at)
+#  index_chat_messages_on_post_id                         (post_id)
+#

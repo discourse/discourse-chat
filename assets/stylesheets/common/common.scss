@@ -14,8 +14,7 @@ $float-height: 530px;
   }
 }
 
-.chat-unread-urgent-indicator,
-.chat-unread-indicator {
+.chat-channel-unread-indicator {
   width: 14px;
   height: 14px;
   border-radius: 100%;
@@ -27,24 +26,24 @@ $float-height: 530px;
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-}
-.chat-unread-indicator {
   background: var(--tertiary-med-or-tertiary);
-}
-.chat-unread-urgent-indicator {
-  background: var(--success);
-  color: var(--secondary);
-  font-size: var(--font-down-2);
 
-  .chat-unread-urgent-indicator-number-wrap {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    .chat-unread-urgent-indicator-number {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+  &.urgent {
+    background: var(--success);
+    color: var(--secondary);
+    font-size: var(--font-down-2);
+
+    .number-wrap {
+      position: relative;
+      width: 100%;
+      height: 100%;
+
+      .number {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
     }
   }
 }
@@ -58,12 +57,12 @@ $float-height: 530px;
     }
 
     &:hover {
-      .chat-unread-indicator {
+      .chat-channel-unread-indicator {
         border-color: var(--primary-low);
       }
     }
     .chat-unread-urgent-indicator,
-    .chat-unread-indicator {
+    .chat-channel-unread-indicator {
       border-color: var(--header_background);
       position: absolute;
       right: 2px;
@@ -75,7 +74,7 @@ $float-height: 530px;
 
 .has-sidebar {
   .header-dropdown-toggle.open-chat {
-    .chat-unread-indicator {
+    .chat-channel-unread-indicator {
       border-color: var(--primary-very-low);
     }
   }
@@ -124,7 +123,7 @@ body.composer-open .topic-chat-float-container {
     }
 
     .chat-unread-urgent-indicator,
-    .chat-unread-indicator {
+    .chat-channel-unread-indicator {
       left: 3px;
       width: 8px;
       height: 8px;
@@ -263,8 +262,7 @@ body.composer-open .topic-chat-float-container {
   height: 100%;
   position: relative;
 
-  .chat-unread-urgent-indicator,
-  .chat-unread-indicator {
+  .chat-channel-unread-indicator {
     width: 10px;
     height: 10px;
     margin-left: 0.5em;
@@ -272,7 +270,8 @@ body.composer-open .topic-chat-float-container {
     border: 0;
     right: 7px;
     top: calc(50% - 5px);
-    .chat-unread-urgent-indicator-number-wrap {
+
+    &.urgent .number-wrap {
       display: none;
     }
   }
@@ -1225,7 +1224,7 @@ body.composer-open .topic-chat-float-container {
     }
 
     .chat-unread-urgent-indicator,
-    .chat-unread-indicator {
+    .chat-channel-unread-indicator {
       border-color: var(--primary-low);
     }
 
@@ -1250,7 +1249,7 @@ body.composer-open .topic-chat-float-container {
     margin-right: 0;
   }
 
-  .chat-unread-indicator {
+  .chat-channel-unread-indicator {
     background: var(--tertiary-med-or-tertiary);
   }
 

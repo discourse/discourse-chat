@@ -23,19 +23,18 @@ export default createWidget("header-chat-link", {
     }
 
     let indicator;
-    let unreadUrgentCount = this.chat.unreadUrgentCount;
-    if (unreadUrgentCount) {
+    if (this.chat.unreadUrgentCount) {
       indicator = h(
-        "div.chat-unread-urgent-indicator",
+        "div.chat-channel-unread-indicator.urgent",
         {},
         h(
-          "div.chat-unread-urgent-indicator-number-wrap",
+          "div.number-wrap",
           {},
-          h("div.chat-unread-urgent-indicator-number", {}, unreadUrgentCount)
+          h("div.number", {}, this.chat.unreadUrgentCount)
         )
       );
     } else if (this.chat.hasUnreadMessages) {
-      indicator = h("div.chat-unread-indicator");
+      indicator = h("div.chat-channel-unread-indicator");
     }
 
     return this.chatLinkHtml(indicator);

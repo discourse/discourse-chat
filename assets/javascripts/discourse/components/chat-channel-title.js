@@ -3,13 +3,13 @@ import Component from "@ember/component";
 import { gt } from "@ember/object/computed";
 
 export default Component.extend({
-  classNameBindings: [":chat-channel-title", "unreadCount:has-unread"],
+  classNameBindings: [":chat-channel-title"],
   channel: null,
   multiDm: gt("channel.chatable.users.length", 1),
 
   @discourseComputed("channel.chatable.users")
   usernames(users) {
-    return users.map((user) => user.username).join(", ");
+    return users.mapBy("username").join(", ");
   },
 
   click() {

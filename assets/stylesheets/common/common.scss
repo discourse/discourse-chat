@@ -424,6 +424,7 @@ body.composer-open .topic-chat-float-container {
 
   .tc-time {
     color: var(--primary-high);
+    font-size: var(--font-down-2);
   }
 
   .tc-message {
@@ -495,21 +496,13 @@ body.composer-open .topic-chat-float-container {
     }
 
     &.user-info-hidden {
-      .tc-meta-data {
-        align-items: flex-start;
-        display: flex;
+      .tc-time {
+        color: var(--secondary-medium);
         flex-shrink: 0;
-        justify-content: center;
-        padding-top: 0.3em;
+        font-size: var(--font-down-2);
+        margin-top: 0.4em;
+        visibility: hidden;
         width: var(--message-left-width);
-
-        .tc-time {
-          visibility: hidden;
-        }
-      }
-
-      .tc-message-container {
-        flex-direction: row;
       }
 
       .tc-msgactions-hover {
@@ -843,9 +836,6 @@ body.composer-open .topic-chat-float-container {
         font-weight: bold;
       }
     }
-    .tc-time {
-      font-size: var(--font-down-2);
-    }
   }
 
   .not-mobile-device & .tc-message:hover,
@@ -864,7 +854,7 @@ body.composer-open .topic-chat-float-container {
 
   .not-mobile-device & .user-info-hidden:hover,
   .user-info-hidden.tc-message-selected {
-    .tc-meta-data .tc-time {
+    .tc-time {
       visibility: visible;
     }
   }

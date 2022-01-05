@@ -25,13 +25,6 @@
   .tc-live-pane {
     .tc-messages-container {
       .tc-message {
-        &.user-info-hidden {
-          .tc-meta-data {
-            justify-content: flex-start;
-            width: var(--message-left-width);
-          }
-        }
-
         &.is-reply {
           grid-template-columns: var(--message-left-width) 1fr;
         }

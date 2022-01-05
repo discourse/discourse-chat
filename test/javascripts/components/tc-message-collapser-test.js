@@ -80,7 +80,7 @@ discourseModule(
 
       async test(assert) {
         assert.strictEqual(
-          query(".tc-message-collapsible-filename").innerText,
+          query(".tc-message-collapsible-filename").innerText.trim(),
           "tomtom.jpeg"
         );
       },
@@ -96,7 +96,7 @@ discourseModule(
 
       async test(assert) {
         assert.strictEqual(
-          query(".tc-message-collapsible-filename").innerText,
+          query(".tc-message-collapsible-filename").innerText.trim(),
           "2 files"
         );
       },

@@ -135,52 +135,36 @@
               {{html-safe actionCodeText}}
             </span>
           {{else}}
-            <div class="tc-text">
-              {{#if isCollapsible}}
-                {{tc-message-collapser cooked=message.cooked}}
-              {{else}}
-                {{html-safe message.cooked}}
-              {{/if}}
-              {{#if message.uploads.length}}
-                <div class="tc-uploads">
-                  {{#each message.uploads as |upload|}}
-                    {{chat-upload upload=upload}}
-                  {{/each}}
-                </div>
-              {{/if}}
-              {{#if message.edited}}
-                <div class="tc-message-edited">
-                  {{i18n "chat.edited"}}
-                </div>
-              {{/if}}
-
-              {{#if hasReactions}}
-                <div class="chat-message-reaction-list">
-                  {{#if reactionLabel}}
-                    <div class="reaction-users-list">
-                      {{replace-emoji reactionLabel}}
-                    </div>
-                  {{/if}}
-                  {{#each-in message.reactions as |emoji reactionAttrs|}}
-                    {{chat-message-reaction
-                      emoji=emoji
-                      count=reactionAttrs.count
-                      users=reactionAttrs.users
-                      reacted=reactionAttrs.reacted
-                      react=(action "react")
-                      showUsersList=(action "showUsersList")
-                      hideUsersList=(action "hideUsersList")
+              {{#tc-text cooked=message.cooked
+                         uploads=message.uploads
+                         edited=message.edited}}
+                {{#if hasReactions}}
+                  <div class="chat-message-reaction-list">
+                    {{#if reactionLabel}}
+                      <div class="reaction-users-list">
+                        {{replace-emoji reactionLabel}}
+                      </div>
+                    {{/if}}
+                    {{#each-in message.reactions as |emoji reactionAttrs|}}
+                      {{chat-message-reaction
+                        emoji=emoji
+                        count=reactionAttrs.count
+                        users=reactionAttrs.users
+                        reacted=reactionAttrs.reacted
+                        react=(action "react")
+                        showUsersList=(action "showUsersList")
+                        hideUsersList=(action "hideUsersList")
+                      }}
+                    {{/each-in}}
+                    {{d-button
+                      class="chat-message-react-btn"
+                      action=(action "startReactionForReactionList")
+                      icon="discourse-emojis"
+                      title="chat.react"
                     }}
-                  {{/each-in}}
-                  {{d-button
-                    class="chat-message-react-btn"
-                    action=(action "startReactionForReactionList")
-                    icon="discourse-emojis"
-                    title="chat.react"
-                  }}
-                </div>
-              {{/if}}
-            </div>
+                  </div>
+                {{/if}}
+              {{/tc-text}}
           {{/if}}
           {{#if message.error}}
             <div class="tc-send-error">

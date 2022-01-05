@@ -5,7 +5,7 @@ import domFromString from "discourse-common/lib/dom-from-string";
 
 export default Component.extend({
   collapsed: false,
-  upload: null,
+  uploads: null,
   cooked: null,
 
   @computed("cooked")

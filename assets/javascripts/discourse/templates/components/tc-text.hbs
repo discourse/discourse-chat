@@ -2,17 +2,10 @@
 
   {{#if isYoutubeCollapsible}}
     {{tc-message-collapser cooked=cooked}}
-
   {{else if isImageCollapsible }}
-    <div class="tc-uploads">
-      {{#each uploads as |upload|}}
-        {{tc-message-collapser cooked=cooked upload=upload}}
-      {{/each}}
-    </div>
-
+    {{tc-message-collapser cooked=cooked uploads=uploads}}
   {{else}}
     {{html-safe cooked}}
-
   {{/if}}
 
   {{#if edited}}

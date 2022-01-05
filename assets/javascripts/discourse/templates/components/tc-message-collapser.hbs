@@ -1,7 +1,7 @@
 <div class="tc-message-collapsible">
   <div class="tc-message-collapsible-header">
 
-    {{#unless upload}}
+    {{#unless uploads}}
       <a
         target="_blank"
         class="tc-message-collapsible-link"
@@ -30,10 +30,14 @@
   </div>
 
   {{#unless collapsed}}
-    {{#unless upload}}
+    {{#unless uploads}}
       {{html-safe cooked}}
     {{else}}
-      {{chat-upload upload=upload}}
+      <div class="tc-uploads">
+        {{#each uploads as |upload|}}
+          {{chat-upload upload=upload}}
+        {{/each}}
+      </div>
     {{/unless}}
   {{/unless}}
 </div>

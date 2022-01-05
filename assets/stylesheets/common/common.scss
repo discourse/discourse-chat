@@ -582,15 +582,6 @@ body.composer-open .topic-chat-float-container {
         font-size: var(--font-down-1);
         width: 100%;
       }
-      > p {
-        margin: 0.5em 0 0.5em;
-      }
-      > p:first-of-type {
-        margin: 0.1em 0;
-      }
-      > p:last-of-type {
-        margin: 0.1em 0 0.1em;
-      }
       .tc-uploads {
         margin-top: 1em;
 
@@ -1882,5 +1873,19 @@ body.composer-open .topic-chat-float-container {
         color: var(--primary);
       }
     }
+  }
+}
+
+.tc-text {
+  > p {
+    margin: 0.5em 0 0.5em;
+  }
+
+  > p:first-of-type {
+    margin-top: 0.1em;
+  }
+
+  > p:last-of-type {
+    margin-bottom: 0.1em;
   }
 }

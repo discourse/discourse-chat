@@ -4,7 +4,11 @@
   {{/if}}
 
   <div class="tc-message-collapsible-header">
-    {{#unless uploads}}
+    {{#if uploads}}
+      <span class="tc-message-collapsible-filename">
+        {{filename}}
+      </span>
+    {{else}}
       <a
         target="_blank"
         class="tc-message-collapsible-link"
@@ -13,11 +17,7 @@
       >
         {{title}}
       </a>
-    {{else}}
-      <span class="tc-message-collapsible-filename">
-        {{filename}}
-      </span>
-    {{/unless}}
+    {{/if}}
 
     {{#if collapsed}}
       {{d-button
@@ -35,14 +35,14 @@
   </div>
 
   {{#unless collapsed}}
-    {{#unless uploads}}
-      {{html-safe cooked}}
-    {{else}}
+    {{#if uploads}}
       <div class="tc-uploads">
         {{#each uploads as |upload|}}
           {{chat-upload upload=upload}}
         {{/each}}
       </div>
-    {{/unless}}
+    {{else}}
+      {{html-safe cooked}}
+    {{/if}}
   {{/unless}}
 </div>

@@ -1,14 +1,8 @@
-import { set } from "@ember/object";
 import componentTest, {
   setupRenderingTest,
 } from "discourse/tests/helpers/component-test";
 import hbs from "htmlbars-inline-precompile";
-import {
-  discourseModule,
-  exists,
-  query,
-  queryAll,
-} from "discourse/tests/helpers/qunit-helpers";
+import { discourseModule, exists } from "discourse/tests/helpers/qunit-helpers";
 
 discourseModule("Discourse Chat | Component | tc text", function (hooks) {
   setupRenderingTest(hooks);

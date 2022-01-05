@@ -121,126 +121,127 @@ export function allChannels() {
   return channels.public_channels;
 }
 
-const messages = [
-  {
-    id: 174,
-    message: messageContents[0],
-    cooked: messageContents[0],
-    excerpt: messageContents[0],
-    action_code: null,
-    created_at: "2021-07-20T08:14:16.950Z",
-    flag_count: 0,
-    user: {
-      id: 1,
-      username: "markvanlan",
-      name: null,
-      avatar_template: "/letter_avatar_proxy/v4/letter/m/48db29/{size}.png",
+const message0 = {
+  id: 174,
+  message: messageContents[0],
+  cooked: messageContents[0],
+  excerpt: messageContents[0],
+  action_code: null,
+  created_at: "2021-07-20T08:14:16.950Z",
+  flag_count: 0,
+  user: {
+    id: 1,
+    username: "markvanlan",
+    name: null,
+    avatar_template: "/letter_avatar_proxy/v4/letter/m/48db29/{size}.png",
+  },
+};
+
+const message1 = {
+  id: 175,
+  message: messageContents[1],
+  cooked: messageContents[1],
+  excerpt: messageContents[1],
+  action_code: null,
+  created_at: "2021-07-20T08:14:22.043Z",
+  flag_count: 0,
+  user: {
+    id: 2,
+    username: "hawk",
+    name: null,
+    avatar_template: "/letter_avatar_proxy/v4/letter/m/48db29/{size}.png",
+  },
+  in_reply_to: message0,
+  uploads: [
+    {
+      extension: "pdf",
+      filesize: 861550,
+      height: null,
+      human_filesize: "841 KB",
+      id: 38,
+      original_filename: "Chat message PDF!",
+      retain_hours: null,
+      short_path: "/uploads/short-url/vYozObYao54I6G3x8wvOf73epfX.pdf",
+      short_url: "upload://vYozObYao54I6G3x8wvOf73epfX.pdf",
+      thumbnail_height: null,
+      thumbnail_width: null,
+      url:
+        "//localhost:3000/uploads/default/original/1X/e0172973d7eff927b875995eb86b162da961b9e1.pdf",
+      width: null,
+    },
+  ],
+};
+
+const message2 = {
+  id: 176,
+  message: messageContents[2],
+  cooked: messageContents[2],
+  excerpt: messageContents[2],
+  action_code: null,
+  created_at: "2021-07-20T08:14:25.043Z",
+  flag_count: 0,
+  user: {
+    id: 2,
+    username: "hawk",
+    name: null,
+    avatar_template: "/letter_avatar_proxy/v4/letter/m/48db29/{size}.png",
+  },
+  in_reply_to: message0,
+  uploads: [
+    {
+      extension: "png",
+      filesize: 50419,
+      height: 393,
+      human_filesize: "49.2 KB",
+      id: 37,
+      original_filename: "image.png",
+      retain_hours: null,
+      short_path: "/uploads/short-url/2LbadI7uOM7JsXyVoc12dHUjJYo.png",
+      short_url: "upload://2LbadI7uOM7JsXyVoc12dHUjJYo.png",
+      thumbnail_height: 224,
+      thumbnail_width: 689,
+      url:
+        "//localhost:3000/uploads/default/original/1X/1359a8a1c9489ad31ef9385df8c46b02740d981c.png",
+      width: 1209,
+    },
+  ],
+  reactions: {
+    heart: {
+      count: 1,
+      reacted: false,
+      users: [{ id: 99, username: "im-penar" }],
+    },
+    kiwi_fruit: {
+      count: 2,
+      reacted: true,
+      users: [{ id: 99, username: "im-penar" }],
+    },
+    tada: {
+      count: 1,
+      reacted: true,
+      users: [],
     },
   },
-  {
-    id: 175,
-    message: messageContents[1],
-    cooked: messageContents[1],
-    excerpt: messageContents[1],
-    action_code: null,
-    created_at: "2021-07-20T08:14:22.043Z",
-    flag_count: 0,
-    user: {
-      id: 2,
-      username: "hawk",
-      name: null,
-      avatar_template: "/letter_avatar_proxy/v4/letter/m/48db29/{size}.png",
-    },
-    uploads: [
-      {
-        extension: "pdf",
-        filesize: 861550,
-        height: null,
-        human_filesize: "841 KB",
-        id: 38,
-        original_filename: "Chat message PDF!",
-        retain_hours: null,
-        short_path: "/uploads/short-url/vYozObYao54I6G3x8wvOf73epfX.pdf",
-        short_url: "upload://vYozObYao54I6G3x8wvOf73epfX.pdf",
-        thumbnail_height: null,
-        thumbnail_width: null,
-        url:
-          "//localhost:3000/uploads/default/original/1X/e0172973d7eff927b875995eb86b162da961b9e1.pdf",
-        width: null,
-      },
-    ],
+};
+
+const message3 = {
+  id: 177,
+  message: "gg @osama @mark @here",
+  cooked:
+    '<p>gg <a class="mention" href="/u/osama">@osama</a> <a class="mention" href="/u/mark">@mark</a> <a class="mention" href="/u/here">@here</a></p>',
+  excerpt:
+    '<p>gg <a class="mention" href="/u/osama">@osama</a> <a class="mention" href="/u/mark">@mark</a> <a class="mention" href="/u/here">@here</a></p>',
+  action_code: null,
+  created_at: "2021-07-22T08:14:16.950Z",
+  flag_count: 0,
+  user: {
+    id: 1,
+    username: "markvanlan",
+    name: null,
+    avatar_template: "/letter_avatar_proxy/v4/letter/m/48db29/{size}.png",
   },
-];
+};
 
 export const chatView = {
-  chat_messages: messages.concat([
-    {
-      id: 176,
-      message: messageContents[2],
-      cooked: messageContents[2],
-      excerpt: messageContents[2],
-      action_code: null,
-      created_at: "2021-07-20T08:14:25.043Z",
-      flag_count: 0,
-      user: {
-        id: 2,
-        username: "hawk",
-        name: null,
-        avatar_template: "/letter_avatar_proxy/v4/letter/m/48db29/{size}.png",
-      },
-      in_reply_to: messages[1],
-      uploads: [
-        {
-          extension: "png",
-          filesize: 50419,
-          height: 393,
-          human_filesize: "49.2 KB",
-          id: 37,
-          original_filename: "image.png",
-          retain_hours: null,
-          short_path: "/uploads/short-url/2LbadI7uOM7JsXyVoc12dHUjJYo.png",
-          short_url: "upload://2LbadI7uOM7JsXyVoc12dHUjJYo.png",
-          thumbnail_height: 224,
-          thumbnail_width: 689,
-          url:
-            "//localhost:3000/uploads/default/original/1X/1359a8a1c9489ad31ef9385df8c46b02740d981c.png",
-          width: 1209,
-        },
-      ],
-      reactions: {
-        heart: {
-          count: 1,
-          reacted: false,
-          users: [{ id: 99, username: "im-penar" }],
-        },
-        kiwi_fruit: {
-          count: 2,
-          reacted: true,
-          users: [{ id: 99, username: "im-penar" }],
-        },
-        tada: {
-          count: 1,
-          reacted: true,
-          users: [],
-        },
-      },
-    },
-    {
-      id: 177,
-      message: "gg @osama @mark @here",
-      cooked:
-        '<p>gg <a class="mention" href="/u/osama">@osama</a> <a class="mention" href="/u/mark">@mark</a> <a class="mention" href="/u/here">@here</a></p>',
-      excerpt:
-        '<p>gg <a class="mention" href="/u/osama">@osama</a> <a class="mention" href="/u/mark">@mark</a> <a class="mention" href="/u/here">@here</a></p>',
-      action_code: null,
-      created_at: "2021-07-22T08:14:16.950Z",
-      flag_count: 0,
-      user: {
-        id: 1,
-        username: "markvanlan",
-        name: null,
-        avatar_template: "/letter_avatar_proxy/v4/letter/m/48db29/{size}.png",
-      },
-    },
-  ]),
+  chat_messages: [message0, message1, message2, message3],
 };

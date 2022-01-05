@@ -239,12 +239,18 @@ acceptance("Discourse Chat - without unread", function (needs) {
     assert.ok(messages[2].querySelector("img.chat-img-upload"));
   });
 
-  test("Reply-to line is present", async function (assert) {
+  test("Reply-to line is hidden when reply-to message is directly above", async function (assert) {
+    await visit("/chat/channel/9/Site");
+    const messages = queryAll(".chat-message");
+    assert.notOk(messages[1].querySelector(".tc-reply-msg"));
+  });
+
+  test("Reply-to line is present when reply-to message is not directly above", async function (assert) {
     await visit("/chat/channel/9/Site");
     const messages = queryAll(".chat-message");
     const replyTo = messages[2].querySelector(".tc-reply-msg");
     assert.ok(replyTo);
-    assert.equal(replyTo.innerText.trim(), messageContents[1]);
+    assert.equal(replyTo.innerText.trim(), messageContents[0]);
   });
 
   test("Unfollowing a direct message channel transitions to another channel", async function (assert) {

@@ -42,7 +42,7 @@ discourseModule(
       },
     });
 
-    componentTest("has unread", {
+    componentTest("has unread and no mentions", {
       template: hbs`{{chat-channel-unread-indicator channel=channel}}`,
 
       beforeEach() {
@@ -57,7 +57,7 @@ discourseModule(
       },
     });
 
-    componentTest("has unread mentions", {
+    componentTest("has unread and mentions", {
       template: hbs`{{chat-channel-unread-indicator channel=channel}}`,
 
       beforeEach() {

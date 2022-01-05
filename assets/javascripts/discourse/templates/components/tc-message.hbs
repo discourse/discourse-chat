@@ -135,25 +135,9 @@
               {{html-safe actionCodeText}}
             </span>
           {{else}}
-            <div class="tc-text">
-              {{#if isCollapsible}}
-                {{tc-message-collapser cooked=message.cooked}}
-              {{else}}
-                {{html-safe message.cooked}}
-              {{/if}}
-              {{#if message.uploads.length}}
-                <div class="tc-uploads">
-                  {{#each message.uploads as |upload|}}
-                    {{chat-upload upload=upload}}
-                  {{/each}}
-                </div>
-              {{/if}}
-              {{#if message.edited}}
-                <div class="tc-message-edited">
-                  {{i18n "chat.edited"}}
-                </div>
-              {{/if}}
-
+            {{#tc-text cooked=message.cooked
+                       uploads=message.uploads
+                       edited=message.edited}}
               {{#if hasReactions}}
                 <div class="chat-message-reaction-list">
                   {{#if reactionLabel}}
@@ -180,7 +164,7 @@
                   }}
                 </div>
               {{/if}}
-            </div>
+            {{/tc-text}}
           {{/if}}
           {{#if message.error}}
             <div class="tc-send-error">

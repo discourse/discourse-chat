@@ -3,10 +3,9 @@ import { computed } from "@ember/object";
 
 export default Component.extend({
   cooked: null,
-  uploads: null,
   edited: false,
 
-  @computed("cooked", "uploads")
+  @computed("cooked")
   get isCollapsible() {
     return /^<div class="onebox lazyYT lazyYT-container"/.test(this.cooked);
   },

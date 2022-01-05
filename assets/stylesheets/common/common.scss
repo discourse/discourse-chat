@@ -574,22 +574,11 @@ body.composer-open .topic-chat-float-container {
       min-width: 0;
       width: 100%;
 
-      img {
-        max-width: 100%;
-        height: unset;
-      }
       code {
         font-size: var(--font-down-1);
         width: 100%;
       }
-      .tc-uploads {
-        margin-top: 1em;
 
-        .chat-img-upload,
-        .chat-other-upload {
-          margin-bottom: 1em;
-        }
-      }
       .mention.highlighted {
         background: var(--tertiary-low);
         color: var(--primary);
@@ -1860,6 +1849,15 @@ body.composer-open .topic-chat-float-container {
   .tc-message-collapsible-header {
     display: flex;
     align-items: center;
+
+    img {
+      max-width: 100%;
+      height: unset;
+    }
+  }
+
+  .tc-message-collapsible-filename {
+    font-size: 0.75em;
   }
 
   .tc-message-collapsible-button {
@@ -1869,13 +1867,24 @@ body.composer-open .topic-chat-float-container {
 
     &:hover {
       background: none;
+
       .d-icon {
         color: var(--primary);
       }
     }
   }
+
+  .tc-uploads {
+    margin-top: 0.5em;
+
+    .chat-img-upload,
+    .chat-other-upload {
+      margin-bottom: 1em;
+    }
+  }
 }
 
+.tc-message-collapsible,
 .tc-text {
   > p {
     margin: 0.5em 0 0.5em;

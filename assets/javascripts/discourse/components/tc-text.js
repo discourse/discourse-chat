@@ -6,8 +6,13 @@ export default Component.extend({
   uploads: null,
   edited: false,
 
-  @computed("cooked", "uploads")
-  get isCollapsible() {
+  @computed("cooked")
+  get isYoutubeCollapsible() {
     return /^<div class="onebox lazyYT lazyYT-container"/.test(this.cooked);
+  },
+
+  @computed("uploads")
+  get isImageCollapsible() {
+    return this.uploads.length > 0;
   },
 });

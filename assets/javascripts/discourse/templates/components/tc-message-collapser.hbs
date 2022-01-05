@@ -1,13 +1,19 @@
 <div class="tc-message-collapsible">
   <div class="tc-message-collapsible-header">
-    <a
-      target="_blank"
-      class="tc-message-collapsible-link"
-      rel="noopener noreferrer"
-      href={{link}}
-    >
-      {{title}}
-    </a>
+
+    {{#unless upload}}
+      <a
+        target="_blank"
+        class="tc-message-collapsible-link"
+        rel="noopener noreferrer"
+        href={{link}}
+      >
+        {{title}}
+      </a>
+    {{else}}
+      {{html-safe cooked}}
+    {{/unless}}
+
     {{#if collapsed}}
       {{d-button
         action=(action "open")
@@ -24,6 +30,10 @@
   </div>
 
   {{#unless collapsed}}
-    {{html-safe cooked}}
+    {{#unless upload}}
+      {{html-safe cooked}}
+    {{else}}
+      {{chat-upload upload=upload}}
+    {{/unless}}
   {{/unless}}
 </div>

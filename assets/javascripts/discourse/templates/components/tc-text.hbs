@@ -1,20 +1,26 @@
 <div class="tc-text">
-  {{#if isCollapsible}}
-    {{tc-message-collapser cooked=cooked uploads=uploads}}
-  {{else}}
-    {{html-safe cooked}}
-  {{/if}}
-  {{#if uploads.length}}
+
+  {{#if isYoutubeCollapsible}}
+    {{tc-message-collapser cooked=cooked}}
+
+  {{else if isImageCollapsible }}
     <div class="tc-uploads">
       {{#each uploads as |upload|}}
-        {{chat-upload upload=upload}}
+        {{tc-message-collapser cooked=cooked upload=upload}}
       {{/each}}
     </div>
+
+  {{else}}
+    {{html-safe cooked}}
+
   {{/if}}
+
   {{#if edited}}
     <div class="tc-message-edited">
       {{i18n "chat.edited"}}
     </div>
   {{/if}}
+
   {{yield}}
+
 </div>

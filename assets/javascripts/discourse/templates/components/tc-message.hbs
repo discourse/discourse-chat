@@ -135,9 +135,11 @@
               {{html-safe actionCodeText}}
             </span>
           {{else}}
-            {{#tc-text cooked=message.cooked
-                       uploads=message.uploads
-                       edited=message.edited}}
+            {{#tc-text
+              cooked=message.cooked
+              uploads=message.uploads
+              edited=message.edited
+            }}
               {{#if hasReactions}}
                 <div class="chat-message-reaction-list">
                   {{#if reactionLabel}}

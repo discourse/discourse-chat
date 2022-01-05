@@ -1,8 +1,7 @@
 <div class="tc-text">
-
   {{#if isYoutubeCollapsible}}
     {{tc-message-collapser cooked=cooked}}
-  {{else if isImageCollapsible }}
+  {{else if isImageCollapsible}}
     {{tc-message-collapser cooked=cooked uploads=uploads}}
   {{else}}
     {{html-safe cooked}}
@@ -15,5 +14,4 @@
   {{/if}}
 
   {{yield}}
-
 </div>

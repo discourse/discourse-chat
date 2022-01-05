@@ -82,6 +82,7 @@ en:
       title: "chat"
       title_capitalized: "Chat"
       upload: "Attach a file"
+      uploaded_files: "%{count} files"
       exit: "back"
 
       create_channel:

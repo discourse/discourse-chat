@@ -1,6 +1,9 @@
 <div class="tc-message-collapsible">
-  <div class="tc-message-collapsible-header">
+  {{#if uploads}}
+    {{html-safe cooked}}
+  {{/if}}
 
+  <div class="tc-message-collapsible-header">
     {{#unless uploads}}
       <a
         target="_blank"
@@ -11,7 +14,9 @@
         {{title}}
       </a>
     {{else}}
-      {{html-safe cooked}}
+      <span class="tc-message-collapsible-filename">
+        {{filename}}
+      </span>
     {{/unless}}
 
     {{#if collapsed}}

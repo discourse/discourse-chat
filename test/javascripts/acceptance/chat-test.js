@@ -366,10 +366,16 @@ acceptance("Discourse Chat - without unread", function (needs) {
       await click(".return-to-channels");
       await click(".chat-channel-row.chat-channel-9");
       await click(".chat-message .reply-btn");
+      // Reply-to line is present
       assert.ok(exists(".tc-composer-message-details .tc-reply-display"));
       await click(".return-to-channels");
       await click(".chat-channel-row.chat-channel-7");
+      // Reply-to line is gone since switching channels
       assert.notOk(exists(".tc-composer-message-details .tc-reply-display"));
+      await click(".return-to-channels");
+      await click(".chat-channel-row.chat-channel-9");
+      // Now reply-to should be back and loaded from draft
+      assert.ok(exists(".tc-composer-message-details .tc-reply-display"));
       done();
     });
   });

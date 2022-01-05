@@ -571,7 +571,9 @@ acceptance("Discourse Chat - without unread", function (needs) {
     const done = assert.async();
     next(() => {
       assert.ok(
-        exists(".header-dropdown-toggle.open-chat .chat-channel-unread-indicator")
+        exists(
+          ".header-dropdown-toggle.open-chat .chat-channel-unread-indicator"
+        )
       );
       done();
     });
@@ -624,7 +626,9 @@ acceptance("Discourse Chat - without unread", function (needs) {
         )
       );
       assert.notOk(
-        exists(".header-dropdown-toggle.open-chat .chat-channel-unread-indicator")
+        exists(
+          ".header-dropdown-toggle.open-chat .chat-channel-unread-indicator"
+        )
       );
       done();
     });
@@ -643,7 +647,9 @@ acceptance("Discourse Chat - without unread", function (needs) {
         )
       );
       assert.notOk(
-        exists(".header-dropdown-toggle.open-chat .chat-channel-unread-indicator")
+        exists(
+          ".header-dropdown-toggle.open-chat .chat-channel-unread-indicator"
+        )
       );
       done();
     });
@@ -903,7 +909,9 @@ acceptance(
       await visit("/t/internationalization-localization/280");
 
       assert.ok(
-        exists(".header-dropdown-toggle.open-chat .chat-channel-unread-indicator"),
+        exists(
+          ".header-dropdown-toggle.open-chat .chat-channel-unread-indicator"
+        ),
         "Unread indicator present in header"
       );
     });

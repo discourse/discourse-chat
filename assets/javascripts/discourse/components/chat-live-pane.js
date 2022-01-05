@@ -295,6 +295,11 @@ export default Component.extend({
         });
       }
     }
+    if (messageData.in_reply_to?.id === previousMessageData?.id) {
+      // Reply-to message is directly above. Remove `in_reply_to` from message.
+      delete messageData.in_reply_to;
+    }
+
     if (messageData.in_reply_to) {
       let inReplyToMessage = this.messageLookup[messageData.in_reply_to.id];
       if (inReplyToMessage) {

@@ -1,17 +1,15 @@
-<div class="tc-text">
-  {{#if isYoutubeCollapsible}}
-    {{tc-message-collapser cooked=cooked}}
-  {{else if isImageCollapsible}}
-    {{tc-message-collapser cooked=cooked uploads=uploads}}
-  {{else}}
-    {{html-safe cooked}}
-  {{/if}}
+{{#if isYoutubeCollapsible}}
+  {{tc-message-collapser cooked=cooked}}
+{{else if isImageCollapsible}}
+  {{tc-message-collapser cooked=cooked uploads=uploads}}
+{{else}}
+  {{html-safe cooked}}
+{{/if}}
 
-  {{#if edited}}
-    <div class="tc-message-edited">
-      {{i18n "chat.edited"}}
-    </div>
-  {{/if}}
+{{#if edited}}
+  <div class="tc-message-edited">
+    {{i18n "chat.edited"}}
+  </div>
+{{/if}}
 
-  {{yield}}
-</div>
+{{yield}}

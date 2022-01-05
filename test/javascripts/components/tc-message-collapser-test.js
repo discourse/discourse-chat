@@ -9,14 +9,12 @@ import {
 } from "discourse/tests/helpers/qunit-helpers";
 
 discourseModule(
-  "Discourse Chat | Component | tc message collapser",
+  "Discourse Chat | Component | tc message collapser youtube",
   function (hooks) {
     setupRenderingTest(hooks);
     const youtubeCooked =
       '<div class="onebox lazyYT lazyYT-container" data-youtube-id="WaT_rLGuUr8" data-youtube-title="Japanese Katsu Curry (Pork Cutlet)"/>';
-    const imageCooked = "<p>A picture of Tomtom</p>";
 
-    // youtube
     componentTest("shows youtube link in header", {
       template: hbs`{{tc-message-collapser cooked=cooked}}`,
 
@@ -68,8 +66,15 @@ discourseModule(
         assert.ok(exists(youtubeDivSelector));
       },
     });
+  }
+);
 
-    // images
+discourseModule(
+  "Discourse Chat | Component | tc message collapser images",
+  function (hooks) {
+    setupRenderingTest(hooks);
+    const imageCooked = "<p>A picture of Tomtom</p>";
+
     componentTest("shows filename for one image", {
       template: hbs`{{tc-message-collapser cooked=cooked uploads=uploads}}`,
 

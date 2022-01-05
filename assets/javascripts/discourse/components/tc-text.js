@@ -13,6 +13,6 @@ export default Component.extend({
 
   @computed("uploads")
   get isImageCollapsible() {
-    return this.uploads.length > 0;
+    return this.uploads?.length > 0;
   },
 });

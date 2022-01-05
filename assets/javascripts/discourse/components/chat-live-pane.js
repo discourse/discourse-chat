@@ -170,6 +170,11 @@ export default Component.extend({
           this.set("loading", false);
 
           if (this.chatChannel.id !== channelId) {
+            this.router.transitionTo(
+              "chat.channel",
+              this.chatChannel.id,
+              this.chatChannel.title
+            );
             return;
           }
 

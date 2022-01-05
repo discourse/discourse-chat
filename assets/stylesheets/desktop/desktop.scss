@@ -18,7 +18,7 @@
   }
 
   .tc-full-page-header {
-    padding: 0.5em 1em;
+    padding: 0 1em;
     flex-shrink: 0;
   }
 
@@ -87,22 +87,23 @@
       max-width: 1200px;
     }
   }
+
   .alert-info:last-of-type {
     margin-bottom: 0;
     border-bottom: 1px solid var(--primary-low);
   }
+
   .full-page-chat {
     border-right: 1px solid var(--primary-low);
     border-left: 1px solid var(--primary-low);
     overflow: hidden;
 
     .tc-full-page-header {
-      padding: 1em 1em 0.5em;
+      padding: 0.5em 1em;
     }
 
     .tc-channels {
       background: var(--primary-very-low);
-      padding-top: 1em;
 
       .chat-channel-divider {
         padding: 0.5rem 0.5rem 0.5rem 1rem;

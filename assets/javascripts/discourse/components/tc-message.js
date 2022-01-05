@@ -634,6 +634,10 @@ export default Component.extend({
 
   @discourseComputed("emojiStore.favorites.[]")
   favoritesEmojis(favorites) {
+    if (!favorites) {
+      return [];
+    }
+
     const userReactions = Object.keys(this.message.reactions).filter((key) => {
       return this.message.reactions[key].reacted;
     });

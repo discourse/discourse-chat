@@ -357,7 +357,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     assert.equal(query(".tc-composer-input").value.trim(), messageContents[0]);
   });
 
-  test("Switching channels in float clears reply-to in composer", async function (assert) {
+  test("Reply-to is stored in draft", async function (assert) {
     this.chatService.set("sidebarActive", false);
     await visit("/latest");
     this.appEvents.trigger("chat:toggle-open");

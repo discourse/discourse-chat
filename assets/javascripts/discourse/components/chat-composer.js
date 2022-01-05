@@ -634,6 +634,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   @action
   removeUpload(upload) {
     this.uploads.removeObject(upload);
+    this.onValueChange(this.value, this.uploads);
   },
 
   @discourseComputed("uploads.[]", "inProgressUploads.[]")

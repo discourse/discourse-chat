@@ -621,12 +621,18 @@ export default Service.extend({
     };
   },
 
-  setDraftForChannel(channelId, draft) {
-    this._draftStore.setObject({ key: channelId, value: draft });
+  setDraftForChannel(channelId, draft, replyToMsg = null) {
+    this._draftStore.setObject({ key: channelId, value: draft, replyToMsg });
   },
 
   getDraftForChannel(channelId) {
-    return this._draftStore.getObject(channelId) || { value: "", uploads: [] };
+    return (
+      this._draftStore.getObject(channelId) || {
+        value: "",
+        uploads: [],
+        replyToMsg: null,
+      }
+    );
   },
 
   addToolbarButton(toolbarButton) {

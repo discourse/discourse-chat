@@ -34,6 +34,7 @@ export function addChatToolbarButton(toolbarButton) {
 
 export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   chatChannel: null,
+  lastChatChannelId: null,
 
   chat: service(),
   classNames: ["tc-composer"],
@@ -80,6 +81,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   init() {
     this._super(...arguments);
 
+    this.appEvents.on("chat-composer:reply-to-set", this, "_replyToMsgChanged");
     this.setProperties({
       uploadProcessorActions: {},
       uploadPreProcessors: [],
@@ -144,6 +146,12 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
 
   willDestroyElement() {
     this._super(...arguments);
+
+    this.appEvents.off(
+      "chat-composer:reply-to-set",
+      this,
+      "_replyToMsgChanged"
+    );
     window.removeEventListener("click", outsideToolbarClick);
 
     if (this.timer) {
@@ -168,7 +176,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
 
   _insertUpload(_, upload) {
     this.uploads.pushObject(upload);
-    this.onValueChange(this.value, this.uploads);
+    this.onValueChange(this.value, this.uploads, this.replyToMsg);
   },
 
   keyDown(event) {
@@ -196,12 +204,12 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
         // if we are inside a code block just insert newline
         const { pre } = this._getSelected(null, { lineVal: true });
         if (this._isInside(pre, /(^|\n)```/g)) {
-          return;
+          return false;
         }
       }
 
-      event.preventDefault();
       this.sendClicked();
+      return false;
     }
 
     if (
@@ -216,12 +224,13 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     if (event.keyCode === 27) {
       // keyCode for 'Escape'
       if (this.replyToMsg) {
-        event.preventDefault();
-        this.set("replyToMsg", null);
+        this.set("value", "");
+        this._replyToMsgChanged(null);
+        return false;
       } else if (this.editingMessage) {
-        event.preventDefault();
-        this.set("replyToMsg", null);
+        this.set("value", "");
         this.cancelEditing();
+        return false;
       } else {
         this._textarea.blur();
       }
@@ -230,9 +239,19 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
 
   didReceiveAttrs() {
     this._super(...arguments);
+    if (
+      this.chatChannel.id === this.lastChatChannelId &&
+      !this.editingMessage
+    ) {
+      return;
+    }
 
-    if (!this.editingMessage && !this.replyToMsg && this.draft) {
+    if (!this.editingMessage && this.draft) {
       this.setProperties(this.draft);
+
+      if (this.draft.replyToMsg) {
+        this.onDraftWithReplyLoaded(this.draft.replyToMsg);
+      }
     }
 
     if (this.editingMessage && !this.loading) {
@@ -245,6 +264,12 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
       });
       this._focusTextArea({ ensureAtEnd: true, resizeTextArea: true });
     }
+    this.set("lastChatChannelId", this.chatChannel.id);
+  },
+
+  _replyToMsgChanged(replyToMsg) {
+    this.set("replyToMsg", replyToMsg);
+    this.onValueChange(this.value, this.uploads, replyToMsg);
   },
 
   @action
@@ -259,7 +284,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   _handleTextareaInput() {
     this._resizeTextArea();
     this._applyUserAutocomplete();
-    this.onValueChange(this.value, this.uploads);
+    this.onValueChange(this.value, this.uploads, this.replyToMsg);
   },
 
   @action
@@ -571,9 +596,13 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
 
   @action
   reset() {
-    this.set("value", "");
-    this.set("uploads", []);
+    this.setProperties({
+      value: "",
+      uploads: [],
+      inReplyMsg: null,
+    });
     this._focusTextArea({ ensureAtEnd: true, resizeTextArea: true });
+    this.onValueChange(this.value, this.uploads, this.replyToMsg);
   },
 
   @action
@@ -628,13 +657,13 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     this.appEvents.trigger(`${this.eventPrefix}:cancel-upload`, {
       fileId: upload.id,
     });
-    this.onValueChange(this.value, this.uploads);
+    this.onValueChange(this.value, this.uploads, this.replyToMsg);
   },
 
   @action
   removeUpload(upload) {
     this.uploads.removeObject(upload);
-    this.onValueChange(this.value, this.uploads);
+    this.onValueChange(this.value, this.uploads, this.replyToMsg);
   },
 
   @discourseComputed("uploads.[]", "inProgressUploads.[]")

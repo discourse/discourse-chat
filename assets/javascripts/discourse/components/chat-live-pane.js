@@ -757,6 +757,7 @@ export default Component.extend({
     this.messages.pushObject(stagedMessage);
     this._resetAfterSend();
     this._stickScrollToBottom();
+    this.appEvents.trigger("chat-composer:reply-to-set", null);
     return Promise.resolve();
   },
 
@@ -823,9 +824,11 @@ export default Component.extend({
     if (messageId) {
       this.set("editingMessage", null);
       this.set("replyToMsg", this.messageLookup[messageId]);
+      this.appEvents.trigger("chat-composer:reply-to-set", this.replyToMsg);
       this._focusComposer();
     } else {
       this.set("replyToMsg", null);
+      this.appEvents.trigger("chat-composer:reply-to-set", null);
     }
   },
 
@@ -913,14 +916,28 @@ export default Component.extend({
 
   @action
   _setDraftForChannel(draft) {
+    if (draft?.replyToMsg) {
+      draft.replyToMsg = {
+        id: draft.replyToMsg.id,
+        excerpt: draft.replyToMsg.excerpt,
+        user: draft.replyToMsg.user,
+      };
+    }
     this.chat.setDraftForChannel(this.chatChannel.id, draft);
     this.set("draft", draft);
   },
 
   @action
-  composerValueChanged(value, uploads) {
+  draftWithReplyLoaded(inReplyMsg) {
+    if (inReplyMsg) {
+      this.set("replyToMsg", inReplyMsg);
+    }
+  },
+
+  @action
+  composerValueChanged(value, uploads, replyToMsg) {
     if (!this.editingMessage) {
-      this._setDraftForChannel({ value, uploads });
+      this._setDraftForChannel({ value, uploads, replyToMsg });
     }
     this._reportReplyingPresence(value);
   },

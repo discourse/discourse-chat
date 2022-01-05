@@ -34,6 +34,7 @@ export function addChatToolbarButton(toolbarButton) {
 
 export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   chatChannel: null,
+  lastChatChannelId: null,
 
   chat: service(),
   classNames: ["tc-composer"],
@@ -231,6 +232,10 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   didReceiveAttrs() {
     this._super(...arguments);
 
+    if (this.lastChatChannelId !== this.chatChannel.id) {
+      this.set("replyToMsg", null);
+    }
+
     if (!this.editingMessage && !this.replyToMsg && this.draft) {
       this.setProperties(this.draft);
     }
@@ -245,6 +250,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
       });
       this._focusTextArea({ ensureAtEnd: true, resizeTextArea: true });
     }
+    this.set("lastChatChannelId", this.chatChannel.id);
   },
 
   @action

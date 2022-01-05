@@ -183,6 +183,10 @@ acceptance("Discourse Chat - without unread", function (needs) {
       return helper.response({ success: "OK" });
     });
   });
+  needs.hooks.beforeEach(function () {
+    this.chatService = this.container.lookup("service:chat");
+    this.appEvents = this.container.lookup("service:appEvents");
+  });
 
   test("Clicking mention notification from outside chat opens the float", async function (assert) {
     await visit("/t/internationalization-localization/280");
@@ -351,6 +355,23 @@ acceptance("Discourse Chat - without unread", function (needs) {
     );
 
     assert.equal(query(".tc-composer-input").value.trim(), messageContents[0]);
+  });
+
+  test("Switching channels in float clears reply-to in composer", async function (assert) {
+    this.chatService.set("sidebarActive", false);
+    await visit("/latest");
+    this.appEvents.trigger("chat:toggle-open");
+    const done = assert.async();
+    next(async () => {
+      await click(".return-to-channels");
+      await click(".chat-channel-row.chat-channel-9");
+      await click(".chat-message .reply-btn");
+      assert.ok(exists(".tc-composer-message-details .tc-reply-display"));
+      await click(".return-to-channels");
+      await click(".chat-channel-row.chat-channel-7");
+      assert.notOk(exists(".tc-composer-message-details .tc-reply-display"));
+      done();
+    });
   });
 
   test("Sending a message", async function (assert) {

@@ -1,24 +1,34 @@
 import Component from "@ember/component";
-import { action } from "@ember/object";
+import { action, computed } from "@ember/object";
 import escape from "discourse-common/lib/escape";
 import domFromString from "discourse-common/lib/dom-from-string";
+import I18n from "I18n";
 
 export default Component.extend({
   collapsed: false,
+  uploads: null,
   cooked: null,
-  link: null,
-  title: null,
 
-  init() {
-    this._super(...arguments);
+  @computed("cooked")
+  get title() {
+    return domFromString(this.cooked).dataset.youtubeTitle;
+  },
 
-    const cookedElement = domFromString(this.cooked);
+  @computed("uploads")
+  get filename() {
+    if (this.uploads) {
+      if (this.uploads.length === 1) {
+        return this.uploads[0].original_filename;
+      } else {
+        return I18n.t(`chat.uploaded_files`, { count: this.uploads.length });
+      }
+    }
+  },
 
-    const title = cookedElement.dataset.youtubeTitle;
-    this.set("title", title);
-
-    const id = cookedElement.dataset.youtubeId;
-    this.set("link", `https://www.youtube.com/watch?v=${escape(id)}`);
+  @computed("cooked")
+  get link() {
+    const id = domFromString(this.cooked).dataset.youtubeId;
+    return `https://www.youtube.com/watch?v=${escape(id)}`;
   },
 
   @action

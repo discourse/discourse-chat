@@ -1,13 +1,24 @@
 <div class="tc-message-collapsible">
+  {{#if uploads}}
+    {{html-safe cooked}}
+  {{/if}}
+
   <div class="tc-message-collapsible-header">
-    <a
-      target="_blank"
-      class="tc-message-collapsible-link"
-      rel="noopener noreferrer"
-      href={{link}}
-    >
-      {{title}}
-    </a>
+    {{#if uploads}}
+      <span class="tc-message-collapsible-filename">
+        {{filename}}
+      </span>
+    {{else}}
+      <a
+        target="_blank"
+        class="tc-message-collapsible-link"
+        rel="noopener noreferrer"
+        href={{link}}
+      >
+        {{title}}
+      </a>
+    {{/if}}
+
     {{#if collapsed}}
       {{d-button
         action=(action "open")
@@ -24,6 +35,14 @@
   </div>
 
   {{#unless collapsed}}
-    {{html-safe cooked}}
+    {{#if uploads}}
+      <div class="tc-uploads">
+        {{#each uploads as |upload|}}
+          {{chat-upload upload=upload}}
+        {{/each}}
+      </div>
+    {{else}}
+      {{html-safe cooked}}
+    {{/if}}
   {{/unless}}
 </div>

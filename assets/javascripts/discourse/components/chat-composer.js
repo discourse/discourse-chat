@@ -608,6 +608,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   @action
   cancelReplyTo() {
     this.set("replyToMsg", null);
+    this.onValueChange(this.value, this.uploads, this.replyToMsg);
   },
 
   @action

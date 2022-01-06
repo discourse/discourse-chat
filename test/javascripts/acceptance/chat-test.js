@@ -378,10 +378,20 @@ acceptance("Discourse Chat - without unread", function (needs) {
       await click(".chat-channel-row.chat-channel-7");
       // Reply-to line is gone since switching channels
       assert.notOk(exists(".tc-composer-message-details .tc-reply-display"));
+      // Now click on reply btn and cancel it on channel 7
+      await click(".chat-message .reply-btn");
+      await click(".tc-composer .cancel-message-action");
+
+      // Go back to channel 9 and check that reply-to is present
       await click(".return-to-channels");
       await click(".chat-channel-row.chat-channel-9");
       // Now reply-to should be back and loaded from draft
       assert.ok(exists(".tc-composer-message-details .tc-reply-display"));
+
+      // Go back one for time to channel 7 and make sure reply-to is gone
+      await click(".return-to-channels");
+      await click(".chat-channel-row.chat-channel-7");
+      assert.notOk(exists(".tc-composer-message-details .tc-reply-display"));
       done();
     });
   });

@@ -1,5 +1,6 @@
 import Controller from "@ember/controller";
 import discourseComputed from "discourse-common/utils/decorators";
+import escape from "discourse-common/lib/escape";
 import I18n from "I18n";
 import ModalFunctionality from "discourse/mixins/modal-functionality";
 import { ajax } from "discourse/lib/ajax";
@@ -31,6 +32,20 @@ export default Controller.extend(ModalFunctionality, {
   @discourseComputed("type", "topic", "category", "name")
   createDisabled(type, topic, category, name) {
     return !this.entitySelected || !name?.length > 0;
+  },
+
+  @discourseComputed("category")
+  categoryHint(category) {
+    if (category) {
+      return {
+        link: `/c/${escape(category.slug)}/edit/security`,
+        category: escape(category.name),
+      };
+    }
+    return {
+      link: "/categories",
+      category: "category",
+    };
   },
 
   @action

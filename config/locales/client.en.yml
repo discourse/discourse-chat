@@ -87,12 +87,13 @@ en:
 
       create_channel:
         choose_category:
-          label: "Choose a category to manage who can access the channel"
+          label: "Choose a category"
           none: "select one..."
+          hint: 'Manage access by visiting <a href=%{link} target="_blank">%{category} security settings</a>'
         create: "Create channel"
         description: "Description (optional)"
         name: "Channel name"
-        title: "Add a channel"
+        title: "Create a channel"
         type: "Type"
         types:
           category: "Category"

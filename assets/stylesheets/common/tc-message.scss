@@ -498,6 +498,11 @@
   }
 }
 
+.tc-text img.chat-img-upload {
+  max-width: 100%;
+  height: unset;
+}
+
 .full-page-chat {
   .tc-message {
     background: var(--primary-very-low);

@@ -33,6 +33,20 @@ export default Controller.extend(ModalFunctionality, {
     return !this.entitySelected || !name?.length > 0;
   },
 
+  @discourseComputed("category")
+  categoryHint(category) {
+    if (category) {
+      return {
+        link: `/c/${category.slug}/edit/security`,
+        category: category.name,
+      };
+    }
+    return {
+      link: "/categories",
+      category: "category",
+    };
+  },
+
   @action
   onCategoryChange(categoryId) {
     let category = categoryId

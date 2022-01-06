@@ -8,7 +8,11 @@
   }}
 
   {{#if (eq type "category")}}
-    <label class="create-channel-label">{{i18n "chat.create_channel.choose_category.label"}}</label>
+    <label class="create-channel-label">
+      {{html-safe
+        (i18n "chat.create_channel.choose_category.label" link=categoryHint.link category=categoryHint.category) }}
+    </label>
+
     {{category-chooser
       value=categoryId
       onChange=(action "onCategoryChange")

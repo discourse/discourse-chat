@@ -1825,6 +1825,12 @@ body.composer-open .topic-chat-float-container {
   .create-channel-label,
   label[for="choose-topic-title"] {
     margin: 1em 0 0.35em;
+
+    display: inline-block;
+
+    a {
+      margin: 0;
+    }
   }
   .chat-channel-title {
     margin: 1em 0 0 0;

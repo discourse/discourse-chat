@@ -928,10 +928,8 @@ export default Component.extend({
   },
 
   @action
-  draftWithReplyLoaded(inReplyMsg) {
-    if (inReplyMsg) {
-      this.set("replyToMsg", inReplyMsg);
-    }
+  setInReplyToMsg(inReplyMsg) {
+    this.set("replyToMsg", inReplyMsg);
   },
 
   @action

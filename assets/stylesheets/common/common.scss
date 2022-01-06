@@ -27,11 +27,11 @@ $float-height: 530px;
   -ms-user-select: none;
   user-select: none;
   background: var(--tertiary-med-or-tertiary);
+  font-size: var(--font-down-2);
 
   &.urgent {
     background: var(--success);
     color: var(--secondary);
-    font-size: var(--font-down-2);
 
     .number-wrap {
       position: relative;
@@ -61,7 +61,7 @@ $float-height: 530px;
         border-color: var(--primary-low);
       }
     }
-    .chat-unread-urgent-indicator,
+
     .chat-channel-unread-indicator {
       border-color: var(--header_background);
       position: absolute;
@@ -122,7 +122,6 @@ body.composer-open .topic-chat-float-container {
       padding: 0 0.5rem 0 1rem;
     }
 
-    .chat-unread-urgent-indicator,
     .chat-channel-unread-indicator {
       left: 3px;
       width: 8px;
@@ -717,7 +716,6 @@ body.composer-open .topic-chat-float-container {
       }
     }
 
-    .chat-unread-urgent-indicator,
     .chat-channel-unread-indicator {
       border-color: var(--primary-low);
     }
@@ -745,6 +743,10 @@ body.composer-open .topic-chat-float-container {
 
   .chat-channel-unread-indicator {
     background: var(--tertiary-med-or-tertiary);
+
+    &.urgent {
+      background: var(--success);
+    }
   }
 
   .chat-channel-row-unread-count {
@@ -762,7 +764,7 @@ body.composer-open .topic-chat-float-container {
   grid-column-gap: 0.75em;
   align-items: center;
   font-weight: 500;
-  max-width: calc(100% - 10px - 0.75em);
+  max-width: calc(100% - 40px - 0.75em);
   cursor: pointer;
   margin: 0.6rem 0;
 

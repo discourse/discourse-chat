@@ -103,8 +103,8 @@
     grid-template-columns: var(--message-left-width) 1fr;
     grid-template-rows: 30px auto;
     grid-template-areas:
-        "replyto replyto"
-        "avatar message";
+      "replyto replyto"
+      "avatar message";
 
     .tc-reply-display {
       grid-area: replyto;
@@ -454,7 +454,6 @@
 .tc-action-text {
   font-style: italic;
 }
-
 
 .tc-message-separator {
   margin: 1em 0 1em 0.75em;

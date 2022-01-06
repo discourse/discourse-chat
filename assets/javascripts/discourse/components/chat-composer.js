@@ -248,10 +248,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
 
     if (!this.editingMessage && this.draft) {
       this.setProperties(this.draft);
-
-      if (this.draft.replyToMsg) {
-        this.setInReplyToMsg(this.draft.replyToMsg);
-      }
+      this.setInReplyToMsg(this.draft.replyToMsg);
     }
 
     if (this.editingMessage && !this.loading) {

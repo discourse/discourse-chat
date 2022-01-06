@@ -87,8 +87,9 @@ en:
 
       create_channel:
         choose_category:
-          label: 'Choose a category<br>Manage access by visiting <a href=%{link} target="_blank">%{category} security settings</a>'
+          label: "Choose a category"
           none: "select one..."
+          hint: 'Manage access by visiting <a href=%{link} target="_blank">%{category} security settings</a>'
         create: "Create channel"
         description: "Description (optional)"
         name: "Channel name"

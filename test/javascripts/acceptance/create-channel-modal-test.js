@@ -36,20 +36,20 @@ acceptance("Discourse Chat - Create channel modal", function (needs) {
     await click("li[data-value='openCreateChannelModal']");
 
     assert.strictEqual(
-      query(".create-channel-label a").innerText,
+      query(".create-channel-hint a").innerText,
       "category security settings"
     );
-    assert.ok(query(".create-channel-label a").href.includes("/categories"));
+    assert.ok(query(".create-channel-hint a").href.includes("/categories"));
 
     await click(".category-chooser .select-kit-header-wrapper");
     await click(".category-chooser .select-kit-body li[title='support']");
 
     assert.strictEqual(
-      query(".create-channel-label a").innerText,
+      query(".create-channel-hint a").innerText,
       "support security settings"
     );
     assert.ok(
-      query(".create-channel-label a").href.includes("/c/support/edit/security")
+      query(".create-channel-hint a").href.includes("/c/support/edit/security")
     );
   });
 });

@@ -3,15 +3,36 @@ import { acceptance, query } from "discourse/tests/helpers/qunit-helpers";
 import { test } from "qunit";
 
 acceptance("Discourse Chat - Create channel modal", function (needs) {
+  const maliciousText = "<script></script>";
+
   needs.user({
     username: "tomtom",
     id: 1,
     can_chat: true,
     has_chat_enabled: true,
   });
+
   needs.settings({
     chat_enabled: true,
   });
+
+  needs.site({
+    categories: [
+      {
+        id: 1,
+        name: "Cats",
+        slug: "cats",
+        permission: 1,
+      },
+      {
+        id: 2,
+        name: maliciousText,
+        slug: maliciousText,
+        permission: 1,
+      },
+    ],
+  });
+
   needs.pretender((server, helper) => {
     server.get("/chat/:chatChannelId/messages.json", () =>
       helper.response({ chat_messages: [] })
@@ -42,14 +63,36 @@ acceptance("Discourse Chat - Create channel modal", function (needs) {
     assert.ok(query(".create-channel-hint a").href.includes("/categories"));
 
     await click(".category-chooser .select-kit-header-wrapper");
-    await click(".category-chooser .select-kit-body li[title='support']");
+    await click(".category-chooser .select-kit-body li[title='Cats']");
 
     assert.strictEqual(
       query(".create-channel-hint a").innerText,
-      "support security settings"
+      "Cats security settings"
     );
     assert.ok(
-      query(".create-channel-hint a").href.includes("/c/support/edit/security")
+      query(".create-channel-hint a").href.includes("/c/cats/edit/security")
+    );
+  });
+
+  test("links to categories are escaped", async (assert) => {
+    await visit("/chat/channel/1/cat");
+
+    await click(".edit-channels-dropdown .select-kit-header-wrapper");
+    await click("li[data-value='openCreateChannelModal']");
+
+    await click(".category-chooser .select-kit-header-wrapper");
+    await click(
+      `.category-chooser .select-kit-body li[title='${maliciousText}']`
+    );
+
+    assert.strictEqual(
+      query(".create-channel-hint a").innerText,
+      "<script></script> security settings"
+    );
+    assert.ok(
+      query(".create-channel-hint a").href.includes(
+        "c/%3Cscript%3E%3C/script%3E/edit/security"
+      )
     );
   });
 });

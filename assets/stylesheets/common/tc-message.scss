@@ -471,9 +471,7 @@
 
   &.first-daily-message {
     .tc-text {
-      border: 1px solid var(--secondary-high);
-      border-radius: 3px;
-      color: var(--primary-high);
+      color: var(--secondary-low);
       font-weight: 600;
       padding: 2px 10px;
     }

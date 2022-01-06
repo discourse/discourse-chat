@@ -1,13 +1,14 @@
-<div class={{rowClassNames}}>
+<div
+  id="chat-channel-row-{{channel.id}}"
+  class="{{rowClassNames}} {{if isUnfollowing "unfollowing"}}"
+  {{on "click" (fn this.handleSwitchChannel)}}
+  {{on "mousedown" (fn this.handleNewWindow)}}
+  role="button"
+>
   {{chat-channel-title channel=channel}}
   {{chat-channel-unread-indicator channel=channel}}
-
-  {{#if isDirectMessageRow}}
-    {{d-button
-      icon="times"
-      action=(action "leaveChatChannel")
-      class="btn-flat leave-channel-btn"
-      title="chat.direct_messages.leave"
-    }}
-  {{/if}}
+  {{chat-channel-leave-btn
+    channel=channel
+    onLeaveChannel=(action "onLeaveChannel")
+  }}
 </div>

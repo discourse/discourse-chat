@@ -259,11 +259,11 @@ acceptance("Discourse Chat - without unread", function (needs) {
 
   test("Unfollowing a direct message channel transitions to another channel", async function (assert) {
     await visit("/chat/channel/75/@hawk");
-    await click(".chat-channel-row.chat-channel-76 .leave-channel-btn");
+    await click(".chat-channel-row.chat-channel-76 .chat-channel-leave-btn");
 
     assert.ok(/^\/chat\/channel\/75/.test(currentURL()));
 
-    await click(".chat-channel-row.chat-channel-75 .leave-channel-btn");
+    await click(".chat-channel-row.chat-channel-75 .chat-channel-leave-btn");
 
     assert.ok(/^\/chat\/channel\/4/.test(currentURL()));
   });

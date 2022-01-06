@@ -6,8 +6,10 @@ import { inject as service } from "@ember/service";
 import { action } from "@ember/object";
 
 export default Component.extend({
+  tagName: "",
   channel: null,
   switchChannel: null,
+  isUnfollowing: false,
   isDirectMessageRow: equal("channel.chatable_type", "DirectMessageChannel"),
   router: service(),
   chat: service(),
@@ -24,9 +26,10 @@ export default Component.extend({
     return classes.join(" ");
   },
 
-  mouseDown(e) {
-    if (e.which === 2) {
-      // Middle mouse click
+  @action
+  handleNewWindow(event) {
+    // Middle mouse click
+    if (event.which === 2) {
       window
         .open(
           getURL(`/chat/channel/${this.channel.id}/${this.channel.title}`),
@@ -36,12 +39,22 @@ export default Component.extend({
     }
   },
 
-  click() {
-    if (this.switchChannel) {
-      return this.switchChannel(this.channel);
+  @action
+  handleSwitchChannel(event) {
+    if (event.target.classList.contains("chat-channel-leave-btn")) {
+      return;
     }
 
-    return false;
+    if (this.switchChannel) {
+      this.switchChannel(this.channel);
+      event.preventDefault();
+    }
+  },
+
+  @action
+  onLeaveChannel() {
+    this.set("isUnfollowing", true);
+    this.chat.unfollowChannel(this.channel);
   },
 
   @discourseComputed("channel", "router.currentRoute")
@@ -50,10 +63,5 @@ export default Component.extend({
       currentRoute?.name === "chat.channel" &&
       currentRoute?.params?.channelId === channel.id.toString(10)
     );
-  },
-
-  @action
-  async leaveChatChannel() {
-    return this.chat.unfollowDirectMessageChannel(this.channel);
   },
 });

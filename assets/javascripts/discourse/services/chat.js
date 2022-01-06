@@ -471,7 +471,7 @@ export default Service.extend({
     });
   },
 
-  async unfollowDirectMessageChannel(channel) {
+  async unfollowChannel(channel) {
     return ajax(`/chat/chat_channels/${channel.id}/unfollow`, {
       method: "POST",
     })

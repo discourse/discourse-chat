@@ -11,6 +11,7 @@ en:
       cancel: "Cancel"
       cancel_reply: "Cancel reply"
       chat_channels: "Channels"
+      leave: "Leave channel"
       channel_list_popup:
         browse: "Browse channels"
         create: "Create a channel"

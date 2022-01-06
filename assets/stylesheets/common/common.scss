@@ -892,6 +892,8 @@ body.composer-open .topic-chat-float-container {
     }
 
     .chat-channel-row {
+      padding: 0.3rem 1.8rem;
+
       &:hover {
         background-color: var(--tertiary-low);
       }
@@ -899,13 +901,6 @@ body.composer-open .topic-chat-float-container {
         font-weight: unset;
         margin: 0;
       }
-    }
-
-    .public-channels .chat-channel-row {
-      padding: 0.5rem 1.8rem;
-    }
-    .direct-message-channels .chat-channel-row {
-      padding: 0.3rem 1.8rem;
     }
   }
 }

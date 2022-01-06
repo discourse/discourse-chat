@@ -250,7 +250,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
       this.setProperties(this.draft);
 
       if (this.draft.replyToMsg) {
-        this.onDraftWithReplyLoaded(this.draft.replyToMsg);
+        this.setInReplyToMsg(this.draft.replyToMsg);
       }
     }
 
@@ -608,6 +608,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   @action
   cancelReplyTo() {
     this.set("replyToMsg", null);
+    this.setInReplyToMsg(null);
     this.onValueChange(this.value, this.uploads, this.replyToMsg);
   },
 

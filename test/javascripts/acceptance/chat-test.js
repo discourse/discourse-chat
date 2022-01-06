@@ -627,7 +627,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
       );
       assert.notOk(
         exists(
-          ".header-dropdown-toggle.open-chat .chat-channel-unread-indicator"
+          ".header-dropdown-toggle.open-chat .chat-channel-unread-indicator:not(.urgent)"
         )
       );
       done();
@@ -648,7 +648,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
       );
       assert.notOk(
         exists(
-          ".header-dropdown-toggle.open-chat .chat-channel-unread-indicator"
+          ".header-dropdown-toggle.open-chat .chat-channel-unread-indicator:not(.urgent)"
         )
       );
       done();

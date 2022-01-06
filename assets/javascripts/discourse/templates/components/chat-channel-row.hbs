@@ -3,6 +3,7 @@
   class="{{rowClassNames}} {{if isUnfollowing "unfollowing"}}"
   {{on "click" (fn this.handleSwitchChannel)}}
   {{on "mousedown" (fn this.handleNewWindow)}}
+  role="button"
 >
   {{chat-channel-title channel=channel}}
   {{chat-channel-unread-indicator channel=channel}}

@@ -634,7 +634,8 @@ export default Component.extend({
 
   @discourseComputed("emojiStore.favorites.[]")
   favoritesEmojis(favorites) {
-    if (!favorites) {
+    // may be a {} if no favs defined in some production builds
+    if (!favorites || !favorites.slice) {
       return [];
     }
 

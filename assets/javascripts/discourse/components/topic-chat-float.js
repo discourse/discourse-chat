@@ -362,7 +362,6 @@ export default Component.extend({
 
     let channelInfo = {
       activeChannel: channel,
-      expanded: this.expectPageChange ? true : this.expanded,
       loading: false,
       hidden: false,
       expanded: true,

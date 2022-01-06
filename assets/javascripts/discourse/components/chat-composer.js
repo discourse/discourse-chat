@@ -204,7 +204,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
         // if we are inside a code block just insert newline
         const { pre } = this._getSelected(null, { lineVal: true });
         if (this._isInside(pre, /(^|\n)```/g)) {
-          return false;
+          return;
         }
       }
 

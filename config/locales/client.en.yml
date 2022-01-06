@@ -83,7 +83,9 @@ en:
       title: "chat"
       title_capitalized: "Chat"
       upload: "Attach a file"
-      uploaded_files: "%{count} files"
+      uploaded_files:
+        one: "%{count} file"
+        other: "%{count} files"
       exit: "back"
 
       create_channel:
@@ -185,7 +187,9 @@ en:
       replying_indicator:
         single_user: "%{username} is typing"
         multiple_users: "%{commaSeparatedUsernames} and %{lastUsername} are typing"
-        many_users: "%{commaSeparatedUsernames} and %{count} others are typing"
+        many_users:
+          one: "%{commaSeparatedUsernames} and %{count} other are typing"
+          other: "%{commaSeparatedUsernames} and %{count} others are typing"
 
     notifications:
       popup:

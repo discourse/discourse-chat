@@ -1,5 +1,6 @@
 import Controller from "@ember/controller";
 import discourseComputed from "discourse-common/utils/decorators";
+import escape from "discourse-common/lib/escape";
 import I18n from "I18n";
 import ModalFunctionality from "discourse/mixins/modal-functionality";
 import { ajax } from "discourse/lib/ajax";
@@ -37,8 +38,8 @@ export default Controller.extend(ModalFunctionality, {
   categoryHint(category) {
     if (category) {
       return {
-        link: `/c/${category.slug}/edit/security`,
-        category: category.name,
+        link: `/c/${escape(category.slug)}/edit/security`,
+        category: escape(category.name),
       };
     }
     return {

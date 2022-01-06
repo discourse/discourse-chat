@@ -16,24 +16,21 @@ export default Component.extend({
 
   currentUserTrackingState: reads("currentUser.chat_channel_tracking_state"),
 
-  @discourseComputed("currentUserTrackingState")
-  isUrgent(trackingState) {
-    if (!this.channel) {
+  @discourseComputed("currentUserTrackingState", "channel", "isDirectMessage")
+  isUrgent(trackingState, channel, isDirectMessage) {
+    if (!channel) {
       return;
     }
 
-    return (
-      this.isDirectMessage ||
-      trackingState?.[this.channel.id]?.unread_mentions > 0
-    );
+    return isDirectMessage || trackingState?.[channel.id]?.unread_mentions > 0;
   },
 
-  @discourseComputed("currentUserTrackingState")
-  unreadCount(trackingState) {
-    if (!this.channel) {
+  @discourseComputed("currentUserTrackingState", "channel")
+  unreadCount(trackingState, channel) {
+    if (!channel) {
       return;
     }
 
-    return trackingState?.[this.channel.id]?.unread_count || 0;
+    return trackingState?.[channel.id]?.unread_count || 0;
   },
 });

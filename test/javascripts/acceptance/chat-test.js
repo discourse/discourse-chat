@@ -975,7 +975,7 @@ acceptance(
       await click(".header-dropdown-toggle.open-chat"); // Force re-render. Flakey otherwise.
       assert.ok(
         exists(
-          ".header-dropdown-toggle.open-chat .chat-unread-urgent-indicator"
+          ".header-dropdown-toggle.open-chat .chat-channel-unread-indicator.urgent"
         )
       );
     });

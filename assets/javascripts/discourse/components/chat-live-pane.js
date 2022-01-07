@@ -238,7 +238,7 @@ export default Component.extend({
       registeredChatChannelId: this.chatChannel.id,
     });
 
-    if (!this.targetMessageId && this.messages.length < PAGE_SIZE) {
+    if (!this.targetMessageId && messages.length < PAGE_SIZE) {
       this.set("allPastMessagesLoaded", true);
     }
 

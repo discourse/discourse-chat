@@ -9,9 +9,9 @@ export default EmberObject.extend({
 
   users: null,
 
-  unsubscribe() {},
+  async unsubscribe() {},
 
-  subscribe() {},
+  async subscribe() {},
 
   name: null,
 });

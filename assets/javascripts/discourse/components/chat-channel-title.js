@@ -4,6 +4,7 @@ import { action } from "@ember/object";
 import { gt, reads } from "@ember/object/computed";
 
 export default Component.extend({
+  tagName: "",
   channel: null,
   multiDm: gt("users.length", 1),
   onClick: null,

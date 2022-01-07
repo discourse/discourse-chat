@@ -26,10 +26,7 @@ import {
 } from "discourse/plugins/discourse-chat/chat-fixtures";
 import { next } from "@ember/runloop";
 import { cloneJSON } from "discourse-common/lib/object";
-import {
-  joinChannel,
-  presentUserIds,
-} from "discourse/tests/helpers/presence-pretender";
+import { presentUserIds } from "discourse/tests/helpers/presence-pretender";
 import User from "discourse/models/user";
 import selectKit from "discourse/tests/helpers/select-kit-helper";
 

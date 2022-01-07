@@ -1,52 +1,57 @@
+import { isBlank, isPresent } from "@ember/utils";
 import Component from "@ember/component";
 import { inject as service } from "@ember/service";
 import discourseComputed from "discourse-common/utils/decorators";
 import I18n from "I18n";
+import { fmt } from "discourse/lib/computed";
 
 export default Component.extend({
-  classNames: ["tc-replying-indicator"],
+  tagName: "",
   presence: service(),
+  presenceChannel: null,
+  chatChannelId: null,
 
   @discourseComputed("presenceChannel.users.[]")
   usernames(users) {
     return users
       ?.filter((u) => u.id !== this.currentUser.id)
-      ?.map((u) => u.username);
+      ?.mapBy("username");
   },
 
-  @discourseComputed("usernames")
+  @discourseComputed("usernames.[]")
   text(usernames) {
-    if (!usernames || usernames.length === 0) {
+    if (isBlank(usernames)) {
       return;
-    } else if (usernames.length === 1) {
+    }
+
+    if (usernames.length === 1) {
       return I18n.t("chat.replying_indicator.single_user", {
         username: usernames[0],
       });
-    } else if (usernames.length < 4) {
+    }
+
+    if (usernames.length < 4) {
       const lastUsername = usernames.pop();
       const commaSeparatedUsernames = usernames.join(", ");
       return I18n.t("chat.replying_indicator.multiple_users", {
         commaSeparatedUsernames,
         lastUsername,
       });
-    } else {
-      const commaSeparatedUsernames = usernames.slice(0, 2).join(", ");
-      return I18n.t("chat.replying_indicator.many_users", {
-        commaSeparatedUsernames,
-        count: usernames.length - 2,
-      });
     }
+
+    const commaSeparatedUsernames = usernames.slice(0, 2).join(", ");
+    return I18n.t("chat.replying_indicator.many_users", {
+      commaSeparatedUsernames,
+      count: usernames.length - 2,
+    });
   },
 
-  @discourseComputed("usernames")
+  @discourseComputed("usernames.[]")
   shouldDisplay(usernames) {
-    return !!usernames?.length;
+    return isPresent(usernames);
   },
 
-  @discourseComputed("chatChannelId")
-  channelName(id) {
-    return `/chat-reply/${id}`;
-  },
+  channelName: fmt("chatChannelId", "/chat-reply/%@"),
 
   didReceiveAttrs() {
     this._super(...arguments);
@@ -59,6 +64,8 @@ export default Component.extend({
   },
 
   willDestroyElement() {
+    this._super(...arguments);
+
     this.presenceChannel?.unsubscribe();
   },
 });

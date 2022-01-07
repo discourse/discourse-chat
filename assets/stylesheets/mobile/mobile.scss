@@ -77,13 +77,6 @@ body.has-full-page-chat {
   overflow-x: hidden;
   width: 100%;
 
-  &.showing-channels {
-    .tc-live-pane {
-      display: none;
-    }
-  }
-
-  .tc-channels,
   .tc-live-pane {
     border-radius: 0;
   }
@@ -99,20 +92,6 @@ body.has-full-page-chat {
   }
   .tc-composer {
     background-color: var(--primary-very-low);
-  }
-
-  .tc-channels {
-    background-color: var(--secondary);
-    border: none;
-    border-top: 1px solid var(--primary-low);
-    font-weight: 500;
-    height: calc(100% - 1px);
-
-    .topic-chat-badge {
-      .d-icon {
-        background-color: var(--secondary);
-      }
-    }
   }
 
   .tc-full-page-header {

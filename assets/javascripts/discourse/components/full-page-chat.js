@@ -7,29 +7,21 @@ import { next } from "@ember/runloop";
 export default Component.extend({
   tagName: "",
   teamsSidebarOn: false,
-  showingChannels: false,
   router: service(),
   chat: service(),
 
-  @discourseComputed("teamsSidebarOn", "showingChannels")
-  wrapperClassNames(teamsSidebarOn, showingChannels) {
+  @discourseComputed("teamsSidebarOn")
+  wrapperClassNames(teamsSidebarOn) {
     const classNames = ["full-page-chat"];
     if (teamsSidebarOn) {
       classNames.push("teams-sidebar-on");
     }
-    if (showingChannels) {
-      classNames.push("showing-channels");
-    }
     return classNames.join(" ");
   },
 
-  @discourseComputed("site.mobileView", "teamsSidebarOn", "showingChannels")
-  showChannelSelector(mobileView, sidebarOn, showingChannels) {
-    if (mobileView) {
-      return showingChannels;
-    }
-
-    return !sidebarOn;
+  @discourseComputed("site.mobileView", "teamsSidebarOn")
+  showChannelSelector(mobileView, sidebarOn) {
+    return !mobileView && !sidebarOn;
   },
 
   init() {
@@ -92,9 +84,12 @@ export default Component.extend({
   },
 
   @action
-  switchChannel(channel) {
-    this.set("showingChannels", false);
+  navigateToIndex() {
+    this.router.transitionTo("chat.index");
+  },
 
+  @action
+  switchChannel(channel) {
     if (channel.id !== this.chatChannel.id) {
       this.router.transitionTo("chat.channel", channel.id, channel.title);
     }

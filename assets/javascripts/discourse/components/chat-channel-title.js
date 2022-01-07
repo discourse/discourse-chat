@@ -17,6 +17,6 @@ export default Component.extend({
 
   @action
   handleOnClick(event) {
-    return this?.onClick(event);
+    return this.onClick?.(event);
   },
 });

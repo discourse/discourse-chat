@@ -22,18 +22,13 @@ export default {
     let canPlay = true;
 
     function playAudio(user) {
-      try {
-        new Audio(CHAT_SOUNDS[user.chat_sound]).play();
-      } catch (error) {
-        if (error instanceof DOMException) {
-          // eslint-disable-next-line no-console
-          console.info(
-            "User needs to interact with DOM before we can play notification sounds"
-          );
-        } else {
-          throw error;
-        }
-      }
+      const audio = new Audio(CHAT_SOUNDS[user.chat_sound]);
+      audio.play().catch(() => {
+        // eslint-disable-next-line no-console
+        console.info(
+          "User needs to interact with DOM before we can play notification sounds"
+        );
+      });
     }
 
     function playAudioWithDebounce(user) {

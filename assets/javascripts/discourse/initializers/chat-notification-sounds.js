@@ -1,4 +1,5 @@
 import { withPluginApi } from "discourse/lib/plugin-api";
+import discourseDebounce from "discourse-common/lib/debounce";
 
 export const CHAT_SOUNDS = {
   bell: "/plugins/discourse-chat/audio/bell.mp3",
@@ -19,8 +20,6 @@ export default {
       return;
     }
 
-    let canPlay = true;
-
     function playAudio(user) {
       const audio = new Audio(CHAT_SOUNDS[user.chat_sound]);
       audio.play().catch(() => {
@@ -32,14 +31,7 @@ export default {
     }
 
     function playAudioWithDebounce(user) {
-      if (canPlay) {
-        canPlay = false;
-
-        setTimeout(() => {
-          canPlay = true;
-          playAudio(user);
-        }, AUDIO_DEBOUNCE_TIMEOUT);
-      }
+      discourseDebounce(this, playAudio, user, AUDIO_DEBOUNCE_TIMEOUT, true);
     }
 
     withPluginApi("0.12.1", (api) => {

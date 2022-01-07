@@ -1,4 +1,4 @@
-<div class="chat-channel-title" {{on "click" (fn this.handleOnClick)}}>
+<div role="button" class="chat-channel-title" {{on "click" (fn this.handleOnClick)}}>
   {{#if (eq channel.chatable_type "DirectMessageChannel")}}
     {{#if multiDm}}
       <span class="dm-multi-count">

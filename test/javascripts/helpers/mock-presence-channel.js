@@ -11,5 +11,7 @@ export default EmberObject.extend({
 
   unsubscribe() {},
 
+  subscribe() {},
+
   name: null,
 });

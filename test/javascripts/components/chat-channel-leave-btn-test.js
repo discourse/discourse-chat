@@ -65,5 +65,18 @@ discourseModule(
         assert.equal(btn.title, I18n.t("chat.leave"));
       },
     });
+
+    componentTest("is not visible on mobile", {
+      template: hbs`{{chat-channel-leave-btn channel=channel}}`,
+
+      beforeEach() {
+        this.site.mobileView = true;
+        this.set("channel", { chatable_type: "Topic" });
+      },
+
+      async test(assert) {
+        assert.notOk(exists(".chat-channel-leave-btn"));
+      },
+    });
   }
 );

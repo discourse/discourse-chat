@@ -1,6 +1,8 @@
-{{d-button
-  icon="times"
-  action=onLeaveChannel
-  class="btn-flat chat-channel-leave-btn"
-  title=leaveChatTitleKey
-}}
+{{#unless site.mobileView}}
+  {{d-button
+    icon="times"
+    action=onLeaveChannel
+    class="btn-flat chat-channel-leave-btn"
+    title=leaveChatTitleKey
+  }}
+{{/unless}}

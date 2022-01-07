@@ -1,18 +1,21 @@
 import discourseComputed from "discourse-common/utils/decorators";
 import Component from "@ember/component";
-import { gt } from "@ember/object/computed";
+import { action } from "@ember/object";
+import { gt, reads } from "@ember/object/computed";
 
 export default Component.extend({
-  classNameBindings: [":chat-channel-title"],
   channel: null,
-  multiDm: gt("channel.chatable.users.length", 1),
+  multiDm: gt("users.length", 1),
+  onClick: null,
+  users: reads("channel.chatable.users.[]"),
 
-  @discourseComputed("channel.chatable.users")
+  @discourseComputed("users")
   usernames(users) {
     return users.mapBy("username").join(", ");
   },
 
-  click() {
-    return this.onClick?.();
+  @action
+  handleOnClick(event) {
+    return this?.onClick(event);
   },
 });

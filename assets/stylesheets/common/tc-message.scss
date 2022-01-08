@@ -536,7 +536,10 @@
 
   img {
     grid-area: image;
-    max-height: 150px;
+
+    &:not(.ytp-thumbnail-image) {
+      max-height: 150px;
+    }
   }
 
   h3 a,

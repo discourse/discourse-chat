@@ -126,8 +126,10 @@ export default Component.extend({
         this.messageBus.unsubscribe(`/chat/${this.registeredChatChannelId}`);
         this.messages.clear();
       }
+
       this.messageLookup = {};
       this.registeredChatChannelId = null;
+      this.set("allPastMessagesLoaded", false);
 
       if (this.chatChannel.id != null) {
         this.fetchMessages(this.chatChannel.id);

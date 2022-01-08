@@ -426,9 +426,12 @@ export default Component.extend({
         // Setting to just 0 doesn't work (it's at 0 by default, so there is no change)
         // Very hacky, but no way to get around this Safari bug
         this._scrollerEl.scrollTop = -1;
-        later(() => {
-          this._scrollerEl.scrollTop = 0;
-        }, 40);
+
+        window.requestAnimationFrame(() => {
+          if (this._scrollerEl) {
+            this._scrollerEl.scrollTop = 0;
+          }
+        });
       }
     });
   },

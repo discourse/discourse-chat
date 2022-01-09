@@ -12,10 +12,14 @@ discourseModule(
     setupRenderingTest(hooks);
 
     componentTest("not displayed when no one is replying", {
-      template: hbs`{{chat-replying-indicator chatChannelId=channel.id}}`,
+      template: hbs`{{chat-replying-indicator presenceChannel=presenceChannel chatChannelId=channel.id}}`,
 
       async beforeEach() {
         this.set("channel", fabricate("chat-channel"));
+        this.set(
+          "presenceChannel",
+          MockPresenceChannel.create({ name: `/chat-reply/${this.channel.id}` })
+        );
       },
 
       async test(assert) {

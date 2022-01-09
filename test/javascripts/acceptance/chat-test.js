@@ -26,10 +26,7 @@ import {
 } from "discourse/plugins/discourse-chat/chat-fixtures";
 import { next } from "@ember/runloop";
 import { cloneJSON } from "discourse-common/lib/object";
-import {
-  joinChannel,
-  presentUserIds,
-} from "discourse/tests/helpers/presence-pretender";
+import { presentUserIds } from "discourse/tests/helpers/presence-pretender";
 import User from "discourse/models/user";
 import selectKit from "discourse/tests/helpers/select-kit-helper";
 
@@ -500,63 +497,6 @@ acceptance("Discourse Chat - without unread", function (needs) {
       assert.ok(query(".chat-message-175 .tc-text").innerHTML.includes(cooked));
       done();
     });
-  });
-
-  test("replying presence indicators", async function (assert) {
-    await visit("/chat/channel/9/Site");
-    assert.equal(
-      queryAll(".tc-replying-indicator .replying-text").text().trim(),
-      "",
-      "no replying indicator"
-    );
-
-    await joinChannel("/chat-reply/9", {
-      id: 124,
-      avatar_template: "/a/b/c.jpg",
-      username: "myusername",
-    });
-
-    assert.equal(
-      queryAll(".tc-replying-indicator .replying-text").text().trim(),
-      "myusername is typing...",
-      "one user replying"
-    );
-
-    await joinChannel("/chat-reply/9", {
-      id: 125,
-      avatar_template: "/a/b/c.jpg",
-      username: "myusername2",
-    });
-
-    assert.equal(
-      queryAll(".tc-replying-indicator .replying-text").text().trim(),
-      "myusername and myusername2 are typing...",
-      "two users replying"
-    );
-
-    await joinChannel("/chat-reply/9", {
-      id: 126,
-      avatar_template: "/a/b/c.jpg",
-      username: "myusername3",
-    });
-
-    assert.equal(
-      queryAll(".tc-replying-indicator .replying-text").text().trim(),
-      "myusername, myusername2 and myusername3 are typing...",
-      "three users replying"
-    );
-
-    await joinChannel("/chat-reply/9", {
-      id: 127,
-      avatar_template: "/a/b/c.jpg",
-      username: "myusername4",
-    });
-
-    assert.equal(
-      queryAll(".tc-replying-indicator .replying-text").text().trim(),
-      "myusername, myusername2 and 2 others are typing...",
-      "four users replying"
-    );
   });
 
   test("Drafts are saved and reloaded", async function (assert) {

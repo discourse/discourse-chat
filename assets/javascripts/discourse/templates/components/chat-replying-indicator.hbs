@@ -1,5 +1,12 @@
-<span class="replying-text">
-  {{#if shouldDisplay}}
-    {{text}}<span class="wave"><span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></span>
-  {{/if}}
-</span>
+<div class="chat-replying-indicator">
+  <span class="replying-text">
+    {{#if shouldDisplay}}
+      <span>{{text}}</span>
+      <span class="wave">
+        <span class="dot">.</span>
+        <span class="dot">.</span>
+        <span class="dot">.</span>
+      </span>
+    {{/if}}
+  </span>
+</div>

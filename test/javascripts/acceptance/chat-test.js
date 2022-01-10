@@ -804,10 +804,12 @@ acceptance("Discourse Chat - without unread", function (needs) {
     });
     const done = assert.async();
     next(async () => {
-      assert.ok(exists(".chat-message-176 .chat-message-mention-warning"));
+      assert.ok(
+        exists(".chat-message-container-176 .chat-message-mention-warning")
+      );
       assert.ok(
         query(
-          ".chat-message-container-176 .chat-message-container-mention-warning .cannot-see"
+          ".chat-message-container-176 .chat-message-mention-warning .cannot-see"
         ).innerText.includes("hawk")
       );
 

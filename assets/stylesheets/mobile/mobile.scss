@@ -1,4 +1,4 @@
-.tc-live-pane .tc-composer .tc-composer-row {
+.chat-pane .tc-composer .tc-composer-row {
   .tc-composer-input {
     padding-right: 75px;
 
@@ -77,14 +77,14 @@ body.has-full-page-chat {
   overflow-x: hidden;
   width: 100%;
 
-  .tc-live-pane {
+  .chat-pane {
     border-radius: 0;
   }
 
   .tc-drawer {
     width: 100%;
   }
-  .tc-live-pane {
+  .chat-pane {
     padding: 0;
   }
   .tc-full-page-header {

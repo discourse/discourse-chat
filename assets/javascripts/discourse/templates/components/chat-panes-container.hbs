@@ -1,0 +1,66 @@
+{{#if fullPage}}
+  <div class="tc-full-page-header {{if previewing "previewing"}}">
+    {{#if site.mobileView}}
+      {{d-button
+        class="btn-flat"
+        icon="chevron-left"
+        action=onBackClick
+      }}
+    {{/if}}
+
+    {{chat-channel-title onClick=(action "onChannelTitleClick") channel=chatChannel}}
+
+    {{#if previewing}}
+      {{d-button
+        class="btn-primary join-channel-btn"
+        action=joinChannel
+        label="chat.join_channel"
+      }}
+    {{/if}}
+    {{#unless currentUser.chat_isolated}}
+      {{d-button
+        action=(action "exitChat")
+        class="btn-flat exit-chat-btn"
+        icon="times"
+        title="chat.exit"
+      }}
+    {{/unless}}
+  </div>
+{{/if}}
+
+{{#if extraPanes.length}}
+  <div class="chat-pane-selector">
+    {{pane-option
+      name=DEFAULT_PANE.name
+      icon=DEFAULT_PANE.icon
+      title=DEFAULT_PANE.title
+      changePane=changePane
+      currentPane=currentPane
+    }}
+    {{#each extraPanes as |pane|}}
+      {{pane-option
+        name=pane.name
+        icon=pane.icon
+        title=pane.titlediscourse_local_dates
+        changePane=changePane
+        currentPane=currentPane
+      }}
+    {{/each}}
+  </div>
+{{/if}}
+
+
+{{default-chat-pane
+  chatChannel=chatChannel
+  expanded=true
+  floatHidden=false
+  fullPage=true
+  previewing=previewing
+  joinChannel=joinChannel
+  onBackClick=onBackClick
+  currentPane=currentPane
+}}
+
+{{#each extraPanes as |pane|}}
+  {{chat-pane chatChannel=chatChannel paneName=pane.name currentPane=currentPane}}
+{{/each}}

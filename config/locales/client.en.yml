@@ -39,6 +39,7 @@ en:
       heading: "Chat"
       join_channel: "Join channel"
       new_messages: "new messages"
+      messages: "Messages"
       mention_notification: "<span>%{username} mentioned you in chat</span>"
       mention_warning:
         cannot_see:

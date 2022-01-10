@@ -139,9 +139,9 @@ export default Component.extend({
 
   openChannelAtMessage(channel, messageId) {
     if (this.activeChannel?.id === channel.id) {
-      // Already have this channel open. Fire app event to notify chat-live-pane
+      // Already have this channel open. Fire app event to notify chat-pane
       // to highlight or fetch the message.
-      this.appEvents.trigger("chat-live-pane:highlight-message", messageId);
+      this.appEvents.trigger("chat-pane:highlight-message", messageId);
     } else {
       this.chat.set("messageId", messageId);
       this.switchChannel(channel);

@@ -1,4 +1,4 @@
-import Component from "@ember/component";
+import chatPane from "discourse/plugins/discourse-chat/discourse/components/chat-pane";
 import discourseComputed, {
   afterRender,
   bind,
@@ -27,9 +27,9 @@ const MAX_RECENT_MSGS = 100;
 const STICKY_SCROLL_LENIENCE = 4;
 const READ_INTERVAL = 1000;
 const PAGE_SIZE = 50;
-
-export default Component.extend({
-  classNameBindings: [":tc-live-pane", "sendingloading", "loading"],
+export default chatPane.extend({
+  classNameBindings: [":chat-pane", "inactive", "sendingloading", "loading"],
+  tagName: "div",
   topicId: null, // ?Number
   chatChannel: null,
   fullPage: false,
@@ -69,7 +69,7 @@ export default Component.extend({
 
     this._unloadedReplyIds = [];
     this.appEvents.on(
-      "chat-live-pane:highlight-message",
+      "chat-pane:highlight-message",
       this,
       "highlightOrFetchMessage"
     );
@@ -94,7 +94,7 @@ export default Component.extend({
 
   willDestroyElement() {
     this.appEvents.off(
-      "chat-live-pane:highlight-message",
+      "chat-pane:highlight-message",
       this,
       "highlightOrFetchMessage"
     );
@@ -136,6 +136,11 @@ export default Component.extend({
         this.loadDraftForChannel();
       }
     }
+  },
+
+  @discourseComputed("currentPane")
+  inactive(currentPane) {
+    return currentPane !== "default";
   },
 
   fetchMessages(channelId) {
@@ -683,7 +688,7 @@ export default Component.extend({
 
         // Make sure new messages have come in. Do not keep pinging server with read updates
         // if no new messages came in since last read update was sent.
-        if (this._floatOpenAndFocused() && hasUnreadMessage) {
+        if (this.messagesAreVisible() && hasUnreadMessage) {
           this.set("lastSendReadMessageId", messageId);
           ajax(`/chat/${this.chatChannel.id}/read/${messageId}.json`, {
             method: "PUT",
@@ -698,8 +703,13 @@ export default Component.extend({
     );
   },
 
-  _floatOpenAndFocused() {
-    return document.hasFocus() && this.expanded && !this.floatHidden;
+  messagesAreVisible() {
+    return (
+      document.hasFocus() &&
+      this.expanded &&
+      !this.floatHidden &&
+      !this.inactive
+    );
   },
 
   _stopLastReadRunner() {
@@ -898,13 +908,6 @@ export default Component.extend({
   },
 
   @action
-  onChannelTitleClick() {
-    if (this.chatChannel.chatable_url) {
-      return this.router.transitionTo(this.chatChannel.chatable_url);
-    }
-  },
-
-  @action
   moveMessagesToTopic() {
     showModal("move-chat-to-topic").setProperties({
       chatMessageIds: this.messages
@@ -965,8 +968,13 @@ export default Component.extend({
   },
 
   @action
-  exitChat() {
-    return this.router.transitionTo(this.chat.lastNonChatRoute);
+  changePane(paneName) {
+    this.set("currentPane", paneName);
+
+    next(() => {
+      // TODO: Fix this - idk what is going on
+      this.element?.querySelector(".chat-pane-option.active")?.blur();
+    });
   },
 
   @bind

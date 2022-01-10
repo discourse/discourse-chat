@@ -149,7 +149,7 @@ body.composer-open .topic-chat-float-container {
     max-height: $float-height;
     height: calc(85vh - var(--composer-height, 0px));
 
-    .tc-live-pane,
+    .chat-pane,
     .tc-chat-listing {
       max-height: calc(#{$float-height} - #{$header-height});
       height: calc(85vh - var(--composer-height, 0px) - #{$header-height});
@@ -449,213 +449,251 @@ body.composer-open .topic-chat-float-container {
   }
 }
 
-.tc-live-pane {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
+.chat-panes-container {
+  position: relative;
+  height: 100%;
   width: 100%;
   overflow: hidden;
 
-  .tc-messages-scroll {
-    margin-bottom: 0.5em;
-    flex-grow: 1;
-    overflow-y: scroll;
-    scrollbar-color: var(--primary-low) transparent;
-    transition: scrollbar-color 0.2s ease-in-out;
-    display: flex;
-    flex-direction: column-reverse;
+  .chat-pane {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    overflow: hidden;
+    transition: transform 0.1s;
 
-    &::-webkit-scrollbar {
-      width: 15px;
-    }
-    &::-webkit-scrollbar-thumb {
-      background: var(--primary-low);
-      border-radius: 8px;
-      border: 3px solid var(--secondary);
-    }
-    &::-webkit-scrollbar-track {
-      background-color: transparent;
-    }
-    &:hover {
-      scrollbar-color: var(--primary-low-mid) transparent;
+    .tc-messages-scroll {
+      margin-bottom: 0.5em;
+      flex-grow: 1;
+      overflow-y: scroll;
+      scrollbar-color: var(--primary-low) transparent;
+      transition: scrollbar-color 0.2s ease-in-out;
+      display: flex;
+      flex-direction: column-reverse;
+
+      &::-webkit-scrollbar {
+        width: 15px;
+      }
       &::-webkit-scrollbar-thumb {
-        background: var(--primary-low-mid);
+        background: var(--primary-low);
+        border-radius: 8px;
+        border: 3px solid var(--secondary);
+      }
+      &::-webkit-scrollbar-track {
+        background-color: transparent;
+      }
+      &:hover {
+        scrollbar-color: var(--primary-low-mid) transparent;
+        &::-webkit-scrollbar-thumb {
+          background: var(--primary-low-mid);
+        }
+      }
+
+      .all-loaded-message {
+        text-align: center;
+        color: var(--primary-medium);
+        font-size: var(--font-down-1);
+        padding: 0.5em 0.25em 0.25em;
       }
     }
 
-    .all-loaded-message {
-      text-align: center;
-      color: var(--primary-medium);
-      font-size: var(--font-down-1);
-      padding: 0.5em 0.25em 0.25em;
-    }
-  }
-
-  .scroll-stick-wrap {
-    position: relative;
-  }
-
-  .chat-scroll-to-bottom {
-    background: var(--primary-medium);
-    bottom: 1em;
-    border-radius: 100%;
-    left: 50%;
-    opacity: 20%;
-    padding: 0.5em;
-    position: absolute;
-    transform: translateX(-50%);
-    z-index: 2;
-
-    &:hover {
-      opacity: 75%;
-    }
-
-    .d-icon {
-      color: var(--primary);
-      margin: 0;
-    }
-  }
-
-  .tc-composer {
-    min-height: 1.5em;
-    flex-shrink: 0;
-    width: 100%;
-
-    .tc-reply-username {
-      font-weight: bold;
-    }
-
-    .tc-composer-row {
+    .scroll-stick-wrap {
       position: relative;
-      padding: 0 0.5em;
-      display: grid;
+    }
 
-      &::after {
-        content: attr(data-replicated-value) " ";
-        white-space: pre-wrap;
-        visibility: hidden;
+    .chat-scroll-to-bottom {
+      background: var(--primary-medium);
+      bottom: 1em;
+      border-radius: 100%;
+      left: 50%;
+      opacity: 20%;
+      padding: 0.5em;
+      position: absolute;
+      transform: translateX(-50%);
+      z-index: 2;
+
+      &:hover {
+        opacity: 75%;
+      }
+
+      .d-icon {
+        color: var(--primary);
+        margin: 0;
+      }
+    }
+
+    .tc-composer {
+      min-height: 1.5em;
+      flex-shrink: 0;
+      width: 100%;
+
+      .tc-reply-username {
+        font-weight: bold;
+      }
+
+      .tc-composer-row {
+        position: relative;
+        padding: 0 0.5em;
+        display: grid;
+
+        &::after {
+          content: attr(data-replicated-value) " ";
+          white-space: pre-wrap;
+          visibility: hidden;
+          outline: none;
+        }
+
+        .open-toolbar-btn {
+          position: absolute;
+          right: 20px;
+          top: 50%;
+          transform: translateY(-50%);
+          padding: 0.4em;
+          border-radius: 100%;
+          background: var(--primary-low);
+        }
+      }
+
+      .tc-composer-row > .tc-composer-input:focus {
+        border-color: var(--primary-medium);
         outline: none;
       }
 
-      .open-toolbar-btn {
+      .tc-composer-row > .tc-composer-input,
+      .tc-composer-row::after {
+        // `after` pseudo-element should match input styling exactly
+        // via https://css-tricks.com/the-cleanest-trick-for-autogrowing-textareas/
+        grid-area: 1 / 1 / 2 / 2;
+        margin: 0;
+        resize: none;
+        max-height: 125px;
+        padding: 8px 40px 8px 8px;
+        border: 1px solid var(--primary-low-mid);
+        box-sizing: border-box;
+        word-break: break-word;
+        width: 100%;
+      }
+
+      .tc-composer-message-details {
+        position: relative;
+        max-height: calc(2em - 5px);
+        padding: 6px 0.75em;
+        border-top: 1px solid var(--primary-low);
+
+        .tc-reply-display {
+          width: calc(100% - 2em);
+        }
+      }
+      .cancel-message-action {
         position: absolute;
-        right: 20px;
-        top: 50%;
-        transform: translateY(-50%);
-        padding: 0.4em;
-        border-radius: 100%;
-        background: var(--primary-low);
+        top: 6px;
+        right: 5px;
+        padding: 4px;
       }
-    }
-
-    .tc-composer-row > .tc-composer-input:focus {
-      border-color: var(--primary-medium);
-      outline: none;
-    }
-
-    .tc-composer-row > .tc-composer-input,
-    .tc-composer-row::after {
-      // `after` pseudo-element should match input styling exactly
-      // via https://css-tricks.com/the-cleanest-trick-for-autogrowing-textareas/
-      grid-area: 1 / 1 / 2 / 2;
-      margin: 0;
-      resize: none;
-      max-height: 125px;
-      padding: 8px 40px 8px 8px;
-      border: 1px solid var(--primary-low-mid);
-      box-sizing: border-box;
-      word-break: break-word;
-      width: 100%;
-    }
-
-    .tc-composer-message-details {
-      position: relative;
-      max-height: calc(2em - 5px);
-      padding: 6px 0.75em;
-      border-top: 1px solid var(--primary-low);
-
-      .tc-reply-display {
-        width: calc(100% - 2em);
-      }
-    }
-    .cancel-message-action {
-      position: absolute;
-      top: 6px;
-      right: 5px;
-      padding: 4px;
-    }
-
-    .d-icon {
-      animation: color 0.2s ease-in-out;
-      color: var(--primary-low-mid);
-    }
-  }
-
-  .chat-composer-toolbar {
-    position: absolute;
-    top: -36px;
-    right: 0.75em;
-    border-radius: 5px;
-    border: 1px solid var(--primary-low);
-    background: var(--secondary);
-
-    .btn-flat {
-      padding: 0.5em;
 
       .d-icon {
-        font-size: var(--font-0);
-        color: var(--primary-medium);
+        animation: color 0.2s ease-in-out;
+        color: var(--primary-low-mid);
       }
+    }
+
+    .chat-composer-toolbar {
+      position: absolute;
+      top: -36px;
+      right: 0.75em;
+      border-radius: 5px;
+      border: 1px solid var(--primary-low);
+      background: var(--secondary);
+
+      .btn-flat {
+        padding: 0.5em;
+
+        .d-icon {
+          font-size: var(--font-0);
+          color: var(--primary-medium);
+        }
+      }
+    }
+
+    .tc-replying-indicator {
+      color: var(--primary-medium);
+      padding: 0.25em 0.75em;
+
+      .replying-text {
+        font-size: var(--font-down-2);
+
+        &:before {
+          // unicode zero width space character
+          // Ensures the span height is consistent even when empty
+          content: "\200b";
+        }
+      }
+
+      .wave {
+        flex: 0 0 auto;
+
+        .dot {
+          display: inline-block;
+          animation: tc-reply-wave 1.8s linear infinite;
+          &:nth-child(2) {
+            animation-delay: -1.6s;
+          }
+          &:nth-child(3) {
+            animation-delay: -1.4s;
+          }
+        }
+
+        @keyframes tc-reply-wave {
+          0%,
+          60%,
+          100% {
+            transform: initial;
+          }
+          30% {
+            transform: translateY(-0.2em);
+          }
+        }
+      }
+    }
+
+    .chat-selection-management-buttons {
+      padding: 0.5em;
+      border-top: 1px solid var(--primary-low);
+
+      .cancel-btn {
+        margin-left: 0.5em;
+      }
+    }
+    &.inactive {
+      transform: translateX(-100%);
     }
   }
+  .chat-pane-selector {
+    position: absolute;
+    display: flex;
+    top: 0;
+    right: 0;
+    border: 1px solid var(--primary-low);
+    background: var(--secondary);
+    z-index: 10;
 
-  .tc-replying-indicator {
-    color: var(--primary-medium);
-    padding: 0.25em 0.75em;
+    .chat-pane-option {
+      display: inline-block;
 
-    .replying-text {
-      font-size: var(--font-down-2);
-
-      &:before {
-        // unicode zero width space character
-        // Ensures the span height is consistent even when empty
-        content: "\200b";
-      }
-    }
-
-    .wave {
-      flex: 0 0 auto;
-
-      .dot {
-        display: inline-block;
-        animation: tc-reply-wave 1.8s linear infinite;
-        &:nth-child(2) {
-          animation-delay: -1.6s;
-        }
-        &:nth-child(3) {
-          animation-delay: -1.4s;
+      &.active {
+        background: var(--primary-low);
+        .d-icon {
+          color: var(--primary-high);
         }
       }
-
-      @keyframes tc-reply-wave {
-        0%,
-        60%,
-        100% {
-          transform: initial;
-        }
-        30% {
-          transform: translateY(-0.2em);
-        }
+      .btn {
+        border-radius: 0;
+        margin: 0;
       }
-    }
-  }
-
-  .chat-selection-management-buttons {
-    padding: 0.5em;
-    border-top: 1px solid var(--primary-low);
-
-    .cancel-btn {
-      margin-left: 0.5em;
     }
   }
 }
@@ -1142,6 +1180,7 @@ body.composer-open .topic-chat-float-container {
     .exit-chat-btn {
       margin-left: auto;
       color: var(--primary-high);
+      z-index: 1;
     }
 
     .chat-channel-title {
@@ -1169,13 +1208,18 @@ body.composer-open .topic-chat-float-container {
       }
     }
   }
-  .tc-live-pane,
-  .tc-messages-scroll,
-  .tc-live-pane {
+  .chat-panes-container,
+  .tc-messages-scroll {
     box-sizing: border-box;
-    height: 100%;
     border-radius: 0 var(--full-page-border-radius)
       var(--full-page-border-radius) 0;
+  }
+
+  .chat-pane-selector {
+    top: 39px;
+  }
+  .chat-pane {
+    padding-top: 40px;
   }
 }
 

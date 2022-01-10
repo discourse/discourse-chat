@@ -4,6 +4,7 @@ import KeyValueStore from "discourse/lib/key-value-store";
 import Service, { inject as service } from "@ember/service";
 import Site from "discourse/models/site";
 import { addChatToolbarButton } from "discourse/plugins/discourse-chat/discourse/components/chat-composer";
+import { addChatPane } from "discourse/plugins/discourse-chat/discourse/components/chat-panes-container";
 import { ajax } from "discourse/lib/ajax";
 import { A } from "@ember/array";
 import { defaultHomepage } from "discourse/lib/utilities";
@@ -359,7 +360,7 @@ export default Service.extend({
   },
 
   _fireOpenMessageAppEvent(messageId) {
-    this.appEvents.trigger("chat-live-pane:highlight-message", messageId);
+    this.appEvents.trigger("chat-pane:highlight-message", messageId);
   },
 
   async startTrackingChannel(channel) {
@@ -635,7 +636,13 @@ export default Service.extend({
     );
   },
 
+  // API functions
+
   addToolbarButton(toolbarButton) {
     addChatToolbarButton(toolbarButton);
+  },
+
+  addChatPane(pane) {
+    addChatPane(pane);
   },
 });

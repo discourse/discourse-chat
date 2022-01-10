@@ -12,7 +12,7 @@
   &.teams-sidebar-on {
     grid-template-columns: 1fr;
 
-    .tc-live-pane {
+    .chat-pane {
       border-radius: var(--full-page-border-radius);
     }
   }
@@ -22,7 +22,7 @@
     flex-shrink: 0;
   }
 
-  .tc-live-pane {
+  .chat-pane {
     .tc-messages-container {
       .tc-message {
         &.is-reply {
@@ -114,10 +114,10 @@
       }
     }
 
-    .tc-live-pane {
+    .chat-pane {
       border-radius: unset;
     }
-    .tc-live-pane,
+    .chat-pane,
     .tc-messages-scroll,
     .tc-message:not(.highlighted):not(.deleted) {
       background-color: transparent;
@@ -148,10 +148,10 @@
     padding: 2em 0em 0em 0em;
   }
   .full-page-chat.teams-sidebar-on {
-    .tc-live-pane {
+    .chat-pane {
       border-radius: 0;
     }
-    .tc-live-pane,
+    .chat-pane,
     .tc-messages-scroll,
     .tc-message:not(.highlighted) {
       background: transparent;

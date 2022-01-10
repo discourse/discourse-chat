@@ -40,7 +40,7 @@
         }}
       </div>
     {{else}}
-      <div class={{innerMessageClasses}}>
+      <div class={{chatMessageClasses}}>
         {{#unless message.staged}}
           <div class="tc-msgactions-hover">
             <div class="tc-msgactions">
@@ -113,9 +113,9 @@
           {{/if}}
         {{/if}}
 
-        <div class="tc-message-container">
+        <div class="chat-message-content">
           {{#unless hideUserInfo}}
-            <div class="tc-meta-data">
+            <div class="chat-message-sender-data">
               <span class={{usernameClasses}}>
                 {{#if message.chat_webhook_event.username}}
                   {{message.chat_webhook_event.username}}

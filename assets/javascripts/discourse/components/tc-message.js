@@ -45,7 +45,7 @@ export default Component.extend({
       return;
     }
     this.element
-      .querySelector(".tc-message-container .tc-text")
+      .querySelector(".chat-message-content .tc-text")
       ?.querySelectorAll(".mention")
       .forEach((node) => {
         const mention = node.textContent.trim().substring(1);
@@ -183,7 +183,7 @@ export default Component.extend({
     "message.action_code",
     "isHovered"
   )
-  innerMessageClasses(staged, deletedAt, inReplyTo, actionCode, isHovered) {
+  chatMessageClasses(staged, deletedAt, inReplyTo, actionCode, isHovered) {
     let classNames = ["tc-message"];
 
     if (staged) {

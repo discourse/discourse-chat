@@ -1359,7 +1359,7 @@ body.composer-open .topic-chat-float-container {
 .tc-live-pane .tc-composer .tc-composer-row .tc-composer-input {
   text-overflow: ellipsis;
 
-  &::-webkit-input-placeholder {
+  &:placeholder-shown {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

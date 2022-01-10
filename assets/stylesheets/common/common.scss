@@ -371,7 +371,7 @@ body.composer-open .topic-chat-float-container {
     border: 1px solid var(--secondary);
     border-radius: 50%;
 
-    .tc-messages-container & {
+    .chat-messages-container & {
       right: -1px;
       bottom: -1px;
       width: 10px;
@@ -399,7 +399,7 @@ body.composer-open .topic-chat-float-container {
   }
 }
 
-.tc-messages-container {
+.chat-messages-container {
   word-wrap: break-word;
   white-space: normal;
 
@@ -456,7 +456,7 @@ body.composer-open .topic-chat-float-container {
   width: 100%;
   overflow: hidden;
 
-  .tc-messages-scroll {
+  .chat-messages-scroll {
     margin-bottom: 0.5em;
     flex-grow: 1;
     overflow-y: scroll;
@@ -1169,8 +1169,9 @@ body.composer-open .topic-chat-float-container {
       }
     }
   }
+
   .tc-live-pane,
-  .tc-messages-scroll,
+  .chat-messages-scroll,
   .tc-live-pane {
     box-sizing: border-box;
     height: 100%;

@@ -1,12 +1,12 @@
 {{#if message.newestMessage}}
-  <div class="tc-message-separator new-message">
+  <div class="chat-message-separator new-message">
     <div class="tc-separator"></div>
     <span class="chat-message-text">
       {{i18n "chat.new_messages"}}
     </span>
   </div>
 {{else if message.firstMessageOfTheDayAt}}
-  <div class="tc-message-separator first-daily-message">
+  <div class="chat-message-separator first-daily-message">
     <div class="tc-separator"></div>
     <span class="chat-message-text">
       {{message.firstMessageOfTheDayAt}}
@@ -32,9 +32,9 @@
       }}
     {{/if}}
     {{#if deletedAndCollapsed}}
-      <div class="tc-message-deleted">
+      <div class="chat-message-deleted">
         {{d-button
-          class="btn-flat tc-message-expand-deleted"
+          class="btn-flat chat-message-expand-deleted"
           action=(action "expand")
           label="chat.deleted"
         }}

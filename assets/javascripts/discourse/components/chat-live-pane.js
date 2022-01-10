@@ -80,7 +80,7 @@ export default Component.extend({
       });
     }
 
-    this._scrollerEl = this.element.querySelector(".tc-messages-scroll");
+    this._scrollerEl = this.element.querySelector(".chat-messages-scroll");
     this._scrollerEl.addEventListener(
       "scroll",
       () => {

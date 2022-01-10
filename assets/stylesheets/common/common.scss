@@ -622,6 +622,8 @@ body.composer-open .topic-chat-float-container {
     padding: 0.25em 0.75em;
 
     .replying-text {
+      display: inline-flex;
+
       font-size: var(--font-down-2);
 
       &:before {
@@ -633,6 +635,7 @@ body.composer-open .topic-chat-float-container {
 
     .wave {
       flex: 0 0 auto;
+      display: inline-flex;
 
       .dot {
         display: inline-block;

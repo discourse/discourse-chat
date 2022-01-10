@@ -388,7 +388,7 @@ export default Component.extend({
     }
 
     const messageEl = this._scrollerEl.querySelector(
-      `.chat-message-${messageId}`
+      `.chat-message-container-${messageId}`
     );
     if (messageEl) {
       schedule("afterRender", () => {

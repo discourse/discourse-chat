@@ -171,7 +171,7 @@ export default Component.extend({
 
   @discourseComputed("selectingMessages", "message.id")
   messageContainerClasses(selecting, id) {
-    return `chat-message chat-message-${id} ${
+    return `chat-message-container chat-message-container-${id} ${
       selecting ? "selecting-messages" : ""
     }`.trim();
   },

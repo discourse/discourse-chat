@@ -148,3 +148,86 @@ discourseModule(
     });
   }
 );
+
+discourseModule(
+  "Discourse Chat | Component | chat message collapser animated image",
+  function (hooks) {
+    setupRenderingTest(hooks);
+    const escapedMessage = "http://gif.com/1/g.w?cid=1&amp;id=gif.web&amp;ct=g";
+    const message = "http://gif.com/1/g.w?cid=1&id=gif.web&ct=g";
+    const animatedImageCooked = `<p><img src="${escapedMessage}" class="animated onebox"></img></p>`;
+    const unescapedAnimatedImageCooked =
+      '<p><img src="someurl" class="animated onebox"></img></p>';
+    const notOneboxAnimatedImageCooked =
+      '<p><img src="someurl" class="animated onebo"></img></p>';
+
+    componentTest("shows link for animated image", {
+      template: hbs`{{chat-message-collapser cooked=cooked message=message}}`,
+
+      beforeEach() {
+        this.set("cooked", animatedImageCooked);
+        this.set("message", message);
+      },
+
+      async test(assert) {
+        assert.strictEqual(
+          query("a.chat-message-collapser-filename").innerText.trim(),
+          message
+        );
+        assert.strictEqual(
+          query("a.chat-message-collapser-filename").href,
+          message
+        );
+      },
+    });
+
+    componentTest("does not show message for malicious cooked message", {
+      template: hbs`{{chat-message-collapser cooked=cooked message=message}}`,
+
+      beforeEach() {
+        this.set("cooked", unescapedAnimatedImageCooked);
+        this.set("message", message);
+      },
+
+      async test(assert) {
+        assert.notOk(exists(".chat-message-collapser-filename"));
+      },
+    });
+
+    componentTest("does not show message for non-onebox cooked message", {
+      template: hbs`{{chat-message-collapser cooked=cooked message=message}}`,
+
+      beforeEach() {
+        this.set("cooked", notOneboxAnimatedImageCooked);
+        this.set("message", message);
+      },
+
+      async test(assert) {
+        assert.notOk(exists(".chat-message-collapser-filename"));
+      },
+    });
+
+    componentTest("collapses and expands animated image", {
+      template: hbs`{{chat-message-collapser cooked=cooked message=message}}`,
+
+      beforeEach() {
+        this.set("cooked", animatedImageCooked);
+        this.set("message", message);
+      },
+
+      async test(assert) {
+        const onebox = ".animated.onebox";
+
+        assert.ok(exists(onebox));
+
+        await click(".chat-message-collapser-open");
+
+        assert.notOk(exists(onebox));
+
+        await click(".chat-message-collapser-close");
+
+        assert.ok(exists(onebox));
+      },
+    });
+  }
+);

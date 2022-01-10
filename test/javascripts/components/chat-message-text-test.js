@@ -49,7 +49,25 @@ discourseModule(
       },
     });
 
-    componentTest("is neither youtube nor image and does not show collapse", {
+    componentTest("is animated image and shows collapsed", {
+      template: hbs`{{chat-message-text cooked=cooked message=message edited=edited}}`,
+
+      beforeEach() {
+        const escapedMessage =
+          "http://gif.com/1/g.w?cid=1&amp;id=gif.web&amp;ct=g";
+        const message = "http://gif.com/1/g.w?cid=1&id=gif.web&ct=g";
+        const animagedImageCooked = `<p><img src="${escapedMessage}" class="animated onebox"`;
+
+        this.set("cooked", animagedImageCooked);
+        this.set("message", message);
+      },
+
+      async test(assert) {
+        assert.ok(exists(".chat-message-collapser"));
+      },
+    });
+
+    componentTest("is not collapsible and does not show collapse", {
       template: hbs`{{chat-message-text cooked=cooked uploads=uploads edited=edited}}`,
 
       beforeEach() {

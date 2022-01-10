@@ -1327,6 +1327,9 @@ body.composer-open .topic-chat-float-container {
 
   .chat-message-collapser-filename {
     font-size: 0.75em;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
   }
 
   .chat-message-collapser-button {

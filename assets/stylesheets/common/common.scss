@@ -1355,3 +1355,13 @@ body.composer-open .topic-chat-float-container {
     margin-bottom: 0.1em;
   }
 }
+
+.tc-live-pane .tc-composer .tc-composer-row .tc-composer-input {
+  text-overflow: ellipsis;
+
+  &::-webkit-input-placeholder {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

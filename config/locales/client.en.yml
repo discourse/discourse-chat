@@ -61,7 +61,7 @@ en:
       open_full_page: "Open full-screen chat"
       open_message: "Open message in chat"
       placeholder_self: "Jot something down"
-      placeholder_others: "Send a message to %{messageRecipient}"
+      placeholder_others: "Chat with %{messageRecipient}"
       placeholder_previewing: "Join the channel to send a message."
       remove_upload: "Remove file"
       react: "React with emoji"

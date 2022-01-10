@@ -7,7 +7,7 @@ $float-height: 530px;
   --full-page-sidebar-width: 275px;
 }
 
-.tc-composer {
+.chat-composer {
   #chat-full-page-uploader,
   #chat-widget-uploader {
     display: none;
@@ -117,7 +117,7 @@ body.composer-open .topic-chat-float-container {
   transition: all 100ms ease-in;
   transition-property: bottom, padding-bottom;
 
-  .tc-channels {
+  .chat-channels {
     .chat-channel-row {
       padding: 0 0.5rem 0 1rem;
     }
@@ -131,7 +131,8 @@ body.composer-open .topic-chat-float-container {
     }
   }
 }
-.tc-drawer {
+
+.chat-drawer {
   align-self: flex-end;
 }
 
@@ -149,8 +150,8 @@ body.composer-open .topic-chat-float-container {
     max-height: $float-height;
     height: calc(85vh - var(--composer-height, 0px));
 
-    .tc-live-pane,
-    .tc-chat-listing {
+    .chat-live-pane,
+    .chat-chat-listing {
       max-height: calc(#{$float-height} - #{$header-height});
       height: calc(85vh - var(--composer-height, 0px) - #{$header-height});
     }
@@ -187,14 +188,17 @@ body.composer-open .topic-chat-float-container {
       overflow: hidden;
       text-overflow: ellipsis;
     }
+
     .d-icon:not(.d-icon-hashtag) {
       color: var(--primary-high);
     }
+
     .category-hashtag {
       padding: 2px 4px;
     }
   }
-  .tc-unread-count {
+
+  .chat-unread-count {
     display: inline-block;
     color: var(--secondary, $secondary);
     background-color: var(--tertiary-med-or-tertiary, $danger);
@@ -207,11 +211,13 @@ body.composer-open .topic-chat-float-container {
     padding: 1px;
     text-align: center;
   }
-  .tc-full-screen-btn {
+
+  .chat-full-screen-btn {
     margin-left: auto;
   }
-  .tc-full-screen-btn,
-  .tc-expand {
+
+  .chat-full-screen-btn,
+  .chat-expand {
     &:focus {
       outline: none;
       background: none;
@@ -221,6 +227,7 @@ body.composer-open .topic-chat-float-container {
         color: var(--primary-low-mid);
       }
     }
+
     &:hover {
       .d-icon {
         color: var(--primary-high);
@@ -241,7 +248,7 @@ body.composer-open .topic-chat-float-container {
   height: 100%;
   padding-bottom: 0.25em;
 
-  .tc-channels .chat-channel-divider {
+  .chat-channels .chat-channel-divider {
     padding: 0.25rem 0.5rem;
   }
 }
@@ -256,7 +263,7 @@ body.composer-open .topic-chat-float-container {
   }
 }
 
-.tc-channels {
+.chat-channels {
   overflow-y: auto;
   height: 100%;
   position: relative;
@@ -403,7 +410,7 @@ body.composer-open .topic-chat-float-container {
   word-wrap: break-word;
   white-space: normal;
 
-  .tc-time {
+  .chat-time {
     color: var(--primary-high);
     font-size: var(--font-down-2);
   }
@@ -449,7 +456,7 @@ body.composer-open .topic-chat-float-container {
   }
 }
 
-.tc-live-pane {
+.chat-live-pane {
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -516,7 +523,7 @@ body.composer-open .topic-chat-float-container {
     }
   }
 
-  .tc-composer {
+  .chat-composer {
     min-height: 1.5em;
     flex-shrink: 0;
     width: 100%;
@@ -525,7 +532,7 @@ body.composer-open .topic-chat-float-container {
       font-weight: bold;
     }
 
-    .tc-composer-row {
+    .chat-composer-row {
       position: relative;
       padding: 0 0.5em;
       display: grid;
@@ -548,13 +555,13 @@ body.composer-open .topic-chat-float-container {
       }
     }
 
-    .tc-composer-row > .tc-composer-input:focus {
+    .chat-composer-row > .chat-composer-input:focus {
       border-color: var(--primary-medium);
       outline: none;
     }
 
-    .tc-composer-row > .tc-composer-input,
-    .tc-composer-row::after {
+    .chat-composer-row > .chat-composer-input,
+    .chat-composer-row::after {
       // `after` pseudo-element should match input styling exactly
       // via https://css-tricks.com/the-cleanest-trick-for-autogrowing-textareas/
       grid-area: 1 / 1 / 2 / 2;
@@ -568,7 +575,7 @@ body.composer-open .topic-chat-float-container {
       width: 100%;
     }
 
-    .tc-composer-message-details {
+    .chat-composer-message-details {
       position: relative;
       max-height: calc(2em - 5px);
       padding: 6px 0.75em;
@@ -578,6 +585,7 @@ body.composer-open .topic-chat-float-container {
         width: calc(100% - 2em);
       }
     }
+
     .cancel-message-action {
       position: absolute;
       top: 6px;
@@ -838,7 +846,7 @@ body.composer-open .topic-chat-float-container {
 
 // Styles to make channel list in sidebar match sidebar theme
 .sidebar-container {
-  .tc-channels {
+  .chat-channels {
     color: var(--primary);
     font-size: var(--font-down-1);
     padding-bottom: 2em;
@@ -1113,7 +1121,7 @@ body.composer-open .topic-chat-float-container {
   grid-template-columns: var(--full-page-sidebar-width) 1fr;
   grid-template-rows: var(--full-page-chat-height);
 
-  .tc-channels {
+  .chat-channels {
     background: var(--primary-very-low);
     height: 100%;
     border-right: 1px solid var(--primary-low);
@@ -1134,7 +1142,7 @@ body.composer-open .topic-chat-float-container {
     }
   }
 
-  .tc-full-page-header {
+  .chat-full-page-header {
     display: flex;
     align-items: center;
     border-bottom: 1px solid var(--primary-low);
@@ -1170,9 +1178,9 @@ body.composer-open .topic-chat-float-container {
     }
   }
 
-  .tc-live-pane,
+  .chat-live-pane,
   .chat-messages-scroll,
-  .tc-live-pane {
+  .chat-live-pane {
     box-sizing: border-box;
     height: 100%;
     border-radius: 0 var(--full-page-border-radius)
@@ -1180,9 +1188,10 @@ body.composer-open .topic-chat-float-container {
   }
 }
 
-.tc-full-page-header {
+.chat-full-page-header {
   .chat-channel-title {
     max-width: 100%;
+
     .dm-usernames {
       overflow: hidden;
       text-overflow: ellipsis;
@@ -1190,7 +1199,7 @@ body.composer-open .topic-chat-float-container {
   }
 }
 
-.tc-channels {
+.chat-channels {
   .tag-chat-badge,
   .category-chat-badge,
   .topic-chat-badge {
@@ -1334,7 +1343,7 @@ body.composer-open .topic-chat-float-container {
     }
   }
 
-  .tc-uploads {
+  .chat-uploads {
     .chat-img-upload,
     .chat-other-upload {
       margin-bottom: 1em;
@@ -1357,7 +1366,7 @@ body.composer-open .topic-chat-float-container {
   }
 }
 
-.tc-live-pane .tc-composer .tc-composer-row .tc-composer-input {
+.chat-live-pane .chat-composer .chat-composer-row .chat-composer-input {
   text-overflow: ellipsis;
 
   &:placeholder-shown {

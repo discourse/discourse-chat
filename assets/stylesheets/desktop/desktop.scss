@@ -1,4 +1,4 @@
-.tc-drawer {
+.chat-drawer {
   width: 400px;
   max-width: 100vw;
 }
@@ -12,17 +12,17 @@
   &.teams-sidebar-on {
     grid-template-columns: 1fr;
 
-    .tc-live-pane {
+    .chat-live-pane {
       border-radius: var(--full-page-border-radius);
     }
   }
 
-  .tc-full-page-header {
+  .chat-full-page-header {
     padding: 0 1em;
     flex-shrink: 0;
   }
 
-  .tc-live-pane {
+  .chat-live-pane {
     .chat-messages-container {
       .chat-message {
         &.is-reply {
@@ -36,15 +36,15 @@
     }
   }
 
-  .tc-composer {
+  .chat-composer {
     margin: 0;
 
-    .tc-composer-message-details {
+    .chat-composer-message-details {
       padding-left: 1em;
       padding-right: 1.5em;
     }
 
-    .tc-composer-row {
+    .chat-composer-row {
       .chat-composer-toolbar {
         right: 1em;
       }
@@ -52,7 +52,7 @@
   }
 }
 
-.tc-composer-row .emoji-picker.opened {
+.chat-composer-row .emoji-picker.opened {
   position: absolute;
   bottom: 40px;
 }
@@ -98,11 +98,11 @@
     border-left: 1px solid var(--primary-low);
     overflow: hidden;
 
-    .tc-full-page-header {
+    .chat-full-page-header {
       padding: 0.5em 1em;
     }
 
-    .tc-channels {
+    .chat-channels {
       background: var(--primary-very-low);
 
       .chat-channel-divider {
@@ -114,11 +114,11 @@
       }
     }
 
-    .tc-live-pane {
+    .chat-live-pane {
       border-radius: unset;
     }
 
-    .tc-live-pane,
+    .chat-live-pane,
     .chat-messages-scroll,
     .chat-message:not(.highlighted):not(.deleted) {
       background-color: transparent;
@@ -150,11 +150,11 @@
     padding: 2em 0em 0em 0em;
   }
   .full-page-chat.teams-sidebar-on {
-    .tc-live-pane {
+    .chat-live-pane {
       border-radius: 0;
     }
 
-    .tc-live-pane,
+    .chat-live-pane,
     .chat-messages-scroll,
     .chat-message:not(.highlighted) {
       background: transparent;

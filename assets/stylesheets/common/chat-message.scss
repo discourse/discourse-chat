@@ -62,7 +62,7 @@
     }
   }
 
-  &.tc-action {
+  &.chat-action {
     background-color: var(--highlight-medium);
   }
 
@@ -84,7 +84,7 @@
   }
 
   &.user-info-hidden {
-    .tc-time {
+    .chat-time {
       color: var(--secondary-medium);
       flex-shrink: 0;
       font-size: var(--font-down-2);
@@ -93,7 +93,7 @@
       width: var(--message-left-width);
     }
 
-    .tc-msgactions-hover {
+    .chat-msgactions-hover {
       top: -2em;
     }
   }
@@ -224,7 +224,7 @@
     }
   }
 
-  .tc-send-error {
+  .chat-send-error {
     text-align: center;
     color: var(--danger-medium);
   }
@@ -257,7 +257,7 @@
   background-color: var(--tertiary-low) !important;
 }
 
-.tc-msgactions-hover {
+.chat-msgactions-hover {
   position: absolute;
   opacity: 0;
   padding-left: 4em;
@@ -268,11 +268,11 @@
   z-index: 2;
 }
 
-.chat-message.is-reply .tc-msgactions-hover {
+.chat-message.is-reply .chat-msgactions-hover {
   top: 0.5em;
 }
 
-.tc-msgactions {
+.chat-msgactions {
   border-radius: 0.25em;
   background-color: var(--secondary);
   display: flex;
@@ -441,7 +441,7 @@
   .not-mobile-device & .chat-message:hover,
   .chat-message.chat-message-selected,
   .chat-message:focus-within {
-    .tc-msgactions-hover {
+    .chat-msgactions-hover {
       opacity: 1;
       pointer-events: initial;
     }
@@ -449,7 +449,7 @@
 
   .not-mobile-device & .user-info-hidden:hover,
   .user-info-hidden.chat-message-selected {
-    .tc-time {
+    .chat-time {
       visibility: visible;
     }
   }
@@ -465,7 +465,7 @@
   }
 }
 
-.tc-action-text {
+.chat-action-text {
   font-style: italic;
 }
 
@@ -478,7 +478,7 @@
   &.new-message {
     color: var(--danger-medium);
 
-    .tc-separator {
+    .chat-separator {
       background-color: var(--danger-medium);
     }
   }
@@ -489,7 +489,7 @@
       font-weight: 600;
     }
 
-    .tc-separator {
+    .chat-separator {
       background-color: var(--secondary-high);
     }
   }
@@ -501,7 +501,7 @@
     background: var(--secondary);
   }
 
-  .tc-separator {
+  .chat-separator {
     position: absolute;
     width: 100%;
     height: 1px;

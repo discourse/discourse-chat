@@ -1,13 +1,13 @@
 {{#if message.newestMessage}}
   <div class="chat-message-separator new-message">
-    <div class="tc-separator"></div>
+    <div class="chat-separator"></div>
     <span class="chat-message-text">
       {{i18n "chat.new_messages"}}
     </span>
   </div>
 {{else if message.firstMessageOfTheDayAt}}
   <div class="chat-message-separator first-daily-message">
-    <div class="tc-separator"></div>
+    <div class="chat-separator"></div>
     <span class="chat-message-text">
       {{message.firstMessageOfTheDayAt}}
     </span>
@@ -42,8 +42,8 @@
     {{else}}
       <div class={{chatMessageClasses}}>
         {{#unless message.staged}}
-          <div class="tc-msgactions-hover">
-            <div class="tc-msgactions">
+          <div class="chat-msgactions-hover">
+            <div class="chat-msgactions">
               {{#each favoritesEmojis as |favorite|}}
                 {{chat-message-reaction
                   emoji=favorite.emoji
@@ -133,7 +133,7 @@
           {{/unless}}
 
           {{#if message.action_code}}
-            <span class="tc-action-text">
+            <span class="chat-action-text">
               {{html-safe actionCodeText}}
             </span>
           {{else}}
@@ -172,7 +172,7 @@
           {{/if}}
 
           {{#if message.error}}
-            <div class="tc-send-error">
+            <div class="chat-send-error">
               {{i18n "chat.send_error"}}
             </div>
           {{/if}}

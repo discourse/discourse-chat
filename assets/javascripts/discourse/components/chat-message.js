@@ -190,8 +190,8 @@ export default Component.extend({
       classNames.push("chat-message-staged");
     }
     if (actionCode) {
-      classNames.push("tc-action");
-      classNames.push(`tc-action-${actionCode}`);
+      classNames.push("chat-action");
+      classNames.push(`chat-action-${actionCode}`);
     }
     if (deletedAt) {
       classNames.push("deleted");
@@ -375,7 +375,7 @@ export default Component.extend({
 
   @action
   startReactionForMsgActions() {
-    const btn = this.element.querySelector(".tc-msgactions-hover .react-btn");
+    const btn = this.element.querySelector(".chat-msgactions-hover .react-btn");
     this._startReaction(btn, this.SHOW_LEFT);
   },
 

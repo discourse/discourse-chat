@@ -129,7 +129,7 @@ discourseModule(
       },
 
       async test(assert) {
-        const uploads = ".tc-uploads";
+        const uploads = ".chat-uploads";
         const chatImageUpload = ".chat-img-upload";
 
         assert.ok(exists(uploads));

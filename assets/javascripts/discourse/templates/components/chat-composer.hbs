@@ -15,7 +15,7 @@
   }}
 {{/if}}
 
-<div class="tc-composer-row">
+<div class="chat-composer-row">
   {{#if showToolbar}}
     <div class="chat-composer-toolbar">
       {{#each toolbarButtons as |toolbarButton|}}
@@ -34,7 +34,7 @@
     value=(readonly value)
     input=(action "onTextareaInput" value="target.value")
     type="text"
-    class="tc-composer-input"
+    class="chat-composer-input"
     disabled=previewing
     autocorrect="on"
     autocapitalize="off"

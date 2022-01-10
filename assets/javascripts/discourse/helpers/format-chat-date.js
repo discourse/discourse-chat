@@ -29,6 +29,6 @@ registerUnbound("format-chat-date", function (message, details, mode) {
       : date.format(I18n.t("dates.time"));
 
   return htmlSafe(
-    `<a title='${title}' class='tc-time' href='${url}'>${display}</a>`
+    `<a title='${title}' class='chat-time' href='${url}'>${display}</a>`
   );
 });

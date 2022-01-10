@@ -1,5 +1,5 @@
-.tc-live-pane .tc-composer .tc-composer-row {
-  .tc-composer-input {
+.chat-live-pane .chat-composer .chat-composer-row {
+  .chat-composer-input {
     padding-right: 75px;
   }
 
@@ -19,7 +19,7 @@
   }
 }
 
-.tc-composer-uploads-container {
+.chat-composer-uploads-container {
   padding: 0.25em 0.75em;
 }
 
@@ -71,30 +71,33 @@ body.has-full-page-chat {
   overflow-x: hidden;
   width: 100%;
 
-  .tc-live-pane {
+  .chat-live-pane {
     border-radius: 0;
   }
 
-  .tc-drawer {
+  .chat-drawer {
     width: 100%;
   }
-  .tc-live-pane {
+
+  .chat-live-pane {
     padding: 0;
   }
-  .tc-full-page-header {
+
+  .chat-full-page-header {
     background-color: var(--secondary);
   }
-  .tc-composer {
+
+  .chat-composer {
     background-color: var(--primary-very-low);
   }
 
-  .tc-full-page-header {
+  .chat-full-page-header {
     padding: 0.5em 0.25em;
     font-weight: bold;
   }
 }
 
-.tc-channels .chat-channel-row {
+.chat-channels .chat-channel-row {
   padding: 0 0.5em 0 1.5em;
 
   .category-chat-private .d-icon {
@@ -109,15 +112,15 @@ body.has-full-page-chat {
   }
 }
 
-.sidebar-container .tc-channels .chat-channel-divider {
+.sidebar-container .chat-channels .chat-channel-divider {
   padding-left: 1em;
 }
 
-.tc-channels .chat-channel-divider {
+.chat-channels .chat-channel-divider {
   padding: 0.25em 0.5em 0.25em;
 }
 
-.sidebar-container .tc-channels .chat-channel-row {
+.sidebar-container .chat-channels .chat-channel-row {
   padding: 0.5em;
 }
 

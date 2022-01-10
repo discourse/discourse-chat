@@ -336,11 +336,13 @@ acceptance("Discourse Chat - without unread", function (needs) {
     await visit("/chat/channel/9/Site");
     await click(".reply-btn");
     assert.ok(
-      exists(".tc-composer-message-details .d-icon-reply"),
+      exists(".chat-composer-message-details .d-icon-reply"),
       "Reply icon is present"
     );
     assert.equal(
-      query(".tc-composer-message-details .tc-reply-username").innerText.trim(),
+      query(
+        ".chat-composer-message-details .tc-reply-username"
+      ).innerText.trim(),
       "markvanlan"
     );
   });
@@ -353,15 +355,20 @@ acceptance("Discourse Chat - without unread", function (needs) {
     await dropdown.selectRowByValue("edit");
 
     assert.ok(
-      exists(".tc-composer-message-details .d-icon-pencil-alt"),
+      exists(".chat-composer-message-details .d-icon-pencil-alt"),
       "Edit icon is present"
     );
     assert.equal(
-      query(".tc-composer-message-details .tc-reply-username").innerText.trim(),
+      query(
+        ".chat-composer-message-details .tc-reply-username"
+      ).innerText.trim(),
       "markvanlan"
     );
 
-    assert.equal(query(".tc-composer-input").value.trim(), messageContents[0]);
+    assert.equal(
+      query(".chat-composer-input").value.trim(),
+      messageContents[0]
+    );
   });
 
   test("Reply-to is stored in draft", async function (assert) {
@@ -374,25 +381,25 @@ acceptance("Discourse Chat - without unread", function (needs) {
       await click(".chat-channel-row.chat-channel-9");
       await click(".chat-message-container .reply-btn");
       // Reply-to line is present
-      assert.ok(exists(".tc-composer-message-details .tc-reply-display"));
+      assert.ok(exists(".chat-composer-message-details .tc-reply-display"));
       await click(".return-to-channels");
       await click(".chat-channel-row.chat-channel-7");
       // Reply-to line is gone since switching channels
-      assert.notOk(exists(".tc-composer-message-details .tc-reply-display"));
+      assert.notOk(exists(".chat-composer-message-details .tc-reply-display"));
       // Now click on reply btn and cancel it on channel 7
       await click(".chat-message-container .reply-btn");
-      await click(".tc-composer .cancel-message-action");
+      await click(".chat-composer .cancel-message-action");
 
       // Go back to channel 9 and check that reply-to is present
       await click(".return-to-channels");
       await click(".chat-channel-row.chat-channel-9");
       // Now reply-to should be back and loaded from draft
-      assert.ok(exists(".tc-composer-message-details .tc-reply-display"));
+      assert.ok(exists(".chat-composer-message-details .tc-reply-display"));
 
       // Go back one for time to channel 7 and make sure reply-to is gone
       await click(".return-to-channels");
       await click(".chat-channel-row.chat-channel-7");
-      assert.notOk(exists(".tc-composer-message-details .tc-reply-display"));
+      assert.notOk(exists(".chat-composer-message-details .tc-reply-display"));
       done();
     });
   });
@@ -400,7 +407,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
   test("Sending a message", async function (assert) {
     await visit("/chat/channel/9/Site");
     const messageContent = "Here's a message";
-    const composerInput = query(".tc-composer-input");
+    const composerInput = query(".chat-composer-input");
     assert.deepEqual(
       presentUserIds("/chat-reply/9"),
       [],
@@ -509,30 +516,30 @@ acceptance("Discourse Chat - without unread", function (needs) {
 
   test("Drafts are saved and reloaded", async function (assert) {
     await visit("/chat/channel/9/Site");
-    await fillIn(".tc-composer-input", "Hi people");
+    await fillIn(".chat-composer-input", "Hi people");
 
     await visit("/chat/channel/75/@hawk");
-    assert.equal(query(".tc-composer-input").value.trim(), "");
-    await fillIn(".tc-composer-input", "What up what up");
+    assert.equal(query(".chat-composer-input").value.trim(), "");
+    await fillIn(".chat-composer-input", "What up what up");
 
     await visit("/chat/channel/9/Site");
-    assert.equal(query(".tc-composer-input").value.trim(), "Hi people");
-    await fillIn(".tc-composer-input", "");
+    assert.equal(query(".chat-composer-input").value.trim(), "Hi people");
+    await fillIn(".chat-composer-input", "");
 
     await visit("/chat/channel/75/@hawk");
-    assert.equal(query(".tc-composer-input").value.trim(), "What up what up");
+    assert.equal(query(".chat-composer-input").value.trim(), "What up what up");
 
     // Send a message
-    const composerTextarea = query(".tc-composer-input");
+    const composerTextarea = query(".chat-composer-input");
     await focus(composerTextarea);
     await triggerKeyEvent(composerTextarea, "keydown", 13); // 13 is enter keycode
 
-    assert.equal(query(".tc-composer-input").value.trim(), "");
+    assert.equal(query(".chat-composer-input").value.trim(), "");
 
     // Navigate away and back to make sure input didn't re-fill
     await visit("/chat/channel/9/Site");
     await visit("/chat/channel/75/@hawk");
-    assert.equal(query(".tc-composer-input").value.trim(), "");
+    assert.equal(query(".chat-composer-input").value.trim(), "");
   });
 
   test("Pressing escape cancels editing", async function (assert) {
@@ -542,11 +549,11 @@ acceptance("Discourse Chat - without unread", function (needs) {
     await dropdown.expand();
     await dropdown.selectRowByValue("edit");
 
-    assert.ok(exists(".tc-composer .tc-composer-message-details"));
-    await triggerKeyEvent(".tc-composer", "keydown", 27); // 27 is escape
+    assert.ok(exists(".chat-composer .chat-composer-message-details"));
+    await triggerKeyEvent(".chat-composer", "keydown", 27); // 27 is escape
 
-    // tc-composer-message-details will be gone as no message is being edited
-    assert.notOk(exists(".tc-composer .tc-composer-message-details"));
+    // chat-composer-message-details will be gone as no message is being edited
+    assert.notOk(exists(".chat-composer .chat-composer-message-details"));
   });
 
   test("Unread indicator increments for public channels when messages come in", async function (assert) {
@@ -656,7 +663,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     await dropdown.selectRowByValue("selectMessage");
 
     assert.ok(firstMessage.classList.contains("selecting-messages"));
-    const moveToTopicBtn = query(".tc-live-pane #chat-move-to-topic-btn");
+    const moveToTopicBtn = query(".chat-live-pane #chat-move-to-topic-btn");
     assert.equal(
       moveToTopicBtn.disabled,
       false,
@@ -692,7 +699,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     updateCurrentUser({ admin: false, moderator: false });
     await visit("/chat/channel/9/Site");
     assert.notOk(
-      exists(".chat-message-container .tc-msgactions-hover .select-btn")
+      exists(".chat-message-container .chat-msgactions-hover .select-btn")
     );
   });
 
@@ -716,7 +723,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     await visit("/chat/channel/9/Site");
     const message = query(".chat-message-container");
     assert.notOk(message.querySelector(".chat-message-reaction-list"));
-    await click(message.querySelector(".tc-msgactions .react-btn"));
+    await click(message.querySelector(".chat-msgactions .react-btn"));
     await click(message.querySelector(".emoji-picker .section-group .emoji"));
 
     assert.ok(message.querySelector(".chat-message-reaction-list"));
@@ -870,7 +877,7 @@ acceptance(
       await visit("/t/internationalization-localization/280");
       this.chatService.set("sidebarActive", false);
       await visit(".header-dropdown-toggle.open-chat");
-      await click(".tc-full-screen-btn");
+      await click(".chat-full-screen-btn");
       const channelWithUnread = chatChannels.public_channels.findBy("id", 7);
       assert.equal(
         currentURL(),
@@ -1081,7 +1088,7 @@ acceptance(
     test("previewing channel", async function (assert) {
       await visit("/chat/channel/70/preview-me");
       assert.ok(exists(".join-channel-btn"), "Join channel button is present");
-      assert.equal(query(".tc-composer-row textarea").disabled, true);
+      assert.equal(query(".chat-composer-row textarea").disabled, true);
     });
 
     test("Chat browse controls", async function (assert) {
@@ -1289,7 +1296,7 @@ acceptance("Discourse Chat - image uploads", function (needs) {
 
     appEvents.on("chat-composer:all-uploads-complete", () => {
       assert.strictEqual(
-        queryAll(".tc-composer-input").val(),
+        queryAll(".chat-composer-input").val(),
         "![avatar.PNG|690x320](upload://yoj8pf9DdIeHRRULyw7i57GAYdz.jpeg)\n"
       );
       done();
@@ -1297,7 +1304,7 @@ acceptance("Discourse Chat - image uploads", function (needs) {
 
     appEvents.on("chat-composer:upload-started", () => {
       assert.strictEqual(
-        queryAll(".tc-composer-input").val(),
+        queryAll(".chat-composer-input").val(),
         "[Uploading: avatar.png...]()\n"
       );
     });

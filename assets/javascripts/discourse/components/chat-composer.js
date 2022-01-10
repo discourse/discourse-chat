@@ -37,7 +37,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   lastChatChannelId: null,
 
   chat: service(),
-  classNames: ["tc-composer"],
+  classNames: ["chat-composer"],
   emojiStore: service("emoji-store"),
   editingMessage: null,
   fullPage: false,
@@ -53,7 +53,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   eventPrefix: "chat-composer",
   composerModel: null,
   composerModelContentKey: "value",
-  editorInputClass: ".tc-composer-input",
+  editorInputClass: ".chat-composer-input",
   showCancelBtn: or("isUploading", "isProcessingUpload"),
   uploadCancelled: false,
   uploadProcessorActions: null,
@@ -126,7 +126,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     this._super(...arguments);
     this.set("composerModel", this);
 
-    this._textarea = this.element.querySelector(".tc-composer-input");
+    this._textarea = this.element.querySelector(".chat-composer-input");
     this._$textarea = $(this._textarea);
     this._applyCategoryHashtagAutocomplete(this._$textarea);
     this._applyEmojiAutocomplete(this._$textarea);
@@ -486,7 +486,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   },
 
   _uploadDropTargetOptions() {
-    const targetEl = document.querySelector(".tc-live-pane");
+    const targetEl = document.querySelector(".chat-live-pane");
     if (!targetEl) {
       return this._super();
     }

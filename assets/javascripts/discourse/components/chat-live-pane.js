@@ -29,7 +29,7 @@ const READ_INTERVAL = 1000;
 const PAGE_SIZE = 50;
 
 export default Component.extend({
-  classNameBindings: [":tc-live-pane", "sendingloading", "loading"],
+  classNameBindings: [":chat-live-pane", "sendingloading", "loading"],
   topicId: null, // ?Number
   chatChannel: null,
   fullPage: false,
@@ -996,7 +996,7 @@ export default Component.extend({
     }
 
     next(() => {
-      document.querySelector(".tc-composer-input")?.focus();
+      document.querySelector(".chat-composer-input")?.focus();
     });
   },
 

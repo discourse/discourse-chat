@@ -509,9 +509,12 @@
   }
 }
 
-.chat-message-text img.chat-img-upload {
-  max-width: 100%;
-  height: unset;
+.chat-message-text {
+  img.animated.onebox,
+  img.chat-img-upload {
+    max-width: 100%;
+    height: unset;
+  }
 }
 
 .full-page-chat {

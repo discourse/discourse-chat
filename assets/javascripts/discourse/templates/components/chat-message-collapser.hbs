@@ -1,21 +1,30 @@
 <div class="chat-message-collapser">
-  {{#if uploads}}
+  {{#if isImage}}
     {{html-safe cooked}}
   {{/if}}
 
   <div class="chat-message-collapser-header">
-    {{#if uploads}}
+    {{#if isImage}}
       <span class="chat-message-collapser-filename">
-        {{filename}}
+        {{imageFilename}}
       </span>
-    {{else}}
+    {{else if isYoutube}}
       <a
         target="_blank"
         class="chat-message-collapser-link"
         rel="noopener noreferrer"
-        href={{link}}
+        href={{youtubeLink}}
       >
-        {{title}}
+        {{youtubeTitle}}
+      </a>
+    {{else if isAnimatedImage}}
+      <a
+        target="_blank"
+        class="chat-message-collapser-filename"
+        rel="noopener noreferrer"
+        href={{message}}
+      >
+        {{message}}
       </a>
     {{/if}}
 
@@ -35,13 +44,13 @@
   </div>
 
   {{#unless collapsed}}
-    {{#if uploads}}
+    {{#if isImage}}
       <div class="chat-uploads">
         {{#each uploads as |upload|}}
           {{chat-upload upload=upload}}
         {{/each}}
       </div>
-    {{else}}
+    {{else if (or isYoutube isAnimatedImage)}}
       {{html-safe cooked}}
     {{/if}}
   {{/unless}}

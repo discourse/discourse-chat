@@ -1,7 +1,5 @@
-{{#if isYoutubeCollapsible}}
-  {{chat-message-collapser cooked=cooked}}
-{{else if isImageCollapsible}}
-  {{chat-message-collapser cooked=cooked uploads=uploads}}
+{{#if isCollapsible}}
+  {{chat-message-collapser cooked=cooked uploads=uploads message=message}}
 {{else}}
   {{html-safe cooked}}
 {{/if}}

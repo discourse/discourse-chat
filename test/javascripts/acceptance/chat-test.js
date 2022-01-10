@@ -228,7 +228,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
 
   test("Chat messages are populated when a channel is entered and images are rendered", async function (assert) {
     await visit("/chat/channel/9/Site");
-    const messages = queryAll(".chat-message .tc-text");
+    const messages = queryAll(".chat-message .chat-message-text");
     assert.equal(messages[0].innerText.trim(), messageContents[0]);
 
     assert.ok(messages[1].querySelector("a.chat-other-upload"));
@@ -434,7 +434,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     assert.ok(lastMessage.querySelector(".tc-avatar"), "Avatar is present");
     assert.ok(lastMessage.querySelector(".full-name"), "Username is present");
     assert.equal(
-      lastMessage.querySelector(".tc-text").innerText.trim(),
+      lastMessage.querySelector(".chat-message-text").innerText.trim(),
       messageContent
     );
 
@@ -477,7 +477,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
         "Username is not shown"
       );
       assert.equal(
-        lastMessage.querySelector(".tc-text").innerText.trim(),
+        lastMessage.querySelector(".chat-message-text").innerText.trim(),
         nextMessageContent
       );
       done();
@@ -499,7 +499,9 @@ acceptance("Discourse Chat - without unread", function (needs) {
     const done = assert.async();
     next(async () => {
       assert.ok(
-        query(".chat-message-container-175 .tc-text").innerHTML.includes(cooked)
+        query(
+          ".chat-message-container-175 .chat-message-text"
+        ).innerHTML.includes(cooked)
       );
       done();
     });

@@ -1183,7 +1183,8 @@ body.composer-open .topic-chat-float-container {
   .chat-live-pane {
     box-sizing: border-box;
     height: 100%;
-    border-radius: 0 var(--full-page-border-radius) var(--full-page-border-radius) 0;
+    border-radius: 0 var(--full-page-border-radius)
+      var(--full-page-border-radius) 0;
   }
 }
 

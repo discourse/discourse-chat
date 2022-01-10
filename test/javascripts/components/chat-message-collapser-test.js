@@ -9,21 +9,21 @@ import {
 } from "discourse/tests/helpers/qunit-helpers";
 
 discourseModule(
-  "Discourse Chat | Component | tc message collapser youtube",
+  "Discourse Chat | Component | chat message collapser youtube",
   function (hooks) {
     setupRenderingTest(hooks);
     const youtubeCooked =
       '<div class="onebox lazyYT lazyYT-container" data-youtube-id="WaT_rLGuUr8" data-youtube-title="Japanese Katsu Curry (Pork Cutlet)"/>';
 
     componentTest("shows youtube link in header", {
-      template: hbs`{{tc-message-collapser cooked=cooked}}`,
+      template: hbs`{{chat-message-collapser cooked=cooked}}`,
 
       beforeEach() {
         this.set("cooked", youtubeCooked);
       },
 
       async test(assert) {
-        const link = query(".tc-message-collapsible-link");
+        const link = query(".chat-message-collapser-link");
 
         assert.ok(link);
         assert.strictEqual(
@@ -34,19 +34,19 @@ discourseModule(
     });
 
     componentTest("does not show filename since it's not an image", {
-      template: hbs`{{tc-message-collapser cooked=cooked}}`,
+      template: hbs`{{chat-message-collapser cooked=cooked}}`,
 
       beforeEach() {
         this.set("cooked", youtubeCooked);
       },
 
       async test(assert) {
-        assert.notOk(exists(".tc-message-collapsible-filename"));
+        assert.notOk(exists(".chat-message-collapser-filename"));
       },
     });
 
     componentTest("collapses and expands cooked youtube", {
-      template: hbs`{{tc-message-collapser cooked=cooked}}`,
+      template: hbs`{{chat-message-collapser cooked=cooked}}`,
 
       beforeEach() {
         this.set("cooked", youtubeCooked);
@@ -57,11 +57,11 @@ discourseModule(
 
         assert.ok(exists(youtubeDivSelector));
 
-        await click(".tc-message-collapsible-open");
+        await click(".chat-message-collapser-open");
 
         assert.notOk(exists(youtubeDivSelector));
 
-        await click(".tc-message-collapsible-close");
+        await click(".chat-message-collapser-close");
 
         assert.ok(exists(youtubeDivSelector));
       },
@@ -70,13 +70,13 @@ discourseModule(
 );
 
 discourseModule(
-  "Discourse Chat | Component | tc message collapser images",
+  "Discourse Chat | Component | chat message collapser images",
   function (hooks) {
     setupRenderingTest(hooks);
     const imageCooked = "<p>A picture of Tomtom</p>";
 
     componentTest("shows filename for one image", {
-      template: hbs`{{tc-message-collapser cooked=cooked uploads=uploads}}`,
+      template: hbs`{{chat-message-collapser cooked=cooked uploads=uploads}}`,
 
       beforeEach() {
         this.set("cooked", imageCooked);
@@ -85,14 +85,14 @@ discourseModule(
 
       async test(assert) {
         assert.strictEqual(
-          query(".tc-message-collapsible-filename").innerText.trim(),
+          query(".chat-message-collapser-filename").innerText.trim(),
           "tomtom.jpeg"
         );
       },
     });
 
     componentTest("shows number of files for multiple images", {
-      template: hbs`{{tc-message-collapser cooked=cooked uploads=uploads}}`,
+      template: hbs`{{chat-message-collapser cooked=cooked uploads=uploads}}`,
 
       beforeEach() {
         this.set("cooked", imageCooked);
@@ -101,14 +101,14 @@ discourseModule(
 
       async test(assert) {
         assert.strictEqual(
-          query(".tc-message-collapsible-filename").innerText.trim(),
+          query(".chat-message-collapser-filename").innerText.trim(),
           "2 files"
         );
       },
     });
 
     componentTest("does not show link in header since it's not youtube", {
-      template: hbs`{{tc-message-collapser cooked=cooked uploads=uploads}}`,
+      template: hbs`{{chat-message-collapser cooked=cooked uploads=uploads}}`,
 
       beforeEach() {
         this.set("cooked", imageCooked);
@@ -116,12 +116,12 @@ discourseModule(
       },
 
       async test(assert) {
-        assert.notOk(exists(".tc-message-collapsible-link"));
+        assert.notOk(exists(".chat-message-collapser-link"));
       },
     });
 
     componentTest("collapses and expands images", {
-      template: hbs`{{tc-message-collapser cooked=cooked uploads=uploads}}`,
+      template: hbs`{{chat-message-collapser cooked=cooked uploads=uploads}}`,
 
       beforeEach() {
         this.set("cooked", imageCooked);
@@ -135,12 +135,12 @@ discourseModule(
         assert.ok(exists(uploads));
         assert.ok(exists(chatImageUpload));
 
-        await click(".tc-message-collapsible-open");
+        await click(".chat-message-collapser-open");
 
         assert.notOk(exists(uploads));
         assert.notOk(exists(chatImageUpload));
 
-        await click(".tc-message-collapsible-close");
+        await click(".chat-message-collapser-close");
 
         assert.ok(exists(uploads));
         assert.ok(exists(chatImageUpload));

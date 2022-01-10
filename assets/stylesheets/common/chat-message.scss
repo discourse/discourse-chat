@@ -152,7 +152,7 @@
     margin-left: -0.25em;
   }
 
-  .tc-text {
+  .chat-message-text {
     min-width: 0;
     width: 100%;
 
@@ -484,7 +484,7 @@
   }
 
   &.first-daily-message {
-    .tc-text {
+    .chat-message-text {
       color: var(--secondary-low);
       font-weight: 600;
     }
@@ -494,7 +494,7 @@
     }
   }
 
-  .tc-text {
+  .chat-message-text {
     margin: 0 auto;
     padding: 0 0.75rem;
     z-index: 1;
@@ -509,7 +509,7 @@
   }
 }
 
-.tc-text img.chat-img-upload {
+.chat-message-text img.chat-img-upload {
   max-width: 100%;
   height: unset;
 }

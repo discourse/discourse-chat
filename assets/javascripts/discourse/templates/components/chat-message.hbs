@@ -1,14 +1,14 @@
 {{#if message.newestMessage}}
   <div class="tc-message-separator new-message">
     <div class="tc-separator"></div>
-    <span class="tc-text">
+    <span class="chat-message-text">
       {{i18n "chat.new_messages"}}
     </span>
   </div>
 {{else if message.firstMessageOfTheDayAt}}
   <div class="tc-message-separator first-daily-message">
     <div class="tc-separator"></div>
-    <span class="tc-text">
+    <span class="chat-message-text">
       {{message.firstMessageOfTheDayAt}}
     </span>
   </div>
@@ -137,7 +137,7 @@
               {{html-safe actionCodeText}}
             </span>
           {{else}}
-            {{#tc-text
+            {{#chat-message-text
               cooked=message.cooked
               uploads=message.uploads
               edited=message.edited
@@ -168,7 +168,7 @@
                   }}
                 </div>
               {{/if}}
-            {{/tc-text}}
+            {{/chat-message-text}}
           {{/if}}
 
           {{#if message.error}}

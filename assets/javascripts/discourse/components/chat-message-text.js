@@ -2,7 +2,7 @@ import Component from "@ember/component";
 import { computed } from "@ember/object";
 
 export default Component.extend({
-  classNames: "tc-text",
+  classNames: "chat-message-text",
 
   cooked: null,
   uploads: null,

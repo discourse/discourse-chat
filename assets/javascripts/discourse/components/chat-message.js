@@ -45,7 +45,7 @@ export default Component.extend({
       return;
     }
     this.element
-      .querySelector(".chat-message-content .tc-text")
+      .querySelector(".chat-message-content .chat-message-text")
       ?.querySelectorAll(".mention")
       .forEach((node) => {
         const mention = node.textContent.trim().substring(1);

@@ -976,7 +976,7 @@ export default Component.extend({
     }
 
     const links = this.element.querySelectorAll(
-      ".tc-text a:not([target='_blank'])"
+      ".chat-message-text a:not([target='_blank'])"
     );
     for (let linkIndex = 0; linkIndex < links.length; linkIndex++) {
       const link = links[linkIndex];

@@ -184,7 +184,7 @@ export default Component.extend({
     "isHovered"
   )
   chatMessageClasses(staged, deletedAt, inReplyTo, actionCode, isHovered) {
-    let classNames = ["tc-message"];
+    let classNames = ["chat-message"];
 
     if (staged) {
       classNames.push("tc-message-staged");

@@ -13,7 +13,7 @@
   }
 }
 
-.tc-message {
+.chat-message {
   align-items: flex-start;
   position: relative;
   padding: 0.25em 0.5em 0.25em 0.75em;
@@ -253,7 +253,7 @@
   }
 }
 
-.chat-message-container.highlighted .tc-message {
+.chat-message-container.highlighted .chat-message {
   background-color: var(--tertiary-low) !important;
 }
 
@@ -268,7 +268,7 @@
   z-index: 2;
 }
 
-.tc-message.is-reply .tc-msgactions-hover {
+.chat-message.is-reply .tc-msgactions-hover {
   top: 0.5em;
 }
 
@@ -433,14 +433,14 @@
 }
 
 .tc-messages-container {
-  .not-mobile-device & .tc-message:hover,
-  .tc-message.tc-message-selected {
+  .not-mobile-device & .chat-message:hover,
+  .chat-message.tc-message-selected {
     background: var(--primary-very-low);
   }
 
-  .not-mobile-device & .tc-message:hover,
-  .tc-message.tc-message-selected,
-  .tc-message:focus-within {
+  .not-mobile-device & .chat-message:hover,
+  .chat-message.tc-message-selected,
+  .chat-message:focus-within {
     .tc-msgactions-hover {
       opacity: 1;
       pointer-events: initial;
@@ -458,7 +458,7 @@
     display: none;
   }
 
-  .not-mobile-device & .tc-message:hover {
+  .not-mobile-device & .chat-message:hover {
     .chat-message-reaction-list .chat-message-react-btn {
       display: inline-block;
     }
@@ -515,18 +515,18 @@
 }
 
 .full-page-chat {
-  .tc-message {
+  .chat-message {
     background: var(--primary-very-low);
   }
 
-  .not-mobile-device & .tc-message:hover,
-  .tc-message.tc-message-selected {
+  .not-mobile-device & .chat-message:hover,
+  .chat-message.tc-message-selected {
     background: var(--primary-very-low);
   }
 }
 
-.has-full-page-chat .tc-message .onebox,
-.topic-chat-float-container .tc-message .onebox {
+.has-full-page-chat .chat-message .onebox,
+.topic-chat-float-container .chat-message .onebox {
   margin: 0.5em 0;
   border-width: 2px;
 
@@ -557,7 +557,7 @@
   }
 }
 
-.topic-chat-float-container .tc-message .onebox {
+.topic-chat-float-container .chat-message .onebox {
   width: 85%;
   border: 2px solid var(--primary-low);
 

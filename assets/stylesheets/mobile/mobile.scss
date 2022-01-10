@@ -1,12 +1,6 @@
 .tc-live-pane .tc-composer .tc-composer-row {
   .tc-composer-input {
     padding-right: 75px;
-
-    &::-webkit-input-placeholder {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
   }
 
   .open-toolbar-btn {

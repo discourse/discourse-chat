@@ -32,7 +32,7 @@ discourseModule(
       },
 
       async test(assert) {
-        assert.ok(exists(".tc-message-collapser"));
+        assert.ok(exists(".chat-message-collapser"));
       },
     });
 
@@ -45,7 +45,7 @@ discourseModule(
       },
 
       async test(assert) {
-        assert.ok(exists(".tc-message-collapser"));
+        assert.ok(exists(".chat-message-collapser"));
       },
     });
 
@@ -57,7 +57,7 @@ discourseModule(
       },
 
       async test(assert) {
-        assert.notOk(exists(".tc-message-collapser"));
+        assert.notOk(exists(".chat-message-collapser"));
       },
     });
 

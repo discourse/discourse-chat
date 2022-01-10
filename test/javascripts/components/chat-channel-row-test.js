@@ -22,7 +22,7 @@ discourseModule(
       },
     });
 
-    componentTest("dot not allow leaveButton", {
+    componentTest("without leaveButton", {
       template: hbs`{{chat-channel-row channel=channel}}`,
 
       beforeEach() {

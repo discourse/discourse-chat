@@ -1,17 +1,17 @@
-<div class="tc-message-collapsible">
+<div class="chat-message-collapser">
   {{#if uploads}}
     {{html-safe cooked}}
   {{/if}}
 
-  <div class="tc-message-collapsible-header">
+  <div class="chat-message-collapser-header">
     {{#if uploads}}
-      <span class="tc-message-collapsible-filename">
+      <span class="chat-message-collapser-filename">
         {{filename}}
       </span>
     {{else}}
       <a
         target="_blank"
-        class="tc-message-collapsible-link"
+        class="chat-message-collapser-link"
         rel="noopener noreferrer"
         href={{link}}
       >
@@ -23,13 +23,13 @@
       {{d-button
         action=(action "open")
         icon="caret-right"
-        class="tc-message-collapsible-button tc-message-collapsible-close"
+        class="chat-message-collapser-button chat-message-collapser-close"
       }}
     {{else}}
       {{d-button
         action=(action "close")
         icon="caret-down"
-        class="tc-message-collapsible-button tc-message-collapsible-open"
+        class="chat-message-collapser-button chat-message-collapser-open"
       }}
     {{/if}}
   </div>

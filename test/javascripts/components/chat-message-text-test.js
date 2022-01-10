@@ -32,7 +32,7 @@ discourseModule(
       },
 
       async test(assert) {
-        assert.ok(exists(".tc-message-collapsible"));
+        assert.ok(exists(".tc-message-collapser"));
       },
     });
 
@@ -45,7 +45,7 @@ discourseModule(
       },
 
       async test(assert) {
-        assert.ok(exists(".tc-message-collapsible"));
+        assert.ok(exists(".tc-message-collapser"));
       },
     });
 
@@ -57,7 +57,7 @@ discourseModule(
       },
 
       async test(assert) {
-        assert.notOk(exists(".tc-message-collapsible"));
+        assert.notOk(exists(".tc-message-collapser"));
       },
     });
 

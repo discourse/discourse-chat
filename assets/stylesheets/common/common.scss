@@ -1309,17 +1309,17 @@ body.composer-open .topic-chat-float-container {
   }
 }
 
-.tc-message-collapsible {
-  .tc-message-collapsible-header {
+.chat-message-collapser {
+  .chat-message-collapser-header {
     display: flex;
     align-items: center;
   }
 
-  .tc-message-collapsible-filename {
+  .chat-message-collapser-filename {
     font-size: 0.75em;
   }
 
-  .tc-message-collapsible-button {
+  .chat-message-collapser-button {
     background: none;
     padding: unset;
     margin-left: 0.5em;
@@ -1341,7 +1341,7 @@ body.composer-open .topic-chat-float-container {
   }
 }
 
-.tc-message-collapsible,
+.chat-message-collapser,
 .chat-message-text {
   > p {
     margin: 0.5em 0 0.5em;

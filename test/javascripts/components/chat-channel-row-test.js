@@ -10,7 +10,7 @@ discourseModule(
   function (hooks) {
     setupRenderingTest(hooks);
 
-    componentTest("allows leaveButton", {
+    componentTest("with leaveButton", {
       template: hbs`{{chat-channel-row channel=channel options=(hash leaveButton=true)}}`,
 
       beforeEach() {

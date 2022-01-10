@@ -13,6 +13,7 @@ export default Component.extend({
   isDirectMessageRow: equal("channel.chatable_type", "DirectMessageChannel"),
   router: service(),
   chat: service(),
+  options: null,
 
   @discourseComputed("active", "channel.{id,muted}")
   rowClassNames(active, channel) {

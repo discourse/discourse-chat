@@ -7,8 +7,11 @@
 >
   {{chat-channel-title channel=channel}}
   {{chat-channel-unread-indicator channel=channel}}
-  {{chat-channel-leave-btn
-    channel=channel
-    onLeaveChannel=(action "onLeaveChannel")
-  }}
+
+  {{#if options.leaveButton}}
+    {{chat-channel-leave-btn
+      channel=channel
+      onLeaveChannel=(action "onLeaveChannel")
+    }}
+  {{/if}}
 </div>

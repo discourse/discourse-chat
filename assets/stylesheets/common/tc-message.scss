@@ -120,12 +120,12 @@
       width: 100%;
     }
 
-    .tc-message-container {
+    .chat-message-content {
       grid-area: message;
     }
   }
 
-  .tc-message-container {
+  .chat-message-content {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
@@ -416,7 +416,7 @@
   }
 }
 
-.tc-meta-data {
+.chat-message-sender-data {
   color: var(--secondary-medium);
   width: 100%;
 

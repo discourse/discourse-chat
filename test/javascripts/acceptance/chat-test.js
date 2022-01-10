@@ -438,7 +438,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     assert.ok(lastMessage.classList.contains("chat-message-staged"));
 
     // Last message was from a different user; full meta data is shown
-    assert.ok(lastMessage.querySelector(".tc-avatar"), "Avatar is present");
+    assert.ok(lastMessage.querySelector(".chat-user"), "Avatar is present");
     assert.ok(lastMessage.querySelector(".full-name"), "Username is present");
     assert.equal(
       lastMessage.querySelector(".chat-message-text").innerText.trim(),
@@ -476,7 +476,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
 
       // We just sent a message so avatar/username will not be present for the last message
       assert.notOk(
-        lastMessage.querySelector(".tc-avatar"),
+        lastMessage.querySelector(".chat-user"),
         "Avatar is not shown"
       );
       assert.notOk(

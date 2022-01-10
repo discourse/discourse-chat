@@ -140,7 +140,7 @@ discourseModule(
         const user = this.channel.chatable.users[0];
 
         assert.ok(
-          exists(`.tc-avatar-container .avatar[title="${user.username}"]`)
+          exists(`.chat-user-container .avatar[title="${user.username}"]`)
         );
         assert.equal(
           query(`.dm-usernames .dm-username`).innerText,

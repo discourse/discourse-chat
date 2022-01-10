@@ -358,40 +358,7 @@ body.composer-open .topic-chat-float-container {
   }
 }
 
-.tc-avatar-container {
-  position: relative;
-
-  .avatar {
-    width: 100%;
-    height: auto;
-  }
-
-  .tc-presence-flair {
-    box-sizing: border-box;
-    display: none;
-    position: absolute;
-    right: -2px;
-    bottom: -2px;
-    background-color: var(--success);
-    width: 8px;
-    height: 8px;
-    border: 1px solid var(--secondary);
-    border-radius: 50%;
-
-    .chat-messages-container & {
-      right: -1px;
-      bottom: -1px;
-      width: 10px;
-      height: 10px;
-    }
-
-    &.online {
-      display: block;
-    }
-  }
-}
-
-.chat-message-container {
+.chat-message {
   position: relative;
   display: grid;
 
@@ -426,6 +393,65 @@ body.composer-open .topic-chat-float-container {
   }
 }
 
+.chat-emoji-avatar {
+  width: var(--message-left-width);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chat-user-avatar {
+  width: var(--message-left-width);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .chat-user-avatar-container {
+    position: relative;
+
+    .avatar {
+      .tc-message:not(.is-reply) & {
+        width: 28px;
+        height: 28px;
+      }
+    }
+
+    .chat-user-presence-flair {
+      box-sizing: border-box;
+      position: absolute;
+      background-color: var(--success);
+      border: 1px solid var(--secondary);
+      border-radius: 50%;
+
+      .tc-message.is-reply .tc-reply-display &,
+      .tc-composer-message-details .tc-reply-display & {
+        width: 8px;
+        height: 8px;
+        right: -1px;
+        bottom: -1px;
+      }
+
+      .tc-message:not(.is-reply) & {
+        width: 10px;
+        height: 10px;
+        right: 0px;
+        bottom: 0px;
+      }
+
+      .chat-channel-title & {
+        width: 8px;
+        height: 8px;
+        right: -1px;
+        bottom: -1px;
+      }
+    }
+  }
+
+  .chat-channel-title & {
+    width: auto;
+  }
+}
+
 .tc-reply-display {
   display: flex;
   align-items: center;
@@ -435,16 +461,11 @@ body.composer-open .topic-chat-float-container {
   font-size: var(--font-down-1);
   padding-left: 0.5em;
 
-  .tc-reply-av {
-    padding: 0 0.5em;
-  }
-
   .tc-reply-username {
     padding: 0 0.5em 0 0;
   }
 
   .tc-reply-msg {
-    align-self: baseline;
     color: var(--primary-high);
     > * {
       margin-top: 0;
@@ -818,17 +839,6 @@ body.composer-open .topic-chat-float-container {
     color: var(--primary-medium);
     width: 100%;
     display: flex;
-  }
-
-  .tc-avatar {
-    display: flex;
-  }
-
-  .tc-avatar-container {
-    align-items: flex-start;
-    display: inline-flex;
-    width: 100%;
-    height: auto;
   }
 
   .dm-multi-count {

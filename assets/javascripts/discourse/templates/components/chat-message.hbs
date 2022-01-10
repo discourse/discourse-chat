@@ -81,13 +81,11 @@
         {{#if message.in_reply_to}}
           <div role="button" onclick={{action "viewReply"}} class="tc-reply-display">
             {{d-icon "share" title="chat.in_reply_to"}}
-            <span class="tc-reply-av">
-              {{#if message.in_reply_to.chat_webhook_event.emoji}}
-                {{replace-emoji message.in_reply_to.chat_webhook_event.emoji}}
-              {{else}}
-                {{avatar message.in_reply_to.user imageSize="tiny"}}
-              {{/if}}
-            </span>
+            {{#if message.in_reply_to.chat_webhook_event.emoji}}
+              {{chat-emoji-avatar emoji=message.in_reply_to.chat_webhook_event.emoji}}
+            {{else}}
+              {{chat-user-avatar user=message.in_reply_to.user}}
+            {{/if}}
             <span class="tc-reply-msg">
               {{replace-emoji message.in_reply_to.excerpt}}
             </span>
@@ -98,18 +96,9 @@
           {{format-chat-date message details "tiny"}}
         {{else}}
           {{#if message.chat_webhook_event.emoji}}
-            <div class="tc-avatar">
-              <div class="tc-avatar-container">
-                {{replace-emoji message.chat_webhook_event.emoji}}
-              </div>
-            </div>
+            {{chat-emoji-avatar emoji=message.chat_webhook_event.emoji}}
           {{else}}
-            <div class="tc-avatar">
-              <div class="tc-avatar-container" data-user-card={{message.user.username}}>
-                {{avatar message.user imageSize="medium"}}
-                {{tc-user-presence-flair user=message.user}}
-              </div>
-            </div>
+            {{chat-user-avatar user=message.user avatarSize="medium"}}
           {{/if}}
         {{/if}}
 

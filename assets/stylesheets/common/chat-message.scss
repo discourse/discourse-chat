@@ -1,8 +1,8 @@
-.tc-message-deleted {
+.chat-message-deleted {
   margin-left: calc(var(--message-left-width) + 0.75em);
   padding: 0;
 
-  .tc-message-expand-deleted {
+  .chat-message-expand-deleted {
     color: var(--primary-low-mid);
     padding: 0.25em;
 
@@ -182,7 +182,7 @@
     }
   }
 
-  .tc-message-edited {
+  .chat-message-edited {
     display: inline-block;
     color: var(--primary-medium);
     font-size: var(--font-down-1);
@@ -432,14 +432,14 @@
   }
 }
 
-.tc-messages-container {
+.chat-messages-container {
   .not-mobile-device & .chat-message:hover,
-  .chat-message.tc-message-selected {
+  .chat-message.chat-message-selected {
     background: var(--primary-very-low);
   }
 
   .not-mobile-device & .chat-message:hover,
-  .chat-message.tc-message-selected,
+  .chat-message.chat-message-selected,
   .chat-message:focus-within {
     .tc-msgactions-hover {
       opacity: 1;
@@ -448,7 +448,7 @@
   }
 
   .not-mobile-device & .user-info-hidden:hover,
-  .user-info-hidden.tc-message-selected {
+  .user-info-hidden.chat-message-selected {
     .tc-time {
       visibility: visible;
     }
@@ -469,7 +469,7 @@
   font-style: italic;
 }
 
-.tc-message-separator {
+.chat-message-separator {
   margin: 0.25rem 0 0.25rem 1rem;
   display: flex;
   font-size: var(--font-down-1);
@@ -520,7 +520,7 @@
   }
 
   .not-mobile-device & .chat-message:hover,
-  .chat-message.tc-message-selected {
+  .chat-message.chat-message-selected {
     background: var(--primary-very-low);
   }
 }

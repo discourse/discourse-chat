@@ -187,7 +187,7 @@ export default Component.extend({
     let classNames = ["chat-message"];
 
     if (staged) {
-      classNames.push("tc-message-staged");
+      classNames.push("chat-message-staged");
     }
     if (actionCode) {
       classNames.push("tc-action");
@@ -203,7 +203,7 @@ export default Component.extend({
       classNames.push("user-info-hidden");
     }
     if (isHovered) {
-      classNames.push("tc-message-selected");
+      classNames.push("chat-message-selected");
     }
     return classNames.join(" ");
   },
@@ -439,7 +439,7 @@ export default Component.extend({
 
     // Calculate bottom pixel value
     let bottomValue = reactBtnPositions.bottom - emojiPicker.offsetHeight + 50;
-    const messageContainer = document.querySelector(".tc-messages-scroll");
+    const messageContainer = document.querySelector(".chat-messages-scroll");
     const bottomOfMessageContainer =
       window.innerHeight - messageContainer.getBoundingClientRect().bottom;
     if (bottomValue < bottomOfMessageContainer) {

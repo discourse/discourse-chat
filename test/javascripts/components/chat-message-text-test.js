@@ -70,7 +70,7 @@ discourseModule(
       },
 
       async test(assert) {
-        assert.ok(exists(".tc-message-edited"));
+        assert.ok(exists(".chat-message-edited"));
       },
     });
 
@@ -82,7 +82,7 @@ discourseModule(
       },
 
       async test(assert) {
-        assert.notOk(exists(".tc-message-edited"));
+        assert.notOk(exists(".chat-message-edited"));
       },
     });
   }

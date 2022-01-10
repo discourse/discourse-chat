@@ -428,7 +428,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     let lastMessage = messages[messages.length - 1];
 
     // Message is staged, without an ID
-    assert.ok(lastMessage.classList.contains("tc-message-staged"));
+    assert.ok(lastMessage.classList.contains("chat-message-staged"));
 
     // Last message was from a different user; full meta data is shown
     assert.ok(lastMessage.querySelector(".tc-avatar"), "Avatar is present");
@@ -457,7 +457,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
           .closest(".chat-message-container")
           .classList.contains("chat-message-container-202")
       );
-      assert.notOk(lastMessage.classList.contains("tc-message-staged"));
+      assert.notOk(lastMessage.classList.contains("chat-message-staged"));
 
       const nextMessageContent = "What up what up!";
       await fillIn(composerInput, nextMessageContent);

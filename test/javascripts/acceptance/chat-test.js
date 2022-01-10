@@ -228,7 +228,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
 
   test("Chat messages are populated when a channel is entered and images are rendered", async function (assert) {
     await visit("/chat/channel/9/Site");
-    const messages = queryAll(".tc-message .tc-text");
+    const messages = queryAll(".chat-message .tc-text");
     assert.equal(messages[0].innerText.trim(), messageContents[0]);
 
     assert.ok(messages[1].querySelector("a.chat-other-upload"));
@@ -267,7 +267,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
 
   test("Message controls are present and correct for permissions", async function (assert) {
     await visit("/chat/channel/9/Site");
-    const messages = queryAll(".tc-message");
+    const messages = queryAll(".chat-message");
 
     // User created this message
     assert.ok(
@@ -424,7 +424,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
       "stops being present after sending message"
     );
 
-    let messages = queryAll(".tc-message");
+    let messages = queryAll(".chat-message");
     let lastMessage = messages[messages.length - 1];
 
     // Message is staged, without an ID
@@ -464,7 +464,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
       await focus(composerInput);
       await triggerKeyEvent(composerInput, "keydown", 13); // 13 is enter keycode
 
-      messages = queryAll(".tc-message");
+      messages = queryAll(".chat-message");
       lastMessage = messages[messages.length - 1];
 
       // We just sent a message so avatar/username will not be present for the last message

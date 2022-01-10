@@ -31,7 +31,7 @@
 <div class="tc-messages-scroll tc-messages-container">
   {{#conditional-loading-spinner condition=this.loading}}
     {{#each this.messages as |message|}}
-      {{tc-message
+      {{chat-message
         message=message
         details=this.details
         setReplyTo=(action "setReplyTo")

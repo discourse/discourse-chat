@@ -24,7 +24,7 @@
 
   .tc-live-pane {
     .tc-messages-container {
-      .tc-message {
+      .chat-message {
         &.is-reply {
           grid-template-columns: var(--message-left-width) 1fr;
         }
@@ -57,7 +57,7 @@
   bottom: 40px;
 }
 
-.tc-message:not(.user-info-hidden) {
+.chat-message:not(.user-info-hidden) {
   padding: 0.65em 1em 0.15em;
 }
 
@@ -75,7 +75,7 @@
   }
 }
 
-.tc-message.user-info-hidden {
+.chat-message.user-info-hidden {
   padding: 0.15em 1em;
 }
 
@@ -117,12 +117,14 @@
     .tc-live-pane {
       border-radius: unset;
     }
+
     .tc-live-pane,
     .tc-messages-scroll,
-    .tc-message:not(.highlighted):not(.deleted) {
+    .chat-message:not(.highlighted):not(.deleted) {
       background-color: transparent;
     }
-    .tc-message:not(.highlighted):not(.deleted):hover {
+
+    .chat-message:not(.highlighted):not(.deleted):hover {
       background-color: var(--primary-very-low);
     }
   }
@@ -151,17 +153,21 @@
     .tc-live-pane {
       border-radius: 0;
     }
+
     .tc-live-pane,
     .tc-messages-scroll,
-    .tc-message:not(.highlighted) {
+    .chat-message:not(.highlighted) {
       background: transparent;
     }
-    .tc-message {
+
+    .chat-message {
       padding-left: 2em;
+
       &:hover {
         background-color: var(--primary-very-low);
       }
     }
+
     .tc-messages-container .tc-message-deleted {
       padding: 0.25em 2em;
     }

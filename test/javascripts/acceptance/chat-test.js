@@ -206,12 +206,12 @@ acceptance("Discourse Chat - without unread", function (needs) {
     // 177 is message id from fixture
     const highlighted = [];
     const notHighlighted = [];
-    query(".chat-message-177")
+    query(".chat-message-container-177")
       .querySelectorAll(".mention.highlighted")
       .forEach((node) => {
         highlighted.push(node.textContent.trim());
       });
-    query(".chat-message-177")
+    query(".chat-message-container-177")
       .querySelectorAll(".mention:not(.highlighted)")
       .forEach((node) => {
         notHighlighted.push(node.textContent.trim());
@@ -242,13 +242,13 @@ acceptance("Discourse Chat - without unread", function (needs) {
 
   test("Reply-to line is hidden when reply-to message is directly above", async function (assert) {
     await visit("/chat/channel/9/Site");
-    const messages = queryAll(".chat-message");
+    const messages = queryAll(".chat-message-container");
     assert.notOk(messages[1].querySelector(".tc-reply-msg"));
   });
 
   test("Reply-to line is present when reply-to message is not directly above", async function (assert) {
     await visit("/chat/channel/9/Site");
-    const messages = queryAll(".chat-message");
+    const messages = queryAll(".chat-message-container");
     const replyTo = messages[2].querySelector(".tc-reply-msg");
     assert.ok(replyTo);
     assert.equal(replyTo.innerText.trim(), messageContents[0]);
@@ -275,7 +275,9 @@ acceptance("Discourse Chat - without unread", function (needs) {
       "it shows the reply button"
     );
 
-    const currentUserDropdown = selectKit(".chat-message-174 .more-buttons");
+    const currentUserDropdown = selectKit(
+      ".chat-message-container-174 .more-buttons"
+    );
     await currentUserDropdown.expand();
 
     assert.ok(
@@ -304,7 +306,9 @@ acceptance("Discourse Chat - without unread", function (needs) {
       "it shows the reply button"
     );
 
-    const notCurrentUserDropdown = selectKit(".chat-message-175 .more-buttons");
+    const notCurrentUserDropdown = selectKit(
+      ".chat-message-container-175 .more-buttons"
+    );
     await notCurrentUserDropdown.expand();
 
     assert.ok(
@@ -368,7 +372,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     next(async () => {
       await click(".return-to-channels");
       await click(".chat-channel-row.chat-channel-9");
-      await click(".chat-message .reply-btn");
+      await click(".chat-message-container .reply-btn");
       // Reply-to line is present
       assert.ok(exists(".tc-composer-message-details .tc-reply-display"));
       await click(".return-to-channels");
@@ -376,7 +380,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
       // Reply-to line is gone since switching channels
       assert.notOk(exists(".tc-composer-message-details .tc-reply-display"));
       // Now click on reply btn and cancel it on channel 7
-      await click(".chat-message .reply-btn");
+      await click(".chat-message-container .reply-btn");
       await click(".tc-composer .cancel-message-action");
 
       // Go back to channel 9 and check that reply-to is present
@@ -450,8 +454,8 @@ acceptance("Discourse Chat - without unread", function (needs) {
       // Wait for DOM to rerender. Message should be un-staged
       assert.ok(
         lastMessage
-          .closest(".chat-message")
-          .classList.contains("chat-message-202")
+          .closest(".chat-message-container")
+          .classList.contains("chat-message-container-202")
       );
       assert.notOk(lastMessage.classList.contains("tc-message-staged"));
 
@@ -494,7 +498,9 @@ acceptance("Discourse Chat - without unread", function (needs) {
 
     const done = assert.async();
     next(async () => {
-      assert.ok(query(".chat-message-175 .tc-text").innerHTML.includes(cooked));
+      assert.ok(
+        query(".chat-message-container-175 .tc-text").innerHTML.includes(cooked)
+      );
       done();
     });
   });
@@ -642,8 +648,8 @@ acceptance("Discourse Chat - without unread", function (needs) {
     updateCurrentUser({ admin: true, moderator: true });
     await visit("/chat/channel/9/Site");
 
-    const firstMessage = query(".chat-message");
-    const dropdown = selectKit(".chat-message .more-buttons");
+    const firstMessage = query(".chat-message-container");
+    const dropdown = selectKit(".chat-message-container .more-buttons");
     await dropdown.expand();
     await dropdown.selectRowByValue("selectMessage");
 
@@ -663,13 +669,15 @@ acceptance("Discourse Chat - without unread", function (needs) {
     );
 
     await click(firstMessage.querySelector("input[type='checkbox']"));
-    const allCheckboxes = queryAll(".chat-message input[type='checkbox']");
+    const allCheckboxes = queryAll(
+      ".chat-message-container input[type='checkbox']"
+    );
 
     await triggerEvent(allCheckboxes[allCheckboxes.length - 1], "click", {
       shiftKey: true,
     });
     assert.equal(
-      queryAll(".chat-message input:checked").length,
+      queryAll(".chat-message-container input:checked").length,
       4,
       "Bulk message select works"
     );
@@ -681,7 +689,9 @@ acceptance("Discourse Chat - without unread", function (needs) {
   test("message selection is not present for regular user", async function (assert) {
     updateCurrentUser({ admin: false, moderator: false });
     await visit("/chat/channel/9/Site");
-    assert.notOk(exists(".chat-message .tc-msgactions-hover .select-btn"));
+    assert.notOk(
+      exists(".chat-message-container .tc-msgactions-hover .select-btn")
+    );
   });
 
   test("creating a new direct message channel works", async function (assert) {
@@ -702,7 +712,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
 
   test("Reacting works with no existing reactions", async function (assert) {
     await visit("/chat/channel/9/Site");
-    const message = query(".chat-message");
+    const message = query(".chat-message-container");
     assert.notOk(message.querySelector(".chat-message-reaction-list"));
     await click(message.querySelector(".tc-msgactions .react-btn"));
     await click(message.querySelector(".emoji-picker .section-group .emoji"));
@@ -717,7 +727,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
 
   test("Reacting works with existing reactions", async function (assert) {
     await visit("/chat/channel/9/Site");
-    const messages = queryAll(".chat-message");
+    const messages = queryAll(".chat-message-container");
 
     // First 2 messages have no reactions; make sure the list isn't rendered
     assert.notOk(messages[0].querySelector(".chat-message-reaction-list"));
@@ -794,23 +804,27 @@ acceptance("Discourse Chat - without unread", function (needs) {
     });
     const done = assert.async();
     next(async () => {
-      assert.ok(exists(".chat-message-176 .chat-message-mention-warning"));
+      assert.ok(
+        exists(".chat-message-container-176 .chat-message-mention-warning")
+      );
       assert.ok(
         query(
-          ".chat-message-176 .chat-message-mention-warning .cannot-see"
+          ".chat-message-container-176 .chat-message-mention-warning .cannot-see"
         ).innerText.includes("hawk")
       );
 
       const withoutMembershipText = query(
-        ".chat-message-176 .chat-message-mention-warning .without-membership"
+        ".chat-message-container-176 .chat-message-mention-warning .without-membership"
       ).innerText;
       assert.ok(withoutMembershipText.includes("eviltrout"));
       assert.ok(withoutMembershipText.includes("sam"));
 
       await click(
-        ".chat-message-176 .chat-message-mention-warning .invite-link"
+        ".chat-message-container-176 .chat-message-mention-warning .invite-link"
       );
-      assert.notOk(exists(".chat-message-176 .chat-message-mention-warning"));
+      assert.notOk(
+        exists(".chat-message-container-176 .chat-message-mention-warning")
+      );
       done();
     });
   });

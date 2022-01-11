@@ -410,9 +410,14 @@ body.composer-open .topic-chat-float-container {
     position: relative;
 
     .avatar {
-      .tc-message:not(.is-reply) & {
+      .chat-message & {
         width: 28px;
         height: 28px;
+      }
+
+      .chat-message .tc-reply-display & {
+        width: 20px;
+        height: 20px;
       }
     }
 
@@ -423,15 +428,15 @@ body.composer-open .topic-chat-float-container {
       border: 1px solid var(--secondary);
       border-radius: 50%;
 
-      .tc-message.is-reply .tc-reply-display &,
-      .tc-composer-message-details .tc-reply-display & {
+      .chat-message.is-reply .tc-reply-display &,
+      .chat-composer-message-details .tc-reply-display & {
         width: 8px;
         height: 8px;
         right: -1px;
         bottom: -1px;
       }
 
-      .tc-message:not(.is-reply) & {
+      .chat-message:not(.is-reply) & {
         width: 10px;
         height: 10px;
         right: 0px;

@@ -172,12 +172,12 @@ export default Service.extend({
       }
 
       if (!this._fetchingChannels) {
-        this._fetchingChannels = this._refreshChannels().finally(
-          () => (this._fetchingChannels = null)
-        );
+        this._fetchingChannels = this._refreshChannels();
       }
 
-      this._fetchingChannels.then(() => resolve(this._channelObject()));
+      return this._fetchingChannels
+        .then(() => resolve(this._channelObject()))
+        .finally(() => (this._fetchingChannels = null));
     });
   },
 
@@ -374,6 +374,12 @@ export default Service.extend({
       ? this.directMessageChannels
       : this.publicChannels;
 
+    // this check shouldn't be needed given the previous check to existingChannel
+    // this is safety net, to ensure we never track duplicated channels
+    if (existingChannels.findBy("id", channel.id)) {
+      return;
+    }
+
     existingChannels.pushObject(this.processChannel(channel));
     this.currentUser.chat_channel_tracking_state[channel.id] = {
       unread_count: 0,
@@ -413,6 +419,7 @@ export default Service.extend({
 
   _subscribeToNewDmChannelUpdates() {
     this.messageBus.subscribe("/chat/new-direct-message-channel", (busData) => {
+      console.log(busData);
       this.startTrackingChannel(busData.chat_channel);
     });
   },

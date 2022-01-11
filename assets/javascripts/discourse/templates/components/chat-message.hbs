@@ -1,18 +1,4 @@
-{{#if message.newestMessage}}
-  <div class="chat-message-separator new-message">
-    <div class="chat-separator"></div>
-    <span class="chat-message-text">
-      {{i18n "chat.new_messages"}}
-    </span>
-  </div>
-{{else if message.firstMessageOfTheDayAt}}
-  <div class="chat-message-separator first-daily-message">
-    <div class="chat-separator"></div>
-    <span class="chat-message-text">
-      {{message.firstMessageOfTheDayAt}}
-    </span>
-  </div>
-{{/if}}
+{{chat-message-separator message=message}}
 
 <div class={{messageContainerClasses}}>
   {{emoji-picker

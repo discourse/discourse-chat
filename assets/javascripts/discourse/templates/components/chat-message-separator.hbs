@@ -1,0 +1,15 @@
+{{#if message.newestMessage}}
+  <div class="chat-message-separator new-message">
+    <div class="divider"></div>
+    <span class="text">
+      {{i18n "chat.new_messages"}}
+    </span>
+  </div>
+{{else if message.firstMessageOfTheDayAt}}
+  <div class="chat-message-separator first-daily-message">
+    <div class="divider"></div>
+    <span class="text">
+      {{message.firstMessageOfTheDayAt}}
+    </span>
+  </div>
+{{/if}}

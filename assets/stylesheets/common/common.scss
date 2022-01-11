@@ -401,10 +401,18 @@ body.composer-open .topic-chat-float-container {
 }
 
 .chat-user-avatar {
-  width: var(--message-left-width);
   display: flex;
   align-items: center;
-  justify-content: center;
+
+  .chat-message:not(.is-reply) & {
+    padding-right: 0.5rem;
+  }
+
+  .chat-message.is-reply .tc-reply-display &,
+  .chat-composer-message-details .tc-reply-display & {
+    padding-right: 0.5rem;
+    padding-left: 0.5rem;
+  }
 
   .chat-user-avatar-container {
     position: relative;
@@ -415,7 +423,7 @@ body.composer-open .topic-chat-float-container {
         height: 28px;
       }
 
-      .chat-message .tc-reply-display & {
+      .chat-message.is-reply .tc-reply-display & {
         width: 20px;
         height: 20px;
       }

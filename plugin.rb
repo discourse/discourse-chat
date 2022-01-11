@@ -146,6 +146,16 @@ after_initialize do
     results
   end
 
+  if respond_to?(:register_upload_in_use)
+    register_upload_in_use do |upload|
+      # TODO after May 2022 - remove this. No longer needed as chat uploads are in a table
+      next true if ChatMessage.where("message LIKE ? OR message LIKE ?", "%#{upload.sha1}%", "%#{encoded_sha}%").exists?
+      next true if ChatUpload.where(upload: upload).exists?
+
+      false
+    end
+  end
+
   add_to_serializer(:listable_topic, :has_chat_live) do
     true
   end

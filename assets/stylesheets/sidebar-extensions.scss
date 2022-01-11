@@ -1,0 +1,88 @@
+// Styles to make channel list in sidebar match sidebar theme
+.has-sidebar {
+  .header-dropdown-toggle.open-chat {
+    .chat-channel-unread-indicator {
+      border-color: var(--primary-very-low);
+    }
+  }
+}
+
+.sidebar-container {
+  .chat-channels {
+    color: var(--primary);
+    font-size: var(--font-down-1);
+    padding-bottom: 2em;
+    width: 100%;
+    overflow-x: hidden;
+
+    .chat-channel-divider {
+      padding: 0 1.75rem;
+
+      &:hover {
+        .title-caret {
+          opacity: 1;
+        }
+      }
+    }
+
+    .chat-channels-container {
+      margin-bottom: 1rem;
+    }
+
+    .public-channel-empty-message {
+      margin: 0;
+      padding: 0em 2em 0.5em;
+    }
+
+    .category-chat-private {
+      .d-icon {
+        background-color: var(--primary-very-low);
+      }
+    }
+
+    .new-dm,
+    .edit-channel-membership-btn,
+    .edit-channels-dropdown .select-kit-header,
+    .chat-channel-leave-btn {
+      display: flex;
+      padding: 0.25em;
+      border-radius: 0.25em;
+
+      &:hover {
+        background-color: var(--tertiary-low);
+
+        .d-icon {
+          color: var(--primary-medium);
+        }
+      }
+
+      .d-icon {
+        color: var(--primary-medium);
+        font-size: var(--font-down-1);
+        padding: 0.25em;
+      }
+    }
+
+    .chat-channel-leave-btn {
+      padding-top: 0;
+      padding-bottom: 0;
+      height: 100%;
+      border-radius: 0;
+    }
+
+    .chat-channel-row {
+      padding-left: 1.8rem;
+      padding-right: 1.8rem;
+      min-height: 28px;
+
+      &:hover {
+        background-color: var(--tertiary-low);
+      }
+
+      .chat-channel-title {
+        font-weight: unset;
+        margin: 0;
+      }
+    }
+  }
+}

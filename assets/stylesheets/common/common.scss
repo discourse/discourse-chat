@@ -72,14 +72,6 @@ $float-height: 530px;
   }
 }
 
-.has-sidebar {
-  .header-dropdown-toggle.open-chat {
-    .chat-channel-unread-indicator {
-      border-color: var(--primary-very-low);
-    }
-  }
-}
-
 body.composer-open .topic-chat-float-container {
   bottom: 11px; // prevent height of grippie from obscuring ...is typing indicator
 }
@@ -292,6 +284,10 @@ body.composer-open .topic-chat-float-container {
 
     &:hover {
       background: transparent;
+
+      .d-icon {
+        color: var(--primary-medium);
+      }
     }
 
     .d-icon {
@@ -703,12 +699,20 @@ body.composer-open .topic-chat-float-container {
     opacity: 0;
   }
 
-  .chat-channel-leave-btn {
+  .chat-channel-leave-btn.btn-icon {
     margin-left: auto;
     visibility: hidden;
 
     > * {
       pointer-events: none;
+    }
+
+    &:hover {
+      background: none;
+
+      .d-icon {
+        color: var(--primary-medium);
+      }
     }
   }
 
@@ -724,7 +728,7 @@ body.composer-open .topic-chat-float-container {
 
     .topic-chat-badge .topic-chat-icon {
       .d-icon {
-        background-color: var(--primary-low);
+        background: transparent;
       }
     }
 
@@ -844,76 +848,6 @@ body.composer-open .topic-chat-float-container {
     margin-right: 0.5em;
     line-height: 20px;
     width: 100%;
-  }
-}
-
-// Styles to make channel list in sidebar match sidebar theme
-.sidebar-container {
-  .chat-channels {
-    color: var(--primary);
-    font-size: var(--font-down-1);
-    padding-bottom: 2em;
-    width: 100%;
-    overflow-x: hidden;
-
-    .chat-channel-divider {
-      padding: 0 1.75rem;
-
-      &:hover {
-        .title-caret {
-          opacity: 1;
-        }
-      }
-    }
-
-    .chat-channels-container {
-      margin-bottom: 1rem;
-    }
-
-    .public-channel-empty-message {
-      margin: 0;
-      padding: 0em 2em 0.5em;
-    }
-
-    .category-chat-private {
-      .d-icon {
-        background-color: var(--primary-very-low);
-      }
-    }
-
-    .new-dm,
-    .edit-channel-membership-btn,
-    .edit-channels-dropdown .select-kit-header,
-    .chat-channel-leave-btn {
-      display: flex;
-      padding: 0.25em;
-      border-radius: 0.25em;
-
-      &:hover {
-        background-color: var(--tertiary-low);
-      }
-      .d-icon {
-        color: var(--primary-medium);
-        font-size: var(--font-down-1);
-        padding: 0.25em;
-      }
-    }
-
-    .chat-channel-leave-btn:hover {
-      background-color: var(--tertiary-medium);
-    }
-
-    .chat-channel-row {
-      padding: 0.2rem 1.8rem;
-
-      &:hover {
-        background-color: var(--tertiary-low);
-      }
-      .chat-channel-title {
-        font-weight: unset;
-        margin: 0;
-      }
-    }
   }
 }
 

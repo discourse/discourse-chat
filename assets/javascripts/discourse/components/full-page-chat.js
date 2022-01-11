@@ -1,12 +1,12 @@
 import Component from "@ember/component";
 import discourseComputed from "discourse-common/utils/decorators";
 import { action } from "@ember/object";
+import { reads } from "@ember/object/computed";
 import { inject as service } from "@ember/service";
-import { next } from "@ember/runloop";
 
 export default Component.extend({
   tagName: "",
-  teamsSidebarOn: false,
+  teamsSidebarOn: reads("chat.sidebarActive"),
   router: service(),
   chat: service(),
 
@@ -26,6 +26,7 @@ export default Component.extend({
 
   init() {
     this._super(...arguments);
+
     this.appEvents.on("chat:refresh-channels", this, "refreshModel");
   },
 
@@ -36,20 +37,16 @@ export default Component.extend({
     window.addEventListener("resize", this._calculateHeight, false);
     document.body.classList.add("has-full-page-chat");
     this.chat.set("fullScreenChatOpen", true);
-    next(this._calculateHeight);
+    this._calculateHeight();
   },
 
   willDestroyElement() {
     this._super(...arguments);
+
     this.appEvents.off("chat:refresh-channels", this, "refreshModel");
     window.removeEventListener("resize", this._calculateHeight, false);
     document.body.classList.remove("has-full-page-chat");
     this.chat.set("fullScreenChatOpen", false);
-  },
-
-  willRender() {
-    this._super(...arguments);
-    this.set("teamsSidebarOn", this.chat.sidebarActive);
   },
 
   _scrollSidebarToBottom() {

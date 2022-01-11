@@ -1,6 +1,5 @@
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import EmberObject from "@ember/object";
-import KeyValueStore from "discourse/lib/key-value-store";
 import Service, { inject as service } from "@ember/service";
 import Site from "discourse/models/site";
 import { addChatToolbarButton } from "discourse/plugins/discourse-chat/discourse/components/chat-composer";
@@ -11,11 +10,12 @@ import { generateCookFunction } from "discourse/lib/text";
 import { next } from "@ember/runloop";
 import { Promise } from "rsvp";
 import simpleCategoryHashMentionTransform from "discourse/plugins/discourse-chat/discourse/lib/simple-category-hash-mention-transform";
+import Draft from "discourse/models/draft";
+import discourseDebounce from "discourse-common/lib/debounce";
 
 export const LIST_VIEW = "list_view";
 export const CHAT_VIEW = "chat_view";
 
-const DRAFT_STORE_NAMESPACE = "discourse_chat_drafts_";
 const CHAT_ONLINE_OPTIONS = {
   userUnseenTime: 300000, // 5 minutes seconds with no interaction
   browserHiddenTime: 300000, // Or the browser has been in the background for 5 minutes
@@ -59,7 +59,10 @@ export default Service.extend({
       this._subscribeToChannelEdits();
       this.appEvents.on("page:changed", this, "_storeLastNonChatRouteInfo");
       this.presenceChannel = this.presence.getChannel("/chat/online");
-      this._draftStore = new KeyValueStore(DRAFT_STORE_NAMESPACE);
+      this.draftStore = {};
+      this.currentUser.chat_drafts.forEach((draft) => {
+        this.draftStore[draft.channel_id] = JSON.parse(draft.data);
+      });
     }
   },
 
@@ -629,13 +632,32 @@ export default Service.extend({
     };
   },
 
-  setDraftForChannel(channelId, draft, replyToMsg = null) {
-    this._draftStore.setObject({ key: channelId, value: draft, replyToMsg });
+  _saveDraft(channelId, draft) {
+    const draftKey = `chat_${channelId}`;
+
+    if (draft) {
+      Draft.save(draftKey, 0, draft, this.messageBus.clientId, {
+        forceSave: true,
+      });
+    } else {
+      Draft.clear(draftKey);
+    }
+  },
+
+  setDraftForChannel(channelId, draft) {
+    if (draft.value || draft.uploads.length > 0) {
+      this.draftStore[channelId] = draft;
+    } else {
+      delete this.draftStore[channelId];
+      draft = null; // _saveDraft will destroy draft
+    }
+
+    discourseDebounce(this, this._saveDraft, channelId, draft, 2000);
   },
 
   getDraftForChannel(channelId) {
     return (
-      this._draftStore.getObject(channelId) || {
+      this.draftStore[channelId] || {
         value: "",
         uploads: [],
         replyToMsg: null,

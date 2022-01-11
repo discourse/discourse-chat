@@ -199,6 +199,20 @@ after_initialize do
     include_has_chat_enabled? && object.user_option.chat_sound
   end
 
+  add_to_serializer(:current_user, :chat_drafts) do
+    Draft
+      .where(user_id: object.id)
+      .where("draft_key LIKE 'chat_%'")
+      .pluck(:draft_key, :data)
+      .map do |row|
+        { channel_id: row[0].gsub('chat_', ''), data: row[1] }
+      end
+  end
+
+  add_to_serializer(:current_user, :include_chat_drafts?) do
+    include_has_chat_enabled?
+  end
+
   add_to_serializer(:user_option, :chat_enabled) do
     object.chat_enabled
   end

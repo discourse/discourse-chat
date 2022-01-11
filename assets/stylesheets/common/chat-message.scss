@@ -454,46 +454,6 @@
   font-style: italic;
 }
 
-.chat-message-separator {
-  margin: 0.25rem 0 0.25rem 1rem;
-  display: flex;
-  font-size: var(--font-down-1);
-  position: relative;
-
-  &.new-message {
-    color: var(--danger-medium);
-
-    .chat-separator {
-      background-color: var(--danger-medium);
-    }
-  }
-
-  &.first-daily-message {
-    .chat-message-text {
-      color: var(--secondary-low);
-      font-weight: 600;
-    }
-
-    .chat-separator {
-      background-color: var(--secondary-high);
-    }
-  }
-
-  .chat-message-text {
-    margin: 0 auto;
-    padding: 0 0.75rem;
-    z-index: 1;
-    background: var(--secondary);
-  }
-
-  .chat-separator {
-    position: absolute;
-    width: 100%;
-    height: 1px;
-    top: 50%;
-  }
-}
-
 .chat-message-text {
   img.animated.onebox,
   img.chat-img-upload {

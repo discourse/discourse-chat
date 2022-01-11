@@ -419,7 +419,6 @@ export default Service.extend({
 
   _subscribeToNewDmChannelUpdates() {
     this.messageBus.subscribe("/chat/new-direct-message-channel", (busData) => {
-      console.log(busData);
       this.startTrackingChannel(busData.chat_channel);
     });
   },

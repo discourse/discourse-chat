@@ -78,11 +78,6 @@
     transition: 2s linear background-color;
   }
 
-  .tc-avatar {
-    flex-shrink: 0;
-    width: var(--message-left-width);
-  }
-
   &.user-info-hidden {
     .chat-time {
       color: var(--secondary-medium);
@@ -115,9 +110,8 @@
       }
     }
 
-    .tc-avatar {
+    .chat-user-avatar {
       grid-area: avatar;
-      width: 100%;
     }
 
     .chat-message-content {
@@ -132,15 +126,6 @@
     word-break: break-word;
     overflow-wrap: break-word;
     min-width: 0;
-  }
-
-  .tc-avatar-container {
-    align-items: flex-start;
-    display: flex;
-    cursor: pointer;
-    flex-shrink: 0;
-    justify-content: center;
-    width: 28px;
   }
 
   .tc-bot-indicator {

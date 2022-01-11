@@ -6,10 +6,7 @@
       </span>
       <span class="dm-usernames">{{usernames}}</span>
     {{else}}
-      <span class="tc-avatar-container">
-        {{avatar channel.chatable.users.firstObject imageSize="medium"}}
-        {{tc-user-presence-flair user=channel.chatable.users.firstObject}}
-      </span>
+      {{chat-user-avatar user=channel.chatable.users.firstObject}}
       <span class="dm-usernames">
         {{#let channel.chatable.users.firstObject as |user|}}
           <span class="dm-username">{{user.username}}</span>

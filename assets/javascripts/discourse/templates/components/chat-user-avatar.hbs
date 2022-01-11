@@ -1,0 +1,9 @@
+<div class="chat-user-avatar">
+  <div class="chat-user-avatar-container" data-user-card={{user.username}}>
+    {{avatar user imageSize=avatarSize}}
+
+    {{#if isOnline}}
+      <div class="chat-user-presence-flair"></div>
+    {{/if}}
+  </div>
+</div>

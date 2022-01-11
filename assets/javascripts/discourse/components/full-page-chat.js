@@ -2,7 +2,7 @@ import Component from "@ember/component";
 import discourseComputed from "discourse-common/utils/decorators";
 import { action } from "@ember/object";
 import { inject as service } from "@ember/service";
-import { next } from "@ember/runloop";
+import { schedule } from "@ember/runloop";
 
 export default Component.extend({
   tagName: "",
@@ -26,6 +26,7 @@ export default Component.extend({
 
   init() {
     this._super(...arguments);
+
     this.appEvents.on("chat:refresh-channels", this, "refreshModel");
   },
 
@@ -36,11 +37,12 @@ export default Component.extend({
     window.addEventListener("resize", this._calculateHeight, false);
     document.body.classList.add("has-full-page-chat");
     this.chat.set("fullScreenChatOpen", true);
-    next(this._calculateHeight);
+    schedule("afterRender", this._calculateHeight);
   },
 
   willDestroyElement() {
     this._super(...arguments);
+
     this.appEvents.off("chat:refresh-channels", this, "refreshModel");
     window.removeEventListener("resize", this._calculateHeight, false);
     document.body.classList.remove("has-full-page-chat");
@@ -49,6 +51,7 @@ export default Component.extend({
 
   willRender() {
     this._super(...arguments);
+
     this.set("teamsSidebarOn", this.chat.sidebarActive);
   },
 
@@ -57,12 +60,14 @@ export default Component.extend({
       return;
     }
 
-    const sidebarScroll = document.querySelector(
-      ".sidebar-container .scroll-wrapper"
-    );
-    if (sidebarScroll) {
-      sidebarScroll.scrollTop = sidebarScroll.scrollHeight;
-    }
+    schedule("afterRender", () => {
+      const sidebarScroll = document.querySelector(
+        ".sidebar-container .scroll-wrapper"
+      );
+      if (sidebarScroll) {
+        sidebarScroll.scrollTop = sidebarScroll.scrollHeight;
+      }
+    });
   },
 
   _calculateHeight() {

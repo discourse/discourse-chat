@@ -14,6 +14,7 @@ register_asset 'stylesheets/common/incoming-chat-webhooks.scss'
 register_asset 'stylesheets/common/chat-message.scss'
 register_asset 'stylesheets/mobile/mobile.scss', :mobile
 register_asset 'stylesheets/desktop/desktop.scss', :desktop
+register_asset 'stylesheets/sidebar-extensions.scss'
 
 register_svg_icon "comments"
 register_svg_icon "comment-slash"

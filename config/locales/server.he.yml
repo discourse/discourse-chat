@@ -13,6 +13,7 @@ he:
       channel_exists_for_topic: "כבר קיים ערוץ לנושא הזה"
   discourse_push_notifications:
     popup:
+      chat_mention: "אוזכרת בצ׳אט על ידי ‎@%{username}"
       chat_message: "הודעת צ׳אט חדשה תחת %{chat_channel_title}"
       group_chat_message: "הודעת צ׳אט חדשה בערוץ צ׳אט אישי"
   discourse_automation:

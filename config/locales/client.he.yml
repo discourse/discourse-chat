@@ -17,6 +17,7 @@ he:
       cancel: "ביטול"
       cancel_reply: "ביטול תגובה"
       chat_channels: "ערוצים"
+      leave: "יציאה מהערוץ"
       channel_list_popup:
         browse: "עיון בערוצים"
         create: "יצירת ערוץ"
@@ -62,7 +63,7 @@ he:
       open_full_page: "פתיחת צ׳אט במסך מלא"
       open_message: "פתיחת הודעה בצ׳אט"
       placeholder_self: "לקשקש משהו"
-      placeholder_others: "לשלוח הודעה אל %{messageRecipient}"
+      placeholder_others: "צ׳אט עם %{messageRecipient}"
       placeholder_previewing: "יש להצטרף לערוץ כדי לשלוח הודעה."
       remove_upload: "הסרת קובץ"
       react: "להגיב עם אמוג׳י"
@@ -84,20 +85,31 @@ he:
       title: "צ׳אט"
       title_capitalized: "צ׳אט"
       upload: "צירוף קובץ"
+      uploaded_files:
+        one: "קובץ %{count}"
+        two: "%{count} קבצים"
+        many: "%{count} קבצים"
+        other: "%{count} קבצים"
       exit: "חזרה"
       create_channel:
         choose_category:
+          label: "נא לבחור קטגוריה"
           none: "נא לבחור אחד…"
+          hint: 'ניתן לנהל את הגישה באמצעות ביקור ב<a href=%{link} target="_blank">הגדרות האבטחה של %{category}</a>'
         create: "יצירת ערוץ"
         description: "תיאור (רשות)"
         name: "שם הערוץ"
-        title: "הוספת ערוץ"
+        title: "יצירת ערוץ"
         type: "סוג"
         types:
           category: "קטגוריה"
           topic: "נושא"
       reactions:
         only_you: "הגבת עם :%{emoji}:"
+        and_others: "הגבת, יחד עם %{usernames} באמוג׳י :%{emoji}:"
+        only_others: "%{usernames} הגיבו באמוג׳י :%{emoji}:"
+        others_and_more: "%{usernames} ו־%{more} נוספים הגיבו באמוג׳י :%{emoji}:"
+        you_others_and_more: "הגבת, יחד עם %{usernames} ו־%{more} נוספים באמוג׳י :%{emoji}:"
       composer:
         toggle_toolbar: "החלפת מצב סרגל כלים"
       notification_levels:
@@ -131,6 +143,7 @@ he:
         description: "תיאור"
         delete: "מחיקה"
         emoji: "אמוג׳י"
+        emoji_instructions: "אם האמוג׳י יישאר ריק ייעשה שימוש בתמונה הייצוגית של המערכת."
         name: "שם"
         name_placeholder: "שם…"
         new: "התליה נכנסת חדשה"
@@ -166,6 +179,13 @@ he:
             two: "פעולה זו תיצור הודעה חדשה ותמלא בה את <b>%{count}</b> הודעות הצ׳אט שבחרת."
             many: "פעולה זו תיצור הודעה חדשה ותמלא בה את <b>%{count}</b> הודעות הצ׳אט שבחרת."
             other: "פעולה זו תיצור הודעה חדשה ותמלא בה את <b>%{count}</b> הודעות הצ׳אט שבחרת."
+      replying_indicator:
+        multiple_users: "%{commaSeparatedUsernames} וגם %{lastUsername} מקלידים"
+        many_users:
+          one: "%{commaSeparatedUsernames} ועוד %{count} בנוסף מקלידים"
+          two: "%{commaSeparatedUsernames} ועוד %{count} נוספים מקלידים"
+          many: "%{commaSeparatedUsernames} ועוד %{count} נוספים מקלידים"
+          other: "%{commaSeparatedUsernames} ועוד %{count} נוספים מקלידים"
     notifications:
       popup:
         chat_mention: "אוזכרת על ידי ‎@%{username} בצ׳אט"

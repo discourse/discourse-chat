@@ -375,7 +375,7 @@ export default Service.extend({
       : this.publicChannels;
 
     // this check shouldn't be needed given the previous check to existingChannel
-    // this is safety net, to ensure we never track duplicated channels
+    // this is a safety net, to ensure we never track duplicated channels
     if (existingChannels.findBy("id", channel.id)) {
       return;
     }

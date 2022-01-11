@@ -64,7 +64,6 @@ sv:
       open_full_page: "Öppna chatt i helskärmsläge"
       open_message: "Öppna meddelande i chatten"
       placeholder_self: "Gör en anteckning"
-      placeholder_others: "Skicka ett meddelande till %{messageRecipient}"
       placeholder_previewing: "Gå med i kanalen för att skicka ett meddelande."
       remove_upload: "Ta bort fil"
       react: "Reagera med emoji"
@@ -89,12 +88,11 @@ sv:
       exit: "tillbaka"
       create_channel:
         choose_category:
-          label: "Välj en kategori för att hantera vem som kan komma åt kanalen"
           none: "Välj en..."
         create: "Skapa kanal"
         description: "Beskrivning (valfritt)"
         name: "Kanalnamn"
-        title: "Lägg till en kanal"
+        title: "Skapa en kanal"
         type: "Typ"
         types:
           category: "Kategori"
@@ -176,7 +174,6 @@ sv:
       replying_indicator:
         single_user: "%{username} skriver"
         multiple_users: "%{commaSeparatedUsernames} och %{lastUsername} skriver"
-        many_users: "%{commaSeparatedUsernames} och %{count} andra skriver"
     notifications:
       popup:
         chat_mention: "@%{username} nämnde dig i chatten"

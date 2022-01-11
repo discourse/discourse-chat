@@ -175,7 +175,7 @@ export default Service.extend({
         this._fetchingChannels = this._refreshChannels();
       }
 
-      return this._fetchingChannels
+      this._fetchingChannels
         .then(() => resolve(this._channelObject()))
         .finally(() => (this._fetchingChannels = null));
     });

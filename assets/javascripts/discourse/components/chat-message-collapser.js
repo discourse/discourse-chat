@@ -34,11 +34,13 @@ export default Component.extend({
 
   @computed("uploads")
   get uploadsHeader() {
+    let name = "";
     if (this.uploads.length === 1) {
-      return this.uploads[0].original_filename;
+      name = this.uploads[0].original_filename;
     } else {
-      return I18n.t("chat.uploaded_files", { count: this.uploads.length });
+      name = I18n.t("chat.uploaded_files", { count: this.uploads.length });
     }
+    return `<span class="chat-message-collapser-link-small">${name}</span>`;
   },
 
   @computed("cooked")

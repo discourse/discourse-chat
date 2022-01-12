@@ -37,7 +37,7 @@ export default Component.extend({
     if (this.uploads.length === 1) {
       return this.uploads[0].original_filename;
     } else {
-      return I18n.t(`chat.uploaded_files`, { count: this.uploads.length });
+      return I18n.t("chat.uploaded_files", { count: this.uploads.length });
     }
   },
 

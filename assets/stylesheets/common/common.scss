@@ -1281,7 +1281,12 @@ body.composer-open .topic-chat-float-container {
     align-items: center;
   }
 
-  .chat-message-collapser-filename {
+  .chat-message-collapser-header + p,
+  .chat-message-collapser-header + p img.onebox {
+    margin-top: 0.25em;
+  }
+
+  .chat-message-collapser-link-small {
     font-size: 0.75em;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -1303,6 +1308,8 @@ body.composer-open .topic-chat-float-container {
   }
 
   .chat-uploads {
+    margin-top: 0.25em;
+
     .chat-img-upload,
     .chat-other-upload {
       margin-bottom: 1em;

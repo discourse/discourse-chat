@@ -1,57 +1,32 @@
 <div class="chat-message-collapser">
-  {{#if isImage}}
+  {{#if hasUploads}}
     {{html-safe cooked}}
-  {{/if}}
-
-  <div class="chat-message-collapser-header">
-    {{#if isImage}}
-      <span class="chat-message-collapser-filename">
-        {{imageFilename}}
-      </span>
-    {{else if isYoutube}}
-      <a
-        target="_blank"
-        class="chat-message-collapser-link"
-        rel="noopener noreferrer"
-        href={{youtubeLink}}
-      >
-        {{youtubeTitle}}
-      </a>
-    {{else if isAnimatedImage}}
-      <a
-        target="_blank"
-        class="chat-message-collapser-filename"
-        rel="noopener noreferrer"
-        href={{message}}
-      >
-        {{message}}
-      </a>
-    {{/if}}
-
-    {{#if collapsed}}
-      {{d-button
-        action=(action "open")
-        icon="caret-right"
-        class="chat-message-collapser-button chat-message-collapser-close"
-      }}
-    {{else}}
-      {{d-button
-        action=(action "close")
-        icon="caret-down"
-        class="chat-message-collapser-button chat-message-collapser-open"
-      }}
-    {{/if}}
-  </div>
-
-  {{#unless collapsed}}
-    {{#if isImage}}
+    {{#collapser header=uploadsHeader}}
       <div class="chat-uploads">
         {{#each uploads as |upload|}}
           {{chat-upload upload=upload}}
         {{/each}}
       </div>
-    {{else if (or isYoutube isAnimatedImage)}}
-      {{html-safe cooked}}
-    {{/if}}
-  {{/unless}}
+    {{/collapser}}
+  {{else if hasYoutube}}
+    {{#each youtubeCooked as |cooked|}}
+      {{#if cooked.needsCollapser}}
+        {{#collapser header=cooked.header}}
+          {{cooked.body}}
+        {{/collapser}}
+      {{else}}
+        {{{cooked.body}}}
+      {{/if}}
+    {{/each}}
+  {{else if hasImageOnebox}}
+    {{#each imageOneboxCooked as |cooked|}}
+      {{#if cooked.needsCollapser}}
+        {{#collapser header=cooked.header}}
+          {{cooked.body}}
+        {{/collapser}}
+      {{else}}
+        {{{cooked.body}}}
+      {{/if}}
+    {{/each}}
+  {{/if}}
 </div>

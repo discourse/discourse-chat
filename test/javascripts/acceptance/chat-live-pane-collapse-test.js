@@ -56,8 +56,8 @@ acceptance("Discourse Chat - Chat live pane", function (needs) {
 
   test("can collapse and expand youtube chat", async function (assert) {
     const youtubeContainerSelector = ".lazyYT";
-    const close = ".chat-message-collapser-close";
-    const open = ".chat-message-collapser-open";
+    const close = ".chat-message-collapser-closed";
+    const open = ".chat-message-collapser-opened";
 
     await visit("/chat/channel/1/cat");
 

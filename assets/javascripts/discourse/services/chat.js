@@ -60,9 +60,12 @@ export default Service.extend({
       this.appEvents.on("page:changed", this, "_storeLastNonChatRouteInfo");
       this.presenceChannel = this.presence.getChannel("/chat/online");
       this.draftStore = {};
-      this.currentUser.chat_drafts.forEach((draft) => {
-        this.draftStore[draft.channel_id] = JSON.parse(draft.data);
-      });
+
+      if (this.currentUser.chat_drafts) {
+        this.currentUser.chat_drafts.forEach((draft) => {
+          this.draftStore[draft.channel_id] = JSON.parse(draft.data);
+        });
+      }
     }
   },
 
@@ -645,7 +648,10 @@ export default Service.extend({
   },
 
   setDraftForChannel(channelId, draft) {
-    if (draft.value || draft.uploads.length > 0) {
+    if (
+      draft &&
+      (draft.value || draft.uploads.length > 0 || draft.replyToMsg)
+    ) {
       this.draftStore[channelId] = draft;
     } else {
       delete this.draftStore[channelId];

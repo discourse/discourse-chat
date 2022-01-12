@@ -153,7 +153,7 @@ discourseModule(
 
       async test(assert) {
         assert.ok(
-          query(".chat-message-collapser-header").innerText.includes(
+          query(".chat-message-collapser-link-small").innerText.includes(
             "tomtom.jpeg"
           )
         );
@@ -170,7 +170,9 @@ discourseModule(
 
       async test(assert) {
         assert.ok(
-          query(".chat-message-collapser-header").innerText.includes("2 files")
+          query(".chat-message-collapser-link-small").innerText.includes(
+            "2 files"
+          )
         );
       },
     });

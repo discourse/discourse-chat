@@ -423,4 +423,16 @@ describe DiscourseChat::ChatMessageCreator do
       }.to change { user2.chat_mentions.count }.by(1)
     end
   end
+
+  it "destroys draft after message was created" do
+    Draft.set(user1, "chat_#{public_chat_channel.id}", 0, "{ uploads: [] }")
+
+    expect do
+      DiscourseChat::ChatMessageCreator.create(
+        chat_channel: public_chat_channel,
+        user: user1,
+        content: "Hi @#{user2.username}"
+      )
+    end.to change { Draft.count }.by(-1)
+  end
 end

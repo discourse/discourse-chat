@@ -36,6 +36,21 @@ discourseModule(
       },
     });
 
+    componentTest("does not collapse a non-image onebox", {
+      template: hbs`{{chat-message-text cooked=cooked}}`,
+
+      beforeEach() {
+        this.set(
+          "cooked",
+          '<p><a href="http://cat1.com" class="onebox"></a></p>'
+        );
+      },
+
+      async test(assert) {
+        assert.notOk(exists(".chat-message-collapser"));
+      },
+    });
+
     componentTest("is edited and shows that it's edited", {
       template: hbs`{{chat-message-text cooked=cooked uploads=uploads edited=edited}}`,
 

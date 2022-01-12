@@ -24,9 +24,9 @@ const animatedImageCooked =
 
 const externalImageCooked =
   "<p>written text</p>" +
-  '<p><a href="http://cat1.com" class="onebox"></a></p>' +
+  '<p><a href="http://cat1.com" class="onebox"><img src=""></img></a></p>' +
   "<p>more written text</p>" +
-  '<p><a href="http://cat2.com" class="onebox"></a></p>' +
+  '<p><a href="http://cat2.com" class="onebox"><img src=""></img></a></p>' +
   "<p>and even more</p>";
 
 discourseModule(

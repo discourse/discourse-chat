@@ -103,7 +103,9 @@ function externalImageOnebox(e) {
   return (
     e.firstElementChild &&
     e.firstElementChild.nodeName === "A" &&
-    e.firstElementChild.classList.contains("onebox")
+    e.firstElementChild.classList.contains("onebox") &&
+    e.firstElementChild.firstElementChild &&
+    e.firstElementChild.firstElementChild.nodeName === "IMG"
   );
 }
 

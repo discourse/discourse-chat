@@ -21,7 +21,7 @@ discourseModule(
       },
     });
 
-    componentTest("is youtube and shows collapsed", {
+    componentTest("shows collapsed", {
       template: hbs`{{chat-message-text cooked=cooked uploads=uploads edited=edited}}`,
 
       beforeEach() {
@@ -33,49 +33,6 @@ discourseModule(
 
       async test(assert) {
         assert.ok(exists(".chat-message-collapser"));
-      },
-    });
-
-    componentTest("is image and shows collapsed", {
-      template: hbs`{{chat-message-text cooked=cooked uploads=uploads edited=edited}}`,
-
-      beforeEach() {
-        this.set("cooked", "<p></p>");
-        this.set("uploads", [{}]);
-      },
-
-      async test(assert) {
-        assert.ok(exists(".chat-message-collapser"));
-      },
-    });
-
-    componentTest("is animated image and shows collapsed", {
-      template: hbs`{{chat-message-text cooked=cooked message=message edited=edited}}`,
-
-      beforeEach() {
-        const escapedMessage =
-          "http://gif.com/1/g.w?cid=1&amp;id=gif.web&amp;ct=g";
-        const message = "http://gif.com/1/g.w?cid=1&id=gif.web&ct=g";
-        const animagedImageCooked = `<p><img src="${escapedMessage}" class="animated onebox"`;
-
-        this.set("cooked", animagedImageCooked);
-        this.set("message", message);
-      },
-
-      async test(assert) {
-        assert.ok(exists(".chat-message-collapser"));
-      },
-    });
-
-    componentTest("is not collapsible and does not show collapse", {
-      template: hbs`{{chat-message-text cooked=cooked uploads=uploads edited=edited}}`,
-
-      beforeEach() {
-        this.set("cooked", "<p></p>");
-      },
-
-      async test(assert) {
-        assert.notOk(exists(".chat-message-collapser"));
       },
     });
 

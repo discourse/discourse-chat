@@ -397,7 +397,7 @@ body.composer-open .topic-chat-float-container {
   align-items: center;
 
   .chat-message:not(.is-reply) & {
-    padding-right: 0.5rem;
+    width: var(--message-left-width);
   }
 
   .chat-message.is-reply .tc-reply-display &,

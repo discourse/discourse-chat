@@ -1315,6 +1315,11 @@ body.composer-open .topic-chat-float-container {
       margin-bottom: 1em;
     }
   }
+
+  a.onebox img {
+    height: unset;
+    width: unset;
+  }
 }
 
 .chat-message-collapser,

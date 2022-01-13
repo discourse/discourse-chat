@@ -442,7 +442,6 @@ export default Component.extend(TextareaTextManipulation, {
   },
 
   messageRecipient(chatChannel) {
-    console.log(chatChannel);
     if (chatChannel.chatable_type === "DirectMessageChannel") {
       const directMessageRecipients = chatChannel.chatable.users;
 
@@ -452,14 +451,6 @@ export default Component.extend(TextareaTextManipulation, {
       ) {
         return I18n.t("chat.placeholder_self");
       }
-
-      console.log(
-        I18n.t("chat.placeholder_others", {
-          messageRecipient: directMessageRecipients
-            .map((u) => u.name || `@${u.username}`)
-            .join(", "),
-        })
-      );
 
       return I18n.t("chat.placeholder_others", {
         messageRecipient: directMessageRecipients

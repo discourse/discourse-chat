@@ -398,6 +398,7 @@ body.composer-open .topic-chat-float-container {
 
   .chat-message:not(.is-reply) & {
     width: var(--message-left-width);
+    flex-shrink: 0;
   }
 
   .chat-message.is-reply .tc-reply-display &,

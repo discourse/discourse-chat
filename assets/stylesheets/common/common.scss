@@ -237,7 +237,7 @@ body.composer-open .topic-chat-float-container {
 
 .topic-chat-drawer-content {
   box-sizing: border-box;
-  height: 100%;
+  height: calc(100% - #{$header-height});
   padding-bottom: 0.25em;
 
   .chat-channels .chat-channel-divider {

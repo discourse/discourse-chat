@@ -1,0 +1,19 @@
+{{#if showUploadsContainer}}
+  <div class="chat-composer-uploads-wrapper">
+    {{#each uploads as |upload|}}
+      {{chat-composer-upload
+        upload=upload
+        isDone=true
+        onCancel=(action "removeUpload" upload)
+      }}
+    {{/each}}
+    {{#each inProgressUploads as |upload|}}
+      {{chat-composer-upload
+        upload=upload
+        onCancel=(action "cancelUploading" upload)
+      }}
+    {{/each}}
+  </div>
+{{/if}}
+
+<input type="file" id={{fileUploadElementId}} accept={{acceptedFormats}} multiple>

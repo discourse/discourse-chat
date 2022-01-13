@@ -1,8 +1,4 @@
 .chat-live-pane .chat-composer .chat-composer-row {
-  .chat-composer-input {
-    padding-right: 75px;
-  }
-
   .open-toolbar-btn {
     right: 50px;
   }
@@ -17,10 +13,6 @@
       color: var(--tertiary);
     }
   }
-}
-
-.chat-composer-uploads-container {
-  padding: 0.25em 0.75em;
 }
 
 .chat-message:not(.user-info-hidden) {

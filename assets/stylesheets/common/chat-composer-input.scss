@@ -1,0 +1,22 @@
+.chat-composer-input {
+  text-overflow: ellipsis;
+  border: 1px solid var(--primary-low-mid);
+
+  &:focus {
+    border: 1px solid var(--primary-medium);
+    outline: none;
+  }
+
+  .uppy-is-drag-over & {
+    box-shadow: 0 2px 5px 0 var(--tertiary-low),
+      0 2px 10px 0 var(--tertiary-low);
+  }
+
+  &:placeholder-shown {
+    .chat-composer-row & {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+}

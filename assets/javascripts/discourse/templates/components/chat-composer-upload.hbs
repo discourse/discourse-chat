@@ -1,31 +1,38 @@
-<span class="preview">
-  {{#if (eq type IMAGE_TYPE)}}
-    {{#if done}}
-      <img class="preview-img" src={{upload.short_path}}>
-    {{else}}
-      {{d-icon "far-image"}}
-    {{/if}}
-  {{else}}
-    {{d-icon "file-alt"}}
-  {{/if}}
-</span>
+{{#if upload}}
+  <span class="chat-composer-upload">
+    <span class="preview">
+      {{#if (eq type IMAGE_TYPE)}}
+        {{#if isDone}}
+          <img class="preview-img" src={{upload.short_path}}>
+        {{else}}
+          {{d-icon "far-image"}}
+        {{/if}}
+      {{else}}
+        {{d-icon "file-alt"}}
+      {{/if}}
+    </span>
 
-<span class="data">
-  <div class="top-data">
-    <span class="file-name">{{fileName}}</span>
-    {{d-button
-      class="btn-flat"
-      action=cancel
-      icon="times"
-      title="chat.remove_upload"
-    }}
-  </div>
-  <div class="bottom-data">
-    {{#if done}}
-      <span class="extension-pill">{{upload.extension}}</span>
-    {{else}}
-      <span class="uploading">{{i18n "uploading"}}</span>
-      <progress class="upload-progress" id="file" max="100" value={{upload.progress}}></progress>
-    {{/if}}
-  </div>
-</span>
+    <span class="data">
+      <div class="top-data">
+        <span class="file-name">{{fileName}}</span>
+      </div>
+      <div class="bottom-data">
+        {{#if isDone}}
+          <span class="extension-pill">{{upload.extension}}</span>
+        {{else}}
+          <span class="uploading">{{i18n "uploading"}}</span>
+          <progress class="upload-progress" id="file" max="100" value={{upload.progress}}></progress>
+        {{/if}}
+      </div>
+    </span>
+
+    <span class="actions">
+      {{d-button
+        class="btn-flat remove-upload"
+        action=(action "handleOnCancel" upload)
+        icon="times"
+        title="chat.remove_upload"
+      }}
+    </span>
+  </span>
+{{/if}}

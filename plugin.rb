@@ -17,6 +17,11 @@ register_asset 'stylesheets/mobile/mobile.scss', :mobile
 register_asset 'stylesheets/desktop/desktop.scss', :desktop
 register_asset 'stylesheets/sidebar-extensions.scss'
 register_asset 'stylesheets/common/chat-message-separator.scss'
+register_asset 'stylesheets/common/chat-composer-input.scss'
+register_asset 'stylesheets/mobile/chat-composer-input.scss', :mobile
+register_asset 'stylesheets/common/chat-composer-uploads.scss'
+register_asset 'stylesheets/mobile/chat-composer-uploads.scss', :mobile
+register_asset 'stylesheets/common/chat-composer-upload.scss'
 
 register_svg_icon "comments"
 register_svg_icon "comment-slash"

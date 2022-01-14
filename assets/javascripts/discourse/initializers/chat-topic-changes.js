@@ -36,7 +36,7 @@ function makeTopicChanges(api, appEvents, chat) {
     statuses() {
       const results = this._super(...arguments);
 
-      if (this.topic.has_chat_live) {
+      if (this.topic.has_chat_live && !this.topic.closed) {
         results.push({
           openTag: "span",
           closeTag: "span",
@@ -66,7 +66,7 @@ function makeTopicChanges(api, appEvents, chat) {
   });
 
   api.decorateWidget("topic-status:after", (dec) => {
-    if (dec.attrs.topic.has_chat_live) {
+    if (dec.attrs.topic.has_chat_live && !dec.attrs.topic.closed) {
       return dec.widget.attach("topic-title-chat-link", dec.attrs.topic);
     }
   });

@@ -42,14 +42,28 @@ export default Component.extend({
 
   @action
   handleSwitchChannel(event) {
-    if (event.target.classList.contains("chat-channel-leave-btn")) {
-      return;
-    }
-
     if (this.switchChannel) {
       this.switchChannel(this.channel);
       event.preventDefault();
     }
+  },
+
+  @action
+  handleClick(event) {
+    if (event.target.classList.contains("chat-channel-leave-btn")) {
+      return;
+    }
+
+    this.handleSwitchChannel(event);
+  },
+
+  @action
+  handleKeydown(event) {
+    if (event.key !== "Enter") {
+      return;
+    }
+
+    this.handleSwitchChannel(event);
   },
 
   @action

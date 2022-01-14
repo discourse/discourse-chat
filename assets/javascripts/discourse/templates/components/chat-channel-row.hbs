@@ -1,9 +1,11 @@
 <div
   id="chat-channel-row-{{channel.id}}"
   class="{{rowClassNames}} {{if isUnfollowing "unfollowing"}}"
-  {{on "click" (fn this.handleSwitchChannel)}}
+  {{on "click" (fn this.handleClick)}}
+  {{on "keydown" (fn this.handleKeydown)}}
   {{on "mousedown" (fn this.handleNewWindow)}}
   role="button"
+  tabindex="0"
 >
   {{chat-channel-title channel=channel}}
   {{chat-channel-unread-indicator channel=channel}}

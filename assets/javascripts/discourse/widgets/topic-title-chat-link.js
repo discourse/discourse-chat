@@ -5,12 +5,14 @@ export default createWidget("topic-title-chat-link", {
   tagName: "span.topic-title-chat-link",
   title: "chat.open",
 
-  html(attrs) {
-    if (attrs.closed) {
-      return;
-    }
-
+  html() {
     return iconNode("far-comments");
+  },
+
+  buildClasses(attrs) {
+    if (attrs.closed || !attrs.has_chat_live) {
+      return "hidden";
+    }
   },
 
   click() {

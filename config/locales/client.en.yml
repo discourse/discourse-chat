@@ -54,6 +54,8 @@ en:
           other: "%{usernames} have not joined this channel."
 
       no_public_channels: "You have not joined any channels."
+      no_joinable_channels_title: "There are no channels for you to join yet."
+      no_joinable_channels_body: "You can reach out to your administrator to start enabling chat for topics or categories."
       only_chat_push_notifications:
         title: "Only send chat push notifications"
         description: "Block all non-chat push notifications from being sent"

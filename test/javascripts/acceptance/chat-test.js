@@ -1021,7 +1021,6 @@ acceptance(
   }
 );
 
-const editedChannelName = "this is an edit test!";
 acceptance(
   "Discourse Chat - chat channel settings and creation",
   function (needs) {
@@ -1038,20 +1037,12 @@ acceptance(
     });
     needs.pretender((server, helper) => {
       baseChatPretenders(server, helper);
-      siteChannelPretender(server, helper);
-      directMessageChannelPretender(server, helper);
       chatChannelPretender(server, helper);
       server.get("/chat/chat_channels/all.json", () => {
         return helper.response(allChannels());
       });
-      server.post("/chat/chat_channels/:chatChannelId/unfollow", () => {
-        return helper.response({ success: "OK" });
-      });
       server.get("/chat/chat_channels/:chatChannelId", () => {
         return helper.response(siteChannel);
-      });
-      server.post("/chat/chat_channels/:chatChannelId/follow", () => {
-        return helper.response(siteChannel.chat_channel);
       });
       server.put("/chat/chat_channels", () => {
         return helper.response({
@@ -1069,93 +1060,12 @@ acceptance(
           },
         });
       });
-      server.post("/chat/chat_channels/:chat_channel_id", () => {
-        return helper.response({
-          chat_channel: {
-            chat_channels: [],
-            chatable: {},
-            chatable_id: 16,
-            chatable_type: "Category",
-            chatable_url: null,
-            id: 75,
-            last_read_message_id: null,
-            title: editedChannelName,
-            unread_count: 0,
-            unread_mentions: 0,
-            updated_at: "2021-11-08T21:26:05.710Z",
-          },
-        });
-      });
     });
 
     test("previewing channel", async function (assert) {
       await visit("/chat/channel/70/preview-me");
       assert.ok(exists(".join-channel-btn"), "Join channel button is present");
       assert.equal(query(".chat-composer-row textarea").disabled, true);
-    });
-
-    test("Chat browse controls", async function (assert) {
-      await visit("/chat/browse");
-      const settingsRow = query(".chat-channel-settings-row");
-      assert.ok(
-        settingsRow.querySelector(".chat-channel-expand-settings"),
-        "Expand notifications button is present"
-      );
-      assert.ok(
-        settingsRow.querySelector(".chat-channel-unfollow"),
-        "Unfollow button is present"
-      );
-      await click(".chat-channel-expand-settings");
-      assert.ok(exists(".chat-channel-row-controls"), "Controls are present");
-
-      // Click unfollow!
-      await click(".chat-channel-unfollow");
-      assert.notOk(
-        settingsRow.querySelector(".chat-channel-expand-settings"),
-        "Expand notifications button is gone"
-      );
-      assert.notOk(
-        settingsRow.querySelector(".chat-channel-unfollow"),
-        "Unfollow button is gone"
-      );
-
-      assert.ok(
-        settingsRow.querySelector(".chat-channel-preview"),
-        "Preview channel button is present"
-      );
-      assert.ok(
-        settingsRow.querySelector(".chat-channel-follow"),
-        "Follow button is present"
-      );
-    });
-
-    test("Chat browse - edit name is present for staff", async function (assert) {
-      updateCurrentUser({ admin: true, moderator: true });
-      await visit("/chat/browse");
-      const settingsRow = query(".chat-channel-settings-row");
-      await click(
-        settingsRow.querySelector(".channel-title-container .edit-btn")
-      );
-      assert.ok(exists(".channel-name-edit-container"));
-      await fillIn(
-        ".channel-name-edit-container .name-input",
-        editedChannelName
-      );
-      await click(
-        settingsRow.querySelector(".channel-name-edit-container .save-btn")
-      );
-      assert.equal(
-        settingsRow.querySelector(".chat-channel-title").innerText.trim(),
-        editedChannelName
-      );
-    });
-
-    test("Chat browse - edit name is hidden for normal user", async function (assert) {
-      updateCurrentUser({ admin: false, moderator: false });
-      await visit("/chat/browse");
-      assert.notOk(
-        exists(".chat-channel-settings-row .channel-title-container .edit-btn")
-      );
     });
 
     test("Create channel modal", async function (assert) {

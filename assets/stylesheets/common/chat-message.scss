@@ -483,8 +483,6 @@
   }
 
   img {
-    grid-area: image;
-
     &:not(.ytp-thumbnail-image) {
       max-height: 150px;
     }

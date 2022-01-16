@@ -1076,6 +1076,13 @@ body.composer-open .topic-chat-float-container {
   }
 }
 
+body.has-full-page-chat {
+  .alert-info:last-of-type {
+    margin-bottom: 0;
+    border-bottom: 1px solid var(--primary-low);
+  }
+}
+
 .full-page-chat {
   font-family: "Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;

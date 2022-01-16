@@ -758,14 +758,15 @@ body.composer-open .topic-chat-float-container {
     }
   }
 
-  &:hover,
+  .discourse-no-touch &:hover,
   &.active {
     background: var(--primary-low);
+  }
 
-    .topic-chat-badge .topic-chat-icon {
-      .d-icon {
-        background: transparent;
-      }
+  &:hover,
+  &.active {
+    .topic-chat-badge .topic-chat-icon .d-icon {
+      background: transparent;
     }
 
     .chat-channel-unread-indicator {

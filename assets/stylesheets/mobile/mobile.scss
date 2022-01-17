@@ -31,12 +31,11 @@
   padding: 0.1em 1em;
 }
 
-body.has-full-page-chat .footer-nav {
-  display: none !important;
-}
-
 body.has-full-page-chat {
-  background-color: var(--primary-very-low);
+  .footer-nav {
+    display: none !important;
+  }
+
   #main-outlet {
     padding: 0;
   }

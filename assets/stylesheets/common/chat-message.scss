@@ -455,10 +455,6 @@
 }
 
 .full-page-chat {
-  .chat-message {
-    background: var(--primary-very-low);
-  }
-
   .not-mobile-device & .chat-message:hover,
   .chat-message.chat-message-selected {
     background: var(--primary-very-low);
@@ -472,10 +468,6 @@
 
   header {
     margin-bottom: 0.5em;
-  }
-
-  img {
-    grid-area: image;
   }
 
   h3 a,

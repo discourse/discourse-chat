@@ -1,8 +1,32 @@
 // Styles to make channel list in sidebar match sidebar theme
 .has-sidebar {
+  .sidebar-header {
+    .d-header .menu-panel {
+      top: 3.22em !important;
+    }
+    .d-header-icons .icon {
+      width: 2em;
+      height: 2em;
+      img.avatar, #logo-small {
+        width: 2em;
+        height: 2em;
+      }
+    }
+  }
   .header-dropdown-toggle.open-chat {
     .chat-channel-unread-indicator {
       border-color: var(--primary-very-low);
+    }
+  }
+  .custom-nav-list .title {
+    padding: 0 0.5em 0 1.75em;
+  }
+  .sidebar-container {
+    .chat-channels .chat-channel-divider {
+      padding: 0 0.5em 0 1.75rem;
+    }
+    .chat-channels .chat-channel-row {
+      padding-right: 0.5em;
     }
   }
 }

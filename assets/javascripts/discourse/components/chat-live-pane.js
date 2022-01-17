@@ -699,7 +699,6 @@ export default Component.extend({
   },
 
   _floatOpenAndFocused() {
-    console.log(document.visibilityState);
     return (
       document.visibilityState === "visible" &&
       this.expanded &&

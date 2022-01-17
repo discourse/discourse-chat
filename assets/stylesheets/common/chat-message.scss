@@ -454,14 +454,6 @@
   font-style: italic;
 }
 
-.chat-message-text {
-  img.animated.onebox,
-  img.chat-img-upload {
-    max-width: 100%;
-    height: unset;
-  }
-}
-
 .full-page-chat {
   .chat-message {
     background: var(--primary-very-low);
@@ -484,10 +476,6 @@
 
   img {
     grid-area: image;
-
-    &:not(.ytp-thumbnail-image) {
-      max-height: 150px;
-    }
   }
 
   h3 a,

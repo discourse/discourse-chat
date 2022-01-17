@@ -39,8 +39,13 @@
     }
   }
 
-  a.onebox img {
-    height: unset;
+  .onebox img:not(.ytp-thumbnail-image),
+  img.onebox,
+  .chat-uploads img {
+    object-fit: contain;
+    max-height: 150px;
+    max-width: 100%;
+
     width: unset;
   }
 }

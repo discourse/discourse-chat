@@ -454,14 +454,6 @@
   font-style: italic;
 }
 
-.chat-message-text {
-  img.animated.onebox,
-  img.chat-img-upload {
-    max-width: 100%;
-    height: unset;
-  }
-}
-
 .full-page-chat {
   .not-mobile-device & .chat-message:hover,
   .chat-message.chat-message-selected {
@@ -476,12 +468,6 @@
 
   header {
     margin-bottom: 0.5em;
-  }
-
-  img {
-    &:not(.ytp-thumbnail-image) {
-      max-height: 150px;
-    }
   }
 
   h3 a,

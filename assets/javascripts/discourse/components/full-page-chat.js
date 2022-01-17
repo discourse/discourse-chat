@@ -2,6 +2,7 @@ import Component from "@ember/component";
 import discourseComputed from "discourse-common/utils/decorators";
 import { action } from "@ember/object";
 import { reads } from "@ember/object/computed";
+import { schedule } from "@ember/runloop";
 import { inject as service } from "@ember/service";
 
 export default Component.extend({
@@ -37,7 +38,7 @@ export default Component.extend({
     window.addEventListener("resize", this._calculateHeight, false);
     document.body.classList.add("has-full-page-chat");
     this.chat.set("fullScreenChatOpen", true);
-    this._calculateHeight();
+    schedule("afterRender", this._calculateHeight);
   },
 
   willDestroyElement() {

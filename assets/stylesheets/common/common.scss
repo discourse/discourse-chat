@@ -351,24 +351,24 @@ body.composer-open .topic-chat-float-container {
   }
 }
 
-.chat-message {
-  position: relative;
-  display: grid;
-
-  &.selecting-messages {
-    grid-template-columns: 1.5em 1fr;
-  }
-
-  .chat-message-selector {
-    align-self: center;
-    justify-self: end;
-    margin: 0;
-  }
-}
-
 .chat-messages-container {
   word-wrap: break-word;
   white-space: normal;
+
+  .chat-message-container {
+    position: relative;
+    display: grid;
+
+    &.selecting-messages {
+      grid-template-columns: 1.5em 1fr;
+    }
+
+    .chat-message-selector {
+      align-self: center;
+      justify-self: end;
+      margin: 0;
+    }
+  }
 
   .chat-time {
     color: var(--primary-high);

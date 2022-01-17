@@ -236,7 +236,9 @@ acceptance("Discourse Chat - without unread", function (needs) {
   test("Group mention uses the users icon", async function (assert) {
     await visit("/chat/channel/75/@hawk");
     await click(".header-dropdown-toggle.current-user");
-    assert.ok(exists("#quick-access-notifications .chat-group-mention .d-icon-users"));
+    assert.ok(
+      exists("#quick-access-notifications .chat-group-mention .d-icon-users")
+    );
   });
 
   test("notifications for current user and here/all are highlighted", async function (assert) {

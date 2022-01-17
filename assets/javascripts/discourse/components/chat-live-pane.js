@@ -1031,34 +1031,38 @@ export default Component.extend({
     decorateGithubOneboxBody(this.element);
   },
 
+  _getScrollParent(node, maxParentSelector) {
+    if (node === null || node.classList.contains(maxParentSelector)) {
+      return null;
+    }
+
+    if (node.scrollHeight > node.clientHeight) {
+      return node;
+    } else {
+      return this._getScrollParent(node.parentNode, maxParentSelector);
+    }
+  },
+
   _scrollGithubOneboxes() {
     this.element
       .querySelectorAll(".onebox.githubblob li.selected")
       .forEach((line) => {
-        const scrollingElementSelector = ".onebox .onebox-body";
+        const scrollingElement = this._getScrollParent(line, "onebox");
 
-        let linePosition = line.offsetTop + line.offsetHeight / 2;
-
-        // offsetTop is relative to the offsetParent (i.e. a position: relative element)
-        // Keep iterating up them until we reach the topmost one within the onebox
-        // Sum up the offsetTop values as we go
-        let offsetParent = line.offsetParent;
-        while (true) {
-          linePosition += offsetParent.offsetTop;
-          if (!offsetParent.offsetParent?.closest(scrollingElementSelector)) {
-            // The next offsetParent would be outside the onebox
-            break;
-          }
-        }
-        let onebox = line.closest(scrollingElementSelector);
-        if (onebox !== offsetParent) {
-          // The onebox body itself is not position: relative, so we need to subtract it's offsetTop
-          linePosition -= onebox.offsetTop;
+        // most likely a very small file which doesn’t need scrolling
+        if (!scrollingElement) {
+          return;
         }
 
-        onebox.scroll({
-          // Scroll so the selected line is in the middle of the div
-          top: linePosition - onebox.offsetHeight / 2,
+        const scrollBarWidth =
+          scrollingElement.offsetHeight - scrollingElement.clientHeight;
+
+        scrollingElement.scroll({
+          top:
+            line.offsetTop +
+            scrollBarWidth -
+            scrollingElement.offsetHeight / 2 +
+            line.offsetHeight / 2,
         });
       });
   },

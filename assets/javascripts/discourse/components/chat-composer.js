@@ -239,6 +239,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
 
   didReceiveAttrs() {
     this._super(...arguments);
+
     if (
       this.chatChannel.id === this.lastChatChannelId &&
       !this.editingMessage
@@ -259,9 +260,10 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
           ? cloneJSON(this.editingMessage.uploads)
           : [],
       });
-      this._focusTextArea({ ensureAtEnd: true, resizeTextArea: true });
+      this._focusTextArea({ ensureAtEnd: true, resizeTextArea: false });
     }
     this.set("lastChatChannelId", this.chatChannel.id);
+    this._resizeTextArea();
   },
 
   _replyToMsgChanged(replyToMsg) {
@@ -478,11 +480,14 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   },
 
   _resizeTextArea() {
-    this._textarea.parentNode.dataset.replicatedValue = this._textarea.value;
+    schedule("afterRender", () => {
+      if (!this._textarea) {
+        return;
+      }
 
-    if (this.onChangeHeight) {
-      this.onChangeHeight();
-    }
+      this._textarea.parentNode.dataset.replicatedValue = this._textarea.value;
+      this.onChangeHeight?.();
+    });
   },
 
   _uploadDropTargetOptions() {

@@ -52,7 +52,27 @@ const baseChatPretenders = (server, helper) => {
           topic_id: null,
           slug: null,
           data: {
-            message: "chat.mention_notification",
+            message: "notifications.popup.chat_mention",
+            chat_message_id: 174,
+            chat_channel_id: 9,
+            chat_channel_title: "Site",
+            mentioned_by_username: "hawk",
+          },
+        },
+        {
+          id: 43,
+          user_id: 1,
+          notification_type: 32,
+          read: false,
+          high_priority: true,
+          created_at: "2021-01-01 12:00:00 UTC",
+          fancy_title: "First notification",
+          post_number: null,
+          topic_id: null,
+          slug: null,
+          data: {
+            message: "notifications.popup.chat_group_mention",
+            group_name: "engineers",
             chat_message_id: 174,
             chat_channel_id: 9,
             chat_channel_title: "Site",
@@ -198,6 +218,25 @@ acceptance("Discourse Chat - without unread", function (needs) {
     await click(".header-dropdown-toggle.current-user");
     await click("#quick-access-notifications .chat-mention");
     assert.equal(currentURL(), `/chat/channel/9/Site`);
+  });
+
+  test("Clicking mention notification inside other full page channel switches the channel", async function (assert) {
+    await visit("/chat/channel/75/@hawk");
+    await click(".header-dropdown-toggle.current-user");
+    await click("#quick-access-notifications .chat-mention");
+    assert.equal(currentURL(), `/chat/channel/9/Site`);
+  });
+
+  test("Regular mention uses the `@` icon", async function (assert) {
+    await visit("/chat/channel/75/@hawk");
+    await click(".header-dropdown-toggle.current-user");
+    assert.ok(exists("#quick-access-notifications .chat-mention .d-icon-at"));
+  });
+
+  test("Group mention uses the users icon", async function (assert) {
+    await visit("/chat/channel/75/@hawk");
+    await click(".header-dropdown-toggle.current-user");
+    assert.ok(exists("#quick-access-notifications .chat-group-mention .d-icon-users"));
   });
 
   test("notifications for current user and here/all are highlighted", async function (assert) {

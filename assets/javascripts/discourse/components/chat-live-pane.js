@@ -699,7 +699,12 @@ export default Component.extend({
   },
 
   _floatOpenAndFocused() {
-    return document.hasFocus() && this.expanded && !this.floatHidden;
+    console.log(document.visibilityState);
+    return (
+      document.visibilityState === "visible" &&
+      this.expanded &&
+      !this.floatHidden
+    );
   },
 
   _stopLastReadRunner() {

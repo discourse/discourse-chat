@@ -10,6 +10,7 @@ import EmberObject, { action } from "@ember/object";
 import I18n from "I18n";
 import loadScript from "discourse/lib/load-script";
 import showModal from "discourse/lib/show-modal";
+import userPresent from "discourse/lib/user-presence";
 import { A } from "@ember/array";
 import { ajax } from "discourse/lib/ajax";
 import { isTesting } from "discourse-common/config/environment";
@@ -699,11 +700,7 @@ export default Component.extend({
   },
 
   _floatOpenAndFocused() {
-    return (
-      document.visibilityState === "visible" &&
-      this.expanded &&
-      !this.floatHidden
-    );
+    return userPresent() && this.expanded && !this.floatHidden;
   },
 
   _stopLastReadRunner() {

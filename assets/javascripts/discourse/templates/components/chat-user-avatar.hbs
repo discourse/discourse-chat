@@ -1,5 +1,5 @@
 <div class="chat-user-avatar">
-  <div class="chat-user-avatar-container" data-user-card={{user.username}}>
+  <div role="button" class="chat-user-avatar-container clickable" data-user-card={{user.username}}>
     {{avatar user imageSize=avatarSize}}
 
     {{#if isOnline}}

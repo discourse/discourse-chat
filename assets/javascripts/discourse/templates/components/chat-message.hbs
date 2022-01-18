@@ -95,7 +95,9 @@
                 {{#if message.chat_webhook_event.username}}
                   {{message.chat_webhook_event.username}}
                 {{else}}
-                  {{name}}
+                  <span role="button" class="clickable" data-user-card={{message.user.username}}>
+                    {{name}}
+                  </span>
                 {{/if}}
               </span>
 

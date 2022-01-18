@@ -5,8 +5,10 @@ export default {
   initialize(container) {
     const currentUser = container.lookup("current-user:main");
     if (!currentUser?.has_chat_enabled) {
+      document.body.classList.remove("chat-enabled")
       return;
     }
+    document.body.classList.add("chat-enabled")
     withPluginApi("0.12.1", (api) => {
       if (api.container.lookup("site:main").mobileView) {
         currentUser.chat_isolated = false;

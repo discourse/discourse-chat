@@ -300,7 +300,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
         treatAsTextarea: true,
         autoSelectFirstSuggestion: true,
         transformComplete: (v) => v.username || v.name,
-        dataSource: (term) => userSearch({ term, includeGroups: true }),
+        dataSource: (term) => userSearch({ term, includeGroups: false }),
         afterComplete: (text) => {
           this.set("value", text);
           this._focusTextArea();

@@ -5,7 +5,7 @@ class ChatMessage < ActiveRecord::Base
   self.ignored_columns = ["post_id"]
   attribute :has_oneboxes, default: false
 
-  BAKED_VERSION = 1
+  BAKED_VERSION = 2
 
   belongs_to :chat_channel
   belongs_to :user
@@ -35,8 +35,39 @@ class ChatMessage < ActiveRecord::Base
     where('cooked_version <> ? or cooked_version IS NULL', BAKED_VERSION)
   end
 
+  MARKDOWN_FEATURES = %w{
+    anchor
+    bbcode-block
+    bbcode-inline
+    category-hashtag
+    censored
+    discourse-local-dates
+    emoji
+    html-img
+    mentions
+    onebox
+    text-post-process
+    upload-protocol
+    watched-words
+    table
+  }
+
+  MARKDOWN_IT_RULES = %w{
+    backticks
+    newline
+    code
+    fence
+    table
+    linkify
+    link
+    strikethrough
+    blockquote
+    emphasis
+  }
+
   def self.cook(message, opts = {})
-    cooked = PrettyText.cook(message, features: COOK_FEATURES)
+    cooked = PrettyText.cook(message, features_override: MARKDOWN_FEATURES, markdown_it_rules: MARKDOWN_IT_RULES)
+
     result = Oneboxer.apply(cooked) do |url|
       if opts[:invalidate_oneboxes]
         Oneboxer.invalidate(url)
@@ -68,44 +99,6 @@ class ChatMessage < ActiveRecord::Base
 
     Jobs.enqueue(:process_chat_message, args)
   end
-
-  COOK_FEATURES = {
-    anchor: true,
-    "auto-link": true,
-    bbcode: true,
-    "bbcode-block": true,
-    "bbcode-inline": true,
-    "bold-italics": true,
-    "category-hashtag": true,
-    censored: true,
-    checklist: false,
-    code: true,
-    "custom-typographer-replacements": false,
-    "d-wrap": false,
-    details: false,
-    "discourse-local-dates": true,
-    emoji: true,
-    emojiShortcuts: true,
-    html: false,
-    "html-img": true,
-    "inject-line-number": true,
-    inlineEmoji: true,
-    linkify: true,
-    mentions: true,
-    newline: true,
-    onebox: true,
-    paragraph: false,
-    policy: false,
-    poll: false,
-    quote: true,
-    quotes: true,
-    "resize-controls": false,
-    table: true,
-    "text-post-process": true,
-    unicodeUsernames: false,
-    "upload-protocol": true,
-    "watched-words": true,
-  }
 end
 
 # == Schema Information

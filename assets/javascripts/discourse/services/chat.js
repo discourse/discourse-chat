@@ -108,8 +108,10 @@ export default Service.extend({
     }
 
     const prettyTextFeatures = {
-      features: Site.currentProp("chat_pretty_text_features"),
+      featuresOverride: Site.currentProp("chat_pretty_text_features"),
+      markdownItRules: Site.currentProp("chat_pretty_text_markdown_rules"),
     };
+
     return generateCookFunction(prettyTextFeatures).then((cookFunction) => {
       return this.set("cook", (raw) => {
         return simpleCategoryHashMentionTransform(

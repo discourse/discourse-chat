@@ -127,11 +127,21 @@ after_initialize do
   end
 
   add_to_serializer(:site, :chat_pretty_text_features) do
-    ChatMessage::COOK_FEATURES.as_json
+    ChatMessage::MARKDOWN_FEATURES.as_json
+  end
+
+  add_to_serializer(:site, :chat_pretty_text_markdown_rules) do
+    ChatMessage::MARKDOWN_IT_RULES.as_json
   end
 
   add_to_serializer(:site, :include_chat_pretty_text_features?) do
-    SiteSetting.chat_enabled && scope.can_chat?(scope.user)
+    return @include_chat_pretty_text_features if defined?(@include_chat_pretty_text_features)
+
+    @include_chat_pretty_text_features = SiteSetting.chat_enabled && scope.can_chat?(scope.user)
+  end
+
+  add_to_serializer(:site, :include_chat_pretty_text_markdown_rules?) do
+    include_chat_pretty_text_features?
   end
 
   add_to_serializer(:listable_topic, :has_chat_live) do

@@ -5,3 +5,26 @@
 # https://translate.discourse.org/
 
 ar:
+  js:
+    chat:
+      dates:
+        time_tiny: "h:mm"
+      all_loaded: "يتم الآن عرض جميع الرسائل"
+      already_enabled: "الدردشة مفعَّلة في هذا الموضوع. يُرجى تحديث الصفحة."
+      disabled_for_topic: "الدردشة متوقفة في هذا الموضوع."
+      bot: "برنامج روبوت"
+      create: "إنشاء"
+      cancel: "إلغاء"
+      cancel_reply: "إلغاء الرد"
+      chat_channels: "القنوات"
+      leave: "مغادرة القناة"
+      channel_list_popup:
+        browse: "استعراض القنوات"
+        create: "إنشاء قناة"
+      click_to_join: "انقر هنا لعرض القنوات المتاحة"
+      close: "إغلاق"
+      collapse: "طي ساحب الدردشة"
+      delete: "حذف"
+      edited: "(تم التعديل)"
+      empty_state:
+        create_personal_chat: "بدء دردشة شخصية"

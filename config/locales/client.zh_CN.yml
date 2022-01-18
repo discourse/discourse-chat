@@ -5,3 +5,205 @@
 # https://translate.discourse.org/
 
 zh_CN:
+  js:
+    chat:
+      dates:
+        time_tiny: "h:mm"
+      all_loaded: "显示所有消息"
+      already_enabled: "此话题已启用聊天。请刷新。"
+      disabled_for_topic: "此话题已禁用聊天。"
+      bot: "机器人"
+      create: "创建"
+      cancel: "取消"
+      cancel_reply: "取消回复"
+      chat_channels: "频道"
+      leave: "离开频道"
+      channel_list_popup:
+        browse: "浏览频道"
+        create: "创建频道"
+      click_to_join: "点击此处查看可用频道。"
+      close: "关闭"
+      collapse: "折叠聊天抽屉"
+      deleted: "一条消息已被删除。[查看]"
+      delete: "删除"
+      edited: "（已编辑）"
+      empty_state:
+        create_personal_chat: "开始个人聊天"
+        no_public_available: "目前没有可供您关注的公共频道。"
+        public_available: "有公共频道可供您关注。"
+        start_direct_message: "您还可以与一位或多位用户开始个人聊天。"
+        title: "首先加入频道"
+      enable: "启用聊天"
+      flag: "举报"
+      invalid_access: "您无权查看此聊天频道"
+      invitation_notification: "<span>%{username} 邀请您加入聊天频道</span>"
+      in_reply_to: "回复"
+      isolate:
+        title: "隔离聊天"
+        description: "始终在新标签页中打开聊天"
+      heading: "聊天"
+      join_channel: "加入频道"
+      new_messages: "新消息"
+      mention_notification: "<span>%{username} 在聊天中提及了您</span>"
+      mention_warning:
+        cannot_see:
+          other: "%{usernames} 无法访问此频道且未收到通知。"
+        dismiss: "关闭"
+        invitations_sent:
+          other: "已发送邀请"
+        invite: "邀请加入频道"
+        without_membership:
+          other: "%{usernames} 尚未加入此频道。"
+      no_public_channels: "您还没有加入任何频道。"
+      no_joinable_channels_title: "还没有您可以加入的频道。"
+      no_joinable_channels_body: "您可以联系管理员，开始为话题或类别启用聊天。"
+      only_chat_push_notifications:
+        title: "只发送聊天推送通知"
+        description: "阻止发送所有非聊天推送通知"
+      open: "打开聊天"
+      open_full_page: "打开全屏聊天"
+      open_message: "在聊天中打开消息"
+      placeholder_self: "做些记录"
+      placeholder_others: "与 %{messageRecipient} 聊天"
+      placeholder_previewing: "加入频道以发送消息。"
+      remove_upload: "移除文件"
+      react: "使用表情符号回复"
+      reply: "回复"
+      edit: "编辑"
+      copy_link: "复制链接"
+      restore: "恢复已删除的消息"
+      save: "保存"
+      select: "选择"
+      return_to_list: "返回频道列表"
+      scroll_to_bottom: "滚动到底部"
+      send_error: "出错了"
+      sound:
+        title: "桌面聊天通知声音"
+      sounds:
+        none: "无"
+        bell: "钟声"
+        ding: "叮叮"
+      title: "聊天"
+      title_capitalized: "聊天"
+      upload: "附加文件"
+      uploaded_files:
+        other: "%{count} 个文件"
+      exit: "返回"
+      create_channel:
+        choose_category:
+          label: "选择一个类别"
+          none: "选择一个…"
+          hint: '访问<a href=%{link} target="_blank">%{category}安全设置</a>管理访问'
+        create: "创建频道"
+        description: "描述（可选）"
+        name: "频道名称"
+        title: "创建频道"
+        type: "类型"
+        types:
+          category: "类别"
+          topic: "话题"
+      reactions:
+        only_you: "您回应了 :%{emoji}:"
+        and_others: "您，%{usernames} 回应了 :%{emoji}:"
+        only_others: "%{usernames} 回应了 :%{emoji}:"
+        others_and_more: "%{usernames} 和其他 %{more} 人回应了 :%{emoji}:"
+        you_others_and_more: "您，%{usernames} 和其他 %{more} 人回应了 :%{emoji}:"
+      composer:
+        toggle_toolbar: "切换工具栏"
+      notification_levels:
+        never: "永不"
+        mention: "仅限提及"
+        always: "所有活动"
+      settings:
+        desktop_notification_level: "桌面通知"
+        follow: "加入"
+        mobile_notification_level: "移动推送通知"
+        mute: "将频道设为免打扰"
+        muted_on: "开"
+        muted_off: "关"
+        notifications: "通知"
+        preview: "预览"
+        save: "保存"
+        saved: "已保存"
+        unfollow: "离开"
+      admin:
+        title: "聊天"
+      direct_messages:
+        title: "个人聊天"
+        new: "新的个人聊天"
+        create: "开始"
+        leave: "离开此个人聊天"
+      incoming_webhooks:
+        back: "返回"
+        channel_placeholder: "选择一个频道"
+        confirm_destroy: "确定要删除这个传入的网络钩子吗？此操作不可撤销。"
+        current_emoji: "当前表情符号"
+        description: "描述"
+        delete: "删除"
+        emoji: "表情符号"
+        emoji_instructions: "如果表情符号留空，将使用系统头像。"
+        name: "名称"
+        name_placeholder: "名称…"
+        new: "新传入的网络钩子"
+        none: "未创建现有的传入网络钩子。"
+        no_emoji: "未选择表情符号"
+        post_to: "发布到"
+        reset_emoji: "重置表情符号"
+        save: "保存"
+        select_emoji: "选择表情符号"
+        system: "系统"
+        title: "传入的网络钩子"
+        url: "URL"
+        username: "用户名"
+        username_instructions: "发布到频道的机器人的用户名。留空时默认为“系统”。"
+      selection:
+        cancel: "取消"
+        move_to_topic: "移动到话题"
+        error: "移动聊天消息时出错"
+        title: "将聊天移动到话题"
+        new_topic:
+          title: "移动到新话题"
+          instructions:
+            other: "您将创建一个新话题并使用您选择的 <b>%{count}</b> 条聊天消息将其填充。"
+        existing_topic:
+          title: "移动到现有话题"
+          instructions:
+            other: "请选择您要将这 <b>%{count}</b> 条聊天消息移动到的话题。"
+        new_message:
+          title: "移动到新消息"
+          instructions:
+            other: "您将创建一条新消息并使用您选择的 <b>%{count}</b> 条聊天消息将其填充。"
+      replying_indicator:
+        single_user: "%{username} 正在输入"
+        multiple_users: "%{commaSeparatedUsernames} 和 %{lastUsername} 正在输入"
+        many_users:
+          other: "%{commaSeparatedUsernames} 和其他 %{count} 人正在输入"
+    notifications:
+      popup:
+        chat_mention: "@%{username} 在聊天中提及了您"
+        chat_message: "新的聊天消息"
+      titles:
+        chat_mention: "聊天提及"
+        chat_invitation: "聊天邀请"
+    topic:
+      actions:
+        chat_enable: "启用聊天"
+        chat_disable: "关闭聊天"
+    action_codes:
+      chat:
+        enabled: '%{who} 启用了<button class="btn-link open-chat">聊天</button> %{when}'
+        disabled: "%{who} 关闭了聊天 %{when}"
+        post_created: "创建了新帖子：%{excerpt}"
+        generic_small_action: "执行了话题管理操作"
+    discourse_automation:
+      scriptables:
+        send_chat_message:
+          title: 发送聊天消息
+          fields:
+            chat_channel_id:
+              label: 聊天频道 ID
+            message:
+              label: 消息
+            sender:
+              label: 发送人
+              description: 默认为“系统”

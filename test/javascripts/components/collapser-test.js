@@ -6,6 +6,7 @@ import {
   discourseModule,
   exists,
   query,
+  visible,
 } from "discourse/tests/helpers/qunit-helpers";
 
 discourseModule("Discourse chat | Component | collapser", function (hooks) {
@@ -33,14 +34,14 @@ discourseModule("Discourse chat | Component | collapser", function (hooks) {
       const closeButton = ".chat-message-collapser-opened";
       const body = ".cat";
 
-      assert.ok(exists(body));
+      assert.ok(visible(body));
       await click(closeButton);
 
-      assert.notOk(exists(body));
+      assert.notOk(visible(body));
 
       await click(openButton);
 
-      assert.ok(exists(body));
+      assert.ok(visible(body));
     },
   });
 });

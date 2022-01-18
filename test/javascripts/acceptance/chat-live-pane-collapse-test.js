@@ -38,6 +38,34 @@ acceptance("Discourse Chat - Chat live pane", function (needs) {
               username: "tomtom",
             },
           },
+          {
+            id: 2,
+            message: "",
+            cooked: "",
+            excerpt: "",
+            uploads: [
+              {
+                id: 4,
+                url: "/images/avatar.png",
+                original_filename: "tomtom.jpeg",
+                filesize: 93815,
+                width: 480,
+                height: 640,
+                thumbnail_width: 375,
+                thumbnail_height: 500,
+                extension: "jpeg",
+                retain_hours: null,
+                human_filesize: "91.6 KB",
+              },
+            ],
+            user: {
+              avatar_template:
+                "/letter_avatar_proxy/v4/letter/t/a9a28c/{size}.png",
+              id: 1,
+              name: "Tomtom",
+              username: "tomtom",
+            },
+          },
         ],
       })
     );
@@ -52,29 +80,72 @@ acceptance("Discourse Chat - Chat live pane", function (needs) {
     server.get("/chat/chat_channels/:chatChannelId", () =>
       helper.response({ chat_channel: { id: 1 } })
     );
+
+    server.post("/uploads/lookup-urls", () =>
+      helper.response([
+        200,
+        { "Content-Type": "application/json" },
+        [
+          {
+            url: "/images/avatar.png",
+          },
+        ],
+      ])
+    );
   });
 
   test("can collapse and expand youtube chat", async function (assert) {
-    const youtubeContainerSelector = ".lazyYT";
-    const close = ".chat-message-collapser-closed";
-    const open = ".chat-message-collapser-opened";
+    const youtubeContainerSelector = ".chat-message-container-1 .lazyYT";
+    const expandImage =
+      ".chat-message-container-1 .chat-message-collapser-closed";
+    const collapseImage =
+      ".chat-message-container-1 .chat-message-collapser-opened";
 
     await visit("/chat/channel/1/cat");
 
     assert.ok(visible(youtubeContainerSelector));
-    assert.ok(visible(open), "the open arrow is shown");
-    assert.notOk(exists(close), "the close arrow is hidden");
+    assert.ok(visible(collapseImage), "the open arrow is shown");
+    assert.notOk(exists(expandImage), "the close arrow is hidden");
 
-    await click(open);
+    await click(collapseImage);
 
-    assert.notOk(exists(youtubeContainerSelector));
-    assert.ok(visible(close), "the close arrow is shown");
-    assert.notOk(exists(open), "the open arrow is hidden");
+    assert.notOk(visible(youtubeContainerSelector));
+    assert.ok(visible(expandImage), "the close arrow is shown");
+    assert.notOk(exists(collapseImage), "the open arrow is hidden");
 
-    await click(close);
+    await click(expandImage);
 
     assert.ok(visible(youtubeContainerSelector));
-    assert.ok(visible(open), "the open arrow is shown again");
-    assert.notOk(exists(close), "the close arrow is hidden again");
+    assert.ok(visible(collapseImage), "the open arrow is shown again");
+    assert.notOk(exists(expandImage), "the close arrow is hidden again");
+  });
+
+  test("lightbox shows up before and after expand and collapse", async function (assert) {
+    const lightboxImage = ".mfp-img";
+    const image = ".chat-message-container-2 .chat-img-upload";
+    const expandImage =
+      ".chat-message-container-2 .chat-message-collapser-closed";
+    const collapseImage =
+      ".chat-message-container-2 .chat-message-collapser-opened";
+
+    await visit("/chat/channel/1/cat");
+
+    await click(image);
+
+    assert.ok(
+      exists(document.querySelector(lightboxImage)),
+      "can see lightbox"
+    );
+    await click(document.querySelector(".mfp-container"));
+
+    await click(collapseImage);
+    await click(expandImage);
+
+    await click(image);
+    assert.ok(
+      exists(document.querySelector(lightboxImage)),
+      "can see lightbox after collapse expand"
+    );
+    await click(document.querySelector(".mfp-container"));
   });
 });

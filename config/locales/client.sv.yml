@@ -17,6 +17,7 @@ sv:
       cancel: "Avbryt"
       cancel_reply: "Avbryt svar"
       chat_channels: "Kanaler"
+      leave: "Lämna kanal"
       channel_list_popup:
         browse: "Bläddra bland kanaler"
         create: "Skapa en kanal"
@@ -57,6 +58,8 @@ sv:
           one: "%{usernames} har inte gått med i den här kanalen."
           other: "%{usernames} har inte gått med i den här kanalen."
       no_public_channels: "Du har inte gått med i några kanaler."
+      no_joinable_channels_title: "Det finns inga kanaler för dig att gå med i ännu."
+      no_joinable_channels_body: "Du kan kontakta din administratör för att aktivera chatt för ämnen eller kategorier."
       only_chat_push_notifications:
         title: "Skicka bara push-meddelanden för chatt"
         description: "Blockera alla push-meddelanden som inte är chattmeddelanden från att skickas"
@@ -64,6 +67,7 @@ sv:
       open_full_page: "Öppna chatt i helskärmsläge"
       open_message: "Öppna meddelande i chatten"
       placeholder_self: "Gör en anteckning"
+      placeholder_others: "Chatta med %{messageRecipient}"
       placeholder_previewing: "Gå med i kanalen för att skicka ett meddelande."
       remove_upload: "Ta bort fil"
       react: "Reagera med emoji"
@@ -85,10 +89,15 @@ sv:
       title: "chatt"
       title_capitalized: "Chatt"
       upload: "Bifoga en fil"
+      uploaded_files:
+        one: "%{count} fil"
+        other: "%{count} filer"
       exit: "tillbaka"
       create_channel:
         choose_category:
+          label: "Välj en kategori"
           none: "Välj en..."
+          hint: 'Hantera åtkomst genom att besöka <a href=%{link} target="_blank">%{category} säkerhetsinställningar</a>'
         create: "Skapa kanal"
         description: "Beskrivning (valfritt)"
         name: "Kanalnamn"
@@ -174,6 +183,9 @@ sv:
       replying_indicator:
         single_user: "%{username} skriver"
         multiple_users: "%{commaSeparatedUsernames} och %{lastUsername} skriver"
+        many_users:
+          one: "%{commaSeparatedUsernames} och %{count} skriver"
+          other: "%{commaSeparatedUsernames} och %{count} andra skriver"
     notifications:
       popup:
         chat_mention: "@%{username} nämnde dig i chatten"

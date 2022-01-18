@@ -59,6 +59,8 @@ he:
           other: "נשלחו הזמנות"
         invite: "הזמנה לערוץ"
       no_public_channels: "לא הצטרפת לאף ערוץ."
+      no_joinable_channels_title: "אין עדיין ערוצים שמותר לך להצטרף אליהם."
+      no_joinable_channels_body: "אפשר לפנות להנהלה כדי להתחיל להפעיל צ׳אט בנושאים או קטגוריות."
       open: "פתיחת צ׳אט"
       open_full_page: "פתיחת צ׳אט במסך מלא"
       open_message: "פתיחת הודעה בצ׳אט"

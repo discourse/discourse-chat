@@ -5,3 +5,19 @@
 # https://translate.discourse.org/
 
 es:
+  site_settings:
+    chat_enabled: "Habilitar el plugin discourse-chat. Usar la acción «Habilitar chat» por tema para configurar."
+    chat_allowed_groups: "Los usuarios de estos grupos pueden chatear."
+  chat:
+    errors:
+      channel_exists_for_category: "Ya existe un canal para esta categoría y nombre"
+      channel_exists_for_topic: "Ya existe un canal para este tema."
+  discourse_push_notifications:
+    popup:
+      chat_mention: "@%{username} te mencionó en el chat"
+      chat_message: "Nuevo mensaje de chat en %{chat_channel_title}"
+      group_chat_message: "Nuevo mensaje de chat en un canal de chat personal"
+  discourse_automation:
+    scriptables:
+      send_chat_message:
+        title: Enviar mensaje de chat

@@ -5,3 +5,19 @@
 # https://translate.discourse.org/
 
 fr:
+  site_settings:
+    chat_enabled: "Activez l'extension discours-chat. Utilisez l'action « Activer le chat » par sujet pour effectuer la configuration."
+    chat_allowed_groups: "Les utilisateurs de ces groupes peuvent discuter."
+  chat:
+    errors:
+      channel_exists_for_category: "Un canal existe déjà pour cette catégorie et ce nom"
+      channel_exists_for_topic: "Un canal existe déjà pour ce sujet"
+  discourse_push_notifications:
+    popup:
+      chat_mention: "@%{username} vous a mentionné(e) dans la discussion"
+      chat_message: "Nouveau message de chat dans %{chat_channel_title}"
+      group_chat_message: "Nouveau message de chat dans un canal de discussion privée"
+  discourse_automation:
+    scriptables:
+      send_chat_message:
+        title: Envoyer un message de chat

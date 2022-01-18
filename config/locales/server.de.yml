@@ -5,3 +5,19 @@
 # https://translate.discourse.org/
 
 de:
+  site_settings:
+    chat_enabled: "Aktiviere das discourse-chat-Plug-in. Verwende die themenspezifische Aktion „Chat aktivieren“, um es einzurichten."
+    chat_allowed_groups: "Benutzer in diesen Gruppen können chatten."
+  chat:
+    errors:
+      channel_exists_for_category: "Für diese Kategorie und diesen Namen existiert bereits ein Kanal"
+      channel_exists_for_topic: "Für dieses Thema existiert bereits ein Kanal"
+  discourse_push_notifications:
+    popup:
+      chat_mention: "@%{username} hat dich im Chat erwähnt"
+      chat_message: "Neue Chat-Nachricht in %{chat_channel_title}"
+      group_chat_message: "Neue Chat-Nachricht in einem persönlichen Chat-Kanal"
+  discourse_automation:
+    scriptables:
+      send_chat_message:
+        title: Chat-Nachricht senden

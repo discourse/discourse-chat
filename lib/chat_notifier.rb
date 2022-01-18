@@ -99,7 +99,9 @@ class DiscourseChat::ChatNotifier
                                    return []
                                  else
                                    mentionable_groups = Group.mentionable(@user, include_public: false).where(name: group_name_mentions)
-                                   users_preloaded_query.joins(:groups).where(groups: mentionable_groups)
+                                   users_preloaded_query(include_groups: false)
+                                     .joins(:groups)
+                                     .where(groups: mentionable_groups)
                                  end
                                end
   end
@@ -175,9 +177,14 @@ class DiscourseChat::ChatNotifier
     users
   end
 
-  def users_preloaded_query
-    User
-      .includes(:do_not_disturb_timings, :push_subscriptions, :groups, :user_chat_channel_memberships)
+  def users_preloaded_query(include_groups: true)
+    users = User.includes(:do_not_disturb_timings, :push_subscriptions, :user_chat_channel_memberships)
+
+    if include_groups
+      users = users.includes(:groups)
+    end
+
+    users
       .joins(:user_chat_channel_memberships)
       .joins(:user_option)
       .real

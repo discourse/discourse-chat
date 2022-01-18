@@ -195,7 +195,8 @@ en:
 
     notifications:
       popup:
-        chat_mention: "@%{username} mentioned you in chat"
+        chat_mention: "%{username} mentioned you in chat"
+        chat_group_mention: "%{username} mentioned @%{groupName} in chat"
         chat_message: "New chat message"
 
       titles:

@@ -80,36 +80,67 @@ class DiscourseChat::ChatNotifier
     Jobs.enqueue_in(3.seconds, :create_chat_mention_notifications, {
       chat_message_id: @chat_message.id,
       user_ids: user_ids,
+      user_ids_to_group_mention_map: user_ids_to_group_mention_map,
       timestamp: @timestamp
     })
   end
 
-  def cooked_mentions
-    @cooked_mentions ||= Nokogiri::HTML5.fragment(@chat_message.cooked).css(".mention").map(&:text)
+  def direct_mentions_from_cooked
+    @direct_mentions_from_cooked ||= Nokogiri::HTML5.fragment(@chat_message.cooked).css(".mention").map(&:text)
+  end
+
+  def group_name_mentions
+    @group_mentions_from_cooked ||= Nokogiri::HTML5.fragment(@chat_message.cooked).css(".mention-group").map(&:text).map { |m| m[1..-1] }
+  end
+
+  def group_mentioned_users
+    @group_mentioned_users ||= begin
+                                 if group_name_mentions.empty?
+                                   return []
+                                 else
+                                   mentionable_groups = Group.mentionable(@user, include_public: false).where(name: group_name_mentions)
+                                   users_preloaded_query.joins(:groups).where(groups: mentionable_groups)
+                                 end
+                               end
+  end
+
+  def user_ids_to_group_mention_map
+    map = {}
+    group_mentioned_users.each do |user|
+      group_name = (user.groups.map(&:name) & group_name_mentions).first
+      map[user.id] = group_name
+    end
+    map
   end
 
   def mentioned_usernames
     # Drop the `@` character from start of each mention
-    @mentioned_usernames ||= cooked_mentions.map { |mention| mention[1..-1] }
+    @mentioned_usernames ||= direct_mentions_from_cooked.map { |mention| mention[1..-1] }
   end
 
   def set_mentioned_users
-    if cooked_mentions.include?("@all")
-      users = members_of_channel(exclude: @user.username)
-    else
-      users = cooked_mentions.include?("@here") ?
-        users_here :
-        mentioned_by_username(
-          exclude: @user.username,
-          usernames: mentioned_usernames
-        )
+    all_users = []
+    if direct_mentions_from_cooked.include?("@all")
+      all_users = members_of_channel(exclude: @user.username)
     end
+
+    users_here = []
+    if direct_mentions_from_cooked.include?("@here")
+      users_here = get_users_here
+    end
+
+    directly_mentioned_users = mentioned_by_username(
+      exclude: @user.username,
+      usernames: mentioned_usernames
+    )
+
+    users = (all_users + users_here + group_mentioned_users + directly_mentioned_users).uniq
 
     can_chat_users, @cannot_chat_users = filter_users_who_can_chat(users)
     @mentioned_with_membership, @mentioned_without_membership = filter_with_and_without_membership(can_chat_users)
   end
 
-  def users_here
+  def get_users_here
     users = members_of_channel(exclude: @user.username).where("last_seen_at > ?", 5.minutes.ago)
     usernames = users.map(&:username)
     other_mentioned_usernames = mentioned_usernames

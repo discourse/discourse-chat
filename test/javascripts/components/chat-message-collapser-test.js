@@ -4,8 +4,8 @@ import componentTest, {
 import hbs from "htmlbars-inline-precompile";
 import {
   discourseModule,
-  exists,
   query,
+  visible,
 } from "discourse/tests/helpers/qunit-helpers";
 
 const youtubeCooked =
@@ -103,11 +103,11 @@ discourseModule(
         );
 
         assert.notOk(
-          exists(".onebox[data-youtube-id='ytId1']"),
+          visible(".onebox[data-youtube-id='ytId1']"),
           "first youtube preview hidden"
         );
         assert.ok(
-          exists(".onebox[data-youtube-id='ytId2']"),
+          visible(".onebox[data-youtube-id='ytId2']"),
           "second youtube preview still visible"
         );
 
@@ -121,11 +121,11 @@ discourseModule(
         );
 
         assert.ok(
-          exists(".onebox[data-youtube-id='ytId1']"),
+          visible(".onebox[data-youtube-id='ytId1']"),
           "first youtube preview still visible"
         );
         assert.notOk(
-          exists(".onebox[data-youtube-id='ytId2']"),
+          visible(".onebox[data-youtube-id='ytId2']"),
           "second youtube preview hidden"
         );
 
@@ -189,18 +189,18 @@ discourseModule(
         const uploads = ".chat-uploads";
         const chatImageUpload = ".chat-img-upload";
 
-        assert.ok(exists(uploads));
-        assert.ok(exists(chatImageUpload));
+        assert.ok(visible(uploads));
+        assert.ok(visible(chatImageUpload));
 
         await click(".chat-message-collapser-opened");
 
-        assert.notOk(exists(uploads));
-        assert.notOk(exists(chatImageUpload));
+        assert.notOk(visible(uploads));
+        assert.notOk(visible(chatImageUpload));
 
         await click(".chat-message-collapser-closed");
 
-        assert.ok(exists(uploads));
-        assert.ok(exists(chatImageUpload));
+        assert.ok(visible(uploads));
+        assert.ok(visible(chatImageUpload));
       },
     });
   }
@@ -265,9 +265,12 @@ discourseModule(
           "close first preview"
         );
 
-        assert.notOk(exists(".onebox[src='lesource1']"), "first onebox hidden");
+        assert.notOk(
+          visible(".onebox[src='lesource1']"),
+          "first onebox hidden"
+        );
         assert.ok(
-          exists(".onebox[src='lesource2']"),
+          visible(".onebox[src='lesource2']"),
           "second onebox still visible"
         );
 
@@ -281,11 +284,11 @@ discourseModule(
         );
 
         assert.ok(
-          exists(".onebox[src='lesource1']"),
+          visible(".onebox[src='lesource1']"),
           "first onebox still visible"
         );
         assert.notOk(
-          exists(".onebox[src='lesource2']"),
+          visible(".onebox[src='lesource2']"),
           "second onebox hidden"
         );
 
@@ -357,11 +360,11 @@ discourseModule(
         );
 
         assert.notOk(
-          exists(".onebox[href='http://cat1.com']"),
+          visible(".onebox[href='http://cat1.com']"),
           "first onebox hidden"
         );
         assert.ok(
-          exists(".onebox[href='http://cat2.com']"),
+          visible(".onebox[href='http://cat2.com']"),
           "second onebox still visible"
         );
 
@@ -375,11 +378,11 @@ discourseModule(
         );
 
         assert.ok(
-          exists(".onebox[href='http://cat1.com']"),
+          visible(".onebox[href='http://cat1.com']"),
           "first onebox still visible"
         );
         assert.notOk(
-          exists(".onebox[href='http://cat2.com']"),
+          visible(".onebox[href='http://cat2.com']"),
           "second onebox hidden"
         );
 

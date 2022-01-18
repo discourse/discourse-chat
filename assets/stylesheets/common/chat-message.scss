@@ -461,7 +461,7 @@
   }
 }
 
-.has-full-page-chat .chat-message .onebox,
+.has-full-page-chat .chat-message .onebox:not(img),
 .topic-chat-float-container .chat-message .onebox {
   margin: 0.5em 0;
   border-width: 2px;

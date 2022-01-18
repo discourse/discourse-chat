@@ -16,6 +16,6 @@
   {{/if}}
 </div>
 
-{{#unless collapsed}}
+<div class={{if collapsed "hidden" ""}}>
   {{yield}}
-{{/unless}}
+</div>

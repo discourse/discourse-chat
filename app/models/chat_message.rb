@@ -5,7 +5,7 @@ class ChatMessage < ActiveRecord::Base
   self.ignored_columns = ["post_id"]
   attribute :has_oneboxes, default: false
 
-  BAKED_VERSION = 1
+  BAKED_VERSION = 2
 
   belongs_to :chat_channel
   belongs_to :user

@@ -66,9 +66,9 @@ describe ChatMessage do
     end
 
     it 'supports link markdown rule' do
-      qa_comment = Fabricate(:qa_comment, raw: "[test link](https://www.example.com)")
+      chat_message = Fabricate(:chat_message, message: "[test link](https://www.example.com)")
 
-      expect(qa_comment.cooked).to eq("<p><a href=\"https://www.example.com\" rel=\"noopener nofollow ugc\">test link</a></p>")
+      expect(chat_message.cooked).to eq("<p><a href=\"https://www.example.com\" rel=\"noopener nofollow ugc\">test link</a></p>")
     end
 
     it 'supports table markdown plugin' do
@@ -109,7 +109,7 @@ describe ChatMessage do
     it 'supports emoji plugin' do
       cooked = ChatMessage.cook(":grin:")
 
-      expect(cooked).to eq("<p><img src=\"/images/emoji/twitter/grin.png?v=10\" title=\":grin:\" class=\"emoji only-emoji\" alt=\":grin:\"></p>")
+      expect(cooked).to eq("<p><img src=\"/images/emoji/twitter/grin.png?v=12\" title=\":grin:\" class=\"emoji only-emoji\" alt=\":grin:\"></p>")
     end
 
     it 'supports mentions plugin' do

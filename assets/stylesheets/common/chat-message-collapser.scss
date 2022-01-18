@@ -4,9 +4,15 @@
     align-items: center;
   }
 
-  .chat-message-collapser-header + p,
-  .chat-message-collapser-header + p img.onebox {
+  .chat-message-collapser-header + div p {
+    margin: 0;
+  }
+
+  .chat-img-upload,
+  .chat-other-upload,
+  .chat-message-collapser-header + div p img {
     margin-top: 0.25em;
+    margin-bottom: 0.5em;
   }
 
   .chat-message-collapser-link-small {
@@ -27,15 +33,6 @@
       .d-icon {
         color: var(--primary);
       }
-    }
-  }
-
-  .chat-uploads {
-    margin-top: 0.25em;
-
-    .chat-img-upload,
-    .chat-other-upload {
-      margin-bottom: 1em;
     }
   }
 

@@ -32,11 +32,16 @@
     }
   }
   .sidebar-container {
-    .chat-channels .chat-channel-divider {
-      padding: 0 0.5em 0 1.75rem;
-    }
-    .chat-channels .chat-channel-row {
-      padding-right: 0.5em;
+    .chat-channels {
+      .chat-channel-divider {
+        padding: 0 0.5em 0 1.75rem;
+      }
+      .chat-channel-row {
+        padding-right: 0.75em;
+      }
+      .chat-channel-leave-btn {
+        padding: 0;
+      }
     }
   }
 }

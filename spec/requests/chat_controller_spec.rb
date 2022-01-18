@@ -365,7 +365,8 @@ RSpec.describe DiscourseChat::ChatController do
 
   describe "#update_user_last_read" do
     fab!(:chat_channel) { Fabricate(:chat_channel, chatable: topic) }
-    fab!(:chat_message) { Fabricate(:chat_message, chat_channel: chat_channel, user: user) }
+    fab!(:chat_message1) { Fabricate(:chat_message, chat_channel: chat_channel, user: user) }
+    fab!(:chat_message2) { Fabricate(:chat_message, chat_channel: chat_channel, user: user) }
 
     before { sign_in(user) }
 
@@ -377,27 +378,27 @@ RSpec.describe DiscourseChat::ChatController do
       )
 
       expect {
-        put "/chat/#{chat_channel.id}/read/#{chat_message.id}.json"
+        put "/chat/#{chat_channel.id}/read/#{chat_message1.id}.json"
       }.to change { UserChatChannelMembership.count }.by(0)
       existing_record.reload
       expect(existing_record.chat_channel_id).to eq(chat_channel.id)
-      expect(existing_record.last_read_message_id).to eq(chat_message.id)
+      expect(existing_record.last_read_message_id).to eq(chat_message1.id)
       expect(existing_record.user_id).to eq(user.id)
     end
 
-    it "marks mention notifications as read" do
-      existing_record = UserChatChannelMembership.create(
+    it "marks all mention notifications as read for the channel" do
+      UserChatChannelMembership.create(
         chat_channel: chat_channel,
         last_read_message_id: 0,
         user: user
       )
-      notification = Notification.create!(
+      notification1 = Notification.create!(
         notification_type: Notification.types[:chat_mention],
         user: user,
         high_priority: true,
         data: {
           message: 'chat.mention_notification',
-          chat_message_id: chat_message.id,
+          chat_message_id: chat_message1.id,
           chat_channel_id: chat_channel.id,
           chat_channel_title: chat_channel.title(user),
           mentioned_by_username: user.username,
@@ -405,13 +406,32 @@ RSpec.describe DiscourseChat::ChatController do
       )
       ChatMention.create(
         user: user,
-        chat_message: chat_message,
-        notification: notification
+        chat_message: chat_message1,
+        notification: notification1
       )
 
-      put "/chat/#{chat_channel.id}/read/#{chat_message.id}.json"
+      notification2 = Notification.create!(
+        notification_type: Notification.types[:chat_group_mention],
+        user: user,
+        high_priority: true,
+        data: {
+          message: 'chat.mention_notification',
+          chat_message_id: chat_message2.id,
+          chat_channel_id: chat_channel.id,
+          chat_channel_title: chat_channel.title(user),
+          mentioned_by_username: user.username,
+        }.to_json
+      )
+      ChatMention.create(
+        user: user,
+        chat_message: chat_message2,
+        notification: notification2
+      )
+
+      put "/chat/#{chat_channel.id}/read/#{chat_message2.id}.json"
       expect(response.status).to eq(200)
-      expect(notification.reload.read).to eq(true)
+      expect(notification1.reload.read).to eq(true)
+      expect(notification2.reload.read).to eq(true)
     end
   end
 

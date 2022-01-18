@@ -319,8 +319,9 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
 
     chat_mentions = ChatMention
       .joins(:notification)
+      .joins(:chat_message)
       .where(user: current_user)
-      .where(chat_message: params[:message_id])
+      .where(chat_message: { chat_channel_id: @chat_channel.id })
       .where(notification: { read: false })
 
     chat_mentions.each do |chat_mention|

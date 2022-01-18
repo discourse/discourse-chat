@@ -9,6 +9,7 @@ describe DiscourseChat::ChatMessageUpdater do
   fab!(:user2) { Fabricate(:user) }
   fab!(:user3) { Fabricate(:user) }
   fab!(:user4) { Fabricate(:user) }
+  fab!(:admin_group) { Fabricate(:public_group, users: [admin1, admin2], mentionable_level: Group::ALIAS_LEVELS[:everyone]) }
   fab!(:user_without_memberships) { Fabricate(:user) }
   fab!(:public_chat_channel) { Fabricate(:chat_channel, chatable: Fabricate(:topic)) }
 
@@ -114,6 +115,45 @@ describe DiscourseChat::ChatMessageUpdater do
         new_content: "ping @#{admin1.username}"
       )
     }.to change { ChatMention.count }.by(0)
+  end
+
+  describe "group mentions" do
+    it "sends group mentions on update" do
+      chat_message = create_chat_message(user1, "ping nobody", public_chat_channel)
+      expect {
+        DiscourseChat::ChatMessageUpdater.update(
+          chat_message: chat_message,
+          new_content: "ping @#{admin_group.name}"
+        )
+      }.to change { ChatMention.count }.by(2)
+      expect(admin1.chat_mentions.where(chat_message: chat_message)).to be_present
+      expect(admin2.chat_mentions.where(chat_message: chat_message)).to be_present
+    end
+
+    it "doesn't repeat mentions when the user is already direct mentioned and then group mentioned" do
+      chat_message = create_chat_message(user1, "ping @#{admin2.username}", public_chat_channel)
+      expect {
+        DiscourseChat::ChatMessageUpdater.update(
+          chat_message: chat_message,
+          new_content: "ping @#{admin_group.name} @#{admin2.username}"
+        )
+      }.to change { admin1.chat_mentions.count }.by(1)
+        .and change {
+          admin2.chat_mentions.count
+        }.by(0)
+    end
+
+    it "deletes old mentions when group mention is removed" do
+      chat_message = create_chat_message(user1, "ping @#{admin_group.name}", public_chat_channel)
+      expect {
+        DiscourseChat::ChatMessageUpdater.update(
+          chat_message: chat_message,
+          new_content: "ping nobody anymore!"
+        )
+      }.to change { ChatMention.where(chat_message: chat_message).count }.by(-2)
+      expect(admin1.chat_mentions.where(chat_message: chat_message)).not_to be_present
+      expect(admin2.chat_mentions.where(chat_message: chat_message)).not_to be_present
+    end
   end
 
   it "creates a chat_message_revision record" do

@@ -242,11 +242,24 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
 
   def lookup_message
     chat_channel = @message.chat_channel
-    chatable = nil
     chatable = chat_channel.chatable
     guardian.ensure_can_see!(chatable)
     include_deleted = guardian.can_moderate_chat?(chatable)
-    base_query = ChatMessage
+    base_query = ChatMessage.where(chat_channel: chat_channel)
+    base_query = base_query.with_deleted if include_deleted
+
+    past_messages = base_query
+      .where("created_at < ?", @message.created_at)
+      .order(created_at: :desc)
+      .limit(40)
+
+    # .with_deleted if include_deleted
+    future_messages = base_query
+      .where("created_at > ?", @message.created_at)
+      .order(created_at: :asc)
+
+    messages = ChatMessage
+      .where(id: [past_messages.reverse.pluck(:id), @message.id, future_messages.pluck(:id)].flatten)
       .includes(:in_reply_to)
       .includes(:revisions)
       .includes(:user)
@@ -254,19 +267,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
       .includes(reactions: :user)
       .includes(:uploads)
       .includes(chat_channel: :chatable)
-      .where(chat_channel: chat_channel)
 
-    base_query = base_query.with_deleted if include_deleted
-    past_messages = base_query
-      .where("created_at < ?", @message.created_at)
-      .order(created_at: :desc).limit(40)
-
-    # .with_deleted if include_deleted
-    future_messages = base_query
-      .where("created_at > ?", @message.created_at)
-      .order(created_at: :asc)
-
-    messages = [past_messages.reverse, [@message], future_messages].reduce([], :concat)
     render_serialized(messages, ChatBaseMessageSerializer, root: :chat_messages, rest_serializer: true)
   end
 

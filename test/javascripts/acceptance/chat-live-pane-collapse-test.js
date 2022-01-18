@@ -95,7 +95,7 @@ acceptance("Discourse Chat - Chat live pane", function (needs) {
   });
 
   test("can collapse and expand youtube chat", async function (assert) {
-    const youtubeContainerSelector = ".chat-message-container-1 .lazyYT";
+    const youtubeContainer = ".chat-message-container-1 .lazyYT";
     const expandImage =
       ".chat-message-container-1 .chat-message-collapser-closed";
     const collapseImage =
@@ -103,19 +103,19 @@ acceptance("Discourse Chat - Chat live pane", function (needs) {
 
     await visit("/chat/channel/1/cat");
 
-    assert.ok(visible(youtubeContainerSelector));
+    assert.ok(visible(youtubeContainer));
     assert.ok(visible(collapseImage), "the open arrow is shown");
     assert.notOk(exists(expandImage), "the close arrow is hidden");
 
     await click(collapseImage);
 
-    assert.notOk(visible(youtubeContainerSelector));
+    assert.notOk(visible(youtubeContainer));
     assert.ok(visible(expandImage), "the close arrow is shown");
     assert.notOk(exists(collapseImage), "the open arrow is hidden");
 
     await click(expandImage);
 
-    assert.ok(visible(youtubeContainerSelector));
+    assert.ok(visible(youtubeContainer));
     assert.ok(visible(collapseImage), "the open arrow is shown again");
     assert.notOk(exists(expandImage), "the close arrow is hidden again");
   });

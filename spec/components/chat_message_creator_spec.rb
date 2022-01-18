@@ -8,8 +8,6 @@ describe DiscourseChat::ChatMessageCreator do
   fab!(:user1) { Fabricate(:user, group_ids: [Group::AUTO_GROUPS[:everyone]]) }
   fab!(:user2) { Fabricate(:user) }
   fab!(:user3) { Fabricate(:user) }
-  fab!(:admin_group) { Fabricate(:public_group, users: [admin1, admin2], mentionable_level: Group::ALIAS_LEVELS[:everyone]) }
-  fab!(:user_group) { Fabricate(:public_group, users: [user1, user2, user3], mentionable_level: Group::ALIAS_LEVELS[:everyone]) }
   fab!(:user_without_memberships) { Fabricate(:user) }
   fab!(:public_chat_channel) { Fabricate(:chat_channel, chatable: Fabricate(:topic)) }
 
@@ -208,80 +206,6 @@ describe DiscourseChat::ChatMessageCreator do
           content: "hello @#{user2.username}"
         )
       }.to change { user2.chat_mentions.count }.by(0)
-    end
-
-    describe "group mentions" do
-      it "creates chat mentions for group mentions where the group is mentionable" do
-        expect {
-          DiscourseChat::ChatMessageCreator.create(
-            chat_channel: public_chat_channel,
-            user: user1,
-            content: "hello @#{admin_group.name}"
-          )
-        }.to change { admin1.chat_mentions.count }.by(1)
-          .and change {
-            admin2.chat_mentions.count
-          }.by(1)
-      end
-
-      it "doesn't mention users twice if they are direct mentioned and group mentioned" do
-        expect {
-          DiscourseChat::ChatMessageCreator.create(
-            chat_channel: public_chat_channel,
-            user: user1,
-            content: "hello @#{admin_group.name} @#{admin1.username} and @#{admin2.username}"
-          )
-        }.to change { admin1.chat_mentions.count }.by(1)
-          .and change {
-            admin2.chat_mentions.count
-          }.by(1)
-      end
-
-      it "creates chat mentions for group mentions and direct mentions" do
-        expect {
-          DiscourseChat::ChatMessageCreator.create(
-            chat_channel: public_chat_channel,
-            user: user1,
-            content: "hello @#{admin_group.name} @#{user2.username}"
-          )
-        }.to change { admin1.chat_mentions.count }.by(1)
-          .and change {
-            admin2.chat_mentions.count
-          }.by(1)
-          .and change {
-            user2.chat_mentions.count
-          }.by(1)
-      end
-
-      it "creates chat mentions for group mentions and direct mentions" do
-        expect {
-          DiscourseChat::ChatMessageCreator.create(
-            chat_channel: public_chat_channel,
-            user: user1,
-            content: "hello @#{admin_group.name} @#{user_group.name}"
-          )
-        }.to change { admin1.chat_mentions.count }.by(1)
-          .and change {
-            admin2.chat_mentions.count
-          }.by(1)
-          .and change {
-            user2.chat_mentions.count
-          }.by(1)
-          .and change {
-            user3.chat_mentions.count
-          }.by(1)
-      end
-
-      it "doesn't create chat mentions for group mentions where the group is un-mentionable" do
-        admin_group.update(mentionable_level: Group::ALIAS_LEVELS[:nobody])
-        expect {
-          DiscourseChat::ChatMessageCreator.create(
-            chat_channel: public_chat_channel,
-            user: user1,
-            content: "hello @#{admin_group.name}"
-          )
-        }.to change { ChatMention.count }.by(0)
-      end
     end
 
     describe "push notifications" do

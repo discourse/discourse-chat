@@ -9,23 +9,24 @@ import { h } from "virtual-dom";
 import { formatUsername } from "discourse/lib/utilities";
 import { iconNode } from "discourse-common/lib/icon-library";
 
-const chatNotificationItem = {
+createWidgetFrom(DefaultNotificationItem, "chat-mention-notification-item", {
   services: ["chat", "router"],
   text(notificationName, data) {
     const username = formatUsername(data.mentioned_by_username);
-    return I18n.t(data.message, { username, groupName: data.group_name });
+    return I18n.t(data.message, { username });
   },
 
   html(attrs) {
     const notificationType = attrs.notification_type;
     const lookup = this.site.get("notificationLookup");
     const notificationName = lookup[notificationType];
-    const { data } = attrs;
+
+    let { data } = attrs;
+    let text = this.text(notificationName, data);
     const title = this.notificationTitle(notificationName, data);
-    const text = this.text(notificationName, data);
-    const html = new RawHtml({ html: `<div>${text}</div>` });
-    const icon = notificationName === "chat_mention" ? "at" : "users";
-    const contents = [iconNode(icon), html];
+    let html = new RawHtml({ html: `<div>${text}</div>` });
+
+    let contents = [iconNode("at"), html];
 
     return h("a", { attributes: { title } }, contents);
   },
@@ -41,15 +42,4 @@ const chatNotificationItem = {
       this.attrs.data.chat_message_id
     );
   },
-};
-
-createWidgetFrom(
-  DefaultNotificationItem,
-  "chat-mention-notification-item",
-  chatNotificationItem
-);
-createWidgetFrom(
-  DefaultNotificationItem,
-  "chat-group-mention-notification-item",
-  chatNotificationItem
-);
+});

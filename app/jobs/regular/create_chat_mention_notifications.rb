@@ -14,27 +14,21 @@ module Jobs
         following: true
       )
       @chat_channel = @chat_message.chat_channel
-      @user_ids_to_group_mention_map = args[:user_ids_to_group_mention_map] || {}
       @memberships.each do |membership|
         unless DiscourseChat::ChatNotifier.user_has_seen_message?(membership, @chat_message.id)
-          group_name = @user_ids_to_group_mention_map[membership.user.id.to_s]
-          mention_type = group_name.present? ?
-            :chat_group_mention :
-            :chat_mention
-          send_mention_notification_to_user(membership.user, mention_type, group_name)
-          send_os_notifications(membership, mention_type, group_name)
+          send_mention_notification_to_user(membership.user)
+          send_os_notifications(membership)
         end
       end
     end
 
-    def send_mention_notification_to_user(user, mention_type, group_name)
+    def send_mention_notification_to_user(user)
       notification = Notification.create!(
-        notification_type: Notification.types[mention_type],
+        notification_type: Notification.types[:chat_mention],
         user_id: user.id,
         high_priority: true,
         data: {
-          message: "notifications.popup.#{mention_type}",
-          group_name: group_name,
+          message: 'chat.mention_notification',
           chat_message_id: @chat_message.id,
           chat_channel_id: @chat_channel.id,
           chat_channel_title: @chat_channel.title(user),
@@ -44,15 +38,14 @@ module Jobs
       ChatMention.create!(notification: notification, user: user, chat_message: @chat_message)
     end
 
-    def send_os_notifications(membership, mention_type, group_name)
+    def send_os_notifications(membership)
       return if membership.desktop_notifications_never? && membership.mobile_notifications_never?
 
       payload = {
-        notification_type: Notification.types[mention_type],
+        notification_type: Notification.types[:chat_mention],
         username: @creator.username,
-        translated_title: I18n.t("discourse_push_notifications.popup.#{mention_type}",
-                                 username: @creator.username,
-                                 group_name: group_name
+        translated_title: I18n.t("discourse_push_notifications.popup.chat_mention",
+                                 username: @creator.username
                                 ),
         tag: DiscourseChat::ChatNotifier.push_notification_tag(:mention, @chat_channel.id),
         excerpt: @chat_message.push_notification_excerpt,

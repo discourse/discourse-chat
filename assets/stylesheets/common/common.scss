@@ -153,6 +153,8 @@ body.composer-open .topic-chat-float-container {
 .topic-chat-drawer-header {
   box-sizing: border-box;
   border-bottom: solid 1px var(--primary-low-mid);
+  border-radius: 8px 8px 0 0;
+  background: var(--primary-very-low);
   padding: 0.5em;
   height: $header-height;
   width: 100%;

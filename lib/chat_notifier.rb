@@ -98,7 +98,9 @@ class DiscourseChat::ChatNotifier
                                  if group_name_mentions.empty?
                                    return []
                                  else
-                                   mentionable_groups = Group.mentionable(@user, include_public: false).where(name: group_name_mentions)
+                                   mentionable_groups = Group
+                                     .mentionable(@user, include_public: false)
+                                     .where(name: group_name_mentions)
                                    users_preloaded_query(include_groups: false)
                                      .joins(:groups)
                                      .where(groups: mentionable_groups)

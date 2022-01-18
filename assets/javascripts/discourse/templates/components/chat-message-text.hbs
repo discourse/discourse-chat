@@ -1,0 +1,13 @@
+{{#if isCollapsible}}
+  {{chat-message-collapser cooked=cooked uploads=uploads}}
+{{else}}
+  {{html-safe cooked}}
+{{/if}}
+
+{{#if edited}}
+  <div class="chat-message-edited">
+    {{i18n "chat.edited"}}
+  </div>
+{{/if}}
+
+{{yield}}

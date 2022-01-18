@@ -26,7 +26,15 @@ module DiscourseChat::ChatChannelFetcher
         .where(user_chat_channel_memberships: { user_id: guardian.user.id, following: true })
     end
 
-    filter_public_channels(channels, memberships, guardian)
+    channels = filter_public_channels(channels, memberships, guardian).to_a
+
+    preload_fields = Category.instance_variable_get(:@custom_field_types).keys
+    Category.preload_custom_fields(channels.select { |c| c.chatable_type == 'Category' }.map(&:chatable), preload_fields)
+
+    preload_fields = Topic.instance_variable_get(:@custom_field_types).keys
+    Topic.preload_custom_fields(channels.select { |c| c.chatable_type == 'Topic' }.map(&:chatable), preload_fields)
+
+    channels
   end
 
   def self.filter_public_channels(channels, memberships, guardian)

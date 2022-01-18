@@ -45,7 +45,7 @@ export default Component.extend({
       return;
     }
     this.element
-      .querySelector(".tc-message-container .tc-text")
+      .querySelector(".chat-message-content .chat-message-text")
       ?.querySelectorAll(".mention")
       .forEach((node) => {
         const mention = node.textContent.trim().substring(1);
@@ -171,7 +171,7 @@ export default Component.extend({
 
   @discourseComputed("selectingMessages", "message.id")
   messageContainerClasses(selecting, id) {
-    return `chat-message chat-message-${id} ${
+    return `chat-message-container chat-message-container-${id} ${
       selecting ? "selecting-messages" : ""
     }`.trim();
   },
@@ -183,15 +183,15 @@ export default Component.extend({
     "message.action_code",
     "isHovered"
   )
-  innerMessageClasses(staged, deletedAt, inReplyTo, actionCode, isHovered) {
-    let classNames = ["tc-message"];
+  chatMessageClasses(staged, deletedAt, inReplyTo, actionCode, isHovered) {
+    let classNames = ["chat-message"];
 
     if (staged) {
-      classNames.push("tc-message-staged");
+      classNames.push("chat-message-staged");
     }
     if (actionCode) {
-      classNames.push("tc-action");
-      classNames.push(`tc-action-${actionCode}`);
+      classNames.push("chat-action");
+      classNames.push(`chat-action-${actionCode}`);
     }
     if (deletedAt) {
       classNames.push("deleted");
@@ -203,7 +203,7 @@ export default Component.extend({
       classNames.push("user-info-hidden");
     }
     if (isHovered) {
-      classNames.push("tc-message-selected");
+      classNames.push("chat-message-selected");
     }
     return classNames.join(" ");
   },
@@ -375,7 +375,7 @@ export default Component.extend({
 
   @action
   startReactionForMsgActions() {
-    const btn = this.element.querySelector(".tc-msgactions-hover .react-btn");
+    const btn = this.element.querySelector(".chat-msgactions-hover .react-btn");
     this._startReaction(btn, this.SHOW_LEFT);
   },
 
@@ -439,7 +439,7 @@ export default Component.extend({
 
     // Calculate bottom pixel value
     let bottomValue = reactBtnPositions.bottom - emojiPicker.offsetHeight + 50;
-    const messageContainer = document.querySelector(".tc-messages-scroll");
+    const messageContainer = document.querySelector(".chat-messages-scroll");
     const bottomOfMessageContainer =
       window.innerHeight - messageContainer.getBoundingClientRect().bottom;
     if (bottomValue < bottomOfMessageContainer) {

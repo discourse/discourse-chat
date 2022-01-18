@@ -17,6 +17,7 @@ ru:
       cancel: "Отменить"
       cancel_reply: "Отменить ответ"
       chat_channels: "Каналы"
+      leave: "Покинуть канал"
       channel_list_popup:
         browse: "Просмотр каналов"
         create: "Создать канал"
@@ -33,6 +34,7 @@ ru:
         start_direct_message: "Вы также можете начать личный чат с одним или несколькими пользователями."
         title: "Начните с присоединения к каналу"
       enable: "Включить чат"
+      flag: "Флаг"
       invalid_access: "У вас нет доступа для просмотра этого канала"
       invitation_notification: "<span>%{username} пригласил вас присоединиться к каналу</span>"
       in_reply_to: "В ответ на"
@@ -69,7 +71,7 @@ ru:
       open_full_page: "Открыть полноэкранный чат"
       open_message: "Открыть сообщение в чате"
       placeholder_self: "Напишите что-нибудь"
-      placeholder_others: "Отправить сообщение %{messageRecipient}"
+      placeholder_others: "Чат с %{messageRecipient}"
       placeholder_previewing: "Присоединись к каналу, чтобы отправить сообщение."
       remove_upload: "Удалить файл"
       react: "Реакция с помощью эмодзи"
@@ -91,15 +93,21 @@ ru:
       title: "чат"
       title_capitalized: "Чат"
       upload: "Прикрепить файл"
+      uploaded_files:
+        one: "%{count} файл"
+        few: "%{count} файла"
+        many: "%{count} файлов"
+        other: "%{count} файлов"
       exit: "Назад"
       create_channel:
         choose_category:
-          label: "Выберите раздел для управления доступом к каналу"
+          label: "Выберите раздел"
           none: "выберите раздел..."
+          hint: 'Управляйте доступом через настройки безопасности раздела <a href=%{link} target="_blank">%{category}</a>'
         create: "Создать канал"
         description: "Описание (необязательно)"
         name: "Название канала"
-        title: "Добавить канал"
+        title: "Создать канал"
         type: "Тип"
         types:
           category: "Раздел"
@@ -187,7 +195,11 @@ ru:
       replying_indicator:
         single_user: "%{username} печатает"
         multiple_users: "%{commaSeparatedUsernames} и %{lastUsername} печатают"
-        many_users: "%{commaSeparatedUsernames} и %{count} других печатают"
+        many_users:
+          one: "Отвечают %{commaSeparatedUsernames} и ещё %{count} пользователь"
+          few: "Отвечают %{commaSeparatedUsernames} и ещё %{count} пользователя"
+          many: "Отвечают %{commaSeparatedUsernames} и ещё %{count} пользователей"
+          other: "Отвечают %{commaSeparatedUsernames} и ещё %{count} пользователей"
     notifications:
       popup:
         chat_mention: "Пользователь @%{username} упомянул вас в чате"

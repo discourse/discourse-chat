@@ -9,6 +9,12 @@ export default createWidget("topic-title-chat-link", {
     return iconNode("far-comments");
   },
 
+  buildClasses(attrs) {
+    if (attrs.closed || !attrs.has_chat_live) {
+      return "hidden";
+    }
+  },
+
   click() {
     this.appEvents.trigger(
       "chat:open-channel-for-chatable",

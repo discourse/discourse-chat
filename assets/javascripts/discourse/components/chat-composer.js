@@ -37,7 +37,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   lastChatChannelId: null,
 
   chat: service(),
-  classNames: ["tc-composer"],
+  classNames: ["chat-composer"],
   emojiStore: service("emoji-store"),
   editingMessage: null,
   fullPage: false,
@@ -53,7 +53,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   eventPrefix: "chat-composer",
   composerModel: null,
   composerModelContentKey: "value",
-  editorInputClass: ".tc-composer-input",
+  editorInputClass: ".chat-composer-input",
   showCancelBtn: or("isUploading", "isProcessingUpload"),
   uploadCancelled: false,
   uploadProcessorActions: null,
@@ -126,7 +126,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     this._super(...arguments);
     this.set("composerModel", this);
 
-    this._textarea = this.element.querySelector(".tc-composer-input");
+    this._textarea = this.element.querySelector(".chat-composer-input");
     this._$textarea = $(this._textarea);
     this._applyCategoryHashtagAutocomplete(this._$textarea);
     this._applyEmojiAutocomplete(this._$textarea);
@@ -239,6 +239,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
 
   didReceiveAttrs() {
     this._super(...arguments);
+
     if (
       this.chatChannel.id === this.lastChatChannelId &&
       !this.editingMessage
@@ -248,10 +249,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
 
     if (!this.editingMessage && this.draft) {
       this.setProperties(this.draft);
-
-      if (this.draft.replyToMsg) {
-        this.onDraftWithReplyLoaded(this.draft.replyToMsg);
-      }
+      this.setInReplyToMsg(this.draft.replyToMsg);
     }
 
     if (this.editingMessage && !this.loading) {
@@ -262,9 +260,10 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
           ? cloneJSON(this.editingMessage.uploads)
           : [],
       });
-      this._focusTextArea({ ensureAtEnd: true, resizeTextArea: true });
+      this._focusTextArea({ ensureAtEnd: true, resizeTextArea: false });
     }
     this.set("lastChatChannelId", this.chatChannel.id);
+    this._resizeTextArea();
   },
 
   _replyToMsgChanged(replyToMsg) {
@@ -481,15 +480,18 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   },
 
   _resizeTextArea() {
-    this._textarea.parentNode.dataset.replicatedValue = this._textarea.value;
+    schedule("afterRender", () => {
+      if (!this._textarea) {
+        return;
+      }
 
-    if (this.onChangeHeight) {
-      this.onChangeHeight();
-    }
+      this._textarea.parentNode.dataset.replicatedValue = this._textarea.value;
+      this.onChangeHeight?.();
+    });
   },
 
   _uploadDropTargetOptions() {
-    const targetEl = document.querySelector(".tc-live-pane");
+    const targetEl = document.querySelector(".chat-live-pane");
     if (!targetEl) {
       return this._super();
     }
@@ -608,6 +610,8 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   @action
   cancelReplyTo() {
     this.set("replyToMsg", null);
+    this.setInReplyToMsg(null);
+    this.onValueChange(this.value, this.uploads, this.replyToMsg);
   },
 
   @action

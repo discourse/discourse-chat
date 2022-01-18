@@ -9,7 +9,7 @@ class DirectMessageChannel < ActiveRecord::Base
   end
 
   def chat_channel_title_for_user(chat_channel, user)
-    return chat_channel.id if users.count > 2
+    return chat_channel.id if users.size > 2
 
     users = direct_message_users.map(&:user) - [user]
 

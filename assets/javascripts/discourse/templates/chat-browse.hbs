@@ -5,13 +5,15 @@
         {{chat-channel-settings-row channel=channel categoryChannel=true}}
       {{/each}}
     </div>
-  {{/if}}
 
-  {{#if model.topicChannels}}
+  {{else if model.topicChannels}}
     <div class="topic-channels">
       {{#each model.topicChannels as |channel|}}
         {{chat-channel-settings-row channel=channel}}
       {{/each}}
     </div>
+
+  {{else}}
+    <EmptyState @title={{i18n "chat.no_joinable_channels_title"}} @body={{i18n "chat.no_joinable_channels_body"}} />
   {{/if}}
 </div>

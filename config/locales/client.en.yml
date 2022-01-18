@@ -11,6 +11,7 @@ en:
       cancel: "Cancel"
       cancel_reply: "Cancel reply"
       chat_channels: "Channels"
+      leave: "Leave channel"
       channel_list_popup:
         browse: "Browse channels"
         create: "Create a channel"
@@ -53,6 +54,8 @@ en:
           other: "%{usernames} have not joined this channel."
 
       no_public_channels: "You have not joined any channels."
+      no_joinable_channels_title: "There are no channels for you to join yet."
+      no_joinable_channels_body: "You can reach out to your administrator to start enabling chat for topics or categories."
       only_chat_push_notifications:
         title: "Only send chat push notifications"
         description: "Block all non-chat push notifications from being sent"
@@ -60,7 +63,7 @@ en:
       open_full_page: "Open full-screen chat"
       open_message: "Open message in chat"
       placeholder_self: "Jot something down"
-      placeholder_others: "Send a message to %{messageRecipient}"
+      placeholder_others: "Chat with %{messageRecipient}"
       placeholder_previewing: "Join the channel to send a message."
       remove_upload: "Remove file"
       react: "React with emoji"
@@ -82,7 +85,9 @@ en:
       title: "chat"
       title_capitalized: "Chat"
       upload: "Attach a file"
-      uploaded_files: "%{count} files"
+      uploaded_files:
+        one: "%{count} file"
+        other: "%{count} files"
       exit: "back"
 
       create_channel:
@@ -184,7 +189,9 @@ en:
       replying_indicator:
         single_user: "%{username} is typing"
         multiple_users: "%{commaSeparatedUsernames} and %{lastUsername} are typing"
-        many_users: "%{commaSeparatedUsernames} and %{count} others are typing"
+        many_users:
+          one: "%{commaSeparatedUsernames} and %{count} other are typing"
+          other: "%{commaSeparatedUsernames} and %{count} others are typing"
 
     notifications:
       popup:

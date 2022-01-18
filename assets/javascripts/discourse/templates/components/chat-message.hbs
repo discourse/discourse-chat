@@ -1,18 +1,4 @@
-{{#if message.newestMessage}}
-  <div class="tc-message-separator new-message">
-    <div class="tc-separator"></div>
-    <span class="tc-text">
-      {{i18n "chat.new_messages"}}
-    </span>
-  </div>
-{{else if message.firstMessageOfTheDayAt}}
-  <div class="tc-message-separator first-daily-message">
-    <div class="tc-separator"></div>
-    <span class="tc-text">
-      {{message.firstMessageOfTheDayAt}}
-    </span>
-  </div>
-{{/if}}
+{{chat-message-separator message=message}}
 
 <div class={{messageContainerClasses}}>
   {{emoji-picker
@@ -32,18 +18,18 @@
       }}
     {{/if}}
     {{#if deletedAndCollapsed}}
-      <div class="tc-message-deleted">
+      <div class="chat-message-deleted">
         {{d-button
-          class="btn-flat tc-message-expand-deleted"
+          class="btn-flat chat-message-expand-deleted"
           action=(action "expand")
           label="chat.deleted"
         }}
       </div>
     {{else}}
-      <div class={{innerMessageClasses}}>
+      <div class={{chatMessageClasses}}>
         {{#unless message.staged}}
-          <div class="tc-msgactions-hover">
-            <div class="tc-msgactions">
+          <div class="chat-msgactions-hover">
+            <div class="chat-msgactions">
               {{#each favoritesEmojis as |favorite|}}
                 {{chat-message-reaction
                   emoji=favorite.emoji
@@ -81,13 +67,11 @@
         {{#if message.in_reply_to}}
           <div role="button" onclick={{action "viewReply"}} class="tc-reply-display">
             {{d-icon "share" title="chat.in_reply_to"}}
-            <span class="tc-reply-av">
-              {{#if message.in_reply_to.chat_webhook_event.emoji}}
-                {{replace-emoji message.in_reply_to.chat_webhook_event.emoji}}
-              {{else}}
-                {{avatar message.in_reply_to.user imageSize="tiny"}}
-              {{/if}}
-            </span>
+            {{#if message.in_reply_to.chat_webhook_event.emoji}}
+              {{chat-emoji-avatar emoji=message.in_reply_to.chat_webhook_event.emoji}}
+            {{else}}
+              {{chat-user-avatar user=message.in_reply_to.user}}
+            {{/if}}
             <span class="tc-reply-msg">
               {{replace-emoji message.in_reply_to.excerpt}}
             </span>
@@ -98,24 +82,15 @@
           {{format-chat-date message details "tiny"}}
         {{else}}
           {{#if message.chat_webhook_event.emoji}}
-            <div class="tc-avatar">
-              <div class="tc-avatar-container">
-                {{replace-emoji message.chat_webhook_event.emoji}}
-              </div>
-            </div>
+            {{chat-emoji-avatar emoji=message.chat_webhook_event.emoji}}
           {{else}}
-            <div class="tc-avatar">
-              <div class="tc-avatar-container" data-user-card={{message.user.username}}>
-                {{avatar message.user imageSize="medium"}}
-                {{tc-user-presence-flair user=message.user}}
-              </div>
-            </div>
+            {{chat-user-avatar user=message.user avatarSize="medium"}}
           {{/if}}
         {{/if}}
 
-        <div class="tc-message-container">
+        <div class="chat-message-content">
           {{#unless hideUserInfo}}
-            <div class="tc-meta-data">
+            <div class="chat-message-sender-data">
               <span class={{usernameClasses}}>
                 {{#if message.chat_webhook_event.username}}
                   {{message.chat_webhook_event.username}}
@@ -133,14 +108,15 @@
           {{/unless}}
 
           {{#if message.action_code}}
-            <span class="tc-action-text">
+            <span class="chat-action-text">
               {{html-safe actionCodeText}}
             </span>
           {{else}}
-            {{#tc-text
+            {{#chat-message-text
               cooked=message.cooked
               uploads=message.uploads
               edited=message.edited
+              message=message.message
             }}
               {{#if hasReactions}}
                 <div class="chat-message-reaction-list">
@@ -168,11 +144,11 @@
                   }}
                 </div>
               {{/if}}
-            {{/tc-text}}
+            {{/chat-message-text}}
           {{/if}}
 
           {{#if message.error}}
-            <div class="tc-send-error">
+            <div class="chat-send-error">
               {{i18n "chat.send_error"}}
             </div>
           {{/if}}

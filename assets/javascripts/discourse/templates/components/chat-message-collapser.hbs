@@ -1,0 +1,32 @@
+<div class="chat-message-collapser">
+  {{#if hasUploads}}
+    {{html-safe cooked}}
+    {{#collapser header=uploadsHeader}}
+      <div class="chat-uploads">
+        {{#each uploads as |upload|}}
+          {{chat-upload upload=upload}}
+        {{/each}}
+      </div>
+    {{/collapser}}
+  {{else if hasYoutube}}
+    {{#each youtubeCooked as |cooked|}}
+      {{#if cooked.needsCollapser}}
+        {{#collapser header=cooked.header}}
+          {{cooked.body}}
+        {{/collapser}}
+      {{else}}
+        {{cooked.body}}
+      {{/if}}
+    {{/each}}
+  {{else if hasImageOnebox}}
+    {{#each imageOneboxCooked as |cooked|}}
+      {{#if cooked.needsCollapser}}
+        {{#collapser header=cooked.header}}
+          {{cooked.body}}
+        {{/collapser}}
+      {{else}}
+        {{cooked.body}}
+      {{/if}}
+    {{/each}}
+  {{/if}}
+</div>

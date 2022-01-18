@@ -1,4 +1,4 @@
-<div class="tc-channels">
+<div class="chat-channels">
   <div class="chat-channel-divider">
     {{#if inSidebar}}
       <span
@@ -16,7 +16,7 @@
 
     {{#if currentUser.staff}}
       {{dropdown-select-box
-        options=(hash icon="pencil-alt")
+        options=(hash icon="pencil-alt" placementStrategy="absolute")
         content=channelsActions
         onChange=(action "handleChannelAction")
         class="edit-channels-dropdown"
@@ -34,7 +34,7 @@
     {{#if publicChannelsEmpty}}
       <div class="public-channel-empty-message">
         <span class="channel-title">{{i18n "chat.no_public_channels"}}</span>
-        {{#link-to "chat.index"}}
+        {{#link-to "chat.browse"}}
           {{i18n "chat.click_to_join"}}
         {{/link-to}}
       </div>
@@ -78,7 +78,7 @@
 
   <div id="direct-message-channels" class={{directMessageChannelClasses}}>
     {{#each sortedDirectMessageChannels as |channel|}}
-      {{chat-channel-row channel=channel switchChannel=onSelect}}
+      {{chat-channel-row channel=channel switchChannel=onSelect options=(hash leaveButton=true)}}
     {{/each}}
   </div>
 </div>

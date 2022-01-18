@@ -76,11 +76,12 @@ fa_IR:
       exit: "بازگشت"
       create_channel:
         choose_category:
+          label: "انتخاب دسته‌بندی"
           none: "یکی را انتخاب کنید..."
         create: "ایجاد کانال"
         description: "توضیحات «اختیاری»"
         name: "نام کانال"
-        title: "افزودن کانال"
+        title: "ایجاد کانال"
         type: "نوع"
         types:
           category: "دسته‌بندی"
@@ -132,7 +133,6 @@ fa_IR:
       replying_indicator:
         single_user: "%{username} در حال نوشتن"
         multiple_users: "%{commaSeparatedUsernames} و %{lastUsername} در حال نوشتن"
-        many_users: "%{commaSeparatedUsernames} و %{count} نفر دیگر در حال نوشتن هستند"
     notifications:
       popup:
         chat_mention: "@%{username} در گفتگو به شما اشاره کرده است"

@@ -1,7 +1,7 @@
-<div class="tc-composer-message-details">
+<div class="chat-composer-message-details">
   <div class="tc-reply-display">
     {{d-icon icon}}
-    <span class="tc-reply-av">{{avatar message.user imageSize="tiny"}}</span>
+    {{chat-user-avatar user=message.user}}
     <span class="tc-reply-username">{{message.user.username}}</span>
     <span class="tc-reply-msg">{{replace-emoji message.excerpt}}</span>
   </div>

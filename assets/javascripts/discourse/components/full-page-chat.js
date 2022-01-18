@@ -1,39 +1,33 @@
 import Component from "@ember/component";
 import discourseComputed from "discourse-common/utils/decorators";
 import { action } from "@ember/object";
+import { reads } from "@ember/object/computed";
+import { schedule } from "@ember/runloop";
 import { inject as service } from "@ember/service";
-import { next } from "@ember/runloop";
 
 export default Component.extend({
   tagName: "",
-  teamsSidebarOn: false,
-  showingChannels: false,
+  teamsSidebarOn: reads("chat.sidebarActive"),
   router: service(),
   chat: service(),
 
-  @discourseComputed("teamsSidebarOn", "showingChannels")
-  wrapperClassNames(teamsSidebarOn, showingChannels) {
+  @discourseComputed("teamsSidebarOn")
+  wrapperClassNames(teamsSidebarOn) {
     const classNames = ["full-page-chat"];
     if (teamsSidebarOn) {
       classNames.push("teams-sidebar-on");
     }
-    if (showingChannels) {
-      classNames.push("showing-channels");
-    }
     return classNames.join(" ");
   },
 
-  @discourseComputed("site.mobileView", "teamsSidebarOn", "showingChannels")
-  showChannelSelector(mobileView, sidebarOn, showingChannels) {
-    if (mobileView) {
-      return showingChannels;
-    }
-
-    return !sidebarOn;
+  @discourseComputed("site.mobileView", "teamsSidebarOn")
+  showChannelSelector(mobileView, sidebarOn) {
+    return !mobileView && !sidebarOn;
   },
 
   init() {
     this._super(...arguments);
+
     this.appEvents.on("chat:refresh-channels", this, "refreshModel");
   },
 
@@ -44,20 +38,16 @@ export default Component.extend({
     window.addEventListener("resize", this._calculateHeight, false);
     document.body.classList.add("has-full-page-chat");
     this.chat.set("fullScreenChatOpen", true);
-    next(this._calculateHeight);
+    schedule("afterRender", this._calculateHeight);
   },
 
   willDestroyElement() {
     this._super(...arguments);
+
     this.appEvents.off("chat:refresh-channels", this, "refreshModel");
     window.removeEventListener("resize", this._calculateHeight, false);
     document.body.classList.remove("has-full-page-chat");
     this.chat.set("fullScreenChatOpen", false);
-  },
-
-  willRender() {
-    this._super(...arguments);
-    this.set("teamsSidebarOn", this.chat.sidebarActive);
   },
 
   _scrollSidebarToBottom() {
@@ -92,9 +82,12 @@ export default Component.extend({
   },
 
   @action
-  switchChannel(channel) {
-    this.set("showingChannels", false);
+  navigateToIndex() {
+    this.router.transitionTo("chat.index");
+  },
 
+  @action
+  switchChannel(channel) {
     if (channel.id !== this.chatChannel.id) {
       this.router.transitionTo("chat.channel", channel.id, channel.title);
     }

@@ -17,6 +17,7 @@ hu:
       cancel: "Mégse"
       cancel_reply: "Válasz elvetése"
       chat_channels: "Csatornák"
+      leave: "Csatorna elhagyása"
       channel_list_popup:
         browse: "Csatornák böngészése"
         create: "Csatorna létrehozása"
@@ -64,7 +65,7 @@ hu:
       open_full_page: "Teljes képernyős csevegés megnyitása"
       open_message: "Üzenet megnyitása a csevegésben"
       placeholder_self: "Jegyezzen le valamit"
-      placeholder_others: "Üzenet küldése %{messageRecipient} számára"
+      placeholder_others: "Csevegés vele: %{messageRecipient}"
       placeholder_previewing: "Üzenet küldéséhez csatlakozzon a csatornához."
       remove_upload: "Fájl eltávolítása"
       react: "Reagálás emodzsival"
@@ -86,15 +87,19 @@ hu:
       title: "csevegés"
       title_capitalized: "Csevegés"
       upload: "Fájl csatolása"
+      uploaded_files:
+        one: "%{count} fájl"
+        other: "%{count} fájl"
       exit: "vissza"
       create_channel:
         choose_category:
-          label: "Válasszon egy kategóriát annak kezeléséhez, hogy ki férhet hozzá a csatornához"
+          label: "Válasszon kategóriát"
           none: "válasszon egyet…"
+          hint: 'Kezelje a hozzáférést a(z) <a href=%{link} target="_blank">%{category} biztonsági beállításainak</a> felkeresésével'
         create: "Csatorna létrehozása"
         description: "Leírás (nem kötelező)"
         name: "Csatorna neve"
-        title: "Csatorna hozzáadása"
+        title: "Csatorna létrehozása"
         type: "Típus"
         types:
           category: "Kategória"
@@ -129,6 +134,7 @@ hu:
         title: "Személyes csevegés"
         new: "Új személyes csevegés"
         create: "Ugrás"
+        leave: "E személyes csevegés elhagyása"
       incoming_webhooks:
         back: "Vissza"
         channel_placeholder: "Válasszon csatornát"
@@ -175,7 +181,9 @@ hu:
       replying_indicator:
         single_user: "%{username} gépel"
         multiple_users: "%{commaSeparatedUsernames} és %{lastUsername} gépel"
-        many_users: "%{commaSeparatedUsernames} és még %{count} valaki gépel"
+        many_users:
+          one: "%{commaSeparatedUsernames} és még %{count} valaki gépel"
+          other: "%{commaSeparatedUsernames} és még %{count} valaki gépel"
     notifications:
       popup:
         chat_mention: "@%{username} megemlítette a csevegésben"

@@ -355,8 +355,9 @@ export default Component.extend({
     }
 
     if (this.currentUser.chat_isolated) {
+      const safeTitle = channel.title.replace(/\./g, "-");
       return window
-        .open(getURL(`/chat/channel/${channel.id}/${channel.title}`), "_blank")
+        .open(getURL(`/chat/channel/${channel.id}/${safeTitle}`), "_blank")
         .focus();
     }
 

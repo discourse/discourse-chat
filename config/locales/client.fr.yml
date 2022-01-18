@@ -5,3 +5,79 @@
 # https://translate.discourse.org/
 
 fr:
+  js:
+    chat:
+      dates:
+        time_tiny: "h:mm"
+      all_loaded: "Voir tous les messages"
+      already_enabled: "Le chat est déjà activé sur ce sujet. Veuillez rafraîchir."
+      disabled_for_topic: "Le chat est désactivé sur ce sujet."
+      bot: "robot"
+      create: "Créer"
+      cancel: "Annuler"
+      cancel_reply: "Annuler la réponse"
+      chat_channels: "Canaux"
+      channel_list_popup:
+        browse: "Parcourir les canaux"
+        create: "Créer un canal"
+      click_to_join: "Cliquez ici pour voir les canaux disponibles."
+      close: "Fermer"
+      deleted: "Un message a été supprimé. [view]"
+      delete: "Supprimer"
+      edited: "(édité)"
+      empty_state:
+        create_personal_chat: "Commencer une discussion privé"
+        no_public_available: "Il n'y a pas de canaux publiques à suivre pour le moment."
+        public_available: "Des canaux publiques sont à votre disposition."
+        start_direct_message: "Vous pouvez également démarrer une discussion personnelle avec un ou plusieurs utilisateurs."
+        title: "Commence par rejoindre un canal"
+      enable: "Activer le chat"
+      invalid_access: "Vous n'avez pas accès à ce canal de discussion"
+      in_reply_to: "En réponse à"
+      isolate:
+        description: "Toujours ouvrir le chat dans un nouvel onglet"
+      heading: "Chat"
+      join_channel: "Rejoindre le canal"
+      new_messages: "nouveaux messages"
+      create_channel:
+        title: "Créer un canal"
+      reactions:
+        and_others: "Vous, %{usernames} avez réagi avec :%{emoji}:"
+        others_and_more: "%{usernames} et %{more} autres ont réagi avec :%{emoji}:"
+        you_others_and_more: "Vous, %{usernames} et %{more} autres avez réagi avec :%{emoji}:"
+      composer:
+        toggle_toolbar: "Basculer la barre d'outils"
+      notification_levels:
+        never: "Jamais"
+        mention: "Seulement pour les mentions"
+        always: "Pour toute activité"
+      settings:
+        desktop_notification_level: "Notifications sur le bureau"
+        follow: "Rejoindre"
+        mobile_notification_level: "Notifications push mobiles"
+        mute: "Canal muet"
+        muted_on: "On"
+        muted_off: "Off"
+        notifications: "Notifications"
+        preview: "Prévisualisation"
+        save: "Sauvegarder"
+        saved: "Enregistré"
+        unfollow: "Quitter"
+      admin:
+        title: "Chat"
+      direct_messages:
+        title: "Conversation personnelle"
+        new: "Nouvelle conversation personnel"
+        create: "Go"
+        leave: "Quittez cette discussion personnelle"
+      incoming_webhooks:
+        back: "Retour"
+        channel_placeholder: "Sélectionnez un canal"
+        confirm_destroy: "Voulez-vous vraiment supprimer ce webhook entrant ? Ça ne peut pas être annulé."
+        current_emoji: "Emoji actuel"
+        description: "Description"
+        delete: "Supprimer"
+        emoji: "Emoji"
+        emoji_instructions: "L'avatar du système sera utilisé si l'emoji est laissé vide."
+        name: "Nom"
+        name_placeholder: "Nom..."

@@ -6,11 +6,14 @@ import { inject as service } from "@ember/service";
 import { action } from "@ember/object";
 
 export default Component.extend({
+  tagName: "",
   channel: null,
   switchChannel: null,
+  isUnfollowing: false,
   isDirectMessageRow: equal("channel.chatable_type", "DirectMessageChannel"),
   router: service(),
   chat: service(),
+  options: null,
 
   @discourseComputed("active", "channel.{id,muted}")
   rowClassNames(active, channel) {
@@ -24,9 +27,10 @@ export default Component.extend({
     return classes.join(" ");
   },
 
-  mouseDown(e) {
-    if (e.which === 2) {
-      // Middle mouse click
+  @action
+  handleNewWindow(event) {
+    // Middle mouse click
+    if (event.which === 2) {
       window
         .open(
           getURL(`/chat/channel/${this.channel.id}/${this.channel.title}`),
@@ -36,12 +40,36 @@ export default Component.extend({
     }
   },
 
-  click() {
+  @action
+  handleSwitchChannel(event) {
     if (this.switchChannel) {
-      return this.switchChannel(this.channel);
+      this.switchChannel(this.channel);
+      event.preventDefault();
+    }
+  },
+
+  @action
+  handleClick(event) {
+    if (event.target.classList.contains("chat-channel-leave-btn")) {
+      return;
     }
 
-    return false;
+    this.handleSwitchChannel(event);
+  },
+
+  @action
+  handleKeydown(event) {
+    if (event.key !== "Enter") {
+      return;
+    }
+
+    this.handleSwitchChannel(event);
+  },
+
+  @action
+  onLeaveChannel() {
+    this.set("isUnfollowing", true);
+    this.chat.unfollowChannel(this.channel);
   },
 
   @discourseComputed("channel", "router.currentRoute")
@@ -50,23 +78,5 @@ export default Component.extend({
       currentRoute?.name === "chat.channel" &&
       currentRoute?.params?.channelId === channel.id.toString(10)
     );
-  },
-
-  @discourseComputed("currentUser.chat_channel_tracking_state")
-  unreadIndicatorClassName(trackingState) {
-    return this.isDirectMessageRow ||
-      trackingState[this.channel.id]?.unread_mentions > 0
-      ? "chat-unread-urgent-indicator"
-      : "chat-unread-indicator";
-  },
-
-  @discourseComputed("currentUser.chat_channel_tracking_state")
-  hasUnread(trackingState) {
-    return trackingState[this.channel.id]?.unread_count || 0;
-  },
-
-  @action
-  async leaveChatChannel() {
-    return this.chat.unfollowDirectMessageChannel(this.channel);
   },
 });

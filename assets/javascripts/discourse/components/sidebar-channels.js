@@ -4,6 +4,7 @@ import { inject as service } from "@ember/service";
 import { withPluginApi } from "discourse/lib/plugin-api";
 
 export default Component.extend({
+  tagName: "",
   publicChannels: null,
   directMessageChannels: null,
   toggleSection: null,

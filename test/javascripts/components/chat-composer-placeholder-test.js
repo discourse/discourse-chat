@@ -25,7 +25,7 @@ discourseModule(
 
       async test(assert) {
         assert.equal(
-          query(".tc-composer-input").placeholder,
+          query(".chat-composer-input").placeholder,
           "Jot something down"
         );
       },
@@ -49,8 +49,8 @@ discourseModule(
 
       async test(assert) {
         assert.equal(
-          query(".tc-composer-input").placeholder,
-          "Send a message to Tomtom, Steaky, @zorro"
+          query(".chat-composer-input").placeholder,
+          "Chat with Tomtom, Steaky, @zorro"
         );
       },
     });
@@ -67,8 +67,8 @@ discourseModule(
 
       async test(assert) {
         assert.equal(
-          query(".tc-composer-input").placeholder,
-          "Send a message to #just-cats"
+          query(".chat-composer-input").placeholder,
+          "Chat with #just-cats"
         );
       },
     });

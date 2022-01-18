@@ -10,6 +10,7 @@ import EmberObject, { action } from "@ember/object";
 import I18n from "I18n";
 import loadScript from "discourse/lib/load-script";
 import showModal from "discourse/lib/show-modal";
+import userPresent from "discourse/lib/user-presence";
 import { A } from "@ember/array";
 import { ajax } from "discourse/lib/ajax";
 import { isTesting } from "discourse-common/config/environment";
@@ -29,7 +30,7 @@ const READ_INTERVAL = 1000;
 const PAGE_SIZE = 50;
 
 export default Component.extend({
-  classNameBindings: [":tc-live-pane", "sendingloading", "loading"],
+  classNameBindings: [":chat-live-pane", "sendingloading", "loading"],
   topicId: null, // ?Number
   chatChannel: null,
   fullPage: false,
@@ -80,7 +81,7 @@ export default Component.extend({
       });
     }
 
-    this._scrollerEl = this.element.querySelector(".tc-messages-scroll");
+    this._scrollerEl = this.element.querySelector(".chat-messages-scroll");
     this._scrollerEl.addEventListener(
       "scroll",
       () => {
@@ -126,8 +127,10 @@ export default Component.extend({
         this.messageBus.unsubscribe(`/chat/${this.registeredChatChannelId}`);
         this.messages.clear();
       }
+
       this.messageLookup = {};
       this.registeredChatChannelId = null;
+      this.set("allPastMessagesLoaded", false);
 
       if (this.chatChannel.id != null) {
         this.fetchMessages(this.chatChannel.id);
@@ -238,7 +241,7 @@ export default Component.extend({
       registeredChatChannelId: this.chatChannel.id,
     });
 
-    if (!this.targetMessageId && this.messages.length < PAGE_SIZE) {
+    if (!this.targetMessageId && messages.length < PAGE_SIZE) {
       this.set("allPastMessagesLoaded", true);
     }
 
@@ -386,7 +389,7 @@ export default Component.extend({
     }
 
     const messageEl = this._scrollerEl.querySelector(
-      `.chat-message-${messageId}`
+      `.chat-message-container-${messageId}`
     );
     if (messageEl) {
       schedule("afterRender", () => {
@@ -424,9 +427,12 @@ export default Component.extend({
         // Setting to just 0 doesn't work (it's at 0 by default, so there is no change)
         // Very hacky, but no way to get around this Safari bug
         this._scrollerEl.scrollTop = -1;
-        later(() => {
-          this._scrollerEl.scrollTop = 0;
-        }, 40);
+
+        window.requestAnimationFrame(() => {
+          if (this._scrollerEl) {
+            this._scrollerEl.scrollTop = 0;
+          }
+        });
       }
     });
   },
@@ -694,7 +700,7 @@ export default Component.extend({
   },
 
   _floatOpenAndFocused() {
-    return document.hasFocus() && this.expanded && !this.floatHidden;
+    return userPresent() && this.expanded && !this.floatHidden;
   },
 
   _stopLastReadRunner() {
@@ -928,10 +934,8 @@ export default Component.extend({
   },
 
   @action
-  draftWithReplyLoaded(inReplyMsg) {
-    if (inReplyMsg) {
-      this.set("replyToMsg", inReplyMsg);
-    }
+  setInReplyToMsg(inReplyMsg) {
+    this.set("replyToMsg", inReplyMsg);
   },
 
   @action
@@ -973,7 +977,7 @@ export default Component.extend({
     }
 
     const links = this.element.querySelectorAll(
-      ".tc-text a:not([target='_blank'])"
+      ".chat-message-text a:not([target='_blank'])"
     );
     for (let linkIndex = 0; linkIndex < links.length; linkIndex++) {
       const link = links[linkIndex];
@@ -993,7 +997,7 @@ export default Component.extend({
     }
 
     next(() => {
-      document.querySelector(".tc-composer-input")?.focus();
+      document.querySelector(".chat-composer-input")?.focus();
     });
   },
 
@@ -1027,34 +1031,38 @@ export default Component.extend({
     decorateGithubOneboxBody(this.element);
   },
 
+  _getScrollParent(node, maxParentSelector) {
+    if (node === null || node.classList.contains(maxParentSelector)) {
+      return null;
+    }
+
+    if (node.scrollHeight > node.clientHeight) {
+      return node;
+    } else {
+      return this._getScrollParent(node.parentNode, maxParentSelector);
+    }
+  },
+
   _scrollGithubOneboxes() {
     this.element
       .querySelectorAll(".onebox.githubblob li.selected")
       .forEach((line) => {
-        const scrollingElementSelector = ".onebox .onebox-body";
+        const scrollingElement = this._getScrollParent(line, "onebox");
 
-        let linePosition = line.offsetTop + line.offsetHeight / 2;
-
-        // offsetTop is relative to the offsetParent (i.e. a position: relative element)
-        // Keep iterating up them until we reach the topmost one within the onebox
-        // Sum up the offsetTop values as we go
-        let offsetParent = line.offsetParent;
-        while (true) {
-          linePosition += offsetParent.offsetTop;
-          if (!offsetParent.offsetParent?.closest(scrollingElementSelector)) {
-            // The next offsetParent would be outside the onebox
-            break;
-          }
-        }
-        let onebox = line.closest(scrollingElementSelector);
-        if (onebox !== offsetParent) {
-          // The onebox body itself is not position: relative, so we need to subtract it's offsetTop
-          linePosition -= onebox.offsetTop;
+        // most likely a very small file which doesn’t need scrolling
+        if (!scrollingElement) {
+          return;
         }
 
-        onebox.scroll({
-          // Scroll so the selected line is in the middle of the div
-          top: linePosition - onebox.offsetHeight / 2,
+        const scrollBarWidth =
+          scrollingElement.offsetHeight - scrollingElement.clientHeight;
+
+        scrollingElement.scroll({
+          top:
+            line.offsetTop +
+            scrollBarWidth -
+            scrollingElement.offsetHeight / 2 +
+            line.offsetHeight / 2,
         });
       });
   },

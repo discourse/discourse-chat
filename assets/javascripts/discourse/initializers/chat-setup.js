@@ -5,7 +5,6 @@ export default {
   initialize(container) {
     const currentUser = container.lookup("current-user:main");
     if (!currentUser?.has_chat_enabled) {
-      document.body.classList.remove("chat-enabled");
       return;
     }
 

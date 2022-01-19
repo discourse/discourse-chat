@@ -209,12 +209,18 @@ after_initialize do
     true
   end
 
-  add_to_serializer(:current_user, :include_dismissed_channel_retention_reminder?) do
-    include_has_chat_enabled? && object.staff? && !object.user_option.dismissed_channel_retention_reminder
+  add_to_serializer(:current_user, :include_needs_channel_retention_reminder?) do
+    include_has_chat_enabled? &&
+      object.staff? &&
+      !object.user_option.dismissed_channel_retention_reminder &&
+      SiteSetting.chat_channel_retention_days
+
   end
 
-  add_to_serializer(:current_user, :include_dismissed_dm_retention_reminder?) do
-    include_has_chat_enabled? && !object.user_option.dismissed_dm_retention_reminder
+  add_to_serializer(:current_user, :include_needs_dm_retention_reminder?) do
+    include_has_chat_enabled? &&
+      !object.user_option.dismissed_dm_retention_reminder &&
+      SiteSetting.chat_channel_retention_days
   end
 
   add_to_serializer(:current_user, :chat_drafts) do
@@ -326,6 +332,7 @@ after_initialize do
     get '/channel/:channel_id/:channel_title' => 'chat#respond'
     post '/enable' => 'chat#enable_chat'
     post '/disable' => 'chat#disable_chat'
+    post '/dismiss-retention-reminder' => 'chat#dismiss_retention_reminder'
     get '/:chat_channel_id/messages' => 'chat#messages'
     put ':chat_channel_id/edit/:message_id' => 'chat#edit_message'
     put ':chat_channel_id/react/:message_id' => 'chat#react'

@@ -193,7 +193,7 @@ en:
           one: "%{commaSeparatedUsernames} and %{count} other are typing"
           other: "%{commaSeparatedUsernames} and %{count} others are typing"
 
-      retention_reminder: "Remember, all messages older than %{days} will be deleted!"
+      retention_reminder: "Remember, all messages older than %{days} days will be deleted!"
 
     notifications:
       popup:

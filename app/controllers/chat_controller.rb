@@ -310,6 +310,18 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     render json: success_json
   end
 
+  def dismiss_retention_reminder
+    params.require(:chatable_type)
+    guardian.ensure_can_chat!(current_user)
+    raise Discourse::InvalidParameters unless ChatChannel.chatable_types.include?(params[:chatable_type])
+
+    field = ChatChannel.public_channel_chatable_types.include?(params[:chatable_type]) ?
+      :dismissed_channel_retention_reminder :
+      :dismissed_dm_retention_reminder
+    current_user.user_option.update("#{field}": true)
+    render json: success_json
+  end
+
   private
 
   def set_user_last_read

@@ -80,6 +80,10 @@ class ChatChannel < ActiveRecord::Base
     end
   end
 
+  def self.chatable_types
+    public_channel_chatable_types << "DirectMessageChannel"
+  end
+
   def self.public_channel_chatable_types
     ["Topic", "Category", "Tag"]
   end

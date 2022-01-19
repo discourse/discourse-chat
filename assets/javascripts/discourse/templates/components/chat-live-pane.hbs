@@ -30,6 +30,7 @@
 
 <div class="chat-messages-scroll chat-messages-container">
   {{#conditional-loading-spinner condition=this.loading}}
+    {{chat-retention-reminder chatChannel=chatChannel}}
     {{#each this.messages as |message|}}
       {{chat-message
         message=message

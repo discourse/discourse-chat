@@ -13,6 +13,7 @@ register_asset 'stylesheets/common/common.scss'
 register_asset 'stylesheets/common/incoming-chat-webhooks.scss'
 register_asset 'stylesheets/common/chat-message.scss'
 register_asset 'stylesheets/common/chat-message-collapser.scss'
+register_asset 'stylesheets/common/chat-retention-reminder.scss'
 register_asset 'stylesheets/mobile/mobile.scss', :mobile
 register_asset 'stylesheets/desktop/desktop.scss', :desktop
 register_asset 'stylesheets/sidebar-extensions.scss'
@@ -85,6 +86,7 @@ after_initialize do
   load File.expand_path('../app/jobs/regular/process_chat_message.rb', __FILE__)
   load File.expand_path('../app/jobs/regular/create_chat_mention_notifications.rb', __FILE__)
   load File.expand_path('../app/jobs/regular/notify_users_watching_chat.rb', __FILE__)
+  load File.expand_path('../app/jobs/scheduled/delete_old_chat_messages.rb', __FILE__)
   load File.expand_path('../app/services/chat_publisher.rb', __FILE__)
 
   register_topic_custom_field_type(DiscourseChat::HAS_CHAT_ENABLED, :boolean)
@@ -197,6 +199,22 @@ after_initialize do
 
   add_to_serializer(:current_user, :include_chat_sound?) do
     include_has_chat_enabled? && object.user_option.chat_sound
+  end
+
+  add_to_serializer(:current_user, :needs_channel_retention_reminder) do
+    true
+  end
+
+  add_to_serializer(:current_user, :needs_dm_retention_reminder) do
+    true
+  end
+
+  add_to_serializer(:current_user, :include_dismissed_channel_retention_reminder?) do
+    include_has_chat_enabled? && object.staff? && !object.user_option.dismissed_channel_retention_reminder
+  end
+
+  add_to_serializer(:current_user, :include_dismissed_dm_retention_reminder?) do
+    include_has_chat_enabled? && !object.user_option.dismissed_dm_retention_reminder
   end
 
   add_to_serializer(:current_user, :chat_drafts) do

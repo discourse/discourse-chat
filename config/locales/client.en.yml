@@ -193,6 +193,8 @@ en:
           one: "%{commaSeparatedUsernames} and %{count} other are typing"
           other: "%{commaSeparatedUsernames} and %{count} others are typing"
 
+      retention_reminder: "Remember, all messages older than %{days} will be deleted!"
+
     notifications:
       popup:
         chat_mention: "%{username} mentioned you in chat"

@@ -1,0 +1,10 @@
+{{#if show}}
+  <div class="chat-retention-reminder">
+    <span>{{i18n "chat.retention_reminder" days=daysCount}}</span>
+    {{d-button
+      class="btn-flat dismiss-btn"
+      action=(action "dismiss")
+      icon="times"
+    }}
+  </div>
+{{/if}}

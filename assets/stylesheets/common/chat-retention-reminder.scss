@@ -1,0 +1,31 @@
+.chat-retention-reminder {
+  display: flex;
+  position: absolute;
+  top: 25px;
+  left: 50%;
+  transform: translateX(-50%);
+  align-items: center;
+  background: var(--tertiary);
+  border-radius: 16px;
+  padding: 0.25em 1em;
+  font-size: var(--font-down-1);
+  border: 1px solid var(--tertiary-hover);
+  color: var(--secondary);
+  z-index: 1;
+  min-width: 300px;
+
+  .dismiss-btn {
+    margin-left: 0.75em;
+
+    &:hover {
+      background: var(--tertiary-hover);
+    }
+    .d-icon {
+      color: var(--secondary);
+
+      &:hover {
+        color: var(--secondary);
+      }
+    }
+  }
+}

@@ -130,11 +130,11 @@ body.composer-open .topic-chat-float-container {
 
 .topic-chat-container {
   background: var(--secondary);
-  border: 1px solid var(--primary-low-mid);
+  border: 1px solid var(--primary-low);
   border-bottom: 0;
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
-  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.125);
   box-sizing: border-box;
   height: 2.5em;
 
@@ -152,7 +152,9 @@ body.composer-open .topic-chat-float-container {
 
 .topic-chat-drawer-header {
   box-sizing: border-box;
-  border-bottom: solid 1px var(--primary-low-mid);
+  border-bottom: solid 1px var(--primary-low);
+  border-radius: 8px 8px 0 0;
+  background: var(--primary-very-low);
   padding: 0.5em;
   height: $header-height;
   width: 100%;
@@ -577,19 +579,23 @@ body.composer-open .topic-chat-float-container {
         right: 20px;
         top: 50%;
         transform: translateY(-50%);
-        padding: 0.4em;
+        padding: 0.3em;
         border-radius: 100%;
-        background: var(--primary-low);
+        background: var(--primary-med-or-secondary-high);
         border: 1px solid transparent;
-
         &:focus {
           border-color: var(--tertiary);
+        }
+        &:hover {
+          background: var(--primary-high);
+          .d-icon {
+            color: var(--primary-low);
+          }
         }
       }
     }
 
     .chat-composer-row > .chat-composer-input:focus {
-      border-color: var(--primary-medium);
       outline: none;
     }
 
@@ -602,7 +608,9 @@ body.composer-open .topic-chat-float-container {
       resize: none;
       max-height: 125px;
       padding: 8px 40px 8px 8px;
-      border: 1px solid var(--primary-low-mid);
+      border: 1px solid transparent;
+      background-color: var(--primary-low);
+      border-radius: 0.5em;
       box-sizing: border-box;
       word-break: break-word;
       width: 100%;
@@ -628,7 +636,7 @@ body.composer-open .topic-chat-float-container {
 
     .d-icon {
       animation: color 0.2s ease-in-out;
-      color: var(--primary-low-mid);
+      color: var(--primary-low);
     }
   }
 

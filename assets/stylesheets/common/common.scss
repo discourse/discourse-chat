@@ -576,7 +576,7 @@ body.composer-open .topic-chat-float-container {
 
       .open-toolbar-btn {
         position: absolute;
-        left: 16px;
+        right: 20px;
         top: 50%;
         transform: translateY(-50%);
         padding: 0.3em;
@@ -607,7 +607,7 @@ body.composer-open .topic-chat-float-container {
       margin: 0;
       resize: none;
       max-height: 125px;
-      padding: 8px 8px 8px 45px;
+      padding: 8px 40px 8px 8px;
       border: 1px solid transparent;
       background-color: var(--primary-low);
       border-radius: 0.5em;
@@ -643,7 +643,7 @@ body.composer-open .topic-chat-float-container {
   .chat-composer-toolbar {
     position: absolute;
     top: -36px;
-    left: 0.75em;
+    right: 0.75em;
     border-radius: 5px;
     border: 1px solid var(--primary-low);
     background: var(--secondary);

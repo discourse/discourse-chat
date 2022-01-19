@@ -156,7 +156,7 @@
     }
 
     .chat-message {
-      padding-left: 2em;
+      padding-left: 1em;
 
       &:hover {
         background-color: var(--primary-very-low);
@@ -164,7 +164,7 @@
     }
 
     .chat-messages-container .chat-message-deleted {
-      padding: 0.25em 2em;
+      padding: 0.25em 1em;
     }
   }
 }

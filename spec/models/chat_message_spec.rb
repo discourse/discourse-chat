@@ -133,5 +133,50 @@ describe ChatMessage do
 
       expect(cooked).to eq("<p>■■■■■</p>")
     end
+
+    it 'supports autolink with <>' do
+      cooked = ChatMessage.cook("<https://github.com/discourse/discourse-chat/pull/468>")
+
+      expect(cooked).to eq("<p><a href=\"https://github.com/discourse/discourse-chat/pull/468\" rel=\"noopener nofollow ugc\">https://github.com/discourse/discourse-chat/pull/468</a></p>")
+    end
+
+    it 'supports lists' do
+      cooked = ChatMessage.cook(<<~MSG)
+      wow look it's a list
+
+      * item 1
+      * item 2
+      MSG
+
+      expect(cooked).to eq(<<~HTML.chomp)
+      <p>wow look it's a list</p>
+      <ul>
+      <li>item 1</li>
+      <li>item 2</li>
+      </ul>
+      HTML
+    end
+
+    it 'supports inline emoji' do
+      cooked = ChatMessage.cook(":D")
+      expect(cooked).to eq(<<~HTML.chomp)
+      <p><img src="/images/emoji/twitter/smiley.png?v=12" title=":smiley:" class="emoji only-emoji" alt=":smiley:"></p>
+      HTML
+    end
+
+    it 'supports emoji shortcuts' do
+      cooked = ChatMessage.cook("this is a replace test :P :|")
+      expect(cooked).to eq(<<~HTML.chomp)
+        <p>this is a replace test <img src="/images/emoji/twitter/stuck_out_tongue.png?v=12" title=":stuck_out_tongue:" class="emoji" alt=":stuck_out_tongue:"> <img src="/images/emoji/twitter/expressionless.png?v=12" title=":expressionless:" class="emoji" alt=":expressionless:"></p>
+      HTML
+    end
+
+    it 'supports spoilers' do
+      if SiteSetting.respond_to?(:spoiler_enabled) && SiteSetting.spoiler_enabled
+        cooked = ChatMessage.cook("[spoiler]the planet of the apes was earth all along[/spoiler]")
+
+        expect(cooked).to eq("<div class=\"spoiler\">\n<p>the planet of the apes was earth all along</p>\n</div>")
+      end
+    end
   end
 end

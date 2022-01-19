@@ -43,6 +43,8 @@ class ChatMessage < ActiveRecord::Base
     censored
     discourse-local-dates
     emoji
+    emojiShortcuts
+    inlineEmoji
     html-img
     mentions
     onebox
@@ -50,9 +52,12 @@ class ChatMessage < ActiveRecord::Base
     upload-protocol
     watched-words
     table
+    spoiler-alert
   }
 
   MARKDOWN_IT_RULES = %w{
+    autolink
+    list
     backticks
     newline
     code

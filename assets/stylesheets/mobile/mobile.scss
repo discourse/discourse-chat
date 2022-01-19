@@ -14,7 +14,7 @@
     top: 50%;
     transform: translateY(-50%);
     .d-icon {
-      columns: var(--primary-low-mid);
+      color: var(--primary-low-mid);
     }
     &:not([disabled]) .d-icon {
       color: var(--primary-medium);

@@ -13,6 +13,9 @@
     right: 12px;
     top: 50%;
     transform: translateY(-50%);
+    .d-icon {
+      color: var(--primary-low-mid);
+    }
     &:not([disabled]) .d-icon {
       color: var(--tertiary);
     }
@@ -87,7 +90,7 @@ body.has-full-page-chat {
   }
 
   .chat-composer {
-    background-color: var(--primary-very-low);
+    background-color: var(--secondary);
   }
 
   .chat-full-page-header {

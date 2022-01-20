@@ -10,15 +10,6 @@ import {
 import hbs from "htmlbars-inline-precompile";
 import I18n from "I18n";
 
-const user = {
-  id: 1,
-  username: "markvanlan",
-  name: null,
-  avatar_template: "/letter_avatar_proxy/v4/letter/m/48db29/{size}.png",
-  needs_dm_retention_reminder: true,
-  needs_channel_retention_reminder: true,
-};
-
 discourseModule(
   "Discourse Chat | Component | chat-retention-reminder",
   function (hooks) {

@@ -3,6 +3,7 @@ import discourseComputed from "discourse-common/utils/decorators";
 import I18n from "I18n";
 import { action } from "@ember/object";
 import { ajax } from "discourse/lib/ajax";
+import { CHATABLE_TYPES } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 
 export default Component.extend({
@@ -15,9 +16,9 @@ export default Component.extend({
   )
   show(chatableType) {
     return (
-      (chatableType === "DirectMessageChannel" &&
+      (chatableType === CHATABLE_TYPES.directMessageChannel &&
         this.currentUser.needs_dm_retention_reminder) ||
-      (chatableType !== "DirectMessageChannel" &&
+      (chatableType !== CHATABLE_TYPES.directMessageChannel &&
         this.currentUser.needs_channel_retention_reminder)
     );
   },
@@ -27,7 +28,7 @@ export default Component.extend({
     let days = this.siteSettings.chat_channel_retention_days;
     let translationKey = "chat.retention_reminders.public";
 
-    if (chatableType === "DirectMessageChannel") {
+    if (chatableType === CHATABLE_TYPES.directMessageChannel) {
       days = this.siteSettings.chat_dm_retention_days;
       translationKey = "chat.retention_reminders.dm";
     }
@@ -36,7 +37,7 @@ export default Component.extend({
 
   @discourseComputed("chatChannel.chatable_type")
   daysCount(chatableType) {
-    return chatableType === "DirectMessageChannel"
+    return chatableType === CHATABLE_TYPES.directMessageChannel
       ? this.siteSettings.chat_dm_retention_days
       : this.siteSettings.chat_channel_retention_days;
   },
@@ -49,7 +50,7 @@ export default Component.extend({
     })
       .then(() => {
         const field =
-          this.chatChannel.chatable_type === "DirectMessageChannel"
+          this.chatChannel.chatable_type === CHATABLE_TYPES.directMessageChannel
             ? "needs_dm_retention_reminder"
             : "needs_channel_retention_reminder";
         this.currentUser.set(field, false);

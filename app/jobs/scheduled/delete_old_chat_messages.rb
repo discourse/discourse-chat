@@ -28,10 +28,7 @@ module Jobs
     end
 
     def valid_day_value?(setting_name)
-      value = SiteSetting.public_send(setting_name)
-      return false if value.nil?
-      return false if value.zero?
-      true
+      (SiteSetting.public_send(setting_name) || 0).positive?
     end
   end
 end

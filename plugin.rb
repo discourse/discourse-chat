@@ -213,14 +213,14 @@ after_initialize do
     include_has_chat_enabled? &&
       object.staff? &&
       !object.user_option.dismissed_channel_retention_reminder &&
-      SiteSetting.chat_channel_retention_days
+      !SiteSetting.chat_channel_retention_days.zero?
 
   end
 
   add_to_serializer(:current_user, :include_needs_dm_retention_reminder?) do
     include_has_chat_enabled? &&
       !object.user_option.dismissed_dm_retention_reminder &&
-      SiteSetting.chat_channel_retention_days
+      !SiteSetting.chat_dm_retention_days.zero?
   end
 
   add_to_serializer(:current_user, :chat_drafts) do
@@ -255,6 +255,21 @@ after_initialize do
 
   add_to_serializer(:user_option, :only_chat_push_notifications) do
     object.only_chat_push_notifications
+  end
+
+  RETENTION_SETTINGS_TO_USER_OPTION_FIELDS = {
+    chat_channel_retention_days: :dismissed_channel_retention_reminder,
+    chat_dm_retention_days: :dismissed_dm_retention_reminder
+  }
+  DiscourseEvent.on(:site_setting_changed) do |name, old_value, new_value|
+    user_option_field = RETENTION_SETTINGS_TO_USER_OPTION_FIELDS[name.to_sym]
+    begin
+      if user_option_field && old_value != new_value && !new_value.zero?
+        UserOption.where(user_option_field => true).update_all(user_option_field => false)
+      end
+    rescue => e
+      Rails.logger.warn("Error updating user_options fields after chat retention settings changed: #{e}")
+    end
   end
 
   register_presence_channel_prefix("chat") do |channel|

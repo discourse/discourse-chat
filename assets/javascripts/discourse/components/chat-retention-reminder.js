@@ -21,10 +21,22 @@ export default Component.extend({
   },
 
   @discourseComputed("chatChannel.chatable_type")
+  text(chatableType) {
+    let days = this.siteSettings.chat_channel_retention_days;
+    let translationKey = "chat.retention_reminders.public";
+
+    if (chatableType === "DirectMessageChannel") {
+      days = this.siteSettings.chat_dm_retention_days;
+      translationKey = "chat.retention_reminders.dm";
+    }
+    return I18n.t(translationKey, { days });
+  },
+
+  @discourseComputed("chatChannel.chatable_type")
   daysCount(chatableType) {
     return chatableType === "DirectMessageChannel"
-      ? this.siteSettings.chat_channel_retention_days
-      : this.siteSettings.chat_dm_retention_days;
+      ? this.siteSettings.chat_dm_retention_days
+      : this.siteSettings.chat_channel_retention_days;
   },
 
   @action

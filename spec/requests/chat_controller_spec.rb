@@ -530,4 +530,50 @@ RSpec.describe DiscourseChat::ChatController do
       expect(JSON.parse(Notification.last.data)["chat_message_id"]).to eq(chat_message.id.to_s)
     end
   end
+
+  describe "#dismiss_retention_reminder" do
+    it "errors for anon" do
+      post "/chat/dismiss-retention-reminder.json", params: { chatable_type: "Category" }
+      expect(response.status).to eq(403)
+    end
+
+    it "errors when chatable_type isn't present" do
+      sign_in(user)
+      post "/chat/dismiss-retention-reminder.json", params: {}
+      expect(response.status).to eq(400)
+    end
+
+    it "errors when chatable_type isn't a valid option" do
+      sign_in(user)
+      post "/chat/dismiss-retention-reminder.json", params: { chatable_type: "hi" }
+      expect(response.status).to eq(400)
+    end
+
+    it "sets `dismissed_channel_retention_reminder` to true" do
+      sign_in(user)
+      expect {
+        post "/chat/dismiss-retention-reminder.json", params: { chatable_type: "Category" }
+      }.to change { user.user_option.reload.dismissed_channel_retention_reminder }.to (true)
+    end
+
+    it "sets `dismissed_dm_retention_reminder` to true" do
+      sign_in(user)
+      expect {
+        post "/chat/dismiss-retention-reminder.json", params: { chatable_type: "DirectMessageChannel" }
+      }.to change { user.user_option.reload.dismissed_dm_retention_reminder }.to (true)
+    end
+
+    it "doesn't error if the fields are already true" do
+      sign_in(user)
+      user.user_option.update(
+        dismissed_channel_retention_reminder: true,
+        dismissed_dm_retention_reminder: true
+      )
+      post "/chat/dismiss-retention-reminder.json", params: { chatable_type: "Category" }
+      expect(response.status).to eq(200)
+
+      post "/chat/dismiss-retention-reminder.json", params: { chatable_type: "DirectMessageChannel" }
+      expect(response.status).to eq(200)
+    end
+  end
 end

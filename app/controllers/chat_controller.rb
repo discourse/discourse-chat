@@ -318,7 +318,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     field = ChatChannel.public_channel_chatable_types.include?(params[:chatable_type]) ?
       :dismissed_channel_retention_reminder :
       :dismissed_dm_retention_reminder
-    current_user.user_option.update("#{field}": true)
+    current_user.user_option.update(field => true)
     render json: success_json
   end
 

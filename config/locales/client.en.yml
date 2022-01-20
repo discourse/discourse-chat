@@ -193,6 +193,10 @@ en:
           one: "%{commaSeparatedUsernames} and %{count} other are typing"
           other: "%{commaSeparatedUsernames} and %{count} others are typing"
 
+      retention_reminders:
+        public: "Channel history is retained for %{days} days."
+        dm: "Personal chat history is retained for %{days} days."
+
     notifications:
       popup:
         chat_mention: "%{username} mentioned you in chat"

@@ -13,6 +13,7 @@ register_asset 'stylesheets/common/common.scss'
 register_asset 'stylesheets/common/incoming-chat-webhooks.scss'
 register_asset 'stylesheets/common/chat-message.scss'
 register_asset 'stylesheets/common/chat-message-collapser.scss'
+register_asset 'stylesheets/common/chat-retention-reminder.scss'
 register_asset 'stylesheets/mobile/mobile.scss', :mobile
 register_asset 'stylesheets/desktop/desktop.scss', :desktop
 register_asset 'stylesheets/sidebar-extensions.scss'
@@ -85,6 +86,7 @@ after_initialize do
   load File.expand_path('../app/jobs/regular/process_chat_message.rb', __FILE__)
   load File.expand_path('../app/jobs/regular/create_chat_mention_notifications.rb', __FILE__)
   load File.expand_path('../app/jobs/regular/notify_users_watching_chat.rb', __FILE__)
+  load File.expand_path('../app/jobs/scheduled/delete_old_chat_messages.rb', __FILE__)
   load File.expand_path('../app/services/chat_publisher.rb', __FILE__)
 
   register_topic_custom_field_type(DiscourseChat::HAS_CHAT_ENABLED, :boolean)
@@ -199,6 +201,28 @@ after_initialize do
     include_has_chat_enabled? && object.user_option.chat_sound
   end
 
+  add_to_serializer(:current_user, :needs_channel_retention_reminder) do
+    true
+  end
+
+  add_to_serializer(:current_user, :needs_dm_retention_reminder) do
+    true
+  end
+
+  add_to_serializer(:current_user, :include_needs_channel_retention_reminder?) do
+    include_has_chat_enabled? &&
+      object.staff? &&
+      !object.user_option.dismissed_channel_retention_reminder &&
+      !SiteSetting.chat_channel_retention_days.zero?
+
+  end
+
+  add_to_serializer(:current_user, :include_needs_dm_retention_reminder?) do
+    include_has_chat_enabled? &&
+      !object.user_option.dismissed_dm_retention_reminder &&
+      !SiteSetting.chat_dm_retention_days.zero?
+  end
+
   add_to_serializer(:current_user, :chat_drafts) do
     Draft
       .where(user_id: object.id)
@@ -231,6 +255,21 @@ after_initialize do
 
   add_to_serializer(:user_option, :only_chat_push_notifications) do
     object.only_chat_push_notifications
+  end
+
+  RETENTION_SETTINGS_TO_USER_OPTION_FIELDS = {
+    chat_channel_retention_days: :dismissed_channel_retention_reminder,
+    chat_dm_retention_days: :dismissed_dm_retention_reminder
+  }
+  DiscourseEvent.on(:site_setting_changed) do |name, old_value, new_value|
+    user_option_field = RETENTION_SETTINGS_TO_USER_OPTION_FIELDS[name.to_sym]
+    begin
+      if user_option_field && old_value != new_value && !new_value.zero?
+        UserOption.where(user_option_field => true).update_all(user_option_field => false)
+      end
+    rescue => e
+      Rails.logger.warn("Error updating user_options fields after chat retention settings changed: #{e}")
+    end
   end
 
   register_presence_channel_prefix("chat") do |channel|
@@ -308,6 +347,7 @@ after_initialize do
     get '/channel/:channel_id/:channel_title' => 'chat#respond'
     post '/enable' => 'chat#enable_chat'
     post '/disable' => 'chat#disable_chat'
+    post '/dismiss-retention-reminder' => 'chat#dismiss_retention_reminder'
     get '/:chat_channel_id/messages' => 'chat#messages'
     put ':chat_channel_id/edit/:message_id' => 'chat#edit_message'
     put ':chat_channel_id/react/:message_id' => 'chat#react'

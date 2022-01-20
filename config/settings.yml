@@ -15,3 +15,13 @@ plugins:
   chat_debug_webhook_payloads:
     default: false
     hidden: true
+  chat_channel_retention_days:
+    default: 90
+    client: true
+    max: 3652 # 10 years
+    min: 0
+  chat_dm_retention_days:
+    default: 0
+    client: true
+    max: 3652 # 10 years
+    min: 0

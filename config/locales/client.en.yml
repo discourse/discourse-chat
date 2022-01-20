@@ -194,8 +194,8 @@ en:
           other: "%{commaSeparatedUsernames} and %{count} others are typing"
 
       retention_reminders:
-        public: "Remember, all messages in this channel older than %{days} days will be deleted!"
-        dm: "Remember, all personal chat messages older than %{days} days will be deleted!"
+        public: "Channel history is retained for %{days} days."
+        dm: "Personal chat history is retained for %{days} days."
 
     notifications:
       popup:

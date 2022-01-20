@@ -5,6 +5,7 @@
   left: 50%;
   transform: translateX(-50%);
   align-items: center;
+  justify-content: space-between;
   background: var(--tertiary);
   border-radius: 16px;
   padding: 0.5em 1em;
@@ -12,10 +13,10 @@
   border: 1px solid var(--tertiary-hover);
   color: var(--secondary);
   z-index: 10;
-  min-width: 260px;
+  min-width: 280px;
 
   .btn-flat.dismiss-btn {
-    margin-left: 0.75em;
+    margin-left: 0.25em;
     color: var(--secondary);
 
     &:hover,

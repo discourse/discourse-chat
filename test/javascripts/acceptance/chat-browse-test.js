@@ -1,9 +1,9 @@
+import selectKit from "discourse/tests/helpers/select-kit-helper";
 import {
   acceptance,
   exists,
   query,
   updateCurrentUser,
-  visible,
 } from "discourse/tests/helpers/qunit-helpers";
 import { click, visit } from "@ember/test-helpers";
 import { test } from "qunit";
@@ -138,19 +138,62 @@ acceptance("Discourse Chat - chat browsing no channels", function (needs) {
         direct_message_channels: [],
       })
     );
+    const hawkAsJson = {
+      username: "hawk",
+      id: 2,
+      name: "hawk",
+      avatar_template:
+        "https://avatars.discourse.org/v3/letter/t/41988e/{size}.png",
+    };
+    server.get("/u/search/users", () => {
+      return helper.response({
+        users: [hawkAsJson],
+      });
+    });
+    server.post("/chat/direct_messages/create.json", () => {
+      return helper.response({
+        chat_channel: {
+          chat_channels: [],
+          chatable: { users: [hawkAsJson] },
+          chatable_id: 16,
+          chatable_type: "DirectMessageChannel",
+          chatable_url: null,
+          id: 75,
+          last_read_message_id: null,
+          title: "@hawk",
+          unread_count: 0,
+          unread_mentions: 0,
+          updated_at: "2021-11-08T21:26:05.710Z",
+        },
+      });
+    });
+    server.get("/chat/chat_channels/:chatChannelId", () => {
+      return helper.response({
+        chat_channel: {
+          id: 75,
+        },
+      });
+    });
+    server.get("/chat/:chatChannelId/messages.json", () => {
+      return helper.response({
+        chat_messages: [],
+      });
+    });
   });
 
-  test("Chat browsing shows no channels", async function (assert) {
+  test("Chat browsing shows empty state with create dm UI", async function (assert) {
     await visit("/chat/browse");
-    assert.notOk(visible(".chat-channel-settings-row"));
+    assert.notOk(exists(".chat-channel-settings-row"));
+    assert.ok(exists(".start-creating-dm-btn"));
 
-    assert.equal(
-      query(".empty-state-title").innerText,
-      "There are no channels for you to join yet."
-    );
-    assert.equal(
-      query(".empty-state-body").innerText,
-      "You can reach out to your administrator to start enabling chat for topics or categories."
-    );
+    await click(".start-creating-dm-btn");
+    assert.ok(exists(".dm-creation-row"));
+    let users = selectKit(".dm-user-chooser");
+    await click(".dm-user-chooser");
+    await users.expand();
+    await fillIn(".dm-user-chooser input.filter-input", "hawk");
+    await users.selectRowByValue("hawk");
+    await click("button.create-dm");
+    assert.equal(currentURL(), "/chat/channel/75/@hawk");
   });
 });

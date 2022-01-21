@@ -1,6 +1,4 @@
 import DiscourseRoute from "discourse/routes/discourse";
-import EmberObject from "@ember/object";
-import { ajax } from "discourse/lib/ajax";
 import { inject as service } from "@ember/service";
 
 export default DiscourseRoute.extend({
@@ -41,12 +39,7 @@ export default DiscourseRoute.extend({
     this._super(...arguments);
 
     if (!model) {
-      return ajax("/chat/chat_channels/all.json").then((channels) => {
-        controller.setProperties({
-          model: channels.map((channel) => EmberObject.create(channel)),
-          blankPage: true,
-        });
-      });
+      return this.transitionTo("chat.browse");
     }
   },
 });

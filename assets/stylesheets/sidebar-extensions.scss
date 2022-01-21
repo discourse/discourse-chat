@@ -20,17 +20,6 @@
         border-color: var(--primary-very-low);
       }
     }
-    .custom-nav-list {
-      li > a {
-        .badge-notification .sidebar-nav-item-callout {
-          padding: 0;
-          margin: 0;
-        }
-      }
-      .title {
-        padding: 0 0 0 1.75em;
-      }
-    }
     .sidebar-container {
       .chat-channels {
         .chat-channel-divider {

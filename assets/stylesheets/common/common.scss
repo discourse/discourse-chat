@@ -636,6 +636,11 @@ body.composer-open .topic-chat-float-container {
       }
     }
 
+    .chat-composer-row > .chat-composer-input:disabled {
+      background-color: var(--primary-low);
+      border: 1px solid var(--primary-low-mid);
+    }
+
     .chat-composer-message-details {
       position: relative;
       max-height: calc(2em - 5px);

@@ -41,12 +41,7 @@ export default DiscourseRoute.extend({
     this._super(...arguments);
 
     if (!model) {
-      return ajax("/chat/chat_channels/all.json").then((channels) => {
-        controller.setProperties({
-          model: channels.map((channel) => EmberObject.create(channel)),
-          blankPage: true,
-        });
-      });
+      return this.transitionTo("chat.browse");
     }
   },
 });

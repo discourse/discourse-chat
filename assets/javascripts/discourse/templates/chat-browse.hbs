@@ -5,15 +5,42 @@
         {{chat-channel-settings-row channel=channel categoryChannel=true}}
       {{/each}}
     </div>
+  {{/if}}
 
-  {{else if model.topicChannels}}
+  {{#if model.topicChannels}}
     <div class="topic-channels">
       {{#each model.topicChannels as |channel|}}
         {{chat-channel-settings-row channel=channel}}
       {{/each}}
     </div>
+  {{/if}}
 
-  {{else}}
-    <EmptyState @title={{i18n "chat.no_joinable_channels_title"}} @body={{i18n "chat.no_joinable_channels_body"}} />
+  {{#if noChannelsAvailable}}
+    <div class="empty-state">
+      <span class="empty-state-title">{{i18n "chat.empty_state.title"}}</span>
+      <div class="empty-state-body">
+        {{#if model.length}}
+          {{#each model as |channel|}}
+            {{chat-channel-settings-row channel=channel}}
+          {{/each}}
+        {{else}}
+          <p>{{i18n "chat.empty_state.no_public_available"}}</p>
+        {{/if}}
+        <hr>
+        <p>{{i18n "chat.empty_state.start_direct_message"}}</p>
+        {{#if creatingDm}}
+          {{dm-creator
+            afterCreate=(action "afterDmCreation")
+            onCancel=(action "cancelDmCreation")
+          }}
+        {{else}}
+          {{d-button
+            class="btn-primary start-creating-dm-btn"
+            action=(action "startCreatingDm")
+            label="chat.empty_state.create_personal_chat"
+          }}
+        {{/if}}
+      </div>
+    </div>
   {{/if}}
 </div>

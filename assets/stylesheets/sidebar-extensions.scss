@@ -22,7 +22,6 @@
     }
     .custom-nav-list {
       li > a {
-        padding: 0.35em 0.5em 0.35em 1.8rem;
         .badge-notification .sidebar-nav-item-callout {
           padding: 0;
           margin: 0;
@@ -117,7 +116,9 @@
       }
 
       .chat-channel-row {
-        padding-left: 1.8rem;
+        padding-left: calc(1.8rem / 2);
+        margin-left: calc(1.8rem / 2);
+        border-radius: 0.25em;
         padding-right: 1.8rem;
         min-height: 28px;
 

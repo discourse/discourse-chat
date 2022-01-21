@@ -18,6 +18,7 @@ register_svg_icon "comments"
 register_svg_icon "comment-slash"
 register_svg_icon "hashtag"
 register_svg_icon "lock"
+register_svg_icon "microphone"
 
 # route: /admin/plugins/chat
 add_admin_route 'chat.admin.title', 'chat'

@@ -15,6 +15,7 @@ export default Component.extend({
   toggleSection: null,
   publicChannelsEmpty: empty("publicChannels"),
   showPopup: false,
+  audioEnabled: true,
   chat: service(),
   router: service(),
 

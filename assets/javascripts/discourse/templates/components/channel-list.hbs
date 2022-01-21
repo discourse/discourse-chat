@@ -41,6 +41,9 @@
       {{chat-channel-row channel=channel switchChannel=onSelect}}
     {{/each}}
   {{/if}}
+  {{#if audioEnabled}}
+    {{audio-channel-row}}
+  {{/if}}
 </div>
 
 <div class="chat-channel-divider">

@@ -6,25 +6,26 @@
   transform: translateX(-50%);
   align-items: center;
   justify-content: space-between;
-  background: var(--tertiary);
-  border-radius: 16px;
-  padding: 0.5em 1em;
+  background: var(--tertiary-low);
+  padding: 0.5em 0 0.5em 1em;
   font-size: var(--font-down-1);
-  border: 1px solid var(--tertiary-hover);
-  color: var(--secondary);
+  color: var(--primary);
   z-index: 10;
   min-width: 280px;
 
   .btn-flat.dismiss-btn {
     margin-left: 0.25em;
-    color: var(--secondary);
+    color: var(--primary-medium);
 
     &:hover,
     &:focus {
-      background: var(--tertiary-hover);
+      background-color: transparent;
+      .d-icon {
+        color: var(--primary);
+      }
     }
     .d-icon {
-      color: var(--secondary);
+      color: var(--primary-medium);
     }
   }
 }

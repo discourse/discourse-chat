@@ -507,6 +507,7 @@ textarea.chat-composer-input {
 
 .chat-live-pane {
   display: flex;
+  position: relative;
   flex-direction: column;
   align-items: stretch;
   width: 100%;

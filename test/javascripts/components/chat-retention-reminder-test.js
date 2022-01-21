@@ -1,0 +1,83 @@
+import { set } from "@ember/object";
+import componentTest, {
+  setupRenderingTest,
+} from "discourse/tests/helpers/component-test";
+import {
+  discourseModule,
+  exists,
+  query,
+} from "discourse/tests/helpers/qunit-helpers";
+import hbs from "htmlbars-inline-precompile";
+import I18n from "I18n";
+
+discourseModule(
+  "Discourse Chat | Component | chat-retention-reminder",
+  function (hooks) {
+    setupRenderingTest(hooks);
+
+    componentTest("Shows for public channels when user needs it", {
+      template: hbs`{{chat-retention-reminder chatChannel=chatChannel}}`,
+
+      async beforeEach() {
+        this.set("chatChannel", { chatable_type: "Category" });
+        set(this.currentUser, "needs_channel_retention_reminder", true);
+        set(this.siteSettings, "chat_channel_retention_days", 100);
+      },
+
+      async test(assert) {
+        assert.equal(
+          query(".chat-retention-reminder-text").innerText.trim(),
+          I18n.t("chat.retention_reminders.public", { days: 100 })
+        );
+      },
+    });
+
+    componentTest(
+      "Doesn't show for public channels when user has dismissed it",
+      {
+        template: hbs`{{chat-retention-reminder chatChannel=chatChannel}}`,
+
+        async beforeEach() {
+          this.set("chatChannel", { chatable_type: "Category" });
+          set(this.currentUser, "needs_channel_retention_reminder", false);
+          set(this.siteSettings, "chat_channel_retention_days", 100);
+        },
+
+        async test(assert) {
+          assert.notOk(exists(".chat-retention-reminder"));
+        },
+      }
+    );
+
+    componentTest("Shows for direct message channels when user needs it", {
+      template: hbs`{{chat-retention-reminder chatChannel=chatChannel}}`,
+
+      async beforeEach() {
+        this.set("chatChannel", { chatable_type: "DirectMessageChannel" });
+        set(this.currentUser, "needs_dm_retention_reminder", true);
+        set(this.siteSettings, "chat_dm_retention_days", 100);
+      },
+
+      async test(assert) {
+        assert.equal(
+          query(".chat-retention-reminder-text").innerText.trim(),
+          I18n.t("chat.retention_reminders.dm", { days: 100 })
+        );
+      },
+    });
+
+    componentTest("Doesn't show for dm channels when user has dismissed it", {
+      template: hbs`{{chat-retention-reminder chatChannel=chatChannel}}`,
+
+      async beforeEach() {
+        this.set("chatChannel", { chatable_type: "DirectMessageChannel" });
+        set(this.currentUser, "needs_dm_retention_reminder", false);
+        set(this.siteSettings, "chat_dm_retention_days", 100);
+      },
+
+      async test(assert) {
+        assert.notOk(exists(".chat-retention-reminder"));
+      },
+    });
+  }
+);

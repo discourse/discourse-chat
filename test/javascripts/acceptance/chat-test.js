@@ -950,7 +950,9 @@ acceptance(
       await visit("/t/internationalization-localization/280");
       this.chatService.set("sidebarActive", false);
       await click(".header-dropdown-toggle.open-chat");
+
       assert.ok(visible(".topic-chat-float-container"), "chat float is open");
+      assert.equal(currentURL(), `/t/internationalization-localization/280`);
     });
 
     test("Unread header indicator is present", async function (assert) {

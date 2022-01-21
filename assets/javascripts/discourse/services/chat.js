@@ -349,7 +349,7 @@ export default Service.extend({
       this.currentUser.chat_isolated
     ) {
       this.router.transitionTo("chat.channel", channel.id, channel.title, {
-        queryParams: { messageId: messageId },
+        queryParams: { messageId },
       });
     } else {
       this._fireOpenFloatAppEvent(channel, messageId);

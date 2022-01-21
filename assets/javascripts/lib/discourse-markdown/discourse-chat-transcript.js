@@ -1,9 +1,3 @@
-import { parseBBCodeTag } from "pretty-text/engines/discourse-markdown/bbcode-block";
-import { cloneJSON } from "discourse-common/lib/object";
-
-let oldFeatureSet = {};
-let mdEngine = null;
-
 const chatTranscriptRule = {
   tag: "chat",
 
@@ -54,7 +48,7 @@ const chatTranscriptRule = {
 const chatBakedTranscriptRule = {
   tag: "chatbaked",
 
-  before: function (state, info) {
+  before: function (state) {
     let wrapperDivToken = state.push("div_chat_transcript_wrap", "div", 1);
     wrapperDivToken.attrs = [["class", "discourse-chat-transcript"]];
   },

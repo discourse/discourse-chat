@@ -26,9 +26,4 @@ export default Controller.extend({
   cancelDmCreation() {
     this.set("creatingDm", false);
   },
-
-  @action
-  selectChannel(channel) {
-    return this.router.transitionTo("chat.channel", channel.id, channel.title);
-  },
 });

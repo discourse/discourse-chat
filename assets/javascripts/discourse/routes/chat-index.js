@@ -18,6 +18,8 @@ export default DiscourseRoute.extend({
           channelInfo.id,
           channelInfo.title
         );
+      } else {
+        return this.transitionTo("chat.browse");
       }
     });
   },
@@ -32,14 +34,6 @@ export default DiscourseRoute.extend({
           return channels;
         }
       });
-    }
-  },
-
-  setupController(controller, model) {
-    this._super(...arguments);
-
-    if (!model) {
-      return this.transitionTo("chat.browse");
     }
   },
 });

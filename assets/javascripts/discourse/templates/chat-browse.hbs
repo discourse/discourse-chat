@@ -19,13 +19,11 @@
     <div class="empty-state">
       <span class="empty-state-title">{{i18n "chat.empty_state.title"}}</span>
       <div class="empty-state-body">
-        {{#if model.length}}
-          {{#each model as |channel|}}
-            {{chat-channel-settings-row channel=channel}}
-          {{/each}}
+        {{#each model as |channel|}}
+          {{chat-channel-settings-row channel=channel}}
         {{else}}
           <p>{{i18n "chat.empty_state.no_public_available"}}</p>
-        {{/if}}
+        {{/each}}
         <hr>
         <p>{{i18n "chat.empty_state.start_direct_message"}}</p>
         {{#if creatingDm}}

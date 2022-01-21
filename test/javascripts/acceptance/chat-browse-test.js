@@ -4,7 +4,6 @@ import {
   exists,
   query,
   updateCurrentUser,
-  visible,
 } from "discourse/tests/helpers/qunit-helpers";
 import { click, visit } from "@ember/test-helpers";
 import { test } from "qunit";

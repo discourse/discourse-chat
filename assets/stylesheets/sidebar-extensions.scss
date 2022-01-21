@@ -3,7 +3,7 @@
   .has-sidebar {
     .sidebar-header {
       .d-header .menu-panel {
-        top: 3.22em !important;
+        top: calc(3.4em - 2px) !important;
       }
       .d-header-icons .icon {
         width: 2em;

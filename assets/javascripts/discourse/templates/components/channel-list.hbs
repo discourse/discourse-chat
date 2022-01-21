@@ -42,6 +42,7 @@
       {{#each publicChannels as |channel|}}
         {{chat-channel-row channel=channel switchChannel=onSelect}}
       {{/each}}
+      {{plugin-outlet name="below-plugin-chat-channels" tagName="" args=(hash inSidebar=inSidebar)}}
     {{/if}}
   </div>
 

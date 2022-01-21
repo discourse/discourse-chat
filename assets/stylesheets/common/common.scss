@@ -486,6 +486,25 @@ body.composer-open .topic-chat-float-container {
   }
 }
 
+textarea.chat-composer-input {
+  scrollbar-color: var(--primary-low-mid) transparent;
+  transition: scrollbar-color 0.2s ease-in-out;
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--primary-low-mid);
+    border-radius: 6px;
+    border: 3px solid var(--primary-low);
+  }
+  &:hover {
+    scrollbar-color: var(--primary-low-mid) transparent;
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--primary-low-mid);
+    }
+  }
+  &::-webkit-scrollbar {
+    width: 12px;
+  }
+}
+
 .chat-live-pane {
   display: flex;
   flex-direction: column;

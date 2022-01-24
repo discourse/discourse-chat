@@ -817,7 +817,7 @@ export default Component.extend({
     ) {
       let message = this.messages[messageIndex];
       if (message.user.id === this.currentUser.id && !message.error) {
-        lastUserMessage = this.messages[messageIndex];
+        lastUserMessage = message;
         break;
       }
     }

@@ -32,6 +32,10 @@ class ChatMessage < ActiveRecord::Base
     where("chat_messages.created_at < ?", date)
   }
 
+  def validate_message
+    WatchedWordsValidator.new(attributes: [:message]).validate(self)
+  end
+
   def reviewable_flag
     raise NotImplementedError
     #ReviewableFlaggedChat.pending.find_by(target: self)

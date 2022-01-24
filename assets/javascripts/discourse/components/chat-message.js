@@ -181,9 +181,17 @@ export default Component.extend({
     "message.deleted_at",
     "message.in_reply_to",
     "message.action_code",
+    "message.error",
     "isHovered"
   )
-  chatMessageClasses(staged, deletedAt, inReplyTo, actionCode, isHovered) {
+  chatMessageClasses(
+    staged,
+    deletedAt,
+    inReplyTo,
+    actionCode,
+    error,
+    isHovered
+  ) {
     let classNames = ["chat-message"];
 
     if (staged) {
@@ -201,6 +209,9 @@ export default Component.extend({
     }
     if (this.hideUserInfo) {
       classNames.push("user-info-hidden");
+    }
+    if (error) {
+      classNames.push("errored");
     }
     if (isHovered) {
       classNames.push("chat-message-selected");

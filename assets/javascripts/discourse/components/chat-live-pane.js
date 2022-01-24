@@ -736,8 +736,8 @@ export default Component.extend({
       type: "POST",
       data,
     })
-      .catch(() => {
-        this._onSendError(data.stagedId);
+      .catch((error) => {
+        this._onSendError(data.staged_id, error);
       })
       .finally(() => {
         if (this._selfDeleted()) {
@@ -767,10 +767,10 @@ export default Component.extend({
     return Promise.resolve();
   },
 
-  _onSendError(stagedId) {
+  _onSendError(stagedId, error) {
     const stagedMessage = this.messageLookup[`staged-${stagedId}`];
     if (stagedMessage) {
-      stagedMessage.set("error", true);
+      stagedMessage.set("error", error.jqXHR.responseJSON.errors[0]);
       this._resetAfterSend();
     }
   },
@@ -815,8 +815,9 @@ export default Component.extend({
       messageIndex >= 0;
       messageIndex--
     ) {
-      if (this.messages[messageIndex].user.id === this.currentUser.id) {
-        lastUserMessage = this.messages[messageIndex];
+      let message = this.messages[messageIndex];
+      if (message.user.id === this.currentUser.id && !message.error) {
+        lastUserMessage = message;
         break;
       }
     }

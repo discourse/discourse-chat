@@ -435,4 +435,18 @@ describe DiscourseChat::ChatMessageCreator do
       )
     end.to change { Draft.count }.by(-1)
   end
+
+  describe "watched words" do
+    fab!(:watched_word) { Fabricate(:watched_word) }
+
+    it "errors when a blocked word is present" do
+      creator = DiscourseChat::ChatMessageCreator.create(
+        chat_channel: public_chat_channel,
+        user: user1,
+        content: "bad word - #{watched_word.word}"
+      )
+      expect(creator.failed?).to eq(true)
+      expect(creator.error.message).to match(I18n.t("contains_blocked_word", { word: watched_word.word }))
+    end
+  end
 end

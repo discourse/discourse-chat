@@ -667,18 +667,23 @@ body.composer-open .topic-chat-float-container {
 
   .chat-composer-toolbar {
     position: absolute;
-    top: -36px;
-    left: 0.75em;
+    top: -42px;
+    left: 8px;
     border-radius: 5px;
     border: 1px solid var(--primary-low);
     background: var(--secondary);
 
     .btn-flat {
-      padding: 0.5em;
-
+      padding: 0.75em;
       .d-icon {
         font-size: var(--font-0);
         color: var(--primary-medium);
+      }
+      &:hover {
+        background-color: var(--primary-low);
+        .d-icon {
+          color: var(--primary);
+        }
       }
     }
   }

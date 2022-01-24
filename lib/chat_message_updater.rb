@@ -31,12 +31,6 @@ class DiscourseChat::ChatMessageUpdater
       DiscourseChat::ChatNotifier.notify_edit(chat_message: @chat_message, timestamp: revision.created_at)
     rescue => error
       @error = error
-      if Rails.env.test?
-        puts "#" * 50
-        puts "Chat message update error:"
-        puts @error.inspect
-        puts "#" * 50
-      end
     end
   end
 

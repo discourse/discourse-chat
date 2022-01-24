@@ -45,12 +45,6 @@ class DiscourseChat::ChatMessageCreator
       DiscourseChat::ChatNotifier.notify_new(chat_message: @chat_message, timestamp: @chat_message.created_at)
     rescue => error
       @error = error
-      if Rails.env.test?
-        puts "#" * 50
-        puts "Chat message creation error:"
-        puts @error.inspect
-        puts "#" * 50
-      end
     end
   end
 

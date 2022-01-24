@@ -73,7 +73,6 @@ en:
       select: "Select"
       return_to_list: "Return to channel list"
       scroll_to_bottom: "Scroll to bottom"
-      send_error: "Something went wrong"
       sound:
         title: "Desktop chat notification sound"
       sounds:

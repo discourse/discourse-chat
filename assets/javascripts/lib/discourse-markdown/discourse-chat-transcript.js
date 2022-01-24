@@ -16,7 +16,7 @@ const MARKDOWN_OVERRIDES = {
     "upload-protocol",
     "watched-words",
     "table",
-    "spoiler-alert",
+    // "spoiler-alert",
     "discourse-chat-transcript",
   ],
   markdownItRules: [
@@ -82,7 +82,7 @@ export function setup(helper) {
   });
 
   helper.buildCustomMarkdownEngine((build) => {
-    build(MARKDOWN_OVERRIDES).then((customMarkdownEngineRenderFn) => {
+    build(MARKDOWN_OVERRIDES, (customMarkdownEngineRenderFn) => {
       customMarkdownCookFn = customMarkdownEngineRenderFn;
     });
   });

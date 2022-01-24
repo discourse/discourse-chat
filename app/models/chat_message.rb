@@ -18,6 +18,20 @@ class ChatMessage < ActiveRecord::Base
   has_many :uploads, through: :chat_uploads
   has_one :chat_webhook_event
 
+  scope :in_public_channel, -> {
+    joins(:chat_channel)
+      .where(chat_channel: { chatable_type: ChatChannel.public_channel_chatable_types })
+  }
+
+  scope :in_dm_channel, -> {
+    joins(:chat_channel)
+      .where(chat_channel: { chatable_type: "DirectMessageChannel" })
+  }
+
+  scope :created_before, -> (date) {
+    where("chat_messages.created_at < ?", date)
+  }
+
   def reviewable_flag
     raise NotImplementedError
     #ReviewableFlaggedChat.pending.find_by(target: self)

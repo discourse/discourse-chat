@@ -38,6 +38,7 @@ class DiscourseChat::ChatMessageCreator
       @chat_message.cook
       @chat_message.save!
       attach_uploads
+      Draft.where(user_id: @user.id, draft_key: "chat_#{@chat_channel.id}").destroy_all
       ChatPublisher.publish_new!(@chat_channel, @chat_message, @staged_id)
       Jobs.enqueue(:process_chat_message, { chat_message_id: @chat_message.id })
       DiscourseChat::ChatNotifier.notify_new(chat_message: @chat_message, timestamp: @chat_message.created_at)

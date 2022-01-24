@@ -3,7 +3,7 @@
   .has-sidebar {
     .sidebar-header {
       .d-header .menu-panel {
-        top: 3.22em !important;
+        top: calc(3.4em - 2px) !important;
       }
       .d-header-icons .icon {
         width: 2em;
@@ -18,18 +18,6 @@
     .header-dropdown-toggle.open-chat {
       .chat-channel-unread-indicator {
         border-color: var(--primary-very-low);
-      }
-    }
-    .custom-nav-list {
-      li > a {
-        padding: 0.35em 1em 0 1.8rem;
-        .badge-notification .sidebar-nav-item-callout {
-          padding: 0;
-          margin: 0;
-        }
-      }
-      .title {
-        padding: 0 0.5em 0 1.75em;
       }
     }
     .sidebar-container {
@@ -117,7 +105,9 @@
       }
 
       .chat-channel-row {
-        padding-left: 1.8rem;
+        padding-left: calc(1.8rem / 2);
+        margin-left: calc(1.8rem / 2);
+        border-radius: 0.25em;
         padding-right: 1.8rem;
         min-height: 28px;
 

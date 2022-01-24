@@ -9,6 +9,7 @@ import { defaultHomepage } from "discourse/lib/utilities";
 import { generateCookFunction } from "discourse/lib/text";
 import { next } from "@ember/runloop";
 import { Promise } from "rsvp";
+import { CHATABLE_TYPES } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import simpleCategoryHashMentionTransform from "discourse/plugins/discourse-chat/discourse/lib/simple-category-hash-mention-transform";
 import Draft from "discourse/models/draft";
 import discourseDebounce from "discourse-common/lib/debounce";
@@ -51,8 +52,12 @@ export default Service.extend({
 
   init() {
     this._super(...arguments);
+    this.set(
+      "userCanChat",
+      this.currentUser?.has_chat_enabled && this.siteSettings.chat_enabled
+    );
 
-    if (this.currentUser?.has_chat_enabled) {
+    if (this.userCanChat) {
       this.set("allChannels", []);
       this._subscribeToNewDmChannelUpdates();
       this._subscribeToUserTrackingChannel();
@@ -72,7 +77,7 @@ export default Service.extend({
   willDestroy() {
     this._super(...arguments);
 
-    if (this.currentUser?.has_chat_enabled) {
+    if (this.userCanChat) {
       this.set("allChannels", null);
       this._unsubscribeFromNewDmChannelUpdates();
       this._unsubscribeFromUserTrackingChannel();
@@ -167,6 +172,34 @@ export default Service.extend({
       publicChannels: this.publicChannels,
       directMessageChannels: this.directMessageChannels,
     };
+  },
+
+  async getChannelsWithFilter(filter) {
+    let sortedChannels = this.allChannels.sort((a, b) => {
+      return new Date(a.updated_at) > new Date(b.updated_at) ? -1 : 1;
+    });
+
+    if (filter.trim().length) {
+      const downcasedFilter = filter.toLowerCase();
+      return sortedChannels.filter((channel) => {
+        if (channel.chatable_type === CHATABLE_TYPES.directMessageChannel) {
+          let userFound = false;
+          channel.chatable.users.forEach((user) => {
+            if (
+              user.username.toLowerCase().includes(downcasedFilter) ||
+              user.name.toLowerCase().includes(downcasedFilter)
+            ) {
+              return (userFound = true);
+            }
+          });
+          return userFound;
+        } else {
+          return channel.title.toLowerCase().includes(downcasedFilter);
+        }
+      });
+    } else {
+      return sortedChannels;
+    }
   },
 
   async isChannelFollowed(channel) {

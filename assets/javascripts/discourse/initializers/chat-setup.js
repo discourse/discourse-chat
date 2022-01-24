@@ -4,7 +4,9 @@ export default {
   name: "chat-setup",
   initialize(container) {
     const currentUser = container.lookup("current-user:main");
-    if (!currentUser?.has_chat_enabled) {
+    const chatService = container.lookup("service:chat");
+
+    if (!chatService.userCanChat) {
       return;
     }
 

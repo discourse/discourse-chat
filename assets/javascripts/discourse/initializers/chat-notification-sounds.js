@@ -16,7 +16,9 @@ export default {
   name: "chat-notification-sounds",
   initialize(container) {
     const currentUser = container.lookup("current-user:main");
-    if (!currentUser?.has_chat_enabled || !currentUser?.chat_sound) {
+    const chatService = container.lookup("service:chat");
+
+    if (!chatService.userCanChat || !currentUser?.chat_sound) {
       return;
     }
 

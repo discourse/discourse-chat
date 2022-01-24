@@ -31,7 +31,7 @@ export default Component.extend({
 
   didInsertElement() {
     this._super(...arguments);
-    if (!this.currentUser?.has_chat_enabled) {
+    if (!this.chat.userCanChat) {
       return;
     }
 
@@ -64,9 +64,10 @@ export default Component.extend({
     );
     this.appEvents.on("composer:resize-ended", this, "_clearDynamicCheckSize");
   },
+
   willDestroyElement() {
     this._super(...arguments);
-    if (!this.currentUser?.has_chat_enabled) {
+    if (!this.chat.userCanChat) {
       return;
     }
 

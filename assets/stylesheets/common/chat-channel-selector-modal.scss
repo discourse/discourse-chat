@@ -1,0 +1,29 @@
+:root {
+  --chat-channel-selector-input-height: 40px;
+}
+
+#chat-channel-selector-modal-inner {
+  width: 500px;
+  height: 350px;
+
+  #chat-channel-selector-input {
+    width: 100%;
+    height: var(--chat-channel-selector-input-height);
+  }
+  .channels {
+    height: calc(100% - var(--chat-channel-selector-input-height));
+    overflow: auto;
+
+    .chat-channel-row {
+      &.active {
+        background: none;
+      }
+      &.focused {
+        background: var(--primary-low);
+      }
+      .chat-channel-title {
+        padding-left: 0.5em;
+      }
+    }
+  }
+}

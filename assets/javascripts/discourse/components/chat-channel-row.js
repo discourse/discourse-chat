@@ -15,11 +15,14 @@ export default Component.extend({
   chat: service(),
   options: null,
 
-  @discourseComputed("active", "channel.{id,muted}")
-  rowClassNames(active, channel) {
+  @discourseComputed("active", "channel.{id,muted}", "channel.focused")
+  rowClassNames(active, channel, focused) {
     const classes = ["chat-channel-row", `chat-channel-${channel.id}`];
     if (active) {
       classes.push("active");
+    }
+    if (focused) {
+      classes.push("focused")
     }
     if (channel.muted) {
       classes.push("muted");

@@ -35,6 +35,7 @@ class DiscourseChat::ChatMessageCreator
 
   def create
     begin
+      validate!
       @chat_message.cook
       @chat_message.save!
       attach_uploads
@@ -50,6 +51,13 @@ class DiscourseChat::ChatMessageCreator
         puts @error.inspect
         puts "#" * 50
       end
+    end
+  end
+
+  def validate!
+    WatchedWordsValidator.new(attributes: [:message]).validate(@chat_message)
+    if @chat_message.errors.present?
+      raise StandardError.new(@chat_message.errors.map(&:full_message).join(", "))
     end
   end
 

@@ -151,7 +151,8 @@
 
           {{#if message.error}}
             <div class="chat-send-error">
-              {{i18n "chat.send_error"}}
+              {{message.error}}
+              {{!--  {{i18n "chat.send_error"}}  --}}
             </div>
           {{/if}}
 

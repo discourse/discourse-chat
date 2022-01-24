@@ -8,6 +8,9 @@ module Jobs
         processor = DiscourseChat::ChatMessageProcessor.new(chat_message)
         processor.run!
         if processor.dirty?
+          puts '#####'
+          puts "DIRTY!"
+          puts '#####'
           chat_message.update(
             cooked: processor.html,
             cooked_version: ChatMessage::BAKED_VERSION

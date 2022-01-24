@@ -72,8 +72,7 @@ export function setup(helper) {
   });
 
   helper.registerPlugin((md) => {
-    const features = md.options.discourse.features;
-    if (features["discourse-chat-transcript"]) {
+    if (md.options.discourse.features["discourse-chat-transcript"]) {
       md.block.bbcode.ruler.push(
         "discourse-chat-transcript",
         chatTranscriptRule

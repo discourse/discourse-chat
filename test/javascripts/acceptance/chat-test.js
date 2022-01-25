@@ -30,6 +30,21 @@ import { cloneJSON } from "discourse-common/lib/object";
 import { presentUserIds } from "discourse/tests/helpers/presence-pretender";
 import User from "discourse/models/user";
 import selectKit from "discourse/tests/helpers/select-kit-helper";
+import { next } from "@ember/runloop";
+import { Promise } from "rsvp";
+import { isLegacyEmber } from "discourse-common/config/environment";
+
+const chatSettled = async () => {
+  await settled();
+  if (isLegacyEmber()) {
+    // In the legacy environment, settled() doesn't always seem to work for us
+    // Using `next()` seems to work around the problem
+    // This hack can be removed once we're 100% Ember CLI
+    await new Promise((resolve) => {
+      next(resolve);
+    });
+  }
+};
 
 const baseChatPretenders = (server, helper) => {
   server.get("/chat/:chatChannelId/messages.json", () =>
@@ -421,7 +436,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     this.chatService.set("sidebarActive", false);
     await visit("/latest");
     this.appEvents.trigger("chat:toggle-open");
-    await settled();
+    await chatSettled();
     await click(".return-to-channels");
     await click(".chat-channel-row.chat-channel-9");
     await click(".chat-message-container .reply-btn");
@@ -503,7 +518,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     });
 
     // Wait for DOM to rerender. Message should be un-staged
-    await settled();
+    await chatSettled();
 
     assert.ok(
       lastMessage
@@ -547,7 +562,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
       },
     });
 
-    await settled();
+    await chatSettled();
     assert.ok(
       query(
         ".chat-message-container-175 .chat-message-text"
@@ -607,7 +622,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
       message_id: 201,
       user_id: 2,
     });
-    await settled();
+    await chatSettled();
     assert.ok(
       exists(".header-dropdown-toggle.open-chat .chat-channel-unread-indicator")
     );
@@ -625,7 +640,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
       message_id: 201,
       user_id: 2,
     });
-    await settled();
+    await chatSettled();
     assert.ok(
       exists(
         ".header-dropdown-toggle.open-chat .chat-channel-unread-indicator.urgent .number"
@@ -649,7 +664,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
       message_id: 202,
       user_id: 2,
     });
-    await settled();
+    await chatSettled();
     assert.ok(
       exists(
         ".header-dropdown-toggle.open-chat .chat-channel-unread-indicator.urgent .number"
@@ -667,7 +682,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     publishToMessageBus("/chat/9/new-mentions", {
       message_id: 201,
     });
-    await settled();
+    await chatSettled();
     assert.ok(
       exists(
         ".header-dropdown-toggle.open-chat .chat-channel-unread-indicator.urgent .number"
@@ -811,7 +826,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
       typ: "reaction",
       chat_message_id: 176,
     });
-    await settled();
+    await chatSettled();
     const sneezingFaceReaction = lastMessage.querySelector(
       ".chat-message-reaction.sneezing_face"
     );
@@ -834,7 +849,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
       ],
       chat_message_id: 176,
     });
-    await settled();
+    await chatSettled();
 
     assert.ok(
       exists(".chat-message-container-176 .chat-message-mention-warning")

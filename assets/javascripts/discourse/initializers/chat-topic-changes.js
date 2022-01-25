@@ -114,7 +114,6 @@ function makeTopicChanges(api, appEvents, chat) {
 export default {
   name: "chat-topic-changes",
   initialize(container) {
-    const currentUser = container.lookup("current-user:main");
     const chatService = container.lookup("service:chat");
     if (chatService.userCanChat) {
       const appEvents = container.lookup("service:app-events");

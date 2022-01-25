@@ -3,11 +3,11 @@ import showModal from "discourse/lib/show-modal";
 
 function openChannelSelector(appEvents) {
   if (document.getElementById("chat-channel-selector-modal-inner")) {
-    appEvents.trigger("chat-channel-selector-modal:close")
+    appEvents.trigger("chat-channel-selector-modal:close");
   } else {
     showModal("chat-channel-selector-modal");
   }
-};
+}
 
 export default {
   name: "chat-keyboard-shortcuts",
@@ -20,8 +20,20 @@ export default {
     }
 
     withPluginApi("0.12.1", (api) => {
-      api.addKeyboardShortcut("command+k", () => { openChannelSelector(appEvents) }, { global: true });
-      api.addKeyboardShortcut("ctrl+k", () => { openChannelSelector(appEvents) }, { global: true });
-    })
-  }
-}
+      api.addKeyboardShortcut(
+        "command+k",
+        () => {
+          openChannelSelector(appEvents);
+        },
+        { global: true }
+      );
+      api.addKeyboardShortcut(
+        "ctrl+k",
+        () => {
+          openChannelSelector(appEvents);
+        },
+        { global: true }
+      );
+    });
+  },
+};

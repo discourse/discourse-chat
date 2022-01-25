@@ -9,10 +9,10 @@ import { next } from "@ember/runloop";
 import {
   click,
   currentURL,
-  visit,
   fillIn,
   settled,
   triggerEvent,
+  visit,
 } from "@ember/test-helpers";
 import {
   chatChannels,
@@ -20,6 +20,7 @@ import {
 } from "discourse/plugins/discourse-chat/chat-fixtures";
 import { test } from "qunit";
 import { isLegacyEmber } from "discourse-common/config/environment";
+import { Promise } from "rsvp";
 
 const chatSettled = async () => {
   await settled();

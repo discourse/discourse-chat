@@ -1,12 +1,11 @@
 import Component from "@ember/component";
-import discourseComputed, { bind } from "discourse-common/utils/decorators";
+import { bind } from "discourse-common/utils/decorators";
 import discourseDebounce from "discourse-common/lib/debounce";
-import { schedule, throttle } from "@ember/runloop";
+import { schedule } from "@ember/runloop";
 import { inject as service } from "@ember/service";
 import { action } from "@ember/object";
 
 export default Component.extend({
-  router: service(),
   chat: service(),
   tagName: "",
   filter: "",
@@ -103,7 +102,7 @@ export default Component.extend({
   },
 
   @action
-  onFilterChange(filter) {
+  onFilterChange() {
     discourseDebounce(this, this._getFilteredChannels, 50);
   },
 });

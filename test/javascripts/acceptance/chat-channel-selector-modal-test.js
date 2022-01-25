@@ -12,6 +12,7 @@ import {
   fillIn,
   settled,
   triggerEvent,
+  triggerKeyEvent,
   visit,
 } from "@ember/test-helpers";
 import {
@@ -64,11 +65,7 @@ acceptance(
     test("opens channel in float with chat not isolated", async function (assert) {
       updateCurrentUser({ chat_isolated: false });
       await visit("/latest");
-      await triggerEvent(document.body, "keydown", {
-        keyCode: 75,
-        ctrlKey: true,
-      });
-
+      await triggerKeyEvent(document.body, "keydown", 75, { ctrlKey: true });
       assert.ok(exists("#chat-channel-selector-modal-inner"));
 
       // All 6 channels should show because the input is blank
@@ -85,9 +82,7 @@ acceptance(
         2
       );
 
-      await triggerEvent("#chat-channel-selector-modal-inner", "keydown", {
-        keyCode: 13,
-      }); // Enter key
+      await triggerKeyEvent(document.body, "keydown", 13); // Enter key
       assert.ok(exists(".topic-chat-container.visible"));
       assert.notOk(exists("#chat-channel-selector-modal-inner"));
       assert.equal(currentURL(), "/latest");
@@ -96,10 +91,8 @@ acceptance(
     test("opens full-page when chat is isolated", async function (assert) {
       updateCurrentUser({ chat_isolated: true });
       await visit("/latest");
-      await triggerEvent(document.body, "keydown", {
-        keyCode: 75,
-        ctrlKey: true,
-      });
+
+      await triggerKeyEvent(document.body, "keydown", 75, { ctrlKey: true });
       await click(
         "#chat-channel-selector-modal-inner .chat-channel-row.chat-channel-75"
       );
@@ -109,10 +102,7 @@ acceptance(
 
     test("the current chat channel does not show in the list", async function (assert) {
       await visit("/chat/channel/75/@hawk");
-      await triggerEvent(document.body, "keydown", {
-        keyCode: 75,
-        ctrlKey: true,
-      });
+      await triggerKeyEvent(document.body, "keydown", 75, { ctrlKey: true });
 
       // Only 5 channels now instead of 6.
       assert.equal(

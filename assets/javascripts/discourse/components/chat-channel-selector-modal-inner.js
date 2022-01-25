@@ -11,7 +11,6 @@ export default Component.extend({
   tagName: "",
   filter: "",
   filteredChannels: null,
-  loadingChannels: true,
 
   init() {
     this._super(...arguments);
@@ -63,18 +62,10 @@ export default Component.extend({
     } else if (e.keyCode === 38) {
       // Up key
       this.arrowNavigateChannels("up");
-    } else if (e.keyCode === 9) {
-      // Tab
-      if (e.shiftKey) {
-        this.arrowNavigateChannels("up", { tabbed: true });
-      } else {
-        this.arrowNavigateChannels("down", { tabbed: true });
-      }
-      e.preventDefault();
     }
   },
 
-  arrowNavigateChannels(direction, opts = { tabbed: false }) {
+  arrowNavigateChannels(direction) {
     const indexOfFocused = this.filteredChannels.findIndex((c) => c.focused);
     if (indexOfFocused > -1) {
       const nextIndex = direction === "down" ? 1 : -1;

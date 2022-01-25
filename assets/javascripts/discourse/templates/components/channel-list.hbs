@@ -45,6 +45,8 @@
     {{/if}}
   </div>
 
+  {{plugin-outlet name="below-public-chat-channels" tagName="" args=(hash inSidebar=inSidebar)}}
+
   <div class="chat-channel-divider">
     {{#if inSidebar}}
       <span

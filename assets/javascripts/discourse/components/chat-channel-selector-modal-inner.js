@@ -98,7 +98,6 @@ export default Component.extend({
     return this.chat.getChannelsWithFilter(this.filter).then((channels) => {
       channels.forEach((c) => c.set("focused", false));
       channels[0]?.set("focused", true);
-
       this.set("filteredChannels", channels);
     });
   },

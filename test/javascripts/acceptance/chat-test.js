@@ -12,6 +12,7 @@ import {
   click,
   currentURL,
   fillIn,
+  settled,
   triggerEvent,
   triggerKeyEvent,
   visit,
@@ -25,7 +26,6 @@ import {
   messageContents,
   siteChannel,
 } from "discourse/plugins/discourse-chat/chat-fixtures";
-import { next } from "@ember/runloop";
 import { cloneJSON } from "discourse-common/lib/object";
 import { presentUserIds } from "discourse/tests/helpers/presence-pretender";
 import User from "discourse/models/user";
@@ -421,33 +421,30 @@ acceptance("Discourse Chat - without unread", function (needs) {
     this.chatService.set("sidebarActive", false);
     await visit("/latest");
     this.appEvents.trigger("chat:toggle-open");
-    const done = assert.async();
-    next(async () => {
-      await click(".return-to-channels");
-      await click(".chat-channel-row.chat-channel-9");
-      await click(".chat-message-container .reply-btn");
-      // Reply-to line is present
-      assert.ok(exists(".chat-composer-message-details .tc-reply-display"));
-      await click(".return-to-channels");
-      await click(".chat-channel-row.chat-channel-7");
-      // Reply-to line is gone since switching channels
-      assert.notOk(exists(".chat-composer-message-details .tc-reply-display"));
-      // Now click on reply btn and cancel it on channel 7
-      await click(".chat-message-container .reply-btn");
-      await click(".chat-composer .cancel-message-action");
+    await settled();
+    await click(".return-to-channels");
+    await click(".chat-channel-row.chat-channel-9");
+    await click(".chat-message-container .reply-btn");
+    // Reply-to line is present
+    assert.ok(exists(".chat-composer-message-details .tc-reply-display"));
+    await click(".return-to-channels");
+    await click(".chat-channel-row.chat-channel-7");
+    // Reply-to line is gone since switching channels
+    assert.notOk(exists(".chat-composer-message-details .tc-reply-display"));
+    // Now click on reply btn and cancel it on channel 7
+    await click(".chat-message-container .reply-btn");
+    await click(".chat-composer .cancel-message-action");
 
-      // Go back to channel 9 and check that reply-to is present
-      await click(".return-to-channels");
-      await click(".chat-channel-row.chat-channel-9");
-      // Now reply-to should be back and loaded from draft
-      assert.ok(exists(".chat-composer-message-details .tc-reply-display"));
+    // Go back to channel 9 and check that reply-to is present
+    await click(".return-to-channels");
+    await click(".chat-channel-row.chat-channel-9");
+    // Now reply-to should be back and loaded from draft
+    assert.ok(exists(".chat-composer-message-details .tc-reply-display"));
 
-      // Go back one for time to channel 7 and make sure reply-to is gone
-      await click(".return-to-channels");
-      await click(".chat-channel-row.chat-channel-7");
-      assert.notOk(exists(".chat-composer-message-details .tc-reply-display"));
-      done();
-    });
+    // Go back one for time to channel 7 and make sure reply-to is gone
+    await click(".return-to-channels");
+    await click(".chat-channel-row.chat-channel-7");
+    assert.notOk(exists(".chat-composer-message-details .tc-reply-display"));
   });
 
   test("Sending a message", async function (assert) {
@@ -505,39 +502,37 @@ acceptance("Discourse Chat - without unread", function (needs) {
       },
     });
 
-    const done = assert.async();
-    next(async () => {
-      // Wait for DOM to rerender. Message should be un-staged
-      assert.ok(
-        lastMessage
-          .closest(".chat-message-container")
-          .classList.contains("chat-message-container-202")
-      );
-      assert.notOk(lastMessage.classList.contains("chat-message-staged"));
+    // Wait for DOM to rerender. Message should be un-staged
+    await settled();
 
-      const nextMessageContent = "What up what up!";
-      await fillIn(composerInput, nextMessageContent);
-      await focus(composerInput);
-      await triggerKeyEvent(composerInput, "keydown", 13); // 13 is enter keycode
+    assert.ok(
+      lastMessage
+        .closest(".chat-message-container")
+        .classList.contains("chat-message-container-202")
+    );
+    assert.notOk(lastMessage.classList.contains("chat-message-staged"));
 
-      messages = queryAll(".chat-message");
-      lastMessage = messages[messages.length - 1];
+    const nextMessageContent = "What up what up!";
+    await fillIn(composerInput, nextMessageContent);
+    await focus(composerInput);
+    await triggerKeyEvent(composerInput, "keydown", 13); // 13 is enter keycode
 
-      // We just sent a message so avatar/username will not be present for the last message
-      assert.notOk(
-        lastMessage.querySelector(".chat-user-avatar"),
-        "Avatar is not shown"
-      );
-      assert.notOk(
-        lastMessage.querySelector(".full-name"),
-        "Username is not shown"
-      );
-      assert.equal(
-        lastMessage.querySelector(".chat-message-text").innerText.trim(),
-        nextMessageContent
-      );
-      done();
-    });
+    messages = queryAll(".chat-message");
+    lastMessage = messages[messages.length - 1];
+
+    // We just sent a message so avatar/username will not be present for the last message
+    assert.notOk(
+      lastMessage.querySelector(".chat-user-avatar"),
+      "Avatar is not shown"
+    );
+    assert.notOk(
+      lastMessage.querySelector(".full-name"),
+      "Username is not shown"
+    );
+    assert.equal(
+      lastMessage.querySelector(".chat-message-text").innerText.trim(),
+      nextMessageContent
+    );
   });
 
   test("cooked processing messages are handled properly", async function (assert) {
@@ -552,15 +547,12 @@ acceptance("Discourse Chat - without unread", function (needs) {
       },
     });
 
-    const done = assert.async();
-    next(async () => {
-      assert.ok(
-        query(
-          ".chat-message-container-175 .chat-message-text"
-        ).innerHTML.includes(cooked)
-      );
-      done();
-    });
+    await settled();
+    assert.ok(
+      query(
+        ".chat-message-container-175 .chat-message-text"
+      ).innerHTML.includes(cooked)
+    );
   });
 
   test("Drafts are saved and reloaded", async function (assert) {
@@ -615,15 +607,10 @@ acceptance("Discourse Chat - without unread", function (needs) {
       message_id: 201,
       user_id: 2,
     });
-    const done = assert.async();
-    next(() => {
-      assert.ok(
-        exists(
-          ".header-dropdown-toggle.open-chat .chat-channel-unread-indicator"
-        )
-      );
-      done();
-    });
+    await settled();
+    assert.ok(
+      exists(".header-dropdown-toggle.open-chat .chat-channel-unread-indicator")
+    );
   });
 
   test("Unread count increments for direct message channels when messages come in", async function (assert) {
@@ -638,21 +625,18 @@ acceptance("Discourse Chat - without unread", function (needs) {
       message_id: 201,
       user_id: 2,
     });
-    const done = assert.async();
-    next(() => {
-      assert.ok(
-        exists(
-          ".header-dropdown-toggle.open-chat .chat-channel-unread-indicator.urgent .number"
-        )
-      );
-      assert.equal(
-        query(
-          ".header-dropdown-toggle.open-chat .chat-channel-unread-indicator.urgent .number"
-        ).innerText.trim(),
-        1
-      );
-      done();
-    });
+    await settled();
+    assert.ok(
+      exists(
+        ".header-dropdown-toggle.open-chat .chat-channel-unread-indicator.urgent .number"
+      )
+    );
+    assert.equal(
+      query(
+        ".header-dropdown-toggle.open-chat .chat-channel-unread-indicator.urgent .number"
+      ).innerText.trim(),
+      1
+    );
   });
 
   test("Unread DM count overrides the public unread indicator", async function (assert) {
@@ -665,20 +649,17 @@ acceptance("Discourse Chat - without unread", function (needs) {
       message_id: 202,
       user_id: 2,
     });
-    const done = assert.async();
-    next(() => {
-      assert.ok(
-        exists(
-          ".header-dropdown-toggle.open-chat .chat-channel-unread-indicator.urgent .number"
-        )
-      );
-      assert.notOk(
-        exists(
-          ".header-dropdown-toggle.open-chat .chat-channel-unread-indicator:not(.urgent)"
-        )
-      );
-      done();
-    });
+    await settled();
+    assert.ok(
+      exists(
+        ".header-dropdown-toggle.open-chat .chat-channel-unread-indicator.urgent .number"
+      )
+    );
+    assert.notOk(
+      exists(
+        ".header-dropdown-toggle.open-chat .chat-channel-unread-indicator:not(.urgent)"
+      )
+    );
   });
 
   test("Mentions in public channels show the unread urgent indicator", async function (assert) {
@@ -686,20 +667,17 @@ acceptance("Discourse Chat - without unread", function (needs) {
     publishToMessageBus("/chat/9/new-mentions", {
       message_id: 201,
     });
-    const done = assert.async();
-    next(() => {
-      assert.ok(
-        exists(
-          ".header-dropdown-toggle.open-chat .chat-channel-unread-indicator.urgent .number"
-        )
-      );
-      assert.notOk(
-        exists(
-          ".header-dropdown-toggle.open-chat .chat-channel-unread-indicator:not(.urgent)"
-        )
-      );
-      done();
-    });
+    await settled();
+    assert.ok(
+      exists(
+        ".header-dropdown-toggle.open-chat .chat-channel-unread-indicator.urgent .number"
+      )
+    );
+    assert.notOk(
+      exists(
+        ".header-dropdown-toggle.open-chat .chat-channel-unread-indicator:not(.urgent)"
+      )
+    );
   });
 
   test("message selection for 'move to topic'", async function (assert) {
@@ -833,20 +811,16 @@ acceptance("Discourse Chat - without unread", function (needs) {
       typ: "reaction",
       chat_message_id: 176,
     });
-    const done = assert.async();
-    next(async () => {
-      const sneezingFaceReaction = lastMessage.querySelector(
-        ".chat-message-reaction.sneezing_face"
-      );
-      assert.ok(sneezingFaceReaction);
-      assert.equal(sneezingFaceReaction.innerText.trim(), "1");
-      assert.notOk(sneezingFaceReaction.classList.contains("reacted"));
-      await click(sneezingFaceReaction);
-      assert.equal(sneezingFaceReaction.innerText.trim(), "2");
-      assert.ok(sneezingFaceReaction.classList.contains("reacted"));
-
-      done();
-    });
+    await settled();
+    const sneezingFaceReaction = lastMessage.querySelector(
+      ".chat-message-reaction.sneezing_face"
+    );
+    assert.ok(sneezingFaceReaction);
+    assert.equal(sneezingFaceReaction.innerText.trim(), "1");
+    assert.notOk(sneezingFaceReaction.classList.contains("reacted"));
+    await click(sneezingFaceReaction);
+    assert.equal(sneezingFaceReaction.innerText.trim(), "2");
+    assert.ok(sneezingFaceReaction.classList.contains("reacted"));
   });
 
   test("mention warning is rendered", async function (assert) {
@@ -860,31 +834,29 @@ acceptance("Discourse Chat - without unread", function (needs) {
       ],
       chat_message_id: 176,
     });
-    const done = assert.async();
-    next(async () => {
-      assert.ok(
-        exists(".chat-message-container-176 .chat-message-mention-warning")
-      );
-      assert.ok(
-        query(
-          ".chat-message-container-176 .chat-message-mention-warning .cannot-see"
-        ).innerText.includes("hawk")
-      );
+    await settled();
 
-      const withoutMembershipText = query(
-        ".chat-message-container-176 .chat-message-mention-warning .without-membership"
-      ).innerText;
-      assert.ok(withoutMembershipText.includes("eviltrout"));
-      assert.ok(withoutMembershipText.includes("sam"));
+    assert.ok(
+      exists(".chat-message-container-176 .chat-message-mention-warning")
+    );
+    assert.ok(
+      query(
+        ".chat-message-container-176 .chat-message-mention-warning .cannot-see"
+      ).innerText.includes("hawk")
+    );
 
-      await click(
-        ".chat-message-container-176 .chat-message-mention-warning .invite-link"
-      );
-      assert.notOk(
-        exists(".chat-message-container-176 .chat-message-mention-warning")
-      );
-      done();
-    });
+    const withoutMembershipText = query(
+      ".chat-message-container-176 .chat-message-mention-warning .without-membership"
+    ).innerText;
+    assert.ok(withoutMembershipText.includes("eviltrout"));
+    assert.ok(withoutMembershipText.includes("sam"));
+
+    await click(
+      ".chat-message-container-176 .chat-message-mention-warning .invite-link"
+    );
+    assert.notOk(
+      exists(".chat-message-container-176 .chat-message-mention-warning")
+    );
   });
 
   test("It displays a separator between days", async function (assert) {

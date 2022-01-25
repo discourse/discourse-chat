@@ -11,6 +11,9 @@ export default createWidget("header-chat-link", {
   services: ["chat", "router"],
 
   html() {
+    if (!this.chat.userCanChat) {
+      return;
+    }
     if (
       this.currentUser.isInDoNotDisturb() ||
       (this.currentUser.chat_isolated && !this.chat.isChatPage)

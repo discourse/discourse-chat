@@ -201,8 +201,12 @@ acceptance("Discourse Chat - without unread", function (needs) {
     });
   });
   needs.hooks.beforeEach(function () {
-    this.chatService = this.container.lookup("service:chat");
-    this.appEvents = this.container.lookup("service:appEvents");
+    Object.defineProperty(this, "chatService", {
+      get: () => this.container.lookup("service:chat"),
+    });
+    Object.defineProperty(this, "appEvents", {
+      get: () => this.container.lookup("service:appEvents"),
+    });
   });
 
   test("Clicking mention notification from outside chat opens the float", async function (assert) {
@@ -914,7 +918,9 @@ acceptance(
       ]);
     });
     needs.hooks.beforeEach(function () {
-      this.chatService = this.container.lookup("service:chat");
+      Object.defineProperty(this, "chatService", {
+        get: () => this.container.lookup("service:chat"),
+      });
     });
 
     test("Expand button takes you to full page chat on the correct channel", async function (assert) {
@@ -991,7 +997,9 @@ acceptance(
       ]);
     });
     needs.hooks.beforeEach(function () {
-      this.chatService = this.container.lookup("service:chat");
+      Object.defineProperty(this, "chatService", {
+        get: () => this.container.lookup("service:chat"),
+      });
     });
 
     test("Unread indicator doesn't show when user is in do not disturb", async function (assert) {
@@ -1176,7 +1184,9 @@ acceptance("Discourse Chat - chat preferences", function (needs) {
     chatChannelPretender(server, helper);
   });
   needs.hooks.beforeEach(function () {
-    this.chatService = this.container.lookup("service:chat");
+    Object.defineProperty(this, "chatService", {
+      get: () => this.container.lookup("service:chat"),
+    });
   });
 
   test("Chat preferences route takes user to homepage when can_chat is false", async function (assert) {

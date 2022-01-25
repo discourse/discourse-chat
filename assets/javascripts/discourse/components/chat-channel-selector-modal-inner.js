@@ -20,10 +20,35 @@ export default Component.extend({
     document.addEventListener("keydown", this.onKeyDown);
   },
 
+  didInsertElement() {
+    this._super(...arguments);
+    schedule("afterRender", () => {
+      document
+        .getElementById("chat-channel-selector-modal-inner")
+        ?.addEventListener("mouseover", this.mouseover);
+    });
+  },
+
   willDestroyElement() {
     this._super(...arguments);
     this.appEvents.off("chat-channel-selector-modal:close", this.close);
     document.removeEventListener("keydown", this.onKeyDown);
+    document
+      .getElementById("chat-channel-selector-modal-inner")
+      ?.removeEventListener("mouseover", this.mouseover);
+    this.filteredChannels.forEach((c) => c.set("focused", false));
+  },
+
+  @bind
+  mouseover(e) {
+    if (e.target.classList.contains("chat-channel-row")) {
+      this.filteredChannels.forEach((c) => c.set("focused", false));
+      const channel = this.filteredChannels.findBy(
+        "id",
+        parseInt(e.target.dataset.chatChannelId, 10)
+      );
+      channel?.set("focused", true);
+    }
   },
 
   @bind
@@ -41,15 +66,15 @@ export default Component.extend({
     } else if (e.keyCode === 9) {
       // Tab
       if (e.shiftKey) {
-        this.arrowNavigateChannels("up");
+        this.arrowNavigateChannels("up", { tabbed: true });
       } else {
-        this.arrowNavigateChannels("down");
+        this.arrowNavigateChannels("down", { tabbed: true });
       }
       e.preventDefault();
     }
   },
 
-  arrowNavigateChannels(direction) {
+  arrowNavigateChannels(direction, opts = { tabbed: false }) {
     const indexOfFocused = this.filteredChannels.findIndex((c) => c.focused);
     if (indexOfFocused > -1) {
       const nextIndex = direction === "down" ? 1 : -1;
@@ -67,7 +92,6 @@ export default Component.extend({
         "#chat-channel-selector-modal-inner .chat-channel-row.focused"
       );
       if (focusedChannel) {
-        // let channelList = document.getElementById("chat-channel-selector-modal-inner")
         focusedChannel.scrollIntoView({ block: "nearest", inline: "start" });
       }
     });
@@ -75,16 +99,14 @@ export default Component.extend({
 
   @action
   switchChannel(channel) {
-    console.log(channel);
-    channel.set("focused", false);
+    this.chat.openChannel(channel);
+    this.close();
   },
 
   _getFilteredChannels() {
     return this.chat.getChannelsWithFilter(this.filter).then((channels) => {
       channels.forEach((c) => c.set("focused", false));
-      if (channels[0]) {
-        channels[0].set("focused", true);
-      }
+      channels[0]?.set("focused", true);
 
       this.set("filteredChannels", channels);
     });

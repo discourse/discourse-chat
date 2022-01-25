@@ -6,6 +6,7 @@
   {{on "mousedown" (fn this.handleNewWindow)}}
   role="button"
   tabindex="0"
+  data-chat-channel-id={{channel.id}}
 >
   {{chat-channel-title channel=channel}}
   {{chat-channel-unread-indicator channel=channel}}

@@ -22,7 +22,7 @@ export default Component.extend({
       classes.push("active");
     }
     if (focused) {
-      classes.push("focused")
+      classes.push("focused");
     }
     if (channel.muted) {
       classes.push("muted");

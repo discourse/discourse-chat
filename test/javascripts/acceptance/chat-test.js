@@ -11,6 +11,7 @@ import {
 import {
   click,
   currentURL,
+  fillIn,
   triggerEvent,
   triggerKeyEvent,
   visit,

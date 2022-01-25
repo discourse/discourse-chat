@@ -1,6 +1,7 @@
 import componentTest, {
   setupRenderingTest,
 } from "discourse/tests/helpers/component-test";
+import { click } from "@ember/test-helpers";
 import hbs from "htmlbars-inline-precompile";
 import {
   discourseModule,

@@ -1,3 +1,4 @@
+import showModal from "discourse/lib/show-modal";
 import {
   acceptance,
   exists,

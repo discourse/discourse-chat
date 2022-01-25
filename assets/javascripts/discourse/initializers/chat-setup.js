@@ -1,4 +1,5 @@
 import { withPluginApi } from "discourse/lib/plugin-api";
+import { bind } from "discourse-common/utils/decorators";
 
 export default {
   name: "chat-setup",
@@ -10,6 +11,8 @@ export default {
       return;
     }
 
+    this.chat = container.lookup("service:chat");
+
     document.body.classList.add("chat-enabled");
 
     withPluginApi("0.12.1", (api) => {
@@ -17,15 +20,18 @@ export default {
         currentUser.chat_isolated = false;
       }
 
-      const chat = container.lookup("service:chat");
-      chat.getChannels();
+      this.chat.getChannels();
 
       const chatNotificationManager = container.lookup(
         "service:chat-notification-manager"
       );
       chatNotificationManager.start();
 
-      api.addDocumentTitleCounter(() => chat.getDocumentTitleCount());
+      if (!this._registeredDocumentTitleCountCallback) {
+        api.addDocumentTitleCounter(this.documentTitleCountCallback);
+        this._registeredDocumentTitleCountCallback = true;
+      }
+
       api.addCardClickListenerSelector(".topic-chat-float-container");
 
       api.dispatchWidgetAppEvent(
@@ -41,5 +47,10 @@ export default {
       );
       api.addToHeaderIcons("header-chat-link");
     });
+  },
+
+  @bind
+  documentTitleCountCallback() {
+    return this.chat.getDocumentTitleCount();
   },
 };

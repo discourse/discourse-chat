@@ -58,8 +58,6 @@ sv:
           one: "%{usernames} har inte gått med i den här kanalen."
           other: "%{usernames} har inte gått med i den här kanalen."
       no_public_channels: "Du har inte gått med i några kanaler."
-      no_joinable_channels_title: "Det finns inga kanaler för dig att gå med i ännu."
-      no_joinable_channels_body: "Du kan kontakta din administratör för att aktivera chatt för ämnen eller kategorier."
       only_chat_push_notifications:
         title: "Skicka bara push-meddelanden för chatt"
         description: "Blockera alla push-meddelanden som inte är chattmeddelanden från att skickas"
@@ -79,7 +77,6 @@ sv:
       select: "Välj"
       return_to_list: "Återgå till kanallistan"
       scroll_to_bottom: "Scrolla till botten"
-      send_error: "Något gick fel"
       sound:
         title: "Meddelandeljud för chatt via dator"
       sounds:
@@ -186,9 +183,13 @@ sv:
         many_users:
           one: "%{commaSeparatedUsernames} och %{count} skriver"
           other: "%{commaSeparatedUsernames} och %{count} andra skriver"
+      retention_reminders:
+        public: "Kanalhistoriken behålls i %{days} dagar."
+        dm: "Personlig chatthistorik behålls i %{days} dagar."
     notifications:
       popup:
-        chat_mention: "@%{username} nämnde dig i chatten"
+        chat_mention: "%{username} nämnde dig i chatten"
+        chat_group_mention: "%{username} nämnde @%{groupName} i chatten"
         chat_message: "Nytt chattmeddelande"
       titles:
         chat_mention: "Chatt omnämnande"

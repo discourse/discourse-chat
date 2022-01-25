@@ -15,6 +15,7 @@ fr:
   discourse_push_notifications:
     popup:
       chat_mention: "@%{username} vous a mentionné(e) dans la discussion"
+      chat_group_mention: "@%{username} a mentionné @%{group_name} dans le chat"
       chat_message: "Nouveau message de chat dans %{chat_channel_title}"
       group_chat_message: "Nouveau message de chat dans un canal de discussion privée"
   discourse_automation:

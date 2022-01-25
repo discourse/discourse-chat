@@ -65,11 +65,9 @@ acceptance(
     test("opens channel in float with chat not isolated", async function (assert) {
       updateCurrentUser({ chat_isolated: false });
       await visit("/latest");
-      await triggerKeyEvent(document.body, "keydown", 75, { ctrlKey: true }); // Works in ember-cli
-      await triggerEvent(document.body, "keydown", {
-        keyCode: 75,
-        ctrlKey: true,
-      }); // Works in legacy
+
+      await showModal("chat-channel-selector-modal");
+      await chatSettled();
       assert.ok(exists("#chat-channel-selector-modal-inner"));
 
       // All 6 channels should show because the input is blank
@@ -95,12 +93,8 @@ acceptance(
     test("opens full-page when chat is isolated", async function (assert) {
       updateCurrentUser({ chat_isolated: true });
       await visit("/latest");
-
-      await triggerKeyEvent(document.body, "keydown", 75, { ctrlKey: true }); // Works in ember-cli
-      await triggerEvent(document.body, "keydown", {
-        keyCode: 75,
-        ctrlKey: true,
-      }); // Works in legacy
+      await showModal("chat-channel-selector-modal");
+      await chatSettled();
       await click(
         "#chat-channel-selector-modal-inner .chat-channel-row.chat-channel-75"
       );
@@ -110,11 +104,8 @@ acceptance(
 
     test("the current chat channel does not show in the list", async function (assert) {
       await visit("/chat/channel/75/@hawk");
-      await triggerKeyEvent(document.body, "keydown", 75, { ctrlKey: true }); // Works in ember-cli
-      await triggerEvent(document.body, "keydown", {
-        keyCode: 75,
-        ctrlKey: true,
-      }); // Works in legacy
+      await showModal("chat-channel-selector-modal");
+      await chatSettled();
 
       // Only 5 channels now instead of 6.
       assert.equal(

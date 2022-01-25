@@ -11,7 +11,6 @@ import {
   currentURL,
   fillIn,
   settled,
-  triggerEvent,
   triggerKeyEvent,
   visit,
 } from "@ember/test-helpers";

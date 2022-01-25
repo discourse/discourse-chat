@@ -58,8 +58,6 @@ hu:
           one: "%{usernames} nem csatlakozott ehhez a csatornához."
           other: "%{usernames} nem csatlakozott ehhez a csatornához."
       no_public_channels: "Nem csatlakozott egyetlen csatornához sem."
-      no_joinable_channels_title: "Még nincsenek csatornák, amelyekhez csatlakozhatna."
-      no_joinable_channels_body: "Forduljon a rendszergazdához, hogy engedélyezze a csevegést a témáknál vagy kategóriáknál."
       only_chat_push_notifications:
         title: "Csak csevegési leküldéses értesítések küldése"
         description: "Az összes nem csevegési leküldéses értesítés elküldésének letiltása"
@@ -79,7 +77,6 @@ hu:
       select: "Válasszon"
       return_to_list: "Vissza a csatornákhoz"
       scroll_to_bottom: "Görgetés lefelé"
-      send_error: "Valami hiba történt"
       sound:
         title: "Asztali csevegőértesítés hangja"
       sounds:
@@ -186,9 +183,13 @@ hu:
         many_users:
           one: "%{commaSeparatedUsernames} és még %{count} valaki gépel"
           other: "%{commaSeparatedUsernames} és még %{count} valaki gépel"
+      retention_reminders:
+        public: "A csatorna előzményei %{days} napig maradnak meg."
+        dm: "A személyes csevegési előzményei %{days} napig maradnak meg."
     notifications:
       popup:
-        chat_mention: "@%{username} megemlítette a csevegésben"
+        chat_mention: "%{username} megemlítette a csevegésben"
+        chat_group_mention: "%{username} megemlítette a(z) @%{groupName} csoportot a csevegésben"
         chat_message: "Új csevegőüzenet"
       titles:
         chat_mention: "Csevegési megemlítés"

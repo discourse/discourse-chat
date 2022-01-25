@@ -58,8 +58,6 @@ fr:
           one: "%{usernames} n'a pas rejoint ce canal."
           other: "%{usernames} n'ont pas rejoint ce canal."
       no_public_channels: "Vous n'avez rejoint aucun canal."
-      no_joinable_channels_title: "Vous n'avez aucun canal à rejoindre."
-      no_joinable_channels_body: "Vous pouvez contacter votre administrateur pour commencer à activer le chat pour les sujets ou les catégories."
       only_chat_push_notifications:
         title: "Envoyer uniquement des notifications push de chat"
         description: "Bloquer l'envoi de toutes les notifications push non liées au chat"
@@ -79,7 +77,6 @@ fr:
       select: "Sélectionner"
       return_to_list: "Retour à la liste des canaux"
       scroll_to_bottom: "Défiler vers le bas"
-      send_error: "Une erreur s'est produite"
       sound:
         title: "Son de notification du chat sur ordinateur"
       sounds:
@@ -188,7 +185,8 @@ fr:
           other: "%{commaSeparatedUsernames} et %{count} autres utilisateurs sont en train d'écrire"
     notifications:
       popup:
-        chat_mention: "@%{username} vous a mentionné(e) dans la discussion"
+        chat_mention: "%{username} vous a mentionné(e) dans la discussion"
+        chat_group_mention: "%{username} a mentionné @%{groupName} dans le chat"
         chat_message: "Nouveau message de discussion"
       titles:
         chat_mention: "Mention de chat"

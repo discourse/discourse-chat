@@ -50,8 +50,6 @@ fa_IR:
           one: "%{usernames} هنوز در این کانال عضو نشده است."
           other: "%{usernames} هنوز در این کانال عضو نشده است."
       no_public_channels: "شما هنوز عضو هیچ کانالی نشده‌اید."
-      no_joinable_channels_title: "هیچ کانالی برای پیوستن، شما وجود ندارد."
-      no_joinable_channels_body: "شما می‌توانید برای فعال شدن گفتگو در موضوعات و دسته‌بندی‌ها، با مدیر تماس بگیرید."
       open: "باز کردن گفتگو..."
       open_message: "پیام را در گفتگو باز کن"
       placeholder_previewing: "برای ارسال پیام، به کانال بپیوندید."
@@ -65,7 +63,6 @@ fa_IR:
       select: "انتخاب کنید"
       return_to_list: "بازگشت به فهرست کانال"
       scroll_to_bottom: "حرکت به پایین"
-      send_error: "یه مشکلی پیش آمده"
       sound:
         title: "صدای آگاه‌سازی گفتگوی دسکتاپ"
       sounds:
@@ -137,7 +134,7 @@ fa_IR:
         multiple_users: "%{commaSeparatedUsernames} و %{lastUsername} در حال نوشتن"
     notifications:
       popup:
-        chat_mention: "@%{username} در گفتگو به شما اشاره کرده است"
+        chat_mention: "%{username} در گفتگو به شما اشاره کرده است"
     topic:
       actions:
         chat_enable: "فعال کردن گفتگو"

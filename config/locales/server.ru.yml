@@ -8,6 +8,8 @@ ru:
   site_settings:
     chat_enabled: "Включить плагин discourse-chat. Для настройки используйте действие 'Включить чат', отображаемое в каждой теме."
     chat_allowed_groups: "Пользователи этих групп могут использовать чат."
+    chat_channel_retention_days: "Сообщения чата в обычных каналах будут храниться указанное здесь количество дней. Установите значение в '0', чтобы сохранять сообщения навсегда."
+    chat_dm_retention_days: "Сообщения чата в личных каналах чата будут храниться указанное здесь количество дней. Установите значение в '0', чтобы сохранять сообщения навсегда."
   chat:
     errors:
       channel_exists_for_category: "Канал для этого раздела уже существует"
@@ -15,6 +17,7 @@ ru:
   discourse_push_notifications:
     popup:
       chat_mention: "Пользователь @%{username} упомянул вас в чате"
+      chat_group_mention: "Пользователь @%{username} упомянул в чате группу @%{group_name}"
       chat_message: "Новое сообщение в канале %{chat_channel_title}"
       group_chat_message: "Новое сообщение в личном канале"
   discourse_automation:

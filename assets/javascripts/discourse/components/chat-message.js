@@ -9,6 +9,7 @@ import { prioritizeNameInUx } from "discourse/lib/settings";
 import EmberObject, { action, computed } from "@ember/object";
 import { autoUpdatingRelativeAge } from "discourse/lib/formatter";
 import { cancel, later, schedule } from "@ember/runloop";
+import bootbox from "bootbox";
 
 const HERE = "here";
 const ALL = "all";

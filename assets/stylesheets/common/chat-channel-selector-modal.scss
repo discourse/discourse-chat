@@ -32,6 +32,9 @@
       &.active {
         background: none;
       }
+      &:hover {
+        background: none;
+      }
       &.focused {
         background: var(--primary-low);
       }

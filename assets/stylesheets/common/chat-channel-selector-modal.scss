@@ -2,6 +2,10 @@
   --chat-channel-selector-input-height: 40px;
 }
 
+.chat-channel-selector-modal-modal.modal.in {
+  animation: none;
+}
+
 #chat-channel-selector-modal-inner {
   width: 500px;
   height: 350px;

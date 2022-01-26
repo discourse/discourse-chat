@@ -39,6 +39,13 @@
         color: var(--primary-high);
         padding-left: 0.5em;
       }
+
+      .chat-channel-unread-indicator {
+        border: none;
+        margin-left: 0.5em;
+        height: 12px;
+        width: 12px;
+      }
     }
   }
 }

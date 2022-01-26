@@ -6,7 +6,7 @@ module DiscourseChat::DirectMessageChannelCreator
   def self.create!(users)
     direct_messages_channel = DirectMessageChannel.for_user_ids(users.map(&:id).uniq)
     if direct_messages_channel
-      chat_channel = ChatChannel.find_by!(chatable_id: direct_messages_channel.id)
+      chat_channel = ChatChannel.find_by!(chatable: direct_messages_channel)
     else
       direct_messages_channel = DirectMessageChannel.create!(users: users)
       chat_channel = ChatChannel.create!(chatable: direct_messages_channel)

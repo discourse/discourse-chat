@@ -15,16 +15,15 @@ export default Component.extend({
     this._super(...arguments);
     this.appEvents.on("chat-channel-selector-modal:close", this.close);
     this._getFilteredChannels();
-    document.addEventListener("keydown", this.onKeyDown);
   },
 
   didInsertElement() {
     this._super(...arguments);
-    schedule("afterRender", () => {
-      document
-        .getElementById("chat-channel-selector-modal-inner")
-        ?.addEventListener("mouseover", this.mouseover);
-    });
+    document.addEventListener("keydown", this.onKeyDown);
+    document
+      .getElementById("chat-channel-selector-modal-inner")
+      ?.addEventListener("mouseover", this.mouseover);
+    document.getElementById("chat-channel-selector-modal-inner")?.focus();
   },
 
   willDestroyElement() {
@@ -51,16 +50,16 @@ export default Component.extend({
 
   @bind
   onKeyDown(e) {
-    if (e.keyCode === 13) {
-      // Enter key
+    if (e.key === "Enter") {
       let focusedChannel = this.filteredChannels.find((c) => c.focused);
       this.switchChannel(focusedChannel);
-    } else if (e.keyCode === 40) {
-      // Down key
+      e.preventDefault();
+    } else if (e.key === "ArrowDown") {
       this.arrowNavigateChannels("down");
-    } else if (e.keyCode === 38) {
-      // Up key
+      e.preventDefault();
+    } else if (e.key === "ArrowUp") {
       this.arrowNavigateChannels("up");
+      e.preventDefault();
     }
   },
 
@@ -81,9 +80,7 @@ export default Component.extend({
       let focusedChannel = document.querySelector(
         "#chat-channel-selector-modal-inner .chat-channel-row.focused"
       );
-      if (focusedChannel) {
-        focusedChannel.scrollIntoView({ block: "nearest", inline: "start" });
-      }
+      focusedChannel?.scrollIntoView({ block: "nearest", inline: "start" });
     });
   },
 

@@ -213,7 +213,7 @@ export default Service.extend({
         channel.chatable.users.forEach((user) => {
           if (
             user.username.toLowerCase().includes(downcasedFilter) ||
-            user?.name?.toLowerCase()?.includes(downcasedFilter)
+            user.name?.toLowerCase().includes(downcasedFilter)
           ) {
             return (userFound = true);
           }

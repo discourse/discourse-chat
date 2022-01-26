@@ -270,8 +270,10 @@ export default Service.extend({
           // We don't need to sort direct message channels, as the channel list
           // uses a computed property to keep them ordered by `updated_at`.
           directMessageChannels: A(
-            channels.direct_message_channels.map((channel) =>
-              this.processChannel(channel)
+            this.sortDirectMessageChannels(
+              channels.direct_message_channels.map((channel) =>
+                this.processChannel(channel)
+              )
             )
           ),
           hasFetchedChannels: true,

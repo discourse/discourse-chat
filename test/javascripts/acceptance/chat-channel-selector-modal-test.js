@@ -6,7 +6,6 @@ import {
   updateCurrentUser,
 } from "discourse/tests/helpers/qunit-helpers";
 
-import { next } from "@ember/runloop";
 import {
   click,
   currentURL,
@@ -21,7 +20,6 @@ import {
 } from "discourse/plugins/discourse-chat/chat-fixtures";
 import { test } from "qunit";
 import { isLegacyEmber } from "discourse-common/config/environment";
-import { Promise } from "rsvp";
 
 if (!isLegacyEmber()) {
   acceptance(

@@ -1,0 +1,44 @@
+:root {
+  --chat-channel-selector-input-height: 40px;
+}
+
+#chat-channel-selector-modal-inner {
+  width: 500px;
+  height: 350px;
+
+  .chat-channel-selector-input-container {
+    position: relative;
+
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--primary-high);
+    }
+
+    #chat-channel-selector-input {
+      width: 100%;
+      height: var(--chat-channel-selector-input-height);
+      padding-left: 30px;
+      margin: 0 0 1px;
+    }
+  }
+  .channels {
+    height: calc(100% - var(--chat-channel-selector-input-height));
+    overflow: auto;
+
+    .chat-channel-row {
+      &.active {
+        background: none;
+      }
+      &.focused {
+        background: var(--primary-low);
+      }
+      .chat-channel-title {
+        color: var(--primary-high);
+        padding-left: 0.5em;
+      }
+    }
+  }
+}

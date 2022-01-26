@@ -11,10 +11,7 @@ export default DiscourseRoute.extend({
   },
 
   beforeModel() {
-    if (
-      !this.currentUser?.has_chat_enabled ||
-      !this.siteSettings.chat_enabled
-    ) {
+    if (!this.chat.userCanChat) {
       return this.transitionTo(`discovery.${defaultHomepage()}`);
     }
   },

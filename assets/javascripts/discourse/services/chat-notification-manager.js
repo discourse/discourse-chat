@@ -136,6 +136,6 @@ export default Service.extend({
   },
 
   _shouldRun() {
-    return this.currentUser?.has_chat_enabled && !isTesting();
+    return this.chat.userCanChat && !isTesting();
   },
 });

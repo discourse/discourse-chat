@@ -110,6 +110,7 @@ class ChatMessage < ActiveRecord::Base
   end
 
   def rebake!(invalidate_oneboxes: false, priority: nil)
+    previous_cooked = self.cooked
     new_cooked = self.class.cook(message, invalidate_oneboxes: invalidate_oneboxes)
     update_columns(
       cooked: new_cooked,
@@ -119,6 +120,7 @@ class ChatMessage < ActiveRecord::Base
       chat_message_id: self.id,
     }
     args[:queue] = priority.to_s if priority && priority != :normal
+    args[:is_dirty] = true if previous_cooked != new_cooked
 
     Jobs.enqueue(:process_chat_message, args)
   end

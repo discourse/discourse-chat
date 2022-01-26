@@ -208,6 +208,49 @@ RSpec.describe DiscourseChat::ChatController do
     end
   end
 
+  describe "#rebake" do
+    fab!(:chat_channel) { Fabricate(:chat_channel) }
+    fab!(:chat_message) { Fabricate(:chat_message, chat_channel: chat_channel, user: user) }
+
+    context "staff" do
+      it "rebakes the post" do
+        sign_in(Fabricate(:admin))
+
+        expect do
+          put "/chat/#{chat_channel.id}/#{chat_message.id}/rebake.json"
+        end.to change { Jobs::ProcessChatMessage.jobs.size }.by(1)
+        expect(response.status).to eq(200)
+
+        job = Jobs::ProcessChatMessage.jobs.first
+        job_args = job["args"].first
+        expect(job_args["chat_message_id"]).to eq(chat_message.id)
+        expect(job_args["is_dirty"]).to be_blank
+        ChatPublisher.expects(:publish_processed!).never
+        job["class"].constantize.new.perform(*job["args"])
+      end
+
+      context "cooked has changed" do
+        it "marks the message as dirty" do
+          sign_in(Fabricate(:admin))
+          chat_message.update!(message: "new content")
+
+          put "/chat/#{chat_channel.id}/#{chat_message.id}/rebake.json"
+          job = Jobs::ProcessChatMessage.jobs.first
+          job_args = job["args"].first
+          expect(job_args["is_dirty"]).to eq(true)
+        end
+      end
+    end
+
+    context "not staff" do
+      it "errors when non staff tries to rebake" do
+        sign_in(Fabricate(:user))
+        put "/chat/#{chat_channel.id}/#{chat_message.id}/rebake.json"
+        expect(response.status).to eq(403)
+      end
+    end
+  end
+
   describe "#edit_message" do
     fab!(:chat_channel) { Fabricate(:chat_channel) }
     fab!(:chat_message) { Fabricate(:chat_message, chat_channel: chat_channel, user: user) }

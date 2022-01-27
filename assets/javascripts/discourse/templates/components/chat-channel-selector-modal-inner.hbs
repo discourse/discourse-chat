@@ -4,7 +4,7 @@
       <span class="search-icon">
         {{d-icon "search"}}
       </span>
-      {{input id="chat-channel-selector-input" type="text" value=filter onChange=onFilterChange autocomplete="off"}}
+      {{input id="chat-channel-selector-input" type="text" value=filter autocomplete="off"}}
     </div>
     <div class="channels">
       {{#each filteredChannels as |channel|}}

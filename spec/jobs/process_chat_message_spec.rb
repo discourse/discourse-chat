@@ -15,4 +15,9 @@ describe Jobs::ProcessChatMessage do
     described_class.new.execute(chat_message_id: chat_message.id)
     expect(chat_message.reload.cooked).to eq("<p><a href=\"https://discourse.org/team\" class=\"onebox\" target=\"_blank\" rel=\"noopener nofollow ugc\">https://discourse.org/team</a></p>")
   end
+
+  it "does not error when message is deleted" do
+    chat_message.destroy
+    expect { described_class.new.execute(chat_message_id: chat_message.id) }.not_to raise_exception
+  end
 end

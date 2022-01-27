@@ -355,7 +355,6 @@ export default Service.extend({
 
   reSortDirectMessageChannels() {
     this.set("directMessageChannels", this.sortDirectMessageChannels(this.directMessageChannels));
-    this.appEvents.trigger("chat:refresh-channels");
   },
 
   async getChannelBy(key, value) {

@@ -38,7 +38,9 @@ export default {
       });
       api.addKeyboardShortcut("ctrl+k", openChannelSelector, { global: true });
       api.addKeyboardShortcut("alt+up", handleMoveUpShortcut, { global: true });
-      api.addKeyboardShortcut("alt+down", handleMoveDownShortcut, { global: true });
+      api.addKeyboardShortcut("alt+down", handleMoveDownShortcut, {
+        global: true,
+      });
     });
   },
 };

@@ -16,12 +16,11 @@ class DiscourseChat::IncomingChatWebhooksController < ApplicationController
     end
   end
 
-  ##
   # See https://api.slack.com/reference/messaging/payload for the
   # slack message payload format. For now we only support the
   # text param, which we preprocess lightly to remove the slack-isms
   # in the formatting.
-  def create_message_slack_compatable
+  def create_message_slack_compatible
     debug_payload
 
     # See note in validate_payload on why this is needed

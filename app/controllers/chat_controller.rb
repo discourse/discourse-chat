@@ -259,7 +259,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
       .order(created_at: :asc)
 
     messages = ChatMessage
-      .where(id: [past_messages.reverse.pluck(:id), @message.id, future_messages.pluck(:id)].flatten)
+      .where(id: [past_messages.pluck(:id).reverse, @message.id, future_messages.pluck(:id)].flatten)
       .includes(:in_reply_to)
       .includes(:revisions)
       .includes(:user)

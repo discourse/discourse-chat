@@ -92,16 +92,18 @@ after_initialize do
 
   register_topic_custom_field_type(DiscourseChat::HAS_CHAT_ENABLED, :boolean)
   register_category_custom_field_type(DiscourseChat::HAS_CHAT_ENABLED, :boolean)
-  Site.preloaded_category_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
-  TopicList.preloaded_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
-  CategoryList.preloaded_topic_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
-  Search.preloaded_topic_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
+
   UserUpdater::OPTION_ATTR.push(:chat_enabled)
   UserUpdater::OPTION_ATTR.push(:chat_isolated)
   UserUpdater::OPTION_ATTR.push(:only_chat_push_notifications)
   UserUpdater::OPTION_ATTR.push(:chat_sound)
 
   reloadable_patch do |plugin|
+    Site.preloaded_category_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
+    TopicList.preloaded_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
+    CategoryList.preloaded_topic_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
+    Search.preloaded_topic_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
+
     Guardian.class_eval { include DiscourseChat::GuardianExtensions }
     TopicViewSerializer.class_eval { prepend DiscourseChat::TopicViewSerializerExtension }
     DetailedTagSerializer.class_eval { prepend DiscourseChat::DetailedTagSerializerExtension }

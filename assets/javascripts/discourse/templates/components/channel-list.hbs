@@ -79,7 +79,7 @@
   {{/if}}
 
   <div id="direct-message-channels" class={{directMessageChannelClasses}}>
-    {{#each directMessageChannels as |channel|}}
+    {{#each sortedDirectMessageChannels as |channel|}}
       {{chat-channel-row channel=channel switchChannel=onSelect options=(hash leaveButton=true)}}
     {{/each}}
   </div>

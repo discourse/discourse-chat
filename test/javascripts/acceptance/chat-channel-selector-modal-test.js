@@ -64,7 +64,11 @@ if (!isLegacyEmber()) {
           6
         );
 
-        await fillIn("#chat-channel-selector-input", "markvanlan");
+        // Freaking keydown event isn't triggered by fillIn...
+        // Next line manually keyup's "r" to make the keyup event run.
+        // Fillin is needed for `this.filter` but triggerKeyEvent is needed to fire the JS event.
+        await fillIn("#chat-channel-selector-input", "mar");
+        await triggerKeyEvent("#chat-channel-selector-input", "keyup", 82);
         await settled();
         // Only 2 channels match this filter now!
         assert.equal(

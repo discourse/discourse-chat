@@ -174,6 +174,10 @@ export default Service.extend({
     };
   },
 
+  truncateDirectMessageChannels(channels) {
+    return channels.slice(0, this.currentUser.chat_isolated ? 20 : 10);
+  },
+
   getActiveChannel() {
     let channelId;
     if (this.router.currentRouteName === "chat.channel") {
@@ -238,51 +242,44 @@ export default Service.extend({
   async switchChannelUpOrDown(direction) {
     const activeChannel = this.getActiveChannel();
     if (!activeChannel) {
-      return;
+      return; // Chat isn't open. Return and do nothing!
     }
-
-    const activeIsDmChannel =
+    const inDmChannel =
       activeChannel.chatable_type === CHATABLE_TYPES.directMessageChannel;
+
     let currentList, otherList;
-    if (activeIsDmChannel) {
-      currentList = this.directMessageChannels;
+    if (inDmChannel) {
+      currentList = this.truncateDirectMessageChannels(
+        this.directMessageChannels
+      );
       otherList = this.publicChannels;
     } else {
       currentList = this.publicChannels;
-      otherList = this.directMessageChannels;
+      otherList = this.truncateDirectMessageChannels(
+        this.directMessageChannels
+      );
     }
 
     const directionUp = direction === "up";
-    const directionInteger = directionUp ? -1 : 1;
-    const currentIndex = currentList.findIndex(
+    const currentChannelIndex = currentList.findIndex(
       (c) => c.id === activeChannel.id
     );
 
-    let possibleNextChannel = currentList[currentIndex + directionInteger];
-    if (possibleNextChannel) {
-      return this.openChannel(possibleNextChannel);
+    let nextChannelInSameList =
+      currentList[currentChannelIndex + (directionUp ? -1 : 1)];
+    if (nextChannelInSameList) {
+      // You're navigating in the same list of channels, just use index +- 1
+      return this.openChannel(nextChannelInSameList);
     }
 
-    if (otherList.length) {
-      // We know the other channel list has at least 1 channel.
+    // You need to go to the next list of channels, if it exists.
+    const nextList = otherList.length ? otherList : currentList;
+    const nextChannel = directionUp
+      ? nextList[nextList.length - 1]
+      : nextList[0];
 
-        // (directionUp && activeIsDmChannel) ||
-        // (!directionUp && !activeIsDmChannel)
-      if (directionUp) {
-        return this.openChannel(otherList[otherList.length - 1]);
-      } else {
-        return this.openChannel(otherList[0]);
-      }
-    } else {
-      // Other channel list doesn't have any channels. Just cycle through
-      const nextChannel = directionUp
-        ? this.currentList[currentList.length - 1]
-        : this.currentList[0];
-
-      if (nextChannel.id !== activeChannel.id) {
-        // Prevent changing channel if there is only 1 channel present
-        return this.openChannel(nextChannel);
-      }
+    if (nextChannel.id !== activeChannel.id) {
+      return this.openChannel(nextChannel);
     }
   },
 
@@ -354,7 +351,10 @@ export default Service.extend({
   },
 
   reSortDirectMessageChannels() {
-    this.set("directMessageChannels", this.sortDirectMessageChannels(this.directMessageChannels));
+    this.set(
+      "directMessageChannels",
+      this.sortDirectMessageChannels(this.directMessageChannels)
+    );
   },
 
   async getChannelBy(key, value) {

@@ -229,17 +229,7 @@ export default Service.extend({
     });
   },
 
-  async moveOneChannelUp() {
-    console.log("UP");
-    this.switchChannelUpOrDown("up");
-  },
-
-  async moveOneChannelDown() {
-    console.log("DOWN");
-    this.switchChannelUpOrDown("down");
-  },
-
-  async switchChannelUpOrDown(direction) {
+  switchChannelUpOrDown(direction) {
     const activeChannel = this.getActiveChannel();
     if (!activeChannel) {
       return; // Chat isn't open. Return and do nothing!

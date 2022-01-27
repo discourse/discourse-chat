@@ -23,13 +23,13 @@ export default {
     const handleMoveUpShortcut = (e) => {
       e.preventDefault();
       e.stopPropagation();
-      chatService.moveOneChannelUp();
+      chatService.switchChannelUpOrDown("up");
     };
 
     const handleMoveDownShortcut = (e) => {
       e.preventDefault();
       e.stopPropagation();
-      chatService.moveOneChannelDown();
+      chatService.switchChannelUpOrDown("down");
     };
 
     withPluginApi("0.12.1", (api) => {

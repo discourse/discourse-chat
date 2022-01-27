@@ -41,4 +41,9 @@ describe Jobs::ProcessChatMessage do
       end
     end
   end
+
+  it "does not error when message is deleted" do
+    chat_message.destroy
+    expect { described_class.new.execute(chat_message_id: chat_message.id) }.not_to raise_exception
+  end
 end

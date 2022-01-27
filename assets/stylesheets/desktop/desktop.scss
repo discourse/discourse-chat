@@ -75,11 +75,11 @@
 
 // Full Page Styling in Core
 .has-full-page-chat:not(.discourse-sidebar) {
+  --max-chat-width: 1200px;
+
   #main-outlet {
-    padding: 0em;
-    &.wrap {
-      max-width: 1200px;
-    }
+    max-width: var(--max-chat-width);
+    padding: 0;
   }
 
   .full-page-chat {
@@ -118,12 +118,10 @@
     }
   }
 
-  @media screen and (max-width: 1366px) {
+  @media screen and (max-width: var(--max-chat-width)) {
     #main-outlet {
+      max-width: 100%;
       padding: 0;
-      &.wrap {
-        max-width: 100%;
-      }
     }
 
     .full-page-chat {
@@ -136,8 +134,9 @@
 // Full page styling with sidebar enabled
 .discourse-sidebar.has-full-page-chat {
   #main-outlet {
-    padding: 2em 0em 0em 0em;
+    padding: 2em 0 0 0;
   }
+
   .full-page-chat.teams-sidebar-on {
     .chat-live-pane {
       border-radius: 0;

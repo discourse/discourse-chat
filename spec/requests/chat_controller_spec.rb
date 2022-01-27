@@ -244,9 +244,26 @@ RSpec.describe DiscourseChat::ChatController do
 
     context "not staff" do
       it "errors when non staff tries to rebake" do
+      it "forbids non staff to rebake" do
         sign_in(Fabricate(:user))
         put "/chat/#{chat_channel.id}/#{chat_message.id}/rebake.json"
         expect(response.status).to eq(403)
+      end
+
+      context "TL3 user" do
+        it "forbids less then TL4 user tries to rebake" do
+          sign_in(Fabricate(:user, trust_level: TrustLevel[3]))
+          put "/chat/#{chat_channel.id}/#{chat_message.id}/rebake.json"
+          expect(response.status).to eq(403)
+        end
+      end
+
+      context "TL4 user" do
+        it "allows TL4 user to rebake" do
+          sign_in(Fabricate(:user, trust_level: TrustLevel[4]))
+          put "/chat/#{chat_channel.id}/#{chat_message.id}/rebake.json"
+          expect(response.status).to eq(200)
+        end
       end
     end
   end

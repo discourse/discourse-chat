@@ -225,6 +225,67 @@ export default Service.extend({
     });
   },
 
+  async moveOneChannelUp() {
+    console.log("UP");
+    this.switchChannelUpOrDown("up");
+  },
+
+  async moveOneChannelDown() {
+    console.log("DOWN");
+    this.switchChannelUpOrDown("down");
+  },
+
+  async switchChannelUpOrDown(direction) {
+    const activeChannel = this.getActiveChannel();
+    if (!activeChannel) {
+      return;
+    }
+
+    const activeIsDmChannel =
+      activeChannel.chatable_type === CHATABLE_TYPES.directMessageChannel;
+    let currentList, otherList;
+    if (activeIsDmChannel) {
+      currentList = this.directMessageChannels;
+      otherList = this.publicChannels;
+    } else {
+      currentList = this.publicChannels;
+      otherList = this.directMessageChannels;
+    }
+
+    const directionUp = direction === "up";
+    const directionInteger = directionUp ? -1 : 1;
+    const currentIndex = currentList.findIndex(
+      (c) => c.id === activeChannel.id
+    );
+
+    let possibleNextChannel = currentList[currentIndex + directionInteger];
+    if (possibleNextChannel) {
+      return this.openChannel(possibleNextChannel);
+    }
+
+    if (otherList.length) {
+      // We know the other channel list has at least 1 channel.
+
+        // (directionUp && activeIsDmChannel) ||
+        // (!directionUp && !activeIsDmChannel)
+      if (directionUp) {
+        return this.openChannel(otherList[otherList.length - 1]);
+      } else {
+        return this.openChannel(otherList[0]);
+      }
+    } else {
+      // Other channel list doesn't have any channels. Just cycle through
+      const nextChannel = directionUp
+        ? this.currentList[currentList.length - 1]
+        : this.currentList[0];
+
+      if (nextChannel.id !== activeChannel.id) {
+        // Prevent changing channel if there is only 1 channel present
+        return this.openChannel(nextChannel);
+      }
+    }
+  },
+
   async isChannelFollowed(channel) {
     return this.getChannelBy("id", channel.id);
   },
@@ -290,6 +351,11 @@ export default Service.extend({
         resolve(this._channelObject());
       });
     });
+  },
+
+  reSortDirectMessageChannels() {
+    this.set("directMessageChannels", this.sortDirectMessageChannels(this.directMessageChannels));
+    this.appEvents.trigger("chat:refresh-channels");
   },
 
   async getChannelBy(key, value) {
@@ -536,6 +602,7 @@ export default Service.extend({
       );
       if (dmChatChannel) {
         dmChatChannel.set("updated_at", new Date());
+        this.reSortDirectMessageChannels();
       }
     });
   },

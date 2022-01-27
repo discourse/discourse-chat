@@ -253,7 +253,7 @@ RSpec.describe DiscourseChat::ChatController do
       end
 
       context "TL4 user" do
-        it "allows TL4 user to rebake" do
+        it "allows TL4 users to rebake" do
           sign_in(Fabricate(:user, trust_level: TrustLevel[4]))
           put "/chat/#{chat_channel.id}/#{chat_message.id}/rebake.json"
           expect(response.status).to eq(200)

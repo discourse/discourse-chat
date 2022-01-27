@@ -9,6 +9,7 @@ import { defaultHomepage } from "discourse/lib/utilities";
 import { generateCookFunction } from "discourse/lib/text";
 import { next } from "@ember/runloop";
 import { Promise } from "rsvp";
+import { CHATABLE_TYPES } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import simpleCategoryHashMentionTransform from "discourse/plugins/discourse-chat/discourse/lib/simple-category-hash-mention-transform";
 import Draft from "discourse/models/draft";
 import discourseDebounce from "discourse-common/lib/debounce";
@@ -51,8 +52,12 @@ export default Service.extend({
 
   init() {
     this._super(...arguments);
+    this.set(
+      "userCanChat",
+      this.currentUser?.has_chat_enabled && this.siteSettings.chat_enabled
+    );
 
-    if (this.currentUser?.has_chat_enabled) {
+    if (this.userCanChat) {
       this.set("allChannels", []);
       this._subscribeToNewDmChannelUpdates();
       this._subscribeToUserTrackingChannel();
@@ -72,7 +77,7 @@ export default Service.extend({
   willDestroy() {
     this._super(...arguments);
 
-    if (this.currentUser?.has_chat_enabled) {
+    if (this.userCanChat) {
       this.set("allChannels", null);
       this._unsubscribeFromNewDmChannelUpdates();
       this._unsubscribeFromUserTrackingChannel();
@@ -167,6 +172,57 @@ export default Service.extend({
       publicChannels: this.publicChannels,
       directMessageChannels: this.directMessageChannels,
     };
+  },
+
+  getActiveChannel() {
+    let channelId;
+    if (this.router.currentRouteName === "chat.channel") {
+      channelId = this.router.currentRoute.params.channelId;
+    } else {
+      channelId = document.querySelector(".topic-chat-container.visible")
+        ?.dataset?.chatChannelId;
+    }
+    return channelId
+      ? this.allChannels.findBy("id", parseInt(channelId, 10))
+      : null;
+  },
+
+  async getChannelsWithFilter(filter, opts = { excludeActiveChannel: true }) {
+    let sortedChannels = this.allChannels.sort((a, b) => {
+      return new Date(a.updated_at) > new Date(b.updated_at) ? -1 : 1;
+    });
+
+    const trimmedFilter = filter.trim();
+    const downcasedFilter = filter.toLowerCase();
+    const activeChannel = this.getActiveChannel();
+
+    return sortedChannels.filter((channel) => {
+      if (
+        opts.excludeActiveChannel &&
+        activeChannel &&
+        activeChannel.id === channel.id
+      ) {
+        return false;
+      }
+      if (!trimmedFilter.length) {
+        return true;
+      }
+
+      if (channel.chatable_type === CHATABLE_TYPES.directMessageChannel) {
+        let userFound = false;
+        channel.chatable.users.forEach((user) => {
+          if (
+            user.username.toLowerCase().includes(downcasedFilter) ||
+            user.name?.toLowerCase().includes(downcasedFilter)
+          ) {
+            return (userFound = true);
+          }
+        });
+        return userFound;
+      } else {
+        return channel.title.toLowerCase().includes(downcasedFilter);
+      }
+    });
   },
 
   async isChannelFollowed(channel) {
@@ -324,25 +380,28 @@ export default Service.extend({
     });
   },
 
-  async openChannelAtMessage(channelId, messageId) {
+  async openChannelAtMessage(channelId, messageId = null) {
     let channel = await this.getChannelBy("id", channelId);
     if (channel) {
       return this._openFoundChannelAtMessage(channel, messageId);
     }
 
     return ajax(`/chat/chat_channels/${channelId}`).then((response) => {
+      const queryParams = messageId ? { messageId } : {};
       this.router.transitionTo(
         "chat.channel",
         response.chat_channel.id,
         response.chat_channel.title,
-        {
-          queryParams: { messageId },
-        }
+        { queryParams }
       );
     });
   },
 
-  _openFoundChannelAtMessage(channel, messageId) {
+  async openChannel(channel) {
+    return this._openFoundChannelAtMessage(channel);
+  },
+
+  _openFoundChannelAtMessage(channel, messageId = null) {
     if (
       this.router.currentRouteName === "chat.channel" &&
       this.router.currentRoute.params.channelTitle === channel.title
@@ -354,6 +413,7 @@ export default Service.extend({
       this.router.currentRouteName === "chat.channel" ||
       this.currentUser.chat_isolated
     ) {
+      const queryParams = messageId ? { messageId } : {};
       this.router.transitionTo("chat.channel", channel.id, channel.title, {
         queryParams: { messageId },
       });
@@ -362,8 +422,14 @@ export default Service.extend({
     }
   },
 
-  _fireOpenFloatAppEvent(channel, messageId) {
-    this.appEvents.trigger("chat:open-channel-at-message", channel, messageId);
+  _fireOpenFloatAppEvent(channel, messageId = null) {
+    messageId
+      ? this.appEvents.trigger(
+          "chat:open-channel-at-message",
+          channel,
+          messageId
+        )
+      : this.appEvents.trigger("chat:open-channel", channel);
   },
 
   _fireOpenMessageAppEvent(messageId) {

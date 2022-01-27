@@ -87,6 +87,9 @@ en:
         other: "%{count} files"
       exit: "back"
 
+      channel_selector:
+        title: "Jump to channel"
+
       create_channel:
         choose_category:
           label: "Choose a category"

@@ -521,6 +521,8 @@ export default Component.extend({
   },
 
   handleSentMessage(data) {
+    this.chatChannel.set("updated_at", new Date());
+
     if (data.chat_message.user.id === this.currentUser.id) {
       // User sent this message. Check staged messages to see if this client sent the message.
       // If so, need to update the staged message with and id.

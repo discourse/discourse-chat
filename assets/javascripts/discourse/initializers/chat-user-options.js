@@ -8,12 +8,15 @@ const CHAT_SOUND = "chat_sound";
 export default {
   name: "chat-user-options",
 
-  initialize() {
+  initialize(container) {
     withPluginApi("0.11.0", (api) => {
-      api.addSaveableUserOptionField(CHAT_ENABLED_FIELD);
-      api.addSaveableUserOptionField(CHAT_ISOLATED_FIELD);
-      api.addSaveableUserOptionField(ONLY_CHAT_PUSH_NOTI_FIELD);
-      api.addSaveableUserOptionField(CHAT_SOUND);
+      const chatService = container.lookup("service:chat");
+      if (chatService.userCanChat) {
+        api.addSaveableUserOptionField(CHAT_ENABLED_FIELD);
+        api.addSaveableUserOptionField(CHAT_ISOLATED_FIELD);
+        api.addSaveableUserOptionField(ONLY_CHAT_PUSH_NOTI_FIELD);
+        api.addSaveableUserOptionField(CHAT_SOUND);
+      }
     });
   },
 };

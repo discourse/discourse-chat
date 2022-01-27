@@ -1,0 +1,15 @@
+{{#d-modal-body title="chat.channel_selector.title"}}
+  <div id="chat-channel-selector-modal-inner">
+    <div class="chat-channel-selector-input-container">
+      <span class="search-icon">
+        {{d-icon "search"}}
+      </span>
+      {{input id="chat-channel-selector-input" type="text" value=filter onChange=onFilterChange autocomplete="off"}}
+    </div>
+    <div class="channels">
+      {{#each filteredChannels as |channel|}}
+        {{chat-channel-row channel=channel switchChannel=switchChannel}}
+      {{/each}}
+    </div>
+  </div>
+{{/d-modal-body}}

@@ -58,8 +58,6 @@ es:
           one: "%{usernames} no se ha unido a este canal."
           other: "%{usernames} no se han unido a este canal."
       no_public_channels: "No te has unido a ningún canal."
-      no_joinable_channels_title: "Aún no hay canales a los que puedas unirte."
-      no_joinable_channels_body: "Puedes ponerte en contacto con tu administrador para empezar a habilitar el chat para temas o categorías."
       only_chat_push_notifications:
         title: "Enviar solo notificaciones de chat"
         description: "Bloquear el envío de todas las notificaciones que no sean de chat"
@@ -79,7 +77,6 @@ es:
       select: "Seleccionar"
       return_to_list: "Volver a la lista de canales"
       scroll_to_bottom: "Desplazar hacia abajo"
-      send_error: "Algo salió mal"
       sound:
         title: "Sonido de notificación de chat de escritorio"
       sounds:
@@ -188,7 +185,8 @@ es:
           other: "%{commaSeparatedUsernames} y %{count} más están escribiendo"
     notifications:
       popup:
-        chat_mention: "@%{username} te mencionó en el chat"
+        chat_mention: "%{username} te mencionó en el chat"
+        chat_group_mention: "%{username} mencionó a @%{groupName} en el chat"
         chat_message: "Nuevo mensaje de chat"
       titles:
         chat_mention: "Mención de chat"

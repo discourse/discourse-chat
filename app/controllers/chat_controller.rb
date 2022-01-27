@@ -9,7 +9,8 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     :delete,
     :restore,
     :lookup_message,
-    :edit_message
+    :edit_message,
+    :rebake
   ]
 
   def respond
@@ -238,6 +239,12 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
 
   def flag
     render_json_error "unimplemented"
+  end
+
+  def rebake
+    guardian.ensure_can_rebake!
+    @message.rebake!(invalidate_oneboxes: true)
+    render json: success_json
   end
 
   def lookup_message

@@ -208,6 +208,60 @@ RSpec.describe DiscourseChat::ChatController do
     end
   end
 
+  describe "#rebake" do
+    fab!(:chat_channel) { Fabricate(:chat_channel) }
+    fab!(:chat_message) { Fabricate(:chat_message, chat_channel: chat_channel, user: user) }
+
+    context "staff" do
+      it "rebakes the post" do
+        sign_in(Fabricate(:admin))
+
+        expect_enqueued_with(job: :process_chat_message, args: { chat_message_id: chat_message.id }) do
+          put "/chat/#{chat_channel.id}/#{chat_message.id}/rebake.json"
+
+          expect(response.status).to eq(200)
+        end
+      end
+
+      context "cooked has changed" do
+        it "marks the message as dirty" do
+          sign_in(Fabricate(:admin))
+          chat_message.update!(message: "new content")
+
+          expect_enqueued_with(job: :process_chat_message, args: { chat_message_id: chat_message.id, is_dirty: true }) do
+            put "/chat/#{chat_channel.id}/#{chat_message.id}/rebake.json"
+
+            expect(response.status).to eq(200)
+          end
+        end
+      end
+    end
+
+    context "not staff" do
+      it "forbids non staff to rebake" do
+        sign_in(Fabricate(:user))
+        put "/chat/#{chat_channel.id}/#{chat_message.id}/rebake.json"
+        expect(response.status).to eq(403)
+      end
+
+      context "TL3 user" do
+        it "forbids less then TL4 user tries to rebake" do
+          sign_in(Fabricate(:user, trust_level: TrustLevel[3]))
+          put "/chat/#{chat_channel.id}/#{chat_message.id}/rebake.json"
+          expect(response.status).to eq(403)
+        end
+      end
+
+      context "TL4 user" do
+        it "allows TL4 users to rebake" do
+          sign_in(Fabricate(:user, trust_level: TrustLevel[4]))
+          put "/chat/#{chat_channel.id}/#{chat_message.id}/rebake.json"
+          expect(response.status).to eq(200)
+        end
+      end
+    end
+  end
+
   describe "#edit_message" do
     fab!(:chat_channel) { Fabricate(:chat_channel) }
     fab!(:chat_message) { Fabricate(:chat_message, chat_channel: chat_channel, user: user) }

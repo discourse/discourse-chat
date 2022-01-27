@@ -16,6 +16,32 @@ describe Jobs::ProcessChatMessage do
     expect(chat_message.reload.cooked).to eq("<p><a href=\"https://discourse.org/team\" class=\"onebox\" target=\"_blank\" rel=\"noopener nofollow ugc\">https://discourse.org/team</a></p>")
   end
 
+  context "is_dirty args is true" do
+    fab!(:chat_message) { Fabricate(:chat_message, message: "a very lovely cat") }
+
+    it "publishes the update" do
+      ChatPublisher.expects(:publish_processed!).once
+      described_class.new.execute(chat_message_id: chat_message.id, is_dirty: true)
+    end
+  end
+
+  context "is_dirty args is not true" do
+    fab!(:chat_message) { Fabricate(:chat_message, message: "a very lovely cat") }
+
+    it "doesn’t publish the update" do
+      ChatPublisher.expects(:publish_processed!).never
+      described_class.new.execute(chat_message_id: chat_message.id)
+    end
+
+    context "the cooked message changed" do
+      it "publishes the update" do
+        chat_message.update!(cooked: "another lovely cat")
+        ChatPublisher.expects(:publish_processed!).once
+        described_class.new.execute(chat_message_id: chat_message.id)
+      end
+    end
+  end
+
   it "does not error when message is deleted" do
     chat_message.destroy
     expect { described_class.new.execute(chat_message_id: chat_message.id) }.not_to raise_exception

@@ -8,7 +8,8 @@ module Jobs
         return if !chat_message
         processor = DiscourseChat::ChatMessageProcessor.new(chat_message)
         processor.run!
-        if processor.dirty?
+
+        if args[:is_dirty] || processor.dirty?
           chat_message.update(
             cooked: processor.html,
             cooked_version: ChatMessage::BAKED_VERSION

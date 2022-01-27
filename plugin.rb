@@ -158,7 +158,7 @@ after_initialize do
   end
 
   add_to_serializer(:post, :chat_connection) do
-    if object.chat_message_post_connections.any?
+    if object.chat_message_post_connections&.first&.chat_message
       {
         chat_channel_id: object.chat_message_post_connections.first.chat_message.chat_channel_id,
         chat_message_ids: object.chat_message_post_connections.map(&:chat_message_id)

@@ -326,7 +326,7 @@ after_initialize do
     post '/hooks/:key' => 'incoming_chat_webhooks#create_message'
 
     # incoming_webhooks_controller routes
-    post '/hooks/:key/slack' => 'incoming_chat_webhooks#create_message_slack_compatable'
+    post '/hooks/:key/slack' => 'incoming_chat_webhooks#create_message_slack_compatible'
 
     # move_to_topic_controller routes
     resources :move_to_topic

@@ -113,6 +113,19 @@ export default Service.extend({
     return this.router.currentRouteName === "chat.browse";
   },
 
+  get activeChannel() {
+    let channelId;
+    if (this.router.currentRouteName === "chat.channel") {
+      channelId = this.router.currentRoute.params.channelId;
+    } else {
+      channelId = document.querySelector(".topic-chat-container.visible")
+        ?.dataset?.chatChannelId;
+    }
+    return channelId
+      ? this.allChannels.findBy("id", parseInt(channelId, 10))
+      : null;
+  },
+
   loadCookFunction(categories) {
     if (this.cook) {
       return Promise.resolve(this.cook);
@@ -198,7 +211,7 @@ export default Service.extend({
 
     const trimmedFilter = filter.trim();
     const downcasedFilter = filter.toLowerCase();
-    const activeChannel = this.getActiveChannel();
+    const { activeChannel } = this;
 
     return sortedChannels.filter((channel) => {
       if (
@@ -230,7 +243,7 @@ export default Service.extend({
   },
 
   switchChannelUpOrDown(direction) {
-    const activeChannel = this.getActiveChannel();
+    const { activeChannel } = this;
     if (!activeChannel) {
       return; // Chat isn't open. Return and do nothing!
     }

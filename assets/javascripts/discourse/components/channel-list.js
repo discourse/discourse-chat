@@ -37,9 +37,9 @@ export default Component.extend({
       return [];
     }
 
-    return this.chat
-      .sortDirectMessageChannels(channels)
-      .slice(0, this.currentUser.chat_isolated ? 20 : 10);
+    return this.chat.truncateDirectMessageChannels(
+      this.chat.sortDirectMessageChannels(channels)
+    );
   },
 
   @discourseComputed("inSidebar")

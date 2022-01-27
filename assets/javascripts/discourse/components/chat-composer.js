@@ -180,7 +180,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   },
 
   keyDown(event) {
-    if (this.site.mobileView) {
+    if (this.site.mobileView || event.altKey || event.metaKey) {
       return;
     }
 
@@ -188,14 +188,6 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     if (event.keyCode === 13) {
       if (event.shiftKey) {
         // Shift+Enter: insert newline
-        return;
-      }
-      if (event.altKey) {
-        // Alt+Enter: no action
-        return;
-      }
-      if (event.metaKey) {
-        // Super+Enter: no action
         return;
       }
 

@@ -191,7 +191,12 @@ export default Component.extend({
   },
 
   _fetchMorePastMessages() {
-    if (this.loading || this.loadingMore || this.allPastMessagesLoaded) {
+    if (
+      this.loading ||
+      this.loadingMore ||
+      this.allPastMessagesLoaded ||
+      !this.messages.length
+    ) {
       return;
     }
 

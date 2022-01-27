@@ -25,7 +25,7 @@ export default Component.extend({
     document.getElementById("chat-channel-selector-modal-inner")?.focus();
     document
       .getElementById("chat-channel-selector-input")
-      ?.addEventListener("keyup", this.getFilteredChannels);
+      ?.addEventListener("keyup", this.onFilterInput);
   },
 
   willDestroyElement() {
@@ -37,7 +37,7 @@ export default Component.extend({
       ?.removeEventListener("mouseover", this.mouseover);
     document
       .getElementById("chat-channel-selector-input")
-      ?.removeEventListener("keyup", this.getFilteredChannels);
+      ?.removeEventListener("keyup", this.onFilterInput);
     this.filteredChannels.forEach((c) => c.set("focused", false));
   },
 
@@ -93,6 +93,15 @@ export default Component.extend({
   switchChannel(channel) {
     this.chat.openChannel(channel);
     this.close();
+  },
+
+  @bind
+  onFilterInput(e) {
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+      return;
+    }
+
+    this.getFilteredChannels();
   },
 
   @action

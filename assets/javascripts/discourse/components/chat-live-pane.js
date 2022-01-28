@@ -463,8 +463,16 @@ export default Component.extend({
   },
 
   _calculateStickScroll() {
-    const shouldStick =
-      Math.abs(this._scrollerEl.scrollTop) < STICKY_SCROLL_LENIENCE;
+    const absoluteScrollTop = Math.abs(this._scrollerEl.scrollTop);
+    const shouldStick = absoluteScrollTop < STICKY_SCROLL_LENIENCE;
+
+    this.set(
+      "showScrollToBottomBtn",
+      shouldStick
+        ? false
+        : absoluteScrollTop / this._scrollerEl.offsetHeight > 0.67
+    );
+
     if (shouldStick !== this.stickyScroll) {
       if (shouldStick) {
         this._stickScrollToBottom();

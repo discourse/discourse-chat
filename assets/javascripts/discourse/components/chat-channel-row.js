@@ -1,18 +1,20 @@
 import Component from "@ember/component";
 import discourseComputed from "discourse-common/utils/decorators";
 import getURL from "discourse-common/lib/get-url";
+import { action } from "@ember/object";
 import { equal } from "@ember/object/computed";
 import { inject as service } from "@ember/service";
-import { action } from "@ember/object";
+import { propertyEqual } from "discourse/lib/computed";
 
 export default Component.extend({
   tagName: "",
+  router: service(),
+  chat: service(),
   channel: null,
   switchChannel: null,
   isUnfollowing: false,
   isDirectMessageRow: equal("channel.chatable_type", "DirectMessageChannel"),
-  router: service(),
-  chat: service(),
+  active: propertyEqual("channel.id", "chat.activeChannel.id"),
   options: null,
 
   @discourseComputed("active", "channel.{id,muted}", "channel.focused")
@@ -73,10 +75,5 @@ export default Component.extend({
   onLeaveChannel() {
     this.set("isUnfollowing", true);
     this.chat.unfollowChannel(this.channel);
-  },
-
-  @discourseComputed("channel", "chat.activeChannel")
-  active(channel, activeChannel) {
-    return channel.id === activeChannel?.id;
   },
 });

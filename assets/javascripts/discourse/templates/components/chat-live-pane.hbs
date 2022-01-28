@@ -56,16 +56,18 @@
   {{conditional-loading-spinner condition=this.loadingMore}}
 </div>
 
-<div class="scroll-stick-wrap">
-  <a
-    href
-    title={{i18n "chat.scroll_to_bottom"}}
-    class="btn btn-flat chat-scroll-to-bottom {{if this.stickyScroll "hidden"}}"
-    {{on "click" (action "restickScrolling")}}
-  >
-    {{d-icon "arrow-down"}}
-  </a>
-</div>
+{{#if showScrollToBottomBtn}}
+  <div class="scroll-stick-wrap">
+    <a
+      href
+      title={{i18n "chat.scroll_to_bottom"}}
+      class="btn btn-flat chat-scroll-to-bottom"
+      {{on "click" (action "restickScrolling")}}
+    >
+      {{d-icon "arrow-down"}}
+    </a>
+  </div>
+{{/if}}
 
 {{#if expanded}}
   {{#if selectingMessages}}

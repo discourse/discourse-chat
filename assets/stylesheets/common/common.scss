@@ -1138,6 +1138,7 @@ body.has-full-page-chat {
   display: grid;
   flex-grow: 1;
   grid-template-columns: var(--full-page-sidebar-width) 1fr;
+  overflow: hidden;
 
   .chat-channels {
     background: var(--primary-very-low);

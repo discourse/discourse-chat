@@ -134,7 +134,9 @@
 // Full page styling with sidebar enabled
 .discourse-sidebar.has-full-page-chat {
   #main-outlet {
-    padding: 2em 0 0 0;
+    box-sizing: border-box;
+    height: calc(100vh - 4rem); // 4rem: sidebar header
+    padding: 1.5rem 0 0 0;
   }
 
   .full-page-chat.teams-sidebar-on {

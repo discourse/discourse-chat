@@ -2,7 +2,6 @@ import Component from "@ember/component";
 import discourseComputed from "discourse-common/utils/decorators";
 import { action } from "@ember/object";
 import { reads } from "@ember/object/computed";
-import { schedule } from "@ember/runloop";
 import { inject as service } from "@ember/service";
 
 export default Component.extend({
@@ -25,27 +24,19 @@ export default Component.extend({
     return !mobileView && !sidebarOn;
   },
 
-  init() {
-    this._super(...arguments);
-
-    this.appEvents.on("chat:refresh-channels", this, "refreshModel");
-  },
-
   didInsertElement() {
     this._super(...arguments);
 
+    this.appEvents.on("chat:refresh-channels", this, "refreshModel");
     this._scrollSidebarToBottom();
-    window.addEventListener("resize", this._calculateHeight, false);
     document.body.classList.add("has-full-page-chat");
     this.chat.set("fullScreenChatOpen", true);
-    schedule("afterRender", this._calculateHeight);
   },
 
   willDestroyElement() {
     this._super(...arguments);
 
     this.appEvents.off("chat:refresh-channels", this, "refreshModel");
-    window.removeEventListener("resize", this._calculateHeight, false);
     document.body.classList.remove("has-full-page-chat");
     this.chat.set("fullScreenChatOpen", false);
   },
@@ -61,24 +52,6 @@ export default Component.extend({
     if (sidebarScroll) {
       sidebarScroll.scrollTop = sidebarScroll.scrollHeight;
     }
-  },
-
-  _calculateHeight() {
-    const main = document.getElementById("main-outlet"),
-      padBottom = window
-        .getComputedStyle(main, null)
-        .getPropertyValue("padding-bottom"),
-      chatContainerCoords = document
-        .querySelector(".full-page-chat")
-        .getBoundingClientRect();
-
-    const elHeight =
-      window.innerHeight -
-      chatContainerCoords.y -
-      window.pageYOffset -
-      parseInt(padBottom, 10);
-
-    document.body.style.setProperty("--full-page-chat-height", `${elHeight}px`);
   },
 
   @action

@@ -34,8 +34,9 @@ export default DiscourseRoute.extend({
       .catch(() => this.replaceWith("/404"));
   },
 
-  afterModel() {
+  afterModel(model) {
     this.appEvents.trigger("chat:navigated-to-full-page");
+    this.chat.setActiveChannel(model?.chatChannel);
   },
 
   setupController(controller) {
@@ -45,6 +46,12 @@ export default DiscourseRoute.extend({
       this.chat.set("messageId", controller.messageId);
       this.controller.set("messageId", null);
     }
+  },
+
+  @action
+  willTransition() {
+    this._super(...arguments);
+    this.chat.setActiveChannel(null);
   },
 
   @action

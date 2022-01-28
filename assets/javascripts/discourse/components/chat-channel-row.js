@@ -75,11 +75,8 @@ export default Component.extend({
     this.chat.unfollowChannel(this.channel);
   },
 
-  @discourseComputed("channel", "router.currentRoute")
-  active(channel, currentRoute) {
-    return (
-      currentRoute?.name === "chat.channel" &&
-      currentRoute?.params?.channelId === channel.id.toString(10)
-    );
+  @discourseComputed("channel", "chat.activeChannel")
+  active(channel, activeChannel) {
+    return channel.id === activeChannel?.id;
   },
 });

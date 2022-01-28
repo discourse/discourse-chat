@@ -295,6 +295,7 @@ export default Component.extend({
       hidden: true,
       expanded: true,
     });
+    this.chat.setActiveChannel(null);
     this.appEvents.trigger("chat:float-toggled", this.hidden);
   },
 
@@ -303,13 +304,13 @@ export default Component.extend({
     this.set("hidden", !this.hidden);
     this.appEvents.trigger("chat:float-toggled", this.hidden);
     if (this.hidden) {
-      return;
+      return this.chat.setActiveChannel(null);
     } else {
       this.set("expanded", true);
       this.appEvents.trigger("chat:toggle-expand", this.expanded);
       if (this.activeChannel) {
         // Channel was previously open, so after expand we are done.
-        return;
+        return this.chat.setActiveChannel(null);
       }
     }
 
@@ -373,6 +374,7 @@ export default Component.extend({
       expectPageChange: false,
       view: CHAT_VIEW,
     };
+    this.chat.setActiveChannel(channel);
     this.setProperties(channelInfo);
   },
 

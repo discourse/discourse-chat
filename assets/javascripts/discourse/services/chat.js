@@ -29,6 +29,7 @@ const PUBLIC_CHANNEL_SORT_PRIOS = {
 };
 
 export default Service.extend({
+  activeChannel: null,
   allChannels: null,
   appEvents: service(),
   chatNotificationManager: service(),
@@ -113,17 +114,8 @@ export default Service.extend({
     return this.router.currentRouteName === "chat.browse";
   },
 
-  get activeChannel() {
-    let channelId;
-    if (this.router.currentRouteName === "chat.channel") {
-      channelId = this.router.currentRoute.params.channelId;
-    } else {
-      channelId = document.querySelector(".topic-chat-container.visible")
-        ?.dataset?.chatChannelId;
-    }
-    return channelId
-      ? this.allChannels.findBy("id", parseInt(channelId, 10))
-      : null;
+  setActiveChannel(channel) {
+    this.set("activeChannel", channel);
   },
 
   loadCookFunction(categories) {

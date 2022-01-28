@@ -18,7 +18,7 @@
   }
 
   .chat-full-page-header {
-    padding: 0 1em;
+    padding: 0.5rem 0.5rem 0.5rem 1rem;
     flex-shrink: 0;
   }
 
@@ -86,10 +86,6 @@
     border-right: 1px solid var(--primary-low);
     border-left: 1px solid var(--primary-low);
     overflow: hidden;
-
-    .chat-full-page-header {
-      padding: 0.5em 1em;
-    }
 
     .chat-channels {
       background: var(--primary-very-low);

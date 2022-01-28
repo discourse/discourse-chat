@@ -142,6 +142,14 @@ export default Component.extend({
       });
     }
 
+    if (this.currentUser?.staff) {
+      buttons.push({
+        id: "rebakeMessage",
+        name: I18n.t("chat.rebake_message"),
+        icon: "sync-alt",
+      });
+    }
+
     return buttons;
   },
 
@@ -585,6 +593,16 @@ export default Component.extend({
   restore() {
     return ajax(
       `/chat/${this.details.chat_channel_id}/restore/${this.message.id}`,
+      {
+        type: "PUT",
+      }
+    ).catch(popupAjaxError);
+  },
+
+  @action
+  rebakeMessage() {
+    return ajax(
+      `/chat/${this.details.chat_channel_id}/${this.message.id}/rebake`,
       {
         type: "PUT",
       }

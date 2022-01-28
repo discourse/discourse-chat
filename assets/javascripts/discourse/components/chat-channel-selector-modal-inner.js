@@ -1,6 +1,5 @@
 import Component from "@ember/component";
 import { bind } from "discourse-common/utils/decorators";
-import discourseDebounce from "discourse-common/lib/debounce";
 import { schedule } from "@ember/runloop";
 import { inject as service } from "@ember/service";
 import { action } from "@ember/object";
@@ -14,7 +13,7 @@ export default Component.extend({
   init() {
     this._super(...arguments);
     this.appEvents.on("chat-channel-selector-modal:close", this.close);
-    this._getFilteredChannels();
+    this.getFilteredChannels();
   },
 
   didInsertElement() {
@@ -24,6 +23,9 @@ export default Component.extend({
       .getElementById("chat-channel-selector-modal-inner")
       ?.addEventListener("mouseover", this.mouseover);
     document.getElementById("chat-channel-selector-modal-inner")?.focus();
+    document
+      .getElementById("chat-channel-selector-input")
+      ?.addEventListener("keyup", this.onFilterInput);
   },
 
   willDestroyElement() {
@@ -33,6 +35,9 @@ export default Component.extend({
     document
       .getElementById("chat-channel-selector-modal-inner")
       ?.removeEventListener("mouseover", this.mouseover);
+    document
+      .getElementById("chat-channel-selector-input")
+      ?.removeEventListener("keyup", this.onFilterInput);
     this.filteredChannels.forEach((c) => c.set("focused", false));
   },
 
@@ -90,16 +95,21 @@ export default Component.extend({
     this.close();
   },
 
-  _getFilteredChannels() {
+  @bind
+  onFilterInput(e) {
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+      return;
+    }
+
+    this.getFilteredChannels();
+  },
+
+  @action
+  getFilteredChannels() {
     return this.chat.getChannelsWithFilter(this.filter).then((channels) => {
       channels.forEach((c) => c.set("focused", false));
       channels[0]?.set("focused", true);
       this.set("filteredChannels", channels);
     });
-  },
-
-  @action
-  onFilterChange() {
-    discourseDebounce(this, this._getFilteredChannels, 50);
   },
 });

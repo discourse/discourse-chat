@@ -68,6 +68,7 @@ en:
       reply: "Reply"
       edit: "Edit"
       copy_link: "Copy link"
+      rebake_message: "Rebuild HTML"
       restore: "Restore deleted message"
       save: "Save"
       select: "Select"

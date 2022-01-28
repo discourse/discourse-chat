@@ -326,6 +326,29 @@ acceptance("Discourse Chat - without unread", function (needs) {
     assert.ok(/^\/chat\/channel\/4/.test(currentURL()));
   });
 
+  test("Admin only controls are present", async function (assert) {
+    await visit("/chat/channel/9/Site");
+    const currentUserDropdown = selectKit(
+      ".chat-message-container-174 .more-buttons"
+    );
+    await currentUserDropdown.expand();
+
+    assert.notOk(
+      currentUserDropdown.rowByValue("rebakeMessage").exists(),
+      "it doesn’t show the rebake button for non staff"
+    );
+
+    await visit("/");
+    updateCurrentUser({ admin: true, moderator: true });
+    await visit("/chat/channel/9/Site");
+    await currentUserDropdown.expand();
+
+    assert.ok(
+      currentUserDropdown.rowByValue("rebakeMessage").exists(),
+      "it shows the rebake button"
+    );
+  });
+
   test("Message controls are present and correct for permissions", async function (assert) {
     await visit("/chat/channel/9/Site");
     const messages = queryAll(".chat-message");
@@ -344,6 +367,11 @@ acceptance("Discourse Chat - without unread", function (needs) {
     assert.ok(
       currentUserDropdown.rowByValue("copyLinkToMessage").exists(),
       "it shows the link to button"
+    );
+
+    assert.notOk(
+      currentUserDropdown.rowByValue("rebakeMessage").exists(),
+      "it doesn’t show the rebake button to a regular user"
     );
 
     assert.ok(

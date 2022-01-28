@@ -93,16 +93,18 @@ after_initialize do
 
   register_topic_custom_field_type(DiscourseChat::HAS_CHAT_ENABLED, :boolean)
   register_category_custom_field_type(DiscourseChat::HAS_CHAT_ENABLED, :boolean)
-  Site.preloaded_category_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
-  TopicList.preloaded_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
-  CategoryList.preloaded_topic_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
-  Search.preloaded_topic_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
+
   UserUpdater::OPTION_ATTR.push(:chat_enabled)
   UserUpdater::OPTION_ATTR.push(:chat_isolated)
   UserUpdater::OPTION_ATTR.push(:only_chat_push_notifications)
   UserUpdater::OPTION_ATTR.push(:chat_sound)
 
   reloadable_patch do |plugin|
+    Site.preloaded_category_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
+    TopicList.preloaded_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
+    CategoryList.preloaded_topic_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
+    Search.preloaded_topic_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
+
     Guardian.class_eval { include DiscourseChat::GuardianExtensions }
     TopicViewSerializer.class_eval { prepend DiscourseChat::TopicViewSerializerExtension }
     DetailedTagSerializer.class_eval { prepend DiscourseChat::DetailedTagSerializerExtension }
@@ -159,7 +161,7 @@ after_initialize do
   end
 
   add_to_serializer(:post, :chat_connection) do
-    if object.chat_message_post_connections.any?
+    if object.chat_message_post_connections&.first&.chat_message
       {
         chat_channel_id: object.chat_message_post_connections.first.chat_message.chat_channel_id,
         chat_message_ids: object.chat_message_post_connections.map(&:chat_message_id)
@@ -327,7 +329,7 @@ after_initialize do
     post '/hooks/:key' => 'incoming_chat_webhooks#create_message'
 
     # incoming_webhooks_controller routes
-    post '/hooks/:key/slack' => 'incoming_chat_webhooks#create_message_slack_compatable'
+    post '/hooks/:key/slack' => 'incoming_chat_webhooks#create_message_slack_compatible'
 
     # move_to_topic_controller routes
     resources :move_to_topic
@@ -354,6 +356,7 @@ after_initialize do
     put ':chat_channel_id/edit/:message_id' => 'chat#edit_message'
     put ':chat_channel_id/react/:message_id' => 'chat#react'
     delete '/:chat_channel_id/:message_id' => 'chat#delete'
+    put '/:chat_channel_id/:message_id/rebake' => 'chat#rebake'
     post '/:chat_channel_id/:message_id/flag' => 'chat#flag'
     put '/:chat_channel_id/restore/:message_id' => 'chat#restore'
     get '/lookup/:message_id' => 'chat#lookup_message'

@@ -20,11 +20,27 @@ export default {
       }
     };
 
+    const handleMoveUpShortcut = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      chatService.switchChannelUpOrDown("up");
+    };
+
+    const handleMoveDownShortcut = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      chatService.switchChannelUpOrDown("down");
+    };
+
     withPluginApi("0.12.1", (api) => {
       api.addKeyboardShortcut("command+k", openChannelSelector, {
         global: true,
       });
       api.addKeyboardShortcut("ctrl+k", openChannelSelector, { global: true });
+      api.addKeyboardShortcut("alt+up", handleMoveUpShortcut, { global: true });
+      api.addKeyboardShortcut("alt+down", handleMoveDownShortcut, {
+        global: true,
+      });
     });
   },
 };

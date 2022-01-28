@@ -113,6 +113,19 @@ export default Service.extend({
     return this.router.currentRouteName === "chat.browse";
   },
 
+  get activeChannel() {
+    let channelId;
+    if (this.router.currentRouteName === "chat.channel") {
+      channelId = this.router.currentRoute.params.channelId;
+    } else {
+      channelId = document.querySelector(".topic-chat-container.visible")
+        ?.dataset?.chatChannelId;
+    }
+    return channelId
+      ? this.allChannels.findBy("id", parseInt(channelId, 10))
+      : null;
+  },
+
   loadCookFunction(categories) {
     if (this.cook) {
       return Promise.resolve(this.cook);
@@ -174,6 +187,10 @@ export default Service.extend({
     };
   },
 
+  truncateDirectMessageChannels(channels) {
+    return channels.slice(0, this.currentUser.chat_isolated ? 20 : 10);
+  },
+
   getActiveChannel() {
     let channelId;
     if (this.router.currentRouteName === "chat.channel") {
@@ -194,7 +211,7 @@ export default Service.extend({
 
     const trimmedFilter = filter.trim();
     const downcasedFilter = filter.toLowerCase();
-    const activeChannel = this.getActiveChannel();
+    const { activeChannel } = this;
 
     return sortedChannels.filter((channel) => {
       if (
@@ -223,6 +240,50 @@ export default Service.extend({
         return channel.title.toLowerCase().includes(downcasedFilter);
       }
     });
+  },
+
+  switchChannelUpOrDown(direction) {
+    const { activeChannel } = this;
+    if (!activeChannel) {
+      return; // Chat isn't open. Return and do nothing!
+    }
+    const inDmChannel =
+      activeChannel.chatable_type === CHATABLE_TYPES.directMessageChannel;
+
+    let currentList, otherList;
+    if (inDmChannel) {
+      currentList = this.truncateDirectMessageChannels(
+        this.directMessageChannels
+      );
+      otherList = this.publicChannels;
+    } else {
+      currentList = this.publicChannels;
+      otherList = this.truncateDirectMessageChannels(
+        this.directMessageChannels
+      );
+    }
+
+    const directionUp = direction === "up";
+    const currentChannelIndex = currentList.findIndex(
+      (c) => c.id === activeChannel.id
+    );
+
+    let nextChannelInSameList =
+      currentList[currentChannelIndex + (directionUp ? -1 : 1)];
+    if (nextChannelInSameList) {
+      // You're navigating in the same list of channels, just use index +- 1
+      return this.openChannel(nextChannelInSameList);
+    }
+
+    // You need to go to the next list of channels, if it exists.
+    const nextList = otherList.length ? otherList : currentList;
+    const nextChannel = directionUp
+      ? nextList[nextList.length - 1]
+      : nextList[0];
+
+    if (nextChannel.id !== activeChannel.id) {
+      return this.openChannel(nextChannel);
+    }
   },
 
   async isChannelFollowed(channel) {
@@ -270,8 +331,10 @@ export default Service.extend({
           // We don't need to sort direct message channels, as the channel list
           // uses a computed property to keep them ordered by `updated_at`.
           directMessageChannels: A(
-            channels.direct_message_channels.map((channel) =>
-              this.processChannel(channel)
+            this.sortDirectMessageChannels(
+              channels.direct_message_channels.map((channel) =>
+                this.processChannel(channel)
+              )
             )
           ),
           hasFetchedChannels: true,
@@ -288,6 +351,13 @@ export default Service.extend({
         resolve(this._channelObject());
       });
     });
+  },
+
+  reSortDirectMessageChannels() {
+    this.set(
+      "directMessageChannels",
+      this.sortDirectMessageChannels(this.directMessageChannels)
+    );
   },
 
   async getChannelBy(key, value) {
@@ -534,6 +604,7 @@ export default Service.extend({
       );
       if (dmChatChannel) {
         dmChatChannel.set("updated_at", new Date());
+        this.reSortDirectMessageChannels();
       }
     });
   },

@@ -135,7 +135,8 @@
 .discourse-sidebar.has-full-page-chat {
   #main-outlet {
     box-sizing: border-box;
-    height: calc(100vh - 4rem); // 4rem: sidebar header
+    // 4rem: sidebar header
+    height: calc(var(--ipad-viewport-height, 100vh) - 4rem);
     padding: 1.5rem 0 0 0;
   }
 

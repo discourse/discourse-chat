@@ -17,7 +17,7 @@ export default Component.extend({
   init() {
     this._super(...arguments);
 
-    if (!this.currentUser?.has_chat_enabled) {
+    if (!this.chat.userCanChat) {
       return;
     }
     this.appEvents.on("chat:refresh-channels", this, "fetchChannels");

@@ -208,6 +208,60 @@ RSpec.describe DiscourseChat::ChatController do
     end
   end
 
+  describe "#rebake" do
+    fab!(:chat_channel) { Fabricate(:chat_channel) }
+    fab!(:chat_message) { Fabricate(:chat_message, chat_channel: chat_channel, user: user) }
+
+    context "staff" do
+      it "rebakes the post" do
+        sign_in(Fabricate(:admin))
+
+        expect_enqueued_with(job: :process_chat_message, args: { chat_message_id: chat_message.id }) do
+          put "/chat/#{chat_channel.id}/#{chat_message.id}/rebake.json"
+
+          expect(response.status).to eq(200)
+        end
+      end
+
+      context "cooked has changed" do
+        it "marks the message as dirty" do
+          sign_in(Fabricate(:admin))
+          chat_message.update!(message: "new content")
+
+          expect_enqueued_with(job: :process_chat_message, args: { chat_message_id: chat_message.id, is_dirty: true }) do
+            put "/chat/#{chat_channel.id}/#{chat_message.id}/rebake.json"
+
+            expect(response.status).to eq(200)
+          end
+        end
+      end
+    end
+
+    context "not staff" do
+      it "forbids non staff to rebake" do
+        sign_in(Fabricate(:user))
+        put "/chat/#{chat_channel.id}/#{chat_message.id}/rebake.json"
+        expect(response.status).to eq(403)
+      end
+
+      context "TL3 user" do
+        it "forbids less then TL4 user tries to rebake" do
+          sign_in(Fabricate(:user, trust_level: TrustLevel[3]))
+          put "/chat/#{chat_channel.id}/#{chat_message.id}/rebake.json"
+          expect(response.status).to eq(403)
+        end
+      end
+
+      context "TL4 user" do
+        it "allows TL4 users to rebake" do
+          sign_in(Fabricate(:user, trust_level: TrustLevel[4]))
+          put "/chat/#{chat_channel.id}/#{chat_message.id}/rebake.json"
+          expect(response.status).to eq(200)
+        end
+      end
+    end
+  end
+
   describe "#edit_message" do
     fab!(:chat_channel) { Fabricate(:chat_channel) }
     fab!(:chat_message) { Fabricate(:chat_message, chat_channel: chat_channel, user: user) }
@@ -528,6 +582,52 @@ RSpec.describe DiscourseChat::ChatController do
     it "adds chat_message_id when param is present" do
       put "/chat/#{chat_channel.id}/invite.json", params: { user_ids: [user.id], chat_message_id: chat_message.id }
       expect(JSON.parse(Notification.last.data)["chat_message_id"]).to eq(chat_message.id.to_s)
+    end
+  end
+
+  describe "#dismiss_retention_reminder" do
+    it "errors for anon" do
+      post "/chat/dismiss-retention-reminder.json", params: { chatable_type: "Category" }
+      expect(response.status).to eq(403)
+    end
+
+    it "errors when chatable_type isn't present" do
+      sign_in(user)
+      post "/chat/dismiss-retention-reminder.json", params: {}
+      expect(response.status).to eq(400)
+    end
+
+    it "errors when chatable_type isn't a valid option" do
+      sign_in(user)
+      post "/chat/dismiss-retention-reminder.json", params: { chatable_type: "hi" }
+      expect(response.status).to eq(400)
+    end
+
+    it "sets `dismissed_channel_retention_reminder` to true" do
+      sign_in(user)
+      expect {
+        post "/chat/dismiss-retention-reminder.json", params: { chatable_type: "Category" }
+      }.to change { user.user_option.reload.dismissed_channel_retention_reminder }.to (true)
+    end
+
+    it "sets `dismissed_dm_retention_reminder` to true" do
+      sign_in(user)
+      expect {
+        post "/chat/dismiss-retention-reminder.json", params: { chatable_type: "DirectMessageChannel" }
+      }.to change { user.user_option.reload.dismissed_dm_retention_reminder }.to (true)
+    end
+
+    it "doesn't error if the fields are already true" do
+      sign_in(user)
+      user.user_option.update(
+        dismissed_channel_retention_reminder: true,
+        dismissed_dm_retention_reminder: true
+      )
+      post "/chat/dismiss-retention-reminder.json", params: { chatable_type: "Category" }
+      expect(response.status).to eq(200)
+
+      post "/chat/dismiss-retention-reminder.json", params: { chatable_type: "DirectMessageChannel" }
+      expect(response.status).to eq(200)
     end
   end
 end

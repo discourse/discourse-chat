@@ -31,7 +31,7 @@ export default Component.extend({
 
   didInsertElement() {
     this._super(...arguments);
-    if (!this.currentUser?.has_chat_enabled) {
+    if (!this.chat.userCanChat) {
       return;
     }
 
@@ -64,9 +64,10 @@ export default Component.extend({
     );
     this.appEvents.on("composer:resize-ended", this, "_clearDynamicCheckSize");
   },
+
   willDestroyElement() {
     this._super(...arguments);
-    if (!this.currentUser?.has_chat_enabled) {
+    if (!this.chat.userCanChat) {
       return;
     }
 
@@ -216,11 +217,14 @@ export default Component.extend({
     this.element.style.setProperty("--composer-height", "40px");
   },
 
-  @discourseComputed("expanded", "activeChannel")
-  containerClassNames(expanded, activeChannel) {
+  @discourseComputed("hidden", "expanded", "activeChannel")
+  containerClassNames(hidden, expanded, activeChannel) {
     const classNames = ["topic-chat-container"];
     if (expanded) {
       classNames.push("expanded");
+    }
+    if (!hidden && expanded) {
+      classNames.push("visible");
     }
     if (activeChannel) {
       classNames.push(`channel-${activeChannel.id}`);

@@ -59,8 +59,6 @@ he:
           other: "נשלחו הזמנות"
         invite: "הזמנה לערוץ"
       no_public_channels: "לא הצטרפת לאף ערוץ."
-      no_joinable_channels_title: "אין עדיין ערוצים שמותר לך להצטרף אליהם."
-      no_joinable_channels_body: "אפשר לפנות להנהלה כדי להתחיל להפעיל צ׳אט בנושאים או קטגוריות."
       open: "פתיחת צ׳אט"
       open_full_page: "פתיחת צ׳אט במסך מלא"
       open_message: "פתיחת הודעה בצ׳אט"
@@ -77,7 +75,6 @@ he:
       select: "בחירה"
       return_to_list: "חזרה לרשימת הערוצים"
       scroll_to_bottom: "גלילה לתחתית"
-      send_error: "משהו השתבש"
       sound:
         title: "צליל התראת צ׳אט שולחן עבודה"
       sounds:
@@ -188,9 +185,12 @@ he:
           two: "%{commaSeparatedUsernames} ועוד %{count} נוספים מקלידים"
           many: "%{commaSeparatedUsernames} ועוד %{count} נוספים מקלידים"
           other: "%{commaSeparatedUsernames} ועוד %{count} נוספים מקלידים"
+      retention_reminders:
+        public: "היסטוריית הערוץ נשמרת למשך %{days} ימים."
+        dm: "היסטוריית הצ׳אט האישית נשמרת למשך %{days} ימים."
     notifications:
       popup:
-        chat_mention: "אוזכרת על ידי ‎@%{username} בצ׳אט"
+        chat_mention: "אוזכרת בצ׳אט על ידי %{username}"
         chat_message: "הודעת צ׳אט חדשה"
       titles:
         chat_mention: "איזכור בצ׳אט"

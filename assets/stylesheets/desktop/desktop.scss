@@ -43,12 +43,6 @@
       padding-left: 1em;
       padding-right: 1.5em;
     }
-
-    .chat-composer-row {
-      .chat-composer-toolbar {
-        right: 1em;
-      }
-    }
   }
 }
 
@@ -81,11 +75,11 @@
 
 // Full Page Styling in Core
 .has-full-page-chat:not(.discourse-sidebar) {
+  --max-chat-width: 1200px;
+
   #main-outlet {
-    padding: 0em;
-    &.wrap {
-      max-width: 1200px;
-    }
+    max-width: var(--max-chat-width);
+    padding: 0;
   }
 
   .full-page-chat {
@@ -124,12 +118,10 @@
     }
   }
 
-  @media screen and (max-width: 1366px) {
+  @media screen and (max-width: var(--max-chat-width)) {
     #main-outlet {
+      max-width: 100%;
       padding: 0;
-      &.wrap {
-        max-width: 100%;
-      }
     }
 
     .full-page-chat {
@@ -142,8 +134,9 @@
 // Full page styling with sidebar enabled
 .discourse-sidebar.has-full-page-chat {
   #main-outlet {
-    padding: 2em 0em 0em 0em;
+    padding: 2em 0 0 0;
   }
+
   .full-page-chat.teams-sidebar-on {
     .chat-live-pane {
       border-radius: 0;
@@ -156,7 +149,7 @@
     }
 
     .chat-message {
-      padding-left: 2em;
+      padding-left: 1em;
 
       &:hover {
         background-color: var(--primary-very-low);
@@ -164,7 +157,7 @@
     }
 
     .chat-messages-container .chat-message-deleted {
-      padding: 0.25em 2em;
+      padding: 0.25em 1em;
     }
   }
 }

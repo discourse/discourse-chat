@@ -80,8 +80,16 @@ class ChatChannel < ActiveRecord::Base
     end
   end
 
+  def self.chatable_types
+    public_channel_chatable_types << "DirectMessageChannel"
+  end
+
+  def self.public_channel_chatable_types
+    ["Topic", "Category", "Tag"]
+  end
+
   def self.public_channels
-    where(chatable_type: ["Topic", "Category", "Tag"])
+    where(chatable_type: public_channel_chatable_types)
   end
 
   def self.is_enabled?(t)

@@ -12,11 +12,29 @@ class ChatMessage < ActiveRecord::Base
   belongs_to :in_reply_to, class_name: "ChatMessage"
   has_many :revisions, class_name: "ChatMessageRevision"
   has_many :reactions, class_name: "ChatMessageReaction"
-  has_many :chat_message_post_connections
+  has_many :chat_message_post_connections, dependent: :destroy
   has_many :posts, through: :chat_message_post_connections
   has_many :chat_uploads
   has_many :uploads, through: :chat_uploads
   has_one :chat_webhook_event
+
+  scope :in_public_channel, -> {
+    joins(:chat_channel)
+      .where(chat_channel: { chatable_type: ChatChannel.public_channel_chatable_types })
+  }
+
+  scope :in_dm_channel, -> {
+    joins(:chat_channel)
+      .where(chat_channel: { chatable_type: "DirectMessageChannel" })
+  }
+
+  scope :created_before, -> (date) {
+    where("chat_messages.created_at < ?", date)
+  }
+
+  def validate_message
+    WatchedWordsValidator.new(attributes: [:message]).validate(self)
+  end
 
   def reviewable_flag
     raise NotImplementedError
@@ -92,6 +110,7 @@ class ChatMessage < ActiveRecord::Base
   end
 
   def rebake!(invalidate_oneboxes: false, priority: nil)
+    previous_cooked = self.cooked
     new_cooked = self.class.cook(message, invalidate_oneboxes: invalidate_oneboxes)
     update_columns(
       cooked: new_cooked,
@@ -101,6 +120,7 @@ class ChatMessage < ActiveRecord::Base
       chat_message_id: self.id,
     }
     args[:queue] = priority.to_s if priority && priority != :normal
+    args[:is_dirty] = true if previous_cooked != new_cooked
 
     Jobs.enqueue(:process_chat_message, args)
   end

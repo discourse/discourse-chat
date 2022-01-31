@@ -58,7 +58,7 @@ RSpec.describe DiscourseChat::IncomingChatWebhooksController do
     end
   end
 
-  describe "#create_message_slack_compatable" do
+  describe "#create_message_slack_compatible" do
     it "processes the text param with SlackCompatibility" do
       expect {
         post "/chat/hooks/#{webhook.key}/slack.json", params: { text: "A new signup woo <!here>!" }
@@ -67,7 +67,7 @@ RSpec.describe DiscourseChat::IncomingChatWebhooksController do
       expect(ChatMessage.last.message).to eq("A new signup woo @here!")
     end
 
-    it "processes the attachments param with SlackCompatability, using the fallback" do
+    it "processes the attachments param with SlackCompatibility, using the fallback" do
       payload_data = {
         attachments: [
           {

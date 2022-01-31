@@ -55,8 +55,6 @@ zh_CN:
         without_membership:
           other: "%{usernames} 尚未加入此频道。"
       no_public_channels: "您还没有加入任何频道。"
-      no_joinable_channels_title: "还没有您可以加入的频道。"
-      no_joinable_channels_body: "您可以联系管理员，开始为话题或类别启用聊天。"
       only_chat_push_notifications:
         title: "只发送聊天推送通知"
         description: "阻止发送所有非聊天推送通知"
@@ -76,7 +74,6 @@ zh_CN:
       select: "选择"
       return_to_list: "返回频道列表"
       scroll_to_bottom: "滚动到底部"
-      send_error: "出错了"
       sound:
         title: "桌面聊天通知声音"
       sounds:
@@ -136,7 +133,7 @@ zh_CN:
       incoming_webhooks:
         back: "返回"
         channel_placeholder: "选择一个频道"
-        confirm_destroy: "确定要删除这个传入的网络钩子吗？此操作不可撤销。"
+        confirm_destroy: "确定要删除此传入网络钩子吗？此操作无法撤消。"
         current_emoji: "当前表情符号"
         description: "描述"
         delete: "删除"
@@ -144,7 +141,7 @@ zh_CN:
         emoji_instructions: "如果表情符号留空，将使用系统头像。"
         name: "名称"
         name_placeholder: "名称…"
-        new: "新传入的网络钩子"
+        new: "新的传入网络钩子"
         none: "未创建现有的传入网络钩子。"
         no_emoji: "未选择表情符号"
         post_to: "发布到"
@@ -152,7 +149,7 @@ zh_CN:
         save: "保存"
         select_emoji: "选择表情符号"
         system: "系统"
-        title: "传入的网络钩子"
+        title: "传入网络钩子"
         url: "URL"
         username: "用户名"
         username_instructions: "发布到频道的机器人的用户名。留空时默认为“系统”。"
@@ -164,7 +161,7 @@ zh_CN:
         new_topic:
           title: "移动到新话题"
           instructions:
-            other: "您将创建一个新话题并使用您选择的 <b>%{count}</b> 条聊天消息将其填充。"
+            other: "您将创建一个新话题并使用您选择的 <b>%{count}</b> 条聊天消息进行填充。"
         existing_topic:
           title: "移动到现有话题"
           instructions:
@@ -172,7 +169,7 @@ zh_CN:
         new_message:
           title: "移动到新消息"
           instructions:
-            other: "您将创建一条新消息并使用您选择的 <b>%{count}</b> 条聊天消息将其填充。"
+            other: "您将创建一条新消息并使用您选择的 <b>%{count}</b> 条聊天消息进行填充。"
       replying_indicator:
         single_user: "%{username} 正在输入"
         multiple_users: "%{commaSeparatedUsernames} 和 %{lastUsername} 正在输入"
@@ -180,7 +177,8 @@ zh_CN:
           other: "%{commaSeparatedUsernames} 和其他 %{count} 人正在输入"
     notifications:
       popup:
-        chat_mention: "@%{username} 在聊天中提及了您"
+        chat_mention: "%{username} 在聊天中提及了您"
+        chat_group_mention: "%{username} 在聊天中提及了 @%{groupName}"
         chat_message: "新的聊天消息"
       titles:
         chat_mention: "聊天提及"
@@ -191,8 +189,8 @@ zh_CN:
         chat_disable: "关闭聊天"
     action_codes:
       chat:
-        enabled: '%{who} 启用了<button class="btn-link open-chat">聊天</button> %{when}'
-        disabled: "%{who} 关闭了聊天 %{when}"
+        enabled: '%{who} 于 %{when} 启用了<button class="btn-link open-chat">聊天</button>'
+        disabled: "%{who} 于 %{when} 关闭了聊天"
         post_created: "创建了新帖子：%{excerpt}"
         generic_small_action: "执行了话题管理操作"
     discourse_automation:

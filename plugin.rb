@@ -14,6 +14,8 @@ register_asset 'stylesheets/common/incoming-chat-webhooks.scss'
 register_asset 'stylesheets/common/chat-message.scss'
 register_asset 'stylesheets/common/chat-message-collapser.scss'
 register_asset 'stylesheets/common/chat-transcript.scss'
+register_asset 'stylesheets/common/chat-retention-reminder.scss'
+register_asset 'stylesheets/common/chat-channel-selector-modal.scss'
 register_asset 'stylesheets/mobile/mobile.scss', :mobile
 register_asset 'stylesheets/desktop/desktop.scss', :desktop
 register_asset 'stylesheets/sidebar-extensions.scss'
@@ -86,20 +88,27 @@ after_initialize do
   load File.expand_path('../app/jobs/regular/process_chat_message.rb', __FILE__)
   load File.expand_path('../app/jobs/regular/create_chat_mention_notifications.rb', __FILE__)
   load File.expand_path('../app/jobs/regular/notify_users_watching_chat.rb', __FILE__)
+  load File.expand_path('../app/jobs/scheduled/delete_old_chat_messages.rb', __FILE__)
   load File.expand_path('../app/services/chat_publisher.rb', __FILE__)
 
   register_topic_custom_field_type(DiscourseChat::HAS_CHAT_ENABLED, :boolean)
   register_category_custom_field_type(DiscourseChat::HAS_CHAT_ENABLED, :boolean)
-  Site.preloaded_category_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
-  TopicList.preloaded_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
-  CategoryList.preloaded_topic_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
-  Search.preloaded_topic_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
+
   UserUpdater::OPTION_ATTR.push(:chat_enabled)
   UserUpdater::OPTION_ATTR.push(:chat_isolated)
   UserUpdater::OPTION_ATTR.push(:only_chat_push_notifications)
   UserUpdater::OPTION_ATTR.push(:chat_sound)
 
   reloadable_patch do |plugin|
+    Site.preloaded_category_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
+    Site.markdown_additional_options["chat"] = {
+      limited_pretty_text_features: ChatMessage::MARKDOWN_FEATURES,
+      limited_pretty_text_markdown_rules: ChatMessage::MARKDOWN_IT_RULES
+    }
+    TopicList.preloaded_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
+    CategoryList.preloaded_topic_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
+    Search.preloaded_topic_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
+
     Guardian.class_eval { include DiscourseChat::GuardianExtensions }
     TopicViewSerializer.class_eval { prepend DiscourseChat::TopicViewSerializerExtension }
     DetailedTagSerializer.class_eval { prepend DiscourseChat::DetailedTagSerializerExtension }
@@ -127,24 +136,6 @@ after_initialize do
     results
   end
 
-  add_to_serializer(:site, :chat_pretty_text_features) do
-    ChatMessage::MARKDOWN_FEATURES.as_json
-  end
-
-  add_to_serializer(:site, :chat_pretty_text_markdown_rules) do
-    ChatMessage::MARKDOWN_IT_RULES.as_json
-  end
-
-  add_to_serializer(:site, :include_chat_pretty_text_features?) do
-    return @include_chat_pretty_text_features if defined?(@include_chat_pretty_text_features)
-
-    @include_chat_pretty_text_features = SiteSetting.chat_enabled && scope.can_chat?(scope.user)
-  end
-
-  add_to_serializer(:site, :include_chat_pretty_text_markdown_rules?) do
-    include_chat_pretty_text_features?
-  end
-
   add_to_serializer(:listable_topic, :has_chat_live) do
     true
   end
@@ -156,7 +147,7 @@ after_initialize do
   end
 
   add_to_serializer(:post, :chat_connection) do
-    if object.chat_message_post_connections.any?
+    if object.chat_message_post_connections&.first&.chat_message
       {
         chat_channel_id: object.chat_message_post_connections.first.chat_message.chat_channel_id,
         chat_message_ids: object.chat_message_post_connections.map(&:chat_message_id)
@@ -200,6 +191,42 @@ after_initialize do
     include_has_chat_enabled? && object.user_option.chat_sound
   end
 
+  add_to_serializer(:current_user, :needs_channel_retention_reminder) do
+    true
+  end
+
+  add_to_serializer(:current_user, :needs_dm_retention_reminder) do
+    true
+  end
+
+  add_to_serializer(:current_user, :include_needs_channel_retention_reminder?) do
+    include_has_chat_enabled? &&
+      object.staff? &&
+      !object.user_option.dismissed_channel_retention_reminder &&
+      !SiteSetting.chat_channel_retention_days.zero?
+
+  end
+
+  add_to_serializer(:current_user, :include_needs_dm_retention_reminder?) do
+    include_has_chat_enabled? &&
+      !object.user_option.dismissed_dm_retention_reminder &&
+      !SiteSetting.chat_dm_retention_days.zero?
+  end
+
+  add_to_serializer(:current_user, :chat_drafts) do
+    Draft
+      .where(user_id: object.id)
+      .where("draft_key LIKE 'chat_%'")
+      .pluck(:draft_key, :data)
+      .map do |row|
+        { channel_id: row[0].gsub('chat_', ''), data: row[1] }
+      end
+  end
+
+  add_to_serializer(:current_user, :include_chat_drafts?) do
+    include_has_chat_enabled?
+  end
+
   add_to_serializer(:user_option, :chat_enabled) do
     object.chat_enabled
   end
@@ -218,6 +245,21 @@ after_initialize do
 
   add_to_serializer(:user_option, :only_chat_push_notifications) do
     object.only_chat_push_notifications
+  end
+
+  RETENTION_SETTINGS_TO_USER_OPTION_FIELDS = {
+    chat_channel_retention_days: :dismissed_channel_retention_reminder,
+    chat_dm_retention_days: :dismissed_dm_retention_reminder
+  }
+  DiscourseEvent.on(:site_setting_changed) do |name, old_value, new_value|
+    user_option_field = RETENTION_SETTINGS_TO_USER_OPTION_FIELDS[name.to_sym]
+    begin
+      if user_option_field && old_value != new_value && !new_value.zero?
+        UserOption.where(user_option_field => true).update_all(user_option_field => false)
+      end
+    rescue => e
+      Rails.logger.warn("Error updating user_options fields after chat retention settings changed: #{e}")
+    end
   end
 
   register_presence_channel_prefix("chat") do |channel|
@@ -273,7 +315,7 @@ after_initialize do
     post '/hooks/:key' => 'incoming_chat_webhooks#create_message'
 
     # incoming_webhooks_controller routes
-    post '/hooks/:key/slack' => 'incoming_chat_webhooks#create_message_slack_compatable'
+    post '/hooks/:key/slack' => 'incoming_chat_webhooks#create_message_slack_compatible'
 
     # move_to_topic_controller routes
     resources :move_to_topic
@@ -295,10 +337,13 @@ after_initialize do
     get '/channel/:channel_id/:channel_title' => 'chat#respond'
     post '/enable' => 'chat#enable_chat'
     post '/disable' => 'chat#disable_chat'
+    post '/dismiss-retention-reminder' => 'chat#dismiss_retention_reminder'
     get '/:chat_channel_id/messages' => 'chat#messages'
+    get '/message/:message_id' => 'chat#message_link'
     put ':chat_channel_id/edit/:message_id' => 'chat#edit_message'
     put ':chat_channel_id/react/:message_id' => 'chat#react'
     delete '/:chat_channel_id/:message_id' => 'chat#delete'
+    put '/:chat_channel_id/:message_id/rebake' => 'chat#rebake'
     post '/:chat_channel_id/:message_id/flag' => 'chat#flag'
     put '/:chat_channel_id/restore/:message_id' => 'chat#restore'
     get '/lookup/:message_id' => 'chat#lookup_message'

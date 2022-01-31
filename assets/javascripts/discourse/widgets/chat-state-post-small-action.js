@@ -3,6 +3,7 @@ import { userPath } from "discourse/lib/url";
 import { autoUpdatingRelativeAge } from "discourse/lib/formatter";
 import I18n from "I18n";
 import { createWidget } from "discourse/widgets/widget";
+import bootbox from "bootbox";
 
 export default createWidget("chat-state-post-small-action", {
   click(event) {

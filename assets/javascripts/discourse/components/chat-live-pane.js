@@ -191,7 +191,12 @@ export default Component.extend({
   },
 
   _fetchMorePastMessages() {
-    if (this.loading || this.loadingMore || this.allPastMessagesLoaded) {
+    if (
+      this.loading ||
+      this.loadingMore ||
+      this.allPastMessagesLoaded ||
+      !this.messages.length
+    ) {
       return;
     }
 
@@ -521,6 +526,8 @@ export default Component.extend({
   },
 
   handleSentMessage(data) {
+    this.chatChannel.set("updated_at", new Date());
+
     if (data.chat_message.user.id === this.currentUser.id) {
       // User sent this message. Check staged messages to see if this client sent the message.
       // If so, need to update the staged message with and id.
@@ -736,8 +743,8 @@ export default Component.extend({
       type: "POST",
       data,
     })
-      .catch(() => {
-        this._onSendError(data.stagedId);
+      .catch((error) => {
+        this._onSendError(data.staged_id, error);
       })
       .finally(() => {
         if (this._selfDeleted()) {
@@ -767,10 +774,10 @@ export default Component.extend({
     return Promise.resolve();
   },
 
-  _onSendError(stagedId) {
+  _onSendError(stagedId, error) {
     const stagedMessage = this.messageLookup[`staged-${stagedId}`];
     if (stagedMessage) {
-      stagedMessage.set("error", true);
+      stagedMessage.set("error", error.jqXHR.responseJSON.errors[0]);
       this._resetAfterSend();
     }
   },
@@ -815,8 +822,9 @@ export default Component.extend({
       messageIndex >= 0;
       messageIndex--
     ) {
-      if (this.messages[messageIndex].user.id === this.currentUser.id) {
-        lastUserMessage = this.messages[messageIndex];
+      let message = this.messages[messageIndex];
+      if (message.user.id === this.currentUser.id && !message.error) {
+        lastUserMessage = message;
         break;
       }
     }

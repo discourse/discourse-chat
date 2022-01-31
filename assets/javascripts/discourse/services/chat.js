@@ -1,6 +1,5 @@
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import EmberObject from "@ember/object";
-import KeyValueStore from "discourse/lib/key-value-store";
 import Service, { inject as service } from "@ember/service";
 import Site from "discourse/models/site";
 import { addChatToolbarButton } from "discourse/plugins/discourse-chat/discourse/components/chat-composer";
@@ -10,12 +9,14 @@ import { defaultHomepage } from "discourse/lib/utilities";
 import { generateCookFunction } from "discourse/lib/text";
 import { next } from "@ember/runloop";
 import { Promise } from "rsvp";
+import { CHATABLE_TYPES } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import simpleCategoryHashMentionTransform from "discourse/plugins/discourse-chat/discourse/lib/simple-category-hash-mention-transform";
+import Draft from "discourse/models/draft";
+import discourseDebounce from "discourse-common/lib/debounce";
 
 export const LIST_VIEW = "list_view";
 export const CHAT_VIEW = "chat_view";
 
-const DRAFT_STORE_NAMESPACE = "discourse_chat_drafts_";
 const CHAT_ONLINE_OPTIONS = {
   userUnseenTime: 300000, // 5 minutes seconds with no interaction
   browserHiddenTime: 300000, // Or the browser has been in the background for 5 minutes
@@ -51,22 +52,32 @@ export default Service.extend({
 
   init() {
     this._super(...arguments);
+    this.set(
+      "userCanChat",
+      this.currentUser?.has_chat_enabled && this.siteSettings.chat_enabled
+    );
 
-    if (this.currentUser?.has_chat_enabled) {
+    if (this.userCanChat) {
       this.set("allChannels", []);
       this._subscribeToNewDmChannelUpdates();
       this._subscribeToUserTrackingChannel();
       this._subscribeToChannelEdits();
       this.appEvents.on("page:changed", this, "_storeLastNonChatRouteInfo");
       this.presenceChannel = this.presence.getChannel("/chat/online");
-      this._draftStore = new KeyValueStore(DRAFT_STORE_NAMESPACE);
+      this.draftStore = {};
+
+      if (this.currentUser.chat_drafts) {
+        this.currentUser.chat_drafts.forEach((draft) => {
+          this.draftStore[draft.channel_id] = JSON.parse(draft.data);
+        });
+      }
     }
   },
 
   willDestroy() {
     this._super(...arguments);
 
-    if (this.currentUser?.has_chat_enabled) {
+    if (this.userCanChat) {
       this.set("allChannels", null);
       this._unsubscribeFromNewDmChannelUpdates();
       this._unsubscribeFromUserTrackingChannel();
@@ -100,6 +111,19 @@ export default Service.extend({
 
   get isBrowsePage() {
     return this.router.currentRouteName === "chat.browse";
+  },
+
+  get activeChannel() {
+    let channelId;
+    if (this.router.currentRouteName === "chat.channel") {
+      channelId = this.router.currentRoute.params.channelId;
+    } else {
+      channelId = document.querySelector(".topic-chat-container.visible")
+        ?.dataset?.chatChannelId;
+    }
+    return channelId
+      ? this.allChannels.findBy("id", parseInt(channelId, 10))
+      : null;
   },
 
   loadCookFunction(categories) {
@@ -163,6 +187,105 @@ export default Service.extend({
     };
   },
 
+  truncateDirectMessageChannels(channels) {
+    return channels.slice(0, this.currentUser.chat_isolated ? 20 : 10);
+  },
+
+  getActiveChannel() {
+    let channelId;
+    if (this.router.currentRouteName === "chat.channel") {
+      channelId = this.router.currentRoute.params.channelId;
+    } else {
+      channelId = document.querySelector(".topic-chat-container.visible")
+        ?.dataset?.chatChannelId;
+    }
+    return channelId
+      ? this.allChannels.findBy("id", parseInt(channelId, 10))
+      : null;
+  },
+
+  async getChannelsWithFilter(filter, opts = { excludeActiveChannel: true }) {
+    let sortedChannels = this.allChannels.sort((a, b) => {
+      return new Date(a.updated_at) > new Date(b.updated_at) ? -1 : 1;
+    });
+
+    const trimmedFilter = filter.trim();
+    const downcasedFilter = filter.toLowerCase();
+    const { activeChannel } = this;
+
+    return sortedChannels.filter((channel) => {
+      if (
+        opts.excludeActiveChannel &&
+        activeChannel &&
+        activeChannel.id === channel.id
+      ) {
+        return false;
+      }
+      if (!trimmedFilter.length) {
+        return true;
+      }
+
+      if (channel.chatable_type === CHATABLE_TYPES.directMessageChannel) {
+        let userFound = false;
+        channel.chatable.users.forEach((user) => {
+          if (
+            user.username.toLowerCase().includes(downcasedFilter) ||
+            user.name?.toLowerCase().includes(downcasedFilter)
+          ) {
+            return (userFound = true);
+          }
+        });
+        return userFound;
+      } else {
+        return channel.title.toLowerCase().includes(downcasedFilter);
+      }
+    });
+  },
+
+  switchChannelUpOrDown(direction) {
+    const { activeChannel } = this;
+    if (!activeChannel) {
+      return; // Chat isn't open. Return and do nothing!
+    }
+    const inDmChannel =
+      activeChannel.chatable_type === CHATABLE_TYPES.directMessageChannel;
+
+    let currentList, otherList;
+    if (inDmChannel) {
+      currentList = this.truncateDirectMessageChannels(
+        this.directMessageChannels
+      );
+      otherList = this.publicChannels;
+    } else {
+      currentList = this.publicChannels;
+      otherList = this.truncateDirectMessageChannels(
+        this.directMessageChannels
+      );
+    }
+
+    const directionUp = direction === "up";
+    const currentChannelIndex = currentList.findIndex(
+      (c) => c.id === activeChannel.id
+    );
+
+    let nextChannelInSameList =
+      currentList[currentChannelIndex + (directionUp ? -1 : 1)];
+    if (nextChannelInSameList) {
+      // You're navigating in the same list of channels, just use index +- 1
+      return this.openChannel(nextChannelInSameList);
+    }
+
+    // You need to go to the next list of channels, if it exists.
+    const nextList = otherList.length ? otherList : currentList;
+    const nextChannel = directionUp
+      ? nextList[nextList.length - 1]
+      : nextList[0];
+
+    if (nextChannel.id !== activeChannel.id) {
+      return this.openChannel(nextChannel);
+    }
+  },
+
   async isChannelFollowed(channel) {
     return this.getChannelBy("id", channel.id);
   },
@@ -208,8 +331,10 @@ export default Service.extend({
           // We don't need to sort direct message channels, as the channel list
           // uses a computed property to keep them ordered by `updated_at`.
           directMessageChannels: A(
-            channels.direct_message_channels.map((channel) =>
-              this.processChannel(channel)
+            this.sortDirectMessageChannels(
+              channels.direct_message_channels.map((channel) =>
+                this.processChannel(channel)
+              )
             )
           ),
           hasFetchedChannels: true,
@@ -226,6 +351,13 @@ export default Service.extend({
         resolve(this._channelObject());
       });
     });
+  },
+
+  reSortDirectMessageChannels() {
+    this.set(
+      "directMessageChannels",
+      this.sortDirectMessageChannels(this.directMessageChannels)
+    );
   },
 
   async getChannelBy(key, value) {
@@ -318,25 +450,28 @@ export default Service.extend({
     });
   },
 
-  async openChannelAtMessage(channelId, messageId) {
+  async openChannelAtMessage(channelId, messageId = null) {
     let channel = await this.getChannelBy("id", channelId);
     if (channel) {
       return this._openFoundChannelAtMessage(channel, messageId);
     }
 
     return ajax(`/chat/chat_channels/${channelId}`).then((response) => {
+      const queryParams = messageId ? { messageId } : {};
       this.router.transitionTo(
         "chat.channel",
         response.chat_channel.id,
         response.chat_channel.title,
-        {
-          queryParams: { messageId },
-        }
+        { queryParams }
       );
     });
   },
 
-  _openFoundChannelAtMessage(channel, messageId) {
+  async openChannel(channel) {
+    return this._openFoundChannelAtMessage(channel);
+  },
+
+  _openFoundChannelAtMessage(channel, messageId = null) {
     if (
       this.router.currentRouteName === "chat.channel" &&
       this.router.currentRoute.params.channelTitle === channel.title
@@ -348,16 +483,23 @@ export default Service.extend({
       this.router.currentRouteName === "chat.channel" ||
       this.currentUser.chat_isolated
     ) {
+      const queryParams = messageId ? { messageId } : {};
       this.router.transitionTo("chat.channel", channel.id, channel.title, {
-        queryParams: { messageId: messageId },
+        queryParams: { messageId },
       });
     } else {
       this._fireOpenFloatAppEvent(channel, messageId);
     }
   },
 
-  _fireOpenFloatAppEvent(channel, messageId) {
-    this.appEvents.trigger("chat:open-channel-at-message", channel, messageId);
+  _fireOpenFloatAppEvent(channel, messageId = null) {
+    messageId
+      ? this.appEvents.trigger(
+          "chat:open-channel-at-message",
+          channel,
+          messageId
+        )
+      : this.appEvents.trigger("chat:open-channel", channel);
   },
 
   _fireOpenMessageAppEvent(messageId) {
@@ -462,6 +604,7 @@ export default Service.extend({
       );
       if (dmChatChannel) {
         dmChatChannel.set("updated_at", new Date());
+        this.reSortDirectMessageChannels();
       }
     });
   },
@@ -629,13 +772,35 @@ export default Service.extend({
     };
   },
 
-  setDraftForChannel(channelId, draft, replyToMsg = null) {
-    this._draftStore.setObject({ key: channelId, value: draft, replyToMsg });
+  _saveDraft(channelId, draft) {
+    const draftKey = `chat_${channelId}`;
+
+    if (draft) {
+      Draft.save(draftKey, 0, draft, this.messageBus.clientId, {
+        forceSave: true,
+      });
+    } else {
+      Draft.clear(draftKey);
+    }
+  },
+
+  setDraftForChannel(channelId, draft) {
+    if (
+      draft &&
+      (draft.value || draft.uploads.length > 0 || draft.replyToMsg)
+    ) {
+      this.draftStore[channelId] = draft;
+    } else {
+      delete this.draftStore[channelId];
+      draft = null; // _saveDraft will destroy draft
+    }
+
+    discourseDebounce(this, this._saveDraft, channelId, draft, 2000);
   },
 
   getDraftForChannel(channelId) {
     return (
-      this._draftStore.getObject(channelId) || {
+      this.draftStore[channelId] || {
         value: "",
         uploads: [],
         replyToMsg: null,

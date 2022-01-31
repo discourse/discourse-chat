@@ -64,8 +64,6 @@ ru:
           many: "Пользователи %{usernames} не присоединились к этому каналу."
           other: "Пользователи %{usernames} не присоединились к этому каналу."
       no_public_channels: "Вы не присоединились ни к одному каналу."
-      no_joinable_channels_title: "Пока нет каналов, к которым вы могли бы присоединиться."
-      no_joinable_channels_body: "Вы можете обратиться к администратору форума, чтобы включить чат для тем или разделов."
       only_chat_push_notifications:
         title: "Отправлять только push-уведомления в чате"
         description: "Запретить отправку всех push-уведомлений, не связанных с чатом"
@@ -85,7 +83,6 @@ ru:
       select: "Выбрать"
       return_to_list: "Вернуться к списку каналов"
       scroll_to_bottom: "Прокрутка вниз"
-      send_error: "Что-то пошло не так"
       sound:
         title: "Звук уведомления"
       sounds:
@@ -202,9 +199,13 @@ ru:
           few: "Отвечают %{commaSeparatedUsernames} и ещё %{count} пользователя"
           many: "Отвечают %{commaSeparatedUsernames} и ещё %{count} пользователей"
           other: "Отвечают %{commaSeparatedUsernames} и ещё %{count} пользователей"
+      retention_reminders:
+        public: "История канала хранится %{days} дней."
+        dm: "История личного чата хранится %{days} дней."
     notifications:
       popup:
-        chat_mention: "Пользователь @%{username} упомянул вас в чате"
+        chat_mention: "Пользователь %{username} упомянул вас в чате"
+        chat_group_mention: "Пользователь %{username} упомянул в чате группу @%{groupName}"
         chat_message: "Новое сообщение в чате"
       titles:
         chat_mention: "Упоминание в чате"

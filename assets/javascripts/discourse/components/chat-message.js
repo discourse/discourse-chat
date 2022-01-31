@@ -9,6 +9,7 @@ import { prioritizeNameInUx } from "discourse/lib/settings";
 import EmberObject, { action, computed } from "@ember/object";
 import { autoUpdatingRelativeAge } from "discourse/lib/formatter";
 import { cancel, later, schedule } from "@ember/runloop";
+import bootbox from "bootbox";
 
 const HERE = "here";
 const ALL = "all";
@@ -141,6 +142,14 @@ export default Component.extend({
       });
     }
 
+    if (this.currentUser?.staff) {
+      buttons.push({
+        id: "rebakeMessage",
+        name: I18n.t("chat.rebake_message"),
+        icon: "sync-alt",
+      });
+    }
+
     return buttons;
   },
 
@@ -181,9 +190,17 @@ export default Component.extend({
     "message.deleted_at",
     "message.in_reply_to",
     "message.action_code",
+    "message.error",
     "isHovered"
   )
-  chatMessageClasses(staged, deletedAt, inReplyTo, actionCode, isHovered) {
+  chatMessageClasses(
+    staged,
+    deletedAt,
+    inReplyTo,
+    actionCode,
+    error,
+    isHovered
+  ) {
     let classNames = ["chat-message"];
 
     if (staged) {
@@ -201,6 +218,9 @@ export default Component.extend({
     }
     if (this.hideUserInfo) {
       classNames.push("user-info-hidden");
+    }
+    if (error) {
+      classNames.push("errored");
     }
     if (isHovered) {
       classNames.push("chat-message-selected");
@@ -573,6 +593,16 @@ export default Component.extend({
   restore() {
     return ajax(
       `/chat/${this.details.chat_channel_id}/restore/${this.message.id}`,
+      {
+        type: "PUT",
+      }
+    ).catch(popupAjaxError);
+  },
+
+  @action
+  rebakeMessage() {
+    return ajax(
+      `/chat/${this.details.chat_channel_id}/${this.message.id}/rebake`,
       {
         type: "PUT",
       }

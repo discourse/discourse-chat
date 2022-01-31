@@ -35,20 +35,23 @@ class DiscourseChat::ChatMessageCreator
 
   def create
     begin
+      validate_message!
       @chat_message.cook
       @chat_message.save!
       attach_uploads
+      Draft.where(user_id: @user.id, draft_key: "chat_#{@chat_channel.id}").destroy_all
       ChatPublisher.publish_new!(@chat_channel, @chat_message, @staged_id)
       Jobs.enqueue(:process_chat_message, { chat_message_id: @chat_message.id })
       DiscourseChat::ChatNotifier.notify_new(chat_message: @chat_message, timestamp: @chat_message.created_at)
     rescue => error
       @error = error
-      if Rails.env.test?
-        puts "#" * 50
-        puts "Chat message creation error:"
-        puts @error.inspect
-        puts "#" * 50
-      end
+    end
+  end
+
+  def validate_message!
+    @chat_message.validate_message
+    if @chat_message.errors.present?
+      raise StandardError.new(@chat_message.errors.map(&:full_message).join(", "))
     end
   end
 

@@ -66,6 +66,10 @@
     background-color: var(--highlight-medium);
   }
 
+  &.errored {
+    color: var(--primary-medium);
+  }
+
   &.deleted {
     background-color: var(--danger-low);
   }
@@ -210,7 +214,6 @@
   }
 
   .chat-send-error {
-    text-align: center;
     color: var(--danger-medium);
   }
 

@@ -5,3 +5,211 @@
 # https://translate.discourse.org/
 
 fi:
+  js:
+    chat:
+      dates:
+        time_tiny: "t:mm"
+      all_loaded: "Näytetään kaikki viestit"
+      already_enabled: "Chat on jo käytössä tässä ketjussa. Päivitä."
+      disabled_for_topic: "Chat on poistettu käytöstä tässä ketjussa."
+      bot: "botti"
+      create: "Luo"
+      cancel: "Peruuta"
+      cancel_reply: "Peruuta vastaus"
+      chat_channels: "Kanavat"
+      leave: "Poistu kanavalta"
+      channel_list_popup:
+        browse: "Selaa kanavia"
+        create: "Luo kanava"
+      click_to_join: "Näytä saatavilla olevat kanavat napsauttamalla tätä."
+      close: "Sulje"
+      collapse: "Tiivistä chat-laatikko"
+      deleted: "Viesti poistettiin. [näytä]"
+      delete: "Poista"
+      edited: "(muokattu)"
+      empty_state:
+        create_personal_chat: "Aloita henkilökohtainen chat"
+        no_public_available: "Tällä hetkellä ei ole saatavilla julkisia kanavia, joita voit seurata."
+        public_available: "Saatavilla on julkisia kanavia, joita voit seurata."
+        start_direct_message: "Voit myös aloittaa henkilökohtaisen chatin yhden tai useamman käyttäjän kanssa."
+        title: "Aloita liittymällä kanavalle"
+      enable: "Ota chat käyttöön"
+      flag: "Liputa"
+      invalid_access: "Sinulla ei ole tämän chat-kanavan katseluoikeutta"
+      invitation_notification: "<span>%{username} kutsui sinut liittymään chat-kanavalle</span>"
+      in_reply_to: "Vastauksena:"
+      isolate:
+        title: "Eristä chat"
+        description: "Avaa chat aina uuteen välilehteen"
+      heading: "Chat"
+      join_channel: "Liity kanavalle"
+      new_messages: "uusia viestejä"
+      mention_notification: "<span>%{username} mainitsi sinut chatissa</span>"
+      mention_warning:
+        cannot_see:
+          one: "%{usernames} ei voi käyttää tätä kanavaa, eikä hänelle ilmoitettu."
+          other: "%{usernames} eivät voi käyttää tätä kanavaa, eikä heille ilmoitettu."
+        dismiss: "hylkää"
+        invitations_sent:
+          one: "Kutsu lähetetty"
+          other: "Kutsut lähetettiin"
+        invite: "Kutsu kanavalle"
+        without_membership:
+          one: "%{usernames} ei ole liittynyt tälle kanavalle."
+          other: "%{usernames} eivät ole liittyneet tälle kanavalle."
+      no_public_channels: "Et ole liittynyt kanaville."
+      only_chat_push_notifications:
+        title: "Lähetä vain chatin push-ilmoituksia"
+        description: "Estä kaikkien muiden kuin chatin push-ilmoitusten lähettäminen"
+      open: "Avaa chat"
+      open_full_page: "Avaa koko näytön chat"
+      open_message: "Avaa viesti chatissa"
+      placeholder_self: "Kirjoita jotakin"
+      placeholder_others: "Chat-keskustelu käyttäjän %{messageRecipient} kanssa"
+      placeholder_previewing: "Liity kanavalle, jotta voit lähettää viestin."
+      remove_upload: "Poista tiedosto"
+      react: "Reagoi emojilla"
+      reply: "Vastaa"
+      edit: "Muokkaa"
+      copy_link: "Kopioi linkki"
+      restore: "Palauta poistettu viesti"
+      save: "Tallenna"
+      select: "Valitse"
+      return_to_list: "Palaa kanavaluetteloon"
+      scroll_to_bottom: "Vieritä alas"
+      sound:
+        title: "Työpöytälaitteen chat-ilmoitusääni"
+      sounds:
+        none: "Ei mitään"
+        bell: "Kello"
+        ding: "Ding"
+      title: "chat"
+      title_capitalized: "Chat"
+      upload: "Liitä tiedosto"
+      uploaded_files:
+        one: "%{count} tiedosto"
+        other: "%{count} tiedostoa"
+      exit: "takaisin"
+      create_channel:
+        choose_category:
+          label: "Valitse alue"
+          none: "valitse yksi..."
+          hint: 'Hallinnoi käyttöoikeutta <a href=%{link} target="_blank">alueen %{category} turvallisuusasetuksissa</a>'
+        create: "Luo kanava"
+        description: "Kuvaus (valinnainen)"
+        name: "Kanavan nimi"
+        title: "Luo kanava"
+        type: "Tyyppi"
+        types:
+          category: "Alue"
+          topic: "Ketju"
+      reactions:
+        only_you: "Reagoit emojilla :%{emoji}:"
+        and_others: "Sinä, %{usernames} reagoitte emojilla :%{emoji}:"
+        only_others: "%{usernames} reagoivat emojilla :%{emoji}:"
+        others_and_more: "%{usernames} ja %{more} muuta reagoivat emojilla :%{emoji}:"
+        you_others_and_more: "Sinä, %{usernames} ja %{more} muuta reagoivat emojilla :%{emoji}:"
+      composer:
+        toggle_toolbar: "Vaihda työkalupalkki"
+      notification_levels:
+        never: "Ei koskaan"
+        mention: "Vain maininnoissa"
+        always: "Kaikessa toiminnassa"
+      settings:
+        desktop_notification_level: "Työpöytäilmoitukset"
+        follow: "Liity"
+        mobile_notification_level: "Mobiili-push-ilmoitukset"
+        mute: "Mykistä kanava"
+        muted_on: "Käytössä"
+        muted_off: "Pois käytöstä"
+        notifications: "Ilmoitukset"
+        preview: "Esikatselu"
+        save: "Tallenna"
+        saved: "Tallennettu"
+        unfollow: "Poistu"
+      admin:
+        title: "Chat"
+      direct_messages:
+        title: "Henkilökohtainen chat"
+        new: "Uusi henkilökohtainen chat"
+        create: "Siirry"
+        leave: "Poistu tästä henkilökohtaisesta chatista"
+      incoming_webhooks:
+        back: "Takaisin"
+        channel_placeholder: "Valitse kanava"
+        confirm_destroy: "Haluatko varmasti poistaa tämän saapuvan webhookin? Tätä ei voi peruuttaa."
+        current_emoji: "Nykyinen emoji"
+        description: "Kuvaus"
+        delete: "Poista"
+        emoji: "Emoji"
+        emoji_instructions: "Järjestelmän avataria käytetään, jos emoji jätetään tyhjäksi."
+        name: "Nimi"
+        name_placeholder: "nimi..."
+        new: "Uusi saapuva webhook"
+        none: "Olemassa olevia saapuvia webhookeja ei ole luotu."
+        no_emoji: "Emojia ei ole valittu"
+        post_to: "Lähetä kohteeseen"
+        reset_emoji: "Nollaa emoji"
+        save: "Tallenna"
+        select_emoji: "Valitse emoji"
+        system: "järjestelmä"
+        title: "Saapuvat webhookit"
+        url: "URL"
+        username: "Käyttäjätunnus"
+        username_instructions: "Kanavalle lähettävän botin käyttäjätunnus. Oletus on \"järjestelmä\", kun tämä jätetään tyhjäksi."
+      selection:
+        cancel: "Peruuta"
+        move_to_topic: "Siirrä ketjuun"
+        error: "Chat-viestien siirtämisessä tapahtui virhe"
+        title: "Siirrä chat ketjuun"
+        new_topic:
+          title: "Siirrä uuteen ketjuun"
+          instructions:
+            one: "Olet luomassa uutta ketjua ja lisäämässä valitsemasi chat-viestin siihen."
+            other: "Olet luomassa uutta ketjua ja lisäämässä <b>%{count}</b> valitsemaasi chat-viestiä siihen."
+        existing_topic:
+          title: "Siirrä olemassa olevaan ketjuun"
+          instructions:
+            one: "Valitse ketju, johon haluat siirtää tämän chat-viestin."
+            other: "Valitse ketju, johon haluat siirtää nämä <b>%{count}</b> chat-viestiä."
+        new_message:
+          title: "Siirrä uuteen viestiin"
+          instructions:
+            one: "Olet luomassa uutta viestiä ja lisäämässä valitsemasi chat-viestin siihen."
+            other: "Olet luomassa uutta viestiä ja lisäämässä <b>%{count}</b> valitsemaasi chat-viestiä siihen."
+      replying_indicator:
+        single_user: "%{username} kirjoittaa"
+        multiple_users: "%{commaSeparatedUsernames} ja %{lastUsername} kirjoittavat"
+        many_users:
+          one: "%{commaSeparatedUsernames} ja %{count} muu kirjoittavat"
+          other: "%{commaSeparatedUsernames} ja %{count} muuta kirjoittavat"
+    notifications:
+      popup:
+        chat_mention: "%{username} mainitsi sinut chatissa"
+        chat_group_mention: "%{username} mainitsi ryhmän @%{groupName} chatissa"
+        chat_message: "Uusi chat-viesti"
+      titles:
+        chat_mention: "Chat-maininta"
+        chat_invitation: "Chat-kutsu"
+    topic:
+      actions:
+        chat_enable: "Ota chat käyttöön"
+        chat_disable: "Sulje chat"
+    action_codes:
+      chat:
+        enabled: '%{who} otti <button class="btn-link open-chat">chatin</button> käyttöön %{when}'
+        disabled: "%{who} sulki chatin %{when}"
+        post_created: "loi uuden viestin: %{excerpt}"
+        generic_small_action: "suoritti ketjunhallintatoiminnon"
+    discourse_automation:
+      scriptables:
+        send_chat_message:
+          title: Lähetä chat-viesti
+          fields:
+            chat_channel_id:
+              label: Chat-kanavan tunnus
+            message:
+              label: Viesti
+            sender:
+              label: Lähettäjä
+              description: Oletuksena järjestelmä

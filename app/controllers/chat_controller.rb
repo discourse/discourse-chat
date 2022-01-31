@@ -9,7 +9,9 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     :delete,
     :restore,
     :lookup_message,
-    :edit_message
+    :edit_message,
+    :rebake,
+    :message_link
   ]
 
   def respond
@@ -240,6 +242,22 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     render_json_error "unimplemented"
   end
 
+  def rebake
+    guardian.ensure_can_rebake!
+    @message.rebake!(invalidate_oneboxes: true)
+    render json: success_json
+  end
+
+  def message_link
+    return render_404 if @message.blank? || @message.deleted_at.present?
+    return render_404 if @message.chat_channel.blank?
+    guardian.ensure_can_see!(@message.chat_channel.chatable)
+    render json: success_json.merge(
+      chat_channel_id: @message.chat_channel.id,
+      chat_channel_title: @message.chat_channel.title(current_user)
+    )
+  end
+
   def lookup_message
     chat_channel = @message.chat_channel
     chatable = nil
@@ -307,6 +325,18 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
       end
     end
 
+    render json: success_json
+  end
+
+  def dismiss_retention_reminder
+    params.require(:chatable_type)
+    guardian.ensure_can_chat!(current_user)
+    raise Discourse::InvalidParameters unless ChatChannel.chatable_types.include?(params[:chatable_type])
+
+    field = ChatChannel.public_channel_chatable_types.include?(params[:chatable_type]) ?
+      :dismissed_channel_retention_reminder :
+      :dismissed_dm_retention_reminder
+    current_user.user_option.update(field => true)
     render json: success_json
   end
 

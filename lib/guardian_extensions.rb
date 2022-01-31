@@ -32,6 +32,10 @@ module DiscourseChat::GuardianExtensions
     is_staff?
   end
 
+  def can_rebake?
+    is_staff? || @user.has_trust_level?(TrustLevel[4])
+  end
+
   def can_see_chat_channel?(chat_channel)
     return false unless chat_channel.chatable
 

@@ -58,8 +58,6 @@ de:
           one: "%{usernames} ist diesem Kanal nicht beigetreten."
           other: "%{usernames} sind diesem Kanal nicht beigetreten."
       no_public_channels: "Du bist keinem Kanal beigetreten."
-      no_joinable_channels_title: "Es gibt noch keine Kanäle, denen du beitreten kannst."
-      no_joinable_channels_body: "Du kannst dich an deinen Administrator wenden, um den Chat für Themen oder Kategorien zu aktivieren."
       only_chat_push_notifications:
         title: "Nur Chat-Push-Benachrichtigungen senden"
         description: "Alle Nicht-Chat-Push-Benachrichtigungen blockieren und nicht senden"
@@ -79,7 +77,6 @@ de:
       select: "Auswählen"
       return_to_list: "Zurück zur Kanalliste"
       scroll_to_bottom: "Nach unten scrollen"
-      send_error: "Etwas ist schiefgelaufen"
       sound:
         title: "Desktop-Chat-Benachrichtigungston"
       sounds:
@@ -188,7 +185,6 @@ de:
           other: "%{commaSeparatedUsernames} und %{count} andere Personen schreiben"
     notifications:
       popup:
-        chat_mention: "@%{username} hat dich im Chat erwähnt"
         chat_message: "Neue Chat-Nachricht"
       titles:
         chat_mention: "Chat-Erwähnung"

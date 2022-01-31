@@ -54,8 +54,6 @@ en:
           other: "%{usernames} have not joined this channel."
 
       no_public_channels: "You have not joined any channels."
-      no_joinable_channels_title: "There are no channels for you to join yet."
-      no_joinable_channels_body: "You can reach out to your administrator to start enabling chat for topics or categories."
       only_chat_push_notifications:
         title: "Only send chat push notifications"
         description: "Block all non-chat push notifications from being sent"
@@ -70,12 +68,12 @@ en:
       reply: "Reply"
       edit: "Edit"
       copy_link: "Copy link"
+      rebake_message: "Rebuild HTML"
       restore: "Restore deleted message"
       save: "Save"
       select: "Select"
       return_to_list: "Return to channel list"
       scroll_to_bottom: "Scroll to bottom"
-      send_error: "Something went wrong"
       sound:
         title: "Desktop chat notification sound"
       sounds:
@@ -89,6 +87,9 @@ en:
         one: "%{count} file"
         other: "%{count} files"
       exit: "back"
+
+      channel_selector:
+        title: "Jump to channel"
 
       create_channel:
         choose_category:
@@ -113,6 +114,9 @@ en:
 
       composer:
         toggle_toolbar: "Toggle toolbar"
+
+      quote:
+        original_channel: "Originally posted in %{channel}."
 
       notification_levels:
         never: "Never"
@@ -192,6 +196,10 @@ en:
         many_users:
           one: "%{commaSeparatedUsernames} and %{count} other are typing"
           other: "%{commaSeparatedUsernames} and %{count} others are typing"
+
+      retention_reminders:
+        public: "Channel history is retained for %{days} days."
+        dm: "Personal chat history is retained for %{days} days."
 
     notifications:
       popup:

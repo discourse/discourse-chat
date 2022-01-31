@@ -16,8 +16,7 @@ export default {
     document.body.classList.add("chat-enabled");
 
     withPluginApi("0.12.1", (api) => {
-      const site = api.container.lookup("site:main");
-      if (site.mobileView) {
+      if (api.container.lookup("site:main").mobileView) {
         currentUser.chat_isolated = false;
       }
 

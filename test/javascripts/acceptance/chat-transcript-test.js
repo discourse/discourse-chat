@@ -62,7 +62,7 @@ ${messageContent}</div>
   return transcript.join("\n");
 }
 
-acceptance("Discourse Chat | discourse-chat-transcript", function (needs) {
+acceptance("Discourse Chat | discourse-chat-transcript", function () {
   // these are both set by the plugin with Site.markdown_additional_options which we can't really
   // modify the response for here, source of truth are consts in ChatMessage::MARKDOWN_FEATURES
   // and ChatMessage::MARKDOWN_IT_RULES

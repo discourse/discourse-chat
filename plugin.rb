@@ -101,6 +101,10 @@ after_initialize do
 
   reloadable_patch do |plugin|
     Site.preloaded_category_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
+    Site.markdown_additional_options["chat"] = {
+      limited_pretty_text_features: ChatMessage::MARKDOWN_FEATURES,
+      limited_pretty_text_markdown_rules: ChatMessage::MARKDOWN_IT_RULES
+    }
     TopicList.preloaded_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
     CategoryList.preloaded_topic_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
     Search.preloaded_topic_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
@@ -130,24 +134,6 @@ after_initialize do
       results = results.includes(:chat_channel)
     end
     results
-  end
-
-  add_to_serializer(:site, :chat_pretty_text_features) do
-    ChatMessage::MARKDOWN_FEATURES.as_json
-  end
-
-  add_to_serializer(:site, :chat_pretty_text_markdown_rules) do
-    ChatMessage::MARKDOWN_IT_RULES.as_json
-  end
-
-  add_to_serializer(:site, :include_chat_pretty_text_features?) do
-    return @include_chat_pretty_text_features if defined?(@include_chat_pretty_text_features)
-
-    @include_chat_pretty_text_features = SiteSetting.chat_enabled && scope.can_chat?(scope.user)
-  end
-
-  add_to_serializer(:site, :include_chat_pretty_text_markdown_rules?) do
-    include_chat_pretty_text_features?
   end
 
   add_to_serializer(:listable_topic, :has_chat_live) do
@@ -353,6 +339,7 @@ after_initialize do
     post '/disable' => 'chat#disable_chat'
     post '/dismiss-retention-reminder' => 'chat#dismiss_retention_reminder'
     get '/:chat_channel_id/messages' => 'chat#messages'
+    get '/message/:message_id' => 'chat#message_link'
     put ':chat_channel_id/edit/:message_id' => 'chat#edit_message'
     put ':chat_channel_id/react/:message_id' => 'chat#react'
     delete '/:chat_channel_id/:message_id' => 'chat#delete'

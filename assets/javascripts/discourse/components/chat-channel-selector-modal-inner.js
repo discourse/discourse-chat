@@ -13,6 +13,7 @@ export default Component.extend({
   filter: "",
   channels: null,
   searchIndex: 0,
+  loading: false,
 
   init() {
     this._super(...arguments);
@@ -121,10 +122,13 @@ export default Component.extend({
 
   @action
   fetchChannelsFromServer() {
-    this.set("searchIndex", this.searchIndex + 1); // This is used to 'cancel' old search requests
+    this.setProperties({
+      loading: true,
+      searchIndex: this.searchIndex + 1,
+    });
     const thisSearchIndex = this.searchIndex;
-    ajax("/chat/chat_channels/search", { data: { filter: this.filter } }).then(
-      (searchModel) => {
+    ajax("/chat/chat_channels/search", { data: { filter: this.filter } })
+      .then((searchModel) => {
         if (this.searchIndex === thisSearchIndex) {
           this.set("searchModel", searchModel);
           const channels = searchModel.public_channels.concat(
@@ -136,14 +140,14 @@ export default Component.extend({
               c.user = true; // This is used by the `chat-channel-selection-row` component
             }
           });
-          this.set(
-            "channels",
-            channels.map((c) => EmberObject.create(c))
-          );
+          this.setProperties({
+            channels: channels.map((c) => EmberObject.create(c)),
+            loading: false,
+          });
           this.focusFirstChannel(this.channels);
         }
-      }
-    ).catch(popupAjaxError);
+      })
+      .catch(popupAjaxError);
   },
 
   @action

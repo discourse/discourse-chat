@@ -128,19 +128,13 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
   end
 
   def search
+    params.require(:filter)
     filter = params[:filter]&.downcase
     memberships = UserChatChannelMembership.where(user: current_user)
-
-    public_channels = filter ?
-      DiscourseChat::ChatChannelFetcher.public_channels_with_filter(
-        guardian,
-        memberships,
-        filter
-    ) :
-      DiscourseChat::ChatChannelFetcher.secured_public_channesl(
-        guardian,
-        memberships,
-        scope_with_membership: false
+    public_channels = DiscourseChat::ChatChannelFetcher.public_channels_with_filter(
+      guardian,
+      memberships,
+      filter
     )
 
     users = User.joins(:user_option)
@@ -149,14 +143,11 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     end
 
     users = users.where(user_option: { chat_enabled: true })
-
-    if filter
-      like_filter = "#{filter}%"
-      if SiteSetting.enable_names
-        users = users.where("LOWER(users.name) LIKE ? OR LOWER(users.username) LIKE ?", like_filter, like_filter)
-      else
-        users = users.where("LOWER(users.username) LIKE ?", like_filter)
-      end
+    like_filter = "#{filter}%"
+    if SiteSetting.enable_names
+      users = users.where("LOWER(users.name) LIKE ? OR LOWER(users.username) LIKE ?", like_filter, like_filter)
+    else
+      users = users.where("LOWER(users.username) LIKE ?", like_filter)
     end
 
     users = users.uniq

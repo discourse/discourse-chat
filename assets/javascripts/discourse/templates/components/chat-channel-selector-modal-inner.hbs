@@ -7,9 +7,11 @@
       {{input id="chat-channel-selector-input" type="text" onChange=(action "search") value=filter autocomplete="off"}}
     </div>
     <div class="channels">
-      {{#each channels as |channel|}}
-        {{chat-channel-selection-row model=channel onClick=switchChannel}}
-      {{/each}}
+      {{#conditional-loading-spinner condition=this.loading}}
+        {{#each channels as |channel|}}
+          {{chat-channel-selection-row model=channel onClick=switchChannel}}
+        {{/each}}
+      {{/conditional-loading-spinner}}
     </div>
   </div>
 {{/d-modal-body}}

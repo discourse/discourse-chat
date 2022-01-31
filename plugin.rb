@@ -69,6 +69,7 @@ after_initialize do
   load File.expand_path('../app/serializers/chat_channel_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/chat_channel_settings_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/chat_channel_index_serializer.rb', __FILE__)
+  load File.expand_path('../app/serializers/chat_channel_search_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/direct_message_channel_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/incoming_chat_webhook_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/admin_chat_index_serializer.rb', __FILE__)
@@ -337,6 +338,7 @@ after_initialize do
     get '/chat_channels' => 'chat_channels#index'
     put '/chat_channels' => 'chat_channels#create'
     get '/chat_channels/all' => 'chat_channels#all'
+    get '/chat_channels/search' => 'chat_channels#search'
     post '/chat_channels/:chat_channel_id' => 'chat_channels#edit'
     post '/chat_channels/:chat_channel_id/notification_settings' => 'chat_channels#notification_settings'
     post '/chat_channels/:chat_channel_id/follow' => 'chat_channels#follow'

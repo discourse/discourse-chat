@@ -127,6 +127,63 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     render_serialized(chat_channel, ChatChannelSerializer)
   end
 
+  def search
+    filter = params[:filter]&.downcase
+    memberships = UserChatChannelMembership.where(user: current_user)
+
+    public_channels = filter ?
+      DiscourseChat::ChatChannelFetcher.public_channels_with_filter(
+        guardian,
+        memberships,
+        filter
+    ) :
+      DiscourseChat::ChatChannelFetcher.secured_public_channesl(
+        guardian,
+        memberships,
+        scope_with_membership: false
+    )
+
+    users = User.joins(:user_option)
+    unless DiscourseChat.allowed_group_ids.include?(Group::AUTO_GROUPS[:everyone])
+      users = users.joins(:groups).where(groups: { id: DiscourseChat.allowed_group_ids })
+    end
+
+    users = users.where(user_option: { chat_enabled: true })
+
+    if filter
+      like_filter = "#{filter}%"
+      if SiteSetting.enable_names
+        users = users.where("LOWER(users.name) LIKE ? OR LOWER(users.username) LIKE ?", like_filter, like_filter)
+      else
+        users = users.where("LOWER(users.username) LIKE ?", like_filter)
+      end
+    end
+
+    users = users.uniq
+    direct_message_channels = users.count > 0 ?
+      ChatChannel
+        .includes(chatable: :users)
+        .joins(direct_message_channel: :direct_message_users)
+        .group(1)
+        .having("ARRAY[?] <@ ARRAY_AGG(user_id) AND ARRAY[?] && ARRAY_AGG(user_id)", [current_user.id], users.map(&:id)) : []
+
+    user_ids_with_channel = []
+    direct_message_channels.each do |dm_channel|
+      user_ids = dm_channel.chatable.users.map(&:id)
+      if user_ids.count < 3
+        user_ids_with_channel.concat(user_ids)
+      end
+    end
+
+    users_without_channel = users.filter { |u| !user_ids_with_channel.include?(u.id) }
+
+    render_serialized({
+      public_channels: public_channels,
+      direct_message_channels: direct_message_channels,
+      users: users_without_channel
+    }, ChatChannelSearchSerializer, root: false)
+  end
+
   private
 
   def render_channel_for_chatable(channel)

@@ -1,19 +1,23 @@
 import Component from "@ember/component";
+import EmberObject from "@ember/object";
+import { action } from "@ember/object";
+import { ajax } from "discourse/lib/ajax";
 import { bind } from "discourse-common/utils/decorators";
 import { schedule } from "@ember/runloop";
 import { inject as service } from "@ember/service";
-import { action } from "@ember/object";
+import { popupAjaxError } from "discourse/lib/ajax-error";
 
 export default Component.extend({
   chat: service(),
   tagName: "",
   filter: "",
-  filteredChannels: null,
+  channels: null,
+  searchIndex: 0,
 
   init() {
     this._super(...arguments);
     this.appEvents.on("chat-channel-selector-modal:close", this.close);
-    this.getFilteredChannels();
+    this.getInitialChannels();
   },
 
   didInsertElement() {
@@ -23,9 +27,6 @@ export default Component.extend({
       .getElementById("chat-channel-selector-modal-inner")
       ?.addEventListener("mouseover", this.mouseover);
     document.getElementById("chat-channel-selector-modal-inner")?.focus();
-    document
-      .getElementById("chat-channel-selector-input")
-      ?.addEventListener("keyup", this.onFilterInput);
   },
 
   willDestroyElement() {
@@ -35,28 +36,31 @@ export default Component.extend({
     document
       .getElementById("chat-channel-selector-modal-inner")
       ?.removeEventListener("mouseover", this.mouseover);
-    document
-      .getElementById("chat-channel-selector-input")
-      ?.removeEventListener("keyup", this.onFilterInput);
-    this.filteredChannels.forEach((c) => c.set("focused", false));
   },
 
   @bind
   mouseover(e) {
-    if (e.target.classList.contains("chat-channel-row")) {
-      this.filteredChannels.forEach((c) => c.set("focused", false));
-      const channel = this.filteredChannels.findBy(
-        "id",
-        parseInt(e.target.dataset.chatChannelId, 10)
-      );
+    if (e.target.classList.contains("chat-channel-selection-row")) {
+      let channel;
+      const id = parseInt(e.target.dataset.id, 10);
+      if (e.target.classList.contains("channel-row")) {
+        channel = this.channels.findBy("id", id);
+      } else {
+        channel = this.channels.find((c) => c.user && c.id === id);
+      }
       channel?.set("focused", true);
+      this.channels.forEach((c) => {
+        if (c !== channel) {
+          c.set("focused", false);
+        }
+      });
     }
   },
 
   @bind
   onKeyDown(e) {
     if (e.key === "Enter") {
-      let focusedChannel = this.filteredChannels.find((c) => c.focused);
+      let focusedChannel = this.channels.find((c) => c.focused);
       this.switchChannel(focusedChannel);
       e.preventDefault();
     } else if (e.key === "ArrowDown") {
@@ -69,21 +73,21 @@ export default Component.extend({
   },
 
   arrowNavigateChannels(direction) {
-    const indexOfFocused = this.filteredChannels.findIndex((c) => c.focused);
+    const indexOfFocused = this.channels.findIndex((c) => c.focused);
     if (indexOfFocused > -1) {
       const nextIndex = direction === "down" ? 1 : -1;
-      const nextChannel = this.filteredChannels[indexOfFocused + nextIndex];
+      const nextChannel = this.channels[indexOfFocused + nextIndex];
       if (nextChannel) {
-        this.filteredChannels[indexOfFocused].set("focused", false);
+        this.channels[indexOfFocused].set("focused", false);
         nextChannel.set("focused", true);
       }
     } else {
-      this.filteredChannels[0].set("focused", true);
+      this.channels[0].set("focused", true);
     }
 
     schedule("afterRender", this, () => {
       let focusedChannel = document.querySelector(
-        "#chat-channel-selector-modal-inner .chat-channel-row.focused"
+        "#chat-channel-selector-modal-inner .chat-channel-selection-row.focused"
       );
       focusedChannel?.scrollIntoView({ block: "nearest", inline: "start" });
     });
@@ -91,25 +95,75 @@ export default Component.extend({
 
   @action
   switchChannel(channel) {
-    this.chat.openChannel(channel);
-    this.close();
-  },
-
-  @bind
-  onFilterInput(e) {
-    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
-      return;
+    if (channel.user) {
+      return this.fetchChannelForUser(channel).then((response) => {
+        this.chat
+          .startTrackingChannel(response.chat_channel)
+          .then((newlyTracked) => {
+            this.chat.openChannel(newlyTracked);
+            this.close();
+          });
+      });
+    } else {
+      this.chat.openChannel(channel);
+      this.close();
     }
-
-    this.getFilteredChannels();
   },
 
   @action
-  getFilteredChannels() {
+  search() {
+    if (this.filter.trim()) {
+      this.fetchChannelsFromServer();
+    } else {
+      this.getInitialChannels();
+    }
+  },
+
+  @action
+  fetchChannelsFromServer() {
+    this.set("searchIndex", this.searchIndex + 1); // This is used to 'cancel' old search requests
+    const thisSearchIndex = this.searchIndex;
+    ajax("/chat/chat_channels/search", { data: { filter: this.filter } }).then(
+      (searchModel) => {
+        if (this.searchIndex === thisSearchIndex) {
+          this.set("searchModel", searchModel);
+          const channels = searchModel.public_channels.concat(
+            searchModel.direct_message_channels,
+            searchModel.users
+          );
+          channels.forEach((c) => {
+            if (c.username) {
+              c.user = true; // This is used by the `chat-channel-selection-row` component
+            }
+          });
+          this.set(
+            "channels",
+            channels.map((c) => EmberObject.create(c))
+          );
+          this.focusFirstChannel(this.channels);
+        }
+      }
+    ).catch(popupAjaxError);
+  },
+
+  @action
+  getInitialChannels() {
     return this.chat.getChannelsWithFilter(this.filter).then((channels) => {
-      channels.forEach((c) => c.set("focused", false));
-      channels[0]?.set("focused", true);
-      this.set("filteredChannels", channels);
+      this.focusFirstChannel(channels);
+      this.set("channels", channels);
     });
+  },
+
+  @action
+  fetchChannelForUser(user) {
+    return ajax("/chat/direct_messages/create.json", {
+      method: "POST",
+      data: { usernames: user.username },
+    }).catch(popupAjaxError);
+  },
+
+  focusFirstChannel(channels) {
+    channels.forEach((c) => c.set("focused", false));
+    channels[0]?.set("focused", true);
   },
 });

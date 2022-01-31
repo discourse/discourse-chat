@@ -11,6 +11,8 @@ class ChatChannel < ActiveRecord::Base
   attribute :last_read_message_id, default: nil
 
   belongs_to :chatable, polymorphic: true
+  belongs_to :direct_message_channel, -> { where(chat_channels: { chatable_type: 'DirectMessageChannel' }) }, foreign_key: 'chatable_id'
+
   has_many :chat_messages
   has_many :user_chat_channel_memberships
 

@@ -1,7 +1,7 @@
 import PrettyText, { buildOptions } from "pretty-text/pretty-text";
+import I18n from "I18n";
 import { deepMerge } from "discourse-common/lib/object";
-import QUnit, { module, skip, test } from "qunit";
-import Site from "discourse/models/site";
+import QUnit, { test } from "qunit";
 
 import { acceptance } from "discourse/tests/helpers/qunit-helpers";
 

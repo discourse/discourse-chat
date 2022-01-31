@@ -1,6 +1,5 @@
 import DiscourseRoute from "discourse/routes/discourse";
 import { ajax } from "discourse/lib/ajax";
-import I18n from "I18n";
 import { defaultHomepage } from "discourse/lib/utilities";
 import { inject as service } from "@ember/service";
 

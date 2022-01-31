@@ -485,7 +485,7 @@ export default Service.extend({
     ) {
       const queryParams = messageId ? { messageId } : {};
       this.router.transitionTo("chat.channel", channel.id, channel.title, {
-        queryParams: { messageId },
+        queryParams,
       });
     } else {
       this._fireOpenFloatAppEvent(channel, messageId);

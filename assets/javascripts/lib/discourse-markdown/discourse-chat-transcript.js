@@ -15,8 +15,12 @@ const chatTranscriptRule = {
 
     let wrapperDivToken = state.push("div_chat_transcript_wrap", "div", 1);
     wrapperDivToken.attrs = [["class", "discourse-chat-transcript"]];
+    wrapperDivToken.attrs.push(["data-message-id", messageIdStart]);
+    wrapperDivToken.attrs.push(["data-username", username]);
+    wrapperDivToken.attrs.push(["data-datetime", messageTimeStart]);
 
     if (channelName) {
+      wrapperDivToken.attrs.push(["data-channel-name", channelName]);
       let metaDivToken = state.push("div_chat_transcript_meta", "div", 1);
       metaDivToken.attrs = [["class", "chat-transcript-meta"]];
       const channelToken = state.push("html_inline", "", 0);
@@ -29,6 +33,7 @@ const chatTranscriptRule = {
     let userDivToken = state.push("div_chat_transcript_user", "div", 1);
     userDivToken.attrs = [["class", "chat-transcript-user"]];
 
+    // start: user avatar
     let avatarDivToken = state.push(
       "div_chat_transcript_user_avatar",
       "div",
@@ -47,7 +52,9 @@ const chatTranscriptRule = {
     }
 
     state.push("div_chat_transcript_user_avatar", "div", -1);
+    // end: user avatar
 
+    // start: username
     let usernameDivToken = state.push("div_chat_transcript_username", "div", 1);
     usernameDivToken.attrs = [["class", "chat-transcript-username"]];
 
@@ -62,12 +69,16 @@ const chatTranscriptRule = {
     usernameToken.content = displayName;
 
     state.push("div_chat_transcript_username", "div", -1);
+    // end: username
 
+    // start: time + link to message
     let datetimeDivToken = state.push("div_chat_transcript_datetime", "div", 1);
     datetimeDivToken.attrs = [["class", "chat-transcript-datetime"]];
 
     let linkToken = state.push("link_open", "a", 1);
-    linkToken.attrs = [["href", options.getURL(`/chat/message/${messageIdStart}`)]];
+    linkToken.attrs = [
+      ["href", options.getURL(`/chat/message/${messageIdStart}`)],
+    ];
     linkToken.block = false;
 
     let datetimeToken = state.push("html_inline", "", 0);
@@ -79,6 +90,8 @@ const chatTranscriptRule = {
     linkToken.block = false;
 
     state.push("div_chat_transcript_datetime", "div", -1);
+    // end: time + link to message
+
     state.push("div_chat_transcript_user", "div", -1);
 
     let messagesToken = state.push("div_chat_transcript_messages", "div", 1);
@@ -104,6 +117,10 @@ export function setup(helper) {
     "div.chat-transcript-user-avatar",
     "div.chat-transcript-messages",
     "div.chat-transcript-datetime",
+    "div[data-message-id]",
+    "div[data-channel-name]",
+    "div[data-username]",
+    "div[data-datetime]",
   ]);
 
   helper.registerOptions((opts, siteSettings) => {
@@ -124,9 +141,8 @@ export function setup(helper) {
 
     // we need to be able to quote images from chat, but the image rule is usually
     // banned for chat messages
-    const markdownItRules = chatAdditionalOpts.limited_pretty_text_markdown_rules.concat(
-      "image"
-    );
+    const markdownItRules =
+      chatAdditionalOpts.limited_pretty_text_markdown_rules.concat("image");
 
     generateCookFunction(
       {

@@ -17,9 +17,14 @@
   .chat-transcript-username {
     font-weight: bold;
   }
-  
+
   .chat-transcript-datetime {
     color: var(--primary-high);
+
+    a {
+      color: var(--primary-high);
+    }
+
     font-size: var(--font-down-2);
     padding-left: 0.5em;
   }

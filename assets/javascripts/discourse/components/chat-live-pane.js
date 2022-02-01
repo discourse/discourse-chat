@@ -132,9 +132,14 @@ export default Component.extend({
       this.registeredChatChannelId = null;
       this.set("allPastMessagesLoaded", false);
 
-      if (this.chatChannel.id != null) {
-        this.fetchMessages(this.chatChannel.id);
-        this.loadDraftForChannel();
+      if (this.chatChannel?.id) {
+        this.chat
+          .getChannelBy("id", this.chatChannel.id)
+          .then((trackedChannel) => {
+            this.set("previewing", !Boolean(trackedChannel));
+            this.fetchMessages(this.chatChannel.id);
+            this.loadDraftForChannel(this.chatChannel.id);
+          });
       }
     }
   },
@@ -186,8 +191,8 @@ export default Component.extend({
     });
   },
 
-  loadDraftForChannel() {
-    this.set("draft", this.chat.getDraftForChannel(this.chatChannel.id));
+  loadDraftForChannel(channelId) {
+    this.set("draft", this.chat.getDraftForChannel(channelId));
   },
 
   _fetchMorePastMessages() {
@@ -780,6 +785,24 @@ export default Component.extend({
     this._stickScrollToBottom();
     this.appEvents.trigger("chat-composer:reply-to-set", null);
     return Promise.resolve();
+  },
+
+  @action
+  joinChannel() {
+    return ajax(`/chat/chat_channels/${this.chatChannel.id}/follow`, {
+      method: "POST",
+    }).then(() => {
+      this.setProperties({
+        id: null,
+      });
+      this.chat.forceRefreshChannels().then(() => {
+        if (this._selfDeleted()) {
+          return;
+        }
+        this.set("previewing", false);
+        this.appEvents.trigger("chat:refresh-channels");
+      });
+    });
   },
 
   _onSendError(stagedId, error) {

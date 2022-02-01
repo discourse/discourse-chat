@@ -232,13 +232,6 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   didReceiveAttrs() {
     this._super(...arguments);
 
-    if (
-      this.chatChannel.id === this.lastChatChannelId &&
-      !this.editingMessage
-    ) {
-      return;
-    }
-
     if (!this.editingMessage && this.draft) {
       this.setProperties(this.draft);
       this.setInReplyToMsg(this.draft.replyToMsg);
@@ -254,6 +247,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
       });
       this._focusTextArea({ ensureAtEnd: true, resizeTextArea: false });
     }
+
     this.set("lastChatChannelId", this.chatChannel.id);
     this._resizeTextArea();
   },

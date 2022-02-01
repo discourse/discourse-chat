@@ -523,6 +523,14 @@ body.composer-open .topic-chat-float-container {
       }
     }
 
+    .join-channel-btn.in-float {
+      position: absolute;
+      transform: translateX(-50%);
+      left: 50%;
+      top: 10px;
+      z-index: 10;
+    }
+
     .all-loaded-message {
       text-align: center;
       color: var(--primary-medium);

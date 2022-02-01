@@ -1,0 +1,18 @@
+<div
+  class="{{rowClassNames}} {{if isUnfollowing "unfollowing"}}"
+  role="button"
+  tabindex="0"
+  {{on "click" this.handleClick}}
+  data-id={{model.id}}
+>
+
+  {{#if model.user}}
+    {{avatar model imageSize="tiny"}}
+    <span class="username">
+      {{model.username}}
+    </span>
+  {{else}}
+    {{chat-channel-title channel=model}}
+    {{chat-channel-unread-indicator channel=channel}}
+  {{/if}}
+</div>

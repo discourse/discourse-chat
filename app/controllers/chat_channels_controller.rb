@@ -127,6 +127,63 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     render_serialized(chat_channel, ChatChannelSerializer)
   end
 
+  def search
+    params.require(:filter)
+    filter = params[:filter]&.downcase
+    memberships = UserChatChannelMembership.where(user: current_user)
+    public_channels = DiscourseChat::ChatChannelFetcher.public_channels_with_filter(
+      guardian,
+      memberships,
+      filter
+    )
+
+    users = User.joins(:user_option)
+    unless DiscourseChat.allowed_group_ids.include?(Group::AUTO_GROUPS[:everyone])
+      users = users.joins(:groups).where(groups: { id: DiscourseChat.allowed_group_ids })
+    end
+
+    users = users.where(user_option: { chat_enabled: true })
+    like_filter = "#{filter}%"
+    if SiteSetting.enable_names
+      users = users.where("LOWER(users.name) LIKE ? OR LOWER(users.username) LIKE ?", like_filter, like_filter)
+    else
+      users = users.where("LOWER(users.username) LIKE ?", like_filter)
+    end
+
+    users = users.limit(25).uniq
+    # Need to filter out current user for chat channel query
+    users.reject! { |user| user.id === current_user.id }
+
+    direct_message_channels = users.count > 0 ?
+      ChatChannel
+        .includes(chatable: :users)
+        .joins(direct_message_channel: :direct_message_users)
+        .group(1)
+        .having("ARRAY[?] <@ ARRAY_AGG(user_id) AND ARRAY[?] && ARRAY_AGG(user_id)", [current_user.id], users.map(&:id)) : []
+
+    user_ids_with_channel = []
+    direct_message_channels.each do |dm_channel|
+      user_ids = dm_channel.chatable.users.map(&:id)
+      if user_ids.count < 3
+        user_ids_with_channel.concat(user_ids)
+      end
+    end
+
+    users_without_channel = users.filter { |u| !user_ids_with_channel.include?(u.id) }
+
+    if current_user.username.downcase.start_with?(filter)
+      # We filtered out the current user for the query earlier, but check to see
+      # if they should be included, and add.
+      users_without_channel << current_user
+    end
+
+    render_serialized({
+      public_channels: public_channels,
+      direct_message_channels: direct_message_channels,
+      users: users_without_channel
+    }, ChatChannelSearchSerializer, root: false)
+  end
+
   private
 
   def render_channel_for_chatable(channel)

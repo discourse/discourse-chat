@@ -499,9 +499,9 @@ export default Service.extend({
   },
 
   async startTrackingChannel(channel) {
-    const existingChannel = await this.getChannelBy("id", channel.id);
+    let existingChannel = await this.getChannelBy("id", channel.id);
     if (existingChannel) {
-      return; // User is already tracking this channel. return!
+      return existingChannel; // User is already tracking this channel. return!
     }
 
     const isDirectMessageChannel =
@@ -512,11 +512,13 @@ export default Service.extend({
 
     // this check shouldn't be needed given the previous check to existingChannel
     // this is a safety net, to ensure we never track duplicated channels
-    if (existingChannels.findBy("id", channel.id)) {
-      return;
+    existingChannel = existingChannels.findBy("id", channel.id);
+    if (existingChannel) {
+      return existingChannel;
     }
 
-    existingChannels.pushObject(this.processChannel(channel));
+    const newChannel = this.processChannel(channel);
+    existingChannels.pushObject(newChannel);
     this.currentUser.chat_channel_tracking_state[channel.id] = {
       unread_count: 0,
       unread_mentions: 0,
@@ -527,6 +529,7 @@ export default Service.extend({
       this.set("publicChannels", this.sortPublicChannels(this.publicChannels));
     }
     this.appEvents.trigger("chat:refresh-channels");
+    return newChannel;
   },
 
   async stopTrackingChannel(channel) {

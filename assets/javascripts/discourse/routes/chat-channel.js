@@ -8,22 +8,20 @@ export default DiscourseRoute.extend({
   chat: service(),
 
   async model(params) {
-    let [[chatChannel, previewing], channels] = await Promise.all([
+    let [chatChannel, channels] = await Promise.all([
       this.getChannel(params.channelId),
       this.chat.getChannels(),
     ]);
 
-    return EmberObject.create({ chatChannel, channels, previewing });
+    return EmberObject.create({ chatChannel, channels });
   },
 
   async getChannel(id) {
     let channel = await this.chat.getChannelBy("id", id);
-    let previewing = false;
     if (!channel) {
       channel = await this.getChannelFromServer(id);
-      previewing = true;
     }
-    return [channel, previewing];
+    return channel;
   },
 
   async getChannelFromServer(id) {

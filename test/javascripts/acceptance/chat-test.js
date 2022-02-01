@@ -1107,6 +1107,14 @@ acceptance(
       server.get("/chat/chat_channels/:chatChannelId", () => {
         return helper.response(siteChannel);
       });
+      server.get("/chat/chat_channels/70", () => {
+        return helper.response({
+          chat_channel: {
+            id: 70,
+            name: "preview-me",
+          },
+        });
+      });
       server.put("/chat/chat_channels", () => {
         return helper.response({
           chat_channel: {

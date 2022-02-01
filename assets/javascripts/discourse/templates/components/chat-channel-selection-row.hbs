@@ -2,9 +2,9 @@
   class="{{rowClassNames}} {{if isUnfollowing "unfollowing"}}"
   role="button"
   tabindex="0"
-  {{on "click" (fn this.handleClick)}}
+  {{on "click" this.handleClick}}
   data-id={{model.id}}
-  >
+>
 
   {{#if model.user}}
     {{avatar model imageSize="tiny"}}

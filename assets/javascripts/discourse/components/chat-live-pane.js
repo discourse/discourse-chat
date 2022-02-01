@@ -795,7 +795,7 @@ export default Component.extend({
       this.setProperties({
         id: null,
       });
-      this.chat.forceRefreshChannels().then(() => {
+      return this.chat.forceRefreshChannels().then(() => {
         if (this._selfDeleted()) {
           return;
         }

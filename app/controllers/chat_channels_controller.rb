@@ -150,7 +150,7 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
       users = users.where("LOWER(users.username) LIKE ?", like_filter)
     end
 
-    users = users.uniq
+    users = users.limit(25).uniq
     # Need to filter out current user for chat channel query
     users.reject! { |user| user.id === current_user.id }
 

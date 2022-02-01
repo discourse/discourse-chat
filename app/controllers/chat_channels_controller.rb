@@ -151,6 +151,9 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     end
 
     users = users.uniq
+    # Need to filter out current user for chat channel query
+    users.reject! { |user| user.id === current_user.id }
+
     direct_message_channels = users.count > 0 ?
       ChatChannel
         .includes(chatable: :users)
@@ -167,6 +170,12 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     end
 
     users_without_channel = users.filter { |u| !user_ids_with_channel.include?(u.id) }
+
+    if current_user.username.downcase.start_with?(filter)
+      # We filtered out the current user for the query earlier, but check to see
+      # if they should be included, and add.
+      users_without_channel << current_user
+    end
 
     render_serialized({
       public_channels: public_channels,

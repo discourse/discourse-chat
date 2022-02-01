@@ -3,8 +3,9 @@
 require 'rails_helper'
 
 RSpec.describe DiscourseChat::ChatChannelsController do
-  fab!(:user) { Fabricate(:user) }
-  fab!(:admin) { Fabricate(:admin) }
+  fab!(:user) { Fabricate(:user, username: "someone") }
+  fab!(:other_user) { Fabricate(:user, username: "someone-else-again") }
+  fab!(:admin) { Fabricate(:admin, username: "someone-else") }
   fab!(:category) { Fabricate(:category) }
   fab!(:topic) { Fabricate(:topic, category: category) }
   fab!(:chat_channel) { Fabricate(:chat_channel, chatable: topic) }
@@ -406,6 +407,62 @@ RSpec.describe DiscourseChat::ChatChannelsController do
       expect(response.status).to eq(200)
       expect(chat_channel.reload.name).to eq(new_name)
       expect(chat_channel.description).to eq(new_description)
+    end
+  end
+
+  describe "#search" do
+
+    describe "without chat permissions" do
+      it "errors errors for anon" do
+        get "/chat/chat_channels/search.json", params: { filter: "so" }
+        expect(response.status).to eq(403)
+      end
+
+      it "errors when user cannot chat" do
+        SiteSetting.chat_allowed_groups = Group::AUTO_GROUPS[:staff]
+        sign_in(user)
+        get "/chat/chat_channels/search.json", params: { filter: "so" }
+        expect(response.status).to eq(403)
+      end
+    end
+
+    describe "with chat permissions" do
+      before do
+        sign_in(user)
+        chat_channel.update(name: "something")
+      end
+
+      it "returns the correct channels with filter 'so'" do
+        get "/chat/chat_channels/search.json", params: { filter: "so" }
+        expect(response.status).to eq(200)
+        expect(response.parsed_body["public_channels"][0]["id"]).to eq(chat_channel.id)
+        expect(response.parsed_body["direct_message_channels"][0]["id"]).to eq(dm_chat_channel.id)
+        expect(response.parsed_body["users"].map { |u| u["id"] }).to match_array([user.id, other_user.id])
+      end
+
+      it "returns the correct channels with filter 'something'" do
+        get "/chat/chat_channels/search.json", params: { filter: "something" }
+        expect(response.status).to eq(200)
+        expect(response.parsed_body["public_channels"][0]["id"]).to eq(chat_channel.id)
+        expect(response.parsed_body["direct_message_channels"].count).to eq(0)
+        expect(response.parsed_body["users"].count).to eq(0)
+      end
+
+      it "returns the correct channels with filter 'someone'" do
+        get "/chat/chat_channels/search.json", params: { filter: "someone" }
+        expect(response.status).to eq(200)
+        expect(response.parsed_body["public_channels"].count).to eq(0)
+        expect(response.parsed_body["direct_message_channels"][0]["id"]).to eq(dm_chat_channel.id)
+        expect(response.parsed_body["users"].map { |u| u["id"] }).to match_array([user.id, other_user.id])
+      end
+
+      it "returns no channels with a whacky filter" do
+        get "/chat/chat_channels/search.json", params: { filter: "hello good sir" }
+        expect(response.status).to eq(200)
+        expect(response.parsed_body["public_channels"].count).to eq(0)
+        expect(response.parsed_body["direct_message_channels"].count).to eq(0)
+        expect(response.parsed_body["users"].count).to eq(0)
+      end
     end
   end
 end

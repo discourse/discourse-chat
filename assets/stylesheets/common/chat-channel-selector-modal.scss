@@ -32,6 +32,10 @@
     height: calc(100% - var(--chat-channel-selector-input-height));
     overflow: auto;
 
+    .no-channels-notice {
+      padding: 0.5em;
+    }
+
     .chat-channel-selection-row {
       display: flex;
       align-items: center;

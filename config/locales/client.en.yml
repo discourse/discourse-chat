@@ -90,6 +90,7 @@ en:
 
       channel_selector:
         title: "Jump to channel"
+        no_channels: "No channels match your search"
 
       create_channel:
         choose_category:

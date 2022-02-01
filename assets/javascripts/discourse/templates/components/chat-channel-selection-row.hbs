@@ -1,5 +1,7 @@
 <div
   class="{{rowClassNames}} {{if isUnfollowing "unfollowing"}}"
+  role="button"
+  tabindex="0"
   {{on "click" (fn this.handleClick)}}
   data-id={{model.id}}
   >

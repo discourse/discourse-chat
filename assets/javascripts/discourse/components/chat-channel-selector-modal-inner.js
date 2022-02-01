@@ -1,6 +1,5 @@
 import Component from "@ember/component";
-import EmberObject from "@ember/object";
-import { action } from "@ember/object";
+import EmberObject, { action } from "@ember/object";
 import { ajax } from "discourse/lib/ajax";
 import { bind } from "discourse-common/utils/decorators";
 import { schedule } from "@ember/runloop";
@@ -27,7 +26,7 @@ export default Component.extend({
     document
       .getElementById("chat-channel-selector-modal-inner")
       ?.addEventListener("mouseover", this.mouseover);
-    document.getElementById("chat-channel-selector-modal-inner")?.focus();
+    document.getElementById("chat-channel-selector-input")?.focus();
   },
 
   willDestroyElement() {

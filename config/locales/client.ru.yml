@@ -78,6 +78,7 @@ ru:
       reply: "Ответить"
       edit: "Изменить"
       copy_link: "Копировать ссылку"
+      rebake_message: "Перестроить HTML"
       restore: "Восстановить удаленное сообщение"
       save: "Сохранить"
       select: "Выбрать"
@@ -98,6 +99,8 @@ ru:
         many: "%{count} файлов"
         other: "%{count} файлов"
       exit: "Назад"
+      channel_selector:
+        title: "Перейти на канал"
       create_channel:
         choose_category:
           label: "Выберите раздел"

@@ -79,7 +79,14 @@
         {{/if}}
 
         {{#if hideUserInfo}}
-          {{format-chat-date message details "tiny"}}
+          <div class="chat-message-left-gutter">
+            {{format-chat-date message details "tiny"}}
+            {{#if message.edited}}
+              <div class="chat-message-edited">
+                {{d-icon "pencil-alt" title=(i18n "chat.edited")}}
+              </div>
+            {{/if}}
+          </div>
         {{else}}
           {{#if message.chat_webhook_event.emoji}}
             {{chat-emoji-avatar emoji=message.chat_webhook_event.emoji}}
@@ -106,6 +113,11 @@
               {{/if}}
 
               {{format-chat-date message details}}
+              {{#if message.edited}}
+                <div class="chat-message-edited">
+                  {{d-icon "pencil-alt" title=(i18n "chat.edited")}}
+                </div>
+              {{/if}}
             </div>
           {{/unless}}
 

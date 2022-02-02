@@ -62,6 +62,13 @@
     }
   }
 
+  .chat-message-left-gutter {
+    width: var(--message-left-width);
+    .chat-message-edited {
+      padding-left: 0.6em;
+    }
+  }
+
   &.chat-action {
     background-color: var(--highlight-medium);
   }
@@ -88,7 +95,7 @@
       flex-shrink: 0;
       font-size: var(--font-down-2);
       margin-top: 0.4em;
-      visibility: hidden;
+      display: none;
       width: var(--message-left-width);
     }
 
@@ -174,7 +181,7 @@
   .chat-message-edited {
     display: inline-block;
     color: var(--primary-medium);
-    font-size: var(--font-down-1);
+    font-size: var(--font-down-2);
   }
 
   .chat-message-reaction-list {
@@ -438,7 +445,10 @@
   .not-mobile-device & .user-info-hidden:hover,
   .user-info-hidden.chat-message-selected {
     .chat-time {
-      visibility: visible;
+      display: inline-block;
+    }
+    .chat-message-edited {
+      display: none;
     }
   }
 

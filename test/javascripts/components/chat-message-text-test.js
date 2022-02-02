@@ -10,7 +10,7 @@ discourseModule(
     setupRenderingTest(hooks);
 
     componentTest("yields", {
-      template: hbs`{{#chat-message-text cooked=cooked uploads=uploads edited=edited}} <div class="yield-me"></div> {{/chat-message-text}}`,
+      template: hbs`{{#chat-message-text cooked=cooked uploads=uploads}} <div class="yield-me"></div> {{/chat-message-text}}`,
 
       beforeEach() {
         this.set("cooked", "<p></p>");
@@ -22,7 +22,7 @@ discourseModule(
     });
 
     componentTest("shows collapsed", {
-      template: hbs`{{chat-message-text cooked=cooked uploads=uploads edited=edited}}`,
+      template: hbs`{{chat-message-text cooked=cooked uploads=uploads}}`,
 
       beforeEach() {
         this.set(
@@ -48,31 +48,6 @@ discourseModule(
 
       async test(assert) {
         assert.notOk(exists(".chat-message-collapser"));
-      },
-    });
-
-    componentTest("is edited and shows that it's edited", {
-      template: hbs`{{chat-message-text cooked=cooked uploads=uploads edited=edited}}`,
-
-      beforeEach() {
-        this.set("cooked", "<p></p>");
-        this.set("edited", true);
-      },
-
-      async test(assert) {
-        assert.ok(exists(".chat-message-edited"));
-      },
-    });
-
-    componentTest("is not edited and does not show", {
-      template: hbs`{{chat-message-text cooked=cooked uploads=uploads edited=edited}}`,
-
-      beforeEach() {
-        this.set("cooked", "<p></p>");
-      },
-
-      async test(assert) {
-        assert.notOk(exists(".chat-message-edited"));
       },
     });
   }

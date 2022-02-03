@@ -80,13 +80,9 @@ const chatTranscriptRule = {
     let linkToken = state.push("link_open", "a", 1);
     linkToken.attrs = [
       ["href", options.getURL(`/chat/message/${messageIdStart}`)],
+      ["title", messageTimeStart],
     ];
     linkToken.block = false;
-
-    let datetimeToken = state.push("html_inline", "", 0);
-    datetimeToken.content = moment(messageTimeStart).format(
-      I18n.t("dates.long_with_year")
-    );
 
     linkToken = state.push("link_close", "a", -1);
     linkToken.block = false;
@@ -138,13 +134,14 @@ export function setup(helper) {
     }
   });
 
-  helper.requestCustomMarkdownCookFunction((opts, generateCookFunction) => {
+  helper.buildCookFunction((opts, generateCookFunction) => {
     const chatAdditionalOpts = opts.discourse.additionalOptions.chat;
 
     // we need to be able to quote images from chat, but the image rule is usually
     // banned for chat messages
-    const markdownItRules =
-      chatAdditionalOpts.limited_pretty_text_markdown_rules.concat("image");
+    const markdownItRules = chatAdditionalOpts.limited_pretty_text_markdown_rules.concat(
+      "image"
+    );
 
     generateCookFunction(
       {

@@ -5,6 +5,7 @@ export default {
   name: "chat-setup",
   initialize(container) {
     const currentUser = container.lookup("current-user:main");
+    const currentUserTimezone = currentUser?.resolvedTimezone(currentUser);
     const chatService = container.lookup("service:chat");
 
     if (!chatService.userCanChat) {
@@ -45,7 +46,30 @@ export default {
         "header-chat-link",
         "chat:rerender-header"
       );
+
       api.addToHeaderIcons("header-chat-link");
+
+      api.decorateCookedElement((elem) => {
+        const chatTranscriptElements = elem.querySelectorAll(
+          ".discourse-chat-transcript"
+        );
+        chatTranscriptElements.forEach((el) => {
+          const dateTimeRaw = el.dataset["datetime"];
+          const dateTimeLinkEl = el.querySelector(
+            ".chat-transcript-datetime a"
+          );
+
+          if (currentUserTimezone) {
+            dateTimeLinkEl.innerText = moment
+              .tz(dateTimeRaw, currentUserTimezone)
+              .format(I18n.t("dates.long_no_year"));
+          } else {
+            dateTimeLinkEl.innerText = moment(dateTimeRaw).format(
+              I18n.t("dates.long_no_year")
+            );
+          }
+        });
+      });
     });
   },
 

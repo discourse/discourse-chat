@@ -54,7 +54,7 @@ Originally posted in #${opts.channel}.</div>`);
 <div class=\"chat-transcript-username\">
 ${opts.username}</div>
 <div class=\"chat-transcript-datetime\">
-<a href=\"/chat/message/${opts.messageId}\">${datetimeFormatted}</a></div>
+<a href=\"/chat/message/${opts.messageId}\" title=\"${opts.datetime}\"></a></div>
 </div>
 <div class=\"chat-transcript-messages\">
 ${messageContent}</div>

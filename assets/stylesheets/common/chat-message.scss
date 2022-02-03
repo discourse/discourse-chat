@@ -63,7 +63,9 @@
   }
 
   .chat-message-left-gutter {
+    flex-shrink: 0;
     width: var(--message-left-width);
+
     .chat-message-edited {
       padding-left: 0.6em;
     }

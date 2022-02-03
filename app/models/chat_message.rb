@@ -80,6 +80,7 @@ class ChatMessage < ActiveRecord::Base
     newline
     code
     fence
+    image
     table
     linkify
     link

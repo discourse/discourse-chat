@@ -1,15 +1,16 @@
-import { inject as service } from "@ember/service";
 import getURL from "discourse-common/lib/get-url";
+import bootbox from "bootbox";
 import Component from "@ember/component";
 import discourseComputed, { bind } from "discourse-common/utils/decorators";
-import I18n from "I18n";
-import { ajax } from "discourse/lib/ajax";
-import { popupAjaxError } from "discourse/lib/ajax-error";
-import { prioritizeNameInUx } from "discourse/lib/settings";
 import EmberObject, { action, computed } from "@ember/object";
+import I18n from "I18n";
+import showModal from "discourse/lib/show-modal";
+import { ajax } from "discourse/lib/ajax";
 import { autoUpdatingRelativeAge } from "discourse/lib/formatter";
 import { cancel, later, schedule } from "@ember/runloop";
-import bootbox from "bootbox";
+import { inject as service } from "@ember/service";
+import { popupAjaxError } from "discourse/lib/ajax-error";
+import { prioritizeNameInUx } from "discourse/lib/settings";
 
 const HERE = "here";
 const ALL = "all";
@@ -579,8 +580,9 @@ export default Component.extend({
 
   @action
   flag() {
-    // TODO showModal
-    bootbox.alert("unimplemented");
+    debugger
+    this.message.set("user_id", this.message.user.id);
+    showModal("flag", { model: this.message });
   },
 
   @action

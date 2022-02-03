@@ -6,6 +6,11 @@ const chatTranscriptRule = {
   tag: "chat",
 
   replace: function (state, tagInfo, content) {
+    // shouldn't really happen but we don't want to break rendering if it does
+    if (!customMarkdownCookFn) {
+      return;
+    }
+
     const options = state.md.options.discourse;
     let [username, messageIdStart, messageTimeStart] =
       (tagInfo.attrs.quote && tagInfo.attrs.quote.split(";")) || [];
@@ -135,12 +140,17 @@ export function setup(helper) {
   });
 
   helper.buildCookFunction((opts, generateCookFunction) => {
+    if (!opts.discourse.additionalOptions) {
+      return;
+    }
+
     const chatAdditionalOpts = opts.discourse.additionalOptions.chat;
 
     // we need to be able to quote images from chat, but the image rule is usually
     // banned for chat messages
-    const markdownItRules =
-      chatAdditionalOpts.limited_pretty_text_markdown_rules.concat("image");
+    const markdownItRules = chatAdditionalOpts.limited_pretty_text_markdown_rules.concat(
+      "image"
+    );
 
     generateCookFunction(
       {

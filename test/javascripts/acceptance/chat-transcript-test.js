@@ -1,8 +1,11 @@
 import PrettyText, { buildOptions } from "pretty-text/pretty-text";
-import { deepMerge } from "discourse-common/lib/object";
+import I18n from "I18n";
+import topicFixtures from "discourse/tests/fixtures/topic";
+import { cloneJSON, deepMerge } from "discourse-common/lib/object";
 import QUnit, { test } from "qunit";
 
-import { acceptance } from "discourse/tests/helpers/qunit-helpers";
+import { visit } from "@ember/test-helpers";
+import { acceptance, query } from "discourse/tests/helpers/qunit-helpers";
 
 const rawOpts = {
   siteSettings: {
@@ -19,9 +22,14 @@ const rawOpts = {
   },
   getURL: (url) => url,
 };
-QUnit.assert.cookedChatTranscript = function (input, opts, expected, message) {
+
+function cookMarkdown(input, opts) {
   const merged = deepMerge({}, rawOpts, opts);
-  const actual = new PrettyText(buildOptions(merged)).cook(input);
+  return new PrettyText(buildOptions(merged)).cook(input);
+}
+
+QUnit.assert.cookedChatTranscript = function (input, opts, expected, message) {
+  const actual = cookMarkdown(input, opts);
   this.pushResult({
     result: actual === expected,
     actual,
@@ -40,7 +48,9 @@ function generateTranscriptHTML(messageContent, opts) {
     `<div class=\"discourse-chat-transcript\" data-message-id=\"${opts.messageId}\" data-username=\"${opts.username}\" data-datetime=\"${opts.datetime}\"${channelDataAttr}>`
   );
 
-  const originallySent = I18n.t("chat.quote.original_channel", { channel: opts.channel })
+  const originallySent = I18n.t("chat.quote.original_channel", {
+    channel: opts.channel,
+  });
   if (opts.channel) {
     transcript.push(`<div class=\"chat-transcript-meta\">
 ${originallySent}</div>`);
@@ -59,11 +69,11 @@ ${messageContent}</div>
   return transcript.join("\n");
 }
 
-acceptance("Discourse Chat | discourse-chat-transcript", function () {
-  // these are both set by the plugin with Site.markdown_additional_options which we can't really
-  // modify the response for here, source of truth are consts in ChatMessage::MARKDOWN_FEATURES
-  // and ChatMessage::MARKDOWN_IT_RULES
-  let additionalOptions = {
+// these are both set by the plugin with Site.markdown_additional_options which we can't really
+// modify the response for here, source of truth are consts in ChatMessage::MARKDOWN_FEATURES
+// and ChatMessage::MARKDOWN_IT_RULES
+function buildAdditionalOptions() {
+  return {
     chat: {
       limited_pretty_text_features: [
         "anchor",
@@ -100,6 +110,10 @@ acceptance("Discourse Chat | discourse-chat-transcript", function () {
       ],
     },
   };
+}
+
+acceptance("Discourse Chat | discourse-chat-transcript", function () {
+  let additionalOptions = buildAdditionalOptions();
 
   test("works with a minimal quote bbcode block", function (assert) {
     assert.cookedChatTranscript(
@@ -224,7 +238,7 @@ another cool reply<br>
       "mentions",
       "onebox",
       "text-post-process",
-      "upload-protocol",
+      "upload-protocolrouter.location.setURL",
       "watched-words",
       "table",
       "spoiler-alert",
@@ -278,3 +292,51 @@ here is a message :P with category hashtag #test
     );
   });
 });
+
+acceptance(
+  "Discourse Chat | discourse-chat-transcript date decoration",
+  function (needs) {
+    let additionalOptions = buildAdditionalOptions();
+
+    needs.user({
+      admin: false,
+      moderator: false,
+      username: "eviltrout",
+      id: 1,
+      can_chat: true,
+      has_chat_enabled: true,
+    });
+    needs.settings({
+      chat_enabled: true,
+    });
+
+    needs.pretender((server, helper) => {
+      server.get("/chat/chat_channels.json", () =>
+        helper.response({
+          public_channels: [],
+          direct_message_channels: [],
+        })
+      );
+
+      const topicResponse = cloneJSON(topicFixtures["/t/280/1.json"]);
+      const firstPost = topicResponse.post_stream.posts[0];
+      const postCooked = cookMarkdown(
+        `[chat quote="martin;2321;2022-01-25T05:40:39Z"]\nThis is a chat message.\n[/chat]`,
+        { additionalOptions }
+      );
+      firstPost.cooked += postCooked;
+
+      server.get("/t/280.json", () => helper.response(topicResponse));
+    });
+
+    test("chat transcript datetimes are formatted into the link with decorateCookedElement", async function (assert) {
+      await visit("/t/-/280");
+
+      assert.strictEqual(
+        query(".chat-transcript-datetime a").text.trim(),
+        moment("2022-01-25T05:40:39Z").format(I18n.t("dates.long_no_year")),
+        "it decorates the chat transcript datetime link with a formatted date"
+      );
+    });
+  }
+);

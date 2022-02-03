@@ -1,5 +1,4 @@
 import PrettyText, { buildOptions } from "pretty-text/pretty-text";
-import I18n from "I18n";
 import { deepMerge } from "discourse-common/lib/object";
 import QUnit, { test } from "qunit";
 
@@ -32,9 +31,6 @@ QUnit.assert.cookedChatTranscript = function (input, opts, expected, message) {
 };
 
 function generateTranscriptHTML(messageContent, opts) {
-  const datetimeFormatted = moment(opts.datetime).format(
-    I18n.t("dates.long_with_year")
-  );
   const channelDataAttr = opts.channel
     ? ` data-channel-name=\"${opts.channel}\"`
     : "";

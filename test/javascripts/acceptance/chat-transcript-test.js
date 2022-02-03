@@ -40,9 +40,10 @@ function generateTranscriptHTML(messageContent, opts) {
     `<div class=\"discourse-chat-transcript\" data-message-id=\"${opts.messageId}\" data-username=\"${opts.username}\" data-datetime=\"${opts.datetime}\"${channelDataAttr}>`
   );
 
+  const originallySent = I18n.t("chat.quote.original_channel", { channel: opts.channel })
   if (opts.channel) {
     transcript.push(`<div class=\"chat-transcript-meta\">
-Originally posted in #${opts.channel}.</div>`);
+${originallySent}</div>`);
   }
 
   transcript.push(`<div class=\"chat-transcript-user\">

@@ -27,7 +27,7 @@ const chatTranscriptRule = {
       metaDivToken.attrs = [["class", "chat-transcript-meta"]];
       const channelToken = state.push("html_inline", "", 0);
       channelToken.content = I18n.t("chat.quote.original_channel", {
-        channel: `#${channelName}`,
+        channel: channelName,
       });
       state.push("div_chat_transcript_meta", "div", -1);
     }
@@ -139,9 +139,8 @@ export function setup(helper) {
 
     // we need to be able to quote images from chat, but the image rule is usually
     // banned for chat messages
-    const markdownItRules = chatAdditionalOpts.limited_pretty_text_markdown_rules.concat(
-      "image"
-    );
+    const markdownItRules =
+      chatAdditionalOpts.limited_pretty_text_markdown_rules.concat("image");
 
     generateCookFunction(
       {

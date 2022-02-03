@@ -13,7 +13,7 @@
     {{#if previewing}}
       {{d-button
         class="btn-primary join-channel-btn"
-        action=joinChannel
+        action=(action "joinChannel")
         label="chat.join_channel"
       }}
     {{/if}}
@@ -30,6 +30,15 @@
 
 <div class="chat-messages-scroll chat-messages-container">
   {{#conditional-loading-spinner condition=this.loading}}
+
+    {{#if (and previewing (not fullPage))}}
+      {{d-button
+        class="btn-primary join-channel-btn in-float"
+        action=(action "joinChannel")
+        label="chat.join_channel"
+      }}
+    {{/if}}
+
     {{chat-retention-reminder chatChannel=chatChannel}}
     {{#each this.messages as |message|}}
       {{chat-message
@@ -56,16 +65,18 @@
   {{conditional-loading-spinner condition=this.loadingMore}}
 </div>
 
-<div class="scroll-stick-wrap">
-  <a
-    href
-    title={{i18n "chat.scroll_to_bottom"}}
-    class="btn btn-flat chat-scroll-to-bottom {{if this.stickyScroll "hidden"}}"
-    {{on "click" (action "restickScrolling")}}
-  >
-    {{d-icon "arrow-down"}}
-  </a>
-</div>
+{{#if showScrollToBottomBtn}}
+  <div class="scroll-stick-wrap">
+    <a
+      href
+      title={{i18n "chat.scroll_to_bottom"}}
+      class="btn btn-flat chat-scroll-to-bottom"
+      {{on "click" (action "restickScrolling")}}
+    >
+      {{d-icon "arrow-down"}}
+    </a>
+  </div>
+{{/if}}
 
 {{#if expanded}}
   {{#if selectingMessages}}

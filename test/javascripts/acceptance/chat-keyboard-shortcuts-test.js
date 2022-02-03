@@ -43,6 +43,19 @@ if (!isLegacyEmber()) {
       server.post("/uploads/lookup-urls", () => {
         return helper.response([]);
       });
+
+      server.get("/chat/chat_channels/search", () => {
+        return helper.response({
+          public_channels: [{ id: 3, name: "seventeen" }],
+          direct_message_channels: [
+            { id: 4, users: [{ id: 10, username: "someone" }] },
+          ],
+          users: [
+            { id: 11, username: "smoothies" },
+            { id: 12, username: "server" },
+          ],
+        });
+      });
     });
 
     needs.settings({
@@ -65,20 +78,24 @@ if (!isLegacyEmber()) {
 
       // All 6 channels should show because the input is blank
       assert.equal(
-        queryAll("#chat-channel-selector-modal-inner .chat-channel-row").length,
+        queryAll(
+          "#chat-channel-selector-modal-inner .chat-channel-selection-row"
+        ).length,
         6
       );
 
       // Freaking keydown event isn't triggered by fillIn...
       // Next line manually keyup's "r" to make the keyup event run.
       // Fillin is needed for `this.filter` but triggerKeyEvent is needed to fire the JS event.
-      await fillIn("#chat-channel-selector-input", "mar");
-      await triggerKeyEvent("#chat-channel-selector-input", "keyup", 82);
+      await fillIn("#chat-channel-selector-input", "s");
+      await triggerKeyEvent("#chat-channel-selector-input", "keyup", 83);
       await settled();
-      // Only 2 channels match this filter now!
+      // Only 4 channels match this filter now!
       assert.equal(
-        queryAll("#chat-channel-selector-modal-inner .chat-channel-row").length,
-        2
+        queryAll(
+          "#chat-channel-selector-modal-inner .chat-channel-selection-row"
+        ).length,
+        4
       );
 
       await triggerKeyEvent(document.body, "keydown", 13); // Enter key
@@ -93,7 +110,7 @@ if (!isLegacyEmber()) {
       await showModal("chat-channel-selector-modal");
       await settled();
       await click(
-        "#chat-channel-selector-modal-inner .chat-channel-row.chat-channel-75"
+        "#chat-channel-selector-modal-inner .chat-channel-selection-row.channel-row[data-id='75']"
       );
       assert.notOk(exists("#chat-channel-selector-modal-inner"));
       assert.equal(currentURL(), "/chat/channel/75/@hawk");
@@ -106,12 +123,14 @@ if (!isLegacyEmber()) {
 
       // Only 5 channels now instead of 6.
       assert.equal(
-        queryAll("#chat-channel-selector-modal-inner .chat-channel-row").length,
+        queryAll(
+          "#chat-channel-selector-modal-inner .chat-channel-selection-row"
+        ).length,
         5
       );
       assert.notOk(
         exists(
-          "#chat-channel-selector-modal-inner .chat-channel-row.chat-channel-75"
+          "#chat-channel-selector-modal-inner .chat-channel-selection-row.chat-channel-75"
         )
       );
     });

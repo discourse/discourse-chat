@@ -251,7 +251,8 @@ body.composer-open .topic-chat-float-container {
   background: transparent;
   color: var(--primary-medium);
   font-size: var(--font-0-rem);
-  padding: 0.6rem;
+  padding: 0.5rem;
+
   &:hover {
     background: transparent;
   }
@@ -283,7 +284,7 @@ body.composer-open .topic-chat-float-container {
     background: transparent;
     color: var(--primary-medium);
     font-size: var(--font-0-rem);
-    padding: 0.6rem;
+    padding: 0.5rem;
 
     &:hover {
       background: transparent;
@@ -308,6 +309,7 @@ body.composer-open .topic-chat-float-container {
     font-size: var(--font-down-1-rem);
 
     .channel-title {
+      line-height: var(--line-height-medium);
       text-transform: uppercase;
     }
   }
@@ -321,7 +323,7 @@ body.composer-open .topic-chat-float-container {
       background: none;
       border: none;
       font-size: var(--font-0-rem);
-      padding: 0.6rem;
+      padding: 0.5rem;
 
       .d-icon {
         color: var(--primary-medium);
@@ -519,6 +521,14 @@ body.composer-open .topic-chat-float-container {
       &::-webkit-scrollbar-thumb {
         background: var(--primary-low-mid);
       }
+    }
+
+    .join-channel-btn.in-float {
+      position: absolute;
+      transform: translateX(-50%);
+      left: 50%;
+      top: 10px;
+      z-index: 10;
     }
 
     .all-loaded-message {
@@ -1202,6 +1212,7 @@ body.has-full-page-chat {
 
 .chat-full-page-header {
   .chat-channel-title {
+    margin: 0;
     max-width: 100%;
 
     .dm-usernames {

@@ -32,19 +32,24 @@
     height: calc(100% - var(--chat-channel-selector-input-height));
     overflow: auto;
 
-    .chat-channel-row {
-      &.active {
-        background: none;
-      }
-      &:hover {
-        background: none;
-      }
+    .no-channels-notice {
+      padding: 0.5em;
+    }
+
+    .chat-channel-selection-row {
+      display: flex;
+      align-items: center;
+      height: 2.5em;
+      padding-left: 0.5em;
+
       &.focused {
         background: var(--primary-low);
       }
+      .username {
+        margin-left: 0.5em;
+      }
       .chat-channel-title {
         color: var(--primary-high);
-        padding-left: 0.5em;
       }
 
       .chat-channel-unread-indicator {

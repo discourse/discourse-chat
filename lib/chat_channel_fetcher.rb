@@ -19,7 +19,7 @@ module DiscourseChat::ChatChannelFetcher
   def self.secured_public_channels(guardian, memberships, scope_with_membership: true)
     channels = ChatChannel.includes(:chatable)
 
-    channels = channels.where(chatable_type: ["Topic", "Category", "Tag"])
+    channels = channels.where(chatable_type: ChatChannel.public_channel_chatable_types)
     if scope_with_membership
       channels = channels
         .joins(:user_chat_channel_memberships)
@@ -27,13 +27,25 @@ module DiscourseChat::ChatChannelFetcher
     end
 
     channels = filter_public_channels(channels, memberships, guardian).to_a
+    preload_custom_fields_for(channels)
+    channels
+  end
 
+  def self.preload_custom_fields_for(channels)
     preload_fields = Category.instance_variable_get(:@custom_field_types).keys
     Category.preload_custom_fields(channels.select { |c| c.chatable_type == 'Category' }.map(&:chatable), preload_fields)
 
     preload_fields = Topic.instance_variable_get(:@custom_field_types).keys
     Topic.preload_custom_fields(channels.select { |c| c.chatable_type == 'Topic' }.map(&:chatable), preload_fields)
 
+  end
+
+  def self.public_channels_with_filter(guardian, memberships, filter)
+    channels = ChatChannel.includes(:chatable)
+    channels = channels.where(chatable_type: ChatChannel.public_channel_chatable_types)
+    channels = channels.where("LOWER(name) LIKE ?", "#{filter}%")
+    channels = filter_public_channels(channels, memberships, guardian).to_a
+    preload_custom_fields_for(channels)
     channels
   end
 

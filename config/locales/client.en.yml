@@ -21,7 +21,7 @@ en:
       collapse: "Collapse Chat Drawer"
       deleted: "A message was deleted. [view]"
       delete: "Delete"
-      edited: "(edited)"
+      edited: "edited"
       empty_state:
         create_personal_chat: "Start a Personal Chat"
         no_public_available: "There are no public channels available for you to follow at this time."
@@ -90,6 +90,7 @@ en:
 
       channel_selector:
         title: "Jump to channel"
+        no_channels: "No channels match your search"
 
       create_channel:
         choose_category:

@@ -70,6 +70,7 @@ he:
       reply: "תגובה"
       edit: "עריכה"
       copy_link: "העתקת קישור"
+      rebake_message: "בניית HTML מחדש"
       restore: "שחזור הודעה שנמחקה"
       save: "שמירה"
       select: "בחירה"
@@ -90,6 +91,8 @@ he:
         many: "%{count} קבצים"
         other: "%{count} קבצים"
       exit: "חזרה"
+      channel_selector:
+        title: "קפיצה לערוץ"
       create_channel:
         choose_category:
           label: "נא לבחור קטגוריה"
@@ -179,6 +182,7 @@ he:
             many: "פעולה זו תיצור הודעה חדשה ותמלא בה את <b>%{count}</b> הודעות הצ׳אט שבחרת."
             other: "פעולה זו תיצור הודעה חדשה ותמלא בה את <b>%{count}</b> הודעות הצ׳אט שבחרת."
       replying_indicator:
+        single_user: "מתבצעת הקלדה מצד %{username}"
         multiple_users: "%{commaSeparatedUsernames} וגם %{lastUsername} מקלידים"
         many_users:
           one: "%{commaSeparatedUsernames} ועוד %{count} בנוסף מקלידים"
@@ -191,6 +195,7 @@ he:
     notifications:
       popup:
         chat_mention: "אוזכרת בצ׳אט על ידי %{username}"
+        chat_group_mention: "היה אזכור של @%{groupName} בצ׳אט על ידי ‎%{username}"
         chat_message: "הודעת צ׳אט חדשה"
       titles:
         chat_mention: "איזכור בצ׳אט"

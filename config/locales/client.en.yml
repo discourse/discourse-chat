@@ -21,7 +21,7 @@ en:
       collapse: "Collapse Chat Drawer"
       deleted: "A message was deleted. [view]"
       delete: "Delete"
-      edited: "(edited)"
+      edited: "edited"
       empty_state:
         create_personal_chat: "Start a Personal Chat"
         no_public_available: "There are no public channels available for you to follow at this time."

@@ -580,7 +580,6 @@ export default Component.extend({
 
   @action
   flag() {
-    debugger
     this.message.set("user_id", this.message.user.id);
     showModal("flag", { model: this.message });
   },

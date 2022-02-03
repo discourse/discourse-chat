@@ -298,26 +298,27 @@ export default Component.extend({
           new Date(messageData.created_at)
         )
       ) {
-        messageData.firstMessageOfTheDayAt = moment(
-          messageData.created_at
-        ).calendar(moment(), {
-          sameDay: "[Today]",
-          lastDay: "[Yesterday]",
-          lastWeek: "LL",
-          sameElse: "LL",
-        });
+        messageData.set(
+          "firstMessageOfTheDayAt",
+          moment(messageData.created_at).calendar(moment(), {
+            sameDay: "[Today]",
+            lastDay: "[Yesterday]",
+            lastWeek: "LL",
+            sameElse: "LL",
+          })
+        );
       }
     }
     if (messageData.in_reply_to?.id === previousMessageData?.id) {
       // Reply-to message is directly above. Remove `in_reply_to` from message.
-      delete messageData.in_reply_to;
+      messageData.set("in_reply_to", null);
     }
 
     if (messageData.in_reply_to) {
       let inReplyToMessage = this.messageLookup[messageData.in_reply_to.id];
       if (inReplyToMessage) {
         // Reply to message has already been added
-        messageData.in_reply_to = inReplyToMessage;
+        messageData.set("in_reply_to", inReplyToMessage);
       } else {
         inReplyToMessage = EmberObject.create(messageData.in_reply_to);
         this._unloadedReplyIds.push(inReplyToMessage.id);
@@ -336,11 +337,14 @@ export default Component.extend({
         ) < 300000 && // If the time between messages is over 5 minutes, break.
         messageData.user.id === previousMessageData.user.id
       ) {
-        messageData.hideUserInfo = true;
+        messageData.set("hideUserInfo", true);
       }
     }
-    messageData.expanded = !messageData.deleted_at;
-    messageData.messageLookupId = this._generateMessageLookupId(messageData);
+    messageData.set("expanded");
+    messageData.setProperties({
+      expanded: !messageData.deleted_at,
+      messageLookupId: this._generateMessageLookupId(messageData),
+    });
     // const prepared = EmberObject.create(messageData);
     // this.messageLookup[messageData.messageLookupId] = prepared;
     // return prepared;

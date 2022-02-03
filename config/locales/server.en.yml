@@ -9,6 +9,54 @@ en:
      channel_exists_for_category: "A channel already exists for this category and name"
      channel_exists_for_topic: "A channel already exists for this topic"
 
+    reviewables:
+      actions:
+        agree:
+          title: "Agree..."
+        agree_and_keep:
+          title: "Keep Message"
+          description: "Agree with flag and keep the message unchanged."
+        agree_and_keep_hidden:
+          title: "Keep Message Hidden"
+          description: "Agree with flag and leave the message hidden."
+        agree_and_suspend:
+          title: "Suspend User"
+          description: "Agree with flag and suspend the user."
+        agree_and_silence:
+          title: "Silence User"
+          description: "Agree with flag and silence the user."
+        agree_and_restore:
+          title: "Restore Message"
+          description: "Restore the message so that all users can see it."
+        agree_and_hide:
+          title: "Hide Message"
+          description: "Hide this message and automatically send the user a message urging them to edit it."
+        delete_single:
+          title: "Delete"
+        delete:
+          title: "Delete..."
+        delete_and_ignore:
+          title: "Delete Message and Ignore"
+          description: "Delete message; if the first message, delete the topic as well"
+        delete_and_ignore_replies:
+          title: "Delete Message + Replies and Ignore"
+          description: "Delete message and all of its replies; if the first message, delete the topic as well"
+          confirm: "Are you sure you want to delete the replies to the message as well?"
+        delete_and_agree:
+          title: "Delete Message and Agree"
+          description: "Delete message; if the first message, delete the topic as well"
+        delete_and_agree_replies:
+          title: "Delete Message + Replies and Agree"
+          description: "Delete message and all of its replies; if the first message, delete the topic as well"
+          confirm: "Are you sure you want to delete the replies to the message as well?"
+        disagree_and_restore:
+          title: "Disagree and Restore Message"
+          description: "Restore the message so that all users can see it."
+        disagree:
+          title: "Disagree"
+        ignore:
+          title: "Ignore"
+
   discourse_push_notifications:
     popup:
       chat_mention: "@%{username} mentioned you in chat"
@@ -20,3 +68,4 @@ en:
     scriptables:
       send_chat_message:
         title: Send chat message
+

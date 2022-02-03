@@ -580,8 +580,7 @@ export default Component.extend({
 
   @action
   flag() {
-    this.message.set("user_id", this.message.user.id);
-    showModal("flag", { model: this.message });
+    showModal("chat-flag-modal", { model: this.message });
   },
 
   @action

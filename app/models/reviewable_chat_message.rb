@@ -3,67 +3,69 @@
 require_dependency 'reviewable'
 
 class ReviewableChatMessage < Reviewable
+
+  def chat_message
+    @chat_message ||= target
+  end
+  def chat_message_creator
+    @chat_message_creator ||= chat_message.user
+  end
+
   def build_actions(actions, guardian, args)
     return unless pending?
-    puts "##########"
-    puts target
-    puts "##########"
-    build_action(actions, :approve, icon: 'check')
+    return if chat_message.blank?
 
-    # if target.trashed? && guardian.can_recover_target?(target)
-      # build_action(actions, :approve_and_restore, icon: 'check')
-    # elsif target.hidden?
-      # build_action(actions, :approve_and_unhide, icon: 'check')
-    # else
-      # build_action(actions, :approve, icon: 'check')
-    # end
+    agree = actions.add_bundle("#{id}-agree", icon: 'thumbs-up', label: 'reviewables.actions.agree.title')
 
-    # reject = actions.add_bundle(
-      # "#{id}-reject", icon: 'times', label: 'reviewables.actions.reject.bundle_title'
-    # )
+    if !chat_message.deleted_at?
+      build_action(actions, :agree_and_hide, icon: 'far-eye-slash', bundle: agree)
+    end
 
-    # if target.trashed?
-      # build_action(actions, :reject_and_keep_deleted, icon: 'trash-alt', bundle: reject)
-    # elsif guardian.can_delete_target_or_topic?(target)
-      # build_action(actions, :reject_and_delete, icon: 'trash-alt', bundle: reject)
-    # end
+    build_action(actions, :agree_and_keep, icon: 'thumbs-up', bundle: agree)
 
-    # if guardian.can_suspend?(target_created_by)
-      # build_action(actions, :reject_and_suspend, icon: 'ban', bundle: reject, client_action: 'suspend')
-      # build_action(actions, :reject_and_silence, icon: 'microphone-slash', bundle: reject, client_action: 'silence')
-    # end
+    if guardian.can_suspend?(chat_message_creator)
+      build_action(actions, :agree_and_suspend, icon: 'ban', bundle: agree, client_action: 'suspend')
+      build_action(actions, :agree_and_silence, icon: 'microphone-slash', bundle: agree, client_action: 'silence')
+    end
+
+    build_action(actions, :disagree, icon: 'thumbs-down')
+    build_action(actions, :ignore, icon: 'external-link-alt')
+
+    delete = actions.add_bundle("#{id}-delete", icon: "far-trash-alt", label: "reviewables.actions.delete.title")
+    build_action(actions, :delete_and_ignore, icon: 'external-link-alt', bundle: delete)
+    build_action(actions, :delete_and_agree, icon: 'thumbs-up', bundle: delete)
   end
 
-  def perform_approve(performed_by, _args)
-    successful_transition :approved, recalculate_score: false
+  def perform_agree_and_keep(performed_by, args)
+    # agree(performed_by, args)
   end
 
-  def perform_reject_and_keep_deleted(performed_by, _args)
-    successful_transition :rejected, recalculate_score: false
+  def perform_agree_and_hide(performed_by, args)
+    # agree(performed_by, args)
   end
 
-  def perform_approve_and_restore(performed_by, _args)
-    # PostDestroyer.new(performed_by, target).recover
-    # target.update(deleted_at:
-
-    successful_transition :approved, recalculate_score: false
+  def perform_agree_and_suspend(performed_by, args)
+    # agree(performed_by, args)
   end
 
-  def perform_approve_and_unhide(performed_by, _args)
-    target.unhide!
-
-    successful_transition :approved, recalculate_score: false
+  def perform_agree_and_silence(performed_by, args)
+    # agree(performed_by, args)
   end
 
-  def perform_reject_and_delete(performed_by, _args)
-    # PostDestroyer.new(performed_by, target, reviewable: self).destroy
-
-
-    successful_transition :rejected, recalculate_score: false
+  def perform_disagree(performed_by, args)
+    # agree(performed_by, args)
   end
 
-  def perform_reject_and_suspend(performed_by, _args)
-    successful_transition :rejected, recalculate_score: false
+  def perform_ignore(performed_by, args)
+    # agree(performed_by, args)
+  end
+
+  def perform_delete_and_ignore(performed_by, args)
+    # agree(performed_by, args)
+  end
+
+  def perform_delete_and_agree(performed_by, args)
+    # agree(performed_by, args)
   end
 
   private
@@ -73,17 +75,11 @@ class ReviewableChatMessage < Reviewable
       prefix = "reviewables.actions.#{id}"
       action.icon = icon
       action.button_class = button_class
-      action.label = "#{prefix}.title"
-      action.description = "#{prefix}.description"
+      action.label = "chat.#{prefix}.title"
+      action.description = "chat.#{prefix}.description"
       action.client_action = client_action
       action.confirm_message = "#{prefix}.confirm" if confirm
     end
   end
 
-  def successful_transition(to_state, recalculate_score: true)
-    create_result(:success, to_state)  do |result|
-      result.recalculate_score = recalculate_score
-      result.update_flag_stats = { status: to_state, user_ids: [created_by_id] }
-    end
-  end
 end

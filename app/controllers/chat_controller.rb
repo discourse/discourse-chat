@@ -238,10 +238,6 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     end
   end
 
-  def flag
-    render_json_error "unimplemented"
-  end
-
   def rebake
     guardian.ensure_can_rebake!
     @message.rebake!(invalidate_oneboxes: true)
@@ -337,6 +333,28 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
       :dismissed_channel_retention_reminder :
       :dismissed_dm_retention_reminder
     current_user.user_option.update(field => true)
+    render json: success_json
+  end
+
+  def flag
+    params.require([:chat_message_id, :type])
+    chat_message = ChatMessage
+      .includes(:chat_channel)
+      .includes(:flags)
+      .find_by(id: params[:chat_message_id])
+    post_action_type = PostActionType.find_by(id: params[:type])
+
+    if !chat_message || !post_action_type || !post_action_type.is_flag
+      raise Discourse::InvalidParameters
+    end
+
+    if chat_message.flags.where(user: current_user).exists?
+      return render json: success_json # Already flagged
+    end
+
+    flag = chat_message.flags.create(user: current_user, post_action_type: post_action_type)
+    flag.create_reviewable
+
     render json: success_json
   end
 

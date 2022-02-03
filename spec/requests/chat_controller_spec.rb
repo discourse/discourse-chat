@@ -7,6 +7,7 @@ RSpec.describe DiscourseChat::ChatController do
   fab!(:admin) { Fabricate(:admin) }
   fab!(:category) { Fabricate(:category) }
   fab!(:topic) { Fabricate(:topic, category: category) }
+  fab!(:chat_channel) { Fabricate(:chat_channel, chatable: topic) }
   fab!(:tag) { Fabricate(:tag) }
 
   before do
@@ -15,7 +16,6 @@ RSpec.describe DiscourseChat::ChatController do
   end
 
   describe "#messages" do
-    fab!(:chat_channel) { Fabricate(:chat_channel, chatable: topic) }
     let(:page_size) { 30 }
     let(:message_count) { 35 }
 
@@ -628,6 +628,21 @@ RSpec.describe DiscourseChat::ChatController do
 
       post "/chat/dismiss-retention-reminder.json", params: { chatable_type: "DirectMessageChannel" }
       expect(response.status).to eq(200)
+    end
+  end
+
+  describe "#flag" do
+    fab!(:chat_message) { Fabricate(:chat_message, user: admin, chat_channel: chat_channel) }
+
+    before do
+      sign_in(user)
+    end
+
+    it "creates reviewable" do
+      expect {
+        put "/chat/flag.json", params: { chat_message_id: chat_message.id, type: PostActionType.types[:spam] }
+      }.to change { chat_message.flags.where(user: user).count }.by(1)
+
     end
   end
 end

@@ -1,0 +1,17 @@
+<div class="flagged-post-header">
+  {{#link-to "chat.channel" reviewable.chat_channel.id reviewable.chat_channel.title (query-params messageId=reviewable.chat_message.id)}}
+
+    {{chat-channel-title channel=reviewable.chat_channel}}
+  {{/link-to}}
+</div>
+
+<div class="post-contents-wrapper">
+  {{reviewable-created-by user=reviewable.chat_message.user tagName=""}}
+  <div class="post-contents">
+    {{reviewable-post-header reviewable=reviewable createdBy=reviewable.chat_message.user tagName=""}}
+    <div class="post-body">
+      {{html-safe reviewable.chat_message.cooked}}
+    </div>
+    {{yield}}
+  </div>
+</div>

@@ -106,6 +106,17 @@ en:
           category: "Category"
           topic: "Topic"
 
+      reviewable:
+        type: "Chat message"
+
+      flagging:
+        label: "What do you find inappropriate this message?"
+        flag_message: "Flag message"
+        types:
+          inappropriate: "It's inappropriate"
+          spam: "It's spam"
+          something_else: "Something else"
+
       reactions:
         only_you: "You reacted with :%{emoji}:"
         and_others: "You, %{usernames} reacted with :%{emoji}:"
@@ -233,3 +244,9 @@ en:
             sender:
               label: Sender
               description: Defaults to system
+    review:
+      types:
+        reviewable_chat_message:
+          title: "Flagged Chat Message"
+          flagged_by: "Flagged By"
+

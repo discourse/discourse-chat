@@ -13,12 +13,12 @@ en:
       actions:
         agree:
           title: "Agree..."
-        agree_and_keep:
+        agree_and_keep_message:
           title: "Keep Message"
           description: "Agree with flag and keep the message unchanged."
-        agree_and_keep_hidden:
-          title: "Keep Message Hidden"
-          description: "Agree with flag and leave the message hidden."
+        agree_and_keep_deleted:
+          title: "Keep Message Deleted"
+          description: "Agree with flag and leave the message deleted."
         agree_and_suspend:
           title: "Suspend User"
           description: "Agree with flag and suspend the user."
@@ -27,10 +27,10 @@ en:
           description: "Agree with flag and silence the user."
         agree_and_restore:
           title: "Restore Message"
-          description: "Restore the message so that all users can see it."
-        agree_and_hide:
-          title: "Hide Message"
-          description: "Hide this message and automatically send the user a message urging them to edit it."
+          description: "Restore the message so that users can see it."
+        agree_and_delete:
+          title: "Delete Message"
+          description: "Delete the message so that users cannot see it."
         delete_single:
           title: "Delete"
         delete:

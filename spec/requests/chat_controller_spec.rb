@@ -640,9 +640,10 @@ RSpec.describe DiscourseChat::ChatController do
 
     it "creates reviewable" do
       expect {
-        put "/chat/flag.json", params: { chat_message_id: chat_message.id, type: PostActionType.types[:spam] }
+        put "/chat/flag.json", params: { chat_message_id: chat_message.id }
       }.to change { chat_message.flags.where(user: user).count }.by(1)
 
+      expect(Reviewable.last.target).to eq(chat_message)
     end
   end
 end

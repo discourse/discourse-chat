@@ -124,8 +124,12 @@ export default Service.extend({
     }
 
     const prettyTextFeatures = {
-      featuresOverride: Site.currentProp("chat_pretty_text_features"),
-      markdownItRules: Site.currentProp("chat_pretty_text_markdown_rules"),
+      featuresOverride: Site.currentProp(
+        "markdown_additional_options.chat.limited_pretty_text_features"
+      ),
+      markdownItRules: Site.currentProp(
+        "markdown_additional_options.chat.limited_pretty_text_markdown_rules"
+      ),
     };
 
     return generateCookFunction(prettyTextFeatures).then((cookFunction) => {

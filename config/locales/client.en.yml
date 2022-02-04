@@ -116,6 +116,9 @@ en:
       composer:
         toggle_toolbar: "Toggle toolbar"
 
+      quote:
+        original_channel: "Originally sent in #%{channel}."
+
       notification_levels:
         never: "Never"
         mention: "Only for mentions"

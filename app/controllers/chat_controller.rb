@@ -10,7 +10,8 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     :restore,
     :lookup_message,
     :edit_message,
-    :rebake
+    :rebake,
+    :message_link
   ]
 
   def respond
@@ -245,6 +246,16 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     guardian.ensure_can_rebake!
     @message.rebake!(invalidate_oneboxes: true)
     render json: success_json
+  end
+
+  def message_link
+    return render_404 if @message.blank? || @message.deleted_at.present?
+    return render_404 if @message.chat_channel.blank?
+    guardian.ensure_can_see!(@message.chat_channel.chatable)
+    render json: success_json.merge(
+      chat_channel_id: @message.chat_channel.id,
+      chat_channel_title: @message.chat_channel.title(current_user)
+    )
   end
 
   def lookup_message

@@ -81,7 +81,7 @@ class DiscourseChat::ChatNotifier
       chat_message_id: @chat_message.id,
       user_ids: user_ids,
       user_ids_to_group_mention_map: user_ids_to_group_mention_map,
-      timestamp: @timestamp
+      timestamp: @timestamp.iso8601(6)
     })
   end
 
@@ -205,7 +205,7 @@ class DiscourseChat::ChatNotifier
     Jobs.enqueue_in(3.seconds, :notify_users_watching_chat, {
       chat_message_id: @chat_message.id,
       except_user_ids: except,
-      timestamp: @timestamp
+      timestamp: @timestamp.iso8601(6)
     })
   end
 end

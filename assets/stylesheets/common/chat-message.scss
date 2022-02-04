@@ -178,6 +178,12 @@
         border-radius: 0;
       }
     }
+
+    // Automatic aspect-ratio mapping https://developer.mozilla.org/en-US/docs/Web/Media/images/aspect_ratio_mapping
+    p img {
+      max-width: 100%;
+      height: auto;
+    }
   }
 
   .chat-message-edited {

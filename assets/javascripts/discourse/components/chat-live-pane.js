@@ -13,6 +13,7 @@ import showModal from "discourse/lib/show-modal";
 import userPresent from "discourse/lib/user-presence";
 import { A } from "@ember/array";
 import { ajax } from "discourse/lib/ajax";
+import { CHATABLE_TYPES } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import { isTesting } from "discourse-common/config/environment";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { cancel, later, next, schedule } from "@ember/runloop";
@@ -244,7 +245,10 @@ export default Component.extend({
       messages: this._prepareMessages(messages),
       details: {
         chat_channel_id: this.chatChannel.id,
-        can_flag: true,
+        chatable_type: this.chatChannel.chatable_type,
+        can_flag:
+          this.chatChannel.chatable_type !==
+          CHATABLE_TYPES.directMessageChannel,
         can_delete_self: true,
         can_delete_others: this.currentUser.staff,
       },
@@ -402,6 +406,10 @@ export default Component.extend({
   scrollToMessage(messageId, opts = { highlight: false }) {
     if (this._selfDeleted()) {
       return;
+    }
+    const message = this.messageLookup[messageId];
+    if (message?.deleted_at) {
+      message.set("expanded", true);
     }
 
     const messageEl = this._scrollerEl.querySelector(

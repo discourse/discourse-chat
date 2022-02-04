@@ -19,6 +19,7 @@ en:
       click_to_join: "Click here to view available channels."
       close: "Close"
       collapse: "Collapse Chat Drawer"
+      confirm_flag: "Are you sure you want to flag %{username}'s message?"
       deleted: "A message was deleted. [view]"
       delete: "Delete"
       edited: "edited"
@@ -108,14 +109,6 @@ en:
 
       reviewable:
         type: "Chat message"
-
-      flagging:
-        label: "What do you find inappropriate this message?"
-        flag_message: "Flag message"
-        types:
-          inappropriate: "It's inappropriate"
-          spam: "It's spam"
-          something_else: "Something else"
 
       reactions:
         only_you: "You reacted with :%{emoji}:"

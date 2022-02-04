@@ -5,8 +5,9 @@ require_dependency 'reviewable'
 class ReviewableChatMessage < Reviewable
 
   def chat_message
-    @chat_message ||= target
+    @chat_message ||= (target || ChatMessage.with_deleted.find_by(id: target_id))
   end
+
   def chat_message_creator
     @chat_message_creator ||= chat_message.user
   end
@@ -81,5 +82,4 @@ class ReviewableChatMessage < Reviewable
       action.confirm_message = "#{prefix}.confirm" if confirm
     end
   end
-
 end

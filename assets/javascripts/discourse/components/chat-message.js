@@ -268,10 +268,11 @@ export default Component.extend({
     );
   },
 
-  @discourseComputed("message", "message.deleted_at")
-  showFlagButton(message, deletedAt) {
+  @discourseComputed("message", "details.can_flag", "message.deleted_at")
+  showFlagButton(message, canFlag, deletedAt) {
     return (
       this.currentUser?.id !== message.user.id &&
+      canFlag &&
       !message.chat_webhook_event &&
       !deletedAt
     );
@@ -580,7 +581,22 @@ export default Component.extend({
 
   @action
   flag() {
-    showModal("chat-flag-modal", { model: this.message });
+    bootbox.confirm(
+      I18n.t("chat.confirm_flag", {
+        username: this.message.user.username,
+      }),
+      (confirmed) => {
+        if (confirmed) {
+          ajax("/chat/flag", {
+            method: "PUT",
+            data: {
+              chat_message_id: this.message.id,
+            },
+          });
+        }
+      }
+    );
+    // showModal("chat-flag-modal", { model: this.message });
   },
 
   @action

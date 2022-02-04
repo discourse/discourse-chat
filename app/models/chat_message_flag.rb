@@ -3,7 +3,11 @@
 class ChatMessageFlag < ActiveRecord::Base
   belongs_to :user
   belongs_to :chat_message
-  belongs_to :post_action_type
+
+  def self.create_for(chat_message:, user:)
+    flag = create!(chat_message: chat_message, user: user)
+    flag.create_reviewable
+  end
 
   def create_reviewable
     reviewable = ReviewableChatMessage.needs_review!(
@@ -15,5 +19,6 @@ class ChatMessageFlag < ActiveRecord::Base
       ReviewableScore.types[:needs_approval],
       force_review: true
     )
+    update(reviewable: reviewable)
   end
 end

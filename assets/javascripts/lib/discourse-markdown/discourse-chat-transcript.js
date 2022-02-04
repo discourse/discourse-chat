@@ -14,7 +14,13 @@ const chatTranscriptRule = {
     const options = state.md.options.discourse;
     let [username, messageIdStart, messageTimeStart] =
       (tagInfo.attrs.quote && tagInfo.attrs.quote.split(";")) || [];
+    let multiQuote = !!tagInfo.attrs.multiQuote;
     let channelName = tagInfo.attrs.channel;
+    let channelLink = channelName
+      ? options.getURL(
+          `/chat/channel/${encodeURIComponent(channelName.toLowerCase())}`
+        )
+      : null;
 
     if (!username || !messageIdStart || !messageTimeStart) {
       return;
@@ -26,15 +32,23 @@ const chatTranscriptRule = {
     wrapperDivToken.attrs.push(["data-username", username]);
     wrapperDivToken.attrs.push(["data-datetime", messageTimeStart]);
 
+    if (!!tagInfo.attrs.chained) {
+      wrapperDivToken.attrs.push(["data-chained", true]);
+    }
+
     if (channelName) {
       wrapperDivToken.attrs.push(["data-channel-name", channelName]);
-      let metaDivToken = state.push("div_chat_transcript_meta", "div", 1);
-      metaDivToken.attrs = [["class", "chat-transcript-meta"]];
-      const channelToken = state.push("html_inline", "", 0);
-      channelToken.content = I18n.t("chat.quote.original_channel", {
-        channel: channelName,
-      });
-      state.push("div_chat_transcript_meta", "div", -1);
+
+      if (multiQuote) {
+        let metaDivToken = state.push("div_chat_transcript_meta", "div", 1);
+        metaDivToken.attrs = [["class", "chat-transcript-meta"]];
+        const channelToken = state.push("html_inline", "", 0);
+        channelToken.content = I18n.t("chat.quote.original_channel", {
+          channel: channelName,
+          channelLink,
+        });
+        state.push("div_chat_transcript_meta", "div", -1);
+      }
     }
 
     let userDivToken = state.push("div_chat_transcript_user", "div", 1);
@@ -87,13 +101,27 @@ const chatTranscriptRule = {
       ["href", options.getURL(`/chat/message/${messageIdStart}`)],
       ["title", messageTimeStart],
     ];
-    linkToken.block = false;
 
+    linkToken.block = false;
     linkToken = state.push("link_close", "a", -1);
     linkToken.block = false;
 
     state.push("div_chat_transcript_datetime", "div", -1);
     // end: time + link to message
+
+    // start: channel link for !multiQuote
+    if (channelName && !multiQuote) {
+      let channelLinkToken = state.push("link_open", "a", 1);
+      channelLinkToken.attrs = [
+        ["class", "chat-transcript-channel"],
+        ["href", channelLink],
+      ];
+      let inlineTextToken = state.push("html_inline", "", 0);
+      inlineTextToken.content = `#${channelName}`;
+      channelLinkToken = state.push("link_close", "a", -1);
+      channelLinkToken.block = false;
+    }
+    // end: channel link for !multiQuote
 
     state.push("div_chat_transcript_user", "div", -1);
 
@@ -124,6 +152,8 @@ export function setup(helper) {
     "div[data-channel-name]",
     "div[data-username]",
     "div[data-datetime]",
+    "div[data-chained]",
+    "a.chat-transcript-channel",
   ]);
 
   helper.registerOptions((opts, siteSettings) => {

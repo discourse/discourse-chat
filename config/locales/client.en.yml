@@ -117,7 +117,7 @@ en:
         toggle_toolbar: "Toggle toolbar"
 
       quote:
-        original_channel: "Originally sent in #%{channel}."
+        original_channel: "Originally sent in <a href=\"%{channelLink}\">#%{channel}</a>."
 
       notification_levels:
         never: "Never"

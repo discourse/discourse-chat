@@ -766,4 +766,18 @@ RSpec.describe DiscourseChat::ChatController do
       expect(response.status).to eq(403)
     end
   end
+
+  describe "#set_draft" do
+    fab!(:chat_channel) { Fabricate(:chat_channel) }
+
+    it "can create and destroy chat drafts" do
+      sign_in(user)
+
+      expect { post "/chat/drafts.json", params: { channel_id: chat_channel.id, data: "{}" } }
+        .to change { ChatDraft.count }.by(1)
+
+      expect { post "/chat/drafts.json", params: { channel_id: chat_channel.id } }
+        .to change { ChatDraft.count }.by(-1)
+    end
+  end
 end

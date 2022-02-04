@@ -55,6 +55,7 @@ after_initialize do
   load File.expand_path('../app/controllers/move_to_topic_controller.rb', __FILE__)
   load File.expand_path('../app/models/user_chat_channel_membership.rb', __FILE__)
   load File.expand_path('../app/models/chat_channel.rb', __FILE__)
+  load File.expand_path('../app/models/chat_draft.rb', __FILE__)
   load File.expand_path('../app/models/chat_message.rb', __FILE__)
   load File.expand_path('../app/models/chat_message_reaction.rb', __FILE__)
   load File.expand_path('../app/models/chat_message_revision.rb', __FILE__)
@@ -239,12 +240,11 @@ after_initialize do
   end
 
   add_to_serializer(:current_user, :chat_drafts) do
-    Draft
+    ChatDraft
       .where(user_id: object.id)
-      .where("draft_key LIKE 'chat_%'")
-      .pluck(:draft_key, :data)
+      .pluck(:chat_channel_id, :data)
       .map do |row|
-        { channel_id: row[0].gsub('chat_', ''), data: row[1] }
+        { channel_id: row[0], data: row[1] }
       end
   end
 
@@ -320,6 +320,12 @@ after_initialize do
     nil
   end
 
+  if respond_to?(:register_upload_in_use)
+    register_upload_in_use do |upload|
+      ChatDraft.exists?("data LIKE '%#{upload.sha1}%' OR data LIKE '%#{Base62.encode(upload.sha1.hex)}%'")
+    end
+  end
+
   CHAT_NOTIFICATION_TYPES = [
     Notification.types[:chat_mention],
     Notification.types[:chat_message],
@@ -377,6 +383,7 @@ after_initialize do
     put '/:chat_channel_id/read/:message_id' => 'chat#update_user_last_read'
     put '/user_chat_enabled/:user_id' => 'chat#set_user_chat_status'
     put '/:chat_channel_id/invite' => 'chat#invite_users'
+    post '/drafts' => 'chat#set_draft'
     post '/:chat_channel_id' => 'chat#create_message'
     put '/flag' => 'chat#flag'
   end

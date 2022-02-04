@@ -5,7 +5,11 @@ import { cloneJSON, deepMerge } from "discourse-common/lib/object";
 import QUnit, { test } from "qunit";
 
 import { visit } from "@ember/test-helpers";
-import { acceptance, query } from "discourse/tests/helpers/qunit-helpers";
+import {
+  acceptance,
+  loggedInUser,
+  query,
+} from "discourse/tests/helpers/qunit-helpers";
 
 const rawOpts = {
   siteSettings: {
@@ -330,11 +334,14 @@ acceptance(
     });
 
     test("chat transcript datetimes are formatted into the link with decorateCookedElement", async function (assert) {
+      loggedInUser().changeTimezone("Australia/Brisbane");
       await visit("/t/-/280");
 
       assert.strictEqual(
         query(".chat-transcript-datetime a").text.trim(),
-        moment("2022-01-25T05:40:39Z").format(I18n.t("dates.long_no_year")),
+        moment
+          .tz("2022-01-25T05:40:39Z", "Australia/Brisbane")
+          .format(I18n.t("dates.long_no_year")),
         "it decorates the chat transcript datetime link with a formatted date"
       );
     });

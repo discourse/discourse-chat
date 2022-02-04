@@ -6,7 +6,6 @@ export default {
   name: "chat-setup",
   initialize(container) {
     const currentUser = container.lookup("current-user:main");
-    const currentUserTimezone = currentUser?.resolvedTimezone(currentUser);
     const chatService = container.lookup("service:chat");
 
     if (!chatService.userCanChat) {
@@ -51,6 +50,7 @@ export default {
       api.addToHeaderIcons("header-chat-link");
 
       api.decorateCookedElement((elem) => {
+        const currentUserTimezone = currentUser?.resolvedTimezone(currentUser);
         const chatTranscriptElements = elem.querySelectorAll(
           ".discourse-chat-transcript"
         );

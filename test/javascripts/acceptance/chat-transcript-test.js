@@ -47,15 +47,23 @@ function generateTranscriptHTML(messageContent, opts) {
     ? ` data-channel-name=\"${opts.channel}\"`
     : "";
 
+  let transcriptClasses = ["discourse-chat-transcript"];
+  if (opts.chained) {
+    transcriptClasses.push("chat-transcript-chained");
+  }
+
   const transcript = [];
   transcript.push(
-    `<div class=\"discourse-chat-transcript\" data-message-id=\"${opts.messageId}\" data-username=\"${opts.username}\" data-datetime=\"${opts.datetime}\"${channelDataAttr}>`
+    `<div class=\"${transcriptClasses.join(" ")}\" data-message-id=\"${opts.messageId}\" data-username=\"${opts.username}\" data-datetime=\"${opts.datetime}\"${channelDataAttr}>`
   );
 
-  const originallySent = I18n.t("chat.quote.original_channel", {
-    channel: opts.channel,
-  });
-  if (opts.channel) {
+  if (opts.channel && opts.multiQuote) {
+    const originallySent = I18n.t("chat.quote.original_channel", {
+      channel: opts.channel,
+      channelLink: `/chat/channel/${encodeURIComponent(
+        opts.channel.toLowerCase()
+      )}`,
+    });
     transcript.push(`<div class=\"chat-transcript-meta\">
 ${originallySent}</div>`);
   }
@@ -65,9 +73,20 @@ ${originallySent}</div>`);
 <div class=\"chat-transcript-username\">
 ${opts.username}</div>
 <div class=\"chat-transcript-datetime\">
-<a href=\"/chat/message/${opts.messageId}\" title=\"${opts.datetime}\"></a></div>
-</div>
-<div class=\"chat-transcript-messages\">
+<a href=\"/chat/message/${opts.messageId}\" title=\"${opts.datetime}\"></a></div>`);
+
+  if (opts.channel && !opts.multiQuote) {
+    transcript.push(
+      `<a class=\"chat-transcript-channel\" href="/chat/channel/${encodeURIComponent(
+        opts.channel.toLowerCase()
+      )}">
+#${opts.channel}</a></div>`
+    );
+  } else {
+    transcript.push("</div>");
+  }
+
+  transcript.push(`<div class=\"chat-transcript-messages\">
 ${messageContent}</div>
 </div>`);
   return transcript.join("\n");
@@ -132,7 +151,22 @@ acceptance("Discourse Chat | discourse-chat-transcript", function () {
     );
   });
 
-  test("renders the channel name if provided", function (assert) {
+  test("renders the channel name if provided with multiQuote", function (assert) {
+    assert.cookedChatTranscript(
+      `[chat quote="martin;2321;2022-01-25T05:40:39Z" channel="Cool Cats Club" multiQuote="true"]\nThis is a chat message.\n[/chat]`,
+      { additionalOptions },
+      generateTranscriptHTML("<p>This is a chat message.</p>", {
+        messageId: "2321",
+        username: "martin",
+        datetime: "2022-01-25T05:40:39Z",
+        channel: "Cool Cats Club",
+        multiQuote: true,
+      }),
+      "renders the chat transcript with the channel name included above the user and datetime"
+    );
+  });
+
+  test("renders the channel name if provided without multiQuote", function (assert) {
     assert.cookedChatTranscript(
       `[chat quote="martin;2321;2022-01-25T05:40:39Z" channel="Cool Cats Club"]\nThis is a chat message.\n[/chat]`,
       { additionalOptions },
@@ -142,7 +176,23 @@ acceptance("Discourse Chat | discourse-chat-transcript", function () {
         datetime: "2022-01-25T05:40:39Z",
         channel: "Cool Cats Club",
       }),
-      "renders the chat transcript with the channel name included"
+      "renders the chat transcript with the channel name included next to the datetime"
+    );
+  });
+
+  test("renders with the chained attribute for more compact quotes", function (assert) {
+    assert.cookedChatTranscript(
+      `[chat quote="martin;2321;2022-01-25T05:40:39Z" channel="Cool Cats Club" multiQuote="true" chained="true"]\nThis is a chat message.\n[/chat]`,
+      { additionalOptions },
+      generateTranscriptHTML("<p>This is a chat message.</p>", {
+        messageId: "2321",
+        username: "martin",
+        datetime: "2022-01-25T05:40:39Z",
+        channel: "Cool Cats Club",
+        multiQuote: true,
+        chained: true,
+      }),
+      "renders with the chained attribute"
     );
   });
 

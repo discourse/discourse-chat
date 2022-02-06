@@ -18,7 +18,7 @@ const chatTranscriptRule = {
     let channelName = tagInfo.attrs.channel;
     let channelLink = channelName
       ? options.getURL(
-          `/chat/channel/${encodeURIComponent(channelName.toLowerCase())}`
+          `/chat/chat_channels/${encodeURIComponent(channelName.toLowerCase())}`
         )
       : null;
 

@@ -465,4 +465,31 @@ RSpec.describe DiscourseChat::ChatChannelsController do
       end
     end
   end
+
+  describe "#show" do
+    let!(:channel) { Fabricate(:chat_channel, chatable: topic, name: "My Great Channel & Stuff") }
+
+    it "can find channel by id" do
+      sign_in(user)
+      get "/chat/chat_channels/#{channel.id}.json"
+      expect(response.status).to eq(200)
+      expect(response.parsed_body["chat_channel"]["id"]).to eq(channel.id)
+    end
+
+    it "can find channel by name" do
+      sign_in(user)
+      get "/chat/chat_channels/#{URI.encode("My Great Channel & Stuff")}.json"
+      expect(response.status).to eq(200)
+      expect(response.parsed_body["chat_channel"]["id"]).to eq(channel.id)
+    end
+
+    it "gives a not found error if the channel cannot be found by name or id" do
+      channel.destroy
+      sign_in(user)
+      get "/chat/chat_channels/#{channel.id}.json"
+      expect(response.status).to eq(404)
+      get "/chat/chat_channels/#{URI.encode(channel.name)}.json"
+      expect(response.status).to eq(404)
+    end
+  end
 end

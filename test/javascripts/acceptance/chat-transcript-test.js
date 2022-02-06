@@ -60,7 +60,7 @@ function generateTranscriptHTML(messageContent, opts) {
   if (opts.channel && opts.multiQuote) {
     const originallySent = I18n.t("chat.quote.original_channel", {
       channel: opts.channel,
-      channelLink: `/chat/channel/${encodeURIComponent(
+      channelLink: `/chat/chat_channels/${encodeURIComponent(
         opts.channel.toLowerCase()
       )}`,
     });

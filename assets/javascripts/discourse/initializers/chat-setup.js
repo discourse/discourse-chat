@@ -70,7 +70,7 @@ export default {
             );
           }
         });
-      });
+      }, { id: "chat-transcript-datetime" });
     });
   },
 

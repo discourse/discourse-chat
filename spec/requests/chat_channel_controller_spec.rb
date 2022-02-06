@@ -478,7 +478,7 @@ RSpec.describe DiscourseChat::ChatChannelsController do
 
     it "can find channel by name" do
       sign_in(user)
-      get "/chat/chat_channels/#{URI.encode("My Great Channel & Stuff")}.json"
+      get "/chat/chat_channels/#{UrlHelper.encode_component("My Great Channel & Stuff")}.json"
       expect(response.status).to eq(200)
       expect(response.parsed_body["chat_channel"]["id"]).to eq(channel.id)
     end
@@ -488,7 +488,7 @@ RSpec.describe DiscourseChat::ChatChannelsController do
       sign_in(user)
       get "/chat/chat_channels/#{channel.id}.json"
       expect(response.status).to eq(404)
-      get "/chat/chat_channels/#{URI.encode(channel.name)}.json"
+      get "/chat/chat_channels/#{UrlHelper.encode_component(channel.name)}.json"
       expect(response.status).to eq(404)
     end
   end

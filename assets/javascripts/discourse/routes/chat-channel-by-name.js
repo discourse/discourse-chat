@@ -1,6 +1,5 @@
 import DiscourseRoute from "discourse/routes/discourse";
-import Promise from "rsvp";
-import EmberObject, { action } from "@ember/object";
+import { defaultHomepage } from "discourse/lib/utilities";
 import { ajax } from "discourse/lib/ajax";
 import { inject as service } from "@ember/service";
 export default DiscourseRoute.extend({

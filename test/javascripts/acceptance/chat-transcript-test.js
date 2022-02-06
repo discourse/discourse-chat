@@ -77,7 +77,7 @@ ${opts.username}</div>
 
   if (opts.channel && !opts.multiQuote) {
     transcript.push(
-      `<a class=\"chat-transcript-channel\" href="/chat/channel/${encodeURIComponent(
+      `<a class=\"chat-transcript-channel\" href="/chat/chat_channels/${encodeURIComponent(
         opts.channel.toLowerCase()
       )}">
 #${opts.channel}</a></div>`

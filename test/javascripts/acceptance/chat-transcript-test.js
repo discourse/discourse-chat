@@ -54,7 +54,11 @@ function generateTranscriptHTML(messageContent, opts) {
 
   const transcript = [];
   transcript.push(
-    `<div class=\"${transcriptClasses.join(" ")}\" data-message-id=\"${opts.messageId}\" data-username=\"${opts.username}\" data-datetime=\"${opts.datetime}\"${channelDataAttr}>`
+    `<div class=\"${transcriptClasses.join(" ")}\" data-message-id=\"${
+      opts.messageId
+    }\" data-username=\"${opts.username}\" data-datetime=\"${
+      opts.datetime
+    }\"${channelDataAttr}>`
   );
 
   if (opts.channel && opts.multiQuote) {

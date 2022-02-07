@@ -154,7 +154,8 @@ function imagePredicate(e) {
   return (
     e.nodeName === "P" &&
     e.firstElementChild &&
-    e.firstElementChild.nodeName === "IMG"
+    e.firstElementChild.nodeName === "IMG" &&
+    !e.firstElementChild.classList.contains("emoji")
   );
 }
 

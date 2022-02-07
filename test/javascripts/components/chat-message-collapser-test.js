@@ -35,7 +35,8 @@ const imageCooked =
   '<p><img src="http://cat1.com" alt="shows alt"></p>' +
   "<p>more written text</p>" +
   '<p><img src="http://cat2.com" alt=""></p>' +
-  "<p>and even more</p>";
+  "<p>and even more</p>" +
+  '<p><img src="http://cat3.com" class="emoji"></p>';
 
 discourseModule(
   "Discourse Chat | Component | chat message collapser youtube",
@@ -437,7 +438,7 @@ discourseModule(
       async test(assert) {
         const text = document.querySelectorAll(".chat-message-collapser p");
 
-        assert.equal(text.length, 5, "shows all written text");
+        assert.equal(text.length, 6, "shows all written text");
         assert.strictEqual(text[0].innerText, "written text");
         assert.strictEqual(text[2].innerText, "more written text");
         assert.strictEqual(text[4].innerText, "and even more");
@@ -454,7 +455,7 @@ discourseModule(
       async test(assert) {
         const images = document.querySelectorAll("img");
 
-        assert.equal(images.length, 2, "two images rendered");
+        assert.equal(images.length, 3);
 
         await click(
           document.querySelectorAll(".chat-message-collapser-opened")[0],
@@ -472,7 +473,7 @@ discourseModule(
 
         await click(".chat-message-collapser-closed");
 
-        assert.equal(images.length, 2, "two images rendered");
+        assert.equal(images.length, 3);
 
         await click(
           document.querySelectorAll(".chat-message-collapser-opened")[1],
@@ -490,7 +491,29 @@ discourseModule(
 
         await click(".chat-message-collapser-closed");
 
-        assert.equal(images.length, 2, "two images rendered");
+        assert.equal(images.length, 3);
+      },
+    });
+
+    componentTest("does not show collapser for emoji images", {
+      template: hbs`{{chat-message-collapser cooked=cooked}}`,
+
+      beforeEach() {
+        this.set("cooked", imageCooked);
+      },
+
+      async test(assert) {
+        const links = document.querySelectorAll(
+          "a.chat-message-collapser-link-small"
+        );
+        const images = document.querySelectorAll("img");
+        const collapser = document.querySelectorAll(
+          ".chat-message-collapser-opened"
+        );
+
+        assert.equal(links.length, 2);
+        assert.equal(images.length, 3, "shows images and emoji");
+        assert.equal(collapser.length, 2);
       },
     });
   }

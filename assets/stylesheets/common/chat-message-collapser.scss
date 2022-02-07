@@ -38,7 +38,8 @@
 
   .onebox img:not(.ytp-thumbnail-image),
   img.onebox,
-  .chat-uploads img {
+  .chat-uploads img,
+  p img {
     object-fit: contain;
     max-height: 150px;
     max-width: 100%;

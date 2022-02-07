@@ -3,6 +3,7 @@
 <div class="control-group chat-setting">
   <label class="controls">
     {{input
+      id="user_chat_enabled"
       type="checkbox"
       checked=model.user_option.chat_enabled
     }}
@@ -13,6 +14,7 @@
 <div class="control-group chat-setting">
   <label class="controls">
     {{input
+      id="user_chat_only_push_notifications"
       type="checkbox"
       checked=model.user_option.only_chat_push_notifications
     }}
@@ -24,6 +26,7 @@
 <div class="control-group chat-setting">
   <label class="controls">
     {{input
+      id="user_chat_isolated"
       type="checkbox"
       checked=model.user_option.chat_isolated
     }}
@@ -33,15 +36,15 @@
 </div>
 
 <div class="control-group chat-setting controls-dropdown">
-  <label for="chat-sounds">{{i18n "chat.sound.title"}}</label>
+  <label for="user_chat_sounds">{{i18n "chat.sound.title"}}</label>
   {{combo-box
     none="chat.sounds.none"
     valueProperty="value"
     content=chatSounds
     value=model.user_option.chat_sound
-    id="chat-sounds"
+    id="user_chat_sounds"
     onChange=(action "onChangeChatSound")
   }}
 </div>
 
-{{save-controls model=model action=(action "save") saved=saved}}
+{{save-controls id="user_chat_preference_save" model=model action=(action "save") saved=saved}}

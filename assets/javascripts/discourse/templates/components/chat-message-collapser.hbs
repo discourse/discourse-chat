@@ -12,7 +12,9 @@
     {{#each youtubeCooked as |cooked|}}
       {{#if cooked.needsCollapser}}
         {{#collapser header=cooked.header}}
-          {{cooked.body}}
+          <div class="chat-message-collapser-youtube">
+            {{cooked.body}}
+          </div>
         {{/collapser}}
       {{else}}
         {{cooked.body}}

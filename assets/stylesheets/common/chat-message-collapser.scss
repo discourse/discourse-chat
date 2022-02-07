@@ -1,3 +1,5 @@
+$max_image_height: 150px;
+
 .chat-message-collapser {
   .chat-message-collapser-header {
     display: flex;
@@ -40,9 +42,15 @@
   img.onebox,
   .chat-uploads img {
     object-fit: contain;
-    max-height: 150px;
+    max-height: $max_image_height;
     max-width: 100%;
 
     width: unset;
+  }
+
+  .chat-message-collapser-header + div .chat-message-collapser-youtube {
+    object-fit: contain;
+    height: $max_image_height;
+    width: calc(#{$max_image_height} / 9 * 16);
   }
 }

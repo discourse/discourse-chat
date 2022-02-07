@@ -149,13 +149,13 @@ discourseModule(
   "Discourse Chat | Component | chat message collapser images",
   function (hooks) {
     setupRenderingTest(hooks);
-    const imageCooked = "<p>A picture of Tomtom</p>";
+    const imageTextCooked = "<p>A picture of Tomtom</p>";
 
     componentTest("shows filename for one image", {
       template: hbs`{{chat-message-collapser cooked=cooked uploads=uploads}}`,
 
       beforeEach() {
-        this.set("cooked", imageCooked);
+        this.set("cooked", imageTextCooked);
         this.set("uploads", [{ original_filename: "tomtom.jpeg" }]);
       },
 
@@ -172,7 +172,7 @@ discourseModule(
       template: hbs`{{chat-message-collapser cooked=cooked uploads=uploads}}`,
 
       beforeEach() {
-        this.set("cooked", imageCooked);
+        this.set("cooked", imageTextCooked);
         this.set("uploads", [{}, {}]);
       },
 
@@ -189,7 +189,7 @@ discourseModule(
       template: hbs`{{chat-message-collapser cooked=cooked uploads=uploads}}`,
 
       beforeEach() {
-        this.set("cooked", imageCooked);
+        this.set("cooked", imageTextCooked);
         this.set("uploads", [{ extension: "png" }]);
       },
 

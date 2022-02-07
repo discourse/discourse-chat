@@ -20,8 +20,8 @@ class ReviewableChatMessage < Reviewable
     @chat_message_creator ||= chat_message.user
   end
 
-  def flags
-    @flags ||= chat_message.flags
+  def flagged_by_user_ids
+    @flagged_by_user_ids ||= reviewable_scopes.map(&:user_id)
   end
 
   def post
@@ -100,7 +100,7 @@ class ReviewableChatMessage < Reviewable
   def agree
     yield if block_given?
     create_result(:success, :approved) do |result|
-      result.update_flag_stats = { status: :agreed, user_ids: flags.map(&:user_id) }
+      result.update_flag_stats = { status: :agreed, user_ids: flagged_by_user_ids.map(&:user_id) }
       result.recalculate_score = true
     end
   end
@@ -108,7 +108,7 @@ class ReviewableChatMessage < Reviewable
   def disagree
     yield if block_given?
     create_result(:success, :rejected) do |result|
-      result.update_flag_stats = { status: :disagreed, user_ids: flags.map(&:user_id) }
+      result.update_flag_stats = { status: :disagreed, user_ids: flagged_by_user_ids.map(&:user_id) }
       result.recalculate_score = true
     end
   end
@@ -116,7 +116,7 @@ class ReviewableChatMessage < Reviewable
   def ignore
     yield if block_given?
     create_result(:success, :ignored) do |result|
-      result.update_flag_stats = { status: :ignored, user_ids: flags.map(&:user_id) }
+      result.update_flag_stats = { status: :ignored, user_ids: flagged_by_user_ids.map(&:user_id) }
     end
   end
 

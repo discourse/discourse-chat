@@ -3,8 +3,23 @@
   border: 1px solid $primary-low;
   min-height: 50px;
   padding: 12px;
+  margin: 1em 0;
 
   @include post-aside;
+
+  &.chat-transcript-chained {
+    margin: 0;
+    border-top: 0;
+    border-bottom: 0;
+
+    &:first-of-type {
+      border-top: 1px solid $primary-low;
+    }
+
+    &:last-of-type {
+      border-bottom: 1px solid $primary-low;
+    }
+  }
 
   .chat-transcript-meta {
     color: var(--primary-high);
@@ -12,6 +27,11 @@
     border-bottom: 1px solid var(--primary-low);
     margin-bottom: 1em;
     padding-bottom: 0.5em;
+  }
+
+  .chat-transcript-channel {
+    font-size: var(--font-down-2);
+    padding-left: 0.5em;
   }
 
   .chat-transcript-username {

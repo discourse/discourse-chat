@@ -49,28 +49,33 @@ export default {
 
       api.addToHeaderIcons("header-chat-link");
 
-      api.decorateCookedElement((elem) => {
-        const currentUserTimezone = currentUser?.resolvedTimezone(currentUser);
-        const chatTranscriptElements = elem.querySelectorAll(
-          ".discourse-chat-transcript"
-        );
-        chatTranscriptElements.forEach((el) => {
-          const dateTimeRaw = el.dataset["datetime"];
-          const dateTimeLinkEl = el.querySelector(
-            ".chat-transcript-datetime a"
+      api.decorateCookedElement(
+        (elem) => {
+          const currentUserTimezone = currentUser?.resolvedTimezone(
+            currentUser
           );
-
-          if (currentUserTimezone) {
-            dateTimeLinkEl.innerText = moment
-              .tz(dateTimeRaw, currentUserTimezone)
-              .format(I18n.t("dates.long_no_year"));
-          } else {
-            dateTimeLinkEl.innerText = moment(dateTimeRaw).format(
-              I18n.t("dates.long_no_year")
+          const chatTranscriptElements = elem.querySelectorAll(
+            ".discourse-chat-transcript"
+          );
+          chatTranscriptElements.forEach((el) => {
+            const dateTimeRaw = el.dataset["datetime"];
+            const dateTimeLinkEl = el.querySelector(
+              ".chat-transcript-datetime a"
             );
-          }
-        });
-      });
+
+            if (currentUserTimezone) {
+              dateTimeLinkEl.innerText = moment
+                .tz(dateTimeRaw, currentUserTimezone)
+                .format(I18n.t("dates.long_no_year"));
+            } else {
+              dateTimeLinkEl.innerText = moment(dateTimeRaw).format(
+                I18n.t("dates.long_no_year")
+              );
+            }
+          });
+        },
+        { id: "chat-transcript-datetime" }
+      );
     });
   },
 

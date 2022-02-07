@@ -33,6 +33,8 @@ import selectKit from "discourse/tests/helpers/select-kit-helper";
 import { next } from "@ember/runloop";
 import { Promise } from "rsvp";
 import { isLegacyEmber } from "discourse-common/config/environment";
+import sinon from "sinon";
+import * as ajaxlib from "discourse/lib/ajax";
 
 const chatSettled = async () => {
   await settled();
@@ -1224,6 +1226,32 @@ acceptance("Discourse Chat - chat preferences", function (needs) {
     await visit("/u/eviltrout/preferences/chat");
     assert.equal(currentURL(), "/u/eviltrout/preferences/chat");
     assert.equal(queryAll(".chat-setting").length, 4);
+  });
+
+  test("The user can save the settings", async function (assert) {
+    updateCurrentUser({ has_chat_enabled: false });
+    let spy = sinon.spy(ajaxlib, "ajax");
+    await visit("/u/eviltrout/preferences/chat");
+    await click("#user_chat_enabled");
+    await click("#user_chat_only_push_notifications");
+    await click("#user_chat_isolated");
+    await selectKit("#user_chat_sounds").expand();
+    await selectKit("#user_chat_sounds").selectRowByValue("bell");
+
+    await click(".save-changes");
+
+    assert.ok(
+      spy.calledWithMatch("/u/eviltrout.json", {
+        data: {
+          chat_enabled: true,
+          chat_isolated: true,
+          chat_sound: "bell",
+          only_chat_push_notifications: true,
+        },
+        type: "PUT",
+      }),
+      "is able to save the chat preferences for the user"
+    );
   });
 });
 

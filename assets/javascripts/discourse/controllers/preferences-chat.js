@@ -1,4 +1,5 @@
 import Controller from "@ember/controller";
+import { isTesting } from "discourse-common/config/environment";
 import discourseComputed from "discourse-common/utils/decorators";
 import I18n from "I18n";
 import { action } from "@ember/object";
@@ -22,7 +23,7 @@ export default Controller.extend({
 
   @action
   onChangeChatSound(sound) {
-    if (sound) {
+    if (sound && !isTesting()) {
       const audio = new Audio(CHAT_SOUNDS[sound]);
       audio.play();
     }
@@ -36,7 +37,9 @@ export default Controller.extend({
       .save(chatAttrs)
       .then(() => {
         this.set("saved", true);
-        location.reload();
+        if (!isTesting()) {
+          location.reload();
+        }
       })
       .catch(popupAjaxError);
   },

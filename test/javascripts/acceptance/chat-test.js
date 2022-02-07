@@ -1230,7 +1230,7 @@ acceptance("Discourse Chat - chat preferences", function (needs) {
 
   test("The user can save the settings", async function (assert) {
     updateCurrentUser({ has_chat_enabled: false });
-    let spy = sinon.spy(ajaxlib, "ajax");
+    const spy = sinon.spy(ajaxlib, "ajax");
     await visit("/u/eviltrout/preferences/chat");
     await click("#user_chat_enabled");
     await click("#user_chat_only_push_notifications");

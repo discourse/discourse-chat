@@ -30,6 +30,13 @@ const externalImageCooked =
   '<p><a href="http://cat2.com" class="onebox"><img src=""></img></a></p>' +
   "<p>and even more</p>";
 
+const imageCooked =
+  "<p>written text</p>" +
+  '<p><img src="http://cat1.com" alt="shows alt"></p>' +
+  "<p>more written text</p>" +
+  '<p><img src="http://cat2.com" alt=""></p>' +
+  "<p>and even more</p>";
+
 discourseModule(
   "Discourse Chat | Component | chat message collapser youtube",
   function (hooks) {
@@ -142,13 +149,13 @@ discourseModule(
   "Discourse Chat | Component | chat message collapser images",
   function (hooks) {
     setupRenderingTest(hooks);
-    const imageCooked = "<p>A picture of Tomtom</p>";
+    const imageTextCooked = "<p>A picture of Tomtom</p>";
 
     componentTest("shows filename for one image", {
       template: hbs`{{chat-message-collapser cooked=cooked uploads=uploads}}`,
 
       beforeEach() {
-        this.set("cooked", imageCooked);
+        this.set("cooked", imageTextCooked);
         this.set("uploads", [{ original_filename: "tomtom.jpeg" }]);
       },
 
@@ -165,7 +172,7 @@ discourseModule(
       template: hbs`{{chat-message-collapser cooked=cooked uploads=uploads}}`,
 
       beforeEach() {
-        this.set("cooked", imageCooked);
+        this.set("cooked", imageTextCooked);
         this.set("uploads", [{}, {}]);
       },
 
@@ -182,7 +189,7 @@ discourseModule(
       template: hbs`{{chat-message-collapser cooked=cooked uploads=uploads}}`,
 
       beforeEach() {
-        this.set("cooked", imageCooked);
+        this.set("cooked", imageTextCooked);
         this.set("uploads", [{ extension: "png" }]);
       },
 
@@ -390,6 +397,100 @@ discourseModule(
         await click(".chat-message-collapser-closed");
 
         assert.equal(imageOneboxes.length, 2, "two oneboxes rendered");
+      },
+    });
+  }
+);
+
+discourseModule(
+  "Discourse Chat | Component | chat message collapser images",
+  function (hooks) {
+    setupRenderingTest(hooks);
+
+    componentTest("shows alt or links (if no alt) for linked image", {
+      template: hbs`{{chat-message-collapser cooked=cooked}}`,
+
+      beforeEach() {
+        this.set("cooked", imageCooked);
+      },
+
+      async test(assert) {
+        const links = document.querySelectorAll(
+          "a.chat-message-collapser-link-small"
+        );
+
+        assert.ok(links[0].innerText.trim().includes("shows alt"));
+        assert.ok(links[0].href.includes("http://cat1.com"));
+
+        assert.ok(links[1].innerText.trim().includes("http://cat2.com"));
+        assert.ok(links[1].href.includes("http://cat2.com"));
+      },
+    });
+
+    componentTest("shows all user written text", {
+      template: hbs`{{chat-message-collapser cooked=cooked}}`,
+
+      beforeEach() {
+        this.set("cooked", imageCooked);
+      },
+
+      async test(assert) {
+        const text = document.querySelectorAll(".chat-message-collapser p");
+
+        assert.equal(text.length, 5, "shows all written text");
+        assert.strictEqual(text[0].innerText, "written text");
+        assert.strictEqual(text[2].innerText, "more written text");
+        assert.strictEqual(text[4].innerText, "and even more");
+      },
+    });
+
+    componentTest("collapses and expands images", {
+      template: hbs`{{chat-message-collapser cooked=cooked}}`,
+
+      beforeEach() {
+        this.set("cooked", imageCooked);
+      },
+
+      async test(assert) {
+        const images = document.querySelectorAll("img");
+
+        assert.equal(images.length, 2, "two images rendered");
+
+        await click(
+          document.querySelectorAll(".chat-message-collapser-opened")[0],
+          "close first preview"
+        );
+
+        assert.notOk(
+          visible("img[src='http://cat1.com']"),
+          "first image hidden"
+        );
+        assert.ok(
+          visible("img[src='http://cat2.com']"),
+          "second image still visible"
+        );
+
+        await click(".chat-message-collapser-closed");
+
+        assert.equal(images.length, 2, "two images rendered");
+
+        await click(
+          document.querySelectorAll(".chat-message-collapser-opened")[1],
+          "close second preview"
+        );
+
+        assert.ok(
+          visible("img[src='http://cat1.com']"),
+          "first image still visible"
+        );
+        assert.notOk(
+          visible("img[src='http://cat2.com']"),
+          "second image hidden"
+        );
+
+        await click(".chat-message-collapser-closed");
+
+        assert.equal(images.length, 2, "two images rendered");
       },
     });
   }

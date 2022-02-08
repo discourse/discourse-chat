@@ -26,7 +26,7 @@ it:
       collapse: "Comprimi il cassetto della chat"
       deleted: "Un messaggio è stato eliminato. [visualizza]"
       delete: "Elimina"
-      edited: "(modificato)"
+      edited: "modificato"
       empty_state:
         create_personal_chat: "Avvia una chat personale"
         no_public_available: "Al momento non ci sono canali pubblici disponibili che puoi seguire."
@@ -72,6 +72,7 @@ it:
       reply: "Rispondi"
       edit: "Modifica"
       copy_link: "Copia link"
+      rebake_message: "Ricompila HTML"
       restore: "Ripristina messaggio eliminato"
       save: "Salva"
       select: "Seleziona"
@@ -90,6 +91,9 @@ it:
         one: "%{count} file"
         other: "%{count} file"
       exit: "indietro"
+      channel_selector:
+        title: "Vai al canale"
+        no_channels: "Nessun canale corrisponde alla tua ricerca"
       create_channel:
         choose_category:
           label: "Scegli una categoria"
@@ -183,6 +187,9 @@ it:
         many_users:
           one: "%{commaSeparatedUsernames} e %{count} altro stanno scrivendo"
           other: "%{commaSeparatedUsernames} e altri %{count} stanno scrivendo"
+      retention_reminders:
+        public: "La cronologia del canale è conservata per %{days} giorni."
+        dm: "La cronologia della chat personale è conservata per %{days} giorni."
     notifications:
       popup:
         chat_mention: "%{username} ti ha menzionato in chat"

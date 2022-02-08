@@ -26,7 +26,6 @@ fi:
       collapse: "Tiivistä chat-laatikko"
       deleted: "Viesti poistettiin. [näytä]"
       delete: "Poista"
-      edited: "(muokattu)"
       empty_state:
         create_personal_chat: "Aloita henkilökohtainen chat"
         no_public_available: "Tällä hetkellä ei ole saatavilla julkisia kanavia, joita voit seurata."

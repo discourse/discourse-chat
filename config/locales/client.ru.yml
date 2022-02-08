@@ -26,7 +26,7 @@ ru:
       collapse: "Свернуть чат"
       deleted: "Сообщение было удалено. [view]"
       delete: "Удалить"
-      edited: "(изменено)"
+      edited: "изменено"
       empty_state:
         create_personal_chat: "Начать личный чат"
         no_public_available: "В данный момент нет доступных для подписки каналов."
@@ -101,6 +101,7 @@ ru:
       exit: "Назад"
       channel_selector:
         title: "Перейти на канал"
+        no_channels: "Нет каналов, соответствующих вашему запросу"
       create_channel:
         choose_category:
           label: "Выберите раздел"
@@ -122,6 +123,8 @@ ru:
         you_others_and_more: "Вы, %{usernames} и %{more}, отреагировали при помощи эмодзи %{emoji}:"
       composer:
         toggle_toolbar: "Переключить панель инструментов"
+      quote:
+        original_channel: "Первоначально отправлено в <a href=\"%{channelLink}\">#%{channel}</a>."
       notification_levels:
         never: "Никогда"
         mention: "Только для упоминаний"

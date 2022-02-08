@@ -26,7 +26,7 @@ hu:
       collapse: "Csevegőfiók összecsukása"
       deleted: "Egy üzenet törölve lett. [megtekintés]"
       delete: "Törlés"
-      edited: "(szerkesztve)"
+      edited: "szerkesztve"
       empty_state:
         create_personal_chat: "Személyes csevegés indítása"
         no_public_available: "Jelenleg nem állnak rendelkezésre nyilvános csatornák, melyeket követhetne."
@@ -72,6 +72,7 @@ hu:
       reply: "Válasz"
       edit: "Szerkesztés"
       copy_link: "Hivatkozás másolása"
+      rebake_message: "HTML újraépítése"
       restore: "Törölt üzenet helyreállítása"
       save: "Mentés"
       select: "Válasszon"
@@ -90,6 +91,9 @@ hu:
         one: "%{count} fájl"
         other: "%{count} fájl"
       exit: "vissza"
+      channel_selector:
+        title: "Ugrás a csatornára"
+        no_channels: "Egyetlen csatorna sem felel meg a keresésnek"
       create_channel:
         choose_category:
           label: "Válasszon kategóriát"
@@ -111,6 +115,8 @@ hu:
         you_others_and_more: "Ön, %{usernames} és még %{more} valaki ezzel reagált: :%{emoji}:"
       composer:
         toggle_toolbar: "Eszköztár be/ki"
+      quote:
+        original_channel: "Eredetileg itt küldve: <a href=\"%{channelLink}\">#%{channel}</a>."
       notification_levels:
         never: "Soha"
         mention: "Csak megemlítésnél"

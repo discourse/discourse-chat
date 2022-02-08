@@ -26,7 +26,7 @@ he:
       collapse: "צמצום מגירת צ׳אט"
       deleted: "הודעה נמחקה. [צפייה]"
       delete: "מחיקה"
-      edited: "(נערך)"
+      edited: "נערך"
       empty_state:
         create_personal_chat: "התחלת צ׳אט אישי"
         no_public_available: "אין ערוצים ציבוריים שזמינים למעקב על ידיך כרגע."
@@ -93,6 +93,7 @@ he:
       exit: "חזרה"
       channel_selector:
         title: "קפיצה לערוץ"
+        no_channels: "אין ערוצים שתואמים לחיפוש שלך"
       create_channel:
         choose_category:
           label: "נא לבחור קטגוריה"
@@ -114,6 +115,8 @@ he:
         you_others_and_more: "הגבת, יחד עם %{usernames} ו־%{more} נוספים באמוג׳י :%{emoji}:"
       composer:
         toggle_toolbar: "החלפת מצב סרגל כלים"
+      quote:
+        original_channel: "נשלח במקור ב־‎<a href=\"%{channelLink}\">#%{channel}</a>‎."
       notification_levels:
         never: "לעולם לא"
         mention: "רק אזכורים"
@@ -174,6 +177,11 @@ he:
             other: "פעולה זו תיצור נושא חדש ותמלא בו את <b>%{count}</b> הודעות הצ׳אט שבחרת."
         existing_topic:
           title: "העברה לנושא קיים"
+          instructions:
+            one: "נא לבחור את הנושא אליו ברצונך להעביר את הודעת הצ׳אט הזו."
+            two: "נא לבחור את הנושא אליו ברצונך להעביר את <b>%{count}</b> הודעות הצ׳אט האלו."
+            many: "נא לבחור את הנושא אליו ברצונך להעביר את <b>%{count}</b> הודעות הצ׳אט האלו."
+            other: "נא לבחור את הנושא אליו ברצונך להעביר את <b>%{count}</b> הודעות הצ׳אט האלו."
         new_message:
           title: "העברה להודעה חדשה"
           instructions:

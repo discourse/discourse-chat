@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
 module ChatPublisher
-  def self.publish_new!(chat_channel, msg, staged_id)
-    content = ChatBaseMessageSerializer.new(msg, { scope: anonymous_guardian, root: :chat_message }).as_json
+  def self.publish_new!(chat_channel, chat_message, staged_id)
+    content = ChatBaseMessageSerializer.new(chat_message, { scope: anonymous_guardian, root: :chat_message }).as_json
     content[:typ] = :sent
     content[:stagedId] = staged_id
     permissions = permissions(chat_channel)
     MessageBus.publish("/chat/#{chat_channel.id}", content.as_json, permissions)
-    MessageBus.publish("/chat/#{chat_channel.id}/new-messages", { message_id: msg.id, user_id: msg.user_id }, permissions)
+    MessageBus.publish("/chat/#{chat_channel.id}/new-messages", { message_id: chat_message.id, user_id: chat_message.user_id }, permissions)
   end
 
   def self.publish_processed!(chat_message)
@@ -22,8 +22,8 @@ module ChatPublisher
     MessageBus.publish("/chat/#{chat_channel.id}", content.as_json, permissions(chat_channel))
   end
 
-  def self.publish_edit!(chat_channel, msg)
-    content = ChatBaseMessageSerializer.new(msg, { scope: anonymous_guardian, root: :chat_message }).as_json
+  def self.publish_edit!(chat_channel, chat_message)
+    content = ChatBaseMessageSerializer.new(chat_message, { scope: anonymous_guardian, root: :chat_message }).as_json
     content[:typ] = :edit
     MessageBus.publish("/chat/#{chat_channel.id}", content.as_json, permissions(chat_channel))
   end
@@ -44,22 +44,42 @@ module ChatPublisher
     raise NotImplementedError
   end
 
-  def self.publish_delete!(chat_channel, msg)
+  def self.publish_delete!(chat_channel, chat_message)
     MessageBus.publish(
       "/chat/#{chat_channel.id}",
-      { typ: "delete", deleted_id: msg.id, deleted_at: msg.deleted_at },
+      { typ: "delete", deleted_id: chat_message.id, deleted_at: chat_message.deleted_at },
       permissions(chat_channel)
     )
   end
 
-  def self.publish_restore!(chat_channel, msg)
-    content = ChatBaseMessageSerializer.new(msg, { scope: anonymous_guardian, root: :chat_message }).as_json
+  def self.publish_restore!(chat_channel, chat_message)
+    content = ChatBaseMessageSerializer.new(chat_message, { scope: anonymous_guardian, root: :chat_message }).as_json
     content[:typ] = :restore
     MessageBus.publish("/chat/#{chat_channel.id}", content.as_json, permissions(chat_channel))
   end
 
-  def self.publish_flag!(msg)
-    raise NotImplementedError
+  def self.publish_flag!(chat_message, user, reviewable)
+    # Publish to user who created flag
+    MessageBus.publish(
+      "/chat/#{chat_message.chat_channel_id}",
+      {
+        typ: "self_flagged",
+        user_flag_status: ReviewableScore.statuses[:pending],
+        chat_message_id: chat_message.id
+      }.as_json,
+      user_ids: [user.id]
+    )
+
+    # Publish flag with link to reviewable to staff
+    MessageBus.publish(
+      "/chat/#{chat_message.chat_channel_id}",
+      {
+        typ: "flag",
+        chat_message_id: chat_message.id,
+        reviewable_id: reviewable.id
+      }.as_json,
+      group_ids: [Group::AUTO_GROUPS[:staff]]
+    )
   end
 
   def self.publish_user_tracking_state(user, chat_channel_id, chat_message_id)

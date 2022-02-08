@@ -546,6 +546,12 @@ export default Component.extend({
       case "mention_warning":
         this.handleMentionWarning(data);
         break;
+      case "self_flagged":
+        this.handleSelfFlaggedMessage(data);
+        break;
+      case "flag":
+        this.handleFlaggedMessage(data);
+        break;
     }
     this.decorateMessages();
   },
@@ -684,6 +690,14 @@ export default Component.extend({
 
   handleMentionWarning(data) {
     this.messageLookup[data.chat_message_id]?.set("mentionWarning", data);
+  },
+
+  handleSelfFlaggedMessage(data) {
+    this.messageLookup[data.chat_message_id]?.set("user_flag_status", data.user_flag_status);
+  },
+
+  handleFlaggedMessage(data) {
+    this.messageLookup[data.chat_message_id]?.set("reviewable_id", data.reviewable_id);
   },
 
   _selfDeleted() {

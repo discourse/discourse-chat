@@ -349,19 +349,18 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
   def flag
     params.require([:chat_message_id])
     chat_message = ChatMessage
-      .includes(:chat_channel)
-      .includes(:flags)
+      .includes(:chat_channel, :user)
       .find_by(id: params[:chat_message_id])
 
-    guardian.ensure_can_see_chat_channel!(chat_message.chat_channel)
     raise Discourse::InvalidParameters unless chat_message
+    guardian.ensure_can_flag_chat_message!(chat_message)
 
-    if chat_message.flags.where(user: current_user).exists?
+    if chat_message.reviewable_flag_for(current_user).exists?
       return render json: success_json # Already flagged
     end
 
-    ChatMessageFlag.create_for(chat_message: chat_message, user: current_user)
-
+    reviewable = chat_message.add_flag(current_user)
+    ChatPublisher.publish_flag!(chat_message, current_user, reviewable)
     render json: success_json
   end
 

@@ -7,14 +7,7 @@ RSpec.describe ReviewableChatMessage, type: :model do
   fab!(:user) { Fabricate(:user) }
   fab!(:chat_channel) { Fabricate(:chat_channel) }
   fab!(:chat_message) { Fabricate(:chat_message, chat_channel: chat_channel, user: user) }
-  fab!(:chat_message_flag) {
-    Fabricate(:chat_message_flag, chat_message: chat_message, user: moderator)
-  }
   fab!(:reviewable) { Fabricate(:reviewable_chat_message, target: chat_message, created_by: moderator) }
-
-  before do
-    chat_message_flag.update(reviewable: reviewable)
-  end
 
   it "agree_and_keep agrees with the flag and doesn't delete the message" do
     reviewable.perform(moderator, :agree_and_keep_message)

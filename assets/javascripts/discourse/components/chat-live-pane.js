@@ -246,9 +246,7 @@ export default Component.extend({
       details: {
         chat_channel_id: this.chatChannel.id,
         chatable_type: this.chatChannel.chatable_type,
-        can_flag:
-          this.chatChannel.chatable_type !==
-          CHATABLE_TYPES.directMessageChannel,
+        can_flag: messages.resultSetMeta.can_flag,
         can_delete_self: true,
         can_delete_others: this.currentUser.staff,
       },

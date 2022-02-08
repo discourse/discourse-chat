@@ -12,11 +12,6 @@ Fabricator(:chat_message) do
   cooked_version ChatMessage::BAKED_VERSION
 end
 
-Fabricator(:chat_message_flag) do
-  user
-  chat_message
-end
-
 Fabricator(:reviewable_chat_message) do
   reviewable_by_moderator true
   type 'ReviewableChatMessage'

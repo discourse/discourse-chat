@@ -175,17 +175,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
 
     # Reverse messages so they are in the correct order. Need the order on the query with the
     # limit to fetch the correct messages.
-    reviewable_ids = current_user.staff? ? ChatMessage.get_reviewable_ids_for(messages) : nil
-    user_flag_statuses = ChatMessage.user_flag_statuses(current_user, messages)
-
-    render_serialized(
-      messages.to_a.reverse,
-      ChatBaseMessageSerializer,
-      root: :chat_messages,
-      rest_serializer: true,
-      reviewable_ids: reviewable_ids,
-      user_flag_statuses: user_flag_statuses
-    )
+    render_serialized(ChatView.new(@chat_channel, messages.to_a.reverse, current_user), ChatViewSerializer, root: false)
   end
 
   def react
@@ -266,7 +256,6 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
 
   def lookup_message
     chat_channel = @message.chat_channel
-    chatable = nil
     chatable = chat_channel.chatable
     guardian.ensure_can_see!(chatable)
     include_deleted = guardian.can_moderate_chat?(chatable)
@@ -291,7 +280,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
       .order(created_at: :asc)
 
     messages = [past_messages.reverse, [@message], future_messages].reduce([], :concat)
-    render_serialized(messages, ChatBaseMessageSerializer, root: :chat_messages, rest_serializer: true)
+    render_serialized(ChatView.new(chat_channel, messages, current_user), ChatViewSerializer, root: false)
   end
 
   def set_user_chat_status
@@ -349,7 +338,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
   def flag
     params.require([:chat_message_id])
     chat_message = ChatMessage
-      .includes(:chat_channel, :user)
+      .includes(:chat_channel)
       .find_by(id: params[:chat_message_id])
 
     raise Discourse::InvalidParameters unless chat_message
@@ -404,7 +393,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
   def find_chat_message
     @message = ChatMessage
       .unscoped
-      .includes(:chat_channel)
+      .includes(chat_channel: :chatable)
       .find_by(id: params[:message_id])
 
     raise Discourse::NotFound unless @message

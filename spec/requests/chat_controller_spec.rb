@@ -7,7 +7,7 @@ RSpec.describe DiscourseChat::ChatController do
   fab!(:admin) { Fabricate(:admin) }
   fab!(:category) { Fabricate(:category) }
   fab!(:topic) { Fabricate(:topic, category: category) }
-  fab!(:chat_channel) { Fabricate(:chat_channel, chatable: topic) }
+  fab!(:chat_channel) { Fabricate(:chat_channel) }
   fab!(:tag) { Fabricate(:tag) }
 
   before do

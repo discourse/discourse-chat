@@ -9,7 +9,8 @@ class ChatBaseMessageSerializer < ApplicationSerializer
     :excerpt,
     :deleted_at,
     :deleted_by_id,
-    :flag_count,
+    :reviewable_id,
+    :user_flag_status,
     :edited,
     :reactions
 
@@ -60,12 +61,25 @@ class ChatBaseMessageSerializer < ApplicationSerializer
     object.in_reply_to_id.presence
   end
 
-  def flag_count
-    0 # TODO: flagging
-    # object.flag_count / ReviewableSomethingOrOther
+  def reviewable_id
+    return @reviewable_id if defined?(@reviewable_id)
+    return @reviewable_id = nil unless @options && @options[:reviewable_ids]
+
+    @reviewable_id = @options[:reviewable_ids][object.id]
   end
 
-  def include_flag_count?
-    scope.can_see_flags?(object.chat_channel.chatable) && (false && object.flag_count > 0)
+  def include_reviewable_id?
+    reviewable_id.present?
+  end
+
+  def user_flag_status
+    return @user_flag_status if defined?(@user_flag_status)
+    return @user_flag_status = nil unless @options&.dig(:user_flag_statuses)
+
+    @user_flag_status = @options[:user_flag_statuses][object.id]
+  end
+
+  def include_user_flag_status?
+    user_flag_status.present?
   end
 end

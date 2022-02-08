@@ -175,7 +175,17 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
 
     # Reverse messages so they are in the correct order. Need the order on the query with the
     # limit to fetch the correct messages.
-    render_serialized(messages.to_a.reverse, ChatBaseMessageSerializer, root: :chat_messages, rest_serializer: true)
+    reviewable_ids = current_user.staff? ? ChatMessage.get_reviewable_ids_for(messages) : nil
+    user_flag_statuses = ChatMessage.user_flag_statuses(current_user, messages)
+
+    render_serialized(
+      messages.to_a.reverse,
+      ChatBaseMessageSerializer,
+      root: :chat_messages,
+      rest_serializer: true,
+      reviewable_ids: reviewable_ids,
+      user_flag_statuses: user_flag_statuses
+    )
   end
 
   def react

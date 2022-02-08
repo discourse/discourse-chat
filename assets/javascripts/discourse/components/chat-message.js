@@ -89,7 +89,7 @@ export default Component.extend({
   },
   @computed(
     "selectingMessages",
-    "showFlagButton",
+    "canFlagMessage",
     "showDeleteButton",
     "showRestoreButton",
     "showEditButton"
@@ -119,7 +119,7 @@ export default Component.extend({
       });
     }
 
-    if (this.showFlagButton) {
+    if (this.canFlagMessage) {
       buttons.push({
         id: "flag",
         name: I18n.t("chat.flag"),
@@ -268,10 +268,11 @@ export default Component.extend({
     );
   },
 
-  @discourseComputed("message", "details.can_flag", "message.deleted_at")
-  showFlagButton(message, canFlag, deletedAt) {
+  @discourseComputed("message", "message.user_flag_status", "details.can_flag", "message.deleted_at")
+  canFlagMessage(message, userFlagStatus, canFlag, deletedAt) {
     return (
       this.currentUser?.id !== message.user.id &&
+      userFlagStatus === undefined &&
       canFlag &&
       !message.chat_webhook_event &&
       !deletedAt

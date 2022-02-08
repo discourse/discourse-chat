@@ -349,11 +349,9 @@ export default Component.extend({
       expanded: !messageData.deleted_at,
       messageLookupId: this._generateMessageLookupId(messageData),
     });
-    // const prepared = EmberObject.create(messageData);
-    // this.messageLookup[messageData.messageLookupId] = prepared;
-    // return prepared;
-    this.messageLookup[messageData.messageLookupId] = messageData;
-    return messageData;
+    const prepared = EmberObject.create(messageData);
+    this.messageLookup[messageData.messageLookupId] = prepared;
+    return prepared;
   },
 
   _generateMessageLookupId(message) {

@@ -26,7 +26,6 @@ pt_BR:
       collapse: "Recolher gaveta de chat"
       deleted: "Uma mensagem foi excluída. [view]"
       delete: "Excluir"
-      edited: "(editado)"
       empty_state:
         create_personal_chat: "Iniciar um chat pessoal"
         no_public_available: "Não há canais públicos disponíveis para você seguir neste momento."

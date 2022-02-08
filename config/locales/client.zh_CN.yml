@@ -26,7 +26,7 @@ zh_CN:
       collapse: "折叠聊天抽屉"
       deleted: "一条消息已被删除。[查看]"
       delete: "删除"
-      edited: "（已编辑）"
+      edited: "已编辑"
       empty_state:
         create_personal_chat: "开始个人聊天"
         no_public_available: "目前没有可供您关注的公共频道。"
@@ -69,6 +69,7 @@ zh_CN:
       reply: "回复"
       edit: "编辑"
       copy_link: "复制链接"
+      rebake_message: "重建 HTML"
       restore: "恢复已删除的消息"
       save: "保存"
       select: "选择"
@@ -86,6 +87,9 @@ zh_CN:
       uploaded_files:
         other: "%{count} 个文件"
       exit: "返回"
+      channel_selector:
+        title: "跳转到频道"
+        no_channels: "没有频道符合您的搜索"
       create_channel:
         choose_category:
           label: "选择一个类别"
@@ -107,6 +111,8 @@ zh_CN:
         you_others_and_more: "您，%{usernames} 和其他 %{more} 人回应了 :%{emoji}:"
       composer:
         toggle_toolbar: "切换工具栏"
+      quote:
+        original_channel: "最初在 <a href=\"%{channelLink}\">#%{channel}</a> 中发送。"
       notification_levels:
         never: "永不"
         mention: "仅限提及"
@@ -175,6 +181,9 @@ zh_CN:
         multiple_users: "%{commaSeparatedUsernames} 和 %{lastUsername} 正在输入"
         many_users:
           other: "%{commaSeparatedUsernames} 和其他 %{count} 人正在输入"
+      retention_reminders:
+        public: "频道历史记录保留 %{days} 天。"
+        dm: "个人聊天记录保留 %{days} 天。"
     notifications:
       popup:
         chat_mention: "%{username} 在聊天中提及了您"

@@ -8,6 +8,8 @@ es:
   site_settings:
     chat_enabled: "Habilitar el plugin discourse-chat. Usar la acción «Habilitar chat» por tema para configurar."
     chat_allowed_groups: "Los usuarios de estos grupos pueden chatear."
+    chat_channel_retention_days: "Los mensajes de chat en los canales normales se conservarán durante este número de días. Si se establece en 0 se conservarán los mensajes para siempre."
+    chat_dm_retention_days: "Los mensajes de chat en los canales de chat personales se conservarán durante este número de días. Si se establece en 0 se conservarán los mensajes para siempre."
   chat:
     errors:
       channel_exists_for_category: "Ya existe un canal para esta categoría y nombre"

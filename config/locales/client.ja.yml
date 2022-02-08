@@ -26,7 +26,7 @@ ja:
       collapse: "チャットドロワーを折りたたむ"
       deleted: "メッセージは削除されました。[view]"
       delete: "削除"
-      edited: "（編集済み）"
+      edited: "編集済み"
       empty_state:
         create_personal_chat: "パーソナルチャットを開始"
         no_public_available: "現在、フォローできる公開チャンネルはありません。"
@@ -69,6 +69,7 @@ ja:
       reply: "返信"
       edit: "編集"
       copy_link: "リンクをコピーする"
+      rebake_message: "HTML を再構築"
       restore: "削除されたメッセージを復元する"
       save: "保存"
       select: "選択"
@@ -86,6 +87,9 @@ ja:
       uploaded_files:
         other: "%{count} 個のファイル"
       exit: "戻る"
+      channel_selector:
+        title: "チャンネルにジャンプ"
+        no_channels: "検索に一致するチャンネルはありません"
       create_channel:
         choose_category:
           label: "カテゴリを選択する"
@@ -107,6 +111,8 @@ ja:
         you_others_and_more: "あなた、%{usernames} と他 %{more} 人が :%{emoji}: でリアクションしました"
       composer:
         toggle_toolbar: "ツールバーの切り替え"
+      quote:
+        original_channel: "最初に <a href=\"%{channelLink}\">#%{channel}</a> で送信されました。"
       notification_levels:
         never: "なし"
         mention: "メンションのみ"

@@ -26,7 +26,7 @@ ar:
       collapse: "طي ساحب الدردشة"
       deleted: "تم حذف رسالة. [view]"
       delete: "حذف"
-      edited: "(تم التعديل)"
+      edited: "تم التعديل"
       empty_state:
         create_personal_chat: "بدء دردشة شخصية"
         no_public_available: "لا تتوفَّر قنوات عامة لك لمتابعتها في الوقت الحالي."
@@ -84,6 +84,7 @@ ar:
       reply: "رد"
       edit: "تعديل"
       copy_link: "نسخ الرابط"
+      rebake_message: "إعادة بناء HTML"
       restore: "استعادة الرسالة المحذوفة"
       save: "حفظ"
       select: "تحديد"
@@ -106,6 +107,9 @@ ar:
         many: "%{count} ملفًا"
         other: "%{count} ملف"
       exit: "عودة"
+      channel_selector:
+        title: "الانتقال إلى القناة"
+        no_channels: "لا توجد قنوات تطابق بحثك"
       create_channel:
         choose_category:
           label: "اختيار فئة"
@@ -215,6 +219,9 @@ ar:
           few: "%{commaSeparatedUsernames} و%{count} آخرون يكتبون"
           many: "%{commaSeparatedUsernames} و%{count} آخرون يكتبون"
           other: "%{commaSeparatedUsernames} و%{count} آخرون يكتبون"
+      retention_reminders:
+        public: "يتم الاحتفاظ بسجل القناة لمدة %{days} من الأيام."
+        dm: "يتم الاحتفاظ بسجل الدردشة الشخصية لمدة %{days} من الأيام."
     notifications:
       popup:
         chat_mention: "أشار %{username} إليك في الدردشة"

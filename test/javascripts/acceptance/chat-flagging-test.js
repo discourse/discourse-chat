@@ -10,11 +10,7 @@ import {
   chatView,
 } from "discourse/plugins/discourse-chat/chat-fixtures";
 import { test } from "qunit";
-import {
-  click,
-  settled,
-  visit,
-} from "@ember/test-helpers";
+import { click, settled, visit } from "@ember/test-helpers";
 import { cloneJSON } from "discourse-common/lib/object";
 import { isLegacyEmber } from "discourse-common/config/environment";
 import { next } from "@ember/runloop";

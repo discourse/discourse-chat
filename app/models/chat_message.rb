@@ -36,7 +36,6 @@ class ChatMessage < ActiveRecord::Base
     WatchedWordsValidator.new(attributes: [:message]).validate(self)
   end
 
-
   def excerpt
     PrettyText.excerpt(cooked, 50, {})
   end

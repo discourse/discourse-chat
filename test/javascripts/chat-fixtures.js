@@ -243,5 +243,9 @@ const message3 = {
 };
 
 export const chatView = {
+  __rest_serializer: "1",
+  meta: {
+    can_flag: true,
+  },
   chat_messages: [message0, message1, message2, message3],
 };

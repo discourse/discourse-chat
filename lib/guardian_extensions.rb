@@ -67,6 +67,7 @@ module DiscourseChat::GuardianExtensions
 
   def can_flag_chat_message?(chat_message)
     return false if chat_message.user.staff? && !SiteSetting.allow_flagging_staff
+    return false if chat_message.user_id == @user.id
 
     can_flag_chat_messages? && can_flag_in_chat_channel?(chat_message.chat_channel)
   end

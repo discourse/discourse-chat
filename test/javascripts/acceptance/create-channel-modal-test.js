@@ -35,7 +35,7 @@ acceptance("Discourse Chat - Create channel modal", function (needs) {
 
   needs.pretender((server, helper) => {
     server.get("/chat/:chatChannelId/messages.json", () =>
-      helper.response({ chat_messages: [] })
+      helper.response({ meta: { can_chat: true }, chat_messages: [] })
     );
 
     server.get("/chat/chat_channels.json", () =>

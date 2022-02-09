@@ -44,7 +44,6 @@ class ReviewableChatMessage < Reviewable
       build_action(actions, :disagree, icon: 'thumbs-down')
     end
 
-
     if guardian.can_suspend?(chat_message_creator)
       build_action(actions, :agree_and_suspend, icon: 'ban', bundle: agree, client_action: 'suspend')
       build_action(actions, :agree_and_silence, icon: 'microphone-slash', bundle: agree, client_action: 'silence')

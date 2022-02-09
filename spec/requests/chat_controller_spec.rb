@@ -632,7 +632,11 @@ RSpec.describe DiscourseChat::ChatController do
   end
 
   describe "#flag" do
-    fab!(:chat_message) { Fabricate(:chat_message, user: admin, chat_channel: chat_channel) }
+    fab!(:admin_chat_message) { Fabricate(:chat_message, user: admin, chat_channel: chat_channel) }
+    fab!(:user_chat_message) { Fabricate(:chat_message, user: user, chat_channel: chat_channel) }
+
+    fab!(:dm_chat_channel) { Fabricate(:chat_channel, chatable: Fabricate(:direct_message_channel, users: [user, admin])) }
+    fab!(:admin_dm_message) { Fabricate(:chat_message, user: admin, chat_channel: dm_chat_channel) }
 
     before do
       sign_in(user)
@@ -640,8 +644,25 @@ RSpec.describe DiscourseChat::ChatController do
 
     it "creates reviewable" do
       expect {
-        put "/chat/flag.json", params: { chat_message_id: chat_message.id }
-      }.to change { Reviewable.where(target: chat_message).count }.by(1)
+        put "/chat/flag.json", params: { chat_message_id: admin_chat_message.id }
+      }.to change { ReviewableChatMessage.where(target: admin_chat_message).count }.by(1)
+      expect(response.status).to eq(200)
+    end
+
+    it "doesn't allow flagging your own message" do
+      put "/chat/flag.json", params: { chat_message_id: user_chat_message.id }
+      expect(response.status).to eq(403)
+    end
+
+    it "doesn't allow flagging staff if SiteSetting.allow_flagging_staff is false" do
+      SiteSetting.allow_flagging_staff = false
+      put "/chat/flag.json", params: { chat_message_id: admin_chat_message.id }
+      expect(response.status).to eq(403)
+    end
+
+    it "doesn't allow flagging direct messages" do
+      put "/chat/flag.json", params: { chat_message_id: admin_dm_message.id }
+      expect(response.status).to eq(403)
     end
   end
 end

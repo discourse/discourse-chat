@@ -104,7 +104,11 @@ after_initialize do
   UserUpdater::OPTION_ATTR.push(:only_chat_push_notifications)
   UserUpdater::OPTION_ATTR.push(:chat_sound)
 
+  register_reviewable_type ReviewableChatMessage
+
   reloadable_patch do |plugin|
+    ReviewableScore.add_new_types([:needs_review])
+
     Site.preloaded_category_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
     Site.markdown_additional_options["chat"] = {
       limited_pretty_text_features: ChatMessage::MARKDOWN_FEATURES,

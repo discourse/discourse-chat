@@ -52,9 +52,7 @@ class ReviewableChatMessage < Reviewable
     build_action(actions, :ignore, icon: 'external-link-alt')
 
     unless chat_message.deleted_at?
-      delete = actions.add_bundle("#{id}-delete", icon: "far-trash-alt", label: "reviewables.actions.delete.title")
-      build_action(actions, :delete_and_ignore, icon: 'external-link-alt', bundle: delete)
-      build_action(actions, :delete_and_agree, icon: 'thumbs-up', bundle: delete)
+      build_action(actions, :delete_and_agree, icon: 'far-trash-alt')
     end
   end
 

@@ -53,12 +53,4 @@ RSpec.describe ReviewableChatMessage, type: :model do
     expect(reviewable).to be_ignored
     expect(chat_message.reload.deleted_at).not_to be_present
   end
-
-  it "perform_delete_and_ignore ignores the flag and deletes the message" do
-    chat_message_id = chat_message.id
-    reviewable.perform(moderator, :delete_and_ignore)
-
-    expect(reviewable).to be_ignored
-    expect(ChatMessage.with_deleted.find_by(id: chat_message_id).deleted_at).to be_present
-  end
 end

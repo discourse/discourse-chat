@@ -52,7 +52,7 @@ class ChatMessage < ActiveRecord::Base
     reviewable.update(target_created_by: self.user)
     reviewable.add_score(
       user,
-      ReviewableScore.types[:needs_approval],
+      ReviewableScore.types[:needs_review],
       force_review: true
     )
     reviewable

@@ -4,9 +4,6 @@ import {
   exists,
   publishToMessageBus,
   query,
-  queryAll,
-  updateCurrentUser,
-  visible,
 } from "discourse/tests/helpers/qunit-helpers";
 import {
   chatChannels,
@@ -15,14 +12,12 @@ import {
 import { test } from "qunit";
 import {
   click,
-  currentURL,
-  fillIn,
   settled,
-  triggerKeyEvent,
   visit,
 } from "@ember/test-helpers";
 import { cloneJSON } from "discourse-common/lib/object";
 import { isLegacyEmber } from "discourse-common/config/environment";
+import { next } from "@ember/runloop";
 import { Promise } from "rsvp";
 
 const chatSettled = async () => {

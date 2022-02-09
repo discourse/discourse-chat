@@ -13,7 +13,6 @@ import showModal from "discourse/lib/show-modal";
 import userPresent from "discourse/lib/user-presence";
 import { A } from "@ember/array";
 import { ajax } from "discourse/lib/ajax";
-import { CHATABLE_TYPES } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import { isTesting } from "discourse-common/config/environment";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { cancel, later, next, schedule } from "@ember/runloop";

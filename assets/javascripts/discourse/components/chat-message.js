@@ -4,7 +4,6 @@ import Component from "@ember/component";
 import discourseComputed, { bind } from "discourse-common/utils/decorators";
 import EmberObject, { action, computed } from "@ember/object";
 import I18n from "I18n";
-import showModal from "discourse/lib/show-modal";
 import { ajax } from "discourse/lib/ajax";
 import { autoUpdatingRelativeAge } from "discourse/lib/formatter";
 import { cancel, later, schedule } from "@ember/runloop";
@@ -268,7 +267,12 @@ export default Component.extend({
     );
   },
 
-  @discourseComputed("message", "message.user_flag_status", "details.can_flag", "message.deleted_at")
+  @discourseComputed(
+    "message",
+    "message.user_flag_status",
+    "details.can_flag",
+    "message.deleted_at"
+  )
   canFlagMessage(message, userFlagStatus, canFlag, deletedAt) {
     return (
       this.currentUser?.id !== message.user.id &&
@@ -277,8 +281,6 @@ export default Component.extend({
       !message.chat_webhook_event &&
       !deletedAt
     );
-    // TODO: Add flagging
-    // return this.details.can_flag && !message.action_code && !deletedAt;
   },
 
   @discourseComputed("message")
@@ -593,11 +595,10 @@ export default Component.extend({
             data: {
               chat_message_id: this.message.id,
             },
-          });
+          }).catch(popupAjaxError);
         }
       }
     );
-    // showModal("chat-flag-modal", { model: this.message });
   },
 
   @action

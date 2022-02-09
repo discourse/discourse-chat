@@ -344,7 +344,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     raise Discourse::InvalidParameters unless chat_message
     guardian.ensure_can_flag_chat_message!(chat_message)
 
-    if chat_message.reviewable_flag_for(current_user).exists?
+    if chat_message.reviewable_score_for(current_user).exists?
       return render json: success_json # Already flagged
     end
 

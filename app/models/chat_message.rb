@@ -58,7 +58,7 @@ class ChatMessage < ActiveRecord::Base
     reviewable
   end
 
-  def reviewable_flag_for(user)
+  def reviewable_score_for(user)
     ReviewableScore.joins(:reviewable).where(reviewable: { target: self }).where(user: user)
   end
 

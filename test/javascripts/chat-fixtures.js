@@ -243,7 +243,6 @@ const message3 = {
 };
 
 export const chatView = {
-  __rest_serializer: "1",
   meta: {
     can_flag: true,
   },

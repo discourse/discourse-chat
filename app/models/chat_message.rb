@@ -87,64 +87,6 @@ class ChatMessage < ActiveRecord::Base
     where('cooked_version <> ? or cooked_version IS NULL', BAKED_VERSION)
   end
 
-  def self.get_reviewable_ids_for(messages)
-    sql = <<~SQL
-        SELECT
-          target_id,
-          MAX(r.id) reviewable_id
-        FROM
-          reviewables r
-        JOIN
-          reviewable_scores s ON reviewable_id = r.id
-        WHERE
-          r.target_id IN (:message_ids) AND
-          r.target_type = 'ChatMessage' AND
-          s.status = :pending
-        GROUP BY
-          target_id
-    SQL
-
-    ids = {}
-
-    DB.query(
-      sql,
-      pending: ReviewableScore.statuses[:pending],
-      message_ids: messages.map(&:id)
-    ).each do |row|
-      ids[row.target_id] = row.reviewable_id
-    end
-
-    ids
-  end
-
-  def self.user_flag_statuses(user, messages)
-    sql = <<~SQL
-        SELECT
-          target_id,
-          s.status
-        FROM
-          reviewables r
-        JOIN
-          reviewable_scores s ON reviewable_id = r.id
-        WHERE
-          s.user_id = :user_id AND
-          r.target_id IN (:message_ids) AND
-          r.target_type = 'ChatMessage'
-    SQL
-
-    statuses = {}
-
-    DB.query(
-      sql,
-      message_ids: messages.map(&:id),
-      user_id: user.id
-    ).each do |row|
-      statuses[row.target_id] = row.status
-    end
-
-    statuses
-  end
-
   MARKDOWN_FEATURES = %w{
     anchor
     bbcode-block

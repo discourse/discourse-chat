@@ -475,7 +475,8 @@
   padding: 0 0.3em;
   cursor: pointer;
 
-  .flag-count, .d-icon {
+  .flag-count,
+  .d-icon {
     color: var(--danger);
   }
 }

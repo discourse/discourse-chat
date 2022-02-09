@@ -180,7 +180,7 @@
     }
 
     // Automatic aspect-ratio mapping https://developer.mozilla.org/en-US/docs/Web/Media/images/aspect_ratio_mapping
-    p img {
+    p img:not(.emoji) {
       max-width: 100%;
       height: auto;
     }

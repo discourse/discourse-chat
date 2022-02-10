@@ -109,7 +109,7 @@ describe ChatMessage do
     it 'supports emoji plugin' do
       cooked = ChatMessage.cook(":grin:")
 
-      expect(cooked).to eq("<p><img src=\"/images/emoji/twitter/grin.png?v=12\" title=\":grin:\" class=\"emoji only-emoji\" alt=\":grin:\"></p>")
+      expect(cooked).to eq("<p><img src=\"/images/emoji/twitter/grin.png?v=12\" title=\":grin:\" class=\"emoji only-emoji\" alt=\":grin:\" loading=\"lazy\" width=\"20\" height=\"20\"></p>")
     end
 
     it 'supports mentions plugin' do
@@ -160,14 +160,14 @@ describe ChatMessage do
     it 'supports inline emoji' do
       cooked = ChatMessage.cook(":D")
       expect(cooked).to eq(<<~HTML.chomp)
-      <p><img src="/images/emoji/twitter/smiley.png?v=12" title=":smiley:" class="emoji only-emoji" alt=":smiley:"></p>
+      <p><img src="/images/emoji/twitter/smiley.png?v=12" title=":smiley:" class="emoji only-emoji" alt=":smiley:" loading="lazy" width="20" height="20"></p>
       HTML
     end
 
     it 'supports emoji shortcuts' do
       cooked = ChatMessage.cook("this is a replace test :P :|")
       expect(cooked).to eq(<<~HTML.chomp)
-        <p>this is a replace test <img src="/images/emoji/twitter/stuck_out_tongue.png?v=12" title=":stuck_out_tongue:" class="emoji" alt=":stuck_out_tongue:"> <img src="/images/emoji/twitter/expressionless.png?v=12" title=":expressionless:" class="emoji" alt=":expressionless:"></p>
+        <p>this is a replace test <img src="/images/emoji/twitter/stuck_out_tongue.png?v=12" title=":stuck_out_tongue:" class="emoji" alt=":stuck_out_tongue:" loading="lazy" width="20" height="20"> <img src="/images/emoji/twitter/expressionless.png?v=12" title=":expressionless:" class="emoji" alt=":expressionless:" loading="lazy" width="20" height="20"></p>
       HTML
     end
 

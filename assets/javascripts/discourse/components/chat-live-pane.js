@@ -363,9 +363,9 @@ export default Component.extend({
         }
       });
     }
-    const lastReadId = this.currentUser.chat_channel_tracking_state[
-      this.chatChannel.id
-    ]?.chat_message_id;
+    const lastReadId =
+      this.currentUser.chat_channel_tracking_state[this.chatChannel.id]
+        ?.chat_message_id;
     if (!lastReadId) {
       return;
     }
@@ -964,7 +964,9 @@ export default Component.extend({
       data: { message_ids: this.selectedMessageIds },
       type: "POST",
     }).then((response) => {
-      const composer = getOwner(this).lookup("controller:composer");
+      const container = getOwner(this);
+      const composer = container.lookup("controller:composer");
+      const topic = container.lookup("controller:topic");
       const openOpts = {};
       if (this.chatChannel.chatable_type === "Category") {
         openOpts.categoryId = this.chatChannel.chatable_id;
@@ -975,6 +977,7 @@ export default Component.extend({
         this._goToChatableUrl().then(() => {
           composer.focusComposer({
             fallbackToNewTopic: true,
+            topic: topic?.model,
             insertText: response.bbcode,
             openOpts,
           });
@@ -989,6 +992,7 @@ export default Component.extend({
           // open the composer and insert text
           composer.focusComposer({
             fallbackToNewTopic: true,
+            topic: topic?.model,
             insertText: response.bbcode,
             openOpts,
           });

@@ -80,21 +80,39 @@
 
 {{#if expanded}}
   {{#if selectingMessages}}
-    <div class="chat-selection-management-buttons">
-      {{d-button
-        id="chat-move-to-topic-btn"
-        class="btn-primary"
-        label="chat.selection.move_to_topic"
-        title="chat.selection.move_to_topic"
-        disabled=moveToTopicDisabled
-        action=(action "moveMessagesToTopic")
-      }}
-      {{d-button
-        class="btn-secondary cancel-btn"
-        label="chat.selection.cancel"
-        title="chat.selection.cancel"
-        action=(action "cancelSelecting")
-      }}
+    <div class="chat-selection-management">
+      <div class="chat-selection-management-buttons">
+        {{d-button
+          id="chat-move-to-topic-btn"
+          class="btn-primary"
+          icon="sign-out-alt"
+          label="chat.selection.move_to_topic"
+          title="chat.selection.move_to_topic"
+          disabled=(not anyMessagesSelected)
+          action=(action "moveMessagesToTopic")
+        }}
+        {{d-button
+          id="chat-quote-btn"
+          class="btn-secondary"
+          icon="quote-left"
+          label="chat.selection.quote_selection"
+          title="chat.selection.quote_selection"
+          disabled=(not anyMessagesSelected)
+          action=(action "quoteMessages")
+        }}
+        {{d-button
+          icon="times"
+          class="btn-secondary cancel-btn"
+          label="chat.selection.cancel"
+          title="chat.selection.cancel"
+          action=(action "cancelSelecting")
+        }}
+      </div>
+      {{#if showChatQuoteSuccess}}
+        <div class="chat-selection-message alert alert-success">
+          Chat quote copied to clipboard.
+        </div>
+      {{/if}}
     </div>
   {{else}}
     {{chat-composer

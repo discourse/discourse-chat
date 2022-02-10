@@ -745,12 +745,35 @@ body.composer-open .topic-chat-float-container {
     }
   }
 
-  .chat-selection-management-buttons {
+  .chat-selection-management {
+    @keyframes chat-quote-message-background-fade-highlight {
+      0% {
+        background-color: var(--success-low);
+        color: black;
+      }
+      100% {
+        background-color: transparent;
+        color: transparent;
+      }
+    }
+
     padding: 0.5em;
     border-top: 1px solid var(--primary-low);
+    display: flex;
 
-    .cancel-btn {
-      margin-left: 0.5em;
+    .chat-selection-message {
+      padding: 0.5em 0.65em;
+      margin: 0 1em;
+      flex: 1;
+      line-height: normal;
+
+      animation: chat-quote-message-background-fade-highlight 2.5s ease-out 3s;
+    }
+
+    .chat-selection-management-buttons {
+      .cancel-btn {
+        margin-left: 1em;
+      }
     }
   }
 }

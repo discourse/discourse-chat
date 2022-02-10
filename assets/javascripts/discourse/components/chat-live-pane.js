@@ -1,4 +1,8 @@
 import Component from "@ember/component";
+import { clipboardCopy } from "discourse/lib/utilities";
+import Composer from "discourse/models/composer";
+import { getOwner } from "discourse-common/lib/get-owner";
+import getURL from "discourse-common/lib/get-url";
 import discourseComputed, {
   afterRender,
   bind,
@@ -15,7 +19,7 @@ import { A } from "@ember/array";
 import { ajax } from "discourse/lib/ajax";
 import { isTesting } from "discourse-common/config/environment";
 import { popupAjaxError } from "discourse/lib/ajax-error";
-import { cancel, later, next, schedule } from "@ember/runloop";
+import { cancel, later, next, schedule, scheduleOnce } from "@ember/runloop";
 import { inject as service } from "@ember/service";
 import { Promise } from "rsvp";
 import { resetIdle } from "discourse/lib/desktop-notifications";
@@ -43,6 +47,7 @@ export default Component.extend({
   selectingMessages: false,
   stickyScroll: true,
   stickyScrollTimer: null,
+  showChatQuoteSuccess: false,
 
   editingMessage: null, // ?Message
   replyToMsg: null, // ?Message
@@ -897,8 +902,13 @@ export default Component.extend({
   },
 
   @discourseComputed("messages.@each.selected")
-  moveToTopicDisabled(messages) {
-    return !messages.filter((m) => m.selected).length;
+  anyMessagesSelected(messages) {
+    return this.selectedMessageIds.length > 0;
+  },
+
+  @discourseComputed("messages.@each.selected")
+  selectedMessageIds(messages) {
+    return messages.filter((m) => m.selected).map((m) => m.id);
   },
 
   @action
@@ -937,19 +947,60 @@ export default Component.extend({
     return this.messages.findIndex((m) => m.id === message.id);
   },
 
-  @action
-  onChannelTitleClick() {
+  _goToChatableUrl() {
     if (this.chatChannel.chatable_url) {
       return this.router.transitionTo(this.chatChannel.chatable_url);
     }
   },
 
   @action
+  onChannelTitleClick() {
+    return this._goToChatableUrl();
+  },
+
+  @action
+  quoteMessages() {
+    ajax(getURL(`/chat/${this.chatChannel.id}/quote`), {
+      data: { message_ids: this.selectedMessageIds },
+      type: "POST",
+    }).then((response) => {
+      const composer = getOwner(this).lookup("controller:composer");
+      const openOpts = {};
+      if (this.chatChannel.chatable_type === "Category") {
+        openOpts.categoryId = this.chatChannel.chatable_id;
+      }
+
+      if (this.site.isMobileDevice) {
+        // go to the relevant chatable (e.g. category) and open the composer to insert text
+        this._goToChatableUrl().then(() => {
+          composer.focusComposer({
+            fallbackToNewTopic: true,
+            insertText: response.bbcode,
+            openOpts,
+          });
+        });
+      } else {
+        // copy to clipboard and show message
+        if (this.currentUser.chat_isolated) {
+          clipboardCopy(response.bbcode);
+          this.set("showChatQuoteSuccess", true);
+          setTimeout(() => this.set("showChatQuoteSuccess", false), 5500); // animation delay + fade
+        } else {
+          // open the composer and insert text
+          composer.focusComposer({
+            fallbackToNewTopic: true,
+            insertText: response.bbcode,
+            openOpts,
+          });
+        }
+      }
+    });
+  },
+
+  @action
   moveMessagesToTopic() {
     showModal("move-chat-to-topic").setProperties({
-      chatMessageIds: this.messages
-        .filter((message) => message.selected)
-        .map((message) => message.id),
+      chatMessageIds: this.selectedMessageIds,
       chatChannelId: this.chatChannel.id,
     });
   },

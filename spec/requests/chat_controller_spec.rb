@@ -630,4 +630,46 @@ RSpec.describe DiscourseChat::ChatController do
       expect(response.status).to eq(200)
     end
   end
+
+  describe "#quote_messages" do
+    fab!(:channel) { Fabricate(:chat_channel, chatable: category, name: "Cool Chat") }
+    let(:user2) { Fabricate(:user) }
+    let(:message1) { Fabricate(:chat_message, user: user, chat_channel: channel, message: "an extremely insightful response :)") }
+    let(:message2) { Fabricate(:chat_message, user: user2, chat_channel: channel, message: "says you!") }
+    let(:message3) { Fabricate(:chat_message, user: user, chat_channel: channel, message: "aw :(") }
+
+    it "returns a 403 if the user can't chat" do
+      SiteSetting.chat_allowed_groups = nil
+      sign_in(user)
+      post "/chat/#{channel.id}/quote.json", params: { message_ids: [message1.id, message2.id, message3.id] }
+      expect(response.status).to eq(403)
+    end
+
+    it "returns a 403 if the user can't see the channel" do
+      category.update(read_restricted: true)
+      sign_in(user)
+      post "/chat/#{channel.id}/quote.json", params: { message_ids: [message1.id, message2.id, message3.id] }
+      expect(response.status).to eq(403)
+    end
+
+    it "quotes the message ids provided" do
+      sign_in(user)
+      post "/chat/#{channel.id}/quote.json", params: { message_ids: [message1.id, message2.id, message3.id] }
+      expect(response.status).to eq(200)
+      bbcode = response.parsed_body["bbcode"]
+      expect(bbcode).to eq(<<~EXPECTED)
+      [chat quote="#{user.username};#{message1.id};#{message1.created_at.iso8601}" channel="Cool Chat" multiQuote="true" chained="true"]
+      an extremely insightful response :)
+      [/chat]
+
+      [chat quote="#{user2.username};#{message2.id};#{message2.created_at.iso8601}" chained="true"]
+      says you!
+      [/chat]
+
+      [chat quote="#{user.username};#{message3.id};#{message3.created_at.iso8601}" chained="true"]
+      aw :(
+      [/chat]
+      EXPECTED
+    end
+  end
 end

@@ -342,15 +342,9 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
 
   def quote_messages
     params.require(:message_ids)
-    guardian.ensure_can_chat!(current_user)
-    quoted_channels = ChatChannel.where(id: ChatMessage.where(id: params[:message_ids]).select(:chat_channel_id).distinct)
-    if quoted_channels.size != 1
-      raise Discourse::InvalidParameters.new("You cannot quote messages from more than one channel.")
-    end
 
-    @chat_channel = quoted_channels.first
+    @chat_channel = ChatChannel.find(params[:chat_channel_id])
     raise Discourse::InvalidAccess if !guardian.can_see_chat_channel?(@chat_channel)
-    guardian.ensure_can_see!(@chat_channel.chatable)
 
     bbcode = ChatTranscriptService.new(@chat_channel, params[:message_ids]).generate_bbcode
     render json: success_json.merge(bbcode: bbcode)

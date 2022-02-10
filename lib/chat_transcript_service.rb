@@ -92,6 +92,8 @@ class ChatTranscriptService
   end
 
   def messages
-    @messages ||= ChatMessage.includes(:user).where(id: @message_ids)
+    @messages ||= ChatMessage.includes(:user).where(
+      id: @message_ids, chat_channel_id: @channel.id
+    ).order(:created_at)
   end
 end

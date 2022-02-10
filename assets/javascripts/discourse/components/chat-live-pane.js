@@ -75,12 +75,6 @@ export default Component.extend({
       "highlightOrFetchMessage"
     );
 
-    if (!isTesting()) {
-      next(this, () => {
-        this._updateReadTimer = this._updateLastReadMessage();
-      });
-    }
-
     this._scrollerEl = this.element.querySelector(".chat-messages-scroll");
     this._scrollerEl.addEventListener(
       "scroll",
@@ -139,6 +133,7 @@ export default Component.extend({
             this.set("previewing", !Boolean(trackedChannel));
             this.fetchMessages(this.chatChannel.id);
             this.loadDraftForChannel(this.chatChannel.id);
+            this._startLastReadRunner();
           });
       }
     }
@@ -678,6 +673,7 @@ export default Component.extend({
     return !this.element || this.isDestroying || this.isDestroyed;
   },
 
+  @bind
   _updateLastReadMessage() {
     if (this._selfDeleted()) {
       return;
@@ -721,6 +717,19 @@ export default Component.extend({
 
   _floatOpenAndFocused() {
     return userPresent() && this.expanded && !this.floatHidden;
+  },
+
+  _startLastReadRunner() {
+    if (!isTesting()) {
+      cancel(this._updateReadTimer);
+      next(this, () => {
+        this._updateLastReadMessage();
+        this._updateReadTimer = later(
+          this._updateLastReadMessage,
+          READ_INTERVAL
+        );
+      });
+    }
   },
 
   _stopLastReadRunner() {

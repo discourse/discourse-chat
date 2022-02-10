@@ -1,8 +1,6 @@
 import Component from "@ember/component";
 import { clipboardCopy } from "discourse/lib/utilities";
-import Composer from "discourse/models/composer";
 import { getOwner } from "discourse-common/lib/get-owner";
-import getURL from "discourse-common/lib/get-url";
 import discourseComputed, {
   afterRender,
   bind,
@@ -19,12 +17,12 @@ import { A } from "@ember/array";
 import { ajax } from "discourse/lib/ajax";
 import { isTesting } from "discourse-common/config/environment";
 import { popupAjaxError } from "discourse/lib/ajax-error";
-import { cancel, later, next, schedule, scheduleOnce } from "@ember/runloop";
+import { cancel, later, next, schedule } from "@ember/runloop";
 import { inject as service } from "@ember/service";
 import { Promise } from "rsvp";
 import { resetIdle } from "discourse/lib/desktop-notifications";
 import { resolveAllShortUrls } from "pretty-text/upload-short-url";
-import { samePrefix } from "discourse-common/lib/get-url";
+import getURL, { samePrefix } from "discourse-common/lib/get-url";
 import { spinnerHTML } from "discourse/helpers/loading-spinner";
 import { decorateGithubOneboxBody } from "discourse/initializers/onebox-decorators";
 
@@ -902,7 +900,7 @@ export default Component.extend({
   },
 
   @discourseComputed("messages.@each.selected")
-  anyMessagesSelected(messages) {
+  anyMessagesSelected() {
     return this.selectedMessageIds.length > 0;
   },
 

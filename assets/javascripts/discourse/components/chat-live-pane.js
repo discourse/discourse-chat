@@ -964,18 +964,17 @@ export default Component.extend({
     }).then((response) => {
       const container = getOwner(this);
       const composer = container.lookup("controller:composer");
-      const topic = container.lookup("controller:topic");
       const openOpts = {};
       if (this.chatChannel.chatable_type === "Category") {
         openOpts.categoryId = this.chatChannel.chatable_id;
       }
 
       if (this.site.isMobileDevice) {
-        // go to the relevant chatable (e.g. category) and open the composer to insert text
+        // go to the relevant chatable (e.g. category) and open the
+        // composer to insert text
         this._goToChatableUrl().then(() => {
           composer.focusComposer({
             fallbackToNewTopic: true,
-            topic: topic?.model,
             insertText: response.bbcode,
             openOpts,
           });
@@ -983,11 +982,11 @@ export default Component.extend({
       } else {
         // copy to clipboard and show message
         if (this.currentUser.chat_isolated) {
-          clipboardCopy(response.bbcode);
-          this.set("showChatQuoteSuccess", true);
-          setTimeout(() => this.set("showChatQuoteSuccess", false), 5500); // animation delay + fade
+          this._copyAndShowSuccess(response.bbcode);
         } else {
-          // open the composer and insert text
+          // open the composer and insert text, reply to the current
+          // topic if there is one, use the active draft if there is one
+          const topic = container.lookup("controller:topic");
           composer.focusComposer({
             fallbackToNewTopic: true,
             topic: topic?.model,
@@ -996,6 +995,19 @@ export default Component.extend({
           });
         }
       }
+    });
+  },
+
+  _copyAndShowSuccess(bbcode) {
+    clipboardCopy(bbcode);
+    this.set("showChatQuoteSuccess", true);
+    schedule("afterRender", this, () => {
+      const element = document.querySelector(".chat-selection-message");
+      const removeSuccess = () => {
+        element.removeEventListener("animationend", removeSuccess);
+        this.set("showChatQuoteSuccess", false);
+      };
+      element.addEventListener("animationend", removeSuccess);
     });
   },
 

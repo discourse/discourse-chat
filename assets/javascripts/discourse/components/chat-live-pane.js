@@ -361,9 +361,9 @@ export default Component.extend({
         }
       });
     }
-    const lastReadId =
-      this.currentUser.chat_channel_tracking_state[this.chatChannel.id]
-        ?.chat_message_id;
+    const lastReadId = this.currentUser.chat_channel_tracking_state[
+      this.chatChannel.id
+    ]?.chat_message_id;
     if (!lastReadId) {
       return;
     }

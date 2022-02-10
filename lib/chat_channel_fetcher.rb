@@ -18,7 +18,6 @@ module DiscourseChat::ChatChannelFetcher
 
   def self.secured_public_channels(guardian, memberships, scope_with_membership: true)
     channels = ChatChannel.includes(:chatable)
-
     channels = channels.where(chatable_type: ChatChannel.public_channel_chatable_types)
     if scope_with_membership
       channels = channels
@@ -37,7 +36,6 @@ module DiscourseChat::ChatChannelFetcher
 
     preload_fields = Topic.instance_variable_get(:@custom_field_types).keys
     Topic.preload_custom_fields(channels.select { |c| c.chatable_type == 'Topic' }.map(&:chatable), preload_fields)
-
   end
 
   def self.public_channels_with_filter(guardian, memberships, filter)

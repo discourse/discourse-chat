@@ -652,6 +652,17 @@ RSpec.describe DiscourseChat::ChatController do
       expect(response.status).to eq(403)
     end
 
+    it "returns a 403 if the channel is a DM channel" do
+      sign_in(user)
+      dm_channel_chatable = Fabricate(:direct_message_channel, users: [user, user2])
+      dm_channel = Fabricate(:chat_channel, chatable: dm_channel_chatable)
+      message1.update(chat_channel: dm_channel)
+      message2.update(chat_channel: dm_channel)
+      message3.update(chat_channel: dm_channel)
+      post "/chat/#{dm_channel.id}/quote.json", params: { message_ids: [message1.id, message2.id, message3.id] }
+      expect(response.status).to eq(403)
+    end
+
     it "quotes the message ids provided" do
       sign_in(user)
       post "/chat/#{channel.id}/quote.json", params: { message_ids: [message1.id, message2.id, message3.id] }

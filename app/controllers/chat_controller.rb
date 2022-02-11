@@ -345,6 +345,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
 
     @chat_channel = ChatChannel.find(params[:chat_channel_id])
     raise Discourse::InvalidAccess if !guardian.can_see_chat_channel?(@chat_channel)
+    raise Discourse::InvalidAccess if @chat_channel.direct_message_channel?
 
     bbcode = ChatTranscriptService.new(@chat_channel, params[:message_ids]).generate_bbcode
     render json: success_json.merge(bbcode: bbcode)

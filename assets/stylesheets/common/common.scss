@@ -111,7 +111,9 @@ body.composer-open .topic-chat-float-container {
 
   .chat-channels {
     .chat-channel-row {
-      padding: 0 0.5rem 0 1rem;
+      padding: 0 0.5rem 0 0.5rem;
+      margin: 0 0.5rem 0.125rem 0.5rem;
+      border-radius: 0.25em;
     }
 
     .chat-channel-unread-indicator {
@@ -166,6 +168,10 @@ body.composer-open .topic-chat-float-container {
     height: 100%;
   }
 
+  .return-to-channels {
+    padding-left: 0;
+  }
+
   .chat-channel-title {
     font-weight: 700;
     width: calc(95% - 0.5em);
@@ -174,6 +180,9 @@ body.composer-open .topic-chat-float-container {
     .topic-chat-name,
     .category-chat-name {
       color: var(--primary);
+    }
+    .category-chat-private .d-icon {
+      background-color: var(--primary-very-low);
     }
     .badge-wrapper.bullet {
       margin-right: 0px;
@@ -187,7 +196,6 @@ body.composer-open .topic-chat-float-container {
     .d-icon:not(.d-icon-hashtag) {
       color: var(--primary-high);
     }
-
     .category-hashtag {
       padding: 2px 4px;
     }

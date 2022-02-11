@@ -140,11 +140,8 @@ export default Component.extend({
   },
 
   fetchMessages(channelId) {
-    if (this.loading) {
-      return;
-    }
-
     this.set("loading", true);
+
     return this.chat.loadCookFunction(this.site.categories).then((cook) => {
       this.set("cook", cook);
       const findArgs = {
@@ -165,21 +162,12 @@ export default Component.extend({
           throw err;
         })
         .finally(() => {
-          if (this._selfDeleted()) {
+          if (this._selfDeleted() || this.chatChannel.id !== channelId) {
             return;
           }
 
           this.chat.set("messageId", null);
           this.set("loading", false);
-
-          if (this.chatChannel.id !== channelId) {
-            this.router.transitionTo(
-              "chat.channel",
-              this.chatChannel.id,
-              this.chatChannel.title
-            );
-            return;
-          }
 
           this.focusComposer();
         });

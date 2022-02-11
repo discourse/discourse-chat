@@ -82,24 +82,28 @@
   {{#if selectingMessages}}
     <div class="chat-selection-management">
       <div class="chat-selection-management-buttons">
-        {{d-button
-          id="chat-move-to-topic-btn"
-          class="btn-primary"
-          icon="sign-out-alt"
-          label="chat.selection.move_to_topic"
-          title="chat.selection.move_to_topic"
-          disabled=(not anyMessagesSelected)
-          action=(action "moveMessagesToTopic")
-        }}
-        {{d-button
-          id="chat-quote-btn"
-          class="btn-secondary"
-          icon="quote-left"
-          label="chat.selection.quote_selection"
-          title="chat.selection.quote_selection"
-          disabled=(not anyMessagesSelected)
-          action=(action "quoteMessages")
-        }}
+        {{#if canMoveToTopic}}
+          {{d-button
+            id="chat-move-to-topic-btn"
+            class="btn-primary"
+            icon="sign-out-alt"
+            label="chat.selection.move_to_topic"
+            title="chat.selection.move_to_topic"
+            disabled=(not anyMessagesSelected)
+            action=(action "moveMessagesToTopic")
+          }}
+        {{/if}}
+        {{#if canQuote}}
+          {{d-button
+            id="chat-quote-btn"
+            class="btn-secondary"
+            icon="quote-left"
+            label="chat.selection.quote_selection"
+            title="chat.selection.quote_selection"
+            disabled=(not anyMessagesSelected)
+            action=(action "quoteMessages")
+          }}
+        {{/if}}
         {{d-button
           icon="times"
           class="btn-secondary cancel-btn"

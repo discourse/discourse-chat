@@ -899,6 +899,20 @@ export default Component.extend({
     next(this.reStickScrollIfNeeded.bind(this));
   },
 
+  @discourseComputed()
+  canQuote() {
+    if (this.chatChannel.chatable_type === "DirectMessageChannel") {
+      return false;
+    }
+
+    return true;
+  },
+
+  @discourseComputed()
+  canMoveToTopic() {
+    return this.currentUser.staff;
+  },
+
   @discourseComputed("messages.@each.selected")
   anyMessagesSelected() {
     return this.selectedMessageIds.length > 0;
@@ -958,7 +972,7 @@ export default Component.extend({
 
   @action
   quoteMessages() {
-    ajax(getURL(`/chat/${this.chatChannel.id}/quote`), {
+    ajax(getURL(`/chat/${this.chatChannel.id}/quote.json`), {
       data: { message_ids: this.selectedMessageIds },
       type: "POST",
     }).then((response) => {

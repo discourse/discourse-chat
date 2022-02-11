@@ -833,9 +833,9 @@ body.composer-open .topic-chat-float-container {
     .topic-chat-badge .topic-chat-icon .d-icon {
       background: transparent;
     }
-  &.active {
-    font-weight: 600;
-  }
+    &.active {
+      font-weight: 600;
+    }
 
     .chat-channel-unread-indicator {
       border-color: var(--primary-low);

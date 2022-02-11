@@ -140,11 +140,8 @@ export default Component.extend({
   },
 
   fetchMessages(channelId) {
-    if (this.loading) {
-      return;
-    }
-
     this.set("loading", true);
+
     return this.chat.loadCookFunction(this.site.categories).then((cook) => {
       this.set("cook", cook);
       const findArgs = {

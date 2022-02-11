@@ -663,6 +663,13 @@ RSpec.describe DiscourseChat::ChatController do
       expect(response.status).to eq(403)
     end
 
+    it "returns a 404 for a not found channel" do
+      channel.destroy
+      sign_in(user)
+      post "/chat/#{channel.id}/quote.json", params: { message_ids: [message1.id, message2.id, message3.id] }
+      expect(response.status).to eq(404)
+    end
+
     it "quotes the message ids provided" do
       sign_in(user)
       post "/chat/#{channel.id}/quote.json", params: { message_ids: [message1.id, message2.id, message3.id] }

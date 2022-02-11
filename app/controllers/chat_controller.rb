@@ -343,7 +343,8 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
   def quote_messages
     params.require(:message_ids)
 
-    @chat_channel = ChatChannel.find(params[:chat_channel_id])
+    @chat_channel = ChatChannel.find_by(id: params[:chat_channel_id])
+    raise Discourse::NotFound if @chat_channel.blank?
     raise Discourse::InvalidAccess if !guardian.can_see_chat_channel?(@chat_channel)
     raise Discourse::InvalidAccess if @chat_channel.direct_message_channel?
 

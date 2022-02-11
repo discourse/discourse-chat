@@ -178,7 +178,8 @@ body.composer-open .topic-chat-float-container {
     margin-right: 0.5em;
     .chat-name,
     .topic-chat-name,
-    .category-chat-name {
+    .category-chat-name,
+    .dm-usernames {
       color: var(--primary);
     }
     .category-chat-private .d-icon {
@@ -832,6 +833,9 @@ body.composer-open .topic-chat-float-container {
     .topic-chat-badge .topic-chat-icon .d-icon {
       background: transparent;
     }
+  &.active {
+    font-weight: 600;
+  }
 
     .chat-channel-unread-indicator {
       border-color: var(--primary-low);
@@ -1170,13 +1174,6 @@ body.has-full-page-chat {
 
       .chat-channel-title {
         grid-column-gap: 0.75em;
-        .category-chat-name,
-        .topic-chat-name,
-        .tag-chat-name,
-        .chat-name,
-        .dm-usernames {
-          font-weight: 600;
-        }
       }
 
       &:hover,

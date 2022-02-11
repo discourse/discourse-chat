@@ -1,4 +1,5 @@
 import { inject as service } from "@ember/service";
+import { clipboardCopy } from "discourse/lib/utilities";
 import getURL from "discourse-common/lib/get-url";
 import Component from "@ember/component";
 import discourseComputed, { bind } from "discourse-common/utils/decorators";
@@ -644,16 +645,7 @@ export default Component.extend({
       `/chat/channel/${this.details.chat_channel_id}/chat?messageId=${this.message.id}`
     );
     url = url.indexOf("/") === 0 ? protocol + "//" + host + url : url;
-
-    const textArea = document.createElement("textarea");
-    textArea.style.position = "absolute";
-    textArea.style.left = "-99999px";
-    textArea.value = url;
-    this.element.append(textArea);
-    textArea.focus();
-    textArea.setSelectionRange(0, url.length);
-    document.execCommand("copy");
-    this.element.removeChild(textArea);
+    clipboardCopy(url);
 
     later(() => {
       this.element

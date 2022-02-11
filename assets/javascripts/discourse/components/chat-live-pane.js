@@ -1013,7 +1013,10 @@ export default Component.extend({
   },
 
   _copyAndShowSuccess(bbcode) {
-    clipboardCopy(bbcode);
+    if (!isTesting()) {
+      clipboardCopy(bbcode);
+    }
+
     this.set("showChatQuoteSuccess", true);
     schedule("afterRender", this, () => {
       const element = document.querySelector(".chat-selection-message");

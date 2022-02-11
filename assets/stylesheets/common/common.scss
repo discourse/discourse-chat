@@ -1178,7 +1178,8 @@ body.has-full-page-chat {
       .category-chat-name,
       .topic-chat-name,
       .tag-chat-name,
-      .chat-name {
+      .chat-name,
+      .dm-usernames  {
         color: var(--primary);
         display: inline;
         text-overflow: ellipsis;

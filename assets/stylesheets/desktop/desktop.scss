@@ -20,6 +20,19 @@
   .chat-full-page-header {
     padding: 0.5rem 0.5rem 0.5rem 1rem;
     flex-shrink: 0;
+    .chat-channel-title {
+      .d-icon:not(.d-icon-lock) {
+        height: 1.25em;
+        width: 1.25em;
+      }
+      .category-chat-name,
+      .dm-username,
+      .topic-chat-name {
+        font-weight: 800;
+        font-size: var(--font-up-1);
+        line-height: var(--font-up-1);
+      }
+    }
   }
 
   .chat-live-pane {

@@ -52,6 +52,7 @@ export default Component.extend({
   _unloadedReplyIds: null, // Array
   _nextStagedMessageId: 0, // Iterate on every new message
   _lastSelectedMessage: null,
+  _loadingChannels: null,
   targetMessageId: null,
 
   chat: service(),
@@ -69,6 +70,7 @@ export default Component.extend({
     this._super(...arguments);
 
     this._unloadedReplyIds = [];
+    this._loadingChannels = {};
     this.appEvents.on(
       "chat-live-pane:highlight-message",
       this,
@@ -105,6 +107,7 @@ export default Component.extend({
       this.registeredChatChannelId = null;
     }
     this._unloadedReplyIds = null;
+    this._loadingChannels = null;
     this.appEvents.off(
       "chat:cancel-message-selection",
       this,
@@ -140,11 +143,9 @@ export default Component.extend({
   },
 
   fetchMessages(channelId) {
-    if (this.loading) {
-      return;
-    }
-
+    this._loadingChannels[channelId] = true;
     this.set("loading", true);
+
     return this.chat.loadCookFunction(this.site.categories).then((cook) => {
       this.set("cook", cook);
       const findArgs = {
@@ -168,17 +169,13 @@ export default Component.extend({
           if (this._selfDeleted()) {
             return;
           }
-
           this.chat.set("messageId", null);
-          this.set("loading", false);
+
+          delete this._loadingChannels[channelId];
+          this.set("loading", Object.keys(this._loadingChannels).length);
 
           if (this.chatChannel.id !== channelId) {
-            this.router.transitionTo(
-              "chat.channel",
-              this.chatChannel.id,
-              this.chatChannel.title
-            );
-            return;
+            return; // There was another request after this; simply return and do nothing.
           }
 
           this.focusComposer();

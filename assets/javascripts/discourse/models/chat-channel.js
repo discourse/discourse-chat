@@ -4,3 +4,5 @@ export const CHATABLE_TYPES = {
   tagChannel: "Tag",
   categoryChannel: "Category",
 };
+import RestModel from "discourse/models/rest";
+export default RestModel.extend();

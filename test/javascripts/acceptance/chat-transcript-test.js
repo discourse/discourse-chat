@@ -272,7 +272,7 @@ another cool reply<br>
       `[chat quote="martin;2321;2022-01-25T05:40:39Z"]\nhere is a message :P with category hashtag #test\n[/chat]`,
       { additionalOptions },
       generateTranscriptHTML(
-        `<p>here is a message <img src=\"/images/emoji/twitter/stuck_out_tongue.png?v=12\" title=\":stuck_out_tongue:\" class=\"emoji\" alt=\":stuck_out_tongue:\"> with category hashtag <span class=\"hashtag\">#test</span></p>`,
+        `<p>here is a message <img src=\"/images/emoji/twitter/stuck_out_tongue.png?v=12\" title=\":stuck_out_tongue:\" class=\"emoji\" alt=\":stuck_out_tongue:\" loading=\"lazy\" width=\"20\" height=\"20\"> with category hashtag <span class=\"hashtag\">#test</span></p>`,
         {
           messageId: "2321",
           username: "martin",
@@ -335,7 +335,7 @@ here is a message :P with category hashtag #test
 <ul>
 <li>list item 1</li>
 </ul>
-<p>here is a message <img src=\"/images/emoji/twitter/stuck_out_tongue.png?v=12\" title=\":stuck_out_tongue:\" class=\"emoji\" alt=\":stuck_out_tongue:\"> with category hashtag <span class=\"hashtag\">#test</span></p>\n` +
+<p>here is a message <img src=\"/images/emoji/twitter/stuck_out_tongue.png?v=12\" title=\":stuck_out_tongue:\" class=\"emoji\" alt=\":stuck_out_tongue:\" loading=\"lazy\" width=\"20\" height=\"20\"> with category hashtag <span class=\"hashtag\">#test</span></p>\n` +
         generateTranscriptHTML(
           `<p>This ~~does work~~ with removed _rules_.</p>
 <p>* list item 1</p>

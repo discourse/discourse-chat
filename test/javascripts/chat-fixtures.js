@@ -243,5 +243,8 @@ const message3 = {
 };
 
 export const chatView = {
+  meta: {
+    can_flag: true,
+  },
   chat_messages: [message0, message1, message2, message3],
 };

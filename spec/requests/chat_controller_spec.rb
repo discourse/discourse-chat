@@ -4,9 +4,12 @@ require 'rails_helper'
 
 RSpec.describe DiscourseChat::ChatController do
   fab!(:user) { Fabricate(:user) }
+  fab!(:other_user) { Fabricate(:user) }
   fab!(:admin) { Fabricate(:admin) }
   fab!(:category) { Fabricate(:category) }
   fab!(:topic) { Fabricate(:topic, category: category) }
+  fab!(:chat_channel) { Fabricate(:chat_channel) }
+  fab!(:dm_chat_channel) { Fabricate(:chat_channel, chatable: Fabricate(:direct_message_channel, users: [user, admin])) }
   fab!(:tag) { Fabricate(:tag) }
 
   before do
@@ -15,7 +18,6 @@ RSpec.describe DiscourseChat::ChatController do
   end
 
   describe "#messages" do
-    fab!(:chat_channel) { Fabricate(:chat_channel, chatable: topic) }
     let(:page_size) { 30 }
     let(:message_count) { 35 }
 
@@ -23,7 +25,7 @@ RSpec.describe DiscourseChat::ChatController do
       message_count.times do |n|
         ChatMessage.create(
           chat_channel: chat_channel,
-          user: user,
+          user: other_user,
           message: "message #{n}",
         )
       end
@@ -62,6 +64,48 @@ RSpec.describe DiscourseChat::ChatController do
       get "/chat/#{chat_channel.id}/messages.json", params: { before_message_id: before_message_id, page_size: page_size }
       messages = response.parsed_body["chat_messages"]
       expect(messages.count).to eq(message_count - page_size)
+    end
+
+    it "returns `can_flag=true` for public channels" do
+      get "/chat/#{chat_channel.id}/messages.json", params: { page_size: page_size }
+      expect(response.parsed_body["meta"]["can_flag"]).to eq(true)
+    end
+
+    it "returns `can_flag=false` for DM channels" do
+      get "/chat/#{dm_chat_channel.id}/messages.json", params: { page_size: page_size }
+      expect(response.parsed_body["meta"]["can_flag"]).to eq(false)
+    end
+
+    it "serializes `user_flag_status` for user who has a pending flag" do
+      chat_message = chat_channel.chat_messages.last
+      chat_message.add_flag(user)
+      reviewable_score = chat_message.add_flag(user)
+
+      get "/chat/#{chat_channel.id}/messages.json", params: { page_size: page_size }
+      expect(response.parsed_body["chat_messages"].last["user_flag_status"]).to eq(reviewable_score.status)
+      expect(response.parsed_body["chat_messages"].second_to_last["user_flag_status"]).to eq(nil)
+    end
+
+    it "doesn't serialize `reviewable_ids` for non-staff" do
+      chat_channel.chat_messages.last.add_flag(admin)
+      chat_channel.chat_messages.second_to_last.add_flag(admin)
+
+      get "/chat/#{chat_channel.id}/messages.json", params: { page_size: page_size }
+      expect(response.parsed_body["chat_messages"].last["reviewable_id"]).to eq(nil)
+      expect(response.parsed_body["chat_messages"].second_to_last["reviewable_id"]).to eq(nil)
+    end
+
+    it "serializes `reviewable_ids` correctly for staff" do
+      sign_in(admin)
+      last_message = chat_channel.chat_messages.last
+      second_to_last_message = chat_channel.chat_messages.second_to_last
+
+      last_reviewable = last_message.add_flag(admin)
+      second_to_last_reviewable = second_to_last_message.add_flag(admin)
+
+      get "/chat/#{chat_channel.id}/messages.json", params: { page_size: page_size }
+      expect(response.parsed_body["chat_messages"].last["reviewable_id"]).to eq(last_reviewable.id)
+      expect(response.parsed_body["chat_messages"].second_to_last["reviewable_id"]).to eq(second_to_last_reviewable.id)
     end
   end
 
@@ -628,6 +672,40 @@ RSpec.describe DiscourseChat::ChatController do
 
       post "/chat/dismiss-retention-reminder.json", params: { chatable_type: "DirectMessageChannel" }
       expect(response.status).to eq(200)
+    end
+  end
+
+  describe "#flag" do
+    fab!(:admin_chat_message) { Fabricate(:chat_message, user: admin, chat_channel: chat_channel) }
+    fab!(:user_chat_message) { Fabricate(:chat_message, user: user, chat_channel: chat_channel) }
+
+    fab!(:admin_dm_message) { Fabricate(:chat_message, user: admin, chat_channel: dm_chat_channel) }
+
+    before do
+      sign_in(user)
+    end
+
+    it "creates reviewable" do
+      expect {
+        put "/chat/flag.json", params: { chat_message_id: admin_chat_message.id }
+      }.to change { ReviewableChatMessage.where(target: admin_chat_message).count }.by(1)
+      expect(response.status).to eq(200)
+    end
+
+    it "doesn't allow flagging your own message" do
+      put "/chat/flag.json", params: { chat_message_id: user_chat_message.id }
+      expect(response.status).to eq(403)
+    end
+
+    it "doesn't allow flagging staff if SiteSetting.allow_flagging_staff is false" do
+      SiteSetting.allow_flagging_staff = false
+      put "/chat/flag.json", params: { chat_message_id: admin_chat_message.id }
+      expect(response.status).to eq(403)
+    end
+
+    it "doesn't allow flagging direct messages" do
+      put "/chat/flag.json", params: { chat_message_id: admin_dm_message.id }
+      expect(response.status).to eq(403)
     end
   end
 end

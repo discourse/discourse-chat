@@ -140,7 +140,7 @@
 
     .chat-live-pane,
     .chat-messages-scroll,
-    .chat-message:not(.highlighted) {
+    .chat-message:not(.highlighted):not(.deleted) {
       background: transparent;
     }
 

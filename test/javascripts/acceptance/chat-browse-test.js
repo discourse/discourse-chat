@@ -176,6 +176,9 @@ acceptance("Discourse Chat - chat browsing no channels", function (needs) {
     });
     server.get("/chat/:chatChannelId/messages.json", () => {
       return helper.response({
+        meta: {
+          can_flag: true,
+        },
         chat_messages: [],
       });
     });

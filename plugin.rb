@@ -65,16 +65,20 @@ after_initialize do
   load File.expand_path('../app/models/direct_message_user.rb', __FILE__)
   load File.expand_path('../app/models/incoming_chat_webhook.rb', __FILE__)
   load File.expand_path('../app/models/chat_message_post_connection.rb', __FILE__)
+  load File.expand_path('../app/models/reviewable_chat_message.rb', __FILE__)
+  load File.expand_path('../app/models/chat_view.rb', __FILE__)
   load File.expand_path('../app/serializers/chat_webhook_event_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/chat_base_message_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/chat_channel_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/chat_channel_settings_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/chat_channel_index_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/chat_channel_search_serializer.rb', __FILE__)
+  load File.expand_path('../app/serializers/chat_view_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/direct_message_channel_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/incoming_chat_webhook_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/admin_chat_index_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/user_chat_channel_membership_serializer.rb', __FILE__)
+  load File.expand_path('../app/serializers/reviewable_chat_message_serializer.rb', __FILE__)
   load File.expand_path('../lib/chat_channel_fetcher.rb', __FILE__)
   load File.expand_path('../lib/chat_message_creator.rb', __FILE__)
   load File.expand_path('../lib/chat_message_processor.rb', __FILE__)
@@ -100,7 +104,11 @@ after_initialize do
   UserUpdater::OPTION_ATTR.push(:only_chat_push_notifications)
   UserUpdater::OPTION_ATTR.push(:chat_sound)
 
+  register_reviewable_type ReviewableChatMessage
+
   reloadable_patch do |plugin|
+    ReviewableScore.add_new_types([:needs_review])
+
     Site.preloaded_category_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
     Site.markdown_additional_options["chat"] = {
       limited_pretty_text_features: ChatMessage::MARKDOWN_FEATURES,
@@ -353,6 +361,7 @@ after_initialize do
     put '/user_chat_enabled/:user_id' => 'chat#set_user_chat_status'
     put '/:chat_channel_id/invite' => 'chat#invite_users'
     post '/:chat_channel_id' => 'chat#create_message'
+    put '/flag' => 'chat#flag'
   end
 
   Discourse::Application.routes.append do

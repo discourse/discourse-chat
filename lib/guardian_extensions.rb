@@ -55,12 +55,21 @@ module DiscourseChat::GuardianExtensions
     end
   end
 
-  def can_flag_chats?
-    # TODO: SiteSetting.allow_flagging_staff is ignored
-
+  def can_flag_chat_messages?
     return false if @user.silenced?
 
     @user.has_trust_level?(TrustLevel[SiteSetting.min_trust_to_flag_posts])
+  end
+
+  def can_flag_in_chat_channel?(chat_channel)
+    !chat_channel.direct_message_channel?
+  end
+
+  def can_flag_chat_message?(chat_message)
+    return false if chat_message.user.staff? && !SiteSetting.allow_flagging_staff
+    return false if chat_message.user_id == @user.id
+
+    can_flag_chat_messages? && can_flag_in_chat_channel?(chat_message.chat_channel)
   end
 
   def can_delete_chat?(message, topic)

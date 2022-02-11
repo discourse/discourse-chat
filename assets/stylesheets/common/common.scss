@@ -1366,3 +1366,10 @@ body.has-full-page-chat {
     white-space: nowrap;
   }
 }
+
+.reviewable-chat-message {
+  .chat-channel-title {
+    max-width: 100%;
+    grid-column-gap: 0.25em;
+  }
+}

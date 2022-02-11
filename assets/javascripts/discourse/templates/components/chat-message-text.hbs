@@ -2,6 +2,9 @@
   {{chat-message-collapser cooked=cooked uploads=uploads}}
 {{else}}
   {{html-safe cooked}}
+  {{#if edited}}
+    <span class="chat-message-edited">({{i18n "chat.edited"}})</span>
+  {{/if}}
 {{/if}}
 
 {{yield}}

@@ -19,6 +19,9 @@ acceptance("Discourse Chat - Chat live pane", function (needs) {
   needs.pretender((server, helper) => {
     server.get("/chat/:chatChannelId/messages.json", () =>
       helper.response({
+        meta: {
+          can_chat: true,
+        },
         chat_messages: [
           {
             id: 1,

@@ -4,10 +4,42 @@ en:
     chat_allowed_groups: "Users in these groups can chat."
     chat_channel_retention_days: "Chat messages in regular channels will be retained for this many days. Set to 0 to retain messages forever."
     chat_dm_retention_days: "Chat messages in personal chat channels will be retained for this many days. Set to 0 to retain messages forever."
+
   chat:
     errors:
      channel_exists_for_category: "A channel already exists for this category and name"
      channel_exists_for_topic: "A channel already exists for this topic"
+    reviewables:
+      actions:
+        agree:
+          title: "Agree..."
+        agree_and_keep_message:
+          title: "Keep Message"
+          description: "Agree with flag and keep the message unchanged."
+        agree_and_keep_deleted:
+          title: "Keep Message Deleted"
+          description: "Agree with flag and leave the message deleted."
+        agree_and_suspend:
+          title: "Suspend User"
+          description: "Agree with flag and suspend the user."
+        agree_and_silence:
+          title: "Silence User"
+          description: "Agree with flag and silence the user."
+        agree_and_restore:
+          title: "Restore Message"
+          description: "Restore the message so that users can see it."
+        agree_and_delete:
+          title: "Delete Message"
+          description: "Delete the message so that users cannot see it."
+        delete_and_agree:
+          title: "Delete Message"
+        disagree_and_restore:
+          title: "Disagree and Restore Message"
+          description: "Restore the message so that all users can see it."
+        disagree:
+          title: "Disagree"
+        ignore:
+          title: "Ignore"
 
   discourse_push_notifications:
     popup:
@@ -20,3 +52,7 @@ en:
     scriptables:
       send_chat_message:
         title: Send chat message
+
+  reviewable_score_types:
+    needs_review:
+      title: "Needs Review"

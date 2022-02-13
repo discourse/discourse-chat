@@ -345,11 +345,11 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
 
     @chat_channel = ChatChannel.find_by(id: params[:chat_channel_id])
     raise Discourse::NotFound if @chat_channel.blank?
-    raise Discourse::InvalidAccess if !guardian.can_see_chat_channel?(@chat_channel)
     raise Discourse::InvalidAccess if @chat_channel.direct_message_channel?
+    raise Discourse::InvalidAccess if !guardian.can_see_chat_channel?(@chat_channel)
 
-    bbcode = ChatTranscriptService.new(@chat_channel, params[:message_ids]).generate_bbcode
-    render json: success_json.merge(bbcode: bbcode)
+    markdown = ChatTranscriptService.new(@chat_channel, params[:message_ids]).generate_markdown
+    render json: success_json.merge(markdown: markdown)
   end
 
   private

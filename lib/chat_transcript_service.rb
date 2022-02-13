@@ -49,6 +49,8 @@ class ChatTranscriptService
       MARKDOWN
     end
 
+    private
+
     def quote_attr(message)
       "quote=\"#{message.user.username};#{message.id};#{message.created_at.iso8601}\""
     end
@@ -63,9 +65,9 @@ class ChatTranscriptService
     @message_ids = message_ids
   end
 
-  def generate_bbcode
+  def generate_markdown
     previous_message = nil
-    rendered_bbcode = []
+    rendered_markdown = []
     all_messages_same_user = messages.count(:user_id) == 1
     open_bbcode_tag = ChatTranscriptBBCode.new(
       channel: @channel,
@@ -75,7 +77,7 @@ class ChatTranscriptService
 
     messages.each.with_index do |message, idx|
       if previous_message.present? && previous_message.user_id != message.user_id
-        rendered_bbcode << open_bbcode_tag.render
+        rendered_markdown << open_bbcode_tag.render
 
         open_bbcode_tag = ChatTranscriptBBCode.new(
           chained: !all_messages_same_user
@@ -87,9 +89,11 @@ class ChatTranscriptService
     end
 
     # tie off the last open bbcode + render
-    rendered_bbcode << open_bbcode_tag.render
-    rendered_bbcode.join("\n")
+    rendered_markdown << open_bbcode_tag.render
+    rendered_markdown.join("\n")
   end
+
+  private
 
   def messages
     @messages ||= ChatMessage.includes(:user).where(

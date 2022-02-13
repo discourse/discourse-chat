@@ -646,7 +646,7 @@ RSpec.describe DiscourseChat::ChatController do
     end
 
     it "returns a 403 if the user can't see the channel" do
-      category.update(read_restricted: true)
+      category.update!(read_restricted: true)
       sign_in(user)
       post "/chat/#{channel.id}/quote.json", params: { message_ids: [message1.id, message2.id, message3.id] }
       expect(response.status).to eq(403)
@@ -656,9 +656,7 @@ RSpec.describe DiscourseChat::ChatController do
       sign_in(user)
       dm_channel_chatable = Fabricate(:direct_message_channel, users: [user, user2])
       dm_channel = Fabricate(:chat_channel, chatable: dm_channel_chatable)
-      message1.update(chat_channel: dm_channel)
-      message2.update(chat_channel: dm_channel)
-      message3.update(chat_channel: dm_channel)
+      message1.update!(chat_channel: dm_channel)
       post "/chat/#{dm_channel.id}/quote.json", params: { message_ids: [message1.id, message2.id, message3.id] }
       expect(response.status).to eq(403)
     end
@@ -674,8 +672,8 @@ RSpec.describe DiscourseChat::ChatController do
       sign_in(user)
       post "/chat/#{channel.id}/quote.json", params: { message_ids: [message1.id, message2.id, message3.id] }
       expect(response.status).to eq(200)
-      bbcode = response.parsed_body["bbcode"]
-      expect(bbcode).to eq(<<~EXPECTED)
+      markdown = response.parsed_body["markdown"]
+      expect(markdown).to eq(<<~EXPECTED)
       [chat quote="#{user.username};#{message1.id};#{message1.created_at.iso8601}" channel="Cool Chat" multiQuote="true" chained="true"]
       an extremely insightful response :)
       [/chat]

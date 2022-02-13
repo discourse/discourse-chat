@@ -20,10 +20,9 @@ let quoteResponse = {
 
 function setupPretenders(server, helper) {
   server.get("/chat/chat_channels.json", () => helper.response(chatChannels));
-  server.post(`/chat/9/quote.json`, () => helper.response(quoteResponse));
   server.post(`/chat/4/quote.json`, () => helper.response(quoteResponse));
   server.post(`/chat/7/quote.json`, () => helper.response(quoteResponse));
-  server.get("/chat/:chatChannelId/messages.json", () =>
+  server.get("/chat/:chat_channel_id/messages.json", () =>
     helper.response(chatView)
   );
   server.post("/uploads/lookup-urls", () => {
@@ -50,7 +49,7 @@ acceptance("Discourse Chat | quoting out of topic", function (needs) {
   });
 
   test("it opens the composer and appends the quote", async function (assert) {
-    await visit("/chat/channel/9/Site");
+    await visit("/chat/channel/7/Uncategorized");
     const firstMessage = query(".chat-message-container");
     const dropdown = selectKit(".chat-message-container .more-buttons");
     await dropdown.expand();
@@ -63,11 +62,26 @@ acceptance("Discourse Chat | quoting out of topic", function (needs) {
       false,
       "button is enabled as a message is selected"
     );
+
+    await click(firstMessage.querySelector("input[type='checkbox']"));
+    assert.equal(
+      quoteBtn.disabled,
+      true,
+      "button is disabled when no messages are selected"
+    );
+
+    await click(firstMessage.querySelector("input[type='checkbox']"));
+
     await click("#chat-quote-btn");
     assert.ok(exists("#reply-control.composer-action-createTopic"));
     assert.strictEqual(
       query("textarea.d-editor-input").value,
       quoteResponse.bbcode
+    );
+    assert.strictEqual(
+      selectKit(".category-chooser").header().value(),
+      "1",
+      "it fills category selector with the right category"
     );
   });
 });
@@ -164,7 +178,7 @@ acceptance(
     });
 
     test("it copies the quote to the clipboard", async function (assert) {
-      await visit("/chat/channel/9/Site");
+      await visit("/chat/channel/7/Uncategorized");
       const firstMessage = query(".chat-message-container");
       const dropdown = selectKit(".chat-message-container .more-buttons");
       await dropdown.expand();

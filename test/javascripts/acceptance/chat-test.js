@@ -725,7 +725,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     );
   });
 
-  test("message selection and live pane buttons for regular staff", async function (assert) {
+  test("message selection and live pane buttons for regular user", async function (assert) {
     updateCurrentUser({ admin: false, moderator: false });
     await visit("/chat/channel/9/Site");
 

@@ -14,7 +14,7 @@ describe ChatTranscriptService do
   it "generates a simple chat transcript from one message" do
     message = Fabricate(:chat_message, user: user1, chat_channel: channel, message: "an extremely insightful response :)")
 
-    expect(service(message.id).generate_bbcode).to eq(<<~MARKDOWN)
+    expect(service(message.id).generate_markdown).to eq(<<~MARKDOWN)
     [chat quote="martinchat;#{message.id};#{message.created_at.iso8601}" channel="The Beam Discussions"]
     an extremely insightful response :)
     [/chat]
@@ -26,7 +26,24 @@ describe ChatTranscriptService do
     message2 = Fabricate(:chat_message, user: user1, chat_channel: channel, message: "if i say so myself")
     message3 = Fabricate(:chat_message, user: user1, chat_channel: channel, message: "yay!")
 
-    rendered = service([message1.id, message2.id, message3.id]).generate_bbcode
+    rendered = service([message1.id, message2.id, message3.id]).generate_markdown
+    expect(rendered).to eq(<<~MARKDOWN)
+    [chat quote="martinchat;#{message1.id};#{message1.created_at.iso8601}" channel="The Beam Discussions" multiQuote="true"]
+    an extremely insightful response :)
+
+    if i say so myself
+
+    yay!
+    [/chat]
+    MARKDOWN
+  end
+
+  it "generates chat messages in created_at order no matter what order the message_ids are passed in" do
+    message1 = Fabricate(:chat_message, created_at: 10.minute.ago, user: user1, chat_channel: channel, message: "an extremely insightful response :)")
+    message2 = Fabricate(:chat_message, created_at: 5.minutes.ago, user: user1, chat_channel: channel, message: "if i say so myself")
+    message3 = Fabricate(:chat_message, created_at: 1.minutes.ago, user: user1, chat_channel: channel, message: "yay!")
+
+    rendered = service([message3.id, message1.id, message2.id]).generate_markdown
     expect(rendered).to eq(<<~MARKDOWN)
     [chat quote="martinchat;#{message1.id};#{message1.created_at.iso8601}" channel="The Beam Discussions" multiQuote="true"]
     an extremely insightful response :)
@@ -43,7 +60,7 @@ describe ChatTranscriptService do
     message2 = Fabricate(:chat_message, user: user2, chat_channel: channel, message: "says you!")
     message3 = Fabricate(:chat_message, user: user1, chat_channel: channel, message: "aw :(")
 
-    expect(service([message1.id, message2.id, message3.id]).generate_bbcode).to eq(<<~MARKDOWN)
+    expect(service([message1.id, message2.id, message3.id]).generate_markdown).to eq(<<~MARKDOWN)
     [chat quote="martinchat;#{message1.id};#{message1.created_at.iso8601}" channel="The Beam Discussions" multiQuote="true" chained="true"]
     an extremely insightful response :)
     [/chat]

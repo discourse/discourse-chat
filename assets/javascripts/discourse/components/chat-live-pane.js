@@ -975,41 +975,44 @@ export default Component.extend({
     ajax(getURL(`/chat/${this.chatChannel.id}/quote.json`), {
       data: { message_ids: this.selectedMessageIds },
       type: "POST",
-    }).then((response) => {
-      const container = getOwner(this);
-      const composer = container.lookup("controller:composer");
-      const openOpts = {};
-      if (this.chatChannel.chatable_type === "Category") {
-        openOpts.categoryId = this.chatChannel.chatable_id;
-      }
+    })
+      .then((response) => {
+        const container = getOwner(this);
+        const composer = container.lookup("controller:composer");
+        const openOpts = {};
 
-      if (this.site.isMobileDevice) {
-        // go to the relevant chatable (e.g. category) and open the
-        // composer to insert text
-        this._goToChatableUrl().then(() => {
-          composer.focusComposer({
-            fallbackToNewTopic: true,
-            insertText: response.bbcode,
-            openOpts,
-          });
-        });
-      } else {
-        // copy to clipboard and show message
-        if (this.currentUser.chat_isolated) {
-          this._copyAndShowSuccess(response.bbcode);
-        } else {
-          // open the composer and insert text, reply to the current
-          // topic if there is one, use the active draft if there is one
-          const topic = container.lookup("controller:topic");
-          composer.focusComposer({
-            fallbackToNewTopic: true,
-            topic: topic?.model,
-            insertText: response.bbcode,
-            openOpts,
-          });
+        if (this.chatChannel.chatable_type === "Category") {
+          openOpts.categoryId = this.chatChannel.chatable_id;
         }
-      }
-    });
+
+        if (this.site.isMobileDevice) {
+          // go to the relevant chatable (e.g. category) and open the
+          // composer to insert text
+          this._goToChatableUrl().then(() => {
+            composer.focusComposer({
+              fallbackToNewTopic: true,
+              insertText: response.bbcode,
+              openOpts,
+            });
+          });
+        } else {
+          // copy to clipboard and show message
+          if (this.currentUser.chat_isolated) {
+            this._copyAndShowSuccess(response.bbcode);
+          } else {
+            // open the composer and insert text, reply to the current
+            // topic if there is one, use the active draft if there is one
+            const topic = container.lookup("controller:topic");
+            composer.focusComposer({
+              fallbackToNewTopic: true,
+              topic: topic?.model,
+              insertText: response.bbcode,
+              openOpts,
+            });
+          }
+        }
+      })
+      .catch(popupAjaxError);
   },
 
   _copyAndShowSuccess(bbcode) {

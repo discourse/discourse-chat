@@ -26,7 +26,7 @@ fr:
       collapse: "Réduire le tiroir de chat"
       deleted: "Un message a été supprimé. [view]"
       delete: "Supprimer"
-      edited: "(modifié)"
+      edited: "modifié"
       empty_state:
         create_personal_chat: "Commencer une discussion privé"
         no_public_available: "Il n'y a pas de canaux publics à suivre pour le moment."
@@ -72,6 +72,7 @@ fr:
       reply: "Répondre"
       edit: "Modifier"
       copy_link: "Copier le lien"
+      rebake_message: "Reconstruire le HTML"
       restore: "Restaurer le message supprimé"
       save: "Enregistrer"
       select: "Sélectionner"
@@ -90,6 +91,9 @@ fr:
         one: "%{count} fichier"
         other: "%{count} fichiers"
       exit: "retour"
+      channel_selector:
+        title: "Accéder au canal"
+        no_channels: "Aucun canal ne correspond à votre recherche"
       create_channel:
         choose_category:
           label: "Choisir une catégorie"
@@ -111,6 +115,8 @@ fr:
         you_others_and_more: "Vous, %{usernames} et %{more} autres utilisateurs avez réagi avec :%{emoji}:"
       composer:
         toggle_toolbar: "Basculer la barre d'outils"
+      quote:
+        original_channel: "Envoyé à l'origine dans <a href=\"%{channelLink}\">#%{channel}</a>."
       notification_levels:
         never: "Jamais"
         mention: "Seulement pour les mentions"
@@ -183,6 +189,9 @@ fr:
         many_users:
           one: "%{commaSeparatedUsernames} et %{count} autre utilisateur sont en train d'écrire"
           other: "%{commaSeparatedUsernames} et %{count} autres utilisateurs sont en train d'écrire"
+      retention_reminders:
+        public: "L'historique du canal est conservé pendant %{days} jours."
+        dm: "L'historique du chat personnel est conservé pendant %{days} jours."
     notifications:
       popup:
         chat_mention: "%{username} vous a mentionné(e) dans la discussion"

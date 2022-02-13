@@ -24,7 +24,7 @@ fa_IR:
       close: "بستن"
       deleted: "یک پیام حذف شد. [view]"
       delete: "حذف"
-      edited: "«ویرایش شده»"
+      edited: "ویرایش شده"
       empty_state:
         create_personal_chat: "شروع گفتگوی شخصی"
         no_public_available: "هیچ کانال عمومی برای دنبال کردن شما در این زمان وجود ندارد."
@@ -73,6 +73,8 @@ fa_IR:
       title_capitalized: "گفتگو"
       upload: "پیوست کردن یک پرونده"
       exit: "بازگشت"
+      channel_selector:
+        no_channels: "هیچ کانالی با جستجوی شما مطابقت ندارد"
       create_channel:
         choose_category:
           label: "انتخاب دسته‌بندی"

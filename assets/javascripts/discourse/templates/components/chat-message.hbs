@@ -80,11 +80,16 @@
 
         {{#if hideUserInfo}}
           <div class="chat-message-left-gutter">
-            {{format-chat-date message details "tiny"}}
-            {{#if message.edited}}
-              <div class="chat-message-edited">
-                {{d-icon "pencil-alt" title=(i18n "chat.edited")}}
+            {{#if message.reviewable_id}}
+              {{#link-to "review.show" message.reviewable_id class="chat-message-flagged"}}
+                {{d-icon "flag" title="chat.flagged"}}
+              {{/link-to}}
+            {{else if (eq message.user_flag_status 0)}}
+              <div class="chat-message-flagged">
+                {{d-icon "flag" title="chat.you_flagged"}}
               </div>
+            {{else}}
+              {{format-chat-date message details "tiny"}}
             {{/if}}
           </div>
         {{else}}
@@ -113,9 +118,14 @@
               {{/if}}
 
               {{format-chat-date message details}}
-              {{#if message.edited}}
-                <div class="chat-message-edited">
-                  {{d-icon "pencil-alt" title=(i18n "chat.edited")}}
+
+              {{#if message.reviewable_id}}
+                {{#link-to "review.show" message.reviewable_id class="chat-message-flagged"}}
+                  {{d-icon "flag" title="chat.flagged"}}
+                {{/link-to}}
+              {{else if (eq message.user_flag_status 0)}}
+                <div class="chat-message-flagged">
+                  {{d-icon "flag" title="chat.you_flagged"}}
                 </div>
               {{/if}}
             </div>

@@ -8,6 +8,8 @@ fr:
   site_settings:
     chat_enabled: "Activez l'extension discours-chat. Utilisez l'action « Activer le chat » par sujet pour effectuer la configuration."
     chat_allowed_groups: "Les utilisateurs de ces groupes peuvent discuter."
+    chat_channel_retention_days: "Les messages de chat dans les canaux réguliers seront conservés pendant ce nombre de jours. Fixez cette valeur sur 0 pour conserver les messages indéfiniment."
+    chat_dm_retention_days: "Les messages de chat dans les canaux personnels seront conservés pendant ce nombre de jours. Fixez cette valeur sur 0 pour conserver les messages indéfiniment."
   chat:
     errors:
       channel_exists_for_category: "Un canal existe déjà pour cette catégorie et ce nom"

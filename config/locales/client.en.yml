@@ -19,6 +19,7 @@ en:
       click_to_join: "Click here to view available channels."
       close: "Close"
       collapse: "Collapse Chat Drawer"
+      confirm_flag: "Are you sure you want to flag %{username}'s message?"
       deleted: "A message was deleted. [view]"
       delete: "Delete"
       edited: "edited"
@@ -30,6 +31,7 @@ en:
         title: "Get started by joining a channel"
       enable: "Enable chat"
       flag: "Flag"
+      flagged: "This message has been flagged for review"
       invalid_access: "You don't have access to view this chat channel"
       invitation_notification: "<span>%{username} invited you to join a chat channel</span>"
       in_reply_to: "In reply to"
@@ -86,6 +88,7 @@ en:
       uploaded_files:
         one: "%{count} file"
         other: "%{count} files"
+      you_flagged: "You flagged this message"
       exit: "back"
 
       channel_selector:
@@ -105,6 +108,9 @@ en:
         types:
           category: "Category"
           topic: "Topic"
+
+      reviewable:
+        type: "Chat message"
 
       reactions:
         only_you: "You reacted with :%{emoji}:"
@@ -235,3 +241,9 @@ en:
             sender:
               label: Sender
               description: Defaults to system
+    review:
+      types:
+        reviewable_chat_message:
+          title: "Flagged Chat Message"
+          flagged_by: "Flagged By"
+

@@ -64,6 +64,27 @@ export default Component.extend({
   },
 
   @computed("cooked")
+  get imageCooked() {
+    const elements = Array.prototype.slice.call(domFromString(this.cooked));
+
+    return elements.reduce((acc, e) => {
+      if (imagePredicate(e)) {
+        const link = e.firstElementChild.src;
+        const alt = e.firstElementChild.alt;
+        const header = htmlSafe(
+          `<a target="_blank" class="chat-message-collapser-link-small" rel="noopener noreferrer" href="${link}">${
+            alt || link
+          }</a>`
+        );
+        acc.push({ header, body: e, needsCollapser: true });
+      } else {
+        acc.push({ body: e, needsCollapser: false });
+      }
+      return acc;
+    }, []);
+  },
+
+  @computed("cooked")
   get hasYoutube() {
     return hasYoutube(this.cooked);
   },
@@ -76,6 +97,11 @@ export default Component.extend({
   @computed("cooked")
   get hasImageOnebox() {
     return hasImageOnebox(this.cooked);
+  },
+
+  @computed("cooked")
+  get hasImage() {
+    return hasImage(this.cooked);
   },
 });
 
@@ -124,6 +150,25 @@ function hasUploads(uploads) {
   return uploads?.length > 0;
 }
 
+function imagePredicate(e) {
+  return (
+    e.nodeName === "P" &&
+    e.firstElementChild &&
+    e.firstElementChild.nodeName === "IMG" &&
+    !e.firstElementChild.classList.contains("emoji")
+  );
+}
+
+function hasImage(cooked) {
+  const elements = Array.prototype.slice.call(domFromString(cooked));
+  return elements.some((e) => imagePredicate(e));
+}
+
 export function isCollapsible(cooked, uploads) {
-  return hasYoutube(cooked) || hasImageOnebox(cooked) || hasUploads(uploads);
+  return (
+    hasYoutube(cooked) ||
+    hasImageOnebox(cooked) ||
+    hasUploads(uploads) ||
+    hasImage(cooked)
+  );
 }

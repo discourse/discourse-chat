@@ -26,7 +26,7 @@ de:
       collapse: "Chat-Bereich ausblenden"
       deleted: "Eine Nachricht wurde gelöscht. [Anzeigen]"
       delete: "Löschen"
-      edited: "(bearbeitet)"
+      edited: "bearbeitet"
       empty_state:
         create_personal_chat: "Persönlichen Chat beginnen"
         no_public_available: "Zurzeit gibt es keine öffentlichen Kanäle, denen du folgen kannst."
@@ -72,6 +72,7 @@ de:
       reply: "Antworten"
       edit: "Bearbeiten"
       copy_link: "Link kopieren"
+      rebake_message: "HTML neu erstellen"
       restore: "Gelöschte Nachricht wiederherstellen"
       save: "Speichern"
       select: "Auswählen"
@@ -90,6 +91,9 @@ de:
         one: "%{count} Datei"
         other: "%{count} Dateien"
       exit: "zurück"
+      channel_selector:
+        title: "Zum Kanal springen"
+        no_channels: "Keine Kanäle entsprechen deiner Suche"
       create_channel:
         choose_category:
           label: "Kategorie auswählen"
@@ -111,6 +115,8 @@ de:
         you_others_and_more: "Du, %{usernames} und %{more} andere haben reagiert mit :%{emoji}:"
       composer:
         toggle_toolbar: "Symbolleiste umschalten"
+      quote:
+        original_channel: "Ursprünglich gesendet in <a href=\"%{channelLink}\">#%{channel}</a>."
       notification_levels:
         never: "Niemals"
         mention: "Nur für Erwähnungen"
@@ -183,8 +189,13 @@ de:
         many_users:
           one: "%{commaSeparatedUsernames} und %{count} andere Person schreiben"
           other: "%{commaSeparatedUsernames} und %{count} andere Personen schreiben"
+      retention_reminders:
+        public: "Der Kanalverlauf wird für %{days} Tage gespeichert."
+        dm: "Der persönliche Chatverlauf wird für %{days} Tage gespeichert."
     notifications:
       popup:
+        chat_mention: "%{username} hat dich im Chat erwähnt"
+        chat_group_mention: "%{username} hat @%{groupName} im Chat erwähnt"
         chat_message: "Neue Chat-Nachricht"
       titles:
         chat_mention: "Chat-Erwähnung"

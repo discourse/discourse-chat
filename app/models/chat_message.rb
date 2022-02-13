@@ -36,17 +36,51 @@ class ChatMessage < ActiveRecord::Base
     WatchedWordsValidator.new(attributes: [:message]).validate(self)
   end
 
-  def reviewable_flag
-    raise NotImplementedError
-    #ReviewableFlaggedChat.pending.find_by(target: self)
-  end
-
   def excerpt
     PrettyText.excerpt(cooked, 50, {})
   end
 
   def push_notification_excerpt
     message[0...400]
+  end
+
+  def add_flag(user)
+    reviewable = ReviewableChatMessage.needs_review!(
+      created_by: user,
+      target: self,
+    )
+    reviewable.update(target_created_by: self.user)
+    reviewable.add_score(
+      user,
+      ReviewableScore.types[:needs_review],
+      force_review: true
+    )
+    reviewable
+  end
+
+  def reviewable_score_for(user)
+    ReviewableScore.joins(:reviewable).where(reviewable: { target: self }).where(user: user)
+  end
+
+  def cook
+    self.cooked = self.class.cook(self.message)
+    self.cooked_version = BAKED_VERSION
+  end
+
+  def rebake!(invalidate_oneboxes: false, priority: nil)
+    previous_cooked = self.cooked
+    new_cooked = self.class.cook(message, invalidate_oneboxes: invalidate_oneboxes)
+    update_columns(
+      cooked: new_cooked,
+      cooked_version: BAKED_VERSION
+    )
+    args = {
+      chat_message_id: self.id,
+    }
+    args[:queue] = priority.to_s if priority && priority != :normal
+    args[:is_dirty] = true if previous_cooked != new_cooked
+
+    Jobs.enqueue(:process_chat_message, args)
   end
 
   def self.uncooked
@@ -103,27 +137,6 @@ class ChatMessage < ActiveRecord::Base
 
     cooked = result.to_html if result.changed?
     cooked
-  end
-
-  def cook
-    self.cooked = self.class.cook(self.message)
-    self.cooked_version = BAKED_VERSION
-  end
-
-  def rebake!(invalidate_oneboxes: false, priority: nil)
-    previous_cooked = self.cooked
-    new_cooked = self.class.cook(message, invalidate_oneboxes: invalidate_oneboxes)
-    update_columns(
-      cooked: new_cooked,
-      cooked_version: BAKED_VERSION
-    )
-    args = {
-      chat_message_id: self.id,
-    }
-    args[:queue] = priority.to_s if priority && priority != :normal
-    args[:is_dirty] = true if previous_cooked != new_cooked
-
-    Jobs.enqueue(:process_chat_message, args)
   end
 end
 

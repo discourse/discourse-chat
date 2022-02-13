@@ -26,7 +26,7 @@ sv:
       collapse: "Komprimera chattruta"
       deleted: "Ett meddelande raderades. [view]"
       delete: "Radera"
-      edited: "(redigerad)"
+      edited: "redigerad"
       empty_state:
         create_personal_chat: "Starta en personlig chatt"
         no_public_available: "Det finns inga offentliga kanaler tillgängliga för dig att följa just nu."
@@ -72,6 +72,7 @@ sv:
       reply: "Svara"
       edit: "Redigera"
       copy_link: "Kopiera länk"
+      rebake_message: "Omskapa HTML"
       restore: "Återställ raderat meddelande"
       save: "Spara"
       select: "Välj"
@@ -90,6 +91,9 @@ sv:
         one: "%{count} fil"
         other: "%{count} filer"
       exit: "tillbaka"
+      channel_selector:
+        title: "Byt till kanal"
+        no_channels: "Inga kanaler matchar din sökning"
       create_channel:
         choose_category:
           label: "Välj en kategori"
@@ -111,6 +115,8 @@ sv:
         you_others_and_more: "Du, %{usernames} och %{more} andra reagerade med :%{emoji}:"
       composer:
         toggle_toolbar: "Växla verktygsfält"
+      quote:
+        original_channel: "Ursprungligen skickad i <a href=\"%{channelLink}\">#%{channel}</a>."
       notification_levels:
         never: "Aldrig"
         mention: "Endast för omnämnanden"

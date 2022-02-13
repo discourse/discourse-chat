@@ -91,7 +91,7 @@
       background: var(--primary-very-low);
 
       .chat-channel-divider {
-        padding: 0.5rem 0.5rem 0.5rem 1rem;
+        padding: 0.5rem 0.5rem 0 1rem;
       }
 
       .loading-container {
@@ -140,7 +140,7 @@
 
     .chat-live-pane,
     .chat-messages-scroll,
-    .chat-message:not(.highlighted) {
+    .chat-message:not(.highlighted):not(.deleted) {
       background: transparent;
     }
 

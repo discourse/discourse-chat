@@ -12,4 +12,8 @@ export default RESTAdapter.extend({
     }
     return path;
   },
+
+  apiNameFor() {
+    return "chat-message";
+  },
 });

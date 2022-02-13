@@ -78,12 +78,6 @@ export default Component.extend({
       "highlightOrFetchMessage"
     );
 
-    if (!isTesting()) {
-      next(this, () => {
-        this._updateReadTimer = this._updateLastReadMessage();
-      });
-    }
-
     this._scrollerEl = this.element.querySelector(".chat-messages-scroll");
     this._scrollerEl.addEventListener(
       "scroll",
@@ -142,17 +136,15 @@ export default Component.extend({
             this.set("previewing", !Boolean(trackedChannel));
             this.fetchMessages(this.chatChannel.id);
             this.loadDraftForChannel(this.chatChannel.id);
+            this._startLastReadRunner();
           });
       }
     }
   },
 
   fetchMessages(channelId) {
-    if (this.loading) {
-      return;
-    }
-
     this.set("loading", true);
+
     return this.chat.loadCookFunction(this.site.categories).then((cook) => {
       this.set("cook", cook);
       const findArgs = {
@@ -173,21 +165,12 @@ export default Component.extend({
           throw err;
         })
         .finally(() => {
-          if (this._selfDeleted()) {
+          if (this._selfDeleted() || this.chatChannel.id !== channelId) {
             return;
           }
 
           this.chat.set("messageId", null);
           this.set("loading", false);
-
-          if (this.chatChannel.id !== channelId) {
-            this.router.transitionTo(
-              "chat.channel",
-              this.chatChannel.id,
-              this.chatChannel.title
-            );
-            return;
-          }
 
           this.focusComposer();
         });
@@ -247,7 +230,8 @@ export default Component.extend({
       messages: this._prepareMessages(messages),
       details: {
         chat_channel_id: this.chatChannel.id,
-        can_flag: true,
+        chatable_type: this.chatChannel.chatable_type,
+        can_flag: messages.resultSetMeta.can_flag,
         can_delete_self: true,
         can_delete_others: this.currentUser.staff,
       },
@@ -313,7 +297,7 @@ export default Component.extend({
     }
     if (messageData.in_reply_to?.id === previousMessageData?.id) {
       // Reply-to message is directly above. Remove `in_reply_to` from message.
-      delete messageData.in_reply_to;
+      messageData.in_reply_to = null;
     }
 
     if (messageData.in_reply_to) {
@@ -344,6 +328,9 @@ export default Component.extend({
     }
     messageData.expanded = !messageData.deleted_at;
     messageData.messageLookupId = this._generateMessageLookupId(messageData);
+    if (this.targetMessageId && this.targetMessageId === messageData.id) {
+      messageData.expanded = true;
+    }
     const prepared = EmberObject.create(messageData);
     this.messageLookup[messageData.messageLookupId] = prepared;
     return prepared;
@@ -399,6 +386,10 @@ export default Component.extend({
   scrollToMessage(messageId, opts = { highlight: false }) {
     if (this._selfDeleted()) {
       return;
+    }
+    const message = this.messageLookup[messageId];
+    if (message?.deleted_at) {
+      message.set("expanded", true);
     }
 
     const messageEl = this._scrollerEl.querySelector(
@@ -536,6 +527,12 @@ export default Component.extend({
         break;
       case "mention_warning":
         this.handleMentionWarning(data);
+        break;
+      case "self_flagged":
+        this.handleSelfFlaggedMessage(data);
+        break;
+      case "flag":
+        this.handleFlaggedMessage(data);
         break;
     }
     this.decorateMessages();
@@ -677,10 +674,25 @@ export default Component.extend({
     this.messageLookup[data.chat_message_id]?.set("mentionWarning", data);
   },
 
+  handleSelfFlaggedMessage(data) {
+    this.messageLookup[data.chat_message_id]?.set(
+      "user_flag_status",
+      data.user_flag_status
+    );
+  },
+
+  handleFlaggedMessage(data) {
+    this.messageLookup[data.chat_message_id]?.set(
+      "reviewable_id",
+      data.reviewable_id
+    );
+  },
+
   _selfDeleted() {
     return !this.element || this.isDestroying || this.isDestroyed;
   },
 
+  @bind
   _updateLastReadMessage() {
     if (this._selfDeleted()) {
       return;
@@ -724,6 +736,19 @@ export default Component.extend({
 
   _floatOpenAndFocused() {
     return userPresent() && this.expanded && !this.floatHidden;
+  },
+
+  _startLastReadRunner() {
+    if (!isTesting()) {
+      cancel(this._updateReadTimer);
+      next(this, () => {
+        this._updateLastReadMessage();
+        this._updateReadTimer = later(
+          this._updateLastReadMessage,
+          READ_INTERVAL
+        );
+      });
+    }
   },
 
   _stopLastReadRunner() {

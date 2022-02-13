@@ -8,8 +8,22 @@
         {{/each}}
       </div>
     {{/collapser}}
+
   {{else if hasYoutube}}
     {{#each youtubeCooked as |cooked|}}
+      {{#if cooked.needsCollapser}}
+        {{#collapser header=cooked.header}}
+          <div class="chat-message-collapser-youtube">
+            {{cooked.body}}
+          </div>
+        {{/collapser}}
+      {{else}}
+        {{cooked.body}}
+      {{/if}}
+    {{/each}}
+
+  {{else if hasImageOnebox}}
+    {{#each imageOneboxCooked as |cooked|}}
       {{#if cooked.needsCollapser}}
         {{#collapser header=cooked.header}}
           {{cooked.body}}
@@ -18,8 +32,9 @@
         {{cooked.body}}
       {{/if}}
     {{/each}}
-  {{else if hasImageOnebox}}
-    {{#each imageOneboxCooked as |cooked|}}
+
+  {{else if hasImage}}
+    {{#each imageCooked as |cooked|}}
       {{#if cooked.needsCollapser}}
         {{#collapser header=cooked.header}}
           {{cooked.body}}

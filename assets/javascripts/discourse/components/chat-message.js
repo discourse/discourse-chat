@@ -1,16 +1,17 @@
 import { inject as service } from "@ember/service";
 import { clipboardCopy } from "discourse/lib/utilities";
 import getURL from "discourse-common/lib/get-url";
+import bootbox from "bootbox";
 import Component from "@ember/component";
 import discourseComputed, { bind } from "discourse-common/utils/decorators";
+import EmberObject, { action, computed } from "@ember/object";
 import I18n from "I18n";
 import { ajax } from "discourse/lib/ajax";
-import { popupAjaxError } from "discourse/lib/ajax-error";
-import { prioritizeNameInUx } from "discourse/lib/settings";
-import EmberObject, { action, computed } from "@ember/object";
 import { autoUpdatingRelativeAge } from "discourse/lib/formatter";
 import { cancel, later, schedule } from "@ember/runloop";
-import bootbox from "bootbox";
+import { inject as service } from "@ember/service";
+import { popupAjaxError } from "discourse/lib/ajax-error";
+import { prioritizeNameInUx } from "discourse/lib/settings";
 
 const HERE = "here";
 const ALL = "all";
@@ -89,7 +90,7 @@ export default Component.extend({
   },
   @computed(
     "selectingMessages",
-    "showFlagButton",
+    "canFlagMessage",
     "showDeleteButton",
     "showRestoreButton",
     "showEditButton"
@@ -119,7 +120,7 @@ export default Component.extend({
       });
     }
 
-    if (this.showFlagButton) {
+    if (this.canFlagMessage) {
       buttons.push({
         id: "flag",
         name: I18n.t("chat.flag"),
@@ -268,15 +269,20 @@ export default Component.extend({
     );
   },
 
-  @discourseComputed("message", "message.deleted_at")
-  showFlagButton(message, deletedAt) {
+  @discourseComputed(
+    "message",
+    "message.user_flag_status",
+    "details.can_flag",
+    "message.deleted_at"
+  )
+  canFlagMessage(message, userFlagStatus, canFlag, deletedAt) {
     return (
       this.currentUser?.id !== message.user.id &&
+      userFlagStatus === undefined &&
+      canFlag &&
       !message.chat_webhook_event &&
       !deletedAt
     );
-    // TODO: Add flagging
-    // return this.details.can_flag && !message.action_code && !deletedAt;
   },
 
   @discourseComputed("message")
@@ -580,8 +586,21 @@ export default Component.extend({
 
   @action
   flag() {
-    // TODO showModal
-    bootbox.alert("unimplemented");
+    bootbox.confirm(
+      I18n.t("chat.confirm_flag", {
+        username: this.message.user.username,
+      }),
+      (confirmed) => {
+        if (confirmed) {
+          ajax("/chat/flag", {
+            method: "PUT",
+            data: {
+              chat_message_id: this.message.id,
+            },
+          }).catch(popupAjaxError);
+        }
+      }
+    );
   },
 
   @action

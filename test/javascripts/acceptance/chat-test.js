@@ -412,11 +412,6 @@ acceptance("Discourse Chat - without unread", function (needs) {
       "it hides the edit button"
     );
 
-    assert.ok(
-      notCurrentUserDropdown.rowByValue("flag").exists(),
-      "it shows the flag button"
-    );
-
     assert.notOk(
       notCurrentUserDropdown.rowByValue("deleteMessage").exists(),
       "it hides the delete button"

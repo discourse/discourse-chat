@@ -720,6 +720,20 @@ acceptance("Discourse Chat - without unread", function (needs) {
     );
   });
 
+  test("message selection and live pane buttons for regular user", async function (assert) {
+    updateCurrentUser({ admin: false, moderator: false });
+    await visit("/chat/channel/9/Site");
+
+    const firstMessage = query(".chat-message-container");
+    const dropdown = selectKit(".chat-message-container .more-buttons");
+    await dropdown.expand();
+    await dropdown.selectRowByValue("selectMessage");
+
+    assert.ok(firstMessage.classList.contains("selecting-messages"));
+    assert.notOk(exists("#chat-move-to-topic-btn"));
+    assert.ok(exists("#chat-quote-btn"));
+  });
+
   test("message selection for 'move to topic'", async function (assert) {
     updateCurrentUser({ admin: true, moderator: true });
     await visit("/chat/channel/9/Site");

@@ -1,4 +1,6 @@
 import Component from "@ember/component";
+import { clipboardCopy } from "discourse/lib/utilities";
+import { getOwner } from "discourse-common/lib/get-owner";
 import discourseComputed, {
   afterRender,
   bind,
@@ -20,7 +22,7 @@ import { inject as service } from "@ember/service";
 import { Promise } from "rsvp";
 import { resetIdle } from "discourse/lib/desktop-notifications";
 import { resolveAllShortUrls } from "pretty-text/upload-short-url";
-import { samePrefix } from "discourse-common/lib/get-url";
+import getURL, { samePrefix } from "discourse-common/lib/get-url";
 import { spinnerHTML } from "discourse/helpers/loading-spinner";
 import { decorateGithubOneboxBody } from "discourse/initializers/onebox-decorators";
 
@@ -43,6 +45,7 @@ export default Component.extend({
   selectingMessages: false,
   stickyScroll: true,
   stickyScrollTimer: null,
+  showChatQuoteSuccess: false,
 
   editingMessage: null, // ?Message
   replyToMsg: null, // ?Message
@@ -921,9 +924,28 @@ export default Component.extend({
     next(this.reStickScrollIfNeeded.bind(this));
   },
 
+  @discourseComputed()
+  canQuote() {
+    if (this.chatChannel.chatable_type === "DirectMessageChannel") {
+      return false;
+    }
+
+    return true;
+  },
+
+  @discourseComputed()
+  canMoveToTopic() {
+    return this.currentUser.staff;
+  },
+
   @discourseComputed("messages.@each.selected")
-  moveToTopicDisabled(messages) {
-    return !messages.filter((m) => m.selected).length;
+  anyMessagesSelected() {
+    return this.selectedMessageIds.length > 0;
+  },
+
+  @discourseComputed("messages.@each.selected")
+  selectedMessageIds(messages) {
+    return messages.filter((m) => m.selected).map((m) => m.id);
   },
 
   @action
@@ -962,19 +984,82 @@ export default Component.extend({
     return this.messages.findIndex((m) => m.id === message.id);
   },
 
-  @action
-  onChannelTitleClick() {
+  _goToChatableUrl() {
     if (this.chatChannel.chatable_url) {
       return this.router.transitionTo(this.chatChannel.chatable_url);
     }
   },
 
   @action
+  onChannelTitleClick() {
+    return this._goToChatableUrl();
+  },
+
+  @action
+  quoteMessages() {
+    ajax(getURL(`/chat/${this.chatChannel.id}/quote.json`), {
+      data: { message_ids: this.selectedMessageIds },
+      type: "POST",
+    })
+      .then((response) => {
+        const container = getOwner(this);
+        const composer = container.lookup("controller:composer");
+        const openOpts = {};
+
+        if (this.chatChannel.chatable_type === "Category") {
+          openOpts.categoryId = this.chatChannel.chatable_id;
+        }
+
+        if (this.site.isMobileDevice) {
+          // go to the relevant chatable (e.g. category) and open the
+          // composer to insert text
+          this._goToChatableUrl().then(() => {
+            composer.focusComposer({
+              fallbackToNewTopic: true,
+              insertText: response.markdown,
+              openOpts,
+            });
+          });
+        } else {
+          // copy to clipboard and show message
+          if (this.currentUser.chat_isolated) {
+            this._copyAndShowSuccess(response.markdown);
+          } else {
+            // open the composer and insert text, reply to the current
+            // topic if there is one, use the active draft if there is one
+            const topic = container.lookup("controller:topic");
+            composer.focusComposer({
+              fallbackToNewTopic: true,
+              topic: topic?.model,
+              insertText: response.markdown,
+              openOpts,
+            });
+          }
+        }
+      })
+      .catch(popupAjaxError);
+  },
+
+  _copyAndShowSuccess(markdown) {
+    if (!isTesting()) {
+      clipboardCopy(markdown);
+    }
+
+    this.set("showChatQuoteSuccess", true);
+    schedule("afterRender", this, () => {
+      const element = document.querySelector(".chat-selection-message");
+      const removeSuccess = () => {
+        element.removeEventListener("animationend", removeSuccess);
+        this.set("showChatQuoteSuccess", false);
+      };
+      element.addEventListener("animationend", removeSuccess);
+    });
+  },
+
+  @action
   moveMessagesToTopic() {
     showModal("move-chat-to-topic").setProperties({
-      chatMessageIds: this.messages
-        .filter((message) => message.selected)
-        .map((message) => message.id),
+      chatMessageIds: this.selectedMessageIds,
       chatChannelId: this.chatChannel.id,
     });
   },

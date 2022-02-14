@@ -179,4 +179,25 @@ describe ChatMessage do
       end
     end
   end
+
+  describe ".to_markdown" do
+    fab!(:message) { Fabricate(:chat_message, message: "hey friend, what's up?!") }
+
+    it "renders the message without uploads" do
+      expect(message.to_markdown).to eq("hey friend, what's up?!")
+    end
+
+    it "renders the message with uploads" do
+      image = Fabricate(:upload, original_filename: "test_image.jpg", width: 400, height: 300, extension: "jpg")
+      image2 = Fabricate(:upload, original_filename: "meme.jpg", width: 10, height: 10, extension: "jpg")
+      ChatUpload.create(chat_message: message, upload: image)
+      ChatUpload.create(chat_message: message, upload: image2)
+      expect(message.to_markdown).to eq(<<~MSG.chomp)
+      hey friend, what's up?!
+
+      ![test_image.jpg|400x300](#{image.short_url})
+      ![meme.jpg|10x10](#{image2.short_url})
+      MSG
+    end
+  end
 end

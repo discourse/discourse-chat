@@ -62,6 +62,26 @@ class ChatMessage < ActiveRecord::Base
     ReviewableScore.joins(:reviewable).where(reviewable: { target: self }).where(user: user)
   end
 
+  def to_markdown
+    markdown = []
+
+    if self.message.present?
+      msg = self.message
+
+      if self.uploads.any?
+        markdown << msg + "\n"
+      else
+        markdown << msg
+      end
+    end
+
+    self.uploads.order(:created_at).each do |upload|
+      markdown << UploadMarkdown.new(upload).to_markdown
+    end
+
+    markdown.reject(&:empty?).join("\n")
+  end
+
   def cook
     self.cooked = self.class.cook(self.message)
     self.cooked_version = BAKED_VERSION

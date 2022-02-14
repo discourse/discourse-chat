@@ -675,6 +675,64 @@ RSpec.describe DiscourseChat::ChatController do
     end
   end
 
+  describe "#quote_messages" do
+    fab!(:channel) { Fabricate(:chat_channel, chatable: category, name: "Cool Chat") }
+    let(:user2) { Fabricate(:user) }
+    let(:message1) { Fabricate(:chat_message, user: user, chat_channel: channel, message: "an extremely insightful response :)") }
+    let(:message2) { Fabricate(:chat_message, user: user2, chat_channel: channel, message: "says you!") }
+    let(:message3) { Fabricate(:chat_message, user: user, chat_channel: channel, message: "aw :(") }
+
+    it "returns a 403 if the user can't chat" do
+      SiteSetting.chat_allowed_groups = nil
+      sign_in(user)
+      post "/chat/#{channel.id}/quote.json", params: { message_ids: [message1.id, message2.id, message3.id] }
+      expect(response.status).to eq(403)
+    end
+
+    it "returns a 403 if the user can't see the channel" do
+      category.update!(read_restricted: true)
+      sign_in(user)
+      post "/chat/#{channel.id}/quote.json", params: { message_ids: [message1.id, message2.id, message3.id] }
+      expect(response.status).to eq(403)
+    end
+
+    it "returns a 403 if the channel is a DM channel" do
+      sign_in(user)
+      dm_channel_chatable = Fabricate(:direct_message_channel, users: [user, user2])
+      dm_channel = Fabricate(:chat_channel, chatable: dm_channel_chatable)
+      message1.update!(chat_channel: dm_channel)
+      post "/chat/#{dm_channel.id}/quote.json", params: { message_ids: [message1.id, message2.id, message3.id] }
+      expect(response.status).to eq(403)
+    end
+
+    it "returns a 404 for a not found channel" do
+      channel.destroy
+      sign_in(user)
+      post "/chat/#{channel.id}/quote.json", params: { message_ids: [message1.id, message2.id, message3.id] }
+      expect(response.status).to eq(404)
+    end
+
+    it "quotes the message ids provided" do
+      sign_in(user)
+      post "/chat/#{channel.id}/quote.json", params: { message_ids: [message1.id, message2.id, message3.id] }
+      expect(response.status).to eq(200)
+      markdown = response.parsed_body["markdown"]
+      expect(markdown).to eq(<<~EXPECTED)
+      [chat quote="#{user.username};#{message1.id};#{message1.created_at.iso8601}" channel="Cool Chat" multiQuote="true" chained="true"]
+      an extremely insightful response :)
+      [/chat]
+
+      [chat quote="#{user2.username};#{message2.id};#{message2.created_at.iso8601}" chained="true"]
+      says you!
+      [/chat]
+
+      [chat quote="#{user.username};#{message3.id};#{message3.created_at.iso8601}" chained="true"]
+      aw :(
+      [/chat]
+      EXPECTED
+    end
+  end
+
   describe "#flag" do
     fab!(:admin_chat_message) { Fabricate(:chat_message, user: admin, chat_channel: chat_channel) }
     fab!(:user_chat_message) { Fabricate(:chat_message, user: user, chat_channel: chat_channel) }

@@ -124,6 +124,7 @@ en:
 
       quote:
         original_channel: "Originally sent in <a href=\"%{channelLink}\">#%{channel}</a>."
+        copy_success: "Chat quote copied to clipboard."
 
       notification_levels:
         never: "Never"
@@ -179,6 +180,7 @@ en:
       selection:
         cancel: "Cancel"
         move_to_topic: "Move to topic"
+        quote_selection: "Quote"
         error: "There was an error moving the chat messages"
         title: "Move Chat to Topic"
         new_topic:

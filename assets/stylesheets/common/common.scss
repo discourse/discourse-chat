@@ -255,9 +255,6 @@ body.composer-open .topic-chat-float-container {
   .chat-channels .chat-channel-divider {
     padding: 0.25rem 0.5rem 0.25rem 1rem;
   }
-  .chat-channel-title {
-    grid-column-gap: 0.75em;
-  }
 }
 
 .btn.exit-chat-btn {
@@ -882,7 +879,7 @@ body.composer-open .topic-chat-float-container {
   position: relative;
   display: grid;
   grid-template-columns: 20px 1fr;
-  grid-column-gap: 0.25em;
+  grid-column-gap: 0.75em;
   align-items: center;
   max-width: calc(100% - 1em);
   cursor: pointer;
@@ -906,7 +903,6 @@ body.composer-open .topic-chat-float-container {
   .tag-chat-name,
   .dm-usernames {
     @include ellipsis;
-    color: var(--primary-high);
     font-size: var(--font-0);
     margin: 0;
 
@@ -1172,10 +1168,6 @@ body.has-full-page-chat {
         background-color: var(--primary-very-low);
       }
 
-      .chat-channel-title {
-        grid-column-gap: 0.75em;
-      }
-
       &:hover,
       &.active {
         background-color: var(--primary-low);
@@ -1414,6 +1406,5 @@ body.has-full-page-chat {
 .reviewable-chat-message {
   .chat-channel-title {
     max-width: 100%;
-    grid-column-gap: 0.25em;
   }
 }

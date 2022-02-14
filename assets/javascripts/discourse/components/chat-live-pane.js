@@ -1016,14 +1016,14 @@ export default Component.extend({
           this._goToChatableUrl().then(() => {
             composer.focusComposer({
               fallbackToNewTopic: true,
-              insertText: response.bbcode,
+              insertText: response.markdown,
               openOpts,
             });
           });
         } else {
           // copy to clipboard and show message
           if (this.currentUser.chat_isolated) {
-            this._copyAndShowSuccess(response.bbcode);
+            this._copyAndShowSuccess(response.markdown);
           } else {
             // open the composer and insert text, reply to the current
             // topic if there is one, use the active draft if there is one
@@ -1031,7 +1031,7 @@ export default Component.extend({
             composer.focusComposer({
               fallbackToNewTopic: true,
               topic: topic?.model,
-              insertText: response.bbcode,
+              insertText: response.markdown,
               openOpts,
             });
           }
@@ -1040,9 +1040,9 @@ export default Component.extend({
       .catch(popupAjaxError);
   },
 
-  _copyAndShowSuccess(bbcode) {
+  _copyAndShowSuccess(markdown) {
     if (!isTesting()) {
-      clipboardCopy(bbcode);
+      clipboardCopy(markdown);
     }
 
     this.set("showChatQuoteSuccess", true);

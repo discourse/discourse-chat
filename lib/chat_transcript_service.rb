@@ -44,7 +44,7 @@ class ChatTranscriptService
 
       <<~MARKDOWN
       [chat #{attrs.join(" ")}]
-      #{@messages.map(&:message).join("\n\n")}
+      #{@messages.map(&:to_markdown).join("\n\n")}
       [/chat]
       MARKDOWN
     end
@@ -96,7 +96,7 @@ class ChatTranscriptService
   private
 
   def messages
-    @messages ||= ChatMessage.includes(:user).where(
+    @messages ||= ChatMessage.includes(:user, :uploads).where(
       id: @message_ids, chat_channel_id: @channel.id
     ).order(:created_at)
   end

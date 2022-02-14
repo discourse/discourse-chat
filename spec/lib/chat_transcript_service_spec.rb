@@ -74,4 +74,46 @@ describe ChatTranscriptService do
     [/chat]
     MARKDOWN
   end
+
+  it "generates image / attachment / video / audio markdown inside the [chat] bbcode for upload-only messages" do
+    SiteSetting.authorized_extensions = "mp4|mp3|pdf|jpg"
+    message = Fabricate(:chat_message, user: user1, chat_channel: channel, message: "")
+    video = Fabricate(:upload, original_filename: "test_video.mp4", extension: "mp4")
+    audio = Fabricate(:upload, original_filename: "test_audio.mp3", extension: "mp3")
+    attachment = Fabricate(:upload, original_filename: "test_file.pdf", extension: "pdf")
+    image = Fabricate(:upload, width: 100, height: 200, original_filename: "test_img.jpg", extension: "jpg")
+    cu1 = ChatUpload.create(chat_message: message, created_at: 10.seconds.ago, upload: video)
+    cu2 = ChatUpload.create(chat_message: message, created_at: 9.seconds.ago, upload: audio)
+    cu3 = ChatUpload.create(chat_message: message, created_at: 8.seconds.ago, upload: attachment)
+    cu4 = ChatUpload.create(chat_message: message, created_at: 7.seconds.ago, upload: image)
+    video_markdown = UploadMarkdown.new(video).to_markdown
+    audio_markdown = UploadMarkdown.new(audio).to_markdown
+    attachment_markdown = UploadMarkdown.new(attachment).to_markdown
+    image_markdown = UploadMarkdown.new(image).to_markdown
+
+    expect(service(message.id).generate_markdown).to eq(<<~MARKDOWN)
+    [chat quote="martinchat;#{message.id};#{message.created_at.iso8601}" channel="The Beam Discussions"]
+    #{video_markdown}
+    #{audio_markdown}
+    #{attachment_markdown}
+    #{image_markdown}
+    [/chat]
+    MARKDOWN
+  end
+
+  it "generates the correct markdown if a message has text and an upload" do
+    SiteSetting.authorized_extensions = "mp4|mp3|pdf|jpg"
+    message = Fabricate(:chat_message, user: user1, chat_channel: channel, message: "this is a cool and funny picture")
+    image = Fabricate(:upload, width: 100, height: 200, original_filename: "test_img.jpg", extension: "jpg")
+    cu = ChatUpload.create(chat_message: message, created_at: 7.seconds.ago, upload: image)
+    image_markdown = UploadMarkdown.new(image).to_markdown
+
+    expect(service(message.id).generate_markdown).to eq(<<~MARKDOWN)
+    [chat quote="martinchat;#{message.id};#{message.created_at.iso8601}" channel="The Beam Discussions"]
+    this is a cool and funny picture
+
+    #{image_markdown}
+    [/chat]
+    MARKDOWN
+  end
 end

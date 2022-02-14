@@ -13,7 +13,7 @@ import {
 import selectKit from "discourse/tests/helpers/select-kit-helper";
 
 let quoteResponse = {
-  bbcode: `[chat quote="martinchat;3875498;2022-02-04T01:12:15Z" channel="The Beam Discussions"]
+  markdown: `[chat quote="martinchat;3875498;2022-02-04T01:12:15Z" channel="The Beam Discussions"]
   an extremely insightful response :)
   [/chat]`,
 };
@@ -76,7 +76,7 @@ acceptance("Discourse Chat | quoting out of topic", function (needs) {
     assert.ok(exists("#reply-control.composer-action-createTopic"));
     assert.strictEqual(
       query("textarea.d-editor-input").value,
-      quoteResponse.bbcode
+      quoteResponse.markdown
     );
     assert.strictEqual(
       selectKit(".category-chooser").header().value(),
@@ -151,7 +151,7 @@ acceptance("Discourse Chat | quoting when topic open", async function (needs) {
     );
     assert.strictEqual(
       query("textarea.d-editor-input").value,
-      quoteResponse.bbcode
+      quoteResponse.markdown
     );
   });
 });
@@ -217,7 +217,7 @@ acceptance("Discourse Chat | quoting on mobile", async function (needs) {
   });
   needs.mobileView();
 
-  test("it opens the chatable, opens the composer, and pastes the bbcode in", async function (assert) {
+  test("it opens the chatable, opens the composer, and pastes the markdown in", async function (assert) {
     await visit("/chat/channel/7/Uncategorized");
     const firstMessage = query(".chat-message-container");
     const dropdown = selectKit(".chat-message-container .more-buttons");
@@ -237,8 +237,8 @@ acceptance("Discourse Chat | quoting on mobile", async function (needs) {
     );
     assert.strictEqual(
       query("textarea.d-editor-input").value,
-      quoteResponse.bbcode,
-      "the composer has the bbcode"
+      quoteResponse.markdown,
+      "the composer has the markdown"
     );
     assert.strictEqual(
       selectKit(".category-chooser").header().value(),

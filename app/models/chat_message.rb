@@ -75,7 +75,7 @@ class ChatMessage < ActiveRecord::Base
       end
     end
 
-    self.uploads.each do |upload|
+    self.uploads.order(:created_at).each do |upload|
       markdown << UploadMarkdown.new(upload).to_markdown
     end
 

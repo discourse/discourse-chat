@@ -923,7 +923,6 @@ body.composer-open .topic-chat-float-container {
 
   .topic-chat-icon {
     color: var(--primary-medium);
-    width: 100%;
     display: flex;
   }
 
@@ -1266,11 +1265,12 @@ body.has-full-page-chat {
     color: var(--primary-low-mid);
     display: flex;
     align-items: center;
+    justify-content: center;
 
     .d-icon {
-      height: 1.125em;
-      width: 1.125em;
-      margin: 0 auto;
+      height: 1.25em;
+      width: 1.25em;
+      margin: 0;
     }
   }
 

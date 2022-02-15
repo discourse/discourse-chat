@@ -123,7 +123,7 @@ en:
         toggle_toolbar: "Toggle toolbar"
 
       quote:
-        original_channel: "Originally sent in <a href=\"%{channelLink}\">#%{channel}</a>."
+        original_channel: 'Originally sent in <a href="%{channelLink}">#%{channel}</a>'
         copy_success: "Chat quote copied to clipboard."
 
       notification_levels:
@@ -246,4 +246,3 @@ en:
         reviewable_chat_message:
           title: "Flagged Chat Message"
           flagged_by: "Flagged By"
-

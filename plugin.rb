@@ -157,7 +157,7 @@ after_initialize do
   if respond_to?(:register_upload_in_use)
     register_upload_in_use do |upload|
       # TODO after May 2022 - remove this. No longer needed as chat uploads are in a table
-      next true if ChatMessage.where("message LIKE ? OR message LIKE ?", "%#{upload.sha1}%", "%#{encoded_sha}%").exists?
+      next true if ChatMessage.where("message LIKE ? OR message LIKE ?", "%#{upload.sha1}%", "%#{upload.base62_sha1}%").exists?
 
       false
     end

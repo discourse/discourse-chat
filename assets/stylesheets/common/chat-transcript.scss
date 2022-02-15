@@ -1,9 +1,8 @@
 .discourse-chat-transcript {
   @extend .chat-message-container;
-  border: 1px solid $primary-low;
   min-height: 50px;
   padding: 12px;
-  margin: 1em 0;
+  margin: 1rem 0;
 
   @include post-aside;
 
@@ -11,45 +10,41 @@
     margin: 0;
     border-top: 0;
     border-bottom: 0;
-
-    &:first-of-type {
-      border-top: 1px solid $primary-low;
-    }
-
-    &:last-of-type {
-      border-bottom: 1px solid $primary-low;
-    }
   }
 
   .chat-transcript-meta {
     color: var(--primary-high);
-    font-size: var(--font-down-3);
+    font-size: var(--font-down-2-rem);
     border-bottom: 1px solid var(--primary-low);
-    margin-bottom: 1em;
-    padding-bottom: 0.5em;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
   }
 
   .chat-transcript-channel {
-    font-size: var(--font-down-2);
-    padding-left: 0.5em;
+    font-size: var(--font-down-2-rem);
+    padding-left: 0.5rem;
   }
 
   .chat-transcript-username {
+    color: var(--primary-high-or-secondary-low);
     font-weight: bold;
   }
 
   .chat-transcript-datetime {
     color: var(--primary-high);
+    font-size: var(--font-down-2-rem);
+    padding-left: 0.5rem;
 
     a {
       color: var(--primary-high);
     }
-
-    font-size: var(--font-down-2);
-    padding-left: 0.5em;
   }
 
   .chat-transcript-messages {
+    p {
+      margin: 0.5rem 0;
+    }
+
     p:last-of-type {
       margin-bottom: 0;
     }
@@ -57,10 +52,10 @@
 
   .chat-transcript-user {
     display: flex;
-    align-items: center;
+    align-items: baseline;
 
     .chat-transcript-user-avatar {
-      padding-right: 0.5em;
+      padding-right: 0.5rem;
     }
   }
 }

@@ -14,6 +14,37 @@ zh_CN:
     errors:
       channel_exists_for_category: "此类别和名称的频道已经存在"
       channel_exists_for_topic: "此话题的频道已经存在"
+    reviewables:
+      actions:
+        agree:
+          title: "同意…"
+        agree_and_keep_message:
+          title: "保留消息"
+          description: "同意举报并保持消息不变。"
+        agree_and_keep_deleted:
+          title: "保持消息删除状态"
+          description: "同意举报并保持消息删除状态。"
+        agree_and_suspend:
+          title: "封禁用户"
+          description: "同意举报并封禁用户。"
+        agree_and_silence:
+          title: "将用户禁言"
+          description: "同意举报并将用户禁言。"
+        agree_and_restore:
+          title: "恢复消息"
+          description: "恢复消息，以便用户可以看到。"
+        agree_and_delete:
+          title: "删除消息"
+          description: "删除消息，使用户看不到。"
+        delete_and_agree:
+          title: "删除消息"
+        disagree_and_restore:
+          title: "不同意并恢复消息"
+          description: "恢复消息，以便所有用户都可以看到。"
+        disagree:
+          title: "不同意"
+        ignore:
+          title: "忽略"
   discourse_push_notifications:
     popup:
       chat_mention: "@%{username} 在聊天中提及了您"
@@ -24,3 +55,6 @@ zh_CN:
     scriptables:
       send_chat_message:
         title: 发送聊天消息
+  reviewable_score_types:
+    needs_review:
+      title: "需要审核"

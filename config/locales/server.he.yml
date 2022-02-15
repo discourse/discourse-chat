@@ -14,6 +14,37 @@ he:
     errors:
       channel_exists_for_category: "כבר קיים ערוץ לקטגוריה ולשם האלו"
       channel_exists_for_topic: "כבר קיים ערוץ לנושא הזה"
+    reviewables:
+      actions:
+        agree:
+          title: "הסכמה…"
+        agree_and_keep_message:
+          title: "להשאיר את ההודעה"
+          description: "להסכים עם הסימון ולהשאיר את ההודעה ללא שינוי."
+        agree_and_keep_deleted:
+          title: "להשאיר את ההודעה מחוקה"
+          description: "להסכים עם הסימון ולהשאיר את ההודעה מחוקה."
+        agree_and_suspend:
+          title: "השעיית משתמש"
+          description: "להסכים עם הסימון ולהשעות את המשתמש."
+        agree_and_silence:
+          title: "השתקת משתמש"
+          description: "להסכים עם הסימון ולהשתיק את המשתמש."
+        agree_and_restore:
+          title: "שחזור הודעה"
+          description: "לשחזר את ההודעה כדי שמשתמשים יוכלו לראות אותה."
+        agree_and_delete:
+          title: "מחיקת ההודעה"
+          description: "למחוק את ההודעה כדי שמשתמשים לא יוכלו לראות אותה."
+        delete_and_agree:
+          title: "מחיקת ההודעה"
+        disagree_and_restore:
+          title: "חוסר הסכמה ושחזור ההודעה"
+          description: "לשחזר את ההודעה כדי שכל המשתמשים יוכלו לראות אותה."
+        disagree:
+          title: "אי־הסכמה"
+        ignore:
+          title: "התעלמות"
   discourse_push_notifications:
     popup:
       chat_mention: "אוזכרת בצ׳אט על ידי ‎@%{username}"
@@ -24,3 +55,6 @@ he:
     scriptables:
       send_chat_message:
         title: שליחת הודעת צ׳אט
+  reviewable_score_types:
+    needs_review:
+      title: "נדרשת סקירה"

@@ -24,8 +24,10 @@ pt_BR:
       click_to_join: "Clique aqui para visualizar os canais disponíveis."
       close: "Fechar"
       collapse: "Recolher gaveta de chat"
+      confirm_flag: "Tem certeza de que deseja sinalizar a mensagem de %{username}?"
       deleted: "Uma mensagem foi excluída. [view]"
       delete: "Excluir"
+      edited: "editou"
       empty_state:
         create_personal_chat: "Iniciar um chat pessoal"
         no_public_available: "Não há canais públicos disponíveis para você seguir neste momento."
@@ -34,6 +36,7 @@ pt_BR:
         title: "Comece entrando em um canal"
       enable: "Ativar chat"
       flag: "Sinalizar"
+      flagged: "Esta mensagem foi sinalizada para revisão"
       invalid_access: "Você não tem acesso para ver este canal de chat"
       invitation_notification: "<span>%{username} te convidou para entrar em um canal de chat</span>"
       in_reply_to: "Em resposta a"
@@ -71,6 +74,7 @@ pt_BR:
       reply: "Responder"
       edit: "Editar"
       copy_link: "Copiar link"
+      rebake_message: "Reconstruir HTML"
       restore: "Restaurar mensagem excluída"
       save: "Salvar"
       select: "Selecionar"
@@ -88,7 +92,11 @@ pt_BR:
       uploaded_files:
         one: "%{count} arquivo"
         other: "%{count} arquivos"
+      you_flagged: "Você sinalizou esta mensagem"
       exit: "voltar"
+      channel_selector:
+        title: "Pular para o canal"
+        no_channels: "Nenhum canal corresponde à sua pesquisa"
       create_channel:
         choose_category:
           label: "Escolha uma categoria"
@@ -102,6 +110,8 @@ pt_BR:
         types:
           category: "Categoria"
           topic: "Tópico"
+      reviewable:
+        type: "Mensagem de chat"
       reactions:
         only_you: "Você reagiu com :%{emoji}:"
         and_others: "Você, %{usernames} reagiu com :%{emoji}:"
@@ -110,6 +120,8 @@ pt_BR:
         you_others_and_more: "Você, %{usernames} e mais %{more} reagiram com :%{emoji}:"
       composer:
         toggle_toolbar: "Ativar/desativar barra de ferramentas"
+      quote:
+        original_channel: "Originalmente enviada em <a href=\"%{channelLink}\">#%{channel}</a>."
       notification_levels:
         never: "Nunca"
         mention: "Apenas para menções"
@@ -182,6 +194,9 @@ pt_BR:
         many_users:
           one: "%{commaSeparatedUsernames} e mais %{count} estão digitando"
           other: "%{commaSeparatedUsernames} e mais %{count} estão digitando"
+      retention_reminders:
+        public: "Histórico do canal é mantido por %{days} dias."
+        dm: "Histórico de conversas pessoais é mantido por %{days} dias."
     notifications:
       popup:
         chat_mention: "Você foi mencionado(a) por %{username} no seu chat"
@@ -212,3 +227,8 @@ pt_BR:
             sender:
               label: Remetente
               description: Padrões do sistema
+    review:
+      types:
+        reviewable_chat_message:
+          title: "Mensagem de chat sinalizada"
+          flagged_by: "Sinalizada por"

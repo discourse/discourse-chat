@@ -14,6 +14,37 @@ ru:
     errors:
       channel_exists_for_category: "Канал для этого раздела уже существует"
       channel_exists_for_topic: "Канал для этой темы уже существует"
+    reviewables:
+      actions:
+        agree:
+          title: "Согласиться..."
+        agree_and_keep_message:
+          title: "Оставить сообщение"
+          description: "Согласиться с жалобой и оставить сообщение без изменений."
+        agree_and_keep_deleted:
+          title: "Оставить сообщение уделённым"
+          description: "Согласиться с жалобой и оставить сообщение удалённым."
+        agree_and_suspend:
+          title: "Заморозить пользователя"
+          description: "Согласиться с жалобой и заморозить пользователя."
+        agree_and_silence:
+          title: "Pf,kjrbhjdfnm gjkmpjdfntkz"
+          description: "Согласиться с жалобой и блокировать пользователя."
+        agree_and_restore:
+          title: "Восстановить сообщение"
+          description: "Восстановить сообщение, чтобы пользователи могли его видеть."
+        agree_and_delete:
+          title: "Удалить сообщение"
+          description: "Удалить сообщение, чтобы пользователи не могли его видеть."
+        delete_and_agree:
+          title: "Удалить сообщение"
+        disagree_and_restore:
+          title: "Отклонить жалобу и восстановить сообщение"
+          description: "Восстановить сообщение, чтобы все пользователи могли его видеть."
+        disagree:
+          title: "Отклонить"
+        ignore:
+          title: "Игнорировать"
   discourse_push_notifications:
     popup:
       chat_mention: "Пользователь @%{username} упомянул вас в чате"
@@ -24,3 +55,6 @@ ru:
     scriptables:
       send_chat_message:
         title: Отправить сообщение
+  reviewable_score_types:
+    needs_review:
+      title: "Требуется проверка"

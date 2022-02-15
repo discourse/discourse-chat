@@ -24,6 +24,7 @@ ru:
       click_to_join: "Нажмите здесь для просмотра доступных каналов."
       close: "Закрыть"
       collapse: "Свернуть чат"
+      confirm_flag: "Вы действительно хотите пожаловаться на сообщение пользователя %{username}?"
       deleted: "Сообщение было удалено. [view]"
       delete: "Удалить"
       edited: "изменено"
@@ -35,6 +36,7 @@ ru:
         title: "Начните с присоединения к каналу"
       enable: "Включить чат"
       flag: "Флаг"
+      flagged: "Это сообщение было отправлено на премодерацию"
       invalid_access: "У вас нет доступа для просмотра этого канала"
       invitation_notification: "<span>%{username} пригласил вас присоединиться к каналу</span>"
       in_reply_to: "В ответ на"
@@ -98,6 +100,7 @@ ru:
         few: "%{count} файла"
         many: "%{count} файлов"
         other: "%{count} файлов"
+      you_flagged: "Вы пожаловались на это сообщение"
       exit: "Назад"
       channel_selector:
         title: "Перейти на канал"
@@ -115,6 +118,8 @@ ru:
         types:
           category: "Раздел"
           topic: "Тема"
+      reviewable:
+        type: "Сообщение чата"
       reactions:
         only_you: "Вы отреагировали при помощи эмодзи :%{emoji}:"
         and_others: "Вы, %{usernames}, отреагировали при помощи эмодзи :%{emoji}:"
@@ -125,6 +130,7 @@ ru:
         toggle_toolbar: "Переключить панель инструментов"
       quote:
         original_channel: "Первоначально отправлено в <a href=\"%{channelLink}\">#%{channel}</a>."
+        copy_success: "Цитата из чата скопирована в буфер обмена."
       notification_levels:
         never: "Никогда"
         mention: "Только для упоминаний"
@@ -174,6 +180,7 @@ ru:
       selection:
         cancel: "Отменить"
         move_to_topic: "Перейти к теме"
+        quote_selection: "Цитировать"
         error: "При перемещении сообщений чата произошла ошибка"
         title: "Переместить чат в тему"
         new_topic:
@@ -238,3 +245,8 @@ ru:
             sender:
               label: Отправитель
               description: Системные значения по умолчанию
+    review:
+      types:
+        reviewable_chat_message:
+          title: "Сообщение на премодерации"
+          flagged_by: "Жалоба от"

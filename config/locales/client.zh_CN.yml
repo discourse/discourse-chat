@@ -24,6 +24,7 @@ zh_CN:
       click_to_join: "点击此处查看可用频道。"
       close: "关闭"
       collapse: "折叠聊天抽屉"
+      confirm_flag: "确定要举报 %{username} 的消息吗？"
       deleted: "一条消息已被删除。[查看]"
       delete: "删除"
       edited: "已编辑"
@@ -35,6 +36,7 @@ zh_CN:
         title: "首先加入频道"
       enable: "启用聊天"
       flag: "举报"
+      flagged: "此消息已被举报，等待审核"
       invalid_access: "您无权查看此聊天频道"
       invitation_notification: "<span>%{username} 邀请您加入聊天频道</span>"
       in_reply_to: "回复"
@@ -86,6 +88,7 @@ zh_CN:
       upload: "附加文件"
       uploaded_files:
         other: "%{count} 个文件"
+      you_flagged: "您已举报此消息"
       exit: "返回"
       channel_selector:
         title: "跳转到频道"
@@ -103,6 +106,8 @@ zh_CN:
         types:
           category: "类别"
           topic: "话题"
+      reviewable:
+        type: "聊天消息"
       reactions:
         only_you: "您回应了 :%{emoji}:"
         and_others: "您，%{usernames} 回应了 :%{emoji}:"
@@ -214,3 +219,8 @@ zh_CN:
             sender:
               label: 发送人
               description: 默认为“系统”
+    review:
+      types:
+        reviewable_chat_message:
+          title: "举报的聊天消息"
+          flagged_by: "举报者"

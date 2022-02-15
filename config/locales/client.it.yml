@@ -24,6 +24,7 @@ it:
       click_to_join: "Fai clic qui per visualizzare i canali disponibili."
       close: "Chiudi"
       collapse: "Comprimi il cassetto della chat"
+      confirm_flag: "Vuoi segnalare il messaggio di %{username}?"
       deleted: "Un messaggio è stato eliminato. [visualizza]"
       delete: "Elimina"
       edited: "modificato"
@@ -35,6 +36,7 @@ it:
         title: "Per iniziare partecipa a un canale"
       enable: "Abilita chat"
       flag: "Segnala"
+      flagged: "Questo messaggio è stato segnalato per la revisione"
       invalid_access: "Non hai accesso alla visualizzazione di questo canale chat"
       invitation_notification: "<span>%{username} ti ha invitato a partecipare a un canale di chat</span>"
       in_reply_to: "In risposta a"
@@ -90,6 +92,7 @@ it:
       uploaded_files:
         one: "%{count} file"
         other: "%{count} file"
+      you_flagged: "Hai segnalato questo messaggio"
       exit: "indietro"
       channel_selector:
         title: "Vai al canale"
@@ -107,6 +110,8 @@ it:
         types:
           category: "Categoria"
           topic: "Argomento"
+      reviewable:
+        type: "Messaggio di chat"
       reactions:
         only_you: "Hai reagito con :%{emoji}:"
         and_others: "Tu, %{usernames} avete reagito con :%{emoji}:"
@@ -115,6 +120,8 @@ it:
         you_others_and_more: "Tu, %{usernames} e altri %{more} avete reagito con :%{emoji}:"
       composer:
         toggle_toolbar: "Attiva barra degli strumenti"
+      quote:
+        original_channel: "Inviato in origine in <a href=\"%{channelLink}\">#%{channel}</a>."
       notification_levels:
         never: "Mai"
         mention: "Solo per le menzioni"
@@ -220,3 +227,8 @@ it:
             sender:
               label: Mittente
               description: Torna ai valori predefiniti di sistema
+    review:
+      types:
+        reviewable_chat_message:
+          title: "Messaggio di chat segnalato"
+          flagged_by: "Segnalato da"

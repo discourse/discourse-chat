@@ -24,6 +24,7 @@ fr:
       click_to_join: "Cliquez ici pour voir les canaux disponibles."
       close: "Fermer"
       collapse: "Réduire le tiroir de chat"
+      confirm_flag: "Voulez-vous vraiment signaler le message de %{username} ?"
       deleted: "Un message a été supprimé. [view]"
       delete: "Supprimer"
       edited: "modifié"
@@ -35,6 +36,7 @@ fr:
         title: "Commencez par rejoindre un canal"
       enable: "Activer le chat"
       flag: "Drapeau"
+      flagged: "Ce message a été signalé pour examen"
       invalid_access: "Vous n'avez pas accès à ce canal de discussion"
       invitation_notification: "<span>%{username} vous a invité(e) à rejoindre un canal de discussion</span>"
       in_reply_to: "En réponse à"
@@ -90,6 +92,7 @@ fr:
       uploaded_files:
         one: "%{count} fichier"
         other: "%{count} fichiers"
+      you_flagged: "Vous avez signalé ce message"
       exit: "retour"
       channel_selector:
         title: "Accéder au canal"
@@ -107,6 +110,8 @@ fr:
         types:
           category: "Catégorie"
           topic: "Sujet"
+      reviewable:
+        type: "Message de chat"
       reactions:
         only_you: "Vous avez réagi avec :%{emoji}:"
         and_others: "Vous, %{usernames} avez réagi avec :%{emoji}:"
@@ -222,3 +227,8 @@ fr:
             sender:
               label: Expéditeur
               description: Paramètres par défaut
+    review:
+      types:
+        reviewable_chat_message:
+          title: "Message de chat signalé"
+          flagged_by: "Signalé par"

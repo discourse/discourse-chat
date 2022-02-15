@@ -14,6 +14,37 @@ ar:
     errors:
       channel_exists_for_category: "توجد قناة بالفعل في هذه الفئة وبهذا الاسم"
       channel_exists_for_topic: "توجد قناة بالفعل لهذا الموضوع"
+    reviewables:
+      actions:
+        agree:
+          title: "موافقة..."
+        agree_and_keep_message:
+          title: "الاحتفاظ بالرسالة"
+          description: "يمكنك الموافقة على البلاغ والاحتفاظ بالرسالة دون تغيير."
+        agree_and_keep_deleted:
+          title: "ترك الرسالة محذوفة"
+          description: "ويمكنك الموافقة على البلاغ وترك الرسالة محذوفة."
+        agree_and_suspend:
+          title: "تعليق المستخدم"
+          description: "يمكنك الموافقة على البلاغ وتعليق المستخدم."
+        agree_and_silence:
+          title: "كتم المستخدم"
+          description: "يمكنك الموافقة على البلاغ وكتم المستخدم."
+        agree_and_restore:
+          title: "استعادة الرسالة"
+          description: "يمكنك استعادة الرسالة حتى يتمكن المستخدمون من رؤيتها."
+        agree_and_delete:
+          title: "حذف الرسالة"
+          description: "يمكنك حذف الرسالة حتى لا يتمكن المستخدمون من رؤيتها."
+        delete_and_agree:
+          title: "حذف الرسالة"
+        disagree_and_restore:
+          title: "عدم الموافقة واستعادة الرسالة"
+          description: "يمكنك استعادة الرسالة حتى يتمكن جميع المستخدمين من رؤيتها."
+        disagree:
+          title: "عدم الموافقة"
+        ignore:
+          title: "تجاهل"
   discourse_push_notifications:
     popup:
       chat_mention: "أشار @%{username} إليك في الدردشة"
@@ -24,3 +55,6 @@ ar:
     scriptables:
       send_chat_message:
         title: إرسال رسالة دردشة
+  reviewable_score_types:
+    needs_review:
+      title: "بحاجة إلى المراجعة"

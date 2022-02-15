@@ -24,6 +24,7 @@ de:
       click_to_join: "Klicke hier, um die verfügbaren Kanäle zu sehen."
       close: "Schließen"
       collapse: "Chat-Bereich ausblenden"
+      confirm_flag: "Bist du sicher, dass du die Nachricht von %{username} markieren möchtest?"
       deleted: "Eine Nachricht wurde gelöscht. [Anzeigen]"
       delete: "Löschen"
       edited: "bearbeitet"
@@ -35,6 +36,7 @@ de:
         title: "Beginne, indem du einem Kanal beitrittst"
       enable: "Chat aktivieren"
       flag: "Melden"
+      flagged: "Diese Nachricht wurde zur Überprüfung markiert"
       invalid_access: "Du bist nicht befugt, diesen Chat-Kanal anzuzeigen"
       invitation_notification: "<span>%{username} hat dich eingeladen, einem Chat-Kanal beizutreten</span>"
       in_reply_to: "Als Antwort auf"
@@ -90,6 +92,7 @@ de:
       uploaded_files:
         one: "%{count} Datei"
         other: "%{count} Dateien"
+      you_flagged: "Du hast diese Nachricht markiert"
       exit: "zurück"
       channel_selector:
         title: "Zum Kanal springen"
@@ -107,6 +110,8 @@ de:
         types:
           category: "Kategorie"
           topic: "Thema"
+      reviewable:
+        type: "Chat-Nachricht"
       reactions:
         only_you: "Du hast reagiert mit :%{emoji}:"
         and_others: "Du, %{usernames} haben reagiert mit :%{emoji}:"
@@ -222,3 +227,8 @@ de:
             sender:
               label: Absender
               description: Standardmäßig System
+    review:
+      types:
+        reviewable_chat_message:
+          title: "Chat-Nachricht markiert"
+          flagged_by: "Markiert von"

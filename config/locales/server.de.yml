@@ -14,6 +14,37 @@ de:
     errors:
       channel_exists_for_category: "Für diese Kategorie und diesen Namen existiert bereits ein Kanal"
       channel_exists_for_topic: "Für dieses Thema existiert bereits ein Kanal"
+    reviewables:
+      actions:
+        agree:
+          title: "Zustimmen …"
+        agree_and_keep_message:
+          title: "Nachricht behalten"
+          description: "Markierung zustimmen und die Nachricht unverändert beibehalten."
+        agree_and_keep_deleted:
+          title: "Nachricht gelöscht lassen"
+          description: "Markierung zustimmen und die Nachricht gelöscht lassen."
+        agree_and_suspend:
+          title: "Benutzer sperren"
+          description: "Markierung zustimmen und den Benutzer sperren."
+        agree_and_silence:
+          title: "Benutzer stummschalten"
+          description: "Markierung zustimmen und den Benutzer stummschalten."
+        agree_and_restore:
+          title: "Nachricht wiederherstellen"
+          description: "Nachricht wiederherstellen, damit Benutzer sie sehen können."
+        agree_and_delete:
+          title: "Nachricht löschen"
+          description: "Nachricht löschen, damit Benutzer sie nicht sehen können."
+        delete_and_agree:
+          title: "Nachricht löschen"
+        disagree_and_restore:
+          title: "Ablehnen und Nachricht wiederherstellen"
+          description: "Nachricht wiederherstellen, damit alle Benutzer sie sehen können."
+        disagree:
+          title: "Ablehnen"
+        ignore:
+          title: "Ignorieren"
   discourse_push_notifications:
     popup:
       chat_mention: "@%{username} hat dich im Chat erwähnt"
@@ -24,3 +55,6 @@ de:
     scriptables:
       send_chat_message:
         title: Chat-Nachricht senden
+  reviewable_score_types:
+    needs_review:
+      title: "Überprüfung erforderlich"

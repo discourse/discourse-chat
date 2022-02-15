@@ -143,6 +143,19 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
       this,
       "_insertUpload"
     );
+
+    this.appEvents.on("chat:modify-selection", this, "_modifySelection");
+  },
+
+  _modifySelection(opts = { type: null }) {
+    const sel = this._getSelected("", { lineVal: true });
+    if (opts.type === "bold") {
+      this._applySurround(sel, "**", "**", "bold_text");
+    } else if (opts.type === "italic") {
+      this._applySurround(sel, "_", "_", "italic_text");
+    } else if (opts.type === "code") {
+      this._applySurround(sel, "`", "`", "code_text");
+    }
   },
 
   willDestroyElement() {
@@ -173,6 +186,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     );
 
     this.appEvents.off("chat:focus-composer", this, "_focusTextArea");
+    this.appEvents.off("chat:modify-selection", this, "_modifySelection");
   },
 
   _insertUpload(_, upload) {

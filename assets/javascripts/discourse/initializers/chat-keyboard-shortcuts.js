@@ -32,6 +32,16 @@ export default {
       chatService.switchChannelUpOrDown("down");
     };
 
+    const isChatComposer = (el) => el.classList.contains("chat-composer-input");
+    const modifyComposerSelection = (event, type) => {
+      if (!isChatComposer(event.target)) {
+        return;
+      }
+      event.preventDefault();
+      event.stopPropagation();
+      appEvents.trigger("chat:modify-selection", { type });
+    };
+
     withPluginApi("0.12.1", (api) => {
       api.addKeyboardShortcut("command+k", openChannelSelector, {
         global: true,
@@ -41,6 +51,22 @@ export default {
       api.addKeyboardShortcut("alt+down", handleMoveDownShortcut, {
         global: true,
       });
+
+      api.addKeyboardShortcut(
+        "ctrl+b",
+        (event) => modifyComposerSelection(event, "bold"),
+        { global: true }
+      );
+      api.addKeyboardShortcut(
+        "ctrl+i",
+        (event) => modifyComposerSelection(event, "italic"),
+        { global: true }
+      );
+      api.addKeyboardShortcut(
+        "ctrl+e",
+        (event) => modifyComposerSelection(event, "code"),
+        { global: true }
+      );
     });
   },
 };

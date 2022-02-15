@@ -121,6 +121,9 @@ en:
 
       composer:
         toggle_toolbar: "Toggle toolbar"
+        italic_text: "emphasized text"
+        bold_title: "Strong"
+        code_text: "indent preformatted text by 4 spaces"
 
       quote:
         original_channel: "Originally sent in <a href=\"%{channelLink}\">#%{channel}</a>."

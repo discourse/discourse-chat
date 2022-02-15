@@ -8,10 +8,43 @@ pt_BR:
   site_settings:
     chat_enabled: "Ative o plugin discourse-chat. Use a ação \"Ativar chat\" por tópico para configurar."
     chat_allowed_groups: "Usuários(as) nestes grupos podem conversar."
+    chat_channel_retention_days: "Mensagens de chat em canais regulares serão mantidas por essa quantidade de dias. Defina para 0 para manter mensagens para sempre."
+    chat_dm_retention_days: "Mensagens de chat em canais pessoais serão mantidas por essa quantidade de dias. Defina para 0 para manter mensagens para sempre."
   chat:
     errors:
       channel_exists_for_category: "Já existe um canal para este nome e categoria"
       channel_exists_for_topic: "Já existe um canal para este tópico"
+    reviewables:
+      actions:
+        agree:
+          title: "Concordo..."
+        agree_and_keep_message:
+          title: "Manter mensagem"
+          description: "Concorde com a sinalização e mantenha a mensagem inalterada."
+        agree_and_keep_deleted:
+          title: "Manter mensagem excluída"
+          description: "Concorde com a sinalização e mantenha a mensagem excluída."
+        agree_and_suspend:
+          title: "Suspender usuário(s)"
+          description: "Concorde com a sinalização e suspenda o usuário(a)."
+        agree_and_silence:
+          title: "Silenciar usuário(a)"
+          description: "Concorde com a sinalização e silencie o usuário(a)."
+        agree_and_restore:
+          title: "Restaurar mensagem"
+          description: "Restaure a mensagem para que os(as) usuários(as) possam vê-las."
+        agree_and_delete:
+          title: "Excluir mensagem"
+          description: "Exclua a mensagem para que os(as) usuários(as) não possam vê-las."
+        delete_and_agree:
+          title: "Excluir mensagem"
+        disagree_and_restore:
+          title: "Não concordar e restaurar mensagem"
+          description: "Restaure a mensagem para que todos(as) os(as) usuários(as) possam vê-las."
+        disagree:
+          title: "Discordar"
+        ignore:
+          title: "Ignorar"
   discourse_push_notifications:
     popup:
       chat_mention: "@Você foi mencionado(a) por %{username} no chat"
@@ -22,3 +55,6 @@ pt_BR:
     scriptables:
       send_chat_message:
         title: Enviar mensagem de chat
+  reviewable_score_types:
+    needs_review:
+      title: "Precisa de revisão"

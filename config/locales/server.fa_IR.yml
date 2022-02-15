@@ -12,6 +12,22 @@ fa_IR:
     errors:
       channel_exists_for_category: "یک کانال دیگر از قبل برای این دسته‌بندی و نام وجود دارد"
       channel_exists_for_topic: "یک کانال دیگر از قبل برای این موضوع وجود دارد"
+    reviewables:
+      actions:
+        agree:
+          title: "موافقم..."
+        agree_and_delete:
+          title: "حذف پیام"
+          description: "پیام را حذف کنید تا کاربران نتوانند آن را ببینند."
+        delete_and_agree:
+          title: "حذف پیام"
+        disagree_and_restore:
+          title: "مخالفت و بازگرداندن پیام"
+          description: "پیام را بازیابی کنید تا همه کاربران بتوانند آن را ببینند."
+        disagree:
+          title: "مخالفم"
+        ignore:
+          title: "نادیده گرفتن"
   discourse_push_notifications:
     popup:
       chat_mention: "@%{username} در گفتگو به شما اشاره کرده است"
@@ -21,3 +37,6 @@ fa_IR:
     scriptables:
       send_chat_message:
         title: ارسال پیام
+  reviewable_score_types:
+    needs_review:
+      title: "نیاز به بررسی دارد"

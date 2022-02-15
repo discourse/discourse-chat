@@ -24,6 +24,7 @@ ar:
       click_to_join: "انقر هنا لعرض القنوات المتاحة"
       close: "إغلاق"
       collapse: "طي ساحب الدردشة"
+      confirm_flag: "هل تريد بالتأكيد الإبلاغ عن رسالة %{username}؟"
       deleted: "تم حذف رسالة. [view]"
       delete: "حذف"
       edited: "تم التعديل"
@@ -35,6 +36,7 @@ ar:
         title: "البدء بالانضمام إلى قناة"
       enable: "تفعيل الدردشة"
       flag: "الإبلاغ"
+      flagged: "لقد تم الإبلاغ عن الرسالة للمراجعة"
       invalid_access: "ليس لديك إذن الوصول لعرض قناة الدردشة هذه"
       invitation_notification: "<span>دعاك %{username} للانضمام إلى قناة دردشة</span>"
       in_reply_to: "ردًا على"
@@ -106,6 +108,7 @@ ar:
         few: "%{count} ملفات"
         many: "%{count} ملفًا"
         other: "%{count} ملف"
+      you_flagged: "لقد أبلغت عن هذه الرسالة"
       exit: "عودة"
       channel_selector:
         title: "الانتقال إلى القناة"
@@ -123,6 +126,8 @@ ar:
         types:
           category: "الفئة"
           topic: "الموضوع"
+      reviewable:
+        type: "رسالة دردشة"
       reactions:
         only_you: "لقد تفاعلت باستخدام :%{emoji}:"
         and_others: "لقد تفاعلت أنت و%{usernames} باستخدام :%{emoji}:"
@@ -131,6 +136,8 @@ ar:
         you_others_and_more: "لقد تفاعلت أنت و%{usernames} و%{more} من المستخدمين الآخرين باستخدام :%{emoji}:"
       composer:
         toggle_toolbar: "تشغيل شريط الأدوات"
+      quote:
+        original_channel: "تم إرساله في الأساس في <a href=\"%{channelLink}\">#%{channel}</a>."
       notification_levels:
         never: "أبدًا"
         mention: "للإشارات فقط"
@@ -252,3 +259,8 @@ ar:
             sender:
               label: المرسل
               description: يتم ضبطه افتراضيًا على النظام
+    review:
+      types:
+        reviewable_chat_message:
+          title: "رسالة دردشة تم الإبلاغ عنها"
+          flagged_by: "تم الإبلاغ بواسطة"

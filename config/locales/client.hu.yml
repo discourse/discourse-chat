@@ -24,6 +24,7 @@ hu:
       click_to_join: "Kattintson ide az elérhető csatornák megtekintéséhez."
       close: "Bezárás"
       collapse: "Csevegőfiók összecsukása"
+      confirm_flag: "Biztos, hogy jelenti %{username} üzenetét?"
       deleted: "Egy üzenet törölve lett. [megtekintés]"
       delete: "Törlés"
       edited: "szerkesztve"
@@ -35,6 +36,7 @@ hu:
         title: "Kezdje azzal, hogy csatlakozik egy csatornához"
       enable: "Csevegés engedélyezése"
       flag: "Jelentés"
+      flagged: "Ezt az üzenetet felülvizsgálatra jelentették"
       invalid_access: "Nincs hozzáférése ennek a csevegőcsatornának a megtekintéséhez"
       invitation_notification: "<span>%{username} meghívta, hogy csatlakozzon egy csevegőcsatornához</span>"
       in_reply_to: "Válaszul erre:"
@@ -90,6 +92,7 @@ hu:
       uploaded_files:
         one: "%{count} fájl"
         other: "%{count} fájl"
+      you_flagged: "Ön jelentette ezt az üzenetet"
       exit: "vissza"
       channel_selector:
         title: "Ugrás a csatornára"
@@ -107,6 +110,8 @@ hu:
         types:
           category: "Kategória"
           topic: "Téma"
+      reviewable:
+        type: "Csevegőüzenet"
       reactions:
         only_you: "Ezzel reagált: :%{emoji}:"
         and_others: "Ön, %{usernames} ezzel reagált: :%{emoji}:"
@@ -222,3 +227,8 @@ hu:
             sender:
               label: Feladó
               description: Alapértelmezés szerint a rendszer
+    review:
+      types:
+        reviewable_chat_message:
+          title: "Jelentett csevegőüzenet"
+          flagged_by: "Jelentette:"

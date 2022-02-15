@@ -14,6 +14,37 @@ it:
     errors:
       channel_exists_for_category: "Esiste già un canale per questa categoria e questo nome"
       channel_exists_for_topic: "Esiste già un canale per questo argomento"
+    reviewables:
+      actions:
+        agree:
+          title: "Accetta..."
+        agree_and_keep_message:
+          title: "Conserva messaggio"
+          description: "Accetta segnalazione e mantieni il messaggio invariato."
+        agree_and_keep_deleted:
+          title: "Conferma eliminazione del messaggio"
+          description: "Accetta segnalazione e conferma eliminazione del messaggio."
+        agree_and_suspend:
+          title: "Sospendi utente"
+          description: "Accetta segnalazione e sospendi l'utente."
+        agree_and_silence:
+          title: "Silenzia utente"
+          description: "Accetta segnalazione e silenzia l'utente."
+        agree_and_restore:
+          title: "Ripristina messaggio"
+          description: "Ripristina il messaggio in modo che gli utenti possano vederlo."
+        agree_and_delete:
+          title: "Elimina messaggio"
+          description: "Elimina il messaggio in modo che gli utenti non possano vederlo."
+        delete_and_agree:
+          title: "Elimina messaggio"
+        disagree_and_restore:
+          title: "Rifiuta e ripristina il messaggio"
+          description: "Ripristina il messaggio in modo che tutti gli utenti possano vederlo."
+        disagree:
+          title: "Rifiuta"
+        ignore:
+          title: "Ignora"
   discourse_push_notifications:
     popup:
       chat_mention: "@%{username} ti ha menzionato in chat"
@@ -24,3 +55,6 @@ it:
     scriptables:
       send_chat_message:
         title: Invia messaggio di chat
+  reviewable_score_types:
+    needs_review:
+      title: "Necessita di revisione"

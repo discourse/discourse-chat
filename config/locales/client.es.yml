@@ -24,6 +24,7 @@ es:
       click_to_join: "Haz clic aquí para ver los canales disponibles."
       close: "Cerrar"
       collapse: "Contraer contenedor del chat"
+      confirm_flag: "¿Seguro que quieres denunciar el mensaje de %{username}?"
       deleted: "Se eliminó un mensaje. [view]"
       delete: "Eliminar"
       edited: "editado"
@@ -35,6 +36,7 @@ es:
         title: "Comienza uniéndote a un canal"
       enable: "Habilitar chat"
       flag: "Denunciar"
+      flagged: "Este mensaje ha sido denunciado y se someterá a revisión"
       invalid_access: "No tienes acceso para ver este canal de chat"
       invitation_notification: "<span>%{username} te invitó a unirte a un canal de chat</span>"
       in_reply_to: "En respuesta a"
@@ -90,6 +92,7 @@ es:
       uploaded_files:
         one: "%{count} archivo"
         other: "%{count} archivos"
+      you_flagged: "Has denunciado este mensaje"
       exit: "atrás"
       channel_selector:
         title: "Ir al canal"
@@ -107,6 +110,8 @@ es:
         types:
           category: "Categoría"
           topic: "Tema"
+      reviewable:
+        type: "Mensaje de chat"
       reactions:
         only_you: "Has reaccionado con :%{emoji}:"
         and_others: "Tú, %{usernames} reaccionaste con :%{emoji}:"
@@ -115,6 +120,8 @@ es:
         you_others_and_more: "Tú, %{usernames} y %{more} personas más reaccionasteis con :%{emoji}:"
       composer:
         toggle_toolbar: "Alternar barra de herramientas"
+      quote:
+        original_channel: "Enviado originalmente en <a href=\"%{channelLink}\">#%{channel}</a>."
       notification_levels:
         never: "Nunca"
         mention: "Solo para menciones"
@@ -220,3 +227,8 @@ es:
             sender:
               label: Remitente
               description: Valores predeterminados del sistema
+    review:
+      types:
+        reviewable_chat_message:
+          title: "Mensaje de chat denunciado"
+          flagged_by: "Denunciado por"

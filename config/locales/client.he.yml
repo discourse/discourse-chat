@@ -24,6 +24,7 @@ he:
       click_to_join: "לחיצה כאן תציג את הערוצים הזמינים."
       close: "סגירה"
       collapse: "צמצום מגירת צ׳אט"
+      confirm_flag: "לסמן את ההודעה של %{username}?"
       deleted: "הודעה נמחקה. [צפייה]"
       delete: "מחיקה"
       edited: "נערך"
@@ -35,6 +36,7 @@ he:
         title: "אפשר להתחיל על ידי הצטרפות לערוץ"
       enable: "הפעלת צ׳אט"
       flag: "סימון בדגל"
+      flagged: "הודעה זו סומנה לסקירה"
       invalid_access: "אין לך גישה לצפות בערוץ הצ׳אט הזה"
       invitation_notification: "<span>הוזמנת להצטרף לערוץ צ׳אט על ידי %{username}</span>"
       in_reply_to: "בתגובה אל"
@@ -59,6 +61,9 @@ he:
           other: "נשלחו הזמנות"
         invite: "הזמנה לערוץ"
       no_public_channels: "לא הצטרפת לאף ערוץ."
+      only_chat_push_notifications:
+        title: "לשלוח התראות בדחיפה על הצ׳אט בלבד"
+        description: "לחסום שליחה של התראות בדחיפה שאינן לגבי הצ׳אט"
       open: "פתיחת צ׳אט"
       open_full_page: "פתיחת צ׳אט במסך מלא"
       open_message: "פתיחת הודעה בצ׳אט"
@@ -90,6 +95,7 @@ he:
         two: "%{count} קבצים"
         many: "%{count} קבצים"
         other: "%{count} קבצים"
+      you_flagged: "סימנת את ההודעה הזאת"
       exit: "חזרה"
       channel_selector:
         title: "קפיצה לערוץ"
@@ -107,6 +113,8 @@ he:
         types:
           category: "קטגוריה"
           topic: "נושא"
+      reviewable:
+        type: "הודעת צ׳אט"
       reactions:
         only_you: "הגבת עם :%{emoji}:"
         and_others: "הגבת, יחד עם %{usernames} באמוג׳י :%{emoji}:"
@@ -230,3 +238,8 @@ he:
             sender:
               label: מוען
               description: ברירת המחדל כמו המערכת
+    review:
+      types:
+        reviewable_chat_message:
+          title: "הודעת צ׳אט מסומנת"
+          flagged_by: "סומנה על ידי"

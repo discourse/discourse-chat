@@ -14,6 +14,37 @@ hu:
     errors:
       channel_exists_for_category: "Már létezik csatorna ehhez a kategóriával, és ezzel a névvel"
       channel_exists_for_topic: "Már létezik csatorna ehhez a témához"
+    reviewables:
+      actions:
+        agree:
+          title: "Egyetértek…"
+        agree_and_keep_message:
+          title: "Üzenet megtartása"
+          description: "Egyetért a jelentéssel, és változatlanul hagyja az üzenetet."
+        agree_and_keep_deleted:
+          title: "Üzenet törölve hagyása"
+          description: "Egyetért a jelentéssel, és törölve hagyja az üzenetet."
+        agree_and_suspend:
+          title: "Felhasználó felfüggesztése"
+          description: "Egyetért a jelentéssel, és felfüggeszti a felhasználót."
+        agree_and_silence:
+          title: "Felhasználó némítása"
+          description: "Egyetért a jelentéssel, és némítja a felhasználót."
+        agree_and_restore:
+          title: "Üzenet helyreállítása"
+          description: "Üzenet helyreállítása, hogy láthassák a felhasználók."
+        agree_and_delete:
+          title: "Üzenet törlése"
+          description: "Üzenet törlése, hogy a felhasználók ne láthassák."
+        delete_and_agree:
+          title: "Üzenet törlése"
+        disagree_and_restore:
+          title: "Nem ért egyet, és az üzenet helyreállítása"
+          description: "Üzenet helyreállítása, hogy az összes felhasználó láthassa."
+        disagree:
+          title: "Nem ért egyet"
+        ignore:
+          title: "Figyelmen kívül hagyás"
   discourse_push_notifications:
     popup:
       chat_mention: "@%{username} megemlítette a csevegésben"
@@ -24,3 +55,6 @@ hu:
     scriptables:
       send_chat_message:
         title: Csevegőüzenet küldése
+  reviewable_score_types:
+    needs_review:
+      title: "Felülvizsgálatra szorul"

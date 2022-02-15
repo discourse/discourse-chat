@@ -24,8 +24,10 @@ fi:
       click_to_join: "Näytä saatavilla olevat kanavat napsauttamalla tätä."
       close: "Sulje"
       collapse: "Tiivistä chat-laatikko"
+      confirm_flag: "Haluatko varmasti liputtaa käyttäjän %{username} viestin?"
       deleted: "Viesti poistettiin. [näytä]"
       delete: "Poista"
+      edited: "muokattu"
       empty_state:
         create_personal_chat: "Aloita henkilökohtainen chat"
         no_public_available: "Tällä hetkellä ei ole saatavilla julkisia kanavia, joita voit seurata."
@@ -34,6 +36,7 @@ fi:
         title: "Aloita liittymällä kanavalle"
       enable: "Ota chat käyttöön"
       flag: "Liputa"
+      flagged: "Tämä viesti on liputettu käsiteltäväksi"
       invalid_access: "Sinulla ei ole tämän chat-kanavan katseluoikeutta"
       invitation_notification: "<span>%{username} kutsui sinut liittymään chat-kanavalle</span>"
       in_reply_to: "Vastauksena:"
@@ -71,6 +74,7 @@ fi:
       reply: "Vastaa"
       edit: "Muokkaa"
       copy_link: "Kopioi linkki"
+      rebake_message: "Kokoa HTML uudelleen"
       restore: "Palauta poistettu viesti"
       save: "Tallenna"
       select: "Valitse"
@@ -88,7 +92,11 @@ fi:
       uploaded_files:
         one: "%{count} tiedosto"
         other: "%{count} tiedostoa"
+      you_flagged: "Liputit tämän viestin"
       exit: "takaisin"
+      channel_selector:
+        title: "Siirry kanavalle"
+        no_channels: "Hakuasi vastaavia kanavia ei ole"
       create_channel:
         choose_category:
           label: "Valitse alue"
@@ -102,6 +110,8 @@ fi:
         types:
           category: "Alue"
           topic: "Ketju"
+      reviewable:
+        type: "Chat-viesti"
       reactions:
         only_you: "Reagoit emojilla :%{emoji}:"
         and_others: "Sinä, %{usernames} reagoitte emojilla :%{emoji}:"
@@ -110,6 +120,9 @@ fi:
         you_others_and_more: "Sinä, %{usernames} ja %{more} muuta reagoivat emojilla :%{emoji}:"
       composer:
         toggle_toolbar: "Vaihda työkalupalkki"
+      quote:
+        original_channel: "Lähetetty alun perin kanavalla <a href=\"%{channelLink}\">#%{channel}</a>."
+        copy_success: "Chat-lainaus kopioitiin leikepöydälle."
       notification_levels:
         never: "Ei koskaan"
         mention: "Vain maininnoissa"
@@ -159,6 +172,7 @@ fi:
       selection:
         cancel: "Peruuta"
         move_to_topic: "Siirrä ketjuun"
+        quote_selection: "Lainaus"
         error: "Chat-viestien siirtämisessä tapahtui virhe"
         title: "Siirrä chat ketjuun"
         new_topic:
@@ -182,6 +196,9 @@ fi:
         many_users:
           one: "%{commaSeparatedUsernames} ja %{count} muu kirjoittavat"
           other: "%{commaSeparatedUsernames} ja %{count} muuta kirjoittavat"
+      retention_reminders:
+        public: "Kanavan historia säilytetään %{days} päivän ajan."
+        dm: "Henkilökohtainen keskusteluhistoria säilytetään %{days} päivän ajan."
     notifications:
       popup:
         chat_mention: "%{username} mainitsi sinut chatissa"
@@ -212,3 +229,8 @@ fi:
             sender:
               label: Lähettäjä
               description: Oletuksena järjestelmä
+    review:
+      types:
+        reviewable_chat_message:
+          title: "Liputettu chat-viesti"
+          flagged_by: "Liputtanut"

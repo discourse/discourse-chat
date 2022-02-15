@@ -22,6 +22,7 @@ fa_IR:
         create: "ایجاد کانال"
       click_to_join: "برای مشاهده کانال‌های موجود، اینجا را کلیک کنید."
       close: "بستن"
+      confirm_flag: "آیا برای پرچم گذاری پیام %{username} مطمئن هستید؟"
       deleted: "یک پیام حذف شد. [view]"
       delete: "حذف"
       edited: "ویرایش شده"
@@ -32,6 +33,7 @@ fa_IR:
         start_direct_message: "شما همچنین می‌توانید یک گفتگو شخصی را با یک یا چند کاربر شروع کنید."
       enable: "فعال کردن گفتگو"
       flag: "پرچم"
+      flagged: "این پیام برای بررسی پرچم گذاری شده است"
       invalid_access: "شما برای مشاهده گفتگوی این کانال دسترسی ندارید"
       invitation_notification: "<span>%{username} شما را دعوت کرده است که به این کانال گفتگو بپیوندید</span>"
       in_reply_to: "در پاسخ به"
@@ -72,6 +74,7 @@ fa_IR:
       title: "گفتگو"
       title_capitalized: "گفتگو"
       upload: "پیوست کردن یک پرونده"
+      you_flagged: "شما این پیام را پرچم گذاری کردید"
       exit: "بازگشت"
       channel_selector:
         no_channels: "هیچ کانالی با جستجوی شما مطابقت ندارد"
@@ -87,6 +90,8 @@ fa_IR:
         types:
           category: "دسته‌بندی"
           topic: "موضوع"
+      reviewable:
+        type: "پیام گفتگو"
       reactions:
         only_you: "شما با :%{emoji}: واکنش نشان دادید"
       notification_levels:
@@ -158,3 +163,8 @@ fa_IR:
             sender:
               label: فرستنده
               description: پیش‌فرض‌های سیستم
+    review:
+      types:
+        reviewable_chat_message:
+          title: "پیام گفتگوی پرچم گذاری شده"
+          flagged_by: "پرچم گذاری شده توسط"

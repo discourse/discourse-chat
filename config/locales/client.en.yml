@@ -211,14 +211,18 @@ en:
         dm: "Personal chat history is retained for %{days} days."
 
     notifications:
+      chat_quoted: "<span>%{username}</span> %{description}"
+
       popup:
         chat_mention: "%{username} mentioned you in chat"
         chat_group_mention: "%{username} mentioned @%{groupName} in chat"
         chat_message: "New chat message"
+        chat_quoted: "%{username} quoted your chat message"
 
       titles:
         chat_mention: "Chat mention"
         chat_invitation: "Chat invitation"
+        chat_quoted: "Chat quoted"
     topic:
       actions:
         chat_enable: "Enable Chat"

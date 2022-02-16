@@ -158,7 +158,9 @@ after_initialize do
   if respond_to?(:register_upload_in_use)
     register_upload_in_use do |upload|
       # TODO after May 2022 - remove this. No longer needed as chat uploads are in a table
-      ChatMessage.where("message LIKE ? OR message LIKE ?", "%#{upload.sha1}%", "%#{upload.base62_sha1}%").exists?
+      return true if ChatMessage.where("message LIKE ? OR message LIKE ?", "%#{upload.sha1}%", "%#{upload.base62_sha1}%").exists?
+
+      ChatDraft.exists?("data LIKE '%#{upload.sha1}%' OR data LIKE '%#{upload.base62_sha1}%'")
     end
   end
 
@@ -318,12 +320,6 @@ after_initialize do
     end
   rescue ActiveRecord::RecordNotFound
     nil
-  end
-
-  if respond_to?(:register_upload_in_use)
-    register_upload_in_use do |upload|
-      ChatDraft.exists?("data LIKE '%#{upload.sha1}%' OR data LIKE '%#{Base62.encode(upload.sha1.hex)}%'")
-    end
   end
 
   CHAT_NOTIFICATION_TYPES = [

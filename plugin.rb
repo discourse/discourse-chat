@@ -93,6 +93,7 @@ after_initialize do
   load File.expand_path('../lib/extensions/topic_view_serializer_extension.rb', __FILE__)
   load File.expand_path('../lib/extensions/detailed_tag_serializer_extension.rb', __FILE__)
   load File.expand_path('../lib/slack_compatibility.rb', __FILE__)
+  load File.expand_path('../lib/post_notification_handler.rb', __FILE__)
   load File.expand_path('../app/jobs/regular/process_chat_message.rb', __FILE__)
   load File.expand_path('../app/jobs/regular/create_chat_mention_notifications.rb', __FILE__)
   load File.expand_path('../app/jobs/regular/notify_users_watching_chat.rb', __FILE__)
@@ -279,7 +280,7 @@ after_initialize do
     chat_channel_retention_days: :dismissed_channel_retention_reminder,
     chat_dm_retention_days: :dismissed_dm_retention_reminder
   }
-  DiscourseEvent.on(:site_setting_changed) do |name, old_value, new_value|
+  on(:site_setting_changed) do |name, old_value, new_value|
     user_option_field = RETENTION_SETTINGS_TO_USER_OPTION_FIELDS[name.to_sym]
     begin
       if user_option_field && old_value != new_value && !new_value.zero?
@@ -288,6 +289,11 @@ after_initialize do
     rescue => e
       Rails.logger.warn("Error updating user_options fields after chat retention settings changed: #{e}")
     end
+  end
+
+  on(:post_alerter_after_save_post) do |post, new_record, notified|
+    next if !new_record
+    DiscourseChat::PostNotificationHandler.new(post, notified).handle
   end
 
   register_presence_channel_prefix("chat") do |channel|

@@ -175,7 +175,7 @@
             <div class="chat-send-error">
               {{message.error}}
               {{#if message.rateLimited}}
-                <a href class="try-sending-again" onclick={{action "retrySend" this}}>
+                <a href class="try-sending-again" onclick={{action "retrySend"}}>
                   {{i18n "chat.try_again"}}
                 </a>
               {{/if}}

@@ -6,7 +6,7 @@ class ChatViewSerializer < ApplicationSerializer
   def chat_messages
     ActiveModel::ArraySerializer.new(
       object.messages,
-      each_serializer: ChatBaseMessageSerializer,
+      each_serializer: ChatMessageSerializer,
       reviewable_ids: object.reviewable_ids,
       user_flag_statuses: object.user_flag_statuses,
       scope: scope

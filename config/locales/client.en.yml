@@ -122,7 +122,7 @@ en:
       composer:
         toggle_toolbar: "Toggle toolbar"
         italic_text: "emphasized text"
-        bold_title: "Strong"
+        bold_text: "strong text"
         code_text: "indent preformatted text by 4 spaces"
 
       quote:

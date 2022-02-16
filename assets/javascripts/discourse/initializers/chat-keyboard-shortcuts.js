@@ -43,27 +43,29 @@ export default {
     };
 
     withPluginApi("0.12.1", (api) => {
-      api.addKeyboardShortcut("command+k", openChannelSelector, {
+      const mac = /Mac|iPod|iPhone|iPad/.test(navigator.platform);
+      const mod = mac ? "meta" : "ctrl";
+
+      api.addKeyboardShortcut(`${mod}+k`, openChannelSelector, {
         global: true,
       });
-      api.addKeyboardShortcut("ctrl+k", openChannelSelector, { global: true });
       api.addKeyboardShortcut("alt+up", handleMoveUpShortcut, { global: true });
       api.addKeyboardShortcut("alt+down", handleMoveDownShortcut, {
         global: true,
       });
 
       api.addKeyboardShortcut(
-        "ctrl+b",
+        `${mod}+b`,
         (event) => modifyComposerSelection(event, "bold"),
         { global: true }
       );
       api.addKeyboardShortcut(
-        "ctrl+i",
+        `${mod}+i`,
         (event) => modifyComposerSelection(event, "italic"),
         { global: true }
       );
       api.addKeyboardShortcut(
-        "ctrl+e",
+        `${mod}+e`,
         (event) => modifyComposerSelection(event, "code"),
         { global: true }
       );

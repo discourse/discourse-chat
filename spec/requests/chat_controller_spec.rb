@@ -108,7 +108,7 @@ RSpec.describe DiscourseChat::ChatController do
       expect(response.parsed_body["chat_messages"].second_to_last["reviewable_id"]).to eq(second_to_last_reviewable.id)
     end
 
-    it "correctly markes reactions as 'reacted' for the current_user" do
+    it "correctly marks reactions as 'reacted' for the current_user" do
       heart_emoji = ":heart:"
       smile_emoji = ":smile"
 

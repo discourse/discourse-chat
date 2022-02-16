@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class ChatView
-  attr_reader :current_user, :chat_channel, :messages, :reviewable_ids, :user_flag_statuses
+  attr_reader :current_user, :chat_channel, :messages
 
   def initialize(chat_channel, messages, current_user)
     @chat_channel = chat_channel

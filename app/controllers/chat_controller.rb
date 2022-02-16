@@ -154,16 +154,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
       raise Discourse::InvalidParameters
     end
 
-    # n.b.: must fetch ID before querying DB
-    messages = ChatMessage
-      .includes(:in_reply_to)
-      .includes(:revisions)
-      .includes(:user)
-      .includes(chat_webhook_event: :incoming_chat_webhook)
-      .includes(reactions: :user)
-      .includes(:uploads)
-      .includes(chat_channel: :chatable)
-      .where(chat_channel: @chat_channel)
+    messages = preloaded_chat_message_query.where(chat_channel: @chat_channel)
 
     if params[:before_message_id]
       messages = messages.where("id < ?", params[:before_message_id])
@@ -261,23 +252,15 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     chatable = chat_channel.chatable
     guardian.ensure_can_see!(chatable)
     include_deleted = guardian.can_moderate_chat?(chatable)
-    base_query = ChatMessage
-      .includes(:in_reply_to)
-      .includes(:revisions)
-      .includes(:user)
-      .includes(chat_webhook_event: :incoming_chat_webhook)
-      .includes(reactions: :user)
-      .includes(:uploads)
-      .includes(chat_channel: :chatable)
-      .where(chat_channel: chat_channel)
 
-    base_query = base_query.with_deleted if include_deleted
-    past_messages = base_query
+    messages = preloaded_chat_message_query.where(chat_channel: chat_channel)
+    messages = messages.with_deleted if include_deleted
+    past_messages = messages
       .where("created_at < ?", @message.created_at)
       .order(created_at: :desc).limit(40)
 
     # .with_deleted if include_deleted
-    future_messages = base_query
+    future_messages = messages
       .where("created_at > ?", @message.created_at)
       .order(created_at: :asc)
 
@@ -384,6 +367,17 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
   end
 
   private
+
+  def preloaded_chat_message_query
+    ChatMessage
+      .includes(in_reply_to: [:user, chat_webhook_event: [:incoming_chat_webhook]])
+      .includes(:revisions)
+      .includes(:user)
+      .includes(chat_webhook_event: :incoming_chat_webhook)
+      .includes(reactions: :user)
+      .includes(:uploads)
+      .includes(chat_channel: :chatable)
+  end
 
   def set_user_last_read
     UserChatChannelMembership

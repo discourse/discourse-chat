@@ -107,6 +107,20 @@ RSpec.describe DiscourseChat::ChatController do
       expect(response.parsed_body["chat_messages"].last["reviewable_id"]).to eq(last_reviewable.id)
       expect(response.parsed_body["chat_messages"].second_to_last["reviewable_id"]).to eq(second_to_last_reviewable.id)
     end
+
+    it "correctly markes reactions as 'reacted' for the current_user" do
+      heart_emoji = ":heart:"
+      smile_emoji = ":smile"
+
+      last_message = chat_channel.chat_messages.last
+      last_message.reactions.create(user: user, emoji: heart_emoji)
+      last_message.reactions.create(user: admin, emoji: smile_emoji)
+
+      get "/chat/#{chat_channel.id}/messages.json", params: { page_size: page_size }
+      reactions = response.parsed_body["chat_messages"].last["reactions"]
+      expect(reactions[heart_emoji]["reacted"]).to eq(true)
+      expect(reactions[smile_emoji]["reacted"]).to eq(false)
+    end
   end
 
   describe "#enable_chat" do

@@ -1,10 +1,5 @@
 import { test } from "qunit";
-import {
-  fillIn,
-  settled,
-  triggerKeyEvent,
-  visit,
-} from "@ember/test-helpers";
+import { fillIn, settled, triggerKeyEvent, visit } from "@ember/test-helpers";
 import {
   acceptance,
   publishToMessageBus,

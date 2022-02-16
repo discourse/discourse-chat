@@ -146,6 +146,21 @@ after_initialize do
     results
   end
 
+  if respond_to?(:register_upload_unused_callback)
+    register_upload_unused_callback do |uploads|
+      uploads
+        .joins("LEFT JOIN chat_uploads pu ON cu.upload_id = uploads.id")
+        .where("cu.upload_id IS NULL")
+    end
+  end
+
+  if respond_to?(:register_upload_in_use)
+    register_upload_in_use do |upload|
+      # TODO after May 2022 - remove this. No longer needed as chat uploads are in a table
+      ChatMessage.where("message LIKE ? OR message LIKE ?", "%#{upload.sha1}%", "%#{upload.base62_sha1}%").exists?
+    end
+  end
+
   add_to_serializer(:listable_topic, :has_chat_live) do
     true
   end

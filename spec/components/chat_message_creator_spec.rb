@@ -425,7 +425,7 @@ describe DiscourseChat::ChatMessageCreator do
   end
 
   it "destroys draft after message was created" do
-    Draft.set(user1, "chat_#{public_chat_channel.id}", 0, "{ uploads: [] }")
+    ChatDraft.create!(user: user1, chat_channel: public_chat_channel, data: "{}")
 
     expect do
       DiscourseChat::ChatMessageCreator.create(
@@ -433,7 +433,7 @@ describe DiscourseChat::ChatMessageCreator do
         user: user1,
         content: "Hi @#{user2.username}"
       )
-    end.to change { Draft.count }.by(-1)
+    end.to change { ChatDraft.count }.by(-1)
   end
 
   describe "watched words" do

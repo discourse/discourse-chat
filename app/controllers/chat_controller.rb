@@ -365,6 +365,22 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     render json: success_json
   end
 
+  def set_draft
+    channel_id = params.require(:channel_id)
+
+    if params[:data].present?
+      ChatDraft
+        .find_or_initialize_by(user: current_user, chat_channel_id: channel_id)
+        .update(data: params[:data])
+    else
+      ChatDraft
+        .where(user: current_user, chat_channel_id: channel_id)
+        .destroy_all
+    end
+
+    render json: success_json
+  end
+
   private
 
   def set_user_last_read

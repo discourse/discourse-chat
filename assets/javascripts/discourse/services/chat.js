@@ -11,7 +11,6 @@ import { next } from "@ember/runloop";
 import { Promise } from "rsvp";
 import { CHATABLE_TYPES } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import simpleCategoryHashMentionTransform from "discourse/plugins/discourse-chat/discourse/lib/simple-category-hash-mention-transform";
-import Draft from "discourse/models/draft";
 import discourseDebounce from "discourse-common/lib/debounce";
 
 export const LIST_VIEW = "list_view";
@@ -772,15 +771,12 @@ export default Service.extend({
   },
 
   _saveDraft(channelId, draft) {
-    const draftKey = `chat_${channelId}`;
-
+    const data = { channel_id: channelId };
     if (draft) {
-      Draft.save(draftKey, 0, draft, this.messageBus.clientId, {
-        forceSave: true,
-      });
-    } else {
-      Draft.clear(draftKey);
+      data.data = JSON.stringify(draft);
     }
+
+    ajax("/chat/drafts", { type: "POST", data });
   },
 
   setDraftForChannel(channelId, draft) {

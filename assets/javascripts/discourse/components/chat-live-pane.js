@@ -550,6 +550,9 @@ export default Component.extend({
           staged: false,
           id: data.chat_message.id,
           excerpt: data.chat_message.excerpt,
+          error: null,
+          stagedId: null,
+          rateLimited: false,
         });
         this.messageLookup[data.chat_message.id] = stagedMessage;
         delete this.messageLookup[`staged-${data.stagedId}`];
@@ -756,6 +759,17 @@ export default Component.extend({
   },
 
   @action
+  retrySendMessage(chatMessage) {
+    let data = {
+      message: chatMessage.message,
+      staged_id: chatMessage.stagedId,
+      upload_ids: (chatMessage.uploads || []).map((upload) => upload.id),
+    };
+
+    this.sendCreateMessageRequest(data, chatMessage.stagedId);
+  },
+
+  @action
   sendMessage(message, uploads) {
     resetIdle();
 
@@ -780,20 +794,7 @@ export default Component.extend({
 
     // Start ajax request but don't return here, we want to stage the message instantly.
     // Return a resolved promise below.
-    ajax(`/chat/${this.chatChannel.id}.json`, {
-      type: "POST",
-      data,
-    })
-      .catch((error) => {
-        this._onSendError(data.staged_id, error);
-      })
-      .finally(() => {
-        if (this._selfDeleted()) {
-          return;
-        }
-        this.set("sendingloading", false);
-      });
-
+    this.sendCreateMessageRequest(data, data.staged_id);
     const stagedMessage = this._prepareSingleMessage(
       // We need to add the user and created at for presentation of staged message
       {
@@ -813,6 +814,23 @@ export default Component.extend({
     this._stickScrollToBottom();
     this.appEvents.trigger("chat-composer:reply-to-set", null);
     return Promise.resolve();
+  },
+
+  @bind
+  sendCreateMessageRequest(data, stagedId) {
+    ajax(`/chat/${this.chatChannel.id}.json`, {
+      type: "POST",
+      data,
+    })
+      .catch((error) => {
+        this._onSendError(stagedId, error);
+      })
+      .finally(() => {
+        if (this._selfDeleted()) {
+          return;
+        }
+        this.set("sendingloading", false);
+      });
   },
 
   @action
@@ -836,6 +854,9 @@ export default Component.extend({
   _onSendError(stagedId, error) {
     const stagedMessage = this.messageLookup[`staged-${stagedId}`];
     if (stagedMessage) {
+      if (error.jqXHR.status === 429) {
+        stagedMessage.set("rateLimited", true);
+      }
       stagedMessage.set("error", error.jqXHR.responseJSON.errors[0]);
       this._resetAfterSend();
     }

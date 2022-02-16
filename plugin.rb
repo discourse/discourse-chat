@@ -160,7 +160,7 @@ after_initialize do
       # TODO after May 2022 - remove this. No longer needed as chat uploads are in a table
       return true if ChatMessage.where("message LIKE ? OR message LIKE ?", "%#{upload.sha1}%", "%#{upload.base62_sha1}%").exists?
 
-      ChatDraft.exists?("data LIKE '%#{upload.sha1}%' OR data LIKE '%#{upload.base62_sha1}%'")
+      ChatDraft.exists?("data LIKE ? OR data LIKE ?", "%#{upload.sha1}%", "%#{upload.base62_sha1}%")
     end
   end
 

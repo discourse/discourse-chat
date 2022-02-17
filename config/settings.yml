@@ -25,3 +25,15 @@ plugins:
     client: true
     max: 3652 # 10 years
     min: 0
+  chat_allow_channel_archive:
+    default: false
+    client: true
+    hidden: false #true
+  chat_max_channel_archive_messages:
+    default: 5000
+    client: true
+    hidden: false #true
+  chat_channel_archive_category_id:
+    default: 0
+    client: true
+    hidden: false #true

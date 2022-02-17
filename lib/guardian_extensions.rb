@@ -28,6 +28,18 @@ module DiscourseChat::GuardianExtensions
     is_staff?
   end
 
+  def can_close_chat_channel?
+    is_staff?
+  end
+
+  def can_open_chat_channel?(chat_channel)
+    can_close_chat_channel? && !chat_channel.archived?
+  end
+
+  def can_archive_chat_channel?
+    is_staff?
+  end
+
   def can_move_chat_to_topic?
     is_staff?
   end
@@ -46,7 +58,6 @@ module DiscourseChat::GuardianExtensions
     elsif chat_channel.direct_message_channel?
       chat_channel.chatable.user_can_access?(@user)
     elsif chat_channel.category_channel?
-
       can_see_category?(chat_channel.chatable)
     elsif chat_channel.tag_channel?
       !hidden_tag_names.include?(chat_channel.chatable.name)
@@ -104,7 +115,8 @@ module DiscourseChat::GuardianExtensions
   def can_restore_chat?(message, chatable)
     message.user_id == current_user.id ?
       can_restore_own_chats?(chatable) :
-      can_delete_other_chats?(chatable) end
+      can_delete_other_chats?(chatable)
+  end
 
   def can_restore_own_chats?(chatable)
     if chatable.class.name == "Topic"

@@ -82,6 +82,18 @@ class ChatChannel < ActiveRecord::Base
     end
   end
 
+  def close!(acting_user)
+    return if !Guardian.new(acting_user).can_close_chat_channel?
+    self.update!(closed: true)
+    log_channel_status_change(acting_user, :chat_channel_closed)
+  end
+
+  def open!(acting_user)
+    return if !Guardian.new(acting_user).can_open_chat_channel?(self)
+    self.update(closed: false)
+    log_channel_status_change(acting_user, :chat_channel_opened)
+  end
+
   def self.chatable_types
     public_channel_chatable_types << "DirectMessageChannel"
   end
@@ -98,6 +110,20 @@ class ChatChannel < ActiveRecord::Base
     return false if !SiteSetting.chat_enabled
 
     ChatChannel.where(chatable: topic).exists?
+  end
+
+  private
+
+  def log_channel_status_change(acting_user, status_event)
+    DiscourseEvent.trigger(status_event, self)
+    StaffActionLogger.new(acting_user).log_custom(
+      status_event.to_s,
+      {
+        chat_channel_id: self.id,
+        chat_channel_name: self.name
+      }
+    )
+    ChatPublisher.publish_channel_status(self)
   end
 end
 
@@ -116,6 +142,8 @@ end
 #  updated_at              :datetime         not null
 #  name                    :string
 #  description             :text
+#  closed                  :boolean          default(FALSE), not null
+#  archived                :boolean          default(FALSE), not null
 #
 # Indexes
 #

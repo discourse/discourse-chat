@@ -1,5 +1,11 @@
 en:
   js:
+    admin:
+      logs:
+        staff_actions:
+          actions:
+            chat_channel_closed: "Chat channel closed"
+            chat_channel_opened: "Chat channel opened"
     chat:
       dates:
         time_tiny: "h:mm"

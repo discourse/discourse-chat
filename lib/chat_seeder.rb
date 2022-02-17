@@ -2,6 +2,10 @@
 
 class ChatSeeder
   def execute(args = {})
+    if SiteSetting.chat_channel_archive_category_id <= 0
+      SiteSetting.chat_channel_archive_category_id = SiteSetting.uncategorized_category_id
+    end
+
     return unless SiteSetting.needs_chat_seeded
 
     begin

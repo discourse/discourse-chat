@@ -1,18 +1,20 @@
 # frozen_string_literal: true
 
 class ChatView
-  attr_reader :current_user, :chat_channel, :messages
+  attr_reader :user, :chat_channel, :chat_messages, :can_load_more_past, :can_load_more_future
 
-  def initialize(chat_channel, messages, current_user)
+  def initialize(chat_channel:, chat_messages:, user:, can_load_more_past: nil, can_load_more_future: nil)
     @chat_channel = chat_channel
-    @messages = messages
-    @current_user = current_user
+    @chat_messages = chat_messages
+    @user = user
+    @can_load_more_past = can_load_more_past
+    @can_load_more_future = can_load_more_future
   end
 
   def reviewable_ids
     return @reviewable_ids if defined?(@reviewable_ids)
 
-    @reviewable_ids = @current_user.staff? ? get_reviewable_ids : nil
+    @reviewable_ids = @user.staff? ? get_reviewable_ids : nil
   end
 
   def user_flag_statuses
@@ -45,7 +47,7 @@ class ChatView
     DB.query(
       sql,
       pending: ReviewableScore.statuses[:pending],
-      message_ids: @messages.map(&:id)
+      message_ids: @chat_messages.map(&:id)
     ).each do |row|
       ids[row.target_id] = row.reviewable_id
     end
@@ -72,8 +74,8 @@ class ChatView
 
     DB.query(
       sql,
-      message_ids: @messages.map(&:id),
-      user_id: @current_user.id
+      message_ids: @chat_messages.map(&:id),
+      user_id: @user.id
     ).each do |row|
       statuses[row.target_id] = row.status
     end

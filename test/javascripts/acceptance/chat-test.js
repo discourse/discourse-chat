@@ -35,6 +35,7 @@ import { Promise } from "rsvp";
 import { isLegacyEmber } from "discourse-common/config/environment";
 import sinon from "sinon";
 import * as ajaxlib from "discourse/lib/ajax";
+import I18n from "I18n";
 
 const chatSettled = async () => {
   await settled();
@@ -1297,8 +1298,7 @@ acceptance("Discourse Chat - image uploads", function (needs) {
           short_url: "upload://yoj8pf9DdIeHRRULyw7i57GAYdz.jpeg",
           thumbnail_height: 320,
           thumbnail_width: 690,
-          url:
-            "//testbucket.s3.dualstack.us-east-2.amazonaws.com/original/1X/f1095d89269ff22e1818cf54b73e857261851019.jpeg",
+          url: "//testbucket.s3.dualstack.us-east-2.amazonaws.com/original/1X/f1095d89269ff22e1818cf54b73e857261851019.jpeg",
           width: 1920,
         });
       },
@@ -1334,6 +1334,59 @@ acceptance("Discourse Chat - image uploads", function (needs) {
 
     const image = createFile("avatar.png");
     appEvents.trigger("chat-composer:add-files", image);
+  });
+});
+
+acceptance("Discourse Chat - Closed channel", function (needs) {
+  needs.user({
+    admin: true,
+    moderator: true,
+    username: "eviltrout",
+    id: 1,
+    can_chat: true,
+    has_chat_enabled: true,
+  });
+  needs.settings({
+    chat_enabled: true,
+  });
+  needs.pretender((server, helper) => {
+    baseChatPretenders(server, helper);
+    chatChannelPretender(server, helper);
+    server.get("/chat/7/messages.json", () => {
+      const cloned = cloneJSON(chatView);
+      cloned.meta.closed = true;
+      return helper.response(cloned);
+    });
+    server.get("/chat/chat_channels.json", () => {
+      const cloned = cloneJSON(chatChannels);
+      cloned.public_channels.find((chan) => chan.id === 7).closed = true;
+      return helper.response(cloned);
+    });
+  });
+
+  test("closed channel composer is disabled", async function (assert) {
+    await visit("/chat/channel/7/Uncategorized");
+    assert.strictEqual(query(".chat-composer-input").disabled, true);
+  });
+
+  test("closed channel header status shows correct information", async function (assert) {
+    await visit("/chat/channel/7/Uncategorized");
+    assert.strictEqual(
+      query(".chat-channel-header-status").innerText.trim(),
+      I18n.t("chat.channel_status.closed")
+    );
+  });
+
+  test("closed channels do not show the reply, react, delete, edit, restore, or rebuild options for messages", async function (assert) {
+    await visit("/chat/channel/7/Uncategorized");
+    const dropdown = selectKit(".chat-message-container .more-buttons");
+    await dropdown.expand();
+    assert.notOk(exists(".select-kit-row[data-value='edit']"));
+    assert.notOk(exists(".select-kit-row[data-value='deleteMessage']"));
+    assert.notOk(exists(".select-kit-row[data-value='restore']"));
+    assert.notOk(exists(".select-kit-row[data-value='rebakeMessage']"));
+    assert.notOk(exists(".reply-btn"));
+    assert.notOk(exists(".react-btn"));
   });
 });
 

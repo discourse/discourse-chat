@@ -92,7 +92,8 @@ export default Component.extend({
     "canFlagMessage",
     "showDeleteButton",
     "showRestoreButton",
-    "showEditButton"
+    "showEditButton",
+    "showRebakeButton"
   )
   get moreButtons() {
     const buttons = [];
@@ -143,7 +144,7 @@ export default Component.extend({
       });
     }
 
-    if (this.currentUser?.staff) {
+    if (this.showRebakeButton) {
       buttons.push({
         id: "rebakeMessage",
         name: I18n.t("chat.rebake_message"),
@@ -259,12 +260,17 @@ export default Component.extend({
     return classes.join(" ");
   },
 
-  @discourseComputed("message", "message.deleted_at")
-  showEditButton(message, deletedAt) {
+  @discourseComputed(
+    "message",
+    "message.deleted_at",
+    "details.chat_channel_status.closed"
+  )
+  showEditButton(message, deletedAt, channelClosed) {
     return (
       !message.action_code &&
       !deletedAt &&
-      this.currentUser.id === message.user.id
+      this.currentUser.id === message.user.id &&
+      !channelClosed
     );
   },
 
@@ -294,14 +300,29 @@ export default Component.extend({
     );
   },
 
-  @discourseComputed("message.deleted_at")
-  showDeleteButton(deletedAt) {
-    return this.canManageDeletion && !deletedAt;
+  @discourseComputed("message.deleted_at", "details.chat_channel_status.closed")
+  canReply(deletedAt, channelClosed) {
+    return !deletedAt && !channelClosed;
   },
 
-  @discourseComputed("message.deleted_at")
-  showRestoreButton(deletedAt) {
-    return this.canManageDeletion && deletedAt;
+  @discourseComputed("message.deleted_at", "details.chat_channel_status.closed")
+  canReact(deletedAt, channelClosed) {
+    return !deletedAt && !channelClosed;
+  },
+
+  @discourseComputed("message.deleted_at", "details.chat_channel_status.closed")
+  showDeleteButton(deletedAt, channelClosed) {
+    return this.canManageDeletion && !deletedAt && !channelClosed;
+  },
+
+  @discourseComputed("message.deleted_at", "details.chat_channel_status.closed")
+  showRestoreButton(deletedAt, channelClosed) {
+    return this.canManageDeletion && deletedAt && !channelClosed;
+  },
+
+  @discourseComputed("details.chat_channel_status.closed")
+  showRebakeButton(channelClosed) {
+    return this.currentUser?.staff && !channelClosed;
   },
 
   @discourseComputed("message", "message.action_code")

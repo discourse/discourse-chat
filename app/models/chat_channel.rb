@@ -90,7 +90,7 @@ class ChatChannel < ActiveRecord::Base
 
   def open!(acting_user)
     return if !Guardian.new(acting_user).can_open_chat_channel?(self)
-    self.update(closed: false)
+    self.update!(closed: false)
     log_channel_status_change(acting_user, :chat_channel_opened)
   end
 

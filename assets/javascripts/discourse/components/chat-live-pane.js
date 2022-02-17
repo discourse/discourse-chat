@@ -234,6 +234,10 @@ export default Component.extend({
         can_flag: messages.resultSetMeta.can_flag,
         can_delete_self: true,
         can_delete_others: this.currentUser.staff,
+        chat_channel_status: {
+          closed: this.chatChannel.closed,
+          archived: this.chatChannel.archived,
+        },
       },
       registeredChatChannelId: this.chatChannel.id,
     });
@@ -348,9 +352,9 @@ export default Component.extend({
         }
       });
     }
-    const lastReadId = this.currentUser.chat_channel_tracking_state[
-      this.chatChannel.id
-    ]?.chat_message_id;
+    const lastReadId =
+      this.currentUser.chat_channel_tracking_state[this.chatChannel.id]
+        ?.chat_message_id;
     if (!lastReadId) {
       return;
     }

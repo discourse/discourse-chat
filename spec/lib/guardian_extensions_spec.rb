@@ -36,6 +36,17 @@ describe DiscourseChat::GuardianExtensions do
       expect(staff_guardian.can_close_chat_channel?).to eq(true)
     end
 
+    it "only staff can open chat channels" do
+      expect(guardian.can_open_chat_channel?(channel)).to eq(false)
+      expect(staff_guardian.can_open_chat_channel?(channel)).to eq(true)
+    end
+
+    it "only chat channels which are not archived can be reopened by staff" do
+      expect(staff_guardian.can_open_chat_channel?(channel)).to eq(true)
+      channel.update(archived: true)
+      expect(staff_guardian.can_open_chat_channel?(channel)).to eq(false)
+    end
+
     it "only staff can archive chat channels" do
       expect(guardian.can_archive_chat_channel?).to eq(false)
       expect(staff_guardian.can_archive_chat_channel?).to eq(true)

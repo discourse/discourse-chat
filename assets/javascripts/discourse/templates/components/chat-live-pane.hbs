@@ -1,30 +1,38 @@
 {{#if fullPage}}
   <div class="chat-full-page-header {{if previewing "previewing"}}">
-    {{#if site.mobileView}}
-      {{d-button
-        class="btn-flat"
-        icon="chevron-left"
-        action=onBackClick
-      }}
-    {{/if}}
+    <div class="chat-channel-header-details">
+      {{#if site.mobileView}}
+        {{d-button
+          class="btn-flat"
+          icon="chevron-left"
+          action=onBackClick
+        }}
+      {{/if}}
 
-    {{chat-channel-title onClick=(action "onChannelTitleClick") channel=chatChannel}}
+      {{chat-channel-title onClick=(action "onChannelTitleClick") channel=chatChannel}}
 
-    {{#if previewing}}
-      {{d-button
-        class="btn-primary join-channel-btn"
-        action=(action "joinChannel")
-        label="chat.join_channel"
-      }}
-    {{/if}}
-    {{#unless currentUser.chat_isolated}}
-      {{d-button
-        action=(action "exitChat")
-        class="btn-flat exit-chat-btn"
-        icon="times"
-        title="chat.exit"
-      }}
-    {{/unless}}
+      {{#if previewing}}
+        {{d-button
+          class="btn-primary join-channel-btn"
+          action=(action "joinChannel")
+          label="chat.join_channel"
+        }}
+      {{/if}}
+      {{#unless currentUser.chat_isolated}}
+        {{d-button
+          action=(action "exitChat")
+          class="btn-flat exit-chat-btn"
+          icon="times"
+          title="chat.exit"
+        }}
+      {{/unless}}
+    </div>
+
+    <div class="chat-channel-header-status">
+      {{#if chatChannel.closed}}
+        {{d-icon "lock"}} {{i18n "chat.channel_status.closed"}}
+      {{/if}}
+    </div>
   </div>
 {{/if}}
 

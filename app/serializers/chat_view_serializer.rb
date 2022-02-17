@@ -15,7 +15,9 @@ class ChatViewSerializer < ApplicationSerializer
 
   def meta
     {
-      can_flag: scope.can_flag_in_chat_channel?(object.chat_channel)
+      can_flag: scope.can_flag_in_chat_channel?(object.chat_channel),
+      closed: object.chat_channel.closed,
+      archived: object.chat_channel.archived
     }
   end
 end

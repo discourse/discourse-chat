@@ -96,6 +96,8 @@ en:
         other: "%{count} files"
       you_flagged: "You flagged this message"
       exit: "back"
+      channel_status:
+        closed: "Channel is closed. No new messages can be posted, and no existing messages can be edited or deleted."
 
       channel_selector:
         title: "Jump to channel"

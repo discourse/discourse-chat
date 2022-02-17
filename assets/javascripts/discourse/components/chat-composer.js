@@ -148,13 +148,13 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   },
 
   _modifySelection(opts = { type: null }) {
-    const sel = this._getSelected("", { lineVal: true });
+    const sel = this.getSelected("", { lineVal: true });
     if (opts.type === "bold") {
-      this._applySurround(sel, "**", "**", "bold_text");
+      this.applySurround(sel, "**", "**", "bold_text");
     } else if (opts.type === "italic") {
-      this._applySurround(sel, "_", "_", "italic_text");
+      this.applySurround(sel, "_", "_", "italic_text");
     } else if (opts.type === "code") {
-      this._applySurround(sel, "`", "`", "code_text");
+      this.applySurround(sel, "`", "`", "code_text");
     }
   },
 
@@ -209,7 +209,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
       // Ctrl+Enter, plain Enter: send
       if (!event.ctrlKey) {
         // if we are inside a code block just insert newline
-        const { pre } = this._getSelected(null, { lineVal: true });
+        const { pre } = this.getSelected(null, { lineVal: true });
         if (this._isInside(pre, /(^|\n)```/g)) {
           return;
         }
@@ -502,7 +502,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   },
 
   addText(text) {
-    const selected = this._getSelected(null, {
+    const selected = this.getSelected(null, {
       lineVal: true,
     });
     this._addText(selected, text);

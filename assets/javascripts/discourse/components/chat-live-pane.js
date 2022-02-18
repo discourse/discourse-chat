@@ -31,8 +31,8 @@ const STICKY_SCROLL_LENIENCE = 4;
 const READ_INTERVAL = 1000;
 const PAGE_SIZE = 50;
 
-const PAST = "past";
-const FUTURE = "future";
+const PAST = "Past";
+const FUTURE = "Future";
 
 export default Component.extend({
   classNameBindings: [":chat-live-pane", "sendingloading", "loading"],
@@ -41,7 +41,9 @@ export default Component.extend({
   fullPage: false,
   registeredChatChannelId: null, // ?Number
   loading: false,
-  loadingMore: false,
+  loadingMorePast: false,
+  loadingMoreFuture: false,
+
   allPastMessagesLoaded: false,
   previewing: false,
   sendingloading: false,
@@ -189,17 +191,14 @@ export default Component.extend({
     const canLoadMore = loadingPast
       ? this.details.can_load_more_past
       : this.details.can_load_more_future;
+    const loadingMoreKey = `loadingMore${direction}`;
+    const loadingMore = this.get(loadingMoreKey);
 
-    if (
-      !canLoadMore ||
-      this.loading ||
-      this.loadingMore ||
-      !this.messages.length
-    ) {
+    if (!canLoadMore || loadingMore || this.loading || !this.messages.length) {
       return;
     }
 
-    this.set("loadingMore", true);
+    this.set(loadingMoreKey, true);
     this.ignoreStickyScrolling = true;
 
     const messageIndex = loadingPast ? 0 : this.messages.length - 1;
@@ -243,7 +242,7 @@ export default Component.extend({
         if (this._selfDeleted()) {
           return;
         }
-        this.set("loadingMore", false);
+        this.set(loadingMoreKey, false);
         this.ignoreStickyScrolling = true;
       });
   },

@@ -142,11 +142,11 @@ end
 #  updated_at              :datetime         not null
 #  name                    :string
 #  description             :text
-#  closed                  :boolean          default(FALSE), not null
-#  archived                :boolean          default(FALSE), not null
+#  status                  :integer          default(0), not null
 #
 # Indexes
 #
 #  index_chat_channels_on_chatable_id                    (chatable_id)
 #  index_chat_channels_on_chatable_id_and_chatable_type  (chatable_id,chatable_type)
+#  index_chat_channels_on_status                         (status)
 #

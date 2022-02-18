@@ -1170,8 +1170,11 @@ body.composer-open .topic-chat-float-container {
 }
 
 body.has-full-page-chat {
-  .alert-info:last-of-type {
-    margin-bottom: 0;
+  .alert-error,
+  .alert-info,
+  .alert-success,
+  .alert-warning {
+    margin: 0;
     border-bottom: 1px solid var(--primary-low);
   }
 }

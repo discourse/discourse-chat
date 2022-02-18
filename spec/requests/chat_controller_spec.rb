@@ -158,7 +158,7 @@ RSpec.describe DiscourseChat::ChatController do
         after_message_id: message_20.id,
         page_size: page_size
       }
-        expect(response.status).to eq(400)
+      expect(response.status).to eq(400)
     end
 
   end
@@ -592,7 +592,7 @@ RSpec.describe DiscourseChat::ChatController do
       put "/chat/#{chat_channel.id}/read/#{chat_message2.id}.json"
       expect(response.status).to eq(200)
       expect(notification1.reload.read).to be true
-        expect(notification2.reload.read).to be true
+      expect(notification2.reload.read).to be true
     end
   end
 

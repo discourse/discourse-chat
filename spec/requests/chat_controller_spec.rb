@@ -12,6 +12,11 @@ RSpec.describe DiscourseChat::ChatController do
   fab!(:dm_chat_channel) { Fabricate(:chat_channel, chatable: Fabricate(:direct_message_channel, users: [user, admin])) }
   fab!(:tag) { Fabricate(:tag) }
 
+  MESSAGE_COUNT = 70
+  MESSAGE_COUNT.times do |n|
+    fab!("message_#{n}") { Fabricate(:chat_message, chat_channel: chat_channel, user: other_user, message: "message #{n}") }
+  end
+
   before do
     SiteSetting.chat_enabled = true
     SiteSetting.chat_allowed_groups = Group::AUTO_GROUPS[:everyone]
@@ -19,16 +24,8 @@ RSpec.describe DiscourseChat::ChatController do
 
   describe "#messages" do
     let(:page_size) { 30 }
-    let(:message_count) { 35 }
 
     before do
-      message_count.times do |n|
-        ChatMessage.create(
-          chat_channel: chat_channel,
-          user: other_user,
-          message: "message #{n}",
-        )
-      end
       sign_in(user)
     end
 
@@ -55,25 +52,14 @@ RSpec.describe DiscourseChat::ChatController do
       expect(messages.first["id"]).to be < messages.last["id"]
     end
 
-    it "returns messages before `before_message_id` if present" do
-      before_message_id = ChatMessage
-        .order(created_at: :desc)
-        .to_a[page_size - 1]
-        .id
-
-      get "/chat/#{chat_channel.id}/messages.json", params: { before_message_id: before_message_id, page_size: page_size }
-      messages = response.parsed_body["chat_messages"]
-      expect(messages.count).to eq(message_count - page_size)
-    end
-
     it "returns `can_flag=true` for public channels" do
       get "/chat/#{chat_channel.id}/messages.json", params: { page_size: page_size }
-      expect(response.parsed_body["meta"]["can_flag"]).to eq(true)
+      expect(response.parsed_body["meta"]["can_flag"]).to be true
     end
 
     it "returns `can_flag=false` for DM channels" do
       get "/chat/#{dm_chat_channel.id}/messages.json", params: { page_size: page_size }
-      expect(response.parsed_body["meta"]["can_flag"]).to eq(false)
+      expect(response.parsed_body["meta"]["can_flag"]).to be false
     end
 
     it "serializes `user_flag_status` for user who has a pending flag" do
@@ -83,7 +69,7 @@ RSpec.describe DiscourseChat::ChatController do
 
       get "/chat/#{chat_channel.id}/messages.json", params: { page_size: page_size }
       expect(response.parsed_body["chat_messages"].last["user_flag_status"]).to eq(reviewable_score.status)
-      expect(response.parsed_body["chat_messages"].second_to_last["user_flag_status"]).to eq(nil)
+      expect(response.parsed_body["chat_messages"].second_to_last["user_flag_status"]).to be_nil
     end
 
     it "doesn't serialize `reviewable_ids` for non-staff" do
@@ -91,8 +77,8 @@ RSpec.describe DiscourseChat::ChatController do
       chat_channel.chat_messages.second_to_last.add_flag(admin)
 
       get "/chat/#{chat_channel.id}/messages.json", params: { page_size: page_size }
-      expect(response.parsed_body["chat_messages"].last["reviewable_id"]).to eq(nil)
-      expect(response.parsed_body["chat_messages"].second_to_last["reviewable_id"]).to eq(nil)
+      expect(response.parsed_body["chat_messages"].last["reviewable_id"]).to be_nil
+      expect(response.parsed_body["chat_messages"].second_to_last["reviewable_id"]).to be_nil
     end
 
     it "serializes `reviewable_ids` correctly for staff" do
@@ -118,9 +104,63 @@ RSpec.describe DiscourseChat::ChatController do
 
       get "/chat/#{chat_channel.id}/messages.json", params: { page_size: page_size }
       reactions = response.parsed_body["chat_messages"].last["reactions"]
-      expect(reactions[heart_emoji]["reacted"]).to eq(true)
-      expect(reactions[smile_emoji]["reacted"]).to eq(false)
+      expect(reactions[heart_emoji]["reacted"]).to be true
+      expect(reactions[smile_emoji]["reacted"]).to be false
     end
+
+    describe "with 'before_message_id' param" do
+      it "returns the correct messages" do
+        get "/chat/#{chat_channel.id}/messages.json", params: { before_message_id: message_40.id, page_size: page_size }
+        messages = response.parsed_body["chat_messages"]
+        expect(messages.count).to eq(page_size)
+        expect(messages.first["id"]).to eq(chat_channel.chat_messages[40 - page_size].id)
+        expect(messages.last["id"]).to eq(chat_channel.chat_messages[39].id)
+      end
+
+      it "returns 'can_load...' properly when there are more past messages" do
+        get "/chat/#{chat_channel.id}/messages.json", params: { before_message_id: message_40.id, page_size: page_size }
+        expect(response.parsed_body["meta"]["can_load_more_past"]).to be true
+        expect(response.parsed_body["meta"]["can_load_more_future"]).to be_nil
+      end
+
+      it "returns 'can_load...' properly when there are no past messages" do
+        get "/chat/#{chat_channel.id}/messages.json", params: { before_message_id: message_3.id, page_size: page_size }
+        expect(response.parsed_body["meta"]["can_load_more_past"]).to be false
+        expect(response.parsed_body["meta"]["can_load_more_future"]).to be_nil
+      end
+    end
+
+    describe "with 'after_message_id' param" do
+      it "returns the correct messages when there are many after" do
+        get "/chat/#{chat_channel.id}/messages.json", params: { after_message_id: message_10.id, page_size: page_size }
+        messages = response.parsed_body["chat_messages"]
+        expect(messages.count).to eq(page_size)
+        expect(messages.first["id"]).to eq(chat_channel.chat_messages[11].id)
+        expect(messages.last["id"]).to eq(chat_channel.chat_messages[10 + page_size].id)
+      end
+
+      it "return 'can_load..' properly when there are future messages" do
+        get "/chat/#{chat_channel.id}/messages.json", params: { after_message_id: message_10.id, page_size: page_size }
+        expect(response.parsed_body["meta"]["can_load_more_past"]).to be_nil
+        expect(response.parsed_body["meta"]["can_load_more_future"]).to be true
+      end
+
+      it "returns 'can_load..' properly when there are no future messages" do
+        get "/chat/#{chat_channel.id}/messages.json", params: { after_message_id: message_60.id, page_size: page_size }
+        expect(response.parsed_body["meta"]["can_load_more_past"]).to be_nil
+        expect(response.parsed_body["meta"]["can_load_more_future"]).to be false
+      end
+    end
+
+    it "errors when both 'after_message_id' and 'before_message_id' are present" do
+      get "/chat/#{chat_channel.id}/messages.json", params: {
+        before_message_id: message_40.id,
+        after_message_id: message_20.id,
+        page_size: page_size
+      }
+      expect(response.status).to eq(400)
+    end
+
   end
 
   describe "#enable_chat" do
@@ -131,7 +171,7 @@ RSpec.describe DiscourseChat::ChatController do
         post "/chat/enable.json", params: { chatable_type: "topic", chatable_id: topic.id }
         expect(response.status).to eq(403)
 
-        expect(topic.reload.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]).to eq(nil)
+        expect(topic.reload.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]).to be_nil
       end
 
       it "Returns a 422 when chat is already enabled" do
@@ -140,7 +180,7 @@ RSpec.describe DiscourseChat::ChatController do
         post "/chat/enable.json", params: { chatable_type: "topic", chatable_id: topic.id }
         expect(response.status).to eq(422)
 
-        expect(topic.reload.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]).to eq(nil)
+        expect(topic.reload.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]).to be_nil
       end
 
       it "Enables chat and follows the channel" do
@@ -152,7 +192,7 @@ RSpec.describe DiscourseChat::ChatController do
         }.by(1)
         expect(response.status).to eq(200)
         expect(topic.chat_channel).to be_present
-        expect(topic.reload.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]).to eq(true)
+        expect(topic.reload.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]).to be true
       end
     end
 
@@ -196,7 +236,7 @@ RSpec.describe DiscourseChat::ChatController do
         post "/chat/disable.json", params: { chatable_type: "topic", chatable_id: topic.id }
         expect(response.status).to eq(200)
         expect(chat_channel.reload.deleted_by_id).to eq(admin.id)
-        expect(topic.reload.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]).to eq(nil)
+        expect(topic.reload.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]).to be_nil
       end
     end
 
@@ -263,14 +303,14 @@ RSpec.describe DiscourseChat::ChatController do
         UserChatChannelMembership.create!(user: user1, chat_channel: direct_message_channel, following: true, desktop_notification_level: UserChatChannelMembership::NOTIFICATION_LEVELS[:always], mobile_notification_level: UserChatChannelMembership::NOTIFICATION_LEVELS[:always])
         UserChatChannelMembership.create!(user: user2, chat_channel: direct_message_channel, following: false, desktop_notification_level: UserChatChannelMembership::NOTIFICATION_LEVELS[:always], mobile_notification_level: UserChatChannelMembership::NOTIFICATION_LEVELS[:always])
 
-        expect(UserChatChannelMembership.find_by(user_id: user2.id).following).to eq(false)
+        expect(UserChatChannelMembership.find_by(user_id: user2.id).following).to be false
 
         ChatPublisher.expects(:publish_new_direct_message_channel).once
 
         sign_in(user1)
         post "/chat/#{direct_message_channel.id}.json", params: { message: message }
 
-        expect(UserChatChannelMembership.find_by(user_id: user2.id).following).to eq(true)
+        expect(UserChatChannelMembership.find_by(user_id: user2.id).following).to be true
       end
     end
   end
@@ -430,7 +470,7 @@ RSpec.describe DiscourseChat::ChatController do
       deleted_message = ChatMessage.unscoped.last
       put "/chat/#{chat_channel.id}/restore/#{deleted_message.id}.json"
       expect(response.status).to eq(200)
-      expect(deleted_message.reload.deleted_at).to eq(nil)
+      expect(deleted_message.reload.deleted_at).to be_nil
     end
 
     it "allows admin to restore others' posts" do
@@ -439,7 +479,7 @@ RSpec.describe DiscourseChat::ChatController do
       deleted_message = ChatMessage.unscoped.last
       put "/chat/#{chat_channel.id}/restore/#{deleted_message.id}.json"
       expect(response.status).to eq(200)
-      expect(deleted_message.reload.deleted_at).to eq(nil)
+      expect(deleted_message.reload.deleted_at).to be_nil
     end
   end
 
@@ -551,8 +591,8 @@ RSpec.describe DiscourseChat::ChatController do
 
       put "/chat/#{chat_channel.id}/read/#{chat_message2.id}.json"
       expect(response.status).to eq(200)
-      expect(notification1.reload.read).to eq(true)
-      expect(notification2.reload.read).to eq(true)
+      expect(notification1.reload.read).to be true
+      expect(notification2.reload.read).to be true
     end
   end
 

@@ -143,6 +143,19 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
       this,
       "_insertUpload"
     );
+
+    this.appEvents.on("chat:modify-selection", this, "_modifySelection");
+  },
+
+  _modifySelection(opts = { type: null }) {
+    const sel = this.getSelected("", { lineVal: true });
+    if (opts.type === "bold") {
+      this.applySurround(sel, "**", "**", "bold_text");
+    } else if (opts.type === "italic") {
+      this.applySurround(sel, "_", "_", "italic_text");
+    } else if (opts.type === "code") {
+      this.applySurround(sel, "`", "`", "code_text");
+    }
   },
 
   willDestroyElement() {
@@ -173,6 +186,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     );
 
     this.appEvents.off("chat:focus-composer", this, "_focusTextArea");
+    this.appEvents.off("chat:modify-selection", this, "_modifySelection");
   },
 
   _insertUpload(_, upload) {
@@ -195,7 +209,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
       // Ctrl+Enter, plain Enter: send
       if (!event.ctrlKey) {
         // if we are inside a code block just insert newline
-        const { pre } = this._getSelected(null, { lineVal: true });
+        const { pre } = this.getSelected(null, { lineVal: true });
         if (this._isInside(pre, /(^|\n)```/g)) {
           return;
         }
@@ -489,7 +503,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   },
 
   addText(text) {
-    const selected = this._getSelected(null, {
+    const selected = this.getSelected(null, {
       lineVal: true,
     });
     this._addText(selected, text);

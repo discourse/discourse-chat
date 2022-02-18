@@ -81,12 +81,6 @@ class DiscourseChat::IncomingChatWebhooksController < ApplicationController
   end
 
   def validate_payload
-    # TODO (martin) Remove this at 2021-12-15
-    # Backwards compat. We need to replace the body param in our old integrations.
-    if params.key?(:body)
-      params[:text] = params[:body]
-    end
-
     params.require([:key])
 
     # TODO (martin) It is not clear whether the :payload key is actually

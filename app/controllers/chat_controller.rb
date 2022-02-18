@@ -259,7 +259,6 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
       .where("created_at < ?", @message.created_at)
       .order(created_at: :desc).limit(40)
 
-    # .with_deleted if include_deleted
     future_messages = messages
       .where("created_at > ?", @message.created_at)
       .order(created_at: :asc)

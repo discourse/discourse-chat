@@ -26,13 +26,6 @@ RSpec.describe DiscourseChat::ChatController do
     let(:page_size) { 30 }
 
     before do
-      # message_count.times do |n|
-      # ChatMessage.create(
-      # chat_channel: chat_channel,
-      # user: other_user,
-      # message: "message #{n}",
-      # )
-      # end
       sign_in(user)
     end
 

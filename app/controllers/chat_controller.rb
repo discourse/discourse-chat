@@ -160,21 +160,18 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
 
     messages = preloaded_chat_message_query.where(chat_channel: @chat_channel)
 
-    created_at_order = :desc
+    order_direction = :desc
     if params[:before_message_id]
       messages = messages.where("id < ?", params[:before_message_id])
     end
 
     if params[:after_message_id]
       messages = messages.where("id > ?", params[:after_message_id])
-      created_at_order = :asc
+      order_direction = :asc
     end
 
-    messages = messages.order(created_at: created_at_order).limit(page_size)
-
-    if guardian.can_moderate_chat?(@chatable)
-      messages = messages.with_deleted
-    end
+    messages = messages.with_deleted if guardian.can_moderate_chat?(@chatable)
+    messages = messages.order(id: order_direction).limit(page_size)
 
     can_load_more_past = params[:after_message_id] ? nil : messages.count == page_size
     can_load_more_future = if !params[:before_message_id] && !params[:after_message_id]
@@ -185,11 +182,9 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
                              messages.count == page_size
     end
 
-    # Reverse messages so they are in the correct order. Need the order on the query with the
-    # limit to fetch the correct messages.
     chat_view = ChatView.new(
       chat_channel: @chat_channel,
-      chat_messages: messages.to_a.reverse,
+      chat_messages: params[:after_message_id] ? messages : messages.to_a.reverse,
       user: current_user,
       can_load_more_past: can_load_more_past,
       can_load_more_future: can_load_more_future
@@ -277,10 +272,9 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     chat_channel = @message.chat_channel
     chatable = chat_channel.chatable
     guardian.ensure_can_see!(chatable)
-    include_deleted = guardian.can_moderate_chat?(chatable)
 
     messages = preloaded_chat_message_query.where(chat_channel: chat_channel)
-    messages = messages.with_deleted if include_deleted
+    messages = messages.with_deleted if guardian.can_moderate_chat?(chatable)
     past_messages = messages
       .where("created_at < ?", @message.created_at)
       .order(created_at: :desc).limit(PAST_MESSAGE_LIMIT)

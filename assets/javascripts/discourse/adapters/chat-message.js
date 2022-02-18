@@ -10,6 +10,9 @@ export default RESTAdapter.extend({
     if (findArgs.beforeMessageId) {
       path += `&before_message_id=${findArgs.beforeMessageId}`;
     }
+    if (findArgs.afterMessageId) {
+      path += `&after_message_id=${findArgs.afterMessageId}`;
+    }
     return path;
   },
 

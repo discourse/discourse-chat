@@ -176,10 +176,10 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     can_load_more_past = params[:after_message_id] ? nil : messages.count == page_size
     can_load_more_future = if !params[:before_message_id] && !params[:after_message_id]
       false
-                           elsif params[:before_message_id]
-                             nil
-                           elsif params[:after_message_id]
-                             messages.count == page_size
+    elsif params[:before_message_id]
+      nil
+    elsif params[:after_message_id]
+      messages.count == page_size
     end
 
     chat_view = ChatView.new(

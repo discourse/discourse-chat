@@ -2,7 +2,10 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 import EmberObject from "@ember/object";
 import Service, { inject as service } from "@ember/service";
 import Site from "discourse/models/site";
-import { addChatToolbarButton } from "discourse/plugins/discourse-chat/discourse/components/chat-composer";
+import {
+  addChatToolbarButton,
+  addChatAutocompleteFn,
+} from "discourse/plugins/discourse-chat/discourse/components/chat-composer";
 import { ajax } from "discourse/lib/ajax";
 import { A } from "@ember/array";
 import { defaultHomepage } from "discourse/lib/utilities";
@@ -805,5 +808,9 @@ export default Service.extend({
 
   addToolbarButton(toolbarButton) {
     addChatToolbarButton(toolbarButton);
+  },
+
+  addAutocompleteFn(fn) {
+    addChatAutocompleteFn(fn);
   },
 });

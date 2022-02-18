@@ -32,6 +32,11 @@ export function addChatToolbarButton(toolbarButton) {
   toolbarButtons.push(toolbarButton);
 }
 
+const extraAutocompletes = [];
+export function addChatAutocompleteFn(fn) {
+  extraAutocompletes.push(fn);
+}
+
 export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   chatChannel: null,
   lastChatChannelId: null,
@@ -283,13 +288,20 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   @bind
   _handleTextareaInput() {
     this._resizeTextArea();
-    this._applyUserAutocomplete();
+    this._applyAutocomplete();
     this.onValueChange(this.value, this.uploads, this.replyToMsg);
   },
 
   @action
   uploadClicked() {
     this.element.querySelector(`#${this.fileUploadElementId}`).click();
+  },
+
+  _applyComplete() {
+    this._applyUserAutocomplete();
+    extraAutocompletes.forEach((autocomplete) => {
+      autocomplete(this._textarea);
+    });
   },
 
   _applyUserAutocomplete() {

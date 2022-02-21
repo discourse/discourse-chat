@@ -13,8 +13,7 @@ class ChatChannelSerializer < ApplicationSerializer
              :unread_count,
              :unread_mentions,
              :updated_at,
-             :closed,
-             :archived
+             :status,
 
   def include_description?
     object.description.present?

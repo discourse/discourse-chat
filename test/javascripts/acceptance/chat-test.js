@@ -36,6 +36,7 @@ import { isLegacyEmber } from "discourse-common/config/environment";
 import sinon from "sinon";
 import * as ajaxlib from "discourse/lib/ajax";
 import I18n from "I18n";
+import { CHANNEL_STATUSES } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 
 const chatSettled = async () => {
   await settled();
@@ -1298,7 +1299,8 @@ acceptance("Discourse Chat - image uploads", function (needs) {
           short_url: "upload://yoj8pf9DdIeHRRULyw7i57GAYdz.jpeg",
           thumbnail_height: 320,
           thumbnail_width: 690,
-          url: "//testbucket.s3.dualstack.us-east-2.amazonaws.com/original/1X/f1095d89269ff22e1818cf54b73e857261851019.jpeg",
+          url:
+            "//testbucket.s3.dualstack.us-east-2.amazonaws.com/original/1X/f1095d89269ff22e1818cf54b73e857261851019.jpeg",
           width: 1920,
         });
       },
@@ -1337,7 +1339,7 @@ acceptance("Discourse Chat - image uploads", function (needs) {
   });
 });
 
-acceptance("Discourse Chat - Closed channel", function (needs) {
+acceptance("Discourse Chat - Read only channel", function (needs) {
   needs.user({
     admin: true,
     moderator: true,
@@ -1354,30 +1356,31 @@ acceptance("Discourse Chat - Closed channel", function (needs) {
     chatChannelPretender(server, helper);
     server.get("/chat/7/messages.json", () => {
       const cloned = cloneJSON(chatView);
-      cloned.meta.closed = true;
+      cloned.meta.status = CHANNEL_STATUSES.readOnly;
       return helper.response(cloned);
     });
     server.get("/chat/chat_channels.json", () => {
       const cloned = cloneJSON(chatChannels);
-      cloned.public_channels.find((chan) => chan.id === 7).closed = true;
+      cloned.public_channels.find((chan) => chan.id === 7).status =
+        CHANNEL_STATUSES.readOnly;
       return helper.response(cloned);
     });
   });
 
-  test("closed channel composer is disabled", async function (assert) {
+  test("read only channel composer is disabled", async function (assert) {
     await visit("/chat/channel/7/Uncategorized");
     assert.strictEqual(query(".chat-composer-input").disabled, true);
   });
 
-  test("closed channel header status shows correct information", async function (assert) {
+  test("read only channel header status shows correct information", async function (assert) {
     await visit("/chat/channel/7/Uncategorized");
     assert.strictEqual(
       query(".chat-channel-header-status").innerText.trim(),
-      I18n.t("chat.channel_status.closed")
+      I18n.t("chat.channel_status.read_only_header")
     );
   });
 
-  test("closed channels do not show the reply, react, delete, edit, restore, or rebuild options for messages", async function (assert) {
+  test("read only channels do not show the reply, react, delete, edit, restore, or rebuild options for messages", async function (assert) {
     await visit("/chat/channel/7/Uncategorized");
     const dropdown = selectKit(".chat-message-container .more-buttons");
     await dropdown.expand();

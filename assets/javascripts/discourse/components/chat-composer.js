@@ -22,6 +22,10 @@ import { search as searchCategoryTag } from "discourse/lib/category-tag-search";
 import { SKIP } from "discourse/lib/autocomplete";
 import { Promise } from "rsvp";
 import { translations } from "pretty-text/emoji/data";
+import {
+  CHANNEL_STATUSES,
+  channelStatusName,
+} from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 
 const THROTTLE_MS = 150;
 let outsideToolbarClick;
@@ -247,7 +251,11 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   didReceiveAttrs() {
     this._super(...arguments);
 
-    if (!this.editingMessage && this.draft) {
+    if (
+      !this.editingMessage &&
+      this.draft &&
+      this.chatChannel.canModifyMessages(this.currentUser)
+    ) {
       this.setProperties(this.draft);
       this.setInReplyToMsg(this.draft.replyToMsg);
     }
@@ -351,10 +359,9 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
       treatAsTextarea: true,
 
       onKeyUp: (text, cp) => {
-        const matches =
-          /(?:^|[\s.\?,@\/#!%&*;:\[\]{}=\-_()])(:(?!:).?[\w-]*:?(?!:)(?:t\d?)?:?) ?$/gi.exec(
-            text.substring(0, cp)
-          );
+        const matches = /(?:^|[\s.\?,@\/#!%&*;:\[\]{}=\-_()])(:(?!:).?[\w-]*:?(?!:)(?:t\d?)?:?) ?$/gi.exec(
+          text.substring(0, cp)
+        );
 
         if (matches && matches[1]) {
           return [matches[1]];
@@ -517,11 +524,16 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
 
   @discourseComputed("previewing", "chatChannel")
   disableComposer(previewing, chatChannel) {
-    return previewing || chatChannel.closed;
+    return previewing || !chatChannel.canModifyMessages(this.currentUser);
   },
 
   @discourseComputed("previewing", "chatChannel")
   placeholder(previewing, chatChannel) {
+    if (!this.chatChannel.canModifyMessages(this.currentUser)) {
+      return I18n.t("chat.placeholder_new_message_disallowed", {
+        status: channelStatusName(chatChannel.status).toLowerCase(),
+      });
+    }
     return previewing
       ? I18n.t("chat.placeholder_previewing")
       : this.messageRecipient(chatChannel);

@@ -28,11 +28,11 @@
       {{/unless}}
     </div>
 
-    <div class="chat-channel-header-status">
-      {{#if chatChannel.closed}}
-        {{d-icon "lock"}} {{i18n "chat.channel_status.closed"}}
-      {{/if}}
-    </div>
+    {{#if channelStatusMessage}}
+      <div class="chat-channel-header-status">
+        {{d-icon channelStatusIcon}} {{channelStatusMessage}}
+      </div>
+    {{/if}}
   </div>
 {{/if}}
 
@@ -52,6 +52,7 @@
       {{chat-message
         message=message
         details=this.details
+        chatChannel=chatChannel
         setReplyTo=(action "setReplyTo")
         replyMessageClicked=(action "replyMessageClicked")
         editButtonClicked=(action "editButtonClicked")

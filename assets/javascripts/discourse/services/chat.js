@@ -12,6 +12,7 @@ import { Promise } from "rsvp";
 import { CHATABLE_TYPES } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import simpleCategoryHashMentionTransform from "discourse/plugins/discourse-chat/discourse/lib/simple-category-hash-mention-transform";
 import discourseDebounce from "discourse-common/lib/debounce";
+import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 
 export const LIST_VIEW = "list_view";
 export const CHAT_VIEW = "chat_view";
@@ -753,7 +754,7 @@ export default Service.extend({
   },
 
   processChannel(channel) {
-    channel = EmberObject.create(channel);
+    channel = ChatChannel.create(channel);
     this._subscribeToSingleUpdateChannel(channel);
     this._updateUserTrackingState(channel);
     this.allChannels.push(channel);

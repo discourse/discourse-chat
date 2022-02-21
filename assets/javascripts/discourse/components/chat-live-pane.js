@@ -25,6 +25,7 @@ import { resolveAllShortUrls } from "pretty-text/upload-short-url";
 import getURL, { samePrefix } from "discourse-common/lib/get-url";
 import { spinnerHTML } from "discourse/helpers/loading-spinner";
 import { decorateGithubOneboxBody } from "discourse/initializers/onebox-decorators";
+import { CHANNEL_STATUSES } from "../models/chat-channel";
 
 const MAX_RECENT_MSGS = 100;
 const STICKY_SCROLL_LENIENCE = 4;
@@ -266,7 +267,6 @@ export default Component.extend({
         chatable_type: this.chatChannel.chatable_type,
         can_delete_self: true,
         can_delete_others: this.currentUser.staff,
-        channel_status: messages.resultSetMeta.channel_status,
         can_flag: messages.resultSetMeta.can_flag,
       },
       registeredChatChannelId: this.chatChannel.id,
@@ -379,9 +379,9 @@ export default Component.extend({
         }
       });
     }
-    const lastReadId =
-      this.currentUser.chat_channel_tracking_state[this.chatChannel.id]
-        ?.chat_message_id;
+    const lastReadId = this.currentUser.chat_channel_tracking_state[
+      this.chatChannel.id
+    ]?.chat_message_id;
     if (!lastReadId) {
       return;
     }
@@ -979,6 +979,49 @@ export default Component.extend({
     const message = this.messageLookup[messageId];
     this.set("editingMessage", message);
     next(this.reStickScrollIfNeeded.bind(this));
+  },
+
+  @discourseComputed("chatChannel.status")
+  channelStatusMessage(channelStatus) {
+    if (channelStatus === CHANNEL_STATUSES.open) {
+      return null;
+    }
+
+    switch (channelStatus) {
+      case CHANNEL_STATUSES.closed:
+        if (this.currentUser.staff) {
+          return I18n.t("chat.channel_status.closed_staff_header");
+        } else {
+          return I18n.t("chat.channel_status.closed_header");
+        }
+        break;
+      case CHANNEL_STATUSES.readOnly:
+        return I18n.t("chat.channel_status.read_only_header");
+        break;
+      case CHANNEL_STATUSES.archived:
+        return I18n.t("chat.channel_status.archived_header");
+        break;
+    }
+  },
+
+  @discourseComputed("chatChannel.status")
+  channelStatusIcon(channelStatus) {
+    if (channelStatus === CHANNEL_STATUSES.open) {
+      return null;
+    }
+
+    switch (channelStatus) {
+      case CHANNEL_STATUSES.closed:
+        return "lock";
+        break;
+      case CHANNEL_STATUSES.readOnly:
+        // FIXME (martin): Use a pencil-slash icon here, we don't have one in FA5
+        return "far-eye";
+        break;
+      case CHANNEL_STATUSES.archived:
+        return "folder";
+        break;
+    }
   },
 
   @discourseComputed()

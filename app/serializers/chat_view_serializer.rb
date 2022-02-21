@@ -14,7 +14,7 @@ class ChatViewSerializer < ApplicationSerializer
   end
 
   def meta
-    {
+    meta_hash = {
       can_flag: scope.can_flag_in_chat_channel?(object.chat_channel),
       channel_status: object.chat_channel.status
     }

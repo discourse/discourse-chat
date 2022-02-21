@@ -260,7 +260,7 @@ export default Component.extend({
     return classes.join(" ");
   },
 
-  @discourseComputed("message", "message.deleted_at")
+  @discourseComputed("message", "message.deleted_at", "chatChannel.status")
   showEditButton(message, deletedAt) {
     return (
       !message.action_code &&
@@ -296,17 +296,17 @@ export default Component.extend({
     );
   },
 
-  @discourseComputed("message.deleted_at")
+  @discourseComputed("message.deleted_at", "chatChannel.status")
   canReply(deletedAt) {
     return !deletedAt && this.chatChannel.canModifyMessages(this.currentUser);
   },
 
-  @discourseComputed("message.deleted_at")
+  @discourseComputed("message.deleted_at", "chatChannel.status")
   canReact(deletedAt) {
     return !deletedAt && this.chatChannel.canModifyMessages(this.currentUser);
   },
 
-  @discourseComputed("message.deleted_at")
+  @discourseComputed("message.deleted_at", "chatChannel.status")
   showDeleteButton(deletedAt) {
     return (
       this.canManageDeletion &&
@@ -315,7 +315,7 @@ export default Component.extend({
     );
   },
 
-  @discourseComputed("message.deleted_at")
+  @discourseComputed("message.deleted_at", "chatChannel.status")
   showRestoreButton(deletedAt) {
     return (
       this.canManageDeletion &&
@@ -324,8 +324,8 @@ export default Component.extend({
     );
   },
 
-  @discourseComputed("channel_status")
-  showRebakeButton(channelStatus) {
+  @discourseComputed("chatChannel.status")
+  showRebakeButton() {
     return (
       this.currentUser?.staff &&
       this.chatChannel.canModifyMessages(this.currentUser)

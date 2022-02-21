@@ -1,3 +1,5 @@
+import I18n from "I18n";
+
 export const CHATABLE_TYPES = {
   directMessageChannel: "DirectMessageChannel",
   topicChannel: "Topic",

@@ -58,7 +58,7 @@ describe DiscourseChat::GuardianExtensions do
     describe "#can_see_chat_channel?" do
       context "for topic channels" do
         let(:topic) { Fabricate(:topic) }
-        
+
         before do
           channel.update(chatable: topic)
         end
@@ -98,7 +98,7 @@ describe DiscourseChat::GuardianExtensions do
         before do
           channel.update(chatable: category)
         end
-        
+
         it "returns true if the user can see the category" do
           expect(Guardian.new(user).can_see_chat_channel?(channel)).to eq(false)
           group = Fabricate(:group)

@@ -22,10 +22,7 @@ import { search as searchCategoryTag } from "discourse/lib/category-tag-search";
 import { SKIP } from "discourse/lib/autocomplete";
 import { Promise } from "rsvp";
 import { translations } from "pretty-text/emoji/data";
-import {
-  CHANNEL_STATUSES,
-  channelStatusName,
-} from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
+import { channelStatusName } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 
 const THROTTLE_MS = 150;
 let outsideToolbarClick;

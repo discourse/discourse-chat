@@ -28,6 +28,16 @@ module DiscourseChat::GuardianExtensions
     is_staff?
   end
 
+  def can_create_channel_message?(chat_channel)
+    return chat_channel.open? || chat_channel.closed? if is_staff?
+    chat_channel.open?
+  end
+
+  def can_modify_channel_message?(chat_channel)
+    return chat_channel.open? || chat_channel.closed? if is_staff?
+    chat_channel.open?
+  end
+
   def can_change_channel_status?(chat_channel, target_status)
     return false if chat_channel.status == target_status
 

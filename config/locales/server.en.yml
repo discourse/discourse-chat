@@ -9,6 +9,7 @@ en:
     errors:
      channel_exists_for_category: "A channel already exists for this category and name"
      channel_exists_for_topic: "A channel already exists for this topic"
+     channel_new_message_disallowed: "The channel is %{status}, no new messages can be created"
     reviewables:
       actions:
         agree:
@@ -40,6 +41,12 @@ en:
           title: "Disagree"
         ignore:
           title: "Ignore"
+    channel:
+      statuses:
+        read_only: "Read Only"
+        archived: "Archived"
+        closed: "Closed"
+        open: "Open"
 
   discourse_push_notifications:
     popup:

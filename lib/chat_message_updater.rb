@@ -20,6 +20,7 @@ class DiscourseChat::ChatMessageUpdater
 
   def update
     begin
+      # TODO (martin) Validate channel status
       @chat_message.message = @new_content
       validate_message!
       @chat_message.cook

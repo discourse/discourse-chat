@@ -11,6 +11,7 @@ class DiscourseChat::ChatMessageCreator
   def initialize(chat_channel:, in_reply_to_id: nil, user:, content:, staged_id: nil, incoming_chat_webhook: nil, upload_ids: nil)
     @chat_channel = chat_channel
     @user = user
+    @guardian = Guardian.new(user)
     @in_reply_to_id = in_reply_to_id
     @content = content
     @staged_id = staged_id
@@ -25,6 +26,8 @@ class DiscourseChat::ChatMessageCreator
       message: @content,
     )
 
+    # TODO (martin) Make sure webhooks fail gracefully if channel is
+    # closed / readonly / archived
     if @incoming_chat_webhook
       ChatWebhookEvent.create(
         chat_message: @chat_message,
@@ -35,6 +38,7 @@ class DiscourseChat::ChatMessageCreator
 
   def create
     begin
+      check_channel_status!
       validate_message!
       @chat_message.cook
       @chat_message.save!
@@ -48,18 +52,25 @@ class DiscourseChat::ChatMessageCreator
     end
   end
 
+  def failed?
+    @error.present?
+  end
+
+  private
+
+  def check_channel_status!
+    return if @guardian.can_create_channel_message?(@chat_channel)
+    raise StandardError.new(
+      I18n.t("chat.errors.channel_new_message_disallowed", status: @chat_channel.status_name)
+    )
+  end
+
   def validate_message!
     @chat_message.validate_message
     if @chat_message.errors.present?
       raise StandardError.new(@chat_message.errors.map(&:full_message).join(", "))
     end
   end
-
-  def failed?
-    @error.present?
-  end
-
-  private
 
   def attach_uploads
     return if @upload_ids.blank?

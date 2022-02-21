@@ -274,6 +274,31 @@ RSpec.describe DiscourseChat::ChatController do
         expect(response.status).to eq(403)
       end
 
+      it "errors when the user is not staff and the channel is not open" do
+        chat_channel.update(status: ChatChannel.statuses[:closed])
+        post "/chat/#{chat_channel.id}.json", params: { message: message }
+        expect(response.status).to eq(422)
+        expect(response.parsed_body["errors"]).to include(
+          I18n.t("chat.errors.channel_new_message_disallowed", status: chat_channel.status_name)
+        )
+      end
+
+      it "errors when the user is staff and the channel is not open or closed" do
+        Fabricate(:user_chat_channel_membership, chat_channel: chat_channel, user: admin)
+        sign_in(admin)
+
+        chat_channel.update(status: ChatChannel.statuses[:closed])
+        post "/chat/#{chat_channel.id}.json", params: { message: message }
+        expect(response.status).to eq(200)
+
+        chat_channel.update(status: ChatChannel.statuses[:read_only])
+        post "/chat/#{chat_channel.id}.json", params: { message: message }
+        expect(response.status).to eq(422)
+        expect(response.parsed_body["errors"]).to include(
+          I18n.t("chat.errors.channel_new_message_disallowed", status: chat_channel.status_name)
+        )
+      end
+
       it "sends a message for regular user when staff-only is disabled and they are following channel" do
         expect {
           post "/chat/#{chat_channel.id}.json", params: { message: message }

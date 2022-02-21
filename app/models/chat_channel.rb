@@ -41,6 +41,10 @@ class ChatChannel < ActiveRecord::Base
     self.status == ChatChannel.statuses[:archived]
   end
 
+  def status_name
+    I18n.t("chat.channel.statuses.#{ChatChannel.statuses.key(self.status)}")
+  end
+
   def chatable_url
     return nil if direct_message_channel?
     return chatable.relative_url if topic_channel?

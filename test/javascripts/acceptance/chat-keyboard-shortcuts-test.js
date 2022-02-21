@@ -20,6 +20,7 @@ import {
   chatChannels,
   chatView,
 } from "discourse/plugins/discourse-chat/chat-fixtures";
+import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import { test } from "qunit";
 import { isLegacyEmber } from "discourse-common/config/environment";
 
@@ -46,9 +47,12 @@ if (!isLegacyEmber()) {
 
       server.get("/chat/chat_channels/search", () => {
         return helper.response({
-          public_channels: [{ id: 3, name: "seventeen" }],
+          public_channels: [ChatChannel.create({ id: 3, name: "seventeen" })],
           direct_message_channels: [
-            { id: 4, users: [{ id: 10, username: "someone" }] },
+            ChatChannel.create({
+              id: 4,
+              users: [{ id: 10, username: "someone" }],
+            }),
           ],
           users: [
             { id: 11, username: "smoothies" },

@@ -25,7 +25,7 @@ import { resolveAllShortUrls } from "pretty-text/upload-short-url";
 import getURL, { samePrefix } from "discourse-common/lib/get-url";
 import { spinnerHTML } from "discourse/helpers/loading-spinner";
 import { decorateGithubOneboxBody } from "discourse/initializers/onebox-decorators";
-import { CHANNEL_STATUSES } from "../models/chat-channel";
+import { CHANNEL_STATUSES } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 
 const MAX_RECENT_MSGS = 100;
 const STICKY_SCROLL_LENIENCE = 4;

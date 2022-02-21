@@ -111,7 +111,7 @@ body.composer-open .topic-chat-float-container {
 
   .chat-channels {
     .chat-channel-row {
-      padding: 0 0.5rem 0 0.5rem;
+      padding: 0 0 0 0.5rem;
       margin: 0 0.5rem 0.125rem 0.5rem;
       border-radius: 0.25em;
     }
@@ -1170,8 +1170,11 @@ body.composer-open .topic-chat-float-container {
 }
 
 body.has-full-page-chat {
-  .alert-info:last-of-type {
-    margin-bottom: 0;
+  .alert-error,
+  .alert-info,
+  .alert-success,
+  .alert-warning {
+    margin: 0;
     border-bottom: 1px solid var(--primary-low);
   }
 }
@@ -1189,7 +1192,7 @@ body.has-full-page-chat {
     border-right: 1px solid var(--primary-low);
 
     .chat-channel-row {
-      padding: 0 0.5rem 0 0.5rem;
+      padding: 0 0 0 0.5rem;
       margin: 0 0.5rem 0.125rem 0.5rem;
       border-radius: 0.25em;
 

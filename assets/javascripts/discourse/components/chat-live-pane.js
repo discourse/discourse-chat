@@ -31,6 +31,9 @@ const STICKY_SCROLL_LENIENCE = 4;
 const READ_INTERVAL = 1000;
 const PAGE_SIZE = 50;
 
+const PAST = "Past";
+const FUTURE = "Future";
+
 export default Component.extend({
   classNameBindings: [":chat-live-pane", "sendingloading", "loading"],
   topicId: null, // ?Number
@@ -38,7 +41,9 @@ export default Component.extend({
   fullPage: false,
   registeredChatChannelId: null, // ?Number
   loading: false,
-  loadingMore: false,
+  loadingMorePast: false,
+  loadingMoreFuture: false,
+
   allPastMessagesLoaded: false,
   previewing: false,
   sendingloading: false,
@@ -181,37 +186,54 @@ export default Component.extend({
     this.set("draft", this.chat.getDraftForChannel(channelId));
   },
 
-  _fetchMorePastMessages() {
-    if (
-      this.loading ||
-      this.loadingMore ||
-      this.allPastMessagesLoaded ||
-      !this.messages.length
-    ) {
+  _fetchMoreMessages(direction) {
+    const loadingPast = direction === PAST;
+    const canLoadMore = loadingPast
+      ? this.details.can_load_more_past
+      : this.details.can_load_more_future;
+    const loadingMoreKey = `loadingMore${direction}`;
+    const loadingMore = this.get(loadingMoreKey);
+
+    if (!canLoadMore || loadingMore || this.loading || !this.messages.length) {
       return;
     }
 
-    this.set("loadingMore", true);
-    const firstMessageId = this.messages[0].id;
+    this.set(loadingMoreKey, true);
+    this.ignoreStickyScrolling = true;
+
+    const messageIndex = loadingPast ? 0 : this.messages.length - 1;
+    const messageId = this.messages[messageIndex].id;
     const findArgs = {
       channelId: this.chatChannel.id,
-      beforeMessageId: firstMessageId,
       pageSize: PAGE_SIZE,
     };
+    findArgs[`${loadingPast ? "before" : "after"}MessageId`] = messageId;
+    const channelId = this.chatChannel.id;
+
     return this.store
       .findAll("chat-message", findArgs)
       .then((messages) => {
-        if (this._selfDeleted()) {
+        if (this._selfDeleted() || channelId !== this.chatChannel.id) {
           return;
         }
+
         const newMessages = this._prepareMessages(messages || []);
         if (newMessages.length) {
-          this.set("messages", newMessages.concat(this.messages));
-          this.scrollToMessage(firstMessageId);
+          this.set(
+            "messages",
+            loadingPast
+              ? newMessages.concat(this.messages)
+              : this.messages.concat(newMessages)
+          );
+
+          const scrollToMessageArgs = {
+            highlight: false,
+            position: loadingPast ? "top" : "bottom",
+          };
+          this.scrollToMessage(messageId, scrollToMessageArgs);
           this.decorateMessages();
-        } else {
-          this.set("allPastMessagesLoaded", true);
         }
+        this.setCanLoadMoreDetails(messages.resultSetMeta);
       })
       .catch((err) => {
         throw err;
@@ -220,8 +242,19 @@ export default Component.extend({
         if (this._selfDeleted()) {
           return;
         }
-        this.set("loadingMore", false);
+        this.set(loadingMoreKey, false);
+        this.ignoreStickyScrolling = true;
       });
+  },
+
+  setCanLoadMoreDetails(meta) {
+    const metaKeys = Object.keys(meta);
+    if (metaKeys.includes("can_load_more_past")) {
+      this.set("details.can_load_more_past", meta.can_load_more_past);
+    }
+    if (metaKeys.includes("can_load_more_future")) {
+      this.set("details.can_load_more_future", meta.can_load_more_future);
+    }
   },
 
   setMessageProps(messages) {
@@ -231,20 +264,13 @@ export default Component.extend({
       details: {
         chat_channel_id: this.chatChannel.id,
         chatable_type: this.chatChannel.chatable_type,
-        can_flag: messages.resultSetMeta.can_flag,
         can_delete_self: true,
         can_delete_others: this.currentUser.staff,
-        chat_channel_status: {
-          closed: this.chatChannel.closed,
-          archived: this.chatChannel.archived,
-        },
+        channel_status: messages.resultSetMeta.channel_status,
+        can_flag: messages.resultSetMeta.can_flag,
       },
       registeredChatChannelId: this.chatChannel.id,
     });
-
-    if (!this.targetMessageId && messages.length < PAGE_SIZE) {
-      this.set("allPastMessagesLoaded", true);
-    }
 
     schedule("afterRender", this, () => {
       if (this.targetMessageId) {
@@ -254,6 +280,7 @@ export default Component.extend({
         this._markLastReadMessage();
       }
     });
+    this.setCanLoadMoreDetails(messages.resultSetMeta);
     this.messageBus.subscribe(`/chat/${this.chatChannel.id}`, (busData) => {
       this.handleMessage(busData);
     });
@@ -387,7 +414,7 @@ export default Component.extend({
     }
   },
 
-  scrollToMessage(messageId, opts = { highlight: false }) {
+  scrollToMessage(messageId, opts = { highlight: false, position: "top" }) {
     if (this._selfDeleted()) {
       return;
     }
@@ -402,7 +429,10 @@ export default Component.extend({
     if (messageEl) {
       schedule("afterRender", () => {
         this._scrollerEl.scrollTop =
-          messageEl.offsetTop - this._scrollerEl.offsetTop - 20;
+          messageEl.offsetTop -
+          (opts.position === "top"
+            ? this._scrollerEl.offsetTop - 20
+            : this._scrollerEl.offsetHeight);
       });
       if (opts.highlight) {
         messageEl.classList.add("highlighted");
@@ -425,7 +455,7 @@ export default Component.extend({
 
   _stickScrollToBottom() {
     schedule("afterRender", () => {
-      if (this._selfDeleted()) {
+      if (this._selfDeleted() || this.ignoreStickyScrolling) {
         return;
       }
       this.set("stickyScroll", true);
@@ -458,8 +488,10 @@ export default Component.extend({
           this._scrollerEl.scrollTop
       ) <= STICKY_SCROLL_LENIENCE;
     if (atTop) {
-      this._fetchMorePastMessages();
+      this._fetchMoreMessages(PAST);
       return;
+    } else if (Math.abs(this._scrollerEl.scrollTop) <= STICKY_SCROLL_LENIENCE) {
+      this._fetchMoreMessages(FUTURE);
     }
 
     this._calculateStickScroll();

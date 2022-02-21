@@ -38,7 +38,7 @@
 
 <div class="chat-messages-scroll chat-messages-container">
   {{#conditional-loading-spinner condition=this.loading}}
-
+    {{conditional-loading-spinner condition=this.loadingMoreFuture}}
     {{#if (and previewing (not fullPage))}}
       {{d-button
         class="btn-primary join-channel-btn in-float"
@@ -65,13 +65,13 @@
         retrySendMessage=(action "retrySendMessage")
       }}
     {{/each}}
+    {{conditional-loading-spinner condition=this.loadingMorePast}}
   {{/conditional-loading-spinner}}
   {{#if allPastMessagesLoaded}}
     <div class="all-loaded-message">
       {{i18n "chat.all_loaded"}}
     </div>
   {{/if}}
-  {{conditional-loading-spinner condition=this.loadingMore}}
 </div>
 
 {{#if showScrollToBottomBtn}}

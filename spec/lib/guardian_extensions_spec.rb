@@ -32,24 +32,27 @@ describe DiscourseChat::GuardianExtensions do
     end
 
     it "only staff can close chat channels" do
-      expect(guardian.can_close_chat_channel?).to eq(false)
-      expect(staff_guardian.can_close_chat_channel?).to eq(true)
+      channel.update(status: ChatChannel.statuses[:open])
+      expect(guardian.can_change_channel_status?(channel, ChatChannel.statuses[:closed])).to eq(false)
+      expect(staff_guardian.can_change_channel_status?(channel, ChatChannel.statuses[:closed])).to eq(true)
     end
 
     it "only staff can open chat channels" do
-      expect(guardian.can_open_chat_channel?(channel)).to eq(false)
-      expect(staff_guardian.can_open_chat_channel?(channel)).to eq(true)
-    end
-
-    it "only chat channels which are not archived can be reopened by staff" do
-      expect(staff_guardian.can_open_chat_channel?(channel)).to eq(true)
-      channel.update(archived: true)
-      expect(staff_guardian.can_open_chat_channel?(channel)).to eq(false)
+      channel.update(status: ChatChannel.statuses[:closed])
+      expect(guardian.can_change_channel_status?(channel, ChatChannel.statuses[:open])).to eq(false)
+      expect(staff_guardian.can_change_channel_status?(channel, ChatChannel.statuses[:open])).to eq(true)
     end
 
     it "only staff can archive chat channels" do
-      expect(guardian.can_archive_chat_channel?).to eq(false)
-      expect(staff_guardian.can_archive_chat_channel?).to eq(true)
+      channel.update(status: ChatChannel.statuses[:read_only])
+      expect(guardian.can_change_channel_status?(channel, ChatChannel.statuses[:archived])).to eq(false)
+      expect(staff_guardian.can_change_channel_status?(channel, ChatChannel.statuses[:archived])).to eq(true)
+    end
+
+    it "only staff can mark chat channels read_only" do
+      channel.update(status: ChatChannel.statuses[:open])
+      expect(guardian.can_change_channel_status?(channel, ChatChannel.statuses[:read_only])).to eq(false)
+      expect(staff_guardian.can_change_channel_status?(channel, ChatChannel.statuses[:read_only])).to eq(true)
     end
 
     describe "#can_see_chat_channel?" do

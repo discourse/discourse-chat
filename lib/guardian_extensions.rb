@@ -28,16 +28,21 @@ module DiscourseChat::GuardianExtensions
     is_staff?
   end
 
-  def can_close_chat_channel?
-    is_staff?
-  end
+  def can_change_channel_status?(chat_channel, target_status)
+    return false if chat_channel.status == target_status
 
-  def can_open_chat_channel?(chat_channel)
-    can_close_chat_channel? && !chat_channel.archived?
-  end
+    case target_status
+    when ChatChannel.statuses[:closed]
+      return is_staff? && chat_channel.open?
+    when ChatChannel.statuses[:open]
+      return is_staff? && chat_channel.closed?
+    when ChatChannel.statuses[:archived]
+      return is_staff? && chat_channel.read_only?
+    when ChatChannel.statuses[:read_only]
+      return is_staff? && (chat_channel.closed? || chat_channel.open?)
+    end
 
-  def can_archive_chat_channel?
-    is_staff?
+    false
   end
 
   def can_move_chat_to_topic?

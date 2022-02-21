@@ -135,8 +135,7 @@ module ChatPublisher
       "/chat/channel-status",
       {
         chat_channel_id: chat_channel.id,
-        closed: chat_channel.closed,
-        archived: chat_channel.archived
+        status: chat_channel.status
       },
       permissions(chat_channel)
     )

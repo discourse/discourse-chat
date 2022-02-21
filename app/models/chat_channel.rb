@@ -16,6 +16,31 @@ class ChatChannel < ActiveRecord::Base
   has_many :chat_messages
   has_many :user_chat_channel_memberships
 
+  def self.statuses
+    @statuses ||= Enum.new(
+      open: 0,
+      read_only: 1,
+      closed: 2,
+      archived: 3
+    )
+  end
+
+  def open?
+    self.status == ChatChannel.statuses[:open]
+  end
+
+  def read_only?
+    self.status == ChatChannel.statuses[:read_only]
+  end
+
+  def closed?
+    self.status == ChatChannel.statuses[:closed]
+  end
+
+  def archived?
+    self.status == ChatChannel.statuses[:archived]
+  end
+
   def chatable_url
     return nil if direct_message_channel?
     return chatable.relative_url if topic_channel?
@@ -82,16 +107,32 @@ class ChatChannel < ActiveRecord::Base
     end
   end
 
-  def close!(acting_user)
-    return if !Guardian.new(acting_user).can_close_chat_channel?
-    self.update!(closed: true)
-    log_channel_status_change(acting_user, :chat_channel_closed)
+  def change_status(acting_user, target_status)
+    return if !ChatChannel.statuses.values.include?(target_status)
+    return if !Guardian.new(acting_user).can_change_channel_status?(self, target_status)
+    old_status = self.status
+    self.update!(status: target_status)
+    log_channel_status_change(
+      acting_user: acting_user,
+      new_status: target_status,
+      old_status: old_status
+    )
   end
 
   def open!(acting_user)
-    return if !Guardian.new(acting_user).can_open_chat_channel?(self)
-    self.update!(closed: false)
-    log_channel_status_change(acting_user, :chat_channel_opened)
+    change_status(acting_user, ChatChannel.statuses[:open])
+  end
+
+  def read_only!(acting_user)
+    change_status(acting_user, ChatChannel.statuses[:read_only])
+  end
+
+  def close!(acting_user)
+    change_status(acting_user, ChatChannel.statuses[:closed])
+  end
+
+  def archive!(acting_user)
+    change_status(acting_user, ChatChannel.statuses[:archived])
   end
 
   def self.chatable_types
@@ -114,13 +155,15 @@ class ChatChannel < ActiveRecord::Base
 
   private
 
-  def log_channel_status_change(acting_user, status_event)
-    DiscourseEvent.trigger(status_event, self)
+  def log_channel_status_change(acting_user:, new_status:, old_status:)
+    DiscourseEvent.trigger(:chat_channel_status_change, channel: self, old_status: old_status, new_status: new_status)
     StaffActionLogger.new(acting_user).log_custom(
-      status_event.to_s,
+      "chat_channel_status_change",
       {
         chat_channel_id: self.id,
-        chat_channel_name: self.name
+        chat_channel_name: self.name,
+        previous_value: old_status,
+        new_value: new_status
       }
     )
     ChatPublisher.publish_channel_status(self)

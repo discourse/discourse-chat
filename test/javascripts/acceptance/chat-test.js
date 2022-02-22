@@ -26,6 +26,7 @@ import {
   messageContents,
   siteChannel,
 } from "discourse/plugins/discourse-chat/chat-fixtures";
+import Session from "discourse/models/session";
 import { cloneJSON } from "discourse-common/lib/object";
 import { presentUserIds } from "discourse/tests/helpers/presence-pretender";
 import User from "discourse/models/user";
@@ -225,6 +226,8 @@ acceptance("Discourse Chat - without unread", function (needs) {
     Object.defineProperty(this, "appEvents", {
       get: () => this.container.lookup("service:appEvents"),
     });
+    Session.current().highlightJsPath =
+      "/assets/highlightjs/highlight-test-bundle.min.js";
   });
 
   test("Clicking mention notification from outside chat opens the float", async function (assert) {
@@ -592,6 +595,39 @@ acceptance("Discourse Chat - without unread", function (needs) {
       query(
         ".chat-message-container-175 .chat-message-text"
       ).innerHTML.includes(cooked)
+    );
+  });
+
+  test("Code highlighting in a message", async function (assert) {
+    await visit("/chat/channel/9/Site");
+    const messageContent = `Here's a message with code highlighting
+
+\`\`\`ruby
+Widget.triangulate(arg: "test")
+\`\`\``;
+    const composerInput = query(".chat-composer-input");
+    await fillIn(composerInput, messageContent);
+    await focus(composerInput);
+    await triggerKeyEvent(composerInput, "keydown", 13); // 13 is enter keycode
+    publishToMessageBus("/chat/9", {
+      typ: "sent",
+      stagedId: 1,
+      chat_message: {
+        id: 202,
+        cooked: `<pre><code class="lang-ruby">Widget.triangulate(arg: "test")
+      </code></pre>`,
+        user: {
+          id: 1,
+        },
+      },
+    });
+
+    await chatSettled();
+    assert.ok(
+      exists(
+        ".chat-message-container-202 .chat-message-text.hljs-complete code.lang-ruby.hljs"
+      ),
+      "chat message code block has been highlighted as ruby code"
     );
   });
 

@@ -41,6 +41,19 @@ describe ChatMessage do
       COOKED
     end
 
+    it 'supports fence rule with language support' do
+      cooked = ChatMessage.cook(<<~RAW)
+      ```ruby
+      Widget.triangulate(argument: "no u")
+      ```
+      RAW
+
+      expect(cooked).to eq(<<~COOKED.chomp)
+      <pre><code class="lang-ruby">Widget.triangulate(argument: "no u")
+      </code></pre>
+      COOKED
+    end
+
     it 'supports code rule' do
       cooked = ChatMessage.cook("    something = test")
 

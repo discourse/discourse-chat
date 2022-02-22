@@ -171,7 +171,7 @@ export default Component.extend({
       return this.store
         .findAll("chat-message", findArgs)
         .then((messages) => {
-          if (this._selfDeleted() || this.chatChannel.id !== channelId) {
+          if (this._selfDeleted || this.chatChannel.id !== channelId) {
             return;
           }
           this.setMessageProps(messages);
@@ -181,7 +181,7 @@ export default Component.extend({
           throw err;
         })
         .finally(() => {
-          if (this._selfDeleted() || this.chatChannel.id !== channelId) {
+          if (this._selfDeleted || this.chatChannel.id !== channelId) {
             return;
           }
 
@@ -224,7 +224,7 @@ export default Component.extend({
     return this.store
       .findAll("chat-message", findArgs)
       .then((messages) => {
-        if (this._selfDeleted() || channelId !== this.chatChannel.id) {
+        if (this._selfDeleted || channelId !== this.chatChannel.id) {
           return;
         }
 
@@ -250,7 +250,7 @@ export default Component.extend({
         throw err;
       })
       .finally(() => {
-        if (this._selfDeleted()) {
+        if (this._selfDeleted) {
           return;
         }
         this.set(loadingMoreKey, false);
@@ -283,7 +283,7 @@ export default Component.extend({
     });
 
     schedule("afterRender", () => {
-      if (this.isDestroying || this.isDestroyed) {
+      if (this._selfDeleted) {
         return;
       }
 
@@ -416,7 +416,7 @@ export default Component.extend({
   },
 
   highlightOrFetchMessage(messageId) {
-    if (this._selfDeleted()) {
+    if (this._selfDeleted) {
       return;
     }
 
@@ -430,7 +430,7 @@ export default Component.extend({
   },
 
   scrollToMessage(messageId, opts = { highlight: false, position: "top" }) {
-    if (this._selfDeleted()) {
+    if (this._selfDeleted) {
       return;
     }
     const message = this.messageLookup[messageId];
@@ -443,7 +443,7 @@ export default Component.extend({
     );
     if (messageEl) {
       schedule("afterRender", () => {
-        if (this.isDestroying || this.isDestroyed) {
+        if (this._selfDeleted) {
           return;
         }
 
@@ -496,7 +496,7 @@ export default Component.extend({
   },
 
   onScroll() {
-    if (this._selfDeleted()) {
+    if (this._selfDeleted) {
       return;
     }
     resetIdle();
@@ -753,13 +753,13 @@ export default Component.extend({
     );
   },
 
-  _selfDeleted() {
+  get _selfDeleted() {
     return !this.element || this.isDestroying || this.isDestroyed;
   },
 
   @bind
   _updateLastReadMessage() {
-    if (this._selfDeleted()) {
+    if (this._selfDeleted) {
       return;
     }
 
@@ -888,7 +888,7 @@ export default Component.extend({
         this._onSendError(stagedId, error);
       })
       .finally(() => {
-        if (this._selfDeleted()) {
+        if (this._selfDeleted) {
           return;
         }
         this.set("sendingloading", false);
@@ -904,7 +904,7 @@ export default Component.extend({
         id: null,
       });
       return this.chat.forceRefreshChannels().then(() => {
-        if (this._selfDeleted()) {
+        if (this._selfDeleted) {
           return;
         }
         this.set("previewing", false);
@@ -941,7 +941,7 @@ export default Component.extend({
       })
       .catch(popupAjaxError)
       .finally(() => {
-        if (this._selfDeleted()) {
+        if (this._selfDeleted) {
           return;
         }
         this.set("sendingloading", false);
@@ -949,7 +949,7 @@ export default Component.extend({
   },
 
   _resetAfterSend() {
-    if (this._selfDeleted()) {
+    if (this._selfDeleted) {
       return;
     }
     this.setProperties({
@@ -1134,7 +1134,7 @@ export default Component.extend({
     this.set("showChatQuoteSuccess", true);
 
     schedule("afterRender", () => {
-      if (this.isDestroying || this.isDestroyed) {
+      if (this._selfDeleted) {
         return;
       }
 
@@ -1214,7 +1214,7 @@ export default Component.extend({
 
   @bind
   forceLinksToOpenNewTab() {
-    if (this._selfDeleted()) {
+    if (this._selfDeleted) {
       return;
     }
 
@@ -1234,7 +1234,7 @@ export default Component.extend({
   },
 
   focusComposer() {
-    if (this._selfDeleted() || this.site.mobileView) {
+    if (this._selfDeleted || this.site.mobileView) {
       return;
     }
 

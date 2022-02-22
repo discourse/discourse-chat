@@ -36,7 +36,7 @@ describe ChatMessage do
       RAW
 
       expect(cooked).to eq(<<~COOKED.chomp)
-      <pre><code>something = test
+      <pre><code class="lang-auto">something = test
       </code></pre>
       COOKED
     end

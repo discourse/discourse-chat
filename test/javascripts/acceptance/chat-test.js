@@ -609,6 +609,7 @@ Widget.triangulate(arg: "test")
     await fillIn(composerInput, messageContent);
     await focus(composerInput);
     await triggerKeyEvent(composerInput, "keydown", 13); // 13 is enter keycode
+
     publishToMessageBus("/chat/9", {
       typ: "sent",
       stagedId: 1,
@@ -623,6 +624,14 @@ Widget.triangulate(arg: "test")
     });
 
     await chatSettled();
+
+    const messages = queryAll(".chat-message");
+    const lastMessage = messages[messages.length - 1];
+    assert.ok(
+      lastMessage
+        .closest(".chat-message-container")
+        .classList.contains("chat-message-container-202")
+    );
     assert.ok(
       exists(
         ".chat-message-container-202 .chat-message-text.hljs-complete code.lang-ruby.hljs"

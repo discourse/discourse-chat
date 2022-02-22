@@ -190,6 +190,10 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   },
 
   _insertUpload(_, upload) {
+    if (this.previewing) {
+      return;
+    }
+
     this.uploads.pushObject(upload);
     this.onValueChange(this.value, this.uploads, this.replyToMsg);
   },
@@ -648,6 +652,10 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
 
   @action
   toggleToolbar() {
+    if (this.previewing) {
+      return;
+    }
+
     this.set("showToolbar", !this.showToolbar);
     if (this.showToolbar) {
       window.addEventListener("click", outsideToolbarClick);
@@ -673,6 +681,10 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
 
   @discourseComputed("uploads.[]", "inProgressUploads.[]")
   showUploadsContainer() {
+    if (this.previewing) {
+      return false;
+    }
+
     return this.uploads?.length > 0 || this.inProgressUploads?.length > 0;
   },
 });

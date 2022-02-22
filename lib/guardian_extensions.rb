@@ -33,6 +33,8 @@ module DiscourseChat::GuardianExtensions
     chat_channel.open?
   end
 
+  # This is intentionally identical to can_create_channel_message, we
+  # may want to have different conditions here in future.
   def can_modify_channel_message?(chat_channel)
     return chat_channel.open? || chat_channel.closed? if is_staff?
     chat_channel.open?

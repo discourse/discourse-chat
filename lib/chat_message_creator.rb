@@ -38,7 +38,7 @@ class DiscourseChat::ChatMessageCreator
 
   def create
     begin
-      check_channel_status!
+      validate_channel_status!
       validate_message!
       @chat_message.cook
       @chat_message.save!
@@ -58,7 +58,7 @@ class DiscourseChat::ChatMessageCreator
 
   private
 
-  def check_channel_status!
+  def validate_channel_status!
     return if @guardian.can_create_channel_message?(@chat_channel)
     raise StandardError.new(
       I18n.t("chat.errors.channel_new_message_disallowed", status: @chat_channel.status_name)

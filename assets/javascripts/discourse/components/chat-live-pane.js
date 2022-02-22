@@ -272,7 +272,11 @@ export default Component.extend({
       registeredChatChannelId: this.chatChannel.id,
     });
 
-    schedule("afterRender", this, () => {
+    schedule("afterRender", () => {
+      if (this.isDestroying || this.isDestroyed) {
+        return;
+      }
+
       if (this.targetMessageId) {
         this.scrollToMessage(this.targetMessageId, { highlight: true });
         this.set("targetMessageId", null);
@@ -280,6 +284,7 @@ export default Component.extend({
         this._markLastReadMessage();
       }
     });
+
     this.setCanLoadMoreDetails(messages.resultSetMeta);
     this.messageBus.subscribe(`/chat/${this.chatChannel.id}`, (busData) => {
       this.handleMessage(busData);
@@ -428,12 +433,17 @@ export default Component.extend({
     );
     if (messageEl) {
       schedule("afterRender", () => {
+        if (this.isDestroying || this.isDestroyed) {
+          return;
+        }
+
         this._scrollerEl.scrollTop =
           messageEl.offsetTop -
           (opts.position === "top"
             ? this._scrollerEl.offsetTop - 20
             : this._scrollerEl.offsetHeight);
       });
+
       if (opts.highlight) {
         messageEl.classList.add("highlighted");
         // Remove highlighted class, but keep `transition-slow` on for another 2 seconds
@@ -453,26 +463,26 @@ export default Component.extend({
     }
   },
 
+  @afterRender
   _stickScrollToBottom() {
-    schedule("afterRender", () => {
-      if (this._selfDeleted() || this.ignoreStickyScrolling) {
-        return;
-      }
-      this.set("stickyScroll", true);
+    if (this.ignoreStickyScrolling) {
+      return;
+    }
 
-      if (this._scrollerEl) {
-        // Trigger a tiny scrollTop change so Safari scrollbar is placed at bottom.
-        // Setting to just 0 doesn't work (it's at 0 by default, so there is no change)
-        // Very hacky, but no way to get around this Safari bug
-        this._scrollerEl.scrollTop = -1;
+    this.set("stickyScroll", true);
 
-        window.requestAnimationFrame(() => {
-          if (this._scrollerEl) {
-            this._scrollerEl.scrollTop = 0;
-          }
-        });
-      }
-    });
+    if (this._scrollerEl) {
+      // Trigger a tiny scrollTop change so Safari scrollbar is placed at bottom.
+      // Setting to just 0 doesn't work (it's at 0 by default, so there is no change)
+      // Very hacky, but no way to get around this Safari bug
+      this._scrollerEl.scrollTop = -1;
+
+      window.requestAnimationFrame(() => {
+        if (this._scrollerEl) {
+          this._scrollerEl.scrollTop = 0;
+        }
+      });
+    }
   },
 
   onScroll() {
@@ -518,15 +528,14 @@ export default Component.extend({
   },
 
   @action
+  @afterRender
   decorateMessages() {
-    schedule("afterRender", this, () => {
-      resolveAllShortUrls(ajax, this.siteSettings, this.element);
-      this.forceLinksToOpenNewTab();
-      lightbox(this.element.querySelectorAll("img:not(.emoji, .avatar)"));
-      this._scrollGithubOneboxes();
-      this._pluginsDecorators();
-      this._highlightCode();
-    });
+    resolveAllShortUrls(ajax, this.siteSettings, this.element);
+    this.forceLinksToOpenNewTab();
+    lightbox(this.element.querySelectorAll("img:not(.emoji, .avatar)"));
+    this._scrollGithubOneboxes();
+    this._pluginsDecorators();
+    this._highlightCode();
   },
 
   @observes("floatHidden")
@@ -1107,13 +1116,20 @@ export default Component.extend({
     }
 
     this.set("showChatQuoteSuccess", true);
-    schedule("afterRender", this, () => {
+
+    schedule("afterRender", () => {
+      if (this.isDestroying || this.isDestroyed) {
+        return;
+      }
+
       const element = document.querySelector(".chat-selection-message");
-      const removeSuccess = () => {
-        element.removeEventListener("animationend", removeSuccess);
-        this.set("showChatQuoteSuccess", false);
-      };
-      element.addEventListener("animationend", removeSuccess);
+      element.addEventListener(
+        "animationend",
+        () => {
+          this.set("showChatQuoteSuccess", false);
+        },
+        { once: true }
+      );
     });
   },
 

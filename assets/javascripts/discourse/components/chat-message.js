@@ -3,7 +3,10 @@ import { clipboardCopy } from "discourse/lib/utilities";
 import getURL from "discourse-common/lib/get-url";
 import bootbox from "bootbox";
 import Component from "@ember/component";
-import discourseComputed, { bind } from "discourse-common/utils/decorators";
+import discourseComputed, {
+  afterRender,
+  bind,
+} from "discourse-common/utils/decorators";
 import EmberObject, { action, computed } from "@ember/object";
 import I18n from "I18n";
 import { ajax } from "discourse/lib/ajax";
@@ -425,6 +428,10 @@ export default Component.extend({
       );
 
       schedule("afterRender", () => {
+        if (this.isDestroying || this.isDestroyed) {
+          return;
+        }
+
         this._repositionEmojiPicker(btn, position);
       });
     }
@@ -642,14 +649,13 @@ export default Component.extend({
   },
 
   @action
+  @afterRender
   toggleChecked(e) {
-    schedule("afterRender", this, () => {
-      if (e.shiftKey) {
-        this.bulkSelectMessages(this.message, e.target.checked);
-      }
+    if (e.shiftKey) {
+      this.bulkSelectMessages(this.message, e.target.checked);
+    }
 
-      this.onSelectMessage(this.message);
-    });
+    this.onSelectMessage(this.message);
   },
 
   @action

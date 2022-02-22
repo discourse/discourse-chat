@@ -381,7 +381,12 @@ export default Component.extend({
   @action
   startCreatingDmChannel() {
     this.set("creatingDmChannel", true);
+
     schedule("afterRender", () => {
+      if (this.isDestroying || this.isDestroyed) {
+        return;
+      }
+
       const userChooser = this.element.querySelector(".dm-user-chooser input");
       if (userChooser) {
         userChooser.focus();

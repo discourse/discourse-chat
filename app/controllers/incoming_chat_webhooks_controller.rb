@@ -61,7 +61,7 @@ class DiscourseChat::IncomingChatWebhooksController < ApplicationController
       incoming_chat_webhook: webhook
     )
     if chat_message_creator.failed?
-      render_json_error(chat_message_creator.chat_message)
+      render_json_error(chat_message_creator.error)
     else
       render json: success_json
     end
@@ -77,7 +77,8 @@ class DiscourseChat::IncomingChatWebhooksController < ApplicationController
   end
 
   def validate_message_length(message)
-    raise Discourse::InvalidParameters.new("Body cannot be over 1000 characters") if message.length > WEBHOOK_MAX_MESSAGE_LENGTH
+    return if message.length <= WEBHOOK_MAX_MESSAGE_LENGTH
+    raise Discourse::InvalidParameters.new("Body cannot be over #{WEBHOOK_MAX_MESSAGE_LENGTH} characters")
   end
 
   def validate_payload

@@ -35,6 +35,18 @@ RSpec.describe DiscourseChat::IncomingChatWebhooksController do
       expect(chat_webhook_event.chat_message_id).to eq(ChatMessage.last.id)
     end
 
+    it "handles create message failures gracefully and does not create the chat message" do
+      watched_word = Fabricate(:watched_word, action: WatchedWord.actions[:block])
+
+      expect {
+        post "/chat/hooks/#{webhook.key}.json", params: { text: "hey #{watched_word.word}" }
+      }.to change { ChatMessage.where(chat_channel: chat_channel).count }.by(0)
+      expect(response.status).to eq(422)
+      expect(response.parsed_body["errors"]).to include(
+        "Sorry, you can't post the word '#{watched_word.word}'; it's not allowed."
+      )
+    end
+
     it "rate limits" do
       RateLimiter.enable
       RateLimiter.clear_all!

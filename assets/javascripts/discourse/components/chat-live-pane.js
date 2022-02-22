@@ -537,9 +537,13 @@ export default Component.extend({
       this._pluginsDecorators();
       this._highlightCode();
 
-      _chatMessageDecorators.forEach((decorator) => {
-        decorator.call(this, this.element, this.chatChannel);
-      });
+      document
+        .querySelectorAll(".chat-message-text")
+        .forEach((chatMessageEl) => {
+          _chatMessageDecorators.forEach((decorator) => {
+            decorator.call(this, chatMessageEl, this.chatChannel);
+          });
+        });
     });
   },
 

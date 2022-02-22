@@ -111,6 +111,7 @@ class ChatMessage < ActiveRecord::Base
     anchor
     bbcode-block
     bbcode-inline
+    code
     category-hashtag
     censored
     discourse-local-dates

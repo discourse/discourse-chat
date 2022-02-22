@@ -25,6 +25,7 @@ import { resolveAllShortUrls } from "pretty-text/upload-short-url";
 import getURL, { samePrefix } from "discourse-common/lib/get-url";
 import { spinnerHTML } from "discourse/helpers/loading-spinner";
 import { decorateGithubOneboxBody } from "discourse/initializers/onebox-decorators";
+import highlightSyntax from "discourse/lib/highlight-syntax";
 
 const MAX_RECENT_MSGS = 100;
 const STICKY_SCROLL_LENIENCE = 4;
@@ -524,6 +525,7 @@ export default Component.extend({
       lightbox(this.element.querySelectorAll("img:not(.emoji, .avatar)"));
       this._scrollGithubOneboxes();
       this._pluginsDecorators();
+      this._highlightCode();
     });
   },
 
@@ -908,7 +910,10 @@ export default Component.extend({
       type: "PUT",
       data,
     })
-      .then(() => this._resetAfterSend())
+      .then(() => {
+        this._resetHighlightForMessage(chatMessage.id);
+        this._resetAfterSend();
+      })
       .catch(popupAjaxError)
       .finally(() => {
         if (this._selfDeleted()) {
@@ -1270,6 +1275,24 @@ export default Component.extend({
             line.offsetHeight / 2,
         });
       });
+  },
+
+  _resetHighlightForMessage(chatMessageId) {
+    document
+      .querySelector(
+        `.chat-message-container-${chatMessageId} .chat-message-text`
+      )
+      ?.classList.remove("hljs-complete");
+  },
+
+  _highlightCode() {
+    document.querySelectorAll(".chat-message-text").forEach((chatMessageEl) => {
+      // no need to do this for every single message every time a message changes
+      if (!chatMessageEl.classList.contains("hljs-complete")) {
+        highlightSyntax(chatMessageEl, this.siteSettings, this.session);
+        chatMessageEl.classList.add("hljs-complete");
+      }
+    });
   },
 
   @afterRender

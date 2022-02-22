@@ -171,7 +171,7 @@ export default Component.extend({
       return this.store
         .findAll("chat-message", findArgs)
         .then((messages) => {
-          if (this._selfDeleted() || this.chatChannel.id !== channelId) {
+          if (this._selfDeleted || this.chatChannel.id !== channelId) {
             return;
           }
           this.setMessageProps(messages);
@@ -181,7 +181,7 @@ export default Component.extend({
           throw err;
         })
         .finally(() => {
-          if (this._selfDeleted() || this.chatChannel.id !== channelId) {
+          if (this._selfDeleted || this.chatChannel.id !== channelId) {
             return;
           }
 
@@ -224,7 +224,7 @@ export default Component.extend({
     return this.store
       .findAll("chat-message", findArgs)
       .then((messages) => {
-        if (this._selfDeleted() || channelId !== this.chatChannel.id) {
+        if (this._selfDeleted || channelId !== this.chatChannel.id) {
           return;
         }
 
@@ -250,7 +250,7 @@ export default Component.extend({
         throw err;
       })
       .finally(() => {
-        if (this._selfDeleted()) {
+        if (this._selfDeleted) {
           return;
         }
         this.set(loadingMoreKey, false);
@@ -282,7 +282,11 @@ export default Component.extend({
       registeredChatChannelId: this.chatChannel.id,
     });
 
-    schedule("afterRender", this, () => {
+    schedule("afterRender", () => {
+      if (this._selfDeleted) {
+        return;
+      }
+
       if (this.targetMessageId) {
         this.scrollToMessage(this.targetMessageId, { highlight: true });
         this.set("targetMessageId", null);
@@ -290,6 +294,7 @@ export default Component.extend({
         this._markLastReadMessage();
       }
     });
+
     this.setCanLoadMoreDetails(messages.resultSetMeta);
     this.messageBus.subscribe(`/chat/${this.chatChannel.id}`, (busData) => {
       this.handleMessage(busData);
@@ -411,7 +416,7 @@ export default Component.extend({
   },
 
   highlightOrFetchMessage(messageId) {
-    if (this._selfDeleted()) {
+    if (this._selfDeleted) {
       return;
     }
 
@@ -425,7 +430,7 @@ export default Component.extend({
   },
 
   scrollToMessage(messageId, opts = { highlight: false, position: "top" }) {
-    if (this._selfDeleted()) {
+    if (this._selfDeleted) {
       return;
     }
     const message = this.messageLookup[messageId];
@@ -438,12 +443,17 @@ export default Component.extend({
     );
     if (messageEl) {
       schedule("afterRender", () => {
+        if (this._selfDeleted) {
+          return;
+        }
+
         this._scrollerEl.scrollTop =
           messageEl.offsetTop -
           (opts.position === "top"
             ? this._scrollerEl.offsetTop - 20
             : this._scrollerEl.offsetHeight);
       });
+
       if (opts.highlight) {
         messageEl.classList.add("highlighted");
         // Remove highlighted class, but keep `transition-slow` on for another 2 seconds
@@ -463,30 +473,30 @@ export default Component.extend({
     }
   },
 
+  @afterRender
   _stickScrollToBottom() {
-    schedule("afterRender", () => {
-      if (this._selfDeleted() || this.ignoreStickyScrolling) {
-        return;
-      }
-      this.set("stickyScroll", true);
+    if (this.ignoreStickyScrolling) {
+      return;
+    }
 
-      if (this._scrollerEl) {
-        // Trigger a tiny scrollTop change so Safari scrollbar is placed at bottom.
-        // Setting to just 0 doesn't work (it's at 0 by default, so there is no change)
-        // Very hacky, but no way to get around this Safari bug
-        this._scrollerEl.scrollTop = -1;
+    this.set("stickyScroll", true);
 
-        window.requestAnimationFrame(() => {
-          if (this._scrollerEl) {
-            this._scrollerEl.scrollTop = 0;
-          }
-        });
-      }
-    });
+    if (this._scrollerEl) {
+      // Trigger a tiny scrollTop change so Safari scrollbar is placed at bottom.
+      // Setting to just 0 doesn't work (it's at 0 by default, so there is no change)
+      // Very hacky, but no way to get around this Safari bug
+      this._scrollerEl.scrollTop = -1;
+
+      window.requestAnimationFrame(() => {
+        if (this._scrollerEl) {
+          this._scrollerEl.scrollTop = 0;
+        }
+      });
+    }
   },
 
   onScroll() {
-    if (this._selfDeleted()) {
+    if (this._selfDeleted) {
       return;
     }
     resetIdle();
@@ -528,22 +538,19 @@ export default Component.extend({
   },
 
   @action
+  @afterRender
   decorateMessages() {
-    schedule("afterRender", this, () => {
-      resolveAllShortUrls(ajax, this.siteSettings, this.element);
-      this.forceLinksToOpenNewTab();
-      lightbox(this.element.querySelectorAll("img:not(.emoji, .avatar)"));
-      this._scrollGithubOneboxes();
-      this._pluginsDecorators();
-      this._highlightCode();
+    resolveAllShortUrls(ajax, this.siteSettings, this.element);
+    this.forceLinksToOpenNewTab();
+    lightbox(this.element.querySelectorAll("img:not(.emoji, .avatar)"));
+    this._scrollGithubOneboxes();
+    this._pluginsDecorators();
+    this._highlightCode();
 
-      document
-        .querySelectorAll(".chat-message-text")
-        .forEach((chatMessageEl) => {
-          _chatMessageDecorators.forEach((decorator) => {
-            decorator.call(this, chatMessageEl, this.chatChannel);
-          });
-        });
+    document.querySelectorAll(".chat-message-text").forEach((chatMessageEl) => {
+      _chatMessageDecorators.forEach((decorator) => {
+        decorator.call(this, chatMessageEl, this.chatChannel);
+      });
     });
   },
 
@@ -746,13 +753,13 @@ export default Component.extend({
     );
   },
 
-  _selfDeleted() {
+  get _selfDeleted() {
     return !this.element || this.isDestroying || this.isDestroyed;
   },
 
   @bind
   _updateLastReadMessage() {
-    if (this._selfDeleted()) {
+    if (this._selfDeleted) {
       return;
     }
 
@@ -881,7 +888,7 @@ export default Component.extend({
         this._onSendError(stagedId, error);
       })
       .finally(() => {
-        if (this._selfDeleted()) {
+        if (this._selfDeleted) {
           return;
         }
         this.set("sendingloading", false);
@@ -897,7 +904,7 @@ export default Component.extend({
         id: null,
       });
       return this.chat.forceRefreshChannels().then(() => {
-        if (this._selfDeleted()) {
+        if (this._selfDeleted) {
           return;
         }
         this.set("previewing", false);
@@ -934,7 +941,7 @@ export default Component.extend({
       })
       .catch(popupAjaxError)
       .finally(() => {
-        if (this._selfDeleted()) {
+        if (this._selfDeleted) {
           return;
         }
         this.set("sendingloading", false);
@@ -942,7 +949,7 @@ export default Component.extend({
   },
 
   _resetAfterSend() {
-    if (this._selfDeleted()) {
+    if (this._selfDeleted) {
       return;
     }
     this.setProperties({
@@ -1125,13 +1132,20 @@ export default Component.extend({
     }
 
     this.set("showChatQuoteSuccess", true);
-    schedule("afterRender", this, () => {
+
+    schedule("afterRender", () => {
+      if (this._selfDeleted) {
+        return;
+      }
+
       const element = document.querySelector(".chat-selection-message");
-      const removeSuccess = () => {
-        element.removeEventListener("animationend", removeSuccess);
-        this.set("showChatQuoteSuccess", false);
-      };
-      element.addEventListener("animationend", removeSuccess);
+      element.addEventListener(
+        "animationend",
+        () => {
+          this.set("showChatQuoteSuccess", false);
+        },
+        { once: true }
+      );
     });
   },
 
@@ -1200,7 +1214,7 @@ export default Component.extend({
 
   @bind
   forceLinksToOpenNewTab() {
-    if (this._selfDeleted()) {
+    if (this._selfDeleted) {
       return;
     }
 
@@ -1220,7 +1234,7 @@ export default Component.extend({
   },
 
   focusComposer() {
-    if (this._selfDeleted() || this.site.mobileView) {
+    if (this._selfDeleted || this.site.mobileView) {
       return;
     }
 

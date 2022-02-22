@@ -1,7 +1,10 @@
 import Component from "@ember/component";
 import UppyMediaOptimization from "discourse/lib/uppy-media-optimization-plugin";
 import ComposerUploadUppy from "discourse/mixins/composer-upload-uppy";
-import discourseComputed, { bind } from "discourse-common/utils/decorators";
+import discourseComputed, {
+  afterRender,
+  bind,
+} from "discourse-common/utils/decorators";
 import I18n from "I18n";
 import TextareaTextManipulation from "discourse/mixins/textarea-text-manipulation";
 import userSearch from "discourse/lib/user-search";
@@ -10,7 +13,7 @@ import {
   authorizesAllExtensions,
 } from "discourse/lib/uploads";
 import { action } from "@ember/object";
-import { cancel, schedule, throttle } from "@ember/runloop";
+import { cancel, throttle } from "@ember/runloop";
 import { categoryHashtagTriggerRule } from "discourse/lib/category-hashtags";
 import { cloneJSON } from "discourse-common/lib/object";
 import { findRawTemplate } from "discourse-common/lib/raw-templates";
@@ -458,37 +461,31 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     });
   },
 
+  @afterRender
   _focusTextArea(opts = { ensureAtEnd: false, resizeTextArea: true }) {
-    schedule("afterRender", () => {
-      if (!this.element || this.isDestroying || this.isDestroyed) {
-        return;
-      }
+    if (!this._textarea) {
+      return;
+    }
 
-      if (!this._textarea) {
-        return;
-      }
+    this._textarea.focus();
 
-      this._textarea.focus();
+    if (opts.resizeTextArea) {
+      this._resizeTextArea();
+    }
 
-      if (opts.resizeTextArea) {
-        this._resizeTextArea();
-      }
-
-      if (opts.ensureAtEnd) {
-        this._textarea.setSelectionRange(this.value.length, this.value.length);
-      }
-    });
+    if (opts.ensureAtEnd) {
+      this._textarea.setSelectionRange(this.value.length, this.value.length);
+    }
   },
 
+  @afterRender
   _resizeTextArea() {
-    schedule("afterRender", () => {
-      if (!this._textarea) {
-        return;
-      }
+    if (!this._textarea) {
+      return;
+    }
 
-      this._textarea.parentNode.dataset.replicatedValue = this._textarea.value;
-      this.onChangeHeight?.();
-    });
+    this._textarea.parentNode.dataset.replicatedValue = this._textarea.value;
+    this.onChangeHeight?.();
   },
 
   _uploadDropTargetOptions() {

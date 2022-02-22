@@ -1,9 +1,6 @@
 # frozen_string_literal: true
 
 class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
-  ADD_REACTION = :add
-  REMOVE_REACTION = :remove
-
   PAST_MESSAGE_LIMIT = 20
   FUTURE_MESSAGE_LIMIT = 40
 
@@ -193,35 +190,17 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
   end
 
   def react
-    params.require([:emoji, :react_action])
-    if ![ADD_REACTION, REMOVE_REACTION].include?(params[:react_action].to_sym) || !Emoji.exists?(params[:emoji])
-      raise Discourse::InvalidParameters
-    end
-
+    params.require([:message_id, :emoji, :react_action])
     set_channel_and_chatable
-    @user_chat_channel_membership = UserChatChannelMembership.find_by(
-      chat_channel: @chat_channel,
-      user: current_user,
-      following: true
+
+    DiscourseChat::ChatMessageReactor.new(
+      current_user, @chat_channel
+    ).react!(
+      message_id: params[:message_id],
+      react_action: params[:react_action].to_sym,
+      emoji: params[:emoji]
     )
-    raise Discourse::InvalidAccess unless @user_chat_channel_membership
 
-    chat_message = ChatMessage.find_by(id: params[:message_id], chat_channel: @chat_channel)
-    raise Discourse::NotFound unless chat_message
-
-    if params[:react_action].to_sym == ADD_REACTION
-      chat_message.reactions.find_or_create_by(user: current_user, emoji: params[:emoji])
-    else
-      chat_message.reactions.where(user: current_user, emoji: params[:emoji]).destroy_all
-    end
-
-    ChatPublisher.publish_reaction!(
-      @chat_channel,
-      chat_message,
-      params[:react_action],
-      current_user,
-      params[:emoji]
-    )
     render json: success_json
   end
 

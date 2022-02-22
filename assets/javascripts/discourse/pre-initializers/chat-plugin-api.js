@@ -14,6 +14,7 @@ export default {
         value(decorator) {
           addChatMessageDecorator(decorator);
         },
+        enumerable: false,
       });
     });
   },

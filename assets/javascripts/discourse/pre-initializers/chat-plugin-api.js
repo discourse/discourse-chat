@@ -10,11 +10,16 @@ export default {
 
   initialize() {
     withPluginApi("1.1.0", (api) => {
-      Object.defineProperty(Object.getPrototypeOf(api), "decorateChatMessage", {
+      const apiPrototype = Object.getPrototypeOf(api);
+
+      if (apiPrototype.hasOwnProperty("decorateChatMessage")) {
+        return;
+      }
+
+      Object.defineProperty(apiPrototype, "decorateChatMessage", {
         value(decorator) {
           addChatMessageDecorator(decorator);
         },
-        enumerable: false,
       });
     });
   },

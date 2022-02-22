@@ -116,7 +116,7 @@ sv:
       composer:
         toggle_toolbar: "Växla verktygsfält"
       quote:
-        original_channel: "Ursprungligen skickad i <a href=\"%{channelLink}\">#%{channel}</a>."
+        original_channel: 'Ursprungligen skickad i <a href="%{channelLink}">#%{channel}</a>'
       notification_levels:
         never: "Aldrig"
         mention: "Endast för omnämnanden"

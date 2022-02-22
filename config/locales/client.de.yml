@@ -120,8 +120,6 @@ de:
         you_others_and_more: "Du, %{usernames} und %{more} andere haben reagiert mit :%{emoji}:"
       composer:
         toggle_toolbar: "Symbolleiste umschalten"
-      quote:
-        original_channel: "Ursprünglich gesendet in <a href=\"%{channelLink}\">#%{channel}</a>."
       notification_levels:
         never: "Niemals"
         mention: "Nur für Erwähnungen"

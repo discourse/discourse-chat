@@ -1,3 +1,4 @@
+import { withPluginApi } from "discourse/lib/plugin-api";
 import {
   acceptance,
   exists,
@@ -1315,6 +1316,41 @@ acceptance("Discourse Chat - chat preferences", function (needs) {
         type: "PUT",
       }),
       "is able to save the chat preferences for the user"
+    );
+  });
+});
+
+acceptance("Discourse Chat - plugin API", function (needs) {
+  needs.user({
+    admin: false,
+    moderator: false,
+    username: "eviltrout",
+    id: 1,
+    can_chat: true,
+    has_chat_enabled: true,
+  });
+  needs.settings({
+    chat_enabled: true,
+  });
+  needs.pretender((server, helper) => {
+    baseChatPretenders(server, helper);
+    siteChannelPretender(server, helper);
+    directMessageChannelPretender(server, helper);
+    chatChannelPretender(server, helper);
+  });
+
+  test("defines a decorateChatMessage plugin API", async function (assert) {
+    withPluginApi("1.1.0", (api) => {
+      api.decorateChatMessage((message) => {
+        message.innerText = "test";
+      });
+    });
+
+    await visit("/chat/channel/75/@hawk");
+
+    assert.equal(
+      document.querySelector(".chat-message-text").innerText,
+      "test"
     );
   });
 });

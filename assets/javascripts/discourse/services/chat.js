@@ -810,7 +810,7 @@ export default Service.extend({
     addChatToolbarButton(toolbarButton);
   },
 
-  addAutocompleteFn(fn) {
+  addAutocompleteFn(fn, context) {
     addChatAutocompleteFn(fn);
   },
 });

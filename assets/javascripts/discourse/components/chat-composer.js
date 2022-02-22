@@ -288,7 +288,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   @bind
   _handleTextareaInput() {
     this._resizeTextArea();
-    this._applyAutocomplete();
+    this._applyComplete();
     this.onValueChange(this.value, this.uploads, this.replyToMsg);
   },
 

@@ -73,6 +73,7 @@ fa_IR:
         ding: "دینگ"
       title: "گفتگو"
       title_capitalized: "گفتگو"
+      try_again: "دوباره امتحان کنید"
       upload: "پیوست کردن یک پرونده"
       you_flagged: "شما این پیام را پرچم گذاری کردید"
       exit: "بازگشت"
@@ -140,6 +141,7 @@ fa_IR:
         single_user: "%{username} در حال نوشتن"
         multiple_users: "%{commaSeparatedUsernames} و %{lastUsername} در حال نوشتن"
     notifications:
+      chat_quoted: "<span>%{username}</span> %{description}"
       popup:
         chat_mention: "%{username} در گفتگو به شما اشاره کرده است"
     topic:

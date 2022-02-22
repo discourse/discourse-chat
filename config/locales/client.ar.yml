@@ -136,8 +136,6 @@ ar:
         you_others_and_more: "لقد تفاعلت أنت و%{usernames} و%{more} من المستخدمين الآخرين باستخدام :%{emoji}:"
       composer:
         toggle_toolbar: "تشغيل شريط الأدوات"
-      quote:
-        original_channel: "تم إرساله في الأساس في <a href=\"%{channelLink}\">#%{channel}</a>."
       notification_levels:
         never: "أبدًا"
         mention: "للإشارات فقط"

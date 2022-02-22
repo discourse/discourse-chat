@@ -120,8 +120,6 @@ it:
         you_others_and_more: "Tu, %{usernames} e altri %{more} avete reagito con :%{emoji}:"
       composer:
         toggle_toolbar: "Attiva barra degli strumenti"
-      quote:
-        original_channel: "Inviato in origine in <a href=\"%{channelLink}\">#%{channel}</a>."
       notification_levels:
         never: "Mai"
         mention: "Solo per le menzioni"

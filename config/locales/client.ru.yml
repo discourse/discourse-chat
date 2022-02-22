@@ -94,6 +94,7 @@ ru:
         ding: "Звонок"
       title: "чат"
       title_capitalized: "Чат"
+      try_again: "Попробуйте ещё раз"
       upload: "Прикрепить файл"
       uploaded_files:
         one: "%{count} файл"
@@ -128,8 +129,11 @@ ru:
         you_others_and_more: "Вы, %{usernames} и %{more}, отреагировали при помощи эмодзи %{emoji}:"
       composer:
         toggle_toolbar: "Переключить панель инструментов"
+        italic_text: "Курсив"
+        bold_text: "Жирный"
+        code_text: "Код"
       quote:
-        original_channel: "Первоначально отправлено в <a href=\"%{channelLink}\">#%{channel}</a>."
+        original_channel: 'Первоначально отправлено в <a href="%{channelLink}">#%{channel}</a>'
         copy_success: "Цитата из чата скопирована в буфер обмена."
       notification_levels:
         never: "Никогда"
@@ -216,13 +220,16 @@ ru:
         public: "История канала хранится %{days} дней."
         dm: "История личного чата хранится %{days} дней."
     notifications:
+      chat_quoted: "<span>%{username}</span> %{description}"
       popup:
         chat_mention: "Пользователь %{username} упомянул вас в чате"
         chat_group_mention: "Пользователь %{username} упомянул в чате группу @%{groupName}"
         chat_message: "Новое сообщение в чате"
+        chat_quoted: "Пользователь %{username} процитировал ваше сообщение в чате"
       titles:
         chat_mention: "Упоминание в чате"
         chat_invitation: "Приглашение в чат"
+        chat_quoted: "Цитирование чата"
     topic:
       actions:
         chat_enable: "Включить чат"

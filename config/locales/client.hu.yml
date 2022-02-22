@@ -88,6 +88,7 @@ hu:
         ding: "Csengettyű"
       title: "csevegés"
       title_capitalized: "Csevegés"
+      try_again: "Próbálja újra"
       upload: "Fájl csatolása"
       uploaded_files:
         one: "%{count} fájl"
@@ -120,8 +121,12 @@ hu:
         you_others_and_more: "Ön, %{usernames} és még %{more} valaki ezzel reagált: :%{emoji}:"
       composer:
         toggle_toolbar: "Eszköztár be/ki"
+        italic_text: "kiemelt szöveg"
+        bold_text: "erős szöveg"
+        code_text: "kódszöveg"
       quote:
-        original_channel: "Eredetileg itt küldve: <a href=\"%{channelLink}\">#%{channel}</a>."
+        original_channel: 'Eredetileg itt küldve: <a href="%{channelLink}">#%{channel}</a>'
+        copy_success: "Csevegési idézet a vágólapra másolva."
       notification_levels:
         never: "Soha"
         mention: "Csak megemlítésnél"
@@ -171,6 +176,7 @@ hu:
       selection:
         cancel: "Mégse"
         move_to_topic: "Áthelyezés a témához"
+        quote_selection: "Idézet"
         error: "Hiba történt a csevegőüzenetek áthelyezésekor"
         title: "Csevegés áthelyezése a témához"
         new_topic:
@@ -198,13 +204,16 @@ hu:
         public: "A csatorna előzményei %{days} napig maradnak meg."
         dm: "A személyes csevegési előzményei %{days} napig maradnak meg."
     notifications:
+      chat_quoted: "<span>%{username}</span> %{description}"
       popup:
         chat_mention: "%{username} megemlítette a csevegésben"
         chat_group_mention: "%{username} megemlítette a(z) @%{groupName} csoportot a csevegésben"
         chat_message: "Új csevegőüzenet"
+        chat_quoted: "%{username} idézte a csevegési üzenetet"
       titles:
         chat_mention: "Csevegési megemlítés"
         chat_invitation: "Csevegési meghívó"
+        chat_quoted: "Csevegés idézve"
     topic:
       actions:
         chat_enable: "Csevegés engedélyezése"

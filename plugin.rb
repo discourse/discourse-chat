@@ -160,10 +160,9 @@ after_initialize do
 
   if respond_to?(:register_upload_in_use)
     register_upload_in_use do |upload|
-      # TODO after May 2022 - remove this. No longer needed as chat uploads are in a table
-      return true if ChatMessage.where("message LIKE ? OR message LIKE ?", "%#{upload.sha1}%", "%#{upload.base62_sha1}%").exists?
-
-      ChatDraft.exists?("data LIKE ? OR data LIKE ?", "%#{upload.sha1}%", "%#{upload.base62_sha1}%")
+      # TODO after May 2022 - remove ChatMessage query (chat uploads are in a table now)
+      ChatMessage.where("message LIKE ? OR message LIKE ?", "%#{upload.sha1}%", "%#{upload.base62_sha1}%").exists? ||
+      ChatDraft.where("data LIKE ? OR data LIKE ?", "%#{upload.sha1}%", "%#{upload.base62_sha1}%").exists?
     end
   end
 

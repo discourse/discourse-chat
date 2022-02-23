@@ -26,9 +26,6 @@ register_svg_icon "comment-slash"
 register_svg_icon "hashtag"
 register_svg_icon "lock"
 
-register_svg_icon "volume"
-register_svg_icon "tv-alt"
-
 register_svg_icon "file-audio"
 register_svg_icon "file-video"
 register_svg_icon "file-image"

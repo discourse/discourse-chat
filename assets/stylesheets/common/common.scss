@@ -35,6 +35,7 @@ $float-height: 530px;
     align-items: center;
     padding: 2em;
     background-color: var(--primary);
+    border-radius: 0.25em;
     &-images {
       .d-icon {
         height: 3em;
@@ -53,9 +54,14 @@ $float-height: 530px;
       }
     }
     &-text {
-      margin: 1em 0 0 0;
+      margin: 1.5em 0 0 0;
       font-size: var(--font-up-1);
       color: var(--secondary);
+      .d-icon-upload {
+        padding-right: 0.25em;
+        position: relative;
+        bottom: 2px
+      }
     }
   }
 }

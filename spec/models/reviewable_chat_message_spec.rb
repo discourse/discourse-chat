@@ -25,7 +25,7 @@ RSpec.describe ReviewableChatMessage, type: :model do
   end
 
   it "agree_and_restore agrees with the flag and restores the message" do
-    chat_message.update(deleted_at: 1.day.ago, deleted_by: user)
+    chat_message.trash!(user)
     reviewable.perform(moderator, :agree_and_restore)
 
     expect(reviewable).to be_approved
@@ -40,7 +40,7 @@ RSpec.describe ReviewableChatMessage, type: :model do
   end
 
   it "perform_disagree_and_restore disagrees with the flag and does nothing" do
-    chat_message.update(deleted_at: 1.day.ago, deleted_by: user)
+    chat_message.trash!(user)
     reviewable.perform(moderator, :disagree_and_restore)
 
     expect(reviewable).to be_rejected

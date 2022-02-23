@@ -57,11 +57,12 @@ module DiscourseChat::GuardianExtensions
     false
   end
 
-  def can_move_chat_to_topic?
-    is_staff?
+  def can_move_chat_to_topic?(chat_channel)
+    is_staff? && can_modify_channel_message?(chat_channel)
   end
 
-  def can_rebake?
+  def can_rebake?(message)
+    return false if !can_modify_channel_message?(message.chat_channel)
     is_staff? || @user.has_trust_level?(TrustLevel[4])
   end
 
@@ -90,6 +91,7 @@ module DiscourseChat::GuardianExtensions
   end
 
   def can_flag_in_chat_channel?(chat_channel)
+    return false if !can_modify_channel_message?(chat_channel)
     !chat_channel.direct_message_channel?
   end
 
@@ -100,10 +102,12 @@ module DiscourseChat::GuardianExtensions
     can_flag_chat_messages? && can_flag_in_chat_channel?(chat_message.chat_channel)
   end
 
-  def can_delete_chat?(message, topic)
+  def can_delete_chat?(message, chatable)
+    return false if !can_modify_channel_message?(message.chat_channel)
+
     message.user_id == current_user.id ?
-      can_delete_own_chats?(topic) :
-      can_delete_other_chats?(topic)
+      can_delete_own_chats?(chatable) :
+      can_delete_other_chats?(chatable)
   end
 
   def can_delete_own_chats?(chatable)
@@ -130,6 +134,8 @@ module DiscourseChat::GuardianExtensions
   end
 
   def can_restore_chat?(message, chatable)
+    return false if !can_modify_channel_message?(message.chat_channel)
+
     message.user_id == current_user.id ?
       can_restore_own_chats?(chatable) :
       can_delete_other_chats?(chatable)

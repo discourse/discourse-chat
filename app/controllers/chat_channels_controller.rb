@@ -111,6 +111,8 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
   end
 
   def edit
+    # TODO (martin) Do we need to prevent editing the channel name/description
+    # when archived/read_only?
     guardian.ensure_can_edit_chat_channel!
     if (params[:name]&.length || 0) > SiteSetting.max_topic_title_length
       raise Discourse::InvalidParameters.new(:name)

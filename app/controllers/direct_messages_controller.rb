@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class DiscourseChat::DirectMessagesController < DiscourseChat::ChatBaseController
+  # TODO (martin) Do we allow archiving DM channels, and if so what does that look like?
   def create
     guardian.ensure_can_chat!(current_user)
     params.require(:usernames)

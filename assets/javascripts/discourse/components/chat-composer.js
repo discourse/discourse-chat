@@ -493,10 +493,20 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   },
 
   _uploadDropTargetOptions() {
-    const targetEl = document.querySelector(".chat-live-pane");
+    const chatWidget = document.querySelector(
+      ".topic-chat-container.expanded.visible"
+    );
+    const fullPageChat = document.querySelector(".full-page-chat");
+
+    const targetEl =
+      chatWidget || fullPageChat
+        ? document.querySelector(".chat-enabled")
+        : null;
+
     if (!targetEl) {
       return this._super();
     }
+
     return {
       target: targetEl,
     };

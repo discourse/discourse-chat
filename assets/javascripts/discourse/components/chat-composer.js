@@ -32,9 +32,9 @@ export function addChatToolbarButton(toolbarButton) {
   toolbarButtons.push(toolbarButton);
 }
 
-const extraAutocompletes = [];
+const _extraAutocompletes = [];
 export function addChatAutocompleteFn(fn) {
-  extraAutocompletes.push(fn);
+  _extraAutocompletes.push(fn);
 }
 
 export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
@@ -134,9 +134,9 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
 
     this._textarea = this.element.querySelector(".chat-composer-input");
     this._$textarea = $(this._textarea);
-    this._applyExtraAutocomplete();
     this._applyCategoryHashtagAutocomplete(this._$textarea);
     this._applyEmojiAutocomplete(this._$textarea);
+    this._applyExtraAutocompletes();
     this._bindUploadTarget();
     this.appEvents.on("chat:focus-composer", this, "_focusTextArea");
 
@@ -298,9 +298,9 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     this.element.querySelector(`#${this.fileUploadElementId}`).click();
   },
 
-  _applyExtraAutocomplete() {
-    extraAutocompletes.forEach((autocomplete) => {
-      autocomplete(this);
+  _applyExtraAutocompletes() {
+    _extraAutocompletes.forEach((buildAutocompleteOptions) => {
+      this._$textarea.autocomplete(buildAutocompleteOptions(this));
     });
   },
 

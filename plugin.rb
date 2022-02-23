@@ -417,11 +417,15 @@ after_initialize do
           channel_name: channel.public_channel_title
         }.merge(context['placeholders'] || {})
 
-        DiscourseChat::ChatMessageCreator.create(
+        creator = DiscourseChat::ChatMessageCreator.create(
           chat_channel: channel,
           user: sender,
           content: utils.apply_placeholders(fields.dig('message', 'value'), placeholders)
         )
+
+        if creator.failed?
+          Rails.logger.warn "[discourse-automation] Chat message failed to send, error was: #{creator.error}"
+        end
       end
     end
   end

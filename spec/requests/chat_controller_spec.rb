@@ -657,6 +657,19 @@ RSpec.describe DiscourseChat::ChatController do
       expect(response.status).to eq(403)
     end
 
+    it "errors when the user tries to react to a read_only channel" do
+      chat_channel.update(status: ChatChannel.statuses[:read_only])
+      sign_in(user)
+      emoji = ":heart:"
+      expect {
+        put "/chat/#{chat_channel.id}/react/#{chat_message.id}.json", params: { emoji: emoji, react_action: "add" }
+      }.not_to change { chat_message.reactions.where(user: user, emoji: emoji).count }
+      expect(response.status).to eq(403)
+      expect(response.parsed_body["errors"]).to include(
+        I18n.t("chat.errors.channel_modify_message_disallowed", status: chat_channel.status_name)
+      )
+    end
+
     it "adds a reaction record correctly" do
       sign_in(user)
       emoji = ":heart:"

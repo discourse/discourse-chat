@@ -10,6 +10,7 @@ en:
      channel_exists_for_category: "A channel already exists for this category and name"
      channel_exists_for_topic: "A channel already exists for this topic"
      channel_new_message_disallowed: "The channel is %{status}, no new messages can be created"
+     channel_modify_message_disallowed: "The channel is %{status}, no messages can be modified"
     reviewables:
       actions:
         agree:

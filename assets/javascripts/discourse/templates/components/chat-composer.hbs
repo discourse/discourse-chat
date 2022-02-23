@@ -35,7 +35,7 @@
     input=(action "onTextareaInput" value="target.value")
     type="text"
     class="chat-composer-input"
-    disabled=previewing
+    disabled=textareaDisabled
     autocorrect="on"
     autocapitalize="off"
     placeholder=placeholder
@@ -47,7 +47,7 @@
     class="open-toolbar-btn"
     title="chat.composer.toggle_toolbar"
     icon=(if showToolbar "minus" "plus")
-    disabled=previewing
+    disabled=textareaDisabled
   }}
 
   {{emoji-picker

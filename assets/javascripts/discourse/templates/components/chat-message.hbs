@@ -30,28 +30,28 @@
         {{#unless message.staged}}
           <div class="chat-msgactions-hover">
             <div class="chat-msgactions">
-              {{#each favoritesEmojis as |favorite|}}
-                {{chat-message-reaction
-                  emoji=favorite.emoji
-                  reacted=favorite.reacted
-                  react=(action "react")
-                  class="show"
+              {{#if canInteractWithChat}}
+                {{#each favoritesEmojis as |favorite|}}
+                  {{chat-message-reaction
+                    emoji=favorite.emoji
+                    reacted=favorite.reacted
+                    react=(action "react")
+                    class="show"
+                  }}
+                {{/each}}
+                {{d-button
+                  class="btn-flat react-btn"
+                  action=(action "startReactionForMsgActions")
+                  icon="discourse-emojis"
+                  title="chat.react"
                 }}
-              {{/each}}
-              {{d-button
-                class="btn-flat react-btn"
-                action=(action "startReactionForMsgActions")
-                icon="discourse-emojis"
-                title="chat.react"
-              }}
-              {{#unless message.deleted_at}}
                 {{d-button
                   class="btn-flat reply-btn"
                   action=(action "reply")
                   icon="reply"
                   title="chat.reply"
                 }}
-              {{/unless}}
+              {{/if}}
               {{#if moreButtons.length}}
                 {{dropdown-select-box
                   class="more-buttons"
@@ -160,12 +160,15 @@
                       hideUsersList=(action "hideUsersList")
                     }}
                   {{/each-in}}
-                  {{d-button
-                    class="chat-message-react-btn"
-                    action=(action "startReactionForReactionList")
-                    icon="discourse-emojis"
-                    title="chat.react"
-                  }}
+
+                  {{#if canInteractWithChat}}
+                    {{d-button
+                      class="chat-message-react-btn"
+                      action=(action "startReactionForReactionList")
+                      icon="discourse-emojis"
+                      title="chat.react"
+                    }}
+                  {{/if}}
                 </div>
               {{/if}}
             {{/chat-message-text}}

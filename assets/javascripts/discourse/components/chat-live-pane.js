@@ -278,6 +278,7 @@ export default Component.extend({
         can_delete_self: true,
         can_delete_others: this.currentUser.staff,
         can_flag: messages.resultSetMeta.can_flag,
+        user_silenced: messages.resultSetMeta.user_silenced,
       },
       registeredChatChannelId: this.chatChannel.id,
     });
@@ -1024,6 +1025,11 @@ export default Component.extend({
   @discourseComputed()
   canMoveToTopic() {
     return this.currentUser.staff;
+  },
+
+  @discourseComputed("previewing", "details.user_silenced")
+  canInteractWithChat(previewing, userSilenced) {
+    return !previewing && !userSilenced
   },
 
   @discourseComputed("messages.@each.selected")

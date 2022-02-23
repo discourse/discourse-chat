@@ -20,7 +20,7 @@ import { findRawTemplate } from "discourse-common/lib/raw-templates";
 import { emojiSearch, isSkinTonableEmoji } from "pretty-text/emoji";
 import { emojiUrlFor } from "discourse/lib/text";
 import { inject as service } from "@ember/service";
-import { alias, or } from "@ember/object/computed";
+import { alias, not, or } from "@ember/object/computed";
 import { search as searchCategoryTag } from "discourse/lib/category-tag-search";
 import { SKIP } from "discourse/lib/autocomplete";
 import { Promise } from "rsvp";
@@ -41,6 +41,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
 
   chat: service(),
   classNames: ["chat-composer"],
+  userSilenced: alias("details.user_silenced"),
   emojiStore: service("emoji-store"),
   editingMessage: null,
   fullPage: false,
@@ -49,6 +50,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   previewing: false,
   showToolbar: false,
   timer: null,
+  textareaDisabled: not("canInteractWithChat"),
   value: "",
 
   // Composer Uppy values
@@ -193,7 +195,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   },
 
   _insertUpload(_, upload) {
-    if (this.previewing) {
+    if (this.textareaDisabled) {
       return;
     }
 
@@ -515,11 +517,15 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     this.set("emojiPickerIsActive", false);
   },
 
-  @discourseComputed("previewing", "chatChannel")
-  placeholder(previewing, chatChannel) {
-    return previewing
-      ? I18n.t("chat.placeholder_previewing")
-      : this.messageRecipient(chatChannel);
+  @discourseComputed("previewing", "details.user_silenced", "chatChannel")
+  placeholder(previewing, userSilenced, chatChannel) {
+    if (previewing) {
+      return I18n.t("chat.placeholder_previewing");
+    } else if (userSilenced) {
+      return I18n.t("chat.placeholder_silenced");
+    } else {
+      return this.messageRecipient(chatChannel)
+    }
   },
 
   messageRecipient(chatChannel) {
@@ -547,7 +553,8 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   @discourseComputed(
     "value",
     "loading",
-    "previewing",
+    "textareaDisabled",
+    "details.user_silenced",
     "uploads.@each",
     "uploading",
     "processingUpload"
@@ -555,12 +562,12 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   sendDisabled(
     value,
     loading,
-    previewing,
+    textareaDisabled,
     uploads,
     uploading,
     processingUpload
   ) {
-    if (loading || previewing || uploading || processingUpload) {
+    if (loading || textareaDisabled || userSilenced || uploading || processingUpload) {
       return true;
     }
 
@@ -649,7 +656,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
 
   @action
   toggleToolbar() {
-    if (this.previewing) {
+    if (this.textareaDisabled) {
       return;
     }
 
@@ -676,12 +683,12 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     this.onValueChange(this.value, this.uploads, this.replyToMsg);
   },
 
-  @discourseComputed("uploads.[]", "inProgressUploads.[]")
-  showUploadsContainer() {
-    if (this.previewing) {
+  @discourseComputed("textareaDisabled", "uploads.[]", "inProgressUploads.[]")
+  showUploadsContainer(textareaDisabled, uploads, inProgressUploads) {
+    if (textareaDisabled) {
       return false;
     }
 
-    return this.uploads?.length > 0 || this.inProgressUploads?.length > 0;
+    return uploads?.length > 0 || inProgressUploads?.length > 0;
   },
 });

@@ -1,17 +1,18 @@
-import { inject as service } from "@ember/service";
-import { clipboardCopy } from "discourse/lib/utilities";
-import getURL from "discourse-common/lib/get-url";
 import bootbox from "bootbox";
 import Component from "@ember/component";
+import I18n from "I18n";
+import getURL from "discourse-common/lib/get-url";
+import optionalService from "discourse/lib/optional-service";
 import discourseComputed, {
   afterRender,
   bind,
 } from "discourse-common/utils/decorators";
 import EmberObject, { action, computed } from "@ember/object";
-import I18n from "I18n";
 import { ajax } from "discourse/lib/ajax";
 import { autoUpdatingRelativeAge } from "discourse/lib/formatter";
 import { cancel, later, schedule } from "@ember/runloop";
+import { clipboardCopy } from "discourse/lib/utilities";
+import { inject as service } from "@ember/service";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { prioritizeNameInUx } from "discourse/lib/settings";
 
@@ -23,10 +24,12 @@ export default Component.extend({
   REMOVE_REACTION: "remove",
   SHOW_LEFT: "showLeft",
   SHOW_RIGHT: "showRight",
+  canInteractWithChat: false,
   isHovered: false,
   emojiPickerIsActive: false,
   mentionWarning: null,
   emojiStore: service("emoji-store"),
+  adminTools: optionalService(),
 
   init() {
     this._super(...arguments);
@@ -127,6 +130,14 @@ export default Component.extend({
         id: "flag",
         name: I18n.t("chat.flag"),
         icon: "flag",
+      });
+    }
+
+    if (this.showSilenceButton) {
+      buttons.push({
+        id: "silence",
+        name: I18n.t("chat.silence"),
+        icon: "microphone-slash",
       });
     }
 
@@ -262,9 +273,10 @@ export default Component.extend({
     return classes.join(" ");
   },
 
-  @discourseComputed("message", "message.deleted_at")
-  showEditButton(message, deletedAt) {
+  @discourseComputed("canInteractWithChat", "message", "message.deleted_at")
+  showEditButton(canInteractWithChat, message, deletedAt) {
     return (
+      canInteractWithChat &&
       !message.action_code &&
       !deletedAt &&
       this.currentUser.id === message.user.id
@@ -272,13 +284,15 @@ export default Component.extend({
   },
 
   @discourseComputed(
+    "canInteractWithChat",
     "message",
     "message.user_flag_status",
     "details.can_flag",
     "message.deleted_at"
   )
-  canFlagMessage(message, userFlagStatus, canFlag, deletedAt) {
+  canFlagMessage(canInteractWithChat, message, userFlagStatus, canFlag, deletedAt) {
     return (
+      canInteractWithChat &&
       this.currentUser?.id !== message.user.id &&
       userFlagStatus === undefined &&
       canFlag &&
@@ -288,8 +302,18 @@ export default Component.extend({
   },
 
   @discourseComputed("message")
-  canManageDeletion(message) {
+  showSilenceButton(message) {
     return (
+      this.currentUser?.staff &&
+      this.currentUser?.id !== message.user.id &&
+      !message.chat_webhook_event
+    );
+  },
+
+  @discourseComputed("canInteractWithChat","message")
+  canManageDeletion(canInteractWithChat, message) {
+    return (
+      canInteractWithChat &&
       !message.action_code &&
       (this.currentUser?.id === message.user.id
         ? this.details.can_delete_self
@@ -297,14 +321,14 @@ export default Component.extend({
     );
   },
 
-  @discourseComputed("message.deleted_at")
-  showDeleteButton(deletedAt) {
-    return this.canManageDeletion && !deletedAt;
+  @discourseComputed("canManageDeletion", "message.deleted_at")
+  showDeleteButton(canManageDeletion, deletedAt) {
+    return canManageDeletion && !deletedAt;
   },
 
-  @discourseComputed("message.deleted_at")
-  showRestoreButton(deletedAt) {
-    return this.canManageDeletion && deletedAt;
+  @discourseComputed("canManageDeletion", "message.deleted_at")
+  showRestoreButton(canManageDeletion, deletedAt) {
+    return canManageDeletion && deletedAt;
   },
 
   @discourseComputed("message", "message.action_code")
@@ -485,6 +509,10 @@ export default Component.extend({
 
   @action
   deselectReaction(emoji) {
+    if (!this.canInteractWithChat) {
+      return;
+    }
+
     this.set("emojiPickerIsActive", false);
     this.react(emoji, this.REMOVE_REACTION);
     this.notifyPropertyChange("favoritesEmojis");
@@ -492,6 +520,10 @@ export default Component.extend({
 
   @action
   selectReaction(emoji) {
+    if (!this.canInteractWithChat) {
+      return;
+    }
+
     this.set("emojiPickerIsActive", false);
     this.react(emoji, this.ADD_REACTION);
     this.notifyPropertyChange("favoritesEmojis");
@@ -510,7 +542,7 @@ export default Component.extend({
 
   @action
   react(emoji, reactAction) {
-    if (this._loadingReactions.includes(emoji)) {
+    if (!this.canInteractWithChat || this._loadingReactions.includes(emoji)) {
       return;
     }
 
@@ -607,6 +639,11 @@ export default Component.extend({
         }
       }
     );
+  },
+
+  @action
+  silence() {
+    this.adminTools.showSilenceModal(EmberObject.create(this.message.user));
   },
 
   @action

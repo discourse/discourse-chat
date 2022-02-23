@@ -8,6 +8,21 @@ class DiscourseChat::ChatMessageCreator
     instance
   end
 
+  def self.attach_uploads(chat_message_id, uploads)
+    return if uploads.blank?
+
+    now = Time.now
+    record_attrs = uploads.map do |upload|
+      {
+        upload_id: upload.id,
+        chat_message_id: chat_message_id,
+        created_at: now,
+        updated_at: now
+      }
+    end
+    ChatUpload.insert_all!(record_attrs)
+  end
+
   def initialize(chat_channel:, in_reply_to_id: nil, user:, content:, staged_id: nil, incoming_chat_webhook: nil, upload_ids: nil)
     @chat_channel = chat_channel
     @user = user
@@ -64,12 +79,6 @@ class DiscourseChat::ChatMessageCreator
     end
   end
 
-  def failed?
-    @error.present?
-  end
-
-  private
-
   def create_chat_webhook_event
     return if @incoming_chat_webhook.blank?
     ChatWebhookEvent.create(
@@ -83,20 +92,5 @@ class DiscourseChat::ChatMessageCreator
 
     uploads = Upload.where(id: @upload_ids, user_id: @user.id)
     self.class.attach_uploads(@chat_message.id, uploads)
-  end
-
-  def self.attach_uploads(chat_message_id, uploads)
-    return if uploads.blank?
-
-    now = Time.now
-    record_attrs = uploads.map do |upload|
-      {
-        upload_id: upload.id,
-        chat_message_id: chat_message_id,
-        created_at: now,
-        updated_at: now
-      }
-    end
-    ChatUpload.insert_all!(record_attrs)
   end
 end

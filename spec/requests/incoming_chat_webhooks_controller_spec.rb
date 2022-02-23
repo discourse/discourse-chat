@@ -47,6 +47,17 @@ RSpec.describe DiscourseChat::IncomingChatWebhooksController do
       )
     end
 
+    it "handles create message failures gracefully if the channel is read only" do
+      chat_channel.update!(status: ChatChannel.statuses[:read_only])
+      expect {
+        post "/chat/hooks/#{webhook.key}.json", params: { text: "hey this is a message" }
+      }.to change { ChatMessage.where(chat_channel: chat_channel).count }.by(0)
+      expect(response.status).to eq(422)
+      expect(response.parsed_body["errors"]).to include(
+        I18n.t("chat.errors.channel_new_message_disallowed", status: chat_channel.status_name)
+      )
+    end
+
     it "rate limits" do
       RateLimiter.enable
       RateLimiter.clear_all!

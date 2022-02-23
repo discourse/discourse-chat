@@ -85,7 +85,7 @@ export default Component.extend({
       this.channels[0].set("focused", true);
     }
 
-    schedule("afterRender", this, () => {
+    schedule("afterRender", () => {
       let focusedChannel = document.querySelector(
         "#chat-channel-selector-modal-inner .chat-channel-selection-row.focused"
       );

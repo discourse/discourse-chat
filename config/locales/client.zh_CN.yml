@@ -116,8 +116,6 @@ zh_CN:
         you_others_and_more: "您，%{usernames} 和其他 %{more} 人回应了 :%{emoji}:"
       composer:
         toggle_toolbar: "切换工具栏"
-      quote:
-        original_channel: "最初在 <a href=\"%{channelLink}\">#%{channel}</a> 中发送。"
       notification_levels:
         never: "永不"
         mention: "仅限提及"

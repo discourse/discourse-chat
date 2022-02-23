@@ -44,7 +44,7 @@ en:
         title: "Isolate chat"
         description: "Always open chat in a new tab"
       heading: "Chat"
-      join_channel: "Join channel"
+      join: "Join"
       new_messages: "new messages"
       mention_notification: "<span>%{username} mentioned you in chat</span>"
       mention_warning:

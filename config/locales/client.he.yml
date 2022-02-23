@@ -89,6 +89,7 @@ he:
         ding: "דינג"
       title: "צ׳אט"
       title_capitalized: "צ׳אט"
+      try_again: "לנסות שוב"
       upload: "צירוף קובץ"
       uploaded_files:
         one: "קובץ %{count}"
@@ -123,8 +124,12 @@ he:
         you_others_and_more: "הגבת, יחד עם %{usernames} ו־%{more} נוספים באמוג׳י :%{emoji}:"
       composer:
         toggle_toolbar: "החלפת מצב סרגל כלים"
+        italic_text: "טקסט מודגש"
+        bold_text: "טקסט בולט"
+        code_text: "טקסט קוד"
       quote:
-        original_channel: "נשלח במקור ב־‎<a href=\"%{channelLink}\">#%{channel}</a>‎."
+        original_channel: 'נשלח במקור ב־‎<a href="%{channelLink}">#%{channel}</a>‎'
+        copy_success: "ציטוט מהצ׳אט הועתק ללוח הגזירים."
       notification_levels:
         never: "לעולם לא"
         mention: "רק אזכורים"
@@ -174,6 +179,7 @@ he:
       selection:
         cancel: "ביטול"
         move_to_topic: "העברה לנושא"
+        quote_selection: "ציטוט"
         error: "אירעה שגיאה בהעברת הודעות הצ׳אט"
         title: "העברת צ׳אט לנושא"
         new_topic:
@@ -209,13 +215,16 @@ he:
         public: "היסטוריית הערוץ נשמרת למשך %{days} ימים."
         dm: "היסטוריית הצ׳אט האישית נשמרת למשך %{days} ימים."
     notifications:
+      chat_quoted: "<span>%{username}</span> %{description}"
       popup:
         chat_mention: "אוזכרת בצ׳אט על ידי %{username}"
         chat_group_mention: "היה אזכור של @%{groupName} בצ׳אט על ידי ‎%{username}"
         chat_message: "הודעת צ׳אט חדשה"
+        chat_quoted: "הודעת הצ׳אט שלך צוטטה על ידי %{username}"
       titles:
         chat_mention: "איזכור בצ׳אט"
         chat_invitation: "הזמנה לצ׳אט"
+        chat_quoted: "הצ׳אט צוטט"
     topic:
       actions:
         chat_enable: "הפעלת צ׳אט"

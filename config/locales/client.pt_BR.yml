@@ -120,8 +120,6 @@ pt_BR:
         you_others_and_more: "Você, %{usernames} e mais %{more} reagiram com :%{emoji}:"
       composer:
         toggle_toolbar: "Ativar/desativar barra de ferramentas"
-      quote:
-        original_channel: "Originalmente enviada em <a href=\"%{channelLink}\">#%{channel}</a>."
       notification_levels:
         never: "Nunca"
         mention: "Apenas para menções"

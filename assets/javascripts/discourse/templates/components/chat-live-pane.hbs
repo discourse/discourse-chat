@@ -11,13 +11,18 @@
 
       {{chat-channel-title onClick=(action "onChannelTitleClick") channel=chatChannel}}
 
+      {{#if channelStatusMessage}}
+        <div class="chat-channel-header-status">
+          {{d-icon channelStatusIcon}} {{channelStatusMessage}}
+        </div>
       {{#if previewing}}
         {{d-button
           class="btn-primary join-channel-btn"
           action=(action "joinChannel")
-          label="chat.join_channel"
+          label="chat.join"
         }}
       {{/if}}
+
       {{#unless currentUser.chat_isolated}}
         {{d-button
           action=(action "exitChat")
@@ -27,12 +32,6 @@
         }}
       {{/unless}}
     </div>
-
-    {{#if channelStatusMessage}}
-      <div class="chat-channel-header-status">
-        {{d-icon channelStatusIcon}} {{channelStatusMessage}}
-      </div>
-    {{/if}}
   </div>
 {{/if}}
 
@@ -43,7 +42,7 @@
       {{d-button
         class="btn-primary join-channel-btn in-float"
         action=(action "joinChannel")
-        label="chat.join_channel"
+        label="chat.join"
       }}
     {{/if}}
 

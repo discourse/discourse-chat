@@ -25,15 +25,6 @@ class DiscourseChat::ChatMessageCreator
       in_reply_to_id: @in_reply_to_id,
       message: @content,
     )
-
-    # TODO (martin) Make sure webhooks fail gracefully if channel is
-    # closed / readonly / archived
-    if @incoming_chat_webhook
-      ChatWebhookEvent.create(
-        chat_message: @chat_message,
-        incoming_chat_webhook: @incoming_chat_webhook
-      )
-    end
   end
 
   def create
@@ -42,6 +33,7 @@ class DiscourseChat::ChatMessageCreator
       validate_message!
       @chat_message.cook
       @chat_message.save!
+      create_chat_webhook_event
       attach_uploads
       ChatDraft.where(user_id: @user.id, chat_channel_id: @chat_channel.id).destroy_all
       ChatPublisher.publish_new!(@chat_channel, @chat_message, @staged_id)
@@ -70,6 +62,20 @@ class DiscourseChat::ChatMessageCreator
     if @chat_message.errors.present?
       raise StandardError.new(@chat_message.errors.map(&:full_message).join(", "))
     end
+  end
+
+  def failed?
+    @error.present?
+  end
+
+  private
+
+  def create_chat_webhook_event
+    return if @incoming_chat_webhook.blank?
+    ChatWebhookEvent.create(
+      chat_message: @chat_message,
+      incoming_chat_webhook: @incoming_chat_webhook
+    )
   end
 
   def attach_uploads

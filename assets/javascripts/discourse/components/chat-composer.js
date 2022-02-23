@@ -493,10 +493,10 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   },
 
   _uploadDropTargetOptions() {
-    let chatWidget = document.querySelector(
+    const chatWidget = document.querySelector(
       ".topic-chat-container.expanded.visible"
     );
-    let fullPageChat = document.querySelector(".full-page-chat");
+    const fullPageChat = document.querySelector(".full-page-chat");
 
     const targetEl =
       chatWidget || fullPageChat

@@ -30,7 +30,6 @@ register_svg_icon "file-audio"
 register_svg_icon "file-video"
 register_svg_icon "file-image"
 
-
 # route: /admin/plugins/chat
 add_admin_route 'chat.admin.title', 'chat'
 

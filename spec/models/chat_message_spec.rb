@@ -66,6 +66,29 @@ describe ChatMessage do
       expect(cooked).to eq("<blockquote>\n<p>a quote</p>\n</blockquote>")
     end
 
+    it 'supports quote bbcode' do
+      topic = Fabricate(:topic, title: "Some quotable topic")
+      post = Fabricate(:post, topic: topic)
+
+      cooked = ChatMessage.cook(<<~RAW)
+      [quote="#{post.user.username}, post:#{post.post_number}, topic:#{topic.id}"]
+      Mark me...this will go down in history.
+      [/quote]
+      RAW
+
+      expect(cooked).to eq(<<~COOKED.chomp)
+      <aside class="quote no-group" data-username="#{post.user.username}" data-post="#{post.post_number}" data-topic="#{topic.id}">
+      <div class="title">
+      <div class="quote-controls"></div>
+      <img loading="lazy" alt="" width="20" height="20" src="//test.localhost/letter_avatar_proxy/v4/letter/b/9de053/40.png" class="avatar"><a href="http://test.localhost/t/some-quotable-topic/#{topic.id}/#{post.post_number}">#{topic.title}</a>
+      </div>
+      <blockquote>
+      <p>Mark me...this will go down in history.</p>
+      </blockquote>
+      </aside>
+      COOKED
+    end
+
     it 'supports strikethrough rule' do
       cooked = ChatMessage.cook("~~test~~")
 

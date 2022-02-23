@@ -618,6 +618,13 @@ export default Component.extend({
           stagedId: null,
           rateLimited: false,
         });
+
+        // some markdown is cooked differently on the server-side, e.g.
+        // quotes, avatar images etc.
+        if (data.chat_message.cooked !== stagedMessage.cooked) {
+          stagedMessage.set("cooked", data.chat_message.cooked);
+        }
+
         this.messageLookup[data.chat_message.id] = stagedMessage;
         delete this.messageLookup[`staged-${data.stagedId}`];
         return;

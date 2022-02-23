@@ -26,7 +26,7 @@ $float-height: 530px;
   height: 100%;
   top: 0;
   left: 0;
-  background-color: rgba(var(--primary-rgb), 0.85);
+  background-color: rgba(0,0,0, 0.75);
   z-index: z("header");
   &-content {
     width: max-content;
@@ -34,13 +34,13 @@ $float-height: 530px;
     flex-direction: column;
     align-items: center;
     padding: 2em;
-    background-color: var(--primary);
+    background-color: #1d1d1d;
     border-radius: 0.25em;
     &-images {
       .d-icon {
         height: 3em;
         width: 3em;
-        color: var(--secondary);
+        color: var(--secondary-or-primary);
         &:first-of-type {
           transform: rotate(-5deg);
         }
@@ -56,11 +56,12 @@ $float-height: 530px;
     &-text {
       margin: 1.5em 0 0 0;
       font-size: var(--font-up-1);
-      color: var(--secondary);
+      color: var(--secondary-or-primary);
       .d-icon-upload {
         padding-right: 0.25em;
         position: relative;
         bottom: 2px;
+        color: var(--secondary-or-primary);
       }
     }
   }

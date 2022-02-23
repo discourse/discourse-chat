@@ -493,13 +493,15 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   },
 
   _uploadDropTargetOptions() {
-    let chatWidgetVisible = document.querySelector(".topic-chat-container.expanded.visible");
-    let onFullPageChat = document.querySelector(".full-page-chat")
+    let chatWidgetVisible = document.querySelector(
+      ".topic-chat-container.expanded.visible"
+    );
+    let onFullPageChat = document.querySelector(".full-page-chat");
 
     let targetEl;
 
     if (chatWidgetVisible || onFullPageChat) {
-      targetEl = document.querySelector(".chat-enabled")
+      targetEl = document.querySelector(".chat-enabled");
     } else {
       targetEl = document.querySelector(".chat-live-pane");
     }

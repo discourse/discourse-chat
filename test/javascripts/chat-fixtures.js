@@ -204,7 +204,7 @@ const message2 = {
       thumbnail_height: 224,
       thumbnail_width: 689,
       url:
-        "//localhost:3000/uploads/default/original/1X/1359a8a1c9489ad31ef9385df8c46b02740d981c.png",
+        "//testbucket.s3.dualstack.us-east-2.amazonaws.com/original/1X/f1095d89269ff22e1818cf54b73e857261851019.jpeg",
       width: 1209,
     },
   ],

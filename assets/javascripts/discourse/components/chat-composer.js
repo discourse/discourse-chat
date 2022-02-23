@@ -134,6 +134,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
 
     this._textarea = this.element.querySelector(".chat-composer-input");
     this._$textarea = $(this._textarea);
+    this._applyExtraAutocomplete();
     this._applyCategoryHashtagAutocomplete(this._$textarea);
     this._applyEmojiAutocomplete(this._$textarea);
     this._bindUploadTarget();
@@ -288,7 +289,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   @bind
   _handleTextareaInput() {
     this._resizeTextArea();
-    this._applyComplete();
+    this._applyUserAutocomplete();
     this.onValueChange(this.value, this.uploads, this.replyToMsg);
   },
 
@@ -297,10 +298,9 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     this.element.querySelector(`#${this.fileUploadElementId}`).click();
   },
 
-  _applyComplete() {
-    this._applyUserAutocomplete();
+  _applyExtraAutocomplete() {
     extraAutocompletes.forEach((autocomplete) => {
-      autocomplete(this._textarea);
+      autocomplete(this);
     });
   },
 

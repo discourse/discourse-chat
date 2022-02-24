@@ -64,6 +64,7 @@ en:
       placeholder_self: "Jot something down"
       placeholder_others: "Chat with %{messageRecipient}"
       placeholder_previewing: "Join the channel to send a message."
+      placeholder_silenced: "You cannot send messages at this time."
       remove_upload: "Remove file"
       react: "React with emoji"
       reply: "Reply"
@@ -73,6 +74,7 @@ en:
       restore: "Restore deleted message"
       save: "Save"
       select: "Select"
+      silence: "Silence user"
       return_to_list: "Return to channel list"
       scroll_to_bottom: "Scroll to bottom"
       sound:

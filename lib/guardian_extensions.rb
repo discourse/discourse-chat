@@ -16,6 +16,10 @@ module DiscourseChat::GuardianExtensions
     (allowed_group_ids & user.group_ids).any?
   end
 
+  def can_create_chat_message?
+    !SpamRule::AutoSilence.prevent_posting?(@user)
+  end
+
   def hidden_tag_names
     @hidden_tag_names ||= DiscourseTagging.hidden_tag_names(self)
   end
@@ -72,10 +76,12 @@ module DiscourseChat::GuardianExtensions
     can_flag_chat_messages? && can_flag_in_chat_channel?(chat_message.chat_channel)
   end
 
-  def can_delete_chat?(message, topic)
+  def can_delete_chat?(message, chatable)
+    return false if @user.silenced?
+
     message.user_id == current_user.id ?
-      can_delete_own_chats?(topic) :
-      can_delete_other_chats?(topic)
+      can_delete_own_chats?(chatable) :
+      can_delete_other_chats?(chatable)
   end
 
   def can_delete_own_chats?(chatable)
@@ -126,6 +132,10 @@ module DiscourseChat::GuardianExtensions
   end
 
   def can_edit_chat?(message)
-    message.user_id == @user.id
+    message.user_id == @user.id && !@user.silenced?
+  end
+
+  def can_react?
+    can_create_chat_message?
   end
 end

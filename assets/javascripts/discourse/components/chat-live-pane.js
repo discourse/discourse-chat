@@ -262,6 +262,10 @@ export default Component.extend({
     const metaKeys = Object.keys(meta);
     if (metaKeys.includes("can_load_more_past")) {
       this.set("details.can_load_more_past", meta.can_load_more_past);
+      this.set(
+        "allPastMessagesLoaded",
+        this.details.can_load_more_past === false
+      );
     }
     if (metaKeys.includes("can_load_more_future")) {
       this.set("details.can_load_more_future", meta.can_load_more_future);
@@ -278,6 +282,7 @@ export default Component.extend({
         can_delete_self: true,
         can_delete_others: this.currentUser.staff,
         can_flag: messages.resultSetMeta.can_flag,
+        user_silenced: messages.resultSetMeta.user_silenced,
       },
       registeredChatChannelId: this.chatChannel.id,
     });
@@ -1034,6 +1039,11 @@ export default Component.extend({
   @discourseComputed()
   canMoveToTopic() {
     return this.currentUser.staff;
+  },
+
+  @discourseComputed("previewing", "details.user_silenced")
+  canInteractWithChat(previewing, userSilenced) {
+    return !previewing && !userSilenced;
   },
 
   @discourseComputed("messages.@each.selected")

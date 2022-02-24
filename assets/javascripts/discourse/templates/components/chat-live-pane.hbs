@@ -43,6 +43,7 @@
     {{#each this.messages as |message|}}
       {{chat-message
         message=message
+        canInteractWithChat=canInteractWithChat
         details=this.details
         setReplyTo=(action "setReplyTo")
         replyMessageClicked=(action "replyMessageClicked")
@@ -122,6 +123,8 @@
   {{else}}
     {{chat-composer
       draft=draft
+      details=this.details
+      canInteractWithChat=canInteractWithChat
       sendMessage=(action "sendMessage")
       editMessage=(action "editMessage")
       setReplyTo=(action "setReplyTo")

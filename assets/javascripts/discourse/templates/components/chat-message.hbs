@@ -27,7 +27,7 @@
       </div>
     {{else}}
       <div class={{chatMessageClasses}}>
-        {{#unless message.staged}}
+        {{#if showActions}}
           <div class="chat-msgactions-hover">
             <div class="chat-msgactions">
               {{#each favoritesEmojis as |favorite|}}
@@ -44,14 +44,12 @@
                 icon="discourse-emojis"
                 title="chat.react"
               }}
-              {{#unless message.deleted_at}}
-                {{d-button
-                  class="btn-flat reply-btn"
-                  action=(action "reply")
-                  icon="reply"
-                  title="chat.reply"
-                }}
-              {{/unless}}
+              {{d-button
+                class="btn-flat reply-btn"
+                action=(action "reply")
+                icon="reply"
+                title="chat.reply"
+              }}
               {{#if moreButtons.length}}
                 {{dropdown-select-box
                   class="more-buttons"
@@ -62,7 +60,7 @@
               {{/if}}
             </div>
           </div>
-        {{/unless}}
+        {{/if}}
 
         {{#if message.in_reply_to}}
           <div role="button" onclick={{action "viewReply"}} class="tc-reply-display">
@@ -160,12 +158,15 @@
                       hideUsersList=(action "hideUsersList")
                     }}
                   {{/each-in}}
-                  {{d-button
-                    class="chat-message-react-btn"
-                    action=(action "startReactionForReactionList")
-                    icon="discourse-emojis"
-                    title="chat.react"
-                  }}
+
+                  {{#if canInteractWithChat}}
+                    {{d-button
+                      class="chat-message-react-btn"
+                      action=(action "startReactionForReactionList")
+                      icon="discourse-emojis"
+                      title="chat.react"
+                    }}
+                  {{/if}}
                 </div>
               {{/if}}
             {{/chat-message-text}}

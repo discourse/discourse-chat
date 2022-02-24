@@ -46,13 +46,13 @@ module DiscourseChat::GuardianExtensions
 
     case target_status
     when :closed
-      return chat_channel.open?
+      chat_channel.open?
     when :open
-      return chat_channel.closed?
+      chat_channel.closed?
     when :archived
-      return chat_channel.read_only?
+      chat_channel.read_only?
     when :read_only
-      return chat_channel.closed? || chat_channel.open?
+      chat_channel.closed? || chat_channel.open?
     else
       false
     end

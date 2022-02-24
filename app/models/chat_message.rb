@@ -37,7 +37,11 @@ class ChatMessage < ActiveRecord::Base
   end
 
   def excerpt
-    PrettyText.excerpt(cooked, 50, {})
+    prettify = cooked
+    if (cooked == "" && uploads.present?)
+      prettify = uploads.first.original_filename
+    end
+    PrettyText.excerpt(prettify, 50, {})
   end
 
   def push_notification_excerpt

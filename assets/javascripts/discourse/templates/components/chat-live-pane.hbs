@@ -11,11 +11,8 @@
 
       {{chat-channel-title onClick=(action "onChannelTitleClick") channel=chatChannel}}
 
-      {{#if channelStatusMessage}}
-        <div class="chat-channel-header-status">
-          {{d-icon channelStatusIcon}} {{channelStatusMessage}}
-        </div>
-      {{/if}}
+      {{chat-channel-status channel=chatChannel}}
+
       {{#if previewing}}
         {{d-button
           class="btn-primary join-channel-btn"

@@ -22,8 +22,4 @@ class ChatViewSerializer < ApplicationSerializer
     meta_hash[:can_load_more_future] = object.can_load_more_future unless object.can_load_more_future.nil?
     meta_hash
   end
-
-  def prevent_posting?(user)
-    user.blank? || user.silenced? || new(user).should_autosilence?
-  end
 end

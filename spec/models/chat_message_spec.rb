@@ -172,6 +172,14 @@ describe ChatMessage do
       expect(cooked).to eq("<p>■■■■■</p>")
     end
 
+    it "excerpts upload file name if message is empty" do
+      gif = Fabricate(:upload, original_filename: "cat.gif", width: 400, height: 300, extension: "gif")
+      message = Fabricate.build(:chat_message, message: "")
+      ChatUpload.create(chat_message: message, upload: gif)
+
+      expect(message.excerpt).to eq "cat.gif"
+    end
+
     it 'supports autolink with <>' do
       cooked = ChatMessage.cook("<https://github.com/discourse/discourse-chat/pull/468>")
 

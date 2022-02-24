@@ -134,8 +134,15 @@ acceptance("Discourse Chat | quoting when topic open", async function (needs) {
     setupPretenders(server, helper);
   });
 
+  needs.hooks.beforeEach(function () {
+    Object.defineProperty(this, "chatService", {
+      get: () => this.container.lookup("service:chat"),
+    });
+  });
+
   test("it opens the composer for the topic and pastes in the quote", async function (assert) {
     await visit("/t/internationalization-localization/280");
+    this.chatService.set("sidebarActive", false);
     await click(".header-dropdown-toggle.open-chat");
     assert.ok(visible(".topic-chat-float-container"), "chat float is open");
     const firstMessage = query(".chat-message-container");

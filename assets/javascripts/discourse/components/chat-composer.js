@@ -554,7 +554,6 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     "value",
     "loading",
     "textareaDisabled",
-    "details.user_silenced",
     "uploads.@each",
     "uploading",
     "processingUpload"

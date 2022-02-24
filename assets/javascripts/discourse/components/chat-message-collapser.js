@@ -15,7 +15,7 @@ export default Component.extend({
   @computed("cooked")
   get youtubeCooked() {
     const elements = Array.prototype.slice.call(
-      domFromString(this.cooked || "")
+      domFromString(this.cooked)
     );
 
     return elements.reduce((acc, e) => {
@@ -48,7 +48,7 @@ export default Component.extend({
   @computed("cooked")
   get imageOneboxCooked() {
     const elements = Array.prototype.slice.call(
-      domFromString(this.cooked || "")
+      domFromString(this.cooked)
     );
 
     return elements.reduce((acc, e) => {
@@ -70,7 +70,7 @@ export default Component.extend({
   @computed("cooked")
   get imageCooked() {
     const elements = Array.prototype.slice.call(
-      domFromString(this.cooked || "")
+      domFromString(this.cooked)
     );
 
     return elements.reduce((acc, e) => {
@@ -120,7 +120,7 @@ function youtubePredicate(e) {
 }
 
 function hasYoutube(cooked) {
-  const elements = Array.prototype.slice.call(domFromString(cooked || ""));
+  const elements = Array.prototype.slice.call(domFromString(cooked));
   return elements.some((e) => youtubePredicate(e));
 }
 
@@ -148,7 +148,7 @@ function imageOneboxPredicate(e) {
 }
 
 function hasImageOnebox(cooked) {
-  const elements = Array.prototype.slice.call(domFromString(cooked || ""));
+  const elements = Array.prototype.slice.call(domFromString(cooked));
   return elements.some((e) => imageOneboxPredicate(e));
 }
 
@@ -166,7 +166,7 @@ function imagePredicate(e) {
 }
 
 function hasImage(cooked) {
-  const elements = Array.prototype.slice.call(domFromString(cooked || ""));
+  const elements = Array.prototype.slice.call(domFromString(cooked));
   return elements.some((e) => imagePredicate(e));
 }
 

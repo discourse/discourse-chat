@@ -716,12 +716,6 @@ export default Component.extend({
     }, 250);
   },
 
-  @action
-  retrySend() {
-    this.retrySendMessage(this.message);
-    return false;
-  },
-
   @discourseComputed("emojiStore.favorites.[]")
   favoritesEmojis(favorites) {
     // may be a {} if no favs defined in some production builds

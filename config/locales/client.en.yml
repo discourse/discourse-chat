@@ -54,6 +54,7 @@ en:
         without_membership:
           one: "%{usernames} has not joined this channel."
           other: "%{usernames} have not joined this channel."
+
       no_public_channels: "You have not joined any channels."
       only_chat_push_notifications:
         title: "Only send chat push notifications"
@@ -85,7 +86,6 @@ en:
         ding: "Ding"
       title: "chat"
       title_capitalized: "Chat"
-      try_again: "Try again"
       upload: "Attach a file"
       uploaded_files:
         one: "%{count} file"

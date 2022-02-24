@@ -253,13 +253,9 @@ RSpec.describe DiscourseChat::ChatController do
 
   describe "#create_message" do
     let(:message) { "This is a message" }
-    fab!(:chat_channel) { Fabricate(:chat_channel, chatable: topic) }
-    fab!(:membership) { Fabricate(:user_chat_channel_membership, chat_channel: chat_channel, user: user) }
 
     describe "for topic" do
-      before do
-        sign_in(user)
-      end
+      fab!(:chat_channel) { Fabricate(:chat_channel, chatable: topic) }
 
       it "errors when the user is silenced" do
         UserSilencer.new(user).silence
@@ -268,6 +264,7 @@ RSpec.describe DiscourseChat::ChatController do
       end
 
       it "errors for regular user when chat is staff-only" do
+        sign_in(user)
         SiteSetting.chat_allowed_groups = Group::AUTO_GROUPS[:staff]
 
         post "/chat/#{chat_channel.id}.json", params: { message: message }
@@ -275,12 +272,16 @@ RSpec.describe DiscourseChat::ChatController do
       end
 
       it "errors when the user isn't following the channel" do
-        membership.destroy!
+        sign_in(user)
+
         post "/chat/#{chat_channel.id}.json", params: { message: message }
         expect(response.status).to eq(403)
       end
 
       it "sends a message for regular user when staff-only is disabled and they are following channel" do
+        sign_in(user)
+        UserChatChannelMembership.create(user: user, chat_channel: chat_channel, following: true)
+
         expect {
           post "/chat/#{chat_channel.id}.json", params: { message: message }
         }.to change { ChatMessage.count }.by(1)

@@ -26,6 +26,10 @@ register_svg_icon "comment-slash"
 register_svg_icon "hashtag"
 register_svg_icon "lock"
 
+register_svg_icon "file-audio"
+register_svg_icon "file-video"
+register_svg_icon "file-image"
+
 # route: /admin/plugins/chat
 add_admin_route 'chat.admin.title', 'chat'
 
@@ -160,10 +164,8 @@ after_initialize do
 
   if respond_to?(:register_upload_in_use)
     register_upload_in_use do |upload|
-      # TODO after May 2022 - remove this. No longer needed as chat uploads are in a table
-      return true if ChatMessage.where("message LIKE ? OR message LIKE ?", "%#{upload.sha1}%", "%#{upload.base62_sha1}%").exists?
-
-      ChatDraft.exists?("data LIKE ? OR data LIKE ?", "%#{upload.sha1}%", "%#{upload.base62_sha1}%")
+      ChatMessage.where("message LIKE ? OR message LIKE ?", "%#{upload.sha1}%", "%#{upload.base62_sha1}%").exists? ||
+      ChatDraft.where("data LIKE ? OR data LIKE ?", "%#{upload.sha1}%", "%#{upload.base62_sha1}%").exists?
     end
   end
 

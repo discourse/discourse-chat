@@ -12,6 +12,59 @@ $float-height: 530px;
   #chat-widget-uploader {
     display: none;
   }
+  .drop-a-file {
+    display: none;
+  }
+}
+
+.uppy-is-drag-over .chat-composer .drop-a-file {
+  display: flex;
+  position: absolute;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  z-index: z("header");
+  &-content {
+    width: max-content;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2em;
+    background-color: #1d1d1d;
+    border-radius: 0.25em;
+    &-images {
+      .d-icon {
+        height: 3em;
+        width: 3em;
+        color: var(--secondary-or-primary);
+        &:first-of-type {
+          transform: rotate(-5deg);
+        }
+        &:nth-of-type(2) {
+          height: 4em;
+          width: 4em;
+        }
+        &:last-of-type {
+          transform: rotate(5deg);
+        }
+      }
+    }
+    &-text {
+      margin: 1.5em 0 0 0;
+      font-size: var(--font-up-1);
+      color: var(--secondary-or-primary);
+      .d-icon-upload {
+        padding-right: 0.25em;
+        position: relative;
+        bottom: 2px;
+        color: var(--secondary-or-primary);
+      }
+    }
+  }
 }
 
 .chat-channel-unread-indicator {

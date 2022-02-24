@@ -7,11 +7,10 @@ export default Component.extend({
 
   cooked: null,
   uploads: null,
-  message: null,
   edited: false,
 
-  @computed("cooked", "uploads", "message")
+  @computed("cooked", "uploads")
   get isCollapsible() {
-    return isCollapsible(this.cooked, this.uploads, this.message);
+    return isCollapsible(this.cooked, this.uploads);
   },
 });

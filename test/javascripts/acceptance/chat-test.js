@@ -1430,156 +1430,165 @@ acceptance("Discourse Chat - image uploads", function (needs) {
   });
 });
 
-acceptance("Discourse Chat - Channel Status - Read only channel", function (needs) {
-  needs.user({
-    admin: true,
-    moderator: true,
-    username: "eviltrout",
-    id: 1,
-    can_chat: true,
-    has_chat_enabled: true,
-  });
-  needs.settings({
-    chat_enabled: true,
-  });
-  needs.pretender((server, helper) => {
-    baseChatPretenders(server, helper);
-    chatChannelPretender(server, helper);
-    server.get("/chat/7/messages.json", () => {
-      const cloned = cloneJSON(chatView);
-      cloned.meta.status = CHANNEL_STATUSES.readOnly;
-      return helper.response(cloned);
+acceptance(
+  "Discourse Chat - Channel Status - Read only channel",
+  function (needs) {
+    needs.user({
+      admin: true,
+      moderator: true,
+      username: "eviltrout",
+      id: 1,
+      can_chat: true,
+      has_chat_enabled: true,
     });
-    server.get("/chat/chat_channels.json", () => {
-      const cloned = cloneJSON(chatChannels);
-      cloned.public_channels.find((chan) => chan.id === 7).status =
-        CHANNEL_STATUSES.readOnly;
-      return helper.response(cloned);
+    needs.settings({
+      chat_enabled: true,
     });
-  });
-
-  test("read only channel composer is disabled", async function (assert) {
-    await visit("/chat/channel/7/Uncategorized");
-    assert.strictEqual(query(".chat-composer-input").disabled, true);
-  });
-
-  test("read only channel header status shows correct information", async function (assert) {
-    await visit("/chat/channel/7/Uncategorized");
-    assert.strictEqual(
-      query(".chat-channel-header-status").innerText.trim(),
-      I18n.t("chat.channel_status.read_only_header")
-    );
-  });
-
-  test("read only channels do not show the reply, react, delete, edit, restore, or rebuild options for messages", async function (assert) {
-    await visit("/chat/channel/7/Uncategorized");
-    const dropdown = selectKit(".chat-message-container .more-buttons");
-    await dropdown.expand();
-    assert.notOk(exists(".select-kit-row[data-value='edit']"));
-    assert.notOk(exists(".select-kit-row[data-value='deleteMessage']"));
-    assert.notOk(exists(".select-kit-row[data-value='rebakeMessage']"));
-    assert.notOk(exists(".reply-btn"));
-    assert.notOk(exists(".react-btn"));
-  });
-});
-
-acceptance("Discourse Chat - Channel Status - Closed channel (regular user)", function (needs) {
-  needs.user({
-    admin: false,
-    moderator: false,
-    username: "eviltrout",
-    id: 1,
-    can_chat: true,
-    has_chat_enabled: true,
-  });
-  needs.settings({
-    chat_enabled: true,
-  });
-  needs.pretender((server, helper) => {
-    baseChatPretenders(server, helper);
-    chatChannelPretender(server, helper);
-    server.get("/chat/7/messages.json", () => {
-      const cloned = cloneJSON(chatView);
-      cloned.meta.status = CHANNEL_STATUSES.closed;
-      return helper.response(cloned);
+    needs.pretender((server, helper) => {
+      baseChatPretenders(server, helper);
+      chatChannelPretender(server, helper);
+      server.get("/chat/7/messages.json", () => {
+        const cloned = cloneJSON(chatView);
+        cloned.meta.status = CHANNEL_STATUSES.readOnly;
+        return helper.response(cloned);
+      });
+      server.get("/chat/chat_channels.json", () => {
+        const cloned = cloneJSON(chatChannels);
+        cloned.public_channels.find((chan) => chan.id === 7).status =
+          CHANNEL_STATUSES.readOnly;
+        return helper.response(cloned);
+      });
     });
-    server.get("/chat/chat_channels.json", () => {
-      const cloned = cloneJSON(chatChannels);
-      cloned.public_channels.find((chan) => chan.id === 7).status =
-        CHANNEL_STATUSES.closed;
-      return helper.response(cloned);
+
+    test("read only channel composer is disabled", async function (assert) {
+      await visit("/chat/channel/7/Uncategorized");
+      assert.strictEqual(query(".chat-composer-input").disabled, true);
     });
-  });
 
-  test("closed channel composer is disabled", async function (assert) {
-    await visit("/chat/channel/7/Uncategorized");
-    assert.strictEqual(query(".chat-composer-input").disabled, true);
-  });
-
-  test("closed channel header status shows correct information", async function (assert) {
-    await visit("/chat/channel/7/Uncategorized");
-    assert.strictEqual(
-      query(".chat-channel-header-status").innerText.trim(),
-      I18n.t("chat.channel_status.closed_header")
-    );
-  });
-
-  test("closed channels do not show the reply, react, delete, edit, restore, or rebuild options for messages", async function (assert) {
-    await visit("/chat/channel/7/Uncategorized");
-    const dropdown = selectKit(".chat-message-container .more-buttons");
-    await dropdown.expand();
-    assert.notOk(exists(".select-kit-row[data-value='edit']"));
-    assert.notOk(exists(".select-kit-row[data-value='deleteMessage']"));
-    assert.notOk(exists(".select-kit-row[data-value='rebakeMessage']"));
-    assert.notOk(exists(".reply-btn"));
-    assert.notOk(exists(".react-btn"));
-  });
-});
-
-acceptance("Discourse Chat - Channel Status - Closed channel (staff user)", function (needs) {
-  needs.user({
-    admin: true,
-    moderator: true,
-    username: "eviltrout",
-    id: 1,
-    can_chat: true,
-    has_chat_enabled: true,
-  });
-  needs.settings({
-    chat_enabled: true,
-  });
-  needs.pretender((server, helper) => {
-    baseChatPretenders(server, helper);
-    chatChannelPretender(server, helper);
-    server.get("/chat/7/messages.json", () => {
-      const cloned = cloneJSON(chatView);
-      cloned.meta.status = CHANNEL_STATUSES.closed;
-      return helper.response(cloned);
+    test("read only channel header status shows correct information", async function (assert) {
+      await visit("/chat/channel/7/Uncategorized");
+      assert.strictEqual(
+        query(".chat-channel-header-status").innerText.trim(),
+        I18n.t("chat.channel_status.read_only_header")
+      );
     });
-    server.get("/chat/chat_channels.json", () => {
-      const cloned = cloneJSON(chatChannels);
-      cloned.public_channels.find((chan) => chan.id === 7).status =
-        CHANNEL_STATUSES.closed;
-      return helper.response(cloned);
+
+    test("read only channels do not show the reply, react, delete, edit, restore, or rebuild options for messages", async function (assert) {
+      await visit("/chat/channel/7/Uncategorized");
+      const dropdown = selectKit(".chat-message-container .more-buttons");
+      await dropdown.expand();
+      assert.notOk(exists(".select-kit-row[data-value='edit']"));
+      assert.notOk(exists(".select-kit-row[data-value='deleteMessage']"));
+      assert.notOk(exists(".select-kit-row[data-value='rebakeMessage']"));
+      assert.notOk(exists(".reply-btn"));
+      assert.notOk(exists(".react-btn"));
     });
-  });
+  }
+);
 
-  test("closed channel composer is enabled", async function (assert) {
-    await visit("/chat/channel/7/Uncategorized");
-    assert.strictEqual(query(".chat-composer-input").disabled, false);
-  });
+acceptance(
+  "Discourse Chat - Channel Status - Closed channel (regular user)",
+  function (needs) {
+    needs.user({
+      admin: false,
+      moderator: false,
+      username: "eviltrout",
+      id: 1,
+      can_chat: true,
+      has_chat_enabled: true,
+    });
+    needs.settings({
+      chat_enabled: true,
+    });
+    needs.pretender((server, helper) => {
+      baseChatPretenders(server, helper);
+      chatChannelPretender(server, helper);
+      server.get("/chat/7/messages.json", () => {
+        const cloned = cloneJSON(chatView);
+        cloned.meta.status = CHANNEL_STATUSES.closed;
+        return helper.response(cloned);
+      });
+      server.get("/chat/chat_channels.json", () => {
+        const cloned = cloneJSON(chatChannels);
+        cloned.public_channels.find((chan) => chan.id === 7).status =
+          CHANNEL_STATUSES.closed;
+        return helper.response(cloned);
+      });
+    });
 
-  test("closed channels show the reply, react, delete, edit, restore, or rebuild options for messages", async function (assert) {
-    await visit("/chat/channel/7/Uncategorized");
-    const dropdown = selectKit(".chat-message-container .more-buttons");
-    await dropdown.expand();
-    assert.ok(exists(".select-kit-row[data-value='edit']"));
-    assert.ok(exists(".select-kit-row[data-value='deleteMessage']"));
-    assert.ok(exists(".select-kit-row[data-value='rebakeMessage']"));
-    assert.ok(exists(".reply-btn"));
-    assert.ok(exists(".react-btn"));
-  });
-});
+    test("closed channel composer is disabled", async function (assert) {
+      await visit("/chat/channel/7/Uncategorized");
+      assert.strictEqual(query(".chat-composer-input").disabled, true);
+    });
+
+    test("closed channel header status shows correct information", async function (assert) {
+      await visit("/chat/channel/7/Uncategorized");
+      assert.strictEqual(
+        query(".chat-channel-header-status").innerText.trim(),
+        I18n.t("chat.channel_status.closed_header")
+      );
+    });
+
+    test("closed channels do not show the reply, react, delete, edit, restore, or rebuild options for messages", async function (assert) {
+      await visit("/chat/channel/7/Uncategorized");
+      const dropdown = selectKit(".chat-message-container .more-buttons");
+      await dropdown.expand();
+      assert.notOk(exists(".select-kit-row[data-value='edit']"));
+      assert.notOk(exists(".select-kit-row[data-value='deleteMessage']"));
+      assert.notOk(exists(".select-kit-row[data-value='rebakeMessage']"));
+      assert.notOk(exists(".reply-btn"));
+      assert.notOk(exists(".react-btn"));
+    });
+  }
+);
+
+acceptance(
+  "Discourse Chat - Channel Status - Closed channel (staff user)",
+  function (needs) {
+    needs.user({
+      admin: true,
+      moderator: true,
+      username: "eviltrout",
+      id: 1,
+      can_chat: true,
+      has_chat_enabled: true,
+    });
+    needs.settings({
+      chat_enabled: true,
+    });
+    needs.pretender((server, helper) => {
+      baseChatPretenders(server, helper);
+      chatChannelPretender(server, helper);
+      server.get("/chat/7/messages.json", () => {
+        const cloned = cloneJSON(chatView);
+        cloned.meta.status = CHANNEL_STATUSES.closed;
+        return helper.response(cloned);
+      });
+      server.get("/chat/chat_channels.json", () => {
+        const cloned = cloneJSON(chatChannels);
+        cloned.public_channels.find((chan) => chan.id === 7).status =
+          CHANNEL_STATUSES.closed;
+        return helper.response(cloned);
+      });
+    });
+
+    test("closed channel composer is enabled", async function (assert) {
+      await visit("/chat/channel/7/Uncategorized");
+      assert.strictEqual(query(".chat-composer-input").disabled, false);
+    });
+
+    test("closed channels show the reply, react, delete, edit, restore, or rebuild options for messages", async function (assert) {
+      await visit("/chat/channel/7/Uncategorized");
+      const dropdown = selectKit(".chat-message-container .more-buttons");
+      await dropdown.expand();
+      assert.ok(exists(".select-kit-row[data-value='edit']"));
+      assert.ok(exists(".select-kit-row[data-value='deleteMessage']"));
+      assert.ok(exists(".select-kit-row[data-value='rebakeMessage']"));
+      assert.ok(exists(".reply-btn"));
+      assert.ok(exists(".react-btn"));
+    });
+  }
+);
 
 function createFile(name, type = "image/png") {
   // the blob content doesn't matter at all, just want it to be random-ish

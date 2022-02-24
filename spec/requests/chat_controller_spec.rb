@@ -287,16 +287,6 @@ RSpec.describe DiscourseChat::ChatController do
         expect(response.status).to eq(200)
         expect(ChatMessage.last.message).to eq(message)
       end
-
-      it "rate limits user properly" do
-        RateLimiter.enable
-        freeze_time
-        post "/chat/#{chat_channel.id}.json", params: { message: message }
-        expect(response.status).to eq(200)
-
-        post "/chat/#{chat_channel.id}.json", params: { message: message }
-        expect(response.status).to eq(429)
-      end
     end
 
     describe 'for direct message' do

@@ -9,6 +9,7 @@ en:
     errors:
      channel_exists_for_category: "A channel already exists for this category and name"
      channel_exists_for_topic: "A channel already exists for this topic"
+    rate_limit_exceeded: "Exceeded the limit of chat messages that can be sent within 30 seconds"
     reviewables:
       actions:
         agree:

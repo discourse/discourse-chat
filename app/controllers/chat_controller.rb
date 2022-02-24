@@ -77,8 +77,8 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
   end
 
   def create_message
-    RateLimiter.new(current_user, "create_chat_message", 1, 1.second).performed! # 1 message per second
     guardian.ensure_can_create_chat_message!
+    DiscourseChat::ChatMessageRateLimiter.run!(current_user)
 
     set_channel_and_chatable
     @user_chat_channel_membership = UserChatChannelMembership.find_by(

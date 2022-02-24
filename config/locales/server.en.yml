@@ -8,7 +8,6 @@ en:
     chat_allowed_messages_for_trust_level_0: "Number of messages that trust level 0 users is allowed to send in 30 seconds. Set to '0' to disable limit."
     chat_allowed_messages_for_other_trust_levels: "Number of messages that users with trust levels 1-4 is allowed to send in 30 seconds. Set to '0' to disable limit."
 
-
   chat:
     errors:
      channel_exists_for_category: "A channel already exists for this category and name"

@@ -121,11 +121,12 @@ class ChatMessage < ActiveRecord::Base
     html-img
     mentions
     onebox
+    quotes
+    spoiler-alert
+    table
     text-post-process
     upload-protocol
     watched-words
-    table
-    spoiler-alert
   }
 
   MARKDOWN_IT_RULES = %w{
@@ -145,7 +146,12 @@ class ChatMessage < ActiveRecord::Base
   }
 
   def self.cook(message, opts = {})
-    cooked = PrettyText.cook(message, features_override: MARKDOWN_FEATURES, markdown_it_rules: MARKDOWN_IT_RULES)
+    cooked = PrettyText.cook(
+      message,
+      features_override: MARKDOWN_FEATURES,
+      markdown_it_rules: MARKDOWN_IT_RULES,
+      force_quote_link: true
+    )
 
     result = Oneboxer.apply(cooked) do |url|
       if opts[:invalidate_oneboxes]

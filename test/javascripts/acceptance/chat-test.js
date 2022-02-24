@@ -543,6 +543,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
         user: {
           id: 1,
         },
+        cooked: messageContent + " some extra cooked stuff",
       },
     });
 
@@ -555,6 +556,12 @@ acceptance("Discourse Chat - without unread", function (needs) {
         .classList.contains("chat-message-container-202")
     );
     assert.notOk(lastMessage.classList.contains("chat-message-staged"));
+
+    assert.equal(
+      lastMessage.querySelector(".chat-message-text").innerText.trim(),
+      messageContent + " some extra cooked stuff",
+      "last message is updated with the cooked content of the message"
+    );
 
     const nextMessageContent = "What up what up!";
     await fillIn(composerInput, nextMessageContent);

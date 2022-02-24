@@ -113,8 +113,8 @@ RSpec.describe DiscourseChat::ChatController do
         get "/chat/#{chat_channel.id}/messages.json", params: { before_message_id: message_40.id, page_size: page_size }
         messages = response.parsed_body["chat_messages"]
         expect(messages.count).to eq(page_size)
-        expect(messages.first["id"]).to eq(chat_channel.chat_messages[40 - page_size].id)
-        expect(messages.last["id"]).to eq(chat_channel.chat_messages[39].id)
+        expect(messages.first["id"]).to eq(message_10.id)
+        expect(messages.last["id"]).to eq(message_39.id)
       end
 
       it "returns 'can_load...' properly when there are more past messages" do
@@ -135,8 +135,8 @@ RSpec.describe DiscourseChat::ChatController do
         get "/chat/#{chat_channel.id}/messages.json", params: { after_message_id: message_10.id, page_size: page_size }
         messages = response.parsed_body["chat_messages"]
         expect(messages.count).to eq(page_size)
-        expect(messages.first["id"]).to eq(chat_channel.chat_messages[11].id)
-        expect(messages.last["id"]).to eq(chat_channel.chat_messages[10 + page_size].id)
+        expect(messages.first["id"]).to eq(message_11.id)
+        expect(messages.last["id"]).to eq(message_40.id)
       end
 
       it "return 'can_load..' properly when there are future messages" do

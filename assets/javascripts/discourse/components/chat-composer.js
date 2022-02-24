@@ -20,7 +20,7 @@ import { findRawTemplate } from "discourse-common/lib/raw-templates";
 import { emojiSearch, isSkinTonableEmoji } from "pretty-text/emoji";
 import { emojiUrlFor } from "discourse/lib/text";
 import { inject as service } from "@ember/service";
-import { alias, not, or } from "@ember/object/computed";
+import { alias, or, readOnly, not } from "@ember/object/computed";
 import { search as searchCategoryTag } from "discourse/lib/category-tag-search";
 import { SKIP } from "discourse/lib/autocomplete";
 import { Promise } from "rsvp";
@@ -41,7 +41,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
 
   chat: service(),
   classNames: ["chat-composer"],
-  userSilenced: alias("details.user_silenced"),
+  userSilenced: readOnly("details.user_silenced"),
   emojiStore: service("emoji-store"),
   editingMessage: null,
   fullPage: false,
@@ -517,7 +517,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     this.set("emojiPickerIsActive", false);
   },
 
-  @discourseComputed("previewing", "details.user_silenced", "chatChannel")
+  @discourseComputed("previewing", "userSilenced", "chatChannel")
   placeholder(previewing, userSilenced, chatChannel) {
     if (previewing) {
       return I18n.t("chat.placeholder_previewing");

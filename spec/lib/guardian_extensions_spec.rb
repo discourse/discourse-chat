@@ -3,11 +3,11 @@
 require 'rails_helper'
 
 describe DiscourseChat::GuardianExtensions do
-  let(:user) { Fabricate(:user) }
-  let(:staff) { Fabricate(:user, admin: true) }
-  let(:guardian) { Guardian.new(user) }
-  let(:staff_guardian) { Guardian.new(staff) }
-  let(:chat_group) { Fabricate(:group) }
+  fab!(:user) { Fabricate(:user) }
+  fab!(:staff) { Fabricate(:user, admin: true) }
+  fab!(:guardian) { Guardian.new(user) }
+  fab!(:staff_guardian) { Guardian.new(staff) }
+  fab!(:chat_group) { Fabricate(:group) }
 
   before do
     SiteSetting.chat_allowed_groups = chat_group.id
@@ -19,7 +19,7 @@ describe DiscourseChat::GuardianExtensions do
   end
 
   describe "chat channel" do
-    let(:channel) { Fabricate(:chat_channel) }
+    fab!(:channel) { Fabricate(:chat_channel) }
 
     it "only staff can create channels" do
       expect(guardian.can_create_chat_channel?).to eq(false)
@@ -32,32 +32,32 @@ describe DiscourseChat::GuardianExtensions do
     end
 
     it "only staff can close chat channels" do
-      channel.update(status: ChatChannel.statuses[:open])
-      expect(guardian.can_change_channel_status?(channel, ChatChannel.statuses[:closed])).to eq(false)
-      expect(staff_guardian.can_change_channel_status?(channel, ChatChannel.statuses[:closed])).to eq(true)
+      channel.update(status: :open)
+      expect(guardian.can_change_channel_status?(channel, :closed)).to eq(false)
+      expect(staff_guardian.can_change_channel_status?(channel, :closed)).to eq(true)
     end
 
     it "only staff can open chat channels" do
-      channel.update(status: ChatChannel.statuses[:closed])
-      expect(guardian.can_change_channel_status?(channel, ChatChannel.statuses[:open])).to eq(false)
-      expect(staff_guardian.can_change_channel_status?(channel, ChatChannel.statuses[:open])).to eq(true)
+      channel.update(status: :closed)
+      expect(guardian.can_change_channel_status?(channel, :open)).to eq(false)
+      expect(staff_guardian.can_change_channel_status?(channel, :open)).to eq(true)
     end
 
     it "only staff can archive chat channels" do
-      channel.update(status: ChatChannel.statuses[:read_only])
-      expect(guardian.can_change_channel_status?(channel, ChatChannel.statuses[:archived])).to eq(false)
-      expect(staff_guardian.can_change_channel_status?(channel, ChatChannel.statuses[:archived])).to eq(true)
+      channel.update(status: :read_only)
+      expect(guardian.can_change_channel_status?(channel, :archived)).to eq(false)
+      expect(staff_guardian.can_change_channel_status?(channel, :archived)).to eq(true)
     end
 
     it "only staff can mark chat channels read_only" do
-      channel.update(status: ChatChannel.statuses[:open])
-      expect(guardian.can_change_channel_status?(channel, ChatChannel.statuses[:read_only])).to eq(false)
-      expect(staff_guardian.can_change_channel_status?(channel, ChatChannel.statuses[:read_only])).to eq(true)
+      channel.update(status: :open)
+      expect(guardian.can_change_channel_status?(channel, :read_only)).to eq(false)
+      expect(staff_guardian.can_change_channel_status?(channel, :read_only)).to eq(true)
     end
 
     describe "#can_see_chat_channel?" do
       context "for topic channels" do
-        let(:topic) { Fabricate(:topic) }
+        fab!(:topic) { Fabricate(:topic) }
 
         before do
           channel.update(chatable: topic)
@@ -79,7 +79,7 @@ describe DiscourseChat::GuardianExtensions do
       end
 
       context "for direct message channels" do
-        let(:dm_channel) { DirectMessageChannel.create! }
+        fab!(:dm_channel) { DirectMessageChannel.create! }
 
         before do
           channel.update(chatable_type: "DirectMessageType", chatable: dm_channel)
@@ -93,7 +93,7 @@ describe DiscourseChat::GuardianExtensions do
       end
 
       context "for category channel" do
-        let(:category) { Fabricate(:category, read_restricted: true) }
+        fab!(:category) { Fabricate(:category, read_restricted: true) }
 
         before do
           channel.update(chatable: category)

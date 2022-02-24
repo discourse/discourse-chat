@@ -33,12 +33,12 @@ describe ChatChannel do
 
   describe "#close!" do
     before do
-      public_topic_channel.update!(status: ChatChannel.statuses[:open])
+      public_topic_channel.update!(status: :open)
     end
 
     it "does nothing if user is not staff" do
       public_topic_channel.close!(user1)
-      expect(public_topic_channel.reload.status).to eq(ChatChannel.statuses[:open])
+      expect(public_topic_channel.reload.open?).to eq(true)
     end
 
     it "closes the channel, logs a staff action, and sends an event" do
@@ -51,20 +51,20 @@ describe ChatChannel do
 
       expect(events).to include(event_name: :chat_channel_status_change, params: [{
         channel: public_topic_channel,
-        old_status: ChatChannel.statuses[:open],
-        new_status: ChatChannel.statuses[:closed]
+        old_status: :open,
+        new_status: :closed
       }])
       expect(messages.first.channel).to eq("/chat/channel-status")
-      expect(messages.first.data).to eq({ chat_channel_id: public_topic_channel.id, status: ChatChannel.statuses[:closed] })
-      expect(public_topic_channel.reload.status).to eq(ChatChannel.statuses[:closed])
+      expect(messages.first.data).to eq({ chat_channel_id: public_topic_channel.id, status: "closed" })
+      expect(public_topic_channel.reload.closed?).to eq(true)
 
       expect(
         UserHistory.exists?(
           acting_user_id: staff.id,
           action: UserHistory.actions[:custom_staff],
           custom_type: "chat_channel_status_change",
-          new_value: ChatChannel.statuses[:closed],
-          previous_value: ChatChannel.statuses[:open]
+          new_value: :closed,
+          previous_value: :open
         )
       ).to eq(true)
     end
@@ -72,18 +72,18 @@ describe ChatChannel do
 
   describe "#open!" do
     before do
-      public_topic_channel.update!(status: ChatChannel.statuses[:closed])
+      public_topic_channel.update!(status: :closed)
     end
 
     it "does nothing if user is not staff" do
       public_topic_channel.open!(user1)
-      expect(public_topic_channel.reload.status).to eq(ChatChannel.statuses[:closed])
+      expect(public_topic_channel.reload.closed?).to eq(true)
     end
 
     it "does nothing if the channel is archived" do
-      public_topic_channel.update!(status: ChatChannel.statuses[:archived])
+      public_topic_channel.update!(status: :archived)
       public_topic_channel.open!(staff)
-      expect(public_topic_channel.reload.status).to eq(ChatChannel.statuses[:archived])
+      expect(public_topic_channel.reload.archived?).to eq(true)
     end
 
     it "opens the channel, logs a staff action, and sends an event" do
@@ -96,20 +96,20 @@ describe ChatChannel do
 
       expect(events).to include(event_name: :chat_channel_status_change, params: [{
         channel: public_topic_channel,
-        old_status: ChatChannel.statuses[:closed],
-        new_status: ChatChannel.statuses[:open]
+        old_status: :closed,
+        new_status: :open
       }])
       expect(messages.first.channel).to eq("/chat/channel-status")
-      expect(messages.first.data).to eq({ chat_channel_id: public_topic_channel.id, status: ChatChannel.statuses[:open] })
-      expect(public_topic_channel.reload.status).to eq(ChatChannel.statuses[:open])
+      expect(messages.first.data).to eq({ chat_channel_id: public_topic_channel.id, status: "open" })
+      expect(public_topic_channel.reload.open?).to eq(true)
 
       expect(
         UserHistory.exists?(
           acting_user_id: staff.id,
           action: UserHistory.actions[:custom_staff],
           custom_type: "chat_channel_status_change",
-          new_value: ChatChannel.statuses[:open],
-          previous_value: ChatChannel.statuses[:closed]
+          new_value: :open,
+          previous_value: :closed
         )
       ).to eq(true)
     end
@@ -117,12 +117,12 @@ describe ChatChannel do
 
   describe "#read_only!" do
     before do
-      public_topic_channel.update!(status: ChatChannel.statuses[:open])
+      public_topic_channel.update!(status: :open)
     end
 
     it "does nothing if user is not staff" do
       public_topic_channel.read_only!(user1)
-      expect(public_topic_channel.reload.status).to eq(ChatChannel.statuses[:open])
+      expect(public_topic_channel.reload.open?).to eq(true)
     end
 
     it "marks the channel read_only, logs a staff action, and sends an event" do
@@ -135,20 +135,20 @@ describe ChatChannel do
 
       expect(events).to include(event_name: :chat_channel_status_change, params: [{
         channel: public_topic_channel,
-        old_status: ChatChannel.statuses[:open],
-        new_status: ChatChannel.statuses[:read_only]
+        old_status: :open,
+        new_status: :read_only
       }])
       expect(messages.first.channel).to eq("/chat/channel-status")
-      expect(messages.first.data).to eq({ chat_channel_id: public_topic_channel.id, status: ChatChannel.statuses[:read_only] })
-      expect(public_topic_channel.reload.status).to eq(ChatChannel.statuses[:read_only])
+      expect(messages.first.data).to eq({ chat_channel_id: public_topic_channel.id, status: "read_only" })
+      expect(public_topic_channel.reload.read_only?).to eq(true)
 
       expect(
         UserHistory.exists?(
           acting_user_id: staff.id,
           action: UserHistory.actions[:custom_staff],
           custom_type: "chat_channel_status_change",
-          new_value: ChatChannel.statuses[:read_only],
-          previous_value: ChatChannel.statuses[:open]
+          new_value: :read_only,
+          previous_value: :open
         )
       ).to eq(true)
     end
@@ -156,27 +156,27 @@ describe ChatChannel do
 
   describe "#archive!" do
     before do
-      public_topic_channel.update!(status: ChatChannel.statuses[:read_only])
+      public_topic_channel.update!(status: :read_only)
     end
 
     it "does nothing if user is not staff" do
       public_topic_channel.archive!(user1)
-      expect(public_topic_channel.reload.status).to eq(ChatChannel.statuses[:read_only])
+      expect(public_topic_channel.reload.read_only?).to eq(true)
     end
 
     it "does nothing if already archived" do
-      public_topic_channel.update!(status: ChatChannel.statuses[:archived])
+      public_topic_channel.update!(status: :archived)
       public_topic_channel.archive!(user1)
-      expect(public_topic_channel.reload.status).to eq(ChatChannel.statuses[:archived])
+      expect(public_topic_channel.reload.archived?).to eq(true)
     end
 
     it "does nothing if the channel is not already readonly" do
-      public_topic_channel.update!(status: ChatChannel.statuses[:open])
+      public_topic_channel.update!(status: :open)
       public_topic_channel.archive!(staff)
-      expect(public_topic_channel.reload.status).to eq(ChatChannel.statuses[:open])
-      public_topic_channel.update!(status: ChatChannel.statuses[:read_only])
+      expect(public_topic_channel.reload.open?).to eq(true)
+      public_topic_channel.update!(status: :read_only)
       public_topic_channel.archive!(staff)
-      expect(public_topic_channel.reload.status).to eq(ChatChannel.statuses[:archived])
+      expect(public_topic_channel.reload.archived?).to eq(true)
     end
 
     it "marks the channel archived, logs a staff action, and sends an event" do
@@ -189,20 +189,20 @@ describe ChatChannel do
 
       expect(events).to include(event_name: :chat_channel_status_change, params: [{
         channel: public_topic_channel,
-        old_status: ChatChannel.statuses[:read_only],
-        new_status: ChatChannel.statuses[:archived]
+        old_status: :read_only,
+        new_status: :archived
       }])
       expect(messages.first.channel).to eq("/chat/channel-status")
-      expect(messages.first.data).to eq({ chat_channel_id: public_topic_channel.id, status: ChatChannel.statuses[:archived] })
-      expect(public_topic_channel.reload.status).to eq(ChatChannel.statuses[:archived])
+      expect(messages.first.data).to eq({ chat_channel_id: public_topic_channel.id, status: "archived" })
+      expect(public_topic_channel.reload.archived?).to eq(true)
 
       expect(
         UserHistory.exists?(
           acting_user_id: staff.id,
           action: UserHistory.actions[:custom_staff],
           custom_type: "chat_channel_status_change",
-          new_value: ChatChannel.statuses[:archived],
-          previous_value: ChatChannel.statuses[:read_only]
+          new_value: :archived,
+          previous_value: :read_only
         )
       ).to eq(true)
     end

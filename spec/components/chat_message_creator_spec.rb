@@ -457,7 +457,7 @@ describe DiscourseChat::ChatMessageCreator do
 
     context "when channel is closed" do
       before do
-        public_chat_channel.update(status: ChatChannel.statuses[:closed])
+        public_chat_channel.update(status: :closed)
       end
 
       it "errors when trying to create the message for non-staff" do
@@ -475,7 +475,7 @@ describe DiscourseChat::ChatMessageCreator do
 
     context "when channel is read_only" do
       before do
-        public_chat_channel.update(status: ChatChannel.statuses[:read_only])
+        public_chat_channel.update(status: :read_only)
       end
 
       it "errors when trying to create the message for all users" do
@@ -494,7 +494,7 @@ describe DiscourseChat::ChatMessageCreator do
 
     context "when channel is archived" do
       before do
-        public_chat_channel.update(status: ChatChannel.statuses[:archived])
+        public_chat_channel.update(status: :archived)
       end
 
       it "errors when trying to create the message for all users" do

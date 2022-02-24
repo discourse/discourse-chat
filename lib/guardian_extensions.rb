@@ -41,20 +41,21 @@ module DiscourseChat::GuardianExtensions
   end
 
   def can_change_channel_status?(chat_channel, target_status)
-    return false if chat_channel.status == target_status
+    return false if chat_channel.status.to_sym == target_status.to_sym
+    return false if !is_staff?
 
     case target_status
-    when ChatChannel.statuses[:closed]
-      return is_staff? && chat_channel.open?
-    when ChatChannel.statuses[:open]
-      return is_staff? && chat_channel.closed?
-    when ChatChannel.statuses[:archived]
-      return is_staff? && chat_channel.read_only?
-    when ChatChannel.statuses[:read_only]
-      return is_staff? && (chat_channel.closed? || chat_channel.open?)
+    when :closed
+      return chat_channel.open?
+    when :open
+      return chat_channel.closed?
+    when :archived
+      return chat_channel.read_only?
+    when :read_only
+      return chat_channel.closed? || chat_channel.open?
+    else
+      false
     end
-
-    false
   end
 
   def can_move_chat_to_topic?(chat_channel)

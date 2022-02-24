@@ -2,7 +2,7 @@
 
 Fabricator(:chat_channel) do
   chatable { Fabricate(:topic) }
-  status { ChatChannel.statuses[:open] }
+  status { :open }
 end
 
 Fabricator(:chat_message) do

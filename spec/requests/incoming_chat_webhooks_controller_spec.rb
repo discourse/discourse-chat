@@ -48,7 +48,7 @@ RSpec.describe DiscourseChat::IncomingChatWebhooksController do
     end
 
     it "handles create message failures gracefully if the channel is read only" do
-      chat_channel.update!(status: ChatChannel.statuses[:read_only])
+      chat_channel.update!(status: :read_only)
       expect {
         post "/chat/hooks/#{webhook.key}.json", params: { text: "hey this is a message" }
       }.to change { ChatMessage.where(chat_channel: chat_channel).count }.by(0)

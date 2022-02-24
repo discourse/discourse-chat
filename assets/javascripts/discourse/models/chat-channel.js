@@ -7,10 +7,10 @@ export const CHATABLE_TYPES = {
   categoryChannel: "Category",
 };
 export const CHANNEL_STATUSES = {
-  open: 0,
-  readOnly: 1,
-  closed: 2,
-  archived: 3,
+  open: "open",
+  readOnly: "read_only",
+  closed: "closed",
+  archived: "archived",
 };
 
 export function channelStatusName(channelStatus) {

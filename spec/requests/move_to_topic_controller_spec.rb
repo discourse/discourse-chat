@@ -160,7 +160,7 @@ RSpec.describe DiscourseChat::MoveToTopicController do
 
     it "errors when the channel is read_only" do
       sign_in(admin)
-      chat_channel.update(status: ChatChannel.statuses[:read_only])
+      chat_channel.update(status: :read_only)
       topic_title = "This is a new topic that is created via chat!"
       tag_names = ["ctag1", "ctag2"]
       expect {

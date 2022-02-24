@@ -90,6 +90,7 @@ export default Component.extend({
   deletedAndCollapsed(deletedAt, expanded) {
     return deletedAt && !expanded;
   },
+
   @computed(
     "selectingMessages",
     "canFlagMessage",

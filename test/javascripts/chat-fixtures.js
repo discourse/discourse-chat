@@ -60,7 +60,7 @@ export const chatChannels = {
       title: "Uncategorized",
       unread_count: 0,
       muted: false,
-      status: 0,
+      status: "open",
       chatable: {
         id: 1,
         name: "Uncategorized",
@@ -78,7 +78,7 @@ export const chatChannels = {
       title: "Small action - testing topic",
       unread_count: 0,
       muted: false,
-      status: 0,
+      status: "open",
       chatable: {
         id: 12,
         title: "Small action - testing topic",
@@ -96,7 +96,7 @@ export const chatChannels = {
       title: "Coolest thing you have seen today",
       unread_count: 0,
       muted: false,
-      status: 0,
+      status: "open",
       chatable: {
         id: 80,
         title: "Coolest thing you have seen today",
@@ -248,7 +248,7 @@ const message3 = {
 export const chatView = {
   meta: {
     can_flag: true,
-    channel_status: 0,
+    channel_status: "open",
   },
   chat_messages: [message0, message1, message2, message3],
 };

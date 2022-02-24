@@ -16,33 +16,31 @@ class ChatChannel < ActiveRecord::Base
   has_many :chat_messages
   has_many :user_chat_channel_memberships
 
-  def self.statuses
-    @statuses ||= Enum.new(
+  enum status: {
       open: 0,
       read_only: 1,
       closed: 2,
       archived: 3
-    )
-  end
+  }, _scopes: false
 
   def open?
-    self.status == ChatChannel.statuses[:open]
+    self.status.to_sym == :open
   end
 
   def read_only?
-    self.status == ChatChannel.statuses[:read_only]
+    self.status.to_sym == :read_only
   end
 
   def closed?
-    self.status == ChatChannel.statuses[:closed]
+    self.status.to_sym == :closed
   end
 
   def archived?
-    self.status == ChatChannel.statuses[:archived]
+    self.status.to_sym == :archived
   end
 
   def status_name
-    I18n.t("chat.channel.statuses.#{ChatChannel.statuses.key(self.status)}")
+    I18n.t("chat.channel.statuses.#{self.status}")
   end
 
   def chatable_url
@@ -112,7 +110,7 @@ class ChatChannel < ActiveRecord::Base
   end
 
   def change_status(acting_user, target_status)
-    return if !ChatChannel.statuses.values.include?(target_status)
+    return if !ChatChannel.statuses.include?(target_status.to_s)
     return if !Guardian.new(acting_user).can_change_channel_status?(self, target_status)
     old_status = self.status
     self.update!(status: target_status)
@@ -124,19 +122,19 @@ class ChatChannel < ActiveRecord::Base
   end
 
   def open!(acting_user)
-    change_status(acting_user, ChatChannel.statuses[:open])
+    change_status(acting_user, :open)
   end
 
   def read_only!(acting_user)
-    change_status(acting_user, ChatChannel.statuses[:read_only])
+    change_status(acting_user, :read_only)
   end
 
   def close!(acting_user)
-    change_status(acting_user, ChatChannel.statuses[:closed])
+    change_status(acting_user, :closed)
   end
 
   def archive!(acting_user)
-    change_status(acting_user, ChatChannel.statuses[:archived])
+    change_status(acting_user, :archived)
   end
 
   def self.chatable_types
@@ -160,7 +158,16 @@ class ChatChannel < ActiveRecord::Base
   private
 
   def log_channel_status_change(acting_user:, new_status:, old_status:)
-    DiscourseEvent.trigger(:chat_channel_status_change, channel: self, old_status: old_status, new_status: new_status)
+    new_status = new_status.to_sym
+    old_status = old_status.to_sym
+
+    DiscourseEvent.trigger(
+      :chat_channel_status_change,
+      channel: self,
+      old_status: old_status,
+      new_status: new_status
+    )
+
     StaffActionLogger.new(acting_user).log_custom(
       "chat_channel_status_change",
       {
@@ -170,6 +177,7 @@ class ChatChannel < ActiveRecord::Base
         new_value: new_status
       }
     )
+
     ChatPublisher.publish_channel_status(self)
   end
 end

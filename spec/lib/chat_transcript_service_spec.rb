@@ -69,7 +69,7 @@ describe ChatTranscriptService do
     says you!
     [/chat]
 
-    [chat quote="martinchat;#{message3.id};#{message1.created_at.iso8601}" chained="true"]
+    [chat quote="martinchat;#{message3.id};#{message3.created_at.iso8601}" chained="true"]
     aw :(
     [/chat]
     MARKDOWN

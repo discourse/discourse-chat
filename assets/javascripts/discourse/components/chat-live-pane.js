@@ -621,7 +621,10 @@ export default Component.extend({
 
         // some markdown is cooked differently on the server-side, e.g.
         // quotes, avatar images etc.
-        if (data.chat_message.cooked !== stagedMessage.cooked) {
+        if (
+          data.chat_message.cooked &&
+          data.chat_message.cooked !== stagedMessage.cooked
+        ) {
           stagedMessage.set("cooked", data.chat_message.cooked);
         }
 

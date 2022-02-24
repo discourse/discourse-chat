@@ -867,7 +867,7 @@ export default Component.extend({
         this._onSendError(data.staged_id, error);
       })
       .finally(() => {
-        if (this._selfDeleted()) {
+        if (this._selfDeleted) {
           return;
         }
         this.set("sendingloading", false);

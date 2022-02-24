@@ -29,7 +29,10 @@ describe DiscourseChat::ChatMessageRateLimiter do
       expect(user.reload.silenced?).to be false
     end
 
-    limiter.run! # Limit hit!
+    expect {
+      limiter.run!
+    }.to raise_error(RateLimiter::LimitExceeded)
+
     expect(user.reload.silenced?).to be true
     expect(user.silenced_till).to eq(30.minutes.from_now)
   end
@@ -38,8 +41,9 @@ describe DiscourseChat::ChatMessageRateLimiter do
     user.update(trust_level: 0) # Should only be able to run once without hitting limit
     limiter.run!
     expect(user.reload.silenced?).to be false
-
-    limiter.run!
+    expect {
+      limiter.run!
+    }.to raise_error(RateLimiter::LimitExceeded)
     expect(user.reload.silenced?).to be true
   end
 
@@ -57,7 +61,9 @@ describe DiscourseChat::ChatMessageRateLimiter do
     limiter.run!
     expect(user.reload.silenced?).to be false
 
-    limiter.run!
+    expect {
+      limiter.run!
+    }.to raise_error(RateLimiter::LimitExceeded)
     expect(user.reload.silenced?).to be false
   end
 
@@ -67,7 +73,8 @@ describe DiscourseChat::ChatMessageRateLimiter do
 
     expect {
       limiter.run!
-    }.to change {
+    }.to raise_error(RateLimiter::LimitExceeded)
+    .and change {
       UserHistory.where(
         target_user: user,
         acting_user: Discourse.system_user,

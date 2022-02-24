@@ -4,7 +4,6 @@ class DiscourseChat::ChatMessageRateLimiter
   def self.run!(user)
     instance = self.new(user)
     instance.run!
-    instance
   end
 
   def initialize(user)
@@ -19,14 +18,9 @@ class DiscourseChat::ChatMessageRateLimiter
       SiteSetting.chat_allowed_messages_for_other_trust_levels
     return if allowed_message_count.zero?
 
-    begin
-      @rate_limiter = RateLimiter.new(@user, "create_chat_message", allowed_message_count, 30.seconds)
-      @rate_limiter.performed!
-      true
-    rescue RateLimiter::LimitExceeded
-      silence_user
-      false
-    end
+    @rate_limiter = RateLimiter.new(@user, "create_chat_message", allowed_message_count, 30.seconds)
+    silence_user if @rate_limiter.remaining.zero?
+    @rate_limiter.performed!
   end
 
   def clear!

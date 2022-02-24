@@ -34,7 +34,7 @@ describe DiscourseChat::ChatMessageRateLimiter do
     }.to raise_error(RateLimiter::LimitExceeded)
 
     expect(user.reload.silenced?).to be true
-    expect(user.silenced_till).to eq(30.minutes.from_now)
+    expect(user.silenced_till).to be_within(0.1).of(30.minutes.from_now)
   end
 
   it "silences the user correctly based on trust level" do

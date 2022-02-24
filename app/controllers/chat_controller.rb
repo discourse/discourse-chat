@@ -78,6 +78,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
 
   def create_message
     RateLimiter.new(current_user, "create_chat_message", 1, 1.second).performed! # 1 message per second
+    guardian.ensure_can_create_chat_message!
 
     set_channel_and_chatable
     @user_chat_channel_membership = UserChatChannelMembership.find_by(
@@ -192,6 +193,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
   def react
     params.require([:message_id, :emoji, :react_action])
     set_channel_and_chatable
+    guardian.ensure_can_react!
 
     DiscourseChat::ChatMessageReactor.new(
       current_user, @chat_channel
@@ -205,14 +207,12 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
   end
 
   def delete
-    chat_channel = @message.chat_channel
-    chatable = chat_channel.chatable
-    guardian.ensure_can_see!(chatable)
-    guardian.ensure_can_delete_chat!(@message, chatable)
+    set_channel_and_chatable
+    guardian.ensure_can_delete_chat!(@message, @chatable)
 
     updated = @message.update(deleted_at: Time.now, deleted_by_id: current_user.id)
     if updated
-      ChatPublisher.publish_delete!(chat_channel, @message)
+      ChatPublisher.publish_delete!(@chat_channel, @message)
       render json: success_json
     else
       render_json_error(@message)

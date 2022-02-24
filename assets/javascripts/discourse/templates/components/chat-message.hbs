@@ -27,31 +27,29 @@
       </div>
     {{else}}
       <div class={{chatMessageClasses}}>
-        {{#unless message.staged}}
+        {{#if showActions}}
           <div class="chat-msgactions-hover">
             <div class="chat-msgactions">
-              {{#if canInteractWithChat}}
-                {{#each favoritesEmojis as |favorite|}}
-                  {{chat-message-reaction
-                    emoji=favorite.emoji
-                    reacted=favorite.reacted
-                    react=(action "react")
-                    class="show"
-                  }}
-                {{/each}}
-                {{d-button
-                  class="btn-flat react-btn"
-                  action=(action "startReactionForMsgActions")
-                  icon="discourse-emojis"
-                  title="chat.react"
+              {{#each favoritesEmojis as |favorite|}}
+                {{chat-message-reaction
+                  emoji=favorite.emoji
+                  reacted=favorite.reacted
+                  react=(action "react")
+                  class="show"
                 }}
-                {{d-button
-                  class="btn-flat reply-btn"
-                  action=(action "reply")
-                  icon="reply"
-                  title="chat.reply"
-                }}
-              {{/if}}
+              {{/each}}
+              {{d-button
+                class="btn-flat react-btn"
+                action=(action "startReactionForMsgActions")
+                icon="discourse-emojis"
+                title="chat.react"
+              }}
+              {{d-button
+                class="btn-flat reply-btn"
+                action=(action "reply")
+                icon="reply"
+                title="chat.reply"
+              }}
               {{#if moreButtons.length}}
                 {{dropdown-select-box
                   class="more-buttons"
@@ -62,7 +60,7 @@
               {{/if}}
             </div>
           </div>
-        {{/unless}}
+        {{/if}}
 
         {{#if message.in_reply_to}}
           <div role="button" onclick={{action "viewReply"}} class="tc-reply-display">

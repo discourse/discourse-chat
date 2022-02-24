@@ -524,7 +524,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     } else if (userSilenced) {
       return I18n.t("chat.placeholder_silenced");
     } else {
-      return this.messageRecipient(chatChannel)
+      return this.messageRecipient(chatChannel);
     }
   },
 
@@ -567,7 +567,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     uploading,
     processingUpload
   ) {
-    if (loading || textareaDisabled || userSilenced || uploading || processingUpload) {
+    if (loading || textareaDisabled || uploading || processingUpload) {
       return true;
     }
 

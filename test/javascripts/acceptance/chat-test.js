@@ -1200,7 +1200,7 @@ acceptance(
       });
     });
 
-    test("previewing channel", async function (assert) {
+    test("Join button is present and textarea disabled when previewing channel", async function (assert) {
       await visit("/chat/channel/70/preview-me");
       assert.ok(exists(".join-channel-btn"), "Join channel button is present");
       assert.equal(query(".chat-composer-row textarea").disabled, true);

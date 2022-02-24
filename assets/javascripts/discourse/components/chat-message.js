@@ -89,6 +89,11 @@ export default Component.extend({
     this.set("emojiPickerIsActive", false);
   },
 
+  @discourseComputed("canInteractWithChat", "message.staged")
+  showActions(canInteractWithChat, messageStaged) {
+    return canInteractWithChat && !messageStaged;
+  },
+
   @discourseComputed("message.deleted_at", "message.expanded")
   deletedAndCollapsed(deletedAt, expanded) {
     return deletedAt && !expanded;
@@ -273,10 +278,9 @@ export default Component.extend({
     return classes.join(" ");
   },
 
-  @discourseComputed("canInteractWithChat", "message", "message.deleted_at")
-  showEditButton(canInteractWithChat, message, deletedAt) {
+  @discourseComputed("message", "message.deleted_at")
+  showEditButton(message, deletedAt) {
     return (
-      canInteractWithChat &&
       !message.action_code &&
       !deletedAt &&
       this.currentUser.id === message.user.id
@@ -284,15 +288,13 @@ export default Component.extend({
   },
 
   @discourseComputed(
-    "canInteractWithChat",
     "message",
     "message.user_flag_status",
     "details.can_flag",
     "message.deleted_at"
   )
-  canFlagMessage(canInteractWithChat, message, userFlagStatus, canFlag, deletedAt) {
+  canFlagMessage(message, userFlagStatus, canFlag, deletedAt) {
     return (
-      canInteractWithChat &&
       this.currentUser?.id !== message.user.id &&
       userFlagStatus === undefined &&
       canFlag &&
@@ -310,10 +312,9 @@ export default Component.extend({
     );
   },
 
-  @discourseComputed("canInteractWithChat","message")
-  canManageDeletion(canInteractWithChat, message) {
+  @discourseComputed("message")
+  canManageDeletion(message) {
     return (
-      canInteractWithChat &&
       !message.action_code &&
       (this.currentUser?.id === message.user.id
         ? this.details.can_delete_self

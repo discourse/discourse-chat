@@ -261,6 +261,12 @@ RSpec.describe DiscourseChat::ChatController do
         sign_in(user)
       end
 
+      it "errors when the user is silenced" do
+        UserSilencer.new(user).silence
+        post "/chat/#{chat_channel.id}.json", params: { message: message }
+        expect(response.status).to eq(403)
+      end
+
       it "errors for regular user when chat is staff-only" do
         SiteSetting.chat_allowed_groups = Group::AUTO_GROUPS[:staff]
 
@@ -388,6 +394,13 @@ RSpec.describe DiscourseChat::ChatController do
       expect(response.status).to eq(403)
     end
 
+    it "errors when the user is silenced" do
+      UserSilencer.new(user).silence
+      sign_in(user)
+      put "/chat/#{chat_channel.id}/edit/#{chat_message.id}.json", params: { new_message: 'Hi' }
+      expect(response.status).to eq(403)
+    end
+
     it "allows a user to edit their own messages" do
       sign_in(user)
       new_message = "Wow markvanlan must be a good programmer"
@@ -406,6 +419,14 @@ RSpec.describe DiscourseChat::ChatController do
       expect(response.status).to eq(403)
     end
 
+    it "doesn't allow a silenced user to delete their message" do
+      sign_in(other_user)
+      UserSilencer.new(other_user).silence
+
+      delete "/chat/#{chat_channel.id}/#{other_user_message.id}.json"
+      expect(response.status).to eq(403)
+    end
+
     it "Allows admin to delete others' messages" do
       sign_in(admin)
 
@@ -418,6 +439,7 @@ RSpec.describe DiscourseChat::ChatController do
 
   describe "#delete" do
     fab!(:second_user) { Fabricate(:user) }
+    fab!(:second_user_message) { Fabricate(:chat_message, user: second_user, chat_channel: chat_channel) }
 
     before do
       ChatMessage.create(user: user, message: "this is a message", chat_channel: chat_channel)
@@ -428,6 +450,7 @@ RSpec.describe DiscourseChat::ChatController do
 
       it_behaves_like "chat_message_deletion" do
         let(:other_user) { second_user }
+        let(:other_user_message) { second_user_message }
       end
 
       it "Allows users to delete their own messages" do
@@ -444,6 +467,7 @@ RSpec.describe DiscourseChat::ChatController do
 
       it_behaves_like "chat_message_deletion" do
         let(:other_user) { second_user }
+        let(:other_user_message) { second_user_message }
       end
 
       it "Allows users to delete their own messages" do
@@ -632,6 +656,13 @@ RSpec.describe DiscourseChat::ChatController do
       expect(response.status).to eq(403)
     end
 
+    it "errors when user is silenced" do
+      UserSilencer.new(user).silence
+      sign_in(user)
+      put "/chat/#{chat_channel.id}/react/#{chat_message.id}.json", params: { emoji: ":heart:", react_action: "add" }
+      expect(response.status).to eq(403)
+    end
+
     it "adds a reaction record correctly" do
       sign_in(user)
       emoji = ":heart:"
@@ -811,6 +842,13 @@ RSpec.describe DiscourseChat::ChatController do
         put "/chat/flag.json", params: { chat_message_id: admin_chat_message.id }
       }.to change { ReviewableChatMessage.where(target: admin_chat_message).count }.by(1)
       expect(response.status).to eq(200)
+    end
+
+    it "errors for silenced users" do
+      UserSilencer.new(user).silence
+
+      put "/chat/flag.json", params: { chat_message_id: admin_chat_message.id }
+      expect(response.status).to eq(403)
     end
 
     it "doesn't allow flagging your own message" do

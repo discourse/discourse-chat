@@ -1029,7 +1029,7 @@ export default Component.extend({
 
   @discourseComputed("previewing", "details.user_silenced")
   canInteractWithChat(previewing, userSilenced) {
-    return !previewing && !userSilenced
+    return !previewing && !userSilenced;
   },
 
   @discourseComputed("messages.@each.selected")

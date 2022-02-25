@@ -91,7 +91,7 @@ export default Component.extend({
     return deletedAt && !expanded;
   },
 
-  @computed(
+  @discourseComputed(
     "selectingMessages",
     "canFlagMessage",
     "showDeleteButton",
@@ -99,7 +99,7 @@ export default Component.extend({
     "showEditButton",
     "showRebakeButton"
   )
-  get moreButtons() {
+  moreButtons() {
     const buttons = [];
 
     buttons.push({

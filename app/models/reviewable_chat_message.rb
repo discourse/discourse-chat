@@ -13,7 +13,7 @@ class ReviewableChatMessage < Reviewable
   end
 
   def self.score_to_silence_user
-    sensitivity_score(SiteSetting.silence_new_user_sensitivity, scale: 0.6)
+    sensitivity_score(SiteSetting.chat_silence_user_sensitivity, scale: 0.6)
   end
 
   def chat_message

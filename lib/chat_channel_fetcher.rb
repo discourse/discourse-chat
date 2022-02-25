@@ -16,17 +16,8 @@ module DiscourseChat::ChatChannelFetcher
     }
   end
 
-  def self.secured_public_channels(
-    guardian,
-    memberships,
-    scope_with_membership: true,
-    include_last_message: false
-  )
+  def self.secured_public_channels(guardian, memberships, scope_with_membership: true, include_last_message: false)
     channels = ChatChannel.includes(:chatable)
-    if include_last_message
-      channels = channels.includes(last_chat_message: [:user, chat_webhook_event: [:incoming_chat_webhook]])
-    end
-
     channels = channels.where(chatable_type: ChatChannel.public_channel_chatable_types)
     if scope_with_membership
       channels = channels

@@ -1211,11 +1211,6 @@ export default Component.extend({
     evt.preventDefault();
   },
 
-  @action
-  exitChat() {
-    return this.router.transitionTo(this.chat.lastNonChatRoute);
-  },
-
   @bind
   forceLinksToOpenNewTab() {
     if (this._selfDeleted) {

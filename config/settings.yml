@@ -34,3 +34,10 @@ plugins:
   chat_allowed_messages_for_other_trust_levels:
     default: 40
     min: 0
+  chat_silence_user_sensitivity:
+    type: enum
+    enum: "ReviewableSensitivitySetting"
+    default: 6
+  chat_auto_silence_from_flags_duration:
+    default: 60
+    min: 0

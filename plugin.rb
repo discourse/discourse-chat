@@ -345,6 +345,24 @@ after_initialize do
     end
   end
 
+  on(:reviewable_score_updated) do |reviewable|
+    return if reviewable.type != "ReviewableChatMessage" &&
+    return if reviewable.score <= ReviewableChatMessage.score_to_silence_user
+
+    auto_silence_duration = SiteSetting.chat_auto_silence_from_flags_duration
+    return if auto_silence_duration.zero?
+
+    user = reviewable&.target&.user
+    return unless user
+
+    UserSilencer.silence(
+      user,
+      Discourse.system_user,
+      silenced_till: auto_silence_duration.minutes.from_now,
+      reason: I18n.t("chat.errors.rate_limit_exceeded")
+    )
+  end
+
   DiscourseChat::Engine.routes.draw do
     # direct_messages_controller routes
     post '/direct_messages/create' => 'direct_messages#create'

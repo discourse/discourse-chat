@@ -12,6 +12,10 @@ class ReviewableChatMessage < Reviewable
       disagree_and_restore: :disagree }
   end
 
+  def self.score_to_silence_user
+    sensitivity_score(SiteSetting.silence_new_user_sensitivity, scale: 0.6)
+  end
+
   def chat_message
     @chat_message ||= (target || ChatMessage.with_deleted.find_by(id: target_id))
   end

@@ -1168,15 +1168,6 @@ acceptance(
         `/chat/channel/${channelWithUnread.id}/${channelWithUnread.title}`
       );
     });
-
-    test("Exit full screen chat button takes you to previous non-chat location", async function (assert) {
-      const nonChatPath = "/t/internationalization-localization/280";
-      await visit(nonChatPath);
-      await visit("/chat/channel/75/@hawk");
-      await visit("/chat/channel/9/Site");
-      await click(".exit-chat-btn");
-      assert.equal(currentURL(), nonChatPath);
-    });
   }
 );
 

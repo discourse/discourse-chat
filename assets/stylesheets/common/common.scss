@@ -318,17 +318,6 @@ body.composer-open .topic-chat-float-container {
   }
 }
 
-.btn.exit-chat-btn {
-  background: transparent;
-  color: var(--primary-medium);
-  font-size: var(--font-0-rem);
-  padding: 0.5rem;
-
-  &:hover {
-    background: transparent;
-  }
-}
-
 .chat-channels {
   overflow-y: auto;
   height: 100%;
@@ -1273,15 +1262,7 @@ body.has-full-page-chat {
   }
 
   .chat-full-page-header {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
     border-bottom: 1px solid var(--primary-low);
-
-    .exit-chat-btn {
-      margin-left: auto;
-      color: var(--primary-high);
-    }
 
     .chat-channel-title {
       .category-chat-name,
@@ -1303,9 +1284,6 @@ body.has-full-page-chat {
       .join-channel-btn {
         margin-left: auto;
       }
-      .exit-chat-btn {
-        margin-left: 0.25em;
-      }
     }
   }
 
@@ -1320,9 +1298,10 @@ body.has-full-page-chat {
 }
 
 .chat-full-page-header {
-  flex-direction: column;
-  align-items: flex-start;
-
+  .chat-channel-header-details {
+    display: flex;
+    flex-direction: row;
+  }
   .chat-channel-title {
     margin: 0;
     max-width: 100%;

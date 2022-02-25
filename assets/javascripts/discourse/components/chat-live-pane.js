@@ -293,7 +293,11 @@ export default Component.extend({
       }
 
       if (this.targetMessageId) {
-        this.scrollToMessage(this.targetMessageId, { highlight: true });
+        this.scrollToMessage(this.targetMessageId, {
+          highlight: true,
+          position: "top",
+          autoExpand: true,
+        });
         this.set("targetMessageId", null);
       } else {
         this._markLastReadMessage();
@@ -427,19 +431,26 @@ export default Component.extend({
 
     if (this.messageLookup[messageId]) {
       // We have the message rendered. highlight and scrollTo
-      this.scrollToMessage(messageId, { highlight: true });
+      this.scrollToMessage(messageId, {
+        highlight: true,
+        position: "top",
+        autoExpand: true,
+      });
     } else {
       this.set("targetMessageId", messageId);
       this.fetchMessages(this.chatChannel.id);
     }
   },
 
-  scrollToMessage(messageId, opts = { highlight: false, position: "top" }) {
+  scrollToMessage(
+    messageId,
+    opts = { highlight: false, position: "top", autoExpand: false }
+  ) {
     if (this._selfDeleted) {
       return;
     }
     const message = this.messageLookup[messageId];
-    if (message?.deleted_at) {
+    if (message?.deleted_at && opts.autoExpand) {
       message.set("expanded", true);
     }
 
@@ -995,7 +1006,11 @@ export default Component.extend({
       this.set("targetMessageId", message.id);
       this.fetchMessages(this.chatChannel.id);
     } else {
-      this.scrollToMessage(replyMessageFromLookup.id, { highlight: true });
+      this.scrollToMessage(replyMessageFromLookup.id, {
+        highlight: true,
+        position: "top",
+        autoExpand: true,
+      });
     }
   },
 

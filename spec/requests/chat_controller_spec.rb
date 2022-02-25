@@ -219,7 +219,7 @@ RSpec.describe DiscourseChat::ChatController do
       it "Returns a 200 and does nothing when chat is already disabled" do
         sign_in(admin)
         chat_channel = Fabricate(:chat_channel, chatable: topic)
-        chat_channel.update(deleted_at: Time.now, deleted_by_id: admin.id)
+        chat_channel.trash!
 
         post "/chat/disable.json", params: { chatable_type: "topic", chatable_id: topic.id }
         expect(response.status).to eq(200)
@@ -278,6 +278,34 @@ RSpec.describe DiscourseChat::ChatController do
         expect(response.status).to eq(403)
       end
 
+      it "errors when the user is not staff and the channel is not open" do
+        Fabricate(:user_chat_channel_membership, chat_channel: chat_channel, user: user)
+        sign_in(user)
+
+        chat_channel.update(status: :closed)
+        post "/chat/#{chat_channel.id}.json", params: { message: message }
+        expect(response.status).to eq(422)
+        expect(response.parsed_body["errors"]).to include(
+          I18n.t("chat.errors.channel_new_message_disallowed", status: chat_channel.status_name)
+        )
+      end
+
+      it "errors when the user is staff and the channel is not open or closed" do
+        Fabricate(:user_chat_channel_membership, chat_channel: chat_channel, user: admin)
+        sign_in(admin)
+
+        chat_channel.update(status: :closed)
+        post "/chat/#{chat_channel.id}.json", params: { message: message }
+        expect(response.status).to eq(200)
+
+        chat_channel.update(status: :read_only)
+        post "/chat/#{chat_channel.id}.json", params: { message: message }
+        expect(response.status).to eq(422)
+        expect(response.parsed_body["errors"]).to include(
+          I18n.t("chat.errors.channel_new_message_disallowed", status: chat_channel.status_name)
+        )
+      end
+
       it "sends a message for regular user when staff-only is disabled and they are following channel" do
         sign_in(user)
         UserChatChannelMembership.create(user: user, chat_channel: chat_channel, following: true)
@@ -327,6 +355,14 @@ RSpec.describe DiscourseChat::ChatController do
         end
       end
 
+      it "does not rebake the post when channel is read_only" do
+        chat_message.chat_channel.update!(status: :read_only)
+        sign_in(Fabricate(:admin))
+
+        put "/chat/#{chat_channel.id}/#{chat_message.id}/rebake.json"
+        expect(response.status).to eq(403)
+      end
+
       context "cooked has changed" do
         it "marks the message as dirty" do
           sign_in(Fabricate(:admin))
@@ -361,6 +397,14 @@ RSpec.describe DiscourseChat::ChatController do
           sign_in(Fabricate(:user, trust_level: TrustLevel[4]))
           put "/chat/#{chat_channel.id}/#{chat_message.id}/rebake.json"
           expect(response.status).to eq(200)
+        end
+
+        it "does not rebake the post when channel is read_only" do
+          chat_message.chat_channel.update!(status: :read_only)
+          sign_in(Fabricate(:user, trust_level: TrustLevel[4]))
+
+          put "/chat/#{chat_channel.id}/#{chat_message.id}/rebake.json"
+          expect(response.status).to eq(403)
         end
       end
     end
@@ -421,6 +465,36 @@ RSpec.describe DiscourseChat::ChatController do
     it "Allows admin to delete others' messages" do
       sign_in(admin)
 
+      expect {
+        delete "/chat/#{chat_channel.id}/#{ChatMessage.last.id}.json"
+      }.to change { ChatMessage.count }.by(-1)
+      expect(response.status).to eq(200)
+    end
+
+    it "does not allow message delete when chat channel is read_only" do
+      sign_in(ChatMessage.last.user)
+
+      chat_channel.update!(status: :read_only)
+      expect {
+        delete "/chat/#{chat_channel.id}/#{ChatMessage.last.id}.json"
+      }.not_to change { ChatMessage.count }
+      expect(response.status).to eq(403)
+
+      sign_in(admin)
+      delete "/chat/#{chat_channel.id}/#{ChatMessage.last.id}.json"
+      expect(response.status).to eq(403)
+    end
+
+    it "only allows admin to delete when chat channel is closed" do
+      sign_in(admin)
+
+      chat_channel.update!(status: :read_only)
+      expect {
+        delete "/chat/#{chat_channel.id}/#{ChatMessage.last.id}.json"
+      }.not_to change { ChatMessage.count }
+      expect(response.status).to eq(403)
+
+      chat_channel.update!(status: :closed)
       expect {
         delete "/chat/#{chat_channel.id}/#{ChatMessage.last.id}.json"
       }.to change { ChatMessage.count }.by(-1)
@@ -496,6 +570,37 @@ RSpec.describe DiscourseChat::ChatController do
       expect(response.status).to eq(200)
       expect(deleted_message.reload.deleted_at).to be_nil
     end
+
+    it "does not allow message restore when chat channel is read_only" do
+      sign_in(ChatMessage.last.user)
+
+      chat_channel.update!(status: :read_only)
+
+      deleted_message = ChatMessage.unscoped.last
+      put "/chat/#{chat_channel.id}/restore/#{deleted_message.id}.json"
+      expect(response.status).to eq(403)
+      expect(deleted_message.reload.deleted_at).not_to be_nil
+
+      sign_in(admin)
+      put "/chat/#{chat_channel.id}/restore/#{deleted_message.id}.json"
+      expect(response.status).to eq(403)
+    end
+
+    it "only allows admin to restore when chat channel is closed" do
+      sign_in(admin)
+
+      chat_channel.update!(status: :read_only)
+
+      deleted_message = ChatMessage.unscoped.last
+      put "/chat/#{chat_channel.id}/restore/#{deleted_message.id}.json"
+      expect(response.status).to eq(403)
+      expect(deleted_message.reload.deleted_at).not_to be_nil
+
+      chat_channel.update!(status: :closed)
+      put "/chat/#{chat_channel.id}/restore/#{deleted_message.id}.json"
+      expect(response.status).to eq(200)
+      expect(deleted_message.reload.deleted_at).to be_nil
+    end
   end
 
   describe "#restore" do
@@ -503,7 +608,7 @@ RSpec.describe DiscourseChat::ChatController do
 
     before do
       message = ChatMessage.create(user: user, message: "this is a message", chat_channel: chat_channel)
-      message.update(deleted_at: Time.now, deleted_by_id: user.id)
+      message.trash!
     end
 
     describe "for topic" do
@@ -645,6 +750,19 @@ RSpec.describe DiscourseChat::ChatController do
       sign_in(user)
       put "/chat/#{private_chat_channel.id}/react/#{private_chat_message.id}.json", params: { emoji: ":heart:", react_action: "add" }
       expect(response.status).to eq(403)
+    end
+
+    it "errors when the user tries to react to a read_only channel" do
+      chat_channel.update(status: :read_only)
+      sign_in(user)
+      emoji = ":heart:"
+      expect {
+        put "/chat/#{chat_channel.id}/react/#{chat_message.id}.json", params: { emoji: emoji, react_action: "add" }
+      }.not_to change { chat_message.reactions.where(user: user, emoji: emoji).count }
+      expect(response.status).to eq(403)
+      expect(response.parsed_body["errors"]).to include(
+        I18n.t("chat.errors.channel_modify_message_disallowed", status: chat_channel.status_name)
+      )
     end
 
     it "errors when user is silenced" do
@@ -844,6 +962,12 @@ RSpec.describe DiscourseChat::ChatController do
 
     it "doesn't allow flagging your own message" do
       put "/chat/flag.json", params: { chat_message_id: user_chat_message.id }
+      expect(response.status).to eq(403)
+    end
+
+    it "doesn't allow flagging messages in a read_only channel" do
+      user_chat_message.chat_channel.update(status: :read_only)
+      put "/chat/flag.json", params: { chat_message_id: admin_chat_message.id }
       expect(response.status).to eq(403)
     end
 

@@ -16,6 +16,7 @@ class ChatViewSerializer < ApplicationSerializer
   def meta
     meta_hash = {
       can_flag: scope.can_flag_in_chat_channel?(object.chat_channel),
+      channel_status: object.chat_channel.status,
       user_silenced: !scope.can_create_chat_message?
     }
     meta_hash[:can_load_more_past] = object.can_load_more_past unless object.can_load_more_past.nil?

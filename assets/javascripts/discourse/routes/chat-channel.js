@@ -3,6 +3,7 @@ import Promise from "rsvp";
 import EmberObject, { action } from "@ember/object";
 import { ajax } from "discourse/lib/ajax";
 import { inject as service } from "@ember/service";
+import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 
 export default DiscourseRoute.extend({
   chat: service(),
@@ -13,7 +14,10 @@ export default DiscourseRoute.extend({
       this.chat.getChannels(),
     ]);
 
-    return EmberObject.create({ chatChannel, channels });
+    return EmberObject.create({
+      chatChannel: ChatChannel.create(chatChannel),
+      channels,
+    });
   },
 
   async getChannel(id) {

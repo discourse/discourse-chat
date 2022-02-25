@@ -4,15 +4,20 @@ class DiscourseChat::MoveToTopicController < DiscourseChat::ChatBaseController
   NEW_TOPIC = "newTopic"
   EXISTING_TOPIC = "existingTopic"
   NEW_MESSAGE = "newMessage"
+
+  # TODO (martin) We need to completely overhaul this, move it into a service,
+  # and quote the messages with [chat] bbcode, deleting them from the channel
+  # once they are moved.
   def create
-    guardian.ensure_can_move_chat_to_topic!
     raise Discourse::NotFound unless SiteSetting.chat_enabled
 
     params.require([:type, :chat_message_ids, :chat_channel_id])
+
     chat_channel = ChatChannel.find_by(id: params[:chat_channel_id])
-    if chat_channel.nil? || !guardian.can_see_chat_channel?(chat_channel)
+    if chat_channel.blank? || !guardian.can_see_chat_channel?(chat_channel)
       raise Discourse::InvalidParameters.new(:chat_channel_id)
     end
+    guardian.ensure_can_move_chat_to_topic!(chat_channel)
 
     chat_messages = chat_channel.chat_messages.includes(:user, :uploads).where(id: params[:chat_message_ids]).order(:id)
     raise Discourse::InvalidParameters.new("Must include at least one chat message id") if chat_messages.empty?

@@ -77,7 +77,6 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
   end
 
   def create_message
-    guardian.ensure_can_create_chat_message!
     DiscourseChat::ChatMessageRateLimiter.run!(current_user)
 
     set_channel_and_chatable
@@ -210,7 +209,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     set_channel_and_chatable
     guardian.ensure_can_delete_chat!(@message, @chatable)
 
-    updated = @message.update(deleted_at: Time.now, deleted_by_id: current_user.id)
+    updated = @message.trash!(current_user)
     if updated
       ChatPublisher.publish_delete!(@chat_channel, @message)
       render json: success_json
@@ -222,7 +221,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
   def restore
     chat_channel = @message.chat_channel
     guardian.ensure_can_restore_chat!(@message, chat_channel.chatable)
-    updated = @message.update(deleted_at: nil, deleted_by_id: nil)
+    updated = @message.recover!
     if updated
       ChatPublisher.publish_restore!(chat_channel, @message)
       render json: success_json
@@ -232,7 +231,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
   end
 
   def rebake
-    guardian.ensure_can_rebake!
+    guardian.ensure_can_rebake!(@message)
     @message.rebake!(invalidate_oneboxes: true)
     render json: success_json
   end

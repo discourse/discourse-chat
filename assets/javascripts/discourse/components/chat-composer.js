@@ -20,11 +20,12 @@ import { findRawTemplate } from "discourse-common/lib/raw-templates";
 import { emojiSearch, isSkinTonableEmoji } from "pretty-text/emoji";
 import { emojiUrlFor } from "discourse/lib/text";
 import { inject as service } from "@ember/service";
-import { alias, not, or, readOnly } from "@ember/object/computed";
+import { alias, or, readOnly } from "@ember/object/computed";
 import { search as searchCategoryTag } from "discourse/lib/category-tag-search";
 import { SKIP } from "discourse/lib/autocomplete";
 import { Promise } from "rsvp";
 import { translations } from "pretty-text/emoji/data";
+import { channelStatusName } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 
 const THROTTLE_MS = 150;
 let outsideToolbarClick;
@@ -50,7 +51,6 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   previewing: false,
   showToolbar: false,
   timer: null,
-  textareaDisabled: not("canInteractWithChat"),
   value: "",
 
   // Composer Uppy values
@@ -195,7 +195,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   },
 
   _insertUpload(_, upload) {
-    if (this.textareaDisabled) {
+    if (this.disableComposer) {
       return;
     }
 
@@ -256,7 +256,11 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   didReceiveAttrs() {
     this._super(...arguments);
 
-    if (!this.editingMessage && this.draft) {
+    if (
+      !this.editingMessage &&
+      this.draft &&
+      this.chatChannel.canModifyMessages(this.currentUser)
+    ) {
       this.setProperties(this.draft);
       this.setInReplyToMsg(this.draft.replyToMsg);
     }
@@ -527,8 +531,23 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     this.set("emojiPickerIsActive", false);
   },
 
+  @discourseComputed("previewing", "chatChannel", "canInteractWithChat")
+  disableComposer(previewing, chatChannel, canInteractWithChat) {
+    return (
+      previewing ||
+      !chatChannel.canModifyMessages(this.currentUser) ||
+      !canInteractWithChat
+    );
+  },
+
   @discourseComputed("previewing", "userSilenced", "chatChannel")
   placeholder(previewing, userSilenced, chatChannel) {
+    if (!this.chatChannel.canModifyMessages(this.currentUser)) {
+      return I18n.t("chat.placeholder_new_message_disallowed", {
+        status: channelStatusName(chatChannel.status).toLowerCase(),
+      });
+    }
+
     if (previewing) {
       return I18n.t("chat.placeholder_previewing");
     } else if (userSilenced) {
@@ -563,7 +582,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   @discourseComputed(
     "value",
     "loading",
-    "textareaDisabled",
+    "disableComposer",
     "uploads.@each",
     "uploading",
     "processingUpload"
@@ -571,12 +590,12 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   sendDisabled(
     value,
     loading,
-    textareaDisabled,
+    disableComposer,
     uploads,
     uploading,
     processingUpload
   ) {
-    if (loading || textareaDisabled || uploading || processingUpload) {
+    if (loading || disableComposer || uploading || processingUpload) {
       return true;
     }
 
@@ -665,7 +684,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
 
   @action
   toggleToolbar() {
-    if (this.textareaDisabled) {
+    if (this.disableComposer) {
       return;
     }
 
@@ -692,9 +711,9 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     this.onValueChange(this.value, this.uploads, this.replyToMsg);
   },
 
-  @discourseComputed("textareaDisabled", "uploads.[]", "inProgressUploads.[]")
-  showUploadsContainer(textareaDisabled, uploads, inProgressUploads) {
-    if (textareaDisabled) {
+  @discourseComputed("composerDisabled", "uploads.[]", "inProgressUploads.[]")
+  showUploadsContainer(composerDisabled, uploads, inProgressUploads) {
+    if (composerDisabled) {
       return false;
     }
 

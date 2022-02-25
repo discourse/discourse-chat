@@ -1,5 +1,4 @@
 import { popupAjaxError } from "discourse/lib/ajax-error";
-import EmberObject from "@ember/object";
 import Service, { inject as service } from "@ember/service";
 import Site from "discourse/models/site";
 import { addChatToolbarButton } from "discourse/plugins/discourse-chat/discourse/components/chat-composer";
@@ -9,7 +8,9 @@ import { defaultHomepage } from "discourse/lib/utilities";
 import { generateCookFunction } from "discourse/lib/text";
 import { next } from "@ember/runloop";
 import { Promise } from "rsvp";
-import { CHATABLE_TYPES } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
+import ChatChannel, {
+  CHATABLE_TYPES,
+} from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import simpleCategoryHashMentionTransform from "discourse/plugins/discourse-chat/discourse/lib/simple-category-hash-mention-transform";
 import discourseDebounce from "discourse-common/lib/debounce";
 
@@ -753,7 +754,7 @@ export default Service.extend({
   },
 
   processChannel(channel) {
-    channel = EmberObject.create(channel);
+    channel = ChatChannel.create(channel);
     this._subscribeToSingleUpdateChannel(channel);
     this._updateUserTrackingState(channel);
     this.allChannels.push(channel);

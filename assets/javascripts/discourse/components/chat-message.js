@@ -7,7 +7,7 @@ import discourseComputed, {
   afterRender,
   bind,
 } from "discourse-common/utils/decorators";
-import EmberObject, { action, computed } from "@ember/object";
+import EmberObject, { action } from "@ember/object";
 import { ajax } from "discourse/lib/ajax";
 import { autoUpdatingRelativeAge } from "discourse/lib/formatter";
 import { cancel, later, schedule } from "@ember/runloop";
@@ -98,14 +98,16 @@ export default Component.extend({
   deletedAndCollapsed(deletedAt, expanded) {
     return deletedAt && !expanded;
   },
-  @computed(
+
+  @discourseComputed(
     "selectingMessages",
     "canFlagMessage",
     "showDeleteButton",
     "showRestoreButton",
-    "showEditButton"
+    "showEditButton",
+    "showRebakeButton"
   )
-  get moreButtons() {
+  moreButtons() {
     const buttons = [];
 
     buttons.push({
@@ -162,7 +164,7 @@ export default Component.extend({
       });
     }
 
-    if (this.currentUser?.staff) {
+    if (this.showRebakeButton) {
       buttons.push({
         id: "rebakeMessage",
         name: I18n.t("chat.rebake_message"),
@@ -278,12 +280,13 @@ export default Component.extend({
     return classes.join(" ");
   },
 
-  @discourseComputed("message", "message.deleted_at")
+  @discourseComputed("message", "message.deleted_at", "chatChannel.status")
   showEditButton(message, deletedAt) {
     return (
       !message.action_code &&
       !deletedAt &&
-      this.currentUser.id === message.user.id
+      this.currentUser.id === message.user.id &&
+      this.chatChannel.canModifyMessages(this.currentUser)
     );
   },
 
@@ -322,14 +325,48 @@ export default Component.extend({
     );
   },
 
-  @discourseComputed("canManageDeletion", "message.deleted_at")
-  showDeleteButton(canManageDeletion, deletedAt) {
-    return canManageDeletion && !deletedAt;
+  @discourseComputed("message.deleted_at", "chatChannel.status")
+  canReply(deletedAt) {
+    return !deletedAt && this.chatChannel.canModifyMessages(this.currentUser);
   },
 
-  @discourseComputed("canManageDeletion", "message.deleted_at")
+  @discourseComputed("message.deleted_at", "chatChannel.status")
+  canReact(deletedAt) {
+    return !deletedAt && this.chatChannel.canModifyMessages(this.currentUser);
+  },
+
+  @discourseComputed(
+    "canManageDeletion",
+    "message.deleted_at",
+    "chatChannel.status"
+  )
+  showDeleteButton(canManageDeletion, deletedAt) {
+    return (
+      canManageDeletion &&
+      !deletedAt &&
+      this.chatChannel.canModifyMessages(this.currentUser)
+    );
+  },
+
+  @discourseComputed(
+    "canManageDeletion",
+    "message.deleted_at",
+    "chatChannel.status"
+  )
   showRestoreButton(canManageDeletion, deletedAt) {
-    return canManageDeletion && deletedAt;
+    return (
+      canManageDeletion &&
+      deletedAt &&
+      this.chatChannel.canModifyMessages(this.currentUser)
+    );
+  },
+
+  @discourseComputed("chatChannel.status")
+  showRebakeButton() {
+    return (
+      this.currentUser?.staff &&
+      this.chatChannel.canModifyMessages(this.currentUser)
+    );
   },
 
   @discourseComputed("message", "message.action_code")

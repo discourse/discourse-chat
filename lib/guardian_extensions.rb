@@ -28,15 +28,48 @@ module DiscourseChat::GuardianExtensions
     is_staff?
   end
 
+  # Channel status intentionally has no bearing on whether the channel
+  # name and description can be edited.
   def can_edit_chat_channel?
     is_staff?
   end
 
-  def can_move_chat_to_topic?
-    is_staff?
+  def can_create_channel_message?(chat_channel)
+    return chat_channel.open? || chat_channel.closed? if is_staff?
+    chat_channel.open?
   end
 
-  def can_rebake?
+  # This is intentionally identical to can_create_channel_message, we
+  # may want to have different conditions here in future.
+  def can_modify_channel_message?(chat_channel)
+    return chat_channel.open? || chat_channel.closed? if is_staff?
+    chat_channel.open?
+  end
+
+  def can_change_channel_status?(chat_channel, target_status)
+    return false if chat_channel.status.to_sym == target_status.to_sym
+    return false if !is_staff?
+
+    case target_status
+    when :closed
+      chat_channel.open?
+    when :open
+      chat_channel.closed?
+    when :archived
+      chat_channel.read_only?
+    when :read_only
+      chat_channel.closed? || chat_channel.open?
+    else
+      false
+    end
+  end
+
+  def can_move_chat_to_topic?(chat_channel)
+    is_staff? && can_modify_channel_message?(chat_channel)
+  end
+
+  def can_rebake?(message)
+    return false if !can_modify_channel_message?(message.chat_channel)
     is_staff? || @user.has_trust_level?(TrustLevel[4])
   end
 
@@ -50,7 +83,6 @@ module DiscourseChat::GuardianExtensions
     elsif chat_channel.direct_message_channel?
       chat_channel.chatable.user_can_access?(@user)
     elsif chat_channel.category_channel?
-
       can_see_category?(chat_channel.chatable)
     elsif chat_channel.tag_channel?
       !hidden_tag_names.include?(chat_channel.chatable.name)
@@ -66,6 +98,7 @@ module DiscourseChat::GuardianExtensions
   end
 
   def can_flag_in_chat_channel?(chat_channel)
+    return false if !can_modify_channel_message?(chat_channel)
     !chat_channel.direct_message_channel?
   end
 
@@ -78,6 +111,7 @@ module DiscourseChat::GuardianExtensions
 
   def can_delete_chat?(message, chatable)
     return false if @user.silenced?
+    return false if !can_modify_channel_message?(message.chat_channel)
 
     message.user_id == current_user.id ?
       can_delete_own_chats?(chatable) :
@@ -108,9 +142,12 @@ module DiscourseChat::GuardianExtensions
   end
 
   def can_restore_chat?(message, chatable)
+    return false if !can_modify_channel_message?(message.chat_channel)
+
     message.user_id == current_user.id ?
       can_restore_own_chats?(chatable) :
-      can_delete_other_chats?(chatable) end
+      can_delete_other_chats?(chatable)
+  end
 
   def can_restore_own_chats?(chatable)
     if chatable.class.name == "Topic"

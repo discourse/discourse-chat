@@ -1,5 +1,6 @@
 import Component from "@ember/component";
-import EmberObject, { action } from "@ember/object";
+import { action } from "@ember/object";
+import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import { ajax } from "discourse/lib/ajax";
 import { bind } from "discourse-common/utils/decorators";
 import { schedule } from "@ember/runloop";
@@ -140,7 +141,7 @@ export default Component.extend({
             }
           });
           this.setProperties({
-            channels: channels.map((c) => EmberObject.create(c)),
+            channels: channels.map((channel) => ChatChannel.create(channel)),
             loading: false,
           });
           this.focusFirstChannel(this.channels);

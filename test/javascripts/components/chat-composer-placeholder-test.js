@@ -4,6 +4,7 @@ import componentTest, {
 } from "discourse/tests/helpers/component-test";
 import { discourseModule, query } from "discourse/tests/helpers/qunit-helpers";
 import hbs from "htmlbars-inline-precompile";
+import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 
 discourseModule(
   "Discourse Chat | Component | chat-composer placeholder",
@@ -15,12 +16,15 @@ discourseModule(
 
       beforeEach() {
         set(this.currentUser, "id", 1);
-        this.set("chatChannel", {
-          chatable_type: "DirectMessageChannel",
-          chatable: {
-            users: [{ id: 1 }],
-          },
-        });
+        this.set(
+          "chatChannel",
+          ChatChannel.create({
+            chatable_type: "DirectMessageChannel",
+            chatable: {
+              users: [{ id: 1 }],
+            },
+          })
+        );
       },
 
       async test(assert) {
@@ -35,16 +39,19 @@ discourseModule(
       template: hbs`{{chat-composer chatChannel=chatChannel}}`,
 
       beforeEach() {
-        this.set("chatChannel", {
-          chatable_type: "DirectMessageChannel",
-          chatable: {
-            users: [
-              { name: "Tomtom" },
-              { name: "Steaky" },
-              { username: "zorro" },
-            ],
-          },
-        });
+        this.set(
+          "chatChannel",
+          ChatChannel.create({
+            chatable_type: "DirectMessageChannel",
+            chatable: {
+              users: [
+                { name: "Tomtom" },
+                { name: "Steaky" },
+                { username: "zorro" },
+              ],
+            },
+          })
+        );
       },
 
       async test(assert) {
@@ -59,10 +66,13 @@ discourseModule(
       template: hbs`{{chat-composer chatChannel=chatChannel}}`,
 
       beforeEach() {
-        this.set("chatChannel", {
-          chatable_type: "Category",
-          title: "just-cats",
-        });
+        this.set(
+          "chatChannel",
+          ChatChannel.create({
+            chatable_type: "Category",
+            title: "just-cats",
+          })
+        );
       },
 
       async test(assert) {

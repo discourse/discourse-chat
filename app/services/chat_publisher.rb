@@ -130,6 +130,17 @@ module ChatPublisher
     )
   end
 
+  def self.publish_channel_status(chat_channel)
+    MessageBus.publish(
+      "/chat/channel-status",
+      {
+        chat_channel_id: chat_channel.id,
+        status: chat_channel.status
+      },
+      permissions(chat_channel)
+    )
+  end
+
   private
 
   def self.permissions(chat_channel)

@@ -7,6 +7,7 @@ class DiscourseChat::ChatMessageReactor
   def initialize(user, chat_channel)
     @user = user
     @chat_channel = chat_channel
+    @guardian = Guardian.new(user)
   end
 
   def react!(message_id:, react_action:, emoji:)
@@ -15,6 +16,7 @@ class DiscourseChat::ChatMessageReactor
     end
 
     validate_channel_membership!
+    validate_channel_status!
 
     @chat_message = ChatMessage.find_by(id: message_id, chat_channel: @chat_channel)
     raise Discourse::NotFound unless @chat_message
@@ -32,6 +34,16 @@ class DiscourseChat::ChatMessageReactor
       chat_channel: @chat_channel,
       user: @user,
       following: true
+    )
+  end
+
+  def validate_channel_status!
+    return if @guardian.can_create_channel_message?(@chat_channel)
+    raise Discourse::InvalidAccess.new(
+      nil,
+      nil,
+      custom_message: "chat.errors.channel_modify_message_disallowed",
+      custom_message_params: { status: @chat_channel.status_name }
     )
   end
 

@@ -449,4 +449,66 @@ describe DiscourseChat::ChatMessageCreator do
       expect(creator.error.message).to match(I18n.t("contains_blocked_word", { word: watched_word.word }))
     end
   end
+
+  describe "channel statuses" do
+    def create_message(user)
+      DiscourseChat::ChatMessageCreator.create(chat_channel: public_chat_channel, user: user, content: "test message")
+    end
+
+    context "when channel is closed" do
+      before do
+        public_chat_channel.update(status: :closed)
+      end
+
+      it "errors when trying to create the message for non-staff" do
+        creator = create_message(user1)
+        expect(creator.failed?).to eq(true)
+        expect(creator.error.message).to eq(
+          I18n.t("chat.errors.channel_new_message_disallowed", status: public_chat_channel.status_name)
+        )
+      end
+
+      it "does not error when trying to create a message for staff" do
+        expect { create_message(admin1) }.to change { ChatMessage.count }.by(1)
+      end
+    end
+
+    context "when channel is read_only" do
+      before do
+        public_chat_channel.update(status: :read_only)
+      end
+
+      it "errors when trying to create the message for all users" do
+        creator = create_message(user1)
+        expect(creator.failed?).to eq(true)
+        expect(creator.error.message).to eq(
+          I18n.t("chat.errors.channel_new_message_disallowed", status: public_chat_channel.status_name)
+        )
+        creator = create_message(admin1)
+        expect(creator.failed?).to eq(true)
+        expect(creator.error.message).to eq(
+          I18n.t("chat.errors.channel_new_message_disallowed", status: public_chat_channel.status_name)
+        )
+      end
+    end
+
+    context "when channel is archived" do
+      before do
+        public_chat_channel.update(status: :archived)
+      end
+
+      it "errors when trying to create the message for all users" do
+        creator = create_message(user1)
+        expect(creator.failed?).to eq(true)
+        expect(creator.error.message).to eq(
+          I18n.t("chat.errors.channel_new_message_disallowed", status: public_chat_channel.status_name)
+        )
+        creator = create_message(admin1)
+        expect(creator.failed?).to eq(true)
+        expect(creator.error.message).to eq(
+          I18n.t("chat.errors.channel_new_message_disallowed", status: public_chat_channel.status_name)
+        )
+      end
+    end
+  end
 end

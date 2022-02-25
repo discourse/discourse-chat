@@ -60,6 +60,7 @@ export const chatChannels = {
       title: "Uncategorized",
       unread_count: 0,
       muted: false,
+      status: "open",
       chatable: {
         id: 1,
         name: "Uncategorized",
@@ -77,6 +78,7 @@ export const chatChannels = {
       title: "Small action - testing topic",
       unread_count: 0,
       muted: false,
+      status: "open",
       chatable: {
         id: 12,
         title: "Small action - testing topic",
@@ -94,6 +96,7 @@ export const chatChannels = {
       title: "Coolest thing you have seen today",
       unread_count: 0,
       muted: false,
+      status: "open",
       chatable: {
         id: 80,
         title: "Coolest thing you have seen today",
@@ -201,7 +204,7 @@ const message2 = {
       thumbnail_height: 224,
       thumbnail_width: 689,
       url:
-        "//localhost:3000/uploads/default/original/1X/1359a8a1c9489ad31ef9385df8c46b02740d981c.png",
+        "//testbucket.s3.dualstack.us-east-2.amazonaws.com/original/1X/f1095d89269ff22e1818cf54b73e857261851019.jpeg",
       width: 1209,
     },
   ],
@@ -245,6 +248,7 @@ const message3 = {
 export const chatView = {
   meta: {
     can_flag: true,
+    channel_status: "open",
     user_silenced: false,
   },
   chat_messages: [message0, message1, message2, message3],

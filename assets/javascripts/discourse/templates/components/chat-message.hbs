@@ -38,18 +38,24 @@
                   class="show"
                 }}
               {{/each}}
-              {{d-button
-                class="btn-flat react-btn"
-                action=(action "startReactionForMsgActions")
-                icon="discourse-emojis"
-                title="chat.react"
-              }}
-              {{d-button
-                class="btn-flat reply-btn"
-                action=(action "reply")
-                icon="reply"
-                title="chat.reply"
-              }}
+
+              {{#if canReact}}
+                {{d-button
+                  class="btn-flat react-btn"
+                  action=(action "startReactionForMsgActions")
+                  icon="discourse-emojis"
+                  title="chat.react"
+                }}
+              {{/if}}
+              {{#if canReply}}
+                {{d-button
+                  class="btn-flat reply-btn"
+                  action=(action "reply")
+                  icon="reply"
+                  title="chat.reply"
+                }}
+              {{/if}}
+
               {{#if moreButtons.length}}
                 {{dropdown-select-box
                   class="more-buttons"

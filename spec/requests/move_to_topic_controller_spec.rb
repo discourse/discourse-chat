@@ -157,5 +157,24 @@ RSpec.describe DiscourseChat::MoveToTopicController do
       expect(topic.archetype).to eq(Archetype.private_message)
       expect(topic.topic_users.map(&:user_id)).to match_array([user.id, other_user.id, admin.id])
     end
+
+    it "errors when the channel is read_only" do
+      sign_in(admin)
+      chat_channel.update(status: :read_only)
+      topic_title = "This is a new topic that is created via chat!"
+      tag_names = ["ctag1", "ctag2"]
+      expect {
+        post "/chat/move_to_topic.json",
+          params: build_params(
+            5,
+            {
+              type: "existingTopic",
+              topic_id: topic.id
+            })
+      }
+        .to change { ChatMessagePostConnection.count }.by(0)
+        .and change { Post.where(topic_id: topic.id).count }.by(0)
+      expect(response.status).to eq(403)
+    end
   end
 end

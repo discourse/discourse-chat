@@ -13,6 +13,7 @@ class DiscourseChat::ChatMessageUpdater
     @old_message_content = chat_message.message
     @chat_channel = @chat_message.chat_channel
     @user = @chat_message.user
+    @guardian = Guardian.new(@user)
     @new_content = new_content
     @upload_ids = upload_ids
     @error = nil
@@ -20,6 +21,7 @@ class DiscourseChat::ChatMessageUpdater
 
   def update
     begin
+      validate_channel_status!
       @chat_message.message = @new_content
       validate_message!
       @chat_message.cook
@@ -34,18 +36,25 @@ class DiscourseChat::ChatMessageUpdater
     end
   end
 
+  def failed?
+    @error.present?
+  end
+
+  private
+
+  def validate_channel_status!
+    return if @guardian.can_modify_channel_message?(@chat_channel)
+    raise StandardError.new(
+      I18n.t("chat.errors.channel_modify_message_disallowed", status: @chat_channel.status_name)
+    )
+  end
+
   def validate_message!
     @chat_message.validate_message
     if @chat_message.errors.present?
       raise StandardError.new(@chat_message.errors.map(&:full_message).join(", "))
     end
   end
-
-  def failed?
-    @error.present?
-  end
-
-  private
 
   def update_uploads!
     return if @upload_ids.nil?

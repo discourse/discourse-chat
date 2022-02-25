@@ -1,5 +1,10 @@
 en:
   js:
+    admin:
+      logs:
+        staff_actions:
+          actions:
+            chat_channel_status_change: "Chat channel status changed"
     chat:
       dates:
         time_tiny: "h:mm"
@@ -65,6 +70,7 @@ en:
       placeholder_self: "Jot something down"
       placeholder_others: "Chat with %{messageRecipient}"
       placeholder_previewing: "Join the channel to send a message."
+      placeholder_new_message_disallowed: "Channel is %{status}, you cannot send new messages right now."
       placeholder_silenced: "You cannot send messages at this time."
       remove_upload: "Remove file"
       react: "React with emoji"
@@ -92,6 +98,16 @@ en:
         other: "%{count} files"
       you_flagged: "You flagged this message"
       exit: "back"
+      channel_status:
+        read_only_header: "Channel is read only. No new messages can be sent, and no existing messages can be edited or deleted."
+        read_only: "Read Only"
+        archived_header: "Channel is archived. No new messages can be sent, and no existing messages can be edited or deleted."
+        archived: "Archived"
+        closed_header: "Channel is closed. No new messages can be sent, and no existing messages can be edited or deleted."
+        closed_staff_header: "Channel is closed."
+        closed: "Closed"
+        open_header: "Channel is open."
+        open: "Open"
 
       channel_selector:
         title: "Jump to channel"

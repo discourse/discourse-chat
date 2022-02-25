@@ -16,6 +16,33 @@ class ChatChannel < ActiveRecord::Base
   has_many :chat_messages
   has_many :user_chat_channel_memberships
 
+  enum status: {
+      open: 0,
+      read_only: 1,
+      closed: 2,
+      archived: 3
+  }, _scopes: false
+
+  def open?
+    self.status.to_sym == :open
+  end
+
+  def read_only?
+    self.status.to_sym == :read_only
+  end
+
+  def closed?
+    self.status.to_sym == :closed
+  end
+
+  def archived?
+    self.status.to_sym == :archived
+  end
+
+  def status_name
+    I18n.t("chat.channel.statuses.#{self.status}")
+  end
+
   def chatable_url
     return nil if direct_message_channel?
     return chatable.relative_url if topic_channel?
@@ -82,6 +109,34 @@ class ChatChannel < ActiveRecord::Base
     end
   end
 
+  def change_status(acting_user, target_status)
+    return if !ChatChannel.statuses.include?(target_status.to_s)
+    return if !Guardian.new(acting_user).can_change_channel_status?(self, target_status)
+    old_status = self.status
+    self.update!(status: target_status)
+    log_channel_status_change(
+      acting_user: acting_user,
+      new_status: target_status,
+      old_status: old_status
+    )
+  end
+
+  def open!(acting_user)
+    change_status(acting_user, :open)
+  end
+
+  def read_only!(acting_user)
+    change_status(acting_user, :read_only)
+  end
+
+  def close!(acting_user)
+    change_status(acting_user, :closed)
+  end
+
+  def archive!(acting_user)
+    change_status(acting_user, :archived)
+  end
+
   def self.chatable_types
     public_channel_chatable_types << "DirectMessageChannel"
   end
@@ -98,6 +153,32 @@ class ChatChannel < ActiveRecord::Base
     return false if !SiteSetting.chat_enabled
 
     ChatChannel.where(chatable: topic).exists?
+  end
+
+  private
+
+  def log_channel_status_change(acting_user:, new_status:, old_status:)
+    new_status = new_status.to_sym
+    old_status = old_status.to_sym
+
+    DiscourseEvent.trigger(
+      :chat_channel_status_change,
+      channel: self,
+      old_status: old_status,
+      new_status: new_status
+    )
+
+    StaffActionLogger.new(acting_user).log_custom(
+      "chat_channel_status_change",
+      {
+        chat_channel_id: self.id,
+        chat_channel_name: self.name,
+        previous_value: old_status,
+        new_value: new_status
+      }
+    )
+
+    ChatPublisher.publish_channel_status(self)
   end
 end
 
@@ -116,9 +197,11 @@ end
 #  updated_at              :datetime         not null
 #  name                    :string
 #  description             :text
+#  status                  :integer          default(0), not null
 #
 # Indexes
 #
 #  index_chat_channels_on_chatable_id                    (chatable_id)
 #  index_chat_channels_on_chatable_id_and_chatable_type  (chatable_id,chatable_type)
+#  index_chat_channels_on_status                         (status)
 #

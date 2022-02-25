@@ -254,4 +254,73 @@ describe DiscourseChat::ChatMessageUpdater do
       expect(creator.error.message).to match(I18n.t("contains_blocked_word", { word: watched_word.word }))
     end
   end
+
+  describe "channel statuses" do
+    fab!(:message) { Fabricate(:chat_message, user: user1, chat_channel: public_chat_channel) }
+
+    def update_message(user)
+      message.update(user: user)
+      DiscourseChat::ChatMessageUpdater.update(
+        chat_message: message,
+        new_content: "I guess this is different"
+      )
+    end
+
+    context "when channel is closed" do
+      before do
+        public_chat_channel.update(status: :closed)
+      end
+
+      it "errors when trying to update the message for non-staff" do
+        updater = update_message(user1)
+        expect(updater.failed?).to eq(true)
+        expect(updater.error.message).to eq(
+          I18n.t("chat.errors.channel_modify_message_disallowed", status: public_chat_channel.status_name)
+        )
+      end
+
+      it "does not error when trying to create a message for staff" do
+        update_message(admin1)
+        expect(message.reload.message).to eq("I guess this is different")
+      end
+    end
+
+    context "when channel is read_only" do
+      before do
+        public_chat_channel.update(status: :read_only)
+      end
+
+      it "errors when trying to update the message for all users" do
+        updater = update_message(user1)
+        expect(updater.failed?).to eq(true)
+        expect(updater.error.message).to eq(
+          I18n.t("chat.errors.channel_modify_message_disallowed", status: public_chat_channel.status_name)
+        )
+        updater = update_message(admin1)
+        expect(updater.failed?).to eq(true)
+        expect(updater.error.message).to eq(
+          I18n.t("chat.errors.channel_modify_message_disallowed", status: public_chat_channel.status_name)
+        )
+      end
+    end
+
+    context "when channel is archived" do
+      before do
+        public_chat_channel.update(status: :archived)
+      end
+
+      it "errors when trying to update the message for all users" do
+        updater = update_message(user1)
+        expect(updater.failed?).to eq(true)
+        expect(updater.error.message).to eq(
+          I18n.t("chat.errors.channel_modify_message_disallowed", status: public_chat_channel.status_name)
+        )
+        updater = update_message(admin1)
+        expect(updater.failed?).to eq(true)
+        expect(updater.error.message).to eq(
+          I18n.t("chat.errors.channel_modify_message_disallowed", status: public_chat_channel.status_name)
+        )
+      end
+    end
+  end
 end

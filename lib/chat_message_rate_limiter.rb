@@ -38,7 +38,7 @@ class DiscourseChat::ChatMessageRateLimiter
       @user,
       Discourse.system_user,
       silenced_till: silenced_for_minutes.minutes.from_now,
-      reason: I18n.t("chat.rate_limit_exceeded")
+      reason: I18n.t("chat.errors.rate_limit_exceeded")
     )
   end
 end

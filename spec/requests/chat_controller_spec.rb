@@ -279,6 +279,9 @@ RSpec.describe DiscourseChat::ChatController do
       end
 
       it "errors when the user is not staff and the channel is not open" do
+        Fabricate(:user_chat_channel_membership, chat_channel: chat_channel, user: user)
+        sign_in(user)
+
         chat_channel.update(status: :closed)
         post "/chat/#{chat_channel.id}.json", params: { message: message }
         expect(response.status).to eq(422)

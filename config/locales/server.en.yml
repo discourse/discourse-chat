@@ -14,7 +14,8 @@ en:
       channel_exists_for_topic: "A channel already exists for this topic"
       channel_new_message_disallowed: "The channel is %{status}, no new messages can be sent"
       channel_modify_message_disallowed: "The channel is %{status}, no messages can be edited or deleted"
-    rate_limit_exceeded: "Exceeded the limit of chat messages that can be sent within 30 seconds"
+      user_cannot_send_message: "You cannot send messages at this time."
+      rate_limit_exceeded: "Exceeded the limit of chat messages that can be sent within 30 seconds"
     reviewables:
       actions:
         agree:

@@ -77,7 +77,6 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
   end
 
   def create_message
-    guardian.ensure_can_create_chat_message!
     DiscourseChat::ChatMessageRateLimiter.run!(current_user)
 
     set_channel_and_chatable

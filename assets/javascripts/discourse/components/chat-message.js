@@ -7,7 +7,7 @@ import discourseComputed, {
   afterRender,
   bind,
 } from "discourse-common/utils/decorators";
-import EmberObject, { action, computed } from "@ember/object";
+import EmberObject, { action } from "@ember/object";
 import { ajax } from "discourse/lib/ajax";
 import { autoUpdatingRelativeAge } from "discourse/lib/formatter";
 import { cancel, later, schedule } from "@ember/runloop";

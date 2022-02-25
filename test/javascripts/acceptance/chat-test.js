@@ -355,6 +355,21 @@ acceptance("Discourse Chat - without unread", function (needs) {
       currentUserDropdown.rowByValue("rebakeMessage").exists(),
       "it shows the rebake button"
     );
+
+    assert.notOk(
+      currentUserDropdown.rowByValue("silence").exists(),
+      "it hides the silence button"
+    );
+
+    const notCurrentUserDropdown = selectKit(
+      ".chat-message-container-175 .more-buttons"
+    );
+
+    await notCurrentUserDropdown.expand();
+    assert.ok(
+      notCurrentUserDropdown.rowByValue("silence").exists(),
+      "it shows the silence button"
+    );
   });
 
   test("Message controls are present and correct for permissions", async function (assert) {
@@ -390,6 +405,11 @@ acceptance("Discourse Chat - without unread", function (needs) {
     assert.notOk(
       currentUserDropdown.rowByValue("flag").exists(),
       "it hides the flag button"
+    );
+
+    assert.notOk(
+      currentUserDropdown.rowByValue("silence").exists(),
+      "it hides the silence button"
     );
 
     assert.ok(
@@ -545,6 +565,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
         user: {
           id: 1,
         },
+        cooked: messageContent + " some extra cooked stuff",
       },
     });
 
@@ -557,6 +578,12 @@ acceptance("Discourse Chat - without unread", function (needs) {
         .classList.contains("chat-message-container-202")
     );
     assert.notOk(lastMessage.classList.contains("chat-message-staged"));
+
+    assert.equal(
+      lastMessage.querySelector(".chat-message-text").innerText.trim(),
+      messageContent + " some extra cooked stuff",
+      "last message is updated with the cooked content of the message"
+    );
 
     const nextMessageContent = "What up what up!";
     await fillIn(composerInput, nextMessageContent);
@@ -1202,7 +1229,7 @@ acceptance(
       });
     });
 
-    test("previewing channel", async function (assert) {
+    test("Join button is present and textarea disabled when previewing channel", async function (assert) {
       await visit("/chat/channel/70/preview-me");
       assert.ok(exists(".join-channel-btn"), "Join channel button is present");
       assert.equal(query(".chat-composer-row textarea").disabled, true);

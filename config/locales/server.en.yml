@@ -2,15 +2,19 @@ en:
   site_settings:
     chat_enabled: "Enable the discourse-chat plugin. Use the per-topic 'Enable Chat' action to set up."
     chat_allowed_groups: "Users in these groups can chat."
-    chat_channel_retention_days: "Chat messages in regular channels will be retained for this many days. Set to 0 to retain messages forever."
-    chat_dm_retention_days: "Chat messages in personal chat channels will be retained for this many days. Set to 0 to retain messages forever."
+    chat_channel_retention_days: "Chat messages in regular channels will be retained for this many days. Set to '0' to retain messages forever."
+    chat_dm_retention_days: "Chat messages in personal chat channels will be retained for this many days. Set to '0' to retain messages forever."
+    chat_auto_silience_duration: "Number of minutes that users will be silenced for when they exceed the chat message creation rate limit. Set to '0' to disable auto-silencing."
+    chat_allowed_messages_for_trust_level_0: "Number of messages that trust level 0 users is allowed to send in 30 seconds. Set to '0' to disable limit."
+    chat_allowed_messages_for_other_trust_levels: "Number of messages that users with trust levels 1-4 is allowed to send in 30 seconds. Set to '0' to disable limit."
 
   chat:
     errors:
-     channel_exists_for_category: "A channel already exists for this category and name"
-     channel_exists_for_topic: "A channel already exists for this topic"
-     channel_new_message_disallowed: "The channel is %{status}, no new messages can be sent"
-     channel_modify_message_disallowed: "The channel is %{status}, no messages can be edited or deleted"
+      channel_exists_for_category: "A channel already exists for this category and name"
+      channel_exists_for_topic: "A channel already exists for this topic"
+      channel_new_message_disallowed: "The channel is %{status}, no new messages can be sent"
+      channel_modify_message_disallowed: "The channel is %{status}, no messages can be edited or deleted"
+    rate_limit_exceeded: "Exceeded the limit of chat messages that can be sent within 30 seconds"
     reviewables:
       actions:
         agree:

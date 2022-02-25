@@ -42,6 +42,7 @@ acceptance("Discourse Chat - Flagging test", function (needs) {
     server.get("/chat/9/messages.json", () => {
       let copy = cloneJSON(chatView);
       copy.meta.can_flag = false;
+      copy.user_silenced = false;
       return helper.response(copy);
     });
     server.get("/chat/75/messages.json", () => {

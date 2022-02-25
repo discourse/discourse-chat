@@ -6,7 +6,7 @@ import {
 } from "discourse/tests/helpers/qunit-helpers";
 import { test } from "qunit";
 
-acceptance("Discourse Chat - Chat live pane", function (needs) {
+acceptance("Discourse Chat - Chat live pane collapse", function (needs) {
   needs.user({
     username: "eviltrout",
     id: 1,
@@ -21,6 +21,7 @@ acceptance("Discourse Chat - Chat live pane", function (needs) {
       helper.response({
         meta: {
           can_chat: true,
+          user_silenced: false,
         },
         chat_messages: [
           {

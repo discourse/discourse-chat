@@ -113,8 +113,8 @@ RSpec.describe DiscourseChat::ChatController do
         get "/chat/#{chat_channel.id}/messages.json", params: { before_message_id: message_40.id, page_size: page_size }
         messages = response.parsed_body["chat_messages"]
         expect(messages.count).to eq(page_size)
-        expect(messages.first["id"]).to eq(chat_channel.chat_messages[40 - page_size].id)
-        expect(messages.last["id"]).to eq(chat_channel.chat_messages[39].id)
+        expect(messages.first["id"]).to eq(message_10.id)
+        expect(messages.last["id"]).to eq(message_39.id)
       end
 
       it "returns 'can_load...' properly when there are more past messages" do
@@ -135,8 +135,8 @@ RSpec.describe DiscourseChat::ChatController do
         get "/chat/#{chat_channel.id}/messages.json", params: { after_message_id: message_10.id, page_size: page_size }
         messages = response.parsed_body["chat_messages"]
         expect(messages.count).to eq(page_size)
-        expect(messages.first["id"]).to eq(chat_channel.chat_messages[11].id)
-        expect(messages.last["id"]).to eq(chat_channel.chat_messages[10 + page_size].id)
+        expect(messages.first["id"]).to eq(message_11.id)
+        expect(messages.last["id"]).to eq(message_40.id)
       end
 
       it "return 'can_load..' properly when there are future messages" do
@@ -253,15 +253,18 @@ RSpec.describe DiscourseChat::ChatController do
 
   describe "#create_message" do
     let(:message) { "This is a message" }
-    fab!(:chat_channel) { Fabricate(:chat_channel, chatable: topic) }
-    fab!(:membership) { Fabricate(:user_chat_channel_membership, chat_channel: chat_channel, user: user) }
 
     describe "for topic" do
-      before do
-        sign_in(user)
+      fab!(:chat_channel) { Fabricate(:chat_channel, chatable: topic) }
+
+      it "errors when the user is silenced" do
+        UserSilencer.new(user).silence
+        post "/chat/#{chat_channel.id}.json", params: { message: message }
+        expect(response.status).to eq(403)
       end
 
       it "errors for regular user when chat is staff-only" do
+        sign_in(user)
         SiteSetting.chat_allowed_groups = Group::AUTO_GROUPS[:staff]
 
         post "/chat/#{chat_channel.id}.json", params: { message: message }
@@ -269,7 +272,8 @@ RSpec.describe DiscourseChat::ChatController do
       end
 
       it "errors when the user isn't following the channel" do
-        membership.destroy!
+        sign_in(user)
+
         post "/chat/#{chat_channel.id}.json", params: { message: message }
         expect(response.status).to eq(403)
       end
@@ -300,21 +304,14 @@ RSpec.describe DiscourseChat::ChatController do
       end
 
       it "sends a message for regular user when staff-only is disabled and they are following channel" do
+        sign_in(user)
+        UserChatChannelMembership.create(user: user, chat_channel: chat_channel, following: true)
+
         expect {
           post "/chat/#{chat_channel.id}.json", params: { message: message }
         }.to change { ChatMessage.count }.by(1)
         expect(response.status).to eq(200)
         expect(ChatMessage.last.message).to eq(message)
-      end
-
-      it "rate limits user properly" do
-        RateLimiter.enable
-        freeze_time
-        post "/chat/#{chat_channel.id}.json", params: { message: message }
-        expect(response.status).to eq(200)
-
-        post "/chat/#{chat_channel.id}.json", params: { message: message }
-        expect(response.status).to eq(429)
       end
     end
 
@@ -429,6 +426,13 @@ RSpec.describe DiscourseChat::ChatController do
       expect(response.status).to eq(403)
     end
 
+    it "errors when the user is silenced" do
+      UserSilencer.new(user).silence
+      sign_in(user)
+      put "/chat/#{chat_channel.id}/edit/#{chat_message.id}.json", params: { new_message: 'Hi' }
+      expect(response.status).to eq(403)
+    end
+
     it "allows a user to edit their own messages" do
       sign_in(user)
       new_message = "Wow markvanlan must be a good programmer"
@@ -444,6 +448,14 @@ RSpec.describe DiscourseChat::ChatController do
       sign_in(other_user)
 
       delete "/chat/#{chat_channel.id}/#{ChatMessage.last.id}.json"
+      expect(response.status).to eq(403)
+    end
+
+    it "doesn't allow a silenced user to delete their message" do
+      sign_in(other_user)
+      UserSilencer.new(other_user).silence
+
+      delete "/chat/#{chat_channel.id}/#{other_user_message.id}.json"
       expect(response.status).to eq(403)
     end
 
@@ -489,6 +501,7 @@ RSpec.describe DiscourseChat::ChatController do
 
   describe "#delete" do
     fab!(:second_user) { Fabricate(:user) }
+    fab!(:second_user_message) { Fabricate(:chat_message, user: second_user, chat_channel: chat_channel) }
 
     before do
       ChatMessage.create(user: user, message: "this is a message", chat_channel: chat_channel)
@@ -499,6 +512,7 @@ RSpec.describe DiscourseChat::ChatController do
 
       it_behaves_like "chat_message_deletion" do
         let(:other_user) { second_user }
+        let(:other_user_message) { second_user_message }
       end
 
       it "Allows users to delete their own messages" do
@@ -515,6 +529,7 @@ RSpec.describe DiscourseChat::ChatController do
 
       it_behaves_like "chat_message_deletion" do
         let(:other_user) { second_user }
+        let(:other_user_message) { second_user_message }
       end
 
       it "Allows users to delete their own messages" do
@@ -747,6 +762,13 @@ RSpec.describe DiscourseChat::ChatController do
       )
     end
 
+    it "errors when user is silenced" do
+      UserSilencer.new(user).silence
+      sign_in(user)
+      put "/chat/#{chat_channel.id}/react/#{chat_message.id}.json", params: { emoji: ":heart:", react_action: "add" }
+      expect(response.status).to eq(403)
+    end
+
     it "adds a reaction record correctly" do
       sign_in(user)
       emoji = ":heart:"
@@ -926,6 +948,13 @@ RSpec.describe DiscourseChat::ChatController do
         put "/chat/flag.json", params: { chat_message_id: admin_chat_message.id }
       }.to change { ReviewableChatMessage.where(target: admin_chat_message).count }.by(1)
       expect(response.status).to eq(200)
+    end
+
+    it "errors for silenced users" do
+      UserSilencer.new(user).silence
+
+      put "/chat/flag.json", params: { chat_message_id: admin_chat_message.id }
+      expect(response.status).to eq(403)
     end
 
     it "doesn't allow flagging your own message" do

@@ -249,6 +249,7 @@ export const chatView = {
   meta: {
     can_flag: true,
     channel_status: "open",
+    user_silenced: false,
   },
   chat_messages: [message0, message1, message2, message3],
 };

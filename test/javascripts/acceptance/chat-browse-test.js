@@ -178,6 +178,7 @@ acceptance("Discourse Chat - chat browsing no channels", function (needs) {
       return helper.response({
         meta: {
           can_flag: true,
+          user_silenced: false,
         },
         chat_messages: [],
       });

@@ -59,6 +59,7 @@ en:
         without_membership:
           one: "%{usernames} has not joined this channel."
           other: "%{usernames} have not joined this channel."
+
       no_public_channels: "You have not joined any channels."
       only_chat_push_notifications:
         title: "Only send chat push notifications"
@@ -70,6 +71,7 @@ en:
       placeholder_others: "Chat with %{messageRecipient}"
       placeholder_previewing: "Join the channel to send a message."
       placeholder_new_message_disallowed: "Channel is %{status}, you cannot send new messages right now."
+      placeholder_silenced: "You cannot send messages at this time."
       remove_upload: "Remove file"
       react: "React with emoji"
       reply: "Reply"
@@ -79,6 +81,7 @@ en:
       restore: "Restore deleted message"
       save: "Save"
       select: "Select"
+      silence: "Silence user"
       return_to_list: "Return to channel list"
       scroll_to_bottom: "Scroll to bottom"
       sound:
@@ -89,7 +92,6 @@ en:
         ding: "Ding"
       title: "chat"
       title_capitalized: "Chat"
-      try_again: "Try again"
       upload: "Attach a file"
       uploaded_files:
         one: "%{count} file"

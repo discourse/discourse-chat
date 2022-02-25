@@ -27,7 +27,7 @@
       </div>
     {{else}}
       <div class={{chatMessageClasses}}>
-        {{#unless message.staged}}
+        {{#if showActions}}
           <div class="chat-msgactions-hover">
             <div class="chat-msgactions">
               {{#each favoritesEmojis as |favorite|}}
@@ -38,6 +38,7 @@
                   class="show"
                 }}
               {{/each}}
+
               {{#if canReact}}
                 {{d-button
                   class="btn-flat react-btn"
@@ -54,6 +55,7 @@
                   title="chat.reply"
                 }}
               {{/if}}
+
               {{#if moreButtons.length}}
                 {{dropdown-select-box
                   class="more-buttons"
@@ -64,7 +66,7 @@
               {{/if}}
             </div>
           </div>
-        {{/unless}}
+        {{/if}}
 
         {{#if message.in_reply_to}}
           <div role="button" onclick={{action "viewReply"}} class="tc-reply-display">
@@ -162,12 +164,15 @@
                       hideUsersList=(action "hideUsersList")
                     }}
                   {{/each-in}}
-                  {{d-button
-                    class="chat-message-react-btn"
-                    action=(action "startReactionForReactionList")
-                    icon="discourse-emojis"
-                    title="chat.react"
-                  }}
+
+                  {{#if canInteractWithChat}}
+                    {{d-button
+                      class="chat-message-react-btn"
+                      action=(action "startReactionForReactionList")
+                      icon="discourse-emojis"
+                      title="chat.react"
+                    }}
+                  {{/if}}
                 </div>
               {{/if}}
             {{/chat-message-text}}
@@ -176,11 +181,6 @@
           {{#if message.error}}
             <div class="chat-send-error">
               {{message.error}}
-              {{#if message.rateLimited}}
-                <a href class="try-sending-again" onclick={{action "retrySend"}}>
-                  {{i18n "chat.try_again"}}
-                </a>
-              {{/if}}
             </div>
           {{/if}}
 

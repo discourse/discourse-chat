@@ -1,17 +1,18 @@
-import { inject as service } from "@ember/service";
-import { clipboardCopy } from "discourse/lib/utilities";
-import getURL from "discourse-common/lib/get-url";
 import bootbox from "bootbox";
 import Component from "@ember/component";
+import I18n from "I18n";
+import getURL from "discourse-common/lib/get-url";
+import optionalService from "discourse/lib/optional-service";
 import discourseComputed, {
   afterRender,
   bind,
 } from "discourse-common/utils/decorators";
 import EmberObject, { action, computed } from "@ember/object";
-import I18n from "I18n";
 import { ajax } from "discourse/lib/ajax";
 import { autoUpdatingRelativeAge } from "discourse/lib/formatter";
 import { cancel, later, schedule } from "@ember/runloop";
+import { clipboardCopy } from "discourse/lib/utilities";
+import { inject as service } from "@ember/service";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { prioritizeNameInUx } from "discourse/lib/settings";
 
@@ -23,10 +24,12 @@ export default Component.extend({
   REMOVE_REACTION: "remove",
   SHOW_LEFT: "showLeft",
   SHOW_RIGHT: "showRight",
+  canInteractWithChat: false,
   isHovered: false,
   emojiPickerIsActive: false,
   mentionWarning: null,
   emojiStore: service("emoji-store"),
+  adminTools: optionalService(),
 
   init() {
     this._super(...arguments);
@@ -86,6 +89,11 @@ export default Component.extend({
     this.set("emojiPickerIsActive", false);
   },
 
+  @discourseComputed("canInteractWithChat", "message.staged")
+  showActions(canInteractWithChat, messageStaged) {
+    return canInteractWithChat && !messageStaged;
+  },
+
   @discourseComputed("message.deleted_at", "message.expanded")
   deletedAndCollapsed(deletedAt, expanded) {
     return deletedAt && !expanded;
@@ -129,6 +137,14 @@ export default Component.extend({
         id: "flag",
         name: I18n.t("chat.flag"),
         icon: "flag",
+      });
+    }
+
+    if (this.showSilenceButton) {
+      buttons.push({
+        id: "silence",
+        name: I18n.t("chat.silence"),
+        icon: "microphone-slash",
       });
     }
 
@@ -291,6 +307,15 @@ export default Component.extend({
   },
 
   @discourseComputed("message")
+  showSilenceButton(message) {
+    return (
+      this.currentUser?.staff &&
+      this.currentUser?.id !== message.user.id &&
+      !message.chat_webhook_event
+    );
+  },
+
+  @discourseComputed("message")
   canManageDeletion(message) {
     return (
       !message.action_code &&
@@ -310,19 +335,27 @@ export default Component.extend({
     return !deletedAt && this.chatChannel.canModifyMessages(this.currentUser);
   },
 
-  @discourseComputed("message.deleted_at", "chatChannel.status")
-  showDeleteButton(deletedAt) {
+  @discourseComputed(
+    "canManageDeletion",
+    "message.deleted_at",
+    "chatChannel.status"
+  )
+  showDeleteButton(canManageDeletion, deletedAt) {
     return (
-      this.canManageDeletion &&
+      canManageDeletion &&
       !deletedAt &&
       this.chatChannel.canModifyMessages(this.currentUser)
     );
   },
 
-  @discourseComputed("message.deleted_at", "chatChannel.status")
-  showRestoreButton(deletedAt) {
+  @discourseComputed(
+    "canManageDeletion",
+    "message.deleted_at",
+    "chatChannel.status"
+  )
+  showRestoreButton(canManageDeletion, deletedAt) {
     return (
-      this.canManageDeletion &&
+      canManageDeletion &&
       deletedAt &&
       this.chatChannel.canModifyMessages(this.currentUser)
     );
@@ -514,6 +547,10 @@ export default Component.extend({
 
   @action
   deselectReaction(emoji) {
+    if (!this.canInteractWithChat) {
+      return;
+    }
+
     this.set("emojiPickerIsActive", false);
     this.react(emoji, this.REMOVE_REACTION);
     this.notifyPropertyChange("favoritesEmojis");
@@ -521,6 +558,10 @@ export default Component.extend({
 
   @action
   selectReaction(emoji) {
+    if (!this.canInteractWithChat) {
+      return;
+    }
+
     this.set("emojiPickerIsActive", false);
     this.react(emoji, this.ADD_REACTION);
     this.notifyPropertyChange("favoritesEmojis");
@@ -539,7 +580,7 @@ export default Component.extend({
 
   @action
   react(emoji, reactAction) {
-    if (this._loadingReactions.includes(emoji)) {
+    if (!this.canInteractWithChat || this._loadingReactions.includes(emoji)) {
       return;
     }
 
@@ -639,6 +680,11 @@ export default Component.extend({
   },
 
   @action
+  silence() {
+    this.adminTools.showSilenceModal(EmberObject.create(this.message.user));
+  },
+
+  @action
   expand() {
     this.message.set("expanded", true);
     this.afterExpand();
@@ -705,12 +751,6 @@ export default Component.extend({
         ?.querySelector(".link-to-message-btn")
         ?.classList?.remove("copied");
     }, 250);
-  },
-
-  @action
-  retrySend() {
-    this.retrySendMessage(this.message);
-    return false;
   },
 
   @discourseComputed("emojiStore.favorites.[]")

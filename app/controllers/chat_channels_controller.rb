@@ -10,7 +10,8 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     channels = DiscourseChat::ChatChannelFetcher.secured_public_channels(
       guardian,
       UserChatChannelMembership.where(user: current_user),
-      scope_with_membership: false
+      scope_with_membership: false,
+      include_last_message: true
     )
 
     render_serialized(channels, ChatChannelSettingsSerializer)

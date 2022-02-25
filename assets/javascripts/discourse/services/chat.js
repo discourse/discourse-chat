@@ -49,7 +49,6 @@ export default Service.extend({
   _chatOpen: false,
   _fetchingChannels: null,
   _fullScreenChatOpen: false,
-  _lastNonChatRoute: null,
 
   init() {
     this._super(...arguments);
@@ -63,7 +62,6 @@ export default Service.extend({
       this._subscribeToNewDmChannelUpdates();
       this._subscribeToUserTrackingChannel();
       this._subscribeToChannelEdits();
-      this.appEvents.on("page:changed", this, "_storeLastNonChatRouteInfo");
       this.presenceChannel = this.presence.getChannel("/chat/online");
       this.draftStore = {};
 
@@ -84,23 +82,7 @@ export default Service.extend({
       this._unsubscribeFromUserTrackingChannel();
       this._unsubscribeFromChannelEdits();
       this._unsubscribeFromAllChatChannels();
-      this.appEvents.off("page:changed", this, "_storeLastNonChatRouteInfo");
     }
-  },
-
-  _storeLastNonChatRouteInfo(data) {
-    if (
-      data.currentRouteName !== "chat" &&
-      data.currentRouteName !== "chat.channel"
-    ) {
-      this.set("_lastNonChatRoute", data.url);
-    }
-  },
-
-  get lastNonChatRoute() {
-    return this._lastNonChatRoute && this._lastNonChatRoute !== "/"
-      ? this._lastNonChatRoute
-      : `discovery.${defaultHomepage()}`;
   },
 
   get isChatPage() {

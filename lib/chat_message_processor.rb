@@ -6,7 +6,6 @@ class DiscourseChat::ChatMessageProcessor
   def initialize(chat_message)
     @model = chat_message
     @previous_cooked = (chat_message.cooked || "").dup
-    @cateogry_id = nil
     @with_secure_media = false
     @size_cache = {}
     @opts = {}

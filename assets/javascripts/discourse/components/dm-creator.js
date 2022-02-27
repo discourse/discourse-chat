@@ -20,9 +20,10 @@ export default Component.extend({
       method: "POST",
       data: { usernames: this.usernames.uniq().join(",") },
     }).then((response) => {
+      const chatChannel = ChatChannel.create(response.chat_channel);
       this.set("usernames", null);
-      this.chat.startTrackingChannel(response.chat_channel);
-      this.afterCreate(ChatChannel.create(response.chat_channel));
+      this.chat.startTrackingChannel(chatChannel);
+      this.afterCreate(chatChannel);
     });
   },
 

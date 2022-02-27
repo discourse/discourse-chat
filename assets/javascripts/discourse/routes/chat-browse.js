@@ -15,7 +15,7 @@ export default DiscourseRoute.extend({
       );
 
       allChannels.forEach((channel) => {
-        if (channel.isCategoryChannel()) {
+        if (channel.isCategoryChannel) {
           categoryChannels.push(channel);
         } else {
           topicChannels.push(channel);

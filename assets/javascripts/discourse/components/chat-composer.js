@@ -558,7 +558,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   },
 
   messageRecipient(chatChannel) {
-    if (chatChannel.isDirectMessageChannel()) {
+    if (chatChannel.isDirectMessageChannel) {
       const directMessageRecipients = chatChannel.chatable.users;
       if (
         directMessageRecipients.length === 1 &&

@@ -99,7 +99,7 @@ export default Component.extend({
     if (channel.user) {
       return this.fetchChannelForUser(channel).then((response) => {
         this.chat
-          .startTrackingChannel(response.chat_channel)
+          .startTrackingChannel(ChatChannel.create(response.chat_channel))
           .then((newlyTracked) => {
             this.chat.openChannel(newlyTracked);
             this.close();

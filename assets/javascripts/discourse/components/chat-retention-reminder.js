@@ -15,9 +15,9 @@ export default Component.extend({
   )
   show() {
     return (
-      (this.chatChannel.isDirectMessageChannel() &&
+      (this.chatChannel.isDirectMessageChannel &&
         this.currentUser.needs_dm_retention_reminder) ||
-      (!this.chatChannel.isDirectMessageChannel() &&
+      (!this.chatChannel.isDirectMessageChannel &&
         this.currentUser.needs_channel_retention_reminder)
     );
   },
@@ -27,7 +27,7 @@ export default Component.extend({
     let days = this.siteSettings.chat_channel_retention_days;
     let translationKey = "chat.retention_reminders.public";
 
-    if (this.chatChannel.isDirectMessageChannel()) {
+    if (this.chatChannel.isDirectMessageChannel) {
       days = this.siteSettings.chat_dm_retention_days;
       translationKey = "chat.retention_reminders.dm";
     }
@@ -36,7 +36,7 @@ export default Component.extend({
 
   @discourseComputed("chatChannel.chatable_type")
   daysCount() {
-    return this.chatChannel.isDirectMessageChannel()
+    return this.chatChannel.isDirectMessageChannel
       ? this.siteSettings.chat_dm_retention_days
       : this.siteSettings.chat_channel_retention_days;
   },
@@ -48,7 +48,7 @@ export default Component.extend({
       data: { chatable_type: this.chatChannel.chatable_type },
     })
       .then(() => {
-        const field = this.chatChannel.isDirectMessageChannel()
+        const field = this.chatChannel.isDirectMessageChannel
           ? "needs_dm_retention_reminder"
           : "needs_channel_retention_reminder";
         this.currentUser.set(field, false);

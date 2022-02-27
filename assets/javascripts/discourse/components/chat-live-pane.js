@@ -1026,7 +1026,7 @@ export default Component.extend({
 
   @discourseComputed()
   canQuote() {
-    if (this.chatChannel.chatable_type === "DirectMessageChannel") {
+    if (this.chatChannel.isDirectMessageChannel()) {
       return false;
     }
 
@@ -1111,7 +1111,7 @@ export default Component.extend({
         const composer = container.lookup("controller:composer");
         const openOpts = {};
 
-        if (this.chatChannel.chatable_type === "Category") {
+        if (this.chatChannel.isCategoryChannel()) {
           openOpts.categoryId = this.chatChannel.chatable_id;
         }
 

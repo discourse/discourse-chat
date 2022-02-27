@@ -3,6 +3,7 @@ import { action } from "@ember/object";
 import { ajax } from "discourse/lib/ajax";
 import { empty } from "@ember/object/computed";
 import { inject as service } from "@ember/service";
+import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 
 export default Component.extend({
   chat: service(),
@@ -21,7 +22,7 @@ export default Component.extend({
     }).then((response) => {
       this.set("usernames", null);
       this.chat.startTrackingChannel(response.chat_channel);
-      this.afterCreate(response.chat_channel);
+      this.afterCreate(ChatChannel.create(response.chat_channel));
     });
   },
 

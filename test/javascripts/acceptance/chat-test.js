@@ -885,6 +885,18 @@ Widget.triangulate(arg: "test")
     );
   });
 
+  test("creating a new direct message channel from popup chat works", async function (assert) {
+    await visit("/t/internationalization-localization/280");
+    await click(".new-dm");
+    let users = selectKit(".dm-user-chooser");
+    await click(".dm-user-chooser");
+    await users.expand();
+    await fillIn(".dm-user-chooser input.filter-input", "hawk");
+    await users.selectRowByValue("hawk");
+    await click("button.create-dm");
+    assert.strictEqual(query(".dm-username").innerText, "hawk");
+  });
+
   test("Reacting works with no existing reactions", async function (assert) {
     await visit("/chat/channel/9/Site");
     const message = query(".chat-message-container");

@@ -1175,7 +1175,7 @@ export default Component.extend({
   moveMessagesToTopic() {
     showModal("move-chat-to-topic").setProperties({
       chatMessageIds: this.selectedMessageIds,
-      chatChannelId: this.chatChannel.id,
+      chatChannel: this.chatChannel,
     });
   },
 

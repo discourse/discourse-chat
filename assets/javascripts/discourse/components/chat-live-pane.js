@@ -640,6 +640,9 @@ export default Component.extend({
         ) {
           stagedMessage.set("cooked", data.chat_message.cooked);
         }
+        this.appEvents.trigger(
+          `chat-message-staged-${data.stagedId}:id-populated`
+        );
 
         this.messageLookup[data.chat_message.id] = stagedMessage;
         delete this.messageLookup[`staged-${data.stagedId}`];

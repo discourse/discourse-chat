@@ -974,6 +974,51 @@ Widget.triangulate(arg: "test")
     assert.ok(sneezingFaceReaction.classList.contains("reacted"));
   });
 
+  test("Reacting and unreacting works on newly created chat messages", async function (assert) {
+    await visit("/chat/channel/9/Site");
+    const composerInput = query(".chat-composer-input");
+    await fillIn(composerInput, "hellloooo");
+    await focus(composerInput);
+    await triggerKeyEvent(composerInput, "keydown", 13); // 13 is enter keycode. Send message
+    const messages = queryAll(".chat-message-container");
+    const lastMessage = messages[messages.length - 1];
+    publishToMessageBus("/chat/9", {
+      typ: "sent",
+      stagedId: 1,
+      chat_message: {
+        id: 202,
+        user: {
+          id: 1,
+        },
+        cooked: "<p>hellloooo</p>",
+      },
+    });
+    await chatSettled();
+    assert.ok(lastMessage.classList.contains("chat-message-container-202"));
+    await click(lastMessage.querySelector(".chat-msgactions .react-btn"));
+    await click(
+      lastMessage.querySelector(
+        ".emoji-picker .section-group .emoji[alt='grin']"
+      )
+    );
+
+    const reaction = lastMessage.querySelector(
+      ".chat-message-reaction.grin.reacted"
+    );
+    publishToMessageBus("/chat/9", {
+      action: "add",
+      user: { id: 1, username: "eviltrout" },
+      emoji: "grin",
+      typ: "reaction",
+      chat_message_id: 202,
+    });
+    await chatSettled();
+    await click(reaction);
+    assert.notOk(
+      lastMessage.querySelector(".chat-message-reaction.grin.reacted")
+    );
+  });
+
   test("mention warning is rendered", async function (assert) {
     await visit("/chat/channel/9/Site");
     publishToMessageBus("/chat/9", {

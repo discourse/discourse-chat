@@ -30,21 +30,15 @@ export default Component.extend({
   mentionWarning: null,
   emojiStore: service("emoji-store"),
   adminTools: optionalService(),
+  _hasSubscribedToAppEvents: false,
 
   init() {
     this._super(...arguments);
     this.set("_loadingReactions", []);
     this.message.set("reactions", EmberObject.create(this.message.reactions));
-    this.appEvents.on(
-      "chat-message:reaction-picker-opened",
-      this,
-      "_reactionPickerOpened"
-    );
-    this.appEvents.on(
-      `chat-message-${this.message.id}:reaction`,
-      this,
-      "_handleReactionMessage"
-    );
+    this.message.id
+      ? this._subscribeToAppEvents()
+      : this._waitForIdToBePopulated();
   },
 
   didInsertElement() {
@@ -67,6 +61,14 @@ export default Component.extend({
 
   willDestroyElement() {
     this._super(...arguments);
+    if (this.message.stagedId) {
+      this.appEvents.off(
+        `chat-message-staged-${this.message.stagedId}:id-populated`,
+        this,
+        "_subscribeToAppEvents"
+      );
+    }
+
     this.appEvents.off(
       "chat-message:reaction-picker-opened",
       this,
@@ -79,6 +81,32 @@ export default Component.extend({
     );
 
     cancel(this._invitationSentTimer);
+  },
+
+  _subscribeToAppEvents() {
+    if (!this.message.id || this._hasSubscribedToAppEvents) {
+      return;
+    }
+
+    this.appEvents.on(
+      "chat-message:reaction-picker-opened",
+      this,
+      "_reactionPickerOpened"
+    );
+    this.appEvents.on(
+      `chat-message-${this.message.id}:reaction`,
+      this,
+      "_handleReactionMessage"
+    );
+    this._hasSubscribedToAppEvents = true;
+  },
+
+  _waitForIdToBePopulated() {
+    this.appEvents.on(
+      `chat-message-staged-${this.message.stagedId}:id-populated`,
+      this,
+      "_subscribeToAppEvents"
+    );
   },
 
   _reactionPickerOpened(messageId) {

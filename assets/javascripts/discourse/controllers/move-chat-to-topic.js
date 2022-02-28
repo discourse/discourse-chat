@@ -14,16 +14,10 @@ const EXISTING_TOPIC_SELECTION = "existingTopic";
 const NEW_MESSAGE_SELECTION = "newMessage";
 
 export default Controller.extend(ModalFunctionality, {
-  newTopicSelection: NEW_TOPIC_SELECTION,
-  existingTopicSelection: EXISTING_TOPIC_SELECTION,
-  newMessageSelection: NEW_MESSAGE_SELECTION,
-
   selection: "newTopic",
   newTopic: equal("selection", NEW_TOPIC_SELECTION),
   existingTopic: equal("selection", EXISTING_TOPIC_SELECTION),
   newMessage: equal("selection", NEW_MESSAGE_SELECTION),
-  canAddTags: alias("site.can_create_tag"),
-  canTagMessages: alias("site.can_tag_pms"),
 
   saving: false,
   topicTitle: null,
@@ -33,6 +27,30 @@ export default Controller.extend(ModalFunctionality, {
 
   onShow() {
     this.set("selection", NEW_TOPIC_SELECTION);
+  },
+
+  @discourseComputed()
+  instructionLabels() {
+    const labels = {};
+    labels[NEW_TOPIC_SELECTION] = I18n.t(
+      "chat.selection.new_topic.instructions",
+      {
+        count: this.chatMessageIds.length,
+      }
+    );
+    labels[EXISTING_TOPIC_SELECTION] = I18n.t(
+      "chat.selection.existing_topic.instructions",
+      {
+        count: this.chatMessageIds.length,
+      }
+    );
+    labels[NEW_MESSAGE_SELECTION] = I18n.t(
+      "chat.selection.new_message.instructions",
+      {
+        count: this.chatMessageIds.length,
+      }
+    );
+    return labels;
   },
 
   @discourseComputed("saving", "selectedTopicId", "topicTitle", "selection")
@@ -78,7 +96,7 @@ export default Controller.extend(ModalFunctionality, {
     const data = {
       type: this.selection,
       chat_message_ids: this.chatMessageIds,
-      chat_channel_id: this.chatChannelId,
+      chat_channel_id: this.chatChannel.id,
     };
     if (this.newTopic || this.newMessage) {
       data.title = this.topicTitle;

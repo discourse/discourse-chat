@@ -7,11 +7,10 @@ class ReviewableChatMessage < Reviewable
   def self.on_score_updated(reviewable)
     # Silence user if new score is over the `score_to_silence_user`
     return if reviewable.type != self.name
-    return if reviewable.score <= self.score_to_silence_user
 
     auto_silence_duration = SiteSetting.chat_auto_silence_from_flags_duration
-
     return if auto_silence_duration.zero?
+    return if reviewable.score <= self.score_to_silence_user
 
     user = reviewable&.target&.user
     return unless user

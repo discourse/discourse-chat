@@ -63,7 +63,7 @@ RSpec.describe ReviewableChatMessage, type: :model do
       }.to change { user.reload.silenced? }.to be true
     end
 
-    it "does nothing if the new score is less thatn the score to auto-silence" do
+    it "does nothing if the new score is less than the score to auto-silence" do
       SiteSetting.chat_auto_silence_from_flags_duration = 3
       reviewable.update!(score: ReviewableChatMessage.score_to_silence_user - 1)
       expect {

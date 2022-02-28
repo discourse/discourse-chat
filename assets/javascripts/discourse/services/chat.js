@@ -202,7 +202,7 @@ export default Service.extend({
         return true;
       }
 
-      if (channel.chatable_type === CHATABLE_TYPES.directMessageChannel) {
+      if (channel.isDirectMessageChannel) {
         let userFound = false;
         channel.chatable.users.forEach((user) => {
           if (
@@ -224,11 +224,9 @@ export default Service.extend({
     if (!activeChannel) {
       return; // Chat isn't open. Return and do nothing!
     }
-    const inDmChannel =
-      activeChannel.chatable_type === CHATABLE_TYPES.directMessageChannel;
 
     let currentList, otherList;
-    if (inDmChannel) {
+    if (activeChannel.isDirectMessageChannel) {
       currentList = this.truncateDirectMessageChannels(
         this.directMessageChannels
       );
@@ -362,7 +360,7 @@ export default Service.extend({
       for (const [channel, state] of Object.entries(
         this.currentUser.chat_channel_tracking_state
       )) {
-        if (state.chatable_type === "DirectMessageChannel") {
+        if (state.chatable_type === CHATABLE_TYPES.directMessageChannel) {
           if (!dmChannelWithUnread && state.unread_count > 0) {
             dmChannelWithUnread = channel;
           } else if (!dmChannel) {
@@ -489,9 +487,7 @@ export default Service.extend({
       return existingChannel; // User is already tracking this channel. return!
     }
 
-    const isDirectMessageChannel =
-      channel.chatable_type === "DirectMessageChannel";
-    const existingChannels = isDirectMessageChannel
+    const existingChannels = channel.isDirectMessageChannel
       ? this.directMessageChannels
       : this.publicChannels;
 
@@ -510,7 +506,7 @@ export default Service.extend({
       chatable_type: channel.chatable_type,
     };
     this.userChatChannelTrackingStateChanged();
-    if (!isDirectMessageChannel) {
+    if (!channel.isDirectMessageChannel) {
       this.set("publicChannels", this.sortPublicChannels(this.publicChannels));
     }
     this.appEvents.trigger("chat:refresh-channels");
@@ -543,7 +539,7 @@ export default Service.extend({
 
   _subscribeToNewDmChannelUpdates() {
     this.messageBus.subscribe("/chat/new-direct-message-channel", (busData) => {
-      this.startTrackingChannel(busData.chat_channel);
+      this.startTrackingChannel(ChatChannel.create(busData.chat_channel));
     });
   },
 
@@ -556,7 +552,7 @@ export default Service.extend({
       return;
     }
 
-    if (channel.chatable_type !== "DirectMessageChannel") {
+    if (!channel.isDirectMessageChannel) {
       this._subscribeToMentionChannel(channel);
     }
 
@@ -640,7 +636,7 @@ export default Service.extend({
 
   _unsubscribeFromChatChannel(channel) {
     this.messageBus.unsubscribe(`/chat/${channel.id}/new-messages`);
-    if (channel.chatable_type !== "DirectMessageChannel") {
+    if (!channel.isDirectMessageChannel) {
       this.messageBus.unsubscribe(`/chat/${channel.id}/new-mentions`);
     }
   },
@@ -707,7 +703,7 @@ export default Service.extend({
           return;
         }
 
-        if (state.chatable_type === "DirectMessageChannel") {
+        if (state.chatable_type === CHATABLE_TYPES.directMessageChannel) {
           unreadUrgentCount += state.unread_count || 0;
         } else {
           unreadUrgentCount += state.unread_mentions || 0;

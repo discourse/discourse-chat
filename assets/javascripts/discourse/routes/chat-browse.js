@@ -1,5 +1,5 @@
 import DiscourseRoute from "discourse/routes/discourse";
-import EmberObject from "@ember/object";
+import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import { ajax } from "discourse/lib/ajax";
 import { inject as service } from "@ember/service";
 
@@ -11,11 +11,11 @@ export default DiscourseRoute.extend({
       const topicChannels = [];
 
       const allChannels = this.chat.sortPublicChannels(
-        channels.map((channel) => EmberObject.create(channel))
+        channels.map((channel) => ChatChannel.create(channel))
       );
 
       allChannels.forEach((channel) => {
-        if (channel.chatable_type === "Category") {
+        if (channel.isCategoryChannel) {
           categoryChannels.push(channel);
         } else {
           topicChannels.push(channel);

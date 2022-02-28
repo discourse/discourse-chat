@@ -1,4 +1,6 @@
-import { CHATABLE_TYPES } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
+import ChatChannel, {
+  CHATABLE_TYPES,
+} from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 
 function defaultChatChannelForType(chatableType) {
   const base = {
@@ -44,5 +46,9 @@ export default function fabricate(model, options = {}) {
     throw `Unkown fabricator ${model}`;
   }
 
-  return Object.assign(base, options);
+  const final = Object.assign(base, options);
+  switch (model) {
+    case "chat-channel":
+      return ChatChannel.create(final);
+  }
 }

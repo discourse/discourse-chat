@@ -1,3 +1,4 @@
+import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import { set } from "@ember/object";
 import componentTest, {
   setupRenderingTest,
@@ -19,7 +20,10 @@ discourseModule(
       template: hbs`{{chat-retention-reminder chatChannel=chatChannel}}`,
 
       async beforeEach() {
-        this.set("chatChannel", { chatable_type: "Category" });
+        this.set(
+          "chatChannel",
+          ChatChannel.create({ chatable_type: "Category" })
+        );
         set(this.currentUser, "needs_channel_retention_reminder", true);
         set(this.siteSettings, "chat_channel_retention_days", 100);
       },
@@ -38,7 +42,10 @@ discourseModule(
         template: hbs`{{chat-retention-reminder chatChannel=chatChannel}}`,
 
         async beforeEach() {
-          this.set("chatChannel", { chatable_type: "Category" });
+          this.set(
+            "chatChannel",
+            ChatChannel.create({ chatable_type: "Category" })
+          );
           set(this.currentUser, "needs_channel_retention_reminder", false);
           set(this.siteSettings, "chat_channel_retention_days", 100);
         },
@@ -53,7 +60,10 @@ discourseModule(
       template: hbs`{{chat-retention-reminder chatChannel=chatChannel}}`,
 
       async beforeEach() {
-        this.set("chatChannel", { chatable_type: "DirectMessageChannel" });
+        this.set(
+          "chatChannel",
+          ChatChannel.create({ chatable_type: "DirectMessageChannel" })
+        );
         set(this.currentUser, "needs_dm_retention_reminder", true);
         set(this.siteSettings, "chat_dm_retention_days", 100);
       },
@@ -70,7 +80,10 @@ discourseModule(
       template: hbs`{{chat-retention-reminder chatChannel=chatChannel}}`,
 
       async beforeEach() {
-        this.set("chatChannel", { chatable_type: "DirectMessageChannel" });
+        this.set(
+          "chatChannel",
+          ChatChannel.create({ chatable_type: "DirectMessageChannel" })
+        );
         set(this.currentUser, "needs_dm_retention_reminder", false);
         set(this.siteSettings, "chat_dm_retention_days", 100);
       },

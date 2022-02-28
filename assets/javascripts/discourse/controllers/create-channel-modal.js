@@ -1,4 +1,5 @@
 import Controller from "@ember/controller";
+import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import discourseComputed from "discourse-common/utils/decorators";
 import escape from "discourse-common/lib/escape";
 import I18n from "I18n";
@@ -91,12 +92,11 @@ export default Controller.extend(ModalFunctionality, {
 
     return ajax("/chat/chat_channels", { method: "PUT", data })
       .then((response) => {
-        return this.chat
-          .startTrackingChannel(response.chat_channel)
-          .then(() => {
-            this.send("closeModal");
-            this.appEvents.trigger("chat:open-channel", response.chat_channel);
-          });
+        const chatChannel = ChatChannel.create(response.chat_channel);
+        return this.chat.startTrackingChannel(chatChannel).then(() => {
+          this.send("closeModal");
+          this.appEvents.trigger("chat:open-channel", chatChannel);
+        });
       })
       .catch((e) => {
         this.flash(e.jqXHR.responseJSON.errors[0], "error");

@@ -46,4 +46,20 @@ export default RestModel.extend({
 
     return !READONLY_STATUSES.includes(this.status);
   },
+
+  get isDirectMessageChannel() {
+    return this.chatable_type === CHATABLE_TYPES.directMessageChannel;
+  },
+
+  get isTopicChannel() {
+    return this.chatable_type === CHATABLE_TYPES.topicChannel;
+  },
+
+  get isCategoryChannel() {
+    return this.chatable_type === CHATABLE_TYPES.categoryChannel;
+  },
+
+  get isTagChannel() {
+    return this.chatable_type === CHATABLE_TYPES.tagChannel;
+  },
 });

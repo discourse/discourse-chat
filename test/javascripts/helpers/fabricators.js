@@ -39,14 +39,16 @@ export default function fabricate(model, options = {}) {
   let base;
 
   if (model === "chat-channel") {
-    base = ChatChannel.create(
-      defaultChatChannelForType(
-        options.chatable_type || CHATABLE_TYPES.topicChannel
-      )
+    base = defaultChatChannelForType(
+      options.chatable_type || CHATABLE_TYPES.topicChannel
     );
   } else {
     throw `Unkown fabricator ${model}`;
   }
 
-  return Object.assign(base, options);
+  const final = Object.assign(base, options);
+  switch (model) {
+    case "chat-channel":
+      return ChatChannel.create(final);
+  }
 }

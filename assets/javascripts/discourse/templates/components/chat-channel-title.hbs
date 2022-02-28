@@ -1,5 +1,5 @@
 <div role="button" class="chat-channel-title" {{on "click" (fn this.handleOnClick)}}>
-  {{#if (eq channel.isDirectMessageChannel)}}
+  {{#if channel.isDirectMessageChannel}}
     {{#if multiDm}}
       <span class="dm-multi-count">
         {{channel.chatable.users.length}}
@@ -14,12 +14,12 @@
         {{/let}}
       </span>
     {{/if}}
-  {{else if (eq channel.isTagChannel)}}
+  {{else if channel.isTagChannel}}
     <span class="tag-chat-badge">
       {{d-icon "tag"}}
     </span>
     <span class="tag-chat-name">{{channel.title}}</span>
-  {{else if (eq channel.isCategoryChannel)}}
+  {{else if channel.isCategoryChannel}}
     <span class="category-chat-badge" style={{html-safe (concat "color: #" channel.chatable.color)}}>
       {{d-icon "hashtag"}}
       {{#if channel.chatable.read_restricted}}
@@ -31,7 +31,7 @@
     <span class="category-chat-name">
       {{replace-emoji channel.title}}
     </span>
-  {{else if (eq channel.isTopicChannel)}}
+  {{else if channel.isTopicChannel}}
     <span class="topic-chat-badge">
       <span class="topic-chat-icon">{{d-icon "far-comments"}}</span>
     </span>

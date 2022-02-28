@@ -4,7 +4,7 @@ import DiscourseURL from "discourse/lib/url";
 import I18n from "I18n";
 import ModalFunctionality from "discourse/mixins/modal-functionality";
 import { action } from "@ember/object";
-import { alias, equal } from "@ember/object/computed";
+import { equal } from "@ember/object/computed";
 import { ajax } from "discourse/lib/ajax";
 import { extractError } from "discourse/lib/ajax-error";
 import { isEmpty } from "@ember/utils";

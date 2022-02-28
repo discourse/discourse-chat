@@ -23,7 +23,6 @@ export default Component.extend({
   tags: null,
   selectedTopicId: null,
 
-  // TODO (martin) (maybe just use channel not id)
   chatMessageIds: null,
   chatChannelId: null,
 

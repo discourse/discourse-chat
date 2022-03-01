@@ -640,6 +640,9 @@ export default Component.extend({
         ) {
           stagedMessage.set("cooked", data.chat_message.cooked);
         }
+        this.appEvents.trigger(
+          `chat-message-staged-${data.stagedId}:id-populated`
+        );
 
         this.messageLookup[data.chat_message.id] = stagedMessage;
         delete this.messageLookup[`staged-${data.stagedId}`];
@@ -1026,7 +1029,7 @@ export default Component.extend({
 
   @discourseComputed()
   canQuote() {
-    if (this.chatChannel.chatable_type === "DirectMessageChannel") {
+    if (this.chatChannel.isDirectMessageChannel) {
       return false;
     }
 
@@ -1111,7 +1114,7 @@ export default Component.extend({
         const composer = container.lookup("controller:composer");
         const openOpts = {};
 
-        if (this.chatChannel.chatable_type === "Category") {
+        if (this.chatChannel.isCategoryChannel) {
           openOpts.categoryId = this.chatChannel.chatable_id;
         }
 
@@ -1172,7 +1175,7 @@ export default Component.extend({
   moveMessagesToTopic() {
     showModal("move-chat-to-topic").setProperties({
       chatMessageIds: this.selectedMessageIds,
-      chatChannelId: this.chatChannel.id,
+      chatChannel: this.chatChannel,
     });
   },
 

@@ -4,7 +4,7 @@ import topicFixtures from "discourse/tests/fixtures/topic";
 import { cloneJSON, deepMerge } from "discourse-common/lib/object";
 import QUnit, { test } from "qunit";
 
-import { visit } from "@ember/test-helpers";
+import { click, fillIn, visit } from "@ember/test-helpers";
 import {
   acceptance,
   loggedInUser,
@@ -47,6 +47,8 @@ function generateTranscriptHTML(messageContent, opts) {
     ? ` data-channel-name=\"${opts.channel}\"`
     : "";
 
+  let tabIndexHTML = opts.linkTabIndex ? ' tabindex="-1"' : "";
+
   let transcriptClasses = ["discourse-chat-transcript"];
   if (opts.chained) {
     transcriptClasses.push("chat-transcript-chained");
@@ -62,28 +64,36 @@ function generateTranscriptHTML(messageContent, opts) {
   );
 
   if (opts.channel && opts.multiQuote) {
-    const originallySent = I18n.t("chat.quote.original_channel", {
+    let originallySent = I18n.t("chat.quote.original_channel", {
       channel: opts.channel,
       channelLink: `/chat/chat_channels/${encodeURIComponent(
         opts.channel.toLowerCase()
       )}`,
     });
+    if (opts.linkTabIndex) {
+      originallySent = originallySent.replace(">#", tabIndexHTML + ">#");
+    }
     transcript.push(`<div class=\"chat-transcript-meta\">
 ${originallySent}</div>`);
   }
 
+  const dateTimeText = opts.showDateTimeText
+    ? moment
+        .tz(opts.datetime, "Australia/Brisbane")
+        .format(I18n.t("dates.long_no_year"))
+    : "";
   transcript.push(`<div class=\"chat-transcript-user\">
 <div class=\"chat-transcript-user-avatar\"></div>
 <div class=\"chat-transcript-username\">
 ${opts.username}</div>
 <div class=\"chat-transcript-datetime\">
-<a href=\"/chat/message/${opts.messageId}\" title=\"${opts.datetime}\"></a></div>`);
+<a href=\"/chat/message/${opts.messageId}\" title=\"${opts.datetime}\"${tabIndexHTML}>${dateTimeText}</a></div>`);
 
   if (opts.channel && !opts.multiQuote) {
     transcript.push(
       `<a class=\"chat-transcript-channel\" href="/chat/chat_channels/${encodeURIComponent(
         opts.channel.toLowerCase()
-      )}">
+      )}"${tabIndexHTML}>
 #${opts.channel}</a></div>`
     );
   } else {
@@ -399,6 +409,83 @@ acceptance(
           .tz("2022-01-25T05:40:39Z", "Australia/Brisbane")
           .format(I18n.t("dates.long_no_year")),
         "it decorates the chat transcript datetime link with a formatted date"
+      );
+    });
+  }
+);
+
+acceptance(
+  "Discourse Chat - discourse-chat-transcript - Composer Oneboxes ",
+  function (needs) {
+    let additionalOptions = buildAdditionalOptions();
+    needs.user({
+      admin: false,
+      moderator: false,
+      username: "eviltrout",
+      id: 1,
+      can_chat: true,
+      has_chat_enabled: true,
+    });
+    needs.settings({
+      chat_enabled: true,
+      enable_markdown_linkify: true,
+      max_oneboxes_per_post: 2,
+    });
+    needs.pretender((server, helper) => {
+      server.get("/chat/chat_channels.json", () =>
+        helper.response({
+          public_channels: [],
+          direct_message_channels: [],
+        })
+      );
+
+      const topicResponse = cloneJSON(topicFixtures["/t/280/1.json"]);
+      const firstPost = topicResponse.post_stream.posts[0];
+      const postCooked = cookMarkdown(
+        `[chat quote="martin;2321;2022-01-25T05:40:39Z"]\nThis is a chat message.\n[/chat]`,
+        { additionalOptions }
+      );
+      firstPost.cooked += postCooked;
+
+      server.get("/t/280.json", () => helper.response(topicResponse));
+    });
+
+    test("Preview should not error for oneboxes within [chat] bbcode", async function (assert) {
+      await visit("/t/internationalization-localization/280");
+      await click("#topic-footer-buttons .btn.create");
+
+      await fillIn(
+        ".d-editor-input",
+        `
+[chat quote="martin;2321;2022-01-25T05:40:39Z" channel="Cool Cats Club" multiQuote="true"]
+http://www.example.com/has-title.html
+[/chat]`
+      );
+
+      const rendered = generateTranscriptHTML(
+        '<p><aside class="onebox"><article class="onebox-body"><h3><a href="http://www.example.com/article.html" tabindex="-1">An interesting article</a></h3></article></aside></p>',
+        {
+          messageId: "2321",
+          username: "martin",
+          datetime: "2022-01-25T05:40:39Z",
+          channel: "Cool Cats Club",
+          multiQuote: true,
+          linkTabIndex: true,
+          showDateTimeText: true,
+        }
+      );
+
+      assert.strictEqual(
+        query(".d-editor-preview").innerHTML.trim(),
+        rendered.trim(),
+        "it renders correctly with the onebox inside the [chat] bbcode"
+      );
+
+      const textarea = query("#reply-control .d-editor-input");
+      await fillIn(".d-editor-input", textarea.value + "\nA");
+      assert.ok(
+        query(".d-editor-preview").innerHTML.trim().includes("\n<p>A</p>"),
+        "it does not error with a opts.discourse.hoisted error in the markdown pipeline when typing more text"
       );
     });
   }

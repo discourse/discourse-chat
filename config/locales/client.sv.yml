@@ -24,6 +24,7 @@ sv:
       click_to_join: "Klicka här för att se tillgängliga kanaler."
       close: "Stäng"
       collapse: "Komprimera chattruta"
+      confirm_flag: "Är du säker på att du vill flagga %{username}:s meddelande?"
       deleted: "Ett meddelande raderades. [view]"
       delete: "Radera"
       edited: "redigerad"
@@ -35,6 +36,7 @@ sv:
         title: "Kom igång genom att gå med i en kanal"
       enable: "Aktivera chatt"
       flag: "Flagga"
+      flagged: "Detta meddelande har flaggats för granskning"
       invalid_access: "Du har inte tillgång till den här chattkanalen"
       invitation_notification: "<span>%{username} bjöd in dig att gå med i en chattkanal</span>"
       in_reply_to: "Som svar på"
@@ -42,7 +44,7 @@ sv:
         title: "Isolera chatt"
         description: "Öppna alltid chatt i en ny flik"
       heading: "Chatt"
-      join_channel: "Gå med i kanal"
+      join: "Gå med"
       new_messages: "nya meddelanden"
       mention_notification: "<span>%{username} nämnde dig i chatt</span>"
       mention_warning:
@@ -90,6 +92,7 @@ sv:
       uploaded_files:
         one: "%{count} fil"
         other: "%{count} filer"
+      you_flagged: "Du flaggade detta meddelande"
       exit: "tillbaka"
       channel_selector:
         title: "Byt till kanal"
@@ -107,6 +110,8 @@ sv:
         types:
           category: "Kategori"
           topic: "Ämne"
+      reviewable:
+        type: "Chatt meddelande"
       reactions:
         only_you: "Du reagerade med :%{emoji}:"
         and_others: "Du, %{usernames} reagerade med :%{emoji}:"
@@ -115,8 +120,12 @@ sv:
         you_others_and_more: "Du, %{usernames} och %{more} andra reagerade med :%{emoji}:"
       composer:
         toggle_toolbar: "Växla verktygsfält"
+        italic_text: "betonad text"
+        bold_text: "stark text"
+        code_text: "kod text"
       quote:
         original_channel: 'Ursprungligen skickad i <a href="%{channelLink}">#%{channel}</a>'
+        copy_success: "Chatt citat kopierades till urklipp."
       notification_levels:
         never: "Aldrig"
         mention: "Endast för omnämnanden"
@@ -166,6 +175,7 @@ sv:
       selection:
         cancel: "Avbryt"
         move_to_topic: "Flytta till ämne"
+        quote_selection: "Citat"
         error: "Det uppstod ett fel när chattmeddelanden skulle flyttas"
         title: "Flytta chatt till ämne"
         new_topic:
@@ -193,13 +203,16 @@ sv:
         public: "Kanalhistoriken behålls i %{days} dagar."
         dm: "Personlig chatthistorik behålls i %{days} dagar."
     notifications:
+      chat_quoted: "<span>%{username}</span> %{description}"
       popup:
         chat_mention: "%{username} nämnde dig i chatten"
         chat_group_mention: "%{username} nämnde @%{groupName} i chatten"
         chat_message: "Nytt chattmeddelande"
+        chat_quoted: "%{username} citerade ditt chattmeddelande"
       titles:
         chat_mention: "Chatt omnämnande"
         chat_invitation: "Chattinbjudan"
+        chat_quoted: "Chatt citerad"
     topic:
       actions:
         chat_enable: "Aktivera chatt"
@@ -222,3 +235,8 @@ sv:
             sender:
               label: Avsändare
               description: Standard är system
+    review:
+      types:
+        reviewable_chat_message:
+          title: "Flaggat chattmeddelande"
+          flagged_by: "Flaggat av"

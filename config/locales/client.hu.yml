@@ -6,6 +6,11 @@
 
 hu:
   js:
+    admin:
+      logs:
+        staff_actions:
+          actions:
+            chat_channel_status_change: "A csevegőcsatorna állapota megváltozott"
     chat:
       dates:
         time_tiny: "h:mm"
@@ -44,7 +49,7 @@ hu:
         title: "Csevegés elkülönítése"
         description: "A csevegést mindig új lapon nyissa meg"
       heading: "Csevegés"
-      join_channel: "Csatlakozás a csatornához"
+      join: "Csatlakozás"
       new_messages: "új üzenetek"
       mention_notification: "<span>%{username} megemlítette a csevegésben</span>"
       mention_warning:
@@ -69,6 +74,8 @@ hu:
       placeholder_self: "Jegyezzen le valamit"
       placeholder_others: "Csevegés vele: %{messageRecipient}"
       placeholder_previewing: "Üzenet küldéséhez csatlakozzon a csatornához."
+      placeholder_new_message_disallowed: "A csatorna „%{status}”, jelenleg nem küldhet új üzeneteket."
+      placeholder_silenced: "Jelenleg nem küldhet üzeneteket."
       remove_upload: "Fájl eltávolítása"
       react: "Reagálás emodzsival"
       reply: "Válasz"
@@ -78,6 +85,7 @@ hu:
       restore: "Törölt üzenet helyreállítása"
       save: "Mentés"
       select: "Válasszon"
+      silence: "Felhasználó némítása"
       return_to_list: "Vissza a csatornákhoz"
       scroll_to_bottom: "Görgetés lefelé"
       sound:
@@ -88,13 +96,22 @@ hu:
         ding: "Csengettyű"
       title: "csevegés"
       title_capitalized: "Csevegés"
-      try_again: "Próbálja újra"
       upload: "Fájl csatolása"
       uploaded_files:
         one: "%{count} fájl"
         other: "%{count} fájl"
       you_flagged: "Ön jelentette ezt az üzenetet"
       exit: "vissza"
+      channel_status:
+        read_only_header: "A csatorna csak olvasható. Nem lehet új üzenetet küldeni, és a meglévő üzeneteket sem lehet szerkeszteni vagy törölni."
+        read_only: "Csak olvasható"
+        archived_header: "A csatorna archivált. Nem lehet új üzenetet küldeni, és a meglévő üzeneteket sem lehet szerkeszteni vagy törölni."
+        archived: "Archivált"
+        closed_header: "A csatorna zárolt. Nem lehet új üzenetet küldeni, és a meglévő üzeneteket sem lehet szerkeszteni vagy törölni."
+        closed_staff_header: "A csatorna zárolt."
+        closed: "Zárolt"
+        open_header: "A csatorna nyitott."
+        open: "Nyitott"
       channel_selector:
         title: "Ugrás a csatornára"
         no_channels: "Egyetlen csatorna sem felel meg a keresésnek"

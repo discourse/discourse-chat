@@ -44,7 +44,6 @@ ja:
         title: "チャットを分離する"
         description: "常に新しいタブでチャットを開く"
       heading: "チャット"
-      join_channel: "チャンネルに参加する"
       new_messages: "新しいメッセージ"
       mention_notification: "<span>%{username} がチャットであなたをメンションしました</span>"
       mention_warning:

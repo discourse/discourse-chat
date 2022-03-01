@@ -44,7 +44,6 @@ pt_BR:
         title: "Isolar chat"
         description: "Sempre abrir chat em uma nova aba"
       heading: "Chat"
-      join_channel: "Entrar no canal"
       new_messages: "novas mensagens"
       mention_notification: "<span>Você foi mencionado(a) por %{username} no chat</span>"
       mention_warning:

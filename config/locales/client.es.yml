@@ -44,7 +44,6 @@ es:
         title: "Aislar chat"
         description: "Abrir siempre el chat en una pestaña nueva"
       heading: "Chat"
-      join_channel: "Unirse al canal"
       new_messages: "nuevos mensajes"
       mention_notification: "<span>%{username} te mencionó en el chat</span>"
       mention_warning:

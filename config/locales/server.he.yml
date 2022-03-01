@@ -14,6 +14,10 @@ he:
     errors:
       channel_exists_for_category: "כבר קיים ערוץ לקטגוריה ולשם האלו"
       channel_exists_for_topic: "כבר קיים ערוץ לנושא הזה"
+      channel_new_message_disallowed: "הערוץ %{status}, לא ניתן לשלוח הודעות חדשות"
+      channel_modify_message_disallowed: "הערוץ %{status}, לא ניתן לערוך או למחוק הודעות"
+      user_cannot_send_message: "אין לך אפשרות לשלוח הודעות כרגע."
+      rate_limit_exceeded: "חריגה ממגבלת הודעות הצ׳אט שניתן לשלוח תוך 30 שניות"
     reviewables:
       actions:
         agree:
@@ -45,6 +49,12 @@ he:
           title: "אי־הסכמה"
         ignore:
           title: "התעלמות"
+    channel:
+      statuses:
+        read_only: "לקריאה בלבד"
+        archived: "בארכיון"
+        closed: "סגור"
+        open: "פתוח"
   discourse_push_notifications:
     popup:
       chat_mention: "אוזכרת בצ׳אט על ידי ‎@%{username}"

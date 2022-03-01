@@ -40,7 +40,7 @@ fa_IR:
       isolate:
         description: "همیشه گفتگو را در یک برگه جدید باز کن"
       heading: "گفتگو"
-      join_channel: "پیوستن به کانال"
+      join: "پیوستن"
       new_messages: "پیام‌های جدید"
       mention_notification: "<span>%{username} در گفتگو به شما اشاره کرده است</span>"
       mention_warning:
@@ -73,7 +73,6 @@ fa_IR:
         ding: "دینگ"
       title: "گفتگو"
       title_capitalized: "گفتگو"
-      try_again: "دوباره امتحان کنید"
       upload: "پیوست کردن یک پرونده"
       you_flagged: "شما این پیام را پرچم گذاری کردید"
       exit: "بازگشت"

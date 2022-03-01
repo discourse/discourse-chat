@@ -8,8 +8,6 @@ de:
   site_settings:
     chat_enabled: "Aktiviere das discourse-chat-Plug-in. Verwende die themenspezifische Aktion „Chat aktivieren“, um es einzurichten."
     chat_allowed_groups: "Benutzer in diesen Gruppen können chatten."
-    chat_channel_retention_days: "Chatnachrichten in regulären Kanälen werden so viele Tage lang aufbewahrt. Auf 0 setzen, um Nachrichten für immer aufzubewahren."
-    chat_dm_retention_days: "Chatnachrichten in persönlichen Chatkanälen werden so viele Tage lang aufbewahrt. Auf 0 setzen, um Nachrichten für immer aufzubewahren."
   chat:
     errors:
       channel_exists_for_category: "Für diese Kategorie und diesen Namen existiert bereits ein Kanal"

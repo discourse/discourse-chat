@@ -8,12 +8,41 @@ sv:
   site_settings:
     chat_enabled: "Aktivera insticksprogrammet för discourse-chatt. Använd åtgärden 'Aktivera chatt' per ämne för att konfigurera."
     chat_allowed_groups: "Användare i dessa grupper kan chatta."
-    chat_channel_retention_days: "Chattmeddelanden i ordinarie kanaler kommer att behållas i så här många dagar. Sätt till 0 för att behålla meddelanden för alltid."
-    chat_dm_retention_days: "Chattmeddelanden i personliga chattkanaler kommer att behållas i så här många dagar. Sätt till 0 för att behålla meddelanden för alltid."
   chat:
     errors:
       channel_exists_for_category: "En kanal finns redan för denna kategori och namn"
       channel_exists_for_topic: "En kanal finns redan för detta ämne"
+    reviewables:
+      actions:
+        agree:
+          title: "Håller med..."
+        agree_and_keep_message:
+          title: "Behåll meddelande"
+          description: "Håll med flaggning men behåll meddelandet oförändrat."
+        agree_and_keep_deleted:
+          title: "Behåll meddelandet raderat"
+          description: "Håll med flaggning och behåll meddelandet raderat."
+        agree_and_suspend:
+          title: "Stäng av användare"
+          description: "Håll med flaggning och stäng av användaren."
+        agree_and_silence:
+          title: "Tysta användare"
+          description: "Håll med flaggning och tysta användaren."
+        agree_and_restore:
+          title: "Återställ meddelande"
+          description: "Återställ meddelandet så att användarna kan se det."
+        agree_and_delete:
+          title: "Radera meddelande"
+          description: "Ta bort meddelandet så att användarna inte kan se det."
+        delete_and_agree:
+          title: "Radera meddelande"
+        disagree_and_restore:
+          title: "Håll inte med och återställ meddelande"
+          description: "Återställ meddelandet så att alla användare kan se det."
+        disagree:
+          title: "Oöverens"
+        ignore:
+          title: "Ignorera"
   discourse_push_notifications:
     popup:
       chat_mention: "@%{username} nämnde dig i chatten"
@@ -24,3 +53,6 @@ sv:
     scriptables:
       send_chat_message:
         title: Skicka chattmeddelande
+  reviewable_score_types:
+    needs_review:
+      title: "Behöver granskning"

@@ -44,7 +44,6 @@ fr:
         title: "Isoler la discussion"
         description: "Toujours ouvrir le chat dans un nouvel onglet"
       heading: "Chat"
-      join_channel: "Rejoindre le canal"
       new_messages: "nouveaux messages"
       mention_notification: "<span>%{username} vous a mentionné(e) dans la discussion</span>"
       mention_warning:

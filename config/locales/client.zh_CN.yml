@@ -44,7 +44,6 @@ zh_CN:
         title: "隔离聊天"
         description: "始终在新标签页中打开聊天"
       heading: "聊天"
-      join_channel: "加入频道"
       new_messages: "新消息"
       mention_notification: "<span>%{username} 在聊天中提及了您</span>"
       mention_warning:

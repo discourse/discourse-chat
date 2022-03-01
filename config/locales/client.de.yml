@@ -44,7 +44,6 @@ de:
         title: "Chat isolieren"
         description: "Chat immer in einem neuen Tab öffnen"
       heading: "Chat"
-      join_channel: "Kanal beitreten"
       new_messages: "neue Nachrichten"
       mention_notification: "<span>%{username} hat dich im Chat erwähnt</span>"
       mention_warning:

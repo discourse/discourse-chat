@@ -6,6 +6,11 @@
 
 he:
   js:
+    admin:
+      logs:
+        staff_actions:
+          actions:
+            chat_channel_status_change: "מצב ערוץ הצ׳אט השתנה"
     chat:
       dates:
         time_tiny: "h:mm"
@@ -44,7 +49,7 @@ he:
         title: "בידוד צ׳אט"
         description: "תמיד לפתוח צ׳אט בלשונית חדשה"
       heading: "צ׳אט"
-      join_channel: "הצטרפות לערוץ"
+      join: "הצטרפות"
       new_messages: "הודעות חדשות"
       mention_notification: "<span>אוזכרת בצ׳אט על ידי %{username}</span>"
       mention_warning:
@@ -70,6 +75,8 @@ he:
       placeholder_self: "לקשקש משהו"
       placeholder_others: "צ׳אט עם %{messageRecipient}"
       placeholder_previewing: "יש להצטרף לערוץ כדי לשלוח הודעה."
+      placeholder_new_message_disallowed: "הערוץ %{status}, אין לך אפשרות לשלוח הודעות חדשות כעת."
+      placeholder_silenced: "אין לך אפשרות לשלוח הודעות כרגע."
       remove_upload: "הסרת קובץ"
       react: "להגיב עם אמוג׳י"
       reply: "תגובה"
@@ -79,6 +86,7 @@ he:
       restore: "שחזור הודעה שנמחקה"
       save: "שמירה"
       select: "בחירה"
+      silence: "השתקת משתמש"
       return_to_list: "חזרה לרשימת הערוצים"
       scroll_to_bottom: "גלילה לתחתית"
       sound:
@@ -89,7 +97,6 @@ he:
         ding: "דינג"
       title: "צ׳אט"
       title_capitalized: "צ׳אט"
-      try_again: "לנסות שוב"
       upload: "צירוף קובץ"
       uploaded_files:
         one: "קובץ %{count}"
@@ -98,6 +105,16 @@ he:
         other: "%{count} קבצים"
       you_flagged: "סימנת את ההודעה הזאת"
       exit: "חזרה"
+      channel_status:
+        read_only_header: "הערוץ הוא לקריאה בלבד. לא ניתן לשלוח הודעות חדשות, ולא ניתן לערוך או למחוק הודעות קיימות."
+        read_only: "לקריאה בלבד"
+        archived_header: "הערוץ נמצא בארכיון. לא ניתן לשלוח הודעות חדשות, ולא ניתן לערוך או למחוק הודעות קיימות."
+        archived: "בארכיון"
+        closed_header: "הערוץ נסגר. לא ניתן לשלוח הודעות חדשות, ולא ניתן לערוך או למחוק הודעות קיימות."
+        closed_staff_header: "הערוץ סגור."
+        closed: "סגור"
+        open_header: "הערוץ פתוח."
+        open: "פתוח"
       channel_selector:
         title: "קפיצה לערוץ"
         no_channels: "אין ערוצים שתואמים לחיפוש שלך"

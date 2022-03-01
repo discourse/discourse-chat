@@ -77,20 +77,7 @@ export default {
 
       api.addKeyboardShortcut("alt+down", handleMoveDownShortcut, {
         global: true,
-        shortcutHelp: {
-          category: "jump_to",
-          details: {
-            name: "chat.keyboard_shortcuts.switch_channel_arrows",
-            definition: {
-              keys1: ["alt", "&uarr;"],
-              keys2: ["alt", "&darr;"],
-              keysDelimiter: "plus",
-              shortcutsDelimiter: "slash",
-            },
-          },
-        },
       });
-
       api.addKeyboardShortcut(
         `${mod}+b`,
         (event) => modifyComposerSelection(event, "bold"),

@@ -55,7 +55,7 @@ RSpec.describe ReviewableChatMessage, type: :model do
   end
 
   describe ".on_score_updated" do
-    it "silences the user for the correct time when the threshhold is met" do
+    it "silences the user for the correct time when the threshold is met" do
       SiteSetting.chat_auto_silence_from_flags_duration = 3
       reviewable.update!(score: ReviewableChatMessage.score_to_silence_user + 1)
       expect {

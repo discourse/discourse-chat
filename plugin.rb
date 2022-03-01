@@ -155,10 +155,10 @@ after_initialize do
     results
   end
 
-  if respond_to?(:register_upload_unused_callback)
-    register_upload_unused_callback do |uploads|
+  if respond_to?(:register_upload_unused)
+    register_upload_unused do |uploads|
       uploads
-        .joins("LEFT JOIN chat_uploads pu ON cu.upload_id = uploads.id")
+        .joins("LEFT JOIN chat_uploads cu ON cu.upload_id = uploads.id")
         .where("cu.upload_id IS NULL")
     end
   end

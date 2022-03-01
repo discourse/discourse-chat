@@ -4,12 +4,35 @@ require_dependency 'reviewable'
 
 class ReviewableChatMessage < Reviewable
 
+  def self.on_score_updated(reviewable)
+    # Silence user if new score is over the `score_to_silence_user`
+    return if reviewable.type != self.name
+
+    auto_silence_duration = SiteSetting.chat_auto_silence_from_flags_duration
+    return if auto_silence_duration.zero?
+    return if reviewable.score <= self.score_to_silence_user
+
+    user = reviewable&.target&.user
+    return unless user
+
+    UserSilencer.silence(
+      user,
+      Discourse.system_user,
+      silenced_till: auto_silence_duration.minutes.from_now,
+      reason: I18n.t("chat.errors.auto_silence_from_flags")
+    )
+  end
+
   def self.action_aliases
     { agree_and_keep_hidden: :agree_and_delete,
       agree_and_silence: :agree_and_delete,
       agree_and_suspend: :agree_and_delete,
       delete_and_agree: :agree_and_delete,
       disagree_and_restore: :disagree }
+  end
+
+  def self.score_to_silence_user
+    sensitivity_score(SiteSetting.chat_silence_user_sensitivity, scale: 0.6)
   end
 
   def chat_message

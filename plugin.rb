@@ -345,6 +345,10 @@ after_initialize do
     end
   end
 
+  on(:reviewable_score_updated) do |reviewable|
+    ReviewableChatMessage.on_score_updated(reviewable)
+  end
+
   DiscourseChat::Engine.routes.draw do
     # direct_messages_controller routes
     post '/direct_messages/create' => 'direct_messages#create'

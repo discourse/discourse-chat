@@ -48,7 +48,7 @@ export default {
 
       api.addKeyboardShortcut(`${mod}+k`, openChannelSelector, {
         global: true,
-        shortcutHelp: {
+        help: {
           category: "chat",
           name: "chat.keyboard_shortcuts.open_quick_channel_selector",
           definition: {
@@ -59,7 +59,7 @@ export default {
       });
       api.addKeyboardShortcut("alt+up", handleMoveUpShortcut, {
         global: true,
-        shortcutHelp: {
+        help: {
           category: "chat",
           name: "chat.keyboard_shortcuts.switch_channel_arrows",
           definition: {

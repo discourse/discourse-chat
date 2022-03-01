@@ -50,12 +50,10 @@ export default {
         global: true,
         shortcutHelp: {
           category: "chat",
-          details: {
-            name: "chat.keyboard_shortcuts.open_quick_channel_selector",
-            definition: {
-              keys1: ["meta", "k"],
-              keysDelimiter: "plus",
-            },
+          name: "chat.keyboard_shortcuts.open_quick_channel_selector",
+          definition: {
+            keys1: ["meta", "k"],
+            keysDelimiter: "plus",
           },
         },
       });
@@ -63,14 +61,12 @@ export default {
         global: true,
         shortcutHelp: {
           category: "chat",
-          details: {
-            name: "chat.keyboard_shortcuts.switch_channel_arrows",
-            definition: {
-              keys1: ["alt", "&uarr;"],
-              keys2: ["alt", "&darr;"],
-              keysDelimiter: "plus",
-              shortcutsDelimiter: "slash",
-            },
+          name: "chat.keyboard_shortcuts.switch_channel_arrows",
+          definition: {
+            keys1: ["alt", "&uarr;"],
+            keys2: ["alt", "&darr;"],
+            keysDelimiter: "plus",
+            shortcutsDelimiter: "slash",
           },
         },
       });

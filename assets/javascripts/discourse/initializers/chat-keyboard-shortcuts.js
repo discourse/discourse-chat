@@ -48,12 +48,32 @@ export default {
 
       api.addKeyboardShortcut(`${mod}+k`, openChannelSelector, {
         global: true,
+        help: {
+          category: "chat",
+          name: "chat.keyboard_shortcuts.open_quick_channel_selector",
+          definition: {
+            keys1: ["meta", "k"],
+            keysDelimiter: "plus",
+          },
+        },
       });
-      api.addKeyboardShortcut("alt+up", handleMoveUpShortcut, { global: true });
+      api.addKeyboardShortcut("alt+up", handleMoveUpShortcut, {
+        global: true,
+        help: {
+          category: "chat",
+          name: "chat.keyboard_shortcuts.switch_channel_arrows",
+          definition: {
+            keys1: ["alt", "&uarr;"],
+            keys2: ["alt", "&darr;"],
+            keysDelimiter: "plus",
+            shortcutsDelimiter: "slash",
+          },
+        },
+      });
+
       api.addKeyboardShortcut("alt+down", handleMoveDownShortcut, {
         global: true,
       });
-
       api.addKeyboardShortcut(
         `${mod}+b`,
         (event) => modifyComposerSelection(event, "bold"),

@@ -271,3 +271,9 @@ en:
         reviewable_chat_message:
           title: "Flagged Chat Message"
           flagged_by: "Flagged By"
+    keyboard_shortcuts_help:
+      chat:
+        title: "Chat"
+        keyboard_shortcuts:
+          switch_channel_arrows: "%{shortcut} Switch channel"
+          open_quick_channel_selector: "%{shortcut} Open quick channel selector"

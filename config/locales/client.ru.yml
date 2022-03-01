@@ -6,6 +6,11 @@
 
 ru:
   js:
+    admin:
+      logs:
+        staff_actions:
+          actions:
+            chat_channel_status_change: "Статус канала изменен"
     chat:
       dates:
         time_tiny: "ч:мм"
@@ -44,7 +49,7 @@ ru:
         title: "Изолировать чат"
         description: "Всегда открывать чат в новой вкладке"
       heading: "Чат"
-      join_channel: "Присоединиться к каналу"
+      join: "Подписаться"
       new_messages: "Новые сообщения"
       mention_notification: "<span>Пользователь %{username} упомянул вас в чате</span>"
       mention_warning:
@@ -75,6 +80,8 @@ ru:
       placeholder_self: "Напишите что-нибудь"
       placeholder_others: "Чат с %{messageRecipient}"
       placeholder_previewing: "Присоединись к каналу, чтобы отправить сообщение."
+      placeholder_new_message_disallowed: "Канал %{status}, в данный момент вы не можете отправлять новые сообщения."
+      placeholder_silenced: "В настоящее время вы не можете отправлять сообщения."
       remove_upload: "Удалить файл"
       react: "Реакция с помощью эмодзи"
       reply: "Ответить"
@@ -84,6 +91,7 @@ ru:
       restore: "Восстановить удаленное сообщение"
       save: "Сохранить"
       select: "Выбрать"
+      silence: "Заблокировать пользователя"
       return_to_list: "Вернуться к списку каналов"
       scroll_to_bottom: "Прокрутка вниз"
       sound:
@@ -94,7 +102,6 @@ ru:
         ding: "Звонок"
       title: "чат"
       title_capitalized: "Чат"
-      try_again: "Попробуйте ещё раз"
       upload: "Прикрепить файл"
       uploaded_files:
         one: "%{count} файл"
@@ -103,6 +110,16 @@ ru:
         other: "%{count} файлов"
       you_flagged: "Вы пожаловались на это сообщение"
       exit: "Назад"
+      channel_status:
+        read_only_header: "Канал только для чтения. В него нельзя отправлять новые сообщения, существующие сообщения нельзя редактировать или удалять."
+        read_only: "Только для чтения"
+        archived_header: "Канал архивирован. В него не могут быть отправлены новые сообщения, существующие сообщения не могут быть отредактированы или удалены."
+        archived: "Архивирован"
+        closed_header: "Канал закрыт. В него не могут быть отправлены новые сообщения, существующие сообщения нельзя редактировать или удалять."
+        closed_staff_header: "Канал закрыт."
+        closed: "Закрыт"
+        open_header: "Канал открыт."
+        open: "Открыт"
       channel_selector:
         title: "Перейти на канал"
         no_channels: "Нет каналов, соответствующих вашему запросу"

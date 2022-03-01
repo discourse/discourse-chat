@@ -8,8 +8,6 @@ pt_BR:
   site_settings:
     chat_enabled: "Ative o plugin discourse-chat. Use a ação \"Ativar chat\" por tópico para configurar."
     chat_allowed_groups: "Usuários(as) nestes grupos podem conversar."
-    chat_channel_retention_days: "Mensagens de chat em canais regulares serão mantidas por essa quantidade de dias. Defina para 0 para manter mensagens para sempre."
-    chat_dm_retention_days: "Mensagens de chat em canais pessoais serão mantidas por essa quantidade de dias. Defina para 0 para manter mensagens para sempre."
   chat:
     errors:
       channel_exists_for_category: "Já existe um canal para este nome e categoria"

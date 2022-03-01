@@ -8,8 +8,6 @@ ja:
   site_settings:
     chat_enabled: "discourse-chat プラグインを有効にします。トピックごとに「チャットを有効にする」アクションを使用してセットアップします。"
     chat_allowed_groups: "これらのグループのユーザーはチャットできます。"
-    chat_channel_retention_days: "通常のチャンネルのチャットメッセージは、この日数の間保持されます。メッセージを永久に保持するには、0 に設定します。"
-    chat_dm_retention_days: "パーソナルチャットチャンネルのチャットメッセージは、この日数の間保持されます。メッセージを永久に保持するには、0 に設定します。"
   chat:
     errors:
       channel_exists_for_category: "このカテゴリと名前のチャンネルはすでに存在します"

@@ -44,7 +44,6 @@ fi:
         title: "Eristä chat"
         description: "Avaa chat aina uuteen välilehteen"
       heading: "Chat"
-      join_channel: "Liity kanavalle"
       new_messages: "uusia viestejä"
       mention_notification: "<span>%{username} mainitsi sinut chatissa</span>"
       mention_warning:

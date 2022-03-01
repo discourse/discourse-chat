@@ -44,7 +44,6 @@ it:
         title: "Isola chat"
         description: "Apri sempre la chat in una nuova scheda"
       heading: "Chat"
-      join_channel: "Partecipa al canale"
       new_messages: "nuovi messaggi"
       mention_notification: "<span>%{username} ti ha menzionato nella chat</span>"
       mention_warning:

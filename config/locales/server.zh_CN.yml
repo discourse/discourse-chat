@@ -8,8 +8,6 @@ zh_CN:
   site_settings:
     chat_enabled: "启用 discourse-chat 插件。使用按话题“启用聊天”操作进行设置。"
     chat_allowed_groups: "这些群组中的用户可以聊天。"
-    chat_channel_retention_days: "常规频道中的聊天消息将保留此天数。设置为 0 将永久保留消息。"
-    chat_dm_retention_days: "个人聊天频道中的聊天消息将保留此天数。设置为 0 将永久保留消息。"
   chat:
     errors:
       channel_exists_for_category: "此类别和名称的频道已经存在"

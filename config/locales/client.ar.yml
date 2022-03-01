@@ -44,7 +44,6 @@ ar:
         title: "عزل الدردشة"
         description: "فتح الدردشة في علامة تبويب جديدة دائمًا"
       heading: "الدردشة"
-      join_channel: "الانضمام إلى القناة"
       new_messages: "رسائل جديدة"
       mention_notification: "<span>أشار %{username} إليك في الدردشة</span>"
       mention_warning:

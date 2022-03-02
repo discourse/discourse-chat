@@ -57,8 +57,8 @@ describe DiscourseChat::ChatChannelArchiveService do
   end
 
   describe "#execute" do
-    before do
-      50.times do
+    def create_messages(num)
+      num.times do
         Fabricate(:chat_message, chat_channel: channel)
       end
     end
@@ -77,6 +77,7 @@ describe DiscourseChat::ChatChannelArchiveService do
 
       it "makes a topic, deletes all the messages, creates posts for batches of messages, and changes the channel to archived" do
         Rails.logger = @fake_logger = FakeLogger.new
+        create_messages(50)
         stub_const(DiscourseChat::ChatChannelArchiveService, "ARCHIVED_MESSAGES_PER_POST", 5) do
           subject.new(@channel_archive).execute
         end
@@ -91,10 +92,26 @@ describe DiscourseChat::ChatChannelArchiveService do
         topic.posts.where.not(post_number: 1).each do |post|
           expect(post.raw).to include("[chat")
         end
+        expect(topic.archived).to eq(true)
 
         expect(@channel_archive.archived_messages).to eq(@channel_archive.total_messages)
         expect(@channel_archive.chat_channel.status).to eq("archived")
         expect(@channel_archive.chat_channel.chat_messages.count).to eq(0)
+      end
+
+      it "does not stop the process if the post length is too high (validations disabled)" do
+        create_messages(50)
+        SiteSetting.max_post_length = 1
+        subject.new(@channel_archive).execute
+        expect(@channel_archive.reload.complete?).to eq(true)
+      end
+
+      it "successfully links uploads from messages to the post" do
+        create_messages(3)
+        ChatUpload.create(chat_message: ChatMessage.last, upload: Fabricate(:upload))
+        subject.new(@channel_archive).execute
+        expect(@channel_archive.reload.complete?).to eq(true)
+        expect(@channel_archive.destination_topic.posts.last.post_uploads.count).to eq(1)
       end
     end
 
@@ -106,8 +123,37 @@ describe DiscourseChat::ChatChannelArchiveService do
         }
       end
 
-      it "deletes all the messages, creates posts for batches of messages, and changes the channel to archived" do
+      before do
+        3.times do
+          Fabricate(:post, topic: topic)
+        end
 
+        @channel_archive = subject.begin_archive_process(chat_channel: channel, acting_user: user, topic_params: topic_params)
+      end
+
+      it "deletes all the messages, creates posts for batches of messages, and changes the channel to archived" do
+        Rails.logger = @fake_logger = FakeLogger.new
+        stub_const(DiscourseChat::ChatChannelArchiveService, "ARCHIVED_MESSAGES_PER_POST", 5) do
+          subject.new(@channel_archive).execute
+        end
+
+        @channel_archive.reload
+        expect(@channel_archive.destination_topic.title).to eq(topic.title)
+        expect(@channel_archive.destination_topic.category).to eq(topic.category)
+        expect(@channel_archive.destination_topic.user).to eq(topic.user)
+
+        topic = @channel_archive.destination_topic
+
+        # existing posts + 10 archive posts
+        expect(topic.posts.count).to eq(13)
+        topic.posts.where.not(post_number: [1, 2, 3]).each do |post|
+          expect(post.raw).to include("[chat")
+        end
+        expect(topic.archived).to eq(true)
+
+        expect(@channel_archive.archived_messages).to eq(@channel_archive.total_messages)
+        expect(@channel_archive.chat_channel.status).to eq("archived")
+        expect(@channel_archive.chat_channel.chat_messages.count).to eq(0)
       end
     end
   end

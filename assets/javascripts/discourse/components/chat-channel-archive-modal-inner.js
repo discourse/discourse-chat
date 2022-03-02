@@ -1,4 +1,5 @@
 import Component from "@ember/component";
+import { later } from "@ember/runloop";
 import { isEmpty } from "@ember/utils";
 import discourseComputed from "discourse-common/utils/decorators";
 import { action } from "@ember/object";
@@ -38,10 +39,11 @@ export default Component.extend({
       data: this._data(),
     })
       .then((response) => {
-        // close modal
-        //
-        // set UI chat channel status / reload channel
-        console.log(response);
+        this.appEvents.trigger("modal-body:flash", {
+          text: I18n.t("chat.channel_archive.process_started"),
+          messageClass: "success",
+        });
+        later(() => window.location.reload(), 3000);
       })
       .catch((error) => popupAjaxError(error))
       .finally(() => this.set("saving", false));

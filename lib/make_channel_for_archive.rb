@@ -39,7 +39,8 @@ class DiscourseChat::MakeChannelForArchive
       UserChatChannelMembership.create(
         chat_channel: chat_channel,
         last_read_message_id: 0,
-        user: User.find_by(username: "martin")
+        user: User.find_by(username: "martin"),
+        following: true
       )
     end
 

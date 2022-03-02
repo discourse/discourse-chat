@@ -60,9 +60,15 @@ class ChatTranscriptService
     end
   end
 
-  def initialize(channel, message_ids)
+  def initialize(channel, message_ids: [], messages: [])
     @channel = channel
-    @message_ids = message_ids
+
+    raise ArgumentError if message_ids.empty? && messages.empty?
+    if messages.any?
+      @messages = messages
+    else
+      @message_ids = message_ids
+    end
   end
 
   def generate_markdown

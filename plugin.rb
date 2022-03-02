@@ -59,6 +59,7 @@ after_initialize do
   load File.expand_path('../app/controllers/move_to_topic_controller.rb', __FILE__)
   load File.expand_path('../app/models/user_chat_channel_membership.rb', __FILE__)
   load File.expand_path('../app/models/chat_channel.rb', __FILE__)
+  load File.expand_path('../app/models/chat_channel_archive.rb', __FILE__)
   load File.expand_path('../app/models/chat_draft.rb', __FILE__)
   load File.expand_path('../app/models/chat_message.rb', __FILE__)
   load File.expand_path('../app/models/chat_message_reaction.rb', __FILE__)
@@ -86,6 +87,7 @@ after_initialize do
   load File.expand_path('../app/serializers/user_chat_channel_membership_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/reviewable_chat_message_serializer.rb', __FILE__)
   load File.expand_path('../lib/chat_channel_fetcher.rb', __FILE__)
+  load File.expand_path('../lib/make_channel_for_archive.rb', __FILE__)
   load File.expand_path('../lib/chat_message_creator.rb', __FILE__)
   load File.expand_path('../lib/chat_message_processor.rb', __FILE__)
   load File.expand_path('../lib/chat_message_updater.rb', __FILE__)
@@ -94,6 +96,7 @@ after_initialize do
   load File.expand_path('../lib/chat_notifier.rb', __FILE__)
   load File.expand_path('../lib/chat_seeder.rb', __FILE__)
   load File.expand_path('../lib/chat_transcript_service.rb', __FILE__)
+  load File.expand_path('../lib/chat_channel_archive_service.rb', __FILE__)
   load File.expand_path('../lib/direct_message_channel_creator.rb', __FILE__)
   load File.expand_path('../lib/guardian_extensions.rb', __FILE__)
   load File.expand_path('../lib/extensions/topic_view_serializer_extension.rb', __FILE__)
@@ -101,6 +104,7 @@ after_initialize do
   load File.expand_path('../lib/slack_compatibility.rb', __FILE__)
   load File.expand_path('../lib/post_notification_handler.rb', __FILE__)
   load File.expand_path('../app/jobs/regular/process_chat_message.rb', __FILE__)
+  load File.expand_path('../app/jobs/regular/chat_channel_archive.rb', __FILE__)
   load File.expand_path('../app/jobs/regular/create_chat_mention_notifications.rb', __FILE__)
   load File.expand_path('../app/jobs/regular/notify_users_watching_chat.rb', __FILE__)
   load File.expand_path('../app/jobs/scheduled/delete_old_chat_messages.rb', __FILE__)
@@ -372,6 +376,7 @@ after_initialize do
     post '/chat_channels/:chat_channel_id/follow' => 'chat_channels#follow'
     post '/chat_channels/:chat_channel_id/unfollow' => 'chat_channels#unfollow'
     get '/chat_channels/:chat_channel_id' => 'chat_channels#show'
+    put '/chat_channels/:chat_channel_id/archive' => 'chat_channels#archive'
 
     # chat_controller routes
     get '/' => 'chat#respond'

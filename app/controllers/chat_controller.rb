@@ -336,7 +336,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     raise Discourse::InvalidAccess if @chat_channel.direct_message_channel?
     raise Discourse::InvalidAccess if !guardian.can_see_chat_channel?(@chat_channel)
 
-    markdown = ChatTranscriptService.new(@chat_channel, params[:message_ids]).generate_markdown
+    markdown = ChatTranscriptService.new(@chat_channel, message_ids: params[:message_ids]).generate_markdown
     render json: success_json.merge(markdown: markdown)
   end
 

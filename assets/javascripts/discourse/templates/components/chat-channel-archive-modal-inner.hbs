@@ -1,0 +1,22 @@
+{{#d-modal-body title="chat.channel_archive.title"}}
+  <div id="chat-channel-archive-modal-inner" class="chat-channel-archive-modal-inner">
+    <p>{{html-safe (i18n "chat.channel_archive.instructions" channelTitle=chatChannel.title)}}</p>
+
+    {{chat-to-topic-selector
+      selection=selection
+      topicTitle=topicTitle
+      categoryId=categoryId
+      tags=tags
+      selectedTopicId=selectedTopicId
+      instructionLabels=instructionLabels
+      allowNewMessage=false
+    }}
+
+    {{d-button
+      class="btn-primary"
+      disabled=buttonDisabled
+      action=(action "archiveChannel")
+      label="chat.channel_archive.title"
+      id="chat-confirm-archive-channel"}}
+  </div>
+{{/d-modal-body}}

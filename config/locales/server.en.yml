@@ -56,6 +56,8 @@ en:
         archived: "Archived"
         closed: "Closed"
         open: "Open"
+      archive:
+        first_post_raw: "This topic is an archive of the [%{channel_name}](%{channel_url}) chat channel."
 
   discourse_push_notifications:
     popup:

@@ -41,3 +41,7 @@ plugins:
   chat_auto_silence_from_flags_duration:
     default: 60
     min: 0
+  chat_allow_archiving_channels:
+    default: false
+    hidden: true
+    client: true

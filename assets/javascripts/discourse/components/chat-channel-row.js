@@ -19,6 +19,7 @@ export default Component.extend({
 
   init() {
     this._super(...arguments);
+    this.options = this.options || {};
     this.set(
       "showSettingsButton",
       this.options.settingsButton && this.currentUser.staff

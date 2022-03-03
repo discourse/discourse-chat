@@ -166,3 +166,16 @@ body.has-full-page-chat {
     }
   }
 }
+
+.chat-full-page-header {
+  .chat-channel-header-details {
+    flex-flow: row wrap;
+    flex-direction: row;
+
+    .chat-channel-header-status {
+      flex-basis: 100%;
+      flex-grow: 0;
+      margin: 0 0 0 10px;
+    }
+  }
+}

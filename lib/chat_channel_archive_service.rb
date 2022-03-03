@@ -41,6 +41,14 @@ class DiscourseChat::ChatChannelArchiveService
 
       # a batch should be idempotent, either the post is created and the
       # messages are deleted or we roll back the whole thing.
+      #
+      # at some point we may want to reconsider disabling post validations,
+      # and add in things like dynamic resizing of the number of messages per
+      # post based on post length, but that can be done later
+      #
+      # another future improvement is to send a MessageBus message for each
+      # completed batch, so the UI can receive updates and show a progress
+      # bar or something similar
       chat_channel.chat_messages.find_in_batches(
         batch_size: ARCHIVED_MESSAGES_PER_POST
       ) do |chat_messages|

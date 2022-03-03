@@ -88,7 +88,7 @@
     </div>
     <div class="chat-channel-data">
       {{#if channel.following}}
-        {{d-icon "check"}}<p class="channel-joined">Joined</p>
+        {{d-icon "check"}}<p class="channel-joined">{{i18n "chat.settings.followed"}}</p>
       {{/if}}
       {{#if (and channel.description categoryChannel)}}
         <div class="chat-channel-description">

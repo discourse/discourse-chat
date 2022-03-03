@@ -1086,82 +1086,92 @@ body.composer-open .topic-chat-float-container {
   }
 }
 
-.chat-browse {
-  .category-chat-name,
-  .topic-chat-name {
-    color: var(--primary);
-    font-size: var(--font-up-1);
-  }
-  .category-channels {
-    .btn-container {
-      align-self: end;
-      .btn {
-        margin-left: 0;
+.chat-channel-settings-row {
+  display: flex;
+  padding: 0.5em;
+  align-items: center;
+  background: var(--secondary);
+  border-bottom: 1px solid var(--primary-low);
+  .chat-channel-info {
+    .channel-title-container {
+      position: relative;
+      .channel-title {
+        display: flex;
+        align-items: center;
+        font-weight: 500;
+        .chat-channel-expand-settings,
+        .edit-btn {
+          border: none;
+          background-color: var(--secondary);
+          &:hover {
+            .d-icon {
+              color: var(--primary-900);
+            }
+          }
+          .d-icon {
+            color: var(--primary-600);
+          }
+        }
+      }
+      .chat-channel-row-controls {
+        width: auto;
+        padding: 1em;
+        position: absolute;
+        background: var(--secondary);
+        z-index: z("usercard");
+        border: 1px solid var(--primary-low);
+        border-radius: 0.25em;
+        box-shadow: 0 12px 12px rgba(0, 0, 0, 0.15);
+        .controls {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          margin-top: 0.5em;
+          label {
+            margin-right: 1em;
+            width: 170px;
+          }
+        }
+        .save-container {
+          .btn {
+            display: inline-block;
+          }
+          .notification-settings-saved {
+            margin-left: 0.5em;
+            color: var(--success);
+          }
+        }
+      }
+    }
+    .chat-channel-data {
+      display: flex;
+      align-items: center;
+      font-size: var(--font-down-1);
+      .d-icon-check {
+        font-size: var(--font-down-3);
         margin-right: 0.5em;
+        color: var(--success);
+      }
+      .channel-joined {
+        margin: 0 0.5em 0 0;
+        font-weight: 500;
+        color: var(--success);
+      }
+      .chat-channel-description {
+        color: var(--primary-700);
       }
     }
   }
-  .topic-channels {
-    margin-top: 1em;
-  }
-}
-
-.category-channels {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-gap: 1em;
-  @media screen and (max-width: 1100px) {
-    grid-template-columns: 1fr 1fr;
-  }
-  .category-chat-channel {
-    padding: 1em;
-    grid-template-rows: auto auto;
-    grid-template-columns: 1fr;
-    grid-gap: 1em;
-    background: var(--secondary);
-    border: 2px solid var(--primary-low);
-    border-left: transparent;
-    .chat-channel-row-controls {
-      right: unset;
-      top: calc(100% - 10px);
-    }
+  .btn-container {
+    margin-left: auto;
   }
 }
 
 .chat-channel-settings-row {
-  display: grid;
-  grid-template-columns: 1fr 210px;
-  flex-wrap: wrap;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.75em 0;
-  border-bottom: 1px solid var(--primary-very-low);
-  position: relative;
-
-  .btn-container {
-    display: flex;
-    align-content: center;
-
-    .btn {
-      margin-left: 0.5em;
-    }
-  }
-
-  .channel-title-container {
-    .edit-btn {
-      color: var(--primary-medium);
-      margin-left: 0.25em;
-    }
-    .chat-channel-title {
-      display: inline-grid;
-      max-width: calc(100% - 40px);
-      color: var(--primary-very-high);
-    }
-  }
-  .channel-name-edit-container {
+  .channel-name-edit {
     display: flex;
     align-items: center;
+    margin-bottom: 9px;
 
     .name-input {
       margin: 0;
@@ -1170,43 +1180,6 @@ body.composer-open .topic-chat-float-container {
     .save-btn,
     .cancel-btn {
       margin-left: 0.25em;
-    }
-  }
-
-  .chat-channel-row-controls {
-    width: auto;
-    padding: 1em;
-    position: absolute;
-    right: 0;
-    background: var(--secondary);
-    z-index: z("usercard");
-    top: 59px;
-    border: 1px solid var(--primary-low);
-    border-radius: 0.25em;
-    box-shadow: 0 12px 12px rgba(0, 0, 0, 0.15);
-    right: 1.5em;
-
-    .controls {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      margin-top: 0.5em;
-
-      label {
-        margin-right: 1em;
-        width: 170px;
-      }
-    }
-
-    .save-container {
-      .btn {
-        display: inline-block;
-      }
-
-      .notification-settings-saved {
-        margin-left: 0.5em;
-        color: var(--success);
-      }
     }
   }
 }

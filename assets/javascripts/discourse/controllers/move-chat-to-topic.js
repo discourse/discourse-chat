@@ -9,9 +9,9 @@ import { ajax } from "discourse/lib/ajax";
 import { extractError } from "discourse/lib/ajax-error";
 import { isEmpty } from "@ember/utils";
 import {
-  NEW_TOPIC_SELECTION,
   EXISTING_TOPIC_SELECTION,
   NEW_MESSAGE_SELECTION,
+  NEW_TOPIC_SELECTION,
 } from "discourse/plugins/discourse-chat/discourse/components/chat-to-topic-selector";
 
 export default Controller.extend(ModalFunctionality, {

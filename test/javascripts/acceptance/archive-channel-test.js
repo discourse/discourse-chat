@@ -5,7 +5,12 @@ import {
   chatChannels,
   chatView,
 } from "discourse/plugins/discourse-chat/chat-fixtures";
-import { acceptance, query } from "discourse/tests/helpers/qunit-helpers";
+import {
+  acceptance,
+  exists,
+  query,
+} from "discourse/tests/helpers/qunit-helpers";
+import I18n from "I18n";
 import { test } from "qunit";
 
 const baseChatPretenders = (server, helper) => {

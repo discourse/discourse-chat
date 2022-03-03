@@ -1,4 +1,5 @@
 import discourseComputed from "discourse-common/utils/decorators";
+import I18n from "I18n";
 import { action } from "@ember/object";
 import showModal from "discourse/lib/show-modal";
 import Component from "@ember/component";

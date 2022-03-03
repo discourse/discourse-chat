@@ -26,8 +26,6 @@ export default Component.extend({
   mutedOptions: MUTED_OPTIONS,
   chat: service(),
   router: service(),
-  tagName: "div",
-  classNameBindings: ["chatChannelClass", ":chat-channel-settings-row"],
 
   didInsertElement() {
     this._super(...arguments);

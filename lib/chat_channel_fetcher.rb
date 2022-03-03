@@ -18,7 +18,6 @@ module DiscourseChat::ChatChannelFetcher
 
   def self.secured_public_channels(guardian, memberships, scope_with_membership: true)
     channels = ChatChannel.includes(:chatable)
-
     channels = channels.where(chatable_type: ChatChannel.public_channel_chatable_types)
     if scope_with_membership
       channels = channels

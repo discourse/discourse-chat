@@ -502,7 +502,7 @@ body.composer-open .topic-chat-float-container {
         bottom: -1px;
       }
 
-      .chat-message:not(.is-reply) & {
+      .chat-message & {
         width: 10px;
         height: 10px;
         right: 0px;

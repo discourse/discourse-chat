@@ -16,8 +16,6 @@ class ChatChannel < ActiveRecord::Base
   has_many :chat_messages
   has_many :user_chat_channel_memberships
 
-  has_one :last_chat_message, -> { order(created_at: :desc) }, class_name: 'ChatMessage'
-
   enum status: {
       open: 0,
       read_only: 1,

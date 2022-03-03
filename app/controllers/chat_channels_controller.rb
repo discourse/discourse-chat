@@ -11,7 +11,6 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
       guardian,
       UserChatChannelMembership.where(user: current_user),
       scope_with_membership: false,
-      include_last_message: true
     )
 
     render_serialized(channels, ChatChannelSettingsSerializer)

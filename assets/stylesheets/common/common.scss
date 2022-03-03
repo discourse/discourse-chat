@@ -1166,14 +1166,7 @@ body.composer-open .topic-chat-float-container {
     }
   }
   .btn-container {
-    opacity: 0;
-    transition: opacity 0.1s ease-in-out;
     margin-left: auto;
-  }
-  &:hover {
-    .btn-container {
-      opacity: 1;
-    }
   }
 }
 

@@ -189,13 +189,18 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     params.require(:type)
 
     topic_type = params[:type] == "newTopic" ? :new : :existing
-    topic_params_ok = (topic_type == :existing && params[:topic_id].present?) || (topic_type == :new && params[:title].present?)
+    topic_params_ok = \
+      (topic_type == :existing && params[:topic_id].present?) ||
+      (topic_type == :new && params[:title].present?)
 
     raise Discourse::InvalidParameters if !topic_params_ok
 
     chat_channel = ChatChannel.find_by(id: params[:chat_channel_id])
-    guardian.ensure_can_see_chat_channel!(chat_channel)
-    guardian.ensure_can_change_channel_status!(chat_channel, :read_only)
+    raise Discourse::NotFound if chat_channel.blank?
+
+    if !guardian.can_change_channel_status?(chat_channel, :read_only)
+      raise Discourse::InvalidAccess.new(I18n.t("chat.errors.channel_cannot_be_archived"))
+    end
 
     DiscourseChat::ChatChannelArchiveService.begin_archive_process(
       chat_channel: chat_channel,

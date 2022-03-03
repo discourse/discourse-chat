@@ -12,11 +12,13 @@ export default Component.extend({
   @discourseComputed()
   channelSettingsOptions() {
     // TODO (martin): Add closeChannel and deleteChannel options at a later date
-    //
-    // TODO (martin) Add logic to change these options based on current channel status
     let options = [];
 
-    if (this.siteSettings.chat_allow_archiving_channels) {
+    if (
+      this.siteSettings.chat_allow_archiving_channels &&
+      !this.channel.isArchived &&
+      !this.channel.isReadOnly
+    ) {
       options.push({
         id: "archiveChannel",
         name: I18n.t("chat.channel_settings.archive_channel"),

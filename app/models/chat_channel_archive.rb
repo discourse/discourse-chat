@@ -25,6 +25,7 @@ end
 #  destination_tags        :string           is an Array
 #  total_messages          :integer          not null
 #  archived_messages       :integer          default(0), not null
+#  archive_error           :string
 #  created_at              :datetime         not null
 #  updated_at              :datetime         not null
 #

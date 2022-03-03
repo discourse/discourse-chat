@@ -1,4 +1,5 @@
 import Component from "@ember/component";
+import { isTesting } from "discourse-common/config/environment";
 import { later } from "@ember/runloop";
 import { isEmpty } from "@ember/utils";
 import discourseComputed from "discourse-common/utils/decorators";
@@ -8,10 +9,10 @@ import { equal } from "@ember/object/computed";
 import { ajax } from "discourse/lib/ajax";
 import { inject as service } from "@ember/service";
 import { popupAjaxError } from "discourse/lib/ajax-error";
-
-// TODO (martin) move into shared class
-const NEW_TOPIC_SELECTION = "newTopic";
-const EXISTING_TOPIC_SELECTION = "existingTopic";
+import {
+  NEW_TOPIC_SELECTION,
+  EXISTING_TOPIC_SELECTION,
+} from "discourse/plugins/discourse-chat/discourse/components/chat-to-topic-selector";
 
 export default Component.extend({
   chat: service(),
@@ -24,8 +25,7 @@ export default Component.extend({
 
   saving: false,
 
-  // TODO (martin) REMOVE THIS, REVERT TO NULL, TEST ONLY
-  topicTitle: "this is a test topic for archiving",
+  topicTitle: null,
   categoryId: null,
   tags: null,
   selectedTopicId: null,
@@ -43,7 +43,11 @@ export default Component.extend({
           text: I18n.t("chat.channel_archive.process_started"),
           messageClass: "success",
         });
-        later(() => window.location.reload(), 3000);
+        later(() => {
+          if (!isTesting()) {
+            window.location.reload();
+          }
+        }, 3000);
       })
       .catch((error) => popupAjaxError(error))
       .finally(() => this.set("saving", false));

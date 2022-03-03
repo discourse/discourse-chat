@@ -78,6 +78,11 @@ acceptance("Discourse Chat - Archive channel", function (needs) {
       archiveChannelRequestPayload,
       "type=newTopic&chat_channel_id=7&title=The+Jedi+Archives+Which+Are+Definitely+Not+Incomplete&category_id=6&tags="
     );
+
+    assert.strictEqual(
+      query("#modal-alert").innerText,
+      I18n.t("chat.channel_archive.process_started")
+    );
   });
 });
 

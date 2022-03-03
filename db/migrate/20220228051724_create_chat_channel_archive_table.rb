@@ -11,6 +11,7 @@ class CreateChatChannelArchiveTable < ActiveRecord::Migration[6.1]
       t.column :destination_tags, :string, array: true
       t.integer :total_messages, null: false
       t.integer :archived_messages, default: 0, null: false
+      t.string :archive_error
 
       t.timestamps
     end

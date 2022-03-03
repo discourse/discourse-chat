@@ -62,4 +62,20 @@ export default RestModel.extend({
   get isTagChannel() {
     return this.chatable_type === CHATABLE_TYPES.tagChannel;
   },
+
+  get isOpen() {
+    return this.status === CHANNEL_STATUSES.open;
+  },
+
+  get isReadOnly() {
+    return this.status === CHANNEL_STATUSES.readOnly;
+  },
+
+  get isClosed() {
+    return this.status === CHANNEL_STATUSES.closed;
+  },
+
+  get isArchived() {
+    return this.status === CHANNEL_STATUSES.archived;
+  },
 });

@@ -9,7 +9,7 @@ class DiscourseChat::MakeChannelForArchive
     Fabricate(:user, username: unique_prefix, email: "#{unique_prefix}@testemail.com")
   end
 
-  def self.run
+  def self.run(user_for_membership)
     topic = nil
     chat_channel = nil
 
@@ -30,7 +30,7 @@ class DiscourseChat::MakeChannelForArchive
       start_time = Time.now
 
       1039.times do
-        cm = ChatMessage.new(message: messages.sample, user: users.sample, chat_channel: chat_channel)
+        cm = ChatMessage.new(message: messages(user_for_membership).sample, user: users.sample, chat_channel: chat_channel)
         cm.cook
         cm.save!
       end
@@ -41,7 +41,7 @@ class DiscourseChat::MakeChannelForArchive
       UserChatChannelMembership.create(
         chat_channel: chat_channel,
         last_read_message_id: 0,
-        user: User.find_by(username: "martin"),
+        user: User.find_by(username: user_for_membership),
         following: true
       )
     end
@@ -49,7 +49,7 @@ class DiscourseChat::MakeChannelForArchive
     puts "channel is located at #{chat_channel.url}"
   end
 
-  def self.messages
+  def self.messages(mention_user)
     [
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
       "Cras sit **amet** metus eget nisl accumsan ullamcorper.",
@@ -66,7 +66,7 @@ class DiscourseChat::MakeChannelForArchive
       "In eleifend ante ut ullamcorper ultrices.",
       "In placerat diam sit amet nibh feugiat, in posuere metus feugiat.",
       "Nullam porttitor leo a leo `cursus`, id hendrerit dui ultrices.",
-      "Pellentesque ut @martin ut ex pulvinar pharetra sit amet ac leo.",
+      "Pellentesque ut @#{mention_user} ut ex pulvinar pharetra sit amet ac leo.",
       "Vestibulum sit amet enim et lectus tincidunt rhoncus hendrerit in enim.",
       <<~MSG
       some bigger message

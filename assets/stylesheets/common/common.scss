@@ -1105,11 +1105,11 @@ body.composer-open .topic-chat-float-container {
           background-color: var(--secondary);
           &:hover {
             .d-icon {
-              color: var(--primary-900);
+              color: var(--primary-very-high);
             }
           }
           .d-icon {
-            color: var(--primary-600);
+            color: var(--primary-medium);
           }
         }
       }
@@ -1158,7 +1158,7 @@ body.composer-open .topic-chat-float-container {
         color: var(--success);
       }
       .chat-channel-description {
-        color: var(--primary-700);
+        color: var(--primary-high);
       }
     }
   }

@@ -1,4 +1,4 @@
-<div class="{{chatChannelClass}} chat-channel-settings-row" onClick={{previewChannel}} role="button">
+<div class="{{chatChannelClass}} chat-channel-settings-row">
   <div class="chat-channel-info">
     <div class="channel-title-container">
       {{#if editingName}}
@@ -22,9 +22,7 @@
         <div class="channel-title">
           {{chat-channel-title channel=channel onClick=(action "previewChannel")}}
           {{#if currentUser.staff}}
-            <a href class="edit-btn" onClick={{action "startEditingName"}}>
-              {{d-icon "pencil-alt"}}
-            </a>
+            {{d-button icon="pencil-alt" class="edit-btn" action=(action "startEditingName")}}
           {{/if}}
           {{#if channel.following}}
             {{d-button
@@ -94,7 +92,6 @@
       {{/if}}
       {{#if (and channel.description categoryChannel)}}
         <div class="chat-channel-description">
-          {{log channel}}
           • {{html-safe channel.description}}
         </div>
       {{/if}}

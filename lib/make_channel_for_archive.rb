@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'fabrication'
 Dir[Rails.root.join("spec/fabricators/*.rb")].each { |f| require f }
 

@@ -3,6 +3,8 @@
 require 'rails_helper'
 
 describe DiscourseChat::ChatChannelArchiveService do
+  class FakeArchiveError < StandardError; end
+
   fab!(:channel) { Fabricate(:chat_channel) }
   fab!(:user) { Fabricate(:user, admin: true) }
   fab!(:category) { Fabricate(:category) }
@@ -168,10 +170,10 @@ describe DiscourseChat::ChatChannelArchiveService do
         Rails.logger = @fake_logger = FakeLogger.new
         create_messages(35) && start_archive
 
-        DiscourseChat::ChatChannelArchiveService.any_instance.stubs(:create_post).raises(StandardError.new("this is a test error"))
+        DiscourseChat::ChatChannelArchiveService.any_instance.stubs(:create_post).raises(FakeArchiveError.new("this is a test error"))
 
         stub_const(DiscourseChat::ChatChannelArchiveService, "ARCHIVED_MESSAGES_PER_POST", 5) do
-          expect { subject.new(@channel_archive).execute }.to raise_error
+          expect { subject.new(@channel_archive).execute }.to raise_error(FakeArchiveError)
         end
 
         expect(@channel_archive.reload.archive_error).to eq("this is a test error")

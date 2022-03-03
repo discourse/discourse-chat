@@ -38,7 +38,7 @@ export default Component.extend({
       type: "PUT",
       data: this._data(),
     })
-      .then((response) => {
+      .then(() => {
         this.appEvents.trigger("modal-body:flash", {
           text: I18n.t("chat.channel_archive.process_started"),
           messageClass: "success",

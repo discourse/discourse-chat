@@ -91,6 +91,51 @@ describe ChatMessage do
       COOKED
     end
 
+    it "supports chat quote bbcode" do
+      chat_channel = Fabricate(:chat_channel)
+      user = Fabricate(:user, username: "chatbbcodeuser")
+      user2 = Fabricate(:user, username: "otherbbcodeuser")
+      avatar_src = "//test.localhost#{User.system_avatar_template(user.username).gsub("{size}", "40")}"
+      avatar_src2 = "//test.localhost#{User.system_avatar_template(user2.username).gsub("{size}", "40")}"
+      msg1 = Fabricate(:chat_message, chat_channel: chat_channel, message: "this is the first message", user: user)
+      msg2 = Fabricate(:chat_message, chat_channel: chat_channel, message: "and another cool one", user: user2)
+      other_messages_to_quote = [msg1, msg2]
+      cooked = ChatMessage.cook(ChatTranscriptService.new(chat_channel, other_messages_to_quote.map(&:id)).generate_markdown)
+
+      expect(cooked).to eq(<<~COOKED.chomp)
+        <div class="discourse-chat-transcript chat-transcript-chained" data-message-id="#{msg1.id}" data-username="chatbbcodeuser" data-datetime="#{msg1.created_at.iso8601}">
+        <div class="chat-transcript-user">
+        <div class="chat-transcript-user-avatar">
+        <img loading="lazy" alt="" width="20" height="20" src="#{avatar_src}" class="avatar">
+        </div>
+        <div class="chat-transcript-username">
+        chatbbcodeuser</div>
+        <div class="chat-transcript-datetime">
+        <a href="/chat/message/#{msg1.id}" title="#{msg1.created_at.iso8601}"></a>
+        </div>
+        </div>
+        <div class="chat-transcript-messages">
+        <p>this is the first message</p>
+        </div>
+        </div>
+        <div class="discourse-chat-transcript chat-transcript-chained" data-message-id="#{msg2.id}" data-username="otherbbcodeuser" data-datetime="#{msg2.created_at.iso8601}">
+        <div class="chat-transcript-user">
+        <div class="chat-transcript-user-avatar">
+        <img loading="lazy" alt="" width="20" height="20" src="#{avatar_src2}" class="avatar">
+        </div>
+        <div class="chat-transcript-username">
+        otherbbcodeuser</div>
+        <div class="chat-transcript-datetime">
+        <a href="/chat/message/#{msg2.id}" title="#{msg2.created_at.iso8601}"></a>
+        </div>
+        </div>
+        <div class="chat-transcript-messages">
+        <p>and another cool one</p>
+        </div>
+        </div>
+      COOKED
+    end
+
     it 'supports strikethrough rule' do
       cooked = ChatMessage.cook("~~test~~")
 

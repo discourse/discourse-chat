@@ -1069,12 +1069,12 @@ Widget.triangulate(arg: "test")
     document.activeElement.blur();
     await triggerKeyEvent(document.body, "keydown", 65); // 65 is `a` keycode
     let composer = query(".chat-composer-input");
-    assert.ok(composer.value, "a");
+    assert.equal(composer.value, "a");
     assert.equal(document.activeElement, composer);
 
     document.activeElement.blur();
     await triggerKeyEvent(document.body, "keydown", 65);
-    assert.ok(composer.value, "aa");
+    assert.equal(composer.value, "aa");
 
     document.activeElement.blur();
     await triggerKeyEvent(document.body, "keydown", 13); // 13 is `Enter` keycode

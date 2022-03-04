@@ -87,7 +87,6 @@ after_initialize do
   load File.expand_path('../app/serializers/user_chat_channel_membership_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/reviewable_chat_message_serializer.rb', __FILE__)
   load File.expand_path('../lib/chat_channel_fetcher.rb', __FILE__)
-  load File.expand_path('../lib/make_channel_for_archive.rb', __FILE__)
   load File.expand_path('../lib/chat_message_creator.rb', __FILE__)
   load File.expand_path('../lib/chat_message_processor.rb', __FILE__)
   load File.expand_path('../lib/chat_message_updater.rb', __FILE__)

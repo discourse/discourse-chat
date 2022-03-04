@@ -1,5 +1,19 @@
 # frozen_string_literal: true
 
+##
+# From time to time, site admins may choose to sunset a chat channel and archive
+# the messages within. The main use case for this is a topic-based channel, but
+# it can be used for category channels just fine. It cannot be used for DM channels
+# in its current iteration.
+#
+# To archive a channel, we mark it read_only first to prevent any further message
+# additions or changes, and create a record to track whether the archive topic
+# will be new or existing. When we archive the channel, messages are copied into
+# posts in batches using the [chat] BBCode to quote the messages. The messages are
+# deleted once the batch has its post made. The execute action of this class is
+# idempotent, so if we fail halfway through the archive process it can be run again.
+#
+# Once all of the messages have been copied then we mark the channel as archived.
 class DiscourseChat::ChatChannelArchiveService
   ARCHIVED_MESSAGES_PER_POST = 100
 

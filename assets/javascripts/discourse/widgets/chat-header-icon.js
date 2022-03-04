@@ -12,13 +12,6 @@ export default createWidget("header-chat-link", {
 
   html() {
     if (
-      !this.chat.userCanChat ||
-      (this.chat.isChatPage && !this.site.mobileView)
-    ) {
-      return;
-    }
-
-    if (
       this.currentUser.isInDoNotDisturb() ||
       (this.currentUser.chat_isolated && !this.chat.isChatPage)
     ) {
@@ -58,6 +51,10 @@ export default createWidget("header-chat-link", {
   },
 
   click() {
+    if (this.chat.isChatPage && !this.site.mobileView) {
+      return;
+    }
+
     if (this.currentUser.chat_isolated) {
       if (this.capabilities.isPwa) {
         return this.router.transitionTo("chat");

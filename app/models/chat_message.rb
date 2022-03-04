@@ -118,6 +118,7 @@ class ChatMessage < ActiveRecord::Base
     code
     category-hashtag
     censored
+    discourse-chat-transcript
     discourse-local-dates
     emoji
     emojiShortcuts

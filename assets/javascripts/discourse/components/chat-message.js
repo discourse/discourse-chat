@@ -31,9 +31,11 @@ export default Component.extend({
   emojiStore: service("emoji-store"),
   adminTools: optionalService(),
   _hasSubscribedToAppEvents: false,
+  tagName: "",
 
   init() {
     this._super(...arguments);
+
     this.set("_loadingReactions", []);
     this.message.set("reactions", EmberObject.create(this.message.reactions));
     this.message.id
@@ -43,11 +45,13 @@ export default Component.extend({
 
   didInsertElement() {
     this._super(...arguments);
-    if (!this.currentUser) {
+
+    if (!this.currentUser || this.message) {
       return;
     }
-    this.element
-      .querySelector(".chat-message-content .chat-message-text")
+
+    document
+      .querySelector(`.chat-message-container[data-id='${this.message.id}']`)
       ?.querySelectorAll(".mention")
       .forEach((node) => {
         const mention = node.textContent.trim().substring(1);
@@ -217,7 +221,8 @@ export default Component.extend({
     );
   },
 
-  click() {
+  @action
+  handleClick() {
     if (this.site.mobileView) {
       this.toggleProperty("isHovered");
     }
@@ -228,9 +233,9 @@ export default Component.extend({
     return hide && !webhookEvent;
   },
 
-  @discourseComputed("selectingMessages", "message.id")
-  messageContainerClasses(selecting, id) {
-    return `chat-message-container chat-message-container-${id} ${
+  @discourseComputed("selecting")
+  messageContainerClasses(selecting) {
+    return `chat-message-container ${
       selecting ? "selecting-messages" : ""
     }`.trim();
   },
@@ -494,13 +499,19 @@ export default Component.extend({
 
   @action
   startReactionForMsgActions() {
-    const btn = this.element.querySelector(".chat-msgactions-hover .react-btn");
+    const element = document.querySelector(
+      `.chat-message-container[data-id='${this.message.id}']`
+    );
+    const btn = element.querySelector(".chat-msgactions-hover .react-btn");
     this._startReaction(btn, this.SHOW_LEFT);
   },
 
   @action
   startReactionForReactionList() {
-    const btn = this.element.querySelector(
+    const element = document.querySelector(
+      `.chat-message-container[data-id='${this.message.id}']`
+    );
+    const btn = element.querySelector(
       ".chat-message-reaction-list .chat-message-react-btn"
     );
     this._startReaction(btn, this.SHOW_RIGHT);
@@ -528,11 +539,15 @@ export default Component.extend({
   },
 
   _repositionEmojiPicker(btn, position) {
-    if (!this.element) {
+    const element = document.querySelector(
+      `.chat-message-container[data-id='${this.message.id}']`
+    );
+
+    if (!element) {
       return;
     }
 
-    const emojiPicker = this.element.querySelector(".emoji-picker");
+    const emojiPicker = element.querySelector(".emoji-picker");
     if (!emojiPicker || !btn) {
       return;
     }
@@ -763,9 +778,11 @@ export default Component.extend({
 
   @action
   copyLinkToMessage() {
-    this.element
-      .querySelector(".link-to-message-btn")
-      ?.classList?.add("copied");
+    const element = document.querySelector(
+      `.chat-message-container[data-id='${this.message.id}']`
+    );
+
+    element.querySelector(".link-to-message-btn")?.classList?.add("copied");
 
     const { protocol, host } = window.location;
     let url = getURL(
@@ -775,7 +792,7 @@ export default Component.extend({
     clipboardCopy(url);
 
     later(() => {
-      this.element
+      element
         ?.querySelector(".link-to-message-btn")
         ?.classList?.remove("copied");
     }, 250);

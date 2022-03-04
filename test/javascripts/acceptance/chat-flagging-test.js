@@ -81,7 +81,7 @@ acceptance("Discourse Chat - Flagging test", function (needs) {
     });
     await chatSettled();
     const reviewableLink = query(
-      `.chat-message[data-id=${chatView.chat_messages[0].id}] .chat-message-flagged`
+      `.chat-message-container[data-id=${chatView.chat_messages[0].id}] .chat-message-flagged`
     );
     assert.ok(reviewableLink.href.endsWith("/review/1"));
   });

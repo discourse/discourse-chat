@@ -36,7 +36,7 @@ export default Component.extend({
 
     this._scrollSidebarToBottom();
     window.addEventListener("resize", this._calculateHeight, false);
-    document.addEventListener("keydown", this.autoFocusChatComposer);
+    document.addEventListener("keydown", this._autoFocusChatComposer);
     document.body.classList.add("has-full-page-chat");
     this.chat.set("fullScreenChatOpen", true);
     schedule("afterRender", this._calculateHeight);
@@ -47,13 +47,13 @@ export default Component.extend({
 
     this.appEvents.off("chat:refresh-channels", this, "refreshModel");
     window.removeEventListener("resize", this._calculateHeight, false);
-    document.removeEventListener("keydown", this.autoFocusChatComposer);
+    document.removeEventListener("keydown", this._autoFocusChatComposer);
     document.body.classList.remove("has-full-page-chat");
     this.chat.set("fullScreenChatOpen", false);
   },
 
   @bind
-  autoFocusChatComposer(e) {
+  _autoFocusChatComposer(e) {
     if (!e.target || e.target.classList.contains("chat-composer-input")) {
       return;
     }

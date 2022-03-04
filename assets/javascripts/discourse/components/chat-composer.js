@@ -192,7 +192,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     );
 
     this.appEvents.off("chat:focus-composer", this, "_focusTextArea");
-    this.appEvents.on("chat:insert-text", this, "insertText");
+    this.appEvents.off("chat:insert-text", this, "insertText");
     this.appEvents.off("chat:modify-selection", this, "_modifySelection");
   },
 

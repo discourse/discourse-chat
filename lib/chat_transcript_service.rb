@@ -60,14 +60,13 @@ class ChatTranscriptService
     end
   end
 
-  def initialize(channel, message_ids: [], messages: [])
+  def initialize(channel, messages_or_ids: [])
     @channel = channel
 
-    raise ArgumentError if message_ids.empty? && messages.empty?
-    if messages.any?
-      @messages = messages
+    if messages_or_ids.all? { |m| m.is_a?(Numeric) }
+      @message_ids = messages_or_ids
     else
-      @message_ids = message_ids
+      @messages = messages_or_ids
     end
   end
 

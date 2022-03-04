@@ -68,7 +68,7 @@ class DiscourseChat::ChatChannelArchiveService
       ) do |chat_messages|
         create_post(
           ChatTranscriptService.new(
-            chat_channel, messages: chat_messages
+            chat_channel, messages_or_ids: chat_messages
           ).generate_markdown
         ) do
           delete_message_batch(chat_messages.map(&:id))

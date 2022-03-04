@@ -34,7 +34,7 @@ describe DiscourseChat::PostNotificationHandler do
   end
 
   def update_post_with_chat_quote(messages)
-    quote_markdown = ChatTranscriptService.new(channel, messages: messages).generate_markdown
+    quote_markdown = ChatTranscriptService.new(channel, messages_or_ids: messages).generate_markdown
     post.update!(raw: post.raw + "\n\n" + quote_markdown)
   end
 

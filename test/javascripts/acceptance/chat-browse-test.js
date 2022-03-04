@@ -93,13 +93,13 @@ acceptance("Discourse Chat - chat browsing", function (needs) {
     await visit("/chat/browse");
     const settingsRow = query(".chat-channel-settings-row");
     await click(
-      settingsRow.querySelector(".channel-title-container .edit-btn")
+      settingsRow.querySelector(
+        ".channel-title-container .channel-title .edit-btn"
+      )
     );
-    assert.ok(exists(".channel-name-edit-container"));
-    await fillIn(".channel-name-edit-container .name-input", editedChannelName);
-    await click(
-      settingsRow.querySelector(".channel-name-edit-container .save-btn")
-    );
+    assert.ok(exists(".channel-name-edit"));
+    await fillIn(".channel-name-edit .name-input", editedChannelName);
+    await click(settingsRow.querySelector(".channel-name-edit .save-btn"));
     assert.equal(
       settingsRow.querySelector(".chat-channel-title").innerText.trim(),
       editedChannelName

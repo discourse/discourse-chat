@@ -26,14 +26,9 @@ export default Component.extend({
   mutedOptions: MUTED_OPTIONS,
   chat: service(),
   router: service(),
-  tagName: "div",
-  classNameBindings: ["chatChannelClass", ":chat-channel-settings-row"],
 
   didInsertElement() {
     this._super(...arguments);
-    if (this.categoryChannel) {
-      this.element.style = `box-shadow: -4px 0px 0px #${this.channel.chatable.color}`;
-    }
   },
 
   @discourseComputed("channel.chatable_type")

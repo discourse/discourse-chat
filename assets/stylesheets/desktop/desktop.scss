@@ -159,13 +159,17 @@
 }
 
 .chat-browse .chat-channel-settings-row {
-  .edit-btn {
+  .edit-btn,
+  .chat-channel-expand-settings,
+  .btn-container {
     opacity: 0;
     transition: opacity 0.1s;
   }
 
   &:hover {
-    .edit-btn {
+    .edit-btn,
+    .chat-channel-expand-settings,
+    .btn-container {
       opacity: 1;
     }
   }

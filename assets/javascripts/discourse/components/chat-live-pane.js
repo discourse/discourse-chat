@@ -156,6 +156,9 @@ export default Component.extend({
           });
       }
     }
+    this.currentUserTimezone = this.currentUser?.resolvedTimezone(
+      this.currentUser
+    );
   },
 
   fetchMessages(channelId) {
@@ -562,6 +565,7 @@ export default Component.extend({
     this._scrollGithubOneboxes();
     this._pluginsDecorators();
     this._highlightCode();
+    this._renderChatTranscriptDates();
 
     document.querySelectorAll(".chat-message-text").forEach((chatMessageEl) => {
       _chatMessageDecorators.forEach((decorator) => {
@@ -1342,6 +1346,33 @@ export default Component.extend({
         chatMessageEl.classList.add("hljs-complete");
       }
     });
+  },
+
+  _renderChatTranscriptDates() {
+    document
+      .querySelectorAll(".discourse-chat-transcript")
+      .forEach((transcriptEl) => {
+        const dateTimeRaw = transcriptEl.dataset["datetime"];
+        const dateTimeLinkEl = transcriptEl.querySelector(
+          ".chat-transcript-datetime a"
+        );
+
+        // same as highlight, no need to do this for every single message every time
+        // any message changes
+        if (dateTimeLinkEl.innerText !== "") {
+          return;
+        }
+
+        if (this.currentUserTimezone) {
+          dateTimeLinkEl.innerText = moment
+            .tz(dateTimeRaw, this.currentUserTimezone)
+            .format(I18n.t("dates.long_no_year"));
+        } else {
+          dateTimeLinkEl.innerText = moment(dateTimeRaw).format(
+            I18n.t("dates.long_no_year")
+          );
+        }
+      });
   },
 
   @afterRender

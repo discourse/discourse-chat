@@ -129,40 +129,10 @@ body.has-full-page-chat {
 }
 
 .chat-browse {
-  .category-channels {
-    grid-template-columns: 1fr;
-  }
-  .topic-channels {
-    padding: 0 calc(0.5em + 2px) 0 0;
-  }
-  .category-chat-channel {
-    padding: 1em 0.5em;
-    .btn:last-of-type {
-      margin-right: 0;
-    }
-  }
   .chat-channel-settings-row {
-    grid-template-columns: 2fr 1fr;
-    grid-template-rows: unset;
-  }
-  .topic-chat-channel,
-  .category-chat-channel {
-    .channel-title-container {
-      width: auto;
-    }
-    .chat-channel-description {
-      display: none;
-    }
-    .btn-container {
-      justify-self: flex-end;
-    }
-  }
-  .chat-channel-expand-settings {
-    .d-icon {
-      margin-right: 0;
-    }
-    .d-button-label {
-      display: none;
+    font-size: var(--font-down-1);
+    .chat-channel-title {
+      grid-template-columns: 15px 1fr;
     }
   }
 }

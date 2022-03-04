@@ -164,6 +164,7 @@ en:
       settings:
         desktop_notification_level: "Desktop notifications"
         follow: "Join"
+        followed: "Joined"
         mobile_notification_level: "Mobile push notifications"
         mute: "Mute channel"
         muted_on: "On"

@@ -1,13 +1,6 @@
 {{chat-message-separator message=message}}
 
-<div {{on "click" (fn this.handleClick)}} class={{messageContainerClasses}} data-id={{message.id}}>
-  {{emoji-picker
-    isActive=emojiPickerIsActive
-    isEditorFocused=true
-    usePopper=false
-    emojiSelected=(action "selectReaction")
-    onEmojiPickerClose=(action (mut emojiPickerIsActive) false)
-  }}
+<div role="button" {{on "click" (fn this.handleClick)}} class={{messageContainerClasses}} data-id={{message.id}}>
   {{#if show}}
     {{#if selectingMessages}}
       {{input

@@ -275,12 +275,12 @@ acceptance("Discourse Chat - without unread", function (needs) {
     // 177 is message id from fixture
     const highlighted = [];
     const notHighlighted = [];
-    query(".chat-message-container[data-id=177]")
+    query(".chat-message[data-id=177]")
       .querySelectorAll(".mention.highlighted")
       .forEach((node) => {
         highlighted.push(node.textContent.trim());
       });
-    query(".chat-message-container[data-id=177]")
+    query(".chat-message[data-id=177]")
       .querySelectorAll(".mention:not(.highlighted)")
       .forEach((node) => {
         notHighlighted.push(node.textContent.trim());
@@ -311,13 +311,13 @@ acceptance("Discourse Chat - without unread", function (needs) {
 
   test("Reply-to line is hidden when reply-to message is directly above", async function (assert) {
     await visit("/chat/channel/9/Site");
-    const messages = queryAll(".chat-message-container");
+    const messages = queryAll(".chat-message");
     assert.notOk(messages[1].querySelector(".tc-reply-msg"));
   });
 
   test("Reply-to line is present when reply-to message is not directly above", async function (assert) {
     await visit("/chat/channel/9/Site");
-    const messages = queryAll(".chat-message-container");
+    const messages = queryAll(".chat-message");
     const replyTo = messages[2].querySelector(".tc-reply-msg");
     assert.ok(replyTo);
     assert.equal(replyTo.innerText.trim(), messageContents[0]);
@@ -337,7 +337,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
   test("Admin only controls are present", async function (assert) {
     await visit("/chat/channel/9/Site");
     const currentUserDropdown = selectKit(
-      ".chat-message-container[data-id=174] .more-buttons"
+      ".chat-message[data-id=174] .more-buttons"
     );
     await currentUserDropdown.expand();
 
@@ -362,7 +362,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     );
 
     const notCurrentUserDropdown = selectKit(
-      ".chat-message-container[data-id=175] .more-buttons"
+      ".chat-message[data-id=175] .more-buttons"
     );
 
     await notCurrentUserDropdown.expand();
@@ -383,7 +383,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     );
 
     const currentUserDropdown = selectKit(
-      ".chat-message-container[data-id=174] .more-buttons"
+      ".chat-message[data-id=174] .more-buttons"
     );
     await currentUserDropdown.expand();
 
@@ -424,7 +424,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     );
 
     const notCurrentUserDropdown = selectKit(
-      ".chat-message-container[data-id=175] .more-buttons"
+      ".chat-message[data-id=175] .more-buttons"
     );
     await notCurrentUserDropdown.expand();
 
@@ -490,7 +490,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     await chatSettled();
     await click(".return-to-channels");
     await click(".chat-channel-row.chat-channel-9");
-    await click(".chat-message-container .reply-btn");
+    await click(".chat-message .reply-btn");
     // Reply-to line is present
     assert.ok(exists(".chat-composer-message-details .tc-reply-display"));
     await click(".return-to-channels");
@@ -498,7 +498,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     // Reply-to line is gone since switching channels
     assert.notOk(exists(".chat-composer-message-details .tc-reply-display"));
     // Now click on reply btn and cancel it on channel 7
-    await click(".chat-message-container .reply-btn");
+    await click(".chat-message .reply-btn");
     await click(".chat-composer .cancel-message-action");
 
     // Go back to channel 9 and check that reply-to is present
@@ -573,7 +573,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     await chatSettled();
 
     assert.equal(
-      lastMessage.closest(".chat-message-container").dataset.id,
+      lastMessage.closest(".chat-message").dataset.id,
       202
     );
     assert.notOk(lastMessage.classList.contains("chat-message-staged"));
@@ -622,7 +622,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     await chatSettled();
     assert.ok(
       query(
-        ".chat-message-container[data-id=175] .chat-message-text"
+        ".chat-message[data-id=175] .chat-message-text"
       ).innerHTML.includes(cooked)
     );
   });
@@ -667,12 +667,12 @@ Widget.triangulate(arg: "test")
     const messages = queryAll(".chat-message");
     const lastMessage = messages[messages.length - 1];
     assert.equal(
-      lastMessage.closest(".chat-message-container").dataset.id,
+      lastMessage.closest(".chat-message").dataset.id,
       202
     );
     assert.ok(
       exists(
-        ".chat-message-container[data-id=202] .chat-message-text.hljs-complete code.lang-ruby.hljs"
+        ".chat-message[data-id=202] .chat-message-text.hljs-complete code.lang-ruby.hljs"
       ),
       "chat message code block has been highlighted as ruby code"
     );
@@ -807,8 +807,8 @@ Widget.triangulate(arg: "test")
     updateCurrentUser({ admin: false, moderator: false });
     await visit("/chat/channel/9/Site");
 
-    const firstMessage = query(".chat-message-container");
-    const dropdown = selectKit(".chat-message-container .more-buttons");
+    const firstMessage = query(".chat-message");
+    const dropdown = selectKit(".chat-message .more-buttons");
     await dropdown.expand();
     await dropdown.selectRowByValue("selectMessage");
 
@@ -821,8 +821,8 @@ Widget.triangulate(arg: "test")
     updateCurrentUser({ admin: true, moderator: true });
     await visit("/chat/channel/9/Site");
 
-    const firstMessage = query(".chat-message-container");
-    const dropdown = selectKit(".chat-message-container .more-buttons");
+    const firstMessage = query(".chat-message");
+    const dropdown = selectKit(".chat-message .more-buttons");
     await dropdown.expand();
     await dropdown.selectRowByValue("selectMessage");
 
@@ -843,14 +843,14 @@ Widget.triangulate(arg: "test")
 
     await click(firstMessage.querySelector("input[type='checkbox']"));
     const allCheckboxes = queryAll(
-      ".chat-message-container input[type='checkbox']"
+      ".chat-message input[type='checkbox']"
     );
 
     await triggerEvent(allCheckboxes[allCheckboxes.length - 1], "click", {
       shiftKey: true,
     });
     assert.equal(
-      queryAll(".chat-message-container input:checked").length,
+      queryAll(".chat-message input:checked").length,
       4,
       "Bulk message select works"
     );
@@ -863,7 +863,7 @@ Widget.triangulate(arg: "test")
     updateCurrentUser({ admin: false, moderator: false });
     await visit("/chat/channel/9/Site");
     assert.notOk(
-      exists(".chat-message-container .chat-msgactions-hover .select-btn")
+      exists(".chat-message .chat-msgactions-hover .select-btn")
     );
   });
 
@@ -897,7 +897,7 @@ Widget.triangulate(arg: "test")
 
   test("Reacting works with no existing reactions", async function (assert) {
     await visit("/chat/channel/9/Site");
-    const message = query(".chat-message-container");
+    const message = query(".chat-message");
     assert.notOk(message.querySelector(".chat-message-reaction-list"));
     await click(message.querySelector(".chat-msgactions .react-btn"));
     await click(message.querySelector(".emoji-picker .section-group .emoji"));
@@ -912,7 +912,7 @@ Widget.triangulate(arg: "test")
 
   test("Reacting works with existing reactions", async function (assert) {
     await visit("/chat/channel/9/Site");
-    const messages = queryAll(".chat-message-container");
+    const messages = queryAll(".chat-message");
 
     // First 2 messages have no reactions; make sure the list isn't rendered
     assert.notOk(messages[0].querySelector(".chat-message-reaction-list"));
@@ -978,7 +978,7 @@ Widget.triangulate(arg: "test")
     await fillIn(composerInput, "hellloooo");
     await focus(composerInput);
     await triggerKeyEvent(composerInput, "keydown", 13); // 13 is enter keycode. Send message
-    const messages = queryAll(".chat-message-container");
+    const messages = queryAll(".chat-message");
     const lastMessage = messages[messages.length - 1];
     publishToMessageBus("/chat/9", {
       typ: "sent",
@@ -1032,27 +1032,27 @@ Widget.triangulate(arg: "test")
 
     assert.ok(
       exists(
-        ".chat-message-container[data-id=176] .chat-message-mention-warning"
+        ".chat-message[data-id=176] .chat-message-mention-warning"
       )
     );
     assert.ok(
       query(
-        ".chat-message-container[data-id=176] .chat-message-mention-warning .cannot-see"
+        ".chat-message[data-id=176] .chat-message-mention-warning .cannot-see"
       ).innerText.includes("hawk")
     );
 
     const withoutMembershipText = query(
-      ".chat-message-container[data-id=176] .chat-message-mention-warning .without-membership"
+      ".chat-message[data-id=176] .chat-message-mention-warning .without-membership"
     ).innerText;
     assert.ok(withoutMembershipText.includes("eviltrout"));
     assert.ok(withoutMembershipText.includes("sam"));
 
     await click(
-      ".chat-message-container[data-id=176] .chat-message-mention-warning .invite-link"
+      ".chat-message[data-id=176] .chat-message-mention-warning .invite-link"
     );
     assert.notOk(
       exists(
-        ".chat-message-container[data-id=176] .chat-message-mention-warning"
+        ".chat-message[data-id=176] .chat-message-mention-warning"
       )
     );
   });
@@ -1552,7 +1552,7 @@ acceptance(
 
     test("read only channels do not show the reply, react, delete, edit, restore, or rebuild options for messages", async function (assert) {
       await visit("/chat/channel/7/Uncategorized");
-      const dropdown = selectKit(".chat-message-container .more-buttons");
+      const dropdown = selectKit(".chat-message .more-buttons");
       await dropdown.expand();
       assert.notOk(exists(".select-kit-row[data-value='edit']"));
       assert.notOk(exists(".select-kit-row[data-value='deleteMessage']"));
@@ -1608,7 +1608,7 @@ acceptance(
 
     test("closed channels do not show the reply, react, delete, edit, restore, or rebuild options for messages", async function (assert) {
       await visit("/chat/channel/7/Uncategorized");
-      const dropdown = selectKit(".chat-message-container .more-buttons");
+      const dropdown = selectKit(".chat-message .more-buttons");
       await dropdown.expand();
       assert.notOk(exists(".select-kit-row[data-value='edit']"));
       assert.notOk(exists(".select-kit-row[data-value='deleteMessage']"));
@@ -1656,7 +1656,7 @@ acceptance(
 
     test("closed channels show the reply, react, delete, edit, restore, or rebuild options for messages", async function (assert) {
       await visit("/chat/channel/7/Uncategorized");
-      const dropdown = selectKit(".chat-message-container .more-buttons");
+      const dropdown = selectKit(".chat-message .more-buttons");
       await dropdown.expand();
       assert.ok(exists(".select-kit-row[data-value='edit']"));
       assert.ok(exists(".select-kit-row[data-value='deleteMessage']"));

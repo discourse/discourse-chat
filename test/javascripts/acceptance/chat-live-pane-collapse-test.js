@@ -99,11 +99,11 @@ acceptance("Discourse Chat - Chat live pane collapse", function (needs) {
   });
 
   test("can collapse and expand youtube chat", async function (assert) {
-    const youtubeContainer = ".chat-message-container[data-id=1] .lazyYT";
+    const youtubeContainer = ".chat-message[data-id=1] .lazyYT";
     const expandImage =
-      ".chat-message-container[data-id=1] .chat-message-collapser-closed";
+      ".chat-message[data-id=1] .chat-message-collapser-closed";
     const collapseImage =
-      ".chat-message-container[data-id=1] .chat-message-collapser-opened";
+      ".chat-message[data-id=1] .chat-message-collapser-opened";
 
     await visit("/chat/channel/1/cat");
 
@@ -126,11 +126,11 @@ acceptance("Discourse Chat - Chat live pane collapse", function (needs) {
 
   test("lightbox shows up before and after expand and collapse", async function (assert) {
     const lightboxImage = ".mfp-img";
-    const image = ".chat-message-container[data-id=2] .chat-img-upload";
+    const image = ".chat-message[data-id=2] .chat-img-upload";
     const expandImage =
-      ".chat-message-container[data-id=2] .chat-message-collapser-closed";
+      ".chat-message[data-id=2] .chat-message-collapser-closed";
     const collapseImage =
-      ".chat-message-container[data-id=2] .chat-message-collapser-opened";
+      ".chat-message[data-id=2] .chat-message-collapser-opened";
 
     await visit("/chat/channel/1/cat");
 

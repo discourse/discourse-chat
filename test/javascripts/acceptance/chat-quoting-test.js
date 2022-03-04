@@ -50,8 +50,8 @@ acceptance("Discourse Chat | quoting out of topic", function (needs) {
 
   test("it opens the composer and appends the quote", async function (assert) {
     await visit("/chat/channel/7/Uncategorized");
-    const firstMessage = query(".chat-message-container");
-    const dropdown = selectKit(".chat-message-container .more-buttons");
+    const firstMessage = query(".chat-message");
+    const dropdown = selectKit(".chat-message .more-buttons");
     await dropdown.expand();
     await dropdown.selectRowByValue("selectMessage");
 
@@ -106,8 +106,8 @@ acceptance("Discourse Chat | quote permissions", function (needs) {
 
   test("it does not show the quote button in direct messages", async function (assert) {
     await visit("/chat/channel/75/@hawk");
-    const firstMessage = query(".chat-message-container");
-    const dropdown = selectKit(".chat-message-container .more-buttons");
+    const firstMessage = query(".chat-message");
+    const dropdown = selectKit(".chat-message .more-buttons");
     await dropdown.expand();
     await dropdown.selectRowByValue("selectMessage");
     assert.ok(firstMessage.classList.contains("selecting-messages"));
@@ -145,8 +145,8 @@ acceptance("Discourse Chat | quoting when topic open", async function (needs) {
     this.chatService.set("sidebarActive", false);
     await click(".header-dropdown-toggle.open-chat");
     assert.ok(visible(".topic-chat-float-container"), "chat float is open");
-    const firstMessage = query(".chat-message-container");
-    const dropdown = selectKit(".chat-message-container .more-buttons");
+    const firstMessage = query(".chat-message");
+    const dropdown = selectKit(".chat-message .more-buttons");
     await dropdown.expand();
     await dropdown.selectRowByValue("selectMessage");
     assert.ok(firstMessage.classList.contains("selecting-messages"));
@@ -186,8 +186,8 @@ acceptance(
 
     test("it copies the quote to the clipboard", async function (assert) {
       await visit("/chat/channel/7/Uncategorized");
-      const firstMessage = query(".chat-message-container");
-      const dropdown = selectKit(".chat-message-container .more-buttons");
+      const firstMessage = query(".chat-message");
+      const dropdown = selectKit(".chat-message .more-buttons");
       await dropdown.expand();
       await dropdown.selectRowByValue("selectMessage");
 
@@ -226,8 +226,8 @@ acceptance("Discourse Chat | quoting on mobile", async function (needs) {
 
   test("it opens the chatable, opens the composer, and pastes the markdown in", async function (assert) {
     await visit("/chat/channel/7/Uncategorized");
-    const firstMessage = query(".chat-message-container");
-    const dropdown = selectKit(".chat-message-container .more-buttons");
+    const firstMessage = query(".chat-message");
+    const dropdown = selectKit(".chat-message .more-buttons");
     await dropdown.expand();
     await dropdown.selectRowByValue("selectMessage");
 

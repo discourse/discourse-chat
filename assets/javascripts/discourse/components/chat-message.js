@@ -51,7 +51,7 @@ export default Component.extend({
     }
 
     document
-      .querySelector(`.chat-message-container[data-id='${this.message.id}']`)
+      .querySelector(`.chat-message[data-id='${this.message.id}']`)
       ?.querySelectorAll(".mention")
       .forEach((node) => {
         const mention = node.textContent.trim().substring(1);
@@ -235,9 +235,7 @@ export default Component.extend({
 
   @discourseComputed("selecting")
   messageContainerClasses(selecting) {
-    return `chat-message-container ${
-      selecting ? "selecting-messages" : ""
-    }`.trim();
+    return `chat-message ${selecting ? "selecting-messages" : ""}`.trim();
   },
 
   @discourseComputed(
@@ -500,7 +498,7 @@ export default Component.extend({
   @action
   startReactionForMsgActions() {
     const element = document.querySelector(
-      `.chat-message-container[data-id='${this.message.id}']`
+      `.chat-message[data-id='${this.message.id}']`
     );
     const btn = element.querySelector(".chat-msgactions-hover .react-btn");
     this._startReaction(btn, this.SHOW_LEFT);
@@ -509,7 +507,7 @@ export default Component.extend({
   @action
   startReactionForReactionList() {
     const element = document.querySelector(
-      `.chat-message-container[data-id='${this.message.id}']`
+      `.chat-message[data-id='${this.message.id}']`
     );
     const btn = element.querySelector(
       ".chat-message-reaction-list .chat-message-react-btn"
@@ -540,7 +538,7 @@ export default Component.extend({
 
   _repositionEmojiPicker(btn, position) {
     const element = document.querySelector(
-      `.chat-message-container[data-id='${this.message.id}']`
+      `.chat-message[data-id='${this.message.id}']`
     );
 
     if (!element) {
@@ -779,7 +777,7 @@ export default Component.extend({
   @action
   copyLinkToMessage() {
     const element = document.querySelector(
-      `.chat-message-container[data-id='${this.message.id}']`
+      `.chat-message[data-id='${this.message.id}']`
     );
 
     element.querySelector(".link-to-message-btn")?.classList?.add("copied");

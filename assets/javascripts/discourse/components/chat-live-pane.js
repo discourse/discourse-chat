@@ -458,7 +458,7 @@ export default Component.extend({
     }
 
     const messageEl = this._scrollerEl.querySelector(
-      `.chat-message-container[data-id=${messageId}]`
+      `.chat-message[data-id=${messageId}]`
     );
     if (messageEl) {
       schedule("afterRender", () => {
@@ -1333,7 +1333,7 @@ export default Component.extend({
   _resetHighlightForMessage(chatMessageId) {
     document
       .querySelector(
-        `.chat-message-container[data-id=${chatMessageId}] .chat-message-text`
+        `.chat-message[data-id=${chatMessageId}] .chat-message-text`
       )
       ?.classList.remove("hljs-complete");
   },

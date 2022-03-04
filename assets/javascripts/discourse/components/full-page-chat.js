@@ -54,12 +54,17 @@ export default Component.extend({
 
   @bind
   _autoFocusChatComposer(e) {
-    if (!e.target || e.target.classList.contains("chat-composer-input")) {
+    if (!e.key || e.key.length > 1 || e.metaKey || e.ctrlKey) {
+      return; // Only care about single characters, unlike `Escape`
+    }
+    const target = e.target;
+    if (!target || target.classList.contains("chat-composer-input")) {
       return;
     }
 
-    if (!e.key || e.key.length > 1) {
-      return; // Only care about single characters, unlike `Escape`
+    const lowerTagName = target.tagName.toLowerCase();
+    if (lowerTagName === "input" || lowerTagName === "textarea") {
+      return;
     }
 
     e.preventDefault();

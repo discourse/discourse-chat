@@ -43,6 +43,7 @@ export default createWidget("header-chat-link", {
   chatLinkHtml(indicatorNode) {
     return h(
       `a.icon${this.chat.isChatPage || this.chat.chatOpen ? ".active" : ""}`,
+      { attributes: { tabindex: 0 } },
       [iconNode("comment"), indicatorNode].filter(Boolean)
     );
   },
@@ -51,6 +52,12 @@ export default createWidget("header-chat-link", {
     if (e.which === 2) {
       // Middle mouse click
       window.open(getURL("/chat"), "_blank").focus();
+    }
+  },
+
+  keyDown(e) {
+    if (e.code === "Enter") {
+      return this.click();
     }
   },
 

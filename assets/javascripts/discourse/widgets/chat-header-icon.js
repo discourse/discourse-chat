@@ -14,6 +14,7 @@ export default createWidget("header-chat-link", {
     if (!this.chat.userCanChat) {
       return;
     }
+
     if (
       this.currentUser.isInDoNotDisturb() ||
       (this.currentUser.chat_isolated && !this.chat.isChatPage)
@@ -54,7 +55,7 @@ export default createWidget("header-chat-link", {
   },
 
   click() {
-    if (this.chat.isChatPage) {
+    if (this.chat.isChatPage && !this.site.mobileView) {
       return;
     }
 

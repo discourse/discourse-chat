@@ -6,7 +6,13 @@ module Jobs
 
     def execute(args = {})
       channel_archive = ::ChatChannelArchive.find_by(id: args[:chat_channel_archive_id])
-      return if channel_archive.blank?
+
+      # this should not really happen, but better to do this than throw an error
+      if channel_archive.blank?
+        Rails.logger.warn("Chat channel archive #{args[:chat_channel_archive_id]} could not be found, aborting archive job.")
+        return
+      end
+
       return if channel_archive.complete?
 
       DistributedMutex.synchronize(

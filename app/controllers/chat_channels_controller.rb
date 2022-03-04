@@ -188,12 +188,9 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     params.require(:chat_channel_id)
     params.require(:type)
 
-    topic_type = params[:type] == "newTopic" ? :new : :existing
-    topic_params_ok = \
-      (topic_type == :existing && params[:topic_id].present?) ||
-      (topic_type == :new && params[:title].present?)
-
-    raise Discourse::InvalidParameters if !topic_params_ok
+    if params[:type] == "newTopic" ? params[:title].blank? : params[:topic_id].blank?
+      raise Discourse::InvalidParameters
+    end
 
     chat_channel = ChatChannel.find_by(id: params[:chat_channel_id])
     raise Discourse::NotFound if chat_channel.blank?

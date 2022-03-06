@@ -14,6 +14,7 @@ export default createWidget("header-chat-link", {
     if (!this.chat.userCanChat) {
       return;
     }
+
     if (
       this.currentUser.isInDoNotDisturb() ||
       (this.currentUser.chat_isolated && !this.chat.isChatPage)
@@ -42,6 +43,7 @@ export default createWidget("header-chat-link", {
   chatLinkHtml(indicatorNode) {
     return h(
       `a.icon${this.chat.isChatPage || this.chat.chatOpen ? ".active" : ""}`,
+      { attributes: { tabindex: 0 } },
       [iconNode("comment"), indicatorNode].filter(Boolean)
     );
   },
@@ -53,8 +55,14 @@ export default createWidget("header-chat-link", {
     }
   },
 
+  keyDown(e) {
+    if (e.code === "Enter") {
+      return this.click();
+    }
+  },
+
   click() {
-    if (this.chat.isChatPage) {
+    if (this.chat.isChatPage && !this.site.mobileView) {
       return;
     }
 

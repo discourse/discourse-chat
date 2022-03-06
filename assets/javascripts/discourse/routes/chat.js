@@ -2,6 +2,7 @@ import DiscourseRoute from "discourse/routes/discourse";
 import I18n from "I18n";
 import { defaultHomepage } from "discourse/lib/utilities";
 import { inject as service } from "@ember/service";
+import { scrollTop } from "discourse/mixins/scroll-top";
 
 export default DiscourseRoute.extend({
   chat: service(),
@@ -14,5 +15,9 @@ export default DiscourseRoute.extend({
     if (!this.chat.userCanChat) {
       return this.transitionTo(`discovery.${defaultHomepage()}`);
     }
+  },
+
+  activate() {
+    scrollTop();
   },
 });

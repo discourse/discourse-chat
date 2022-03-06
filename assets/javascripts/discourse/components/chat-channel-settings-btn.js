@@ -35,6 +35,9 @@ export default Component.extend({
     if (!this.currentUser.staff) {
       return;
     }
+    if (!this.channelSettingsOptions.map((a) => a.id).includes(id)) {
+      throw new Error(`The action ${id} is not allowed`);
+    }
     this[id]();
   },
 

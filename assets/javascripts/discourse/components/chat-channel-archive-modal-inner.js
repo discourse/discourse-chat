@@ -49,7 +49,7 @@ export default Component.extend({
           }
         }, 3000);
       })
-      .catch((error) => popupAjaxError(error))
+      .catch(popupAjaxError)
       .finally(() => this.set("saving", false));
   },
 

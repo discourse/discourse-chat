@@ -275,12 +275,12 @@ acceptance("Discourse Chat - without unread", function (needs) {
     // 177 is message id from fixture
     const highlighted = [];
     const notHighlighted = [];
-    query(".chat-message-container[data-id=177]")
+    query(".chat-message-container[data-id='177']")
       .querySelectorAll(".mention.highlighted")
       .forEach((node) => {
         highlighted.push(node.textContent.trim());
       });
-    query(".chat-message-container[data-id=177]")
+    query(".chat-message-container[data-id='177']")
       .querySelectorAll(".mention:not(.highlighted)")
       .forEach((node) => {
         notHighlighted.push(node.textContent.trim());
@@ -337,7 +337,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
   test("Admin only controls are present", async function (assert) {
     await visit("/chat/channel/9/Site");
     const currentUserDropdown = selectKit(
-      ".chat-message-container[data-id=174] .more-buttons"
+      ".chat-message-container[data-id='174'] .more-buttons"
     );
     await currentUserDropdown.expand();
 
@@ -362,7 +362,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     );
 
     const notCurrentUserDropdown = selectKit(
-      ".chat-message-container[data-id=175] .more-buttons"
+      ".chat-message-container[data-id='175'] .more-buttons"
     );
 
     await notCurrentUserDropdown.expand();
@@ -383,7 +383,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     );
 
     const currentUserDropdown = selectKit(
-      ".chat-message-container[data-id=174] .more-buttons"
+      ".chat-message-container[data-id='174'] .more-buttons"
     );
     await currentUserDropdown.expand();
 
@@ -424,7 +424,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     );
 
     const notCurrentUserDropdown = selectKit(
-      ".chat-message-container[data-id=175] .more-buttons"
+      ".chat-message-container[data-id='175'] .more-buttons"
     );
     await notCurrentUserDropdown.expand();
 
@@ -622,7 +622,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     await chatSettled();
     assert.ok(
       query(
-        ".chat-message-container[data-id=175] .chat-message-text"
+        ".chat-message-container[data-id='175'] .chat-message-text"
       ).innerHTML.includes(cooked)
     );
   });
@@ -672,7 +672,7 @@ Widget.triangulate(arg: "test")
     );
     assert.ok(
       exists(
-        ".chat-message-container[data-id=202] .chat-message-text.hljs-complete code.lang-ruby.hljs"
+        ".chat-message-container[data-id='202'] .chat-message-text.hljs-complete code.lang-ruby.hljs"
       ),
       "chat message code block has been highlighted as ruby code"
     );
@@ -1032,27 +1032,27 @@ Widget.triangulate(arg: "test")
 
     assert.ok(
       exists(
-        ".chat-message-container[data-id=176] .chat-message-mention-warning"
+        ".chat-message-container[data-id='176'] .chat-message-mention-warning"
       )
     );
     assert.ok(
       query(
-        ".chat-message-container[data-id=176] .chat-message-mention-warning .cannot-see"
+        ".chat-message-container[data-id='176'] .chat-message-mention-warning .cannot-see"
       ).innerText.includes("hawk")
     );
 
     const withoutMembershipText = query(
-      ".chat-message-container[data-id=176] .chat-message-mention-warning .without-membership"
+      ".chat-message-container[data-id='176'] .chat-message-mention-warning .without-membership"
     ).innerText;
     assert.ok(withoutMembershipText.includes("eviltrout"));
     assert.ok(withoutMembershipText.includes("sam"));
 
     await click(
-      ".chat-message-container[data-id=176] .chat-message-mention-warning .invite-link"
+      ".chat-message-container[data-id='176'] .chat-message-mention-warning .invite-link"
     );
     assert.notOk(
       exists(
-        ".chat-message-container[data-id=176] .chat-message-mention-warning"
+        ".chat-message-container[data-id='176'] .chat-message-mention-warning"
       )
     );
   });

@@ -7,7 +7,7 @@ import discourseComputed, {
   afterRender,
   bind,
 } from "discourse-common/utils/decorators";
-import EmberObject, { action } from "@ember/object";
+import EmberObject, { action, computed } from "@ember/object";
 import { ajax } from "discourse/lib/ajax";
 import { autoUpdatingRelativeAge } from "discourse/lib/formatter";
 import { cancel, later, schedule } from "@ember/runloop";
@@ -85,6 +85,16 @@ export default Component.extend({
     );
 
     cancel(this._invitationSentTimer);
+  },
+
+  @computed("message.id")
+  get element() {
+    return (
+      this.message?.id &&
+      document.querySelector(
+        `.chat-message-container[data-id='${this.message.id}']`
+      )
+    );
   },
 
   _subscribeToAppEvents() {
@@ -499,19 +509,21 @@ export default Component.extend({
 
   @action
   startReactionForMsgActions() {
-    const element = document.querySelector(
-      `.chat-message-container[data-id='${this.message.id}']`
-    );
-    const btn = element.querySelector(".chat-msgactions-hover .react-btn");
+    if (!this.element) {
+      return;
+    }
+
+    const btn = this.element.querySelector(".chat-msgactions-hover .react-btn");
     this._startReaction(btn, this.SHOW_LEFT);
   },
 
   @action
   startReactionForReactionList() {
-    const element = document.querySelector(
-      `.chat-message-container[data-id='${this.message.id}']`
-    );
-    const btn = element.querySelector(
+    if (!this.element) {
+      return;
+    }
+
+    const btn = this.element.querySelector(
       ".chat-message-reaction-list .chat-message-react-btn"
     );
     this._startReaction(btn, this.SHOW_RIGHT);
@@ -539,15 +551,11 @@ export default Component.extend({
   },
 
   _repositionEmojiPicker(btn, position) {
-    const element = document.querySelector(
-      `.chat-message-container[data-id='${this.message.id}']`
-    );
-
-    if (!element) {
+    if (!this.element) {
       return;
     }
 
-    const emojiPicker = element.querySelector(".emoji-picker");
+    const emojiPicker = this.element.querySelector(".emoji-picker");
     if (!emojiPicker || !btn) {
       return;
     }
@@ -778,11 +786,13 @@ export default Component.extend({
 
   @action
   copyLinkToMessage() {
-    const element = document.querySelector(
-      `.chat-message-container[data-id='${this.message.id}']`
-    );
+    if (!this.element) {
+      return;
+    }
 
-    element.querySelector(".link-to-message-btn")?.classList?.add("copied");
+    this.element
+      .querySelector(".link-to-message-btn")
+      ?.classList?.add("copied");
 
     const { protocol, host } = window.location;
     let url = getURL(
@@ -792,7 +802,7 @@ export default Component.extend({
     clipboardCopy(url);
 
     later(() => {
-      element
+      this.element
         ?.querySelector(".link-to-message-btn")
         ?.classList?.remove("copied");
     }, 250);

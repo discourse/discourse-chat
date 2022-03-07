@@ -7,7 +7,7 @@ import discourseComputed, {
   afterRender,
   bind,
 } from "discourse-common/utils/decorators";
-import EmberObject, { action } from "@ember/object";
+import EmberObject, { action, computed } from "@ember/object";
 import { ajax } from "discourse/lib/ajax";
 import { autoUpdatingRelativeAge } from "discourse/lib/formatter";
 import { cancel, later, schedule } from "@ember/runloop";
@@ -31,9 +31,11 @@ export default Component.extend({
   emojiStore: service("emoji-store"),
   adminTools: optionalService(),
   _hasSubscribedToAppEvents: false,
+  tagName: "",
 
   init() {
     this._super(...arguments);
+
     this.set("_loadingReactions", []);
     this.message.set("reactions", EmberObject.create(this.message.reactions));
     this.message.id
@@ -43,20 +45,19 @@ export default Component.extend({
 
   didInsertElement() {
     this._super(...arguments);
-    if (!this.currentUser) {
+
+    if (!this.currentUser || !this.message) {
       return;
     }
-    this.element
-      .querySelector(".chat-message-content .chat-message-text")
-      ?.querySelectorAll(".mention")
-      .forEach((node) => {
-        const mention = node.textContent.trim().substring(1);
-        const highlightable = [this.currentUser.username, HERE, ALL];
-        if (highlightable.includes(mention)) {
-          node.classList.add("highlighted");
-          node.classList.add("valid-mention");
-        }
-      });
+
+    this.messageContainer?.querySelectorAll(".mention").forEach((node) => {
+      const mention = node.textContent.trim().substring(1);
+      const highlightable = [this.currentUser.username, HERE, ALL];
+      if (highlightable.includes(mention)) {
+        node.classList.add("highlighted");
+        node.classList.add("valid-mention");
+      }
+    });
   },
 
   willDestroyElement() {
@@ -81,6 +82,14 @@ export default Component.extend({
     );
 
     cancel(this._invitationSentTimer);
+  },
+
+  @computed("message.{id,stagedId}")
+  get messageContainer() {
+    const id = this.message?.id || this.message?.stagedId;
+    return (
+      id && document.querySelector(`.chat-message-container[data-id='${id}']`)
+    );
   },
 
   _subscribeToAppEvents() {
@@ -208,16 +217,18 @@ export default Component.extend({
     this[value].call();
   },
 
-  @discourseComputed("message")
-  show(message) {
+  @discourseComputed("message", "details.can_moderate")
+  show(message, canModerate) {
     return (
       !message.deleted_at ||
       this.currentUser === this.message.user.id ||
-      this.currentUser.staff
+      this.currentUser.staff ||
+      canModerate
     );
   },
 
-  click() {
+  @action
+  handleClick() {
     if (this.site.mobileView) {
       this.toggleProperty("isHovered");
     }
@@ -228,9 +239,9 @@ export default Component.extend({
     return hide && !webhookEvent;
   },
 
-  @discourseComputed("selectingMessages", "message.id")
-  messageContainerClasses(selecting, id) {
-    return `chat-message-container chat-message-container-${id} ${
+  @discourseComputed("selectingMessages")
+  messageContainerClasses(selecting) {
+    return `chat-message-container ${
       selecting ? "selecting-messages" : ""
     }`.trim();
   },
@@ -494,13 +505,23 @@ export default Component.extend({
 
   @action
   startReactionForMsgActions() {
-    const btn = this.element.querySelector(".chat-msgactions-hover .react-btn");
+    if (!this.messageContainer) {
+      return;
+    }
+
+    const btn = this.messageContainer.querySelector(
+      ".chat-msgactions-hover .react-btn"
+    );
     this._startReaction(btn, this.SHOW_LEFT);
   },
 
   @action
   startReactionForReactionList() {
-    const btn = this.element.querySelector(
+    if (!this.messageContainer) {
+      return;
+    }
+
+    const btn = this.messageContainer.querySelector(
       ".chat-message-reaction-list .chat-message-react-btn"
     );
     this._startReaction(btn, this.SHOW_RIGHT);
@@ -528,11 +549,11 @@ export default Component.extend({
   },
 
   _repositionEmojiPicker(btn, position) {
-    if (!this.element) {
+    if (!this.messageContainer) {
       return;
     }
 
-    const emojiPicker = this.element.querySelector(".emoji-picker");
+    const emojiPicker = this.messageContainer.querySelector(".emoji-picker");
     if (!emojiPicker || !btn) {
       return;
     }
@@ -763,7 +784,11 @@ export default Component.extend({
 
   @action
   copyLinkToMessage() {
-    this.element
+    if (!this.messageContainer) {
+      return;
+    }
+
+    this.messageContainer
       .querySelector(".link-to-message-btn")
       ?.classList?.add("copied");
 
@@ -775,7 +800,7 @@ export default Component.extend({
     clipboardCopy(url);
 
     later(() => {
-      this.element
+      this.messageContainer
         ?.querySelector(".link-to-message-btn")
         ?.classList?.remove("copied");
     }, 250);

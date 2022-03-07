@@ -45,3 +45,7 @@ plugins:
     default: false
     hidden: true
     client: true
+  chat_default_channel_id:
+    default: ""
+    client: true
+    validator: "ChatDefaultChannelValidator"

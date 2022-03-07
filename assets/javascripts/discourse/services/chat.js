@@ -346,16 +346,22 @@ export default Service.extend({
 
   getIdealFirstChannelId() {
     // When user opens chat we need to give them the 'best' channel when they enter.
+    //
     // Look for public channels with mentions. If one exists, enter that.
     // Next best is a DM channel with unread messages.
     // Next best is a public channel with unread messages.
+    // Then we fall back to the chat_default_channel_id site setting
+    // if that is present and in the list of channels the user can access.
+    // If none of these options exist, then we get the first public channel,
+    // or failing that the first DM channel.
     return this.getChannels().then(() => {
       // Defined in order of significance.
       let publicChannelWithMention,
         dmChannelWithUnread,
         publicChannelWithUnread,
         publicChannel,
-        dmChannel;
+        dmChannel,
+        defaultChannel;
 
       for (const [channel, state] of Object.entries(
         this.currentUser.chat_channel_tracking_state
@@ -372,6 +378,11 @@ export default Service.extend({
             break; // <- We have a public channel with a mention. Break and return this.
           } else if (!publicChannelWithUnread && state.unread_count > 0) {
             publicChannelWithUnread = channel;
+          } else if (
+            !defaultChannel &&
+            this.siteSettings.chat_default_channel_id === parseInt(channel, 10)
+          ) {
+            defaultChannel = channel;
           } else if (!publicChannel) {
             publicChannel = channel;
           }
@@ -381,6 +392,7 @@ export default Service.extend({
         publicChannelWithMention ||
         dmChannelWithUnread ||
         publicChannelWithUnread ||
+        defaultChannel ||
         publicChannel ||
         dmChannel
       );

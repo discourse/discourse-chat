@@ -68,6 +68,10 @@ en:
         without_membership:
           one: "%{usernames} has not joined this channel."
           other: "%{usernames} have not joined this channel."
+      aria_roles:
+        header: "Chat header"
+        composer: "Chat composer"
+        channel_list: "Chat channel list"
 
       no_public_channels: "You have not joined any channels."
       only_chat_push_notifications:

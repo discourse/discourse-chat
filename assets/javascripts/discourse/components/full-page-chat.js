@@ -58,7 +58,7 @@ export default Component.extend({
       return; // Only care about single characters, unlike `Escape`
     }
     const target = e.target;
-    if (!target || target.classList.contains("chat-composer-input")) {
+    if (!target) {
       return;
     }
 

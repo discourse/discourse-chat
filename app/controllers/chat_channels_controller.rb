@@ -184,6 +184,35 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     }, ChatChannelSearchSerializer, root: false)
   end
 
+  def archive
+    params.require(:chat_channel_id)
+    params.require(:type)
+
+    if params[:type] == "newTopic" ? params[:title].blank? : params[:topic_id].blank?
+      raise Discourse::InvalidParameters
+    end
+
+    chat_channel = ChatChannel.find_by(id: params[:chat_channel_id])
+    raise Discourse::NotFound if chat_channel.blank?
+
+    if !guardian.can_change_channel_status?(chat_channel, :read_only)
+      raise Discourse::InvalidAccess.new(I18n.t("chat.errors.channel_cannot_be_archived"))
+    end
+
+    DiscourseChat::ChatChannelArchiveService.begin_archive_process(
+      chat_channel: chat_channel,
+      acting_user: current_user,
+      topic_params: {
+        topic_id: params[:topic_id],
+        topic_title: params[:title],
+        category_id: params[:category_id],
+        tags: params[:tags]
+      }
+    )
+
+    render json: success_json
+  end
+
   private
 
   def render_channel_for_chatable(channel)

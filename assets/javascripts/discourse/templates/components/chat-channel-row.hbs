@@ -11,6 +11,10 @@
   {{chat-channel-title channel=channel}}
   {{chat-channel-unread-indicator channel=channel}}
 
+  {{#if showSettingsButton}}
+    {{chat-channel-settings-btn channel=channel}}
+  {{/if}}
+
   {{#if options.leaveButton}}
     {{chat-channel-leave-btn
       channel=channel

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 Fabricator(:chat_channel) do
+  name { ["Gaming Lounge", "Music Lodge", "Random", "Politics", "Sports Center", "Kino Buffs"].sample }
   chatable { Fabricate(:topic) }
   status { :open }
 end

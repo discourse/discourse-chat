@@ -1,6 +1,6 @@
 <div class="chat-drawer">
   <div class={{containerClassNames}} data-chat-channel-id={{activeChannel.id}}>
-    <div class="topic-chat-drawer-header">
+    <div role="region" aria-label={{i18n "chat.aria_roles.header"}} class="topic-chat-drawer-header">
       {{#if chatView}}
         {{#if this.expanded}}
           {{flat-button

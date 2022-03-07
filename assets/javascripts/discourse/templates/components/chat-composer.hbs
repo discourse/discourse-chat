@@ -15,7 +15,7 @@
   }}
 {{/if}}
 
-<div class="chat-composer-row">
+<div role="region" aria-label={{i18n "chat.aria_roles.composer"}} class="chat-composer-row">
   {{#if showToolbar}}
     <div class="chat-composer-toolbar">
       {{#each toolbarButtons as |toolbarButton|}}

@@ -17,6 +17,15 @@ en:
       cancel_reply: "Cancel reply"
       chat_channels: "Channels"
       leave: "Leave channel"
+      channel_settings:
+        title: "Channel settings"
+        close_channel: "Close Channel"
+        archive_channel: "Archive Channel"
+        delete_channel: "Delete Channel"
+      channel_archive:
+        title: "Archive Channel"
+        instructions: "<p>Archiving a channel puts it into read-only mode and moves all messages from the channel into a new or existing topic. No new messages can be sent, and no existing messages can be edited or deleted.</p><p>Are you sure you want to archive the <strong>#%{channelTitle}</strong> channel?</p>"
+        process_started: "Archiving process has started. This channel will be reloaded shortly, and you will receive a personal message when the archive process is complete."
       channel_list_popup:
         browse: "Browse channels"
         create: "Create a channel"
@@ -59,6 +68,10 @@ en:
         without_membership:
           one: "%{usernames} has not joined this channel."
           other: "%{usernames} have not joined this channel."
+      aria_roles:
+        header: "Chat header"
+        composer: "Chat composer"
+        channel_list: "Chat channel list"
 
       no_public_channels: "You have not joined any channels."
       only_chat_push_notifications:
@@ -210,11 +223,13 @@ en:
           instructions:
             one: "You are about to create a new topic and populate it with the chat message you've selected."
             other: "You are about to create a new topic and populate it with the <b>%{count}</b> chat messages you've selected."
+          instructions_channel_archive: "You are about to create a new topic and archive the channel messages to it."
         existing_topic:
           title: "Move to Existing Topic"
           instructions:
             one: "Please choose the topic you'd like to move that chat message to."
             other: "Please choose the topic you'd like to move those <b>%{count}</b> chat messages to."
+          instructions_channel_archive: "Please choose the topic you'd like to archive the channel messages to."
         new_message:
           title: "Move to New Message"
           instructions:

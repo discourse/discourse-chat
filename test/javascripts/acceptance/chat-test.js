@@ -275,12 +275,12 @@ acceptance("Discourse Chat - without unread", function (needs) {
     // 177 is message id from fixture
     const highlighted = [];
     const notHighlighted = [];
-    query(".chat-message-container-177")
+    query(".chat-message-container[data-id='177']")
       .querySelectorAll(".mention.highlighted")
       .forEach((node) => {
         highlighted.push(node.textContent.trim());
       });
-    query(".chat-message-container-177")
+    query(".chat-message-container[data-id='177']")
       .querySelectorAll(".mention:not(.highlighted)")
       .forEach((node) => {
         notHighlighted.push(node.textContent.trim());
@@ -337,7 +337,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
   test("Admin only controls are present", async function (assert) {
     await visit("/chat/channel/9/Site");
     const currentUserDropdown = selectKit(
-      ".chat-message-container-174 .more-buttons"
+      ".chat-message-container[data-id='174'] .more-buttons"
     );
     await currentUserDropdown.expand();
 
@@ -362,7 +362,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     );
 
     const notCurrentUserDropdown = selectKit(
-      ".chat-message-container-175 .more-buttons"
+      ".chat-message-container[data-id='175'] .more-buttons"
     );
 
     await notCurrentUserDropdown.expand();
@@ -383,7 +383,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     );
 
     const currentUserDropdown = selectKit(
-      ".chat-message-container-174 .more-buttons"
+      ".chat-message-container[data-id='174'] .more-buttons"
     );
     await currentUserDropdown.expand();
 
@@ -424,7 +424,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     );
 
     const notCurrentUserDropdown = selectKit(
-      ".chat-message-container-175 .more-buttons"
+      ".chat-message-container[data-id='175'] .more-buttons"
     );
     await notCurrentUserDropdown.expand();
 
@@ -572,10 +572,9 @@ acceptance("Discourse Chat - without unread", function (needs) {
     // Wait for DOM to rerender. Message should be un-staged
     await chatSettled();
 
-    assert.ok(
-      lastMessage
-        .closest(".chat-message-container")
-        .classList.contains("chat-message-container-202")
+    assert.equal(
+      lastMessage.closest(".chat-message-container").dataset.id,
+      202
     );
     assert.notOk(lastMessage.classList.contains("chat-message-staged"));
 
@@ -623,7 +622,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     await chatSettled();
     assert.ok(
       query(
-        ".chat-message-container-175 .chat-message-text"
+        ".chat-message-container[data-id='175'] .chat-message-text"
       ).innerHTML.includes(cooked)
     );
   });
@@ -667,14 +666,13 @@ Widget.triangulate(arg: "test")
 
     const messages = queryAll(".chat-message");
     const lastMessage = messages[messages.length - 1];
-    assert.ok(
-      lastMessage
-        .closest(".chat-message-container")
-        .classList.contains("chat-message-container-202")
+    assert.equal(
+      lastMessage.closest(".chat-message-container").dataset.id,
+      202
     );
     assert.ok(
       exists(
-        ".chat-message-container-202 .chat-message-text.hljs-complete code.lang-ruby.hljs"
+        ".chat-message-container[data-id='202'] .chat-message-text.hljs-complete code.lang-ruby.hljs"
       ),
       "chat message code block has been highlighted as ruby code"
     );
@@ -994,7 +992,8 @@ Widget.triangulate(arg: "test")
       },
     });
     await chatSettled();
-    assert.ok(lastMessage.classList.contains("chat-message-container-202"));
+
+    assert.deepEqual(lastMessage.dataset.id, "202");
     await click(lastMessage.querySelector(".chat-msgactions .react-btn"));
     await click(
       lastMessage.querySelector(
@@ -1033,25 +1032,29 @@ Widget.triangulate(arg: "test")
     await chatSettled();
 
     assert.ok(
-      exists(".chat-message-container-176 .chat-message-mention-warning")
+      exists(
+        ".chat-message-container[data-id='176'] .chat-message-mention-warning"
+      )
     );
     assert.ok(
       query(
-        ".chat-message-container-176 .chat-message-mention-warning .cannot-see"
+        ".chat-message-container[data-id='176'] .chat-message-mention-warning .cannot-see"
       ).innerText.includes("hawk")
     );
 
     const withoutMembershipText = query(
-      ".chat-message-container-176 .chat-message-mention-warning .without-membership"
+      ".chat-message-container[data-id='176'] .chat-message-mention-warning .without-membership"
     ).innerText;
     assert.ok(withoutMembershipText.includes("eviltrout"));
     assert.ok(withoutMembershipText.includes("sam"));
 
     await click(
-      ".chat-message-container-176 .chat-message-mention-warning .invite-link"
+      ".chat-message-container[data-id='176'] .chat-message-mention-warning .invite-link"
     );
     assert.notOk(
-      exists(".chat-message-container-176 .chat-message-mention-warning")
+      exists(
+        ".chat-message-container[data-id='176'] .chat-message-mention-warning"
+      )
     );
   });
 
@@ -1061,6 +1064,25 @@ Widget.triangulate(arg: "test")
       query(".first-daily-message").innerText.trim(),
       "July 22, 2021"
     );
+  });
+
+  test("pressing keys focuses composer in full page chat", async function (assert) {
+    await visit("/chat/channel/9/Site");
+
+    document.activeElement.blur();
+    await triggerKeyEvent(document.body, "keydown", 65); // 65 is `a` keycode
+    let composer = query(".chat-composer-input");
+    assert.equal(composer.value, "a");
+    assert.equal(document.activeElement, composer);
+
+    document.activeElement.blur();
+    await triggerKeyEvent(document.body, "keydown", 65);
+    assert.equal(composer.value, "aa");
+
+    document.activeElement.blur();
+    await triggerKeyEvent(document.body, "keydown", 13); // 13 is `Enter` keycode
+    // Composer is not focused because `Enter` isn't a key that causes focus.
+    assert.notEqual(document.activeElement, composer);
   });
 });
 

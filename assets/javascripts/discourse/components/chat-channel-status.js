@@ -41,11 +41,10 @@ export default Component.extend({
         return "lock";
         break;
       case CHANNEL_STATUSES.readOnly:
-        // FIXME (martin): Use a pencil-slash icon here, we don't have one in FA5
-        return "far-eye";
+        return "comment-slash";
         break;
       case CHANNEL_STATUSES.archived:
-        return "folder";
+        return "archive";
         break;
     }
   },

@@ -9,9 +9,20 @@ en:
     chat_allowed_messages_for_other_trust_levels: "Number of messages that users with trust levels 1-4 is allowed to send in 30 seconds. Set to '0' to disable limit."
     chat_silence_user_sensitivity: "The likelihood that a user flagged in chat will be automatically silenced."
     chat_auto_silence_from_flags_duration: "Number of minutes that users will be silenced for when they are automatically silenced due to flagged chat messages."
-    chat_default_channel_id: "The chat channel that will be opened by default when a user has no unread messages or mentions in other channels."
     errors:
       chat_default_channel: "The default chat channel must be a public channel."
+  system_messages:
+    chat_channel_archive_complete:
+      title: "Chat Channel Archive Complete"
+      subject_template: "Chat channel archive completed successfully"
+      text_body_template: |
+        Archiving the chat channel **\#%{channel_name}** has been completed successfully. The messages were copied into the topic [%{topic_title}](%{topic_url}).
+    chat_channel_archive_failed:
+      title: "Chat Channel Archive Failed"
+      subject_template: "Chat channel archive failed"
+      text_body_template: |
+        Archiving the chat channel **\#%{channel_name}** has failed. %{messages_archived} messages have been archived. Partially archived messages were copied into the topic [%{topic_title}](%{topic_url}). Visit the channel at %{channel_url} to retry.
+    chat_default_channel_id: "The chat channel that will be opened by default when a user has no unread messages or mentions in other channels."
 
   chat:
     errors:
@@ -22,6 +33,7 @@ en:
       user_cannot_send_message: "You cannot send messages at this time."
       rate_limit_exceeded: "Exceeded the limit of chat messages that can be sent within 30 seconds"
       auto_silence_from_flags: "Chat message flagged with score high enough to silence user."
+      channel_cannot_be_archived: "The channel cannot be archived at this time, it must be either closed or open to archive."
     reviewables:
       actions:
         agree:
@@ -59,6 +71,8 @@ en:
         archived: "Archived"
         closed: "Closed"
         open: "Open"
+      archive:
+        first_post_raw: "This topic is an archive of the [%{channel_name}](%{channel_url}) chat channel."
 
   discourse_push_notifications:
     popup:

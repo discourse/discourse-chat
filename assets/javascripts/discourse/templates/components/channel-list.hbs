@@ -1,4 +1,4 @@
-<div class="chat-channels">
+<div role="region" aria-label={{i18n "chat.aria_roles.channel_list"}} class="chat-channels">
   <div class="chat-channel-divider">
     {{#if inSidebar}}
       <span
@@ -40,7 +40,7 @@
       </div>
     {{else}}
       {{#each publicChannels as |channel|}}
-        {{chat-channel-row channel=channel switchChannel=onSelect}}
+        {{chat-channel-row channel=channel switchChannel=onSelect options=(hash settingsButton=true)}}
       {{/each}}
     {{/if}}
   </div>

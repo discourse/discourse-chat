@@ -119,5 +119,48 @@ describe DiscourseChat::GuardianExtensions do
         expect(guardian.can_flag_in_chat_channel?(channel)).to eq(false)
       end
     end
+
+    describe "#can_moderate_chat?" do
+      context "for topic channel" do
+        fab!(:topic) { Fabricate(:topic) }
+
+        before do
+          channel.update(chatable: topic)
+        end
+
+        it "is based on whether the user is a group moderator or has high enough trust level, see core for details" do
+          Guardian.any_instance.stubs(:can_perform_action_available_to_group_moderators?).returns(true)
+          expect(guardian.can_moderate_chat?(channel.chatable)).to eq(true)
+          Guardian.any_instance.stubs(:can_perform_action_available_to_group_moderators?).returns(false)
+          expect(guardian.can_moderate_chat?(channel.chatable)).to eq(false)
+        end
+      end
+
+      context "for category channel" do
+        fab!(:category) { Fabricate(:category, read_restricted: true) }
+
+        before do
+          channel.update(chatable: category)
+        end
+
+        it "returns true for staff and false for regular users" do
+          expect(staff_guardian.can_moderate_chat?(channel.chatable)).to eq(true)
+          expect(guardian.can_moderate_chat?(channel.chatable)).to eq(false)
+        end
+      end
+
+      context "for DM channel" do
+        fab!(:dm_channel) { DirectMessageChannel.create! }
+
+        before do
+          channel.update(chatable_type: "DirectMessageType", chatable: dm_channel)
+        end
+
+        it "returns true for staff and false for regular users" do
+          expect(staff_guardian.can_moderate_chat?(channel.chatable)).to eq(true)
+          expect(guardian.can_moderate_chat?(channel.chatable)).to eq(false)
+        end
+      end
+    end
   end
 end

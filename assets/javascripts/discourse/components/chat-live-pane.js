@@ -286,6 +286,7 @@ export default Component.extend({
         can_delete_others: this.currentUser.staff,
         can_flag: messages.resultSetMeta.can_flag,
         user_silenced: messages.resultSetMeta.user_silenced,
+        can_moderate: messages.resultSetMeta.can_moderate,
       },
       registeredChatChannelId: this.chatChannel.id,
     });
@@ -458,7 +459,7 @@ export default Component.extend({
     }
 
     const messageEl = this._scrollerEl.querySelector(
-      `.chat-message-container-${messageId}`
+      `.chat-message-container[data-id='${messageId}']`
     );
     if (messageEl) {
       schedule("afterRender", () => {
@@ -1333,7 +1334,7 @@ export default Component.extend({
   _resetHighlightForMessage(chatMessageId) {
     document
       .querySelector(
-        `.chat-message-container-${chatMessageId} .chat-message-text`
+        `.chat-message-container[data-id='${chatMessageId}'] .chat-message-text`
       )
       ?.classList.remove("hljs-complete");
   },

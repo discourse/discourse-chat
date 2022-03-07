@@ -8,7 +8,7 @@ describe ChatTranscriptService do
   let(:channel) { Fabricate(:chat_channel, name: "The Beam Discussions") }
 
   def service(message_ids)
-    described_class.new(channel, Array.wrap(message_ids))
+    described_class.new(channel, messages_or_ids: Array.wrap(message_ids))
   end
 
   it "generates a simple chat transcript from one message" do

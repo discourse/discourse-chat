@@ -43,6 +43,10 @@ class ChatChannel < ActiveRecord::Base
     I18n.t("chat.channel.statuses.#{self.status}")
   end
 
+  def url
+    "#{Discourse.base_url}/chat/chat_channels/#{self.id}"
+  end
+
   def chatable_url
     return nil if direct_message_channel?
     return chatable.relative_url if topic_channel?
@@ -197,7 +201,7 @@ end
 #  updated_at              :datetime         not null
 #  name                    :string
 #  description             :text
-#  status                  :integer          default(0), not null
+#  status                  :integer          default("open"), not null
 #
 # Indexes
 #

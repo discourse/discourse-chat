@@ -62,6 +62,21 @@ RSpec.describe DiscourseChat::ChatController do
       expect(response.parsed_body["meta"]["can_flag"]).to be false
     end
 
+    it "returns `can_moderate=true` based on whether the user can moderate the chatable" do
+      user.update!(trust_level: 1)
+      get "/chat/#{chat_channel.id}/messages.json", params: { page_size: page_size }
+      expect(response.parsed_body["meta"]["can_moderate"]).to be false
+      user.update!(trust_level: 4)
+      get "/chat/#{chat_channel.id}/messages.json", params: { page_size: page_size }
+      expect(response.parsed_body["meta"]["can_moderate"]).to be true
+      chat_channel.update!(chatable: Fabricate(:category))
+      get "/chat/#{chat_channel.id}/messages.json", params: { page_size: page_size }
+      expect(response.parsed_body["meta"]["can_moderate"]).to be false
+      user.update!(admin: true)
+      get "/chat/#{chat_channel.id}/messages.json", params: { page_size: page_size }
+      expect(response.parsed_body["meta"]["can_moderate"]).to be true
+    end
+
     it "serializes `user_flag_status` for user who has a pending flag" do
       chat_message = chat_channel.chat_messages.last
       chat_message.add_flag(user)

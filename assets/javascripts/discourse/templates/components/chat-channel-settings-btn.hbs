@@ -1,0 +1,8 @@
+{{#if channelSettingsOptions}}
+  {{dropdown-select-box
+    options=(hash icon="cog" placementStrategy="absolute")
+    content=channelSettingsOptions
+    onChange=(action "handleChannelSettingsAction")
+    class="chat-channel-settings-btn"
+  }}
+{{/if}}

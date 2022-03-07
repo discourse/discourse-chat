@@ -467,7 +467,7 @@ RSpec.describe DiscourseChat::ChatChannelsController do
   end
 
   describe "#show" do
-    let!(:channel) { Fabricate(:chat_channel, chatable: topic, name: "My Great Channel & Stuff") }
+    fab!(:channel) { Fabricate(:chat_channel, chatable: topic, name: "My Great Channel & Stuff") }
 
     it "can find channel by id" do
       sign_in(user)
@@ -490,6 +490,68 @@ RSpec.describe DiscourseChat::ChatChannelsController do
       expect(response.status).to eq(404)
       get "/chat/chat_channels/#{UrlHelper.encode_component(channel.name)}.json"
       expect(response.status).to eq(404)
+    end
+  end
+
+  describe "#archive" do
+    fab!(:channel) { Fabricate(:chat_channel, chatable: topic, name: "The English Channel") }
+    let(:new_topic_params) { { type: "newTopic", title: "This is a test archive topic", category_id: category.id } }
+    let(:existing_topic_params) { { type: "existingTopic", topic_id: Fabricate(:topic).id } }
+
+    it "returns error if user is not admin" do
+      sign_in(user)
+      put "/chat/chat_channels/#{channel.id}/archive.json", params: new_topic_params
+      expect(response.status).to eq(403)
+    end
+
+    it "returns error if type or chat_channel_id is not provided" do
+      sign_in(admin)
+      put "/chat/chat_channels/#{channel.id}/archive.json", params: {}
+      expect(response.status).to eq(400)
+    end
+
+    it "returns error if title is not provided for new topic" do
+      sign_in(admin)
+      put "/chat/chat_channels/#{channel.id}/archive.json", params: { type: "newTopic" }
+      expect(response.status).to eq(400)
+    end
+
+    it "returns error if topic_id is not provided for existing topic" do
+      sign_in(admin)
+      put "/chat/chat_channels/#{channel.id}/archive.json", params: { type: "existingTopic" }
+      expect(response.status).to eq(400)
+    end
+
+    it "returns error if the channel cannot be archived" do
+      channel.update!(status: :archived)
+      sign_in(admin)
+      put "/chat/chat_channels/#{channel.id}/archive.json", params: new_topic_params
+      expect(response.status).to eq(403)
+    end
+
+    it "starts the archive process using a new topic" do
+      sign_in(admin)
+      put "/chat/chat_channels/#{channel.id}/archive.json", params: new_topic_params
+      channel_archive = ChatChannelArchive.find_by(chat_channel: channel)
+      expect(job_enqueued?(job: :chat_channel_archive, args: { chat_channel_archive_id: channel_archive.id })).to eq(true)
+      expect(channel.reload.status).to eq("read_only")
+    end
+
+    it "starts the archive process using an existing topic" do
+      sign_in(admin)
+      put "/chat/chat_channels/#{channel.id}/archive.json", params: existing_topic_params
+      channel_archive = ChatChannelArchive.find_by(chat_channel: channel)
+      expect(job_enqueued?(job: :chat_channel_archive, args: { chat_channel_archive_id: channel_archive.id })).to eq(true)
+      expect(channel.reload.status).to eq("read_only")
+    end
+
+    it "does nothing if the chat channel archive already exists" do
+      sign_in(admin)
+      put "/chat/chat_channels/#{channel.id}/archive.json", params: new_topic_params
+      expect(response.status).to eq(200)
+      expect {
+        put "/chat/chat_channels/#{channel.id}/archive.json", params: new_topic_params
+      }.not_to change { ChatChannelArchive.count }
     end
   end
 end

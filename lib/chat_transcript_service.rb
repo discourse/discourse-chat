@@ -60,9 +60,14 @@ class ChatTranscriptService
     end
   end
 
-  def initialize(channel, message_ids)
+  def initialize(channel, messages_or_ids: [])
     @channel = channel
-    @message_ids = message_ids
+
+    if messages_or_ids.all? { |m| m.is_a?(Numeric) }
+      @message_ids = messages_or_ids
+    else
+      @messages = messages_or_ids
+    end
   end
 
   def generate_markdown

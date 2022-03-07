@@ -14,6 +14,7 @@ class ChatChannelSerializer < ApplicationSerializer
              :unread_mentions,
              :updated_at,
              :status,
+             :archive_failed
 
   def include_description?
     object.description.present?
@@ -44,5 +45,17 @@ class ChatChannelSerializer < ApplicationSerializer
     when "Site"
       nil
     end
+  end
+
+  def archive
+    object.chat_channel_archive
+  end
+
+  def include_archive_failed?
+    scope.is_staff? && archive.present?
+  end
+
+  def archive_failed
+    archive.failed?
   end
 end

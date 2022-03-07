@@ -2,9 +2,9 @@ import Component from "@ember/component";
 import discourseComputed from "discourse-common/utils/decorators";
 import { alias, equal } from "@ember/object/computed";
 
-const NEW_TOPIC_SELECTION = "newTopic";
-const EXISTING_TOPIC_SELECTION = "existingTopic";
-const NEW_MESSAGE_SELECTION = "newMessage";
+export const NEW_TOPIC_SELECTION = "newTopic";
+export const EXISTING_TOPIC_SELECTION = "existingTopic";
+export const NEW_MESSAGE_SELECTION = "newMessage";
 
 export default Component.extend({
   newTopicSelection: NEW_TOPIC_SELECTION,

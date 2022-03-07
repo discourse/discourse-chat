@@ -8,10 +8,11 @@ import { equal } from "@ember/object/computed";
 import { ajax } from "discourse/lib/ajax";
 import { extractError } from "discourse/lib/ajax-error";
 import { isEmpty } from "@ember/utils";
-
-const NEW_TOPIC_SELECTION = "newTopic";
-const EXISTING_TOPIC_SELECTION = "existingTopic";
-const NEW_MESSAGE_SELECTION = "newMessage";
+import {
+  EXISTING_TOPIC_SELECTION,
+  NEW_MESSAGE_SELECTION,
+  NEW_TOPIC_SELECTION,
+} from "discourse/plugins/discourse-chat/discourse/components/chat-to-topic-selector";
 
 export default Controller.extend(ModalFunctionality, {
   selection: "newTopic",

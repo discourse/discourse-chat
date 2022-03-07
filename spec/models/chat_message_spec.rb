@@ -92,7 +92,7 @@ describe ChatMessage do
     end
 
     it "supports chat quote bbcode" do
-      chat_channel = Fabricate(:chat_channel)
+      chat_channel = Fabricate(:chat_channel, name: "testchannel")
       user = Fabricate(:user, username: "chatbbcodeuser")
       user2 = Fabricate(:user, username: "otherbbcodeuser")
       avatar_src = "//test.localhost#{User.system_avatar_template(user.username).gsub("{size}", "40")}"
@@ -100,10 +100,13 @@ describe ChatMessage do
       msg1 = Fabricate(:chat_message, chat_channel: chat_channel, message: "this is the first message", user: user)
       msg2 = Fabricate(:chat_message, chat_channel: chat_channel, message: "and another cool one", user: user2)
       other_messages_to_quote = [msg1, msg2]
-      cooked = ChatMessage.cook(ChatTranscriptService.new(chat_channel, other_messages_to_quote.map(&:id)).generate_markdown)
+      cooked = ChatMessage.cook(ChatTranscriptService.new(chat_channel, messages_or_ids: other_messages_to_quote.map(&:id)).generate_markdown)
 
       expect(cooked).to eq(<<~COOKED.chomp)
-        <div class="discourse-chat-transcript chat-transcript-chained" data-message-id="#{msg1.id}" data-username="chatbbcodeuser" data-datetime="#{msg1.created_at.iso8601}">
+        <div class="discourse-chat-transcript chat-transcript-chained" data-message-id="#{msg1.id}" data-username="chatbbcodeuser" data-datetime="#{msg1.created_at.iso8601}" data-channel-name="testchannel">
+        <div class="chat-transcript-meta">
+        Originally sent in <a href="/chat/chat_channels/testchannel">#testchannel</a>
+        </div>
         <div class="chat-transcript-user">
         <div class="chat-transcript-user-avatar">
         <img loading="lazy" alt="" width="20" height="20" src="#{avatar_src}" class="avatar">

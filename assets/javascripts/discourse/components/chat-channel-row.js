@@ -17,6 +17,15 @@ export default Component.extend({
   active: propertyEqual("channel.id", "chat.activeChannel.id"),
   options: null,
 
+  init() {
+    this._super(...arguments);
+    this.set("options", this.options || {});
+    this.set(
+      "showSettingsButton",
+      this.options.settingsButton && this.currentUser.staff
+    );
+  },
+
   @discourseComputed("active", "channel.{id,muted}", "channel.focused")
   rowClassNames(active, channel, focused) {
     const classes = ["chat-channel-row", `chat-channel-${channel.id}`];
@@ -56,6 +65,13 @@ export default Component.extend({
   @action
   handleClick(event) {
     if (event.target.classList.contains("chat-channel-leave-btn")) {
+      return;
+    }
+
+    if (
+      event.target.classList.contains("chat-channel-settings-btn") ||
+      event.target.parentElement.classList.contains("select-kit-header-wrapper")
+    ) {
       return;
     }
 

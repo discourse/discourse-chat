@@ -74,6 +74,9 @@ export default Component.extend({
 
   @action
   handleChannelAction(id) {
+    if (!this.channelsActions.map((a) => a.id).includes(id)) {
+      throw new Error(`The action ${id} is not allowed`);
+    }
     this[id]();
   },
 

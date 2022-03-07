@@ -63,7 +63,7 @@ export default Component.extend({
   },
 
   @action
-  handleKeydown(event) {
+  handleKeyUp(event) {
     if (event.key !== "Enter") {
       return;
     }

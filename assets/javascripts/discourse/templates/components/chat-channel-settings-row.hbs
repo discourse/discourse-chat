@@ -34,6 +34,7 @@
           {{/if}}
         </div>
       {{/if}}
+
       {{#if channel.expanded}}
         <div class="chat-channel-row-controls">
 
@@ -68,6 +69,7 @@
               }}
             </div>
           {{/unless}}
+
           <div class="controls save-container">
             <label></label>
             {{d-button
@@ -86,6 +88,7 @@
         </div>
       {{/if}}
     </div>
+
     <div class="chat-channel-data">
       {{#if channel.following}}
         {{d-icon "check"}}<p class="channel-joined">{{i18n "chat.settings.followed"}}</p>
@@ -121,5 +124,4 @@
       }}
     {{/if}}
   </div>
-
 </div>

@@ -23,7 +23,7 @@ export default Component.extend({
 
   didInsertElement() {
     this._super(...arguments);
-    document.addEventListener("keydown", this.onKeyDown);
+    document.addEventListener("keyup", this.onKeyUp);
     document
       .getElementById("chat-channel-selector-modal-inner")
       ?.addEventListener("mouseover", this.mouseover);
@@ -33,7 +33,7 @@ export default Component.extend({
   willDestroyElement() {
     this._super(...arguments);
     this.appEvents.off("chat-channel-selector-modal:close", this.close);
-    document.removeEventListener("keydown", this.onKeyDown);
+    document.removeEventListener("keyup", this.onKeyUp);
     document
       .getElementById("chat-channel-selector-modal-inner")
       ?.removeEventListener("mouseover", this.mouseover);
@@ -59,7 +59,7 @@ export default Component.extend({
   },
 
   @bind
-  onKeyDown(e) {
+  onKeyUp(e) {
     if (e.key === "Enter") {
       let focusedChannel = this.channels.find((c) => c.focused);
       this.switchChannel(focusedChannel);

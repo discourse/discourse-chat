@@ -203,7 +203,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     this.onValueChange(this.value, this.uploads, this.replyToMsg);
   },
 
-  keyDown(event) {
+  keyUp(event) {
     if (this.site.mobileView || event.altKey || event.metaKey) {
       return;
     }
@@ -364,9 +364,10 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
       treatAsTextarea: true,
 
       onKeyUp: (text, cp) => {
-        const matches = /(?:^|[\s.\?,@\/#!%&*;:\[\]{}=\-_()])(:(?!:).?[\w-]*:?(?!:)(?:t\d?)?:?) ?$/gi.exec(
-          text.substring(0, cp)
-        );
+        const matches =
+          /(?:^|[\s.\?,@\/#!%&*;:\[\]{}=\-_()])(:(?!:).?[\w-]*:?(?!:)(?:t\d?)?:?) ?$/gi.exec(
+            text.substring(0, cp)
+          );
 
         if (matches && matches[1]) {
           return [matches[1]];

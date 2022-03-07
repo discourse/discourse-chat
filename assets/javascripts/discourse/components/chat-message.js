@@ -50,16 +50,14 @@ export default Component.extend({
       return;
     }
 
-    this.element
-      ?.querySelectorAll(".mention")
-      .forEach((node) => {
-        const mention = node.textContent.trim().substring(1);
-        const highlightable = [this.currentUser.username, HERE, ALL];
-        if (highlightable.includes(mention)) {
-          node.classList.add("highlighted");
-          node.classList.add("valid-mention");
-        }
-      });
+    this.element?.querySelectorAll(".mention").forEach((node) => {
+      const mention = node.textContent.trim().substring(1);
+      const highlightable = [this.currentUser.username, HERE, ALL];
+      if (highlightable.includes(mention)) {
+        node.classList.add("highlighted");
+        node.classList.add("valid-mention");
+      }
+    });
   },
 
   willDestroyElement() {

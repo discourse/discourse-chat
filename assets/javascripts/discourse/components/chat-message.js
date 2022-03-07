@@ -46,7 +46,7 @@ export default Component.extend({
   didInsertElement() {
     this._super(...arguments);
 
-    if (!this.currentUser || this.message) {
+    if (!this.currentUser || !this.message) {
       return;
     }
 

@@ -50,7 +50,7 @@ export default Component.extend({
       return;
     }
 
-    this.element?.querySelectorAll(".mention").forEach((node) => {
+    this.messageContainer?.querySelectorAll(".mention").forEach((node) => {
       const mention = node.textContent.trim().substring(1);
       const highlightable = [this.currentUser.username, HERE, ALL];
       if (highlightable.includes(mention)) {
@@ -85,9 +85,9 @@ export default Component.extend({
   },
 
   @computed("message.id")
-  get element() {
+  get messageContainer() {
     return (
-      this.message?.id &&
+      this?.message?.id &&
       document.querySelector(
         `.chat-message-container[data-id='${this.message.id}']`
       )
@@ -506,21 +506,23 @@ export default Component.extend({
 
   @action
   startReactionForMsgActions() {
-    if (!this.element) {
+    if (!this.messageContainer) {
       return;
     }
 
-    const btn = this.element.querySelector(".chat-msgactions-hover .react-btn");
+    const btn = this.messageContainer.querySelector(
+      ".chat-msgactions-hover .react-btn"
+    );
     this._startReaction(btn, this.SHOW_LEFT);
   },
 
   @action
   startReactionForReactionList() {
-    if (!this.element) {
+    if (!this.messageContainer) {
       return;
     }
 
-    const btn = this.element.querySelector(
+    const btn = this.messageContainer.querySelector(
       ".chat-message-reaction-list .chat-message-react-btn"
     );
     this._startReaction(btn, this.SHOW_RIGHT);
@@ -548,11 +550,11 @@ export default Component.extend({
   },
 
   _repositionEmojiPicker(btn, position) {
-    if (!this.element) {
+    if (!this.messageContainer) {
       return;
     }
 
-    const emojiPicker = this.element.querySelector(".emoji-picker");
+    const emojiPicker = this.messageContainer.querySelector(".emoji-picker");
     if (!emojiPicker || !btn) {
       return;
     }
@@ -783,11 +785,11 @@ export default Component.extend({
 
   @action
   copyLinkToMessage() {
-    if (!this.element) {
+    if (!this.messageContainer) {
       return;
     }
 
-    this.element
+    this.messageContainer
       .querySelector(".link-to-message-btn")
       ?.classList?.add("copied");
 
@@ -799,7 +801,7 @@ export default Component.extend({
     clipboardCopy(url);
 
     later(() => {
-      this.element
+      this.messageContainer
         ?.querySelector(".link-to-message-btn")
         ?.classList?.remove("copied");
     }, 250);

@@ -6,7 +6,7 @@ class ChatDefaultChannelValidator
   end
 
   def valid_value?(value)
-    return false if !ChatChannel.public_channels.pluck(:id).include?(value.to_i)
+    return false if value != "" && !ChatChannel.public_channels.pluck(:id).include?(value.to_i)
     true
   end
 

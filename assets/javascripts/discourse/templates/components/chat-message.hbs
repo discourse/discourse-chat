@@ -2,7 +2,7 @@
 
 {{chat-message-separator message=message}}
 
-<div {{on "click" (fn this.handleClick)}} class={{messageContainerClasses}} data-id={{message.id}}>
+<div {{on "click" (fn this.handleClick)}} class={{messageContainerClasses}} data-id={{or message.id message.stagedId}}>
   {{emoji-picker
     isActive=emojiPickerIsActive
     isEditorFocused=true

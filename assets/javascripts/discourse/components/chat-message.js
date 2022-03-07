@@ -84,13 +84,11 @@ export default Component.extend({
     cancel(this._invitationSentTimer);
   },
 
-  @computed("message.id")
+  @computed("message.{id,stagedId}")
   get messageContainer() {
+    const id = this.message?.id || this.message?.stagedId;
     return (
-      this?.message?.id &&
-      document.querySelector(
-        `.chat-message-container[data-id='${this.message.id}']`
-      )
+      id && document.querySelector(`.chat-message-container[data-id='${id}']`)
     );
   },
 

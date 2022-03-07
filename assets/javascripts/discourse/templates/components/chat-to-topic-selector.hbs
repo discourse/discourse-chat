@@ -43,7 +43,7 @@
   {{#if (and allowNewMessage newMessage)}}
     <p>{{html-safe newMessageInstruction}}</p>
     <form>
-      <label id="split-message-title">{{i18n "topic.move_to_new_message.message_title"}}</label>
+      <label for="split-message-title">{{i18n "topic.move_to_new_message.message_title"}}</label>
       {{text-field value=topicTitle placeholderKey="composer.title_placeholder" id="split-message-title"}}
 
       {{#if canTagMessages}}

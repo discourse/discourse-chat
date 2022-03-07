@@ -286,6 +286,7 @@ export default Component.extend({
         can_delete_others: this.currentUser.staff,
         can_flag: messages.resultSetMeta.can_flag,
         user_silenced: messages.resultSetMeta.user_silenced,
+        can_moderate: messages.resultSetMeta.can_moderate,
       },
       registeredChatChannelId: this.chatChannel.id,
     });

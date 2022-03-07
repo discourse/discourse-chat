@@ -50,8 +50,7 @@ export default Component.extend({
       return;
     }
 
-    document
-      .querySelector(`.chat-message-container[data-id='${this.message.id}']`)
+    this.element
       ?.querySelectorAll(".mention")
       .forEach((node) => {
         const mention = node.textContent.trim().substring(1);

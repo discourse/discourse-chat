@@ -992,7 +992,8 @@ Widget.triangulate(arg: "test")
       },
     });
     await chatSettled();
-    assert.equal(lastMessage.dataset.id, 202);
+
+    assert.deepEqual(lastMessage.dataset.id, "202");
     await click(lastMessage.querySelector(".chat-msgactions .react-btn"));
     await click(
       lastMessage.querySelector(

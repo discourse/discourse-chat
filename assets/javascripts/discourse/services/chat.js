@@ -380,7 +380,7 @@ export default Service.extend({
             publicChannelWithUnread = channel;
           } else if (
             !defaultChannel &&
-            this.siteSettings.chat_default_channel_id == channel
+            this.siteSettings.chat_default_channel_id === parseInt(channel, 10)
           ) {
             defaultChannel = channel;
           } else if (!publicChannel) {

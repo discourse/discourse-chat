@@ -233,7 +233,7 @@ export default Component.extend({
     return hide && !webhookEvent;
   },
 
-  @discourseComputed("selecting")
+  @discourseComputed("selectingMessages")
   messageContainerClasses(selecting) {
     return `chat-message-container ${
       selecting ? "selecting-messages" : ""

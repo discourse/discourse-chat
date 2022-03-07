@@ -180,9 +180,8 @@ export function setup(helper) {
 
     // we need to be able to quote images from chat, but the image rule is usually
     // banned for chat messages
-    const markdownItRules = chatAdditionalOpts.limited_pretty_text_markdown_rules.concat(
-      "image"
-    );
+    const markdownItRules =
+      chatAdditionalOpts.limited_pretty_text_markdown_rules.concat("image");
 
     generateCookFunction(
       {

@@ -1,9 +1,9 @@
 <div
   id="chat-channel-row-{{channel.id}}"
   class="{{rowClassNames}} {{if isUnfollowing "unfollowing"}}"
-  {{on "click" (fn this.handleClick)}}
-  {{on "keydown" (fn this.handleKeydown)}}
-  {{on "mousedown" (fn this.handleNewWindow)}}
+  {{on "click" this.handleClick}}
+  {{on "keyup" this.handleKeyUp}}
+  {{on "mouseup" this.handleNewWindow}}
   role="button"
   tabindex="0"
   data-chat-channel-id={{channel.id}}

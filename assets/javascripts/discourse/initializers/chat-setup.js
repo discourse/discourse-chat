@@ -51,9 +51,8 @@ export default {
 
       api.decorateCookedElement(
         (elem) => {
-          const currentUserTimezone = currentUser?.resolvedTimezone(
-            currentUser
-          );
+          const currentUserTimezone =
+            currentUser?.resolvedTimezone(currentUser);
           const chatTranscriptElements = elem.querySelectorAll(
             ".discourse-chat-transcript"
           );

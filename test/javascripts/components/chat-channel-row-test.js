@@ -53,7 +53,7 @@ discourseModule(
       },
     });
 
-    componentTest("receives Enter keydown", {
+    componentTest("receives Enter keyup", {
       template: hbs`{{chat-channel-row switchChannel=switchChannel channel=channel}}`,
 
       beforeEach() {
@@ -65,7 +65,7 @@ discourseModule(
       },
 
       async test(assert) {
-        await triggerKeyEvent(".chat-channel-row", "keydown", 13);
+        await triggerKeyEvent(".chat-channel-row", "keyup", 13);
 
         assert.strictEqual(this.switchedChannel, this.channel.id);
       },

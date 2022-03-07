@@ -1062,6 +1062,25 @@ Widget.triangulate(arg: "test")
       "July 22, 2021"
     );
   });
+
+  test("pressing keys focuses composer in full page chat", async function (assert) {
+    await visit("/chat/channel/9/Site");
+
+    document.activeElement.blur();
+    await triggerKeyEvent(document.body, "keydown", 65); // 65 is `a` keycode
+    let composer = query(".chat-composer-input");
+    assert.equal(composer.value, "a");
+    assert.equal(document.activeElement, composer);
+
+    document.activeElement.blur();
+    await triggerKeyEvent(document.body, "keydown", 65);
+    assert.equal(composer.value, "aa");
+
+    document.activeElement.blur();
+    await triggerKeyEvent(document.body, "keydown", 13); // 13 is `Enter` keycode
+    // Composer is not focused because `Enter` isn't a key that causes focus.
+    assert.notEqual(document.activeElement, composer);
+  });
 });
 
 acceptance(

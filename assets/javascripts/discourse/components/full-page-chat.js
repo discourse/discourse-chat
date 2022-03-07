@@ -1,5 +1,5 @@
 import Component from "@ember/component";
-import discourseComputed from "discourse-common/utils/decorators";
+import discourseComputed, { bind } from "discourse-common/utils/decorators";
 import { action } from "@ember/object";
 import { reads } from "@ember/object/computed";
 import { schedule } from "@ember/runloop";
@@ -36,6 +36,7 @@ export default Component.extend({
 
     this._scrollSidebarToBottom();
     window.addEventListener("resize", this._calculateHeight, false);
+    document.addEventListener("keydown", this._autoFocusChatComposer);
     document.body.classList.add("has-full-page-chat");
     this.chat.set("fullScreenChatOpen", true);
     schedule("afterRender", this._calculateHeight);
@@ -46,8 +47,33 @@ export default Component.extend({
 
     this.appEvents.off("chat:refresh-channels", this, "refreshModel");
     window.removeEventListener("resize", this._calculateHeight, false);
+    document.removeEventListener("keydown", this._autoFocusChatComposer);
     document.body.classList.remove("has-full-page-chat");
     this.chat.set("fullScreenChatOpen", false);
+  },
+
+  @bind
+  _autoFocusChatComposer(e) {
+    if (!e.key || e.key.length > 1 || e.metaKey || e.ctrlKey) {
+      return; // Only care about single characters, unlike `Escape`
+    }
+    const target = e.target;
+    if (!target) {
+      return;
+    }
+
+    if (/^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName)) {
+      return;
+    }
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    const composer = document.querySelector(".chat-composer-input");
+    if (composer) {
+      this.appEvents.trigger("chat:insert-text", e.key);
+      composer.focus();
+    }
   },
 
   _scrollSidebarToBottom() {

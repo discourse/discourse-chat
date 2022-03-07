@@ -9,6 +9,9 @@ en:
     chat_allowed_messages_for_other_trust_levels: "Number of messages that users with trust levels 1-4 is allowed to send in 30 seconds. Set to '0' to disable limit."
     chat_silence_user_sensitivity: "The likelihood that a user flagged in chat will be automatically silenced."
     chat_auto_silence_from_flags_duration: "Number of minutes that users will be silenced for when they are automatically silenced due to flagged chat messages."
+    chat_default_channel_id: "The chat channel that will be opened by default when a user has no unread messages or mentions in other channels."
+    errors:
+      chat_default_channel: "The default chat channel must be a public channel."
 
   chat:
     errors:

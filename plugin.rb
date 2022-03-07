@@ -33,6 +33,9 @@ register_svg_icon "file-image"
 # route: /admin/plugins/chat
 add_admin_route 'chat.admin.title', 'chat'
 
+# Site setting validators must be loaded before initialize
+require_relative "lib/validators/chat_default_channel_validator.rb"
+
 after_initialize do
   module ::DiscourseChat
     PLUGIN_NAME = "discourse-chat"

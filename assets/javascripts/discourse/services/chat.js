@@ -346,16 +346,22 @@ export default Service.extend({
 
   getIdealFirstChannelId() {
     // When user opens chat we need to give them the 'best' channel when they enter.
+    //
     // Look for public channels with mentions. If one exists, enter that.
     // Next best is a DM channel with unread messages.
     // Next best is a public channel with unread messages.
+    // Then we fall back to the chat_default_channel_id site setting
+    // if that is present and in the list of channels the user can access.
+    // If none of these options exist, then we get the first public channel,
+    // or failing that the first DM channel.
     return this.getChannels().then(() => {
       // Defined in order of significance.
       let publicChannelWithMention,
         dmChannelWithUnread,
         publicChannelWithUnread,
         publicChannel,
-        dmChannel;
+        dmChannel,
+        defaultChannel;
 
       for (const [channel, state] of Object.entries(
         this.currentUser.chat_channel_tracking_state
@@ -372,6 +378,11 @@ export default Service.extend({
             break; // <- We have a public channel with a mention. Break and return this.
           } else if (!publicChannelWithUnread && state.unread_count > 0) {
             publicChannelWithUnread = channel;
+          } else if (
+            !defaultChannel &&
+            this.siteSettings.chat_default_channel_id === channel
+          ) {
+            defaultChannel = channel;
           } else if (!publicChannel) {
             publicChannel = channel;
           }
@@ -381,8 +392,9 @@ export default Service.extend({
         publicChannelWithMention ||
         dmChannelWithUnread ||
         publicChannelWithUnread ||
+        defaultChannel ||
         publicChannel ||
-        dmChannel
+        dmChannel 
       );
     });
   },
@@ -564,9 +576,8 @@ export default Service.extend({
         ].chat_message_id = busData.message_id;
       } else {
         // Message from other user. Increment trackings state
-        const trackingState = this.currentUser.chat_channel_tracking_state[
-          channel.id
-        ];
+        const trackingState =
+          this.currentUser.chat_channel_tracking_state[channel.id];
         if (busData.message_id > (trackingState.chat_message_id || 0)) {
           trackingState.unread_count = trackingState.unread_count + 1;
         }
@@ -587,9 +598,8 @@ export default Service.extend({
 
   _subscribeToMentionChannel(channel) {
     this.messageBus.subscribe(`/chat/${channel.id}/new-mentions`, () => {
-      const trackingState = this.currentUser.chat_channel_tracking_state[
-        channel.id
-      ];
+      const trackingState =
+        this.currentUser.chat_channel_tracking_state[channel.id];
       if (trackingState) {
         trackingState.unread_mentions =
           (trackingState.unread_mentions || 0) + 1;
@@ -659,9 +669,8 @@ export default Service.extend({
           return this.forceRefreshChannels();
         }
 
-        const trackingState = this.currentUser.chat_channel_tracking_state[
-          busData.chat_channel_id
-        ];
+        const trackingState =
+          this.currentUser.chat_channel_tracking_state[busData.chat_channel_id];
         if (trackingState) {
           trackingState.chat_message_id = busData.chat_message_id;
           trackingState.unread_count = 0;
@@ -679,9 +688,8 @@ export default Service.extend({
   },
 
   resetTrackingStateForChannel(channelId) {
-    const trackingState = this.currentUser.chat_channel_tracking_state[
-      channelId
-    ];
+    const trackingState =
+      this.currentUser.chat_channel_tracking_state[channelId];
     if (trackingState) {
       trackingState.unread_count = 0;
       this.userChatChannelTrackingStateChanged();

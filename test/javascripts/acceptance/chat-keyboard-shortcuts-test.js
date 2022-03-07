@@ -141,17 +141,17 @@ if (!isLegacyEmber()) {
 
     test("switching channel with alt+arrow keys in full page chat", async function (assert) {
       await visit("/chat/channel/75/@hawk");
-      await triggerKeyEvent(document.body, "keyup", 40, { altKey: true }); // Down key
+      await triggerKeyEvent(document.body, "keydown", 40, { altKey: true }); // Down key
       assert.equal(currentURL(), "/chat/channel/76/@eviltrout");
-      await triggerKeyEvent(document.body, "keyup", 40, { altKey: true }); // Down key
+      await triggerKeyEvent(document.body, "keydown", 40, { altKey: true }); // Down key
       assert.equal(currentURL(), "/chat/channel/9/Site");
-      await triggerKeyEvent(document.body, "keyup", 40, { altKey: true }); // Down key
+      await triggerKeyEvent(document.body, "keydown", 40, { altKey: true }); // Down key
       assert.equal(currentURL(), "/chat/channel/7/Uncategorized");
-      await triggerKeyEvent(document.body, "keyup", 38, { altKey: true }); // Up key
+      await triggerKeyEvent(document.body, "keydown", 38, { altKey: true }); // Up key
       assert.equal(currentURL(), "/chat/channel/9/Site");
-      await triggerKeyEvent(document.body, "keyup", 38, { altKey: true }); // Up key
+      await triggerKeyEvent(document.body, "keydown", 38, { altKey: true }); // Up key
       assert.equal(currentURL(), "/chat/channel/76/@eviltrout");
-      await triggerKeyEvent(document.body, "keyup", 38, { altKey: true }); // Up key
+      await triggerKeyEvent(document.body, "keydown", 38, { altKey: true }); // Up key
       assert.equal(currentURL(), "/chat/channel/75/@hawk");
     });
 

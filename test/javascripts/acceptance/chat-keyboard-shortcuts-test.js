@@ -163,31 +163,31 @@ if (!isLegacyEmber()) {
       assert.ok(visible(".topic-chat-float-container"), "chat float is open");
       assert.ok(query(".topic-chat-container").classList.contains("channel-4"));
 
-      await triggerKeyEvent(document.body, "keyup", 40, { altKey: true }); // Down key
+      await triggerKeyEvent(document.body, "keydown", 40, { altKey: true }); // Down key
       assert.ok(
         query(".topic-chat-container").classList.contains("channel-75")
       );
 
-      await triggerKeyEvent(document.body, "keyup", 40, { altKey: true }); // Down key
+      await triggerKeyEvent(document.body, "keydown", 40, { altKey: true }); // Down key
       assert.ok(
         query(".topic-chat-container").classList.contains("channel-76")
       );
 
-      await triggerKeyEvent(document.body, "keyup", 40, { altKey: true }); // Down key
+      await triggerKeyEvent(document.body, "keydown", 40, { altKey: true }); // Down key
       assert.ok(query(".topic-chat-container").classList.contains("channel-9"));
 
-      await triggerKeyEvent(document.body, "keyup", 40, { altKey: true }); // Down key
+      await triggerKeyEvent(document.body, "keydown", 40, { altKey: true }); // Down key
       assert.ok(query(".topic-chat-container").classList.contains("channel-7"));
 
-      await triggerKeyEvent(document.body, "keyup", 40, { altKey: true }); // Down key
+      await triggerKeyEvent(document.body, "keydown", 40, { altKey: true }); // Down key
       assert.ok(
         query(".topic-chat-container").classList.contains("channel-11")
       );
 
-      await triggerKeyEvent(document.body, "keyup", 40, { altKey: true }); // Down key
+      await triggerKeyEvent(document.body, "keydown", 40, { altKey: true }); // Down key
       assert.ok(query(".topic-chat-container").classList.contains("channel-4"));
 
-      await triggerKeyEvent(document.body, "keyup", 38, { altKey: true }); // Up key
+      await triggerKeyEvent(document.body, "keydown", 38, { altKey: true }); // Up key
       assert.ok(
         query(".topic-chat-container").classList.contains("channel-11")
       );

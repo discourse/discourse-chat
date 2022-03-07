@@ -62,8 +62,7 @@ export default Component.extend({
       return;
     }
 
-    const lowerTagName = target.tagName.toLowerCase();
-    if (lowerTagName === "input" || lowerTagName === "textarea") {
+    if (/^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName)) {
       return;
     }
 

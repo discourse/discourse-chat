@@ -208,12 +208,13 @@ export default Component.extend({
     this[value].call();
   },
 
-  @discourseComputed("message")
-  show(message) {
+  @discourseComputed("message", "details.can_moderate")
+  show(message, canModerate) {
     return (
       !message.deleted_at ||
       this.currentUser === this.message.user.id ||
-      this.currentUser.staff
+      this.currentUser.staff ||
+      canModerate
     );
   },
 

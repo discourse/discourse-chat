@@ -60,11 +60,11 @@ acceptance("Discourse Chat - Archive channel", function (needs) {
     );
   });
 
-  test("it allows admins to archive the chat channel", async function (assert) {
-    await visit("/chat/channel/7/Uncategorized");
+  test("it allows admins to archive the chat channel from the chat browse page", async function (assert) {
+    await visit("/chat/browse");
 
     await click(
-      "#chat-channel-row-7 .chat-channel-settings-btn .select-kit-header-wrapper"
+      ".chat-channel-settings-row-7 .chat-channel-settings-btn .select-kit-header-wrapper"
     );
     await click("li[data-value='archiveChannel']");
     assert.ok(exists("#chat-channel-archive-modal-inner"));

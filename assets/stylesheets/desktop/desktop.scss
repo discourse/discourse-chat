@@ -161,7 +161,8 @@
 .chat-browse .chat-channel-settings-row {
   .edit-btn,
   .chat-channel-expand-settings,
-  .btn-container {
+  .btn-container,
+  .chat-channel-settings-btn {
     opacity: 0;
     transition: opacity 0.1s;
   }
@@ -169,7 +170,8 @@
   &:hover {
     .edit-btn,
     .chat-channel-expand-settings,
-    .btn-container {
+    .btn-container,
+    .chat-channel-settings-btn {
       opacity: 1;
     }
   }

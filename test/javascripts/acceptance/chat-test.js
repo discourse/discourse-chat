@@ -1564,7 +1564,7 @@ acceptance(
     test("read only channel header status shows correct information", async function (assert) {
       await visit("/chat/channel/7/Uncategorized");
       assert.strictEqual(
-        query(".chat-channel-header-status").innerText.trim(),
+        query(".chat-channel-status").innerText.trim(),
         I18n.t("chat.channel_status.read_only_header")
       );
     });
@@ -1620,7 +1620,7 @@ acceptance(
     test("closed channel header status shows correct information", async function (assert) {
       await visit("/chat/channel/7/Uncategorized");
       assert.strictEqual(
-        query(".chat-channel-header-status").innerText.trim(),
+        query(".chat-channel-status").innerText.trim(),
         I18n.t("chat.channel_status.closed_header")
       );
     });

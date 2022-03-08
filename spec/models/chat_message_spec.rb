@@ -294,4 +294,16 @@ describe ChatMessage do
       MSG
     end
   end
+
+  describe ".push_notification_excerpt" do
+    it "truncates to 400 characters" do
+      message = ChatMessage.new(message: "Hello, World!" * 40)
+      expect(message.push_notification_excerpt.size).to eq(400)
+    end
+
+    it "encodes emojis" do
+      message = ChatMessage.new(message: ":grinning:")
+      expect(message.push_notification_excerpt).to eq("😀")
+    end
+  end
 end

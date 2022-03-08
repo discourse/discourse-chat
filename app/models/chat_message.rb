@@ -45,7 +45,7 @@ class ChatMessage < ActiveRecord::Base
   end
 
   def push_notification_excerpt
-    message[0...400]
+    Emoji.gsub_emoji_to_unicode(message).truncate(400)
   end
 
   def add_flag(user)

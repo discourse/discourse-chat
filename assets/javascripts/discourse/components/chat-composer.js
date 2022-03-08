@@ -205,7 +205,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     this.onValueChange(this.value, this.uploads, this.replyToMsg);
   },
 
-  keyUp(event) {
+  keyDown(event) {
     if (this.site.mobileView || event.altKey || event.metaKey) {
       return;
     }

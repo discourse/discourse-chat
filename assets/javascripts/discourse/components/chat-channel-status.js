@@ -1,10 +1,10 @@
 import discourseComputed from "discourse-common/utils/decorators";
 import I18n from "I18n";
 import Component from "@ember/component";
-import { CHANNEL_STATUSES } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import {
-  channelStatusName,
+  CHANNEL_STATUSES,
   channelStatusIcon,
+  channelStatusName,
 } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 
 export default Component.extend({

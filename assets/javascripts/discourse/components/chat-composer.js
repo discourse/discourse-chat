@@ -205,6 +205,10 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     this.onValueChange(this.value, this.uploads, this.replyToMsg);
   },
 
+  // It is important that this is keyDown and not keyUp, otherwise
+  // we add new lines to chat message on send and on edit, because
+  // you cannot prevent default with a keyUp event -- it is like trying
+  // to shut the gate after the horse has already bolted!
   keyDown(event) {
     if (this.site.mobileView || event.altKey || event.metaKey) {
       return;

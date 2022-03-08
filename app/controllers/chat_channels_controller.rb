@@ -24,12 +24,22 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
   def follow
     params.require(:chat_channel_id)
 
-    membership = UserChatChannelMembership.includes(:chat_channel).find_or_create_by(
-      user_id: current_user.id,
-      chat_channel_id: params[:chat_channel_id]
-    )
+    membership = UserChatChannelMembership
+      .includes(:chat_channel)
+      .find_or_create_by(
+        user_id: current_user.id,
+        chat_channel_id: params[:chat_channel_id]
+      )
+
+    if membership.following
+      return render_serialized(membership, UserChatChannelMembershipSerializer, root: false)
+    end
+
+    # Need to set following and `save` rather than `update` because it's possible this is a new
+    # record, since the membership is fetched with `find_or_create_by`.
     membership.following = true
     if (membership.save)
+      membership.chat_channel.update(user_count: membership.chat_channel.user_count + 1)
       render_serialized(membership, UserChatChannelMembershipSerializer, root: false)
     else
       render_json_error(membership)
@@ -46,6 +56,7 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
         chat_channel_id: params[:chat_channel_id]
       )
     if (membership && membership.update(following: false))
+      membership.chat_channel.update(user_count: membership.chat_channel.user_count - 1 || 0)
       render json: success_json
     else
       render_json_error(membership)
@@ -101,7 +112,7 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     raise Discourse::NotFound unless chatable
 
     chat_channel = ChatChannel.create!(chatable: chatable, name: params[:name], description: params[:description])
-    chat_channel.user_chat_channel_memberships.create!(user: current_user, following: true)
+    chat_channel.user_chat_channel_memberships.create!(user: current_user, following: true, user_count: 1)
 
     if creating_topic_channel
       chatable.custom_fields[DiscourseChat::HAS_CHAT_ENABLED] = true

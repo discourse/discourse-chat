@@ -49,3 +49,9 @@ plugins:
     default: ""
     client: true
     validator: "ChatDefaultChannelValidator"
+  chat_duplicate_message_sensitivity:
+    type: float
+    default: 0.5
+    min: 0
+    max: 1
+

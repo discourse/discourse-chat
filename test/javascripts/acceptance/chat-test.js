@@ -530,7 +530,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     );
     await focus(composerInput);
 
-    await triggerKeyEvent(composerInput, "keyup", 13); // 13 is enter keycode
+    await triggerKeyEvent(composerInput, "keydown", 13); // 13 is enter keycode
 
     assert.equal(composerInput.innerText.trim(), "", "composer input cleared");
 
@@ -587,7 +587,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     const nextMessageContent = "What up what up!";
     await fillIn(composerInput, nextMessageContent);
     await focus(composerInput);
-    await triggerKeyEvent(composerInput, "keyup", 13); // 13 is enter keycode
+    await triggerKeyEvent(composerInput, "keydown", 13); // 13 is enter keycode
 
     messages = queryAll(".chat-message");
     lastMessage = messages[messages.length - 1];
@@ -647,7 +647,7 @@ Widget.triangulate(arg: "test")
     const composerInput = query(".chat-composer-input");
     await fillIn(composerInput, messageContent);
     await focus(composerInput);
-    await triggerKeyEvent(composerInput, "keyup", 13); // 13 is enter keycode
+    await triggerKeyEvent(composerInput, "keydown", 13); // 13 is enter keycode
 
     publishToMessageBus("/chat/9", {
       typ: "sent",
@@ -696,7 +696,7 @@ Widget.triangulate(arg: "test")
     // Send a message
     const composerTextarea = query(".chat-composer-input");
     await focus(composerTextarea);
-    await triggerKeyEvent(composerTextarea, "keyup", 13); // 13 is enter keycode
+    await triggerKeyEvent(composerTextarea, "keydown", 13); // 13 is enter keycode
 
     assert.equal(query(".chat-composer-input").value.trim(), "");
 
@@ -714,7 +714,7 @@ Widget.triangulate(arg: "test")
     await dropdown.selectRowByValue("edit");
 
     assert.ok(exists(".chat-composer .chat-composer-message-details"));
-    await triggerKeyEvent(".chat-composer", "keyup", 27); // 27 is escape
+    await triggerKeyEvent(".chat-composer", "keydown", 27); // 27 is escape
 
     // chat-composer-message-details will be gone as no message is being edited
     assert.notOk(exists(".chat-composer .chat-composer-message-details"));
@@ -977,7 +977,7 @@ Widget.triangulate(arg: "test")
     const composerInput = query(".chat-composer-input");
     await fillIn(composerInput, "hellloooo");
     await focus(composerInput);
-    await triggerKeyEvent(composerInput, "keyup", 13); // 13 is enter keycode. Send message
+    await triggerKeyEvent(composerInput, "keydown", 13); // 13 is enter keycode. Send message
     const messages = queryAll(".chat-message-container");
     const lastMessage = messages[messages.length - 1];
     publishToMessageBus("/chat/9", {

@@ -373,7 +373,7 @@ export default Service.extend({
             dmChannel = channel;
           }
         } else {
-          if (!publicChannelWithMention && state.unread_mentions > 0) {
+          if (state.unread_mentions > 0) {
             publicChannelWithMention = channel;
             break; // <- We have a public channel with a mention. Break and return this.
           } else if (!publicChannelWithUnread && state.unread_count > 0) {

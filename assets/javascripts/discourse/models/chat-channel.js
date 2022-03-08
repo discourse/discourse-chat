@@ -26,6 +26,24 @@ export function channelStatusName(channelStatus) {
   }
 }
 
+export function channelStatusIcon(channelStatus) {
+  if (channelStatus === CHANNEL_STATUSES.open) {
+    return null;
+  }
+
+  switch (channelStatus) {
+    case CHANNEL_STATUSES.closed:
+      return "lock";
+      break;
+    case CHANNEL_STATUSES.readOnly:
+      return "comment-slash";
+      break;
+    case CHANNEL_STATUSES.archived:
+      return "archive";
+      break;
+  }
+}
+
 const STAFF_READONLY_STATUSES = [
   CHANNEL_STATUSES.readOnly,
   CHANNEL_STATUSES.archived,

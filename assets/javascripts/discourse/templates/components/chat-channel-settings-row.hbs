@@ -24,6 +24,9 @@
           {{#if currentUser.staff}}
             {{d-button icon="pencil-alt" class="edit-btn" action=(action "startEditingName")}}
           {{/if}}
+          {{#if currentUser.staff}}
+            {{chat-channel-settings-btn channel=channel}}
+          {{/if}}
           {{#if channel.following}}
             {{d-button
               class="chat-channel-expand-settings"
@@ -98,6 +101,7 @@
           • {{html-safe channel.description}}
         </div>
       {{/if}}
+      {{chat-channel-status channel=channel format="short"}}
     </div>
   </div>
 

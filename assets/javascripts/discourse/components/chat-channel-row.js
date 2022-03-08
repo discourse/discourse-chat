@@ -19,11 +19,6 @@ export default Component.extend({
 
   init() {
     this._super(...arguments);
-    this.set("options", this.options || {});
-    this.set(
-      "showSettingsButton",
-      this.options.settingsButton && this.currentUser.staff
-    );
   },
 
   @discourseComputed("active", "channel.{id,muted}", "channel.focused")

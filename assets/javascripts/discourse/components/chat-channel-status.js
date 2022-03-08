@@ -2,10 +2,22 @@ import discourseComputed from "discourse-common/utils/decorators";
 import I18n from "I18n";
 import Component from "@ember/component";
 import { CHANNEL_STATUSES } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
+import {
+  channelStatusName,
+  channelStatusIcon,
+} from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 
 export default Component.extend({
   tagName: "",
   channel: null,
+  format: null,
+
+  init() {
+    this._super(...arguments);
+    if (!["short", "long"].includes(this.format)) {
+      this.set("format", "long");
+    }
+  },
 
   @discourseComputed("channel.status")
   channelStatusMessage(channelStatus) {
@@ -13,38 +25,32 @@ export default Component.extend({
       return null;
     }
 
+    if (this.format === "long") {
+      return this._longStatusMessage(channelStatus);
+    } else {
+      return this._shortStatusMessage(channelStatus);
+    }
+  },
+
+  @discourseComputed("channel.status")
+  channelStatusIcon(channelStatus) {
+    return channelStatusIcon(channelStatus);
+  },
+
+  _shortStatusMessage(channelStatus) {
+    return channelStatusName(channelStatus);
+  },
+
+  _longStatusMessage(channelStatus) {
     switch (channelStatus) {
       case CHANNEL_STATUSES.closed:
-        if (this.currentUser.staff) {
-          return I18n.t("chat.channel_status.closed_staff_header");
-        } else {
-          return I18n.t("chat.channel_status.closed_header");
-        }
+        return I18n.t("chat.channel_status.closed_header");
         break;
       case CHANNEL_STATUSES.readOnly:
         return I18n.t("chat.channel_status.read_only_header");
         break;
       case CHANNEL_STATUSES.archived:
         return I18n.t("chat.channel_status.archived_header");
-        break;
-    }
-  },
-
-  @discourseComputed("channel.status")
-  channelStatusIcon(channelStatus) {
-    if (channelStatus === CHANNEL_STATUSES.open) {
-      return null;
-    }
-
-    switch (channelStatus) {
-      case CHANNEL_STATUSES.closed:
-        return "lock";
-        break;
-      case CHANNEL_STATUSES.readOnly:
-        return "comment-slash";
-        break;
-      case CHANNEL_STATUSES.archived:
-        return "archive";
         break;
     }
   },

@@ -101,12 +101,9 @@ pl_PL:
       you_flagged: "Oflagowałeś tę wiadomość"
       exit: "powrót"
       channel_status:
-        read_only_header: "Kanał jest tylko do odczytu. Nie można wysyłać nowych wiadomości, edytować ani usuwać istniejących wiadomości."
         read_only: "Tylko do odczytu"
-        archived_header: "Kanał został zarchiwizowany. Nie można wysyłać nowych wiadomości, edytować ani usuwać istniejących wiadomości."
         archived: "Zarchiwizowany"
-        closed_header: "Kanał jest zamknięty. Nie można wysyłać nowych wiadomości, edytować ani usuwać istniejących wiadomości."
-        closed_staff_header: "Kanał jest zamknięty."
+        closed_header: "Kanał jest zamknięty."
         closed: "Zamknięty"
         open_header: "Kanał jest otwarty."
         open: "Otwarty"
@@ -238,3 +235,6 @@ pl_PL:
       types:
         reviewable_chat_message:
           flagged_by: "Oflagowane przez"
+    keyboard_shortcuts_help:
+      chat:
+        title: "Czat"

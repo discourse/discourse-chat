@@ -103,12 +103,9 @@ hu:
       you_flagged: "Ön jelentette ezt az üzenetet"
       exit: "vissza"
       channel_status:
-        read_only_header: "A csatorna csak olvasható. Nem lehet új üzenetet küldeni, és a meglévő üzeneteket sem lehet szerkeszteni vagy törölni."
         read_only: "Csak olvasható"
-        archived_header: "A csatorna archivált. Nem lehet új üzenetet küldeni, és a meglévő üzeneteket sem lehet szerkeszteni vagy törölni."
         archived: "Archivált"
-        closed_header: "A csatorna zárolt. Nem lehet új üzenetet küldeni, és a meglévő üzeneteket sem lehet szerkeszteni vagy törölni."
-        closed_staff_header: "A csatorna zárolt."
+        closed_header: "A csatorna zárolt."
         closed: "Zárolt"
         open_header: "A csatorna nyitott."
         open: "Nyitott"
@@ -151,6 +148,7 @@ hu:
       settings:
         desktop_notification_level: "Asztali értesítések"
         follow: "Csatlakozás"
+        followed: "Csatlakozott"
         mobile_notification_level: "Mobilos leküldéses értesítések"
         mute: "Csatorna némítása"
         muted_on: "Be"
@@ -258,3 +256,9 @@ hu:
         reviewable_chat_message:
           title: "Jelentett csevegőüzenet"
           flagged_by: "Jelentette:"
+    keyboard_shortcuts_help:
+      chat:
+        title: "Csevegés"
+        keyboard_shortcuts:
+          switch_channel_arrows: "%{shortcut} Csatorna váltása"
+          open_quick_channel_selector: "%{shortcut} Gyors csatornaválasztó megnyitása"

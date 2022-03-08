@@ -13,6 +13,11 @@ hu:
     chat_auto_silience_duration: "A felhasználók ennyi percig lesznek némítva, ha túllépik a csevegőüzenet létrehozási korlátját. Állítsa „0”-ra, hogy letiltsa az automatikus némítást."
     chat_allowed_messages_for_trust_level_0: "A 0-s megbízhatósági szinttel rendelkező felhasználók legfeljebb ennyi üzenetet küldhetnek 30 másodpercen belül. A korlátozás letiltásához állítsa „0”-ra."
     chat_allowed_messages_for_other_trust_levels: "Az 1–4-es megbízhatósági szinttel rendelkező felhasználók legfeljebb ennyi üzenetet küldhetnek 30 másodpercen belül. A korlátozás letiltásához állítsa „0”-ra."
+    chat_silence_user_sensitivity: "Annak a valószínűsége, hogy a csevegésben megjelölt felhasználó automatikusan némítva lesz."
+    chat_auto_silence_from_flags_duration: "Azon percek száma, ameddig a felhasználók el lesznek némítva, ha a megjelölt csevegési üzenetek miatt automatikusan némítva lesznek."
+    chat_default_channel_id: "Az a csevegőcsatorna, amely alapértelmezés szerint megnyílik, ha a felhasználónak nincsenek olvasatlan üzenetei vagy említései más csatornákon."
+    errors:
+      chat_default_channel: "Az alapértelmezett csevegőcsatornának nyilvános csatornának kell lennie."
   chat:
     errors:
       channel_exists_for_category: "Már létezik csatorna ehhez a kategóriával, és ezzel a névvel"
@@ -21,6 +26,7 @@ hu:
       channel_modify_message_disallowed: "A csatorna „%{status}”, az üzenetek nem szerkeszthetők vagy törölhetők"
       user_cannot_send_message: "Jelenleg nem küldhet üzeneteket."
       rate_limit_exceeded: "Túllépte a 30 másodpercen belül elküldhető csevegőüzenetek korlátját"
+      auto_silence_from_flags: "A csevegőüzenet elég magas pontszámmal lett megjelölve, hogy a felhasználó némítva legyen."
     reviewables:
       actions:
         agree:

@@ -71,10 +71,6 @@ class DiscourseChat::ChatChannelArchiveService
       chat_channel.chat_messages.find_in_batches(
         batch_size: ARCHIVED_MESSAGES_PER_POST
       ) do |chat_messages|
-
-        # TODO: REMOVE THIS OBVIOUSLY
-        raise StandardError.new("some archive error") if rand(1..10) < 7
-
         create_post(
           ChatTranscriptService.new(
             chat_channel, messages_or_ids: chat_messages

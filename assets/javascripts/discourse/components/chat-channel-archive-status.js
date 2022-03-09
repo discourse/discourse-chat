@@ -1,4 +1,5 @@
 import Component from "@ember/component";
+import I18n from "I18n";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { ajax } from "discourse/lib/ajax";
 import getURL from "discourse-common/lib/get-url";
@@ -50,7 +51,6 @@ export default Component.extend({
     this._super(...arguments);
     if (this.currentUser.admin) {
       this.messageBus.subscribe("/chat/channel-archive-status", (busData) => {
-        console.log(busData);
         if (busData.chat_channel_id === this.channel.id) {
           this.channel.setProperties({
             archive_failed: busData.archive_failed,

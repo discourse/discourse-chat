@@ -380,6 +380,8 @@ after_initialize do
     get '/chat_channels/:chat_channel_id' => 'chat_channels#show'
     put '/chat_channels/:chat_channel_id/archive' => 'chat_channels#archive'
 
+    put '/chat_channels/:chat_channel_id/toggle_open_status' => 'chat_channels#toggle_open_status'
+
     # chat_controller routes
     get '/' => 'chat#respond'
     get '/browse' => 'chat#respond'

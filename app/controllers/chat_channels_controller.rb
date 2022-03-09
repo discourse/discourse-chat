@@ -213,6 +213,10 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     render json: success_json
   end
 
+  def toggle_open_status
+    render json: success_json
+  end
+
   private
 
   def render_channel_for_chatable(channel)

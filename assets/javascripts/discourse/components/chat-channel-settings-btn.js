@@ -27,6 +27,22 @@ export default Component.extend({
       });
     }
 
+    if (this.channel.isOpen) {
+      options.push({
+        id: "closeChannel",
+        name: I18n.t("chat.channel_settings.close_channel"),
+        icon: "lock",
+      });
+    } else if (this.channel.isClosed) {
+      if (this.channel.isOpen) {
+        options.push({
+          id: "openChannel",
+          name: I18n.t("chat.channel_settings.open_channel"),
+          icon: "unlock",
+        });
+      }
+    }
+
     return options;
   },
 
@@ -43,5 +59,19 @@ export default Component.extend({
 
   archiveChannel() {
     showModal("chat-channel-archive-modal").set("chatChannel", this.channel);
+  },
+
+  closeChannel() {
+    showModal("chat-channel-toggle-open-modal").set(
+      "chatChannel",
+      this.channel
+    );
+  },
+
+  openChannel() {
+    showModal("chat-channel-toggle-open-modal").set(
+      "chatChannel",
+      this.channel
+    );
   },
 });

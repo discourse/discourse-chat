@@ -1260,7 +1260,7 @@ body.has-full-page-chat {
 
     &.previewing {
       .chat-channel-title {
-        max-width: calc(100% - 200px);
+        max-width: calc(100% - 50px);
       }
       .join-channel-btn {
         margin-left: auto;
@@ -1281,7 +1281,11 @@ body.has-full-page-chat {
 .chat-full-page-header {
   .chat-channel-header-details {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+
+    .chat-channel-title-with-status {
+      flex-grow: 1;
+    }
   }
   .chat-channel-title {
     margin: 0;

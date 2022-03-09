@@ -9,9 +9,10 @@
         }}
       {{/if}}
 
-      {{chat-channel-title onClick=(action "onChannelTitleClick") channel=chatChannel}}
-
-      {{chat-channel-status channel=chatChannel}}
+      <div class="chat-channel-title-with-status">
+        {{chat-channel-title onClick=(action "onChannelTitleClick") channel=chatChannel}}
+        {{chat-channel-status channel=chatChannel}}
+      </div>
 
       {{#if previewing}}
         {{d-button

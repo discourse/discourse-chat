@@ -75,6 +75,7 @@ class DiscourseChat::ChatChannelArchiveService
         end
       end
 
+      kick_all_users
       complete_archive
     rescue => err
       notify_archiver(:failed, error: err)
@@ -196,5 +197,9 @@ class DiscourseChat::ChatChannelArchiveService
         chat_channel_archive.archived_by, :chat_channel_archive_complete, base_translation_params
       )
     end
+  end
+
+  def kick_all_users
+    UserChatChannelMembership.where(chat_channel: chat_channel).update_all(following: false)
   end
 end

@@ -39,7 +39,7 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     # record, since the membership is fetched with `find_or_create_by`.
     membership.following = true
     if (membership.save)
-      membership.chat_channel.update(user_count: membership.chat_channel.user_count + 1)
+      membership.chat_channel.update(user_count: (membership.chat_channel.user_count || 0) + 1)
       render_serialized(membership, UserChatChannelMembershipSerializer, root: false)
     else
       render_json_error(membership)
@@ -56,7 +56,8 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
         chat_channel_id: params[:chat_channel_id]
       )
     if (membership && membership.update(following: false))
-      membership.chat_channel.update(user_count: membership.chat_channel.user_count - 1 || 0)
+      new_user_count = [(membership.chat_channel.user_count || 0) - 1, 0].max
+      membership.chat_channel.update(user_count: new_user_count)
       render json: success_json
     else
       render_json_error(membership)
@@ -111,8 +112,8 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     chatable = chatable_type.constantize.find_by(id: params[:id])
     raise Discourse::NotFound unless chatable
 
-    chat_channel = ChatChannel.create!(chatable: chatable, name: params[:name], description: params[:description])
-    chat_channel.user_chat_channel_memberships.create!(user: current_user, following: true, user_count: 1)
+    chat_channel = ChatChannel.create!(chatable: chatable, name: params[:name], description: params[:description], user_count: 1)
+    chat_channel.user_chat_channel_memberships.create!(user: current_user, following: true)
 
     if creating_topic_channel
       chatable.custom_fields[DiscourseChat::HAS_CHAT_ENABLED] = true

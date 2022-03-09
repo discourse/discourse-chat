@@ -184,7 +184,7 @@ class ChatMessage < ActiveRecord::Base
     return false if message.length < calc_min_message_length_for_duplicates(sensitivity)
 
     # Check if there are enough users in the channel to check for a duplicate message
-    return false if chat_channel.user_count < calc_min_user_count_for_duplicates(sensitivity)
+    return false if (chat_channel.user_count || 0) < calc_min_user_count_for_duplicates(sensitivity)
 
     chat_channel.chat_messages
       .where("created_at > ?", calc_in_the_past_seconds_for_duplicates(sensitivity).seconds.ago)

@@ -98,7 +98,7 @@ module DiscourseChat::ChatChannelFetcher
       .joins(:user_chat_channel_memberships)
       .where(user_chat_channel_memberships: { user_id: user_id, following: true })
       .where(chatable_type: "DirectMessageChannel")
-      .order(updated_at: :desc)
+      .order(last_message_sent_at: :desc)
       .to_a
 
     preload_fields = User.allowed_user_custom_fields(guardian) + UserField.all.pluck(:id).map { |fid| "#{User::USER_FIELD_PREFIX}#{fid}" }

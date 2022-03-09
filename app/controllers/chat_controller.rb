@@ -108,7 +108,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
       return render_json_error(chat_message_creator.error)
     end
 
-    @chat_channel.touch
+    @chat_channel.touch(:last_message_sent_at)
     @user_chat_channel_membership.update(
       last_read_message_id: chat_message_creator.chat_message.id
     )

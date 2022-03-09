@@ -407,9 +407,9 @@ export default Component.extend({
         }
       });
     }
-    const lastReadId =
-      this.currentUser.chat_channel_tracking_state[this.chatChannel.id]
-        ?.chat_message_id;
+    const lastReadId = this.currentUser.chat_channel_tracking_state[
+      this.chatChannel.id
+    ]?.chat_message_id;
     if (!lastReadId) {
       return;
     }
@@ -623,7 +623,7 @@ export default Component.extend({
 
   handleSentMessage(data) {
     if (!this.previewing) {
-      this.chatChannel.set("updated_at", new Date());
+      this.chatChannel.set("last_message_sent_at", new Date());
     }
 
     if (data.chat_message.user.id === this.currentUser.id) {

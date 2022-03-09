@@ -16,6 +16,7 @@ describe DiscourseChat::ChatMessageCreator do
   before do
     SiteSetting.chat_enabled = true
     SiteSetting.chat_allowed_groups = Group::AUTO_GROUPS[:everyone]
+    SiteSetting.chat_duplicate_message_sensitivity = 0
 
     # Create channel memberships
     [admin1, admin2, user1, user2, user3].each do |user|

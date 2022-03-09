@@ -3,6 +3,7 @@
 require 'rails_helper'
 
 describe ChatMessage do
+  fab!(:message) { Fabricate(:chat_message, message: "hey friend, what's up?!") }
   describe '.cook' do
     it 'does not support HTML tags' do
       cooked = ChatMessage.cook("<h1>test</h1>")
@@ -275,8 +276,6 @@ describe ChatMessage do
   end
 
   describe ".to_markdown" do
-    fab!(:message) { Fabricate(:chat_message, message: "hey friend, what's up?!") }
-
     it "renders the message without uploads" do
       expect(message.to_markdown).to eq("hey friend, what's up?!")
     end
@@ -304,6 +303,36 @@ describe ChatMessage do
     it "encodes emojis" do
       message = ChatMessage.new(message: ":grinning:")
       expect(message.push_notification_excerpt).to eq("😀")
+    end
+  end
+
+  describe "#calc_min_user_count_for_duplicates" do
+    it "is correct for some points" do
+      expect(message.send(:calc_min_user_count_for_duplicates, 0.1)).to eq(100)
+      expect(message.send(:calc_min_user_count_for_duplicates, 0.3)).to eq(78)
+      expect(message.send(:calc_min_user_count_for_duplicates, 0.5)).to eq(57)
+      expect(message.send(:calc_min_user_count_for_duplicates, 0.7)).to eq(36)
+      expect(message.send(:calc_min_user_count_for_duplicates, 1.0)).to eq(5)
+    end
+  end
+
+  describe "#calc_min_message_length_for_duplicates" do
+    it "is correct for some points" do
+      expect(message.send(:calc_min_message_length_for_duplicates, 0.1)).to eq(30)
+      expect(message.send(:calc_min_message_length_for_duplicates, 0.3)).to eq(25)
+      expect(message.send(:calc_min_message_length_for_duplicates, 0.5)).to eq(21)
+      expect(message.send(:calc_min_message_length_for_duplicates, 0.7)).to eq(16)
+      expect(message.send(:calc_min_message_length_for_duplicates, 1.0)).to eq(10)
+    end
+  end
+
+  describe "#calc_in_the_past_seconds_for_duplicates" do
+    it "is correct for some points" do
+      expect(message.send(:calc_in_the_past_seconds_for_duplicates, 0.1)).to eq(10)
+      expect(message.send(:calc_in_the_past_seconds_for_duplicates, 0.3)).to eq(21)
+      expect(message.send(:calc_in_the_past_seconds_for_duplicates, 0.5)).to eq(32)
+      expect(message.send(:calc_in_the_past_seconds_for_duplicates, 0.7)).to eq(43)
+      expect(message.send(:calc_in_the_past_seconds_for_duplicates, 1.0)).to eq(60)
     end
   end
 end

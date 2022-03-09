@@ -678,13 +678,18 @@ body.composer-open .topic-chat-float-container {
       margin: 0;
       resize: none;
       max-height: 125px;
-      padding: 8px 8px 8px 45px;
+      padding: 8px;
       background-color: var(--secondary);
       border: 1px solid var(--primary-low-mid);
       border-radius: 0.5em;
       box-sizing: border-box;
       word-break: break-word;
       width: 100%;
+    }
+    .chat-composer-row.has-toolbar {
+      .chat-composer-input, .chat-composer-row::after {
+        padding-left: 45px;
+      }
     }
     // composer scrollbar
     .chat-composer-row > .chat-composer-input {

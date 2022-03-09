@@ -357,6 +357,18 @@ describe DiscourseChat::ChatMessageCreator do
           ChatUpload.where(upload_id: private_upload.id).count
         }.by(0)
       end
+
+      it "doesn't attach uploads when `chat_allow_attachments` is false" do
+        SiteSetting.chat_allow_attachments = false
+        expect {
+          DiscourseChat::ChatMessageCreator.create(
+            chat_channel: public_chat_channel,
+            user: user1,
+            content: "Beep boop",
+            upload_ids: [upload1.id]
+          )
+        }.to change { ChatUpload.where(upload_id: upload1.id).count }.by(0)
+      end
     end
   end
 

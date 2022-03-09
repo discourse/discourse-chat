@@ -239,6 +239,30 @@ describe DiscourseChat::ChatMessageUpdater do
         )
       }.to change { ChatUpload.where(chat_message: chat_message).count }.by(0)
     end
+
+    it "doesn't add uploads if `chat_allow_attachments` is false" do
+      SiteSetting.chat_allow_attachments = false
+      chat_message = create_chat_message(user1, "something", public_chat_channel)
+      expect {
+        DiscourseChat::ChatMessageUpdater.update(
+          chat_message: chat_message,
+          new_content: "I guess this is different",
+          upload_ids: [upload1.id, upload2.id]
+        )
+      }.to change { ChatUpload.where(chat_message: chat_message).count }.by(0)
+    end
+
+    it "doesn't remove existing uploads if `chat_allow_attachments` is false" do
+      SiteSetting.chat_allow_attachments = false
+      chat_message = create_chat_message(user1, "something", public_chat_channel, upload_ids: [upload1.id, upload2.id])
+      expect {
+        DiscourseChat::ChatMessageUpdater.update(
+          chat_message: chat_message,
+          new_content: "I guess this is different",
+          upload_ids: []
+        )
+      }.to change { ChatUpload.where(chat_message: chat_message).count }.by(0)
+    end
   end
 
   describe "watched words" do

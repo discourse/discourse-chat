@@ -68,6 +68,11 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   uppyId: "chat-composer-uppy",
   editorClass: alias("editorInputClass"),
 
+  @discourseComputed("toolbarButtons")
+  composerRowClasses(toolbarButtons) {
+    return `chat-composer-row ${toolbarButtons.length ? "has-toolbar" : ""}`;
+  },
+
   @discourseComputed("fullPage")
   fileUploadElementId(fullPage) {
     return fullPage ? "chat-full-page-uploader" : "chat-widget-uploader";
@@ -84,6 +89,17 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     return;
   },
 
+  @discourseComputed(
+    "siteSettings.chat_allow_attachments",
+    "chatChannel.isDirectMessageChannel"
+  )
+  canAttachUploads(attachmentsAllowed, isDirectMessageChannel) {
+    if (isDirectMessageChannel) {
+      return true;
+    }
+    return attachmentsAllowed;
+  },
+
   init() {
     this._super(...arguments);
 
@@ -96,18 +112,22 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     });
     outsideToolbarClick = this.toggleToolbar.bind(this);
 
-    this.set(
-      "toolbarButtons",
-      [
-        {
-          action: this.uploadClicked,
-          class: "upload-btn",
-          id: this.mobileFileUploaderId,
-          icon: "far-image",
-          title: "chat.upload",
-        },
-      ].concat(toolbarButtons)
-    );
+    if (this.canAttachUploads) {
+      this.set(
+        "toolbarButtons",
+        [
+          {
+            action: this.uploadClicked,
+            class: "upload-btn",
+            id: this.mobileFileUploaderId,
+            icon: "far-image",
+            title: "chat.upload",
+          },
+        ].concat(toolbarButtons)
+      );
+    } else {
+      this.set("toolbarButtons", toolbarButtons);
+    }
 
     if (this.siteSettings.composer_media_optimization_image_enabled) {
       // TODO:
@@ -136,7 +156,9 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     this._$textarea = $(this._textarea);
     this._applyCategoryHashtagAutocomplete(this._$textarea);
     this._applyEmojiAutocomplete(this._$textarea);
-    this._bindUploadTarget();
+    if (this.canAttachUploads) {
+      this._bindUploadTarget();
+    }
     this.appEvents.on("chat:focus-composer", this, "_focusTextArea");
     this.appEvents.on("chat:insert-text", this, "insertText");
 
@@ -633,7 +655,22 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   },
 
   _messageIsValid() {
-    return !this._messageIsEmpty() || this.uploads.length;
+    const validLength =
+      (this.value || "").trim().length >=
+      this.siteSettings.chat_minimum_message_length;
+
+    if (this.canAttachUploads) {
+      if (this._messageIsEmpty()) {
+        // If message is empty, an an upload must present for sending to be enabled
+        return this.uploads.length;
+      } else {
+        // Message is non-empty. Make sure it's long enough to be valid.
+        return validLength;
+      }
+    }
+
+    // Attachments are disabled so for a message to be valid it must be long enough.
+    return validLength;
   },
 
   _messageIsEmpty() {

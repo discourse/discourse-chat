@@ -1,4 +1,5 @@
 import { popupAjaxError } from "discourse/lib/ajax-error";
+import { isTesting } from "discourse-common/config/environment";
 import Service, { inject as service } from "@ember/service";
 import Site from "discourse/models/site";
 import { addChatToolbarButton } from "discourse/plugins/discourse-chat/discourse/components/chat-composer";
@@ -560,7 +561,9 @@ export default Service.extend({
         // a nice reactive magical transformation of the channel status
         // before the user's very eyes...but for now let's just reload so
         // they can see they are no longer allowed to chat.
-        window.location.reload();
+        if (!isTesting()) {
+          window.location.reload();
+        }
       }
     });
   },

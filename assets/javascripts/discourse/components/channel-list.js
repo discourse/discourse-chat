@@ -31,7 +31,7 @@ export default Component.extend({
     this.appEvents.off("chat:start-new-dm", this, "startCreatingDmChannel");
   },
 
-  @discourseComputed("directMessageChannels.@each.updated_at")
+  @discourseComputed("directMessageChannels.@each.last_message_sent_at")
   sortedDirectMessageChannels(channels) {
     if (!channels?.length) {
       return [];

@@ -187,7 +187,9 @@ export default Service.extend({
 
   async getChannelsWithFilter(filter, opts = { excludeActiveChannel: true }) {
     let sortedChannels = this.allChannels.sort((a, b) => {
-      return new Date(a.updated_at) > new Date(b.updated_at) ? -1 : 1;
+      return new Date(a.last_message_sent_at) > new Date(b.last_message_sent_at)
+        ? -1
+        : 1;
     });
 
     const trimmedFilter = filter.trim();
@@ -308,7 +310,7 @@ export default Service.extend({
             )
           ),
           // We don't need to sort direct message channels, as the channel list
-          // uses a computed property to keep them ordered by `updated_at`.
+          // uses a computed property to keep them ordered by `last_message_sent_at`.
           directMessageChannels: A(
             this.sortDirectMessageChannels(
               channels.direct_message_channels.map((channel) =>
@@ -422,7 +424,10 @@ export default Service.extend({
       const unreadCountB =
         this.currentUser.chat_channel_tracking_state[b.id]?.unread_count || 0;
       if (unreadCountA === unreadCountB) {
-        return new Date(a.updated_at) > new Date(b.updated_at) ? -1 : 1;
+        return new Date(a.last_message_sent_at) >
+          new Date(b.last_message_sent_at)
+          ? -1
+          : 1;
       } else {
         return unreadCountA > unreadCountB ? -1 : 1;
       }
@@ -611,13 +616,13 @@ export default Service.extend({
       }
       this.userChatChannelTrackingStateChanged();
 
-      // Update updated_at timestamp for channel if direct message
+      // Update last_message_sent_at timestamp for channel if direct message
       const dmChatChannel = (this.directMessageChannels || []).findBy(
         "id",
         parseInt(channel.id, 10)
       );
       if (dmChatChannel) {
-        dmChatChannel.set("updated_at", new Date());
+        dmChatChannel.set("last_message_sent_at", new Date());
         this.reSortDirectMessageChannels();
       }
     });

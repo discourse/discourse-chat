@@ -163,7 +163,7 @@ acceptance("Discourse Chat - chat browsing no channels", function (needs) {
           title: "@hawk",
           unread_count: 0,
           unread_mentions: 0,
-          updated_at: "2021-11-08T21:26:05.710Z",
+          last_message_sent_at: "2021-11-08T21:26:05.710Z",
         },
       });
     });

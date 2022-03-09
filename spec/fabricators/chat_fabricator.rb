@@ -4,6 +4,7 @@ Fabricator(:chat_channel) do
   name { ["Gaming Lounge", "Music Lodge", "Random", "Politics", "Sports Center", "Kino Buffs"].sample }
   chatable { Fabricate(:topic) }
   status { :open }
+  user_count 0
 end
 
 Fabricator(:chat_message) do

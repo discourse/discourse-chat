@@ -11,7 +11,7 @@ module Jobs
     end
 
     def set_user_count(chat_channel)
-      current_count = chat_channel.user_count
+      current_count = chat_channel.user_count || 0
       new_count = chat_channel
         .user_chat_channel_memberships
         .joins(:user)

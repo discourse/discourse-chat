@@ -5,7 +5,7 @@ module Jobs
     every 2.hours
 
     def execute(args = {})
-      ChatChannel.all.each do |chat_channel|
+      ChatChannel.find_each do |chat_channel|
         set_user_count(chat_channel)
       end
     end

@@ -25,7 +25,7 @@ en:
       channel_archive:
         title: "Archive Channel"
         instructions: "<p>Archiving a channel puts it into read-only mode and moves all messages from the channel into a new or existing topic. No new messages can be sent, and no existing messages can be edited or deleted.</p><p>Are you sure you want to archive the <strong>#%{channelTitle}</strong> channel?</p>"
-        process_started: "Archiving process has started. This channel will be reloaded shortly, and you will receive a personal message when the archive process is complete."
+        process_started: "Archiving process has started. This page will be reloaded shortly, and you will receive a personal message when the archive process is complete."
       channel_list_popup:
         browse: "Browse channels"
         create: "Create a channel"
@@ -112,12 +112,11 @@ en:
       you_flagged: "You flagged this message"
       exit: "back"
       channel_status:
-        read_only_header: "Channel is read only. No new messages can be sent, and no existing messages can be edited or deleted."
+        read_only_header: "Channel is read only."
         read_only: "Read Only"
-        archived_header: "Channel is archived. No new messages can be sent, and no existing messages can be edited or deleted."
+        archived_header: "Channel is archived."
         archived: "Archived"
-        closed_header: "Channel is closed. No new messages can be sent, and no existing messages can be edited or deleted."
-        closed_staff_header: "Channel is closed."
+        closed_header: "Channel is closed."
         closed: "Closed"
         open_header: "Channel is open."
         open: "Open"

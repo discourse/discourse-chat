@@ -378,8 +378,7 @@ body.composer-open .topic-chat-float-container {
     width: calc(100% - 75px);
   }
 
-  .edit-channels-dropdown,
-  .chat-channel-settings-btn {
+  .edit-channels-dropdown {
     .select-kit-header {
       background: none;
       border: none;
@@ -871,8 +870,7 @@ body.composer-open .topic-chat-float-container {
     opacity: 0;
   }
 
-  .chat-channel-leave-btn.btn-icon,
-  .chat-channel-settings-btn {
+  .chat-channel-leave-btn.btn-icon {
     margin-left: auto;
     visibility: hidden;
 
@@ -890,8 +888,7 @@ body.composer-open .topic-chat-float-container {
   }
 
   &:hover {
-    .chat-channel-leave-btn,
-    .chat-channel-settings-btn {
+    .chat-channel-leave-btn {
       visibility: visible;
 
       > * {
@@ -1107,7 +1104,8 @@ body.composer-open .topic-chat-float-container {
         align-items: center;
         font-weight: 500;
         .chat-channel-expand-settings,
-        .edit-btn {
+        .edit-btn,
+        .chat-channel-settings-btn {
           border: none;
           background-color: var(--secondary);
           &:hover {
@@ -1117,6 +1115,9 @@ body.composer-open .topic-chat-float-container {
           }
           .d-icon {
             color: var(--primary-medium);
+          }
+          .select-kit-header {
+            background-color: var(--secondary);
           }
         }
       }

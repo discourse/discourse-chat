@@ -48,14 +48,14 @@ export default createWidget("header-chat-link", {
     );
   },
 
-  mouseDown(e) {
+  mouseUp(e) {
     if (e.which === 2) {
       // Middle mouse click
       window.open(getURL("/chat"), "_blank").focus();
     }
   },
 
-  keyDown(e) {
+  keyUp(e) {
     if (e.code === "Enter") {
       return this.click();
     }

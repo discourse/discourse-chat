@@ -88,9 +88,9 @@ if (!isLegacyEmber()) {
         6
       );
 
-      // Freaking keydown event isn't triggered by fillIn...
+      // Freaking keyup event isn't triggered by fillIn...
       // Next line manually keyup's "r" to make the keyup event run.
-      // Fillin is needed for `this.filter` but triggerKeyEvent is needed to fire the JS event.
+      // fillIn is needed for `this.filter` but triggerKeyEvent is needed to fire the JS event.
       await fillIn("#chat-channel-selector-input", "s");
       await triggerKeyEvent("#chat-channel-selector-input", "keyup", 83);
       await settled();
@@ -102,7 +102,7 @@ if (!isLegacyEmber()) {
         4
       );
 
-      await triggerKeyEvent(document.body, "keydown", 13); // Enter key
+      await triggerKeyEvent(document.body, "keyup", 13); // Enter key
       assert.ok(exists(".topic-chat-container.visible"));
       assert.notOk(exists("#chat-channel-selector-modal-inner"));
       assert.equal(currentURL(), "/latest");

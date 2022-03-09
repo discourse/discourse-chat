@@ -2,7 +2,7 @@
 
 {{chat-message-separator message=message}}
 
-<div {{on "click" (fn this.handleClick)}} class={{messageContainerClasses}} data-id={{or message.id message.stagedId}}>
+<div {{on "click" this.handleClick}} class={{messageContainerClasses}} data-id={{or message.id message.stagedId}}>
   {{emoji-picker
     isActive=emojiPickerIsActive
     isEditorFocused=true
@@ -10,6 +10,7 @@
     emojiSelected=(action "selectReaction")
     onEmojiPickerClose=(action (mut emojiPickerIsActive) false)
   }}
+
   {{#if show}}
     {{#if selectingMessages}}
       {{input
@@ -19,6 +20,7 @@
         click=(action "toggleChecked")
       }}
     {{/if}}
+
     {{#if deletedAndCollapsed}}
       <div class="chat-message-deleted">
         {{d-button
@@ -49,6 +51,7 @@
                   title="chat.react"
                 }}
               {{/if}}
+
               {{#if canReply}}
                 {{d-button
                   class="btn-flat reply-btn"
@@ -73,11 +76,13 @@
         {{#if message.in_reply_to}}
           <div role="button" onclick={{action "viewReply"}} class="tc-reply-display">
             {{d-icon "share" title="chat.in_reply_to"}}
+
             {{#if message.in_reply_to.chat_webhook_event.emoji}}
               {{chat-emoji-avatar emoji=message.in_reply_to.chat_webhook_event.emoji}}
             {{else}}
               {{chat-user-avatar user=message.in_reply_to.user}}
             {{/if}}
+
             <span class="tc-reply-msg">
               {{replace-emoji message.in_reply_to.excerpt}}
             </span>
@@ -155,6 +160,7 @@
                       {{replace-emoji reactionLabel}}
                     </div>
                   {{/if}}
+
                   {{#each-in message.reactions as |emoji reactionAttrs|}}
                     {{chat-message-reaction
                       emoji=emoji
@@ -216,7 +222,6 @@
               {{/if}}
             </div>
           {{/if}}
-
         </div>
       </div>
     {{/if}}

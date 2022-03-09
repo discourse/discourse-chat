@@ -1,4 +1,4 @@
-<div class="{{chatChannelClass}} chat-channel-settings-row">
+<div class="{{chatChannelClass}} chat-channel-settings-row chat-channel-settings-row-{{channel.id}}">
   <div class="chat-channel-info">
     <div class="channel-title-container">
       {{#if editingName}}
@@ -24,6 +24,9 @@
           {{#if currentUser.staff}}
             {{d-button icon="pencil-alt" class="edit-btn" action=(action "startEditingName")}}
           {{/if}}
+          {{#if currentUser.staff}}
+            {{chat-channel-settings-btn channel=channel}}
+          {{/if}}
           {{#if channel.following}}
             {{d-button
               class="chat-channel-expand-settings"
@@ -34,6 +37,7 @@
           {{/if}}
         </div>
       {{/if}}
+
       {{#if channel.expanded}}
         <div class="chat-channel-row-controls">
 
@@ -68,6 +72,7 @@
               }}
             </div>
           {{/unless}}
+
           <div class="controls save-container">
             <label></label>
             {{d-button
@@ -86,6 +91,7 @@
         </div>
       {{/if}}
     </div>
+
     <div class="chat-channel-data">
       {{#if channel.following}}
         {{d-icon "check"}}<p class="channel-joined">{{i18n "chat.settings.followed"}}</p>
@@ -95,6 +101,7 @@
           • {{html-safe channel.description}}
         </div>
       {{/if}}
+      {{chat-channel-status channel=channel format="short"}}
     </div>
   </div>
 
@@ -121,5 +128,4 @@
       }}
     {{/if}}
   </div>
-
 </div>

@@ -373,7 +373,7 @@ export default Service.extend({
             dmChannel = channel;
           }
         } else {
-          if (!publicChannelWithMention && state.unread_mentions > 0) {
+          if (state.unread_mentions > 0) {
             publicChannelWithMention = channel;
             break; // <- We have a public channel with a mention. Break and return this.
           } else if (!publicChannelWithUnread && state.unread_count > 0) {
@@ -576,9 +576,8 @@ export default Service.extend({
         ].chat_message_id = busData.message_id;
       } else {
         // Message from other user. Increment trackings state
-        const trackingState = this.currentUser.chat_channel_tracking_state[
-          channel.id
-        ];
+        const trackingState =
+          this.currentUser.chat_channel_tracking_state[channel.id];
         if (busData.message_id > (trackingState.chat_message_id || 0)) {
           trackingState.unread_count = trackingState.unread_count + 1;
         }
@@ -599,9 +598,8 @@ export default Service.extend({
 
   _subscribeToMentionChannel(channel) {
     this.messageBus.subscribe(`/chat/${channel.id}/new-mentions`, () => {
-      const trackingState = this.currentUser.chat_channel_tracking_state[
-        channel.id
-      ];
+      const trackingState =
+        this.currentUser.chat_channel_tracking_state[channel.id];
       if (trackingState) {
         trackingState.unread_mentions =
           (trackingState.unread_mentions || 0) + 1;
@@ -671,9 +669,8 @@ export default Service.extend({
           return this.forceRefreshChannels();
         }
 
-        const trackingState = this.currentUser.chat_channel_tracking_state[
-          busData.chat_channel_id
-        ];
+        const trackingState =
+          this.currentUser.chat_channel_tracking_state[busData.chat_channel_id];
         if (trackingState) {
           trackingState.chat_message_id = busData.chat_message_id;
           trackingState.unread_count = 0;
@@ -691,9 +688,8 @@ export default Service.extend({
   },
 
   resetTrackingStateForChannel(channelId) {
-    const trackingState = this.currentUser.chat_channel_tracking_state[
-      channelId
-    ];
+    const trackingState =
+      this.currentUser.chat_channel_tracking_state[channelId];
     if (trackingState) {
       trackingState.unread_count = 0;
       this.userChatChannelTrackingStateChanged();

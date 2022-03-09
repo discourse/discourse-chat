@@ -15,6 +15,7 @@ class ChatChannelSerializer < ApplicationSerializer
              :updated_at,
              :status,
              :archive_failed,
+             :archive_completed,
              :archived_messages,
              :total_messages,
              :archive_topic_id
@@ -54,8 +55,20 @@ class ChatChannelSerializer < ApplicationSerializer
     object.chat_channel_archive
   end
 
-  def include_archive_failed?
+  def include_archive_status?
     scope.is_staff? && archive.present?
+  end
+
+  def include_archive_completed?
+    include_archive_status?
+  end
+
+  def archive_completed
+    archive.complete?
+  end
+
+  def include_archive_failed?
+    include_archive_status?
   end
 
   def archive_failed

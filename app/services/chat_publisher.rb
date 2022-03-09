@@ -149,7 +149,7 @@ module ChatPublisher
       {
         chat_channel_id: chat_channel.id,
         archive_failed: archive_status == :failed,
-        archive_completed: archive_status == :complete,
+        archive_completed: archive_status == :success,
         archived_messages: archived_messages,
         total_messages: total_messages,
         archive_topic_id: archive_topic_id

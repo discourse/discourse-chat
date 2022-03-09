@@ -119,7 +119,6 @@ export default Component.extend({
       cancel(this.stickyScrollTimer);
       this.stickyScrollTimer = null;
     }
-    this.messageBus.unsubscribe("/chat/channel-archive-status");
     if (this.registeredChatChannelId) {
       this.messageBus.unsubscribe(`/chat/${this.registeredChatChannelId}`);
       this.registeredChatChannelId = null;
@@ -313,19 +312,6 @@ export default Component.extend({
     this.messageBus.subscribe(`/chat/${this.chatChannel.id}`, (busData) => {
       this.handleMessage(busData);
     });
-
-    if (this.currentUser.admin) {
-      this.messageBus.subscribe("/chat/channel-archive-status", (busData) => {
-        if (busData.chat_channel_id === this.chatChannel.id) {
-          this.chatChannel.setProperties({
-            archive_failed: busData.archive_failed,
-            archived_messages: busData.archived_messages,
-            archive_topic_id: busData.archive_topic_id,
-            total_messages: busData.total_messages,
-          });
-        }
-      });
-    }
   },
 
   _prepareMessages(messages) {
@@ -1073,32 +1059,6 @@ export default Component.extend({
   @discourseComputed("messages.@each.selected")
   selectedMessageIds(messages) {
     return messages.filter((m) => m.selected).map((m) => m.id);
-  },
-
-  @discourseComputed(
-    "chatChannel.status",
-    "chatChannel.archived_messages",
-    "chatChannel.total_messages"
-  )
-  channelArchiveFailedMessage() {
-    let topicUrl = getURL(`/t/-/${this.chatChannel.archive_topic_id}`);
-    return I18n.t("chat.channel_status.archive_failed", {
-      completed: this.chatChannel.archived_messages,
-      total: this.chatChannel.total_messages,
-      topic_url: topicUrl,
-    });
-  },
-
-  @action
-  retryArchive() {
-    return ajax({
-      url: `/chat/chat_channels/${this.chatChannel.id}/retry_archive.json`,
-      type: "PUT",
-    })
-      .then(() => {
-        this.chatChannel.set("archive_failed", false);
-      })
-      .catch(popupAjaxError);
   },
 
   @action

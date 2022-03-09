@@ -13,16 +13,7 @@
 
       {{chat-channel-status channel=chatChannel}}
 
-      {{#if (and chatChannel.archive_failed currentUser.admin)}}
-        <div class="alert alert-warn chat-channel-retry-archive">
-          <div class="chat-channel-archive-failed-message">
-            {{html-safe channelArchiveFailedMessage}}
-          </div>
-          <div class="chat-channel-archive-failed-retry">
-            {{d-button action=(action "retryArchive") label="chat.channel_archive.retry"}}
-          </div>
-        </div>
-      {{/if}}
+      {{chat-channel-archive-status channel=chatChannel}}
 
       {{#if previewing}}
         {{d-button

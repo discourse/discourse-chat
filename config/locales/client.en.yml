@@ -118,6 +118,7 @@ en:
         archived_header: "Channel is archived."
         archived: "Archived"
         archive_failed: "Archive channel failed. %{completed}/%{total} messages have been archived in <a target=\"_blank\" href=\"%{topic_url}\">the destination topic</a>. Press retry to attempt to complete the archive."
+        archive_completed: "Archive channel completed. The archive can be found in <a target=\"_blank\" href=\"%{topic_url}\">the destination topic</a>."
         closed_header: "Channel is closed."
         closed: "Closed"
         open_header: "Channel is open."

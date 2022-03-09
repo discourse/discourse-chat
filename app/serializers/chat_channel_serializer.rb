@@ -14,7 +14,10 @@ class ChatChannelSerializer < ApplicationSerializer
              :unread_mentions,
              :updated_at,
              :status,
-             :archive_failed
+             :archive_failed,
+             :archived_messages,
+             :total_messages,
+             :archive_topic_id
 
   def include_description?
     object.description.present?
@@ -57,5 +60,29 @@ class ChatChannelSerializer < ApplicationSerializer
 
   def archive_failed
     archive.failed?
+  end
+
+  def archived_messages
+    archive.archived_messages
+  end
+
+  def total_messages
+    archive.total_messages
+  end
+
+  def archive_topic_id
+    archive.destination_topic_id
+  end
+
+  def include_archived_messages?
+    include_archive_failed?
+  end
+
+  def include_total_messages?
+    include_archive_failed?
+  end
+
+  def include_archive_topic_id?
+    include_archive_failed?
   end
 end

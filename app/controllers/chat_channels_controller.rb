@@ -213,6 +213,20 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     render json: success_json
   end
 
+  def retry_archive
+    params.require(:chat_channel_id)
+
+    chat_channel = ChatChannel.find_by(id: params[:chat_channel_id])
+    archive = chat_channel.chat_channel_archive
+    raise Discourse::NotFound if archive.blank?
+    raise Discourse::InvalidParameters if !archive.failed?
+    guardian.ensure_can_change_channel_status!(chat_channel, :archived)
+
+    DiscourseChat::ChatChannelArchiveService.retry_archive_process(chat_channel: chat_channel)
+
+    render json: success_json
+  end
+
   private
 
   def render_channel_for_chatable(channel)

@@ -11,9 +11,9 @@
 
       {{chat-channel-title onClick=(action "onChannelTitleClick") channel=chatChannel}}
 
-      {{chat-channel-status channel=chatChannel showFailureMessages=true}}
+      {{chat-channel-status channel=chatChannel}}
 
-      {{#if (and chatChannel.archive_failed currentUser.staff)}}
+      {{#if (and chatChannel.archive_failed currentUser.admin)}}
         <div class="alert alert-warn chat-channel-retry-archive">
           <div class="chat-channel-archive-failed-message">
             {{html-safe channelArchiveFailedMessage}}

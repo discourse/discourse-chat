@@ -39,7 +39,7 @@ class DiscourseChat::ChatChannelArchiveService
   end
 
   def self.retry_archive_process(chat_channel:)
-    return if !ChatChannelArchive.exists?(chat_channel: chat_channel)
+    return if !chat_channel.chat_channel_archive&.failed?
     Jobs.enqueue(:chat_channel_archive, chat_channel_archive_id: chat_channel.chat_channel_archive.id)
   end
 

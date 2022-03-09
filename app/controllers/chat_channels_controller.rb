@@ -217,10 +217,11 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     params.require(:chat_channel_id)
 
     chat_channel = ChatChannel.find_by(id: params[:chat_channel_id])
+    guardian.ensure_can_change_channel_status!(chat_channel, :archived)
+
     archive = chat_channel.chat_channel_archive
     raise Discourse::NotFound if archive.blank?
-    raise Discourse::InvalidParameters if !archive.failed?
-    guardian.ensure_can_change_channel_status!(chat_channel, :archived)
+    raise Discourse::InvalidAccess if !archive.failed?
 
     DiscourseChat::ChatChannelArchiveService.retry_archive_process(chat_channel: chat_channel)
 

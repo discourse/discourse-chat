@@ -315,11 +315,8 @@ export default Component.extend({
     });
 
     if (this.currentUser.admin) {
-      console.log("subbed");
       this.messageBus.subscribe("/chat/channel-archive-status", (busData) => {
-        console.log("got bus", busData);
         if (busData.chat_channel_id === this.chatChannel.id) {
-          console.log("found channel", this.chatChannel);
           this.chatChannel.setProperties({
             archive_failed: busData.archive_failed,
             archived_messages: busData.archived_messages,
@@ -1078,7 +1075,11 @@ export default Component.extend({
     return messages.filter((m) => m.selected).map((m) => m.id);
   },
 
-  @discourseComputed("chatChannel.status", "chatChannel.archived_messages", "chatChannel.total_messages")
+  @discourseComputed(
+    "chatChannel.status",
+    "chatChannel.archived_messages",
+    "chatChannel.total_messages"
+  )
   channelArchiveFailedMessage() {
     let topicUrl = getURL(`/t/-/${this.chatChannel.archive_topic_id}`);
     return I18n.t("chat.channel_status.archive_failed", {

@@ -225,7 +225,7 @@ acceptance("Discourse Chat | discourse-chat-transcript", function () {
         datetime: "2022-01-25T05:40:39Z",
         channel: "Cool Cats Club",
         multiQuote: true,
-        noLink: true
+        noLink: true,
       }),
       "renders with the noLink attribute"
     );

@@ -177,6 +177,21 @@ describe DiscourseChat::ChatChannelArchiveService do
             expect(topic.closed?).to eq(true)
           end
         end
+
+        context "when archiving to an existing topic" do
+          it "does not change the status of the topic" do
+            create_messages(3) && start_archive
+            @channel_archive.update(
+              destination_topic_title: nil,
+              destination_topic_id: Fabricate(:topic).id
+            )
+            subject.new(@channel_archive).execute
+            topic = @channel_archive.destination_topic
+            topic.reload
+            expect(topic.archived).to eq(false)
+            expect(topic.closed?).to eq(false)
+          end
+        end
       end
     end
 

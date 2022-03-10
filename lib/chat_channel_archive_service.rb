@@ -148,10 +148,15 @@ class DiscourseChat::ChatChannelArchiveService
   end
 
   def update_destination_topic_status
-    if SiteSetting.chat_archive_destination_topic_status == "archived"
-      chat_channel_archive.destination_topic.update!(archived: true)
-    elsif SiteSetting.chat_archive_destination_topic_status == "closed"
-      chat_channel_archive.destination_topic.update!(closed: true)
+    # we only want to do this when the destination topic is new, not an
+    # existing topic, because we don't want to update the status unexpectedly
+    # on an existing topic
+    if chat_channel_archive.destination_topic_title.present?
+      if SiteSetting.chat_archive_destination_topic_status == "archived"
+        chat_channel_archive.destination_topic.update!(archived: true)
+      elsif SiteSetting.chat_archive_destination_topic_status == "closed"
+        chat_channel_archive.destination_topic.update!(closed: true)
+      end
     end
   end
 

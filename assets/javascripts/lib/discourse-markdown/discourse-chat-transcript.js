@@ -12,12 +12,12 @@ const chatTranscriptRule = {
     }
 
     const options = state.md.options.discourse;
-    let [username, messageIdStart, messageTimeStart] =
+    const [username, messageIdStart, messageTimeStart] =
       (tagInfo.attrs.quote && tagInfo.attrs.quote.split(";")) || [];
-    let multiQuote = !!tagInfo.attrs.multiQuote;
-    let noLink = !!tagInfo.attrs.noLink;
-    let channelName = tagInfo.attrs.channel;
-    let channelLink = channelName
+    const multiQuote = !!tagInfo.attrs.multiQuote;
+    const noLink = !!tagInfo.attrs.noLink;
+    const channelName = tagInfo.attrs.channel;
+    const channelLink = channelName
       ? options.getURL(
           `/chat/chat_channels/${encodeURIComponent(channelName.toLowerCase())}`
         )

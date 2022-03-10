@@ -73,7 +73,7 @@ class DiscourseChat::ChatChannelArchiveService
       ) do |chat_messages|
         create_post(
           ChatTranscriptService.new(
-            chat_channel, messages_or_ids: chat_messages
+            chat_channel, messages_or_ids: chat_messages, opts: { no_link: true }
           ).generate_markdown
         ) do
           delete_message_batch(chat_messages.map(&:id))
@@ -149,7 +149,20 @@ class DiscourseChat::ChatChannelArchiveService
       Rails.logger.info("Topic already exists for #{chat_channel.name} archive.")
     end
 
-    chat_channel_archive.destination_topic.update!(archived: true)
+    update_destination_topic_status
+  end
+
+  def update_destination_topic_status
+    # we only want to do this when the destination topic is new, not an
+    # existing topic, because we don't want to update the status unexpectedly
+    # on an existing topic
+    if chat_channel_archive.destination_topic_title.present?
+      if SiteSetting.chat_archive_destination_topic_status == "archived"
+        chat_channel_archive.destination_topic.update!(archived: true)
+      elsif SiteSetting.chat_archive_destination_topic_status == "closed"
+        chat_channel_archive.destination_topic.update!(closed: true)
+      end
+    end
   end
 
   def delete_message_batch(message_ids)

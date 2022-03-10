@@ -17,18 +17,21 @@
 class ChatTranscriptService
   CHAINED_ATTR = "chained=\"true\""
   MULTIQUOTE_ATTR = "multiQuote=\"true\""
+  NO_LINK_ATTR = "noLink=\"true\""
 
   class ChatTranscriptBBCode
-    attr_reader :channel, :multiquote, :chained
+    attr_reader :channel, :multiquote, :chained, :no_link
 
     def initialize(
       channel: nil,
       multiquote: false,
-      chained: false
+      chained: false,
+      no_link: false
     )
       @channel = channel
       @multiquote = multiquote
       @chained = chained
+      @no_link = no_link
       @messages = []
     end
 
@@ -41,6 +44,7 @@ class ChatTranscriptService
       attrs << channel_attr if channel
       attrs << MULTIQUOTE_ATTR if multiquote
       attrs << CHAINED_ATTR if chained
+      attrs << NO_LINK_ATTR if no_link
 
       <<~MARKDOWN
       [chat #{attrs.join(" ")}]
@@ -60,7 +64,7 @@ class ChatTranscriptService
     end
   end
 
-  def initialize(channel, messages_or_ids: [])
+  def initialize(channel, messages_or_ids: [], opts: {})
     @channel = channel
 
     if messages_or_ids.all? { |m| m.is_a?(Numeric) }
@@ -68,6 +72,7 @@ class ChatTranscriptService
     else
       @messages = messages_or_ids
     end
+    @opts = opts
   end
 
   def generate_markdown
@@ -77,7 +82,8 @@ class ChatTranscriptService
     open_bbcode_tag = ChatTranscriptBBCode.new(
       channel: @channel,
       multiquote: messages.length > 1,
-      chained: !all_messages_same_user
+      chained: !all_messages_same_user,
+      no_link: @opts[:no_link]
     )
 
     messages.each.with_index do |message, idx|
@@ -85,7 +91,8 @@ class ChatTranscriptService
         rendered_markdown << open_bbcode_tag.render
 
         open_bbcode_tag = ChatTranscriptBBCode.new(
-          chained: !all_messages_same_user
+          chained: !all_messages_same_user,
+          no_link: @opts[:no_link]
         )
       end
 

@@ -59,16 +59,8 @@ class ChatChannelSerializer < ApplicationSerializer
     scope.is_staff? && archive.present?
   end
 
-  def include_archive_completed?
-    include_archive_status?
-  end
-
   def archive_completed
     archive.complete?
-  end
-
-  def include_archive_failed?
-    include_archive_status?
   end
 
   def archive_failed
@@ -87,15 +79,9 @@ class ChatChannelSerializer < ApplicationSerializer
     archive.destination_topic_id
   end
 
-  def include_archived_messages?
-    include_archive_failed?
-  end
-
-  def include_total_messages?
-    include_archive_failed?
-  end
-
-  def include_archive_topic_id?
-    include_archive_failed?
-  end
+  alias_method :include_archive_topic_id?, :include_archive_status?
+  alias_method :include_total_messages?, :include_archive_status?
+  alias_method :include_archived_messages?, :include_archive_status?
+  alias_method :include_archive_failed?, :include_archive_status?
+  alias_method :include_archive_completed?, :include_archive_status?
 end

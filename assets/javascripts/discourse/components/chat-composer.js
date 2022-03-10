@@ -69,8 +69,8 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   editorClass: alias("editorInputClass"),
 
   @discourseComputed("toolbarButtons")
-  composerRowClasses(toolbarButtons) {
-    return `chat-composer-row ${toolbarButtons.length ? "has-toolbar" : ""}`;
+  composerRowClasses(buttons) {
+    return `chat-composer-row ${buttons.length ? "has-toolbar" : ""}`;
   },
 
   @discourseComputed("fullPage")

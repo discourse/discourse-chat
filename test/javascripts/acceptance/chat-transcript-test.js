@@ -154,10 +154,20 @@ function buildAdditionalOptions() {
   };
 }
 
-acceptance("Discourse Chat | discourse-chat-transcript", function () {
+acceptance("Discourse Chat | discourse-chat-transcript", function (needs) {
   let additionalOptions = buildAdditionalOptions();
 
+  needs.user({
+    admin: false,
+    moderator: false,
+    username: "eviltrout",
+    id: 1,
+    can_chat: false,
+    has_chat_enabled: false,
+  });
+
   test("works with a minimal quote bbcode block", function (assert) {
+    loggedInUser().changeTimezone("Australia/Brisbane");
     assert.cookedChatTranscript(
       `[chat quote="martin;2321;2022-01-25T05:40:39Z"]\nThis is a chat message.\n[/chat]`,
       { additionalOptions },
@@ -171,6 +181,7 @@ acceptance("Discourse Chat | discourse-chat-transcript", function () {
   });
 
   test("renders the channel name if provided with multiQuote", function (assert) {
+    loggedInUser().changeTimezone("Australia/Brisbane");
     assert.cookedChatTranscript(
       `[chat quote="martin;2321;2022-01-25T05:40:39Z" channel="Cool Cats Club" multiQuote="true"]\nThis is a chat message.\n[/chat]`,
       { additionalOptions },
@@ -186,6 +197,7 @@ acceptance("Discourse Chat | discourse-chat-transcript", function () {
   });
 
   test("renders the channel name if provided without multiQuote", function (assert) {
+    loggedInUser().changeTimezone("Australia/Brisbane");
     assert.cookedChatTranscript(
       `[chat quote="martin;2321;2022-01-25T05:40:39Z" channel="Cool Cats Club"]\nThis is a chat message.\n[/chat]`,
       { additionalOptions },
@@ -200,6 +212,7 @@ acceptance("Discourse Chat | discourse-chat-transcript", function () {
   });
 
   test("renders with the chained attribute for more compact quotes", function (assert) {
+    loggedInUser().changeTimezone("Australia/Brisbane");
     assert.cookedChatTranscript(
       `[chat quote="martin;2321;2022-01-25T05:40:39Z" channel="Cool Cats Club" multiQuote="true" chained="true"]\nThis is a chat message.\n[/chat]`,
       { additionalOptions },
@@ -216,6 +229,7 @@ acceptance("Discourse Chat | discourse-chat-transcript", function () {
   });
 
   test("renders with the noLink attribute to remove the links to the individual messages from the datetimes", function (assert) {
+    loggedInUser().changeTimezone("Australia/Brisbane");
     assert.cookedChatTranscript(
       `[chat quote="martin;2321;2022-01-25T05:40:39Z" channel="Cool Cats Club" multiQuote="true" noLink="true"]\nThis is a chat message.\n[/chat]`,
       { additionalOptions },
@@ -232,6 +246,7 @@ acceptance("Discourse Chat | discourse-chat-transcript", function () {
   });
 
   test("renders with minimal markdown rules inside the quote bbcode block, same as server-side chat messages", function (assert) {
+    loggedInUser().changeTimezone("Australia/Brisbane");
     assert.cookedChatTranscript(
       `[chat quote="johnsmith;450;2021-04-25T05:40:39Z"]
 [quote="martin, post:3, topic:6215"]
@@ -471,6 +486,7 @@ acceptance(
     });
 
     test("Preview should not error for oneboxes within [chat] bbcode", async function (assert) {
+      loggedInUser().changeTimezone("Australia/Brisbane");
       await visit("/t/internationalization-localization/280");
       await click("#topic-footer-buttons .btn.create");
 

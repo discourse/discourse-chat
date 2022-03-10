@@ -26,6 +26,7 @@ en:
         title: "Archive Channel"
         instructions: "<p>Archiving a channel puts it into read-only mode and moves all messages from the channel into a new or existing topic. No new messages can be sent, and no existing messages can be edited or deleted.</p><p>Are you sure you want to archive the <strong>#%{channelTitle}</strong> channel?</p>"
         process_started: "Archiving process has started. This page will be reloaded shortly, and you will receive a personal message when the archive process is complete."
+        retry: "Retry"
       channel_list_popup:
         browse: "Browse channels"
         create: "Create a channel"
@@ -116,6 +117,8 @@ en:
         read_only: "Read Only"
         archived_header: "Channel is archived."
         archived: "Archived"
+        archive_failed: "Archive channel failed. %{completed}/%{total} messages have been archived in <a target=\"_blank\" href=\"%{topic_url}\">the destination topic</a>. Press retry to attempt to complete the archive."
+        archive_completed: "Archive channel completed. The archive can be found in <a target=\"_blank\" href=\"%{topic_url}\">the destination topic</a>."
         closed_header: "Channel is closed."
         closed: "Closed"
         open_header: "Channel is open."

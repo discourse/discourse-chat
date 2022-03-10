@@ -38,6 +38,11 @@ class DiscourseChat::ChatChannelArchiveService
     end
   end
 
+  def self.retry_archive_process(chat_channel:)
+    return if !chat_channel.chat_channel_archive&.failed?
+    Jobs.enqueue(:chat_channel_archive, chat_channel_archive_id: chat_channel.chat_channel_archive.id)
+  end
+
   attr_reader :chat_channel_archive, :chat_channel
 
   def initialize(chat_channel_archive)
@@ -197,6 +202,14 @@ class DiscourseChat::ChatChannelArchiveService
         chat_channel_archive.archived_by, :chat_channel_archive_complete, base_translation_params
       )
     end
+
+    ChatPublisher.publish_archive_status(
+      chat_channel,
+      archive_status: result,
+      archived_messages: chat_channel_archive.archived_messages,
+      archive_topic_id: chat_channel_archive.destination_topic_id,
+      total_messages: chat_channel_archive.total_messages
+    )
   end
 
   def kick_all_users

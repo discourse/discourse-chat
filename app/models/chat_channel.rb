@@ -16,6 +16,8 @@ class ChatChannel < ActiveRecord::Base
   has_many :chat_messages
   has_many :user_chat_channel_memberships
 
+  has_one :chat_channel_archive
+
   enum status: {
       open: 0,
       read_only: 1,

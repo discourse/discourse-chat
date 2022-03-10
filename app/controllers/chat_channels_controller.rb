@@ -24,12 +24,22 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
   def follow
     params.require(:chat_channel_id)
 
-    membership = UserChatChannelMembership.includes(:chat_channel).find_or_create_by(
-      user_id: current_user.id,
-      chat_channel_id: params[:chat_channel_id]
-    )
+    membership = UserChatChannelMembership
+      .includes(:chat_channel)
+      .find_or_create_by(
+        user_id: current_user.id,
+        chat_channel_id: params[:chat_channel_id]
+      )
+
+    if membership.following
+      return render_serialized(membership, UserChatChannelMembershipSerializer, root: false)
+    end
+
+    # Need to set following and `save` rather than `update` because it's possible this is a new
+    # record, since the membership is fetched with `find_or_create_by`.
     membership.following = true
     if (membership.save)
+      membership.chat_channel.update(user_count: (membership.chat_channel.user_count || 0) + 1)
       render_serialized(membership, UserChatChannelMembershipSerializer, root: false)
     else
       render_json_error(membership)
@@ -46,6 +56,8 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
         chat_channel_id: params[:chat_channel_id]
       )
     if (membership && membership.update(following: false))
+      new_user_count = [(membership.chat_channel.user_count || 0) - 1, 0].max
+      membership.chat_channel.update(user_count: new_user_count)
       render json: success_json
     else
       render_json_error(membership)
@@ -100,7 +112,7 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     chatable = chatable_type.constantize.find_by(id: params[:id])
     raise Discourse::NotFound unless chatable
 
-    chat_channel = ChatChannel.create!(chatable: chatable, name: params[:name], description: params[:description])
+    chat_channel = ChatChannel.create!(chatable: chatable, name: params[:name], description: params[:description], user_count: 1)
     chat_channel.user_chat_channel_memberships.create!(user: current_user, following: true)
 
     if creating_topic_channel
@@ -209,6 +221,21 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
         tags: params[:tags]
       }
     )
+
+    render json: success_json
+  end
+
+  def retry_archive
+    params.require(:chat_channel_id)
+
+    chat_channel = ChatChannel.find_by(id: params[:chat_channel_id])
+    guardian.ensure_can_change_channel_status!(chat_channel, :archived)
+
+    archive = chat_channel.chat_channel_archive
+    raise Discourse::NotFound if archive.blank?
+    raise Discourse::InvalidAccess if !archive.failed?
+
+    DiscourseChat::ChatChannelArchiveService.retry_archive_process(chat_channel: chat_channel)
 
     render json: success_json
   end

@@ -110,6 +110,7 @@ after_initialize do
   load File.expand_path('../app/jobs/regular/create_chat_mention_notifications.rb', __FILE__)
   load File.expand_path('../app/jobs/regular/notify_users_watching_chat.rb', __FILE__)
   load File.expand_path('../app/jobs/scheduled/delete_old_chat_messages.rb', __FILE__)
+  load File.expand_path('../app/jobs/scheduled/update_user_counts_for_chat_channels.rb', __FILE__)
   load File.expand_path('../app/services/chat_publisher.rb', __FILE__)
 
   register_topic_custom_field_type(DiscourseChat::HAS_CHAT_ENABLED, :boolean)
@@ -379,6 +380,7 @@ after_initialize do
     post '/chat_channels/:chat_channel_id/unfollow' => 'chat_channels#unfollow'
     get '/chat_channels/:chat_channel_id' => 'chat_channels#show'
     put '/chat_channels/:chat_channel_id/archive' => 'chat_channels#archive'
+    put '/chat_channels/:chat_channel_id/retry_archive' => 'chat_channels#retry_archive'
 
     put '/chat_channels/:chat_channel_id/toggle_open_status' => 'chat_channels#toggle_open_status'
 

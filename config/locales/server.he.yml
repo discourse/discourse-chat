@@ -10,6 +10,12 @@ he:
     chat_allowed_groups: "משתמשים בקבוצות אלו יכולים להשתתף בצ׳אט."
     chat_channel_retention_days: "הודעות הצ׳אט בערוצים הרגילים ישמרו למשך כמות כזאת של ימים. הגדרה לאפס תשמור את ההודעות לעד."
     chat_dm_retention_days: "הודעות הצ׳אט בערוצי הצ׳אט האישיים ישמרו למשך כמות כזאת של ימים. הגדרה לאפס תשמור את ההודעות לעד."
+    chat_auto_silience_duration: "מספר הדקות שבמהלכן שמשתמשים יושתקו כאשר הם חורגים ממגבלת קצב יצירת הודעת בצ׳אט. 0 משבית את ההשתקה האוטומטית."
+    chat_silence_user_sensitivity: "הסבירות שמשתמש שסומן בצ׳אט יושתק אוטומטית."
+    chat_auto_silence_from_flags_duration: "מספר דקות השתקת המשתמשים כאשר הם מושתקים אוטומטית עקב הודעות צ׳אט מסומנות."
+    chat_default_channel_id: "ערוץ הצ׳אט שייפתח כברירת מחדל כאשר למשתמש אין הודעות או אזכורים שלא נקראו בערוצים אחרים."
+    errors:
+      chat_default_channel: "ערוץ הצ׳אט כברירת המחדל חייב להיות ערוץ ציבורי."
   chat:
     errors:
       channel_exists_for_category: "כבר קיים ערוץ לקטגוריה ולשם האלו"
@@ -18,6 +24,7 @@ he:
       channel_modify_message_disallowed: "הערוץ %{status}, לא ניתן לערוך או למחוק הודעות"
       user_cannot_send_message: "אין לך אפשרות לשלוח הודעות כרגע."
       rate_limit_exceeded: "חריגה ממגבלת הודעות הצ׳אט שניתן לשלוח תוך 30 שניות"
+      auto_silence_from_flags: "הודעת צ׳אט שסומנה בציון גבוה מספיק כדי להשתיק את המשתמש."
     reviewables:
       actions:
         agree:

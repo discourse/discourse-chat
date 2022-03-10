@@ -169,3 +169,6 @@ fa_IR:
         reviewable_chat_message:
           title: "پیام گفتگوی پرچم گذاری شده"
           flagged_by: "پرچم گذاری شده توسط"
+    keyboard_shortcuts_help:
+      chat:
+        title: "گفتگو"

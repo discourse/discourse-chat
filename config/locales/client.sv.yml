@@ -240,3 +240,6 @@ sv:
         reviewable_chat_message:
           title: "Flaggat chattmeddelande"
           flagged_by: "Flaggat av"
+    keyboard_shortcuts_help:
+      chat:
+        title: "Chatt"

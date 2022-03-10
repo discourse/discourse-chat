@@ -25,10 +25,12 @@ export default {
             );
 
             if (currentUserTimezone) {
+              console.log("current user timezone", currentUserTimezone);
               dateTimeEl.innerText = moment
                 .tz(dateTimeRaw, currentUserTimezone)
                 .format(I18n.t("dates.long_no_year"));
             } else {
+              console.log("no current user timezone");
               dateTimeEl.innerText = moment(dateTimeRaw).format(
                 I18n.t("dates.long_no_year")
               );

@@ -224,7 +224,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     }
 
     this.uploads.pushObject(upload);
-    this.onValueChange(this.value, this.uploads, this.replyToMsg);
+    this.onValueChange?.(this.value, this.uploads, this.replyToMsg);
   },
 
   // It is important that this is keyDown and not keyUp, otherwise
@@ -310,7 +310,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
 
   _replyToMsgChanged(replyToMsg) {
     this.set("replyToMsg", replyToMsg);
-    this.onValueChange(this.value, this.uploads, replyToMsg);
+    this.onValueChange?.(this.value, this.uploads, replyToMsg);
   },
 
   @action
@@ -325,7 +325,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   _handleTextareaInput() {
     this._resizeTextArea();
     this._applyUserAutocomplete();
-    this.onValueChange(this.value, this.uploads, this.replyToMsg);
+    this.onValueChange?.(this.value, this.uploads, this.replyToMsg);
   },
 
   @action
@@ -685,14 +685,14 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
       inReplyMsg: null,
     });
     this._focusTextArea({ ensureAtEnd: true, resizeTextArea: true });
-    this.onValueChange(this.value, this.uploads, this.replyToMsg);
+    this.onValueChange?.(this.value, this.uploads, this.replyToMsg);
   },
 
   @action
   cancelReplyTo() {
     this.set("replyToMsg", null);
     this.setInReplyToMsg(null);
-    this.onValueChange(this.value, this.uploads, this.replyToMsg);
+    this.onValueChange?.(this.value, this.uploads, this.replyToMsg);
   },
 
   @action
@@ -746,13 +746,13 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     this.appEvents.trigger(`${this.eventPrefix}:cancel-upload`, {
       fileId: upload.id,
     });
-    this.onValueChange(this.value, this.uploads, this.replyToMsg);
+    this.onValueChange?.(this.value, this.uploads, this.replyToMsg);
   },
 
   @action
   removeUpload(upload) {
     this.uploads.removeObject(upload);
-    this.onValueChange(this.value, this.uploads, this.replyToMsg);
+    this.onValueChange?.(this.value, this.uploads, this.replyToMsg);
   },
 
   @discourseComputed("composerDisabled", "uploads.[]", "inProgressUploads.[]")

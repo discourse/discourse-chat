@@ -36,6 +36,21 @@ describe DiscourseChat::ChatMessageUpdater do
     creator.chat_message
   end
 
+  it "errors when the length is shorter the `chat_minimum_message_length`" do
+    SiteSetting.chat_minimum_message_length = 10
+    og_message = "This won't be changed!"
+    chat_message = create_chat_message(user1, og_message, public_chat_channel)
+    new_message = "2 short"
+
+    updater = DiscourseChat::ChatMessageUpdater.update(
+      chat_message: chat_message,
+      new_content: new_message
+    )
+    expect(updater.failed?).to eq(true)
+    expect(updater.error.message).to match(I18n.t("chat.errors.minimum_length_not_met", { minimum: SiteSetting.chat_minimum_message_length }))
+    expect(chat_message.reload.message).to eq(og_message)
+  end
+
   it "it updates a messages content" do
     chat_message = create_chat_message(user1, "This will be changed", public_chat_channel)
     new_message = "Change to this!"

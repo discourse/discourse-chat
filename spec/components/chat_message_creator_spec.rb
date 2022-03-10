@@ -31,6 +31,17 @@ describe DiscourseChat::ChatMessageCreator do
       Jobs.run_immediately!
     end
 
+    it "errors when the length is shorter the `chat_minimum_message_length`" do
+      SiteSetting.chat_minimum_message_length = 10
+      creator = DiscourseChat::ChatMessageCreator.create(
+        chat_channel: public_chat_channel,
+        user: user1,
+        content: "2 short"
+      )
+      expect(creator.failed?).to eq(true)
+      expect(creator.error.message).to match(I18n.t("chat.errors.minimum_length_not_met", { minimum: SiteSetting.chat_minimum_message_length }))
+    end
+
     it "creates messages for users who can see the channel" do
       expect {
         DiscourseChat::ChatMessageCreator.create(

@@ -657,7 +657,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   _messageIsValid() {
     const validLength =
       (this.value || "").trim().length >=
-      this.siteSettings.chat_minimum_message_length;
+      (this.siteSettings.chat_minimum_message_length || 0);
 
     if (this.canAttachUploads) {
       if (this._messageIsEmpty()) {

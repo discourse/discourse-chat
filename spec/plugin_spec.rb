@@ -68,5 +68,27 @@ describe 'discourse-chat' do
       expect(Upload.exists?(id: draft_upload.id)).to eq(true)
       expect(Upload.exists?(id: unused_upload.id)).to eq(false)
     end
+  end 
+  
+  describe "topic view serializer extension" do
+    fab!(:topic) { Fabricate(:topic) }
+    fab!(:user) { Fabricate(:user) }
+    fab!(:chat_channel) { Fabricate(:chat_channel, chatable: topic) }
+
+    def topic_view
+      topic_view = TopicView.new(topic.id, user)
+      serializer = TopicViewSerializer.new(topic_view, scope: Guardian.new(user), root: false).as_json
+      JSON.parse(MultiJson.dump(serializer)).deep_symbolize_keys!
+    end
+
+    it "has_chat_live is true when the channel is open or closed, not read_only or archived" do
+      expect(topic_view[:has_chat_live]).to eq(true)
+      chat_channel.update!(status: "closed")
+      expect(topic_view[:has_chat_live]).to eq(true)
+      chat_channel.update!(status: "read_only")
+      expect(topic_view[:has_chat_live]).to eq(false)
+      chat_channel.update!(status: "archived")
+      expect(topic_view[:has_chat_live]).to eq(false)
+    end
   end
 end

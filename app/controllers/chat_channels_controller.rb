@@ -229,6 +229,7 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     params.require(:chat_channel_id)
 
     chat_channel = ChatChannel.find_by(id: params[:chat_channel_id])
+    raise Discourse::NotFound if chat_channel.blank?
     guardian.ensure_can_change_channel_status!(chat_channel, :archived)
 
     archive = chat_channel.chat_channel_archive
@@ -241,6 +242,21 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
   end
 
   def toggle_open_status
+    params.require(:chat_channel_id)
+
+    chat_channel = ChatChannel.find_by(id: params[:chat_channel_id])
+    raise Discourse::NotFound if chat_channel.blank?
+
+    if chat_channel.open?
+      guardian.ensure_can_change_channel_status!(chat_channel, :closed)
+      chat_channel.close!(current_user)
+    elsif chat_channel.closed?
+      guardian.ensure_can_change_channel_status!(chat_channel, :open)
+      chat_channel.open!(current_user)
+    else
+      raise Discourse::InvalidAccess
+    end
+
     render json: success_json
   end
 

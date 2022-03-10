@@ -49,7 +49,10 @@ export default Component.extend({
 
   @action
   toggleChannelStatus() {
-    return ajax(`/chat/chat_channels/${this.chatChannel.id}/toggle_open_status`, { method: "PUT" })
+    return ajax(
+      `/chat/chat_channels/${this.chatChannel.id}/toggle_open_status`,
+      { method: "PUT" }
+    )
       .then((response) => {
         if (this.chatChannel.isOpen) {
           this.chatChannel.set("status", CHANNEL_STATUSES.closed);

@@ -34,13 +34,11 @@ export default Component.extend({
         icon: "lock",
       });
     } else if (this.channel.isClosed) {
-      if (this.channel.isOpen) {
-        options.push({
-          id: "openChannel",
-          name: I18n.t("chat.channel_settings.open_channel"),
-          icon: "unlock",
-        });
-      }
+      options.push({
+        id: "openChannel",
+        name: I18n.t("chat.channel_settings.open_channel"),
+        icon: "unlock",
+      });
     }
 
     return options;

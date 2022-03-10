@@ -4,6 +4,7 @@
 
 <div {{on "click" this.handleClick}} class={{messageContainerClasses}} data-id={{or message.id message.stagedId}}>
   {{emoji-picker
+    emojiStore=emojiStore
     isActive=emojiPickerIsActive
     isEditorFocused=true
     usePopper=false
@@ -34,10 +35,10 @@
         {{#if showActions}}
           <div class="chat-msgactions-hover">
             <div class="chat-msgactions">
-              {{#each favoritesEmojis as |favorite|}}
+              {{#each emojiReactions as |reaction|}}
                 {{chat-message-reaction
-                  emoji=favorite.emoji
-                  reacted=favorite.reacted
+                  emoji=reaction.emoji
+                  reacted=reaction.reacted
                   react=(action "react")
                   class="show"
                 }}

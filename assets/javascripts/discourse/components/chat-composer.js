@@ -43,7 +43,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   chat: service(),
   classNames: ["chat-composer"],
   userSilenced: readOnly("details.user_silenced"),
-  emojiStore: service("emoji-store"),
+  emojiStore: service("chat-emoji-store"),
   editingMessage: null,
   fullPage: false,
   mediaOptimizationWorker: service(),

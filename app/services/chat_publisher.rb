@@ -141,6 +141,23 @@ module ChatPublisher
     )
   end
 
+  def self.publish_archive_status(
+    chat_channel, archive_status:, archived_messages:, archive_topic_id:, total_messages:
+  )
+    MessageBus.publish(
+      "/chat/channel-archive-status",
+      {
+        chat_channel_id: chat_channel.id,
+        archive_failed: archive_status == :failed,
+        archive_completed: archive_status == :success,
+        archived_messages: archived_messages,
+        total_messages: total_messages,
+        archive_topic_id: archive_topic_id
+      },
+      permissions(chat_channel)
+    )
+  end
+
   private
 
   def self.permissions(chat_channel)

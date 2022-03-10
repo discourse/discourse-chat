@@ -10,6 +10,10 @@ class ChatChannelArchive < ActiveRecord::Base
     self.archived_messages >= self.total_messages &&
       self.chat_channel.chat_messages.count.zero?
   end
+
+  def failed?
+    !complete? && self.archive_error.present?
+  end
 end
 
 # == Schema Information

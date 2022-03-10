@@ -18,10 +18,15 @@ class DiscourseChat::ChatBaseController < ::ApplicationController
     rescue ArgumentError
     end
 
+    base_channel_relation = ChatChannel.includes(:chatable)
+    if current_user.staff?
+      base_channel_relation = base_channel_relation.includes(:chat_channel_archive)
+    end
+
     if id_or_name.is_a? Integer
-      @chat_channel = ChatChannel.includes(:chatable).find_by(id: id_or_name)
+      @chat_channel = base_channel_relation.find_by(id: id_or_name)
     else
-      @chat_channel = ChatChannel.includes(:chatable).find_by("LOWER(name) = ?", id_or_name.downcase)
+      @chat_channel = base_channel_relation.find_by("LOWER(name) = ?", id_or_name.downcase)
     end
 
     raise Discourse::NotFound unless @chat_channel

@@ -6,22 +6,49 @@ export default {
   name: "chat-setup",
   initialize(container) {
     const currentUser = container.lookup("current-user:main");
-    const chatService = container.lookup("service:chat");
-
-    if (!chatService.userCanChat) {
-      return;
-    }
-
-    this.chat = container.lookup("service:chat");
-
-    document.body.classList.add("chat-enabled");
+    this.chatService = container.lookup("service:chat");
 
     withPluginApi("0.12.1", (api) => {
+      // we want to decorate the chat quote dates regardless
+      // of whether the current user has chat enabled
+      api.decorateCookedElement(
+        (elem) => {
+          const currentUserTimezone =
+            currentUser?.resolvedTimezone(currentUser);
+          const chatTranscriptElements = elem.querySelectorAll(
+            ".discourse-chat-transcript"
+          );
+          chatTranscriptElements.forEach((el) => {
+            const dateTimeRaw = el.dataset["datetime"];
+            const dateTimeEl = el.querySelector(
+              ".chat-transcript-datetime a, .chat-transcript-datetime span"
+            );
+
+            if (currentUserTimezone) {
+              dateTimeEl.innerText = moment
+                .tz(dateTimeRaw, currentUserTimezone)
+                .format(I18n.t("dates.long_no_year"));
+            } else {
+              dateTimeEl.innerText = moment(dateTimeRaw).format(
+                I18n.t("dates.long_no_year")
+              );
+            }
+          });
+        },
+        { id: "chat-transcript-datetime" }
+      );
+
+      if (!this.chatService.userCanChat) {
+        return;
+      }
+
+      document.body.classList.add("chat-enabled");
+
       if (api.container.lookup("site:main").mobileView) {
         currentUser.chat_isolated = false;
       }
 
-      this.chat.getChannels();
+      this.chatService.getChannels();
 
       const chatNotificationManager = container.lookup(
         "service:chat-notification-manager"
@@ -48,38 +75,11 @@ export default {
       );
 
       api.addToHeaderIcons("header-chat-link");
-
-      api.decorateCookedElement(
-        (elem) => {
-          const currentUserTimezone =
-            currentUser?.resolvedTimezone(currentUser);
-          const chatTranscriptElements = elem.querySelectorAll(
-            ".discourse-chat-transcript"
-          );
-          chatTranscriptElements.forEach((el) => {
-            const dateTimeRaw = el.dataset["datetime"];
-            const dateTimeLinkEl = el.querySelector(
-              ".chat-transcript-datetime a"
-            );
-
-            if (currentUserTimezone) {
-              dateTimeLinkEl.innerText = moment
-                .tz(dateTimeRaw, currentUserTimezone)
-                .format(I18n.t("dates.long_no_year"));
-            } else {
-              dateTimeLinkEl.innerText = moment(dateTimeRaw).format(
-                I18n.t("dates.long_no_year")
-              );
-            }
-          });
-        },
-        { id: "chat-transcript-datetime" }
-      );
     });
   },
 
   @bind
   documentTitleCountCallback() {
-    return this.chat.getDocumentTitleCount();
+    return this.chatService.getDocumentTitleCount();
   },
 };

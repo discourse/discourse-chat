@@ -94,7 +94,7 @@ task 'chat:make_channel_to_test_archiving', [:user_for_membership] => :environme
     topic = Fabricate(:topic, user: make_test_user, title: "Testing topic for chat archiving #{SecureRandom.hex(4)}")
     Fabricate(:post, topic: topic, user: topic.user, raw: "This is some cool first post for archive stuff")
     chat_channel = ChatChannel.create(
-      chatable: topic, chatable_type: "Topic", name: "testing channel for archiving"
+      chatable: topic, chatable_type: "Topic", name: "testing channel for archiving #{SecureRandom.hex(4)}"
     )
   end
 

@@ -15,7 +15,7 @@ module DiscourseChat::TopicViewSerializerExtension
   end
 
   def has_chat_live
-    true
+    chat_channel.open? || chat_channel.closed?
   end
 
   def include_has_chat_live?
@@ -23,8 +23,6 @@ module DiscourseChat::TopicViewSerializerExtension
   end
 
   def chat_channel
-    return @chat_channel if defined?(@chat_channel)
-
-    @chat_channel = object.topic.chat_channel
+    @chat_channel ||= object.topic.chat_channel
   end
 end

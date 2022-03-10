@@ -28,7 +28,7 @@ export default Component.extend({
   isHovered: false,
   emojiPickerIsActive: false,
   mentionWarning: null,
-  emojiStore: service("emoji-store"),
+  emojiStore: service("chat-emoji-store"),
   adminTools: optionalService(),
   _hasSubscribedToAppEvents: false,
   tagName: "",
@@ -602,7 +602,7 @@ export default Component.extend({
 
     this.set("emojiPickerIsActive", false);
     this.react(emoji, this.REMOVE_REACTION);
-    this.notifyPropertyChange("favoritesEmojis");
+    this.notifyPropertyChange("emojiReactions");
   },
 
   @action
@@ -613,7 +613,7 @@ export default Component.extend({
 
     this.set("emojiPickerIsActive", false);
     this.react(emoji, this.ADD_REACTION);
-    this.notifyPropertyChange("favoritesEmojis");
+    this.notifyPropertyChange("emojiReactions");
   },
 
   @bind
@@ -636,7 +636,7 @@ export default Component.extend({
     this._loadingReactions.push(emoji);
     this._updateReactionsList(emoji, reactAction, this.currentUser);
     this._publishReaction(emoji, reactAction);
-    this.notifyPropertyChange("favoritesEmojis");
+    this.notifyPropertyChange("emojiReactions");
 
     if (this.site.mobileView) {
       this.toggleProperty("isHovered");
@@ -806,10 +806,10 @@ export default Component.extend({
     }, 250);
   },
 
-  @discourseComputed("emojiStore.favorites.[]")
-  favoritesEmojis(favorites) {
-    // may be a {} if no favs defined in some production builds
-    if (!favorites || !favorites.slice) {
+  @discourseComputed("emojiStore.reactions.[]")
+  emojiReactions(reactions) {
+    // may be a {} if no defaults defined in some production builds
+    if (!reactions || !reactions.slice) {
       return [];
     }
 
@@ -817,7 +817,7 @@ export default Component.extend({
       return this.message.reactions[key].reacted;
     });
 
-    return favorites.slice(0, 3).map((emoji) => {
+    return reactions.slice(0, 5).map((emoji) => {
       if (userReactions.includes(emoji)) {
         return { emoji, reacted: true };
       } else {

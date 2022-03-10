@@ -1314,6 +1314,10 @@ body.has-full-page-chat {
       text-overflow: ellipsis;
     }
   }
+  .chat-channel-retry-archive {
+    display: flex;
+    margin-top: 1em;
+  }
 }
 
 .chat-channels {

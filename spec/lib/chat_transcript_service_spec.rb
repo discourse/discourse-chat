@@ -7,8 +7,8 @@ describe ChatTranscriptService do
   let(:user2) { Fabricate(:user, username: "brucechat") }
   let(:channel) { Fabricate(:chat_channel, name: "The Beam Discussions") }
 
-  def service(message_ids)
-    described_class.new(channel, messages_or_ids: Array.wrap(message_ids))
+  def service(message_ids, opts: {})
+    described_class.new(channel, messages_or_ids: Array.wrap(message_ids), opts: opts)
   end
 
   it "generates a simple chat transcript from one message" do
@@ -113,6 +113,16 @@ describe ChatTranscriptService do
     this is a cool and funny picture
 
     #{image_markdown}
+    [/chat]
+    MARKDOWN
+  end
+
+  it "generates a transcript with the noLink option" do
+    message = Fabricate(:chat_message, user: user1, chat_channel: channel, message: "an extremely insightful response :)")
+
+    expect(service(message.id, opts: { no_link: true }).generate_markdown).to eq(<<~MARKDOWN)
+    [chat quote="martinchat;#{message.id};#{message.created_at.iso8601}" channel="The Beam Discussions" noLink="true"]
+    an extremely insightful response :)
     [/chat]
     MARKDOWN
   end

@@ -555,4 +555,59 @@ RSpec.describe DiscourseChat::ChatChannelsController do
       }.not_to change { ChatChannelArchive.count }
     end
   end
+
+  describe "#retry_archive" do
+    fab!(:channel) do
+      Fabricate(
+        :chat_channel,
+        chatable: topic,
+        name: "The English Channel",
+        status: :read_only
+      )
+    end
+    fab!(:archive) do
+      ChatChannelArchive.create!(
+        chat_channel: channel,
+        destination_topic_title: "test archive topic title",
+        archived_by: admin,
+        total_messages: 10
+      )
+    end
+
+    it "returns error if user is not admin" do
+      sign_in(user)
+      put "/chat/chat_channels/#{channel.id}/retry_archive.json"
+      expect(response.status).to eq(403)
+    end
+
+    it "returns a 404 if the archive has not been started" do
+      archive.destroy
+      sign_in(admin)
+      put "/chat/chat_channels/#{channel.id}/retry_archive.json"
+      expect(response.status).to eq(404)
+    end
+
+    it "returns a 403 error if the archive is not currently failed" do
+      sign_in(admin)
+      archive.update!(archive_error: nil)
+      put "/chat/chat_channels/#{channel.id}/retry_archive.json"
+      expect(response.status).to eq(403)
+    end
+
+    it "returns a 403 error if the channel is not read_only" do
+      sign_in(admin)
+      archive.update!(archive_error: "bad stuff", archived_messages: 1)
+      channel.update!(status: "open")
+      put "/chat/chat_channels/#{channel.id}/retry_archive.json"
+      expect(response.status).to eq(403)
+    end
+
+    it "re-enqueues the archive job" do
+      sign_in(admin)
+      archive.update!(archive_error: "bad stuff", archived_messages: 1)
+      put "/chat/chat_channels/#{channel.id}/retry_archive.json"
+      expect(response.status).to eq(200)
+      expect(job_enqueued?(job: :chat_channel_archive, args: { chat_channel_archive_id: archive.id })).to eq(true)
+    end
+  end
 end

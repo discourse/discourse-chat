@@ -94,6 +94,7 @@ describe DiscourseChat::ChatChannelArchiveService do
         expect(topic.posts.count).to eq(11)
         topic.posts.where.not(post_number: 1).each do |post|
           expect(post.raw).to include("[chat")
+          expect(post.raw).to include("noLink=\"true\"")
         end
         expect(topic.archived).to eq(true)
 
@@ -137,6 +138,61 @@ describe DiscourseChat::ChatChannelArchiveService do
         expect(@channel_archive.reload.complete?).to eq(true)
         expect(UserChatChannelMembership.where(chat_channel: channel, following: true).count).to eq(0)
       end
+
+      describe "chat_archive_destination_topic_status setting" do
+        context "when set to archived" do
+          before { SiteSetting.chat_archive_destination_topic_status = "archived" }
+
+          it "archives the topic" do
+            create_messages(3) && start_archive
+            subject.new(@channel_archive).execute
+            topic = @channel_archive.destination_topic
+            topic.reload
+            expect(topic.archived).to eq(true)
+          end
+        end
+
+        context "when set to open" do
+          before { SiteSetting.chat_archive_destination_topic_status = "open" }
+
+          it "leaves the topic open" do
+            create_messages(3) && start_archive
+            subject.new(@channel_archive).execute
+            topic = @channel_archive.destination_topic
+            topic.reload
+            expect(topic.archived).to eq(false)
+            expect(topic.open?).to eq(true)
+          end
+        end
+
+        context "when set to closed" do
+          before { SiteSetting.chat_archive_destination_topic_status = "closed" }
+
+          it "closes the topic" do
+            create_messages(3) && start_archive
+            subject.new(@channel_archive).execute
+            topic = @channel_archive.destination_topic
+            topic.reload
+            expect(topic.archived).to eq(false)
+            expect(topic.closed?).to eq(true)
+          end
+        end
+
+        context "when archiving to an existing topic" do
+          it "does not change the status of the topic" do
+            create_messages(3) && start_archive
+            @channel_archive.update(
+              destination_topic_title: nil,
+              destination_topic_id: Fabricate(:topic).id
+            )
+            subject.new(@channel_archive).execute
+            topic = @channel_archive.destination_topic
+            topic.reload
+            expect(topic.archived).to eq(false)
+            expect(topic.closed?).to eq(false)
+          end
+        end
+      end
     end
 
     context "when archiving to an existing topic" do
@@ -171,7 +227,7 @@ describe DiscourseChat::ChatChannelArchiveService do
         topic.posts.where.not(post_number: [1, 2, 3]).each do |post|
           expect(post.raw).to include("[chat")
         end
-        expect(topic.archived).to eq(true)
+        expect(topic.archived).to eq(false)
 
         expect(@channel_archive.archived_messages).to eq(50)
         expect(@channel_archive.chat_channel.status).to eq("archived")

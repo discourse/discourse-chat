@@ -380,6 +380,7 @@ after_initialize do
     post '/chat_channels/:chat_channel_id/unfollow' => 'chat_channels#unfollow'
     get '/chat_channels/:chat_channel_id' => 'chat_channels#show'
     put '/chat_channels/:chat_channel_id/archive' => 'chat_channels#archive'
+    put '/chat_channels/:chat_channel_id/retry_archive' => 'chat_channels#retry_archive'
 
     # chat_controller routes
     get '/' => 'chat#respond'

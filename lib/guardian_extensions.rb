@@ -68,7 +68,7 @@ module DiscourseChat::GuardianExtensions
     is_staff? && can_modify_channel_message?(chat_channel)
   end
 
-  def can_rebake?(message)
+  def can_rebake_chat_message?(message)
     return false if !can_modify_channel_message?(message.chat_channel)
     is_staff? || @user.has_trust_level?(TrustLevel[4])
   end

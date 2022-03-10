@@ -231,7 +231,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
   end
 
   def rebake
-    guardian.ensure_can_rebake!(@message)
+    guardian.ensure_can_rebake_chat_message!(@message)
     @message.rebake!(invalidate_oneboxes: true)
     render json: success_json
   end

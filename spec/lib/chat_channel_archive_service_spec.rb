@@ -227,7 +227,7 @@ describe DiscourseChat::ChatChannelArchiveService do
         topic.posts.where.not(post_number: [1, 2, 3]).each do |post|
           expect(post.raw).to include("[chat")
         end
-        expect(topic.archived).to eq(true)
+        expect(topic.archived).to eq(false)
 
         expect(@channel_archive.archived_messages).to eq(50)
         expect(@channel_archive.chat_channel.status).to eq("archived")

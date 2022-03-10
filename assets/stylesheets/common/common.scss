@@ -687,7 +687,8 @@ body.composer-open .topic-chat-float-container {
       width: 100%;
     }
     .chat-composer-row.has-toolbar {
-      .chat-composer-input, .chat-composer-row::after {
+      .chat-composer-input,
+      .chat-composer-row::after {
         padding-left: 45px;
       }
     }

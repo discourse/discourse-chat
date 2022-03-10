@@ -68,8 +68,8 @@ describe 'discourse-chat' do
       expect(Upload.exists?(id: draft_upload.id)).to eq(true)
       expect(Upload.exists?(id: unused_upload.id)).to eq(false)
     end
-  end 
-  
+  end
+
   describe "topic view serializer extension" do
     fab!(:topic) { Fabricate(:topic) }
     fab!(:user) { Fabricate(:user) }

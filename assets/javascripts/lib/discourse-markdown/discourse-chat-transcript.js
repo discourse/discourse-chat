@@ -103,9 +103,7 @@ const chatTranscriptRule = {
     // chat message because it will just result in a 404
     if (noLink) {
       let spanToken = state.push("span_open", "span", 1);
-      spanToken.attrs = [
-        ["title", messageTimeStart],
-      ];
+      spanToken.attrs = [["title", messageTimeStart]];
 
       spanToken.block = false;
       spanToken = state.push("span_close", "span", -1);

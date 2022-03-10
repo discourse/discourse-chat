@@ -370,6 +370,15 @@ RSpec.describe DiscourseChat::ChatController do
         end
       end
 
+      it "does not interfere with core's guardian can_rebake? for posts" do
+        sign_in(Fabricate(:admin))
+        put "/chat/#{chat_channel.id}/#{chat_message.id}/rebake.json"
+        expect(response.status).to eq(200)
+        post = Fabricate(:post)
+        put "/posts/#{post.id}/rebake.json"
+        expect(response.status).to eq(200)
+      end
+
       it "does not rebake the post when channel is read_only" do
         chat_message.chat_channel.update!(status: :read_only)
         sign_in(Fabricate(:admin))

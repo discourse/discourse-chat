@@ -12,11 +12,12 @@ const chatTranscriptRule = {
     }
 
     const options = state.md.options.discourse;
-    let [username, messageIdStart, messageTimeStart] =
+    const [username, messageIdStart, messageTimeStart] =
       (tagInfo.attrs.quote && tagInfo.attrs.quote.split(";")) || [];
-    let multiQuote = !!tagInfo.attrs.multiQuote;
-    let channelName = tagInfo.attrs.channel;
-    let channelLink = channelName
+    const multiQuote = !!tagInfo.attrs.multiQuote;
+    const noLink = !!tagInfo.attrs.noLink;
+    const channelName = tagInfo.attrs.channel;
+    const channelLink = channelName
       ? options.getURL(
           `/chat/chat_channels/${encodeURIComponent(channelName.toLowerCase())}`
         )
@@ -98,15 +99,26 @@ const chatTranscriptRule = {
     let datetimeDivToken = state.push("div_chat_transcript_datetime", "div", 1);
     datetimeDivToken.attrs = [["class", "chat-transcript-datetime"]];
 
-    let linkToken = state.push("link_open", "a", 1);
-    linkToken.attrs = [
-      ["href", options.getURL(`/chat/message/${messageIdStart}`)],
-      ["title", messageTimeStart],
-    ];
+    // for some cases, like archiving, we don't want the link to the
+    // chat message because it will just result in a 404
+    if (noLink) {
+      let spanToken = state.push("span_open", "span", 1);
+      spanToken.attrs = [["title", messageTimeStart]];
 
-    linkToken.block = false;
-    linkToken = state.push("link_close", "a", -1);
-    linkToken.block = false;
+      spanToken.block = false;
+      spanToken = state.push("span_close", "span", -1);
+      spanToken.block = false;
+    } else {
+      let linkToken = state.push("link_open", "a", 1);
+      linkToken.attrs = [
+        ["href", options.getURL(`/chat/message/${messageIdStart}`)],
+        ["title", messageTimeStart],
+      ];
+
+      linkToken.block = false;
+      linkToken = state.push("link_close", "a", -1);
+      linkToken.block = false;
+    }
 
     state.push("div_chat_transcript_datetime", "div", -1);
     // end: time + link to message
@@ -151,6 +163,7 @@ export function setup(helper) {
     "div.chat-transcript-user-avatar",
     "div.chat-transcript-messages",
     "div.chat-transcript-datetime",
+    "span[title]",
     "div[data-message-id]",
     "div[data-channel-name]",
     "div[data-username]",

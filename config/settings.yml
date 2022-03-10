@@ -45,6 +45,13 @@ plugins:
     default: false
     hidden: true
     client: true
+  chat_archive_destination_topic_status:
+    type: enum
+    default: archived
+    choices:
+      - archived
+      - open
+      - closed
   chat_default_channel_id:
     default: ""
     client: true
@@ -54,4 +61,7 @@ plugins:
     default: 0.5
     min: 0
     max: 1
-
+  default_emoji_reactions:
+    type: emoji_list
+    default: +1|heart|tada
+    client: true

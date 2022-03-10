@@ -23,6 +23,13 @@ he:
       cancel_reply: "ביטול תגובה"
       chat_channels: "ערוצים"
       leave: "יציאה מהערוץ"
+      channel_settings:
+        title: "הגדרות ערוץ"
+        close_channel: "סגירת ערוץ"
+        archive_channel: "העברת ערוץ לארכיון"
+        delete_channel: "מחיקת ערוץ"
+      channel_archive:
+        title: "העברת ערוץ לארכיון"
       channel_list_popup:
         browse: "עיון בערוצים"
         create: "יצירת ערוץ"
@@ -65,6 +72,10 @@ he:
           many: "נשלחו הזמנות"
           other: "נשלחו הזמנות"
         invite: "הזמנה לערוץ"
+      aria_roles:
+        header: "כותרת צ׳אט"
+        composer: "כותב צ׳אט"
+        channel_list: "רשימת ערוצי צ׳אט"
       no_public_channels: "לא הצטרפת לאף ערוץ."
       only_chat_push_notifications:
         title: "לשלוח התראות בדחיפה על הצ׳אט בלבד"
@@ -106,12 +117,11 @@ he:
       you_flagged: "סימנת את ההודעה הזאת"
       exit: "חזרה"
       channel_status:
-        read_only_header: "הערוץ הוא לקריאה בלבד. לא ניתן לשלוח הודעות חדשות, ולא ניתן לערוך או למחוק הודעות קיימות."
+        read_only_header: "הערוץ הוא לקריאה בלבד."
         read_only: "לקריאה בלבד"
-        archived_header: "הערוץ נמצא בארכיון. לא ניתן לשלוח הודעות חדשות, ולא ניתן לערוך או למחוק הודעות קיימות."
+        archived_header: "הערוץ בארכיון."
         archived: "בארכיון"
-        closed_header: "הערוץ נסגר. לא ניתן לשלוח הודעות חדשות, ולא ניתן לערוך או למחוק הודעות קיימות."
-        closed_staff_header: "הערוץ סגור."
+        closed_header: "הערוץ סגור."
         closed: "סגור"
         open_header: "הערוץ פתוח."
         open: "פתוח"
@@ -154,6 +164,7 @@ he:
       settings:
         desktop_notification_level: "התראות שולחן עבודה"
         follow: "הצטרפות"
+        followed: "הצטרפות"
         mobile_notification_level: "התראות בדחיפה לנייד"
         mute: "השתקת ערוץ"
         muted_on: "פעילה"
@@ -269,3 +280,9 @@ he:
         reviewable_chat_message:
           title: "הודעת צ׳אט מסומנת"
           flagged_by: "סומנה על ידי"
+    keyboard_shortcuts_help:
+      chat:
+        title: "צ׳אט"
+        keyboard_shortcuts:
+          switch_channel_arrows: "%{shortcut} החלפת ערוץ"
+          open_quick_channel_selector: "%{shortcut} פתיחת בורר הערוצים המהיר"

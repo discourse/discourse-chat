@@ -82,12 +82,16 @@ ${originallySent}</div>`);
         .tz(opts.datetime, "Australia/Brisbane")
         .format(I18n.t("dates.long_no_year"))
     : "";
+
+  const innerDatetimeEl = opts.noLink
+    ? `<span title=\"${opts.datetime}\">${dateTimeText}</span>`
+    : `<a href=\"/chat/message/${opts.messageId}\" title=\"${opts.datetime}\"${tabIndexHTML}>${dateTimeText}</a>`;
   transcript.push(`<div class=\"chat-transcript-user\">
 <div class=\"chat-transcript-user-avatar\"></div>
 <div class=\"chat-transcript-username\">
 ${opts.username}</div>
 <div class=\"chat-transcript-datetime\">
-<a href=\"/chat/message/${opts.messageId}\" title=\"${opts.datetime}\"${tabIndexHTML}>${dateTimeText}</a></div>`);
+${innerDatetimeEl}</div>`);
 
   if (opts.channel && !opts.multiQuote) {
     transcript.push(
@@ -208,6 +212,22 @@ acceptance("Discourse Chat | discourse-chat-transcript", function () {
         chained: true,
       }),
       "renders with the chained attribute"
+    );
+  });
+
+  test("renders with the noLink attribute to remove the links to the individual messages from the datetimes", function (assert) {
+    assert.cookedChatTranscript(
+      `[chat quote="martin;2321;2022-01-25T05:40:39Z" channel="Cool Cats Club" multiQuote="true" noLink="true"]\nThis is a chat message.\n[/chat]`,
+      { additionalOptions },
+      generateTranscriptHTML("<p>This is a chat message.</p>", {
+        messageId: "2321",
+        username: "martin",
+        datetime: "2022-01-25T05:40:39Z",
+        channel: "Cool Cats Club",
+        multiQuote: true,
+        noLink: true,
+      }),
+      "renders with the noLink attribute"
     );
   });
 

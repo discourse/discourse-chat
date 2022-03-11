@@ -143,9 +143,10 @@ acceptance(
     test("it does not allow admin to archive chat channels if that is disabled for the site", async function (assert) {
       await visit("/chat/browse");
 
-      assert.notOk(
-        exists(".chat-channel-settings-row-7 .chat-channel-settings-btn")
+      await click(
+        ".chat-channel-settings-row-7 .chat-channel-settings-btn .select-kit-header-wrapper"
       );
+      assert.notOk(exists("li[data-value='archiveChannel']"));
     });
   }
 );

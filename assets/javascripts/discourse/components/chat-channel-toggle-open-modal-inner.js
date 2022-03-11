@@ -12,8 +12,7 @@ export default Component.extend({
   tagName: "",
   chatChannel: null,
 
-  @discourseComputed()
-  buttonLabel() {
+  get buttonLabel() {
     if (this.chatChannel.isClosed) {
       return "chat.channel_settings.open_channel";
     } else {
@@ -21,8 +20,7 @@ export default Component.extend({
     }
   },
 
-  @discourseComputed()
-  instructions() {
+  get instructions() {
     if (this.chatChannel.isClosed) {
       return I18n.t("chat.channel_open.instructions");
     } else {
@@ -40,17 +38,16 @@ export default Component.extend({
   },
 
   @action
-  toggleChannelStatus() {
-    return ajax(
-      `/chat/chat_channels/${this.chatChannel.id}/toggle_open_status`,
-      { method: "PUT" }
-    )
+  changeChannelStatus() {
+    const status = this.chatChannel.isClosed
+      ? CHANNEL_STATUSES.open
+      : CHANNEL_STATUSES.closed;
+    return ajax(`/chat/chat_channels/${this.chatChannel.id}/change_status.json`, {
+      method: "PUT",
+      data: { status },
+    })
       .then(() => {
-        if (this.chatChannel.isOpen) {
-          this.chatChannel.set("status", CHANNEL_STATUSES.closed);
-        } else {
-          this.chatChannel.set("status", CHANNEL_STATUSES.open);
-        }
+        this.chatChannel.set("status", status);
         this.closeModal();
       })
       .catch(popupAjaxError);

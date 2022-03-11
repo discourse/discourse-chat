@@ -10,7 +10,7 @@ export default Component.extend({
   channel: null,
   chat: service(),
 
-  @discourseComputed()
+  @discourseComputed("channel.status")
   channelSettingsOptions() {
     let options = [];
 

@@ -241,21 +241,23 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     render json: success_json
   end
 
-  def toggle_open_status
+  def change_status
     params.require(:chat_channel_id)
+    params.require(:status)
+
+    # we only want to use this endpoint for open/closed status changes,
+    # the others are more "special" and are handled by the archive endpoint
+    if !ChatChannel.statuses.keys.include?(params[:status]) ||
+        params[:status] == "read_only" ||
+        params[:status] == "archive"
+      raise Discourse::InvalidParameters
+    end
 
     chat_channel = ChatChannel.find_by(id: params[:chat_channel_id])
     raise Discourse::NotFound if chat_channel.blank?
 
-    if chat_channel.open?
-      guardian.ensure_can_change_channel_status!(chat_channel, :closed)
-      chat_channel.close!(current_user)
-    elsif chat_channel.closed?
-      guardian.ensure_can_change_channel_status!(chat_channel, :open)
-      chat_channel.open!(current_user)
-    else
-      raise Discourse::InvalidAccess
-    end
+    guardian.ensure_can_change_channel_status!(chat_channel, params[:status].to_sym)
+    chat_channel.public_send("#{params[:status]}!", current_user)
 
     render json: success_json
   end

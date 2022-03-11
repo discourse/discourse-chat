@@ -182,7 +182,7 @@ class DiscourseChat::ChatChannelArchiveService
 
   def complete_archive
     Rails.logger.info("Creating posts completed for #{chat_channel.name} archive.")
-    chat_channel.archive!(chat_channel_archive.archived_by)
+    chat_channel.archived!(chat_channel_archive.archived_by)
     notify_archiver(:success)
   end
 

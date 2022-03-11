@@ -611,7 +611,7 @@ RSpec.describe DiscourseChat::ChatChannelsController do
     end
   end
 
-  describe "#toggle_open_status" do
+  describe "#change_status" do
     fab!(:channel) do
       Fabricate(
         :chat_channel,
@@ -623,27 +623,27 @@ RSpec.describe DiscourseChat::ChatChannelsController do
 
     it "returns error if user is not admin" do
       sign_in(user)
-      put "/chat/chat_channels/#{channel.id}/toggle_open_status.json"
+      put "/chat/chat_channels/#{channel.id}/change_status.json", params: { status: "closed" }
       expect(response.status).to eq(403)
     end
 
     it "returns a 404 if the channel does not exist" do
-      channel.destroy
+      channel.destroy!
       sign_in(admin)
-      put "/chat/chat_channels/#{channel.id}/toggle_open_status.json"
+      put "/chat/chat_channels/#{channel.id}/change_status.json", params: { status: "closed" }
       expect(response.status).to eq(404)
     end
 
     it "returns a 400 if the channel status is not closed or open" do
       channel.update!(status: "read_only")
       sign_in(admin)
-      put "/chat/chat_channels/#{channel.id}/toggle_open_status.json"
+      put "/chat/chat_channels/#{channel.id}/change_status.json", params: { status: "closed" }
       expect(response.status).to eq(403)
     end
 
     it "changes the channel to closed if it is open" do
       sign_in(admin)
-      put "/chat/chat_channels/#{channel.id}/toggle_open_status.json"
+      put "/chat/chat_channels/#{channel.id}/change_status.json", params: { status: "closed" }
       expect(response.status).to eq(200)
       expect(channel.reload.status).to eq("closed")
     end
@@ -651,7 +651,7 @@ RSpec.describe DiscourseChat::ChatChannelsController do
     it "changes the channel to open if it is closed" do
       channel.update!(status: "closed")
       sign_in(admin)
-      put "/chat/chat_channels/#{channel.id}/toggle_open_status.json"
+      put "/chat/chat_channels/#{channel.id}/change_status.json", params: { status: "open" }
       expect(response.status).to eq(200)
       expect(channel.reload.status).to eq("open")
     end

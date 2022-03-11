@@ -17,8 +17,9 @@ export default {
             this.currentUser = container.lookup("current-user:main");
           }
 
-          const currentUserTimezone =
-            this.currentUser?.resolvedTimezone(this.currentUser);
+          const currentUserTimezone = this.currentUser?.resolvedTimezone(
+            this.currentUser
+          );
           const chatTranscriptElements = elem.querySelectorAll(
             ".discourse-chat-transcript"
           );

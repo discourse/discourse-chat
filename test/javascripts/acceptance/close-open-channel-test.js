@@ -1,5 +1,4 @@
-import { click, fillIn, visit } from "@ember/test-helpers";
-import selectKit from "discourse/tests/helpers/select-kit-helper";
+import { click, visit } from "@ember/test-helpers";
 import {
   allChannels,
   chatChannels,
@@ -72,7 +71,9 @@ acceptance("Discourse Chat - Close and open channel", function (needs) {
     assert.strictEqual(changeStatusPayload, "status=closed");
 
     assert.strictEqual(
-      query(".chat-channel-settings-row-7 .chat-channel-status").innerText.trim(),
+      query(
+        ".chat-channel-settings-row-7 .chat-channel-status"
+      ).innerText.trim(),
       I18n.t("chat.channel_status.closed")
     );
 
@@ -87,29 +88,32 @@ acceptance("Discourse Chat - Close and open channel", function (needs) {
   });
 });
 
-acceptance("Discourse Chat - Close/open channel for non-admin", function (needs) {
-  needs.user({
-    admin: false,
-    moderator: false,
-    username: "tomtom",
-    id: 1,
-    can_chat: true,
-    has_chat_enabled: true,
-  });
+acceptance(
+  "Discourse Chat - Close/open channel for non-admin",
+  function (needs) {
+    needs.user({
+      admin: false,
+      moderator: false,
+      username: "tomtom",
+      id: 1,
+      can_chat: true,
+      has_chat_enabled: true,
+    });
 
-  needs.settings({
-    chat_enabled: true,
-  });
+    needs.settings({
+      chat_enabled: true,
+    });
 
-  needs.pretender((server, helper) => {
-    baseChatPretenders(server, helper);
-  });
+    needs.pretender((server, helper) => {
+      baseChatPretenders(server, helper);
+    });
 
-  test("it does not allow non-admin to close/open chat channels", async function (assert) {
-    await visit("/chat/browse");
+    test("it does not allow non-admin to close/open chat channels", async function (assert) {
+      await visit("/chat/browse");
 
-    assert.notOk(
-      exists(".chat-channel-settings-row-7 .chat-channel-settings-btn")
-    );
-  });
-});
+      assert.notOk(
+        exists(".chat-channel-settings-row-7 .chat-channel-settings-btn")
+      );
+    });
+  }
+);

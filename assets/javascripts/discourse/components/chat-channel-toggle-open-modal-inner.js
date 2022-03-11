@@ -42,10 +42,13 @@ export default Component.extend({
     const status = this.chatChannel.isClosed
       ? CHANNEL_STATUSES.open
       : CHANNEL_STATUSES.closed;
-    return ajax(`/chat/chat_channels/${this.chatChannel.id}/change_status.json`, {
-      method: "PUT",
-      data: { status },
-    })
+    return ajax(
+      `/chat/chat_channels/${this.chatChannel.id}/change_status.json`,
+      {
+        method: "PUT",
+        data: { status },
+      }
+    )
       .then(() => {
         this.chatChannel.set("status", status);
         this.closeModal();

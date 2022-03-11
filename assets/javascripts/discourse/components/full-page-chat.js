@@ -54,7 +54,13 @@ export default Component.extend({
 
   @bind
   _autoFocusChatComposer(e) {
-    if (!e.key || e.key.length > 1 || e.metaKey || e.ctrlKey) {
+    if (
+      !e.key ||
+      e.key.length > 1 ||
+      e.metaKey ||
+      e.ctrlKey ||
+      e.code === "Space"
+    ) {
       return; // Only care about single characters, unlike `Escape`
     }
     const target = e.target;

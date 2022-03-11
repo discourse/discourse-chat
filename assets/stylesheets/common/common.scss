@@ -959,6 +959,7 @@ body.composer-open .topic-chat-float-container {
   grid-column-gap: 0.5em;
   align-items: center;
   cursor: pointer;
+  margin: 0.6rem 0;
 
   .category-chat-private .d-icon {
     background-color: var(--secondary);
@@ -1167,10 +1168,6 @@ body.composer-open .topic-chat-float-container {
       .chat-channel-description {
         color: var(--primary-high);
       }
-    }
-
-    .chat-channel-title {
-      margin: 0.6rem 0;
     }
   }
   .btn-container {

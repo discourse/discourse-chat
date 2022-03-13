@@ -12,21 +12,6 @@ import {
 import { test } from "qunit";
 import { click, settled, visit } from "@ember/test-helpers";
 import { cloneJSON } from "discourse-common/lib/object";
-import { isLegacyEmber } from "discourse-common/config/environment";
-import { next } from "@ember/runloop";
-import { Promise } from "rsvp";
-
-const chatSettled = async () => {
-  await settled();
-  if (isLegacyEmber()) {
-    // In the legacy environment, settled() doesn't always seem to work for us
-    // Using `next()` seems to work around the problem
-    // This hack can be removed once we're 100% Ember CLI
-    await new Promise((resolve) => {
-      next(resolve);
-    });
-  }
-};
 
 acceptance("Discourse Chat - Flagging test", function (needs) {
   needs.user({
@@ -79,7 +64,7 @@ acceptance("Discourse Chat - Flagging test", function (needs) {
       chat_message_id: chatView.chat_messages[0].id,
       reviewable_id: 1,
     });
-    await chatSettled();
+    await settled();
     const reviewableLink = query(
       `.chat-message-container[data-id='${chatView.chat_messages[0].id}'] .chat-message-flagged`
     );

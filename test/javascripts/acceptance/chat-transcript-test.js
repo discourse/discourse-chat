@@ -493,6 +493,7 @@ acceptance(
     });
 
     test("Preview should not error for oneboxes within [chat] bbcode", async function (assert) {
+      loggedInUser().changeTimezone("Australia/Brisbane");
       await visit("/t/internationalization-localization/280");
       await click("#topic-footer-buttons .btn.create");
 

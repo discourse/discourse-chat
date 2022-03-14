@@ -22,7 +22,7 @@ export default DiscourseRoute.extend({
 
   async getChannel(id) {
     let channel = await this.chat.getChannelBy("id", id);
-    if (!channel) {
+    if (!channel || this.forceRefetchChannel) {
       channel = await this.getChannelFromServer(id);
     }
     return channel;
@@ -57,7 +57,8 @@ export default DiscourseRoute.extend({
   },
 
   @action
-  refreshModel() {
+  refreshModel(forceRefetchChannel = false) {
+    this.forceRefetchChannel = forceRefetchChannel;
     this.refresh();
   },
 });

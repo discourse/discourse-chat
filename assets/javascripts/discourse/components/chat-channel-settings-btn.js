@@ -10,9 +10,8 @@ export default Component.extend({
   channel: null,
   chat: service(),
 
-  @discourseComputed()
+  @discourseComputed("channel.status")
   channelSettingsOptions() {
-    // TODO (martin): Add closeChannel and deleteChannel options at a later date
     let options = [];
 
     if (
@@ -24,6 +23,20 @@ export default Component.extend({
         id: "archiveChannel",
         name: I18n.t("chat.channel_settings.archive_channel"),
         icon: "archive",
+      });
+    }
+
+    if (this.channel.isOpen) {
+      options.push({
+        id: "showToggleOpenModal",
+        name: I18n.t("chat.channel_settings.close_channel"),
+        icon: "lock",
+      });
+    } else if (this.channel.isClosed) {
+      options.push({
+        id: "showToggleOpenModal",
+        name: I18n.t("chat.channel_settings.open_channel"),
+        icon: "unlock",
       });
     }
 
@@ -43,5 +56,12 @@ export default Component.extend({
 
   archiveChannel() {
     showModal("chat-channel-archive-modal").set("chatChannel", this.channel);
+  },
+
+  showToggleOpenModal() {
+    showModal("chat-channel-toggle-open-modal").set(
+      "chatChannel",
+      this.channel
+    );
   },
 });

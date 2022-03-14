@@ -31,13 +31,13 @@ describe ChatChannel do
     end
   end
 
-  describe "#close!" do
+  describe "#closed!" do
     before do
       public_topic_channel.update!(status: :open)
     end
 
     it "does nothing if user is not staff" do
-      public_topic_channel.close!(user1)
+      public_topic_channel.closed!(user1)
       expect(public_topic_channel.reload.open?).to eq(true)
     end
 
@@ -45,7 +45,7 @@ describe ChatChannel do
       events = []
       messages = MessageBus.track_publish do
         events = DiscourseEvent.track_events do
-          public_topic_channel.close!(staff)
+          public_topic_channel.closed!(staff)
         end
       end
 
@@ -154,28 +154,28 @@ describe ChatChannel do
     end
   end
 
-  describe "#archive!" do
+  describe "#archived!" do
     before do
       public_topic_channel.update!(status: :read_only)
     end
 
     it "does nothing if user is not staff" do
-      public_topic_channel.archive!(user1)
+      public_topic_channel.archived!(user1)
       expect(public_topic_channel.reload.read_only?).to eq(true)
     end
 
     it "does nothing if already archived" do
       public_topic_channel.update!(status: :archived)
-      public_topic_channel.archive!(user1)
+      public_topic_channel.archived!(user1)
       expect(public_topic_channel.reload.archived?).to eq(true)
     end
 
     it "does nothing if the channel is not already readonly" do
       public_topic_channel.update!(status: :open)
-      public_topic_channel.archive!(staff)
+      public_topic_channel.archived!(staff)
       expect(public_topic_channel.reload.open?).to eq(true)
       public_topic_channel.update!(status: :read_only)
-      public_topic_channel.archive!(staff)
+      public_topic_channel.archived!(staff)
       expect(public_topic_channel.reload.archived?).to eq(true)
     end
 
@@ -183,7 +183,7 @@ describe ChatChannel do
       events = []
       messages = MessageBus.track_publish do
         events = DiscourseEvent.track_events do
-          public_topic_channel.archive!(staff)
+          public_topic_channel.archived!(staff)
         end
       end
 

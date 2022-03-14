@@ -1,5 +1,4 @@
 import { popupAjaxError } from "discourse/lib/ajax-error";
-import { isTesting } from "discourse-common/config/environment";
 import Service, { inject as service } from "@ember/service";
 import Site from "discourse/models/site";
 import { addChatToolbarButton } from "discourse/plugins/discourse-chat/discourse/components/chat-composer";
@@ -9,7 +8,6 @@ import { generateCookFunction } from "discourse/lib/text";
 import { next } from "@ember/runloop";
 import { Promise } from "rsvp";
 import ChatChannel, {
-  CHANNEL_STATUSES,
   CHATABLE_TYPES,
 } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import simpleCategoryHashMentionTransform from "discourse/plugins/discourse-chat/discourse/lib/simple-category-hash-mention-transform";
@@ -556,20 +554,14 @@ export default Service.extend({
 
   _subscribeToChannelStatusChange() {
     this.messageBus.subscribe("/chat/channel-status", (busData) => {
-      let activeChannel = this.getActiveChannel();
-      if (
-        busData.chat_channel_id === activeChannel?.id &&
-        (busData.status === CHANNEL_STATUSES.readOnly ||
-          busData.status === CHANNEL_STATUSES.archived)
-      ) {
-        // This is not very elegant. Ideally at some point we want to have
-        // a nice reactive magical transformation of the channel status
-        // before the user's very eyes...but for now let's just reload so
-        // they can see they are no longer allowed to chat.
-        if (!isTesting()) {
-          window.location.reload();
+      this.getChannelBy("id", busData.chat_channel_id).then((channel) => {
+        if (!channel) {
+          return;
         }
-      }
+
+        channel.set("status", busData.status);
+        this.appEvents.trigger("chat:refresh-channel", channel.id);
+      });
     });
   },
 

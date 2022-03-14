@@ -1,11 +1,11 @@
 import { withPluginApi } from "discourse/lib/plugin-api";
 import I18n from "I18n";
 import { bind } from "discourse-common/utils/decorators";
+import { getOwner } from "discourse-common/lib/get-owner";
 
 export default {
   name: "chat-setup",
   initialize(container) {
-    this.currentUser = container.lookup("current-user:main");
     this.chatService = container.lookup("service:chat");
 
     withPluginApi("0.12.1", (api) => {
@@ -13,16 +13,13 @@ export default {
       // of whether the current user has chat enabled
       api.decorateCookedElement(
         (elem) => {
-          if (!this.currentUser) {
-            this.currentUser = container.lookup("current-user:main");
-          }
-
-          const currentUserTimezone = this.currentUser?.resolvedTimezone(
-            this.currentUser
-          );
+          const currentUser = getOwner(this).lookup("current-user:main");
+          const currentUserTimezone =
+            currentUser?.resolvedTimezone(currentUser);
           const chatTranscriptElements = elem.querySelectorAll(
             ".discourse-chat-transcript"
           );
+
           chatTranscriptElements.forEach((el) => {
             const dateTimeRaw = el.dataset["datetime"];
             const dateTimeEl = el.querySelector(
@@ -50,7 +47,8 @@ export default {
       document.body.classList.add("chat-enabled");
 
       if (api.container.lookup("site:main").mobileView) {
-        this.currentUser.chat_isolated = false;
+        const currentUser = api.container.lookup("current-user:main");
+        currentUser.chat_isolated = false;
       }
 
       this.chatService.getChannels();

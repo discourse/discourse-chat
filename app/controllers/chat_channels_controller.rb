@@ -229,6 +229,7 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     params.require(:chat_channel_id)
 
     chat_channel = ChatChannel.find_by(id: params[:chat_channel_id])
+    raise Discourse::NotFound if chat_channel.blank?
     guardian.ensure_can_change_channel_status!(chat_channel, :archived)
 
     archive = chat_channel.chat_channel_archive
@@ -236,6 +237,27 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     raise Discourse::InvalidAccess if !archive.failed?
 
     DiscourseChat::ChatChannelArchiveService.retry_archive_process(chat_channel: chat_channel)
+
+    render json: success_json
+  end
+
+  def change_status
+    params.require(:chat_channel_id)
+    params.require(:status)
+
+    # we only want to use this endpoint for open/closed status changes,
+    # the others are more "special" and are handled by the archive endpoint
+    if !ChatChannel.statuses.keys.include?(params[:status]) ||
+        params[:status] == "read_only" ||
+        params[:status] == "archive"
+      raise Discourse::InvalidParameters
+    end
+
+    chat_channel = ChatChannel.find_by(id: params[:chat_channel_id])
+    raise Discourse::NotFound if chat_channel.blank?
+
+    guardian.ensure_can_change_channel_status!(chat_channel, params[:status].to_sym)
+    chat_channel.public_send("#{params[:status]}!", current_user)
 
     render json: success_json
   end

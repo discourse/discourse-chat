@@ -29,6 +29,7 @@ export default Component.extend({
     this._super(...arguments);
 
     this.appEvents.on("chat:refresh-channels", this, "refreshModel");
+    this.appEvents.on("chat:refresh-channel", this, "_refreshChannel");
   },
 
   didInsertElement() {
@@ -46,6 +47,7 @@ export default Component.extend({
     this._super(...arguments);
 
     this.appEvents.off("chat:refresh-channels", this, "refreshModel");
+    this.appEvents.off("chat:refresh-channel", this, "_refreshChannel");
     window.removeEventListener("resize", this._calculateHeight, false);
     document.removeEventListener("keydown", this._autoFocusChatComposer);
     document.body.classList.remove("has-full-page-chat");
@@ -111,6 +113,12 @@ export default Component.extend({
       parseInt(padBottom, 10);
 
     document.body.style.setProperty("--full-page-chat-height", `${elHeight}px`);
+  },
+
+  _refreshChannel(channelId) {
+    if (this.chatChannel.id === channelId) {
+      this.refreshModel(true);
+    }
   },
 
   @action

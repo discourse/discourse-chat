@@ -5,11 +5,7 @@ import { cloneJSON, deepMerge } from "discourse-common/lib/object";
 import QUnit, { test } from "qunit";
 
 import { click, fillIn, visit } from "@ember/test-helpers";
-import {
-  acceptance,
-  loggedInUser,
-  query,
-} from "discourse/tests/helpers/qunit-helpers";
+import { acceptance, query } from "discourse/tests/helpers/qunit-helpers";
 
 const rawOpts = {
   siteSettings: {
@@ -175,7 +171,7 @@ acceptance("Discourse Chat | discourse-chat-transcript", function (needs) {
         messageId: "2321",
         username: "martin",
         datetime: "2022-01-25T05:40:39Z",
-        timezone: loggedInUser().resolvedTimezone(loggedInUser()),
+        timezone: "Australia/Brisbane",
       }),
       "renders the chat message with the required CSS classes and attributes"
     );
@@ -191,7 +187,7 @@ acceptance("Discourse Chat | discourse-chat-transcript", function (needs) {
         datetime: "2022-01-25T05:40:39Z",
         channel: "Cool Cats Club",
         multiQuote: true,
-        timezone: loggedInUser().resolvedTimezone(loggedInUser()),
+        timezone: "Australia/Brisbane",
       }),
       "renders the chat transcript with the channel name included above the user and datetime"
     );
@@ -206,7 +202,7 @@ acceptance("Discourse Chat | discourse-chat-transcript", function (needs) {
         username: "martin",
         datetime: "2022-01-25T05:40:39Z",
         channel: "Cool Cats Club",
-        timezone: loggedInUser().resolvedTimezone(loggedInUser()),
+        timezone: "Australia/Brisbane",
       }),
       "renders the chat transcript with the channel name included next to the datetime"
     );
@@ -223,7 +219,7 @@ acceptance("Discourse Chat | discourse-chat-transcript", function (needs) {
         channel: "Cool Cats Club",
         multiQuote: true,
         chained: true,
-        timezone: loggedInUser().resolvedTimezone(loggedInUser()),
+        timezone: "Australia/Brisbane",
       }),
       "renders with the chained attribute"
     );
@@ -240,7 +236,7 @@ acceptance("Discourse Chat | discourse-chat-transcript", function (needs) {
         channel: "Cool Cats Club",
         multiQuote: true,
         noLink: true,
-        timezone: loggedInUser().resolvedTimezone(loggedInUser()),
+        timezone: "Australia/Brisbane",
       }),
       "renders with the noLink attribute"
     );
@@ -262,7 +258,7 @@ another cool reply<br>
           messageId: "450",
           username: "johnsmith",
           datetime: "2021-04-25T05:40:39Z",
-          timezone: loggedInUser().resolvedTimezone(loggedInUser()),
+          timezone: "Australia/Brisbane",
         }
       ),
       "does not render the markdown feature that has been excluded"
@@ -280,7 +276,7 @@ another cool reply<br>
           messageId: "2321",
           username: "martin",
           datetime: "2022-01-25T05:40:39Z",
-          timezone: loggedInUser().resolvedTimezone(loggedInUser()),
+          timezone: "Australia/Brisbane",
         }
       ),
       "renders correctly when the rule has not been excluded"
@@ -311,7 +307,7 @@ another cool reply<br>
           messageId: "2321",
           username: "martin",
           datetime: "2022-01-25T05:40:39Z",
-          timezone: loggedInUser().resolvedTimezone(loggedInUser()),
+          timezone: "Australia/Brisbane",
         }
       ),
       "renders correctly with some obvious rules excluded (list/strikethrough/emphasis)"
@@ -326,7 +322,7 @@ another cool reply<br>
           messageId: "2321",
           username: "martin",
           datetime: "2022-01-25T05:40:39Z",
-          timezone: loggedInUser().resolvedTimezone(loggedInUser()),
+          timezone: "Australia/Brisbane",
         }
       ),
       "renders correctly when the feature has not been excluded"
@@ -362,7 +358,7 @@ another cool reply<br>
           messageId: "2321",
           username: "martin",
           datetime: "2022-01-25T05:40:39Z",
-          timezone: loggedInUser().resolvedTimezone(loggedInUser()),
+          timezone: "Australia/Brisbane",
         }
       ),
       "renders correctly with some obvious features excluded (category-hashtag, emojiShortcuts)"
@@ -396,7 +392,7 @@ here is a message :P with category hashtag #test
             messageId: "2321",
             username: "martin",
             datetime: "2022-01-25T05:40:39Z",
-            timezone: loggedInUser().resolvedTimezone(loggedInUser()),
+            timezone: "Australia/Brisbane",
           }
         ),
       "the rule changes do not apply outside the BBCode [chat] block"
@@ -515,7 +511,7 @@ http://www.example.com/has-title.html
           multiQuote: true,
           linkTabIndex: true,
           showDateTimeText: true,
-          timezone: loggedInUser().resolvedTimezone(loggedInUser()),
+          timezone: "Australia/Brisbane",
         }
       );
 

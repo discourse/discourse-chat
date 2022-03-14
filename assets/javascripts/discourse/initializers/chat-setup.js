@@ -5,7 +5,7 @@ import { bind } from "discourse-common/utils/decorators";
 export default {
   name: "chat-setup",
   initialize(container) {
-    const currentUser = container.lookup("current-user:main");
+    this.currentUser = container.lookup("current-user:main");
     this.chatService = container.lookup("service:chat");
 
     withPluginApi("0.12.1", (api) => {
@@ -13,8 +13,13 @@ export default {
       // of whether the current user has chat enabled
       api.decorateCookedElement(
         (elem) => {
-          const currentUserTimezone =
-            currentUser?.resolvedTimezone(currentUser);
+          if (!this.currentUser) {
+            this.currentUser = container.lookup("current-user:main");
+          }
+
+          const currentUserTimezone = this.currentUser?.resolvedTimezone(
+            this.currentUser
+          );
           const chatTranscriptElements = elem.querySelectorAll(
             ".discourse-chat-transcript"
           );
@@ -45,7 +50,7 @@ export default {
       document.body.classList.add("chat-enabled");
 
       if (api.container.lookup("site:main").mobileView) {
-        currentUser.chat_isolated = false;
+        this.currentUser.chat_isolated = false;
       }
 
       this.chatService.getChannels();

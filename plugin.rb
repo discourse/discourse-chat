@@ -382,6 +382,8 @@ after_initialize do
     put '/chat_channels/:chat_channel_id/archive' => 'chat_channels#archive'
     put '/chat_channels/:chat_channel_id/retry_archive' => 'chat_channels#retry_archive'
 
+    put '/chat_channels/:chat_channel_id/change_status' => 'chat_channels#change_status'
+
     # chat_controller routes
     get '/' => 'chat#respond'
     get '/browse' => 'chat#respond'

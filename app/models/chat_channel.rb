@@ -135,11 +135,11 @@ class ChatChannel < ActiveRecord::Base
     change_status(acting_user, :read_only)
   end
 
-  def close!(acting_user)
+  def closed!(acting_user)
     change_status(acting_user, :closed)
   end
 
-  def archive!(acting_user)
+  def archived!(acting_user)
     change_status(acting_user, :archived)
   end
 

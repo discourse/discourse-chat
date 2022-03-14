@@ -18,7 +18,7 @@ import {
   triggerKeyEvent,
   visit,
 } from "@ember/test-helpers";
-import { skip, test } from "qunit";
+import { test } from "qunit";
 import {
   allChannels,
   chatChannels,
@@ -1495,8 +1495,7 @@ acceptance("Discourse Chat - image uploads", function (needs) {
     );
   });
 
-  // this times out in CI...of course
-  skip("uploading files in chat works", async function (assert) {
+  test("uploading files in chat works", async function (assert) {
     await visit("/t/internationalization-localization/280");
     this.container.lookup("service:chat").set("sidebarActive", false);
     await click(".header-dropdown-toggle.open-chat");
@@ -1508,7 +1507,7 @@ acceptance("Discourse Chat - image uploads", function (needs) {
 
     appEvents.on("chat-composer:all-uploads-complete", () => {
       assert.strictEqual(
-        queryAll(".chat-composer-input").val(),
+        query(".chat-composer-input").value,
         "![avatar.PNG|690x320](upload://yoj8pf9DdIeHRRULyw7i57GAYdz.jpeg)\n"
       );
       done();
@@ -1516,7 +1515,7 @@ acceptance("Discourse Chat - image uploads", function (needs) {
 
     appEvents.on("chat-composer:upload-started", () => {
       assert.strictEqual(
-        queryAll(".chat-composer-input").val(),
+        query(".chat-composer-input").value,
         "[Uploading: avatar.png...]()\n"
       );
     });

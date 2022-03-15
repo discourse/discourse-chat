@@ -7,7 +7,7 @@ import Service from "@ember/service";
 const EMOJI_USAGE = "emojiUsage";
 const EMOJI_SELECTED_DIVERSITY = "emojiSelectedDiversity";
 const TRACKED_EMOJIS = 15;
-const STORE_NAMESPACE = "discourse_chat_emojis_";
+const STORE_NAMESPACE = "discourse_chat_emoji_reaction_";
 
 export default Service.extend({
   init() {

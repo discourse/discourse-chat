@@ -260,7 +260,7 @@ en:
 
       popup:
         chat_mention:
-          you: "<span>%{username}</span> <span>mentioned you in %{channel}</span>"
+          direct: "<span>%{username}</span> <span>mentioned you in %{channel}</span>"
           other: "<span>%{username}</span> <span>mentioned %{identifier} in %{channel}</span>"
         chat_group_mention: "<span>%{username}</span> <span>mentioned @%{groupName} in chat</span>"
 

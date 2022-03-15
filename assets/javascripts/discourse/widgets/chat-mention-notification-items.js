@@ -28,7 +28,7 @@ const chatNotificationItem = {
     console.log(identifier, data.identifier);
     const i18nKey = identifier
       ? "notifications.popup.chat_mention.other"
-      : "notifications.popup.chat_mention.you";
+      : "notifications.popup.chat_mention.direct";
 
     return I18n.t(i18nKey, {
       username,

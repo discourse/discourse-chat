@@ -22,7 +22,10 @@ module Jobs
             :chat_group_mention :
             :chat_mention
 
-          # mention identifier is used by frontend to determine
+          # A user might be directly mentioned by username, or mentioned with @here, @all or BOTH.
+          # Here we need to set the identifier if the user wasn't mentioned directly so that both
+          # OS notifications and core notifications can correctly display what identifier they were
+          # mentioned by.
           mention_identifier = nil
           if !args[:directly_mentioned_users_ids]&.include?(membership.user_id)
             if args[:global_mentioned_users_ids]&.include?(membership.user_id)
@@ -78,6 +81,9 @@ module Jobs
         excerpt: @chat_message.push_notification_excerpt,
         post_url: "/chat/channel/#{@chat_channel.id}/#{@chat_channel.title(membership.user).to_s.strip}?messageId=#{@chat_message.id}"
       }
+      puts '#################'
+      puts payload.inspect
+      puts '#################'
 
       unless membership.desktop_notifications_never?
         MessageBus.publish("/chat/notification-alert/#{membership.user.id}", payload, user_ids: [membership.user.id])
@@ -90,6 +96,7 @@ module Jobs
 
     def transform_identifier(identifier)
       # Translated `:global -> @all` and `:here -> @here`
+      # we don't want these strings translated, so we need to pass them into the translation.
       "@#{identifier.to_s.sub('global', 'all')}"
     end
 
@@ -98,7 +105,7 @@ module Jobs
         return "discourse_push_notifications.popup.chat_group_mention"
       end
 
-      "discourse_push_notifications.popup.chat_mention.#{identifier.present? ? 'other' : 'you'}"
+      "discourse_push_notifications.popup.chat_mention.#{identifier.present? ? 'other' : 'direct'}"
     end
   end
 end

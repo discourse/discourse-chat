@@ -81,9 +81,6 @@ module Jobs
         excerpt: @chat_message.push_notification_excerpt,
         post_url: "/chat/channel/#{@chat_channel.id}/#{@chat_channel.title(membership.user).to_s.strip}?messageId=#{@chat_message.id}"
       }
-      puts '#################'
-      puts payload.inspect
-      puts '#################'
 
       unless membership.desktop_notifications_never?
         MessageBus.publish("/chat/notification-alert/#{membership.user.id}", payload, user_ids: [membership.user.id])

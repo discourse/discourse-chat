@@ -1,4 +1,5 @@
 import { popupAjaxError } from "discourse/lib/ajax-error";
+import { CHANNEL_STATUSES } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import Service, { inject as service } from "@ember/service";
 import Site from "discourse/models/site";
 import { addChatToolbarButton } from "discourse/plugins/discourse-chat/discourse/components/chat-composer";
@@ -560,6 +561,20 @@ export default Service.extend({
         }
 
         channel.set("status", busData.status);
+
+        // it is not possible for the user to set their last read message id
+        // if the channel has been archived, because all the messages have
+        // been deleted. we don't want them seeing the blue dot anymore so
+        // just completely reset the unreads
+        if (busData.status === CHANNEL_STATUSES.archived) {
+          this.currentUser.chat_channel_tracking_state[channel.id] = {
+            unread_count: 0,
+            unread_mentions: 0,
+            chatable_type: channel.chatable_type,
+          };
+          this.userChatChannelTrackingStateChanged();
+        }
+
         this.appEvents.trigger("chat:refresh-channel", channel.id);
       });
     });

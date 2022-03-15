@@ -58,6 +58,7 @@ class DiscourseChat::ChatChannelArchiveService
 
       Rails.logger.info("Creating posts from message batches for #{chat_channel.name} archive, #{chat_channel_archive.total_messages} messages to archive (#{chat_channel_archive.total_messages / ARCHIVED_MESSAGES_PER_POST} posts).")
 
+      last_message_id = chat_channel.chat_messages.last.id
       # a batch should be idempotent, either the post is created and the
       # messages are deleted or we roll back the whole thing.
       #
@@ -80,7 +81,7 @@ class DiscourseChat::ChatChannelArchiveService
         end
       end
 
-      kick_all_users
+      kick_all_users(last_message_id)
       complete_archive
     rescue => err
       notify_archiver(:failed, error: err)
@@ -225,7 +226,9 @@ class DiscourseChat::ChatChannelArchiveService
     )
   end
 
-  def kick_all_users
-    UserChatChannelMembership.where(chat_channel: chat_channel).update_all(following: false)
+  def kick_all_users(last_message_id)
+    UserChatChannelMembership.where(chat_channel: chat_channel).update_all(
+      following: false, last_read_message_id: last_message_id
+    )
   end
 end

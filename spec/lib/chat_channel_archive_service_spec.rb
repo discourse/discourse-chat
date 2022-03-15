@@ -131,7 +131,7 @@ describe DiscourseChat::ChatChannelArchiveService do
         before do
           create_messages(3)
           channel.chat_messages.map(&:user).each do |user|
-            UserChatChannelMembership.create(chat_channel: channel, user: user, following: true)
+            UserChatChannelMembership.create!(chat_channel: channel, user: user, following: true)
           end
         end
 

@@ -42,14 +42,12 @@ pl_PL:
       enable: "Włącz czat"
       flagged: "Ta wiadomość została oznaczona do sprawdzenia"
       invalid_access: "Nie masz dostępu do tego kanału czatu"
-      invitation_notification: "<span>%{username} zaprosił Cię do dołączenia do kanału czatu</span>"
       in_reply_to: "W odpowiedzi na"
       isolate:
         description: "Zawsze otwieraj czat w nowej karcie"
       heading: "Czat"
       join: "Dołącz"
       new_messages: "nowe wiadomości"
-      mention_notification: "<span>%{username} wspomniał o Tobie na czacie</span>"
       mention_warning:
         dismiss: "odrzuć"
         invitations_sent:
@@ -208,8 +206,6 @@ pl_PL:
     notifications:
       chat_quoted: "<span>%{username}</span> %{description}"
       popup:
-        chat_mention: "%{username} wspomniał o Tobie na czacie"
-        chat_group_mention: "%{username} wspomniał o @%{groupName} na czacie"
         chat_message: "Nowa wiadomość na czacie"
         chat_quoted: "%{username} zacytował Twoją wiadomość na czacie"
     topic:

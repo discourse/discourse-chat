@@ -26,12 +26,20 @@ ru:
       channel_settings:
         title: "Настройки канала"
         close_channel: "Закрыть канал"
+        open_channel: "Открыть канал"
         archive_channel: "Архивировать канал"
         delete_channel: "Удалить канал"
       channel_archive:
         title: "Архивировать канал"
         instructions: "<p>Архивация канала переводит его в режим только для чтения и перемещает все сообщения из канала в новую или существующую тему. Нельзя отправлять новые сообщения, а существующие сообщения нельзя редактировать или удалять.</p><p>Вы действительно хотите заархивировать канал <strong>#%{channelTitle}</strong> ?</p>"
         process_started: "Процесс архивации запущен. Эта страница будет перезагружена в ближайшее время, и вы получите личное сообщение, когда процесс архивирования будет завершён."
+        retry: "Повторить"
+      channel_open:
+        title: "Открыть канал"
+        instructions: "Открытие канала; все пользователи смогут отправлять и редактировать свои сообщения."
+      channel_close:
+        title: "Закрыть канал"
+        instructions: "Закрытие канала; запрет пользователям, не являющихся сотрудниками, отправлять новые или редактировать существующие сообщения. Вы действительно хотите закрыть этот канал?"
       channel_list_popup:
         browse: "Просмотр каналов"
         create: "Создать канал"
@@ -52,7 +60,7 @@ ru:
       flag: "Флаг"
       flagged: "Это сообщение было отправлено на премодерацию"
       invalid_access: "У вас нет доступа для просмотра этого канала"
-      invitation_notification: "<span>%{username} пригласил вас присоединиться к каналу</span>"
+      invitation_notification: "<span>Пользователь %{username}</span> <span> пригласил вас присоединиться к каналу</span>"
       in_reply_to: "В ответ на"
       isolate:
         title: "Изолировать чат"
@@ -60,7 +68,6 @@ ru:
       heading: "Чат"
       join: "Подписаться"
       new_messages: "Новые сообщения"
-      mention_notification: "<span>Пользователь %{username} упомянул вас в чате</span>"
       mention_warning:
         cannot_see:
           one: "Пользователь %{usernames} не может получить доступ к этому каналу и не был уведомлён."
@@ -128,6 +135,8 @@ ru:
         read_only: "Только для чтения"
         archived_header: "Канал заархивирован."
         archived: "Архивирован"
+        archive_failed: "Во время архивации поизошла ошибка. %{completed}/%{total} сообщений были заархивированы в <a target=\"_blank\" href=\"%{topic_url}\">целевой теме</a>. Нажмите 'Повторить', чтобы попытаться завершить архивирование."
+        archive_completed: "Архивация канала завершена. Архив можно найти в <a target=\"_blank\" href=\"%{topic_url}\">целевой теме</a>."
         closed_header: "Канал закрыт."
         closed: "Закрыт"
         open_header: "Канал открыт."
@@ -254,8 +263,8 @@ ru:
     notifications:
       chat_quoted: "<span>%{username}</span> %{description}"
       popup:
-        chat_mention: "Пользователь %{username} упомянул вас в чате"
-        chat_group_mention: "Пользователь %{username} упомянул в чате группу @%{groupName}"
+        chat_mention: "<span>Пользователь %{username}</span> <span>упомянул вас в чате</span>"
+        chat_group_mention: "<span>Пользователь %{username}</span> <span>упомянул группу @%{groupName} в чате</span>"
         chat_message: "Новое сообщение в чате"
         chat_quoted: "Пользователь %{username} процитировал ваше сообщение в чате"
       titles:

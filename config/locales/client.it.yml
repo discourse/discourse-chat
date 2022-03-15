@@ -38,14 +38,12 @@ it:
       flag: "Segnala"
       flagged: "Questo messaggio è stato segnalato per la revisione"
       invalid_access: "Non hai accesso alla visualizzazione di questo canale chat"
-      invitation_notification: "<span>%{username} ti ha invitato a partecipare a un canale di chat</span>"
       in_reply_to: "In risposta a"
       isolate:
         title: "Isola chat"
         description: "Apri sempre la chat in una nuova scheda"
       heading: "Chat"
       new_messages: "nuovi messaggi"
-      mention_notification: "<span>%{username} ti ha menzionato nella chat</span>"
       mention_warning:
         cannot_see:
           one: "%{usernames} non può accedere a questo canale e non è stato avvisato."
@@ -196,8 +194,6 @@ it:
         dm: "La cronologia della chat personale è conservata per %{days} giorni."
     notifications:
       popup:
-        chat_mention: "%{username} ti ha menzionato in chat"
-        chat_group_mention: "%{username} ha menzionato @%{groupName} in chat"
         chat_message: "Nuovo messaggio di chat"
       titles:
         chat_mention: "Menzione in chat"

@@ -43,7 +43,6 @@ hu:
       flag: "Jelentés"
       flagged: "Ezt az üzenetet felülvizsgálatra jelentették"
       invalid_access: "Nincs hozzáférése ennek a csevegőcsatornának a megtekintéséhez"
-      invitation_notification: "<span>%{username} meghívta, hogy csatlakozzon egy csevegőcsatornához</span>"
       in_reply_to: "Válaszul erre:"
       isolate:
         title: "Csevegés elkülönítése"
@@ -51,7 +50,6 @@ hu:
       heading: "Csevegés"
       join: "Csatlakozás"
       new_messages: "új üzenetek"
-      mention_notification: "<span>%{username} megemlítette a csevegésben</span>"
       mention_warning:
         cannot_see:
           one: "%{usernames} nem fér hozzá ehhez a csatornához, és nem lett értesítve."
@@ -221,8 +219,6 @@ hu:
     notifications:
       chat_quoted: "<span>%{username}</span> %{description}"
       popup:
-        chat_mention: "%{username} megemlítette a csevegésben"
-        chat_group_mention: "%{username} megemlítette a(z) @%{groupName} csoportot a csevegésben"
         chat_message: "Új csevegőüzenet"
         chat_quoted: "%{username} idézte a csevegési üzenetet"
       titles:

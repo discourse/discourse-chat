@@ -1,6 +1,5 @@
-import { click, fillIn, settled, visit } from "@ember/test-helpers";
+import { settled, visit } from "@ember/test-helpers";
 import { cloneJSON } from "discourse-common/lib/object";
-import selectKit from "discourse/tests/helpers/select-kit-helper";
 import {
   allChannels,
   chatChannels,
@@ -50,16 +49,6 @@ const baseChatPretenders = (server, helper) => {
     });
   });
 };
-
-function siteChannelPretender(
-  server,
-  helper,
-  opts = { unread_count: 0, muted: false }
-) {
-  let copy = cloneJSON(siteChannel);
-  copy.chat_channel.unread_count = opts.unread_count;
-  server.get("/chat/chat_channels/9.json", () => helper.response(copy));
-}
 
 acceptance(
   "Discourse Chat - Respond to /chat/channel-status archive message",

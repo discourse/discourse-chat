@@ -26,10 +26,18 @@ he:
       channel_settings:
         title: "הגדרות ערוץ"
         close_channel: "סגירת ערוץ"
+        open_channel: "פתיחת ערוץ"
         archive_channel: "העברת ערוץ לארכיון"
         delete_channel: "מחיקת ערוץ"
       channel_archive:
         title: "העברת ערוץ לארכיון"
+        retry: "לנסות שוב"
+      channel_open:
+        title: "פתיחת ערוץ"
+        instructions: "פתיחת הערוץ מחדש, כל המשתמשים יוכלו לשלוח הודעות ולערוך את ההודעות הקיימות שלהם."
+      channel_close:
+        title: "סגירת ערוץ"
+        instructions: "סגירת הערוץ מונעת ממשתמשים מחוץ לסגל לשלוח הודעות חדשות או לערוך הודעות קיימות. לסגור את הערוץ הזה?"
       channel_list_popup:
         browse: "עיון בערוצים"
         create: "יצירת ערוץ"
@@ -50,7 +58,7 @@ he:
       flag: "סימון בדגל"
       flagged: "הודעה זו סומנה לסקירה"
       invalid_access: "אין לך גישה לצפות בערוץ הצ׳אט הזה"
-      invitation_notification: "<span>הוזמנת להצטרף לערוץ צ׳אט על ידי %{username}</span>"
+      invitation_notification: "<span>הוזמנת להצטרף לערוץ צ׳אט על ידי</span> <span>%{username}</span>"
       in_reply_to: "בתגובה אל"
       isolate:
         title: "בידוד צ׳אט"
@@ -58,7 +66,6 @@ he:
       heading: "צ׳אט"
       join: "הצטרפות"
       new_messages: "הודעות חדשות"
-      mention_notification: "<span>אוזכרת בצ׳אט על ידי %{username}</span>"
       mention_warning:
         cannot_see:
           one: "ל־%{usernames} אין גישה לערוץ הזה ולא נשלחה הודעה."
@@ -245,8 +252,8 @@ he:
     notifications:
       chat_quoted: "<span>%{username}</span> %{description}"
       popup:
-        chat_mention: "אוזכרת בצ׳אט על ידי %{username}"
-        chat_group_mention: "היה אזכור של @%{groupName} בצ׳אט על ידי ‎%{username}"
+        chat_mention: "<span>אוזכרת בצ׳אט על ידי</span> <span>%{username}</span>"
+        chat_group_mention: "<span>התבצע אזכור של ‎@%{groupName} על ידי</span> <span>%{username}</span>"
         chat_message: "הודעת צ׳אט חדשה"
         chat_quoted: "הודעת הצ׳אט שלך צוטטה על ידי %{username}"
       titles:

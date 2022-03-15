@@ -38,7 +38,6 @@ sv:
       flag: "Flagga"
       flagged: "Detta meddelande har flaggats för granskning"
       invalid_access: "Du har inte tillgång till den här chattkanalen"
-      invitation_notification: "<span>%{username} bjöd in dig att gå med i en chattkanal</span>"
       in_reply_to: "Som svar på"
       isolate:
         title: "Isolera chatt"
@@ -46,7 +45,6 @@ sv:
       heading: "Chatt"
       join: "Gå med"
       new_messages: "nya meddelanden"
-      mention_notification: "<span>%{username} nämnde dig i chatt</span>"
       mention_warning:
         cannot_see:
           one: "%{usernames} kan inte komma åt den här kanalen och har inte blivit meddelad."
@@ -205,8 +203,6 @@ sv:
     notifications:
       chat_quoted: "<span>%{username}</span> %{description}"
       popup:
-        chat_mention: "%{username} nämnde dig i chatten"
-        chat_group_mention: "%{username} nämnde @%{groupName} i chatten"
         chat_message: "Nytt chattmeddelande"
         chat_quoted: "%{username} citerade ditt chattmeddelande"
       titles:

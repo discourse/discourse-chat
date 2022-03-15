@@ -14,6 +14,7 @@ he:
     chat_silence_user_sensitivity: "הסבירות שמשתמש שסומן בצ׳אט יושתק אוטומטית."
     chat_auto_silence_from_flags_duration: "מספר דקות השתקת המשתמשים כאשר הם מושתקים אוטומטית עקב הודעות צ׳אט מסומנות."
     chat_default_channel_id: "ערוץ הצ׳אט שייפתח כברירת מחדל כאשר למשתמש אין הודעות או אזכורים שלא נקראו בערוצים אחרים."
+    chat_archive_destination_topic_status: "המצב בו נושא היעד צריך להיות לאחר שהעברת ערוץ לארכיון הושלמה. חל רק כאשר נושא היעד הוא נושא חדש ולא קיים."
     errors:
       chat_default_channel: "ערוץ הצ׳אט כברירת המחדל חייב להיות ערוץ ציבורי."
   chat:
@@ -25,6 +26,8 @@ he:
       user_cannot_send_message: "אין לך אפשרות לשלוח הודעות כרגע."
       rate_limit_exceeded: "חריגה ממגבלת הודעות הצ׳אט שניתן לשלוח תוך 30 שניות"
       auto_silence_from_flags: "הודעת צ׳אט שסומנה בציון גבוה מספיק כדי להשתיק את המשתמש."
+      channel_cannot_be_archived: "אי אפשר להעביר את הערוץ לארכיון כרגע, הוא חייב להיות סגור או פתוח להעברה לארכיון."
+      duplicate_message: "פרסמת הודעה זהה לפני זמן קצר מדי."
     reviewables:
       actions:
         agree:

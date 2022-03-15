@@ -38,14 +38,12 @@ de:
       flag: "Melden"
       flagged: "Diese Nachricht wurde zur Überprüfung markiert"
       invalid_access: "Du bist nicht befugt, diesen Chat-Kanal anzuzeigen"
-      invitation_notification: "<span>%{username} hat dich eingeladen, einem Chat-Kanal beizutreten</span>"
       in_reply_to: "Als Antwort auf"
       isolate:
         title: "Chat isolieren"
         description: "Chat immer in einem neuen Tab öffnen"
       heading: "Chat"
       new_messages: "neue Nachrichten"
-      mention_notification: "<span>%{username} hat dich im Chat erwähnt</span>"
       mention_warning:
         cannot_see:
           one: "%{usernames} kann nicht auf diesen Kanal zugreifen und wurde nicht benachrichtigt."
@@ -196,8 +194,6 @@ de:
         dm: "Der persönliche Chatverlauf wird für %{days} Tage gespeichert."
     notifications:
       popup:
-        chat_mention: "%{username} hat dich im Chat erwähnt"
-        chat_group_mention: "%{username} hat @%{groupName} im Chat erwähnt"
         chat_message: "Neue Chat-Nachricht"
       titles:
         chat_mention: "Chat-Erwähnung"

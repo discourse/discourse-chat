@@ -17,6 +17,14 @@ fa_IR:
       cancel: "لغو"
       cancel_reply: "لغو پاسخ"
       chat_channels: "کانال‌ها"
+      channel_settings:
+        open_channel: "باز کردن کانال"
+      channel_open:
+        title: "باز کردن کانال"
+        instructions: "کانال را باز می‌کند، همه کاربران قادر خواهند بود پیام جدید ارسال کنند و پیام‌های قبلی خود را ویرایش کنند."
+      channel_close:
+        title: "بستن کانال"
+        instructions: "بستن کانال از ارسال پیام‌های جدید یا ویرایش پیام‌های قبلی توسط کاربران که همکار نیستن جلوگیری می‌کند. آیا مطمئنید که می‌خواهید اين کانال رو ببنديد؟"
       channel_list_popup:
         browse: "مرور کانال‌ها"
         create: "ایجاد کانال"
@@ -35,14 +43,12 @@ fa_IR:
       flag: "پرچم"
       flagged: "این پیام برای بررسی پرچم گذاری شده است"
       invalid_access: "شما برای مشاهده گفتگوی این کانال دسترسی ندارید"
-      invitation_notification: "<span>%{username} شما را دعوت کرده است که به این کانال گفتگو بپیوندید</span>"
       in_reply_to: "در پاسخ به"
       isolate:
         description: "همیشه گفتگو را در یک برگه جدید باز کن"
       heading: "گفتگو"
       join: "پیوستن"
       new_messages: "پیام‌های جدید"
-      mention_notification: "<span>%{username} در گفتگو به شما اشاره کرده است</span>"
       mention_warning:
         invitations_sent:
           one: "دعوت‌نامه ارسال شد"
@@ -141,8 +147,6 @@ fa_IR:
         multiple_users: "%{commaSeparatedUsernames} و %{lastUsername} در حال نوشتن"
     notifications:
       chat_quoted: "<span>%{username}</span> %{description}"
-      popup:
-        chat_mention: "%{username} در گفتگو به شما اشاره کرده است"
     topic:
       actions:
         chat_enable: "فعال کردن گفتگو"

@@ -85,10 +85,7 @@ en:
       chat_mention:
         direct: "@%{username} mentioned you in %{channel}"
         other: "@%{username} mentioned %{identifier} in %{channel}"
-
-      chat_group_mention: "@%{username} mentioned @%{group_name} in %{channel}"
-      chat_message: "New chat message in %{chat_channel_title}"
-      group_chat_message: "New chat message in a personal chat channel"
+      chat_message: "New chat message in %{channel}"
 
   discourse_automation:
     scriptables:

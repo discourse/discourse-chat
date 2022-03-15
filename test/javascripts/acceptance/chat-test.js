@@ -74,7 +74,6 @@ const baseChatPretenders = (server, helper) => {
           topic_id: null,
           slug: null,
           data: {
-            message: "notifications.popup.chat_mention",
             chat_message_id: 174,
             chat_channel_id: 9,
             chat_channel_title: "Site",
@@ -84,17 +83,37 @@ const baseChatPretenders = (server, helper) => {
         {
           id: 43,
           user_id: 1,
-          notification_type: 32,
+          notification_type: 29,
           read: false,
           high_priority: true,
           created_at: "2021-01-01 12:00:00 UTC",
-          fancy_title: "First notification",
+          fancy_title: "Second notification",
           post_number: null,
           topic_id: null,
           slug: null,
           data: {
-            message: "notifications.popup.chat_group_mention",
-            group_name: "engineers",
+            identifier: "engineers",
+            is_group: true,
+            chat_message_id: 174,
+            chat_channel_id: 9,
+            chat_channel_title: "Site",
+            mentioned_by_username: "hawk",
+          },
+        },
+        {
+          id: 43,
+          user_id: 1,
+          notification_type: 29,
+          read: false,
+          high_priority: true,
+          created_at: "2021-01-01 12:00:00 UTC",
+          fancy_title: "Third notification",
+          post_number: null,
+          topic_id: null,
+          slug: null,
+          data: {
+            identifier: "global",
+            is_group: true,
             chat_message_id: 174,
             chat_channel_id: 9,
             chat_channel_title: "Site",
@@ -255,17 +274,38 @@ acceptance("Discourse Chat - without unread", function (needs) {
     assert.equal(currentURL(), `/chat/channel/9/Site`);
   });
 
-  test("Regular mention uses the `@` icon", async function (assert) {
+  test("Mention notifications contain the correct text and icon", async function (assert) {
     await visit("/chat/channel/75/@hawk");
     await click(".header-dropdown-toggle.current-user");
-    assert.ok(exists("#quick-access-notifications .chat-mention .d-icon-at"));
-  });
+    const notifications = queryAll("#quick-access-notifications .chat-mention");
 
-  test("Group mention uses the users icon", async function (assert) {
-    await visit("/chat/channel/75/@hawk");
-    await click(".header-dropdown-toggle.current-user");
-    assert.ok(
-      exists("#quick-access-notifications .chat-group-mention .d-icon-users")
+    // First is a direct mention from @hawk in #Site
+    assert.equal(
+      notifications[0].innerText,
+      I18n.t("notifications.popup.chat_mention.direct", {
+        username: "hawk",
+        identifier: null,
+        channel: "Site",
+      })
+    );
+
+    // Second is a group mention from @hawk in #Site
+    assert.equal(
+      notifications[1].innerText,
+      I18n.t("notifications.popup.chat_mention.other", {
+        username: "hawk",
+        identifier: "@engineers",
+        channel: "Site",
+      })
+    );
+
+    assert.equal(
+      notifications[2].innerText,
+      I18n.t("notifications.popup.chat_mention.other", {
+        username: "hawk",
+        identifier: "@all",
+        channel: "Site",
+      })
     );
   });
 

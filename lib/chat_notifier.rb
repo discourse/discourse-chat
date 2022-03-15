@@ -87,19 +87,25 @@ class DiscourseChat::ChatNotifier
   end
 
   def user_ids_to_identifier_map
-    # A user might be directly mentioned by username, or mentioned with @here, @all or BOTH.
+    # A user might be directly mentioned by username, @here, @all, @group_name or a combo.
     # Here we need to set the identifier if the user wasn't mentioned directly so that both
     # OS notifications and core notifications can correctly display what identifier they were
-    # mentioned by. Loop through @all, @here, and then directly mentioned user_ids with each loop
+    # mentioned by. Loop through @all, @here, then group mentions, finally directly mentioned user_ids with each loop
     # overriding the previous identifier so directly mentioned users will always be mentioned as such.
     map = {}
     [
       [@global_mentioned_users.map(&:id), :global],
-      [@here_mentioned_users.map(&:id), :here],
-      [@directly_mentioned_users.map(&:id), nil]
+      [@here_mentioned_users.map(&:id), :here]
     ].each do |user_ids, identifier|
-      user_ids.each { |user_id| map[user_id] = identifier }
+      user_ids.each { |user_id| map[user_id] = { is_group: false, identifier: identifier } }
     end
+
+    group_mentioned_users.each do |user|
+      group_name = (user.groups.map(&:name) & group_name_mentions).first
+      map[user.id] = { is_group: true, identifier: group_name }
+    end
+
+    @directly_mentioned_users.each { |user_id| map[user_id] = nil }
     map
   end
 

@@ -36,7 +36,7 @@ module Jobs
       translated_title = @chat_channel.group_direct_message_channel? ?
         I18n.t("discourse_push_notifications.popup.group_chat_message") :
         I18n.t("discourse_push_notifications.popup.chat_message",
-               chat_channel_title: @chat_channel.title(user)
+               channel: @chat_channel.title_for_mention(user)
               )
 
       payload = {

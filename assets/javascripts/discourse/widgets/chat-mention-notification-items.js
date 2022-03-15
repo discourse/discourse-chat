@@ -13,32 +13,29 @@ const chatNotificationItem = {
   services: ["chat", "router"],
   text(notificationName, data) {
     const username = formatUsername(data.mentioned_by_username);
-    if (data.group_name) {
-      return I18n.t("notifications.popup.chat_group_mention", {
-        username,
-        groupName: data.group_name,
-        channel: data.chat_channel_title,
-      });
-    }
-
-    let identifier;
-    if (data.identifier) {
-      identifier = this.transformIdentifier(data.identifier);
-    }
-    console.log(identifier, data.identifier);
+    const identifier = this.transformIdentifier(data);
     const i18nKey = identifier
       ? "notifications.popup.chat_mention.other"
       : "notifications.popup.chat_mention.direct";
 
     return I18n.t(i18nKey, {
       username,
-      identifier: identifier,
+      identifier,
       channel: data.chat_channel_title,
     });
   },
 
-  transformIdentifier(identifier) {
-    return `<b>@${identifier.replace("global", "all")}</b>`;
+  transformIdentifier(data) {
+    if (!data.identifier) {
+      return;
+    }
+
+    let identifier = data.identifier;
+    if (!data.is_group_mention) {
+      identifier = identifier.replace("global", "all");
+    }
+
+    return `@${identifier}`;
   },
 
   html(attrs) {
@@ -49,8 +46,7 @@ const chatNotificationItem = {
     const title = this.notificationTitle(notificationName, data);
     const text = this.text(notificationName, data);
     const html = new RawHtml({ html: `<div>${text}</div>` });
-    const icon = notificationName === "chat_mention" ? "comment" : "users";
-    const contents = [iconNode(icon), html];
+    const contents = [iconNode("comment"), html];
 
     return h("a", { attributes: { title } }, contents);
   },

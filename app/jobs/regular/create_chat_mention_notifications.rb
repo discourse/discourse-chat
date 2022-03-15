@@ -17,30 +17,25 @@ module Jobs
       @user_ids_to_group_mention_map = args[:user_ids_to_group_mention_map] || {}
       @memberships.each do |membership|
         unless DiscourseChat::ChatNotifier.user_has_seen_message?(membership, @chat_message.id)
-          group_name = @user_ids_to_group_mention_map[membership.user.id.to_s]
-          mention_type = group_name.present? ?
-            :chat_group_mention :
-            :chat_mention
-
-          mention_identifier = (args["user_ids_to_identifier_map"] || {})[membership.user_id.to_s]
-          send_mention_notification_to_user(membership.user, mention_type, group_name, mention_identifier)
-          send_os_notifications(membership, mention_type, group_name, mention_identifier)
+          identifier_info = (args["user_ids_to_identifier_map"] || {})[membership.user_id.to_s]
+          send_mention_notification_to_user(membership.user, identifier_info)
+          send_os_notifications(membership, identifier_info)
         end
       end
     end
 
-    def send_mention_notification_to_user(user, mention_type, group_name, mention_identifier)
+    def send_mention_notification_to_user(user, identifier_info)
       data = {
         chat_message_id: @chat_message.id,
         chat_channel_id: @chat_channel.id,
         chat_channel_title: @chat_channel.title_for_mention(user),
         mentioned_by_username: @creator.username,
       }
-      data[:identifier] = mention_identifier if mention_identifier.present?
-      data[:group_name] = group_name if group_name.present?
+      data[:identifier] = identifier_info["identifier"] if identifier_info.present?
+      data[:is_group_mention] = true if (identifier_info || {})["is_group"]
 
       notification = Notification.create!(
-        notification_type: Notification.types[mention_type],
+        notification_type: Notification.types[:chat_mention],
         user_id: user.id,
         high_priority: true,
         data: data.to_json
@@ -48,21 +43,16 @@ module Jobs
       ChatMention.create!(notification: notification, user: user, chat_message: @chat_message)
     end
 
-    def send_os_notifications(membership, mention_type, group_name, mention_identifier)
+    def send_os_notifications(membership, identifier_info)
       return if membership.desktop_notifications_never? && membership.mobile_notifications_never?
 
-      i18n_key = "discourse_push_notifications.popup.#{mention_type}"
-      if mention_type == :chat_mention
-        i18n_key += ".#{mention_identifier}"
-      end
-
+      i18n_key = "discourse_push_notifications.popup.chat_mention.#{identifier_info ? "other" : "direct"}"
       payload = {
-        notification_type: Notification.types[mention_type],
+        notification_type: Notification.types[:chat_mention],
         username: @creator.username,
-        translated_title: I18n.t(i18n_key_for_os_notifications(mention_type, mention_identifier),
+        translated_title: I18n.t(i18n_key,
                                  username: @creator.username,
-                                 group_name: group_name,
-                                 identifier: transform_identifier(mention_identifier),
+                                 identifier: transform_identifier(identifier_info),
                                  channel: @chat_channel.title_for_mention(membership.user)
                                 ),
         tag: DiscourseChat::ChatNotifier.push_notification_tag(:mention, @chat_channel.id),
@@ -79,18 +69,15 @@ module Jobs
       end
     end
 
-    def transform_identifier(identifier)
+    def transform_identifier(identifier_info)
+      return if identifier_info.nil?
+
       # Translated `:global -> @all` and `:here -> @here`
       # we don't want these strings translated, so we need to pass them into the translation.
-      "@#{identifier.to_s.sub('global', 'all')}"
-    end
-
-    def i18n_key_for_os_notifications(mention_type, identifier)
-      if mention_type == :chat_group_mention
-        return "discourse_push_notifications.popup.chat_group_mention"
-      end
-
-      "discourse_push_notifications.popup.chat_mention.#{identifier.present? ? 'other' : 'direct'}"
+      # Or if the identifier is a group name simple return that.
+      identifier = identifier_info["identifier"]
+      identifier = identifier.to_s.sub('global', 'all') unless identifier_info["is_group"]
+      "@#{identifier}"
     end
   end
 end

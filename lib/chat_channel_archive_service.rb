@@ -226,6 +226,8 @@ class DiscourseChat::ChatChannelArchiveService
   end
 
   def kick_all_users
-    UserChatChannelMembership.where(chat_channel: chat_channel).update_all(following: false)
+    UserChatChannelMembership.where(chat_channel: chat_channel).update_all(
+      following: false, last_read_message_id: chat_channel.chat_messages.last&.id
+    )
   end
 end

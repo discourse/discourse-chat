@@ -127,16 +127,29 @@ describe DiscourseChat::ChatChannelArchiveService do
         expect(pm_topic.title).to eq(I18n.t("system_messages.chat_channel_archive_complete.subject_template"))
       end
 
-      it "unfollows (leaves) the channel for all users" do
-        create_messages(3)
-        channel.chat_messages.map(&:user).each do |user|
-          UserChatChannelMembership.create(chat_channel: channel, user: user, following: true)
+      describe "channel members" do
+        before do
+          create_messages(3)
+          channel.chat_messages.map(&:user).each do |user|
+            UserChatChannelMembership.create!(chat_channel: channel, user: user, following: true)
+          end
         end
-        expect(UserChatChannelMembership.where(chat_channel: channel, following: true).count).to eq(3)
-        start_archive
-        subject.new(@channel_archive).execute
-        expect(@channel_archive.reload.complete?).to eq(true)
-        expect(UserChatChannelMembership.where(chat_channel: channel, following: true).count).to eq(0)
+
+        it "unfollows (leaves) the channel for all users" do
+          expect(UserChatChannelMembership.where(chat_channel: channel, following: true).count).to eq(3)
+          start_archive
+          subject.new(@channel_archive).execute
+          expect(@channel_archive.reload.complete?).to eq(true)
+          expect(UserChatChannelMembership.where(chat_channel: channel, following: true).count).to eq(0)
+        end
+
+        it "resets unread state for all users" do
+          UserChatChannelMembership.last.update!(last_read_message_id: channel.chat_messages.first.id)
+          start_archive
+          subject.new(@channel_archive).execute
+          expect(@channel_archive.reload.complete?).to eq(true)
+          expect(UserChatChannelMembership.last.last_read_message_id).to eq(channel.chat_messages.last.id)
+        end
       end
 
       describe "chat_archive_destination_topic_status setting" do

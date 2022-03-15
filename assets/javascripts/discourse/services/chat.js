@@ -8,6 +8,7 @@ import { generateCookFunction } from "discourse/lib/text";
 import { next } from "@ember/runloop";
 import { Promise } from "rsvp";
 import ChatChannel, {
+  CHANNEL_STATUSES,
   CHATABLE_TYPES,
 } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import simpleCategoryHashMentionTransform from "discourse/plugins/discourse-chat/discourse/lib/simple-category-hash-mention-transform";
@@ -560,6 +561,20 @@ export default Service.extend({
         }
 
         channel.set("status", busData.status);
+
+        // it is not possible for the user to set their last read message id
+        // if the channel has been archived, because all the messages have
+        // been deleted. we don't want them seeing the blue dot anymore so
+        // just completely reset the unreads
+        if (busData.status === CHANNEL_STATUSES.archived) {
+          this.currentUser.chat_channel_tracking_state[channel.id] = {
+            unread_count: 0,
+            unread_mentions: 0,
+            chatable_type: channel.chatable_type,
+          };
+          this.userChatChannelTrackingStateChanged();
+        }
+
         this.appEvents.trigger("chat:refresh-channel", channel.id);
       });
     });

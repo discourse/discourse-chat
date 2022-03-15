@@ -4,7 +4,7 @@
 
 <div {{on "click" this.handleClick}} class={{messageContainerClasses}} data-id={{or message.id message.stagedId}}>
   {{emoji-picker
-    emojiStore=emojiStore
+    emojiStore=emojiReactionStore
     isActive=emojiPickerIsActive
     isEditorFocused=true
     usePopper=false

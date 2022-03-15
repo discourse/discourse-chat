@@ -28,7 +28,7 @@ export default Component.extend({
   isHovered: false,
   emojiPickerIsActive: false,
   mentionWarning: null,
-  emojiStore: service("chat-emoji-store"),
+  emojiReactionStore: service("chat-emoji-reaction-store"),
   adminTools: optionalService(),
   _hasSubscribedToAppEvents: false,
   tagName: "",
@@ -806,10 +806,10 @@ export default Component.extend({
     }, 250);
   },
 
-  @discourseComputed("emojiStore.reactions.[]")
-  emojiReactions(reactions) {
+  @discourseComputed("emojiReactionStore.favorites.[]")
+  emojiReactions(favorites) {
     // may be a {} if no defaults defined in some production builds
-    if (!reactions || !reactions.slice) {
+    if (!favorites || !favorites.slice) {
       return [];
     }
 
@@ -817,7 +817,7 @@ export default Component.extend({
       return this.message.reactions[key].reacted;
     });
 
-    return reactions.slice(0, 5).map((emoji) => {
+    return favorites.slice(0, 5).map((emoji) => {
       if (userReactions.includes(emoji)) {
         return { emoji, reacted: true };
       } else {

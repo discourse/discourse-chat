@@ -28,13 +28,6 @@ export default Service.extend({
     this.store.setObject({ key: EMOJI_SELECTED_DIVERSITY, value: value || 1 });
   },
 
-  get reactions() {
-    if (!this.siteSettings.default_emoji_reactions) {
-      return [];
-    }
-    return this.siteSettings.default_emoji_reactions.split("|").filter(Boolean);
-  },
-
   get favorites() {
     if (this.store.getObject(EMOJI_USAGE).length < 1) {
       if (!this.siteSettings.default_emoji_reactions) {

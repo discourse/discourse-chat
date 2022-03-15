@@ -4,7 +4,6 @@ import {
   allChannels,
   chatChannels,
   chatView,
-  siteChannel,
 } from "discourse/plugins/discourse-chat/chat-fixtures";
 import {
   acceptance,

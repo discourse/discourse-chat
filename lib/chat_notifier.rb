@@ -80,12 +80,27 @@ class DiscourseChat::ChatNotifier
     Jobs.enqueue_in(3.seconds, :create_chat_mention_notifications, {
       chat_message_id: @chat_message.id,
       user_ids: user_ids,
+      user_ids_to_identifier_map: user_ids_to_identifier_map.as_json,
       user_ids_to_group_mention_map: user_ids_to_group_mention_map,
-      global_mentioned_users_ids: @global_mentioned_users.map(&:id),
-      here_mentioned_users_ids: @here_mentioned_users.map(&:id),
-      directly_mentioned_users_ids: @directly_mentioned_users.map(&:id),
       timestamp: @timestamp.iso8601(6)
     })
+  end
+
+  def user_ids_to_identifier_map
+    # A user might be directly mentioned by username, or mentioned with @here, @all or BOTH.
+    # Here we need to set the identifier if the user wasn't mentioned directly so that both
+    # OS notifications and core notifications can correctly display what identifier they were
+    # mentioned by. Loop through @all, @here, and then directly mentioned user_ids with each loop
+    # overriding the previous identifier so directly mentioned users will always be mentioned as such.
+    map = {}
+    [
+      [@global_mentioned_users.map(&:id), :global],
+      [@here_mentioned_users.map(&:id), :here],
+      [@directly_mentioned_users.map(&:id), nil]
+    ].each do |user_ids, identifier|
+      user_ids.each { |user_id| map[user_id] = identifier }
+    end
+    map
   end
 
   def direct_mentions_from_cooked

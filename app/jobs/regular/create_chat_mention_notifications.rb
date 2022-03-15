@@ -22,19 +22,7 @@ module Jobs
             :chat_group_mention :
             :chat_mention
 
-          # A user might be directly mentioned by username, or mentioned with @here, @all or BOTH.
-          # Here we need to set the identifier if the user wasn't mentioned directly so that both
-          # OS notifications and core notifications can correctly display what identifier they were
-          # mentioned by.
-          mention_identifier = nil
-          if !args[:directly_mentioned_users_ids]&.include?(membership.user_id)
-            if args[:global_mentioned_users_ids]&.include?(membership.user_id)
-              mention_identifier = :global
-            elsif args[:here_mentioned_users_ids]&.include?(membership.user_id)
-              mention_identifier = :here
-            end
-          end
-
+          mention_identifier = (args["user_ids_to_identifier_map"] || {})[membership.user_id.to_s]
           send_mention_notification_to_user(membership.user, mention_type, group_name, mention_identifier)
           send_os_notifications(membership, mention_type, group_name, mention_identifier)
         end

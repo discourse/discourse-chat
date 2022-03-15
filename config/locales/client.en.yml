@@ -259,8 +259,11 @@ en:
       chat_quoted: "<span>%{username}</span> %{description}"
 
       popup:
-        chat_mention: "<span>%{username}</span> <span>mentioned you in chat</span>"
+        chat_mention:
+          you: "<span>%{username}</span> <span>mentioned you in %{channel}</span>"
+          other: "<span>%{username}</span> <span>mentioned %{identifier} in %{channel}</span>"
         chat_group_mention: "<span>%{username}</span> <span>mentioned @%{groupName} in chat</span>"
+
         chat_message: "New chat message"
         chat_quoted: "%{username} quoted your chat message"
 

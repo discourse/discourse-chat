@@ -81,6 +81,9 @@ class DiscourseChat::ChatNotifier
       chat_message_id: @chat_message.id,
       user_ids: user_ids,
       user_ids_to_group_mention_map: user_ids_to_group_mention_map,
+      global_mentioned_users_ids: @global_mentioned_users.map(&:id),
+      here_mentioned_users_ids: @here_mentioned_users.map(&:id),
+      directly_mentioned_users_ids: @directly_mentioned_users.map(&:id),
       timestamp: @timestamp.iso8601(6)
     })
   end
@@ -123,22 +126,18 @@ class DiscourseChat::ChatNotifier
   end
 
   def set_mentioned_users
-    all_users = []
-    if direct_mentions_from_cooked.include?("@all")
-      all_users = members_of_channel(exclude: @user.username)
-    end
+    @global_mentioned_users = direct_mentions_from_cooked.include?("@all") ?
+      members_of_channel(exclude: @user.username) :
+      []
 
-    users_here = []
-    if direct_mentions_from_cooked.include?("@here")
-      users_here = get_users_here
-    end
+    @here_mentioned_users = direct_mentions_from_cooked.include?("@here") ? get_users_here : []
 
-    directly_mentioned_users = mentioned_by_username(
+    @directly_mentioned_users = mentioned_by_username(
       exclude: @user.username,
       usernames: mentioned_usernames
     )
 
-    users = (all_users + users_here + group_mentioned_users + directly_mentioned_users).uniq
+    users = (@global_mentioned_users + @here_mentioned_users + group_mentioned_users + @directly_mentioned_users).uniq
 
     can_chat_users, @cannot_chat_users = filter_users_who_can_chat(users)
     @mentioned_with_membership, @mentioned_without_membership = filter_with_and_without_membership(can_chat_users)

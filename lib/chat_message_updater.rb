@@ -57,7 +57,7 @@ class DiscourseChat::ChatMessageUpdater
   end
 
   def update_uploads!
-    return if @upload_ids.nil? || !SiteSetting.chat_allow_uploads
+    return if @upload_ids.nil? || !SiteSetting.chat_allow_attachments
 
     uploads = Upload.where(id: @upload_ids, user_id: @user.id)
     return unless uploads.count == @upload_ids.count

@@ -32,7 +32,7 @@ discourseModule(
               },
             })
           );
-          set(this.siteSettings, "chat_allow_uploads", false);
+          set(this.siteSettings, "chat_allow_attachments", false);
         },
 
         async test(assert) {
@@ -56,7 +56,7 @@ discourseModule(
             chatable: {},
           })
         );
-        set(this.siteSettings, "chat_allow_uploads", false);
+        set(this.siteSettings, "chat_allow_attachments", false);
       },
 
       async test(assert) {

@@ -80,7 +80,8 @@ describe DiscourseChat::ChatChannelArchiveService do
 
       it "makes a topic, deletes all the messages, creates posts for batches of messages, and changes the channel to archived" do
         create_messages(50) && start_archive
-        ChatMessageReaction.create!(chat_message: ChatMessage.first, user: Fabricate(:user), emoji: "+1")
+        reaction_message = ChatMessage.last
+        ChatMessageReaction.create!(chat_message: reaction_message, user: Fabricate(:user), emoji: "+1")
         stub_const(DiscourseChat::ChatChannelArchiveService, "ARCHIVED_MESSAGES_PER_POST", 5) do
           subject.new(@channel_archive).execute
         end
@@ -96,7 +97,10 @@ describe DiscourseChat::ChatChannelArchiveService do
         topic.posts.where.not(post_number: 1).each do |post|
           expect(post.raw).to include("[chat")
           expect(post.raw).to include("noLink=\"true\"")
-          expect(post.raw).to include("reactions=")
+
+          if post.raw.include?(";#{reaction_message.id};")
+            expect(post.raw).to include("reactions=")
+          end
         end
         expect(topic.archived).to eq(true)
 

@@ -103,6 +103,20 @@ class ChatChannel < ActiveRecord::Base
   end
 
   def title(user)
+    return chatable.chat_channel_title_for_user(self, user) if direct_message_channel?
+    return name if name.present?
+
+    title_from_chatable
+  end
+
+  def title_for_mention(user)
+    return I18n.t("chat.personal_chat") if direct_message_channel?
+    return name if name.present?
+
+    title_from_chatable
+  end
+
+  def title_from_chatable
     case chatable_type
     when "Topic"
       chatable.fancy_title

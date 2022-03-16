@@ -65,7 +65,7 @@ class ChatTranscriptService
           "#{react.emoji}:#{react.usernames}"
         end
       end
-      return if reaction_data.empty?
+      return if reaction_data.blank? || reaction_data.empty?
       "reactions=\"#{reaction_data.join(";")}\""
     end
 

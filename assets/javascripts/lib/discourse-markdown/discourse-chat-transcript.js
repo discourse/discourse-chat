@@ -1,4 +1,5 @@
 import I18n from "I18n";
+import { performEmojiUnescape } from "pretty-text/emoji";
 
 let customMarkdownCookFn;
 
@@ -14,6 +15,7 @@ const chatTranscriptRule = {
     const options = state.md.options.discourse;
     const [username, messageIdStart, messageTimeStart] =
       (tagInfo.attrs.quote && tagInfo.attrs.quote.split(";")) || [];
+    const reactions = tagInfo.attrs.reactions;
     const multiQuote = !!tagInfo.attrs.multiQuote;
     const noLink = !!tagInfo.attrs.noLink;
     const channelName = tagInfo.attrs.channel;
@@ -38,6 +40,10 @@ const chatTranscriptRule = {
     wrapperDivToken.attrs.push(["data-message-id", messageIdStart]);
     wrapperDivToken.attrs.push(["data-username", username]);
     wrapperDivToken.attrs.push(["data-datetime", messageTimeStart]);
+
+    if (reactions) {
+      wrapperDivToken.attrs.push(["data-reactions", reactions]);
+    }
 
     if (channelName) {
       wrapperDivToken.attrs.push(["data-channel-name", channelName]);
@@ -147,6 +153,41 @@ const chatTranscriptRule = {
     token.content = customMarkdownCookFn(content);
     state.push("html_raw", "", -1);
 
+    if (reactions) {
+      let emojiHtmlCache = {};
+      let reactionsToken = state.push(
+        "div_chat_transcript_reactions",
+        "div",
+        1
+      );
+      reactionsToken.attrs = [["class", "chat-transcript-reactions"]];
+
+      const reactionsMap = reactions.split(";");
+      reactionsMap.forEach((reaction) => {
+        const split = reaction.split(":");
+        const emoji = split[0];
+        const usernames = split[1].split(",");
+
+        const reactToken = state.push("div_chat_transcript_reaction", "div", 1);
+        reactToken.attrs = [["class", "chat-transcript-reaction"]];
+        const emojiToken = state.push("html_inline", "", 0);
+        if (!emojiHtmlCache[emoji]) {
+          emojiHtmlCache[emoji] = performEmojiUnescape(`:${emoji}:`, {
+            getURL: options.getURL,
+            emojiSet: options.emojiSet,
+            emojiCDNUrl: options.emojiCDNUrl,
+            enableEmojiShortcuts: options.enableEmojiShortcuts,
+            inlineEmoji: options.inlineEmoji,
+            lazy: true,
+          });
+        }
+        emojiToken.content =
+          emojiHtmlCache[emoji] + " " + usernames.length.toString();
+        state.push("div_chat_transcript_reaction", "div", -1);
+      });
+      state.push("div_chat_transcript_reactions", "div", -1);
+    }
+
     state.push("div_chat_transcript_messages", "div", -1);
     state.push("div_chat_transcript_wrap", "div", -1);
     return true;
@@ -163,6 +204,8 @@ export function setup(helper) {
     "div.chat-transcript-user-avatar",
     "div.chat-transcript-messages",
     "div.chat-transcript-datetime",
+    "div.chat-transcript-reactions",
+    "div.chat-transcript-reaction",
     "span[title]",
     "div[data-message-id]",
     "div[data-channel-name]",

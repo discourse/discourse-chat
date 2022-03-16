@@ -369,8 +369,8 @@ describe DiscourseChat::ChatMessageCreator do
         }.by(0)
       end
 
-      it "doesn't attach uploads when `chat_allow_attachments` is false" do
-        SiteSetting.chat_allow_attachments = false
+      it "doesn't attach uploads when `chat_allow_uploads` is false" do
+        SiteSetting.chat_allow_uploads = false
         expect {
           DiscourseChat::ChatMessageCreator.create(
             chat_channel: public_chat_channel,

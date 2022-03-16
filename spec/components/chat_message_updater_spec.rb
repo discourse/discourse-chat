@@ -255,8 +255,8 @@ describe DiscourseChat::ChatMessageUpdater do
       }.to change { ChatUpload.where(chat_message: chat_message).count }.by(0)
     end
 
-    it "doesn't add uploads if `chat_allow_attachments` is false" do
-      SiteSetting.chat_allow_attachments = false
+    it "doesn't add uploads if `chat_allow_uploads` is false" do
+      SiteSetting.chat_allow_uploads = false
       chat_message = create_chat_message(user1, "something", public_chat_channel)
       expect {
         DiscourseChat::ChatMessageUpdater.update(
@@ -267,8 +267,8 @@ describe DiscourseChat::ChatMessageUpdater do
       }.to change { ChatUpload.where(chat_message: chat_message).count }.by(0)
     end
 
-    it "doesn't remove existing uploads if `chat_allow_attachments` is false" do
-      SiteSetting.chat_allow_attachments = false
+    it "doesn't remove existing uploads if `chat_allow_uploads` is false" do
+      SiteSetting.chat_allow_uploads = false
       chat_message = create_chat_message(user1, "something", public_chat_channel, upload_ids: [upload1.id, upload2.id])
       expect {
         DiscourseChat::ChatMessageUpdater.update(

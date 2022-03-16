@@ -94,7 +94,7 @@ class DiscourseChat::ChatNotifier
     # overriding the previous identifier so directly mentioned users will always be mentioned as such.
     map = {}
     [
-      [@global_mentioned_users.map(&:id), :global],
+      [@global_mentioned_users.map(&:id), :all],
       [@here_mentioned_users.map(&:id), :here]
     ].each do |user_ids, identifier|
       user_ids.each { |user_id| map[user_id] = { is_group: false, identifier: identifier } }
@@ -105,7 +105,7 @@ class DiscourseChat::ChatNotifier
       map[user.id] = { is_group: true, identifier: group_name }
     end
 
-    @directly_mentioned_users.each { |user_id| map[user_id] = nil }
+    @directly_mentioned_users.each { |user| map[user.id] = nil }
     map
   end
 

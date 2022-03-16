@@ -361,7 +361,7 @@ describe DiscourseChat::ChatMessageCreator do
   end
 
   describe "manually running jobs" do
-    it "doesn't send mention notifications if the user has already read the message" do
+    it "creates mention notifications and marks them as read if the user has already read the message" do
       chat_message = DiscourseChat::ChatMessageCreator.create(
         chat_channel: public_chat_channel,
         user: user1,
@@ -375,7 +375,8 @@ describe DiscourseChat::ChatMessageCreator do
 
       expect {
         Jobs::CreateChatMentionNotifications.new.execute(user_ids: [user2.id], chat_message_id: chat_message.id, timestamp: chat_message.created_at)
-      }.not_to change { user2.chat_mentions.count }
+      }.to change { user2.chat_mentions.count }.by(1)
+      expect(user2.chat_mentions.last.notification.read).to be true
     end
 
     it "doesn't send chat message 'watching' notifications if the user has already read the message" do

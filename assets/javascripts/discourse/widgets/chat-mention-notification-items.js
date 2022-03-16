@@ -13,7 +13,7 @@ const chatNotificationItem = {
   services: ["chat", "router"],
   text(notificationName, data) {
     const username = formatUsername(data.mentioned_by_username);
-    const identifier = this.transformIdentifier(data);
+    const identifier = data.identifier ? `@${data.identifier}` : null;
     const i18nKey = identifier
       ? "notifications.popup.chat_mention.other"
       : "notifications.popup.chat_mention.direct";
@@ -23,19 +23,6 @@ const chatNotificationItem = {
       identifier,
       channel: data.chat_channel_title,
     });
-  },
-
-  transformIdentifier(data) {
-    if (!data.identifier) {
-      return;
-    }
-
-    let identifier = data.identifier;
-    if (!data.is_group_mention) {
-      identifier = identifier.replace("global", "all");
-    }
-
-    return `@${identifier}`;
   },
 
   html(attrs) {

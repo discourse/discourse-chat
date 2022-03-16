@@ -2,7 +2,7 @@ $header-height: 2.5rem;
 $float-height: 530px;
 
 :root {
-  --message-left-width: 38px;
+  --message-left-width: 42px;
   --full-page-border-radius: 12px;
   --full-page-sidebar-width: 275px;
 }
@@ -327,7 +327,6 @@ body.composer-open .topic-chat-float-container {
   .chat-channel-unread-indicator {
     width: 10px;
     height: 10px;
-    margin-left: 0.5em;
     border-radius: 10px;
     border: 0;
     right: 7px;
@@ -472,10 +471,20 @@ body.composer-open .topic-chat-float-container {
     padding-left: 0.5rem;
   }
 
+  &.is-online {
+    .chat-user-avatar-container .avatar {
+      box-shadow: 0px 0px 0px 1px var(--success);
+      border: 1px solid var(--secondary);
+      padding: 0;
+    }
+  }
+
   .chat-user-avatar-container {
     position: relative;
 
     .avatar {
+      padding: 1px;
+
       .chat-message & {
         width: 28px;
         height: 28px;
@@ -955,7 +964,7 @@ body.composer-open .topic-chat-float-container {
 .chat-channel-title {
   position: relative;
   display: grid;
-  grid-template-columns: 20px 1fr;
+  grid-template-columns: 22px 1fr 10px;
   grid-column-gap: 0.5em;
   align-items: center;
   cursor: pointer;
@@ -1285,6 +1294,8 @@ body.has-full-page-chat {
 
     .chat-channel-title-with-status {
       flex-grow: 1;
+      display: flex;
+      align-items: center;
     }
   }
   .chat-channel-title {

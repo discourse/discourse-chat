@@ -817,7 +817,7 @@ export default Component.extend({
       return this.message.reactions[key].reacted;
     });
 
-    return favorites.slice(0, 5).map((emoji) => {
+    return favorites.slice(0, 3).map((emoji) => {
       if (userReactions.includes(emoji)) {
         return { emoji, reacted: true };
       } else {

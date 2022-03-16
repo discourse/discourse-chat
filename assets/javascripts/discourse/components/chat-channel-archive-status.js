@@ -8,6 +8,7 @@ import discourseComputed from "discourse-common/utils/decorators";
 
 export default Component.extend({
   channel: null,
+  tagName: "",
 
   @discourseComputed(
     "channel.status",

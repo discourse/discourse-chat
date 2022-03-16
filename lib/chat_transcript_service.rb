@@ -59,12 +59,12 @@ class ChatTranscriptService
     private
 
     def reactions_attr
-      reaction_data = @message_data.map do |msg_data|
+      reaction_data = @message_data.reduce([]) do |array, msg_data|
         next if msg_data[:reactions].empty?
-        msg_data[:reactions].map do |react|
+        array << msg_data[:reactions].map do |react|
           "#{react.emoji}:#{react.usernames}"
         end
-      end.compact
+      end
       return if reaction_data.empty?
       "reactions=\"#{reaction_data.join(";")}\""
     end

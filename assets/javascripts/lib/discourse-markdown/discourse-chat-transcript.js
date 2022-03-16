@@ -162,8 +162,7 @@ const chatTranscriptRule = {
       );
       reactionsToken.attrs = [["class", "chat-transcript-reactions"]];
 
-      const reactionsMap = reactions.split(";");
-      reactionsMap.forEach((reaction) => {
+      reactions.split(";").forEach((reaction) => {
         const split = reaction.split(":");
         const emoji = split[0];
         const usernames = split[1].split(",");
@@ -181,8 +180,9 @@ const chatTranscriptRule = {
             lazy: true,
           });
         }
-        emojiToken.content =
-          emojiHtmlCache[emoji] + " " + usernames.length.toString();
+        emojiToken.content = `${
+          emojiHtmlCache[emoji]
+        } ${usernames.length.toString()}`;
         state.push("div_chat_transcript_reaction", "div", -1);
       });
       state.push("div_chat_transcript_reactions", "div", -1);

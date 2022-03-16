@@ -132,11 +132,11 @@ describe ChatTranscriptService do
     message2 = Fabricate(:chat_message, user: user1, chat_channel: channel, message: "wow so tru")
     message3 = Fabricate(:chat_message, user: user2, chat_channel: channel, message: "a new perspective")
 
-    ChatMessageReaction.create(chat_message: message, user: Fabricate(:user, username: "bjorn"), emoji: "heart")
-    ChatMessageReaction.create(chat_message: message, user: Fabricate(:user, username: "sigurd"), emoji: "heart")
-    ChatMessageReaction.create(chat_message: message, user: Fabricate(:user, username: "hvitserk"), emoji: "+1")
-    ChatMessageReaction.create(chat_message: message2, user: Fabricate(:user, username: "ubbe"), emoji: "money_mouth_face")
-    ChatMessageReaction.create(chat_message: message3, user: Fabricate(:user, username: "ivar"), emoji: "sob")
+    ChatMessageReaction.create!(chat_message: message, user: Fabricate(:user, username: "bjorn"), emoji: "heart")
+    ChatMessageReaction.create!(chat_message: message, user: Fabricate(:user, username: "sigurd"), emoji: "heart")
+    ChatMessageReaction.create!(chat_message: message, user: Fabricate(:user, username: "hvitserk"), emoji: "+1")
+    ChatMessageReaction.create!(chat_message: message2, user: Fabricate(:user, username: "ubbe"), emoji: "money_mouth_face")
+    ChatMessageReaction.create!(chat_message: message3, user: Fabricate(:user, username: "ivar"), emoji: "sob")
 
     expect(service([message.id, message2.id, message3.id], opts: { include_reactions: true }).generate_markdown).to eq(<<~MARKDOWN)
     [chat quote="martinchat;#{message.id};#{message.created_at.iso8601}" channel="The Beam Discussions" multiQuote="true" chained="true" reactions="+1:hvitserk;heart:bjorn,sigurd;money_mouth_face:ubbe"]

@@ -56,10 +56,6 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   // Composer Uppy values
   ready: true,
   eventPrefix: "chat-composer",
-  canAttachUploads: or(
-    "siteSettings.chat_allow_uploads",
-    "chatChannel.isDirectMessageChannel"
-  ),
   composerModel: null,
   composerModelContentKey: "value",
   editorInputClass: ".chat-composer-input",
@@ -71,11 +67,6 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   uploadType: "chat-composer",
   uppyId: "chat-composer-uppy",
   editorClass: alias("editorInputClass"),
-
-  @discourseComputed("toolbarButtons")
-  composerRowClasses(buttons) {
-    return `chat-composer-row ${buttons.length ? "has-toolbar" : ""}`;
-  },
 
   @discourseComputed("fullPage")
   fileUploadElementId(fullPage) {
@@ -105,22 +96,18 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     });
     outsideToolbarClick = this.toggleToolbar.bind(this);
 
-    if (this.canAttachUploads) {
-      this.set(
-        "toolbarButtons",
-        [
-          {
-            action: this.uploadClicked,
-            class: "upload-btn",
-            id: this.mobileFileUploaderId,
-            icon: "far-image",
-            title: "chat.upload",
-          },
-        ].concat(toolbarButtons)
-      );
-    } else {
-      this.set("toolbarButtons", toolbarButtons);
-    }
+    this.set(
+      "toolbarButtons",
+      [
+        {
+          action: this.uploadClicked,
+          class: "upload-btn",
+          id: this.mobileFileUploaderId,
+          icon: "far-image",
+          title: "chat.upload",
+        },
+      ].concat(toolbarButtons)
+    );
 
     if (this.siteSettings.composer_media_optimization_image_enabled) {
       // TODO:
@@ -149,9 +136,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     this._$textarea = $(this._textarea);
     this._applyCategoryHashtagAutocomplete(this._$textarea);
     this._applyEmojiAutocomplete(this._$textarea);
-    if (this.canAttachUploads) {
-      this._bindUploadTarget();
-    }
+    this._bindUploadTarget();
     this.appEvents.on("chat:focus-composer", this, "_focusTextArea");
     this.appEvents.on("chat:insert-text", this, "insertText");
 
@@ -217,7 +202,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     }
 
     this.uploads.pushObject(upload);
-    this.onValueChange?.(this.value, this.uploads, this.replyToMsg);
+    this.onValueChange(this.value, this.uploads, this.replyToMsg);
   },
 
   // It is important that this is keyDown and not keyUp, otherwise
@@ -303,7 +288,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
 
   _replyToMsgChanged(replyToMsg) {
     this.set("replyToMsg", replyToMsg);
-    this.onValueChange?.(this.value, this.uploads, replyToMsg);
+    this.onValueChange(this.value, this.uploads, replyToMsg);
   },
 
   @action
@@ -318,7 +303,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   _handleTextareaInput() {
     this._resizeTextArea();
     this._applyUserAutocomplete();
-    this.onValueChange?.(this.value, this.uploads, this.replyToMsg);
+    this.onValueChange(this.value, this.uploads, this.replyToMsg);
   },
 
   @action
@@ -648,22 +633,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   },
 
   _messageIsValid() {
-    const validLength =
-      (this.value || "").trim().length >=
-      (this.siteSettings.chat_minimum_message_length || 0);
-
-    if (this.canAttachUploads) {
-      if (this._messageIsEmpty()) {
-        // If message is empty, an an upload must present for sending to be enabled
-        return this.uploads.length;
-      } else {
-        // Message is non-empty. Make sure it's long enough to be valid.
-        return validLength;
-      }
-    }
-
-    // Attachments are disabled so for a message to be valid it must be long enough.
-    return validLength;
+    return !this._messageIsEmpty() || this.uploads.length;
   },
 
   _messageIsEmpty() {
@@ -678,14 +648,14 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
       inReplyMsg: null,
     });
     this._focusTextArea({ ensureAtEnd: true, resizeTextArea: true });
-    this.onValueChange?.(this.value, this.uploads, this.replyToMsg);
+    this.onValueChange(this.value, this.uploads, this.replyToMsg);
   },
 
   @action
   cancelReplyTo() {
     this.set("replyToMsg", null);
     this.setInReplyToMsg(null);
-    this.onValueChange?.(this.value, this.uploads, this.replyToMsg);
+    this.onValueChange(this.value, this.uploads, this.replyToMsg);
   },
 
   @action
@@ -739,13 +709,13 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     this.appEvents.trigger(`${this.eventPrefix}:cancel-upload`, {
       fileId: upload.id,
     });
-    this.onValueChange?.(this.value, this.uploads, this.replyToMsg);
+    this.onValueChange(this.value, this.uploads, this.replyToMsg);
   },
 
   @action
   removeUpload(upload) {
     this.uploads.removeObject(upload);
-    this.onValueChange?.(this.value, this.uploads, this.replyToMsg);
+    this.onValueChange(this.value, this.uploads, this.replyToMsg);
   },
 
   @discourseComputed("composerDisabled", "uploads.[]", "inProgressUploads.[]")

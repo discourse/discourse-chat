@@ -15,7 +15,7 @@
   }}
 {{/if}}
 
-<div role="region" aria-label={{i18n "chat.aria_roles.composer"}} class={{composerRowClasses}}>
+<div role="region" aria-label={{i18n "chat.aria_roles.composer"}} class="chat-composer-row">
   {{#if showToolbar}}
     <div class="chat-composer-toolbar">
       {{#each toolbarButtons as |toolbarButton|}}
@@ -42,15 +42,13 @@
     rows=1
   }}
 
-  {{#if this.toolbarButtons.length}}
-    {{flat-button
-      disabled=disableComposer
-      action=(action "toggleToolbar")
-      class="open-toolbar-btn"
-      title="chat.composer.toggle_toolbar"
-      icon=(if showToolbar "minus" "plus")
-    }}
-  {{/if}}
+  {{flat-button
+    disabled=disableComposer
+    action=(action "toggleToolbar")
+    class="open-toolbar-btn"
+    title="chat.composer.toggle_toolbar"
+    icon=(if showToolbar "minus" "plus")
+  }}
 
   {{emoji-picker
     isActive=emojiPickerIsActive

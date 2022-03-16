@@ -117,6 +117,7 @@
     .tc-reply-display {
       grid-area: replyto;
       cursor: pointer;
+      height: 100%;
 
       .d-icon {
         color: var(--primary-high);

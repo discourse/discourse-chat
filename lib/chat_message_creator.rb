@@ -95,7 +95,7 @@ class DiscourseChat::ChatMessageCreator
   end
 
   def attach_uploads
-    return if @upload_ids.blank? || !SiteSetting.chat_allow_attachments
+    return if @upload_ids.blank?
 
     uploads = Upload.where(id: @upload_ids, user_id: @user.id)
     self.class.attach_uploads(@chat_message.id, uploads)

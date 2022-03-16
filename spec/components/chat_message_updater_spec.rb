@@ -36,21 +36,6 @@ describe DiscourseChat::ChatMessageUpdater do
     creator.chat_message
   end
 
-  it "errors when length is less than `chat_minimum_message_length`" do
-    SiteSetting.chat_minimum_message_length = 10
-    og_message = "This won't be changed!"
-    chat_message = create_chat_message(user1, og_message, public_chat_channel)
-    new_message = "2 short"
-
-    updater = DiscourseChat::ChatMessageUpdater.update(
-      chat_message: chat_message,
-      new_content: new_message
-    )
-    expect(updater.failed?).to eq(true)
-    expect(updater.error.message).to match(I18n.t("chat.errors.minimum_length_not_met", { minimum: SiteSetting.chat_minimum_message_length }))
-    expect(chat_message.reload.message).to eq(og_message)
-  end
-
   it "it updates a messages content" do
     chat_message = create_chat_message(user1, "This will be changed", public_chat_channel)
     new_message = "Change to this!"
@@ -251,30 +236,6 @@ describe DiscourseChat::ChatMessageUpdater do
           chat_message: chat_message,
           new_content: "I guess this is different",
           upload_ids: [0]
-        )
-      }.to change { ChatUpload.where(chat_message: chat_message).count }.by(0)
-    end
-
-    it "doesn't add uploads if `chat_allow_attachments` is false" do
-      SiteSetting.chat_allow_attachments = false
-      chat_message = create_chat_message(user1, "something", public_chat_channel)
-      expect {
-        DiscourseChat::ChatMessageUpdater.update(
-          chat_message: chat_message,
-          new_content: "I guess this is different",
-          upload_ids: [upload1.id, upload2.id]
-        )
-      }.to change { ChatUpload.where(chat_message: chat_message).count }.by(0)
-    end
-
-    it "doesn't remove existing uploads if `chat_allow_attachments` is false" do
-      SiteSetting.chat_allow_attachments = false
-      chat_message = create_chat_message(user1, "something", public_chat_channel, upload_ids: [upload1.id, upload2.id])
-      expect {
-        DiscourseChat::ChatMessageUpdater.update(
-          chat_message: chat_message,
-          new_content: "I guess this is different",
-          upload_ids: []
         )
       }.to change { ChatUpload.where(chat_message: chat_message).count }.by(0)
     end

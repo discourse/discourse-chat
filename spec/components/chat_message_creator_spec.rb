@@ -31,17 +31,6 @@ describe DiscourseChat::ChatMessageCreator do
       Jobs.run_immediately!
     end
 
-    it "errors when length is less than `chat_minimum_message_length`" do
-      SiteSetting.chat_minimum_message_length = 10
-      creator = DiscourseChat::ChatMessageCreator.create(
-        chat_channel: public_chat_channel,
-        user: user1,
-        content: "2 short"
-      )
-      expect(creator.failed?).to eq(true)
-      expect(creator.error.message).to match(I18n.t("chat.errors.minimum_length_not_met", { minimum: SiteSetting.chat_minimum_message_length }))
-    end
-
     it "creates messages for users who can see the channel" do
       expect {
         DiscourseChat::ChatMessageCreator.create(
@@ -367,18 +356,6 @@ describe DiscourseChat::ChatMessageCreator do
         }.to change {
           ChatUpload.where(upload_id: private_upload.id).count
         }.by(0)
-      end
-
-      it "doesn't attach uploads when `chat_allow_attachments` is false" do
-        SiteSetting.chat_allow_attachments = false
-        expect {
-          DiscourseChat::ChatMessageCreator.create(
-            chat_channel: public_chat_channel,
-            user: user1,
-            content: "Beep boop",
-            upload_ids: [upload1.id]
-          )
-        }.to change { ChatUpload.where(upload_id: upload1.id).count }.by(0)
       end
     end
   end

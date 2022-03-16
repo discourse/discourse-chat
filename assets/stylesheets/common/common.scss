@@ -327,7 +327,6 @@ body.composer-open .topic-chat-float-container {
   .chat-channel-unread-indicator {
     width: 10px;
     height: 10px;
-    margin-left: 0.5em;
     border-radius: 10px;
     border: 0;
     right: 7px;
@@ -965,7 +964,7 @@ body.composer-open .topic-chat-float-container {
 .chat-channel-title {
   position: relative;
   display: grid;
-  grid-template-columns: 22px 1fr;
+  grid-template-columns: 22px 1fr 10px;
   grid-column-gap: 0.5em;
   align-items: center;
   cursor: pointer;

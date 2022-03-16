@@ -31,7 +31,7 @@ describe DiscourseChat::ChatMessageCreator do
       Jobs.run_immediately!
     end
 
-    it "errors when the length is shorter the `chat_minimum_message_length`" do
+    it "errors when length is less than `chat_minimum_message_length`" do
       SiteSetting.chat_minimum_message_length = 10
       creator = DiscourseChat::ChatMessageCreator.create(
         chat_channel: public_chat_channel,

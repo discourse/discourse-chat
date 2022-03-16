@@ -56,6 +56,10 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   // Composer Uppy values
   ready: true,
   eventPrefix: "chat-composer",
+  canAttachUploads: or(
+    "siteSettings.chat_allow_attachments",
+    "chatChannel.isDirectMessageChannel"
+  ),
   composerModel: null,
   composerModelContentKey: "value",
   editorInputClass: ".chat-composer-input",
@@ -87,17 +91,6 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
 
   _findMatchingUploadHandler() {
     return;
-  },
-
-  @discourseComputed(
-    "siteSettings.chat_allow_attachments",
-    "chatChannel.isDirectMessageChannel"
-  )
-  canAttachUploads(attachmentsAllowed, isDirectMessageChannel) {
-    if (isDirectMessageChannel) {
-      return true;
-    }
-    return attachmentsAllowed;
   },
 
   init() {

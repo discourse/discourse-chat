@@ -71,6 +71,6 @@ plugins:
     min: 1
     max: 50
     client: true
-  chat_allow_attachments:
+  chat_allow_uploads:
     default: true
     client: true

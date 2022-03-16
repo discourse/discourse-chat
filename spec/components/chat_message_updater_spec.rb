@@ -36,7 +36,7 @@ describe DiscourseChat::ChatMessageUpdater do
     creator.chat_message
   end
 
-  it "errors when the length is shorter the `chat_minimum_message_length`" do
+  it "errors when length is less than `chat_minimum_message_length`" do
     SiteSetting.chat_minimum_message_length = 10
     og_message = "This won't be changed!"
     chat_message = create_chat_message(user1, og_message, public_chat_channel)

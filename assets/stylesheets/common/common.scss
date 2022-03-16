@@ -1294,6 +1294,8 @@ body.has-full-page-chat {
 
     .chat-channel-title-with-status {
       flex-grow: 1;
+      display: flex;
+      align-items: center;
     }
   }
   .chat-channel-title {

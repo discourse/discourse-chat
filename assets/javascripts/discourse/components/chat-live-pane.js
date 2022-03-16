@@ -804,7 +804,7 @@ export default Component.extend({
           messageId = this.messages[this.messages.length - 1]?.id;
         }
         const hasUnreadMessage =
-          messageId && messageId !== this.lastSendReadMessageId;
+          messageId && messageId > this.lastSendReadMessageId;
 
         if (
           !hasUnreadMessage &&

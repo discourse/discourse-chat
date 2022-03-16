@@ -57,7 +57,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   ready: true,
   eventPrefix: "chat-composer",
   canAttachUploads: or(
-    "siteSettings.chat_allow_attachments",
+    "siteSettings.chat_allow_uploads",
     "chatChannel.isDirectMessageChannel"
   ),
   composerModel: null,

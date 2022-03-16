@@ -101,7 +101,7 @@ const baseChatPretenders = (server, helper) => {
           },
         },
         {
-          id: 43,
+          id: 44,
           user_id: 1,
           notification_type: 29,
           read: false,
@@ -112,8 +112,7 @@ const baseChatPretenders = (server, helper) => {
           topic_id: null,
           slug: null,
           data: {
-            identifier: "global",
-            is_group: true,
+            identifier: "all",
             chat_message_id: 174,
             chat_channel_id: 9,
             chat_channel_title: "Site",
@@ -279,34 +278,39 @@ acceptance("Discourse Chat - without unread", function (needs) {
     await click(".header-dropdown-toggle.current-user");
     const notifications = queryAll("#quick-access-notifications .chat-mention");
 
+    const domParser = new DOMParser();
     // First is a direct mention from @hawk in #Site
-    assert.equal(
-      notifications[0].innerText,
+    let mentionHtml = domParser.parseFromString(
       I18n.t("notifications.popup.chat_mention.direct", {
         username: "hawk",
         identifier: null,
         channel: "Site",
-      })
+      }),
+      "text/html"
     );
+    assert.equal(notifications[0].innerText, mentionHtml.body.innerText);
 
     // Second is a group mention from @hawk in #Site
-    assert.equal(
-      notifications[1].innerText,
+    mentionHtml = domParser.parseFromString(
       I18n.t("notifications.popup.chat_mention.other", {
         username: "hawk",
         identifier: "@engineers",
         channel: "Site",
-      })
+      }),
+      "text/html"
     );
+    assert.equal(notifications[1].innerText, mentionHtml.body.innerText);
 
-    assert.equal(
-      notifications[2].innerText,
+    // Third is an `@all` mention from @hawk in #Site
+    mentionHtml = domParser.parseFromString(
       I18n.t("notifications.popup.chat_mention.other", {
         username: "hawk",
         identifier: "@all",
         channel: "Site",
-      })
+      }),
+      "text/html"
     );
+    assert.equal(notifications[2].innerText, mentionHtml.body.innerText);
   });
 
   test("notifications for current user and here/all are highlighted", async function (assert) {

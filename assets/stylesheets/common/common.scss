@@ -2,7 +2,7 @@ $header-height: 2.5rem;
 $float-height: 530px;
 
 :root {
-  --message-left-width: 38px;
+  --message-left-width: 42px;
   --full-page-border-radius: 12px;
   --full-page-sidebar-width: 275px;
 }
@@ -327,7 +327,6 @@ body.composer-open .topic-chat-float-container {
   .chat-channel-unread-indicator {
     width: 10px;
     height: 10px;
-    margin-left: 0.5em;
     border-radius: 10px;
     border: 0;
     right: 7px;
@@ -452,9 +451,13 @@ body.composer-open .topic-chat-float-container {
 
 .chat-emoji-avatar {
   width: var(--message-left-width);
-  display: flex;
   align-items: center;
-  justify-content: center;
+
+  img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
 }
 
 .chat-user-avatar {
@@ -472,14 +475,19 @@ body.composer-open .topic-chat-float-container {
     padding-left: 0.5rem;
   }
 
+  &.is-online {
+    .chat-user-avatar-container .avatar {
+      box-shadow: 0px 0px 0px 1px var(--success);
+      border: 1px solid var(--secondary);
+      padding: 0;
+    }
+  }
+
   .chat-user-avatar-container {
     position: relative;
 
     .avatar {
-      .chat-message & {
-        width: 28px;
-        height: 28px;
-      }
+      padding: 1px;
 
       .chat-message.is-reply .tc-reply-display & {
         width: 20px;
@@ -678,13 +686,19 @@ body.composer-open .topic-chat-float-container {
       margin: 0;
       resize: none;
       max-height: 125px;
-      padding: 8px 8px 8px 45px;
+      padding: 8px;
       background-color: var(--secondary);
       border: 1px solid var(--primary-low-mid);
       border-radius: 0.5em;
       box-sizing: border-box;
       word-break: break-word;
       width: 100%;
+    }
+    .chat-composer-row.has-toolbar {
+      .chat-composer-input,
+      .chat-composer-row::after {
+        padding-left: 45px;
+      }
     }
     // composer scrollbar
     .chat-composer-row > .chat-composer-input {
@@ -955,7 +969,7 @@ body.composer-open .topic-chat-float-container {
 .chat-channel-title {
   position: relative;
   display: grid;
-  grid-template-columns: 20px 1fr;
+  grid-template-columns: 22px 1fr 10px;
   grid-column-gap: 0.5em;
   align-items: center;
   cursor: pointer;
@@ -1285,6 +1299,14 @@ body.has-full-page-chat {
 
     .chat-channel-title-with-status {
       flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 50%;
+    }
+
+    .chat-channel-archive-status {
+      text-align: right;
+      padding-right: 1em;
     }
   }
   .chat-channel-title {

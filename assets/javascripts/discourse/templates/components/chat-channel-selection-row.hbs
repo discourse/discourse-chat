@@ -12,7 +12,6 @@
       {{model.username}}
     </span>
   {{else}}
-    {{chat-channel-title channel=model}}
-    {{chat-channel-unread-indicator channel=channel}}
+    {{chat-channel-title channel=model unreadIndicator=true}}
   {{/if}}
 </div>

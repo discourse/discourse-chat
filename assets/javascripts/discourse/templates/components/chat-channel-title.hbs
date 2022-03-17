@@ -37,4 +37,8 @@
     </span>
     <p class="topic-chat-name">{{replace-emoji channel.title}}</p>
   {{/if}}
+
+  {{#if unreadIndicator}}
+    {{chat-channel-unread-indicator channel=channel}}
+  {{/if}}
 </div>

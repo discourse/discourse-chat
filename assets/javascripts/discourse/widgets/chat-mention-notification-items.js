@@ -13,7 +13,16 @@ const chatNotificationItem = {
   services: ["chat", "router"],
   text(notificationName, data) {
     const username = formatUsername(data.mentioned_by_username);
-    return I18n.t(data.message, { username, groupName: data.group_name });
+    const identifier = data.identifier ? `@${data.identifier}` : null;
+    const i18nKey = identifier
+      ? "notifications.popup.chat_mention.other"
+      : "notifications.popup.chat_mention.direct";
+
+    return I18n.t(i18nKey, {
+      username,
+      identifier,
+      channel: data.chat_channel_title,
+    });
   },
 
   html(attrs) {
@@ -24,8 +33,7 @@ const chatNotificationItem = {
     const title = this.notificationTitle(notificationName, data);
     const text = this.text(notificationName, data);
     const html = new RawHtml({ html: `<div>${text}</div>` });
-    const icon = notificationName === "chat_mention" ? "at" : "users";
-    const contents = [iconNode(icon), html];
+    const contents = [iconNode("comment"), html];
 
     return h("a", { attributes: { title } }, contents);
   },

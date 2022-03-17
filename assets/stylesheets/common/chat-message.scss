@@ -13,6 +13,43 @@
   }
 }
 
+@mixin chat-reaction {
+  align-items: center;
+  display: inline-flex;
+  padding: 0.3em 0.6em;
+  margin: 1px 0.25em 1px 0;
+  font-size: var(--font-down-2);
+  border-radius: 4px;
+  border: 1px solid var(--primary-low);
+  background: transparent;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.2s, border-color 0.2s;
+
+  &.reacted {
+    border-color: var(--tertiary-medium);
+    background: var(--tertiary-very-low);
+    color: var(--tertiary-hover);
+
+    &:hover {
+      background: var(--tertiary-low);
+    }
+  }
+
+  &:not(.reacted) {
+    &:hover {
+      background: var(--primary-low);
+      border-color: var(--primary-low-mid);
+    }
+  }
+
+  .emoji {
+    height: 15px;
+    margin-right: 4px;
+    width: auto;
+  }
+}
+
 .chat-message {
   align-items: flex-start;
   position: relative;
@@ -22,43 +59,10 @@
   min-width: 0;
 
   .chat-message-reaction {
-    align-items: center;
-    display: inline-flex;
-    padding: 0.3em 0.6em;
-    margin: 1px 0.25em 1px 0;
-    font-size: var(--font-down-2);
-    border-radius: 4px;
-    border: 1px solid var(--primary-low);
-    background: transparent;
-    cursor: pointer;
-    user-select: none;
-    transition: background 0.2s, border-color 0.2s;
-
-    &:not(.reacted) {
-      &:hover {
-        background: var(--primary-low);
-        border-color: var(--primary-low-mid);
-      }
-    }
+    @include chat-reaction;
 
     &:not(.show) {
       display: none;
-    }
-
-    &.reacted {
-      border-color: var(--tertiary-medium);
-      background: var(--tertiary-very-low);
-      color: var(--tertiary-hover);
-
-      &:hover {
-        background: var(--tertiary-low);
-      }
-    }
-
-    .emoji {
-      height: 15px;
-      margin-right: 4px;
-      width: auto;
     }
   }
 
@@ -117,6 +121,7 @@
     .tc-reply-display {
       grid-area: replyto;
       cursor: pointer;
+      height: 100%;
 
       .d-icon {
         color: var(--primary-high);
@@ -197,7 +202,8 @@
     font-size: var(--font-down-2);
   }
 
-  .chat-message-reaction-list {
+  .chat-message-reaction-list,
+  .chat-transcript-reactions {
     position: relative;
     margin-top: 0.25em;
     display: flex;
@@ -258,6 +264,12 @@
       color: var(--tertiary);
       cursor: pointer;
     }
+  }
+
+  .chat-user-avatar .chat-user-avatar-container .avatar,
+  .chat-emoji-avatar .chat-emoji-avatar-container {
+    width: 28px;
+    height: 28px;
   }
 }
 

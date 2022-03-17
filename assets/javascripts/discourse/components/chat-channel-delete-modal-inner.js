@@ -2,7 +2,6 @@ import Component from "@ember/component";
 import { isTesting } from "discourse-common/config/environment";
 import { later } from "@ember/runloop";
 import { isEmpty } from "@ember/utils";
-import { CHANNEL_STATUSES } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import I18n from "I18n";
 import discourseComputed from "discourse-common/utils/decorators";
 import { action } from "@ember/object";
@@ -24,7 +23,8 @@ export default Component.extend({
 
     if (
       isEmpty(channelNameConfirmation) ||
-      channelNameConfirmation.toLowerCase() !== this.chatChannel.title.toLowerCase()
+      channelNameConfirmation.toLowerCase() !==
+        this.chatChannel.title.toLowerCase()
     ) {
       return true;
     }
@@ -34,13 +34,10 @@ export default Component.extend({
   @action
   deleteChannel() {
     this.set("deleting", true);
-    return ajax(
-      `/chat/chat_channels/${this.chatChannel.id}.json`,
-      {
-        method: "DELETE",
-        data: { channel_name_confirmation: this.channelNameConfirmation },
-      }
-    )
+    return ajax(`/chat/chat_channels/${this.chatChannel.id}.json`, {
+      method: "DELETE",
+      data: { channel_name_confirmation: this.channelNameConfirmation },
+    })
       .then(() => {
         this.appEvents.trigger("modal-body:flash", {
           text: I18n.t("chat.channel_delete.process_started"),

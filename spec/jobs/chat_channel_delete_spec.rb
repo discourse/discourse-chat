@@ -63,4 +63,4 @@ describe Jobs::ChatChannelDelete do
     expect(ChatUpload.where(chat_message_id: @message_ids).count).to eq(0)
     expect(ChatMessage.where(id: @message_ids).count).to eq(0)
   end
-end 
+end

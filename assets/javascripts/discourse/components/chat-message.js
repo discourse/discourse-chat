@@ -221,7 +221,7 @@ export default Component.extend({
   show(message, canModerate) {
     return (
       !message.deleted_at ||
-      this.currentUser === this.message.user.id ||
+      this.currentUser.id === this.message.user.id ||
       this.currentUser.staff ||
       canModerate
     );

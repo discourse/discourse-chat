@@ -9,6 +9,7 @@ export default Component.extend({
   multiDm: gt("users.length", 1),
   onClick: null,
   users: reads("channel.chatable.users.[]"),
+  unreadIndicator: false,
 
   @discourseComputed("users")
   usernames(users) {

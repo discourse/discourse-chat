@@ -1,0 +1,28 @@
+{{#d-modal-body title="chat.channel_delete.title"}}
+  <div id="chat-channel-delete-modal-inner" class="chat-channel-delete-modal-inner">
+    <p>{{html-safe (i18n "chat.channel_delete.instructions" name=chatChannel.title)}}</p>
+  </div>
+
+  {{text-field
+    value=channelNameConfirmation
+    id="channel-delete-confirm-name"
+    placeholderKey="chat.channel_delete.confirm_channel_name"
+    autocorrect="off"
+    autocapitalize="off"
+  }}
+{{/d-modal-body}}
+
+<div class="modal-footer">
+  {{d-button
+    disabled=buttonDisabled
+    class="btn-primary"
+    action=(action "deleteChannel")
+    label="chat.channel_delete.confirm"
+    id="chat-confirm-delete-channel"}}
+
+  {{d-button
+    label="cancel"
+    class="btn-flat"
+    action=(route-action "closeModal")
+  }}
+</div>

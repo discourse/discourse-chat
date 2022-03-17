@@ -262,6 +262,31 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     render json: success_json
   end
 
+  def delete
+    params.require(:chat_channel_id)
+    params.require(:channel_name_confirmation)
+
+    chat_channel = ChatChannel.find_by(id: params[:chat_channel_id])
+    raise Discourse::NotFound if chat_channel.blank?
+
+    guardian.ensure_can_delete_chat_channel!
+
+    if chat_channel.name.downcase != params[:channel_name_confirmation].downcase
+      raise Discourse::InvalidParameters
+    end
+
+    chat_channel.trash!(current_user)
+    StaffActionLogger.new(current_user).log_custom(
+      "chat_channel_delete",
+      {
+        chat_channel_id: chat_channel.id,
+        chat_channel_name: chat_channel.name
+      }
+    )
+    Jobs.enqueue(:chat_channel_delete, { chat_channel_id: chat_channel.id })
+    render json: success_json
+  end
+
   private
 
   def render_channel_for_chatable(channel)

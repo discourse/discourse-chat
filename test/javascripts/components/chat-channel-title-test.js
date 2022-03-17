@@ -10,6 +10,7 @@ import {
 import hbs from "htmlbars-inline-precompile";
 import fabricate from "../helpers/fabricators";
 import { CHATABLE_TYPES } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
+import { set } from "@ember/object";
 
 discourseModule(
   "Discourse Chat | Component | chat-channel-title",
@@ -182,6 +183,34 @@ discourseModule(
           query(".dm-usernames").innerText,
           users.mapBy("username").join(", ")
         );
+      },
+    });
+
+    componentTest("unreadIndicator", {
+      template: hbs`{{chat-channel-title channel=channel unreadIndicator=unreadIndicator}}`,
+
+      beforeEach() {
+        const channel = fabricate("chat-channel", {
+          chatable_type: CHATABLE_TYPES.directMessageChannel,
+        });
+
+        const state = {};
+        state[channel.id] = {
+          unread_count: 1,
+        };
+        set(this.currentUser, "chat_channel_tracking_state", state);
+
+        this.set("channel", channel);
+      },
+
+      async test(assert) {
+        this.set("unreadIndicator", true);
+
+        assert.ok(exists(".chat-channel-unread-indicator"));
+
+        this.set("unreadIndicator", false);
+
+        assert.notOk(exists(".chat-channel-unread-indicator"));
       },
     });
   }

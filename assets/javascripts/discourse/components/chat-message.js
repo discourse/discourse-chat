@@ -231,7 +231,7 @@ export default Component.extend({
   @action
   handleClick() {
     if (this.site.mobileView) {
-      this.onHoverMessage && this.onHoverMessage(this.message);
+      this.onHoverMessage?.(this.message);
       return false;
     }
   },

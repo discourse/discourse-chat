@@ -32,18 +32,33 @@ class ChatMessage < ActiveRecord::Base
     where("chat_messages.created_at < ?", date)
   }
 
-  def validate_message
+  def validate_message(has_uploads:)
     WatchedWordsValidator.new(attributes: [:message]).validate(self)
     if block_duplicate?
       self.errors.add(:base, I18n.t("chat.errors.duplicate_message"))
     end
 
-    if message_too_short?
+    if !has_uploads && message_too_short?
       self.errors.add(
         :base,
         I18n.t("chat.errors.minimum_length_not_met", minimum: SiteSetting.chat_minimum_message_length)
       )
     end
+  end
+
+  def attach_uploads(uploads)
+    return if uploads.blank?
+
+    now = Time.now
+    record_attrs = uploads.map do |upload|
+      {
+        upload_id: upload.id,
+        chat_message_id: self.id,
+        created_at: now,
+        updated_at: now
+      }
+    end
+    ChatUpload.insert_all!(record_attrs)
   end
 
   def excerpt

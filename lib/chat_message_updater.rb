@@ -23,11 +23,12 @@ class DiscourseChat::ChatMessageUpdater
     begin
       validate_channel_status!
       @chat_message.message = @new_content
-      validate_message!
+      upload_info = get_upload_info
+      validate_message!(has_uploads: upload_info[:uploads].any?)
       @chat_message.cook
       @chat_message.save!
+      update_uploads(upload_info)
       revision = save_revision!
-      update_uploads!
       ChatPublisher.publish_edit!(@chat_channel, @chat_message)
       Jobs.enqueue(:process_chat_message, { chat_message_id: @chat_message.id })
       DiscourseChat::ChatNotifier.notify_edit(chat_message: @chat_message, timestamp: revision.created_at)
@@ -49,26 +50,33 @@ class DiscourseChat::ChatMessageUpdater
     )
   end
 
-  def validate_message!
-    @chat_message.validate_message
+  def validate_message!(has_uploads:)
+    @chat_message.validate_message(has_uploads: has_uploads)
     if @chat_message.errors.present?
       raise StandardError.new(@chat_message.errors.map(&:full_message).join(", "))
     end
   end
 
-  def update_uploads!
-    return if @upload_ids.nil? || !SiteSetting.chat_allow_uploads
+  def get_upload_info
+    return { uploads: [] } if @upload_ids.nil? || !SiteSetting.chat_allow_uploads
 
     uploads = Upload.where(id: @upload_ids, user_id: @user.id)
-    return unless uploads.count == @upload_ids.count
+    if uploads.count != @upload_ids.count
+      # User is passing upload_ids for uploads that they don't own. Don't change anything.
+      return { uploads: @chat_message.uploads, changed: false }
+    end
 
-    validate_upload_ids = uploads.map(&:id)
+    new_upload_ids = uploads.map(&:id)
     existing_upload_ids = @chat_message.upload_ids
-    difference = (existing_upload_ids + validate_upload_ids) - (existing_upload_ids & validate_upload_ids)
-    return if difference.empty?
+    difference = (existing_upload_ids + new_upload_ids) - (existing_upload_ids & new_upload_ids)
+    { uploads: uploads, changed: difference.any? }
+  end
+
+  def update_uploads(upload_info)
+    return unless upload_info[:changed]
 
     ChatUpload.where(chat_message: @chat_message).destroy_all
-    DiscourseChat::ChatMessageCreator.attach_uploads(@chat_message.id, uploads)
+    @chat_message.attach_uploads(upload_info[:uploads])
   end
 
   def save_revision!

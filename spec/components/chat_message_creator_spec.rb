@@ -42,6 +42,19 @@ describe DiscourseChat::ChatMessageCreator do
       expect(creator.error.message).to match(I18n.t("chat.errors.minimum_length_not_met", { minimum: SiteSetting.chat_minimum_message_length }))
     end
 
+    it "allows message creation when length is less than `chat_minimum_message_length` when upload is present" do
+      upload = Fabricate(:upload, user: user1)
+      SiteSetting.chat_minimum_message_length = 10
+      expect {
+        creator = DiscourseChat::ChatMessageCreator.create(
+          chat_channel: public_chat_channel,
+          user: user1,
+          content: "2 short",
+          upload_ids: [upload.id]
+        )
+      }.to change { ChatMessage.count }.by(1)
+    end
+
     it "creates messages for users who can see the channel" do
       expect {
         DiscourseChat::ChatMessageCreator.create(

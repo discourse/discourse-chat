@@ -278,6 +278,18 @@ describe DiscourseChat::ChatMessageUpdater do
         )
       }.to change { ChatUpload.where(chat_message: chat_message).count }.by(0)
     end
+
+    it "updates if upload is present even if length is less than `chat_minimum_message_length`" do
+      chat_message = create_chat_message(user1, "something", public_chat_channel, upload_ids: [upload1.id, upload2.id])
+      SiteSetting.chat_minimum_message_length = 10
+      new_message = "hi :)"
+      DiscourseChat::ChatMessageUpdater.update(
+        chat_message: chat_message,
+        new_content: new_message,
+        upload_ids: [upload1.id]
+      )
+      expect(chat_message.reload.message).to eq(new_message)
+    end
   end
 
   describe "watched words" do

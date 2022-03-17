@@ -8,5 +8,5 @@
     </div>
   </div>
 {{else if (and channel.archive_completed currentUser.admin)}}
-  {{html-safe channelArchiveCompletedMessage}}
+  <div class="chat-channel-archive-status">{{html-safe channelArchiveCompletedMessage}}</div>
 {{/if}}

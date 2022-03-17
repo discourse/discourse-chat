@@ -96,7 +96,7 @@ class DiscourseChat::ChatChannelArchiveService
     pc = nil
     Post.transaction do
       pc = PostCreator.new(
-        chat_channel_archive.archived_by,
+        Discourse.system_user,
         raw: raw,
 
         # we must skip these because the posts are created in a big transaction,
@@ -126,7 +126,7 @@ class DiscourseChat::ChatChannelArchiveService
       Rails.logger.info("Creating topic for #{chat_channel.name} archive.")
       Topic.transaction do
         topic_creator = TopicCreator.new(
-          chat_channel_archive.archived_by,
+          Discourse.system_user,
           Guardian.new(chat_channel_archive.archived_by),
           {
             title: chat_channel_archive.destination_topic_title,

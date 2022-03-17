@@ -60,12 +60,14 @@ class ChatTranscriptService
 
     def reactions_attr
       reaction_data = @message_data.reduce([]) do |array, msg_data|
-        next if msg_data[:reactions].empty?
-        array << msg_data[:reactions].map do |react|
-          "#{react.emoji}:#{react.usernames}"
+        if msg_data[:reactions].any?
+          array << msg_data[:reactions].map do |react|
+            "#{react.emoji}:#{react.usernames}"
+          end
         end
+        array
       end
-      return if reaction_data.blank? || reaction_data.empty?
+      return if reaction_data.empty?
       "reactions=\"#{reaction_data.join(";")}\""
     end
 
@@ -128,7 +130,9 @@ class ChatTranscriptService
   private
 
   def messages
-    @messages ||= ChatMessage.includes(:user, :uploads, :reactions).where(
+    @messages ||= ChatMessage.includes(
+      :user, chat_uploads: :upload
+    ).where(
       id: @message_ids, chat_channel_id: @channel.id
     ).order(:created_at)
   end

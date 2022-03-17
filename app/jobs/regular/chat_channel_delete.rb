@@ -18,7 +18,7 @@ module Jobs
         Rails.logger.debug("Deleting webhooks and events for channel #{chat_channel.id}")
         ChatMessage.transaction do
           webhooks = IncomingChatWebhook.where(chat_channel: chat_channel)
-          ChatWebhookEvent.where(incoming_chat_webhook_id: webhooks.pluck(:id)).delete_all
+          ChatWebhookEvent.where(incoming_chat_webhook_id: webhooks.select(:id)).delete_all
           webhooks.delete_all
         end
 
@@ -29,12 +29,12 @@ module Jobs
         Rails.logger.debug("Deleting chat messages, mentions, revisions, and uploads for channel #{chat_channel.id}")
         ChatMessage.transaction do
           chat_messages = ChatMessage.where(chat_channel: chat_channel)
-          ChatMention.where(chat_message_id: chat_messages.pluck(:id)).delete_all
-          ChatMessageRevision.where(chat_message_id: chat_messages.pluck(:id)).delete_all
+          ChatMention.where(chat_message_id: chat_messages.select(:id)).delete_all
+          ChatMessageRevision.where(chat_message_id: chat_messages.select(:id)).delete_all
 
           # if the uploads are not used anywhere else they will be deleted
           # by the CleanUpUploads job in core
-          ChatUpload.where(chat_message_id: chat_messages.pluck(:id)).delete_all
+          ChatUpload.where(chat_message_id: chat_messages.select(:id)).delete_all
 
           # only the messages and the channel are Trashable, everything else gets
           # permanently destroyed

@@ -37,6 +37,13 @@ class ChatMessage < ActiveRecord::Base
     if block_duplicate?
       self.errors.add(:base, I18n.t("chat.errors.duplicate_message"))
     end
+
+    if message_too_short?
+      self.errors.add(
+        :base,
+        I18n.t("chat.errors.minimum_length_not_met", minimum: SiteSetting.chat_minimum_message_length)
+      )
+    end
   end
 
   def excerpt
@@ -205,6 +212,10 @@ class ChatMessage < ActiveRecord::Base
   def calc_in_the_past_seconds_for_duplicates(sensitivity)
     # Line generated from 0.1 sensitivity = 10 seconds and 1.0 sensitivity = 60 seconds.
     (55.55 * sensitivity + 4.5).to_i
+  end
+
+  def message_too_short?
+    message.length < SiteSetting.chat_minimum_message_length
   end
 end
 

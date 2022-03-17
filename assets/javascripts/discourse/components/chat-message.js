@@ -26,6 +26,7 @@ export default Component.extend({
   SHOW_RIGHT: "showRight",
   canInteractWithChat: false,
   isHovered: false,
+  onHoverMessage: null,
   emojiPickerIsActive: false,
   mentionWarning: null,
   emojiReactionStore: service("chat-emoji-reaction-store"),
@@ -230,7 +231,8 @@ export default Component.extend({
   @action
   handleClick() {
     if (this.site.mobileView) {
-      this.toggleProperty("isHovered");
+      this.onHoverMessage && this.onHoverMessage(this.message);
+      return false;
     }
   },
 
@@ -639,7 +641,7 @@ export default Component.extend({
     this.notifyPropertyChange("emojiReactions");
 
     if (this.site.mobileView) {
-      this.toggleProperty("isHovered");
+      this.set("isHovered", false);
     }
   },
 

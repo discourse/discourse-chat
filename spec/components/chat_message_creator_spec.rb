@@ -46,7 +46,7 @@ describe DiscourseChat::ChatMessageCreator do
       upload = Fabricate(:upload, user: user1)
       SiteSetting.chat_minimum_message_length = 10
       expect {
-        creator = DiscourseChat::ChatMessageCreator.create(
+        DiscourseChat::ChatMessageCreator.create(
           chat_channel: public_chat_channel,
           user: user1,
           content: "2 short",

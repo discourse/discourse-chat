@@ -75,15 +75,15 @@ class ChatMessage < ActiveRecord::Base
     if self.message.present?
       msg = self.message
 
-      if self.uploads.any?
+      if self.chat_uploads.any?
         markdown << msg + "\n"
       else
         markdown << msg
       end
     end
 
-    self.uploads.order(:created_at).each do |upload|
-      markdown << UploadMarkdown.new(upload).to_markdown
+    self.chat_uploads.order(:created_at).each do |chat_upload|
+      markdown << UploadMarkdown.new(chat_upload.upload).to_markdown
     end
 
     markdown.reject(&:empty?).join("\n")

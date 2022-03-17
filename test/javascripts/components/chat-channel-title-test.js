@@ -10,7 +10,6 @@ import {
 import hbs from "htmlbars-inline-precompile";
 import fabricate from "../helpers/fabricators";
 import { CHATABLE_TYPES } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
-import { set } from "@ember/object";
 
 discourseModule(
   "Discourse Chat | Component | chat-channel-title",
@@ -198,7 +197,7 @@ discourseModule(
         state[channel.id] = {
           unread_count: 1,
         };
-        set(this.currentUser, "chat_channel_tracking_state", state);
+        this.currentUser.set("chat_channel_tracking_state", state);
 
         this.set("channel", channel);
       },

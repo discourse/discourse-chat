@@ -258,7 +258,7 @@ export default Component.extend({
           return;
         }
         this.set(loadingMoreKey, false);
-        this.ignoreStickyScrolling = true;
+        this.ignoreStickyScrolling = false;
       });
   },
 

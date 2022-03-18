@@ -14,10 +14,12 @@ export default Component.extend({
   tagName: "",
   chatChannel: null,
   channelNameConfirmation: null,
+  deleting: false,
+  confirmed: false,
 
-  @discourseComputed("deleting", "channelNameConfirmation")
-  buttonDisabled(deleting, channelNameConfirmation) {
-    if (deleting) {
+  @discourseComputed("deleting", "channelNameConfirmation", "confirmed")
+  buttonDisabled(deleting, channelNameConfirmation, confirmed) {
+    if (deleting || confirmed) {
       return true;
     }
 
@@ -39,6 +41,7 @@ export default Component.extend({
       data: { channel_name_confirmation: this.channelNameConfirmation },
     })
       .then(() => {
+        this.set("confirmed", true);
         this.appEvents.trigger("modal-body:flash", {
           text: I18n.t("chat.channel_delete.process_started"),
           messageClass: "success",

@@ -123,7 +123,7 @@ const baseChatPretenders = (server, helper) => {
       seen_notification_id: null,
     });
   });
-  server.get("/chat/lookup/:message_id.json", () => helper.response(chatView));
+  server.get("/chat/lookup/:messageId.json", () => helper.response(chatView));
   server.post("/uploads/lookup-urls", () => {
     return helper.response([]);
   });
@@ -214,7 +214,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     });
 
     server.put(
-      "/chat/:chat_channel_id/react/:message_id.json",
+      "/chat/:chat_channel_id/react/:messageId.json",
       helper.response
     );
 

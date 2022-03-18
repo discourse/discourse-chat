@@ -13,6 +13,7 @@ import I18n from "I18n";
 
 discourseModule("Discourse Chat | Component | chat-message", function (hooks) {
   setupRenderingTest(hooks);
+
   const template = hbs`{{chat-message
       message=message
       canInteractWithChat=canInteractWithChat
@@ -29,19 +30,27 @@ discourseModule("Discourse Chat | Component | chat-message", function (hooks) {
       fullPage=fullPage
       afterReactionAdded=reStickScrollIfNeeded
     }}`;
-
-  const chatChannel = ChatChannel.create({
-    chatable: { id: 1 },
-    chatable_type: "Category",
-    id: 9,
-    title: "Site",
-    unread_count: 0,
-    muted: false,
-  });
+  let emojiReactionStore;
 
   componentTest("Message with deleted user", {
     template,
+
     async beforeEach() {
+      emojiReactionStore = this.container.lookup(
+        "service:chat-emoji-reaction-store"
+      );
+      emojiReactionStore.siteSettings =
+        this.container.lookup("site-settings:main");
+
+      const chatChannel = ChatChannel.create({
+        chatable: { id: 1 },
+        chatable_type: "Category",
+        id: 9,
+        title: "Site",
+        unread_count: 0,
+        muted: false,
+      });
+
       this.setProperties({
         message: EmberObject.create({
           id: 178,
@@ -75,6 +84,9 @@ discourseModule("Discourse Chat | Component | chat-message", function (hooks) {
         fullPage: false,
         afterReactionAdded: () => {},
       });
+    },
+    async afterEach() {
+      emojiReactionStore.reset();
     },
 
     async test(assert) {

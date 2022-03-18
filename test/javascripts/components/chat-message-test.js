@@ -30,7 +30,6 @@ discourseModule("Discourse Chat | Component | chat-message", function (hooks) {
       fullPage=fullPage
       afterReactionAdded=reStickScrollIfNeeded
     }}`;
-  let emojiReactionStore;
 
   componentTest("Message with deleted user", {
     template,

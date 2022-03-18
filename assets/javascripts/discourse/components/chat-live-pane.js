@@ -258,7 +258,7 @@ export default Component.extend({
           return;
         }
         this.set(loadingMoreKey, false);
-        this.ignoreStickyScrolling = true;
+        this.ignoreStickyScrolling = false;
       });
   },
 
@@ -1241,6 +1241,7 @@ export default Component.extend({
     this.set("stickyScroll", true);
     this._stickScrollToBottom();
     evt.preventDefault();
+    return false;
   },
 
   @bind

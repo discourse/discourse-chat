@@ -1241,7 +1241,6 @@ export default Component.extend({
     this.set("stickyScroll", true);
     this._stickScrollToBottom();
     evt.preventDefault();
-    return false;
   },
 
   @bind

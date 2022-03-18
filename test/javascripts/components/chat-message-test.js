@@ -36,12 +36,6 @@ discourseModule("Discourse Chat | Component | chat-message", function (hooks) {
     template,
 
     async beforeEach() {
-      emojiReactionStore = this.container.lookup(
-        "service:chat-emoji-reaction-store"
-      );
-      emojiReactionStore.siteSettings =
-        this.container.lookup("site-settings:main");
-
       const chatChannel = ChatChannel.create({
         chatable: { id: 1 },
         chatable_type: "Category",
@@ -84,9 +78,6 @@ discourseModule("Discourse Chat | Component | chat-message", function (hooks) {
         fullPage: false,
         afterReactionAdded: () => {},
       });
-    },
-    async afterEach() {
-      emojiReactionStore.reset();
     },
 
     async test(assert) {

@@ -213,10 +213,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
       });
     });
 
-    server.put(
-      "/chat/:chat_channel_id/react/:messageId.json",
-      helper.response
-    );
+    server.put("/chat/:chat_channel_id/react/:messageId.json", helper.response);
 
     server.put("/chat/:chat_channel_id/invite", helper.response);
     server.post("/chat/direct_messages/create.json", () => {

@@ -709,7 +709,7 @@ RSpec.describe DiscourseChat::ChatChannelsController do
       sign_in(admin)
       delete "/chat/chat_channels/#{channel.id}.json", params: { channel_name_confirmation: "ambrose channel" }
       expect(response.status).to eq(200)
-      expect(ChatChannel.find_by(id: channel.id)).to eq(nil)
+      expect(channel.reload.trashed?).to eq(true)
       expect(job_enqueued?(job: :chat_channel_delete, args: { chat_channel_id: channel.id })).to eq(true)
       expect(
         UserHistory.exists?(

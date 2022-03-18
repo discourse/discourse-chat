@@ -51,14 +51,24 @@ describe Jobs::ChatChannelDelete do
   end
 
   it "deletes all of the messages and related records completely" do
-    described_class.new.execute(chat_channel_id: chat_channel.id)
-    expect(IncomingChatWebhook.where(chat_channel_id: chat_channel.id).count).to eq(0)
-    expect(ChatWebhookEvent.where(incoming_chat_webhook_id: @incoming_chat_webhook_id).count).to eq(0)
-    expect(ChatDraft.where(chat_channel: chat_channel).count).to eq(0)
-    expect(UserChatChannelMembership.where(chat_channel: chat_channel).count).to eq(0)
-    expect(ChatMessageRevision.where(chat_message_id: @message_ids).count).to eq(0)
-    expect(ChatMention.where(chat_message_id: @message_ids).count).to eq(0)
-    expect(ChatUpload.where(chat_message_id: @message_ids).count).to eq(0)
-    expect(ChatMessage.where(id: @message_ids).count).to eq(0)
+    expect { described_class.new.execute(chat_channel_id: chat_channel.id) }.to change {
+      IncomingChatWebhook.where(chat_channel_id: chat_channel.id).count
+    }.by(-1).and change {
+      ChatWebhookEvent.where(incoming_chat_webhook_id: @incoming_chat_webhook_id).count
+    }.by(-1).and change {
+      ChatDraft.where(chat_channel: chat_channel).count
+    }.by(-1).and change {
+      UserChatChannelMembership.where(chat_channel: chat_channel).count
+    }.by(-3).and change {
+      ChatMessageRevision.where(chat_message_id: @message_ids).count
+    }.by(-1).and change {
+      ChatMention.where(chat_message_id: @message_ids).count
+    }.by(-1).and change {
+      ChatUpload.where(chat_message_id: @message_ids).count
+    }.by(-10).and change {
+      ChatMessage.where(id: @message_ids).count
+    }.by(-20).and change {
+      ChatMessageReaction.where(chat_message_id: @message_ids).count
+    }.by(-10)
   end
 end

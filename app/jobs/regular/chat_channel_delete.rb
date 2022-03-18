@@ -29,12 +29,14 @@ module Jobs
         Rails.logger.debug("Deleting chat messages, mentions, revisions, and uploads for channel #{chat_channel.id}")
         ChatMessage.transaction do
           chat_messages = ChatMessage.where(chat_channel: chat_channel)
-          ChatMention.where(chat_message_id: chat_messages.select(:id)).delete_all
-          ChatMessageRevision.where(chat_message_id: chat_messages.select(:id)).delete_all
+          message_ids = chat_messages.select(:id)
+          ChatMention.where(chat_message_id: message_ids).delete_all
+          ChatMessageRevision.where(chat_message_id: message_ids).delete_all
+          ChatMessageReaction.where(chat_message_id: message_ids).delete_all
 
           # if the uploads are not used anywhere else they will be deleted
           # by the CleanUpUploads job in core
-          ChatUpload.where(chat_message_id: chat_messages.select(:id)).delete_all
+          ChatUpload.where(chat_message_id: message_ids).delete_all
 
           # only the messages and the channel are Trashable, everything else gets
           # permanently destroyed

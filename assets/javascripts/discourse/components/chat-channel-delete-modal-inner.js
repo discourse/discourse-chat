@@ -43,9 +43,10 @@ export default Component.extend({
           text: I18n.t("chat.channel_delete.process_started"),
           messageClass: "success",
         });
+        this.appEvents.trigger("chat-channel:deleted", this.chatChannel);
         later(() => {
           if (!isTesting()) {
-            window.location.reload();
+            this.closeModal();
           }
         }, 3000);
       })

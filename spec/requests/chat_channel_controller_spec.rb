@@ -464,6 +464,25 @@ RSpec.describe DiscourseChat::ChatChannelsController do
         expect(response.parsed_body["direct_message_channels"].count).to eq(0)
         expect(response.parsed_body["users"].count).to eq(0)
       end
+
+      it "only returns open channels" do
+        chat_channel.update(status: ChatChannel.statuses[:closed])
+        get "/chat/chat_channels/search.json", params: { filter: "so" }
+        expect(response.parsed_body["public_channels"].count).to eq(0)
+
+        chat_channel.update(status: ChatChannel.statuses[:read_only])
+        get "/chat/chat_channels/search.json", params: { filter: "so" }
+        expect(response.parsed_body["public_channels"].count).to eq(0)
+
+        chat_channel.update(status: ChatChannel.statuses[:archived])
+        get "/chat/chat_channels/search.json", params: { filter: "so" }
+        expect(response.parsed_body["public_channels"].count).to eq(0)
+
+        # Now set status to open and the channel is there!
+        chat_channel.update(status: ChatChannel.statuses[:open])
+        get "/chat/chat_channels/search.json", params: { filter: "so" }
+        expect(response.parsed_body["public_channels"][0]["id"]).to eq(chat_channel.id)
+      end
     end
   end
 

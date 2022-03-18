@@ -31,6 +31,30 @@ describe DiscourseChat::ChatMessageCreator do
       Jobs.run_immediately!
     end
 
+    it "errors when length is less than `chat_minimum_message_length`" do
+      SiteSetting.chat_minimum_message_length = 10
+      creator = DiscourseChat::ChatMessageCreator.create(
+        chat_channel: public_chat_channel,
+        user: user1,
+        content: "2 short"
+      )
+      expect(creator.failed?).to eq(true)
+      expect(creator.error.message).to match(I18n.t("chat.errors.minimum_length_not_met", { minimum: SiteSetting.chat_minimum_message_length }))
+    end
+
+    it "allows message creation when length is less than `chat_minimum_message_length` when upload is present" do
+      upload = Fabricate(:upload, user: user1)
+      SiteSetting.chat_minimum_message_length = 10
+      expect {
+        DiscourseChat::ChatMessageCreator.create(
+          chat_channel: public_chat_channel,
+          user: user1,
+          content: "2 short",
+          upload_ids: [upload.id]
+        )
+      }.to change { ChatMessage.count }.by(1)
+    end
+
     it "creates messages for users who can see the channel" do
       expect {
         DiscourseChat::ChatMessageCreator.create(
@@ -357,11 +381,23 @@ describe DiscourseChat::ChatMessageCreator do
           ChatUpload.where(upload_id: private_upload.id).count
         }.by(0)
       end
+
+      it "doesn't attach uploads when `chat_allow_uploads` is false" do
+        SiteSetting.chat_allow_uploads = false
+        expect {
+          DiscourseChat::ChatMessageCreator.create(
+            chat_channel: public_chat_channel,
+            user: user1,
+            content: "Beep boop",
+            upload_ids: [upload1.id]
+          )
+        }.to change { ChatUpload.where(upload_id: upload1.id).count }.by(0)
+      end
     end
   end
 
   describe "manually running jobs" do
-    it "doesn't send mention notifications if the user has already read the message" do
+    it "creates mention notifications and marks them as read if the user has already read the message" do
       chat_message = DiscourseChat::ChatMessageCreator.create(
         chat_channel: public_chat_channel,
         user: user1,
@@ -375,7 +411,8 @@ describe DiscourseChat::ChatMessageCreator do
 
       expect {
         Jobs::CreateChatMentionNotifications.new.execute(user_ids: [user2.id], chat_message_id: chat_message.id, timestamp: chat_message.created_at)
-      }.not_to change { user2.chat_mentions.count }
+      }.to change { user2.chat_mentions.count }.by(1)
+      expect(user2.chat_mentions.last.notification.read).to be true
     end
 
     it "doesn't send chat message 'watching' notifications if the user has already read the message" do

@@ -58,4 +58,12 @@
       padding-right: 0.5rem;
     }
   }
+
+  .chat-transcript-reactions {
+    margin-top: 0.5em;
+
+    .chat-transcript-reaction {
+      @include chat-reaction;
+    }
+  }
 }

@@ -39,9 +39,13 @@ module DiscourseChat::ChatChannelFetcher
   end
 
   def self.public_channels_with_filter(guardian, memberships, filter)
-    channels = ChatChannel.includes(:chatable)
-    channels = channels.where(chatable_type: ChatChannel.public_channel_chatable_types)
-    channels = channels.where("LOWER(name) LIKE ?", "#{filter}%")
+    channels = ChatChannel
+      .includes(:chatable)
+      .where(
+        chatable_type: ChatChannel.public_channel_chatable_types,
+        status: ChatChannel.statuses[:open]
+      )
+      .where("LOWER(name) LIKE ?", "#{filter}%")
     channels = filter_public_channels(channels, memberships, guardian).to_a
     preload_custom_fields_for(channels)
     channels

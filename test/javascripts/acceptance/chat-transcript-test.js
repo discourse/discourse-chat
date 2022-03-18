@@ -1,4 +1,5 @@
 import PrettyText, { buildOptions } from "pretty-text/pretty-text";
+import { emojiUnescape } from "discourse/lib/text";
 import I18n from "I18n";
 import topicFixtures from "discourse/tests/fixtures/topic";
 import { cloneJSON, deepMerge } from "discourse-common/lib/object";
@@ -42,6 +43,9 @@ function generateTranscriptHTML(messageContent, opts) {
   const channelDataAttr = opts.channel
     ? ` data-channel-name=\"${opts.channel}\"`
     : "";
+  const reactDataAttr = opts.reactions
+    ? ` data-reactions=\"${opts.reactionsAttr}\"`
+    : "";
 
   let tabIndexHTML = opts.linkTabIndex ? ' tabindex="-1"' : "";
 
@@ -56,7 +60,7 @@ function generateTranscriptHTML(messageContent, opts) {
       opts.messageId
     }\" data-username=\"${opts.username}\" data-datetime=\"${
       opts.datetime
-    }\"${channelDataAttr}>`
+    }\"${reactDataAttr}${channelDataAttr}>`
   );
 
   if (opts.channel && opts.multiQuote) {
@@ -100,9 +104,23 @@ ${innerDatetimeEl}</div>`);
     transcript.push("</div>");
   }
 
-  transcript.push(`<div class=\"chat-transcript-messages\">
-${messageContent}</div>
-</div>`);
+  let messageHtml = `<div class=\"chat-transcript-messages\">\n${messageContent}`;
+
+  if (opts.reactions) {
+    let reactionsHtml = [`<div class=\"chat-transcript-reactions\">\n`];
+    opts.reactions.forEach((react) => {
+      reactionsHtml.push(
+        `<div class=\"chat-transcript-reaction\">\n${emojiUnescape(
+          `:${react.emoji}:`,
+          { lazy: true }
+        ).replace(/'/g, '"')} ${react.usernames.length}</div>\n`
+      );
+    });
+    reactionsHtml.push(`</div>\n`);
+    messageHtml += reactionsHtml.join("");
+  }
+  transcript.push(`${messageHtml}</div>`);
+  transcript.push("</div>");
   return transcript.join("\n");
 }
 
@@ -161,6 +179,10 @@ acceptance("Discourse Chat | discourse-chat-transcript", function (needs) {
     can_chat: false,
     has_chat_enabled: false,
     timezone: "Australia/Brisbane",
+  });
+
+  needs.settings({
+    emoji_set: "twitter",
   });
 
   test("works with a minimal quote bbcode block", function (assert) {
@@ -239,6 +261,27 @@ acceptance("Discourse Chat | discourse-chat-transcript", function (needs) {
         timezone: "Australia/Brisbane",
       }),
       "renders with the noLink attribute"
+    );
+  });
+
+  test("renders with the reactions attribute", function (assert) {
+    const reactionsAttr = "+1:martin;heart:martin,eviltrout";
+    assert.cookedChatTranscript(
+      `[chat quote="martin;2321;2022-01-25T05:40:39Z" channel="Cool Cats Club" reactions="${reactionsAttr}"]\nThis is a chat message.\n[/chat]`,
+      { additionalOptions },
+      generateTranscriptHTML("<p>This is a chat message.</p>", {
+        messageId: "2321",
+        username: "martin",
+        datetime: "2022-01-25T05:40:39Z",
+        channel: "Cool Cats Club",
+        timezone: "Australia/Brisbane",
+        reactionsAttr,
+        reactions: [
+          { emoji: "+1", usernames: ["martin"] },
+          { emoji: "heart", usernames: ["martin", "eviltrout"] },
+        ],
+      }),
+      "renders with the reaction data attribute and HTML"
     );
   });
 

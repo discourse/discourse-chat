@@ -30,7 +30,7 @@ discourseModule(
             `.chat-user-avatar .chat-user-avatar-container[data-user-card=${user.username}] .avatar[title=${user.username}]`
           )
         );
-        assert.notOk(exists(".chat-user-avatar .chat-user-presence-flair"));
+        assert.notOk(exists(".chat-user-avatar.is-online"));
       },
     });
 
@@ -50,7 +50,7 @@ discourseModule(
             `.chat-user-avatar .chat-user-avatar-container[data-user-card=${user.username}] .avatar[title=${user.username}]`
           )
         );
-        assert.ok(exists(".chat-user-avatar .chat-user-presence-flair"));
+        assert.ok(exists(".chat-user-avatar.is-online"));
       },
     });
   }

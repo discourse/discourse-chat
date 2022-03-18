@@ -26,6 +26,12 @@ export default Component.extend({
       });
     }
 
+    options.push({
+      id: "deleteChannel",
+      name: I18n.t("chat.channel_settings.delete_channel"),
+      icon: "trash-alt",
+    });
+
     if (this.channel.isOpen) {
       options.push({
         id: "showToggleOpenModal",
@@ -52,6 +58,10 @@ export default Component.extend({
       throw new Error(`The action ${id} is not allowed`);
     }
     this[id]();
+  },
+
+  deleteChannel() {
+    showModal("chat-channel-delete-modal").set("chatChannel", this.channel);
   },
 
   archiveChannel() {

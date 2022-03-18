@@ -6,6 +6,25 @@ export default Controller.extend({
   creatingDm: false,
   router: service(),
 
+  init() {
+    this._super(...arguments);
+    this.appEvents.on("chat-channel:deleted", (chatChannel) => {
+      if (chatChannel.isCategoryChannel) {
+        this.set(
+          "model.categoryChannels",
+          this.model.categoryChannels.filter(
+            (chan) => chan.id !== chatChannel.id
+          )
+        );
+      } else {
+        this.set(
+          "model.topicChannels",
+          this.model.topicChannels.filter((chan) => chan.id !== chatChannel.id)
+        );
+      }
+    });
+  },
+
   @discourseComputed("model.categoryChannels", "model.topicChannels")
   noChannelsAvailable(categoryChannels, topicChannels) {
     return !categoryChannels.length && !topicChannels.length;

@@ -107,6 +107,7 @@ after_initialize do
   load File.expand_path('../lib/post_notification_handler.rb', __FILE__)
   load File.expand_path('../app/jobs/regular/process_chat_message.rb', __FILE__)
   load File.expand_path('../app/jobs/regular/chat_channel_archive.rb', __FILE__)
+  load File.expand_path('../app/jobs/regular/chat_channel_delete.rb', __FILE__)
   load File.expand_path('../app/jobs/regular/create_chat_mention_notifications.rb', __FILE__)
   load File.expand_path('../app/jobs/regular/notify_users_watching_chat.rb', __FILE__)
   load File.expand_path('../app/jobs/scheduled/delete_old_chat_messages.rb', __FILE__)
@@ -381,8 +382,8 @@ after_initialize do
     get '/chat_channels/:chat_channel_id' => 'chat_channels#show'
     put '/chat_channels/:chat_channel_id/archive' => 'chat_channels#archive'
     put '/chat_channels/:chat_channel_id/retry_archive' => 'chat_channels#retry_archive'
-
     put '/chat_channels/:chat_channel_id/change_status' => 'chat_channels#change_status'
+    delete '/chat_channels/:chat_channel_id' => 'chat_channels#destroy'
 
     # chat_controller routes
     get '/' => 'chat#respond'

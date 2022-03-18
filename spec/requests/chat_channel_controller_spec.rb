@@ -518,7 +518,7 @@ RSpec.describe DiscourseChat::ChatChannelsController do
     let(:new_topic_params) { { type: "newTopic", title: "This is a test archive topic", category_id: category.id } }
     let(:existing_topic_params) { { type: "existingTopic", topic_id: Fabricate(:topic).id } }
 
-    it "returns error if user is not admin" do
+    it "returns error if user is not staff" do
       sign_in(user)
       put "/chat/chat_channels/#{channel.id}/archive.json", params: new_topic_params
       expect(response.status).to eq(403)
@@ -593,7 +593,7 @@ RSpec.describe DiscourseChat::ChatChannelsController do
       )
     end
 
-    it "returns error if user is not admin" do
+    it "returns error if user is not staff" do
       sign_in(user)
       put "/chat/chat_channels/#{channel.id}/retry_archive.json"
       expect(response.status).to eq(403)
@@ -640,7 +640,7 @@ RSpec.describe DiscourseChat::ChatChannelsController do
       )
     end
 
-    it "returns error if user is not admin" do
+    it "returns error if user is not staff" do
       sign_in(user)
       put "/chat/chat_channels/#{channel.id}/change_status.json", params: { status: "closed" }
       expect(response.status).to eq(403)
@@ -673,6 +673,51 @@ RSpec.describe DiscourseChat::ChatChannelsController do
       put "/chat/chat_channels/#{channel.id}/change_status.json", params: { status: "open" }
       expect(response.status).to eq(200)
       expect(channel.reload.status).to eq("open")
+    end
+  end
+
+  describe "#delete" do
+    fab!(:channel) do
+      Fabricate(
+        :chat_channel,
+        chatable: topic,
+        name: "Ambrose Channel",
+        status: :open
+      )
+    end
+
+    it "returns error if user is not staff" do
+      sign_in(user)
+      delete "/chat/chat_channels/#{channel.id}.json", params: { channel_name_confirmation: "ambrose channel" }
+      expect(response.status).to eq(403)
+    end
+
+    it "returns a 404 if the channel does not exist" do
+      channel.destroy!
+      sign_in(admin)
+      delete "/chat/chat_channels/#{channel.id}.json", params: { channel_name_confirmation: "ambrose channel" }
+      expect(response.status).to eq(404)
+    end
+
+    it "returns a 400 if the channel_name_confirmation does not match the channel name" do
+      sign_in(admin)
+      delete "/chat/chat_channels/#{channel.id}.json", params: { channel_name_confirmation: "some Other channel" }
+      expect(response.status).to eq(400)
+    end
+
+    it "deletes the channel right away and enqueues the background job to delete all its chat messages and related content" do
+      sign_in(admin)
+      delete "/chat/chat_channels/#{channel.id}.json", params: { channel_name_confirmation: "ambrose channel" }
+      expect(response.status).to eq(200)
+      expect(channel.reload.trashed?).to eq(true)
+      expect(job_enqueued?(job: :chat_channel_delete, args: { chat_channel_id: channel.id })).to eq(true)
+      expect(
+        UserHistory.exists?(
+          acting_user_id: admin.id,
+          action: UserHistory.actions[:custom_staff],
+          custom_type: "chat_channel_delete"
+        )
+      ).to eq(true)
     end
   end
 end

@@ -40,8 +40,8 @@ en:
       auto_silence_from_flags: "Chat message flagged with score high enough to silence user."
       channel_cannot_be_archived: "The channel cannot be archived at this time, it must be either closed or open to archive."
       duplicate_message: "You posted an identical message too recently."
+      delete_channel_failed: "Delete channel failed, please try again."
       minimum_length_not_met: "Message is too short, must have a minimum of %{minimum} characters."
-
     reviewables:
       actions:
         agree:

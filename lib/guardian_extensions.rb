@@ -28,6 +28,10 @@ module DiscourseChat::GuardianExtensions
     is_staff?
   end
 
+  def can_delete_chat_channel?
+    is_staff?
+  end
+
   # Channel status intentionally has no bearing on whether the channel
   # name and description can be edited.
   def can_edit_chat_channel?

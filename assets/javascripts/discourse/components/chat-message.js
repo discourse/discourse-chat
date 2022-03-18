@@ -293,6 +293,9 @@ export default Component.extend({
 
   @discourseComputed("message.user")
   name(user) {
+    if (!user) {
+      return I18n.t("chat.user_deleted");
+    }
     return this.prioritizeName ? user.name : user.username;
   },
 
@@ -306,6 +309,10 @@ export default Component.extend({
     const classes = this.prioritizeName
       ? ["full-name names first"]
       : ["username names first"];
+
+    if (!user) {
+      return classes;
+    }
     if (user.staff) {
       classes.push("staff");
     }
@@ -326,7 +333,7 @@ export default Component.extend({
     return (
       !message.action_code &&
       !deletedAt &&
-      this.currentUser.id === message.user.id &&
+      this.currentUser.id === message.user?.id &&
       this.chatChannel.canModifyMessages(this.currentUser)
     );
   },
@@ -339,7 +346,7 @@ export default Component.extend({
   )
   canFlagMessage(message, userFlagStatus, canFlag, deletedAt) {
     return (
-      this.currentUser?.id !== message.user.id &&
+      this.currentUser?.id !== message.user?.id &&
       userFlagStatus === undefined &&
       canFlag &&
       !message.chat_webhook_event &&
@@ -351,7 +358,7 @@ export default Component.extend({
   showSilenceButton(message) {
     return (
       this.currentUser?.staff &&
-      this.currentUser?.id !== message.user.id &&
+      this.currentUser?.id !== message.user?.id &&
       !message.chat_webhook_event
     );
   },
@@ -360,7 +367,7 @@ export default Component.extend({
   canManageDeletion(message) {
     return (
       !message.action_code &&
-      (this.currentUser?.id === message.user.id
+      (this.currentUser?.id === message.user?.id
         ? this.details.can_delete_self
         : this.details.can_delete_others)
     );
@@ -715,7 +722,7 @@ export default Component.extend({
   flag() {
     bootbox.confirm(
       I18n.t("chat.confirm_flag", {
-        username: this.message.user.username,
+        username: this.message.user?.username,
       }),
       (confirmed) => {
         if (confirmed) {

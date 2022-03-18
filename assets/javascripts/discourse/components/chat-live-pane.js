@@ -54,6 +54,7 @@ export default Component.extend({
   loading: false,
   loadingMorePast: false,
   loadingMoreFuture: false,
+  hoveredMessageId: null,
 
   allPastMessagesLoaded: false,
   previewing: false,
@@ -1220,6 +1221,14 @@ export default Component.extend({
     if (this.stickyScroll) {
       this._stickScrollToBottom();
     }
+  },
+
+  @action
+  onHoverMessage(message) {
+    this.set(
+      "hoveredMessageId",
+      message?.id && message.id !== this.hoveredMessageId ? message.id : null
+    );
   },
 
   _reportReplyingPresence(composerValue) {

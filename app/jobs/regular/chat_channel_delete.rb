@@ -13,7 +13,7 @@ module Jobs
 
       DistributedMutex.synchronize(
         "delete_chat_channel_#{chat_channel.id}",
-        validity: 20.minutes
+        validity: 1.minute
       ) do
         Rails.logger.debug("Deleting webhooks and events for channel #{chat_channel.id}")
         ChatMessage.transaction do

@@ -145,6 +145,7 @@ export default Component.extend({
       this.messageLookup = {};
       this.registeredChatChannelId = null;
       this.set("allPastMessagesLoaded", false);
+      this.cancelEditing();
 
       if (this.chatChannel?.id) {
         this.chat
@@ -997,7 +998,7 @@ export default Component.extend({
   @action
   setReplyTo(messageId) {
     if (messageId) {
-      this.set("editingMessage", null);
+      this.cancelEditing();
       this.set("replyToMsg", this.messageLookup[messageId]);
       this.appEvents.trigger("chat-composer:reply-to-set", this.replyToMsg);
       this._focusComposer();

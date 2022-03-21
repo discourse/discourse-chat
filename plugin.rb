@@ -59,7 +59,6 @@ after_initialize do
   load File.expand_path('../app/controllers/chat_channels_controller.rb', __FILE__)
   load File.expand_path('../app/controllers/direct_messages_controller.rb', __FILE__)
   load File.expand_path('../app/controllers/incoming_chat_webhooks_controller.rb', __FILE__)
-  load File.expand_path('../app/controllers/move_to_topic_controller.rb', __FILE__)
   load File.expand_path('../app/models/user_chat_channel_membership.rb', __FILE__)
   load File.expand_path('../app/models/chat_channel.rb', __FILE__)
   load File.expand_path('../app/models/chat_channel_archive.rb', __FILE__)
@@ -73,7 +72,6 @@ after_initialize do
   load File.expand_path('../app/models/direct_message_channel.rb', __FILE__)
   load File.expand_path('../app/models/direct_message_user.rb', __FILE__)
   load File.expand_path('../app/models/incoming_chat_webhook.rb', __FILE__)
-  load File.expand_path('../app/models/chat_message_post_connection.rb', __FILE__)
   load File.expand_path('../app/models/reviewable_chat_message.rb', __FILE__)
   load File.expand_path('../app/models/chat_view.rb', __FILE__)
   load File.expand_path('../app/serializers/chat_webhook_event_serializer.rb', __FILE__)
@@ -150,10 +148,6 @@ after_initialize do
       has_many :chat_message_reactions, dependent: :destroy
       has_many :chat_mentions
     }
-    Post.class_eval {
-      has_many :chat_message_post_connections, dependent: :destroy
-      has_many :chat_messages, through: :chat_message_post_connections
-    }
   end
 
   TopicQuery.add_custom_filter(::DiscourseChat::PLUGIN_NAME) do |results, topic_query|
@@ -186,15 +180,6 @@ after_initialize do
     SiteSetting.chat_enabled &&
       scope.can_chat?(scope.user) &&
       object.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]
-  end
-
-  add_to_serializer(:post, :chat_connection) do
-    if object.chat_message_post_connections&.first&.chat_message
-      {
-        chat_channel_id: object.chat_message_post_connections.first.chat_message.chat_channel_id,
-        chat_message_ids: object.chat_message_post_connections.map(&:chat_message_id)
-      }
-    end
   end
 
   add_to_serializer(:current_user, :can_chat) do
@@ -366,9 +351,6 @@ after_initialize do
 
     # incoming_webhooks_controller routes
     post '/hooks/:key/slack' => 'incoming_chat_webhooks#create_message_slack_compatible'
-
-    # move_to_topic_controller routes
-    resources :move_to_topic
 
     # chat_channel_controller routes
     get '/chat_channels' => 'chat_channels#index'

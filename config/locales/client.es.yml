@@ -165,7 +165,6 @@ es:
         username_instructions: "Nombre de usuario del bot que publica en el canal. El valor predeterminado es «sistema» cuando se deja en blanco."
       selection:
         cancel: "Cancelar"
-        move_to_topic: "Mover al tema"
         error: "Se ha producido un error al mover los mensajes de chat"
         title: "Mover chat a tema"
         new_topic:

@@ -172,7 +172,6 @@ sv:
         username_instructions: "Användarnamn på bot som gör inlägg på kanalen. Standardinställning är 'system' när det lämnas tomt."
       selection:
         cancel: "Avbryt"
-        move_to_topic: "Flytta till ämne"
         quote_selection: "Citat"
         error: "Det uppstod ett fel när chattmeddelanden skulle flyttas"
         title: "Flytta chatt till ämne"

@@ -182,7 +182,6 @@ pl_PL:
         username_instructions: "Nazwa użytkownika bota, który publikuje na kanale. Domyślnie \"system\" gdy pozostanie puste."
       selection:
         cancel: "Anuluj"
-        move_to_topic: "Przenieś do tematu"
         quote_selection: "Cytuj"
         error: "Wystąpił błąd podczas przenoszenia wiadomości czatu"
         title: "Przenieś czat do tematu"

@@ -86,17 +86,6 @@
   {{#if selectingMessages}}
     <div class="chat-selection-management">
       <div class="chat-selection-management-buttons">
-        {{#if canMoveToTopic}}
-          {{d-button
-            id="chat-move-to-topic-btn"
-            class="btn-primary"
-            icon="sign-out-alt"
-            label="chat.selection.move_to_topic"
-            title="chat.selection.move_to_topic"
-            disabled=(not anyMessagesSelected)
-            action=(action "moveMessagesToTopic")
-          }}
-        {{/if}}
         {{#if canQuote}}
           {{d-button
             id="chat-quote-btn"

@@ -165,7 +165,6 @@ it:
         username_instructions: "Nome utente del bot che pubblica sul canale. Il valore predefinito è 'system' se l'impostazione è lasciata vuota."
       selection:
         cancel: "Annulla"
-        move_to_topic: "Sposta nell'argomento"
         error: "Si è verificato un errore durante lo spostamento dei messaggi di chat"
         title: "Sposta la chat nell'argomento"
         new_topic:

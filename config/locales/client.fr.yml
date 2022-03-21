@@ -165,7 +165,6 @@ fr:
         username_instructions: "Nom d'utilisateur du robot qui publie sur le canal. La valeur par défaut est « système » lorsqu'elle est laissée vide."
       selection:
         cancel: "Annuler"
-        move_to_topic: "Déplacer vers le sujet"
         error: "Une erreur s'est produite lors du déplacement des messages du chat"
         title: "Déplacer le chat vers le sujet"
         new_topic:

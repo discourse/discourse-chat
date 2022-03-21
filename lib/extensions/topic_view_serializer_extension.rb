@@ -6,14 +6,6 @@ module DiscourseChat::TopicViewSerializerExtension
     base.attribute :has_chat_live
   end
 
-  def posts
-    if SiteSetting.chat_enabled
-      posts = object.posts.includes(chat_message_post_connections: :chat_message)
-      object.instance_variable_set(:@posts, posts)
-    end
-    super
-  end
-
   def has_chat_live
     chat_channel.open? || chat_channel.closed?
   end

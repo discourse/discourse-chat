@@ -11,7 +11,6 @@ import DiscourseURL from "discourse/lib/url";
 import EmberObject, { action } from "@ember/object";
 import I18n from "I18n";
 import loadScript from "discourse/lib/load-script";
-import showModal from "discourse/lib/show-modal";
 import userPresent from "discourse/lib/user-presence";
 import { A } from "@ember/array";
 import { ajax } from "discourse/lib/ajax";
@@ -1042,11 +1041,6 @@ export default Component.extend({
     return true;
   },
 
-  @discourseComputed()
-  canMoveToTopic() {
-    return this.currentUser.staff;
-  },
-
   @discourseComputed("previewing", "details.user_silenced")
   canInteractWithChat(previewing, userSilenced) {
     return !previewing && !userSilenced;
@@ -1192,14 +1186,6 @@ export default Component.extend({
         },
         { once: true }
       );
-    });
-  },
-
-  @action
-  moveMessagesToTopic() {
-    showModal("move-chat-to-topic").setProperties({
-      chatMessageIds: this.selectedMessageIds,
-      chatChannel: this.chatChannel,
     });
   },
 

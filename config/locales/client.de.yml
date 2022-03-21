@@ -165,7 +165,6 @@ de:
         username_instructions: "Benutzername des Bots, der etwas im Kanal veröffentlicht. Standardmäßig „System“, wenn das Feld leer gelassen wird."
       selection:
         cancel: "Abbrechen"
-        move_to_topic: "In Thema verschieben"
         error: "Beim Verschieben der Chat-Nachrichten ist ein Fehler aufgetreten"
         title: "Chat in Thema verschieben"
         new_topic:

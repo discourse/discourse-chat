@@ -197,10 +197,6 @@ acceptance(
         exists("#reply-control.composer-action-createTopic"),
         "the composer does not open"
       );
-      assert.ok(
-        exists(".chat-selection-message"),
-        "the clipboard copy success message shows"
-      );
     });
   }
 );

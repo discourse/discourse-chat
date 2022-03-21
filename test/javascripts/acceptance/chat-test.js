@@ -1119,11 +1119,23 @@ Widget.triangulate(arg: "test")
     document.activeElement.blur();
     await triggerKeyEvent(document.body, "keydown", 65);
     assert.equal(composer.value, "aa");
+    assert.equal(document.activeElement, composer);
+
+    document.activeElement.blur();
+    await triggerKeyEvent(document.body, "keydown", 191); // 191 is ?
+    assert.notEqual(
+      document.activeElement,
+      composer,
+      "? is a special case and should not focus"
+    );
 
     document.activeElement.blur();
     await triggerKeyEvent(document.body, "keydown", 13); // 13 is `Enter` keycode
-    // Composer is not focused because `Enter` isn't a key that causes focus.
-    assert.notEqual(document.activeElement, composer);
+    assert.notEqual(
+      document.activeElement,
+      composer,
+      "enter is a special case and should not focus"
+    );
   });
 });
 

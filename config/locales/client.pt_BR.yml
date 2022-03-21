@@ -165,7 +165,6 @@ pt_BR:
         username_instructions: "Nome de usuário(a) de robô que posta no canal. Padrão para \"sistema\" quando deixado em branco."
       selection:
         cancel: "Cancelar"
-        move_to_topic: "Mover para tópico"
         error: "Houve um erro ao mover as mensagens de chat"
         title: "Mover chat para tópico"
         new_topic:

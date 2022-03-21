@@ -1374,7 +1374,6 @@ body.has-full-page-chat {
   }
 }
 
-.move-chat-to-topic-modal,
 .chat-channel-archive-modal-inner {
   .chat-to-topic-selector {
     width: 500px;
@@ -1404,16 +1403,6 @@ body.has-full-page-chat {
 .chat-channel-archive-modal-inner {
   .chat-to-topic-selector {
     width: auto;
-  }
-}
-
-.topic-meta-data .post-chat-link {
-  margin: 0 0.75em 0 auto;
-  color: var(--tertiary);
-
-  .d-icon {
-    margin-right: 0.25em;
-    color: var(--tertiary);
   }
 }
 

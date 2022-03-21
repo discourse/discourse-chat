@@ -137,7 +137,6 @@ fa_IR:
         username: "نام‌کاربری"
       selection:
         cancel: "انصراف"
-        move_to_topic: "انتقال به موضوع"
         error: "در انتقال پیام‌های گفتگو خطایی رخ داده"
         title: "انتقال گفتگو به موضوع"
         new_topic:

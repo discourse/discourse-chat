@@ -161,7 +161,6 @@ zh_CN:
         username_instructions: "发布到频道的机器人的用户名。留空时默认为“系统”。"
       selection:
         cancel: "取消"
-        move_to_topic: "移动到话题"
         error: "移动聊天消息时出错"
         title: "将聊天移动到话题"
         new_topic:

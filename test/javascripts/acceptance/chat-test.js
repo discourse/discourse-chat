@@ -14,7 +14,6 @@ import {
   currentURL,
   fillIn,
   settled,
-  triggerEvent,
   triggerKeyEvent,
   visit,
 } from "@ember/test-helpers";
@@ -854,50 +853,7 @@ Widget.triangulate(arg: "test")
     await dropdown.selectRowByValue("selectMessage");
 
     assert.ok(firstMessage.classList.contains("selecting-messages"));
-    assert.notOk(exists("#chat-move-to-topic-btn"));
     assert.ok(exists("#chat-quote-btn"));
-  });
-
-  test("message selection for 'move to topic'", async function (assert) {
-    updateCurrentUser({ admin: true, moderator: true });
-    await visit("/chat/channel/9/Site");
-
-    const firstMessage = query(".chat-message-container");
-    const dropdown = selectKit(".chat-message-container .more-buttons");
-    await dropdown.expand();
-    await dropdown.selectRowByValue("selectMessage");
-
-    assert.ok(firstMessage.classList.contains("selecting-messages"));
-    const moveToTopicBtn = query(".chat-live-pane #chat-move-to-topic-btn");
-    assert.equal(
-      moveToTopicBtn.disabled,
-      false,
-      "button is enabled as a message is selected"
-    );
-
-    await click(firstMessage.querySelector("input[type='checkbox']"));
-    assert.equal(
-      moveToTopicBtn.disabled,
-      true,
-      "button is disabled when no messages are selected"
-    );
-
-    await click(firstMessage.querySelector("input[type='checkbox']"));
-    const allCheckboxes = queryAll(
-      ".chat-message-container input[type='checkbox']"
-    );
-
-    await triggerEvent(allCheckboxes[allCheckboxes.length - 1], "click", {
-      shiftKey: true,
-    });
-    assert.equal(
-      queryAll(".chat-message-container input:checked").length,
-      4,
-      "Bulk message select works"
-    );
-
-    await click("#chat-move-to-topic-btn");
-    assert.ok(exists(".move-chat-to-topic-modal"));
   });
 
   test("message selection is not present for regular user", async function (assert) {

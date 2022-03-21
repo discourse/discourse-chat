@@ -122,7 +122,7 @@ export default Component.extend({
     }
     if (this.registeredChatChannelId) {
       this.messageBus.unsubscribe(`/chat/${this.registeredChatChannelId}`);
-      this.registeredChatChannelId = null;
+      this.set("registeredChatChannelId", null);
     }
     this._unloadedReplyIds = null;
     this.appEvents.off(
@@ -143,7 +143,7 @@ export default Component.extend({
       }
 
       this.messageLookup = {};
-      this.registeredChatChannelId = null;
+      this.set("registeredChatChannelId", null);
       this.set("allPastMessagesLoaded", false);
 
       if (this.chatChannel?.id) {

@@ -1286,7 +1286,7 @@ export default Component.extend({
       return;
     }
 
-    next(() => {
+    schedule("afterRender", () => {
       document.querySelector(".chat-composer-input")?.focus();
     });
   },

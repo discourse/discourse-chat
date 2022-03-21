@@ -539,6 +539,7 @@ body.composer-open .topic-chat-float-container {
   white-space: nowrap;
   font-size: var(--font-down-1);
   padding-left: 0.5em;
+  height: 100%;
 
   .tc-reply-username {
     padding: 0 0.5em 0 0;
@@ -727,6 +728,7 @@ body.composer-open .topic-chat-float-container {
 
     .chat-composer-message-details {
       position: relative;
+      height: 100%;
       max-height: calc(2em - 5px);
       padding: 6px 0.75em;
       border-top: 1px solid var(--primary-low);

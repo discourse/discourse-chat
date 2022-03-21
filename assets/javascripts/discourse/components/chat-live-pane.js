@@ -1028,9 +1028,7 @@ export default Component.extend({
     const message = this.messageLookup[messageId];
     this.set("editingMessage", message);
     next(this.reStickScrollIfNeeded.bind(this));
-    next(this, () => {
-      this._focusComposer();
-    });
+    this._focusComposer();
   },
 
   @discourseComputed()

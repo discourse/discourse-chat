@@ -52,6 +52,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   showToolbar: false,
   timer: null,
   value: "",
+  composerFocusSelector: ".chat-composer-input",
 
   // Composer Uppy values
   ready: true,

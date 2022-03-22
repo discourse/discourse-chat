@@ -182,6 +182,21 @@ after_initialize do
       object.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]
   end
 
+  add_to_serializer(:post, :chat_connection) do
+    if object.chat_message_post_connections&.first&.chat_message
+      {
+        chat_channel_id: object.chat_message_post_connections.first.chat_message.chat_channel_id,
+        chat_message_ids: object.chat_message_post_connections.map(&:chat_message_id)
+      }
+    end
+  end
+
+  add_to_serializer(:user_card, :can_chat) do
+    SiteSetting.chat_enabled &&
+      scope.can_chat?(scope.user) &&
+      scope.can_chat?(object)
+  end
+
   add_to_serializer(:current_user, :can_chat) do
     true
   end

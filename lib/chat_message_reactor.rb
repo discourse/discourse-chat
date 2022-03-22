@@ -3,6 +3,7 @@
 class DiscourseChat::ChatMessageReactor
   ADD_REACTION = :add
   REMOVE_REACTION = :remove
+  MAX_REACTIONS_LIMIT = 30
 
   def initialize(user, chat_channel)
     @user = user
@@ -20,6 +21,8 @@ class DiscourseChat::ChatMessageReactor
 
     @chat_message = ChatMessage.find_by(id: message_id, chat_channel: @chat_channel)
     raise Discourse::NotFound unless @chat_message
+
+    validate_max_reactions!(react_action)
 
     execute_action(react_action, emoji)
     publish_reaction(react_action, emoji)
@@ -45,6 +48,18 @@ class DiscourseChat::ChatMessageReactor
       custom_message: "chat.errors.channel_modify_message_disallowed",
       custom_message_params: { status: @chat_channel.status_name }
     )
+  end
+
+  def validate_max_reactions!(react_action)
+    if react_action == ADD_REACTION &&
+      @chat_message.reactions.count('DISTINCT emoji') >= MAX_REACTIONS_LIMIT
+
+      raise Discourse::InvalidAccess.new(
+        nil,
+        nil,
+        custom_message: "chat.errors.max_reactions_limit_reached"
+      )
+    end
   end
 
   def execute_action(react_action, emoji)

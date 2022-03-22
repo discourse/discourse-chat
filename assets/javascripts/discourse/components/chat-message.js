@@ -700,7 +700,10 @@ export default Component.extend({
           emoji,
         },
       }
-    ).catch(popupAjaxError);
+    ).catch((errResult) => {
+      popupAjaxError(errResult);
+      this._updateReactionsList(emoji, this.REMOVE_REACTION, this.currentUser);
+    });
   },
 
   @action

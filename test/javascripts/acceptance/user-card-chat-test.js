@@ -82,7 +82,7 @@ if (!isLegacyEmber()) {
       });
     });
 
-    test("User card has message button that opens chat", async function (assert) {
+    test("User card has chat button that opens the correct channel", async function (assert) {
       this.chatService.set("sidebarActive", false);
       await visit("/latest");
       this.appEvents.trigger("chat:toggle-open");

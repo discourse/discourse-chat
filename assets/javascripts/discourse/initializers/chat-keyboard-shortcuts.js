@@ -101,7 +101,17 @@ export default {
       api.addKeyboardShortcut(
         `${mod}+l`,
         (event) => openInsertLinkModal(event),
-        { global: true }
+        {
+          global: true,
+          help: {
+            category: "chat",
+            name: "chat.keyboard_shortcuts.open_insert_link_modal",
+            definition: {
+              keys1: ["meta", "l"],
+              keysDelimiter: "plus",
+            },
+          },
+        }
       );
     });
   },

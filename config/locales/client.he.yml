@@ -11,6 +11,7 @@ he:
         staff_actions:
           actions:
             chat_channel_status_change: "מצב ערוץ הצ׳אט השתנה"
+            chat_channel_delete: "ערוץ הצ׳אט נמחק"
     chat:
       dates:
         time_tiny: "h:mm"
@@ -25,12 +26,13 @@ he:
       leave: "יציאה מהערוץ"
       channel_settings:
         title: "הגדרות ערוץ"
-        close_channel: "סגירת ערוץ"
-        open_channel: "פתיחת ערוץ"
-        archive_channel: "העברת ערוץ לארכיון"
-        delete_channel: "מחיקת ערוץ"
+        close_channel: "סגירת ערוץ…"
+        open_channel: "פתיחת ערוץ…"
+        archive_channel: "העברת ערוץ לארכיון…"
+        delete_channel: "מחיקת ערוץ…"
       channel_archive:
         title: "העברת ערוץ לארכיון"
+        process_started: "תהליך ההעברה לארכיון החל. חלונית צצה זו תיסגר בקרוב ותישלח אליך הודעה אישית כשתהליך ההעברה לארכיון יסתיים."
         retry: "לנסות שוב"
       channel_open:
         title: "פתיחת ערוץ"
@@ -38,6 +40,12 @@ he:
       channel_close:
         title: "סגירת ערוץ"
         instructions: "סגירת הערוץ מונעת ממשתמשים מחוץ לסגל לשלוח הודעות חדשות או לערוך הודעות קיימות. לסגור את הערוץ הזה?"
+      channel_delete:
+        title: "מחיקת ערוץ"
+        instructions: "<p>תהליך זה ימחק את הערוץ <strong>%{name}</strong> ואת היסטוריית ההתכתבות בו. כל ההודעות והנתונים הקשורים כגון תגובות והעלאות יימחקו לחלוטין. אם עדיף לך לשמר את היסטוריית הערוץ ולבטל אותו, אפשר להעביר את הערוץ לארכיון במקום.</p> <p>למחוק את הערוץ <strong>לצמיתות</strong>? כדי לאשר, נא למלא את שם הערוץ בתיבה שלהלן.</p>"
+        confirm: "ההשלכות ברורות לי, נא למחוק את הערוץ"
+        confirm_channel_name: "נא למלא את שם הערוץ"
+        process_started: "תהליך מחיקת הערוץ החל. חלונית צצה זו תיסגר בקרוב, הערוץ שנמחק לא יופיעו עוד בשום מקום."
       channel_list_popup:
         browse: "עיון בערוצים"
         create: "יצירת ערוץ"
@@ -122,12 +130,15 @@ he:
         many: "%{count} קבצים"
         other: "%{count} קבצים"
       you_flagged: "סימנת את ההודעה הזאת"
+      user_deleted: "נמחק"
       exit: "חזרה"
       channel_status:
         read_only_header: "הערוץ הוא לקריאה בלבד."
         read_only: "לקריאה בלבד"
         archived_header: "הערוץ בארכיון."
         archived: "בארכיון"
+        archive_failed: "העברת הערוץ לארכיון נכשלה. %{completed}/%{total} הודעות הועברו לארכיון תחת <a target=\"_blank\" href=\"%{topic_url}\">נושא היעד</a>. נא לנסות להשלים את ההעברה לארכיון פעם נוספת."
+        archive_completed: "העברת הערוץ לארכיון הושלמה. אפשר למצוא את הארכיון תחת <a target=\"_blank\" href=\"%{topic_url}\">נושא היעד</a>."
         closed_header: "הערוץ סגור."
         closed: "סגור"
         open_header: "הערוץ פתוח."
@@ -223,6 +234,7 @@ he:
             two: "פעולה זו תיצור נושא חדש ותמלא בו את <b>%{count}</b> הודעות הצ׳אט שבחרת."
             many: "פעולה זו תיצור נושא חדש ותמלא בו את <b>%{count}</b> הודעות הצ׳אט שבחרת."
             other: "פעולה זו תיצור נושא חדש ותמלא בו את <b>%{count}</b> הודעות הצ׳אט שבחרת."
+          instructions_channel_archive: "פעולה זו תיצור נושא חדש ותעביר אליו את הודעות הערוץ כארכיון."
         existing_topic:
           title: "העברה לנושא קיים"
           instructions:
@@ -230,6 +242,7 @@ he:
             two: "נא לבחור את הנושא אליו ברצונך להעביר את <b>%{count}</b> הודעות הצ׳אט האלו."
             many: "נא לבחור את הנושא אליו ברצונך להעביר את <b>%{count}</b> הודעות הצ׳אט האלו."
             other: "נא לבחור את הנושא אליו ברצונך להעביר את <b>%{count}</b> הודעות הצ׳אט האלו."
+          instructions_channel_archive: "נא לבחור את הנושא אליו ברצונך להעביר את הודעות הערוץ כארכיון."
         new_message:
           title: "העברה להודעה חדשה"
           instructions:
@@ -251,8 +264,9 @@ he:
     notifications:
       chat_quoted: "<span>%{username}</span> %{description}"
       popup:
-        chat_mention: "<span>אוזכרת בצ׳אט על ידי</span> <span>%{username}</span>"
-        chat_group_mention: "<span>התבצע אזכור של ‎@%{groupName} על ידי</span> <span>%{username}</span>"
+        chat_mention:
+          direct: "<span>אוזכרת בערוץ %{channel} על ידי</span> <span>%{username}</span>"
+          other: "<span>נוסף אזכור של %{identifier} בערוץ %{channel} על ידי</span> <span>%{username}</span>"
         chat_message: "הודעת צ׳אט חדשה"
         chat_quoted: "הודעת הצ׳אט שלך צוטטה על ידי %{username}"
       titles:
@@ -292,3 +306,4 @@ he:
         keyboard_shortcuts:
           switch_channel_arrows: "%{shortcut} החלפת ערוץ"
           open_quick_channel_selector: "%{shortcut} פתיחת בורר הערוצים המהיר"
+          open_insert_link_modal: "%{shortcut} הוספת קישור"

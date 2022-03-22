@@ -43,12 +43,6 @@ it:
           title: "Rifiuta"
         ignore:
           title: "Ignora"
-  discourse_push_notifications:
-    popup:
-      chat_mention: "@%{username} ti ha menzionato in chat"
-      chat_group_mention: "@%{username} ha menzionato @%{group_name} in chat"
-      chat_message: "Nuovo messaggio nella chat %{chat_channel_title}"
-      group_chat_message: "Nuovo messaggio in un canale di chat personale"
   discourse_automation:
     scriptables:
       send_chat_message:

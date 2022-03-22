@@ -43,12 +43,6 @@ ja:
           title: "同意しない"
         ignore:
           title: "無視"
-  discourse_push_notifications:
-    popup:
-      chat_mention: "@%{username} がチャットであなたをメンションしました"
-      chat_group_mention: "@%{username} がチャットで %{group_name} をメンションしました"
-      chat_message: "%{chat_channel_title} に新しいチャットメッセージがあります"
-      group_chat_message: "パーソナルチャットチャンネルに新しいチャットメッセージがあります"
   discourse_automation:
     scriptables:
       send_chat_message:

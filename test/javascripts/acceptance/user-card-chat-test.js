@@ -87,6 +87,7 @@ if (!isLegacyEmber()) {
       await visit("/latest");
       this.appEvents.trigger("chat:toggle-open");
       await settled();
+      await click(".return-to-channels");
       await click(".chat-channel-row.chat-channel-9");
       await click("[data-user-card='hawk']");
       assert.ok(exists(".user-card-chat-btn"));

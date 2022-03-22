@@ -40,11 +40,10 @@ pl_PL:
         archived: "Zarchiwizowany"
         closed: "Zamknięty"
         open: "Otwarty"
+    personal_chat: "czat osobisty"
   discourse_push_notifications:
     popup:
-      chat_mention: "@%{username} wspomniał o Tobie na czacie"
-      chat_message: "Nowa wiadomość na czacie %{chat_channel_title}"
-      group_chat_message: "Nowa wiadomość w osobistym kanale czatu"
+      chat_message: "Nowa wiadomość na czacie %{channel}"
   discourse_automation:
     scriptables:
       send_chat_message:

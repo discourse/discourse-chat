@@ -43,12 +43,6 @@ ar:
           title: "عدم الموافقة"
         ignore:
           title: "تجاهل"
-  discourse_push_notifications:
-    popup:
-      chat_mention: "أشار @%{username} إليك في الدردشة"
-      chat_group_mention: "@أشار %{username} إلى @%{group_name} في الدردشة"
-      chat_message: "رسالة دردشة جديدة في %{chat_channel_title}"
-      group_chat_message: "رسالة دردشة جديدة في قناة دردشة شخصية"
   discourse_automation:
     scriptables:
       send_chat_message:

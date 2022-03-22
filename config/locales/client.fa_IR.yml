@@ -6,6 +6,11 @@
 
 fa_IR:
   js:
+    admin:
+      logs:
+        staff_actions:
+          actions:
+            chat_channel_delete: "کانال گفتگو حذف شد"
     chat:
       dates:
         time_tiny: "HH:mm"
@@ -18,13 +23,20 @@ fa_IR:
       cancel_reply: "لغو پاسخ"
       chat_channels: "کانال‌ها"
       channel_settings:
-        open_channel: "باز کردن کانال"
+        title: "تنظیمات کانال"
+        close_channel: "بستن کانال..."
+        open_channel: "باز کردن کانال..."
+        archive_channel: "کانال بایگانی..."
+        delete_channel: "حذف کانال..."
       channel_open:
         title: "باز کردن کانال"
         instructions: "کانال را باز می‌کند، همه کاربران قادر خواهند بود پیام جدید ارسال کنند و پیام‌های قبلی خود را ویرایش کنند."
       channel_close:
         title: "بستن کانال"
         instructions: "بستن کانال از ارسال پیام‌های جدید یا ویرایش پیام‌های قبلی توسط کاربران که همکار نیستن جلوگیری می‌کند. آیا مطمئنید که می‌خواهید اين کانال رو ببنديد؟"
+      channel_delete:
+        title: "حذف کانال"
+        confirm_channel_name: "نام کانال را وارد کنید"
       channel_list_popup:
         browse: "مرور کانال‌ها"
         create: "ایجاد کانال"
@@ -80,7 +92,11 @@ fa_IR:
       title: "گفتگو"
       title_capitalized: "گفتگو"
       upload: "پیوست کردن یک پرونده"
+      uploaded_files:
+        one: "%{count} پرونده"
+        other: "%{count} پرونده"
       you_flagged: "شما این پیام را پرچم گذاری کردید"
+      user_deleted: "حذف شده"
       exit: "بازگشت"
       channel_selector:
         no_channels: "هیچ کانالی با جستجوی شما مطابقت ندارد"
@@ -146,6 +162,9 @@ fa_IR:
         multiple_users: "%{commaSeparatedUsernames} و %{lastUsername} در حال نوشتن"
     notifications:
       chat_quoted: "<span>%{username}</span> %{description}"
+      popup:
+        chat_mention:
+          direct: "<span>%{username}</span> <span> به شما در کانال %{channel}</span> اشاره کرده است"
     topic:
       actions:
         chat_enable: "فعال کردن گفتگو"

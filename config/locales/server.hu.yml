@@ -64,12 +64,10 @@ hu:
         archived: "Archivált"
         closed: "Zárolt"
         open: "Nyitott"
+    personal_chat: "személyes csevegés"
   discourse_push_notifications:
     popup:
-      chat_mention: "@%{username} megemlítette a csevegésben"
-      chat_group_mention: "@%{username} megemlítette a(z) @%{group_name} csoportot a csevegésben"
-      chat_message: "Új csevegőüzenet itt: %{chat_channel_title}"
-      group_chat_message: "Új csevegőüzenet egy személyes csevegőcsatornán"
+      chat_message: "Új csevegőüzenet itt: %{channel}"
   discourse_automation:
     scriptables:
       send_chat_message:

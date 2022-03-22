@@ -6,7 +6,7 @@ import {
   query,
   visible,
 } from "discourse/tests/helpers/qunit-helpers";
-import { click, currentURL, settled, visit } from "@ember/test-helpers";
+import { click, settled, visit } from "@ember/test-helpers";
 import {
   chatChannels,
   chatView,

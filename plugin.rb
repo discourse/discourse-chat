@@ -191,8 +191,9 @@ after_initialize do
     end
   end
 
-  add_to_serializer(:user_card, :can_chat) do
+  add_to_serializer(:user_card, :can_chat_user) do
     SiteSetting.chat_enabled &&
+      scope.user.id != object.id &&
       scope.can_chat?(scope.user) &&
       scope.can_chat?(object)
   end

@@ -1,4 +1,5 @@
 import Component from "@ember/component";
+import showModal from "discourse/lib/show-modal";
 import UppyMediaOptimization from "discourse/lib/uppy-media-optimization-plugin";
 import ComposerUploadUppy from "discourse/mixins/composer-upload-uppy";
 import discourseComputed, {
@@ -167,6 +168,11 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     );
 
     this.appEvents.on("chat:modify-selection", this, "_modifySelection");
+    this.appEvents.on(
+      "chat:open-insert-link-modal",
+      this,
+      "_openInsertLinkModal"
+    );
   },
 
   _modifySelection(opts = { type: null }) {
@@ -178,6 +184,17 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     } else if (opts.type === "code") {
       this.applySurround(sel, "`", "`", "code_text");
     }
+  },
+
+  _openInsertLinkModal() {
+    const selected = this.getSelected("", { lineVal: true });
+    const linkText = selected?.value;
+    showModal("insert-hyperlink").setProperties({
+      linkText,
+      toolbarEvent: {
+        addText: (text) => this.addText(selected, text),
+      },
+    });
   },
 
   willDestroyElement() {
@@ -210,6 +227,11 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     this.appEvents.off("chat:focus-composer", this, "_focusTextArea");
     this.appEvents.off("chat:insert-text", this, "insertText");
     this.appEvents.off("chat:modify-selection", this, "_modifySelection");
+    this.appEvents.off(
+      "chat:open-insert-link-modal",
+      this,
+      "_openInsertLinkModal"
+    );
   },
 
   _insertUpload(_, upload) {
@@ -539,13 +561,6 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     return {
       target: targetEl,
     };
-  },
-
-  addText(text) {
-    const selected = this.getSelected(null, {
-      lineVal: true,
-    });
-    this._addText(selected, text);
   },
 
   @action

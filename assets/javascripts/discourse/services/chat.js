@@ -795,6 +795,19 @@ export default Service.extend({
     };
   },
 
+  getDmChannelForUsernames(usernames) {
+    return ajax("/chat/direct_messages/create.json", {
+      method: "POST",
+      data: { usernames: usernames.uniq().join(",") },
+    })
+      .then((response) => {
+        const chatChannel = ChatChannel.create(response.chat_channel);
+        this.startTrackingChannel(chatChannel);
+        return chatChannel;
+      })
+      .catch(popupAjaxError);
+  },
+
   _saveDraft(channelId, draft) {
     const data = { channel_id: channelId };
     if (draft) {

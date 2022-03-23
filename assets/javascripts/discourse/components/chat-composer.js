@@ -57,7 +57,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
 
   // Composer Uppy values
   ready: true,
-  eventPrefix: "chat-composer",
+  composerEventPrefix: "chat-composer",
   canAttachUploads: or(
     "siteSettings.chat_allow_uploads",
     "chatChannel.isDirectMessageChannel"
@@ -156,6 +156,11 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     }
     this.appEvents.on("chat:focus-composer", this, "_focusTextArea");
     this.appEvents.on("chat:insert-text", this, "insertText");
+    this.appEvents.on(
+      `${this.composerEventPrefix}:insert-text`,
+      this,
+      "insertText"
+    );
 
     if (!this.site.mobileView) {
       this._focusTextArea();
@@ -226,6 +231,11 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
 
     this.appEvents.off("chat:focus-composer", this, "_focusTextArea");
     this.appEvents.off("chat:insert-text", this, "insertText");
+    this.appEvents.off(
+      `${this.composerEventPrefix}:insert-text`,
+      this,
+      "insertText"
+    );
     this.appEvents.off("chat:modify-selection", this, "_modifySelection");
     this.appEvents.off(
       "chat:open-insert-link-modal",

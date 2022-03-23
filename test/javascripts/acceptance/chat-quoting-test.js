@@ -86,36 +86,6 @@ acceptance("Discourse Chat | quoting out of topic", function (needs) {
   });
 });
 
-acceptance("Discourse Chat | quote permissions", function (needs) {
-  needs.user({
-    admin: false,
-    moderator: false,
-    username: "eviltrout",
-    id: 1,
-    can_chat: true,
-    has_chat_enabled: true,
-  });
-
-  needs.settings({
-    chat_enabled: true,
-  });
-
-  needs.pretender((server, helper) => {
-    setupPretenders(server, helper);
-  });
-
-  test("it does not show the quote button in direct messages", async function (assert) {
-    await visit("/chat/channel/75/@hawk");
-    const firstMessage = query(".chat-message-container");
-    const dropdown = selectKit(".chat-message-container .more-buttons");
-    await dropdown.expand();
-    await dropdown.selectRowByValue("selectMessage");
-    assert.ok(firstMessage.classList.contains("selecting-messages"));
-    assert.ok(exists(".chat-selection-management"));
-    assert.notOk(exists(".chat-live-pane #chat-quote-btn"));
-  });
-});
-
 acceptance("Discourse Chat | quoting when topic open", async function (needs) {
   needs.user({
     admin: false,

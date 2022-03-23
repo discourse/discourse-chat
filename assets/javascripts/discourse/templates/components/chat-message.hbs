@@ -16,7 +16,7 @@
     {{#if selectingMessages}}
       {{input
         type="checkbox"
-        class="chat-message-selector"
+        class="chat-message-selector catch-click"
         checked=message.selected
         click=(action "toggleChecked")
       }}
@@ -33,45 +33,13 @@
     {{else}}
       <div class={{chatMessageClasses}}>
         {{#if showActions}}
-          <div class="chat-msgactions-hover">
-            <div class="chat-msgactions">
-              {{#each emojiReactions as |reaction|}}
-                {{chat-message-reaction
-                  emoji=reaction.emoji
-                  reacted=reaction.reacted
-                  react=(action "react")
-                  class="show"
-                }}
-              {{/each}}
-
-              {{#if canReact}}
-                {{d-button
-                  class="btn-flat react-btn"
-                  action=(action "startReactionForMsgActions")
-                  icon="discourse-emojis"
-                  title="chat.react"
-                }}
-              {{/if}}
-
-              {{#if canReply}}
-                {{d-button
-                  class="btn-flat reply-btn"
-                  action=(action "reply")
-                  icon="reply"
-                  title="chat.reply"
-                }}
-              {{/if}}
-
-              {{#if moreButtons.length}}
-                {{dropdown-select-box
-                  class="more-buttons"
-                  options=(hash icon="ellipsis-h")
-                  content=moreButtons
-                  onChange=(action "handleMoreButtons")
-                }}
-              {{/if}}
-            </div>
-          </div>
+          {{component (concat "chat-message-actions-" (if site.mobileView "mobile" "desktop"))
+            message=message
+            emojiReactions=emojiReactions
+            secondaryButtons=secondaryButtons
+            messageActions=messageActions
+            messageCapabilities=messageCapabilities
+          }}
         {{/if}}
 
         {{#if message.in_reply_to}}
@@ -172,6 +140,7 @@
 
                   {{#each-in message.reactions as |emoji reactionAttrs|}}
                     {{chat-message-reaction
+                      class="catch-click"
                       emoji=emoji
                       count=reactionAttrs.count
                       users=reactionAttrs.users
@@ -184,7 +153,7 @@
 
                   {{#if canInteractWithChat}}
                     {{d-button
-                      class="chat-message-react-btn"
+                      class="chat-message-react-btn catch-click"
                       action=(action "startReactionForReactionList")
                       icon="discourse-emojis"
                       title="chat.react"

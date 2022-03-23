@@ -223,9 +223,8 @@ acceptance("Discourse Chat | quoting on mobile", async function (needs) {
   test("it opens the chatable, opens the composer, and pastes the markdown in", async function (assert) {
     await visit("/chat/channel/7/Uncategorized");
     const firstMessage = query(".chat-message-container");
-    const dropdown = selectKit(".chat-message-container .more-buttons");
-    await dropdown.expand();
-    await dropdown.selectRowByValue("selectMessage");
+    await click(firstMessage);
+    await click(".chat-message-action-item[data-id='selectMessage'] button");
 
     assert.ok(firstMessage.classList.contains("selecting-messages"));
     await click("#chat-quote-btn");

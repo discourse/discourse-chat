@@ -127,9 +127,13 @@ export default Component.extend({
     this.set("emojiPickerIsActive", false);
   },
 
-  @discourseComputed("canInteractWithChat", "message.staged")
-  showActions(canInteractWithChat, messageStaged) {
-    return canInteractWithChat && !messageStaged;
+  @discourseComputed("canInteractWithChat", "message.staged", "isHovered")
+  showActions(canInteractWithChat, messageStaged, isHovered) {
+    return (
+      canInteractWithChat &&
+      !messageStaged &&
+      (this.site.mobileView ? isHovered : true)
+    );
   },
 
   @discourseComputed("message.deleted_at", "message.expanded")
@@ -145,7 +149,7 @@ export default Component.extend({
     "showEditButton",
     "showRebakeButton"
   )
-  moreButtons() {
+  secondaryButtons() {
     const buttons = [];
 
     buttons.push({
@@ -213,9 +217,27 @@ export default Component.extend({
     return buttons;
   },
 
-  @action
-  handleMoreButtons(value) {
-    this[value].call();
+  get messageActions() {
+    return {
+      reply: this.reply,
+      react: this.react,
+      copyLinkToMessage: this.copyLinkToMessage,
+      edit: this.edit,
+      selectMessage: this.selectMessage,
+      flag: this.flag,
+      silence: this.silence,
+      deleteMessage: this.deleteMessage,
+      restore: this.restore,
+      rebakeMessage: this.rebakeMessage,
+      startReactionForMsgActions: this.startReactionForMsgActions,
+    };
+  },
+
+  get messageCapabilities() {
+    return {
+      canReact: this.canReact,
+      canReply: this.canReply,
+    };
   },
 
   @discourseComputed("message", "details.can_moderate")
@@ -229,9 +251,27 @@ export default Component.extend({
   },
 
   @action
-  handleClick() {
+  handleClick(event) {
     if (this.site.mobileView) {
-      this.onHoverMessage?.(this.message);
+      if (event.target.classList.contains("catch-click")) {
+        later(this.onHoverMessage);
+        return true;
+      }
+
+      document
+        .querySelector(".chat-msgactions-backdrop")
+        ?.classList?.remove("fade-in");
+
+      // we don't want to remove the component right away as it's animating
+      // 200 is equal to the duration of the css animation
+      later(() => {
+        if (this.isDestroying || this.isDestroyed) {
+          return;
+        }
+
+        this.onHoverMessage(this.message);
+      }, 200);
+
       return false;
     }
   },

@@ -71,6 +71,10 @@
 
 .chat-message.user-info-hidden {
   padding: 0.15em 1em;
+
+  .chat-msgactions-hover {
+    top: -2em;
+  }
 }
 
 // Full Page Styling in Core

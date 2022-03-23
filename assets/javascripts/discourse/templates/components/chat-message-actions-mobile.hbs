@@ -7,7 +7,7 @@
 
     <ul class="secondary-actions">
       {{#each secondaryButtons as |button|}}
-        <li class="chat-message-action-item">
+        <li class="chat-message-action-item" data-id={{button.id}}>
           {{d-button
             class="chat-message-action catch-click"
             translatedLabel=button.name

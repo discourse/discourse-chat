@@ -13,6 +13,6 @@ export default Component.extend({
   _addFadeIn() {
     document
       .querySelector(".chat-msgactions-backdrop")
-      ?.classList?.add("fade-in");
+      ?.classList.add("fade-in");
   },
 });

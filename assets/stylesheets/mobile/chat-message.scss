@@ -14,9 +14,9 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: calc(100% - var(--header-offset));
+  height: 100%;
   width: 100%;
-  z-index: z("usercard");
+  z-index: z("header") + 1;
   transition: background-color 0.2s ease;
 
   &.fade-in {

@@ -16,7 +16,7 @@
     {{#if selectingMessages}}
       {{input
         type="checkbox"
-        class="chat-message-selector"
+        class="chat-message-selector catch-click"
         checked=message.selected
         click=(action "toggleChecked")
       }}

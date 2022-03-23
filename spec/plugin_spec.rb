@@ -91,4 +91,63 @@ describe 'discourse-chat' do
       expect(topic_view[:has_chat_live]).to eq(false)
     end
   end
+
+  describe "user card serializer extension #can_chat_user" do
+    fab!(:target_user) { Fabricate(:user) }
+    let!(:user) { Fabricate(:user) }
+    let!(:guardian) { Guardian.new(user) }
+    let(:serializer) { UserCardSerializer.new(target_user, scope: guardian) }
+    fab!(:group) { Fabricate(:group) }
+
+    context "when chat enabled" do
+      before do
+        SiteSetting.chat_enabled = true
+      end
+
+      it "returns true if the target user and the guardian user is in the DiscourseChat.allowed_group_ids" do
+        SiteSetting.chat_allowed_groups = group.id
+        GroupUser.create(user: target_user, group: group)
+        GroupUser.create(user: user, group: group)
+        expect(serializer.can_chat_user).to eq(true)
+      end
+
+      it "returns false if the target user but not the guardian user is in the DiscourseChat.allowed_group_ids" do
+        SiteSetting.chat_allowed_groups = group.id
+        GroupUser.create(user: target_user, group: group)
+        expect(serializer.can_chat_user).to eq(false)
+      end
+
+      it "returns false if the guardian user but not the target user is in the DiscourseChat.allowed_group_ids" do
+        SiteSetting.chat_allowed_groups = group.id
+        GroupUser.create(user: user, group: group)
+        expect(serializer.can_chat_user).to eq(false)
+      end
+
+      context "when guardian user is same as target user" do
+        let!(:guardian) { Guardian.new(target_user) }
+
+        it "returns false" do
+          expect(serializer.can_chat_user).to eq(false)
+        end
+      end
+
+      context "when guardian user is anon" do
+        let!(:guardian) { Guardian.new }
+
+        it "returns false" do
+          expect(serializer.can_chat_user).to eq(false)
+        end
+      end
+    end
+
+    context "when chat not enabled" do
+      before do
+        SiteSetting.chat_enabled = false
+      end
+
+      it "returns false" do
+        expect(serializer.can_chat_user).to eq(false)
+      end
+    end
+  end
 end

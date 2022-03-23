@@ -22,7 +22,7 @@ class DiscourseChat::ChatMessageReactor
     @chat_message = ChatMessage.find_by(id: message_id, chat_channel: @chat_channel)
     raise Discourse::NotFound unless @chat_message
 
-    validate_max_reactions!(react_action)
+    validate_max_reactions!(react_action, emoji)
 
     execute_action(react_action, emoji)
     publish_reaction(react_action, emoji)
@@ -50,9 +50,10 @@ class DiscourseChat::ChatMessageReactor
     )
   end
 
-  def validate_max_reactions!(react_action)
+  def validate_max_reactions!(react_action, emoji)
     if react_action == ADD_REACTION &&
-      @chat_message.reactions.count('DISTINCT emoji') >= MAX_REACTIONS_LIMIT
+      @chat_message.reactions.count('DISTINCT emoji') >= MAX_REACTIONS_LIMIT &&
+      !@chat_message.reactions.exists?(emoji: emoji)
 
       raise Discourse::InvalidAccess.new(
         nil,

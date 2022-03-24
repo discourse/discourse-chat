@@ -54,6 +54,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   timer: null,
   value: "",
   composerFocusSelector: ".chat-composer-input",
+  useUploadPlaceholders: false,
 
   // Composer Uppy values
   ready: true,
@@ -167,7 +168,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     }
 
     this.appEvents.on(
-      `${this.eventPrefix}:upload-success`,
+      `${this.composerEventPrefix}:upload-success`,
       this,
       "_insertUpload"
     );
@@ -224,7 +225,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     });
 
     this.appEvents.off(
-      `${this.eventPrefix}:upload-success`,
+      `${this.composerEventPrefix}:upload-success`,
       this,
       "_insertUpload"
     );
@@ -762,7 +763,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
 
   @action
   cancelUploading(upload) {
-    this.appEvents.trigger(`${this.eventPrefix}:cancel-upload`, {
+    this.appEvents.trigger(`${this.composerEventPrefix}:cancel-upload`, {
       fileId: upload.id,
     });
     this.onValueChange?.(this.value, this.uploads, this.replyToMsg);

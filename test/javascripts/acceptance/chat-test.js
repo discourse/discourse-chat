@@ -17,7 +17,7 @@ import {
   triggerKeyEvent,
   visit,
 } from "@ember/test-helpers";
-import { skip, test } from "qunit";
+import { test } from "qunit";
 import {
   allChannels,
   chatChannels,
@@ -1474,6 +1474,7 @@ acceptance("Discourse Chat - image uploads", function (needs) {
   });
   needs.settings({
     chat_enabled: true,
+    chat_allow_uploads: true,
   });
   needs.pretender((server, helper) => {
     baseChatPretenders(server, helper);
@@ -1504,8 +1505,7 @@ acceptance("Discourse Chat - image uploads", function (needs) {
     );
   });
 
-  // this times out in CI...of course
-  skip("uploading files in chat works", async function (assert) {
+  test("uploading files in chat works", async function (assert) {
     await visit("/t/internationalization-localization/280");
     this.container.lookup("service:chat").set("sidebarActive", false);
     await click(".header-dropdown-toggle.open-chat");
@@ -1515,18 +1515,32 @@ acceptance("Discourse Chat - image uploads", function (needs) {
     const appEvents = loggedInUser().appEvents;
     const done = assert.async();
 
-    appEvents.on("chat-composer:all-uploads-complete", () => {
+    appEvents.on("chat-composer:all-uploads-complete", async () => {
+      await settled();
+      assert.ok(exists(".chat-upload"), "the chat upload preview should show");
+      assert.notOk(
+        exists(".bottom-data .uploading"),
+        "the chat upload preview should no longer say it is uploading"
+      );
       assert.strictEqual(
         queryAll(".chat-composer-input").val(),
-        "![avatar.PNG|690x320](upload://yoj8pf9DdIeHRRULyw7i57GAYdz.jpeg)\n"
+        "",
+        "the chat composer does not get the upload markdown when the upload is complete"
       );
       done();
     });
 
-    appEvents.on("chat-composer:upload-started", () => {
+    appEvents.on("chat-composer:upload-started", async () => {
+      await settled();
+      assert.ok(exists(".chat-upload"), "the chat upload preview should show");
+      assert.ok(
+        exists(".bottom-data .uploading"),
+        "the chat upload preview should say it is uploading"
+      );
       assert.strictEqual(
         queryAll(".chat-composer-input").val(),
-        "[Uploading: avatar.png...]()\n"
+        "",
+        "the chat composer does not get an uploading... placeholder"
       );
     });
 

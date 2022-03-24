@@ -105,13 +105,6 @@ class ChatChannel < ActiveRecord::Base
     title_from_chatable
   end
 
-  def title_for_mention(user)
-    return I18n.t("chat.personal_chat") if direct_message_channel?
-    return name if name.present?
-
-    "\"#{title_from_chatable}\""
-  end
-
   def title_from_chatable
     case chatable_type
     when "Topic"

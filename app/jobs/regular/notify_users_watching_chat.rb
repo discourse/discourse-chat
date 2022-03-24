@@ -8,6 +8,7 @@ module Jobs
 
       @creator = @chat_message.user
       @chat_channel = @chat_message.chat_channel
+      @is_direct_message_channel = @chat_channel.direct_message_channel?
 
       always_notification_level = UserChatChannelMembership::NOTIFICATION_LEVELS[:always]
 
@@ -33,17 +34,18 @@ module Jobs
       return if DiscourseChat::ChatNotifier.user_has_seen_message?(membership, @chat_message.id)
       return if online_user_ids.include?(user.id)
 
-      translated_title = I18n.t(
-        "discourse_push_notifications.popup.chat_message",
-        channel: @chat_channel.title_for_mention(user),
-        username: @creator.username
-      )
+      translation_key = @is_direct_message_channel ?
+        "discourse_push_notifications.popup.new_direct_chat_message" :
+        "discourse_push_notifications.popup.new_chat_message"
+
+      translation_args = { username: @creator.username }
+      translation_args[:channel] = @chat_channel.title(user) unless @is_direct_message_channel
 
       payload = {
         username: @creator.username,
         notification_type: Notification.types[:chat_message],
         post_url: "/chat/channel/#{@chat_channel.id}/#{@chat_channel.title(user)}",
-        translated_title: translated_title,
+        translated_title: I18n.t(translation_key, translation_args),
         tag: DiscourseChat::ChatNotifier.push_notification_tag(:message, @chat_channel.id),
         excerpt: @chat_message.push_notification_excerpt
       }

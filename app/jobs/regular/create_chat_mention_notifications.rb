@@ -29,6 +29,7 @@ module Jobs
         chat_channel_id: @chat_channel.id,
         chat_channel_title: @chat_channel.title_for_mention(user),
         mentioned_by_username: @creator.username,
+        is_direct_message_channel: @chat_channel.direct_message_channel?
       }
       data[:identifier] = identifier_info["identifier"] if identifier_info.present?
       data[:is_group_mention] = true if (identifier_info || {})["is_group"]
@@ -57,7 +58,7 @@ module Jobs
                                 ),
         tag: DiscourseChat::ChatNotifier.push_notification_tag(:mention, @chat_channel.id),
         excerpt: @chat_message.push_notification_excerpt,
-        post_url: "/chat/channel/#{@chat_channel.id}/#{@chat_channel.title(membership.user).to_s.strip}?messageId=#{@chat_message.id}"
+        post_url: "/chat/channel/#{@chat_channel.id}/#{@chat_channel.title(membership.user)}?messageId=#{@chat_message.id}"
       }
 
       unless membership.desktop_notifications_never?

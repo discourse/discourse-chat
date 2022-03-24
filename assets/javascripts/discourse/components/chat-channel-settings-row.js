@@ -60,7 +60,7 @@ export default Component.extend({
     return ajax(`/chat/chat_channels/${this.channel.id}`, {
       method: "POST",
       data: {
-        name: this.newName,
+        name: this.newName.trim(),
       },
     })
       .then((response) => {

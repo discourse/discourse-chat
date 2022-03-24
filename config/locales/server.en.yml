@@ -90,7 +90,7 @@ en:
       chat_mention:
         direct: "@%{username} mentioned you in %{channel}"
         other: "@%{username} mentioned %{identifier} in %{channel}"
-      chat_message: "New chat message in %{channel}"
+      chat_message: "@%{username} sent a message in %{channel}"
 
   discourse_automation:
     scriptables:

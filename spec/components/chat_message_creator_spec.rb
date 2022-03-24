@@ -235,6 +235,42 @@ describe DiscourseChat::ChatMessageCreator do
       }.to change { user2.chat_mentions.count }.by(0)
     end
 
+    it "does not create @all mentions for users when ignore_channel_wide_mention is enabled" do
+      expect {
+        DiscourseChat::ChatMessageCreator.create(
+          chat_channel: public_chat_channel,
+          user: user1,
+          content: "@all"
+        )
+      }.to change { ChatMention.count }.by(4)
+
+      user2.user_option.update(ignore_channel_wide_mention: true)
+      expect {
+        DiscourseChat::ChatMessageCreator.create(
+          chat_channel: public_chat_channel,
+          user: user1,
+          content: "hi! @all"
+        )
+      }.to change { ChatMention.count }.by(3)
+    end
+
+    it "does not create @here mentions for users when ignore_channel_wide_mention is enabled" do
+      admin1.update(last_seen_at: 1.year.ago)
+      admin2.update(last_seen_at: 1.year.ago)
+      user1.update(last_seen_at: Time.now)
+      user2.update(last_seen_at: Time.now)
+      user2.user_option.update(ignore_channel_wide_mention: true)
+      user3.update(last_seen_at: Time.now)
+
+      expect {
+        DiscourseChat::ChatMessageCreator.create(
+          chat_channel: public_chat_channel,
+          user: user1,
+          content: "@here"
+        )
+      }.to change { ChatMention.count }.by(1)
+    end
+
     describe "group mentions" do
       it "creates chat mentions for group mentions where the group is mentionable" do
         expect {

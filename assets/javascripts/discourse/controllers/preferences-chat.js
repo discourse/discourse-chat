@@ -10,6 +10,7 @@ const chatAttrs = [
   "chat_enabled",
   "chat_isolated",
   "only_chat_push_notifications",
+  "ignore_channel_wide_mention",
   "chat_sound",
 ];
 

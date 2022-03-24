@@ -92,6 +92,9 @@ en:
       only_chat_push_notifications:
         title: "Only send chat push notifications"
         description: "Block all non-chat push notifications from being sent"
+      ignore_channel_wide_mention:
+        title: "Ignore channel-wide mentions"
+        description: "Do not send notifications for channel-wide mentions (@here and @all)"
       open: "Open chat"
       open_full_page: "Open full-screen chat"
       open_message: "Open message in chat"

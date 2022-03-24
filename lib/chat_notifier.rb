@@ -148,7 +148,7 @@ class DiscourseChat::ChatNotifier
 
   def set_mentioned_users
     @global_mentioned_users = direct_mentions_from_cooked.include?("@all") ?
-      members_of_channel(exclude: @user.username) :
+      members_of_channel(exclude: @user.username, is_channel_mention: true) :
       []
 
     @here_mentioned_users = direct_mentions_from_cooked.include?("@here") ? get_users_here : []
@@ -165,7 +165,7 @@ class DiscourseChat::ChatNotifier
   end
 
   def get_users_here
-    users = members_of_channel(exclude: @user.username).where("last_seen_at > ?", 5.minutes.ago)
+    users = members_of_channel(exclude: @user.username, is_channel_mention: true).where("last_seen_at > ?", 5.minutes.ago)
     usernames = users.map(&:username)
     other_mentioned_usernames = mentioned_usernames
       .reject { |username| username == "here" || usernames.include?(username) }
@@ -173,7 +173,8 @@ class DiscourseChat::ChatNotifier
       users = users.or(
         members_of_channel(
           exclude: @user.username,
-          usernames: other_mentioned_usernames
+          usernames: other_mentioned_usernames,
+          is_channel_mention: true
         )
       )
     end
@@ -191,11 +192,12 @@ class DiscourseChat::ChatNotifier
     users_preloaded_query.where(username_lower: (usernames.map(&:downcase) - [exclude.downcase]))
   end
 
-  def members_of_channel(exclude:, usernames: nil)
+  def members_of_channel(exclude:, usernames: nil, is_channel_mention: false)
     users = users_preloaded_query
       .where(user_chat_channel_memberships: { following: true, chat_channel_id: @chat_channel.id })
       .where.not(username_lower: exclude.downcase)
     users = users.where(username_lower: usernames.map(&:downcase)) if usernames
+    users = users.where(user_options: { ignore_channel_wide_mention: [false, nil] }) if is_channel_mention
     users
   end
 

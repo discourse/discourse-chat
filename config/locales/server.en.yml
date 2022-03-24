@@ -88,9 +88,9 @@ en:
   discourse_push_notifications:
     popup:
       chat_mention:
-        direct: "@%{username} mentioned you in %{channel}"
-        other: "@%{username} mentioned %{identifier} in %{channel}"
-      chat_message: "@%{username} sent a message in %{channel}"
+        direct: "%{username} mentioned you in %{channel}"
+        other: "%{username} mentioned %{identifier} in %{channel}"
+      chat_message: "%{username} sent a message in %{channel}"
 
   discourse_automation:
     scriptables:

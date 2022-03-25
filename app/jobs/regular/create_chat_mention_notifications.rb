@@ -50,15 +50,15 @@ module Jobs
     def send_os_notifications(membership, identifier_info)
       return if membership.desktop_notifications_never? && membership.mobile_notifications_never?
 
-      i18n_key = @is_direct_message_channel ?
-        "discourse_push_notifications.popup.direct_message_chat_mention." :
-        "discourse_push_notifications.popup.chat_mention."
-      i18n_key << identifier_info ? "other" : "direct"
+      translation_prefix = @is_direct_message_channel ?
+        "discourse_push_notifications.popup.direct_message_chat_mention" :
+        "discourse_push_notifications.popup.chat_mention"
+      translation_suffix = identifier_info ? "other" : "direct"
 
       payload = {
         notification_type: Notification.types[:chat_mention],
         username: @creator.username,
-        translated_title: I18n.t(i18n_key,
+        translated_title: I18n.t("#{translation_prefix}.#{translation_suffix}",
                                  username: @creator.username,
                                  identifier: identifier_info ? "@#{identifier_info["identifier"]}" : "",
                                  channel: @chat_channel.title(membership.user)

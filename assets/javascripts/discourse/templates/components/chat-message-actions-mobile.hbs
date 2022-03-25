@@ -1,10 +1,10 @@
 <div class="chat-msgactions-backdrop">
-  <div role="button" class="collapse-area" {{on "click" (fn this.collapseMenu)}}></div>
+  <div role="button" class="collapse-area" {{on "click" this.collapseMenu}}></div>
   <div class="chat-msgactions">
     <div class="selected-message-container">
       <div class="selected-message">
         {{chat-user-avatar user=message.user}}
-        <span {{on "touchstart" (fn this.expandReply)}} role="button" class="selected-message-reply {{if isExpanded 'is-expanded'}}">
+        <span {{on "touchstart" this.expandReply}} role="button" class="selected-message-reply {{if isExpanded "is-expanded"}}">
           {{message.message}}
         </span>
       </div>

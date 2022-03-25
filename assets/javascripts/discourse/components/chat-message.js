@@ -251,9 +251,9 @@ export default Component.extend({
   },
 
   @action
-  handleTouchStart(event) {
+  handleTouchStart() {
     if (!this.isHovered) {
-      this._isPressingHandler = later(this._handlelongPress, event, 500);
+      this._isPressingHandler = later(this._handlelongPress, 500);
     }
   },
 
@@ -264,21 +264,7 @@ export default Component.extend({
 
   @action
   _handlelongPress() {
-    document
-      .querySelector(".chat-msgactions-backdrop")
-      ?.classList?.remove("fade-in");
-
-    // we don't want to remove the component right away as it's animating
-    // 200 is equal to the duration of the css animation
-    later(() => {
-      if (this.isDestroying || this.isDestroyed) {
-        return;
-      }
-
-      this.onHoverMessage(this.message);
-    }, 200);
-
-    return false;
+    this.onHoverMessage(this.message);
   },
 
   @discourseComputed("message.hideUserInfo", "message.chat_webhook_event")

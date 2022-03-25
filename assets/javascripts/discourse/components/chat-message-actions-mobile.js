@@ -22,13 +22,29 @@ export default Component.extend({
   @action
   collapseMenu(event) {
     event.stopPropagation();
-    this.onHoverMessage();
+    this.onCloseMenu();
   },
 
   @action
   actAndCloseMenu(fn) {
     fn?.();
-    this.onHoverMessage();
+    this.onCloseMenu();
+  },
+
+  onCloseMenu() {
+    document
+      .querySelector(".chat-msgactions-backdrop")
+      .classList?.remove("fade-in");
+
+    // we don't want to remove the component right away as it's animating
+    // 200 is equal to the duration of the css animation
+    later(() => {
+      if (this.isDestroying || this.isDestroyed) {
+        return;
+      }
+
+      this.onHoverMessage(this.message);
+    }, 200);
   },
 
   _addFadeIn() {

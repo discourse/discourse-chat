@@ -1,18 +1,24 @@
 <div class="chat-msgactions-backdrop">
+  <div role="button" class="collapse-area" {{on "click" (fn this.collapseMenu)}}></div>
   <div class="chat-msgactions">
-    <div class="selected-message">
-      {{chat-user-avatar user=message.user}}
-      <span class="selected-message-reply">{{replace-emoji message.excerpt}}</span>
+    <div class="selected-message-container">
+      <div class="selected-message">
+        {{chat-user-avatar user=message.user}}
+        <span {{on "touchstart" (fn this.expandReply)}} role="button" class="selected-message-reply {{if isExpanded 'is-expanded'}}">
+          {{message.message}}
+        </span>
+      </div>
     </div>
 
     <ul class="secondary-actions">
       {{#each secondaryButtons as |button|}}
         <li class="chat-message-action-item" data-id={{button.id}}>
           {{d-button
-            class="chat-message-action catch-click"
+            class="chat-message-action"
             translatedLabel=button.name
             icon=button.icon
-            action=(action (get messageActions button.id))
+            actionParam=button.id
+            action=(action "actAndCloseMenu" (get messageActions button.id))
           }}
         </li>
       {{/each}}
@@ -31,8 +37,8 @@
           {{/each}}
 
           {{d-button
-            class="btn-flat react-btn catch-click"
-            action=messageActions.startReactionForMsgActions
+            class="btn-flat react-btn"
+            action=(action "actAndCloseMenu" messageActions.startReactionForMsgActions)
             icon="discourse-emojis"
             title="chat.react"
           }}
@@ -40,8 +46,8 @@
 
         {{#if messageCapabilities.canReply}}
           {{d-button
-            class="chat-message-action reply-btn btn-primary catch-click"
-            action=messageActions.reply
+            class="chat-message-action reply-btn btn-primary"
+            action=(action "actAndCloseMenu" messageActions.reply)
             icon="reply"
             title="chat.reply"
           }}

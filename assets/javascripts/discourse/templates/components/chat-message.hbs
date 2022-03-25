@@ -2,7 +2,12 @@
 
 {{chat-message-separator message=message}}
 
-<div {{on "click" this.handleClick}} class={{messageContainerClasses}} data-id={{or message.id message.stagedId}}>
+<div
+  {{on "touchstart" this.handleTouchStart}}
+  {{on "touchend" this.handleTouchEnd}}
+  class={{messageContainerClasses}}
+  data-id={{or message.id message.stagedId}}
+>
   {{emoji-picker
     emojiStore=emojiReactionStore
     isActive=emojiPickerIsActive
@@ -16,7 +21,7 @@
     {{#if selectingMessages}}
       {{input
         type="checkbox"
-        class="chat-message-selector catch-click"
+        class="chat-message-selector"
         checked=message.selected
         click=(action "toggleChecked")
       }}
@@ -39,6 +44,7 @@
             secondaryButtons=secondaryButtons
             messageActions=messageActions
             messageCapabilities=messageCapabilities
+            onHoverMessage=onHoverMessage
           }}
         {{/if}}
 
@@ -140,7 +146,6 @@
 
                   {{#each-in message.reactions as |emoji reactionAttrs|}}
                     {{chat-message-reaction
-                      class="catch-click"
                       emoji=emoji
                       count=reactionAttrs.count
                       users=reactionAttrs.users
@@ -153,7 +158,7 @@
 
                   {{#if canInteractWithChat}}
                     {{d-button
-                      class="chat-message-react-btn catch-click"
+                      class="chat-message-react-btn"
                       action=(action "startReactionForReactionList")
                       icon="discourse-emojis"
                       title="chat.react"

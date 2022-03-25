@@ -7,7 +7,8 @@
 
 .chat-message *,
 .chat-message-separator *,
-.chat-composer-row {
+.chat-composer-row,
+.tc-reply-display {
   @include user-select(none);
 }
 
@@ -58,13 +59,12 @@
       border-radius: 8px;
 
       .selected-message-reply {
-        @include user-select(text);
-
         &:not(.is-expanded) {
           @include ellipsis;
         }
 
         &.is-expanded {
+          @include user-select(text);
           max-height: 80px;
           overflow-y: scroll;
         }

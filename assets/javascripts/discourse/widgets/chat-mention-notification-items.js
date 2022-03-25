@@ -14,11 +14,12 @@ const chatNotificationItem = {
   text(notificationName, data) {
     const username = formatUsername(data.mentioned_by_username);
     const identifier = data.identifier ? `@${data.identifier}` : null;
-    const i18nKey = identifier
-      ? "notifications.popup.chat_mention.other"
-      : "notifications.popup.chat_mention.direct";
+    const i18nPrefix = data.is_direct_message_channel
+      ? "notifications.popup.direct_message_chat_mention"
+      : "notifications.popup.chat_mention";
+    const i18nSuffix = identifier ? "other" : "direct";
 
-    return I18n.t(i18nKey, {
+    return I18n.t(`${i18nPrefix}.${i18nSuffix}`, {
       username,
       identifier,
       channel: data.chat_channel_title,

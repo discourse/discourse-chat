@@ -253,7 +253,7 @@ export default Component.extend({
   @action
   handleTouchStart() {
     if (!this.isHovered) {
-      this._isPressingHandler = later(this._handlelongPress, 500);
+      this._isPressingHandler = later(this._handleLongPress, 500);
     }
   },
 
@@ -263,7 +263,7 @@ export default Component.extend({
   },
 
   @action
-  _handlelongPress() {
+  _handleLongPress() {
     this.onHoverMessage(this.message);
   },
 

@@ -8,7 +8,8 @@
 .chat-message *,
 .chat-message-separator *,
 .chat-composer-row,
-.tc-reply-display {
+.tc-reply-display,
+.replying-text {
   @include user-select(none);
 }
 

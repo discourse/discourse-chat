@@ -72,10 +72,6 @@ class ChatChannel < ActiveRecord::Base
     chatable_type == "DirectMessageChannel"
   end
 
-  def group_direct_message_channel?
-    direct_message_channel? && chatable.users.count > 2
-  end
-
   def chatable_has_custom_fields?
     topic_channel? || category_channel?
   end
@@ -104,13 +100,6 @@ class ChatChannel < ActiveRecord::Base
 
   def title(user)
     return chatable.chat_channel_title_for_user(self, user) if direct_message_channel?
-    return name if name.present?
-
-    title_from_chatable
-  end
-
-  def title_for_mention(user)
-    return I18n.t("chat.personal_chat") if direct_message_channel?
     return name if name.present?
 
     title_from_chatable

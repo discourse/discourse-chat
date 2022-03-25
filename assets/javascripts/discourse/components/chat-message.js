@@ -258,6 +258,13 @@ export default Component.extend({
   },
 
   @action
+  handleTouchMove() {
+    if (!this.isHovered) {
+      cancel(this._isPressingHandler);
+    }
+  },
+
+  @action
   handleTouchEnd() {
     cancel(this._isPressingHandler);
   },

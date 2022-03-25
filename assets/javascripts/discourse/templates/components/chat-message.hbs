@@ -3,6 +3,7 @@
 {{chat-message-separator message=message}}
 
 <div
+  {{on "touchmove" this.handleTouchMove}}
   {{on "touchstart" this.handleTouchStart}}
   {{on "touchend" this.handleTouchEnd}}
   class={{messageContainerClasses}}

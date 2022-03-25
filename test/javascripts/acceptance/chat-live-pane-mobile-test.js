@@ -83,19 +83,6 @@ acceptance("Discourse Chat - Chat live pane mobile", function (needs) {
 
     await click(".chat-message-container[data-id='1']");
 
-    assert.ok(messageExists(1), "it selects the clicked message");
-
-    await click(".chat-message-container[data-id='2']");
-
-    assert.notOk(
-      messageExists(1),
-      "it unselects another previously selected message"
-    );
-    assert.ok(messageExists(2));
-
-    await click(".chat-message-container[data-id='2']");
-
-    assert.notOk(messageExists(1));
-    assert.notOk(messageExists(2), "it unselects the clicked message");
+    assert.notOk(messageExists(1), "it doesn’t select the touched message");
   });
 });

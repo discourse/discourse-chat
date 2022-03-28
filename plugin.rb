@@ -159,6 +159,10 @@ after_initialize do
     results
   end
 
+  if respond_to?(:register_consistency_exempt_notification_type)
+    register_consistency_exempt_notification_type(Notification.types[:chat_mention])
+  end
+
   if respond_to?(:register_upload_unused)
     register_upload_unused do |uploads|
       uploads

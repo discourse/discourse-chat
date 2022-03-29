@@ -803,6 +803,7 @@ export default Service.extend({
       .then((response) => {
         const chatChannel = ChatChannel.create(response.chat_channel);
         this.startTrackingChannel(chatChannel);
+        this.forceRefreshChannels();
         return chatChannel;
       })
       .catch(popupAjaxError);

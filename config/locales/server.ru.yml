@@ -47,6 +47,7 @@ ru:
       duplicate_message: "Вы отправляете одно и то же сообщение слишком часто."
       delete_channel_failed: "Не удалось удалить канал, попробуйте ещё раз."
       minimum_length_not_met: "Сообщение слишком короткое, оно должно содержать не менее %{minimum} символов."
+      max_reactions_limit_reached: "Новые реакции на это сообщение запрещены."
     reviewables:
       actions:
         agree:
@@ -90,9 +91,13 @@ ru:
   discourse_push_notifications:
     popup:
       chat_mention:
-        direct: "@Пользователь %{username} упомянул вас на канале %{channel}"
-        other: "Пользователь @%{username} упомянул %{identifier} на канале %{channel}"
-      chat_message: "Новое сообщение в канале %{channel}"
+        direct: 'Пользователь %{username} упомянул вас на канале "%{channel}"'
+        other: 'Пользователь %{username} упомянул %{identifier} на канале "%{channel}"'
+      direct_message_chat_mention:
+        direct: "Пользователь %{username} упомянул вас в личном чате"
+        other: "Пользователь %{username} упомянул %{identifier} в личном чате"
+      new_chat_message: 'Пользователь %{username} отправил сообщение на канале "%{channel}"'
+      new_direct_chat_message: "Пользователь %{username} отправил сообщение в личный чат"
   discourse_automation:
     scriptables:
       send_chat_message:

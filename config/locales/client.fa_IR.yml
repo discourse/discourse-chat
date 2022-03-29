@@ -162,9 +162,6 @@ fa_IR:
         multiple_users: "%{commaSeparatedUsernames} و %{lastUsername} در حال نوشتن"
     notifications:
       chat_quoted: "<span>%{username}</span> %{description}"
-      popup:
-        chat_mention:
-          direct: "<span>%{username}</span> <span> به شما در کانال %{channel}</span> اشاره کرده است"
     topic:
       actions:
         chat_enable: "فعال کردن گفتگو"

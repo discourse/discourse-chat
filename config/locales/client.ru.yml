@@ -101,6 +101,9 @@ ru:
       only_chat_push_notifications:
         title: "Отправлять только push-уведомления в чате"
         description: "Запретить отправку всех push-уведомлений, не связанных с чатом"
+      ignore_channel_wide_mention:
+        title: "Игнорировать на канале массовые упоминания"
+        description: "Не отправлять массовые уведомления при использовании на канале переменных @here и @all"
       open: "Открыть чат"
       open_full_page: "Открыть полноэкранный чат"
       open_message: "Открыть сообщение в чате"
@@ -271,8 +274,11 @@ ru:
       chat_quoted: "<span>%{username}</span> %{description}"
       popup:
         chat_mention:
-          direct: "<span>Пользователь %{username}</span> <span>упомянул вас на канале %{channel}</span>"
-          other: "<span>Пользователь %{username}</span> <span>упомянул @%{identifier} на канале %{channel}</span>"
+          direct: '<span>Пользователь %{username}</span> <span>упомянул вас на канале "%{channel}"</span>'
+          other: '<span>Пользователь %{username}</span> <span>упомянул %{identifier} на канале "%{channel}"</span>'
+        direct_message_chat_mention:
+          direct: "<span>Пользователь %{username}</span> <span>упомянул вас в личном чате</span>"
+          other: "<span>Пользователь %{username}</span> <span>упомянул @%{identifier} в личном чате</span>"
         chat_message: "Новое сообщение в чате"
         chat_quoted: "Пользователь %{username} процитировал ваше сообщение в чате"
       titles:

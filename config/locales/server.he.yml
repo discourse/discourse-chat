@@ -45,6 +45,7 @@ he:
       duplicate_message: "פרסמת הודעה זהה לפני זמן קצר מדי."
       delete_channel_failed: "מחיקת הערוץ נכשלה, נא לנסות שוב."
       minimum_length_not_met: "ההודעה קצרה מדי, היא חייבת להיות ארוכה מ־%{minimum} תווים"
+      max_reactions_limit_reached: "רגשות חדשים אסורים בהודעה זו."
     reviewables:
       actions:
         agree:
@@ -88,9 +89,13 @@ he:
   discourse_push_notifications:
     popup:
       chat_mention:
-        direct: "אוזכרת בערוץ %{channel} על ידי @%{username}"
-        other: "נוסף אזכור של %{identifier} בערוץ %{channel} על ידי ‎@%{username}"
-      chat_message: "הודעת צ׳אט חדשה תחת %{channel}"
+        direct: 'אוזכרת בערוץ „%{channel}” על ידי %{username}'
+        other: 'נוסף אזכור של %{identifier} בערוץ „%{channel}” על ידי %{username}'
+      direct_message_chat_mention:
+        direct: "אוזכרת בצ׳אט אישי על ידי %{username}"
+        other: "נוסף אזכור של ‎%{identifier} בצ׳אט אישי על ידי %{username}"
+      new_chat_message: 'נשחלה הודעה על ידי %{username} ב־„%{channel}”'
+      new_direct_chat_message: "נשלחה הודעה על ידי %{username} בצ׳אט אישי"
   discourse_automation:
     scriptables:
       send_chat_message:

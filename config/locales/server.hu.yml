@@ -65,9 +65,6 @@ hu:
         closed: "Zárolt"
         open: "Nyitott"
     personal_chat: "személyes csevegés"
-  discourse_push_notifications:
-    popup:
-      chat_message: "Új csevegőüzenet itt: %{channel}"
   discourse_automation:
     scriptables:
       send_chat_message:

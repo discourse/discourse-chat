@@ -95,6 +95,9 @@ he:
       only_chat_push_notifications:
         title: "לשלוח התראות בדחיפה על הצ׳אט בלבד"
         description: "לחסום שליחה של התראות בדחיפה שאינן לגבי הצ׳אט"
+      ignore_channel_wide_mention:
+        title: "התעלמות מאזכורים לכל הערוץ"
+        description: "לא לשלוח התראות על אזכורים לכל הערוץ (‎@here ו־‎@all)"
       open: "פתיחת צ׳אט"
       open_full_page: "פתיחת צ׳אט במסך מלא"
       open_message: "פתיחת הודעה בצ׳אט"
@@ -265,8 +268,11 @@ he:
       chat_quoted: "<span>%{username}</span> %{description}"
       popup:
         chat_mention:
-          direct: "<span>אוזכרת בערוץ %{channel} על ידי</span> <span>%{username}</span>"
-          other: "<span>נוסף אזכור של %{identifier} בערוץ %{channel} על ידי</span> <span>%{username}</span>"
+          direct: '<span>אוזכרת בערוץ „%{channel}” על ידי</span> <span>%{username}</span>'
+          other: '<span>נוסף אזכור של %{identifier} בערוץ „%{channel}” על ידי</span> <span>%{username}</span>'
+        direct_message_chat_mention:
+          direct: "<span>אוזכרת בצ׳אט אישי על ידי</span> <span>%{username}</span>"
+          other: "<span>נוסף אזכור של ‎%{identifier} בצ׳אט אישי על ידי</span> <span>%{username}</span>"
         chat_message: "הודעת צ׳אט חדשה"
         chat_quoted: "הודעת הצ׳אט שלך צוטטה על ידי %{username}"
       titles:

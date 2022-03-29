@@ -39,7 +39,8 @@ class DiscourseChat::ChatMessageCreator
       ChatDraft.where(user_id: @user.id, chat_channel_id: @chat_channel.id).destroy_all
       ChatPublisher.publish_new!(@chat_channel, @chat_message, @staged_id)
       Jobs.enqueue(:process_chat_message, { chat_message_id: @chat_message.id })
-      DiscourseChat::ChatNotifier.notify_new(chat_message: @chat_message, timestamp: @chat_message.created_at)
+      mentioned_user_ids = DiscourseChat::ChatNotifier.notify_new(chat_message: @chat_message, timestamp: @chat_message.created_at)
+      create_email_statuses(mentioned_user_ids)
     rescue => error
       @error = error
     end
@@ -53,6 +54,7 @@ class DiscourseChat::ChatMessageCreator
 
   def validate_user_permissions!
     return if @guardian.can_create_chat_message!
+
     raise StandardError.new(
       I18n.t("chat.errors.user_cannot_send_message")
     )
@@ -60,6 +62,7 @@ class DiscourseChat::ChatMessageCreator
 
   def validate_channel_status!
     return if @guardian.can_create_channel_message?(@chat_channel)
+
     raise StandardError.new(
       I18n.t("chat.errors.channel_new_message_disallowed", status: @chat_channel.status_name)
     )
@@ -84,5 +87,16 @@ class DiscourseChat::ChatMessageCreator
     return [] if @upload_ids.blank? || !SiteSetting.chat_allow_uploads
 
     Upload.where(id: @upload_ids, user_id: @user.id)
+  end
+
+  def create_email_statuses(mentioned_users_by_identifier)
+    puts "######################"
+    puts mentioned_users_by_identifier.inspect
+    puts "######################"
+    # ChatMessageEmailStatus.on_new_message_created(
+      # chat_channel: @chat_channel,
+      # chat_message: @chat_message,
+      # mentioned_user_ids: mentioned_user_ids
+    # )
   end
 end

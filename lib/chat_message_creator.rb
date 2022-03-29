@@ -89,14 +89,11 @@ class DiscourseChat::ChatMessageCreator
     Upload.where(id: @upload_ids, user_id: @user.id)
   end
 
-  def create_email_statuses(mentioned_users_by_identifier)
-    puts "######################"
-    puts mentioned_users_by_identifier.inspect
-    puts "######################"
-    # ChatMessageEmailStatus.on_new_message_created(
-      # chat_channel: @chat_channel,
-      # chat_message: @chat_message,
-      # mentioned_user_ids: mentioned_user_ids
-    # )
+  def create_email_statuses(mentioned_users_with_identifier)
+    ChatMessageEmailStatus.new_message_created(
+      chat_channel: @chat_channel,
+      chat_message: @chat_message,
+      mentioned_users_with_identifier: mentioned_users_with_identifier
+    )
   end
 end

@@ -11,6 +11,7 @@ hu:
         staff_actions:
           actions:
             chat_channel_status_change: "A csevegőcsatorna állapota megváltozott"
+            chat_channel_delete: "Csevegőcsatorna törölve"
     chat:
       dates:
         time_tiny: "h:mm"
@@ -23,6 +24,26 @@ hu:
       cancel_reply: "Válasz elvetése"
       chat_channels: "Csatornák"
       leave: "Csatorna elhagyása"
+      channel_settings:
+        title: "Csatornabeállítások"
+        close_channel: "Csatorna bezárása…"
+        open_channel: "Csatorna megnyitása…"
+        archive_channel: "Csatorna archiválása…"
+        delete_channel: "Csatorna törlése…"
+      channel_archive:
+        title: "Csatorna archiválása"
+        instructions: "<p>Egy csatorna archiválása írásvédett módba helyezi azt, és a csatorna összes üzenetét egy új vagy meglévő témába helyezi át. Új üzeneteket nem lehet küldeni, és a meglévő üzeneteket nem lehet szerkeszteni vagy törölni.</p><p>Biztos, hogy archiválja a(z) <strong>#%{channelTitle}</strong> csatornát?</p>"
+        process_started: "Az archiválási folyamat megkezdődött. Ez az ablak rövidesen bezárul, és az archiválási folyamat befejeztével személyes üzenetet kap."
+        retry: "Újra"
+      channel_open:
+        title: "Csatorna megnyitása"
+        instructions: "Újranyitja a csatornát, az összes felhasználó fog tudni üzeneteket küldeni és szerkeszteni a meglévőket."
+      channel_close:
+        title: "Csatorna bezárása"
+        instructions: "A csatorna lezárása megakadályozza, hogy a nem stábtagok új üzeneteket küldjenek vagy szerkesszék a meglévő üzeneteket. Biztos, hogy be akarja zárni ezt a csatornát?"
+      channel_delete:
+        title: "Csatorna törlése"
+        confirm_channel_name: "Adja meg a csatorna nevét"
       channel_list_popup:
         browse: "Csatornák böngészése"
         create: "Csatorna létrehozása"
@@ -62,10 +83,17 @@ hu:
         without_membership:
           one: "%{usernames} nem csatlakozott ehhez a csatornához."
           other: "%{usernames} nem csatlakozott ehhez a csatornához."
+      aria_roles:
+        header: "Csevegés fejléce"
+        composer: "Csevegés szerkesztője"
+        channel_list: "Csevegőcsatornák"
       no_public_channels: "Nem csatlakozott egyetlen csatornához sem."
       only_chat_push_notifications:
         title: "Csak csevegési leküldéses értesítések küldése"
         description: "Az összes nem csevegési leküldéses értesítés elküldésének letiltása"
+      ignore_channel_wide_mention:
+        title: "A csatornaszintű említések figyelmen kívül hagyása"
+        description: "Ne küldjön értesítést a csatornaszintű említésekről (@here és @all)"
       open: "Csevegés megnyitása"
       open_full_page: "Teljes képernyős csevegés megnyitása"
       open_message: "Üzenet megnyitása a csevegésben"
@@ -99,9 +127,12 @@ hu:
         one: "%{count} fájl"
         other: "%{count} fájl"
       you_flagged: "Ön jelentette ezt az üzenetet"
+      user_deleted: "törölve"
       exit: "vissza"
       channel_status:
+        read_only_header: "A csatorna írásvédett."
         read_only: "Csak olvasható"
+        archived_header: "A csatorna archiválva van."
         archived: "Archivált"
         closed_header: "A csatorna zárolt."
         closed: "Zárolt"
@@ -257,3 +288,4 @@ hu:
         keyboard_shortcuts:
           switch_channel_arrows: "%{shortcut} Csatorna váltása"
           open_quick_channel_selector: "%{shortcut} Gyors csatornaválasztó megnyitása"
+          open_insert_link_modal: "%{shortcut} Hiperhivatkozás beillesztése"

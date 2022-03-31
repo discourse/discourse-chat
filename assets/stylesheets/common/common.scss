@@ -1474,10 +1474,12 @@ body.has-full-page-chat {
 .chat-live-pane .chat-composer .chat-composer-row .chat-composer-input {
   text-overflow: ellipsis;
 
-  &:placeholder-shown {
+  &:placeholder-shown,
+  &::placeholder {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    padding-right: 1.25em;
   }
 }
 

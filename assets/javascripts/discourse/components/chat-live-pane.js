@@ -25,6 +25,7 @@ import getURL, { samePrefix } from "discourse-common/lib/get-url";
 import { spinnerHTML } from "discourse/helpers/loading-spinner";
 import { decorateGithubOneboxBody } from "discourse/initializers/onebox-decorators";
 import highlightSyntax from "discourse/lib/highlight-syntax";
+import { applyLocalDates } from "discourse/lib/local-dates";
 
 const MAX_RECENT_MSGS = 100;
 const STICKY_SCROLL_LENIENCE = 4;
@@ -408,9 +409,9 @@ export default Component.extend({
         }
       });
     }
-    const lastReadId =
-      this.currentUser.chat_channel_tracking_state[this.chatChannel.id]
-        ?.chat_message_id;
+    const lastReadId = this.currentUser.chat_channel_tracking_state[
+      this.chatChannel.id
+    ]?.chat_message_id;
     if (!lastReadId) {
       return;
     }
@@ -1278,16 +1279,10 @@ export default Component.extend({
   },
 
   _pluginsDecorators() {
-    if (this.siteSettings.discourse_local_dates_enabled) {
-      const applyLocalDates = requirejs(
-        "discourse/plugins/discourse-local-dates/initializers/discourse-local-dates"
-      ).applyLocalDates;
-
-      applyLocalDates(
-        this.element.querySelectorAll(".discourse-local-date"),
-        this.siteSettings
-      );
-    }
+    applyLocalDates(
+      this.element.querySelectorAll(".discourse-local-date"),
+      this.siteSettings
+    );
 
     if (this.siteSettings.spoiler_enabled) {
       const applySpoiler = requirejs(

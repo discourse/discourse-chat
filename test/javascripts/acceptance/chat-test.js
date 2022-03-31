@@ -1499,7 +1499,8 @@ acceptance("Discourse Chat - image uploads", function (needs) {
           short_url: "upload://yoj8pf9DdIeHRRULyw7i57GAYdz.jpeg",
           thumbnail_height: 320,
           thumbnail_width: 690,
-          url: "//testbucket.s3.dualstack.us-east-2.amazonaws.com/original/1X/f1095d89269ff22e1818cf54b73e857261851019.jpeg",
+          url:
+            "//testbucket.s3.dualstack.us-east-2.amazonaws.com/original/1X/f1095d89269ff22e1818cf54b73e857261851019.jpeg",
           width: 1920,
         });
       },
@@ -1548,6 +1549,36 @@ acceptance("Discourse Chat - image uploads", function (needs) {
 
     const image = createFile("avatar.png");
     appEvents.trigger("chat-composer:add-files", image);
+  });
+});
+
+acceptance("Discourse Chat - Insert Date", function (needs) {
+  needs.user({
+    username: "eviltrout",
+    id: 1,
+    can_chat: true,
+    has_chat_enabled: true,
+  });
+  needs.settings({
+    chat_enabled: true,
+    discourse_local_dates_enabled: true,
+  });
+  needs.pretender((server, helper) => {
+    baseChatPretenders(server, helper);
+    chatChannelPretender(server, helper);
+  });
+
+  test("can use local date modal", async function (assert) {
+    await visit("/chat/channel/7/Uncategorized");
+    await click(".open-toolbar-btn");
+    await click(".chat-local-dates-btn");
+
+    assert.ok(exists(".discourse-local-dates-create-modal"));
+    await click(".modal-footer .btn-primary");
+    assert.ok(
+      query(".chat-composer-input").value.startsWith("[date"),
+      "inserts date in composer input"
+    );
   });
 });
 

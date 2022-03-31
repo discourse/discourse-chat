@@ -31,10 +31,10 @@ import { channelStatusName } from "discourse/plugins/discourse-chat/discourse/mo
 const THROTTLE_MS = 150;
 let outsideToolbarClick;
 
-const toolbarButtons = [];
+const toolbarExtraButtons = [];
 
 export function addChatToolbarButton(toolbarButton) {
-  toolbarButtons.push(toolbarButton);
+  toolbarExtraButtons.push(toolbarButton);
 }
 
 export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
@@ -108,22 +108,28 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     });
     outsideToolbarClick = this.toggleToolbar.bind(this);
 
+    const toolbarBtns = [];
+
     if (this.canAttachUploads) {
-      this.set(
-        "toolbarButtons",
-        [
-          {
-            action: this.uploadClicked,
-            class: "upload-btn",
-            id: this.mobileFileUploaderId,
-            icon: "far-image",
-            title: "chat.upload",
-          },
-        ].concat(toolbarButtons)
-      );
-    } else {
-      this.set("toolbarButtons", toolbarButtons);
+      toolbarBtns.push({
+        action: this.uploadClicked,
+        class: "upload-btn",
+        id: this.mobileFileUploaderId,
+        icon: "far-image",
+        title: "chat.upload",
+      });
     }
+
+    if (this.siteSettings.discourse_local_dates_enabled) {
+      toolbarBtns.push({
+        title: "discourse_local_dates.title",
+        id: "local-dates",
+        class: "chat-local-dates-btn",
+        icon: "calendar-alt",
+        action: this.insertDiscourseLocalDate,
+      });
+    }
+    this.set("toolbarButtons", toolbarBtns.concat(toolbarExtraButtons));
 
     if (this.siteSettings.composer_media_optimization_image_enabled) {
       // TODO:
@@ -360,6 +366,15 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     this.element.querySelector(`#${this.fileUploadElementId}`).click();
   },
 
+  @action
+  insertDiscourseLocalDate() {
+    showModal("discourse-local-dates-create-modal").setProperties({
+      insertDate: (markup) => {
+        this.addText(this.getSelected(), markup);
+      },
+    });
+  },
+
   _applyUserAutocomplete() {
     if (this.siteSettings.enable_mentions) {
       $(this._textarea).autocomplete({
@@ -419,10 +434,9 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
       treatAsTextarea: true,
 
       onKeyUp: (text, cp) => {
-        const matches =
-          /(?:^|[\s.\?,@\/#!%&*;:\[\]{}=\-_()])(:(?!:).?[\w-]*:?(?!:)(?:t\d?)?:?) ?$/gi.exec(
-            text.substring(0, cp)
-          );
+        const matches = /(?:^|[\s.\?,@\/#!%&*;:\[\]{}=\-_()])(:(?!:).?[\w-]*:?(?!:)(?:t\d?)?:?) ?$/gi.exec(
+          text.substring(0, cp)
+        );
 
         if (matches && matches[1]) {
           return [matches[1]];

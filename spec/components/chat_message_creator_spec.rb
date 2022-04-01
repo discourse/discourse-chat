@@ -592,12 +592,12 @@ describe DiscourseChat::ChatMessageCreator do
       expect {
         DiscourseChat::ChatMessageCreator.create(chat_channel: dm_chat_channel, user: user1, content: "test message")
       }.to change {
-      user2.chat_message_email_statuses.where(type: ChatMessageEmailStatus::TYPES[:regular], status: ChatMessageEmailStatus::STATUSES[:unprocessed]).count
+        user2.chat_message_email_statuses.where(type: ChatMessageEmailStatus::TYPES[:regular], status: ChatMessageEmailStatus::STATUSES[:unprocessed]).count
       }.by(1).and change {
-          user2.chat_message_email_statuses.where(type: ChatMessageEmailStatus::TYPES[:regular], status: ChatMessageEmailStatus::STATUSES[:unprocessed]).count
-        }.by(1).and change {
-          user1.chat_message_email_statuses.count
-        }.by(0)
+                    user2.chat_message_email_statuses.where(type: ChatMessageEmailStatus::TYPES[:regular], status: ChatMessageEmailStatus::STATUSES[:unprocessed]).count
+                  }.by(1).and change {
+                                user1.chat_message_email_statuses.count
+                              }.by(0)
     end
 
     it "creates chat_message_email_status records with the correct type" do
@@ -611,10 +611,10 @@ describe DiscourseChat::ChatMessageCreator do
         content: "hi @here @#{user2.username} and @#{user_group.name}"
       )
 
-      expect(admin2.chat_message_email_statuses.last.type).to eq(ChatMessageEmailStatus::TYPES[:global_mention])
-      expect(user1.chat_message_email_statuses.last.type).to eq(ChatMessageEmailStatus::TYPES[:group_mention])
-      expect(user2.chat_message_email_statuses.last.type).to eq(ChatMessageEmailStatus::TYPES[:direct_mention])
-      expect(user3.chat_message_email_statuses.last.type).to eq(ChatMessageEmailStatus::TYPES[:group_mention])
+      expect(admin2.chat_message_email_statuses.last.type_before_type_cast).to eq(ChatMessageEmailStatus::TYPES[:global_mention])
+      expect(user1.chat_message_email_statuses.last.type_before_type_cast).to eq(ChatMessageEmailStatus::TYPES[:group_mention])
+      expect(user2.chat_message_email_statuses.last.type_before_type_cast).to eq(ChatMessageEmailStatus::TYPES[:direct_mention])
+      expect(user3.chat_message_email_statuses.last.type_before_type_cast).to eq(ChatMessageEmailStatus::TYPES[:group_mention])
     end
   end
 end

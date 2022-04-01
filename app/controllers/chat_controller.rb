@@ -143,7 +143,32 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
 
   def update_user_last_read
     set_channel_and_chatable
-    set_user_last_read
+    UserChatChannelMembership
+      .where(user: current_user, chat_channel: @chat_channel)
+      .update_all(last_read_message_id: params[:message_id])
+
+    ChatMessageEmailStatus
+      .joins(:chat_message)
+      .where(chat_message: { chat_channel_id: @chat_channel.id })
+      .where("chat_message.id <= ?", params[:message_id])
+      .update_all(status: ChatMessageEmailStatus::STATUSES[:processed])
+
+    chat_mentions = ChatMention
+      .joins(:notification)
+      .joins(:chat_message)
+      .where(user: current_user)
+      .where(chat_message: { chat_channel_id: @chat_channel.id })
+      .where(notification: { read: false })
+
+    chat_mentions.each do |chat_mention|
+      chat_mention.notification.update(read: true)
+    end
+
+    ChatPublisher.publish_user_tracking_state(
+      current_user,
+      @chat_channel.id,
+      params[:message_id]
+    )
 
     render json: success_json
   end
@@ -211,6 +236,10 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
 
     updated = @message.trash!(current_user)
     if updated
+      # Update email statuses to processed for all users to make sure they aren't emailed.
+      ChatMessageEmailStatus
+        .where(chat_message_id: @message.id)
+        .update_all(status: ChatMessageEmailStatus::STATUSES[:processed])
       ChatPublisher.publish_delete!(@chat_channel, @message)
       render json: success_json
     else
@@ -223,6 +252,13 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     guardian.ensure_can_restore_chat!(@message, chat_channel.chatable)
     updated = @message.recover!
     if updated
+      # Update email statuses to unprocessed for users who haven't read this message
+      ChatMessageEmailStatus
+        .joins(:chat_message)
+        .joins(user: :user_chat_channel_memberships)
+        .where("user_chat_channel_memberships.chat_channel_id = chat_messages.chat_channel_id")
+        .where("user_chat_channel_memberships.last_read_message_id < ? OR user_chat_channel_memberships.last_read_message_id IS NULL", @message.id)
+        .update_all(status: ChatMessageEmailStatus::STATUSES[:unprocessed])
       ChatPublisher.publish_restore!(chat_channel, @message)
       render json: success_json
     else
@@ -386,35 +422,6 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
       .includes(reactions: :user)
       .includes(:uploads)
       .includes(chat_channel: :chatable)
-  end
-
-  def set_user_last_read
-    UserChatChannelMembership
-      .where(user: current_user, chat_channel: @chat_channel)
-      .update_all(last_read_message_id: params[:message_id])
-
-    ChatMessageEmailStatus
-      .joins(:chat_message)
-      .where(chat_message: { chat_message_id: @chat_channel.id })
-      .where("id <= ?", params[:message_id])
-      .update_all(status: ChatMessageEmailStatus::STATUSES[:processed])
-
-    chat_mentions = ChatMention
-      .joins(:notification)
-      .joins(:chat_message)
-      .where(user: current_user)
-      .where(chat_message: { chat_channel_id: @chat_channel.id })
-      .where(notification: { read: false })
-
-    chat_mentions.each do |chat_mention|
-      chat_mention.notification.update(read: true)
-    end
-
-    ChatPublisher.publish_user_tracking_state(
-      current_user,
-      @chat_channel.id,
-      params[:message_id]
-    )
   end
 
   def find_chatable

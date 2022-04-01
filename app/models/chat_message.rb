@@ -71,6 +71,11 @@ class ChatMessage < ActiveRecord::Base
     Emoji.gsub_emoji_to_unicode(message).truncate(400)
   end
 
+
+  def message_url
+    "#{Discourse.base_url}/chat/message/#{self.id}"
+  end
+
   def add_flag(user)
     reviewable = ReviewableChatMessage.needs_review!(
       created_by: user,
@@ -133,6 +138,7 @@ class ChatMessage < ActiveRecord::Base
   def self.uncooked
     where('cooked_version <> ? or cooked_version IS NULL', BAKED_VERSION)
   end
+
 
   MARKDOWN_FEATURES = %w{
     anchor

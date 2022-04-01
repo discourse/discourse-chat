@@ -82,6 +82,7 @@ en:
         open: "Open"
       archive:
         first_post_raw: "This topic is an archive of the [%{channel_name}](%{channel_url}) chat channel."
+      title_for_large_group_dm: "%{users} and %{count} others"
 
     personal_chat: "personal chat"
 
@@ -104,3 +105,14 @@ en:
   reviewable_score_types:
     needs_review:
       title: "Needs Review"
+
+  user_notifications:
+    chat_summary:
+      deleted_user: "Deleted user"
+      description: "You have new chat messages"
+      view_message: "View message"
+      view_more:
+        one: "View %{count} more message"
+        other: "View %{count} more messages"
+
+

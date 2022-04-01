@@ -90,6 +90,7 @@ after_initialize do
   load File.expand_path('../app/serializers/user_chat_channel_membership_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/reviewable_chat_message_serializer.rb', __FILE__)
   load File.expand_path('../lib/chat_channel_fetcher.rb', __FILE__)
+  load File.expand_path('../lib/chat_mailer.rb', __FILE__)
   load File.expand_path('../lib/chat_message_creator.rb', __FILE__)
   load File.expand_path('../lib/chat_message_processor.rb', __FILE__)
   load File.expand_path('../lib/chat_message_updater.rb', __FILE__)
@@ -103,6 +104,8 @@ after_initialize do
   load File.expand_path('../lib/guardian_extensions.rb', __FILE__)
   load File.expand_path('../lib/extensions/topic_view_serializer_extension.rb', __FILE__)
   load File.expand_path('../lib/extensions/detailed_tag_serializer_extension.rb', __FILE__)
+  load File.expand_path('../lib/extensions/user_option_extension.rb', __FILE__)
+  load File.expand_path('../lib/extensions/user_notifications_extension.rb', __FILE__)
   load File.expand_path('../lib/slack_compatibility.rb', __FILE__)
   load File.expand_path('../lib/post_notification_handler.rb', __FILE__)
   load File.expand_path('../app/jobs/regular/process_chat_message.rb', __FILE__)
@@ -112,7 +115,10 @@ after_initialize do
   load File.expand_path('../app/jobs/regular/notify_users_watching_chat.rb', __FILE__)
   load File.expand_path('../app/jobs/scheduled/delete_old_chat_messages.rb', __FILE__)
   load File.expand_path('../app/jobs/scheduled/update_user_counts_for_chat_channels.rb', __FILE__)
+  load File.expand_path('../app/jobs/scheduled/email_chat_notifications.rb', __FILE__)
   load File.expand_path('../app/services/chat_publisher.rb', __FILE__)
+
+  UserNotifications.prepend_view_path("#{File.dirname(__FILE__)}/app/views")
 
   register_topic_custom_field_type(DiscourseChat::HAS_CHAT_ENABLED, :boolean)
   register_category_custom_field_type(DiscourseChat::HAS_CHAT_ENABLED, :boolean)
@@ -140,6 +146,8 @@ after_initialize do
     Guardian.class_eval { include DiscourseChat::GuardianExtensions }
     TopicViewSerializer.class_eval { prepend DiscourseChat::TopicViewSerializerExtension }
     DetailedTagSerializer.class_eval { prepend DiscourseChat::DetailedTagSerializerExtension }
+    UserNotifications.class_eval { prepend DiscourseChat::UserNotificationsExtension }
+    UserOption.class_eval { prepend DiscourseChat::UserOptionExtension }
     Topic.class_eval {
       has_one :chat_channel, as: :chatable
     }

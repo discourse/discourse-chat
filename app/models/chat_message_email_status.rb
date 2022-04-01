@@ -16,7 +16,7 @@ class ChatMessageEmailStatus < ActiveRecord::Base
   }
 
   enum status: STATUSES
-  enum status: TYPES
+  enum type: TYPES
   belongs_to :user
   belongs_to :chat_message
 

@@ -393,6 +393,12 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
       .where(user: current_user, chat_channel: @chat_channel)
       .update_all(last_read_message_id: params[:message_id])
 
+    ChatMessageEmailStatus
+      .joins(:chat_message)
+      .where(chat_message: { chat_message_id: @chat_channel.id })
+      .where("id <= ?", params[:message_id])
+      .update_all(status: ChatMessageEmailStatus::STATUSES[:processed])
+
     chat_mentions = ChatMention
       .joins(:notification)
       .joins(:chat_message)

@@ -2,12 +2,12 @@
 
 module Jobs
   class EmailChatNotifications < ::Jobs::Scheduled
-    every 1.hour
+    every 15.minutes
 
     def execute(args = {})
       return unless SiteSetting.chat_enabled
 
-      # DiscourseChat::ChatMailer.run(users: [])
+      DiscourseChat::ChatMailer.mail_notifications
     end
   end
 end

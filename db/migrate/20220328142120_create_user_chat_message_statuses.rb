@@ -13,9 +13,7 @@ class CreateUserChatMessageStatuses < ActiveRecord::Migration[6.1]
     add_index :chat_message_email_statuses, [:user_id, :chat_message_id], name: "chat_message_email_status_user_message_index"
     add_index :chat_message_email_statuses, :status
 
-    add_column :user_options, :chat_email_frequency, :integer, null: true, default: 0
-    change_column_null :user_options, :chat_email_frequency, false
-
+    add_column :user_options, :chat_email_frequency, :integer, default: 1, null: false
     add_column :user_options, :last_emailed_for_chat, :datetime, null: true
   end
 end

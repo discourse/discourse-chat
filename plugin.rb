@@ -128,6 +128,7 @@ after_initialize do
   UserUpdater::OPTION_ATTR.push(:only_chat_push_notifications)
   UserUpdater::OPTION_ATTR.push(:chat_sound)
   UserUpdater::OPTION_ATTR.push(:ignore_channel_wide_mention)
+  UserUpdater::OPTION_ATTR.push(:chat_email_frequency)
 
   register_reviewable_type ReviewableChatMessage
 
@@ -296,6 +297,10 @@ after_initialize do
 
   add_to_serializer(:user_option, :ignore_channel_wide_mention) do
     object.ignore_channel_wide_mention
+  end
+
+  add_to_serializer(:user_option, :chat_email_frequency) do
+    object.chat_email_frequency
   end
 
   RETENTION_SETTINGS_TO_USER_OPTION_FIELDS = {

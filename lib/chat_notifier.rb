@@ -27,6 +27,7 @@ class DiscourseChat::ChatNotifier
 
   def notify_edit
     update_mention_notifications
+    user_ids_to_identifier_map
   end
 
   def notify_new

@@ -60,10 +60,8 @@ class ChatMessageEmailStatus < ActiveRecord::Base
     if mentioned_users_with_identifier.keys.empty?
       # There are now no mentions. Deleted all statuses where the type is some form of mention
       return mentioned_statuses_for_message(chat_message).destroy_all
-
     end
 
-    status_ids_to_be_deleted = []
     user_ids_needing_status = []
     new_record_attrs = []
     existing_statuses = mentioned_statuses_for_message(chat_message)
@@ -92,10 +90,6 @@ class ChatMessageEmailStatus < ActiveRecord::Base
     end
 
     self.insert_all!(new_record_attrs) if new_record_attrs.any?
-  end
-
-  def self.record_attrs_from_mention_info(user_id, mention_info)
-
   end
 
   def self.mentioned_statuses_for_message(chat_message)

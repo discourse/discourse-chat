@@ -599,7 +599,14 @@ export default Service.extend({
       }
 
       if (creator.id === this.currentUser.id) {
-        this.appEvents.trigger("chat:open-channel", channel);
+        if (
+          Site.currentProp("mobileView") ||
+          this.router.currentRouteName.startsWith("chat.")
+        ) {
+          this.router.transitionTo("chat.channel", channel.id, channel.title);
+        } else {
+          this.appEvents.trigger("chat:open-channel", channel);
+        }
       }
     });
   },

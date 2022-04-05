@@ -13,10 +13,7 @@ export default Component.extend({
     if (this.usernamesEmpty) {
       return;
     }
-    this.chat.getDmChannelForUsernames(this.usernames).then((chatChannel) => {
-      this.set("usernames", null);
-      this.afterCreate(chatChannel);
-    });
+    this.chat.getDmChannelForUsernames(this.usernames);
   },
 
   @action

@@ -3,7 +3,7 @@
 module DiscourseChat::DirectMessageChannelCreator
   attr_reader :chat_channel, :users
 
-  def self.create!(users)
+  def self.create!(creator, users)
     direct_messages_channel = DirectMessageChannel.for_user_ids(users.map(&:id).uniq)
     if direct_messages_channel
       chat_channel = ChatChannel.find_by!(chatable: direct_messages_channel)
@@ -13,7 +13,7 @@ module DiscourseChat::DirectMessageChannelCreator
     end
 
     update_memberships(users, chat_channel.id)
-    ChatPublisher.publish_new_direct_message_channel(chat_channel, users)
+    ChatPublisher.publish_new_direct_message_channel(chat_channel, creator, users)
     chat_channel
   end
 

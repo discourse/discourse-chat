@@ -590,7 +590,17 @@ export default Service.extend({
 
   _subscribeToNewDmChannelUpdates() {
     this.messageBus.subscribe("/chat/new-direct-message-channel", (busData) => {
-      this.startTrackingChannel(ChatChannel.create(busData.chat_channel));
+      const channel = ChatChannel.create(busData.chat_channel);
+      const creator = busData.creator;
+      this.startTrackingChannel(channel);
+      const users = channel?.chatable?.users;
+      if (!users) {
+        return;
+      }
+
+      if (creator.id === this.currentUser.id) {
+        this.appEvents.trigger("chat:open-channel", channel);
+      }
     });
   },
 
@@ -799,13 +809,7 @@ export default Service.extend({
     return ajax("/chat/direct_messages/create.json", {
       method: "POST",
       data: { usernames: usernames.uniq().join(",") },
-    })
-      .then((response) => {
-        const chatChannel = ChatChannel.create(response.chat_channel);
-        this.startTrackingChannel(chatChannel);
-        return chatChannel;
-      })
-      .catch(popupAjaxError);
+    }).catch(popupAjaxError);
   },
 
   _saveDraft(channelId, draft) {

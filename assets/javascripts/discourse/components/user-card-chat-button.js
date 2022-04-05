@@ -8,10 +8,6 @@ export default Component.extend({
   @action
   startChatting() {
     this.chat
-      .getDmChannelForUsernames([this.user.username])
-      .then((chatChannel) => {
-        this.appEvents.trigger("chat:open-channel", chatChannel);
-        this.appEvents.trigger("card:close");
-      });
+      .getDmChannelForUsernames([this.user.username]);
   },
 });

@@ -11,7 +11,7 @@ describe DiscourseChat::DirectMessageChannelCreator do
 
     it 'doesn’t create a new chat channel' do
       expect {
-        subject.create!([user_1, user_2])
+        subject.create!(user_1, [user_1, user_2])
       }.to change { ChatChannel.count }.by(0)
     end
   end
@@ -19,7 +19,7 @@ describe DiscourseChat::DirectMessageChannelCreator do
   context 'non existing direct message channel' do
     it 'creates a new chat channel' do
       expect {
-        subject.create!([user_1, user_2])
+        subject.create!(user_1, [user_1, user_2])
       }.to change { ChatChannel.count }.by(1)
     end
   end

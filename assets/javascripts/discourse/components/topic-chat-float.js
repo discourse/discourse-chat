@@ -408,9 +408,8 @@ export default Component.extend({
     return ajax("/chat/direct_messages/create.json", {
       method: "POST",
       data: { usernames: this.newDmUsernames.uniq().join(",") },
-    }).then((response) => {
+    }).then(() => {
       this.resetDmCreation();
-      this.switchChannel(response.chat_channel);
     });
   },
 

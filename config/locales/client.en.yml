@@ -234,7 +234,7 @@ en:
 
       selection:
         cancel: "Cancel"
-        quote_selection: "Quote"
+        quote_selection: "Quote in Topic"
         error: "There was an error moving the chat messages"
         title: "Move Chat to Topic"
         new_topic:

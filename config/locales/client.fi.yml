@@ -167,7 +167,6 @@ fi:
         username_instructions: "Kanavalle lähettävän botin käyttäjätunnus. Oletus on \"järjestelmä\", kun tämä jätetään tyhjäksi."
       selection:
         cancel: "Peruuta"
-        quote_selection: "Lainaus"
         error: "Chat-viestien siirtämisessä tapahtui virhe"
         title: "Siirrä chat ketjuun"
         new_topic:

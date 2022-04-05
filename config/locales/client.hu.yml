@@ -219,7 +219,6 @@ hu:
         username_instructions: "A csatornán közzétevő bot felhasználóneve. Ha üresen marad, akkor alapértelmezés szerint „rendszer”."
       selection:
         cancel: "Mégse"
-        quote_selection: "Idézet"
         error: "Hiba történt a csevegőüzenetek áthelyezésekor"
         title: "Csevegés áthelyezése a témához"
         new_topic:

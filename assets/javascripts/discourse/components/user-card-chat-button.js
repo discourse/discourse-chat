@@ -7,7 +7,6 @@ export default Component.extend({
 
   @action
   startChatting() {
-    this.chat
-      .getDmChannelForUsernames([this.user.username]);
+    this.chat.getDmChannelForUsernames([this.user.username]);
   },
 });

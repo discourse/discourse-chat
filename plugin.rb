@@ -445,4 +445,11 @@ after_initialize do
       end
     end
   end
+
+  add_api_key_scope(:chat, {
+    create_message: {
+      actions: %w[discourse_chat/chat#create_message],
+      params: %i[chat_channel_id]
+    }
+  })
 end

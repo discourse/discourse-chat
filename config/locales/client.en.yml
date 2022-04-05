@@ -6,6 +6,11 @@ en:
           actions:
             chat_channel_status_change: "Chat channel status changed"
             chat_channel_delete: "Chat channel deleted"
+      api:
+        scopes:
+          descriptions:
+            chat:
+              create_message: "Create a chat message in a specified channel."
     chat:
       dates:
         time_tiny: "h:mm"

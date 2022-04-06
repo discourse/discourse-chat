@@ -23,7 +23,7 @@ export default Component.extend(UppyUploadMixin, {
       fileInputSelector: `#${this.fileUploadElementId}`,
     });
     this.set("uploads", []);
-    this.appEvents.on("chat:load-uploads", this, "_loadUploads");
+    this.appEvents.on("chat-composer:load-uploads", this, "_loadUploads");
   },
 
   didInsertElement() {
@@ -35,7 +35,7 @@ export default Component.extend(UppyUploadMixin, {
 
   willDestroyElement() {
     this._super(...arguments);
-    this.appEvents.off("chat:load-uploads", this, "_loadUploads");
+    this.appEvents.off("chat-composer:load-uploads", this, "_loadUploads");
     document
       .querySelector(".chat-composer-input")
       .removeEventListener("paste", this._pasteEventListener);

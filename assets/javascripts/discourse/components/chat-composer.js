@@ -298,7 +298,7 @@ export default Component.extend(TextareaTextManipulation, {
     }
 
     this.set("_uploads", cloneJSON(newUploads));
-    this.appEvents.trigger("chat:load-uploads", this._uploads);
+    this.appEvents.trigger("chat-composer:load-uploads", this._uploads);
   },
 
   _inProgressUploadsChanged(inProgressUploads) {

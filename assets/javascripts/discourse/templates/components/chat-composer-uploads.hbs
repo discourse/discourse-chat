@@ -1,35 +1,33 @@
-{{#if allowUploads}}
-  {{#if showUploadsContainer}}
-    <div class="chat-composer-uploads-container">
-      {{#each uploads as |upload|}}
-        {{chat-composer-upload
-          upload=upload
-          done=true
-          cancel=(action "removeUpload" upload)
-          fileName=upload.original_filename
-        }}
-      {{/each}}
+{{#if showUploadsContainer}}
+  <div class="chat-composer-uploads-container">
+    {{#each uploads as |upload|}}
+      {{chat-composer-upload
+        upload=upload
+        done=true
+        cancel=(action "removeUpload" upload)
+        fileName=upload.original_filename
+      }}
+    {{/each}}
 
-      {{#each inProgressUploads as |upload|}}
-        {{chat-composer-upload
-          upload=upload
-          cancel=(action "cancelUploading" upload)
-          fileName=upload.fileName
-        }}
-      {{/each}}
-    </div>
-  {{/if}}
-
-  {{pick-files-button allowMultiple=true fileInputId=fileUploadElementId fileInputClass="hidden-upload-field"}}
-
-  <div class="drop-a-file">
-    <div class="drop-a-file-content">
-      <div class="drop-a-file-content-images">
-        {{d-icon "file-audio"}}
-        {{d-icon "file-video"}}
-        {{d-icon "file-image"}}
-      </div>
-      <p class="drop-a-file-content-text">{{d-icon "upload"}} Drop a file to upload it.</p>
-    </div>
+    {{#each inProgressUploads as |upload|}}
+      {{chat-composer-upload
+        upload=upload
+        cancel=(action "cancelUploading" upload)
+        fileName=upload.fileName
+      }}
+    {{/each}}
   </div>
 {{/if}}
+
+{{pick-files-button allowMultiple=true fileInputId=fileUploadElementId fileInputClass="hidden-upload-field"}}
+
+<div class="drop-a-file">
+  <div class="drop-a-file-content">
+    <div class="drop-a-file-content-images">
+      {{d-icon "file-audio"}}
+      {{d-icon "file-video"}}
+      {{d-icon "file-image"}}
+    </div>
+    <p class="drop-a-file-content-text">{{d-icon "upload"}} Drop a file to upload it.</p>
+  </div>
+</div>

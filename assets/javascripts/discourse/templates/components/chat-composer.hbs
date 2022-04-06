@@ -70,8 +70,9 @@
   {{/if}}
 </div>
 
-{{chat-composer-uploads
-  allowUploads=canAttachUploads
-  fileUploadElementId=fileUploadElementId
-  onUploadChanged=(action "uploadChanged")
-}}
+{{#if canAttachUploads}}
+  {{chat-composer-uploads
+    fileUploadElementId=fileUploadElementId
+    onUploadChanged=(action "uploadChanged")
+  }}
+{{/if}}

@@ -100,6 +100,7 @@ export default Component.extend(TextareaTextManipulation, {
     this.setProperties({
       toolbarButtons: toolbarBtns.concat(toolbarExtraButtons),
       inProgressUploads: [],
+      _uploads: [],
     });
   },
 
@@ -254,9 +255,9 @@ export default Component.extend(TextareaTextManipulation, {
       this.setProperties({
         value: this.draft.value,
         replyToMsg: this.draft.replyToMsg,
-        _uploads: cloneJSON(this.draft.uploads),
       });
-      this.appEvents.trigger("chat:load-uploads", this._uploads);
+
+      this._syncUploads(this.draft.uploads);
       this.setInReplyToMsg(this.draft.replyToMsg);
     }
 
@@ -264,18 +265,44 @@ export default Component.extend(TextareaTextManipulation, {
       this.setProperties({
         replyToMsg: null,
         value: this.editingMessage.message,
-
-        // uses uploads from edited message here...
-        _uploads: this.editingMessage.uploads
-          ? cloneJSON(this.editingMessage.uploads)
-          : [],
       });
-      this.appEvents.trigger("chat:load-uploads", this._uploads);
+
+      this._syncUploads(this.editingMessage.uploads);
       this._focusTextArea({ ensureAtEnd: true, resizeTextArea: false });
     }
 
     this.set("lastChatChannelId", this.chatChannel.id);
     this._resizeTextArea();
+  },
+
+  // the chat-composer needs to be able to set the internal list of uploads
+  // for chat-composer-uploads to preload in existing uploads for drafts
+  // and for when messages are being edited.
+  //
+  // the opposite is true as well -- when an upload is completed the chat-composer
+  // needs its internal state updated so drafts can be saved, which is handled
+  // by the uploadChanged action
+  _syncUploads(newUploads = []) {
+    const currentUploadIds = this._uploads.map((upl) => upl.id);
+    const newUploadIds = newUploads.map((upl) => upl.id);
+
+    // don't need to load the uploads into chat-composer-uploads if
+    // nothing has changed notherwise we would rerender for no reason
+    if (
+      currentUploadIds.length === newUploadIds.length &&
+      newUploadIds.every((newUploadId) =>
+        currentUploadIds.includes(newUploadId)
+      )
+    ) {
+      return;
+    }
+
+    this.set("_uploads", cloneJSON(newUploads));
+    this.appEvents.trigger("chat:load-uploads", this._uploads);
+  },
+
+  _inProgressUploadsChanged(inProgressUploads) {
+    this.set("inProgressUploads", inProgressUploads);
   },
 
   _replyToMsgChanged(replyToMsg) {
@@ -599,10 +626,6 @@ export default Component.extend(TextareaTextManipulation, {
     ).then(this.reset);
   },
 
-  _inProgressUploadsChanged(inProgressUploads) {
-    this.set("inProgressUploads", inProgressUploads);
-  },
-
   _messageIsValid() {
     const validLength =
       (this.value || "").trim().length >=
@@ -630,9 +653,9 @@ export default Component.extend(TextareaTextManipulation, {
   reset() {
     this.setProperties({
       value: "",
-      _uploads: [],
       inReplyMsg: null,
     });
+    this._syncUploads([]);
     this._focusTextArea({ ensureAtEnd: true, resizeTextArea: true });
     this.onValueChange?.(this.value, this._uploads, this.replyToMsg);
   },

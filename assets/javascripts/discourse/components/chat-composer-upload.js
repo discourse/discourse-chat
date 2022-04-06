@@ -18,8 +18,8 @@ export default Component.extend({
     }
   },
 
-  @discourseComputed("upload.original_filename", "upload.fileName")
-  fileName(uploadFileName, uppyFileName) {
-    return uploadFileName || uppyFileName;
+  @discourseComputed("isDone", "upload.{original_filename,filename}")
+  fileName(isDone, upload) {
+    return isDone ? upload.original_filename : upload.filename;
   },
 });

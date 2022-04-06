@@ -5,16 +5,21 @@ import { IMAGES_EXTENSIONS_REGEX } from "discourse/lib/uploads";
 export default Component.extend({
   IMAGE_TYPE: "image",
 
-  tagName: "span",
+  tagName: "",
   classNames: "chat-upload",
-  done: false,
+  isDone: false,
   upload: null,
-  cancel: null,
+  onCancel: null,
 
   @discourseComputed("upload.extension")
   type(extension) {
     if (IMAGES_EXTENSIONS_REGEX.test(extension)) {
       return this.IMAGE_TYPE;
     }
+  },
+
+  @discourseComputed("upload.original_filename", "upload.fileName")
+  fileName(uploadFileName, uppyFileName) {
+    return uploadFileName || uppyFileName;
   },
 });

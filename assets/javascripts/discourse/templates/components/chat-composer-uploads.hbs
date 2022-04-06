@@ -3,17 +3,15 @@
     {{#each uploads as |upload|}}
       {{chat-composer-upload
         upload=upload
-        done=true
-        cancel=(action "removeUpload" upload)
-        fileName=upload.original_filename
+        isDone=true
+        onCancel=(action "removeUpload" upload)
       }}
     {{/each}}
 
     {{#each inProgressUploads as |upload|}}
       {{chat-composer-upload
         upload=upload
-        cancel=(action "cancelUploading" upload)
-        fileName=upload.fileName
+        onCancel=(action "cancelUploading" upload)
       }}
     {{/each}}
   </div>

@@ -22,23 +22,22 @@ export default Component.extend(UppyUploadMixin, {
       uploads: [],
       fileInputSelector: `#${this.fileUploadElementId}`,
     });
-    this.set("uploads", []);
     this.appEvents.on("chat-composer:load-uploads", this, "_loadUploads");
   },
 
   didInsertElement() {
     this._super(...arguments);
-    document
-      .querySelector(".chat-composer-input")
-      .addEventListener("paste", this._pasteEventListener);
+    this.composerInputEl = document.querySelector(".chat-composer-input");
+    this.composerInputEl?.addEventListener("paste", this._pasteEventListener);
   },
 
   willDestroyElement() {
     this._super(...arguments);
     this.appEvents.off("chat-composer:load-uploads", this, "_loadUploads");
-    document
-      .querySelector(".chat-composer-input")
-      .removeEventListener("paste", this._pasteEventListener);
+    this.composerInputEl?.removeEventListener(
+      "paste",
+      this._pasteEventListener
+    );
   },
 
   uploadDone(upload) {

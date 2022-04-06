@@ -1,4 +1,5 @@
 import Component from "@ember/component";
+import { run } from "@ember/runloop";
 import { action } from "@ember/object";
 import { inject as service } from "@ember/service";
 import UppyMediaOptimization from "discourse/lib/uppy-media-optimization-plugin";
@@ -12,27 +13,24 @@ export default Component.extend(UppyUploadMixin, {
   type: "chat-composer",
   uploads: null,
   uploadCancelled: false,
+  useMultipartUploadsIfAvailable: true,
 
   init() {
     this._super(...arguments);
+    this.setProperties({
+      uploads: [],
+      fileInputSelector: `#${this.fileUploadElementId}`,
+    });
     this.set("uploads", []);
+    this.appEvents.on("chat:load-uploads", this, "_loadUploads");
   },
 
-  _uppyReady() {
-    if (this.siteSettings.composer_media_optimization_image_enabled) {
-      this._useUploadPlugin(UppyMediaOptimization, {
-        optimizeFn: (data, opts) =>
-          this.mediaOptimizationWorker.optimizeImage(data, opts),
-        runParallel: !this.site.isMobileDevice,
-      });
-    }
+  willDestroyElement() {
+    this._super(...arguments);
+    this.appEvents.off("chat:load-uploads", this, "_loadUploads");
   },
 
   uploadDone(upload) {
-    this._insertUpload(null, upload);
-  },
-
-  _insertUpload(_, upload) {
     this.uploads.pushObject(upload);
     this.onUploadChanged(this.uploads);
   },
@@ -47,6 +45,7 @@ export default Component.extend(UppyUploadMixin, {
     this.appEvents.trigger(`upload-mixin:${this.id}:cancel-upload`, {
       fileId: upload.id,
     });
+    this.uploads.removeObject(upload);
     this.onUploadChanged(this.uploads);
   },
 
@@ -74,5 +73,38 @@ export default Component.extend(UppyUploadMixin, {
     return {
       target: targetEl,
     };
+  },
+
+  _loadUploads(uploads) {
+    this._uppyInstance?.cancelAll();
+    this.set("uploads", uploads);
+  },
+
+  _uppyReady() {
+    if (this.siteSettings.composer_media_optimization_image_enabled) {
+      this._useUploadPlugin(UppyMediaOptimization, {
+        optimizeFn: (data, opts) =>
+          this.mediaOptimizationWorker.optimizeImage(data, opts),
+        runParallel: !this.site.isMobileDevice,
+      });
+    }
+
+    this._onPreProcessProgress((file) => {
+      const inProgressUpload = this.inProgressUploads.find(
+        (upl) => upl.id === file.id
+      );
+      if (!inProgressUpload?.processing) {
+        inProgressUpload?.set("processing", true);
+      }
+    });
+
+    this._onPreProcessComplete((file) => {
+      run(() => {
+        const inProgressUpload = this.inProgressUploads.find(
+          (upl) => upl.id === file.id
+        );
+        inProgressUpload?.set("processing", false);
+      });
+    });
   },
 });

@@ -1087,7 +1087,8 @@ body.composer-open .topic-chat-float-container {
         margin-right: 0.5em;
       }
 
-      .uploading {
+      .uploading,
+      .processing {
         font-size: var(--font-down-2);
         margin-right: 0.75em;
       }

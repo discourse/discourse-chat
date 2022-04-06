@@ -24,7 +24,11 @@
     {{#if done}}
       <span class="extension-pill">{{upload.extension}}</span>
     {{else}}
-      <span class="uploading">{{i18n "uploading"}}</span>
+      {{#if upload.processing}}
+        <span class="processing">{{i18n "processing"}}</span>
+      {{else}}
+        <span class="uploading">{{i18n "uploading"}}</span>
+      {{/if}}
       <progress class="upload-progress" id="file" max="100" value={{upload.progress}}></progress>
     {{/if}}
   </div>

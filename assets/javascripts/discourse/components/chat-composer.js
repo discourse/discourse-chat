@@ -46,11 +46,10 @@ export default Component.extend(TextareaTextManipulation, {
   showToolbar: false,
   timer: null,
   value: "",
-  inProgressUploads: 0,
+  inProgressUploads: null,
   composerFocusSelector: ".chat-composer-input",
 
   // Composer Uppy values
-  // // TODO (martin) should also check composerDisabled
   canAttachUploads: or(
     "siteSettings.chat_allow_uploads",
     "chatChannel.isDirectMessageChannel"
@@ -98,7 +97,10 @@ export default Component.extend(TextareaTextManipulation, {
         action: this.insertDiscourseLocalDate,
       });
     }
-    this.set("toolbarButtons", toolbarBtns.concat(toolbarExtraButtons));
+    this.setProperties({
+      toolbarButtons: toolbarBtns.concat(toolbarExtraButtons),
+      inProgressUploads: [],
+    });
   },
 
   didInsertElement() {
@@ -126,6 +128,7 @@ export default Component.extend(TextareaTextManipulation, {
       this,
       "_openInsertLinkModal"
     );
+    this.set("ready", true);
   },
 
   _modifySelection(opts = { type: null }) {
@@ -248,7 +251,12 @@ export default Component.extend(TextareaTextManipulation, {
       this.chatChannel.canModifyMessages(this.currentUser)
     ) {
       // uses uploads from draft here...
-      this.setProperties(this.draft);
+      this.setProperties({
+        value: this.draft.value,
+        replyToMsg: this.draft.replyToMsg,
+        _uploads: cloneJSON(this.draft.uploads),
+      });
+      this.appEvents.trigger("chat:load-uploads", this._uploads);
       this.setInReplyToMsg(this.draft.replyToMsg);
     }
 
@@ -262,6 +270,7 @@ export default Component.extend(TextareaTextManipulation, {
           ? cloneJSON(this.editingMessage.uploads)
           : [],
       });
+      this.appEvents.trigger("chat:load-uploads", this._uploads);
       this._focusTextArea({ ensureAtEnd: true, resizeTextArea: false });
     }
 
@@ -551,9 +560,14 @@ export default Component.extend(TextareaTextManipulation, {
     }
   },
 
-  @discourseComputed("value", "loading", "disableComposer", "inProgressUploads")
+  @discourseComputed(
+    "value",
+    "loading",
+    "disableComposer",
+    "inProgressUploads.[]"
+  )
   sendDisabled(value, loading, disableComposer, inProgressUploads) {
-    if (loading || disableComposer || inProgressUploads) {
+    if (loading || disableComposer || inProgressUploads.length > 0) {
       return true;
     }
 

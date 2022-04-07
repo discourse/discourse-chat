@@ -13,7 +13,6 @@ export default Component.extend(UppyUploadMixin, {
   id: "chat-composer-uploader",
   type: "chat-composer",
   uploads: null,
-  uploadCancelled: false,
   useMultipartUploadsIfAvailable: true,
 
   init() {

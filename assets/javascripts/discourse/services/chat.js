@@ -1,3 +1,4 @@
+import userSearch from "discourse/lib/user-search";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import Service, { inject as service } from "@ember/service";
 import Site from "discourse/models/site";
@@ -347,6 +348,11 @@ export default Service.extend({
       }
       return (this.allChannels || []).findBy(key, value);
     });
+  },
+
+  searchPossibleDirectMessageUsers(options) {
+    // TODO: implement a chat specific user search function
+    return userSearch(options);
   },
 
   getIdealFirstChannelId() {
@@ -795,7 +801,16 @@ export default Service.extend({
     };
   },
 
-  getDmChannelForUsernames(usernames) {
+  upsertDmChannelForUser(channel, user) {
+    const usernames = (channel.chatable.users || [])
+      .mapBy("username")
+      .concat(user.username)
+      .uniq();
+
+    return this.upsertDmChannelForUsernames(usernames);
+  },
+
+  upsertDmChannelForUsernames(usernames) {
     return ajax("/chat/direct_messages/create.json", {
       method: "POST",
       data: { usernames: usernames.uniq().join(",") },
@@ -808,6 +823,16 @@ export default Service.extend({
       .catch(popupAjaxError);
   },
 
+  getDmChannelForUsernames(usernames) {
+    return ajax(`/chat/direct_messages/${usernames}.json`);
+  },
+
+  poss(usernames) {
+    return ajax(`/chat/direct_messages/${usernames}.json`).catch(
+      popupAjaxError
+    );
+  },
+
   _saveDraft(channelId, draft) {
     const data = { channel_id: channelId };
     if (draft) {
@@ -817,18 +842,18 @@ export default Service.extend({
     ajax("/chat/drafts", { type: "POST", data });
   },
 
-  setDraftForChannel(channelId, draft) {
+  setDraftForChannel(channel, draft) {
     if (
       draft &&
       (draft.value || draft.uploads.length > 0 || draft.replyToMsg)
     ) {
-      this.draftStore[channelId] = draft;
+      this.draftStore[channel.id] = draft;
     } else {
-      delete this.draftStore[channelId];
+      delete this.draftStore[channel.id];
       draft = null; // _saveDraft will destroy draft
     }
 
-    discourseDebounce(this, this._saveDraft, channelId, draft, 2000);
+    discourseDebounce(this, this._saveDraft, channel.id, draft, 2000);
   },
 
   getDraftForChannel(channelId) {

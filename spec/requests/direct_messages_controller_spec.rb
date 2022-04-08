@@ -22,6 +22,41 @@ RSpec.describe DiscourseChat::DirectMessagesController do
     ChatChannel.create!(chatable: direct_messages_channel)
   end
 
+  describe "#show" do
+    context "user is not allowed to chat" do
+      before do
+        SiteSetting.chat_allowed_groups = nil
+      end
+
+      it "returns a forbidden rror" do
+        get "/chat/direct_messages/#{user1.username}.json"
+        expect(response.status).to eq(403)
+      end
+    end
+
+    context "channel doesn’t exists" do
+      it "returns a not found error" do
+        get "/chat/direct_messages/#{user1.username}.json"
+        expect(response.status).to eq(404)
+      end
+    end
+
+    context "channel exists" do
+      let!(:channel) {
+        direct_messages_channel = DirectMessageChannel.create!
+        direct_messages_channel.direct_message_users.create!(user_id: user.id)
+        direct_messages_channel.direct_message_users.create!(user_id: user1.id)
+        ChatChannel.create!(chatable: direct_messages_channel)
+      }
+
+      it "returns the channel" do
+        get "/chat/direct_messages/#{user1.username}.json"
+        expect(response.status).to eq(200)
+        expect(response.parsed_body["chat_channel"]["id"]).to eq(channel.id)
+      end
+    end
+  end
+
   describe "#create" do
     shared_examples "creating dms" do
       it "creates a new dm channel with username(s) provided" do

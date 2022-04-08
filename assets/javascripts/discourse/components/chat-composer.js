@@ -1,3 +1,4 @@
+import { isEmpty } from "@ember/utils";
 import Component from "@ember/component";
 import showModal from "discourse/lib/show-modal";
 import UppyMediaOptimization from "discourse/lib/uppy-media-optimization-plugin";
@@ -119,6 +120,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
         title: "chat.upload",
       });
     }
+    this.set("toolbarButtons", toolbarBtns.concat(toolbarExtraButtons));
 
     if (this.siteSettings.discourse_local_dates_enabled) {
       toolbarBtns.push({
@@ -544,6 +546,10 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
 
   @afterRender
   _focusTextArea(opts = { ensureAtEnd: false, resizeTextArea: true }) {
+    if (this.chatChannel.isDraft) {
+      return;
+    }
+
     if (!this._textarea) {
       return;
     }
@@ -595,20 +601,38 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     this.set("emojiPickerIsActive", false);
   },
 
-  @discourseComputed("previewing", "chatChannel", "canInteractWithChat")
-  disableComposer(previewing, chatChannel, canInteractWithChat) {
+  @discourseComputed(
+    "chatChannel.{id,isFetchingChannelPreview,previewedChannel,chatable.users.[]}",
+    "canInteractWithChat"
+  )
+  disableComposer(channel, canInteractWithChat) {
     return (
-      previewing ||
-      !chatChannel.canModifyMessages(this.currentUser) ||
-      !canInteractWithChat
+      (channel.isDraft &&
+        (channel.previewedChannel ||
+          channel.isFetchingChannelPreview ||
+          isEmpty(channel.chatable.users))) ||
+      !canInteractWithChat ||
+      !channel.canModifyMessages(this.currentUser)
     );
   },
 
-  @discourseComputed("previewing", "userSilenced", "chatChannel")
+  @discourseComputed(
+    "previewing",
+    "userSilenced",
+    "chatChannel.{chatable.users.[],id,previewedChannel}"
+  )
   placeholder(previewing, userSilenced, chatChannel) {
-    if (!this.chatChannel.canModifyMessages(this.currentUser)) {
+    if (!chatChannel.canModifyMessages(this.currentUser)) {
       return I18n.t("chat.placeholder_new_message_disallowed", {
         status: channelStatusName(chatChannel.status).toLowerCase(),
+      });
+    }
+
+    if (chatChannel.isDraft) {
+      return I18n.t("chat.placeholder_start_conversation", {
+        usernames: chatChannel.chatable.users.length
+          ? chatChannel.chatable.users.mapBy("username").join(", ")
+          : "...",
       });
     }
 
@@ -679,7 +703,9 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
 
   @action
   internalSendMessage() {
-    return this.sendMessage(this.value, this.uploads).then(this.reset);
+    return this.sendMessage(this.value, this.uploads, this.chatChannel).then(
+      this.reset
+    );
   },
 
   @action
@@ -714,6 +740,10 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
 
   @action
   reset() {
+    if (this.isDestroyed || this.isDestroying) {
+      return;
+    }
+
     this.setProperties({
       value: "",
       uploads: [],

@@ -1,4 +1,3 @@
-import selectKit from "discourse/tests/helpers/select-kit-helper";
 import {
   acceptance,
   exists,
@@ -7,6 +6,7 @@ import {
 } from "discourse/tests/helpers/qunit-helpers";
 import { click, currentURL, fillIn, visit } from "@ember/test-helpers";
 import { test } from "qunit";
+import I18n from "I18n";
 
 acceptance("Discourse Chat - chat browsing", function (needs) {
   const editedChannelName = "this is an edit test!";
@@ -183,6 +183,17 @@ acceptance("Discourse Chat - chat browsing no channels", function (needs) {
         chat_messages: [],
       });
     });
+    server.get("/chat/direct_messages/hawk.json", () => {
+      return helper.response({
+        chat_channel: {
+          id: 75,
+          title: "hawk",
+        },
+      });
+    });
+    server.get("/u/hawk/card.json", () => {
+      return helper.response({});
+    });
   });
 
   test("Chat browsing shows empty state with create dm UI", async function (assert) {
@@ -191,13 +202,21 @@ acceptance("Discourse Chat - chat browsing no channels", function (needs) {
     assert.ok(exists(".start-creating-dm-btn"));
 
     await click(".start-creating-dm-btn");
-    assert.ok(exists(".dm-creation-row"));
-    let users = selectKit(".dm-user-chooser");
-    await click(".dm-user-chooser");
-    await users.expand();
-    await fillIn(".dm-user-chooser input.filter-input", "hawk");
-    await users.selectRowByValue("hawk");
-    await click("button.create-dm");
-    assert.equal(currentURL(), "/chat/channel/75/@hawk");
+
+    assert.equal(
+      currentURL(),
+      `/chat/channel/draft/${encodeURIComponent(
+        I18n.t("chat.direct_message_creator.title")
+      )}`
+    );
+    assert.ok(exists(".direct-message-creator"));
+
+    await fillIn(".filter-usernames", "hawk");
+    await click('.chat-user-avatar-container[data-user-card="hawk"]');
+
+    assert.equal(
+      query(".chat-composer-row textarea").placeholder,
+      I18n.t("chat.placeholder_start_conversation", { usernames: "hawk" })
+    );
   });
 });

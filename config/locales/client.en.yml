@@ -105,9 +105,10 @@ en:
       open_message: "Open message in chat"
       placeholder_self: "Jot something down"
       placeholder_others: "Chat with %{messageRecipient}"
-      placeholder_previewing: "Join the channel to send a message."
+      placeholder_previewing: "Send a message to join the conversation."
       placeholder_new_message_disallowed: "Channel is %{status}, you cannot send new messages right now."
       placeholder_silenced: "You cannot send messages at this time."
+      placeholder_start_conversation: Start a conversation with %{usernames}
       remove_upload: "Remove file"
       react: "React with emoji"
       reply: "Reply"
@@ -146,6 +147,12 @@ en:
         closed: "Closed"
         open_header: "Channel is open."
         open: "Open"
+
+      direct_message_creator:
+        title: New Message
+        prefix: "To:"
+        no_results: No results
+        selected_user_title: "Deselect %{username}"
 
       channel_selector:
         title: "Jump to channel"

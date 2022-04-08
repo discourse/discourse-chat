@@ -82,7 +82,7 @@ export default Component.extend({
     event.stopPropagation();
 
     const composer = document.querySelector(".chat-composer-input");
-    if (composer) {
+    if (composer && !this.chatChannel.isDraft) {
       this.appEvents.trigger("chat:insert-text", event.key);
       composer.focus();
     }
@@ -128,6 +128,12 @@ export default Component.extend({
   @action
   navigateToIndex() {
     this.router.transitionTo("chat.index");
+  },
+
+  @action
+  replaceChannel(channel) {
+    this.set("chatChannel", null);
+    this.set("chatChannel", channel);
   },
 
   @action

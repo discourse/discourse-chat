@@ -1,0 +1,80 @@
+{{#if (and channel.isDraft (not isLoading))}}
+  <div class="direct-message-creator">
+    <div
+      class="filter-area {{if isFilterFocused "is-focused"}}"
+      role="button"
+      {{on "click" this.focusFilter}}
+    >
+      {{d-progress-bar
+        key="dm-recipients-loader"
+        isLoading=(or isFiltering channel.isFetchingChannelPreview)
+      }}
+
+      <span class="prefix">
+        {{i18n "chat.direct_message_creator.prefix"}}
+      </span>
+
+      <div class="recipients">
+        {{#each channel.chatable.users as |selectedUser|}}
+          {{#d-button
+            class=(concat
+              "selected-user"
+              (if (eq highlightedSelectedUser selectedUser) " is-highlighted")
+            )
+            action=(action "deselectUser" selectedUser)
+            translatedTitle=(i18n
+              "chat.direct_message_creator.selected_user_title"
+              username=selectedUser.username
+            )
+          }}
+            {{chat-user-avatar user=selectedUser}}
+            <span class="username">{{selectedUser.username}}</span>
+            {{d-icon "times"}}
+          {{/d-button}}
+        {{/each}}
+
+        {{input
+          class="filter-usernames"
+          value=term
+          autofocus="autofocus"
+          input=(action "onFilterInput" value="target.value")
+          key-down=(action "handleFilterKeyDown")
+          focus-in=(action (mut isFilterFocused) true)
+          focus-out=(action "onFilterInputFocusOut")
+        }}
+      </div>
+    </div>
+
+    {{#if (not (or isFiltering channel.isFetchingChannelPreview))}}
+      {{#if users}}
+        <div class="results-container">
+          <ul class="results">
+            {{#each users as |user|}}
+              <li
+                class="user {{if (eq focusedUser user) "is-focused"}}"
+                data-username={{user.username}}
+                role="button"
+                tabindex="-1"
+                {{on "click" (action "selectUser" user)}}
+                {{on "mouseenter" (action (mut focusedUser) user)}}
+                {{on "focus" (action (mut focusedUser) user)}}
+                {{on "keyup" (action "handleUserKeyUp" user)}}
+              >
+                {{chat-user-avatar user=user avatarSize="medium"}}
+                {{user-info user=user includeLink=false includeAvatar=false}}
+              </li>
+            {{/each}}
+          </ul>
+        </div>
+      {{else}}
+        {{#if term.length}}
+          <div class="no-results-container">
+            <p class="no-results">
+              {{i18n "chat.direct_message_creator.no_results"}}
+            </p>
+          </div>
+        {{/if}}
+      {{/if}}
+    {{/if}}
+  </div>
+{{/if}}

@@ -235,6 +235,21 @@ acceptance("Discourse Chat - without unread", function (needs) {
     server.post("/chat/chat_channels/:chatChannelId/unfollow", () => {
       return helper.response({ success: "OK" });
     });
+    server.get("/chat/direct_messages/hawk.json", () => {
+      return helper.response({
+        chat_channel: {
+          id: 75,
+          title: "hawk",
+          chatable_type: "DirectMessageChannel",
+          chatable: {
+            users: [{ username: "hawk" }],
+          },
+        },
+      });
+    });
+    server.get("/u/hawk/card.json", () => {
+      return helper.response({});
+    });
   });
   needs.hooks.beforeEach(function () {
     Object.defineProperty(this, "chatService", {
@@ -867,29 +882,27 @@ Widget.triangulate(arg: "test")
   test("creating a new direct message channel works", async function (assert) {
     await visit("/chat/channel/9/Site");
     await click(".new-dm");
-    let users = selectKit(".dm-user-chooser");
-    await click(".dm-user-chooser");
-    await users.expand();
-    await fillIn(".dm-user-chooser input.filter-input", "hawk");
-    await users.selectRowByValue("hawk");
-    await click("button.create-dm");
-    assert.equal(currentURL(), "/chat/channel/75/@hawk");
+    await fillIn(".filter-usernames", "hawk");
+    await click("li.user[data-username='hawk']");
+
     assert.notOk(
       query(".join-channel-btn"),
       "Join channel button is not present"
+    );
+    const enabledComposer = document.querySelector(".chat-composer-input");
+    assert.ok(!enabledComposer.disabled);
+    assert.equal(
+      enabledComposer.placeholder,
+      I18n.t("chat.placeholder_start_conversation", { usernames: "hawk" })
     );
   });
 
   test("creating a new direct message channel from popup chat works", async function (assert) {
     await visit("/t/internationalization-localization/280");
     await click(".new-dm");
-    let users = selectKit(".dm-user-chooser");
-    await click(".dm-user-chooser");
-    await users.expand();
-    await fillIn(".dm-user-chooser input.filter-input", "hawk");
-    await users.selectRowByValue("hawk");
-    await click("button.create-dm");
-    assert.strictEqual(query(".dm-username").innerText, "hawk");
+    await fillIn(".filter-usernames", "hawk");
+    await click('.chat-user-avatar-container[data-user-card="hawk"]');
+    assert.ok(query(".selected-user").innerText, "hawk");
   });
 
   test("Reacting works with no existing reactions", async function (assert) {
@@ -1308,10 +1321,13 @@ acceptance(
       });
     });
 
-    test("Join button is present and textarea disabled when previewing channel", async function (assert) {
+    test("Composer placeholder is specific when previewing", async function (assert) {
       await visit("/chat/channel/70/preview-me");
-      assert.ok(exists(".join-channel-btn"), "Join channel button is present");
-      assert.equal(query(".chat-composer-row textarea").disabled, true);
+
+      assert.equal(
+        query(".chat-composer-row textarea").placeholder,
+        I18n.t("chat.placeholder_previewing")
+      );
     });
 
     test("Create channel modal", async function (assert) {

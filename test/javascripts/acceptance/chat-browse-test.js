@@ -16,7 +16,6 @@ import {
 } from "discourse/plugins/discourse-chat/chat-fixtures";
 import { Promise } from "rsvp";
 
-
 const chatSettled = async () => {
   await settled();
   if (isLegacyEmber()) {
@@ -181,7 +180,7 @@ acceptance("Discourse Chat - chat browsing no channels", function (needs) {
       return helper.response({
         chat_channel: {
           id: 75,
-          title: "@hawk"
+          title: "@hawk",
         },
       });
     });
@@ -238,7 +237,7 @@ acceptance("Discourse Chat - chat browsing no channels", function (needs) {
         unread_mentions: 0,
         last_message_sent_at: "2021-11-08T21:26:05.710Z",
       },
-      creator: hawkAsJson
+      creator: hawkAsJson,
     });
 
     await chatSettled();

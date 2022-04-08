@@ -1,6 +1,5 @@
 import Component from "@ember/component";
 import { clipboardHelpers } from "discourse/lib/utilities";
-import { run } from "@ember/runloop";
 import { action } from "@ember/object";
 import { inject as service } from "@ember/service";
 import UppyMediaOptimization from "discourse/lib/uppy-media-optimization-plugin";
@@ -44,9 +43,9 @@ export default Component.extend(UppyUploadMixin, {
     this.onUploadChanged(this.uploads);
   },
 
-  @discourseComputed("uploads.[]", "inProgressUploads.[]")
-  showUploadsContainer(uploads, inProgressUploads) {
-    return uploads?.length > 0 || inProgressUploads?.length > 0;
+  @discourseComputed("uploads.length", "inProgressUploads.length")
+  showUploadsContainer(uploadsCount, inProgressUploadsCount) {
+    return uploadsCount > 0 || inProgressUploadsCount > 0;
   },
 
   @action
@@ -99,29 +98,21 @@ export default Component.extend(UppyUploadMixin, {
     }
 
     this._onPreProcessProgress((file) => {
-      const inProgressUpload = this.inProgressUploads.find(
-        (upl) => upl.id === file.id
-      );
+      const inProgressUpload = this.inProgressUploads.findBy("id", file.id);
       if (!inProgressUpload?.processing) {
         inProgressUpload?.set("processing", true);
       }
     });
 
     this._onPreProcessComplete((file) => {
-      run(() => {
-        const inProgressUpload = this.inProgressUploads.find(
-          (upl) => upl.id === file.id
-        );
-        inProgressUpload?.set("processing", false);
-      });
+      const inProgressUpload = this.inProgressUploads.findBy("id", file.id);
+      inProgressUpload?.set("processing", false);
     });
   },
 
   @bind
   _pasteEventListener(event) {
-    if (
-      document.activeElement !== document.querySelector(".chat-composer-input")
-    ) {
+    if (document.activeElement !== this.composerInputEl) {
       return;
     }
 

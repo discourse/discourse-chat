@@ -279,10 +279,10 @@ export default Component.extend(TextareaTextManipulation, {
   //
   // the opposite is true as well -- when an upload is completed the chat-composer
   // needs its internal state updated so drafts can be saved, which is handled
-  // by the uploadChanged action
+  // by the uploadsChanged action
   _syncUploads(newUploads = []) {
-    const currentUploadIds = this._uploads.map((upl) => upl.id);
-    const newUploadIds = newUploads.map((upl) => upl.id);
+    const currentUploadIds = this._uploads.mapBy("id");
+    const newUploadIds = newUploads.mapBy("id");
 
     // don't need to load the uploads into chat-composer-uploads if
     // nothing has changed notherwise we would rerender for no reason
@@ -698,7 +698,7 @@ export default Component.extend(TextareaTextManipulation, {
   },
 
   @action
-  uploadChanged(uploads) {
+  uploadsChanged(uploads) {
     this.set("_uploads", uploads);
     this.onValueChange?.(this.value, this._uploads, this.replyToMsg);
   },

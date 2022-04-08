@@ -6,6 +6,11 @@ en:
           actions:
             chat_channel_status_change: "Chat channel status changed"
             chat_channel_delete: "Chat channel deleted"
+      api:
+        scopes:
+          descriptions:
+            chat:
+              create_message: "Create a chat message in a specified channel."
     chat:
       dates:
         time_tiny: "h:mm"
@@ -234,7 +239,7 @@ en:
 
       selection:
         cancel: "Cancel"
-        quote_selection: "Quote"
+        quote_selection: "Quote in Topic"
         error: "There was an error moving the chat messages"
         title: "Move Chat to Topic"
         new_topic:

@@ -10,6 +10,7 @@
 enabled_site_setting :chat_enabled
 
 register_asset 'stylesheets/common/common.scss'
+register_asset 'stylesheets/common/d-progress-bar.scss'
 register_asset 'stylesheets/common/incoming-chat-webhooks.scss'
 register_asset 'stylesheets/mobile/chat-message.scss', :mobile
 register_asset 'stylesheets/common/chat-message.scss'

@@ -28,7 +28,7 @@ RSpec.describe DiscourseChat::DirectMessagesController do
         SiteSetting.chat_allowed_groups = nil
       end
 
-      it "returns a forbidden rror" do
+      it "returns a forbidden error" do
         get "/chat/direct_messages/#{user1.username}.json"
         expect(response.status).to eq(403)
       end

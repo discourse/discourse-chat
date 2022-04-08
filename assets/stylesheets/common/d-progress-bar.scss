@@ -45,11 +45,6 @@
     width: 100%;
   }
 
-  body.discourse-hub-webview & {
-    // DiscourseHub obscures the top 1px to work around an iOS bug
-    top: 1px;
-  }
-
   body.footer-nav-ipad & {
     top: 49px; // TODO: Share $footer-nav-height from footer-nav.scss
   }

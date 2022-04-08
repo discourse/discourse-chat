@@ -2,11 +2,30 @@ import selectKit from "discourse/tests/helpers/select-kit-helper";
 import {
   acceptance,
   exists,
+  publishToMessageBus,
   query,
   updateCurrentUser,
 } from "discourse/tests/helpers/qunit-helpers";
-import { click, currentURL, fillIn, visit } from "@ember/test-helpers";
+import { click, currentURL, fillIn, settled, visit } from "@ember/test-helpers";
+import { isLegacyEmber } from "discourse-common/config/environment";
+import { next } from "@ember/runloop";
 import { test } from "qunit";
+import {
+  chatChannels,
+  directMessageChannels,
+} from "discourse/plugins/discourse-chat/chat-fixtures";
+
+const chatSettled = async () => {
+  await settled();
+  if (isLegacyEmber()) {
+    // In the legacy environment, settled() doesn't always seem to work for us
+    // Using `next()` seems to work around the problem
+    // This hack can be removed once we're 100% Ember CLI
+    await new Promise((resolve) => {
+      next(resolve);
+    });
+  }
+};
 
 acceptance("Discourse Chat - chat browsing", function (needs) {
   const editedChannelName = "this is an edit test!";
@@ -152,28 +171,19 @@ acceptance("Discourse Chat - chat browsing no channels", function (needs) {
     });
     server.post("/chat/direct_messages/create.json", () => {
       return helper.response({
-        chat_channel: {
-          chat_channels: [],
-          chatable: { users: [hawkAsJson] },
-          chatable_id: 16,
-          chatable_type: "DirectMessageChannel",
-          chatable_url: null,
-          id: 75,
-          last_read_message_id: null,
-          title: "@hawk",
-          unread_count: 0,
-          unread_mentions: 0,
-          last_message_sent_at: "2021-11-08T21:26:05.710Z",
-        },
+        chat_channel: directMessageChannels[0],
       });
     });
+
     server.get("/chat/chat_channels/:chatChannelId", () => {
       return helper.response({
         chat_channel: {
           id: 75,
+          title: "@hawk"
         },
       });
     });
+
     server.get("/chat/:chatChannelId/messages.json", () => {
       return helper.response({
         meta: {
@@ -183,9 +193,14 @@ acceptance("Discourse Chat - chat browsing no channels", function (needs) {
         chat_messages: [],
       });
     });
+
+    server.get("/chat/chat_channels.json", () => {
+      return helper.response(chatChannels);
+    });
   });
 
   test("Chat browsing shows empty state with create dm UI", async function (assert) {
+    updateCurrentUser({ id: 2 });
     await visit("/chat/browse");
     assert.notOk(exists(".chat-channel-settings-row"));
     assert.ok(exists(".start-creating-dm-btn"));
@@ -198,6 +213,33 @@ acceptance("Discourse Chat - chat browsing no channels", function (needs) {
     await fillIn(".dm-user-chooser input.filter-input", "hawk");
     await users.selectRowByValue("hawk");
     await click("button.create-dm");
+
+    const hawkAsJson = {
+      username: "hawk",
+      id: 2,
+      name: "hawk",
+      avatar_template:
+        "https://avatars.discourse.org/v3/letter/t/41988e/{size}.png",
+    };
+
+    await publishToMessageBus("/chat/new-direct-message-channel", {
+      chat_channel: {
+        chat_channels: [],
+        chatable: { users: [hawkAsJson] },
+        chatable_id: 16,
+        chatable_type: "DirectMessageChannel",
+        chatable_url: null,
+        id: 75,
+        last_read_message_id: null,
+        title: "@hawk",
+        unread_count: 0,
+        unread_mentions: 0,
+        last_message_sent_at: "2021-11-08T21:26:05.710Z",
+      },
+      creator: hawkAsJson
+    });
+
+    await chatSettled();
     assert.equal(currentURL(), "/chat/channel/75/@hawk");
   });
 });

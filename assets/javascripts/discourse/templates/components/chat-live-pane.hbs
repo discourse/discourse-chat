@@ -1,5 +1,5 @@
 {{#if fullPage}}
-  <div class="chat-full-page-header {{if previewing "previewing"}}">
+  <div class="chat-full-page-header {{if previewing 'previewing'}}">
     <div class="chat-channel-header-details">
       {{#if site.mobileView}}
         {{d-button class="btn-flat" icon="chevron-left" action=onBackClick}}
@@ -28,7 +28,7 @@
 {{direct-message-creator
   channel=chatChannel
   isLoading=sendingloading
-  onReplaceChannel=onReplaceChannel
+  onSwitchChannel=onSwitchChannel
 }}
 
 <div class="chat-messages-scroll chat-messages-container">
@@ -55,7 +55,7 @@
         isHovered=(eq message.id hoveredMessageId)
         onHoverMessage=(action "onHoverMessage")
         previewing=previewing
-        onReplaceChannel=onReplaceChannel
+        onSwitchChannel=onSwitchChannel
       }}
     {{/each}}
     {{conditional-loading-spinner condition=this.loadingMorePast}}

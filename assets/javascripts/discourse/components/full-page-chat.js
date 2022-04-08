@@ -131,14 +131,18 @@ export default Component.extend({
   },
 
   @action
-  replaceChannel(channel) {
-    this.set("chatChannel", null);
-    this.switchChannel(channel);
-  },
+  switchChannel(channel, options = {}) {
+    options = Object.assign({}, { replace: false, transition: true }, options);
 
-  @action
-  switchChannel(channel) {
-    if (channel.id !== this.chatChannel?.id) {
+    if (options.replace) {
+      this.set("chatChannel", null);
+      this.set("chatChannel", channel);
+    }
+
+    if (
+      options.transition &&
+      (options.replace || channel.id !== this.chatChannel?.id)
+    ) {
       this.router.transitionTo("chat.channel", channel.id, channel.title);
     }
 

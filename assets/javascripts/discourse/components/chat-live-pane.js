@@ -57,7 +57,6 @@ export default Component.extend({
   loadingMoreFuture: false,
   hoveredMessageId: null,
   onSwitchChannel: null,
-  onReplaceChannel: null,
 
   allPastMessagesLoaded: false,
   previewing: false,
@@ -1002,7 +1001,9 @@ export default Component.extend({
           });
         });
 
-        return this.onReplaceChannel(ChatChannel.create(result.chat_channel));
+        return this.onSwitchChannel(ChatChannel.create(result.chat_channel), {
+          replace: true,
+        });
       })
       .finally(() => {
         if (this.isDestroyed || this.isDestroying) {

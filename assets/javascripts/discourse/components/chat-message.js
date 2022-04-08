@@ -706,7 +706,7 @@ export default Component.extend({
       this.notifyPropertyChange("emojiReactions");
 
       if (this.previewing) {
-        this.onReplaceChannel(this.chatChannel);
+        this.onSwitchChannel(this.chatChannel, { replace: true });
       }
     });
   },

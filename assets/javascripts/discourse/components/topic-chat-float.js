@@ -339,8 +339,12 @@ export default Component.extend({
   },
 
   @action
-  switchChannel(channel) {
-    this.set("activeChannel", null);
+  switchChannel(channel, options = {}) {
+    options = Object.assign({}, { replace: true }, options);
+
+    if (options.replace) {
+      this.set("activeChannel", null);
+    }
 
     if (this.site.mobileView || this.chat.isChatPage) {
       return this.router.transitionTo("chat.channel", channel.id, channel.title)

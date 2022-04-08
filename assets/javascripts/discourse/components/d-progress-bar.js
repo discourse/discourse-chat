@@ -1,3 +1,5 @@
+// temporary stuff to be moved in core with discourse-loading-slider
+
 import Component from "@ember/component";
 import { cancel, later, schedule } from "@ember/runloop";
 

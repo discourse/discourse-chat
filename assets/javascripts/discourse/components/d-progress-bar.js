@@ -1,6 +1,5 @@
 import Component from "@ember/component";
 import { cancel, later, schedule } from "@ember/runloop";
-import Evented from "@ember/object/evented";
 
 const STORE_LOADING_TIMES = 5;
 const DEFAULT_LOADING_TIME = 0.3;

@@ -14,6 +14,8 @@ import {
   chatChannels,
   directMessageChannels,
 } from "discourse/plugins/discourse-chat/chat-fixtures";
+import { Promise } from "rsvp";
+
 
 const chatSettled = async () => {
   await settled();

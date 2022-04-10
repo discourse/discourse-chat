@@ -155,7 +155,7 @@ export default Component.extend({
       this.set("allPastMessagesLoaded", false);
       this.cancelEditing();
 
-      if (!this.chatChannel.id !== "draft") {
+      if (this.chatChannel?.id !== "draft") {
         this.chat
           .getChannelBy("id", this.chatChannel.id)
           .then((trackedChannel) => {

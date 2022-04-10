@@ -8,6 +8,7 @@ import { bind } from "discourse-common/utils/decorators";
 import { INPUT_DELAY } from "discourse-common/config/environment";
 import { inject as service } from "@ember/service";
 import { schedule } from "@ember/runloop";
+import { not } from "@ember/object/computed";
 
 export default Component.extend({
   tagName: "",
@@ -66,6 +67,8 @@ export default Component.extend({
         this.set("isFiltering", false);
       });
   },
+
+  shouldRenderResults: not("isFiltering", "channel.isFetchingChannelPreview"),
 
   @action
   selectUser(user) {

@@ -45,7 +45,7 @@
       </div>
     </div>
 
-    {{#if (not (or isFiltering channel.isFetchingChannelPreview))}}
+    {{#if shouldRenderResults}}
       {{#if users}}
         <div class="results-container">
           <ul class="results">

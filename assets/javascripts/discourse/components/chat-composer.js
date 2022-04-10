@@ -120,7 +120,6 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
         title: "chat.upload",
       });
     }
-    this.set("toolbarButtons", toolbarBtns.concat(toolbarExtraButtons));
 
     if (this.siteSettings.discourse_local_dates_enabled) {
       toolbarBtns.push({

@@ -635,9 +635,7 @@ export default Component.extend(TextareaTextManipulation, {
 
   @action
   internalSendMessage() {
-    return this.sendMessage(this.value, this._uploads, this.chatChannel).then(
-      this.reset
-    );
+    return this.sendMessage(this.value, this._uploads).then(this.reset);
   },
 
   @action

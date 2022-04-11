@@ -1533,37 +1533,49 @@ acceptance("Discourse Chat - image uploads", function (needs) {
     const appEvents = loggedInUser().appEvents;
     const done = assert.async();
 
-    appEvents.on("chat-composer:all-uploads-complete", async () => {
-      await settled();
-      assert.ok(exists(".chat-upload"), "the chat upload preview should show");
-      assert.notOk(
-        exists(".bottom-data .uploading"),
-        "the chat upload preview should no longer say it is uploading"
-      );
-      assert.strictEqual(
-        queryAll(".chat-composer-input").val(),
-        "",
-        "the chat composer does not get the upload markdown when the upload is complete"
-      );
-      done();
-    });
+    appEvents.on(
+      "upload-mixin:chat-composer-uploader:all-uploads-complete",
+      async () => {
+        await settled();
+        assert.ok(
+          exists(".preview .preview-img"),
+          "the chat upload preview should show"
+        );
+        assert.notOk(
+          exists(".bottom-data .uploading"),
+          "the chat upload preview should no longer say it is uploading"
+        );
+        assert.strictEqual(
+          queryAll(".chat-composer-input").val(),
+          "",
+          "the chat composer does not get the upload markdown when the upload is complete"
+        );
+        done();
+      }
+    );
 
-    appEvents.on("chat-composer:upload-started", async () => {
-      await settled();
-      assert.ok(exists(".chat-upload"), "the chat upload preview should show");
-      assert.ok(
-        exists(".bottom-data .uploading"),
-        "the chat upload preview should say it is uploading"
-      );
-      assert.strictEqual(
-        queryAll(".chat-composer-input").val(),
-        "",
-        "the chat composer does not get an uploading... placeholder"
-      );
-    });
+    appEvents.on(
+      "upload-mixin:chat-composer-uploader:upload-started",
+      async () => {
+        await settled();
+        assert.ok(
+          exists(".chat-upload"),
+          "the chat upload preview should show"
+        );
+        assert.ok(
+          exists(".bottom-data .uploading"),
+          "the chat upload preview should say it is uploading"
+        );
+        assert.strictEqual(
+          queryAll(".chat-composer-input").val(),
+          "",
+          "the chat composer does not get an uploading... placeholder"
+        );
+      }
+    );
 
     const image = createFile("avatar.png");
-    appEvents.trigger("chat-composer:add-files", image);
+    appEvents.trigger("upload-mixin:chat-composer-uploader:add-files", image);
   });
 });
 

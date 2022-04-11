@@ -3,7 +3,7 @@
 # name: discourse-chat
 # about: Chat inside Discourse
 # version: 0.3
-# authors: Kane York, Mark VanLandingham
+# authors: Kane York, Mark VanLandingham, Martin Brennan, Joffrey Jaffeux
 # url: https://github.com/discourse/discourse-chat
 # transpile_js: true
 
@@ -18,6 +18,8 @@ register_asset 'stylesheets/common/direct-message-creator.scss'
 register_asset 'stylesheets/common/chat-message-collapser.scss'
 register_asset 'stylesheets/common/chat-transcript.scss'
 register_asset 'stylesheets/common/chat-retention-reminder.scss'
+register_asset 'stylesheets/common/chat-composer-uploads.scss'
+register_asset 'stylesheets/common/chat-composer-upload.scss'
 register_asset 'stylesheets/common/chat-channel-selector-modal.scss'
 register_asset 'stylesheets/mobile/mobile.scss', :mobile
 register_asset 'stylesheets/desktop/desktop.scss', :desktop

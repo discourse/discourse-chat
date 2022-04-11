@@ -16,17 +16,17 @@ export default DiscourseRoute.extend({
         chatChannel: createDirectMessageChannelDraft(),
         channels: await this.chat.getChannels(),
       });
-    } else {
-      let [chatChannel, channels] = await Promise.all([
-        this.getChannel(params.channelId),
-        this.chat.getChannels(),
-      ]);
-
-      return EmberObject.create({
-        chatChannel: ChatChannel.create(chatChannel),
-        channels,
-      });
     }
+
+    let [chatChannel, channels] = await Promise.all([
+      this.getChannel(params.channelId),
+      this.chat.getChannels(),
+    ]);
+
+    return EmberObject.create({
+      chatChannel: ChatChannel.create(chatChannel),
+      channels,
+    });
   },
 
   async getChannel(id) {

@@ -33,9 +33,9 @@ describe DiscourseChat::ChatMailer do
     expect(job_enqueued?(job: :user_email, args: { type: "chat_summary", user_id: user_2.id })).to be true
     expect(job_enqueued?(job: :user_email, args: { type: "chat_summary", user_id: user_3.id })).to be true
 
-    expect(user_1.user_option.reload.last_emailed_for_chat).to eq(now)
-    expect(user_2.user_option.reload.last_emailed_for_chat).to eq(now)
-    expect(user_3.user_option.reload.last_emailed_for_chat).to eq(now)
+    expect(user_1.user_option.reload.last_emailed_for_chat).to be_within(0.1).of(now)
+    expect(user_2.user_option.reload.last_emailed_for_chat).to be_within(0.1).of(now)
+    expect(user_3.user_option.reload.last_emailed_for_chat).to be_within(0.1).of(now)
 
     unfreeze_time
   end

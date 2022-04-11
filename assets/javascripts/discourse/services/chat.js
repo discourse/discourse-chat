@@ -824,13 +824,7 @@ export default Service.extend({
   },
 
   getDmChannelForUsernames(usernames) {
-    return ajax(`/chat/direct_messages/${usernames}.json`);
-  },
-
-  poss(usernames) {
-    return ajax(`/chat/direct_messages/${usernames}.json`).catch(
-      popupAjaxError
-    );
+    return ajax("/chat/direct_messages.json", { data: { usernames } });
   },
 
   _saveDraft(channelId, draft) {

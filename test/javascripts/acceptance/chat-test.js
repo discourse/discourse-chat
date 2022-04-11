@@ -235,7 +235,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     server.post("/chat/chat_channels/:chatChannelId/unfollow", () => {
       return helper.response({ success: "OK" });
     });
-    server.get("/chat/direct_messages/hawk.json", () => {
+    server.get("/chat/direct_messages.json", () => {
       return helper.response({
         chat_channel: {
           id: 75,

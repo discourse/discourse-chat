@@ -7,7 +7,6 @@ const STORE_LOADING_TIMES = 5;
 const DEFAULT_LOADING_TIME = 0.3;
 const MIN_LOADING_TIME = 0.1;
 const STILL_LOADING_DURATION = 2;
-const MIN_LOADING_TIME_TRIGGER = 0.5;
 
 export default Component.extend({
   tagName: "",
@@ -52,13 +51,13 @@ export default Component.extend({
     this.cancelScheduled();
 
     this.scheduled.push(
-      later(() => {
+      schedule("afterRender", () => {
         this.container?.classList?.add("loading");
         document.documentElement.style.setProperty(
           "--loading-duration",
           `${this.averageTime.toFixed(2)}s`
         );
-      }, MIN_LOADING_TIME_TRIGGER * 1000)
+      })
     );
 
     this.scheduled.push(

@@ -2,7 +2,7 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 import { caretPosition } from "discourse/lib/utilities";
 import { isEmpty } from "@ember/utils";
 import Component from "@ember/component";
-import { action, computed } from "@ember/object";
+import { action } from "@ember/object";
 import discourseDebounce from "discourse-common/lib/debounce";
 import { bind } from "discourse-common/utils/decorators";
 import { INPUT_DELAY } from "discourse-common/config/environment";
@@ -301,8 +301,7 @@ export default Component.extend({
     }
   },
 
-  @computed("channel.chatable.users.[]")
-  get formatedUsernames() {
+  _formatUsernames() {
     return (this.channel.chatable.users || [])
       .mapBy("username")
       .uniq()
@@ -322,7 +321,7 @@ export default Component.extend({
     this.channel.set("isFetchingChannelPreview", true);
 
     return this.chat
-      .getDmChannelForUsernames(this.formatedUsernames)
+      .getDmChannelForUsernames(this._formatUsernames())
       .catch((error) => {
         if (error?.jqXHR?.status === 404) {
           this.channel.set("id", "draft");

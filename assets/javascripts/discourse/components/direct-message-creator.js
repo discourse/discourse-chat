@@ -43,7 +43,7 @@ export default Component.extend({
     this.chat
       .searchPossibleDirectMessageUsers({
         term,
-        limit: 5,
+        limit: 6,
         exclude: [this.currentUser?.username].concat(
           this.channel.chatable?.users?.mapBy("username") || []
         ),

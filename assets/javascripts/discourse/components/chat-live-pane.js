@@ -876,7 +876,7 @@ export default Component.extend({
   },
 
   @action
-  sendMessage(message, uploads, channel) {
+  sendMessage(message, uploads) {
     resetIdle();
 
     if (this.sendingloading) {
@@ -886,20 +886,22 @@ export default Component.extend({
     this.set("sendingloading", true);
     this._setDraftForChannel(null);
 
-    if (this.previewing || channel.isDraft) {
+    if (this.previewing || this.chatChannel.isDraft) {
       this.set("loading", true);
 
-      return this._upsertChannelWithMessage(channel, message, uploads).finally(
-        () => {
-          if (this._selfDeleted) {
-            return;
-          }
-          this.set("loading", false);
-          this.set("sendingloading", false);
-          this._resetAfterSend();
-          this._stickScrollToBottom();
+      return this._upsertChannelWithMessage(
+        this.chatChannel,
+        message,
+        uploads
+      ).finally(() => {
+        if (this._selfDeleted) {
+          return;
         }
-      );
+        this.set("loading", false);
+        this.set("sendingloading", false);
+        this._resetAfterSend();
+        this._stickScrollToBottom();
+      });
     }
 
     this.set("_nextStagedMessageId", this._nextStagedMessageId + 1);
@@ -917,7 +919,7 @@ export default Component.extend({
 
     // Start ajax request but don't return here, we want to stage the message instantly.
     // Return a resolved promise below.
-    ajax(`/chat/${channel.id}.json`, {
+    ajax(`/chat/${this.chatChannel.id}.json`, {
       type: "POST",
       data,
     })

@@ -2,7 +2,7 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 import { caretPosition } from "discourse/lib/utilities";
 import { isEmpty } from "@ember/utils";
 import Component from "@ember/component";
-import { action, computed } from "@ember/object";
+import { action } from "@ember/object";
 import discourseDebounce from "discourse-common/lib/debounce";
 import { bind } from "discourse-common/utils/decorators";
 import { INPUT_DELAY } from "discourse-common/config/environment";

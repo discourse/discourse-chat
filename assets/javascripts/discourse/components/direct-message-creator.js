@@ -301,8 +301,7 @@ export default Component.extend({
     }
   },
 
-  @computed("channel.chatable.users.[]")
-  get formatedUsernames() {
+  _formatUsernames() {
     return (this.channel.chatable.users || [])
       .mapBy("username")
       .uniq()
@@ -322,7 +321,7 @@ export default Component.extend({
     this.channel.set("isFetchingChannelPreview", true);
 
     return this.chat
-      .getDmChannelForUsernames(this.formatedUsernames)
+      .getDmChannelForUsernames(this._formatUsernames())
       .catch((error) => {
         if (error?.jqXHR?.status === 404) {
           this.channel.set("id", "draft");

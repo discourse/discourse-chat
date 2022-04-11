@@ -1,7 +1,5 @@
 import Component from "@ember/component";
 import showModal from "discourse/lib/show-modal";
-import UppyMediaOptimization from "discourse/lib/uppy-media-optimization-plugin";
-import ComposerUploadUppy from "discourse/mixins/composer-upload-uppy";
 import discourseComputed, {
   afterRender,
   bind,
@@ -9,10 +7,6 @@ import discourseComputed, {
 import I18n from "I18n";
 import TextareaTextManipulation from "discourse/mixins/textarea-text-manipulation";
 import userSearch from "discourse/lib/user-search";
-import {
-  authorizedExtensions,
-  authorizesAllExtensions,
-} from "discourse/lib/uploads";
 import { action } from "@ember/object";
 import { cancel, throttle } from "@ember/runloop";
 import { categoryHashtagTriggerRule } from "discourse/lib/category-hashtags";
@@ -21,7 +15,7 @@ import { findRawTemplate } from "discourse-common/lib/raw-templates";
 import { emojiSearch, isSkinTonableEmoji } from "pretty-text/emoji";
 import { emojiUrlFor } from "discourse/lib/text";
 import { inject as service } from "@ember/service";
-import { alias, or, readOnly } from "@ember/object/computed";
+import { or, readOnly } from "@ember/object/computed";
 import { search as searchCategoryTag } from "discourse/lib/category-tag-search";
 import { SKIP } from "discourse/lib/autocomplete";
 import { Promise } from "rsvp";
@@ -37,7 +31,7 @@ export function addChatToolbarButton(toolbarButton) {
   toolbarExtraButtons.push(toolbarButton);
 }
 
-export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
+export default Component.extend(TextareaTextManipulation, {
   chatChannel: null,
   lastChatChannelId: null,
 
@@ -47,33 +41,17 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   emojiStore: service("emoji-store"),
   editingMessage: null,
   fullPage: false,
-  mediaOptimizationWorker: service(),
   onValueChange: null,
   previewing: false,
   showToolbar: false,
   timer: null,
   value: "",
+  inProgressUploads: null,
   composerFocusSelector: ".chat-composer-input",
-  useUploadPlaceholders: false,
-
-  // Composer Uppy values
-  ready: true,
-  composerEventPrefix: "chat-composer",
   canAttachUploads: or(
     "siteSettings.chat_allow_uploads",
     "chatChannel.isDirectMessageChannel"
   ),
-  composerModel: null,
-  composerModelContentKey: "value",
-  editorInputClass: ".chat-composer-input",
-  showCancelBtn: or("isUploading", "isProcessingUpload"),
-  uploadCancelled: false,
-  uploadProcessorActions: null,
-  uploadPreProcessors: null,
-  uploadMarkdownResolvers: null,
-  uploadType: "chat-composer",
-  uppyId: "chat-composer-uppy",
-  editorClass: alias("editorInputClass"),
 
   @discourseComputed("toolbarButtons")
   composerRowClasses(buttons) {
@@ -85,27 +63,15 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     return fullPage ? "chat-full-page-uploader" : "chat-widget-uploader";
   },
 
-  @discourseComputed("fullPage")
-  mobileFileUploaderId(fullPage) {
-    return fullPage
-      ? "chat-full-page-mobile-uploader"
-      : "chat-widget-mobile-uploader";
-  },
-
-  _findMatchingUploadHandler() {
-    return;
-  },
-
   init() {
     this._super(...arguments);
 
     this.appEvents.on("chat-composer:reply-to-set", this, "_replyToMsgChanged");
-    this.setProperties({
-      uploadProcessorActions: {},
-      uploadPreProcessors: [],
-      uploadMarkdownResolvers: [],
-      uploads: [],
-    });
+    this.appEvents.on(
+      "upload-mixin:chat-composer-uploader:in-progress-uploads",
+      this,
+      "_inProgressUploadsChanged"
+    );
     outsideToolbarClick = this.toggleToolbar.bind(this);
 
     const toolbarBtns = [];
@@ -114,7 +80,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
       toolbarBtns.push({
         action: this.uploadClicked,
         class: "upload-btn",
-        id: this.mobileFileUploaderId,
+        id: "chat-upload-btn",
         icon: "far-image",
         title: "chat.upload",
       });
@@ -129,38 +95,20 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
         action: this.insertDiscourseLocalDate,
       });
     }
-    this.set("toolbarButtons", toolbarBtns.concat(toolbarExtraButtons));
-
-    if (this.siteSettings.composer_media_optimization_image_enabled) {
-      // TODO:
-      // This whole deal really is not ideal, maybe we need some sort
-      // of ComposerLike mixin that handles adding these processors? But
-      // then again maybe not, because we may not want all processors
-      // for chat...
-      this.uploadPreProcessors.push({
-        pluginClass: UppyMediaOptimization,
-        optionsResolverFn: ({ isMobileDevice }) => {
-          return {
-            optimizeFn: (data, opts) =>
-              this.mediaOptimizationWorker.optimizeImage(data, opts),
-            runParallel: !isMobileDevice,
-          };
-        },
-      });
-    }
+    this.setProperties({
+      toolbarButtons: toolbarBtns.concat(toolbarExtraButtons),
+      inProgressUploads: [],
+      _uploads: [],
+    });
   },
 
   didInsertElement() {
     this._super(...arguments);
-    this.set("composerModel", this);
 
     this._textarea = this.element.querySelector(".chat-composer-input");
     this._$textarea = $(this._textarea);
     this._applyCategoryHashtagAutocomplete(this._$textarea);
     this._applyEmojiAutocomplete(this._$textarea);
-    if (this.canAttachUploads) {
-      this._bindUploadTarget();
-    }
     this.appEvents.on("chat:focus-composer", this, "_focusTextArea");
     this.appEvents.on("chat:insert-text", this, "insertText");
     this.appEvents.on(
@@ -173,18 +121,13 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
       this._focusTextArea();
     }
 
-    this.appEvents.on(
-      `${this.composerEventPrefix}:upload-success`,
-      this,
-      "_insertUpload"
-    );
-
     this.appEvents.on("chat:modify-selection", this, "_modifySelection");
     this.appEvents.on(
       "chat:open-insert-link-modal",
       this,
       "_openInsertLinkModal"
     );
+    this.set("ready", true);
   },
 
   _modifySelection(opts = { type: null }) {
@@ -217,24 +160,17 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
       this,
       "_replyToMsgChanged"
     );
+    this.appEvents.off(
+      "upload-mixin:chat-composer-uploader:in-progress-uploads",
+      this,
+      "_inProgressUploadsChanged"
+    );
     window.removeEventListener("click", outsideToolbarClick);
 
     if (this.timer) {
       cancel(this.timer);
       this.timer = null;
     }
-
-    this.setProperties({
-      uploadPreProcessors: null,
-      uploadProcessorActions: null,
-      uploadMarkdownResolvers: null,
-    });
-
-    this.appEvents.off(
-      `${this.composerEventPrefix}:upload-success`,
-      this,
-      "_insertUpload"
-    );
 
     this.appEvents.off("chat:focus-composer", this, "_focusTextArea");
     this.appEvents.off("chat:insert-text", this, "insertText");
@@ -249,15 +185,6 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
       this,
       "_openInsertLinkModal"
     );
-  },
-
-  _insertUpload(_, upload) {
-    if (this.disableComposer) {
-      return;
-    }
-
-    this.uploads.pushObject(upload);
-    this.onValueChange?.(this.value, this.uploads, this.replyToMsg);
   },
 
   // It is important that this is keyDown and not keyUp, otherwise
@@ -322,7 +249,13 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
       this.draft &&
       this.chatChannel.canModifyMessages(this.currentUser)
     ) {
-      this.setProperties(this.draft);
+      // uses uploads from draft here...
+      this.setProperties({
+        value: this.draft.value,
+        replyToMsg: this.draft.replyToMsg,
+      });
+
+      this._syncUploads(this.draft.uploads);
       this.setInReplyToMsg(this.draft.replyToMsg);
     }
 
@@ -330,10 +263,9 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
       this.setProperties({
         replyToMsg: null,
         value: this.editingMessage.message,
-        uploads: this.editingMessage.uploads
-          ? cloneJSON(this.editingMessage.uploads)
-          : [],
       });
+
+      this._syncUploads(this.editingMessage.uploads);
       this._focusTextArea({ ensureAtEnd: true, resizeTextArea: false });
     }
 
@@ -341,9 +273,39 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     this._resizeTextArea();
   },
 
+  // the chat-composer needs to be able to set the internal list of uploads
+  // for chat-composer-uploads to preload in existing uploads for drafts
+  // and for when messages are being edited.
+  //
+  // the opposite is true as well -- when an upload is completed the chat-composer
+  // needs its internal state updated so drafts can be saved, which is handled
+  // by the uploadsChanged action
+  _syncUploads(newUploads = []) {
+    const currentUploadIds = this._uploads.mapBy("id");
+    const newUploadIds = newUploads.mapBy("id");
+
+    // don't need to load the uploads into chat-composer-uploads if
+    // nothing has changed notherwise we would rerender for no reason
+    if (
+      currentUploadIds.length === newUploadIds.length &&
+      newUploadIds.every((newUploadId) =>
+        currentUploadIds.includes(newUploadId)
+      )
+    ) {
+      return;
+    }
+
+    this.set("_uploads", cloneJSON(newUploads));
+    this.appEvents.trigger("chat-composer:load-uploads", this._uploads);
+  },
+
+  _inProgressUploadsChanged(inProgressUploads) {
+    this.set("inProgressUploads", inProgressUploads);
+  },
+
   _replyToMsgChanged(replyToMsg) {
     this.set("replyToMsg", replyToMsg);
-    this.onValueChange?.(this.value, this.uploads, replyToMsg);
+    this.onValueChange?.(this.value, this._uploads, replyToMsg);
   },
 
   @action
@@ -358,7 +320,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   _handleTextareaInput() {
     this._resizeTextArea();
     this._applyUserAutocomplete();
-    this.onValueChange?.(this.value, this.uploads, this.replyToMsg);
+    this.onValueChange?.(this.value, this._uploads, this.replyToMsg);
   },
 
   @action
@@ -569,26 +531,6 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     this.onChangeHeight?.();
   },
 
-  _uploadDropTargetOptions() {
-    const chatWidget = document.querySelector(
-      ".topic-chat-container.expanded.visible"
-    );
-    const fullPageChat = document.querySelector(".full-page-chat");
-
-    const targetEl =
-      chatWidget || fullPageChat
-        ? document.querySelector(".chat-enabled")
-        : null;
-
-    if (!targetEl) {
-      return this._super();
-    }
-
-    return {
-      target: targetEl,
-    };
-  },
-
   @action
   onEmojiSelected(code) {
     this.emojiSelected(code);
@@ -647,19 +589,10 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     "value",
     "loading",
     "disableComposer",
-    "uploads.@each",
-    "uploading",
-    "processingUpload"
+    "inProgressUploads.[]"
   )
-  sendDisabled(
-    value,
-    loading,
-    disableComposer,
-    uploads,
-    uploading,
-    processingUpload
-  ) {
-    if (loading || disableComposer || uploading || processingUpload) {
+  sendDisabled(value, loading, disableComposer, inProgressUploads) {
+    if (loading || disableComposer || inProgressUploads.length > 0) {
       return true;
     }
 
@@ -679,14 +612,16 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
 
   @action
   internalSendMessage() {
-    return this.sendMessage(this.value, this.uploads).then(this.reset);
+    return this.sendMessage(this.value, this._uploads).then(this.reset);
   },
 
   @action
   internalEditMessage() {
-    return this.editMessage(this.editingMessage, this.value, this.uploads).then(
-      this.reset
-    );
+    return this.editMessage(
+      this.editingMessage,
+      this.value,
+      this._uploads
+    ).then(this.reset);
   },
 
   _messageIsValid() {
@@ -697,7 +632,7 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
     if (this.canAttachUploads) {
       if (this._messageIsEmpty()) {
         // If message is empty, an an upload must present for sending to be enabled
-        return this.uploads.length;
+        return this._uploads.length;
       } else {
         // Message is non-empty. Make sure it's long enough to be valid.
         return validLength;
@@ -716,38 +651,24 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   reset() {
     this.setProperties({
       value: "",
-      uploads: [],
       inReplyMsg: null,
     });
+    this._syncUploads([]);
     this._focusTextArea({ ensureAtEnd: true, resizeTextArea: true });
-    this.onValueChange?.(this.value, this.uploads, this.replyToMsg);
+    this.onValueChange?.(this.value, this._uploads, this.replyToMsg);
   },
 
   @action
   cancelReplyTo() {
     this.set("replyToMsg", null);
     this.setInReplyToMsg(null);
-    this.onValueChange?.(this.value, this.uploads, this.replyToMsg);
+    this.onValueChange?.(this.value, this._uploads, this.replyToMsg);
   },
 
   @action
   cancelEditing() {
     this.onCancelEditing();
     this._focusTextArea({ ensureAtEnd: true, resizeTextArea: true });
-  },
-
-  @discourseComputed()
-  acceptedFormats() {
-    const extensions = authorizedExtensions(
-      this.currentUser.staff,
-      this.siteSettings
-    );
-
-    return extensions.map((ext) => `.${ext}`).join();
-  },
-  @discourseComputed()
-  acceptsAllFormats() {
-    return authorizesAllExtensions(this.currentUser.staff, this.siteSettings);
   },
 
   _cursorIsOnEmptyLine() {
@@ -777,25 +698,8 @@ export default Component.extend(TextareaTextManipulation, ComposerUploadUppy, {
   },
 
   @action
-  cancelUploading(upload) {
-    this.appEvents.trigger(`${this.composerEventPrefix}:cancel-upload`, {
-      fileId: upload.id,
-    });
-    this.onValueChange?.(this.value, this.uploads, this.replyToMsg);
-  },
-
-  @action
-  removeUpload(upload) {
-    this.uploads.removeObject(upload);
-    this.onValueChange?.(this.value, this.uploads, this.replyToMsg);
-  },
-
-  @discourseComputed("composerDisabled", "uploads.[]", "inProgressUploads.[]")
-  showUploadsContainer(composerDisabled, uploads, inProgressUploads) {
-    if (composerDisabled) {
-      return false;
-    }
-
-    return uploads?.length > 0 || inProgressUploads?.length > 0;
+  uploadsChanged(uploads) {
+    this.set("_uploads", uploads);
+    this.onValueChange?.(this.value, this._uploads, this.replyToMsg);
   },
 });

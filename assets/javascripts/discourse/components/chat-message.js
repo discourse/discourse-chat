@@ -15,6 +15,7 @@ import { clipboardCopy } from "discourse/lib/utilities";
 import { inject as service } from "@ember/service";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { prioritizeNameInUx } from "discourse/lib/settings";
+import { Promise } from "rsvp";
 
 const HERE = "here";
 const ALL = "all";
@@ -33,6 +34,8 @@ export default Component.extend({
   adminTools: optionalService(),
   _hasSubscribedToAppEvents: false,
   tagName: "",
+  previewing: false,
+  chat: service(),
 
   init() {
     this._super(...arguments);
@@ -680,14 +683,32 @@ export default Component.extend({
       return;
     }
 
-    this._loadingReactions.push(emoji);
-    this._updateReactionsList(emoji, reactAction, this.currentUser);
-    this._publishReaction(emoji, reactAction);
-    this.notifyPropertyChange("emojiReactions");
-
     if (this.site.mobileView) {
       this.set("isHovered", false);
     }
+
+    // TODO: ideally all react logic wouldn't be on message but chat channel
+    // or at least chat-live-pane, this would avoid extra complexity
+    let promise;
+    if (this.previewing) {
+      promise = this.chat.upsertDmChannelForUser(
+        this.chatChannel,
+        this.currentUser
+      );
+    } else {
+      promise = Promise.resolve();
+    }
+
+    promise.then(() => {
+      this._loadingReactions.push(emoji);
+      this._updateReactionsList(emoji, reactAction, this.currentUser);
+      this._publishReaction(emoji, reactAction);
+      this.notifyPropertyChange("emojiReactions");
+
+      if (this.previewing) {
+        this.onSwitchChannel(this.chatChannel, { replace: true });
+      }
+    });
   },
 
   _updateReactionsList(emoji, reactAction, user) {

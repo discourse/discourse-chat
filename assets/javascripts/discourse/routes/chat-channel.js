@@ -3,12 +3,21 @@ import Promise from "rsvp";
 import EmberObject, { action } from "@ember/object";
 import { ajax } from "discourse/lib/ajax";
 import { inject as service } from "@ember/service";
-import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
+import ChatChannel, {
+  createDirectMessageChannelDraft,
+} from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 
 export default DiscourseRoute.extend({
   chat: service(),
 
   async model(params) {
+    if (params.channelId === "draft") {
+      return EmberObject.create({
+        chatChannel: createDirectMessageChannelDraft(),
+        channels: await this.chat.getChannels(),
+      });
+    }
+
     let [chatChannel, channels] = await Promise.all([
       this.getChannel(params.channelId),
       this.chat.getChannels(),

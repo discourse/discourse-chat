@@ -15,10 +15,11 @@ export default Component.extend({
   )
   show() {
     return (
-      (this.chatChannel.isDirectMessageChannel &&
+      !this.chatChannel.isDraft &&
+      ((this.chatChannel.isDirectMessageChannel &&
         this.currentUser.needs_dm_retention_reminder) ||
-      (!this.chatChannel.isDirectMessageChannel &&
-        this.currentUser.needs_channel_retention_reminder)
+        (!this.chatChannel.isDirectMessageChannel &&
+          this.currentUser.needs_channel_retention_reminder))
     );
   },
 

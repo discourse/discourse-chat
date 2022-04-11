@@ -9,7 +9,7 @@ export default Component.extend({
   tagName: "",
   presence: service(),
   presenceChannel: null,
-  chatChannelId: null,
+  chatChannel: null,
 
   @discourseComputed("presenceChannel.users.[]")
   usernames(users) {
@@ -51,10 +51,14 @@ export default Component.extend({
     return isPresent(usernames);
   },
 
-  channelName: fmt("chatChannelId", "/chat-reply/%@"),
+  channelName: fmt("chatChannel.id", "/chat-reply/%@"),
 
   didReceiveAttrs() {
     this._super(...arguments);
+
+    if (!this.channel || this.channel.isDraft) {
+      return;
+    }
 
     if (this.presenceChannel?.name !== this.channelName) {
       this.presenceChannel?.unsubscribe();

@@ -1,3 +1,4 @@
+import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import Component from "@ember/component";
 import { clipboardCopyAsync } from "discourse/lib/utilities";
 import { getOwner } from "discourse-common/lib/get-owner";
@@ -55,6 +56,7 @@ export default Component.extend({
   loadingMorePast: false,
   loadingMoreFuture: false,
   hoveredMessageId: null,
+  onSwitchChannel: null,
 
   allPastMessagesLoaded: false,
   previewing: false,
@@ -84,6 +86,12 @@ export default Component.extend({
   _updateReadTimer: null,
   lastSendReadMessageId: null,
   _scrollerEl: null,
+
+  init() {
+    this._super(...arguments);
+
+    this.set("messages", []);
+  },
 
   didInsertElement() {
     this._super(...arguments);
@@ -147,7 +155,7 @@ export default Component.extend({
       this.set("allPastMessagesLoaded", false);
       this.cancelEditing();
 
-      if (this.chatChannel?.id) {
+      if (this.chatChannel?.id !== "draft") {
         this.chat
           .getChannelBy("id", this.chatChannel.id)
           .then((trackedChannel) => {
@@ -164,6 +172,10 @@ export default Component.extend({
   },
 
   fetchMessages(channelId) {
+    if (channelId === "draft") {
+      return Promise.resolve();
+    }
+
     this.set("loading", true);
 
     return this.chat.loadCookFunction(this.site.categories).then((cook) => {
@@ -203,6 +215,10 @@ export default Component.extend({
   },
 
   _fetchMoreMessages(direction) {
+    if (this.chatChannel.isDraft) {
+      return Promise.resolve();
+    }
+
     const loadingPast = direction === PAST;
     const canLoadMore = loadingPast
       ? this.details.can_load_more_past
@@ -801,6 +817,10 @@ export default Component.extend({
     return later(
       this,
       () => {
+        if (this._selfDeleted) {
+          return;
+        }
+
         let messageId;
         if (this.messages?.length) {
           messageId = this.messages[this.messages.length - 1]?.id;
@@ -856,14 +876,31 @@ export default Component.extend({
   },
 
   @action
-  sendMessage(message, uploads) {
+  sendMessage(message, uploads, channel) {
     resetIdle();
 
     if (this.sendingloading) {
       return;
     }
+
     this.set("sendingloading", true);
     this._setDraftForChannel(null);
+
+    if (this.previewing || channel.isDraft) {
+      this.set("loading", true);
+
+      return this._upsertChannelWithMessage(channel, message, uploads).finally(
+        () => {
+          if (this._selfDeleted) {
+            return;
+          }
+          this.set("loading", false);
+          this.set("sendingloading", false);
+          this._resetAfterSend();
+          this._stickScrollToBottom();
+        }
+      );
+    }
 
     this.set("_nextStagedMessageId", this._nextStagedMessageId + 1);
     const cooked = this.cook(message);
@@ -880,7 +917,7 @@ export default Component.extend({
 
     // Start ajax request but don't return here, we want to stage the message instantly.
     // Return a resolved promise below.
-    ajax(`/chat/${this.chatChannel.id}.json`, {
+    ajax(`/chat/${channel.id}.json`, {
       type: "POST",
       data,
     })
@@ -931,6 +968,50 @@ export default Component.extend({
         this.appEvents.trigger("chat:refresh-channels");
       });
     });
+  },
+
+  _upsertChannelWithMessage(channel, message, uploads) {
+    let promise;
+
+    if (channel.isDirectMessageChannel) {
+      promise = ajax("/chat/direct_messages/create.json", {
+        method: "POST",
+        data: { usernames: channel.chatable.users.mapBy("username") },
+      });
+    } else {
+      promise = ajax(`/chat/chat_channels/${channel.id}/follow`, {
+        method: "POST",
+      }).then(() =>
+        this.chat.startTrackingChannel(channel).then((c) => {
+          return { chat_channel: c };
+        })
+      );
+    }
+
+    return promise
+      .then((result) => {
+        this.chat.loadCookFunction(this.site.categories).then((cook) => {
+          ajax(`/chat/${result.chat_channel.id}.json`, {
+            type: "POST",
+            data: {
+              message,
+              cooked: cook(message),
+              upload_ids: (uploads || []).mapBy("id"),
+            },
+          });
+        });
+
+        return this.onSwitchChannel(ChatChannel.create(result.chat_channel), {
+          replace: true,
+        });
+      })
+      .finally(() => {
+        if (this.isDestroyed || this.isDestroying) {
+          return;
+        }
+
+        this.set("previewing", false);
+      });
   },
 
   _onSendError(stagedId, error) {
@@ -1041,9 +1122,9 @@ export default Component.extend({
     return true;
   },
 
-  @discourseComputed("previewing", "details.user_silenced")
-  canInteractWithChat(previewing, userSilenced) {
-    return !previewing && !userSilenced;
+  @discourseComputed("details.user_silenced")
+  canInteractWithChat(userSilenced) {
+    return !userSilenced;
   },
 
   @discourseComputed("messages.@each.selected")
@@ -1071,6 +1152,11 @@ export default Component.extend({
   @action
   onSelectMessage(message) {
     this._lastSelectedMessage = message;
+  },
+
+  @action
+  navigateToIndex() {
+    this.router.transitionTo("chat.index");
   },
 
   @action
@@ -1196,6 +1282,10 @@ export default Component.extend({
 
   @action
   _setDraftForChannel(draft) {
+    if (this.chatChannel.isDraft) {
+      return;
+    }
+
     if (draft?.replyToMsg) {
       draft.replyToMsg = {
         id: draft.replyToMsg.id,
@@ -1203,7 +1293,7 @@ export default Component.extend({
         user: draft.replyToMsg.user,
       };
     }
-    this.chat.setDraftForChannel(this.chatChannel.id, draft);
+    this.chat.setDraftForChannel(this.chatChannel, draft);
     this.set("draft", draft);
   },
 
@@ -1214,10 +1304,13 @@ export default Component.extend({
 
   @action
   composerValueChanged(value, uploads, replyToMsg) {
-    if (!this.editingMessage) {
+    if (!this.editingMessage && !this.chatChannel.directMessageChannelDraft) {
       this._setDraftForChannel({ value, uploads, replyToMsg });
     }
-    this._reportReplyingPresence(value);
+
+    if (!this.chatChannel.directMessageChannelDraft) {
+      this._reportReplyingPresence(value);
+    }
   },
 
   @action
@@ -1236,6 +1329,10 @@ export default Component.extend({
   },
 
   _reportReplyingPresence(composerValue) {
+    if (this.chatChannel.isDraft) {
+      return;
+    }
+
     const replying = !this.editingMessage && !!composerValue;
     this.chatComposerPresenceManager.notifyState(this.chatChannel.id, replying);
   },
@@ -1269,7 +1366,11 @@ export default Component.extend({
   },
 
   focusComposer() {
-    if (this._selfDeleted || this.site.mobileView) {
+    if (
+      this._selfDeleted ||
+      this.site.mobileView ||
+      this.chatChannel?.isDraft
+    ) {
       return;
     }
 

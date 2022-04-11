@@ -22,18 +22,11 @@
         <p>{{i18n "chat.empty_state.no_public_available"}}</p>
         <hr>
         <p>{{i18n "chat.empty_state.start_direct_message"}}</p>
-        {{#if creatingDm}}
-          {{dm-creator
-            afterCreate=(action "afterDmCreation")
-            onCancel=(action "cancelDmCreation")
-          }}
-        {{else}}
-          {{d-button
-            class="btn-primary start-creating-dm-btn"
-            action=(action "startCreatingDm")
-            label="chat.empty_state.create_personal_chat"
-          }}
-        {{/if}}
+        {{d-button
+          class="btn-primary start-creating-dm-btn"
+          action=(action "startCreatingDmChannel")
+          label="chat.empty_state.create_personal_chat"
+        }}
       </div>
     </div>
   {{/if}}

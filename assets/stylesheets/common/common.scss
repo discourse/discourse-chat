@@ -373,10 +373,6 @@ body.composer-open .topic-chat-float-container {
     }
   }
 
-  .dm-creation-row .dm-user-chooser {
-    width: calc(100% - 75px);
-  }
-
   .edit-channels-dropdown {
     .select-kit-header {
       background: none;
@@ -399,18 +395,6 @@ body.composer-open .topic-chat-float-container {
     &:hover {
       background: none;
     }
-  }
-}
-
-.dm-creation-row {
-  display: flex;
-  align-items: center;
-  margin: 0 0.5em;
-  justify-content: space-between;
-  max-width: 400px;
-
-  .dm-user-chooser {
-    width: calc(100% - 90px);
   }
 }
 
@@ -1229,6 +1213,7 @@ body.has-full-page-chat {
       display: flex;
       flex-direction: column;
       min-width: 50%;
+      justify-content: center;
     }
 
     .chat-channel-archive-status {
@@ -1236,6 +1221,7 @@ body.has-full-page-chat {
       padding-right: 1em;
     }
   }
+
   .chat-channel-title {
     margin: 0;
     max-width: 100%;
@@ -1411,5 +1397,17 @@ body.has-full-page-chat {
 .reviewable-chat-message {
   .chat-channel-title {
     max-width: 100%;
+  }
+}
+
+.chat-channel-dm-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .channel-name {
+    font-weight: 700;
+    font-size: var(--font-up-1);
+    line-height: var(--font-up-1);
   }
 }

@@ -82,7 +82,7 @@ export default Component.extend({
     event.stopPropagation();
 
     const composer = document.querySelector(".chat-composer-input");
-    if (composer) {
+    if (composer && !this.chatChannel.isDraft) {
       this.appEvents.trigger("chat:insert-text", event.key);
       composer.focus();
     }
@@ -131,8 +131,18 @@ export default Component.extend({
   },
 
   @action
-  switchChannel(channel) {
-    if (channel.id !== this.chatChannel.id) {
+  switchChannel(channel, options = {}) {
+    options = Object.assign({}, { replace: false, transition: true }, options);
+
+    if (options.replace) {
+      this.set("chatChannel", null);
+      this.set("chatChannel", channel);
+    }
+
+    if (
+      options.transition &&
+      (options.replace || channel.id !== this.chatChannel?.id)
+    ) {
       this.router.transitionTo("chat.channel", channel.id, channel.title);
     }
 

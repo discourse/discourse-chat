@@ -68,14 +68,13 @@ export default Component.extend({
   stillLoading() {
     this.scheduled.push(
       schedule("afterRender", () => {
-        this.container?.classList?.classList.add("still-loading");
+        this.container?.classList?.add("still-loading");
       })
     );
   },
 
   end() {
     this.updateAverage((Date.now() - this.startedAt) / 1000);
-    this.trigger("stateChanged", false);
 
     this.cancelScheduled();
     this.scheduled.push(

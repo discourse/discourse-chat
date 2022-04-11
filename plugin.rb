@@ -14,6 +14,7 @@ register_asset 'stylesheets/common/d-progress-bar.scss'
 register_asset 'stylesheets/common/incoming-chat-webhooks.scss'
 register_asset 'stylesheets/mobile/chat-message.scss', :mobile
 register_asset 'stylesheets/common/chat-message.scss'
+register_asset 'stylesheets/common/direct-message-creator.scss'
 register_asset 'stylesheets/common/chat-message-collapser.scss'
 register_asset 'stylesheets/common/chat-transcript.scss'
 register_asset 'stylesheets/common/chat-retention-reminder.scss'
@@ -362,6 +363,7 @@ after_initialize do
 
   DiscourseChat::Engine.routes.draw do
     # direct_messages_controller routes
+    get '/direct_messages/:usernames' => 'direct_messages#show'
     post '/direct_messages/create' => 'direct_messages#create'
 
     # incoming_webhooks_controller routes

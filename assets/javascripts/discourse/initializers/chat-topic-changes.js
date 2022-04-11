@@ -91,6 +91,12 @@ function makeTopicChanges(api, appEvents, chat) {
     });
   });
 
+  api.decorateWidget("timeline-footer-controls:after", (dec) => {
+    if (dec.attrs.topic.has_chat_live && !dec.attrs.topic.closed) {
+      return dec.widget.attach("topic-chat-button", dec.attrs.topic);
+    }
+  });
+
   api.modifyClass("component:topic-admin-menu-button", {
     pluginId: PLUGIN_ID,
     toggleChat() {

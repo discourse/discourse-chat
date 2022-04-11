@@ -119,7 +119,7 @@ export default Component.extend({
       return;
     }
 
-    this.set("isFiltering", false);
+    this.set("isFiltering", true);
 
     discourseDebounce(this, this.filterUsernames, term, INPUT_DELAY);
   },

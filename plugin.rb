@@ -363,7 +363,7 @@ after_initialize do
 
   DiscourseChat::Engine.routes.draw do
     # direct_messages_controller routes
-    get '/direct_messages/:usernames' => 'direct_messages#show'
+    get '/direct_messages' => 'direct_messages#index'
     post '/direct_messages/create' => 'direct_messages#create'
 
     # incoming_webhooks_controller routes

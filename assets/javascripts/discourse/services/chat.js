@@ -824,7 +824,7 @@ export default Service.extend({
   },
 
   getDmChannelForUsernames(usernames) {
-    return ajax(`/chat/direct_messages/${usernames}.json`);
+    return ajax("/chat/direct_messages.json", { data: { usernames } });
   },
 
   poss(usernames) {

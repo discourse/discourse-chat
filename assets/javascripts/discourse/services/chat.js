@@ -827,12 +827,6 @@ export default Service.extend({
     return ajax("/chat/direct_messages.json", { data: { usernames } });
   },
 
-  poss(usernames) {
-    return ajax(`/chat/direct_messages/${usernames}.json`).catch(
-      popupAjaxError
-    );
-  },
-
   _saveDraft(channelId, draft) {
     const data = { channel_id: channelId };
     if (draft) {

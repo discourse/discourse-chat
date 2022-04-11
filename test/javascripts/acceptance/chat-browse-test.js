@@ -183,7 +183,7 @@ acceptance("Discourse Chat - chat browsing no channels", function (needs) {
         chat_messages: [],
       });
     });
-    server.get("/chat/direct_messages/hawk.json", () => {
+    server.get("/chat/direct_messages.json", () => {
       return helper.response({
         chat_channel: {
           id: 75,

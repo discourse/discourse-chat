@@ -1,5 +1,4 @@
 <div class="summary-email">
-  Chat email
   <table class="digest-header text-header with-dir" style="background-color:#<%= @header_bgcolor -%>;width:100%;min-width:100%;">
     <tr>
       <td align="center" style="text-align: center;padding: 20px 0; font-family:Arial,sans-serif;">
@@ -16,7 +15,7 @@
     </tr>
     <tr>
       <td align="center" style="font-weight:bold;font-size:22px;color:#0a0a0a">
-        <%= I18n.t("user_notifications.chat_summary.description") %>
+        <%= I18n.t("user_notifications.chat_summary.description", count: @email_statuses.count) %>
       </td>
     </tr>
   </table>
@@ -39,7 +38,7 @@
               </span>
             </td>
             <td style="width:99%;margin:0;padding:<%= rtl? ? '0 2em 0 0' : '0 0 0 2em' %>;vertical-align:top;">
-              <%= email_excerpt(status.chat_message.cooked) %>
+              <%= email_excerpt(status.chat_message.cooked_for_excerpt) %>
               <a href="<%= status.chat_message.message_url %>" style="padding:0 0 1em 0;">
                 <%= I18n.t("user_notifications.chat_summary.view_message") %>
               </a>
@@ -63,9 +62,9 @@
 <table class='summary-footer with-dir' style="margin-top:2em;width:100%">
   <tr>
     <td align="center">
-  <%=raw(t 'user_notifications.digest.unsubscribe',
+  <%=raw(t 'user_notifications.chat_summary.unsubscribe',
            site_link: html_site_link,
-           email_preferences_link: link_to(t('user_notifications.digest.your_email_settings'), Discourse.base_url + '/my/preferences/emails'),
+           email_preferences_link: link_to(t('user_notifications.chat_summary.your_chat_settings'), Discourse.base_url + '/my/preferences/chat'),
            unsubscribe_link: link_to(t('user_notifications.digest.click_here'), "#{Discourse.base_url}/email/unsubscribe/#{@unsubscribe_key}"))  %>
     </td>
   </tr>

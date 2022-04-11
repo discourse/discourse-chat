@@ -2,6 +2,8 @@
 #
 class DiscourseChat::ChatMailer
   def self.mail_notifications
+    return unless SiteSetting.chat_enabled
+
     instance = self.new
     instance.mail_notifications
   end
@@ -23,5 +25,6 @@ class DiscourseChat::ChatMailer
       .where(user_option: { chat_email_frequency: UserOption.chat_email_frequencies[:when_away] })
       .where("user_option.last_emailed_for_chat < ? OR user_option.last_emailed_for_chat IS NULL", 5.minutes.ago)
       .where(chat_message_email_statuses: { status: ChatMessageEmailStatus::STATUSES[:unprocessed] })
+      .distinct
   end
 end

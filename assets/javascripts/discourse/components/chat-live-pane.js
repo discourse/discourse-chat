@@ -989,22 +989,19 @@ export default Component.extend({
     }
 
     return promise
-      .then((result) => {
-        this.chat.loadCookFunction(this.site.categories).then((cook) => {
-          ajax(`/chat/${result.chat_channel.id}.json`, {
-            type: "POST",
-            data: {
-              message,
-              cooked: cook(message),
-              upload_ids: (uploads || []).mapBy("id"),
-            },
-          });
-        });
-
-        return this.onSwitchChannel(ChatChannel.create(result.chat_channel), {
-          replace: true,
-        });
-      })
+      .then((result) =>
+        ajax(`/chat/${result.chat_channel.id}.json`, {
+          type: "POST",
+          data: {
+            message,
+            upload_ids: (uploads || []).mapBy("id"),
+          },
+        }).then(() =>
+          this.onSwitchChannel(ChatChannel.create(result.chat_channel), {
+            replace: true,
+          })
+        )
+      )
       .finally(() => {
         if (this.isDestroyed || this.isDestroying) {
           return;

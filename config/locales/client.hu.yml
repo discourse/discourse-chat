@@ -99,7 +99,6 @@ hu:
       open_message: "Üzenet megnyitása a csevegésben"
       placeholder_self: "Jegyezzen le valamit"
       placeholder_others: "Csevegés vele: %{messageRecipient}"
-      placeholder_previewing: "Üzenet küldéséhez csatlakozzon a csatornához."
       placeholder_new_message_disallowed: "A csatorna „%{status}”, jelenleg nem küldhet új üzeneteket."
       placeholder_silenced: "Jelenleg nem küldhet üzeneteket."
       remove_upload: "Fájl eltávolítása"

@@ -278,6 +278,8 @@ en:
         public: "Channel history is retained for %{days} days."
         dm: "Personal chat history is retained for %{days} days."
 
+      topic_button_title: "Chat"
+
     notifications:
       chat_quoted: "<span>%{username}</span> %{description}"
 

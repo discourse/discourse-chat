@@ -80,7 +80,6 @@ sv:
       open_message: "Öppna meddelande i chatten"
       placeholder_self: "Gör en anteckning"
       placeholder_others: "Chatta med %{messageRecipient}"
-      placeholder_previewing: "Gå med i kanalen för att skicka ett meddelande."
       placeholder_new_message_disallowed: "Kanalen är %{status}, du kan inte skicka nya meddelanden just nu."
       placeholder_silenced: "Du kan inte skicka meddelanden just nu."
       remove_upload: "Ta bort fil"

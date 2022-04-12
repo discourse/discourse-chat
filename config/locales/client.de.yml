@@ -65,7 +65,6 @@ de:
       open_message: "Nachricht im Chat öffnen"
       placeholder_self: "Etwas notieren"
       placeholder_others: "Chat mit %{messageRecipient}"
-      placeholder_previewing: "Tritt dem Kanal bei, um eine Nachricht zu senden."
       remove_upload: "Datei löschen"
       react: "Mit Emoji reagieren"
       reply: "Antworten"

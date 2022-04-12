@@ -62,7 +62,6 @@ ja:
       open_message: "メッセージをチャットで開く"
       placeholder_self: "メモを書き留める"
       placeholder_others: "%{messageRecipient} とチャット"
-      placeholder_previewing: "チャンネルに参加してメッセージを送信します。"
       remove_upload: "ファイルを削除する"
       react: "絵文字でリアクション"
       reply: "返信"

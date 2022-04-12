@@ -12,6 +12,11 @@ he:
           actions:
             chat_channel_status_change: "מצב ערוץ הצ׳אט השתנה"
             chat_channel_delete: "ערוץ הצ׳אט נמחק"
+      api:
+        scopes:
+          descriptions:
+            chat:
+              create_message: "יצירת הודעת צ׳אט בערוץ מסוים."
     chat:
       dates:
         time_tiny: "h:mm"
@@ -32,6 +37,7 @@ he:
         delete_channel: "מחיקת ערוץ…"
       channel_archive:
         title: "העברת ערוץ לארכיון"
+        instructions: "<p>העברת ערוץ לארכיון מעבירה אותו למצב לקריאה בלבד ומעביר את כל ההודעות מהערוץ לנושא חדש או קיים. אי אפשר לשלוח הודעות חדשות ואי אפשר לערוך או למחוק הודעות קיימות.</p><p>להעביר את הערוץ ‎<strong>#%{channelTitle}</strong> לארכיון?</p>"
         process_started: "תהליך ההעברה לארכיון החל. חלונית צצה זו תיסגר בקרוב ותישלח אליך הודעה אישית כשתהליך ההעברה לארכיון יסתיים."
         retry: "לנסות שוב"
       channel_open:
@@ -103,9 +109,10 @@ he:
       open_message: "פתיחת הודעה בצ׳אט"
       placeholder_self: "לקשקש משהו"
       placeholder_others: "צ׳אט עם %{messageRecipient}"
-      placeholder_previewing: "יש להצטרף לערוץ כדי לשלוח הודעה."
+      placeholder_previewing: "כדי להצטרף לדיון נא לשלוח הודעה."
       placeholder_new_message_disallowed: "הערוץ %{status}, אין לך אפשרות לשלוח הודעות חדשות כעת."
       placeholder_silenced: "אין לך אפשרות לשלוח הודעות כרגע."
+      placeholder_start_conversation: פתיחת דיון עם %{usernames}
       remove_upload: "הסרת קובץ"
       react: "להגיב עם אמוג׳י"
       reply: "תגובה"
@@ -146,6 +153,11 @@ he:
         closed: "סגור"
         open_header: "הערוץ פתוח."
         open: "פתוח"
+      direct_message_creator:
+        title: הודעה חדשה
+        prefix: "אל:"
+        no_results: אין תוצאות
+        selected_user_title: "ביטול בחירת %{username}"
       channel_selector:
         title: "קפיצה לערוץ"
         no_channels: "אין ערוצים שתואמים לחיפוש שלך"
@@ -227,6 +239,7 @@ he:
         username_instructions: "שם משתמש הבוט שמפרסם לערוץ. ברירת המחדל היא ‚מערכת’ כשזה נשאר ריק."
       selection:
         cancel: "ביטול"
+        quote_selection: "ציטוט בנושא"
         error: "אירעה שגיאה בהעברת הודעות הצ׳אט"
         title: "העברת צ׳אט לנושא"
         new_topic:

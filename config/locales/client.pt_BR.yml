@@ -38,14 +38,12 @@ pt_BR:
       flag: "Sinalizar"
       flagged: "Esta mensagem foi sinalizada para revisão"
       invalid_access: "Você não tem acesso para ver este canal de chat"
-      invitation_notification: "<span>%{username} te convidou para entrar em um canal de chat</span>"
       in_reply_to: "Em resposta a"
       isolate:
         title: "Isolar chat"
         description: "Sempre abrir chat em uma nova aba"
       heading: "Chat"
       new_messages: "novas mensagens"
-      mention_notification: "<span>Você foi mencionado(a) por %{username} no chat</span>"
       mention_warning:
         cannot_see:
           one: "%{usernames} não pode acessar este canal e não recebeu notificação."
@@ -67,7 +65,6 @@ pt_BR:
       open_message: "Abrir mensagem no chat"
       placeholder_self: "Anotar algo"
       placeholder_others: "Conversar com %{messageRecipient}"
-      placeholder_previewing: "Entre no canal para enviar uma mensagem."
       remove_upload: "Remover arquivo"
       react: "Reagir com emoji"
       reply: "Responder"
@@ -167,7 +164,6 @@ pt_BR:
         username_instructions: "Nome de usuário(a) de robô que posta no canal. Padrão para \"sistema\" quando deixado em branco."
       selection:
         cancel: "Cancelar"
-        move_to_topic: "Mover para tópico"
         error: "Houve um erro ao mover as mensagens de chat"
         title: "Mover chat para tópico"
         new_topic:
@@ -196,8 +192,6 @@ pt_BR:
         dm: "Histórico de conversas pessoais é mantido por %{days} dias."
     notifications:
       popup:
-        chat_mention: "Você foi mencionado(a) por %{username} no seu chat"
-        chat_group_mention: "%{username} mencionou @%{groupName} no chat"
         chat_message: "Nova mensagem de chat"
       titles:
         chat_mention: "Menção no chat"

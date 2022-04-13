@@ -6,6 +6,11 @@
 
 sv:
   js:
+    admin:
+      logs:
+        staff_actions:
+          actions:
+            chat_channel_status_change: "Chattkanalens status har ändrats"
     chat:
       dates:
         time_tiny: "h:mm"
@@ -18,6 +23,11 @@ sv:
       cancel_reply: "Avbryt svar"
       chat_channels: "Kanaler"
       leave: "Lämna kanal"
+      channel_settings:
+        title: "Kanalinställningar"
+      channel_archive:
+        title: "Arkivera kanal"
+        instructions: "<p>Arkivering av en kanal sätter den i skrivskyddat läge och flyttar alla meddelanden från kanalen till ett nytt eller existerande ämne. Inga nya meddelanden kan skickas, och inga befintliga meddelanden kan redigeras eller raderas.</p><p>Är du säker på att du vill arkivera <strong>#%{channelTitle}</strong> kanalen?</p>"
       channel_list_popup:
         browse: "Bläddra bland kanaler"
         create: "Skapa en kanal"
@@ -38,7 +48,6 @@ sv:
       flag: "Flagga"
       flagged: "Detta meddelande har flaggats för granskning"
       invalid_access: "Du har inte tillgång till den här chattkanalen"
-      invitation_notification: "<span>%{username} bjöd in dig att gå med i en chattkanal</span>"
       in_reply_to: "Som svar på"
       isolate:
         title: "Isolera chatt"
@@ -46,7 +55,6 @@ sv:
       heading: "Chatt"
       join: "Gå med"
       new_messages: "nya meddelanden"
-      mention_notification: "<span>%{username} nämnde dig i chatt</span>"
       mention_warning:
         cannot_see:
           one: "%{usernames} kan inte komma åt den här kanalen och har inte blivit meddelad."
@@ -59,6 +67,10 @@ sv:
         without_membership:
           one: "%{usernames} har inte gått med i den här kanalen."
           other: "%{usernames} har inte gått med i den här kanalen."
+      aria_roles:
+        header: "Chatthuvud"
+        composer: "Chattkompositör"
+        channel_list: "Lista över chattkanaler"
       no_public_channels: "Du har inte gått med i några kanaler."
       only_chat_push_notifications:
         title: "Skicka bara push-meddelanden för chatt"
@@ -68,7 +80,8 @@ sv:
       open_message: "Öppna meddelande i chatten"
       placeholder_self: "Gör en anteckning"
       placeholder_others: "Chatta med %{messageRecipient}"
-      placeholder_previewing: "Gå med i kanalen för att skicka ett meddelande."
+      placeholder_new_message_disallowed: "Kanalen är %{status}, du kan inte skicka nya meddelanden just nu."
+      placeholder_silenced: "Du kan inte skicka meddelanden just nu."
       remove_upload: "Ta bort fil"
       react: "Reagera med emoji"
       reply: "Svara"
@@ -78,6 +91,7 @@ sv:
       restore: "Återställ raderat meddelande"
       save: "Spara"
       select: "Välj"
+      silence: "Tysta användare"
       return_to_list: "Återgå till kanallistan"
       scroll_to_bottom: "Scrolla till botten"
       sound:
@@ -94,6 +108,15 @@ sv:
         other: "%{count} filer"
       you_flagged: "Du flaggade detta meddelande"
       exit: "tillbaka"
+      channel_status:
+        read_only_header: "Kanalen är skrivskyddad."
+        read_only: "Endast läsning"
+        archived_header: "Kanalen är arkiverad."
+        archived: "Arkiverad"
+        closed_header: "Kanalen är stängd."
+        closed: "Stängd"
+        open_header: "Kanalen är öppen."
+        open: "Öppen"
       channel_selector:
         title: "Byt till kanal"
         no_channels: "Inga kanaler matchar din sökning"
@@ -133,6 +156,7 @@ sv:
       settings:
         desktop_notification_level: "Skrivbordsaviseringar"
         follow: "Gå med"
+        followed: "Anslöt sig"
         mobile_notification_level: "Mobila push-meddelanden"
         mute: "Tysta kanal"
         muted_on: "På"
@@ -174,8 +198,6 @@ sv:
         username_instructions: "Användarnamn på bot som gör inlägg på kanalen. Standardinställning är 'system' när det lämnas tomt."
       selection:
         cancel: "Avbryt"
-        move_to_topic: "Flytta till ämne"
-        quote_selection: "Citat"
         error: "Det uppstod ett fel när chattmeddelanden skulle flyttas"
         title: "Flytta chatt till ämne"
         new_topic:
@@ -183,11 +205,13 @@ sv:
           instructions:
             one: "Du håller på att skapa ett nytt ämne och fylla det med chattmeddelandet du har valt."
             other: "Du håller på att skapa ett nytt ämne och fylla det med de <b>%{count}</b> chattmeddelanden du har valt."
+          instructions_channel_archive: "Du håller på att skapa ett nytt ämne och arkivera kanalmeddelandena till det."
         existing_topic:
           title: "Flytta till befintligt ämne"
           instructions:
             one: "Välj det ämne du vill flytta chattmeddelandet till."
             other: "Välj det ämne du vill flytta dessa <b>%{count}</b> chattmeddelanden till."
+          instructions_channel_archive: "Välj vilket ämne du vill arkivera kanalmeddelanden till."
         new_message:
           title: "Flytta till nytt meddelande"
           instructions:
@@ -205,8 +229,6 @@ sv:
     notifications:
       chat_quoted: "<span>%{username}</span> %{description}"
       popup:
-        chat_mention: "%{username} nämnde dig i chatten"
-        chat_group_mention: "%{username} nämnde @%{groupName} i chatten"
         chat_message: "Nytt chattmeddelande"
         chat_quoted: "%{username} citerade ditt chattmeddelande"
       titles:
@@ -243,3 +265,6 @@ sv:
     keyboard_shortcuts_help:
       chat:
         title: "Chatt"
+        keyboard_shortcuts:
+          switch_channel_arrows: "%{shortcut} Byt kanal"
+          open_quick_channel_selector: "%{shortcut} Öppna snabbval av kanal"

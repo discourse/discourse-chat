@@ -55,31 +55,35 @@ export default Component.extend({
   },
 
   @bind
-  _autoFocusChatComposer(e) {
+  _autoFocusChatComposer(event) {
     if (
-      !e.key ||
-      e.key.length > 1 ||
-      e.metaKey ||
-      e.ctrlKey ||
-      e.code === "Space"
+      !event.key ||
+      // Handles things like Enter, Tab, Shift
+      event.key.length > 1 ||
+      // Don't need to focus if the user is beginning a shortcut.
+      event.metaKey ||
+      event.ctrlKey ||
+      // Space's key comes through as ' ' so it's not covered by event.key
+      event.code === "Space" ||
+      // ? is used for the keyboard shortcut modal
+      event.key === "?"
     ) {
-      return; // Only care about single characters, unlike `Escape`
-    }
-    const target = e.target;
-    if (!target) {
       return;
     }
 
-    if (/^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName)) {
+    if (
+      !event.target ||
+      /^(INPUT|TEXTAREA|SELECT)$/.test(event.target.tagName)
+    ) {
       return;
     }
 
-    e.preventDefault();
-    e.stopPropagation();
+    event.preventDefault();
+    event.stopPropagation();
 
     const composer = document.querySelector(".chat-composer-input");
-    if (composer) {
-      this.appEvents.trigger("chat:insert-text", e.key);
+    if (composer && !this.chatChannel.isDraft) {
+      this.appEvents.trigger("chat:insert-text", event.key);
       composer.focus();
     }
   },
@@ -127,8 +131,18 @@ export default Component.extend({
   },
 
   @action
-  switchChannel(channel) {
-    if (channel.id !== this.chatChannel.id) {
+  switchChannel(channel, options = {}) {
+    options = Object.assign({}, { replace: false, transition: true }, options);
+
+    if (options.replace) {
+      this.set("chatChannel", null);
+      this.set("chatChannel", channel);
+    }
+
+    if (
+      options.transition &&
+      (options.replace || channel.id !== this.chatChannel?.id)
+    ) {
       this.router.transitionTo("chat.channel", channel.id, channel.title);
     }
 

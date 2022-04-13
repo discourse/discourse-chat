@@ -44,6 +44,9 @@ if (!isLegacyEmber()) {
       server.post("/uploads/lookup-urls", () => {
         return helper.response([]);
       });
+      server.post("/chat/drafts", () => {
+        return helper.response([]);
+      });
 
       server.get("/chat/chat_channels/search", () => {
         return helper.response({
@@ -190,6 +193,75 @@ if (!isLegacyEmber()) {
       await triggerKeyEvent(document.body, "keydown", 38, { altKey: true }); // Up key
       assert.ok(
         query(".topic-chat-container").classList.contains("channel-11")
+      );
+    });
+
+    test("simple composer formatting shortcuts", async function (assert) {
+      await visit("/latest");
+      this.chatService.set("sidebarActive", false);
+      await click(".header-dropdown-toggle.open-chat");
+      await settled();
+      const composerInput = query(".chat-composer-input");
+      await fillIn(composerInput, "test text");
+      await focus(composerInput);
+      composerInput.selectionStart = 0;
+      composerInput.selectionEnd = 9;
+      await triggerKeyEvent(composerInput, "keydown", 66, { ctrlKey: true }); // ctrl+b
+      await settled();
+      assert.strictEqual(
+        composerInput.value,
+        "**test text**",
+        "selection should get the bold markdown"
+      );
+      await fillIn(composerInput, "test text");
+      await focus(composerInput);
+      composerInput.selectionStart = 0;
+      composerInput.selectionEnd = 9;
+      await triggerKeyEvent(composerInput, "keydown", 73, { ctrlKey: true }); // ctrl+i
+      await settled();
+      assert.strictEqual(
+        composerInput.value,
+        "_test text_",
+        "selection should get the italic markdown"
+      );
+      await fillIn(composerInput, "test text");
+      await focus(composerInput);
+      composerInput.selectionStart = 0;
+      composerInput.selectionEnd = 9;
+      await triggerKeyEvent(composerInput, "keydown", 69, { ctrlKey: true }); // ctrl+e
+      await settled();
+      assert.strictEqual(
+        composerInput.value,
+        "`test text`",
+        "selection should get the code markdown"
+      );
+    });
+
+    test("insert link shortcut", async function (assert) {
+      await visit("/latest");
+      this.chatService.set("sidebarActive", false);
+      await click(".header-dropdown-toggle.open-chat");
+      await settled();
+      const composerInput = query(".chat-composer-input");
+      await fillIn(composerInput, "This is a link to ");
+      await focus(composerInput);
+      await triggerKeyEvent(composerInput, "keydown", 76, { ctrlKey: true }); // ctrl+l
+
+      assert.ok(exists(".insert-link.modal-body"), "hyperlink modal visible");
+
+      await fillIn(".modal-body .link-url", "google.com");
+      await fillIn(".modal-body .link-text", "Google");
+      await click(".modal-footer button.btn-primary");
+
+      assert.strictEqual(
+        composerInput.value,
+        "This is a link to [Google](https://google.com)",
+        "adds link with url and text, prepends 'https://'"
+      );
+
+      assert.ok(
+        !exists(".insert-link.modal-body"),
+        "modal dismissed after submitting link"
       );
     });
   });

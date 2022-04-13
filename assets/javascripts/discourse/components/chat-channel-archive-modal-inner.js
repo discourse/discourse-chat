@@ -13,6 +13,7 @@ import {
   EXISTING_TOPIC_SELECTION,
   NEW_TOPIC_SELECTION,
 } from "discourse/plugins/discourse-chat/discourse/components/chat-to-topic-selector";
+import { CHANNEL_STATUSES } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 
 export default Component.extend({
   chat: service(),
@@ -43,9 +44,10 @@ export default Component.extend({
           text: I18n.t("chat.channel_archive.process_started"),
           messageClass: "success",
         });
+        this.chatChannel.set("status", CHANNEL_STATUSES.archived);
         later(() => {
           if (!isTesting()) {
-            window.location.reload();
+            this.closeModal();
           }
         }, 3000);
       })

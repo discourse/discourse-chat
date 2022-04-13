@@ -11,6 +11,8 @@ en:
     chat_auto_silence_from_flags_duration: "Number of minutes that users will be silenced for when they are automatically silenced due to flagged chat messages."
     chat_default_channel_id: "The chat channel that will be opened by default when a user has no unread messages or mentions in other channels."
     chat_duplicate_message_sensitivity: "The likelihood that a duplicate message by the same sender will be blocked in a short period. Decimal number between 0 and 1.0, with 1.0 being the highest setting (blocks messages more frequently in a shorter amount of time). Set to `0` to allow duplicate messages."
+    chat_minimum_message_length: "Minimum number of characters for a chat message."
+    chat_allow_uploads: "Allow uploads in public chat channels."
     chat_archive_destination_topic_status: "The status that the destination topic should be once a channel archive is completed. This only applies when the destination topic is a new topic, not an existing one."
     default_emoji_reactions: "Default emoji reactions for chat messages. Add upto 5 emojis for quick reaction."
     errors:
@@ -38,6 +40,9 @@ en:
       auto_silence_from_flags: "Chat message flagged with score high enough to silence user."
       channel_cannot_be_archived: "The channel cannot be archived at this time, it must be either closed or open to archive."
       duplicate_message: "You posted an identical message too recently."
+      delete_channel_failed: "Delete channel failed, please try again."
+      minimum_length_not_met: "Message is too short, must have a minimum of %{minimum} characters."
+      max_reactions_limit_reached: "New reactions are not allowed on this message."
     reviewables:
       actions:
         agree:
@@ -78,12 +83,18 @@ en:
       archive:
         first_post_raw: "This topic is an archive of the [%{channel_name}](%{channel_url}) chat channel."
 
+    personal_chat: "personal chat"
+
   discourse_push_notifications:
     popup:
-      chat_mention: "@%{username} mentioned you in chat"
-      chat_group_mention: "@%{username} mentioned @%{group_name} in chat"
-      chat_message: "New chat message in %{chat_channel_title}"
-      group_chat_message: "New chat message in a personal chat channel"
+      chat_mention:
+        direct: '%{username} mentioned you in "%{channel}"'
+        other: '%{username} mentioned %{identifier} in "%{channel}"'
+      direct_message_chat_mention:
+        direct: "%{username} mentioned you in personal chat"
+        other: "%{username} mentioned %{identifier} in personal chat"
+      new_chat_message: '%{username} sent a message in "%{channel}"'
+      new_direct_chat_message: "%{username} sent a message in personal chat"
 
   discourse_automation:
     scriptables:

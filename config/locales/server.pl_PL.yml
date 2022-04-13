@@ -13,6 +13,7 @@ pl_PL:
       channel_exists_for_topic: "Istnieje już kanał dla tego tematu"
       user_cannot_send_message: "W tej chwili nie możesz wysyłać wiadomości."
       rate_limit_exceeded: "Przekroczono limit wiadomości na czacie, które można wysłać w ciągu 30 sekund"
+      max_reactions_limit_reached: "Nowe reakcje nie są dozwolone w tej wiadomości."
     reviewables:
       actions:
         agree_and_keep_message:
@@ -40,11 +41,7 @@ pl_PL:
         archived: "Zarchiwizowany"
         closed: "Zamknięty"
         open: "Otwarty"
-  discourse_push_notifications:
-    popup:
-      chat_mention: "@%{username} wspomniał o Tobie na czacie"
-      chat_message: "Nowa wiadomość na czacie %{chat_channel_title}"
-      group_chat_message: "Nowa wiadomość w osobistym kanale czatu"
+    personal_chat: "czat osobisty"
   discourse_automation:
     scriptables:
       send_chat_message:

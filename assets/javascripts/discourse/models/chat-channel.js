@@ -1,3 +1,4 @@
+import RestModel from "discourse/models/rest";
 import I18n from "I18n";
 
 export const CHATABLE_TYPES = {
@@ -55,8 +56,7 @@ const READONLY_STATUSES = [
   CHANNEL_STATUSES.archived,
 ];
 
-import RestModel from "discourse/models/rest";
-export default RestModel.extend({
+const ChatChannel = RestModel.extend({
   canModifyMessages(user) {
     if (user.staff) {
       return !STAFF_READONLY_STATUSES.includes(this.status);
@@ -64,6 +64,8 @@ export default RestModel.extend({
 
     return !READONLY_STATUSES.includes(this.status);
   },
+
+  isDraft: false,
 
   get isDirectMessageChannel() {
     return this.chatable_type === CHATABLE_TYPES.directMessageChannel;
@@ -97,3 +99,17 @@ export default RestModel.extend({
     return this.status === CHANNEL_STATUSES.archived;
   },
 });
+
+export function createDirectMessageChannelDraft() {
+  return ChatChannel.create({
+    id: "draft",
+    isDraft: true,
+    title: I18n.t("chat.direct_message_creator.title"),
+    chatable_type: CHATABLE_TYPES.directMessageChannel,
+    chatable: {
+      users: [],
+    },
+  });
+}
+
+export default ChatChannel;

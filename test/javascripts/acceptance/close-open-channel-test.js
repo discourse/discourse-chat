@@ -19,7 +19,7 @@ const baseChatPretenders = (server, helper) => {
   server.post("/chat/:chatChannelId.json", () => {
     return helper.response({ success: "OK" });
   });
-  server.get("/chat/lookup/:message_id.json", () => helper.response(chatView));
+  server.get("/chat/lookup/:messageId.json", () => helper.response(chatView));
   server.post("/uploads/lookup-urls", () => {
     return helper.response([]);
   });

@@ -2,7 +2,7 @@ $header-height: 2.5rem;
 $float-height: 530px;
 
 :root {
-  --message-left-width: 38px;
+  --message-left-width: 42px;
   --full-page-border-radius: 12px;
   --full-page-sidebar-width: 275px;
 }
@@ -327,7 +327,6 @@ body.composer-open .topic-chat-float-container {
   .chat-channel-unread-indicator {
     width: 10px;
     height: 10px;
-    margin-left: 0.5em;
     border-radius: 10px;
     border: 0;
     right: 7px;
@@ -374,10 +373,6 @@ body.composer-open .topic-chat-float-container {
     }
   }
 
-  .dm-creation-row .dm-user-chooser {
-    width: calc(100% - 75px);
-  }
-
   .edit-channels-dropdown {
     .select-kit-header {
       background: none;
@@ -400,18 +395,6 @@ body.composer-open .topic-chat-float-container {
     &:hover {
       background: none;
     }
-  }
-}
-
-.dm-creation-row {
-  display: flex;
-  align-items: center;
-  margin: 0 0.5em;
-  justify-content: space-between;
-  max-width: 400px;
-
-  .dm-user-chooser {
-    width: calc(100% - 90px);
   }
 }
 
@@ -452,9 +435,13 @@ body.composer-open .topic-chat-float-container {
 
 .chat-emoji-avatar {
   width: var(--message-left-width);
-  display: flex;
   align-items: center;
-  justify-content: center;
+
+  img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
 }
 
 .chat-user-avatar {
@@ -472,14 +459,19 @@ body.composer-open .topic-chat-float-container {
     padding-left: 0.5rem;
   }
 
+  &.is-online {
+    .chat-user-avatar-container .avatar {
+      box-shadow: 0px 0px 0px 1px var(--success);
+      border: 1px solid var(--secondary);
+      padding: 0;
+    }
+  }
+
   .chat-user-avatar-container {
     position: relative;
 
     .avatar {
-      .chat-message & {
-        width: 28px;
-        height: 28px;
-      }
+      padding: 1px;
 
       .chat-message.is-reply .tc-reply-display & {
         width: 20px;
@@ -531,6 +523,7 @@ body.composer-open .topic-chat-float-container {
   white-space: nowrap;
   font-size: var(--font-down-1);
   padding-left: 0.5em;
+  height: 100%;
 
   .tc-reply-username {
     padding: 0 0.5em 0 0;
@@ -678,13 +671,19 @@ body.composer-open .topic-chat-float-container {
       margin: 0;
       resize: none;
       max-height: 125px;
-      padding: 8px 8px 8px 45px;
+      padding: 8px;
       background-color: var(--secondary);
       border: 1px solid var(--primary-low-mid);
       border-radius: 0.5em;
       box-sizing: border-box;
       word-break: break-word;
       width: 100%;
+    }
+    .chat-composer-row.has-toolbar {
+      .chat-composer-input,
+      .chat-composer-row::after {
+        padding-left: 45px;
+      }
     }
     // composer scrollbar
     .chat-composer-row > .chat-composer-input {
@@ -713,6 +712,7 @@ body.composer-open .topic-chat-float-container {
 
     .chat-composer-message-details {
       position: relative;
+      height: 100%;
       max-height: calc(2em - 5px);
       padding: 6px 0.75em;
       border-top: 1px solid var(--primary-low);
@@ -955,7 +955,7 @@ body.composer-open .topic-chat-float-container {
 .chat-channel-title {
   position: relative;
   display: grid;
-  grid-template-columns: 20px 1fr;
+  grid-template-columns: 22px 1fr 10px;
   grid-column-gap: 0.5em;
   align-items: center;
   cursor: pointer;
@@ -1012,81 +1012,6 @@ body.composer-open .topic-chat-float-container {
     margin-right: 0.5em;
     line-height: 20px;
     width: 100%;
-  }
-}
-
-.chat-composer-uploads-container {
-  display: flex;
-  padding: 0.5em 0.5em 0 0.5em;
-  white-space: nowrap;
-  overflow-x: auto;
-
-  .chat-upload {
-    display: inline-flex;
-    height: 50px;
-    padding: 0.5em 0.75em;
-    border: 1px solid var(--primary-low);
-    border-radius: 6px;
-    margin-right: 0.5em;
-
-    .preview {
-      width: 50px;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 1em 0 0;
-      border-radius: 8px;
-
-      .d-icon {
-        font-size: 3.2rem;
-      }
-
-      .preview-img {
-        max-width: 100%;
-        max-height: 100%;
-      }
-    }
-
-    .data {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      line-height: 1.5em;
-      font-size: var(--font-down-1);
-      color: var(--primary-high);
-
-      .top-data,
-      .bottom-data {
-        display: flex;
-        align-items: center;
-      }
-
-      .file-name {
-        display: inline-block;
-        max-width: 150px;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        margin-right: 0.5em;
-      }
-
-      .uploading {
-        font-size: var(--font-down-2);
-        margin-right: 0.75em;
-      }
-
-      .upload-progress {
-        width: 110px;
-      }
-
-      .extension-pill {
-        background: var(--primary-low);
-        border-radius: 5px;
-        font-size: var(--font-down-2-rem);
-        padding: 0.1em 0.4em;
-      }
-    }
   }
 }
 
@@ -1285,8 +1210,18 @@ body.has-full-page-chat {
 
     .chat-channel-title-with-status {
       flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 50%;
+      justify-content: center;
+    }
+
+    .chat-channel-archive-status {
+      text-align: right;
+      padding-right: 1em;
     }
   }
+
   .chat-channel-title {
     margin: 0;
     max-width: 100%;
@@ -1350,7 +1285,6 @@ body.has-full-page-chat {
   }
 }
 
-.move-chat-to-topic-modal,
 .chat-channel-archive-modal-inner {
   .chat-to-topic-selector {
     width: 500px;
@@ -1380,16 +1314,6 @@ body.has-full-page-chat {
 .chat-channel-archive-modal-inner {
   .chat-to-topic-selector {
     width: auto;
-  }
-}
-
-.topic-meta-data .post-chat-link {
-  margin: 0 0.75em 0 auto;
-  color: var(--tertiary);
-
-  .d-icon {
-    margin-right: 0.25em;
-    color: var(--tertiary);
   }
 }
 
@@ -1461,15 +1385,36 @@ body.has-full-page-chat {
 .chat-live-pane .chat-composer .chat-composer-row .chat-composer-input {
   text-overflow: ellipsis;
 
-  &:placeholder-shown {
+  &:placeholder-shown,
+  &::placeholder {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    padding-right: 1.25em;
   }
 }
 
 .reviewable-chat-message {
   .chat-channel-title {
     max-width: 100%;
+  }
+}
+
+.chat-channel-dm-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .channel-name {
+    font-weight: 700;
+    font-size: var(--font-up-1);
+    line-height: var(--font-up-1);
+  }
+}
+
+.timeline-footer-controls {
+  .topic-chat-button {
+    margin: 0.5em 0 0 0;
+    display: inline;
   }
 }

@@ -38,14 +38,12 @@ ar:
       flag: "الإبلاغ"
       flagged: "لقد تم الإبلاغ عن الرسالة للمراجعة"
       invalid_access: "ليس لديك إذن الوصول لعرض قناة الدردشة هذه"
-      invitation_notification: "<span>دعاك %{username} للانضمام إلى قناة دردشة</span>"
       in_reply_to: "ردًا على"
       isolate:
         title: "عزل الدردشة"
         description: "فتح الدردشة في علامة تبويب جديدة دائمًا"
       heading: "الدردشة"
       new_messages: "رسائل جديدة"
-      mention_notification: "<span>أشار %{username} إليك في الدردشة</span>"
       mention_warning:
         cannot_see:
           zero: "لا يستطيع %{usernames} الوصول إلى هذه القناة ولم يتم إرسال إشعار إليه."
@@ -79,7 +77,6 @@ ar:
       open_message: "فتح رسالة في الدردشة"
       placeholder_self: "تدوين شيء ما"
       placeholder_others: "الدردشة مع %{messageRecipient}"
-      placeholder_previewing: "الانضمام إلى الدردشة لإرسال رسالة"
       remove_upload: "إزالة ملف"
       react: "التفاعل برمز تعبيري"
       reply: "رد"
@@ -183,7 +180,6 @@ ar:
         username_instructions: "اسم المستخدم لبرنامج الروبوت الذي ينشر على القناة. يتم ضبطه افتراضيًا على \"النظام\" عند تركه فارغة."
       selection:
         cancel: "إلغاء"
-        move_to_topic: "النقل إلى الموضوع"
         error: "حدث خطأ في أثناء نقل رسائل الدردشة"
         title: "نقل الدردشة إلى الموضوع"
         new_topic:
@@ -228,8 +224,6 @@ ar:
         dm: "يتم الاحتفاظ بسجل الدردشة الشخصية لمدة %{days} من الأيام."
     notifications:
       popup:
-        chat_mention: "أشار %{username} إليك في الدردشة"
-        chat_group_mention: "أشار %{username} إلى @%{groupName} في الدردشة"
         chat_message: "رسالة دردشة جديدة"
       titles:
         chat_mention: "إشارة في الدردشة"

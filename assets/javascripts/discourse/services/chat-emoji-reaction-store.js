@@ -1,5 +1,4 @@
-// This class is duplicated from emoji-store class in core with an addition of `reactions` property.
-// We want to maintain separate emoji store for chat plugin.
+// This class is duplicated from emoji-store class in core. We want to maintain separate emoji store for reactions in chat plugin.
 // https://github.com/discourse/discourse/blob/892f7e0506f3a4d40d9a59a4c926ff0a2aa0947e/app/assets/javascripts/discourse/app/services/emoji-store.js
 
 import KeyValueStore from "discourse/lib/key-value-store";
@@ -8,7 +7,7 @@ import Service from "@ember/service";
 const EMOJI_USAGE = "emojiUsage";
 const EMOJI_SELECTED_DIVERSITY = "emojiSelectedDiversity";
 const TRACKED_EMOJIS = 15;
-const STORE_NAMESPACE = "discourse_chat_emojis_";
+const STORE_NAMESPACE = "discourse_chat_emoji_reaction_";
 
 export default Service.extend({
   init() {
@@ -29,14 +28,17 @@ export default Service.extend({
     this.store.setObject({ key: EMOJI_SELECTED_DIVERSITY, value: value || 1 });
   },
 
-  get reactions() {
-    if (!this.siteSettings.default_emoji_reactions) {
-      return [];
-    }
-    return this.siteSettings.default_emoji_reactions.split("|").filter(Boolean);
-  },
-
   get favorites() {
+    if (this.store.getObject(EMOJI_USAGE).length < 1) {
+      if (!this.siteSettings.default_emoji_reactions) {
+        this.store.setObject({ key: EMOJI_USAGE, value: [] });
+      } else {
+        const reactions = this.siteSettings.default_emoji_reactions
+          .split("|")
+          .filter(Boolean);
+        this.store.setObject({ key: EMOJI_USAGE, value: reactions });
+      }
+    }
     return this.store.getObject(EMOJI_USAGE) || [];
   },
 

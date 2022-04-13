@@ -28,11 +28,12 @@ fa_IR:
           title: "مخالفم"
         ignore:
           title: "نادیده گرفتن"
-  discourse_push_notifications:
-    popup:
-      chat_mention: "@%{username} در گفتگو به شما اشاره کرده است"
-      chat_message: "پیام جدید در %{chat_channel_title}"
-      group_chat_message: "پیام جدید در کانال گفتگوی شخصی"
+    channel:
+      statuses:
+        archived: "بایگانی شده"
+        closed: "بسته شد"
+        open: "باز کردن"
+    personal_chat: "گفتگوی شخصی"
   discourse_automation:
     scriptables:
       send_chat_message:

@@ -12,8 +12,6 @@ class ChatMessage < ActiveRecord::Base
   belongs_to :in_reply_to, class_name: "ChatMessage"
   has_many :revisions, class_name: "ChatMessageRevision"
   has_many :reactions, class_name: "ChatMessageReaction"
-  has_many :chat_message_post_connections, dependent: :destroy
-  has_many :posts, through: :chat_message_post_connections
   has_many :chat_uploads
   has_many :uploads, through: :chat_uploads
   has_one :chat_webhook_event
@@ -32,11 +30,33 @@ class ChatMessage < ActiveRecord::Base
     where("chat_messages.created_at < ?", date)
   }
 
-  def validate_message
+  def validate_message(has_uploads:)
     WatchedWordsValidator.new(attributes: [:message]).validate(self)
     if block_duplicate?
       self.errors.add(:base, I18n.t("chat.errors.duplicate_message"))
     end
+
+    if !has_uploads && message_too_short?
+      self.errors.add(
+        :base,
+        I18n.t("chat.errors.minimum_length_not_met", minimum: SiteSetting.chat_minimum_message_length)
+      )
+    end
+  end
+
+  def attach_uploads(uploads)
+    return if uploads.blank?
+
+    now = Time.now
+    record_attrs = uploads.map do |upload|
+      {
+        upload_id: upload.id,
+        chat_message_id: self.id,
+        created_at: now,
+        updated_at: now
+      }
+    end
+    ChatUpload.insert_all!(record_attrs)
   end
 
   def excerpt
@@ -75,15 +95,15 @@ class ChatMessage < ActiveRecord::Base
     if self.message.present?
       msg = self.message
 
-      if self.uploads.any?
+      if self.chat_uploads.any?
         markdown << msg + "\n"
       else
         markdown << msg
       end
     end
 
-    self.uploads.order(:created_at).each do |upload|
-      markdown << UploadMarkdown.new(upload).to_markdown
+    self.chat_uploads.order(:created_at).each do |chat_upload|
+      markdown << UploadMarkdown.new(chat_upload.upload).to_markdown
     end
 
     markdown.reject(&:empty?).join("\n")
@@ -205,6 +225,10 @@ class ChatMessage < ActiveRecord::Base
   def calc_in_the_past_seconds_for_duplicates(sensitivity)
     # Line generated from 0.1 sensitivity = 10 seconds and 1.0 sensitivity = 60 seconds.
     (55.55 * sensitivity + 4.5).to_i
+  end
+
+  def message_too_short?
+    message.length < SiteSetting.chat_minimum_message_length
   end
 end
 

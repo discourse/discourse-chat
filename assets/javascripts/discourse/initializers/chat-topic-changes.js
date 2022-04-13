@@ -1,3 +1,4 @@
+import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import discourseComputed from "discourse-common/utils/decorators";
 import I18n from "I18n";
 import RawTopicStatus from "discourse/raw-views/topic-status";
@@ -20,8 +21,9 @@ function toggleChatForTopic(topic, appEvents, chat) {
   })
     .then((response) => {
       if (topic.has_chat_live) {
-        topic.set("chat_channel", response.chat_channel);
-        chat.startTrackingChannel(response.chat_channel);
+        const channel = ChatChannel.create(response.chat_channel);
+        topic.set("chat_channel", channel);
+        chat.startTrackingChannel(channel);
       } else {
         chat.stopTrackingChannel(topic.chat_channel);
       }
@@ -89,6 +91,12 @@ function makeTopicChanges(api, appEvents, chat) {
     });
   });
 
+  api.decorateWidget("timeline-footer-controls:after", (dec) => {
+    if (dec.attrs.topic.has_chat_live && !dec.attrs.topic.closed) {
+      return dec.widget.attach("topic-chat-button", dec.attrs.topic);
+    }
+  });
+
   api.modifyClass("component:topic-admin-menu-button", {
     pluginId: PLUGIN_ID,
     toggleChat() {
@@ -101,13 +109,6 @@ function makeTopicChanges(api, appEvents, chat) {
     toggleChat() {
       return toggleChatForTopic(this.topic, appEvents, chat);
     },
-  });
-
-  api.includePostAttributes("chat_connection");
-  api.decorateWidget("poster-name:after", (helper) => {
-    if (helper.attrs.chat_connection) {
-      return helper.attach("post-chat-link");
-    }
   });
 }
 

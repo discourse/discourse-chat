@@ -43,12 +43,6 @@ zh_CN:
           title: "不同意"
         ignore:
           title: "忽略"
-  discourse_push_notifications:
-    popup:
-      chat_mention: "@%{username} 在聊天中提及了您"
-      chat_group_mention: "@%{username} 在聊天中提及了 @%{group_name}"
-      chat_message: "%{chat_channel_title} 中的新聊天消息"
-      group_chat_message: "个人聊天频道中的新聊天消息"
   discourse_automation:
     scriptables:
       send_chat_message:

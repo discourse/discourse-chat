@@ -796,6 +796,35 @@ RSpec.describe DiscourseChat::ChatController do
       expect(response.status).to eq(403)
     end
 
+    it "errors when max unique reactions limit is reached" do
+      Emoji.all.map(&:name).take(29).each do |emoji|
+        chat_message.reactions.create(user: user, emoji: emoji)
+      end
+
+      sign_in(user)
+      put "/chat/#{chat_channel.id}/react/#{chat_message.id}.json", params: { emoji: ":wink:", react_action: "add" }
+      expect(response.status).to eq(200)
+
+      put "/chat/#{chat_channel.id}/react/#{chat_message.id}.json", params: { emoji: ":wave:", react_action: "add" }
+      expect(response.status).to eq(403)
+      expect(response.parsed_body["errors"]).to include(
+        I18n.t("chat.errors.max_reactions_limit_reached")
+      )
+    end
+
+    it "does not error on new duplicate reactions" do
+      another_user = Fabricate(:user)
+      Emoji.all.map(&:name).take(29).each do |emoji|
+        chat_message.reactions.create(user: another_user, emoji: emoji)
+      end
+      emoji = ":wink:"
+      chat_message.reactions.create(user: another_user, emoji: emoji)
+
+      sign_in(user)
+      put "/chat/#{chat_channel.id}/react/#{chat_message.id}.json", params: { emoji: emoji, react_action: "add" }
+      expect(response.status).to eq(200)
+    end
+
     it "adds a reaction record correctly" do
       sign_in(user)
       emoji = ":heart:"

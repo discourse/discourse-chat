@@ -80,9 +80,33 @@ class DiscourseChat::ChatNotifier
     Jobs.enqueue_in(3.seconds, :create_chat_mention_notifications, {
       chat_message_id: @chat_message.id,
       user_ids: user_ids,
+      user_ids_to_identifier_map: user_ids_to_identifier_map.as_json,
       user_ids_to_group_mention_map: user_ids_to_group_mention_map,
       timestamp: @timestamp.iso8601(6)
     })
+  end
+
+  def user_ids_to_identifier_map
+    # A user might be directly mentioned by username, @here, @all, @group_name or a combo.
+    # Here we need to set the identifier if the user wasn't mentioned directly so that both
+    # OS notifications and core notifications can correctly display what identifier they were
+    # mentioned by. Loop through @all, @here, then group mentions, finally directly mentioned user_ids with each loop
+    # overriding the previous identifier so directly mentioned users will always be mentioned as such.
+    map = {}
+    [
+      [@global_mentioned_users.map(&:id), :all],
+      [@here_mentioned_users.map(&:id), :here]
+    ].each do |user_ids, identifier|
+      user_ids.each { |user_id| map[user_id] = { is_group: false, identifier: identifier } }
+    end
+
+    group_mentioned_users.each do |user|
+      group_name = (user.groups.map(&:name) & group_name_mentions).first
+      map[user.id] = { is_group: true, identifier: group_name }
+    end
+
+    @directly_mentioned_users.each { |user| map[user.id] = nil }
+    map
   end
 
   def direct_mentions_from_cooked
@@ -123,29 +147,25 @@ class DiscourseChat::ChatNotifier
   end
 
   def set_mentioned_users
-    all_users = []
-    if direct_mentions_from_cooked.include?("@all")
-      all_users = members_of_channel(exclude: @user.username)
-    end
+    @global_mentioned_users = direct_mentions_from_cooked.include?("@all") ?
+      members_of_channel(exclude: @user.username, is_channel_mention: true) :
+      []
 
-    users_here = []
-    if direct_mentions_from_cooked.include?("@here")
-      users_here = get_users_here
-    end
+    @here_mentioned_users = direct_mentions_from_cooked.include?("@here") ? get_users_here : []
 
-    directly_mentioned_users = mentioned_by_username(
+    @directly_mentioned_users = mentioned_by_username(
       exclude: @user.username,
       usernames: mentioned_usernames
     )
 
-    users = (all_users + users_here + group_mentioned_users + directly_mentioned_users).uniq
+    users = (@global_mentioned_users + @here_mentioned_users + group_mentioned_users + @directly_mentioned_users).uniq
 
     can_chat_users, @cannot_chat_users = filter_users_who_can_chat(users)
     @mentioned_with_membership, @mentioned_without_membership = filter_with_and_without_membership(can_chat_users)
   end
 
   def get_users_here
-    users = members_of_channel(exclude: @user.username).where("last_seen_at > ?", 5.minutes.ago)
+    users = members_of_channel(exclude: @user.username, is_channel_mention: true).where("last_seen_at > ?", 5.minutes.ago)
     usernames = users.map(&:username)
     other_mentioned_usernames = mentioned_usernames
       .reject { |username| username == "here" || usernames.include?(username) }
@@ -153,7 +173,8 @@ class DiscourseChat::ChatNotifier
       users = users.or(
         members_of_channel(
           exclude: @user.username,
-          usernames: other_mentioned_usernames
+          usernames: other_mentioned_usernames,
+          is_channel_mention: true
         )
       )
     end
@@ -171,11 +192,12 @@ class DiscourseChat::ChatNotifier
     users_preloaded_query.where(username_lower: (usernames.map(&:downcase) - [exclude.downcase]))
   end
 
-  def members_of_channel(exclude:, usernames: nil)
+  def members_of_channel(exclude:, usernames: nil, is_channel_mention: false)
     users = users_preloaded_query
       .where(user_chat_channel_memberships: { following: true, chat_channel_id: @chat_channel.id })
       .where.not(username_lower: exclude.downcase)
     users = users.where(username_lower: usernames.map(&:downcase)) if usernames
+    users = users.where(user_options: { ignore_channel_wide_mention: [false, nil] }) if is_channel_mention
     users
   end
 

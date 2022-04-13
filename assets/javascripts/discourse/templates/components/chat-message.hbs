@@ -2,9 +2,15 @@
 
 {{chat-message-separator message=message}}
 
-<div {{on "click" this.handleClick}} class={{messageContainerClasses}} data-id={{or message.id message.stagedId}}>
+<div
+  {{on "touchmove" this.handleTouchMove}}
+  {{on "touchstart" this.handleTouchStart}}
+  {{on "touchend" this.handleTouchEnd}}
+  class={{messageContainerClasses}}
+  data-id={{or message.id message.stagedId}}
+>
   {{emoji-picker
-    emojiStore=emojiStore
+    emojiStore=emojiReactionStore
     isActive=emojiPickerIsActive
     isEditorFocused=true
     usePopper=false
@@ -33,45 +39,14 @@
     {{else}}
       <div class={{chatMessageClasses}}>
         {{#if showActions}}
-          <div class="chat-msgactions-hover">
-            <div class="chat-msgactions">
-              {{#each emojiReactions as |reaction|}}
-                {{chat-message-reaction
-                  emoji=reaction.emoji
-                  reacted=reaction.reacted
-                  react=(action "react")
-                  class="show"
-                }}
-              {{/each}}
-
-              {{#if canReact}}
-                {{d-button
-                  class="btn-flat react-btn"
-                  action=(action "startReactionForMsgActions")
-                  icon="discourse-emojis"
-                  title="chat.react"
-                }}
-              {{/if}}
-
-              {{#if canReply}}
-                {{d-button
-                  class="btn-flat reply-btn"
-                  action=(action "reply")
-                  icon="reply"
-                  title="chat.reply"
-                }}
-              {{/if}}
-
-              {{#if moreButtons.length}}
-                {{dropdown-select-box
-                  class="more-buttons"
-                  options=(hash icon="ellipsis-h")
-                  content=moreButtons
-                  onChange=(action "handleMoreButtons")
-                }}
-              {{/if}}
-            </div>
-          </div>
+          {{component (concat "chat-message-actions-" (if site.mobileView "mobile" "desktop"))
+            message=message
+            emojiReactions=emojiReactions
+            secondaryButtons=secondaryButtons
+            messageActions=messageActions
+            messageCapabilities=messageCapabilities
+            onHoverMessage=onHoverMessage
+          }}
         {{/if}}
 
         {{#if message.in_reply_to}}
@@ -81,7 +56,11 @@
             {{#if message.in_reply_to.chat_webhook_event.emoji}}
               {{chat-emoji-avatar emoji=message.in_reply_to.chat_webhook_event.emoji}}
             {{else}}
-              {{chat-user-avatar user=message.in_reply_to.user}}
+              {{#if message.in_reply_to.user}}
+                {{chat-user-avatar user=message.in_reply_to.user}}
+              {{else}}
+                {{chat-emoji-avatar emoji=":wastebasket:"}}
+              {{/if}}
             {{/if}}
 
             <span class="tc-reply-msg">
@@ -108,7 +87,11 @@
           {{#if message.chat_webhook_event.emoji}}
             {{chat-emoji-avatar emoji=message.chat_webhook_event.emoji}}
           {{else}}
-            {{chat-user-avatar user=message.user avatarSize="medium"}}
+            {{#if message.user}}
+              {{chat-user-avatar user=message.user avatarSize="medium"}}
+            {{else}}
+              {{chat-emoji-avatar emoji=":wastebasket:"}}
+            {{/if}}
           {{/if}}
         {{/if}}
 

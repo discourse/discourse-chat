@@ -73,7 +73,9 @@ class DiscourseChat::ChatChannelArchiveService
       ) do |chat_messages|
         create_post(
           ChatTranscriptService.new(
-            chat_channel, messages_or_ids: chat_messages, opts: { no_link: true }
+            chat_channel,
+            messages_or_ids: chat_messages,
+            opts: { no_link: true, include_reactions: true }
           ).generate_markdown
         ) do
           delete_message_batch(chat_messages.map(&:id))
@@ -94,7 +96,7 @@ class DiscourseChat::ChatChannelArchiveService
     pc = nil
     Post.transaction do
       pc = PostCreator.new(
-        chat_channel_archive.archived_by,
+        Discourse.system_user,
         raw: raw,
 
         # we must skip these because the posts are created in a big transaction,
@@ -124,7 +126,7 @@ class DiscourseChat::ChatChannelArchiveService
       Rails.logger.info("Creating topic for #{chat_channel.name} archive.")
       Topic.transaction do
         topic_creator = TopicCreator.new(
-          chat_channel_archive.archived_by,
+          Discourse.system_user,
           Guardian.new(chat_channel_archive.archived_by),
           {
             title: chat_channel_archive.destination_topic_title,
@@ -226,6 +228,8 @@ class DiscourseChat::ChatChannelArchiveService
   end
 
   def kick_all_users
-    UserChatChannelMembership.where(chat_channel: chat_channel).update_all(following: false)
+    UserChatChannelMembership.where(chat_channel: chat_channel).update_all(
+      following: false, last_read_message_id: chat_channel.chat_messages.last&.id
+    )
   end
 end

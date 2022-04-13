@@ -80,6 +80,8 @@ describe DiscourseChat::ChatChannelArchiveService do
 
       it "makes a topic, deletes all the messages, creates posts for batches of messages, and changes the channel to archived" do
         create_messages(50) && start_archive
+        reaction_message = ChatMessage.last
+        ChatMessageReaction.create!(chat_message: reaction_message, user: Fabricate(:user), emoji: "+1")
         stub_const(DiscourseChat::ChatChannelArchiveService, "ARCHIVED_MESSAGES_PER_POST", 5) do
           subject.new(@channel_archive).execute
         end
@@ -87,7 +89,7 @@ describe DiscourseChat::ChatChannelArchiveService do
         @channel_archive.reload
         expect(@channel_archive.destination_topic.title).to eq("This will be a new topic")
         expect(@channel_archive.destination_topic.category).to eq(category)
-        expect(@channel_archive.destination_topic.user).to eq(user)
+        expect(@channel_archive.destination_topic.user).to eq(Discourse.system_user)
         expect(@channel_archive.destination_topic.tags.map(&:name)).to match_array(["news", "gossip"])
 
         topic = @channel_archive.destination_topic
@@ -95,6 +97,11 @@ describe DiscourseChat::ChatChannelArchiveService do
         topic.posts.where.not(post_number: 1).each do |post|
           expect(post.raw).to include("[chat")
           expect(post.raw).to include("noLink=\"true\"")
+          expect(post.user).to eq(Discourse.system_user)
+
+          if post.raw.include?(";#{reaction_message.id};")
+            expect(post.raw).to include("reactions=")
+          end
         end
         expect(topic.archived).to eq(true)
 
@@ -127,16 +134,29 @@ describe DiscourseChat::ChatChannelArchiveService do
         expect(pm_topic.title).to eq(I18n.t("system_messages.chat_channel_archive_complete.subject_template"))
       end
 
-      it "unfollows (leaves) the channel for all users" do
-        create_messages(3)
-        channel.chat_messages.map(&:user).each do |user|
-          UserChatChannelMembership.create(chat_channel: channel, user: user, following: true)
+      describe "channel members" do
+        before do
+          create_messages(3)
+          channel.chat_messages.map(&:user).each do |user|
+            UserChatChannelMembership.create!(chat_channel: channel, user: user, following: true)
+          end
         end
-        expect(UserChatChannelMembership.where(chat_channel: channel, following: true).count).to eq(3)
-        start_archive
-        subject.new(@channel_archive).execute
-        expect(@channel_archive.reload.complete?).to eq(true)
-        expect(UserChatChannelMembership.where(chat_channel: channel, following: true).count).to eq(0)
+
+        it "unfollows (leaves) the channel for all users" do
+          expect(UserChatChannelMembership.where(chat_channel: channel, following: true).count).to eq(3)
+          start_archive
+          subject.new(@channel_archive).execute
+          expect(@channel_archive.reload.complete?).to eq(true)
+          expect(UserChatChannelMembership.where(chat_channel: channel, following: true).count).to eq(0)
+        end
+
+        it "resets unread state for all users" do
+          UserChatChannelMembership.last.update!(last_read_message_id: channel.chat_messages.first.id)
+          start_archive
+          subject.new(@channel_archive).execute
+          expect(@channel_archive.reload.complete?).to eq(true)
+          expect(UserChatChannelMembership.last.last_read_message_id).to eq(channel.chat_messages.last.id)
+        end
       end
 
       describe "chat_archive_destination_topic_status setting" do
@@ -211,6 +231,8 @@ describe DiscourseChat::ChatChannelArchiveService do
 
       it "deletes all the messages, creates posts for batches of messages, and changes the channel to archived" do
         create_messages(50) && start_archive
+        reaction_message = ChatMessage.last
+        ChatMessageReaction.create!(chat_message: reaction_message, user: Fabricate(:user), emoji: "+1")
         stub_const(DiscourseChat::ChatChannelArchiveService, "ARCHIVED_MESSAGES_PER_POST", 5) do
           subject.new(@channel_archive).execute
         end
@@ -226,6 +248,12 @@ describe DiscourseChat::ChatChannelArchiveService do
         expect(topic.posts.count).to eq(13)
         topic.posts.where.not(post_number: [1, 2, 3]).each do |post|
           expect(post.raw).to include("[chat")
+          expect(post.raw).to include("noLink=\"true\"")
+          expect(post.user).to eq(Discourse.system_user)
+
+          if post.raw.include?(";#{reaction_message.id};")
+            expect(post.raw).to include("reactions=")
+          end
         end
         expect(topic.archived).to eq(false)
 

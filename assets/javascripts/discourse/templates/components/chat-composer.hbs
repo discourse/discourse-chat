@@ -15,7 +15,7 @@
   }}
 {{/if}}
 
-<div role="region" aria-label={{i18n "chat.aria_roles.composer"}} class="chat-composer-row">
+<div role="region" aria-label={{i18n "chat.aria_roles.composer"}} class={{composerRowClasses}}>
   {{#if showToolbar}}
     <div class="chat-composer-toolbar">
       {{#each toolbarButtons as |toolbarButton|}}
@@ -37,18 +37,20 @@
     class="chat-composer-input"
     disabled=disableComposer
     autocorrect="on"
-    autocapitalize="off"
+    autocapitalize="sentences"
     placeholder=placeholder
     rows=1
   }}
 
-  {{flat-button
-    disabled=disableComposer
-    action=(action "toggleToolbar")
-    class="open-toolbar-btn"
-    title="chat.composer.toggle_toolbar"
-    icon=(if showToolbar "minus" "plus")
-  }}
+  {{#if this.toolbarButtons.length}}
+    {{flat-button
+      disabled=disableComposer
+      action=(action "toggleToolbar")
+      class="open-toolbar-btn"
+      title="chat.composer.toggle_toolbar"
+      icon=(if showToolbar "minus" "plus")
+    }}
+  {{/if}}
 
   {{emoji-picker
     isActive=emojiPickerIsActive
@@ -68,35 +70,10 @@
   {{/if}}
 </div>
 
-{{#if showUploadsContainer}}
-  <div class="chat-composer-uploads-container">
-    {{#each uploads as |upload|}}
-      {{chat-composer-upload
-        upload=upload
-        done=true
-        cancel=(action "removeUpload" upload)
-        fileName=upload.original_filename
-      }}
-    {{/each}}
-
-    {{#each inProgressUploads as |upload|}}
-      {{chat-composer-upload
-        upload=upload
-        cancel=(action "cancelUploading" upload)
-        fileName=upload.fileName
-      }}
-    {{/each}}
-  </div>
+{{#if canAttachUploads}}
+  {{chat-composer-uploads
+    fullPage=fullPage
+    fileUploadElementId=fileUploadElementId
+    onUploadChanged=(action "uploadsChanged")
+  }}
 {{/if}}
-<input type="file" id={{fileUploadElementId}} accept={{acceptedFormats}} multiple>
-
-<div class="drop-a-file">
-  <div class="drop-a-file-content">
-    <div class="drop-a-file-content-images">
-      {{d-icon "file-audio"}}
-      {{d-icon "file-video"}}
-      {{d-icon "file-image"}}
-    </div>
-    <p class="drop-a-file-content-text">{{d-icon "upload"}} Drop a file to upload it.</p>
-  </div>
-</div>

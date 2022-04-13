@@ -15,6 +15,7 @@ import { clipboardCopy } from "discourse/lib/utilities";
 import { inject as service } from "@ember/service";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { prioritizeNameInUx } from "discourse/lib/settings";
+import { Promise } from "rsvp";
 
 const HERE = "here";
 const ALL = "all";
@@ -26,12 +27,15 @@ export default Component.extend({
   SHOW_RIGHT: "showRight",
   canInteractWithChat: false,
   isHovered: false,
+  onHoverMessage: null,
   emojiPickerIsActive: false,
   mentionWarning: null,
-  emojiStore: service("chat-emoji-store"),
+  emojiReactionStore: service("chat-emoji-reaction-store"),
   adminTools: optionalService(),
   _hasSubscribedToAppEvents: false,
   tagName: "",
+  previewing: false,
+  chat: service(),
 
   init() {
     this._super(...arguments);
@@ -126,9 +130,13 @@ export default Component.extend({
     this.set("emojiPickerIsActive", false);
   },
 
-  @discourseComputed("canInteractWithChat", "message.staged")
-  showActions(canInteractWithChat, messageStaged) {
-    return canInteractWithChat && !messageStaged;
+  @discourseComputed("canInteractWithChat", "message.staged", "isHovered")
+  showActions(canInteractWithChat, messageStaged, isHovered) {
+    return (
+      canInteractWithChat &&
+      !messageStaged &&
+      (this.site.mobileView ? isHovered : true)
+    );
   },
 
   @discourseComputed("message.deleted_at", "message.expanded")
@@ -144,7 +152,7 @@ export default Component.extend({
     "showEditButton",
     "showRebakeButton"
   )
-  moreButtons() {
+  secondaryButtons() {
     const buttons = [];
 
     buttons.push({
@@ -212,26 +220,61 @@ export default Component.extend({
     return buttons;
   },
 
-  @action
-  handleMoreButtons(value) {
-    this[value].call();
+  get messageActions() {
+    return {
+      reply: this.reply,
+      react: this.react,
+      copyLinkToMessage: this.copyLinkToMessage,
+      edit: this.edit,
+      selectMessage: this.selectMessage,
+      flag: this.flag,
+      silence: this.silence,
+      deleteMessage: this.deleteMessage,
+      restore: this.restore,
+      rebakeMessage: this.rebakeMessage,
+      startReactionForMsgActions: this.startReactionForMsgActions,
+    };
+  },
+
+  get messageCapabilities() {
+    return {
+      canReact: this.canReact,
+      canReply: this.canReply,
+    };
   },
 
   @discourseComputed("message", "details.can_moderate")
   show(message, canModerate) {
     return (
       !message.deleted_at ||
-      this.currentUser === this.message.user.id ||
+      this.currentUser.id === this.message.user.id ||
       this.currentUser.staff ||
       canModerate
     );
   },
 
   @action
-  handleClick() {
-    if (this.site.mobileView) {
-      this.toggleProperty("isHovered");
+  handleTouchStart() {
+    if (!this.isHovered) {
+      this._isPressingHandler = later(this._handleLongPress, 500);
     }
+  },
+
+  @action
+  handleTouchMove() {
+    if (!this.isHovered) {
+      cancel(this._isPressingHandler);
+    }
+  },
+
+  @action
+  handleTouchEnd() {
+    cancel(this._isPressingHandler);
+  },
+
+  @action
+  _handleLongPress() {
+    this.onHoverMessage(this.message);
   },
 
   @discourseComputed("message.hideUserInfo", "message.chat_webhook_event")
@@ -291,6 +334,9 @@ export default Component.extend({
 
   @discourseComputed("message.user")
   name(user) {
+    if (!user) {
+      return I18n.t("chat.user_deleted");
+    }
     return this.prioritizeName ? user.name : user.username;
   },
 
@@ -304,6 +350,10 @@ export default Component.extend({
     const classes = this.prioritizeName
       ? ["full-name names first"]
       : ["username names first"];
+
+    if (!user) {
+      return classes;
+    }
     if (user.staff) {
       classes.push("staff");
     }
@@ -324,7 +374,7 @@ export default Component.extend({
     return (
       !message.action_code &&
       !deletedAt &&
-      this.currentUser.id === message.user.id &&
+      this.currentUser.id === message.user?.id &&
       this.chatChannel.canModifyMessages(this.currentUser)
     );
   },
@@ -337,7 +387,7 @@ export default Component.extend({
   )
   canFlagMessage(message, userFlagStatus, canFlag, deletedAt) {
     return (
-      this.currentUser?.id !== message.user.id &&
+      this.currentUser?.id !== message.user?.id &&
       userFlagStatus === undefined &&
       canFlag &&
       !message.chat_webhook_event &&
@@ -349,7 +399,7 @@ export default Component.extend({
   showSilenceButton(message) {
     return (
       this.currentUser?.staff &&
-      this.currentUser?.id !== message.user.id &&
+      this.currentUser?.id !== message.user?.id &&
       !message.chat_webhook_event
     );
   },
@@ -358,7 +408,7 @@ export default Component.extend({
   canManageDeletion(message) {
     return (
       !message.action_code &&
-      (this.currentUser?.id === message.user.id
+      (this.currentUser?.id === message.user?.id
         ? this.details.can_delete_self
         : this.details.can_delete_others)
     );
@@ -633,14 +683,32 @@ export default Component.extend({
       return;
     }
 
-    this._loadingReactions.push(emoji);
-    this._updateReactionsList(emoji, reactAction, this.currentUser);
-    this._publishReaction(emoji, reactAction);
-    this.notifyPropertyChange("emojiReactions");
-
     if (this.site.mobileView) {
-      this.toggleProperty("isHovered");
+      this.set("isHovered", false);
     }
+
+    // TODO: ideally all react logic wouldn't be on message but chat channel
+    // or at least chat-live-pane, this would avoid extra complexity
+    let promise;
+    if (this.previewing) {
+      promise = this.chat.upsertDmChannelForUser(
+        this.chatChannel,
+        this.currentUser
+      );
+    } else {
+      promise = Promise.resolve();
+    }
+
+    promise.then(() => {
+      this._loadingReactions.push(emoji);
+      this._updateReactionsList(emoji, reactAction, this.currentUser);
+      this._publishReaction(emoji, reactAction);
+      this.notifyPropertyChange("emojiReactions");
+
+      if (this.previewing) {
+        this.onSwitchChannel(this.chatChannel, { replace: true });
+      }
+    });
   },
 
   _updateReactionsList(emoji, reactAction, user) {
@@ -691,7 +759,10 @@ export default Component.extend({
           emoji,
         },
       }
-    ).catch(popupAjaxError);
+    ).catch((errResult) => {
+      popupAjaxError(errResult);
+      this._updateReactionsList(emoji, this.REMOVE_REACTION, this.currentUser);
+    });
   },
 
   @action
@@ -713,7 +784,7 @@ export default Component.extend({
   flag() {
     bootbox.confirm(
       I18n.t("chat.confirm_flag", {
-        username: this.message.user.username,
+        username: this.message.user?.username,
       }),
       (confirmed) => {
         if (confirmed) {
@@ -806,10 +877,10 @@ export default Component.extend({
     }, 250);
   },
 
-  @discourseComputed("emojiStore.reactions.[]")
-  emojiReactions(reactions) {
+  @discourseComputed("emojiReactionStore.favorites.[]")
+  emojiReactions(favorites) {
     // may be a {} if no defaults defined in some production builds
-    if (!reactions || !reactions.slice) {
+    if (!favorites || !favorites.slice) {
       return [];
     }
 
@@ -817,7 +888,7 @@ export default Component.extend({
       return this.message.reactions[key].reacted;
     });
 
-    return reactions.slice(0, 5).map((emoji) => {
+    return favorites.slice(0, 3).map((emoji) => {
       if (userReactions.includes(emoji)) {
         return { emoji, reacted: true };
       } else {

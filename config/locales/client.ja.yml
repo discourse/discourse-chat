@@ -38,14 +38,12 @@ ja:
       flag: "通報する"
       flagged: "このメッセージはレビュー目的で通報されました"
       invalid_access: "このチャットチャンネルを表示するためのアクセス権がありません"
-      invitation_notification: "<span>%{username} があなたをチャットチャンネルに招待しました</span>"
       in_reply_to: "返信先"
       isolate:
         title: "チャットを分離する"
         description: "常に新しいタブでチャットを開く"
       heading: "チャット"
       new_messages: "新しいメッセージ"
-      mention_notification: "<span>%{username} がチャットであなたをメンションしました</span>"
       mention_warning:
         cannot_see:
           other: "%{usernames} はこのチャンネルにアクセスできないため通知されませんでした。"
@@ -64,7 +62,6 @@ ja:
       open_message: "メッセージをチャットで開く"
       placeholder_self: "メモを書き留める"
       placeholder_others: "%{messageRecipient} とチャット"
-      placeholder_previewing: "チャンネルに参加してメッセージを送信します。"
       remove_upload: "ファイルを削除する"
       react: "絵文字でリアクション"
       reply: "返信"
@@ -165,8 +162,6 @@ ja:
         username_instructions: "チャンネルに投稿するボットのユーザー名。空白のままにすると、デフォルトで「システム」になります。"
       selection:
         cancel: "キャンセル"
-        move_to_topic: "トピックに移動する"
-        quote_selection: "引用"
         error: "チャットメッセージを移動中にエラーが発生しました"
         title: "チャットをトピックに移動"
         new_topic:
@@ -191,8 +186,6 @@ ja:
         dm: "パーソナルチャット履歴は %{days} 日間保持されます。"
     notifications:
       popup:
-        chat_mention: "%{username} がチャットであなたをメンションしました"
-        chat_group_mention: "%{username} がチャットで %{groupName} をメンションしました"
         chat_message: "新しいチャットメッセージ"
       titles:
         chat_mention: "チャットのメンション"

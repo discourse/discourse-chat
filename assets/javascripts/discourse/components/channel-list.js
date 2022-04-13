@@ -1,8 +1,8 @@
+import { createDirectMessageChannelDraft } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import Component from "@ember/component";
 import discourseComputed from "discourse-common/utils/decorators";
 import showModal from "discourse/lib/show-modal";
 import { action, computed } from "@ember/object";
-import { schedule } from "@ember/runloop";
 import { inject as service } from "@ember/service";
 import { empty } from "@ember/object/computed";
 import I18n from "I18n";
@@ -11,25 +11,12 @@ export default Component.extend({
   tagName: "",
   publicChannels: null,
   directMessageChannels: null,
-  creatingDmChannel: false,
   inSidebar: false,
   toggleSection: null,
   publicChannelsEmpty: empty("publicChannels"),
   chat: service(),
   router: service(),
   onSelect: null,
-
-  didInsertElement() {
-    this._super(...arguments);
-
-    this.appEvents.on("chat:start-new-dm", this, "startCreatingDmChannel");
-  },
-
-  willDestroyElement() {
-    this._super(...arguments);
-
-    this.appEvents.off("chat:start-new-dm", this, "startCreatingDmChannel");
-  },
 
   @discourseComputed("directMessageChannels.@each.last_message_sent_at")
   sortedDirectMessageChannels(channels) {
@@ -88,28 +75,7 @@ export default Component.extend({
 
   @action
   startCreatingDmChannel() {
-    this.set("creatingDmChannel", true);
-
-    schedule("afterRender", () => {
-      if (this.isDestroying || this.isDestroyed) {
-        return;
-      }
-
-      document
-        .querySelector(".dm-creation-row .dm-user-chooser .select-kit-header")
-        ?.click();
-    });
-  },
-
-  @action
-  afterDmCreation(chatChannel) {
-    this.cancelDmCreation();
-    this.onSelect(chatChannel);
-  },
-
-  @action
-  cancelDmCreation() {
-    this.set("creatingDmChannel", false);
+    return this.onSelect(createDirectMessageChannelDraft());
   },
 
   @action

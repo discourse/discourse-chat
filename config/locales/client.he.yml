@@ -11,6 +11,12 @@ he:
         staff_actions:
           actions:
             chat_channel_status_change: "מצב ערוץ הצ׳אט השתנה"
+            chat_channel_delete: "ערוץ הצ׳אט נמחק"
+      api:
+        scopes:
+          descriptions:
+            chat:
+              create_message: "יצירת הודעת צ׳אט בערוץ מסוים."
     chat:
       dates:
         time_tiny: "h:mm"
@@ -25,11 +31,27 @@ he:
       leave: "יציאה מהערוץ"
       channel_settings:
         title: "הגדרות ערוץ"
-        close_channel: "סגירת ערוץ"
-        archive_channel: "העברת ערוץ לארכיון"
-        delete_channel: "מחיקת ערוץ"
+        close_channel: "סגירת ערוץ…"
+        open_channel: "פתיחת ערוץ…"
+        archive_channel: "העברת ערוץ לארכיון…"
+        delete_channel: "מחיקת ערוץ…"
       channel_archive:
         title: "העברת ערוץ לארכיון"
+        instructions: "<p>העברת ערוץ לארכיון מעבירה אותו למצב לקריאה בלבד ומעביר את כל ההודעות מהערוץ לנושא חדש או קיים. אי אפשר לשלוח הודעות חדשות ואי אפשר לערוך או למחוק הודעות קיימות.</p><p>להעביר את הערוץ ‎<strong>#%{channelTitle}</strong> לארכיון?</p>"
+        process_started: "תהליך ההעברה לארכיון החל. חלונית צצה זו תיסגר בקרוב ותישלח אליך הודעה אישית כשתהליך ההעברה לארכיון יסתיים."
+        retry: "לנסות שוב"
+      channel_open:
+        title: "פתיחת ערוץ"
+        instructions: "פתיחת הערוץ מחדש, כל המשתמשים יוכלו לשלוח הודעות ולערוך את ההודעות הקיימות שלהם."
+      channel_close:
+        title: "סגירת ערוץ"
+        instructions: "סגירת הערוץ מונעת ממשתמשים מחוץ לסגל לשלוח הודעות חדשות או לערוך הודעות קיימות. לסגור את הערוץ הזה?"
+      channel_delete:
+        title: "מחיקת ערוץ"
+        instructions: "<p>תהליך זה ימחק את הערוץ <strong>%{name}</strong> ואת היסטוריית ההתכתבות בו. כל ההודעות והנתונים הקשורים כגון תגובות והעלאות יימחקו לחלוטין. אם עדיף לך לשמר את היסטוריית הערוץ ולבטל אותו, אפשר להעביר את הערוץ לארכיון במקום.</p> <p>למחוק את הערוץ <strong>לצמיתות</strong>? כדי לאשר, נא למלא את שם הערוץ בתיבה שלהלן.</p>"
+        confirm: "ההשלכות ברורות לי, נא למחוק את הערוץ"
+        confirm_channel_name: "נא למלא את שם הערוץ"
+        process_started: "תהליך מחיקת הערוץ החל. חלונית צצה זו תיסגר בקרוב, הערוץ שנמחק לא יופיעו עוד בשום מקום."
       channel_list_popup:
         browse: "עיון בערוצים"
         create: "יצירת ערוץ"
@@ -50,7 +72,7 @@ he:
       flag: "סימון בדגל"
       flagged: "הודעה זו סומנה לסקירה"
       invalid_access: "אין לך גישה לצפות בערוץ הצ׳אט הזה"
-      invitation_notification: "<span>הוזמנת להצטרף לערוץ צ׳אט על ידי %{username}</span>"
+      invitation_notification: "<span>הוזמנת להצטרף לערוץ צ׳אט על ידי</span> <span>%{username}</span>"
       in_reply_to: "בתגובה אל"
       isolate:
         title: "בידוד צ׳אט"
@@ -58,7 +80,6 @@ he:
       heading: "צ׳אט"
       join: "הצטרפות"
       new_messages: "הודעות חדשות"
-      mention_notification: "<span>אוזכרת בצ׳אט על ידי %{username}</span>"
       mention_warning:
         cannot_see:
           one: "ל־%{usernames} אין גישה לערוץ הזה ולא נשלחה הודעה."
@@ -80,14 +101,18 @@ he:
       only_chat_push_notifications:
         title: "לשלוח התראות בדחיפה על הצ׳אט בלבד"
         description: "לחסום שליחה של התראות בדחיפה שאינן לגבי הצ׳אט"
+      ignore_channel_wide_mention:
+        title: "התעלמות מאזכורים לכל הערוץ"
+        description: "לא לשלוח התראות על אזכורים לכל הערוץ (‎@here ו־‎@all)"
       open: "פתיחת צ׳אט"
       open_full_page: "פתיחת צ׳אט במסך מלא"
       open_message: "פתיחת הודעה בצ׳אט"
       placeholder_self: "לקשקש משהו"
       placeholder_others: "צ׳אט עם %{messageRecipient}"
-      placeholder_previewing: "יש להצטרף לערוץ כדי לשלוח הודעה."
+      placeholder_previewing: "כדי להצטרף לדיון נא לשלוח הודעה."
       placeholder_new_message_disallowed: "הערוץ %{status}, אין לך אפשרות לשלוח הודעות חדשות כעת."
       placeholder_silenced: "אין לך אפשרות לשלוח הודעות כרגע."
+      placeholder_start_conversation: פתיחת דיון עם %{usernames}
       remove_upload: "הסרת קובץ"
       react: "להגיב עם אמוג׳י"
       reply: "תגובה"
@@ -115,16 +140,24 @@ he:
         many: "%{count} קבצים"
         other: "%{count} קבצים"
       you_flagged: "סימנת את ההודעה הזאת"
+      user_deleted: "נמחק"
       exit: "חזרה"
       channel_status:
         read_only_header: "הערוץ הוא לקריאה בלבד."
         read_only: "לקריאה בלבד"
         archived_header: "הערוץ בארכיון."
         archived: "בארכיון"
+        archive_failed: "העברת הערוץ לארכיון נכשלה. %{completed}/%{total} הודעות הועברו לארכיון תחת <a target=\"_blank\" href=\"%{topic_url}\">נושא היעד</a>. נא לנסות להשלים את ההעברה לארכיון פעם נוספת."
+        archive_completed: "העברת הערוץ לארכיון הושלמה. אפשר למצוא את הארכיון תחת <a target=\"_blank\" href=\"%{topic_url}\">נושא היעד</a>."
         closed_header: "הערוץ סגור."
         closed: "סגור"
         open_header: "הערוץ פתוח."
         open: "פתוח"
+      direct_message_creator:
+        title: הודעה חדשה
+        prefix: "אל:"
+        no_results: אין תוצאות
+        selected_user_title: "ביטול בחירת %{username}"
       channel_selector:
         title: "קפיצה לערוץ"
         no_channels: "אין ערוצים שתואמים לחיפוש שלך"
@@ -206,8 +239,7 @@ he:
         username_instructions: "שם משתמש הבוט שמפרסם לערוץ. ברירת המחדל היא ‚מערכת’ כשזה נשאר ריק."
       selection:
         cancel: "ביטול"
-        move_to_topic: "העברה לנושא"
-        quote_selection: "ציטוט"
+        quote_selection: "ציטוט בנושא"
         error: "אירעה שגיאה בהעברת הודעות הצ׳אט"
         title: "העברת צ׳אט לנושא"
         new_topic:
@@ -217,6 +249,7 @@ he:
             two: "פעולה זו תיצור נושא חדש ותמלא בו את <b>%{count}</b> הודעות הצ׳אט שבחרת."
             many: "פעולה זו תיצור נושא חדש ותמלא בו את <b>%{count}</b> הודעות הצ׳אט שבחרת."
             other: "פעולה זו תיצור נושא חדש ותמלא בו את <b>%{count}</b> הודעות הצ׳אט שבחרת."
+          instructions_channel_archive: "פעולה זו תיצור נושא חדש ותעביר אליו את הודעות הערוץ כארכיון."
         existing_topic:
           title: "העברה לנושא קיים"
           instructions:
@@ -224,6 +257,7 @@ he:
             two: "נא לבחור את הנושא אליו ברצונך להעביר את <b>%{count}</b> הודעות הצ׳אט האלו."
             many: "נא לבחור את הנושא אליו ברצונך להעביר את <b>%{count}</b> הודעות הצ׳אט האלו."
             other: "נא לבחור את הנושא אליו ברצונך להעביר את <b>%{count}</b> הודעות הצ׳אט האלו."
+          instructions_channel_archive: "נא לבחור את הנושא אליו ברצונך להעביר את הודעות הערוץ כארכיון."
         new_message:
           title: "העברה להודעה חדשה"
           instructions:
@@ -245,8 +279,12 @@ he:
     notifications:
       chat_quoted: "<span>%{username}</span> %{description}"
       popup:
-        chat_mention: "אוזכרת בצ׳אט על ידי %{username}"
-        chat_group_mention: "היה אזכור של @%{groupName} בצ׳אט על ידי ‎%{username}"
+        chat_mention:
+          direct: '<span>אוזכרת בערוץ „%{channel}” על ידי</span> <span>%{username}</span>'
+          other: '<span>נוסף אזכור של %{identifier} בערוץ „%{channel}” על ידי</span> <span>%{username}</span>'
+        direct_message_chat_mention:
+          direct: "<span>אוזכרת בצ׳אט אישי על ידי</span> <span>%{username}</span>"
+          other: "<span>נוסף אזכור של ‎%{identifier} בצ׳אט אישי על ידי</span> <span>%{username}</span>"
         chat_message: "הודעת צ׳אט חדשה"
         chat_quoted: "הודעת הצ׳אט שלך צוטטה על ידי %{username}"
       titles:
@@ -286,3 +324,4 @@ he:
         keyboard_shortcuts:
           switch_channel_arrows: "%{shortcut} החלפת ערוץ"
           open_quick_channel_selector: "%{shortcut} פתיחת בורר הערוצים המהיר"
+          open_insert_link_modal: "%{shortcut} הוספת קישור"

@@ -2,42 +2,38 @@
   <div class="chat-full-page-header {{if previewing "previewing"}}">
     <div class="chat-channel-header-details">
       {{#if site.mobileView}}
-        {{d-button
-          class="btn-flat"
-          icon="chevron-left"
-          action=onBackClick
-        }}
+        {{d-button class="btn-flat" icon="chevron-left" action=onBackClick}}
       {{/if}}
 
       <div class="chat-channel-title-with-status">
-        {{chat-channel-title onClick=(action "onChannelTitleClick") channel=chatChannel}}
+        {{#chat-channel-title
+          onClick=(action "onChannelTitleClick")
+          channel=chatChannel
+        }}
+          {{component
+            (if site.mobileView "flat-button" "d-button")
+            icon="trash-alt"
+            action=(action "navigateToIndex")
+            class="leave-channel btn-default"
+          }}
+        {{/chat-channel-title}}
         {{chat-channel-status channel=chatChannel}}
       </div>
 
       {{chat-channel-archive-status channel=chatChannel}}
-
-      {{#if previewing}}
-        {{d-button
-          class="btn-primary join-channel-btn"
-          action=(action "joinChannel")
-          label="chat.join"
-        }}
-      {{/if}}
-
     </div>
   </div>
 {{/if}}
 
+{{direct-message-creator
+  channel=chatChannel
+  isLoading=sendingloading
+  onSwitchChannel=onSwitchChannel
+}}
+
 <div class="chat-messages-scroll chat-messages-container">
   {{#conditional-loading-spinner condition=this.loading}}
     {{conditional-loading-spinner condition=this.loadingMoreFuture}}
-    {{#if (and previewing (not fullPage))}}
-      {{d-button
-        class="btn-primary join-channel-btn in-float"
-        action=(action "joinChannel")
-        label="chat.join"
-      }}
-    {{/if}}
 
     {{chat-retention-reminder chatChannel=chatChannel}}
     {{#each this.messages as |message|}}
@@ -56,6 +52,10 @@
         bulkSelectMessages=bulkSelectMessages
         fullPage=fullPage
         afterReactionAdded=(action "reStickScrollIfNeeded")
+        isHovered=(eq message.id hoveredMessageId)
+        onHoverMessage=(action "onHoverMessage")
+        previewing=previewing
+        onSwitchChannel=onSwitchChannel
       }}
     {{/each}}
     {{conditional-loading-spinner condition=this.loadingMorePast}}
@@ -84,17 +84,6 @@
   {{#if selectingMessages}}
     <div class="chat-selection-management">
       <div class="chat-selection-management-buttons">
-        {{#if canMoveToTopic}}
-          {{d-button
-            id="chat-move-to-topic-btn"
-            class="btn-primary"
-            icon="sign-out-alt"
-            label="chat.selection.move_to_topic"
-            title="chat.selection.move_to_topic"
-            disabled=(not anyMessagesSelected)
-            action=(action "moveMessagesToTopic")
-          }}
-        {{/if}}
         {{#if canQuote}}
           {{d-button
             id="chat-quote-btn"
@@ -139,6 +128,6 @@
       chatChannel=chatChannel
     }}
   {{/if}}
-
-  {{chat-replying-indicator chatChannelId=chatChannel.id}}
 {{/if}}
+
+{{chat-replying-indicator chatChannel=chatChannel}}

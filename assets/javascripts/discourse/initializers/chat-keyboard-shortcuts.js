@@ -42,6 +42,15 @@ export default {
       appEvents.trigger("chat:modify-selection", { type });
     };
 
+    const openInsertLinkModal = (event) => {
+      if (!isChatComposer(event.target)) {
+        return;
+      }
+      event.preventDefault();
+      event.stopPropagation();
+      appEvents.trigger("chat:open-insert-link-modal", { event });
+    };
+
     withPluginApi("0.12.1", (api) => {
       const mac = /Mac|iPod|iPhone|iPad/.test(navigator.platform);
       const mod = mac ? "meta" : "ctrl";
@@ -88,6 +97,21 @@ export default {
         `${mod}+e`,
         (event) => modifyComposerSelection(event, "code"),
         { global: true }
+      );
+      api.addKeyboardShortcut(
+        `${mod}+l`,
+        (event) => openInsertLinkModal(event),
+        {
+          global: true,
+          help: {
+            category: "chat",
+            name: "chat.keyboard_shortcuts.open_insert_link_modal",
+            definition: {
+              keys1: ["meta", "l"],
+              keysDelimiter: "plus",
+            },
+          },
+        }
       );
     });
   },

@@ -1,3 +1,4 @@
+import userSearch from "discourse/lib/user-search";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import Service, { inject as service } from "@ember/service";
 import Site from "discourse/models/site";
@@ -8,6 +9,7 @@ import { generateCookFunction } from "discourse/lib/text";
 import { next } from "@ember/runloop";
 import { Promise } from "rsvp";
 import ChatChannel, {
+  CHANNEL_STATUSES,
   CHATABLE_TYPES,
 } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import simpleCategoryHashMentionTransform from "discourse/plugins/discourse-chat/discourse/lib/simple-category-hash-mention-transform";
@@ -348,6 +350,11 @@ export default Service.extend({
     });
   },
 
+  searchPossibleDirectMessageUsers(options) {
+    // TODO: implement a chat specific user search function
+    return userSearch(options);
+  },
+
   getIdealFirstChannelId() {
     // When user opens chat we need to give them the 'best' channel when they enter.
     //
@@ -560,6 +567,20 @@ export default Service.extend({
         }
 
         channel.set("status", busData.status);
+
+        // it is not possible for the user to set their last read message id
+        // if the channel has been archived, because all the messages have
+        // been deleted. we don't want them seeing the blue dot anymore so
+        // just completely reset the unreads
+        if (busData.status === CHANNEL_STATUSES.archived) {
+          this.currentUser.chat_channel_tracking_state[channel.id] = {
+            unread_count: 0,
+            unread_mentions: 0,
+            chatable_type: channel.chatable_type,
+          };
+          this.userChatChannelTrackingStateChanged();
+        }
+
         this.appEvents.trigger("chat:refresh-channel", channel.id);
       });
     });
@@ -780,6 +801,32 @@ export default Service.extend({
     };
   },
 
+  upsertDmChannelForUser(channel, user) {
+    const usernames = (channel.chatable.users || [])
+      .mapBy("username")
+      .concat(user.username)
+      .uniq();
+
+    return this.upsertDmChannelForUsernames(usernames);
+  },
+
+  upsertDmChannelForUsernames(usernames) {
+    return ajax("/chat/direct_messages/create.json", {
+      method: "POST",
+      data: { usernames: usernames.uniq().join(",") },
+    })
+      .then((response) => {
+        const chatChannel = ChatChannel.create(response.chat_channel);
+        this.startTrackingChannel(chatChannel);
+        return chatChannel;
+      })
+      .catch(popupAjaxError);
+  },
+
+  getDmChannelForUsernames(usernames) {
+    return ajax("/chat/direct_messages.json", { data: { usernames } });
+  },
+
   _saveDraft(channelId, draft) {
     const data = { channel_id: channelId };
     if (draft) {
@@ -789,18 +836,18 @@ export default Service.extend({
     ajax("/chat/drafts", { type: "POST", data });
   },
 
-  setDraftForChannel(channelId, draft) {
+  setDraftForChannel(channel, draft) {
     if (
       draft &&
       (draft.value || draft.uploads.length > 0 || draft.replyToMsg)
     ) {
-      this.draftStore[channelId] = draft;
+      this.draftStore[channel.id] = draft;
     } else {
-      delete this.draftStore[channelId];
+      delete this.draftStore[channel.id];
       draft = null; // _saveDraft will destroy draft
     }
 
-    discourseDebounce(this, this._saveDraft, channelId, draft, 2000);
+    discourseDebounce(this, this._saveDraft, channel.id, draft, 2000);
   },
 
   getDraftForChannel(channelId) {

@@ -8,21 +8,6 @@ class DiscourseChat::ChatMessageCreator
     instance
   end
 
-  def self.attach_uploads(chat_message_id, uploads)
-    return if uploads.blank?
-
-    now = Time.now
-    record_attrs = uploads.map do |upload|
-      {
-        upload_id: upload.id,
-        chat_message_id: chat_message_id,
-        created_at: now,
-        updated_at: now
-      }
-    end
-    ChatUpload.insert_all!(record_attrs)
-  end
-
   def initialize(chat_channel:, in_reply_to_id: nil, user:, content:, staged_id: nil, incoming_chat_webhook: nil, upload_ids: nil)
     @chat_channel = chat_channel
     @user = user
@@ -45,11 +30,12 @@ class DiscourseChat::ChatMessageCreator
   def create
     begin
       validate_channel_status!
-      validate_message!
+      uploads = get_uploads
+      validate_message!(has_uploads: uploads.any?)
       @chat_message.cook
       @chat_message.save!
       create_chat_webhook_event
-      attach_uploads
+      @chat_message.attach_uploads(uploads)
       ChatDraft.where(user_id: @user.id, chat_channel_id: @chat_channel.id).destroy_all
       ChatPublisher.publish_new!(@chat_channel, @chat_message, @staged_id)
       Jobs.enqueue(:process_chat_message, { chat_message_id: @chat_message.id })
@@ -79,8 +65,8 @@ class DiscourseChat::ChatMessageCreator
     )
   end
 
-  def validate_message!
-    @chat_message.validate_message
+  def validate_message!(has_uploads:)
+    @chat_message.validate_message(has_uploads: has_uploads)
     if @chat_message.errors.present?
       raise StandardError.new(@chat_message.errors.map(&:full_message).join(", "))
     end
@@ -94,10 +80,9 @@ class DiscourseChat::ChatMessageCreator
     )
   end
 
-  def attach_uploads
-    return if @upload_ids.blank?
+  def get_uploads
+    return [] if @upload_ids.blank? || !SiteSetting.chat_allow_uploads
 
-    uploads = Upload.where(id: @upload_ids, user_id: @user.id)
-    self.class.attach_uploads(@chat_message.id, uploads)
+    Upload.where(id: @upload_ids, user_id: @user.id)
   end
 end

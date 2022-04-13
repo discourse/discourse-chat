@@ -35,6 +35,18 @@
   <span class="control-instructions">{{i18n "chat.isolate.description"}}</span>
 </div>
 
+<div class="control-group chat-setting">
+  <label class="controls">
+    {{input
+      id="user_chat_ignore_channel_wide_mention"
+      type="checkbox"
+      checked=model.user_option.ignore_channel_wide_mention
+    }}
+    {{i18n "chat.ignore_channel_wide_mention.title"}}
+  </label>
+  <span class="control-instructions">{{i18n "chat.ignore_channel_wide_mention.description"}}</span>
+</div>
+
 <div class="control-group chat-setting controls-dropdown">
   <label for="user_chat_sounds">{{i18n "chat.sound.title"}}</label>
   {{combo-box

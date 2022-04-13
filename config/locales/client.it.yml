@@ -38,14 +38,12 @@ it:
       flag: "Segnala"
       flagged: "Questo messaggio è stato segnalato per la revisione"
       invalid_access: "Non hai accesso alla visualizzazione di questo canale chat"
-      invitation_notification: "<span>%{username} ti ha invitato a partecipare a un canale di chat</span>"
       in_reply_to: "In risposta a"
       isolate:
         title: "Isola chat"
         description: "Apri sempre la chat in una nuova scheda"
       heading: "Chat"
       new_messages: "nuovi messaggi"
-      mention_notification: "<span>%{username} ti ha menzionato nella chat</span>"
       mention_warning:
         cannot_see:
           one: "%{usernames} non può accedere a questo canale e non è stato avvisato."
@@ -67,7 +65,6 @@ it:
       open_message: "Apri messaggio in chat"
       placeholder_self: "Scrivi qualche annotazione"
       placeholder_others: "Chatta con %{messageRecipient}"
-      placeholder_previewing: "Partecipa al canale per inviare un messaggio."
       remove_upload: "Rimuovi file"
       react: "Reagisci con delle emoji"
       reply: "Rispondi"
@@ -167,7 +164,6 @@ it:
         username_instructions: "Nome utente del bot che pubblica sul canale. Il valore predefinito è 'system' se l'impostazione è lasciata vuota."
       selection:
         cancel: "Annulla"
-        move_to_topic: "Sposta nell'argomento"
         error: "Si è verificato un errore durante lo spostamento dei messaggi di chat"
         title: "Sposta la chat nell'argomento"
         new_topic:
@@ -196,8 +192,6 @@ it:
         dm: "La cronologia della chat personale è conservata per %{days} giorni."
     notifications:
       popup:
-        chat_mention: "%{username} ti ha menzionato in chat"
-        chat_group_mention: "%{username} ha menzionato @%{groupName} in chat"
         chat_message: "Nuovo messaggio di chat"
       titles:
         chat_mention: "Menzione in chat"

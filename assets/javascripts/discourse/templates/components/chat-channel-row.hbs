@@ -8,8 +8,7 @@
   tabindex="0"
   data-chat-channel-id={{channel.id}}
 >
-  {{chat-channel-title channel=channel}}
-  {{chat-channel-unread-indicator channel=channel}}
+  {{chat-channel-title channel=channel unreadIndicator=true}}
 
   {{#if options.leaveButton}}
     {{chat-channel-leave-btn

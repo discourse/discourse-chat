@@ -11,11 +11,29 @@ he:
     chat_channel_retention_days: "הודעות הצ׳אט בערוצים הרגילים ישמרו למשך כמות כזאת של ימים. הגדרה לאפס תשמור את ההודעות לעד."
     chat_dm_retention_days: "הודעות הצ׳אט בערוצי הצ׳אט האישיים ישמרו למשך כמות כזאת של ימים. הגדרה לאפס תשמור את ההודעות לעד."
     chat_auto_silience_duration: "מספר הדקות שבמהלכן שמשתמשים יושתקו כאשר הם חורגים ממגבלת קצב יצירת הודעת בצ׳אט. 0 משבית את ההשתקה האוטומטית."
+    chat_allowed_messages_for_trust_level_0: "מספר ההודעות שמשתמשים בדרגת אמון 0 רשאים לשלוח תוך 30 שניות. ‚0’ כדי להשבית את המגבלה."
+    chat_allowed_messages_for_other_trust_levels: "מספר ההודעות שמשתמשים בדרגות אמון 1-4 רשאים לשלוח תוך 30 שניות. ‚0’ כדי להשבית את המגבלה."
     chat_silence_user_sensitivity: "הסבירות שמשתמש שסומן בצ׳אט יושתק אוטומטית."
     chat_auto_silence_from_flags_duration: "מספר דקות השתקת המשתמשים כאשר הם מושתקים אוטומטית עקב הודעות צ׳אט מסומנות."
     chat_default_channel_id: "ערוץ הצ׳אט שייפתח כברירת מחדל כאשר למשתמש אין הודעות או אזכורים שלא נקראו בערוצים אחרים."
+    chat_duplicate_message_sensitivity: "הסבירות שהודעה כפולה מאותו שולח תיחסם תוך זמן קצר. מספר עשרוני בין 0 ל־1.0, כאשר 1.0 הוא ההגדרה הגבוהה ביותר (חוסם הודעות בתדירות גבוהה יותר בפרק זמן קצר יותר). ‚0’ כדי לאפשר הודעות כפולות."
+    chat_minimum_message_length: "מספר התווים המזערי להודעת צ׳אט."
+    chat_allow_uploads: "לאפשר העלאות בערוצי צ׳אט ציבוריים."
+    chat_archive_destination_topic_status: "המצב בו נושא היעד צריך להיות לאחר שהעברת ערוץ לארכיון הושלמה. חל רק כאשר נושא היעד הוא נושא חדש ולא קיים."
+    default_emoji_reactions: "רגשות אמוג׳י כברירת מחדל להודעות צ׳אט. ניתן להוסיף עד 5 אמוג׳ים לתגובה מהירה."
     errors:
       chat_default_channel: "ערוץ הצ׳אט כברירת המחדל חייב להיות ערוץ ציבורי."
+  system_messages:
+    chat_channel_archive_complete:
+      title: "העברת ערוץ הצ׳אט לארכיון הושלמה"
+      subject_template: "העברת ערוץ הצ׳אט לארכיון הושלמה בהצלחה"
+      text_body_template: |
+        העברת ערוץ הצ׳אט **‎\#%{channel_name}** לארכיון הושלמה בהצלחה. ההודעות הועתקו לנושא [%{topic_title}](%{topic_url}).
+    chat_channel_archive_failed:
+      title: "העברת הצ׳אט לארכיון נכשלה"
+      subject_template: "העברת הצ׳אט לארכיון נכשלה"
+      text_body_template: |
+        העברת ערוץ הצ׳אט **‎\#%{channel_name}** לארכיון נכשלה. %{messages_archived} הודעות הועברו לארכיון. הודעות שהועברו לארכיון באופן חלקי הועתקו לנושא [%{topic_title}](%{topic_url}). יש לבקר בכתובת הערוץ %{channel_url} כדי לנסות שוב.
   chat:
     errors:
       channel_exists_for_category: "כבר קיים ערוץ לקטגוריה ולשם האלו"
@@ -25,6 +43,11 @@ he:
       user_cannot_send_message: "אין לך אפשרות לשלוח הודעות כרגע."
       rate_limit_exceeded: "חריגה ממגבלת הודעות הצ׳אט שניתן לשלוח תוך 30 שניות"
       auto_silence_from_flags: "הודעת צ׳אט שסומנה בציון גבוה מספיק כדי להשתיק את המשתמש."
+      channel_cannot_be_archived: "אי אפשר להעביר את הערוץ לארכיון כרגע, הוא חייב להיות סגור או פתוח להעברה לארכיון."
+      duplicate_message: "פרסמת הודעה זהה לפני זמן קצר מדי."
+      delete_channel_failed: "מחיקת הערוץ נכשלה, נא לנסות שוב."
+      minimum_length_not_met: "ההודעה קצרה מדי, היא חייבת להיות ארוכה מ־%{minimum} תווים"
+      max_reactions_limit_reached: "רגשות חדשים אסורים בהודעה זו."
     reviewables:
       actions:
         agree:
@@ -62,12 +85,19 @@ he:
         archived: "בארכיון"
         closed: "סגור"
         open: "פתוח"
+      archive:
+        first_post_raw: "הנושא הזה הוא הארכיון של ערוץ הצ׳אט [%{channel_name}](%{channel_url})."
+    personal_chat: "צ׳אט אישי"
   discourse_push_notifications:
     popup:
-      chat_mention: "אוזכרת בצ׳אט על ידי ‎@%{username}"
-      chat_group_mention: "היה אזכור של ‎@%{group_name} בצ׳אט על ידי ‎@%{username}"
-      chat_message: "הודעת צ׳אט חדשה תחת %{chat_channel_title}"
-      group_chat_message: "הודעת צ׳אט חדשה בערוץ צ׳אט אישי"
+      chat_mention:
+        direct: 'אוזכרת בערוץ „%{channel}” על ידי %{username}'
+        other: 'נוסף אזכור של %{identifier} בערוץ „%{channel}” על ידי %{username}'
+      direct_message_chat_mention:
+        direct: "אוזכרת בצ׳אט אישי על ידי %{username}"
+        other: "נוסף אזכור של ‎%{identifier} בצ׳אט אישי על ידי %{username}"
+      new_chat_message: 'נשחלה הודעה על ידי %{username} ב־„%{channel}”'
+      new_direct_chat_message: "נשלחה הודעה על ידי %{username} בצ׳אט אישי"
   discourse_automation:
     scriptables:
       send_chat_message:

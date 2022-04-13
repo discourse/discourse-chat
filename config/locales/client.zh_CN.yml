@@ -38,14 +38,12 @@ zh_CN:
       flag: "举报"
       flagged: "此消息已被举报，等待审核"
       invalid_access: "您无权查看此聊天频道"
-      invitation_notification: "<span>%{username} 邀请您加入聊天频道</span>"
       in_reply_to: "回复"
       isolate:
         title: "隔离聊天"
         description: "始终在新标签页中打开聊天"
       heading: "聊天"
       new_messages: "新消息"
-      mention_notification: "<span>%{username} 在聊天中提及了您</span>"
       mention_warning:
         cannot_see:
           other: "%{usernames} 无法访问此频道且未收到通知。"
@@ -64,7 +62,6 @@ zh_CN:
       open_message: "在聊天中打开消息"
       placeholder_self: "做些记录"
       placeholder_others: "与 %{messageRecipient} 聊天"
-      placeholder_previewing: "加入频道以发送消息。"
       remove_upload: "移除文件"
       react: "使用表情符号回复"
       reply: "回复"
@@ -163,7 +160,6 @@ zh_CN:
         username_instructions: "发布到频道的机器人的用户名。留空时默认为“系统”。"
       selection:
         cancel: "取消"
-        move_to_topic: "移动到话题"
         error: "移动聊天消息时出错"
         title: "将聊天移动到话题"
         new_topic:
@@ -188,8 +184,6 @@ zh_CN:
         dm: "个人聊天记录保留 %{days} 天。"
     notifications:
       popup:
-        chat_mention: "%{username} 在聊天中提及了您"
-        chat_group_mention: "%{username} 在聊天中提及了 @%{groupName}"
         chat_message: "新的聊天消息"
       titles:
         chat_mention: "聊天提及"

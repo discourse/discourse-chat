@@ -8,10 +8,39 @@ sv:
   site_settings:
     chat_enabled: "Aktivera insticksprogrammet för discourse-chatt. Använd åtgärden 'Aktivera chatt' per ämne för att konfigurera."
     chat_allowed_groups: "Användare i dessa grupper kan chatta."
+    chat_channel_retention_days: "Chattmeddelanden i ordinarie kanaler kommer att behållas i så här många dagar. Sätt till '0' för att behålla meddelanden för alltid."
+    chat_dm_retention_days: "Chattmeddelanden i personliga chattkanaler kommer att behållas i så här många dagar. Sätt till '0' för att behålla meddelanden för alltid."
+    chat_auto_silience_duration: "Antal minuter som användare kommer att tystas för när de överskrider gränsen för att skapa chattmeddelanden. Sätt till '0' för att inaktivera auto-tystning."
+    chat_allowed_messages_for_trust_level_0: "Antal meddelanden som användare på förtroendenivå 0 får skicka inom 30 sekunder. Ange '0' för att inaktivera gränsen."
+    chat_allowed_messages_for_other_trust_levels: "Antal meddelanden som användare med förtroendenivå 1-4 får skicka inom 30 sekunder. Ange '0' för att inaktivera gränsen."
+    chat_silence_user_sensitivity: "Sannolikheten för att en användare som flaggas i chatten automatiskt tystas."
+    chat_auto_silence_from_flags_duration: "Antal minuter som användarna tystas i när de automatiskt tystas på grund av markerade chattmeddelanden."
+    chat_default_channel_id: "Chattkanalen som öppnas som standard när en användare inte har olästa meddelanden eller omnämnanden i andra kanaler."
+    chat_duplicate_message_sensitivity: "Sannolikheten att ett duplicerat meddelande från samma avsändare blockeras inom en kort tidsperiod. Decimaltal mellan 0 och 1,0, där 1,0 är den högsta inställningen (blockerar meddelanden oftare på kortare tid). Ställ in `0` för att tillåta dubbletter av meddelanden."
+    errors:
+      chat_default_channel: "Standardchattkanalen måste vara en offentlig kanal."
+  system_messages:
+    chat_channel_archive_complete:
+      title: "Arkivering av chattkanalen är färdigt"
+      subject_template: "Arkivering av chattkanalen slutfördes framgångsrikt"
+      text_body_template: |
+        Arkivering av chattkanalen **\#%{channel_name}** har slutförts. Meddelandena har kopierats till ämnet [%{topic_title}](%{topic_url}).
+    chat_channel_archive_failed:
+      title: "Arkivering av chattkanalen misslyckades"
+      subject_template: "Arkivering av chattkanalen misslyckades"
+      text_body_template: |
+        Arkivering av chatt kanalen **\#%{channel_name}** misslyckades. %{messages_archived} meddelanden har arkiverats. Delvis arkiverade meddelanden kopierades till ämnet [%{topic_title}](%{topic_url}). Besök kanalen på %{channel_url} för att försöka igen.
   chat:
     errors:
       channel_exists_for_category: "En kanal finns redan för denna kategori och namn"
       channel_exists_for_topic: "En kanal finns redan för detta ämne"
+      channel_new_message_disallowed: "Kanalen är %{status}, inga nya meddelanden kan skickas"
+      channel_modify_message_disallowed: "Kanalen är %{status}, inga meddelanden kan redigeras eller tas bort"
+      user_cannot_send_message: "Du kan inte skicka meddelanden just nu."
+      rate_limit_exceeded: "Överskred gränsen för chattmeddelanden som kan skickas inom 30 sekunder"
+      auto_silence_from_flags: "Chattmeddelande flaggat med tillräckligt hög poäng för att tysta användaren."
+      channel_cannot_be_archived: "Kanalen kan inte arkiveras just nu, den måste vara antingen stängd eller öppen för arkivering."
+      duplicate_message: "Du skrev också ett identiskt meddelande nyligen."
     reviewables:
       actions:
         agree:
@@ -43,12 +72,15 @@ sv:
           title: "Oöverens"
         ignore:
           title: "Ignorera"
-  discourse_push_notifications:
-    popup:
-      chat_mention: "@%{username} nämnde dig i chatten"
-      chat_group_mention: "@%{username} nämnde @%{group_name} i chatten"
-      chat_message: "Nytt chattmeddelande i %{chat_channel_title}"
-      group_chat_message: "Nytt chattmeddelande i en personlig chattkanal"
+    channel:
+      statuses:
+        read_only: "Endast läsning"
+        archived: "Arkiverad"
+        closed: "Stängd"
+        open: "Öppen"
+      archive:
+        first_post_raw: "Detta ämne är ett arkiv av chatt kanalen [%{channel_name}](%{channel_url})."
+    personal_chat: "personlig chatt"
   discourse_automation:
     scriptables:
       send_chat_message:

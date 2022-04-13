@@ -38,14 +38,12 @@ es:
       flag: "Denunciar"
       flagged: "Este mensaje ha sido denunciado y se someterá a revisión"
       invalid_access: "No tienes acceso para ver este canal de chat"
-      invitation_notification: "<span>%{username} te invitó a unirte a un canal de chat</span>"
       in_reply_to: "En respuesta a"
       isolate:
         title: "Aislar chat"
         description: "Abrir siempre el chat en una pestaña nueva"
       heading: "Chat"
       new_messages: "nuevos mensajes"
-      mention_notification: "<span>%{username} te mencionó en el chat</span>"
       mention_warning:
         cannot_see:
           one: "%{usernames} no puede acceder a este canal y no fue notificado."
@@ -67,7 +65,6 @@ es:
       open_message: "Abrir mensaje en el chat"
       placeholder_self: "Anota algo"
       placeholder_others: "Chatear con %{messageRecipient}"
-      placeholder_previewing: "Únete al canal para enviar un mensaje."
       remove_upload: "Eliminar archivo"
       react: "Reaccionar con emojis"
       reply: "Responder"
@@ -167,7 +164,6 @@ es:
         username_instructions: "Nombre de usuario del bot que publica en el canal. El valor predeterminado es «sistema» cuando se deja en blanco."
       selection:
         cancel: "Cancelar"
-        move_to_topic: "Mover al tema"
         error: "Se ha producido un error al mover los mensajes de chat"
         title: "Mover chat a tema"
         new_topic:
@@ -196,8 +192,6 @@ es:
         dm: "El historial de chat personal se conserva durante %{days} días."
     notifications:
       popup:
-        chat_mention: "%{username} te mencionó en el chat"
-        chat_group_mention: "%{username} mencionó a @%{groupName} en el chat"
         chat_message: "Nuevo mensaje de chat"
       titles:
         chat_mention: "Mención de chat"

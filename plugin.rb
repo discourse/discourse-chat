@@ -3,18 +3,23 @@
 # name: discourse-chat
 # about: Chat inside Discourse
 # version: 0.3
-# authors: Kane York, Mark VanLandingham
+# authors: Kane York, Mark VanLandingham, Martin Brennan, Joffrey Jaffeux
 # url: https://github.com/discourse/discourse-chat
 # transpile_js: true
 
 enabled_site_setting :chat_enabled
 
 register_asset 'stylesheets/common/common.scss'
+register_asset 'stylesheets/common/d-progress-bar.scss'
 register_asset 'stylesheets/common/incoming-chat-webhooks.scss'
+register_asset 'stylesheets/mobile/chat-message.scss', :mobile
 register_asset 'stylesheets/common/chat-message.scss'
+register_asset 'stylesheets/common/direct-message-creator.scss'
 register_asset 'stylesheets/common/chat-message-collapser.scss'
 register_asset 'stylesheets/common/chat-transcript.scss'
 register_asset 'stylesheets/common/chat-retention-reminder.scss'
+register_asset 'stylesheets/common/chat-composer-uploads.scss'
+register_asset 'stylesheets/common/chat-composer-upload.scss'
 register_asset 'stylesheets/common/chat-channel-selector-modal.scss'
 register_asset 'stylesheets/mobile/mobile.scss', :mobile
 register_asset 'stylesheets/desktop/desktop.scss', :desktop
@@ -59,7 +64,6 @@ after_initialize do
   load File.expand_path('../app/controllers/chat_channels_controller.rb', __FILE__)
   load File.expand_path('../app/controllers/direct_messages_controller.rb', __FILE__)
   load File.expand_path('../app/controllers/incoming_chat_webhooks_controller.rb', __FILE__)
-  load File.expand_path('../app/controllers/move_to_topic_controller.rb', __FILE__)
   load File.expand_path('../app/models/user_chat_channel_membership.rb', __FILE__)
   load File.expand_path('../app/models/chat_channel.rb', __FILE__)
   load File.expand_path('../app/models/chat_channel_archive.rb', __FILE__)
@@ -73,7 +77,6 @@ after_initialize do
   load File.expand_path('../app/models/direct_message_channel.rb', __FILE__)
   load File.expand_path('../app/models/direct_message_user.rb', __FILE__)
   load File.expand_path('../app/models/incoming_chat_webhook.rb', __FILE__)
-  load File.expand_path('../app/models/chat_message_post_connection.rb', __FILE__)
   load File.expand_path('../app/models/reviewable_chat_message.rb', __FILE__)
   load File.expand_path('../app/models/chat_view.rb', __FILE__)
   load File.expand_path('../app/serializers/chat_webhook_event_serializer.rb', __FILE__)
@@ -107,6 +110,7 @@ after_initialize do
   load File.expand_path('../lib/post_notification_handler.rb', __FILE__)
   load File.expand_path('../app/jobs/regular/process_chat_message.rb', __FILE__)
   load File.expand_path('../app/jobs/regular/chat_channel_archive.rb', __FILE__)
+  load File.expand_path('../app/jobs/regular/chat_channel_delete.rb', __FILE__)
   load File.expand_path('../app/jobs/regular/create_chat_mention_notifications.rb', __FILE__)
   load File.expand_path('../app/jobs/regular/notify_users_watching_chat.rb', __FILE__)
   load File.expand_path('../app/jobs/scheduled/delete_old_chat_messages.rb', __FILE__)
@@ -120,6 +124,7 @@ after_initialize do
   UserUpdater::OPTION_ATTR.push(:chat_isolated)
   UserUpdater::OPTION_ATTR.push(:only_chat_push_notifications)
   UserUpdater::OPTION_ATTR.push(:chat_sound)
+  UserUpdater::OPTION_ATTR.push(:ignore_channel_wide_mention)
 
   register_reviewable_type ReviewableChatMessage
 
@@ -148,10 +153,6 @@ after_initialize do
       has_many :user_chat_channel_memberships, dependent: :destroy
       has_many :chat_message_reactions, dependent: :destroy
       has_many :chat_mentions
-    }
-    Post.class_eval {
-      has_many :chat_message_post_connections, dependent: :destroy
-      has_many :chat_messages, through: :chat_message_post_connections
     }
   end
 
@@ -187,13 +188,13 @@ after_initialize do
       object.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]
   end
 
-  add_to_serializer(:post, :chat_connection) do
-    if object.chat_message_post_connections&.first&.chat_message
-      {
-        chat_channel_id: object.chat_message_post_connections.first.chat_message.chat_channel_id,
-        chat_message_ids: object.chat_message_post_connections.map(&:chat_message_id)
-      }
-    end
+  add_to_serializer(:user_card, :can_chat_user) do
+    return false if !SiteSetting.chat_enabled
+    return false if scope.user.blank?
+
+    scope.user.id != object.id &&
+      scope.can_chat?(scope.user) &&
+      scope.can_chat?(object)
   end
 
   add_to_serializer(:current_user, :can_chat) do
@@ -287,6 +288,10 @@ after_initialize do
     object.only_chat_push_notifications
   end
 
+  add_to_serializer(:user_option, :ignore_channel_wide_mention) do
+    object.ignore_channel_wide_mention
+  end
+
   RETENTION_SETTINGS_TO_USER_OPTION_FIELDS = {
     chat_channel_retention_days: :dismissed_channel_retention_reminder,
     chat_dm_retention_days: :dismissed_dm_retention_reminder
@@ -358,6 +363,7 @@ after_initialize do
 
   DiscourseChat::Engine.routes.draw do
     # direct_messages_controller routes
+    get '/direct_messages' => 'direct_messages#index'
     post '/direct_messages/create' => 'direct_messages#create'
 
     # incoming_webhooks_controller routes
@@ -365,9 +371,6 @@ after_initialize do
 
     # incoming_webhooks_controller routes
     post '/hooks/:key/slack' => 'incoming_chat_webhooks#create_message_slack_compatible'
-
-    # move_to_topic_controller routes
-    resources :move_to_topic
 
     # chat_channel_controller routes
     get '/chat_channels' => 'chat_channels#index'
@@ -381,8 +384,8 @@ after_initialize do
     get '/chat_channels/:chat_channel_id' => 'chat_channels#show'
     put '/chat_channels/:chat_channel_id/archive' => 'chat_channels#archive'
     put '/chat_channels/:chat_channel_id/retry_archive' => 'chat_channels#retry_archive'
-
     put '/chat_channels/:chat_channel_id/change_status' => 'chat_channels#change_status'
+    delete '/chat_channels/:chat_channel_id' => 'chat_channels#destroy'
 
     # chat_controller routes
     get '/' => 'chat#respond'
@@ -447,4 +450,11 @@ after_initialize do
       end
     end
   end
+
+  add_api_key_scope(:chat, {
+    create_message: {
+      actions: %w[discourse_chat/chat#create_message],
+      params: %i[chat_channel_id]
+    }
+  })
 end

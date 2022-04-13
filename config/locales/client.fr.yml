@@ -38,14 +38,12 @@ fr:
       flag: "Drapeau"
       flagged: "Ce message a été signalé pour examen"
       invalid_access: "Vous n'avez pas accès à ce canal de discussion"
-      invitation_notification: "<span>%{username} vous a invité(e) à rejoindre un canal de discussion</span>"
       in_reply_to: "En réponse à"
       isolate:
         title: "Isoler la discussion"
         description: "Toujours ouvrir le chat dans un nouvel onglet"
       heading: "Chat"
       new_messages: "nouveaux messages"
-      mention_notification: "<span>%{username} vous a mentionné(e) dans la discussion</span>"
       mention_warning:
         cannot_see:
           one: "%{usernames} ne peut pas accéder à ce canal et n'a pas été averti(e)."
@@ -67,7 +65,6 @@ fr:
       open_message: "Ouvrir le message dans le chat"
       placeholder_self: "Noter quelque chose"
       placeholder_others: "Discuter avec %{messageRecipient}"
-      placeholder_previewing: "Rejoignez le canal pour envoyer un message."
       remove_upload: "Supprimer le fichier"
       react: "Réagir avec un émoji"
       reply: "Répondre"
@@ -167,7 +164,6 @@ fr:
         username_instructions: "Nom d'utilisateur du robot qui publie sur le canal. La valeur par défaut est « système » lorsqu'elle est laissée vide."
       selection:
         cancel: "Annuler"
-        move_to_topic: "Déplacer vers le sujet"
         error: "Une erreur s'est produite lors du déplacement des messages du chat"
         title: "Déplacer le chat vers le sujet"
         new_topic:
@@ -196,8 +192,6 @@ fr:
         dm: "L'historique du chat personnel est conservé pendant %{days} jours."
     notifications:
       popup:
-        chat_mention: "%{username} vous a mentionné(e) dans la discussion"
-        chat_group_mention: "%{username} a mentionné @%{groupName} dans le chat"
         chat_message: "Nouveau message de discussion"
       titles:
         chat_mention: "Mention de chat"

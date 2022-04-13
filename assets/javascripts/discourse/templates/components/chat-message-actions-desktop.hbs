@@ -1,0 +1,39 @@
+<div class="chat-msgactions-hover">
+  <div class="chat-msgactions">
+    {{#each emojiReactions as |reaction|}}
+      {{chat-message-reaction
+        emoji=reaction.emoji
+        reacted=reaction.reacted
+        react=messageActions.react
+        class="show"
+      }}
+    {{/each}}
+
+    {{#if messageCapabilities.canReact}}
+      {{d-button
+        class="btn-flat react-btn"
+        action=messageActions.startReactionForMsgActions
+        icon="discourse-emojis"
+        title="chat.react"
+      }}
+    {{/if}}
+
+    {{#if messageCapabilities.canReply}}
+      {{d-button
+        class="btn-flat reply-btn"
+        action=messageActions.reply
+        icon="reply"
+        title="chat.reply"
+      }}
+    {{/if}}
+
+    {{#if secondaryButtons.length}}
+      {{dropdown-select-box
+        class="more-buttons"
+        options=(hash icon="ellipsis-h")
+        content=secondaryButtons
+        onChange=(action "handlesecondaryButtons")
+      }}
+    {{/if}}
+  </div>
+</div>

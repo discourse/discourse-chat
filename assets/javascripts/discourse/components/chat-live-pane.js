@@ -164,6 +164,8 @@ export default Component.extend({
             this.loadDraftForChannel(this.chatChannel.id);
             this._startLastReadRunner();
           });
+      } else {
+        this.set("draft", this.chat.getDraftForChannel("draft"));
       }
     }
     this.currentUserTimezone = this.currentUser?.resolvedTimezone(

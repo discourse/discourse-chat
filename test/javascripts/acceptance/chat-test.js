@@ -28,7 +28,11 @@ import {
 } from "discourse/plugins/discourse-chat/chat-fixtures";
 import Session from "discourse/models/session";
 import { cloneJSON } from "discourse-common/lib/object";
-import { presentUserIds } from "discourse/tests/helpers/presence-pretender";
+import {
+  joinChannel,
+  leaveChannel,
+  presentUserIds,
+} from "discourse/tests/helpers/presence-pretender";
 import User from "discourse/models/user";
 import selectKit from "discourse/tests/helpers/select-kit-helper";
 import { next } from "@ember/runloop";
@@ -1813,6 +1817,52 @@ acceptance(
     });
   }
 );
+
+acceptance("Discourse Chat - Channel Replying Indicator", function (needs) {
+  needs.user({
+    admin: true,
+    moderator: true,
+    username: "eviltrout",
+    id: 1,
+    can_chat: true,
+    has_chat_enabled: true,
+  });
+  needs.settings({
+    chat_enabled: true,
+  });
+  needs.pretender((server, helper) => {
+    baseChatPretenders(server, helper);
+    chatChannelPretender(server, helper);
+    server.get("/chat/7/messages.json", () => {
+      const cloned = cloneJSON(chatView);
+      cloned.meta.status = CHANNEL_STATUSES.closed;
+      return helper.response(cloned);
+    });
+    server.get("/chat/chat_channels.json", () => {
+      const cloned = cloneJSON(chatChannels);
+      cloned.public_channels.find((chan) => chan.id === 7).status =
+        CHANNEL_STATUSES.closed;
+      return helper.response(cloned);
+    });
+  });
+
+  test("indicator content when replying/not replying", async function (assert) {
+    const user = { id: 8, username: "bob" };
+    await visit("/chat/channel/7/Uncategorized");
+    await joinChannel("/chat-reply/7", user);
+
+    assert.equal(
+      query(".replying-text").innerText,
+      I18n.t("chat.replying_indicator.single_user", {
+        username: user.username,
+      }) + " . . ."
+    );
+
+    await leaveChannel("/chat-reply/7", user);
+
+    assert.equal(query(".replying-text").innerText, "");
+  });
+});
 
 function createFile(name, type = "image/png") {
   // the blob content doesn't matter at all, just want it to be random-ish

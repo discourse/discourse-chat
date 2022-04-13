@@ -1577,6 +1577,51 @@ acceptance("Discourse Chat - image uploads", function (needs) {
     const image = createFile("avatar.png");
     appEvents.trigger("upload-mixin:chat-composer-uploader:add-files", image);
   });
+
+  test("uploading files in composer does not insert placeholder text into chat composer", async function (assert) {
+    await visit("/t/internationalization-localization/280");
+
+    await click("#topic-footer-buttons .btn.create");
+    assert.ok(exists(".d-editor-input"), "the composer input is visible");
+
+    this.container.lookup("service:chat").set("sidebarActive", false);
+    await click(".header-dropdown-toggle.open-chat");
+    assert.ok(visible(".topic-chat-float-container"), "chat float is open");
+
+    const appEvents = loggedInUser().appEvents;
+    const done = assert.async();
+    await fillIn(".d-editor-input", "The image:\n");
+
+    appEvents.on("composer:all-uploads-complete", () => {
+      assert.strictEqual(
+        query(".d-editor-input").value,
+        "The image:\n![avatar.PNG|690x320](upload://yoj8pf9DdIeHRRULyw7i57GAYdz.jpeg)\n",
+        "the topic composer gets the completed image markdown"
+      );
+      assert.strictEqual(
+        query(".chat-composer-input").value,
+        "",
+        "the chat composer does not get the completed image markdown"
+      );
+      done();
+    });
+
+    appEvents.on("composer:upload-started", () => {
+      assert.strictEqual(
+        query(".d-editor-input").value,
+        "The image:\n[Uploading: avatar.png...]()\n",
+        "the topic composer gets the placeholder image markdown"
+      );
+      assert.strictEqual(
+        query(".chat-composer-input").value,
+        "",
+        "the chat composer does not get the placeholder image markdown"
+      );
+    });
+
+    const image = createFile("avatar.png");
+    appEvents.trigger("composer:add-files", image);
+  });
 });
 
 acceptance("Discourse Chat - Insert Date", function (needs) {

@@ -1864,6 +1864,37 @@ acceptance("Discourse Chat - Channel Replying Indicator", function (needs) {
   });
 });
 
+acceptance("Discourse Chat - Direct Message Creator", function (needs) {
+  needs.user({
+    admin: true,
+    moderator: true,
+    username: "eviltrout",
+    id: 1,
+    can_chat: true,
+    has_chat_enabled: true,
+  });
+  needs.settings({
+    chat_enabled: true,
+  });
+  needs.pretender((server, helper) => {
+    baseChatPretenders(server, helper);
+    chatChannelPretender(server, helper);
+
+    server.get("/u/search/users", () => {
+      return helper.response([]);
+    });
+  });
+
+  test("starting dm creation, resets draft", async function (assert) {
+    const text = "What up what up";
+    await visit("/chat/channel/9/Site");
+    await fillIn(".chat-composer-input", text);
+    await visit("/chat/channel/draft/NewMessage");
+
+    assert.notEqual(document.querySelector(".chat-composer-input").value, text);
+  });
+});
+
 function createFile(name, type = "image/png") {
   // the blob content doesn't matter at all, just want it to be random-ish
   const file = new Blob([(Math.random() + 1).toString(36).substring(2)], {

@@ -13,6 +13,7 @@ export default Component.extend(UppyUploadMixin, {
   type: "chat-composer",
   uploads: null,
   useMultipartUploadsIfAvailable: true,
+  fullPage: false,
 
   init() {
     this._super(...arguments);
@@ -64,15 +65,14 @@ export default Component.extend(UppyUploadMixin, {
   },
 
   _uploadDropTargetOptions() {
-    const chatWidget = document.querySelector(
-      ".topic-chat-container.expanded.visible"
-    );
-    const fullPageChat = document.querySelector(".full-page-chat");
-
-    const targetEl =
-      chatWidget || fullPageChat
-        ? document.querySelector(".chat-enabled")
-        : null;
+    let targetEl;
+    if (this.fullPage) {
+      targetEl = document.querySelector(".full-page-chat");
+    } else {
+      targetEl = document.querySelector(
+        ".topic-chat-container.expanded.visible"
+      );
+    }
 
     if (!targetEl) {
       return this._super();

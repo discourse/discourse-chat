@@ -1885,7 +1885,7 @@ acceptance("Discourse Chat - Direct Message Creator", function (needs) {
     });
   });
 
-  test("starting dm creation, resets draft", async function (assert) {
+  test("starting new dm resets draft state", async function (assert) {
     const text = "What up what up";
     await visit("/chat/channel/9/Site");
     await fillIn(".chat-composer-input", text);

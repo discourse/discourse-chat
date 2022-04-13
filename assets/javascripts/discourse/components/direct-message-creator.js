@@ -44,9 +44,7 @@ export default Component.extend({
       .searchPossibleDirectMessageUsers({
         term,
         limit: 6,
-        exclude: [this.currentUser?.username].concat(
-          this.channel.chatable?.users?.mapBy("username") || []
-        ),
+        exclude: this.channel.chatable?.users?.mapBy("username") || [],
         lastSeenUsers: isEmpty(term) ? true : false,
       })
       .then((r) => {

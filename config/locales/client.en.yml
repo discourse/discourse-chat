@@ -331,3 +331,6 @@ en:
           switch_channel_arrows: "%{shortcut} Switch channel"
           open_quick_channel_selector: "%{shortcut} Open quick channel selector"
           open_insert_link_modal: "%{shortcut} Insert hyperlink"
+    topic_statuses:
+      chat:
+        help: "Chat is enabled for this topic"

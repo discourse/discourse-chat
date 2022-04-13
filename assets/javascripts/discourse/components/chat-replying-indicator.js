@@ -56,7 +56,7 @@ export default Component.extend({
   didReceiveAttrs() {
     this._super(...arguments);
 
-    if (!this.channel || this.channel.isDraft) {
+    if (!this.chatChannel || this.chatChannel.isDraft) {
       return;
     }
 

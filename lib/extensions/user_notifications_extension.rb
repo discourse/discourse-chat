@@ -17,12 +17,13 @@ module DiscourseChat::UserNotificationsExtension
       unsubscribe_url: "#{Discourse.base_url}/email/unsubscribe/#{@unsubscribe_key}",
     }
 
-    ChatMessageEmailStatus.where(id: @email_statuses.map(&:id)).update_all(status: ChatMessageEmailStatus::STATUSES[:processed])
     @group_email_statuses = @email_statuses.group_by { |status| status.chat_message.chat_channel }
     @group_email_statuses.each do |chat_channel, statuses|
       @group_email_statuses[chat_channel] = statuses.sort_by(&:created_at)
     end
     @user = user
+
     build_email(user.email, opts)
+    ChatMessageEmailStatus.where(user_id: user.id).update_all(status: ChatMessageEmailStatus::STATUSES[:processed])
   end
 end

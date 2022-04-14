@@ -102,3 +102,21 @@ class ChatMessageEmailStatus < ActiveRecord::Base
     return TYPES[:global_mention] if [:all, :here].include?(mention_info[:identifier])
   end
 end
+
+# == Schema Information
+#
+# Table name: chat_message_email_statuses
+#
+#  id              :bigint           not null, primary key
+#  chat_message_id :integer          not null
+#  user_id         :integer          not null
+#  status          :integer          default("unprocessed"), not null
+#  type            :integer          not null
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
+#
+# Indexes
+#
+#  chat_message_email_status_user_message_index  (user_id,chat_message_id)
+#  index_chat_message_email_statuses_on_status   (status)
+#

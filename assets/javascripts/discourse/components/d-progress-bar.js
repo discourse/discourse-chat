@@ -22,6 +22,10 @@ export default Component.extend({
     this.scheduled = [];
   },
 
+  resetState() {
+    this.container?.classList?.remove("done", "loading", "still-loading");
+  },
+
   cancelScheduled() {
     this.scheduled.forEach((s) => cancel(s));
     this.scheduled = [];
@@ -33,6 +37,9 @@ export default Component.extend({
     if (!this.key) {
       return;
     }
+
+    this.cancelScheduled();
+    this.resetState();
 
     if (this.isLoading) {
       this.start();
@@ -48,8 +55,14 @@ export default Component.extend({
   start() {
     this.set("startedAt", Date.now());
 
-    this.cancelScheduled();
+    this.scheduled.push(later(this, "startLoading"));
 
+    this.scheduled.push(
+      later(this, "stillLoading", STILL_LOADING_DURATION * 1000)
+    );
+  },
+
+  startLoading() {
     this.scheduled.push(
       schedule("afterRender", () => {
         this.container?.classList?.add("loading");
@@ -58,10 +71,6 @@ export default Component.extend({
           `${this.averageTime.toFixed(2)}s`
         );
       })
-    );
-
-    this.scheduled.push(
-      later(this, "stillLoading", STILL_LOADING_DURATION * 1000)
     );
   },
 
@@ -77,9 +86,11 @@ export default Component.extend({
     this.updateAverage((Date.now() - this.startedAt) / 1000);
 
     this.cancelScheduled();
+
     this.scheduled.push(
       schedule("afterRender", () => {
         this.container?.classList?.remove("loading", "still-loading");
+        this.container?.classList?.add("done");
       })
     );
   },

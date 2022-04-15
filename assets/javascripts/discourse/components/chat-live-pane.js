@@ -985,23 +985,24 @@ export default Component.extend({
     } else {
       promise = ajax(`/chat/chat_channels/${channel.id}/follow`, {
         method: "POST",
-      }).then(() =>
-        this.chat.startTrackingChannel(channel).then((c) => {
-          return { chat_channel: c };
-        })
-      );
+      });
     }
 
     return promise
-      .then((result) =>
-        ajax(`/chat/${result.chat_channel.id}.json`, {
+      .then((response) =>
+        this.chat.startTrackingChannel(
+          ChatChannel.create(response.chat_channel)
+        )
+      )
+      .then((c) =>
+        ajax(`/chat/${c.id}.json`, {
           type: "POST",
           data: {
             message,
             upload_ids: (uploads || []).mapBy("id"),
           },
         }).then(() =>
-          this.onSwitchChannel(ChatChannel.create(result.chat_channel), {
+          this.onSwitchChannel(ChatChannel.create(c), {
             replace: true,
           })
         )

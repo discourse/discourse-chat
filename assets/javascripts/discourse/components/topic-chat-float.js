@@ -347,8 +347,7 @@ export default Component.extend({
     }
 
     if (this.site.mobileView || this.chat.isChatPage) {
-      return this.router.transitionTo("chat.channel", channel.id, channel.title)
-        .promise;
+      return this.chat.openChannel(channel);
     }
 
     if (this.currentUser.chat_isolated) {

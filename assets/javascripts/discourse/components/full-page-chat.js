@@ -143,9 +143,7 @@ export default Component.extend({
       options.transition &&
       (options.replace || channel.id !== this.chatChannel?.id)
     ) {
-      this.router.transitionTo("chat.channel", channel.id, channel.title);
+      return this.chat.openChannel(channel);
     }
-
-    return false;
   },
 });

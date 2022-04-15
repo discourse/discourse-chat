@@ -33,6 +33,11 @@ export default Component.extend({
     this._super(...arguments);
 
     this.filterUsernames();
+  },
+
+  didReceiveAttrs() {
+    this._super(...arguments);
+
     this.focusFilter();
   },
 

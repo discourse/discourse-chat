@@ -459,12 +459,12 @@ export default Service.extend({
 
     return ajax(`/chat/chat_channels/${channelId}`).then((response) => {
       const queryParams = messageId ? { messageId } : {};
-      this.router.transitionTo(
+      return this.router.transitionTo(
         "chat.channel",
         response.chat_channel.id,
         response.chat_channel.title,
         { queryParams }
-      );
+      ).promise;
     });
   },
 
@@ -485,9 +485,14 @@ export default Service.extend({
       this.currentUser.chat_isolated
     ) {
       const queryParams = messageId ? { messageId } : {};
-      this.router.transitionTo("chat.channel", channel.id, channel.title, {
-        queryParams,
-      });
+      return this.router.transitionTo(
+        "chat.channel",
+        channel.id,
+        channel.title,
+        {
+          queryParams,
+        }
+      ).promise;
     } else {
       this._fireOpenFloatAppEvent(channel, messageId);
     }

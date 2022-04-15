@@ -8,7 +8,7 @@ import { bind } from "discourse-common/utils/decorators";
 import { INPUT_DELAY } from "discourse-common/config/environment";
 import { inject as service } from "@ember/service";
 import { schedule } from "@ember/runloop";
-import { not } from "@ember/object/computed";
+import { gt, not } from "@ember/object/computed";
 
 export default Component.extend({
   tagName: "",
@@ -38,8 +38,16 @@ export default Component.extend({
   didReceiveAttrs() {
     this._super(...arguments);
 
+    this.set("term", null);
+
     this.focusFilter();
+
+    if (!this.hasSelection) {
+      this.filterUsernames();
+    }
   },
+
+  hasSelection: gt("channel.chatable.users.length", 0),
 
   @bind
   filterUsernames(term = null) {
@@ -168,11 +176,7 @@ export default Component.extend({
       return;
     }
 
-    if (
-      event.key === "Backspace" &&
-      isEmpty(value) &&
-      this.channel.chatable.users?.length
-    ) {
+    if (event.key === "Backspace" && isEmpty(value) && this.hasSelection) {
       event.preventDefault();
       event.stopPropagation();
 

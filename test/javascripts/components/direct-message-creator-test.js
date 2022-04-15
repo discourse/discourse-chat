@@ -3,7 +3,11 @@ import componentTest, {
 } from "discourse/tests/helpers/component-test";
 import { click, fillIn } from "@ember/test-helpers";
 import hbs from "htmlbars-inline-precompile";
-import { discourseModule, exists } from "discourse/tests/helpers/qunit-helpers";
+import {
+  discourseModule,
+  exists,
+  query,
+} from "discourse/tests/helpers/qunit-helpers";
 import { createDirectMessageChannelDraft } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import { Promise } from "rsvp";
 import fabricate from "../helpers/fabricators";
@@ -122,6 +126,28 @@ discourseModule(
         await click(".test-blur");
 
         assert.notOk(exists(".filter-area.is-focused"));
+      },
+    });
+
+    componentTest("state is reset on channel change", {
+      template: hbs`{{direct-message-creator channel=channel chat=chat}}`,
+
+      beforeEach() {
+        this.set("chat", mockChat(this));
+        this.set("channel", createDirectMessageChannelDraft());
+      },
+
+      async test(assert) {
+        await fillIn(".filter-usernames", "hawk");
+
+        assert.equal(query(".filter-usernames").value, "hawk");
+
+        this.set("channel", fabricate("chat-channel"));
+        this.set("channel", createDirectMessageChannelDraft());
+
+        assert.equal(query(".filter-usernames").value, "");
+        assert.ok(exists(".filter-area.is-focused"));
+        assert.ok(exists("li.user[data-username='hawk']"));
       },
     });
   }

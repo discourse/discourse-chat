@@ -760,7 +760,7 @@ body.composer-open .topic-chat-float-container {
 
   .chat-replying-indicator {
     color: var(--primary-medium);
-    padding: 0.25em 0.75em;
+    padding: 0 0.75em;
     padding-bottom: unquote(
       "max(calc(env(safe-area-inset-bottom) - 0.75em), 0.25em)"
     );

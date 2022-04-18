@@ -27,11 +27,13 @@ class DiscourseChat::ChatNotifier
 
   def notify_edit
     update_mention_notifications
+    user_ids_to_identifier_map
   end
 
   def notify_new
     mentioned_user_ids = create_mention_notifications
     notify_watching_users(except: [@user.id] + mentioned_user_ids)
+    user_ids_to_identifier_map
   end
 
   private
@@ -92,21 +94,23 @@ class DiscourseChat::ChatNotifier
     # OS notifications and core notifications can correctly display what identifier they were
     # mentioned by. Loop through @all, @here, then group mentions, finally directly mentioned user_ids with each loop
     # overriding the previous identifier so directly mentioned users will always be mentioned as such.
-    map = {}
-    [
-      [@global_mentioned_users.map(&:id), :all],
-      [@here_mentioned_users.map(&:id), :here]
-    ].each do |user_ids, identifier|
-      user_ids.each { |user_id| map[user_id] = { is_group: false, identifier: identifier } }
-    end
+    @user_ids_to_identifier_map ||= begin
+      map = {}
+      [
+        [@global_mentioned_users.map(&:id), :all],
+        [@here_mentioned_users.map(&:id), :here]
+      ].each do |user_ids, identifier|
+        user_ids.each { |user_id| map[user_id] = { is_group: false, identifier: identifier } }
+      end
 
-    group_mentioned_users.each do |user|
-      group_name = (user.groups.map(&:name) & group_name_mentions).first
-      map[user.id] = { is_group: true, identifier: group_name }
-    end
+      group_mentioned_users.each do |user|
+        group_name = (user.groups.map(&:name) & group_name_mentions).first
+        map[user.id] = { is_group: true, identifier: group_name }
+      end
 
-    @directly_mentioned_users.each { |user| map[user.id] = nil }
-    map
+      @directly_mentioned_users.each { |user| map[user.id] = nil }
+      map
+    end
   end
 
   def direct_mentions_from_cooked

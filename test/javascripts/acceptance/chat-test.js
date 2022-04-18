@@ -1414,11 +1414,11 @@ acceptance("Discourse Chat - chat preferences", function (needs) {
     assert.equal(currentURL(), "/latest");
   });
 
-  test("There are all 5 settings shown", async function (assert) {
+  test("There are all 6 settings shown", async function (assert) {
     this.chatService.set("sidebarActive", true);
     await visit("/u/eviltrout/preferences/chat");
     assert.equal(currentURL(), "/u/eviltrout/preferences/chat");
-    assert.equal(queryAll(".chat-setting").length, 5);
+    assert.equal(queryAll(".chat-setting").length, 6);
   });
 
   test("The user can save the settings", async function (assert) {
@@ -1431,6 +1431,8 @@ acceptance("Discourse Chat - chat preferences", function (needs) {
     await click("#user_chat_ignore_channel_wide_mention");
     await selectKit("#user_chat_sounds").expand();
     await selectKit("#user_chat_sounds").selectRowByValue("bell");
+    await selectKit("#user_chat_email_frequency").expand();
+    await selectKit("#user_chat_email_frequency").selectRowByValue("never");
 
     await click(".save-changes");
 
@@ -1442,6 +1444,7 @@ acceptance("Discourse Chat - chat preferences", function (needs) {
           chat_sound: "bell",
           only_chat_push_notifications: true,
           ignore_channel_wide_mention: true,
+          chat_email_frequency: "never",
         },
         type: "PUT",
       }),

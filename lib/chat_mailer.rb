@@ -14,7 +14,7 @@ class DiscourseChat::ChatMailer
         Jobs.enqueue(:user_email,
                      type: "chat_summary",
                      user_id: user.id,
-                     force_skip_if_seen_recently: true
+                     force_respect_seen_recently: true
                     )
         user.user_option.update(last_emailed_for_chat: Time.now)
       end

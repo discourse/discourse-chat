@@ -865,6 +865,7 @@ Widget.triangulate(arg: "test")
   });
 
   test("creating a new direct message channel works", async function (assert) {
+    updateCurrentUser({ id: 2 });
     await visit("/chat/channel/9/Site");
     await click(".new-dm");
     let users = selectKit(".dm-user-chooser");
@@ -873,6 +874,33 @@ Widget.triangulate(arg: "test")
     await fillIn(".dm-user-chooser input.filter-input", "hawk");
     await users.selectRowByValue("hawk");
     await click("button.create-dm");
+
+    const hawkAsJson = {
+      username: "hawk",
+      id: 2,
+      name: "hawk",
+      avatar_template:
+        "https://avatars.discourse.org/v3/letter/t/41988e/{size}.png",
+    };
+
+    await publishToMessageBus("/chat/new-direct-message-channel", {
+      chat_channel: {
+        chat_channels: [],
+        chatable: { users: [hawkAsJson] },
+        chatable_id: 16,
+        chatable_type: "DirectMessageChannel",
+        chatable_url: null,
+        id: 75,
+        last_read_message_id: null,
+        title: "@hawk",
+        unread_count: 0,
+        unread_mentions: 0,
+        last_message_sent_at: "2021-11-08T21:26:05.710Z",
+      },
+      creator: hawkAsJson,
+    });
+
+    await chatSettled();
     assert.equal(currentURL(), "/chat/channel/75/@hawk");
     assert.notOk(
       query(".join-channel-btn"),

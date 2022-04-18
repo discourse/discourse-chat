@@ -1,3 +1,4 @@
+import userSearch from "discourse/lib/user-search";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import Service, { inject as service } from "@ember/service";
 import Site from "discourse/models/site";
@@ -349,6 +350,11 @@ export default Service.extend({
     });
   },
 
+  searchPossibleDirectMessageUsers(options) {
+    // TODO: implement a chat specific user search function
+    return userSearch(options);
+  },
+
   getIdealFirstChannelId() {
     // When user opens chat we need to give them the 'best' channel when they enter.
     //
@@ -453,12 +459,12 @@ export default Service.extend({
 
     return ajax(`/chat/chat_channels/${channelId}`).then((response) => {
       const queryParams = messageId ? { messageId } : {};
-      this.router.transitionTo(
+      return this.router.transitionTo(
         "chat.channel",
         response.chat_channel.id,
         response.chat_channel.title,
         { queryParams }
-      );
+      ).promise;
     });
   },
 
@@ -479,9 +485,14 @@ export default Service.extend({
       this.currentUser.chat_isolated
     ) {
       const queryParams = messageId ? { messageId } : {};
-      this.router.transitionTo("chat.channel", channel.id, channel.title, {
-        queryParams,
-      });
+      return this.router.transitionTo(
+        "chat.channel",
+        channel.id,
+        channel.title,
+        {
+          queryParams,
+        }
+      ).promise;
     } else {
       this._fireOpenFloatAppEvent(channel, messageId);
     }
@@ -795,7 +806,16 @@ export default Service.extend({
     };
   },
 
-  getDmChannelForUsernames(usernames) {
+  upsertDmChannelForUser(channel, user) {
+    const usernames = (channel.chatable.users || [])
+      .mapBy("username")
+      .concat(user.username)
+      .uniq();
+
+    return this.upsertDmChannelForUsernames(usernames);
+  },
+
+  upsertDmChannelForUsernames(usernames) {
     return ajax("/chat/direct_messages/create.json", {
       method: "POST",
       data: { usernames: usernames.uniq().join(",") },
@@ -808,6 +828,10 @@ export default Service.extend({
       .catch(popupAjaxError);
   },
 
+  getDmChannelForUsernames(usernames) {
+    return ajax("/chat/direct_messages.json", { data: { usernames } });
+  },
+
   _saveDraft(channelId, draft) {
     const data = { channel_id: channelId };
     if (draft) {
@@ -817,18 +841,18 @@ export default Service.extend({
     ajax("/chat/drafts", { type: "POST", data });
   },
 
-  setDraftForChannel(channelId, draft) {
+  setDraftForChannel(channel, draft) {
     if (
       draft &&
       (draft.value || draft.uploads.length > 0 || draft.replyToMsg)
     ) {
-      this.draftStore[channelId] = draft;
+      this.draftStore[channel.id] = draft;
     } else {
-      delete this.draftStore[channelId];
+      delete this.draftStore[channel.id];
       draft = null; // _saveDraft will destroy draft
     }
 
-    discourseDebounce(this, this._saveDraft, channelId, draft, 2000);
+    discourseDebounce(this, this._saveDraft, channel.id, draft, 2000);
   },
 
   getDraftForChannel(channelId) {

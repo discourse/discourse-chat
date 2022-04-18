@@ -11,8 +11,11 @@ export default Component.extend({
 
   avatarSize: "tiny",
 
-  @discourseComputed("chat.presenceChannel.users.[]", "user.id")
-  isOnline(users, userId) {
-    return !!users?.findBy("id", userId);
+  @discourseComputed("chat.presenceChannel.users.[]", "user.{id,username}")
+  isOnline(users, user) {
+    return (
+      !!users?.findBy("id", user?.id) ||
+      !!users?.findBy("username", user?.username)
+    );
   },
 });

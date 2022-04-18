@@ -77,7 +77,6 @@ ar:
       open_message: "فتح رسالة في الدردشة"
       placeholder_self: "تدوين شيء ما"
       placeholder_others: "الدردشة مع %{messageRecipient}"
-      placeholder_previewing: "الانضمام إلى الدردشة لإرسال رسالة"
       remove_upload: "إزالة ملف"
       react: "التفاعل برمز تعبيري"
       reply: "رد"

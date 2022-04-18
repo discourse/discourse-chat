@@ -65,7 +65,6 @@ fr:
       open_message: "Ouvrir le message dans le chat"
       placeholder_self: "Noter quelque chose"
       placeholder_others: "Discuter avec %{messageRecipient}"
-      placeholder_previewing: "Rejoignez le canal pour envoyer un message."
       remove_upload: "Supprimer le fichier"
       react: "Réagir avec un émoji"
       reply: "Répondre"

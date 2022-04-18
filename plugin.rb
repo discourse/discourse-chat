@@ -3,19 +3,23 @@
 # name: discourse-chat
 # about: Chat inside Discourse
 # version: 0.3
-# authors: Kane York, Mark VanLandingham
+# authors: Kane York, Mark VanLandingham, Martin Brennan, Joffrey Jaffeux
 # url: https://github.com/discourse/discourse-chat
 # transpile_js: true
 
 enabled_site_setting :chat_enabled
 
 register_asset 'stylesheets/common/common.scss'
+register_asset 'stylesheets/common/d-progress-bar.scss'
 register_asset 'stylesheets/common/incoming-chat-webhooks.scss'
 register_asset 'stylesheets/mobile/chat-message.scss', :mobile
 register_asset 'stylesheets/common/chat-message.scss'
+register_asset 'stylesheets/common/direct-message-creator.scss'
 register_asset 'stylesheets/common/chat-message-collapser.scss'
 register_asset 'stylesheets/common/chat-transcript.scss'
 register_asset 'stylesheets/common/chat-retention-reminder.scss'
+register_asset 'stylesheets/common/chat-composer-uploads.scss'
+register_asset 'stylesheets/common/chat-composer-upload.scss'
 register_asset 'stylesheets/common/chat-channel-selector-modal.scss'
 register_asset 'stylesheets/mobile/mobile.scss', :mobile
 register_asset 'stylesheets/desktop/desktop.scss', :desktop
@@ -374,6 +378,7 @@ after_initialize do
 
   DiscourseChat::Engine.routes.draw do
     # direct_messages_controller routes
+    get '/direct_messages' => 'direct_messages#index'
     post '/direct_messages/create' => 'direct_messages#create'
 
     # incoming_webhooks_controller routes
@@ -460,4 +465,11 @@ after_initialize do
       end
     end
   end
+
+  add_api_key_scope(:chat, {
+    create_message: {
+      actions: %w[discourse_chat/chat#create_message],
+      params: %i[chat_channel_id]
+    }
+  })
 end

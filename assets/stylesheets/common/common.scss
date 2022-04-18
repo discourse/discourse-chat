@@ -373,10 +373,6 @@ body.composer-open .topic-chat-float-container {
     }
   }
 
-  .dm-creation-row .dm-user-chooser {
-    width: calc(100% - 75px);
-  }
-
   .edit-channels-dropdown {
     .select-kit-header {
       background: none;
@@ -399,18 +395,6 @@ body.composer-open .topic-chat-float-container {
     &:hover {
       background: none;
     }
-  }
-}
-
-.dm-creation-row {
-  display: flex;
-  align-items: center;
-  margin: 0 0.5em;
-  justify-content: space-between;
-  max-width: 400px;
-
-  .dm-user-chooser {
-    width: calc(100% - 90px);
   }
 }
 
@@ -776,7 +760,7 @@ body.composer-open .topic-chat-float-container {
 
   .chat-replying-indicator {
     color: var(--primary-medium);
-    padding: 0.25em 0.75em;
+    padding: 0 0.75em;
     padding-bottom: unquote(
       "max(calc(env(safe-area-inset-bottom) - 0.75em), 0.25em)"
     );
@@ -1031,81 +1015,6 @@ body.composer-open .topic-chat-float-container {
   }
 }
 
-.chat-composer-uploads-container {
-  display: flex;
-  padding: 0.5em 0.5em 0 0.5em;
-  white-space: nowrap;
-  overflow-x: auto;
-
-  .chat-upload {
-    display: inline-flex;
-    height: 50px;
-    padding: 0.5em 0.75em;
-    border: 1px solid var(--primary-low);
-    border-radius: 6px;
-    margin-right: 0.5em;
-
-    .preview {
-      width: 50px;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 1em 0 0;
-      border-radius: 8px;
-
-      .d-icon {
-        font-size: 3.2rem;
-      }
-
-      .preview-img {
-        max-width: 100%;
-        max-height: 100%;
-      }
-    }
-
-    .data {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      line-height: 1.5em;
-      font-size: var(--font-down-1);
-      color: var(--primary-high);
-
-      .top-data,
-      .bottom-data {
-        display: flex;
-        align-items: center;
-      }
-
-      .file-name {
-        display: inline-block;
-        max-width: 150px;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        margin-right: 0.5em;
-      }
-
-      .uploading {
-        font-size: var(--font-down-2);
-        margin-right: 0.75em;
-      }
-
-      .upload-progress {
-        width: 110px;
-      }
-
-      .extension-pill {
-        background: var(--primary-low);
-        border-radius: 5px;
-        font-size: var(--font-down-2-rem);
-        padding: 0.1em 0.4em;
-      }
-    }
-  }
-}
-
 .chat-channel-settings-row {
   display: flex;
   padding: 0.5em;
@@ -1304,6 +1213,7 @@ body.has-full-page-chat {
       display: flex;
       flex-direction: column;
       min-width: 50%;
+      justify-content: center;
     }
 
     .chat-channel-archive-status {
@@ -1311,6 +1221,7 @@ body.has-full-page-chat {
       padding-right: 1em;
     }
   }
+
   .chat-channel-title {
     margin: 0;
     max-width: 100%;
@@ -1474,15 +1385,36 @@ body.has-full-page-chat {
 .chat-live-pane .chat-composer .chat-composer-row .chat-composer-input {
   text-overflow: ellipsis;
 
-  &:placeholder-shown {
+  &:placeholder-shown,
+  &::placeholder {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    padding-right: 1.25em;
   }
 }
 
 .reviewable-chat-message {
   .chat-channel-title {
     max-width: 100%;
+  }
+}
+
+.chat-channel-dm-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .channel-name {
+    font-weight: 700;
+    font-size: var(--font-up-1);
+    line-height: var(--font-up-1);
+  }
+}
+
+.timeline-footer-controls {
+  .topic-chat-button {
+    margin: 0.5em 0 0 0;
+    display: inline;
   }
 }

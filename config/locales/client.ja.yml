@@ -62,7 +62,6 @@ ja:
       open_message: "メッセージをチャットで開く"
       placeholder_self: "メモを書き留める"
       placeholder_others: "%{messageRecipient} とチャット"
-      placeholder_previewing: "チャンネルに参加してメッセージを送信します。"
       remove_upload: "ファイルを削除する"
       react: "絵文字でリアクション"
       reply: "返信"
@@ -163,7 +162,6 @@ ja:
         username_instructions: "チャンネルに投稿するボットのユーザー名。空白のままにすると、デフォルトで「システム」になります。"
       selection:
         cancel: "キャンセル"
-        quote_selection: "引用"
         error: "チャットメッセージを移動中にエラーが発生しました"
         title: "チャットをトピックに移動"
         new_topic:

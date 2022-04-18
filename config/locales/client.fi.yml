@@ -65,7 +65,6 @@ fi:
       open_message: "Avaa viesti chatissa"
       placeholder_self: "Kirjoita jotakin"
       placeholder_others: "Chat-keskustelu käyttäjän %{messageRecipient} kanssa"
-      placeholder_previewing: "Liity kanavalle, jotta voit lähettää viestin."
       remove_upload: "Poista tiedosto"
       react: "Reagoi emojilla"
       reply: "Vastaa"
@@ -167,7 +166,6 @@ fi:
         username_instructions: "Kanavalle lähettävän botin käyttäjätunnus. Oletus on \"järjestelmä\", kun tämä jätetään tyhjäksi."
       selection:
         cancel: "Peruuta"
-        quote_selection: "Lainaus"
         error: "Chat-viestien siirtämisessä tapahtui virhe"
         title: "Siirrä chat ketjuun"
         new_topic:

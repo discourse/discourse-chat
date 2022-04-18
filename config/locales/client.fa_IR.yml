@@ -72,7 +72,7 @@ fa_IR:
       no_public_channels: "شما هنوز عضو هیچ کانالی نشده‌اید."
       open: "باز کردن گفتگو..."
       open_message: "پیام را در گفتگو باز کن"
-      placeholder_previewing: "برای ارسال پیام، به کانال بپیوندید."
+      placeholder_start_conversation: شروع گفتگو با %{usernames}
       remove_upload: "حذف پرونده"
       react: "واکنش با شکلک"
       reply: "پاسخ"
@@ -98,6 +98,10 @@ fa_IR:
       you_flagged: "شما این پیام را پرچم گذاری کردید"
       user_deleted: "حذف شده"
       exit: "بازگشت"
+      direct_message_creator:
+        title: پیام جدید
+        prefix: "به:"
+        no_results: هیج نتیجه‌ای نداشت
       channel_selector:
         no_channels: "هیچ کانالی با جستجوی شما مطابقت ندارد"
       create_channel:
@@ -153,6 +157,7 @@ fa_IR:
         username: "نام‌کاربری"
       selection:
         cancel: "انصراف"
+        quote_selection: "نقل قول در موضوع"
         error: "در انتقال پیام‌های گفتگو خطایی رخ داده"
         title: "انتقال گفتگو به موضوع"
         new_topic:
@@ -162,9 +167,6 @@ fa_IR:
         multiple_users: "%{commaSeparatedUsernames} و %{lastUsername} در حال نوشتن"
     notifications:
       chat_quoted: "<span>%{username}</span> %{description}"
-      popup:
-        chat_mention:
-          direct: "<span>%{username}</span> <span> به شما در کانال %{channel}</span> اشاره کرده است"
     topic:
       actions:
         chat_enable: "فعال کردن گفتگو"

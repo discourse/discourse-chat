@@ -28,7 +28,11 @@ import {
 } from "discourse/plugins/discourse-chat/chat-fixtures";
 import Session from "discourse/models/session";
 import { cloneJSON } from "discourse-common/lib/object";
-import { presentUserIds } from "discourse/tests/helpers/presence-pretender";
+import {
+  joinChannel,
+  leaveChannel,
+  presentUserIds,
+} from "discourse/tests/helpers/presence-pretender";
 import User from "discourse/models/user";
 import selectKit from "discourse/tests/helpers/select-kit-helper";
 import { next } from "@ember/runloop";
@@ -234,6 +238,21 @@ acceptance("Discourse Chat - without unread", function (needs) {
     });
     server.post("/chat/chat_channels/:chatChannelId/unfollow", () => {
       return helper.response({ success: "OK" });
+    });
+    server.get("/chat/direct_messages.json", () => {
+      return helper.response({
+        chat_channel: {
+          id: 75,
+          title: "hawk",
+          chatable_type: "DirectMessageChannel",
+          chatable: {
+            users: [{ username: "hawk" }],
+          },
+        },
+      });
+    });
+    server.get("/u/hawk/card.json", () => {
+      return helper.response({});
     });
   });
   needs.hooks.beforeEach(function () {
@@ -867,29 +886,27 @@ Widget.triangulate(arg: "test")
   test("creating a new direct message channel works", async function (assert) {
     await visit("/chat/channel/9/Site");
     await click(".new-dm");
-    let users = selectKit(".dm-user-chooser");
-    await click(".dm-user-chooser");
-    await users.expand();
-    await fillIn(".dm-user-chooser input.filter-input", "hawk");
-    await users.selectRowByValue("hawk");
-    await click("button.create-dm");
-    assert.equal(currentURL(), "/chat/channel/75/@hawk");
+    await fillIn(".filter-usernames", "hawk");
+    await click("li.user[data-username='hawk']");
+
     assert.notOk(
       query(".join-channel-btn"),
       "Join channel button is not present"
+    );
+    const enabledComposer = document.querySelector(".chat-composer-input");
+    assert.ok(!enabledComposer.disabled);
+    assert.equal(
+      enabledComposer.placeholder,
+      I18n.t("chat.placeholder_start_conversation", { usernames: "hawk" })
     );
   });
 
   test("creating a new direct message channel from popup chat works", async function (assert) {
     await visit("/t/internationalization-localization/280");
     await click(".new-dm");
-    let users = selectKit(".dm-user-chooser");
-    await click(".dm-user-chooser");
-    await users.expand();
-    await fillIn(".dm-user-chooser input.filter-input", "hawk");
-    await users.selectRowByValue("hawk");
-    await click("button.create-dm");
-    assert.strictEqual(query(".dm-username").innerText, "hawk");
+    await fillIn(".filter-usernames", "hawk");
+    await click('.chat-user-avatar-container[data-user-card="hawk"]');
+    assert.ok(query(".selected-user").innerText, "hawk");
   });
 
   test("Reacting works with no existing reactions", async function (assert) {
@@ -1308,10 +1325,13 @@ acceptance(
       });
     });
 
-    test("Join button is present and textarea disabled when previewing channel", async function (assert) {
+    test("Composer placeholder is specific when previewing", async function (assert) {
       await visit("/chat/channel/70/preview-me");
-      assert.ok(exists(".join-channel-btn"), "Join channel button is present");
-      assert.equal(query(".chat-composer-row textarea").disabled, true);
+
+      assert.equal(
+        query(".chat-composer-row textarea").placeholder,
+        I18n.t("chat.placeholder_previewing")
+      );
     });
 
     test("Create channel modal", async function (assert) {
@@ -1520,37 +1540,124 @@ acceptance("Discourse Chat - image uploads", function (needs) {
     const appEvents = loggedInUser().appEvents;
     const done = assert.async();
 
-    appEvents.on("chat-composer:all-uploads-complete", async () => {
-      await settled();
-      assert.ok(exists(".chat-upload"), "the chat upload preview should show");
-      assert.notOk(
-        exists(".bottom-data .uploading"),
-        "the chat upload preview should no longer say it is uploading"
+    appEvents.on(
+      "upload-mixin:chat-composer-uploader:all-uploads-complete",
+      async () => {
+        await settled();
+        assert.ok(
+          exists(".preview .preview-img"),
+          "the chat upload preview should show"
+        );
+        assert.notOk(
+          exists(".bottom-data .uploading"),
+          "the chat upload preview should no longer say it is uploading"
+        );
+        assert.strictEqual(
+          queryAll(".chat-composer-input").val(),
+          "",
+          "the chat composer does not get the upload markdown when the upload is complete"
+        );
+        done();
+      }
+    );
+
+    appEvents.on(
+      "upload-mixin:chat-composer-uploader:upload-started",
+      async () => {
+        await settled();
+        assert.ok(
+          exists(".chat-upload"),
+          "the chat upload preview should show"
+        );
+        assert.ok(
+          exists(".bottom-data .uploading"),
+          "the chat upload preview should say it is uploading"
+        );
+        assert.strictEqual(
+          queryAll(".chat-composer-input").val(),
+          "",
+          "the chat composer does not get an uploading... placeholder"
+        );
+      }
+    );
+
+    const image = createFile("avatar.png");
+    appEvents.trigger("upload-mixin:chat-composer-uploader:add-files", image);
+  });
+
+  test("uploading files in composer does not insert placeholder text into chat composer", async function (assert) {
+    await visit("/t/internationalization-localization/280");
+
+    await click("#topic-footer-buttons .btn.create");
+    assert.ok(exists(".d-editor-input"), "the composer input is visible");
+
+    this.container.lookup("service:chat").set("sidebarActive", false);
+    await click(".header-dropdown-toggle.open-chat");
+    assert.ok(visible(".topic-chat-float-container"), "chat float is open");
+
+    const appEvents = loggedInUser().appEvents;
+    const done = assert.async();
+    await fillIn(".d-editor-input", "The image:\n");
+
+    appEvents.on("composer:all-uploads-complete", () => {
+      assert.strictEqual(
+        query(".d-editor-input").value,
+        "The image:\n![avatar.PNG|690x320](upload://yoj8pf9DdIeHRRULyw7i57GAYdz.jpeg)\n",
+        "the topic composer gets the completed image markdown"
       );
       assert.strictEqual(
-        queryAll(".chat-composer-input").val(),
+        query(".chat-composer-input").value,
         "",
-        "the chat composer does not get the upload markdown when the upload is complete"
+        "the chat composer does not get the completed image markdown"
       );
       done();
     });
 
-    appEvents.on("chat-composer:upload-started", async () => {
-      await settled();
-      assert.ok(exists(".chat-upload"), "the chat upload preview should show");
-      assert.ok(
-        exists(".bottom-data .uploading"),
-        "the chat upload preview should say it is uploading"
+    appEvents.on("composer:upload-started", () => {
+      assert.strictEqual(
+        query(".d-editor-input").value,
+        "The image:\n[Uploading: avatar.png...]()\n",
+        "the topic composer gets the placeholder image markdown"
       );
       assert.strictEqual(
-        queryAll(".chat-composer-input").val(),
+        query(".chat-composer-input").value,
         "",
-        "the chat composer does not get an uploading... placeholder"
+        "the chat composer does not get the placeholder image markdown"
       );
     });
 
     const image = createFile("avatar.png");
-    appEvents.trigger("chat-composer:add-files", image);
+    appEvents.trigger("composer:add-files", image);
+  });
+});
+
+acceptance("Discourse Chat - Insert Date", function (needs) {
+  needs.user({
+    username: "eviltrout",
+    id: 1,
+    can_chat: true,
+    has_chat_enabled: true,
+  });
+  needs.settings({
+    chat_enabled: true,
+    discourse_local_dates_enabled: true,
+  });
+  needs.pretender((server, helper) => {
+    baseChatPretenders(server, helper);
+    chatChannelPretender(server, helper);
+  });
+
+  test("can use local date modal", async function (assert) {
+    await visit("/chat/channel/7/Uncategorized");
+    await click(".open-toolbar-btn");
+    await click(".chat-local-dates-btn");
+
+    assert.ok(exists(".discourse-local-dates-create-modal"));
+    await click(".modal-footer .btn-primary");
+    assert.ok(
+      query(".chat-composer-input").value.startsWith("[date"),
+      "inserts date in composer input"
+    );
   });
 });
 
@@ -1713,6 +1820,83 @@ acceptance(
     });
   }
 );
+
+acceptance("Discourse Chat - Channel Replying Indicator", function (needs) {
+  needs.user({
+    admin: true,
+    moderator: true,
+    username: "eviltrout",
+    id: 1,
+    can_chat: true,
+    has_chat_enabled: true,
+  });
+  needs.settings({
+    chat_enabled: true,
+  });
+  needs.pretender((server, helper) => {
+    baseChatPretenders(server, helper);
+    chatChannelPretender(server, helper);
+    server.get("/chat/7/messages.json", () => {
+      const cloned = cloneJSON(chatView);
+      cloned.meta.status = CHANNEL_STATUSES.closed;
+      return helper.response(cloned);
+    });
+    server.get("/chat/chat_channels.json", () => {
+      const cloned = cloneJSON(chatChannels);
+      cloned.public_channels.find((chan) => chan.id === 7).status =
+        CHANNEL_STATUSES.closed;
+      return helper.response(cloned);
+    });
+  });
+
+  test("indicator content when replying/not replying", async function (assert) {
+    const user = { id: 8, username: "bob" };
+    await visit("/chat/channel/7/Uncategorized");
+    await joinChannel("/chat-reply/7", user);
+
+    assert.equal(
+      query(".replying-text").innerText,
+      I18n.t("chat.replying_indicator.single_user", {
+        username: user.username,
+      }) + " . . ."
+    );
+
+    await leaveChannel("/chat-reply/7", user);
+
+    assert.equal(query(".replying-text").innerText, "");
+  });
+});
+
+acceptance("Discourse Chat - Direct Message Creator", function (needs) {
+  needs.user({
+    admin: true,
+    moderator: true,
+    username: "eviltrout",
+    id: 1,
+    can_chat: true,
+    has_chat_enabled: true,
+  });
+  needs.settings({
+    chat_enabled: true,
+  });
+  needs.pretender((server, helper) => {
+    baseChatPretenders(server, helper);
+    chatChannelPretender(server, helper);
+
+    server.get("/u/search/users", () => {
+      return helper.response([]);
+    });
+  });
+
+  test("starting new dm resets draft state", async function (assert) {
+    const text = "What up what up";
+    await visit("/chat/channel/9/Site");
+    await fillIn(".chat-composer-input", text);
+    await visit("/chat/channel/draft/NewMessage");
+
+    assert.notEqual(document.querySelector(".chat-composer-input").value, text);
+  });
+});
 
 function createFile(name, type = "image/png") {
   // the blob content doesn't matter at all, just want it to be random-ish

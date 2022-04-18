@@ -34,11 +34,6 @@ fa_IR:
         closed: "بسته شد"
         open: "باز کردن"
     personal_chat: "گفتگوی شخصی"
-  discourse_push_notifications:
-    popup:
-      chat_mention:
-        direct: "@%{username} به شما در کانال %{channel} اشاره کرده است"
-      chat_message: "پیام جدید در %{channel}"
   discourse_automation:
     scriptables:
       send_chat_message:

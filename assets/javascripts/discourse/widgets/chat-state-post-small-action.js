@@ -4,14 +4,18 @@ import { autoUpdatingRelativeAge } from "discourse/lib/formatter";
 import I18n from "I18n";
 import { createWidget } from "discourse/widgets/widget";
 import bootbox from "bootbox";
+import { getOwner } from "discourse-common/lib/get-owner";
+import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 
 export default createWidget("chat-state-post-small-action", {
   click(event) {
     if (event.target.classList.contains("open-chat")) {
       event.preventDefault();
 
-      const topicController = this.container.lookup("controller:topic");
-      const chatChannel = topicController.model.chat_channel;
+      const topicController = getOwner(this).lookup("controller:topic");
+      const chatChannel = ChatChannel.create(
+        topicController.model.chat_channel
+      );
 
       if (chatChannel) {
         this.appEvents.trigger("chat:open-channel-for-chatable", chatChannel);

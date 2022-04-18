@@ -67,7 +67,6 @@ pl_PL:
       open_message: "Otwórz wiadomość na czacie"
       placeholder_self: "Zanotuj coś"
       placeholder_others: "Czat z %{messageRecipient}"
-      placeholder_previewing: "Dołącz do kanału, aby wysłać wiadomość."
       placeholder_new_message_disallowed: "Kanał ma %{status}, nie możesz teraz wysyłać nowych wiadomości."
       placeholder_silenced: "W tej chwili nie możesz wysyłać wiadomości."
       remove_upload: "Usuń plik"
@@ -182,7 +181,6 @@ pl_PL:
         username_instructions: "Nazwa użytkownika bota, który publikuje na kanale. Domyślnie \"system\" gdy pozostanie puste."
       selection:
         cancel: "Anuluj"
-        quote_selection: "Cytuj"
         error: "Wystąpił błąd podczas przenoszenia wiadomości czatu"
         title: "Przenieś czat do tematu"
         new_topic:

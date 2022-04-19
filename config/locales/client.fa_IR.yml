@@ -51,6 +51,10 @@ fa_IR:
         no_public_available: "هیچ کانال عمومی برای دنبال کردن شما در این زمان وجود ندارد."
         public_available: "کانال‌های عمومی در دسترس شما برای دنبال کردن وجود دارد."
         start_direct_message: "شما همچنین می‌توانید یک گفتگو شخصی را با یک یا چند کاربر شروع کنید."
+      email_frequency:
+        description: "ما فقط در صورتی به شما ایمیل می‌کنیم، که در ۱۰ دقیقه گذشته شما را ندیده‌ایم."
+        never: "هرگز"
+        title: "آگاه‌سازی‌های ایمیل"
       enable: "فعال کردن گفتگو"
       flag: "پرچم"
       flagged: "این پیام برای بررسی پرچم گذاری شده است"
@@ -165,6 +169,7 @@ fa_IR:
       replying_indicator:
         single_user: "%{username} در حال نوشتن"
         multiple_users: "%{commaSeparatedUsernames} و %{lastUsername} در حال نوشتن"
+      topic_button_title: "گفتگو"
     notifications:
       chat_quoted: "<span>%{username}</span> %{description}"
     topic:
@@ -196,3 +201,6 @@ fa_IR:
     keyboard_shortcuts_help:
       chat:
         title: "گفتگو"
+    topic_statuses:
+      chat:
+        help: "گفتگو برای این موضوع فعال است"

@@ -68,6 +68,11 @@ he:
         public_available: "יש ערוצים ציבוריים שזמינים למעקב על ידיך."
         start_direct_message: "אפשר לפתוח בצ׳אט אישי עם משתמש אחד או יותר."
         title: "אפשר להתחיל על ידי הצטרפות לערוץ"
+      email_frequency:
+        description: "נשלח לך דוא״ל אם לא ראינו אותך ב־10 הדקות האחרונות."
+        never: "לעולם לא"
+        title: "הודעות בדוא״ל"
+        when_away: "רק כשלא במערכת"
       enable: "הפעלת צ׳אט"
       flag: "סימון בדגל"
       flagged: "הודעה זו סומנה לסקירה"
@@ -276,6 +281,7 @@ he:
       retention_reminders:
         public: "היסטוריית הערוץ נשמרת למשך %{days} ימים."
         dm: "היסטוריית הצ׳אט האישית נשמרת למשך %{days} ימים."
+      topic_button_title: "צ׳אט"
     notifications:
       chat_quoted: "<span>%{username}</span> %{description}"
       popup:
@@ -325,3 +331,6 @@ he:
           switch_channel_arrows: "%{shortcut} החלפת ערוץ"
           open_quick_channel_selector: "%{shortcut} פתיחת בורר הערוצים המהיר"
           open_insert_link_modal: "%{shortcut} הוספת קישור"
+    topic_statuses:
+      chat:
+        help: "הצ׳אט מופעל בנושא הזה"

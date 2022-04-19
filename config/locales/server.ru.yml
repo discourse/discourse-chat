@@ -87,6 +87,7 @@ ru:
         open: "Открыт"
       archive:
         first_post_raw: "Эта тема является архивом канала [%{channel_name}](%{channel_url})."
+      title_for_large_group_dm: "%{users} и ещё %{count}"
     personal_chat: "личный чат"
   discourse_push_notifications:
     popup:
@@ -105,3 +106,30 @@ ru:
   reviewable_score_types:
     needs_review:
       title: "Требуется проверка"
+  user_notifications:
+    chat_summary:
+      deleted_user: "Удалённый пользователь"
+      description:
+        one: "У вас в чате одно новое сообщение"
+        few: "У вас в чате есть новые сообщения"
+        many: "У вас в чате есть новые сообщения"
+        other: "У вас в чате есть новые сообщения"
+      from: "%{site_name}"
+      subject:
+        one: "[%{email_prefix}] Новое сообщение в чате"
+        few: "[%{email_prefix}] Новые сообщения в чате"
+        many: "[%{email_prefix}] Новые сообщения в чате"
+        other: "[%{email_prefix}] Новые сообщения в чате"
+      unsubscribe: "Этот дайджест чата отправляется с сайта %{site_link} в период вашего отсутствия на форуме. Для отмены подписки измените %{email_preferences_link} или %{unsubscribe_link}."
+      view_message: "Посмотреть сообщение"
+      view_messages:
+        one: "Посмотреть %{count} сообщение"
+        few: "Посмотреть %{count} сообщения"
+        many: "Посмотреть %{count} сообщений"
+        other: "Посмотреть %{count} сообщений"
+      view_more:
+        one: "Посмотреть ещё %{count} сообщение"
+        few: "Посмотреть ещё %{count} сообщения"
+        many: "Посмотреть ещё %{count} сообщений"
+        other: "Посмотреть ещё %{count} сообщений"
+      your_chat_settings: "Настройка частоты рассылки дайджеста чата"

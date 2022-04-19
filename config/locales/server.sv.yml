@@ -17,6 +17,10 @@ sv:
     chat_auto_silence_from_flags_duration: "Antal minuter som användarna tystas i när de automatiskt tystas på grund av markerade chattmeddelanden."
     chat_default_channel_id: "Chattkanalen som öppnas som standard när en användare inte har olästa meddelanden eller omnämnanden i andra kanaler."
     chat_duplicate_message_sensitivity: "Sannolikheten att ett duplicerat meddelande från samma avsändare blockeras inom en kort tidsperiod. Decimaltal mellan 0 och 1,0, där 1,0 är den högsta inställningen (blockerar meddelanden oftare på kortare tid). Ställ in `0` för att tillåta dubbletter av meddelanden."
+    chat_minimum_message_length: "Minsta antal tecken för ett chattmeddelande."
+    chat_allow_uploads: "Tillåt uppladdningar i offentliga chattkanaler."
+    chat_archive_destination_topic_status: "Den status som målämnet ska ha när ett kanalarkiv är slutfört. Detta gäller endast när målämnet är ett nytt ämne, inte ett befintligt."
+    default_emoji_reactions: "Standard reaktioner genom emoji för chattmeddelanden. Lägg till upp till 5 emojis för snabb reaktion."
     errors:
       chat_default_channel: "Standardchattkanalen måste vara en offentlig kanal."
   system_messages:
@@ -41,6 +45,9 @@ sv:
       auto_silence_from_flags: "Chattmeddelande flaggat med tillräckligt hög poäng för att tysta användaren."
       channel_cannot_be_archived: "Kanalen kan inte arkiveras just nu, den måste vara antingen stängd eller öppen för arkivering."
       duplicate_message: "Du skrev också ett identiskt meddelande nyligen."
+      delete_channel_failed: "Det gick inte att ta bort kanalen, försök igen."
+      minimum_length_not_met: "Meddelandet är för kort, måste ha minst %{minimum} tecken."
+      max_reactions_limit_reached: "Nya reaktioner är inte tillåtna för detta meddelande."
     reviewables:
       actions:
         agree:
@@ -81,6 +88,16 @@ sv:
       archive:
         first_post_raw: "Detta ämne är ett arkiv av chatt kanalen [%{channel_name}](%{channel_url})."
     personal_chat: "personlig chatt"
+  discourse_push_notifications:
+    popup:
+      chat_mention:
+        direct: '%{username} nämnde dig i "%{channel}"'
+        other: '%{username} nämnde %{identifier} i "%{channel}"'
+      direct_message_chat_mention:
+        direct: "%{username} nämnde dig i en personlig chatt"
+        other: "%{username} nämnde %{identifier} i personlig chatt"
+      new_chat_message: '%{username} skickade ett meddelande i "%{channel}"'
+      new_direct_chat_message: "%{username} skickade ett meddelande i personlig chatt"
   discourse_automation:
     scriptables:
       send_chat_message:

@@ -68,6 +68,11 @@ ru:
         public_available: "Есть доступные для подписки каналы."
         start_direct_message: "Вы также можете начать личный чат с одним или несколькими пользователями."
         title: "Начните с присоединения к каналу"
+      email_frequency:
+        description: "Мы отправим вам письмо только в том случае, если вы не были онлайн последние 10 минут."
+        never: "Никогда"
+        title: "Настройка почтовых уведомлений"
+        when_away: "Если вы находитесь офлайн"
       enable: "Включить чат"
       flag: "Флаг"
       flagged: "Это сообщение было отправлено на премодерацию"
@@ -281,6 +286,7 @@ ru:
       retention_reminders:
         public: "История канала хранится %{days} дней."
         dm: "История личного чата хранится %{days} дней."
+      topic_button_title: "Чат"
     notifications:
       chat_quoted: "<span>%{username}</span> %{description}"
       popup:
@@ -330,3 +336,6 @@ ru:
           switch_channel_arrows: "%{shortcut} Переключить канал"
           open_quick_channel_selector: "%{shortcut} Открыть переключатель каналов"
           open_insert_link_modal: "%{shortcut} Вставить гиперссылку"
+    topic_statuses:
+      chat:
+        help: "Чат включён для этой темы"

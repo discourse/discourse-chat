@@ -48,6 +48,7 @@ export default Component.extend(TextareaTextManipulation, {
   timer: null,
   value: "",
   inProgressUploads: null,
+  composerEventPrefix: "chat",
   composerFocusSelector: ".chat-composer-input",
   canAttachUploads: or(
     "siteSettings.chat_allow_uploads",

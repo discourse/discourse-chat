@@ -1898,6 +1898,45 @@ acceptance("Discourse Chat - Direct Message Creator", function (needs) {
   });
 });
 
+acceptance("Discourse Chat - Composer", function (needs) {
+  needs.user({
+    admin: true,
+    moderator: true,
+    username: "eviltrout",
+    id: 1,
+    can_chat: true,
+    has_chat_enabled: true,
+  });
+  needs.settings({
+    chat_enabled: true,
+    enable_rich_text_paste: true,
+  });
+  needs.pretender((server, helper) => {
+    baseChatPretenders(server, helper);
+    chatChannelPretender(server, helper);
+  });
+
+  test("pasting html in composer", async function (assert) {
+    await visit("/chat/channel/9/Site");
+
+    const clipboardEvent = new Event("paste", { bubbles: true });
+    clipboardEvent.clipboardData = {
+      types: ["text/html"],
+      getData: (type) => {
+        if (type === "text/html") {
+          return "<a href>Foo</a>";
+        }
+      },
+    };
+
+    document
+      .querySelector(".chat-composer-input")
+      .dispatchEvent(clipboardEvent);
+
+    assert.equal(document.querySelector(".chat-composer-input").value, "Foo");
+  });
+});
+
 function createFile(name, type = "image/png") {
   // the blob content doesn't matter at all, just want it to be random-ish
   const file = new Blob([(Math.random() + 1).toString(36).substring(2)], {

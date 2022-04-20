@@ -974,46 +974,45 @@ export default Component.extend({
     });
   },
 
-  _upsertChannelWithMessage(channel, message, uploads) {
-    let promise;
+  async _upsertChannelWithMessage(channel, message, uploads) {
+    let response;
 
-    if (channel.isDirectMessageChannel) {
-      promise = ajax("/chat/direct_messages/create.json", {
-        method: "POST",
-        data: { usernames: channel.chatable.users.mapBy("username") },
+    try {
+      if (channel.isDirectMessageChannel) {
+        response = await ajax("/chat/direct_messages/create.json", {
+          method: "POST",
+          data: { usernames: channel.chatable.users.mapBy("username") },
+        });
+      } else {
+        response = await ajax(`/chat/chat_channels/${channel.id}/follow`, {
+          method: "POST",
+        });
+      }
+
+      let trackedChannel = await this.chat.startTrackingChannel(
+        ChatChannel.create(response.chat_channel)
+      );
+
+      await ajax(`/chat/${trackedChannel.id}.json`, {
+        type: "POST",
+        data: {
+          message,
+          upload_ids: (uploads || []).mapBy("id"),
+        },
       });
-    } else {
-      promise = ajax(`/chat/chat_channels/${channel.id}/follow`, {
-        method: "POST",
+
+      await this.onSwitchChannel(ChatChannel.create(trackedChannel), {
+        replace: true,
       });
+    } catch (error) {
+      popupAjaxError(error);
+    } finally {
+      if (this.isDestroyed || this.isDestroying) {
+        return;
+      }
+
+      this.set("previewing", false);
     }
-
-    return promise
-      .then((response) =>
-        this.chat.startTrackingChannel(
-          ChatChannel.create(response.chat_channel)
-        )
-      )
-      .then((c) =>
-        ajax(`/chat/${c.id}.json`, {
-          type: "POST",
-          data: {
-            message,
-            upload_ids: (uploads || []).mapBy("id"),
-          },
-        }).then(() =>
-          this.onSwitchChannel(ChatChannel.create(c), {
-            replace: true,
-          })
-        )
-      )
-      .finally(() => {
-        if (this.isDestroyed || this.isDestroying) {
-          return;
-        }
-
-        this.set("previewing", false);
-      });
   },
 
   _onSendError(stagedId, error) {

@@ -1,3 +1,4 @@
+import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import Component from "@ember/component";
 import { clipboardCopyAsync } from "discourse/lib/utilities";
 import { getOwner } from "discourse-common/lib/get-owner";
@@ -25,6 +26,7 @@ import getURL, { samePrefix } from "discourse-common/lib/get-url";
 import { spinnerHTML } from "discourse/helpers/loading-spinner";
 import { decorateGithubOneboxBody } from "discourse/initializers/onebox-decorators";
 import highlightSyntax from "discourse/lib/highlight-syntax";
+import { applyLocalDates } from "discourse/lib/local-dates";
 
 const MAX_RECENT_MSGS = 100;
 const STICKY_SCROLL_LENIENCE = 4;
@@ -54,6 +56,7 @@ export default Component.extend({
   loadingMorePast: false,
   loadingMoreFuture: false,
   hoveredMessageId: null,
+  onSwitchChannel: null,
 
   allPastMessagesLoaded: false,
   previewing: false,
@@ -83,6 +86,12 @@ export default Component.extend({
   _updateReadTimer: null,
   lastSendReadMessageId: null,
   _scrollerEl: null,
+
+  init() {
+    this._super(...arguments);
+
+    this.set("messages", []);
+  },
 
   didInsertElement() {
     this._super(...arguments);
@@ -146,7 +155,7 @@ export default Component.extend({
       this.set("allPastMessagesLoaded", false);
       this.cancelEditing();
 
-      if (this.chatChannel?.id) {
+      if (this.chatChannel?.id !== "draft") {
         this.chat
           .getChannelBy("id", this.chatChannel.id)
           .then((trackedChannel) => {
@@ -155,6 +164,8 @@ export default Component.extend({
             this.loadDraftForChannel(this.chatChannel.id);
             this._startLastReadRunner();
           });
+      } else {
+        this.set("draft", this.chat.getDraftForChannel("draft"));
       }
     }
     this.currentUserTimezone = this.currentUser?.resolvedTimezone(
@@ -163,6 +174,10 @@ export default Component.extend({
   },
 
   fetchMessages(channelId) {
+    if (channelId === "draft") {
+      return Promise.resolve();
+    }
+
     this.set("loading", true);
 
     return this.chat.loadCookFunction(this.site.categories).then((cook) => {
@@ -202,6 +217,10 @@ export default Component.extend({
   },
 
   _fetchMoreMessages(direction) {
+    if (this.chatChannel.isDraft) {
+      return Promise.resolve();
+    }
+
     const loadingPast = direction === PAST;
     const canLoadMore = loadingPast
       ? this.details.can_load_more_past
@@ -800,6 +819,10 @@ export default Component.extend({
     return later(
       this,
       () => {
+        if (this._selfDeleted) {
+          return;
+        }
+
         let messageId;
         if (this.messages?.length) {
           messageId = this.messages[this.messages.length - 1]?.id;
@@ -861,8 +884,27 @@ export default Component.extend({
     if (this.sendingloading) {
       return;
     }
+
     this.set("sendingloading", true);
     this._setDraftForChannel(null);
+
+    if (this.previewing || this.chatChannel.isDraft) {
+      this.set("loading", true);
+
+      return this._upsertChannelWithMessage(
+        this.chatChannel,
+        message,
+        uploads
+      ).finally(() => {
+        if (this._selfDeleted) {
+          return;
+        }
+        this.set("loading", false);
+        this.set("sendingloading", false);
+        this._resetAfterSend();
+        this._stickScrollToBottom();
+      });
+    }
 
     this.set("_nextStagedMessageId", this._nextStagedMessageId + 1);
     const cooked = this.cook(message);
@@ -930,6 +972,48 @@ export default Component.extend({
         this.appEvents.trigger("chat:refresh-channels");
       });
     });
+  },
+
+  _upsertChannelWithMessage(channel, message, uploads) {
+    let promise;
+
+    if (channel.isDirectMessageChannel) {
+      promise = ajax("/chat/direct_messages/create.json", {
+        method: "POST",
+        data: { usernames: channel.chatable.users.mapBy("username") },
+      });
+    } else {
+      promise = ajax(`/chat/chat_channels/${channel.id}/follow`, {
+        method: "POST",
+      });
+    }
+
+    return promise
+      .then((response) =>
+        this.chat.startTrackingChannel(
+          ChatChannel.create(response.chat_channel)
+        )
+      )
+      .then((c) =>
+        ajax(`/chat/${c.id}.json`, {
+          type: "POST",
+          data: {
+            message,
+            upload_ids: (uploads || []).mapBy("id"),
+          },
+        }).then(() =>
+          this.onSwitchChannel(ChatChannel.create(c), {
+            replace: true,
+          })
+        )
+      )
+      .finally(() => {
+        if (this.isDestroyed || this.isDestroying) {
+          return;
+        }
+
+        this.set("previewing", false);
+      });
   },
 
   _onSendError(stagedId, error) {
@@ -1031,9 +1115,9 @@ export default Component.extend({
     this._focusComposer();
   },
 
-  @discourseComputed("previewing", "details.user_silenced")
-  canInteractWithChat(previewing, userSilenced) {
-    return !previewing && !userSilenced;
+  @discourseComputed("details.user_silenced")
+  canInteractWithChat(userSilenced) {
+    return !userSilenced;
   },
 
   @discourseComputed("messages.@each.selected")
@@ -1061,6 +1145,11 @@ export default Component.extend({
   @action
   onSelectMessage(message) {
     this._lastSelectedMessage = message;
+  },
+
+  @action
+  navigateToIndex() {
+    this.router.transitionTo("chat.index");
   },
 
   @action
@@ -1186,6 +1275,10 @@ export default Component.extend({
 
   @action
   _setDraftForChannel(draft) {
+    if (this.chatChannel.isDraft) {
+      return;
+    }
+
     if (draft?.replyToMsg) {
       draft.replyToMsg = {
         id: draft.replyToMsg.id,
@@ -1193,7 +1286,7 @@ export default Component.extend({
         user: draft.replyToMsg.user,
       };
     }
-    this.chat.setDraftForChannel(this.chatChannel.id, draft);
+    this.chat.setDraftForChannel(this.chatChannel, draft);
     this.set("draft", draft);
   },
 
@@ -1204,10 +1297,13 @@ export default Component.extend({
 
   @action
   composerValueChanged(value, uploads, replyToMsg) {
-    if (!this.editingMessage) {
+    if (!this.editingMessage && !this.chatChannel.directMessageChannelDraft) {
       this._setDraftForChannel({ value, uploads, replyToMsg });
     }
-    this._reportReplyingPresence(value);
+
+    if (!this.chatChannel.directMessageChannelDraft) {
+      this._reportReplyingPresence(value);
+    }
   },
 
   @action
@@ -1226,6 +1322,10 @@ export default Component.extend({
   },
 
   _reportReplyingPresence(composerValue) {
+    if (this.chatChannel.isDraft) {
+      return;
+    }
+
     const replying = !this.editingMessage && !!composerValue;
     this.chatComposerPresenceManager.notifyState(this.chatChannel.id, replying);
   },
@@ -1259,7 +1359,11 @@ export default Component.extend({
   },
 
   focusComposer() {
-    if (this._selfDeleted || this.site.mobileView) {
+    if (
+      this._selfDeleted ||
+      this.site.mobileView ||
+      this.chatChannel?.isDraft
+    ) {
       return;
     }
 
@@ -1269,16 +1373,10 @@ export default Component.extend({
   },
 
   _pluginsDecorators() {
-    if (this.siteSettings.discourse_local_dates_enabled) {
-      const applyLocalDates = requirejs(
-        "discourse/plugins/discourse-local-dates/initializers/discourse-local-dates"
-      ).applyLocalDates;
-
-      applyLocalDates(
-        this.element.querySelectorAll(".discourse-local-date"),
-        this.siteSettings
-      );
-    }
+    applyLocalDates(
+      this.element.querySelectorAll(".discourse-local-date"),
+      this.siteSettings
+    );
 
     if (this.siteSettings.spoiler_enabled) {
       const applySpoiler = requirejs(

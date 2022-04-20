@@ -15,6 +15,7 @@ import { clipboardCopy } from "discourse/lib/utilities";
 import { inject as service } from "@ember/service";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { prioritizeNameInUx } from "discourse/lib/settings";
+import { Promise } from "rsvp";
 
 const HERE = "here";
 const ALL = "all";
@@ -33,6 +34,8 @@ export default Component.extend({
   adminTools: optionalService(),
   _hasSubscribedToAppEvents: false,
   tagName: "",
+  previewing: false,
+  chat: service(),
 
   init() {
     this._super(...arguments);
@@ -127,9 +130,13 @@ export default Component.extend({
     this.set("emojiPickerIsActive", false);
   },
 
-  @discourseComputed("canInteractWithChat", "message.staged")
-  showActions(canInteractWithChat, messageStaged) {
-    return canInteractWithChat && !messageStaged;
+  @discourseComputed("canInteractWithChat", "message.staged", "isHovered")
+  showActions(canInteractWithChat, messageStaged, isHovered) {
+    return (
+      canInteractWithChat &&
+      !messageStaged &&
+      (this.site.mobileView ? isHovered : true)
+    );
   },
 
   @discourseComputed("message.deleted_at", "message.expanded")
@@ -145,7 +152,7 @@ export default Component.extend({
     "showEditButton",
     "showRebakeButton"
   )
-  moreButtons() {
+  secondaryButtons() {
     const buttons = [];
 
     buttons.push({
@@ -213,9 +220,27 @@ export default Component.extend({
     return buttons;
   },
 
-  @action
-  handleMoreButtons(value) {
-    this[value].call();
+  get messageActions() {
+    return {
+      reply: this.reply,
+      react: this.react,
+      copyLinkToMessage: this.copyLinkToMessage,
+      edit: this.edit,
+      selectMessage: this.selectMessage,
+      flag: this.flag,
+      silence: this.silence,
+      deleteMessage: this.deleteMessage,
+      restore: this.restore,
+      rebakeMessage: this.rebakeMessage,
+      startReactionForMsgActions: this.startReactionForMsgActions,
+    };
+  },
+
+  get messageCapabilities() {
+    return {
+      canReact: this.canReact,
+      canReply: this.canReply,
+    };
   },
 
   @discourseComputed("message", "details.can_moderate")
@@ -229,11 +254,27 @@ export default Component.extend({
   },
 
   @action
-  handleClick() {
-    if (this.site.mobileView) {
-      this.onHoverMessage?.(this.message);
-      return false;
+  handleTouchStart() {
+    if (!this.isHovered) {
+      this._isPressingHandler = later(this._handleLongPress, 500);
     }
+  },
+
+  @action
+  handleTouchMove() {
+    if (!this.isHovered) {
+      cancel(this._isPressingHandler);
+    }
+  },
+
+  @action
+  handleTouchEnd() {
+    cancel(this._isPressingHandler);
+  },
+
+  @action
+  _handleLongPress() {
+    this.onHoverMessage(this.message);
   },
 
   @discourseComputed("message.hideUserInfo", "message.chat_webhook_event")
@@ -642,14 +683,32 @@ export default Component.extend({
       return;
     }
 
-    this._loadingReactions.push(emoji);
-    this._updateReactionsList(emoji, reactAction, this.currentUser);
-    this._publishReaction(emoji, reactAction);
-    this.notifyPropertyChange("emojiReactions");
-
     if (this.site.mobileView) {
       this.set("isHovered", false);
     }
+
+    // TODO: ideally all react logic wouldn't be on message but chat channel
+    // or at least chat-live-pane, this would avoid extra complexity
+    let promise;
+    if (this.previewing) {
+      promise = this.chat.upsertDmChannelForUser(
+        this.chatChannel,
+        this.currentUser
+      );
+    } else {
+      promise = Promise.resolve();
+    }
+
+    promise.then(() => {
+      this._loadingReactions.push(emoji);
+      this._updateReactionsList(emoji, reactAction, this.currentUser);
+      this._publishReaction(emoji, reactAction);
+      this.notifyPropertyChange("emojiReactions");
+
+      if (this.previewing) {
+        this.onSwitchChannel(this.chatChannel, { replace: true });
+      }
+    });
   },
 
   _updateReactionsList(emoji, reactAction, user) {

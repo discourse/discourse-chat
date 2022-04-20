@@ -37,9 +37,7 @@ discourseModule(
 
         async test(assert) {
           await click(".open-toolbar-btn");
-          assert.ok(
-            visible(".chat-composer-toolbar #chat-widget-mobile-uploader")
-          );
+          assert.ok(visible(".chat-composer-toolbar #chat-upload-btn"));
         },
       }
     );

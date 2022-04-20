@@ -12,13 +12,15 @@ discourseModule(
     setupRenderingTest(hooks);
 
     componentTest("not displayed when no one is replying", {
-      template: hbs`{{chat-replying-indicator presenceChannel=presenceChannel chatChannelId=channel.id}}`,
+      template: hbs`{{chat-replying-indicator presenceChannel=presenceChannel chatChannel=chatChannel}}`,
 
       async beforeEach() {
-        this.set("channel", fabricate("chat-channel"));
+        this.set("chatChannel", fabricate("chat-channel"));
         this.set(
           "presenceChannel",
-          MockPresenceChannel.create({ name: `/chat-reply/${this.channel.id}` })
+          MockPresenceChannel.create({
+            name: `/chat-reply/${this.chatChannel.id}`,
+          })
         );
       },
 
@@ -28,13 +30,15 @@ discourseModule(
     });
 
     componentTest("displays indicator when user is replying", {
-      template: hbs`{{chat-replying-indicator presenceChannel=presenceChannel chatChannelId=channel.id}}`,
+      template: hbs`{{chat-replying-indicator presenceChannel=presenceChannel chatChannel=chatChannel}}`,
 
       async beforeEach() {
-        this.set("channel", fabricate("chat-channel"));
+        this.set("chatChannel", fabricate("chat-channel"));
         this.set(
           "presenceChannel",
-          MockPresenceChannel.create({ name: `/chat-reply/${this.channel.id}` })
+          MockPresenceChannel.create({
+            name: `/chat-reply/${this.chatChannel.id}`,
+          })
         );
       },
 
@@ -50,13 +54,15 @@ discourseModule(
     });
 
     componentTest("displays indicator when 2 or 3 users are replying", {
-      template: hbs`{{chat-replying-indicator presenceChannel=presenceChannel chatChannelId=channel.id}}`,
+      template: hbs`{{chat-replying-indicator presenceChannel=presenceChannel chatChannel=chatChannel}}`,
 
       async beforeEach() {
-        this.set("channel", fabricate("chat-channel"));
+        this.set("chatChannel", fabricate("chat-channel"));
         this.set(
           "presenceChannel",
-          MockPresenceChannel.create({ name: `/chat-reply/${this.channel.id}` })
+          MockPresenceChannel.create({
+            name: `/chat-reply/${this.chatChannel.id}`,
+          })
         );
       },
 
@@ -73,13 +79,15 @@ discourseModule(
     });
 
     componentTest("displays indicator when 3 users are replying", {
-      template: hbs`{{chat-replying-indicator presenceChannel=presenceChannel chatChannelId=channel.id}}`,
+      template: hbs`{{chat-replying-indicator presenceChannel=presenceChannel chatChannel=chatChannel}}`,
 
       async beforeEach() {
-        this.set("channel", fabricate("chat-channel"));
+        this.set("chatChannel", fabricate("chat-channel"));
         this.set(
           "presenceChannel",
-          MockPresenceChannel.create({ name: `/chat-reply/${this.channel.id}` })
+          MockPresenceChannel.create({
+            name: `/chat-reply/${this.chatChannel.id}`,
+          })
         );
       },
 
@@ -97,13 +105,15 @@ discourseModule(
     });
 
     componentTest("displays indicator when more than 3 users are replying", {
-      template: hbs`{{chat-replying-indicator presenceChannel=presenceChannel chatChannelId=channel.id}}`,
+      template: hbs`{{chat-replying-indicator presenceChannel=presenceChannel chatChannel=chatChannel}}`,
 
       async beforeEach() {
-        this.set("channel", fabricate("chat-channel"));
+        this.set("chatChannel", fabricate("chat-channel"));
         this.set(
           "presenceChannel",
-          MockPresenceChannel.create({ name: `/chat-reply/${this.channel.id}` })
+          MockPresenceChannel.create({
+            name: `/chat-reply/${this.chatChannel.id}`,
+          })
         );
       },
 
@@ -122,13 +132,15 @@ discourseModule(
     });
 
     componentTest("filters current user from list of replyers", {
-      template: hbs`{{chat-replying-indicator presenceChannel=presenceChannel chatChannelId=channel.id}}`,
+      template: hbs`{{chat-replying-indicator presenceChannel=presenceChannel chatChannel=chatChannel}}`,
 
       async beforeEach() {
-        this.set("channel", fabricate("chat-channel"));
+        this.set("chatChannel", fabricate("chat-channel"));
         this.set(
           "presenceChannel",
-          MockPresenceChannel.create({ name: `/chat-reply/${this.channel.id}` })
+          MockPresenceChannel.create({
+            name: `/chat-reply/${this.chatChannel.id}`,
+          })
         );
       },
 

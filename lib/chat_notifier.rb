@@ -27,11 +27,13 @@ class DiscourseChat::ChatNotifier
 
   def notify_edit
     update_mention_notifications
+    user_ids_to_identifier_map
   end
 
   def notify_new
     mentioned_user_ids = create_mention_notifications
     notify_watching_users(except: [@user.id] + mentioned_user_ids)
+    user_ids_to_identifier_map
   end
 
   private
@@ -92,21 +94,23 @@ class DiscourseChat::ChatNotifier
     # OS notifications and core notifications can correctly display what identifier they were
     # mentioned by. Loop through @all, @here, then group mentions, finally directly mentioned user_ids with each loop
     # overriding the previous identifier so directly mentioned users will always be mentioned as such.
-    map = {}
-    [
-      [@global_mentioned_users.map(&:id), :all],
-      [@here_mentioned_users.map(&:id), :here]
-    ].each do |user_ids, identifier|
-      user_ids.each { |user_id| map[user_id] = { is_group: false, identifier: identifier } }
-    end
+    @user_ids_to_identifier_map ||= begin
+      map = {}
+      [
+        [@global_mentioned_users.map(&:id), :all],
+        [@here_mentioned_users.map(&:id), :here]
+      ].each do |user_ids, identifier|
+        user_ids.each { |user_id| map[user_id] = { is_group: false, identifier: identifier } }
+      end
 
-    group_mentioned_users.each do |user|
-      group_name = (user.groups.map(&:name) & group_name_mentions).first
-      map[user.id] = { is_group: true, identifier: group_name }
-    end
+      group_mentioned_users.each do |user|
+        group_name = (user.groups.map(&:name) & group_name_mentions).first
+        map[user.id] = { is_group: true, identifier: group_name }
+      end
 
-    @directly_mentioned_users.each { |user| map[user.id] = nil }
-    map
+      @directly_mentioned_users.each { |user| map[user.id] = nil }
+      map
+    end
   end
 
   def direct_mentions_from_cooked
@@ -148,7 +152,7 @@ class DiscourseChat::ChatNotifier
 
   def set_mentioned_users
     @global_mentioned_users = direct_mentions_from_cooked.include?("@all") ?
-      members_of_channel(exclude: @user.username) :
+      members_of_channel(exclude: @user.username, is_channel_mention: true) :
       []
 
     @here_mentioned_users = direct_mentions_from_cooked.include?("@here") ? get_users_here : []
@@ -165,7 +169,7 @@ class DiscourseChat::ChatNotifier
   end
 
   def get_users_here
-    users = members_of_channel(exclude: @user.username).where("last_seen_at > ?", 5.minutes.ago)
+    users = members_of_channel(exclude: @user.username, is_channel_mention: true).where("last_seen_at > ?", 5.minutes.ago)
     usernames = users.map(&:username)
     other_mentioned_usernames = mentioned_usernames
       .reject { |username| username == "here" || usernames.include?(username) }
@@ -173,7 +177,8 @@ class DiscourseChat::ChatNotifier
       users = users.or(
         members_of_channel(
           exclude: @user.username,
-          usernames: other_mentioned_usernames
+          usernames: other_mentioned_usernames,
+          is_channel_mention: true
         )
       )
     end
@@ -191,11 +196,12 @@ class DiscourseChat::ChatNotifier
     users_preloaded_query.where(username_lower: (usernames.map(&:downcase) - [exclude.downcase]))
   end
 
-  def members_of_channel(exclude:, usernames: nil)
+  def members_of_channel(exclude:, usernames: nil, is_channel_mention: false)
     users = users_preloaded_query
       .where(user_chat_channel_memberships: { following: true, chat_channel_id: @chat_channel.id })
       .where.not(username_lower: exclude.downcase)
     users = users.where(username_lower: usernames.map(&:downcase)) if usernames
+    users = users.where(user_options: { ignore_channel_wide_mention: [false, nil] }) if is_channel_mention
     users
   end
 

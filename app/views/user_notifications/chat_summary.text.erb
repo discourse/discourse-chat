@@ -1,0 +1,8 @@
+<%- site_link = raw(@markdown_linker.create(@site_name, '/')) %>
+<%= t('user_notifications.chat_summary.description', count: @email_statuses.count,) %>
+<%= raw(@markdown_linker.create(t("user_notifications.chat_summary.view_messages", count: @email_statuses.count), "/chat")) %>
+<%=raw(t :'user_notifications.chat_summary.unsubscribe',
+       site_link: site_link,
+       email_preferences_link: @markdown_linker.create(t('user_notifications.chat_summary.your_chat_settings'), Discourse.base_url + '/my/preferences/chat'),
+       unsubscribe_link: @markdown_linker.create(t('user_notifications.digest.click_here'), "#{Discourse.base_url}/email/unsubscribe/#{@unsubscribe_key}"))  %>
+<%= raw(@markdown_linker.references) %>

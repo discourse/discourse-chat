@@ -51,6 +51,10 @@ fa_IR:
         no_public_available: "هیچ کانال عمومی برای دنبال کردن شما در این زمان وجود ندارد."
         public_available: "کانال‌های عمومی در دسترس شما برای دنبال کردن وجود دارد."
         start_direct_message: "شما همچنین می‌توانید یک گفتگو شخصی را با یک یا چند کاربر شروع کنید."
+      email_frequency:
+        description: "ما فقط در صورتی به شما ایمیل می‌کنیم، که در ۱۰ دقیقه گذشته شما را ندیده‌ایم."
+        never: "هرگز"
+        title: "آگاه‌سازی‌های ایمیل"
       enable: "فعال کردن گفتگو"
       flag: "پرچم"
       flagged: "این پیام برای بررسی پرچم گذاری شده است"
@@ -72,7 +76,7 @@ fa_IR:
       no_public_channels: "شما هنوز عضو هیچ کانالی نشده‌اید."
       open: "باز کردن گفتگو..."
       open_message: "پیام را در گفتگو باز کن"
-      placeholder_previewing: "برای ارسال پیام، به کانال بپیوندید."
+      placeholder_start_conversation: شروع گفتگو با %{usernames}
       remove_upload: "حذف پرونده"
       react: "واکنش با شکلک"
       reply: "پاسخ"
@@ -98,6 +102,10 @@ fa_IR:
       you_flagged: "شما این پیام را پرچم گذاری کردید"
       user_deleted: "حذف شده"
       exit: "بازگشت"
+      direct_message_creator:
+        title: پیام جدید
+        prefix: "به:"
+        no_results: هیج نتیجه‌ای نداشت
       channel_selector:
         no_channels: "هیچ کانالی با جستجوی شما مطابقت ندارد"
       create_channel:
@@ -153,6 +161,7 @@ fa_IR:
         username: "نام‌کاربری"
       selection:
         cancel: "انصراف"
+        quote_selection: "نقل قول در موضوع"
         error: "در انتقال پیام‌های گفتگو خطایی رخ داده"
         title: "انتقال گفتگو به موضوع"
         new_topic:
@@ -160,11 +169,9 @@ fa_IR:
       replying_indicator:
         single_user: "%{username} در حال نوشتن"
         multiple_users: "%{commaSeparatedUsernames} و %{lastUsername} در حال نوشتن"
+      topic_button_title: "گفتگو"
     notifications:
       chat_quoted: "<span>%{username}</span> %{description}"
-      popup:
-        chat_mention:
-          direct: "<span>%{username}</span> <span> به شما در کانال %{channel}</span> اشاره کرده است"
     topic:
       actions:
         chat_enable: "فعال کردن گفتگو"
@@ -194,3 +201,6 @@ fa_IR:
     keyboard_shortcuts_help:
       chat:
         title: "گفتگو"
+    topic_statuses:
+      chat:
+        help: "گفتگو برای این موضوع فعال است"

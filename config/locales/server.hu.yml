@@ -16,8 +16,24 @@ hu:
     chat_silence_user_sensitivity: "Annak a valószínűsége, hogy a csevegésben megjelölt felhasználó automatikusan némítva lesz."
     chat_auto_silence_from_flags_duration: "Azon percek száma, ameddig a felhasználók el lesznek némítva, ha a megjelölt csevegési üzenetek miatt automatikusan némítva lesznek."
     chat_default_channel_id: "Az a csevegőcsatorna, amely alapértelmezés szerint megnyílik, ha a felhasználónak nincsenek olvasatlan üzenetei vagy említései más csatornákon."
+    chat_duplicate_message_sensitivity: "Annak a valószínűsége, hogy az azonos feladó által küldött ismételt üzenet rövid időn belül blokkolásra kerül. Tizedes szám 0 és 1.0 között, ahol az 1.0 a legmagasabb érték (az üzeneteket gyakrabban blokkolja rövidebb idő alatt). Az ismételt üzenetek engedélyezéséhez állítsa „0”-ra az értéket."
+    chat_minimum_message_length: "A csevegőüzenetek minimális karakterszáma."
+    chat_allow_uploads: "A feltöltések engedélyezése a nyilvános csevegőcsatornákon."
+    chat_archive_destination_topic_status: "Az az állapot, amelyet a céltéma a csatornaarchiválás befejezése után fog kapni. Ez csak akkor érvényes, ha a céltéma egy új téma, nem pedig egy meglévő."
+    default_emoji_reactions: "Alapértelmezett emodzsi reakciók a csevegőüzenetekhez. Adjon hozzá akár 5 emodzsit a gyors reakcióhoz."
     errors:
       chat_default_channel: "Az alapértelmezett csevegőcsatornának nyilvános csatornának kell lennie."
+  system_messages:
+    chat_channel_archive_complete:
+      title: "A csevegőcsatorna archiválása kész"
+      subject_template: "A csevegőcsatorna archiválása sikeresen befejeződött"
+      text_body_template: |
+        A(z) **\#%{channel_name}** csevegőcsatorna archiválása sikeresen befejeződött. Az üzenetek átmásolásra kerültek a(z) [ <%{topic_title}](%{topic_url}) témába.
+    chat_channel_archive_failed:
+      title: "A csevegőcsatorna archiválása sikertelen"
+      subject_template: "A csevegőcsatorna archiválása sikertelen"
+      text_body_template: |
+        A(z) **\#%{channel_name}** csevegőcsatorna archiválása nem sikerült. %{messages_archived} üzenet archiválásra került. A részben archivált üzeneteket a(z) [%{topic_title}](%{topic_url}) témába lettek másolva. Keresse fel a(z) %{channel_url} csatornát az újbóli próbálkozáshoz.
   chat:
     errors:
       channel_exists_for_category: "Már létezik csatorna ehhez a kategóriával, és ezzel a névvel"
@@ -27,6 +43,11 @@ hu:
       user_cannot_send_message: "Jelenleg nem küldhet üzeneteket."
       rate_limit_exceeded: "Túllépte a 30 másodpercen belül elküldhető csevegőüzenetek korlátját"
       auto_silence_from_flags: "A csevegőüzenet elég magas pontszámmal lett megjelölve, hogy a felhasználó némítva legyen."
+      channel_cannot_be_archived: "A csatorna jelenleg nem archiválható, a csatornát vagy le kell zárni, vagy meg kell nyitni az archiváláshoz."
+      duplicate_message: "Nemrég küldött egy azonos tartalmú üzenetet."
+      delete_channel_failed: "A csatorna törlése sikertelen, próbálja meg újra."
+      minimum_length_not_met: "Az üzenet túl rövid, legalább %{minimum} karaktert kell tartalmaznia."
+      max_reactions_limit_reached: "Új reakciók nem engedélyezettek ezen az üzeneten."
     reviewables:
       actions:
         agree:
@@ -64,10 +85,20 @@ hu:
         archived: "Archivált"
         closed: "Zárolt"
         open: "Nyitott"
+      archive:
+        first_post_raw: "Ez a téma a(z) [%{channel_name}](%{channel_url}) csevegőcsatorna archívuma."
+      title_for_large_group_dm: "%{users} és még %{count} fő"
     personal_chat: "személyes csevegés"
   discourse_push_notifications:
     popup:
-      chat_message: "Új csevegőüzenet itt: %{channel}"
+      chat_mention:
+        direct: '%{username} megemlítette Önt a következő csatornán: „%{channel}”'
+        other: '%{username} megemlítette %{identifier} felhasználót a következő csatornán: „%{channel}”'
+      direct_message_chat_mention:
+        direct: "%{username} megemlítette Önt egy személyes csevegésben"
+        other: "%{username} megemlítette %{identifier} felhasználót egy személyes csevegésben"
+      new_chat_message: '%{username} üzenet küldött a következő csatornán: „%{channel}”'
+      new_direct_chat_message: "%{username} üzenetet küldött egy személyes csevegésben"
   discourse_automation:
     scriptables:
       send_chat_message:
@@ -75,3 +106,21 @@ hu:
   reviewable_score_types:
     needs_review:
       title: "Felülvizsgálatra szorul"
+  user_notifications:
+    chat_summary:
+      deleted_user: "Törölt felhasználó"
+      description:
+        one: "Új csevegőüzenete érkezett"
+        other: "Új csevegőüzenetei érkeztek"
+      from: "%{site_name}"
+      subject:
+        one: "[%{email_prefix}] Új csevegőüzenet"
+        other: "[%{email_prefix}] Új csevegőüzenetek"
+      view_message: "Üzenet megtekintése"
+      view_messages:
+        one: "Üzenet megtekintése"
+        other: "%{count} üzenet megtekintése"
+      view_more:
+        one: "%{count} további üzenet megtekintése"
+        other: "%{count} további üzenet megtekintése"
+      your_chat_settings: "csevegési e-mail gyakoriságának beállítása"

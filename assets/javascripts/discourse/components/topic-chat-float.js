@@ -1,16 +1,15 @@
 import Component from "@ember/component";
 import discourseComputed, { observes } from "discourse-common/utils/decorators";
 import getURL from "discourse-common/lib/get-url";
-import popupAjaxError from "discourse/lib/ajax-error";
 import { action } from "@ember/object";
 import {
   CHAT_VIEW,
   LIST_VIEW,
 } from "discourse/plugins/discourse-chat/discourse/services/chat";
-import { ajax } from "discourse/lib/ajax";
 import { equal } from "@ember/object/computed";
-import { cancel, schedule, throttle } from "@ember/runloop";
+import { cancel, throttle } from "@ember/runloop";
 import { inject as service } from "@ember/service";
+import Promise from "rsvp";
 
 export default Component.extend({
   chatView: equal("view", CHAT_VIEW),
@@ -123,19 +122,8 @@ export default Component.extend({
     if (!channel) {
       return;
     }
-    // Check to see if channel is followed or not.
-    // If it is, switch channel. If not, start following then switch.
-    const isFollowed = await this.chat.isChannelFollowed(channel);
-    if (!isFollowed) {
-      ajax(`/chat/chat_channels/${channel.id}/follow`, { method: "POST" })
-        .then(() => {
-          this.chat.startTrackingChannel(channel);
-          this.switchChannel(channel);
-        })
-        .catch(popupAjaxError);
-    } else {
-      this.switchChannel(channel);
-    }
+
+    this.switchChannel(channel);
   },
 
   openChannelAtMessage(channel, messageId) {
@@ -263,6 +251,7 @@ export default Component.extend({
       hidden: true,
       activeChannel: null,
     });
+
     if (channel) {
       return this.router.transitionTo(
         "chat.channel",
@@ -350,13 +339,15 @@ export default Component.extend({
   },
 
   @action
-  switchChannel(channel) {
+  switchChannel(channel, options = {}) {
+    options = Object.assign({}, { replace: true }, options);
+
+    if (options.replace) {
+      this.set("activeChannel", null);
+    }
+
     if (this.site.mobileView || this.chat.isChatPage) {
-      return this.router.transitionTo(
-        "chat.channel",
-        channel.id,
-        channel.title
-      );
+      return this.chat.openChannel(channel);
     }
 
     if (this.currentUser.chat_isolated) {
@@ -376,49 +367,6 @@ export default Component.extend({
     };
     this.chat.setActiveChannel(channel);
     this.setProperties(channelInfo);
-  },
-
-  @action
-  startCreatingDmChannel() {
-    this.set("creatingDmChannel", true);
-
-    schedule("afterRender", () => {
-      if (this.isDestroying || this.isDestroyed) {
-        return;
-      }
-
-      const userChooser = this.element.querySelector(".dm-user-chooser input");
-      if (userChooser) {
-        userChooser.focus();
-      }
-    });
-  },
-
-  @action
-  onChangeNewDmUsernames(usernames) {
-    this.set("newDmUsernames", usernames);
-  },
-
-  @action
-  createDmChannel() {
-    if (this.newDmUsernamesEmpty) {
-      return;
-    }
-
-    return ajax("/chat/direct_messages/create.json", {
-      method: "POST",
-      data: { usernames: this.newDmUsernames.uniq().join(",") },
-    }).then((response) => {
-      this.resetDmCreation();
-      this.switchChannel(response.chat_channel);
-    });
-  },
-
-  @action
-  resetDmCreation() {
-    this.setProperties({
-      newDmUsernames: null,
-      creatingDmChannel: false,
-    });
+    return Promise.resolve();
   },
 });

@@ -1,6 +1,10 @@
 <div class="chat-drawer">
   <div class={{containerClassNames}} data-chat-channel-id={{activeChannel.id}}>
-    <div role="region" aria-label={{i18n "chat.aria_roles.header"}} class="topic-chat-drawer-header">
+    <div
+      role="region"
+      aria-label={{i18n "chat.aria_roles.header"}}
+      class="topic-chat-drawer-header"
+    >
       {{#if chatView}}
         {{#if this.expanded}}
           {{flat-button
@@ -12,7 +16,11 @@
         {{/if}}
 
         {{#if activeChannel}}
-          {{chat-channel-title channel=activeChannel onClick=(action "onChannelTitleClick")}}
+          {{chat-channel-title
+            channel=activeChannel
+            onClick=(action "onChannelTitleClick")
+            onSelectChannel=(action "switchChannel")
+          }}
           {{#if (and (not expanded) unreadCount)}}
             <span class="chat-unread-count">{{unreadCount}}</span>
           {{/if}}
@@ -30,14 +38,18 @@
       >
         {{d-icon "discourse-expand"}}
       </button>
-      {{flat-button icon=this.expandIcon class="chat-expand" action=(action "toggleExpand") title="chat.collapse"}}
+      {{flat-button
+        icon=this.expandIcon
+        class="chat-expand"
+        action=(action "toggleExpand")
+        title="chat.collapse"
+      }}
 
       {{#if showClose}}
         {{flat-button icon="times" action=(action "close") title="chat.close"}}
       {{/if}}
     </div>
 
-    {{!-- Content --}}
     <div class="topic-chat-drawer-content">
       {{#if chatView}}
         {{#if this.activeChannel}}
@@ -46,6 +58,7 @@
             expanded=this.expanded
             floatHidden=this.hidden
             fullPage=false
+            onSwitchChannel=(action "switchChannel")
           }}
         {{/if}}
       {{else}}

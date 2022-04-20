@@ -72,10 +72,6 @@ class ChatChannel < ActiveRecord::Base
     chatable_type == "DirectMessageChannel"
   end
 
-  def group_direct_message_channel?
-    direct_message_channel? && chatable.users.count > 2
-  end
-
   def chatable_has_custom_fields?
     topic_channel? || category_channel?
   end
@@ -109,13 +105,6 @@ class ChatChannel < ActiveRecord::Base
     title_from_chatable
   end
 
-  def title_for_mention(user)
-    return I18n.t("chat.personal_chat") if direct_message_channel?
-    return name if name.present?
-
-    title_from_chatable
-  end
-
   def title_from_chatable
     case chatable_type
     when "Topic"
@@ -127,6 +116,21 @@ class ChatChannel < ActiveRecord::Base
     when "DirectMessageChannel"
       chatable.chat_channel_title_for_user(self, user)
     end
+  end
+
+  def email_title(user)
+    if direct_message_channel?
+      usernames = (chatable.users.map(&:username) - [user.username]).map { |username| "@#{username}" }
+      if usernames.count > 5
+        return I18n.t("chat.channel.title_for_large_group_dm", users: usernames.take(5).join(", "), count: usernames.count - 5)
+      end
+
+      if usernames.count > 1
+        return usernames.join(", ")
+      end
+    end
+
+    title(user)
   end
 
   def change_status(acting_user, target_status)

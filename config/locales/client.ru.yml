@@ -12,6 +12,11 @@ ru:
           actions:
             chat_channel_status_change: "Статус канала изменен"
             chat_channel_delete: "Канал чата удалён"
+      api:
+        scopes:
+          descriptions:
+            chat:
+              create_message: "Создать сообщение чата в указанном канале."
     chat:
       dates:
         time_tiny: "ч:мм"
@@ -63,6 +68,11 @@ ru:
         public_available: "Есть доступные для подписки каналы."
         start_direct_message: "Вы также можете начать личный чат с одним или несколькими пользователями."
         title: "Начните с присоединения к каналу"
+      email_frequency:
+        description: "Мы отправим вам письмо только в том случае, если вы не были онлайн последние 10 минут."
+        never: "Никогда"
+        title: "Настройка почтовых уведомлений"
+        when_away: "Если вы находитесь офлайн"
       enable: "Включить чат"
       flag: "Флаг"
       flagged: "Это сообщение было отправлено на премодерацию"
@@ -101,14 +111,18 @@ ru:
       only_chat_push_notifications:
         title: "Отправлять только push-уведомления в чате"
         description: "Запретить отправку всех push-уведомлений, не связанных с чатом"
+      ignore_channel_wide_mention:
+        title: "Игнорировать на канале массовые упоминания"
+        description: "Не отправлять массовые уведомления при использовании на канале переменных @here и @all"
       open: "Открыть чат"
       open_full_page: "Открыть полноэкранный чат"
       open_message: "Открыть сообщение в чате"
       placeholder_self: "Напишите что-нибудь"
       placeholder_others: "Чат с %{messageRecipient}"
-      placeholder_previewing: "Присоединись к каналу, чтобы отправить сообщение."
+      placeholder_previewing: "Отправьте сообщение, чтобы присоединиться к беседе."
       placeholder_new_message_disallowed: "Канал %{status}, в данный момент вы не можете отправлять новые сообщения."
       placeholder_silenced: "В настоящее время вы не можете отправлять сообщения."
+      placeholder_start_conversation: Начать беседу с пользователем %{usernames}
       remove_upload: "Удалить файл"
       react: "Реакция с помощью эмодзи"
       reply: "Ответить"
@@ -149,6 +163,11 @@ ru:
         closed: "Закрыт"
         open_header: "Канал открыт."
         open: "Открыт"
+      direct_message_creator:
+        title: Новое сообщение
+        prefix: "Кому:"
+        no_results: Нет результатов
+        selected_user_title: "Отменить выбор пользователя %{username}"
       channel_selector:
         title: "Перейти на канал"
         no_channels: "Нет каналов, соответствующих вашему запросу"
@@ -230,7 +249,7 @@ ru:
         username_instructions: "Имя бота, отправляющего сообщения на канал. Если оставить поле пустым, по умолчанию используется 'Системный'."
       selection:
         cancel: "Отменить"
-        quote_selection: "Цитировать"
+        quote_selection: "Цитировать в теме"
         error: "При перемещении сообщений чата произошла ошибка"
         title: "Переместить чат в тему"
         new_topic:
@@ -267,12 +286,16 @@ ru:
       retention_reminders:
         public: "История канала хранится %{days} дней."
         dm: "История личного чата хранится %{days} дней."
+      topic_button_title: "Чат"
     notifications:
       chat_quoted: "<span>%{username}</span> %{description}"
       popup:
         chat_mention:
-          direct: "<span>Пользователь %{username}</span> <span>упомянул вас на канале %{channel}</span>"
-          other: "<span>Пользователь %{username}</span> <span>упомянул @%{identifier} на канале %{channel}</span>"
+          direct: '<span>Пользователь %{username}</span> <span>упомянул вас на канале "%{channel}"</span>'
+          other: '<span>Пользователь %{username}</span> <span>упомянул %{identifier} на канале "%{channel}"</span>'
+        direct_message_chat_mention:
+          direct: "<span>Пользователь %{username}</span> <span>упомянул вас в личном чате</span>"
+          other: "<span>Пользователь %{username}</span> <span>упомянул @%{identifier} в личном чате</span>"
         chat_message: "Новое сообщение в чате"
         chat_quoted: "Пользователь %{username} процитировал ваше сообщение в чате"
       titles:
@@ -313,3 +336,6 @@ ru:
           switch_channel_arrows: "%{shortcut} Переключить канал"
           open_quick_channel_selector: "%{shortcut} Открыть переключатель каналов"
           open_insert_link_modal: "%{shortcut} Вставить гиперссылку"
+    topic_statuses:
+      chat:
+        help: "Чат включён для этой темы"

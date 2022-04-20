@@ -61,26 +61,21 @@
       </span>
     {{/if}}
     <span class="channel-title">{{i18n "chat.direct_messages.title"}}</span>
-    {{#unless creatingDmChannel}}
-      {{d-button
-        class="btn-flat new-dm keep-mobile-sidebar-open"
-        icon="plus"
-        action=(action "startCreatingDmChannel")
-        title="chat.direct_messages.new"
-      }}
-    {{/unless}}
-  </div>
-
-  {{#if creatingDmChannel}}
-    {{dm-creator
-      afterCreate=(action "afterDmCreation")
-      onCancel=(action "cancelDmCreation")
+    {{d-button
+      class="btn-flat new-dm keep-mobile-sidebar-open"
+      icon="plus"
+      action=(action "startCreatingDmChannel")
+      title="chat.direct_messages.new"
     }}
-  {{/if}}
+  </div>
 
   <div id="direct-message-channels" class={{directMessageChannelClasses}}>
     {{#each sortedDirectMessageChannels as |channel|}}
-      {{chat-channel-row channel=channel switchChannel=onSelect options=(hash leaveButton=true)}}
+      {{chat-channel-row
+        channel=channel
+        switchChannel=onSelect
+        options=(hash leaveButton=true)
+      }}
     {{/each}}
   </div>
 </div>

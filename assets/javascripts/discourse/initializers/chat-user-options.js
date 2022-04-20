@@ -3,7 +3,9 @@ import { withPluginApi } from "discourse/lib/plugin-api";
 const CHAT_ENABLED_FIELD = "chat_enabled";
 const CHAT_ISOLATED_FIELD = "chat_isolated";
 const ONLY_CHAT_PUSH_NOTI_FIELD = "only_chat_push_notifications";
+const IGNORE_CHANNEL_WIDE_MENTION = "ignore_channel_wide_mention";
 const CHAT_SOUND = "chat_sound";
+const CHAT_EMAIL_FREQUENCY = "chat_email_frequency";
 
 export default {
   name: "chat-user-options",
@@ -15,7 +17,9 @@ export default {
         api.addSaveableUserOptionField(CHAT_ENABLED_FIELD);
         api.addSaveableUserOptionField(CHAT_ISOLATED_FIELD);
         api.addSaveableUserOptionField(ONLY_CHAT_PUSH_NOTI_FIELD);
+        api.addSaveableUserOptionField(IGNORE_CHANNEL_WIDE_MENTION);
         api.addSaveableUserOptionField(CHAT_SOUND);
+        api.addSaveableUserOptionField(CHAT_EMAIL_FREQUENCY);
       }
     });
   },

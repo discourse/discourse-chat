@@ -6,6 +6,11 @@ en:
           actions:
             chat_channel_status_change: "Chat channel status changed"
             chat_channel_delete: "Chat channel deleted"
+      api:
+        scopes:
+          descriptions:
+            chat:
+              create_message: "Create a chat message in a specified channel."
     chat:
       dates:
         time_tiny: "h:mm"
@@ -59,6 +64,11 @@ en:
         public_available: "There are public channels available for you to follow."
         start_direct_message: "You can also start a personal chat with one or more users."
         title: "Get started by joining a channel"
+      email_frequency:
+        description: "We'll only email you if we haven't seen you in the last 10 minutes."
+        never: "Never"
+        title: "Email Notifications"
+        when_away: "Only when away"
       enable: "Enable chat"
       flag: "Flag"
       flagged: "This message has been flagged for review"
@@ -92,14 +102,18 @@ en:
       only_chat_push_notifications:
         title: "Only send chat push notifications"
         description: "Block all non-chat push notifications from being sent"
+      ignore_channel_wide_mention:
+        title: "Ignore channel-wide mentions"
+        description: "Do not send notifications for channel-wide mentions (@here and @all)"
       open: "Open chat"
       open_full_page: "Open full-screen chat"
       open_message: "Open message in chat"
       placeholder_self: "Jot something down"
       placeholder_others: "Chat with %{messageRecipient}"
-      placeholder_previewing: "Join the channel to send a message."
+      placeholder_previewing: "Send a message to join the conversation."
       placeholder_new_message_disallowed: "Channel is %{status}, you cannot send new messages right now."
       placeholder_silenced: "You cannot send messages at this time."
+      placeholder_start_conversation: Start a conversation with %{usernames}
       remove_upload: "Remove file"
       react: "React with emoji"
       reply: "Reply"
@@ -138,6 +152,12 @@ en:
         closed: "Closed"
         open_header: "Channel is open."
         open: "Open"
+
+      direct_message_creator:
+        title: New Message
+        prefix: "To:"
+        no_results: No results
+        selected_user_title: "Deselect %{username}"
 
       channel_selector:
         title: "Jump to channel"
@@ -231,7 +251,7 @@ en:
 
       selection:
         cancel: "Cancel"
-        quote_selection: "Quote"
+        quote_selection: "Quote in Topic"
         error: "There was an error moving the chat messages"
         title: "Move Chat to Topic"
         new_topic:
@@ -263,13 +283,18 @@ en:
         public: "Channel history is retained for %{days} days."
         dm: "Personal chat history is retained for %{days} days."
 
+      topic_button_title: "Chat"
+
     notifications:
       chat_quoted: "<span>%{username}</span> %{description}"
 
       popup:
         chat_mention:
-          direct: "<span>%{username}</span> <span>mentioned you in %{channel}</span>"
-          other: "<span>%{username}</span> <span>mentioned %{identifier} in %{channel}</span>"
+          direct: '<span>%{username}</span> <span>mentioned you in "%{channel}"</span>'
+          other: '<span>%{username}</span> <span>mentioned %{identifier} in "%{channel}"</span>'
+        direct_message_chat_mention:
+          direct: "<span>%{username}</span> <span>mentioned you in personal chat</span>"
+          other: "<span>%{username}</span> <span>mentioned %{identifier} in personal chat</span>"
         chat_message: "New chat message"
         chat_quoted: "%{username} quoted your chat message"
 
@@ -311,3 +336,6 @@ en:
           switch_channel_arrows: "%{shortcut} Switch channel"
           open_quick_channel_selector: "%{shortcut} Open quick channel selector"
           open_insert_link_modal: "%{shortcut} Insert hyperlink"
+    topic_statuses:
+      chat:
+        help: "Chat is enabled for this topic"

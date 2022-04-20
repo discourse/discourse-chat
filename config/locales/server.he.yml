@@ -16,9 +16,11 @@ he:
     chat_silence_user_sensitivity: "הסבירות שמשתמש שסומן בצ׳אט יושתק אוטומטית."
     chat_auto_silence_from_flags_duration: "מספר דקות השתקת המשתמשים כאשר הם מושתקים אוטומטית עקב הודעות צ׳אט מסומנות."
     chat_default_channel_id: "ערוץ הצ׳אט שייפתח כברירת מחדל כאשר למשתמש אין הודעות או אזכורים שלא נקראו בערוצים אחרים."
+    chat_duplicate_message_sensitivity: "הסבירות שהודעה כפולה מאותו שולח תיחסם תוך זמן קצר. מספר עשרוני בין 0 ל־1.0, כאשר 1.0 הוא ההגדרה הגבוהה ביותר (חוסם הודעות בתדירות גבוהה יותר בפרק זמן קצר יותר). ‚0’ כדי לאפשר הודעות כפולות."
     chat_minimum_message_length: "מספר התווים המזערי להודעת צ׳אט."
     chat_allow_uploads: "לאפשר העלאות בערוצי צ׳אט ציבוריים."
     chat_archive_destination_topic_status: "המצב בו נושא היעד צריך להיות לאחר שהעברת ערוץ לארכיון הושלמה. חל רק כאשר נושא היעד הוא נושא חדש ולא קיים."
+    default_emoji_reactions: "רגשות אמוג׳י כברירת מחדל להודעות צ׳אט. ניתן להוסיף עד 5 אמוג׳ים לתגובה מהירה."
     errors:
       chat_default_channel: "ערוץ הצ׳אט כברירת המחדל חייב להיות ערוץ ציבורי."
   system_messages:
@@ -45,6 +47,7 @@ he:
       duplicate_message: "פרסמת הודעה זהה לפני זמן קצר מדי."
       delete_channel_failed: "מחיקת הערוץ נכשלה, נא לנסות שוב."
       minimum_length_not_met: "ההודעה קצרה מדי, היא חייבת להיות ארוכה מ־%{minimum} תווים"
+      max_reactions_limit_reached: "רגשות חדשים אסורים בהודעה זו."
     reviewables:
       actions:
         agree:
@@ -84,13 +87,18 @@ he:
         open: "פתוח"
       archive:
         first_post_raw: "הנושא הזה הוא הארכיון של ערוץ הצ׳אט [%{channel_name}](%{channel_url})."
+      title_for_large_group_dm: "%{users} ו־%{count} נוספים"
     personal_chat: "צ׳אט אישי"
   discourse_push_notifications:
     popup:
       chat_mention:
-        direct: "אוזכרת בערוץ %{channel} על ידי @%{username}"
-        other: "נוסף אזכור של %{identifier} בערוץ %{channel} על ידי ‎@%{username}"
-      chat_message: "הודעת צ׳אט חדשה תחת %{channel}"
+        direct: 'אוזכרת בערוץ „%{channel}” על ידי %{username}'
+        other: 'נוסף אזכור של %{identifier} בערוץ „%{channel}” על ידי %{username}'
+      direct_message_chat_mention:
+        direct: "אוזכרת בצ׳אט אישי על ידי %{username}"
+        other: "נוסף אזכור של ‎%{identifier} בצ׳אט אישי על ידי %{username}"
+      new_chat_message: 'נשחלה הודעה על ידי %{username} ב־„%{channel}”'
+      new_direct_chat_message: "נשלחה הודעה על ידי %{username} בצ׳אט אישי"
   discourse_automation:
     scriptables:
       send_chat_message:
@@ -98,3 +106,30 @@ he:
   reviewable_score_types:
     needs_review:
       title: "נדרשת סקירה"
+  user_notifications:
+    chat_summary:
+      deleted_user: "משתמש שנמחק"
+      description:
+        one: "יש לך הודעה חדשה בצ׳אט"
+        two: "יש לך הודעות חדשות בצ׳אט"
+        many: "יש לך הודעות חדשות בצ׳אט"
+        other: "יש לך הודעות חדשות בצ׳אט"
+      from: "%{site_name}"
+      subject:
+        one: "[%{email_prefix}] הודעה חדשה בצ׳אט"
+        two: "[%{email_prefix}] הודעות חדשות בצ׳אט"
+        many: "[%{email_prefix}] הודעות חדשות בצ׳אט"
+        other: "[%{email_prefix}] הודעות חדשות בצ׳אט"
+      unsubscribe: "סיכום צ׳אט זה נשלח מהאתר %{site_link} כשנעדרת ממנו. ניתן לשנות את %{email_preferences_link} שלך או %{unsubscribe_link} כדי להפסיק לקבל הודעות."
+      view_message: "הצגת הודעה"
+      view_messages:
+        one: "הצגת הודעה"
+        two: "הצגת %{count} הודעות"
+        many: "הצגת %{count} הודעות"
+        other: "הצגת %{count} הודעות"
+      view_more:
+        one: "הצגת הודעה נוספת %{count}"
+        two: "הצגת %{count} הודעות נוספות"
+        many: "הצגת %{count} הודעות נוספות"
+        other: "הצגת %{count} הודעות נוספות"
+      your_chat_settings: "העדפת תדירות דוא״ל צ׳אט"

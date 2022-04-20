@@ -151,6 +151,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
       .joins(:chat_message)
       .where(chat_message: { chat_channel_id: @chat_channel.id })
       .where("chat_message.id <= ?", params[:message_id])
+      .where(user: current_user)
       .update_all(status: ChatMessageEmailStatus::STATUSES[:processed])
 
     chat_mentions = ChatMention

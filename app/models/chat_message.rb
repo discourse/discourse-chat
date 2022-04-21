@@ -198,6 +198,10 @@ class ChatMessage < ActiveRecord::Base
     cooked
   end
 
+  def url
+    "#{Discourse.base_url}/chat/channel/#{self.chat_channel_id}/chat?messageId=#{self.id}"
+  end
+
   private
 
   def block_duplicate?

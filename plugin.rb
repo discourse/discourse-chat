@@ -92,6 +92,7 @@ after_initialize do
   load File.expand_path('../app/serializers/incoming_chat_webhook_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/admin_chat_index_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/user_chat_channel_membership_serializer.rb', __FILE__)
+  load File.expand_path('../app/serializers/user_chat_message_bookmark_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/reviewable_chat_message_serializer.rb', __FILE__)
   load File.expand_path('../lib/chat_channel_fetcher.rb', __FILE__)
   load File.expand_path('../lib/chat_mailer.rb', __FILE__)
@@ -165,6 +166,22 @@ after_initialize do
       has_many :chat_mentions
       has_many :chat_message_email_statuses, dependent: :destroy
     }
+
+    if SiteSetting.use_polymorphic_bookmarks
+      Bookmark.register_bookmarkable(
+        model: ChatMessage,
+        serializer: UserChatMessageBookmarkSerializer,
+        list_query: lambda do |user, guardian|
+          user
+            .bookmarks_of_type("ChatMessage")
+            .joins("INNER JOIN chat_messages ON chat_messages.id = bookmarks.bookmarkable_id AND bookmarks.bookmarkable_type = 'ChatMessage'")
+        end,
+        search_query: lambda do |bookmarks, query, ts_query, &blk|
+          blk.call(bookmarks, "chat_messages.message ILIKE :q")
+        end,
+        preload_associations: [:chat_channel]
+      )
+    end
   end
 
   TopicQuery.add_custom_filter(::DiscourseChat::PLUGIN_NAME) do |results, topic_query|

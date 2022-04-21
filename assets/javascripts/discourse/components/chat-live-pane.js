@@ -1115,15 +1115,6 @@ export default Component.extend({
     this._focusComposer();
   },
 
-  @discourseComputed()
-  canQuote() {
-    if (this.chatChannel.isDirectMessageChannel) {
-      return false;
-    }
-
-    return true;
-  },
-
   @discourseComputed("details.user_silenced")
   canInteractWithChat(userSilenced) {
     return !userSilenced;

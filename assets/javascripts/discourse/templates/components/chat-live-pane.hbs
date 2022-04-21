@@ -84,17 +84,15 @@
   {{#if selectingMessages}}
     <div class="chat-selection-management">
       <div class="chat-selection-management-buttons">
-        {{#if canQuote}}
-          {{d-button
-            id="chat-quote-btn"
-            class="btn-secondary"
-            icon="quote-left"
-            label="chat.selection.quote_selection"
-            title="chat.selection.quote_selection"
-            disabled=(not anyMessagesSelected)
-            action=(action "quoteMessages")
-          }}
-        {{/if}}
+        {{d-button
+          id="chat-quote-btn"
+          class="btn-secondary"
+          icon="quote-left"
+          label="chat.selection.quote_selection"
+          title="chat.selection.quote_selection"
+          disabled=(not anyMessagesSelected)
+          action=(action "quoteMessages")
+        }}
         {{d-button
           icon="times"
           class="btn-secondary cancel-btn"

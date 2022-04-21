@@ -1,5 +1,5 @@
-import { test } from "qunit";
-import { click, visit } from "@ember/test-helpers";
+import { skip, test } from "qunit";
+import { click, currentURL, visit } from "@ember/test-helpers";
 import {
   acceptance,
   exists,
@@ -87,37 +87,6 @@ acceptance("Discourse Chat | quoting out of topic", function (needs) {
   });
 });
 
-acceptance("Discourse Chat | quote permissions", function (needs) {
-  needs.user({
-    admin: false,
-    moderator: false,
-    username: "eviltrout",
-    id: 1,
-    can_chat: true,
-    has_chat_enabled: true,
-  });
-
-  needs.settings({
-    chat_enabled: true,
-  });
-
-  needs.pretender((server, helper) => {
-    setupPretenders(server, helper);
-  });
-
-  test("it does not show the quote button in direct messages", async function (assert) {
-    await visit("/chat/channel/75/@hawk");
-    assert.ok(exists(".chat-message-container"));
-    const firstMessage = query(".chat-message-container");
-    const dropdown = selectKit(".chat-message-container .more-buttons");
-    await dropdown.expand();
-    await dropdown.selectRowByValue("selectMessage");
-    assert.ok(firstMessage.classList.contains("selecting-messages"));
-    assert.ok(exists(".chat-selection-management"));
-    assert.notOk(exists(".chat-live-pane #chat-quote-btn"));
-  });
-});
-
 acceptance("Discourse Chat | quoting when topic open", async function (needs) {
   needs.user({
     admin: false,
@@ -199,52 +168,52 @@ acceptance(
 );
 
 // TODO: implement touch support for this test
-// acceptance("Discourse Chat | quoting on mobile", async function (needs) {
-//   needs.user({
-//     admin: false,
-//     moderator: false,
-//     username: "eviltrout",
-//     id: 1,
-//     can_chat: true,
-//     has_chat_enabled: true,
-//   });
-//
-//   needs.settings({
-//     chat_enabled: true,
-//   });
-//
-//   needs.pretender((server, helper) => {
-//     setupPretenders(server, helper);
-//   });
-//   needs.mobileView();
-//
-//   test("it opens the chatable, opens the composer, and pastes the markdown in", async function (assert) {
-//     await visit("/chat/channel/7/Uncategorized");
-//     assert.ok(exists(".chat-message-container"));
-//     const firstMessage = query(".chat-message-container");
-//     await click(firstMessage);
-//     await click(".chat-message-action-item[data-id='selectMessage'] button");
-//
-//     assert.ok(firstMessage.classList.contains("selecting-messages"));
-//     await click("#chat-quote-btn");
-//     assert.equal(
-//       currentURL(),
-//       "/c/uncategorized/1",
-//       "navigates to the chatable url"
-//     );
-//     assert.ok(
-//       exists("#reply-control.composer-action-createTopic"),
-//       "the composer opens"
-//     );
-//     assert.strictEqual(
-//       query("textarea.d-editor-input").value,
-//       quoteResponse.markdown,
-//       "the composer has the markdown"
-//     );
-//     assert.strictEqual(
-//       selectKit(".category-chooser").header().value(),
-//       "1",
-//       "it fills category selector with the right category"
-//     );
-//   });
-// });
+acceptance("Discourse Chat | quoting on mobile", async function (needs) {
+  needs.user({
+    admin: false,
+    moderator: false,
+    username: "eviltrout",
+    id: 1,
+    can_chat: true,
+    has_chat_enabled: true,
+  });
+
+  needs.settings({
+    chat_enabled: true,
+  });
+
+  needs.pretender((server, helper) => {
+    setupPretenders(server, helper);
+  });
+  needs.mobileView();
+
+  skip("it opens the chatable, opens the composer, and pastes the markdown in", async function (assert) {
+    await visit("/chat/channel/7/Uncategorized");
+    assert.ok(exists(".chat-message-container"));
+    const firstMessage = query(".chat-message-container");
+    await click(firstMessage);
+    await click(".chat-message-action-item[data-id='selectMessage'] button");
+
+    assert.ok(firstMessage.classList.contains("selecting-messages"));
+    await click("#chat-quote-btn");
+    assert.equal(
+      currentURL(),
+      "/c/uncategorized/1",
+      "navigates to the chatable url"
+    );
+    assert.ok(
+      exists("#reply-control.composer-action-createTopic"),
+      "the composer opens"
+    );
+    assert.strictEqual(
+      query("textarea.d-editor-input").value,
+      quoteResponse.markdown,
+      "the composer has the markdown"
+    );
+    assert.strictEqual(
+      selectKit(".category-chooser").header().value(),
+      "1",
+      "it fills category selector with the right category"
+    );
+  });
+});

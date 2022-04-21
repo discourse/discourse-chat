@@ -1,7 +1,5 @@
 import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import Component from "@ember/component";
-import { clipboardCopyAsync } from "discourse/lib/utilities";
-import { getOwner } from "discourse-common/lib/get-owner";
 import discourseComputed, {
   afterRender,
   bind,
@@ -22,7 +20,7 @@ import { inject as service } from "@ember/service";
 import { Promise } from "rsvp";
 import { resetIdle } from "discourse/lib/desktop-notifications";
 import { resolveAllShortUrls } from "pretty-text/upload-short-url";
-import getURL, { samePrefix } from "discourse-common/lib/get-url";
+import { samePrefix } from "discourse-common/lib/get-url";
 import { spinnerHTML } from "discourse/helpers/loading-spinner";
 import { decorateGithubOneboxBody } from "discourse/initializers/onebox-decorators";
 import highlightSyntax from "discourse/lib/highlight-syntax";
@@ -116,6 +114,8 @@ export default Component.extend({
   },
 
   willDestroyElement() {
+    this._super(...arguments);
+
     this.appEvents.off(
       "chat-live-pane:highlight-message",
       this,
@@ -1121,11 +1121,6 @@ export default Component.extend({
   },
 
   @discourseComputed("messages.@each.selected")
-  anyMessagesSelected() {
-    return this.selectedMessageIds.length > 0;
-  },
-
-  @discourseComputed("messages.@each.selected")
   selectedMessageIds(messages) {
     return messages.filter((m) => m.selected).map((m) => m.id);
   },
@@ -1180,92 +1175,6 @@ export default Component.extend({
   @action
   onChannelTitleClick() {
     return this._goToChatableUrl();
-  },
-
-  @action
-  async quoteMessages() {
-    const quoteGenerationPromise = async () => {
-      const response = await ajax(
-        getURL(`/chat/${this.chatChannel.id}/quote.json`),
-        {
-          data: { message_ids: this.selectedMessageIds },
-          type: "POST",
-        }
-      );
-      return new Blob([response.markdown], {
-        type: "text/plain",
-      });
-    };
-
-    // copy the generated quote to the clipboard
-    if (!this.site.isMobileDevice && this.currentUser.chat_isolated) {
-      if (!isTesting()) {
-        return clipboardCopyAsync(quoteGenerationPromise)
-          .then(() => {
-            this._showCopyQuoteSuccess();
-          })
-          .catch(popupAjaxError);
-      } else {
-        // clipboard API throws errors in tests
-        return;
-      }
-    }
-
-    let quoteMarkdownBlob, quoteMarkdown;
-    try {
-      quoteMarkdownBlob = await quoteGenerationPromise();
-      quoteMarkdown = await quoteMarkdownBlob.text();
-    } catch (error) {
-      popupAjaxError(error);
-    }
-    const container = getOwner(this);
-    const composer = container.lookup("controller:composer");
-    const openOpts = {};
-
-    if (this.chatChannel.isCategoryChannel) {
-      openOpts.categoryId = this.chatChannel.chatable_id;
-    }
-
-    if (this.site.isMobileDevice) {
-      // go to the relevant chatable (e.g. category) and open the
-      // composer to insert text
-      this._goToChatableUrl().then(() => {
-        composer.focusComposer({
-          fallbackToNewTopic: true,
-          insertText: quoteMarkdown,
-          openOpts,
-        });
-      });
-    } else {
-      // open the composer and insert text, reply to the current
-      // topic if there is one, use the active draft if there is one
-      const topic = container.lookup("controller:topic");
-      composer.focusComposer({
-        fallbackToNewTopic: true,
-        topic: topic?.model,
-        insertText: quoteMarkdown,
-        openOpts,
-      });
-    }
-  },
-
-  _showCopyQuoteSuccess() {
-    this.set("showChatQuoteSuccess", true);
-
-    schedule("afterRender", () => {
-      if (this._selfDeleted) {
-        return;
-      }
-
-      const element = document.querySelector(".chat-selection-message");
-      element.addEventListener(
-        "animationend",
-        () => {
-          this.set("showChatQuoteSuccess", false);
-        },
-        { once: true }
-      );
-    });
   },
 
   @action

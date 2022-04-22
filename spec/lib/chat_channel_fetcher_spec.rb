@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-
 describe DiscourseChat::ChatChannelFetcher do
   describe ".unread_counts" do
     fab!(:user_1) { Fabricate(:user) }
@@ -27,7 +26,7 @@ describe DiscourseChat::ChatChannelFetcher do
       context "has no unread messages" do
         it "returns the correct count" do
           unread_counts = subject.unread_counts([chat_channel], user_1)
-          expect(unread_counts[chat_channel.id]).to be_nil
+          expect(unread_counts[chat_channel.id]).to eq(0)
         end
       end
 
@@ -40,7 +39,7 @@ describe DiscourseChat::ChatChannelFetcher do
 
         it "returns the correct count" do
           unread_counts = subject.unread_counts([chat_channel], user_1)
-          expect(unread_counts[chat_channel.id]).to be_nil
+          expect(unread_counts[chat_channel.id]).to eq(0)
         end
       end
     end
@@ -53,7 +52,7 @@ describe DiscourseChat::ChatChannelFetcher do
 
         it "returns the correct count" do
           unread_counts = subject.unread_counts([chat_channel], user_1)
-          expect(unread_counts[chat_channel.id]).to be_nil
+          expect(unread_counts[chat_channel.id]).to eq(0)
         end
       end
     end

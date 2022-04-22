@@ -126,7 +126,7 @@ module DiscourseChat::ChatChannelFetcher
   end
 
   def self.unread_counts(channels, user_id)
-    unread_counts = DB.query(<<~SQL, channel_ids: channels.map(&:id), user_id: user_id)
+    unread_counts = DB.query_hash(<<~SQL, channel_ids: channels.map(&:id), user_id: user_id)
       SELECT cc.id, COUNT(*) as count
       FROM chat_messages cm
       JOIN chat_channels cc ON cc.id = cm.chat_channel_id
@@ -139,6 +139,9 @@ module DiscourseChat::ChatChannelFetcher
       GROUP BY cc.id
     SQL
 
-    unread_counts.each.with_object({}) { |row, map| map[row.id] = row.count }
+    channels.each_with_object({}) do |channel, map|
+      channel_unreads = unread_counts.find { |uc| uc['id'] == channel.id }
+      map[channel.id] = channel_unreads&.dig('count') || 0
+    end
   end
 end

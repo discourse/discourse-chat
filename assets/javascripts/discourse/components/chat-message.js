@@ -1,4 +1,5 @@
 import bootbox from "bootbox";
+import { isTesting } from "discourse-common/config/environment";
 import Component from "@ember/component";
 import I18n from "I18n";
 import getURL from "discourse-common/lib/get-url";
@@ -256,6 +257,14 @@ export default Component.extend({
   @action
   handleTouchStart() {
     if (!this.isHovered) {
+      // when testing this must be triggered immediately because there
+      // is no concept of "long press" there, the Ember `tap` test helper
+      // does send the touchstart/touchend events but immediately, see
+      // https://github.com/emberjs/ember-test-helpers/blob/master/API.md#tap
+      if (isTesting()) {
+        this._handleLongPress();
+      }
+
       this._isPressingHandler = later(this._handleLongPress, 500);
     }
   },

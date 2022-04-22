@@ -11,7 +11,7 @@ import getURL from "discourse-common/lib/get-url";
 
 export default class AdminCustomizeColorsShowController extends Component {
   tagName = "";
-  router = service();
+  @service router;
   chatChannel = null;
   selectedMessageIds = null;
   showChatQuoteSuccess = false;

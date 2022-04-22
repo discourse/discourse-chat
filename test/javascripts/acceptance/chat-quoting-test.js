@@ -1,5 +1,5 @@
 import { skip, test } from "qunit";
-import { click, currentURL, visit } from "@ember/test-helpers";
+import { click, currentURL, tap, visit } from "@ember/test-helpers";
 import {
   acceptance,
   exists,
@@ -187,11 +187,11 @@ acceptance("Discourse Chat | quoting on mobile", async function (needs) {
   });
   needs.mobileView();
 
-  skip("it opens the chatable, opens the composer, and pastes the markdown in", async function (assert) {
+  test("it opens the chatable, opens the composer, and pastes the markdown in", async function (assert) {
     await visit("/chat/channel/7/Uncategorized");
     assert.ok(exists(".chat-message-container"));
     const firstMessage = query(".chat-message-container");
-    await click(firstMessage);
+    await tap(firstMessage);
     await click(".chat-message-action-item[data-id='selectMessage'] button");
 
     assert.ok(firstMessage.classList.contains("selecting-messages"));

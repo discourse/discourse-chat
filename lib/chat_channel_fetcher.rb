@@ -131,7 +131,11 @@ module DiscourseChat::ChatChannelFetcher
       FROM chat_messages cm
       JOIN chat_channels cc ON cc.id = cm.chat_channel_id
       JOIN user_chat_channel_memberships uccm ON uccm.chat_channel_id = cc.id
-      WHERE cc.id IN (:channel_ids) AND cm.user_id != :user_id AND uccm.user_id = :user_id AND cm.id > COALESCE(uccm.last_read_message_id, 0)
+      WHERE cc.id IN (:channel_ids)
+        AND cm.user_id != :user_id
+        AND uccm.user_id = :user_id
+        AND cm.id > COALESCE(uccm.last_read_message_id, 0)
+        AND cm.deleted_at IS NULL
       GROUP BY cc.id
     SQL
 

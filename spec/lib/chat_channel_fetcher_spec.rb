@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "rails_helper"
 
 describe DiscourseChat::ChatChannelFetcher do
   describe ".unread_counts" do

@@ -1,8 +1,7 @@
 import Component from "@ember/component";
-import discourseComputed from "discourse-common/utils/decorators";
+import { action, computed } from "@ember/object";
 import { clipboardCopyAsync } from "discourse/lib/utilities";
 import { getOwner } from "discourse-common/lib/get-owner";
-import { action } from "@ember/object";
 import { ajax } from "discourse/lib/ajax";
 import { isTesting } from "discourse-common/config/environment";
 import { popupAjaxError } from "discourse/lib/ajax-error";
@@ -10,18 +9,18 @@ import { schedule } from "@ember/runloop";
 import { inject as service } from "@ember/service";
 import getURL from "discourse-common/lib/get-url";
 
-export default Component.extend({
-  tagName: "",
-  router: service(),
-  chatChannel: null,
-  selectedMessageIds: null,
-  showChatQuoteSuccess: false,
-  cancelSelecting: null,
+export default class AdminCustomizeColorsShowController extends Component {
+  tagName = "";
+  router = service();
+  chatChannel = null;
+  selectedMessageIds = null;
+  showChatQuoteSuccess = false;
+  cancelSelecting = null;
 
-  @discourseComputed("selectedMessageIds")
-  anyMessagesSelected(selectedMessageIds) {
-    return selectedMessageIds.length > 0;
-  },
+  @computed("selectedMessageIds.length")
+  get anyMessagesSelected() {
+    return this.selectedMessageIds.length > 0;
+  }
 
   @action
   async quoteMessages() {
@@ -38,20 +37,52 @@ export default Component.extend({
       });
     };
 
-    // copy the generated quote to the clipboard
     if (!this.site.isMobileDevice && this.currentUser.chat_isolated) {
-      if (!isTesting()) {
-        return clipboardCopyAsync(quoteGenerationPromise)
-          .then(() => {
-            this._showCopyQuoteSuccess();
-          })
-          .catch(popupAjaxError);
-      } else {
-        // clipboard API throws errors in tests
-        return;
-      }
+      return this._copyQuoteToClipboard(quoteGenerationPromise);
     }
 
+    return this._copyQuoteToComposer(quoteGenerationPromise);
+  }
+
+  _showCopyQuoteSuccess() {
+    this.set("showChatQuoteSuccess", true);
+
+    schedule("afterRender", () => {
+      if (!this.element || this.isDestroying || this.isDestroyed) {
+        return;
+      }
+
+      const element = document.querySelector(".chat-selection-message");
+      element.addEventListener(
+        "animationend",
+        () => {
+          this.set("showChatQuoteSuccess", false);
+        },
+        { once: true }
+      );
+    });
+  }
+
+  _goToChatableUrl() {
+    if (this.chatChannel.chatable_url) {
+      return this.router.transitionTo(this.chatChannel.chatable_url);
+    }
+  }
+
+  _copyQuoteToClipboard(quoteGenerationPromise) {
+    if (!isTesting()) {
+      return clipboardCopyAsync(quoteGenerationPromise)
+        .then(() => {
+          this._showCopyQuoteSuccess();
+        })
+        .catch(popupAjaxError);
+    } else {
+      // clipboard API throws errors in tests
+      return;
+    }
+  }
+
+  async _copyQuoteToComposer(quoteGenerationPromise) {
     let quoteMarkdownBlob, quoteMarkdown;
     try {
       quoteMarkdownBlob = await quoteGenerationPromise();
@@ -88,30 +119,5 @@ export default Component.extend({
         openOpts,
       });
     }
-  },
-
-  _showCopyQuoteSuccess() {
-    this.set("showChatQuoteSuccess", true);
-
-    schedule("afterRender", () => {
-      if (this._selfDeleted) {
-        return;
-      }
-
-      const element = document.querySelector(".chat-selection-message");
-      element.addEventListener(
-        "animationend",
-        () => {
-          this.set("showChatQuoteSuccess", false);
-        },
-        { once: true }
-      );
-    });
-  },
-
-  _goToChatableUrl() {
-    if (this.chatChannel.chatable_url) {
-      return this.router.transitionTo(this.chatChannel.chatable_url);
-    }
-  },
-});
+  }
+}

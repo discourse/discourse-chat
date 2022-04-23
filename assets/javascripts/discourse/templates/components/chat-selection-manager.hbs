@@ -1,0 +1,25 @@
+<div class="chat-selection-management">
+  <div class="chat-selection-management-buttons">
+    {{d-button
+      id="chat-quote-btn"
+      class="btn-secondary"
+      icon="quote-left"
+      label="chat.selection.quote_selection"
+      title="chat.selection.quote_selection"
+      disabled=(not anyMessagesSelected)
+      action=(action "quoteMessages")
+    }}
+    {{d-button
+      icon="times"
+      class="btn-secondary cancel-btn"
+      label="chat.selection.cancel"
+      title="chat.selection.cancel"
+      action=cancelSelecting
+    }}
+  </div>
+  {{#if showChatQuoteSuccess}}
+    <div class="chat-selection-message alert alert-success">
+      {{i18n "chat.quote.copy_success"}}
+    </div>
+  {{/if}}
+</div>

@@ -82,33 +82,10 @@
 
 {{#if expanded}}
   {{#if selectingMessages}}
-    <div class="chat-selection-management">
-      <div class="chat-selection-management-buttons">
-        {{#if canQuote}}
-          {{d-button
-            id="chat-quote-btn"
-            class="btn-secondary"
-            icon="quote-left"
-            label="chat.selection.quote_selection"
-            title="chat.selection.quote_selection"
-            disabled=(not anyMessagesSelected)
-            action=(action "quoteMessages")
-          }}
-        {{/if}}
-        {{d-button
-          icon="times"
-          class="btn-secondary cancel-btn"
-          label="chat.selection.cancel"
-          title="chat.selection.cancel"
-          action=(action "cancelSelecting")
-        }}
-      </div>
-      {{#if showChatQuoteSuccess}}
-        <div class="chat-selection-message alert alert-success">
-          {{i18n "chat.quote.copy_success"}}
-        </div>
-      {{/if}}
-    </div>
+    {{chat-selection-manager
+      selectedMessageIds=selectedMessageIds
+      chatChannel=chatChannel
+      cancelSelecting=(action "cancelSelecting")}}
   {{else}}
     {{chat-composer
       draft=draft

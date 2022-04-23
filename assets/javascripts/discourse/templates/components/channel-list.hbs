@@ -16,7 +16,7 @@
 
     {{#if currentUser.staff}}
       {{dropdown-select-box
-        options=(hash icon="pencil-alt" placementStrategy="absolute")
+        options=(hash icon="cog" placementStrategy="absolute")
         content=channelsActions
         onChange=(action "handleChannelAction")
         class="edit-channels-dropdown"

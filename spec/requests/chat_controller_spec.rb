@@ -9,7 +9,7 @@ RSpec.describe DiscourseChat::ChatController do
   fab!(:category) { Fabricate(:category) }
   fab!(:topic) { Fabricate(:topic, category: category) }
   fab!(:chat_channel) { Fabricate(:chat_channel) }
-  fab!(:dm_chat_channel) { Fabricate(:chat_channel, chatable: Fabricate(:direct_message_channel, users: [user, admin])) }
+  fab!(:dm_chat_channel) { Fabricate(:chat_channel, chatable: Fabricate(:direct_message_channel, users: [user, other_user, admin])) }
   fab!(:tag) { Fabricate(:tag) }
 
   MESSAGE_COUNT = 70
@@ -787,7 +787,7 @@ RSpec.describe DiscourseChat::ChatController do
       expect(notification2.reload.read).to be true
     end
 
-    it "marks all chat_message_email_status records to `processed`" do
+    it "marks all chat_message_email_status records to `processed` for current_user" do
       message1 = DiscourseChat::ChatMessageCreator.create(
         chat_channel: dm_chat_channel,
         user: admin,
@@ -817,6 +817,13 @@ RSpec.describe DiscourseChat::ChatController do
         user
           .chat_message_email_statuses
           .where(chat_message_id: message_ids, status: ChatMessageEmailStatus::STATUSES[:processed])
+          .count
+      ).to eq(2)
+
+      expect(
+        other_user
+          .chat_message_email_statuses
+          .where(chat_message_id: message_ids, status: ChatMessageEmailStatus::STATUSES[:unprocessed])
           .count
       ).to eq(2)
     end
@@ -1031,15 +1038,6 @@ RSpec.describe DiscourseChat::ChatController do
       category.update!(read_restricted: true)
       sign_in(user)
       post "/chat/#{channel.id}/quote.json", params: { message_ids: [message1.id, message2.id, message3.id] }
-      expect(response.status).to eq(403)
-    end
-
-    it "returns a 403 if the channel is a DM channel" do
-      sign_in(user)
-      dm_channel_chatable = Fabricate(:direct_message_channel, users: [user, user2])
-      dm_channel = Fabricate(:chat_channel, chatable: dm_channel_chatable)
-      message1.update!(chat_channel: dm_channel)
-      post "/chat/#{dm_channel.id}/quote.json", params: { message_ids: [message1.id, message2.id, message3.id] }
       expect(response.status).to eq(403)
     end
 

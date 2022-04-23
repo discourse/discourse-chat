@@ -151,6 +151,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
       .joins(:chat_message)
       .where(chat_message: { chat_channel_id: @chat_channel.id })
       .where("chat_message.id <= ?", params[:message_id])
+      .where(user: current_user)
       .update_all(status: ChatMessageEmailStatus::STATUSES[:processed])
 
     chat_mentions = ChatMention
@@ -369,7 +370,6 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
 
     @chat_channel = ChatChannel.find_by(id: params[:chat_channel_id])
     raise Discourse::NotFound if @chat_channel.blank?
-    raise Discourse::InvalidAccess if @chat_channel.direct_message_channel?
     raise Discourse::InvalidAccess if !guardian.can_see_chat_channel?(@chat_channel)
 
     message_ids = params[:message_ids].map(&:to_i)

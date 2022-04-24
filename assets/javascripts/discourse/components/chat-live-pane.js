@@ -935,6 +935,14 @@ export default Component.extend({
         this.set("sendingloading", false);
       });
 
+    this.stageMessage(message, cooked, stagedId, uploads);
+    this._resetAfterSend();
+    this._stickScrollToBottom();
+    this.appEvents.trigger("chat-composer:reply-to-set", null);
+    return Promise.resolve();
+  },
+
+  stageMessage(message, cooked, stagedId, uploads) {
     const stagedMessage = this._prepareSingleMessage(
       // We need to add the user and created at for presentation of staged message
       {
@@ -950,10 +958,6 @@ export default Component.extend({
       this.messages[this.messages.length - 1]
     );
     this.messages.pushObject(stagedMessage);
-    this._resetAfterSend();
-    this._stickScrollToBottom();
-    this.appEvents.trigger("chat-composer:reply-to-set", null);
-    return Promise.resolve();
   },
 
   @action

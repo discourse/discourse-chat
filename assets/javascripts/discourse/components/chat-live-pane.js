@@ -889,7 +889,6 @@ export default Component.extend({
     this._setDraftForChannel(null);
 
     if (this.previewing || this.chatChannel.isDraft) {
-      this.set("loading", true);
 
       return this._upsertChannelWithMessage(
         this.chatChannel,
@@ -899,7 +898,6 @@ export default Component.extend({
         if (this._selfDeleted) {
           return;
         }
-        this.set("loading", false);
         this.set("sendingloading", false);
         this._resetAfterSend();
         this._stickScrollToBottom();

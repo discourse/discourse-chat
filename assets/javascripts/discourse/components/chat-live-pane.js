@@ -942,11 +942,7 @@ export default Component.extend({
     return Promise.resolve();
   },
 
-  stageMessage(message, uploads, cooked = null) {
-    if (!cooked) {
-      cooked = this.cook(message);
-    }
-
+  stageMessage(message, uploads, cooked) {
     const stagedId = this._nextStagedMessageId;
     const stagedMessage = this._prepareSingleMessage(
       // We need to add the user and created at for presentation of staged message
@@ -963,6 +959,7 @@ export default Component.extend({
       this.messages[this.messages.length - 1]
     );
     this.messages.pushObject(stagedMessage);
+    this.notifyPropertyChange("messages");
   },
 
   @action
@@ -987,6 +984,14 @@ export default Component.extend({
     let response;
 
     try {
+      this.incrementProperty("_nextStagedMessageId");
+      if (!this.cook) {
+        const cook = await this.chat.loadCookFunction(this.site.categories);
+        this.set("cook", cook);
+      }
+
+      const cooked = this.cook(message);
+      this.stageMessage(message, uploads, cooked);
       if (channel.isDirectMessageChannel) {
         response = await ajax("/chat/direct_messages/create.json", {
           method: "POST",
@@ -1015,6 +1020,7 @@ export default Component.extend({
       });
     } catch (error) {
       popupAjaxError(error);
+      this._onSendError(this._nextStagedMessageId, error);
     } finally {
       if (this.isDestroyed || this.isDestroying) {
         return;

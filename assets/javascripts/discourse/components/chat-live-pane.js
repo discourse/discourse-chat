@@ -957,7 +957,6 @@ export default Component.extend({
       this.messages[this.messages.length - 1]
     );
     this.messages.pushObject(stagedMessage);
-    this.notifyPropertyChange("messages");
   },
 
   @action

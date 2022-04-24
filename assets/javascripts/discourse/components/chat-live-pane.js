@@ -1017,7 +1017,8 @@ export default Component.extend({
       });
     } catch (error) {
       popupAjaxError(error);
-      this._onSendError(this._nextStagedMessageId, error);
+      // because we're dealing with a single message
+      this.messages.clear();
     } finally {
       if (this.isDestroyed || this.isDestroying) {
         return;

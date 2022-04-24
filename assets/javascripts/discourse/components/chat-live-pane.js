@@ -906,7 +906,7 @@ export default Component.extend({
       });
     }
 
-    this.set("_nextStagedMessageId", this._nextStagedMessageId + 1);
+    this.incrementProperty("_nextStagedMessageId");
     const cooked = this.cook(message);
     const stagedId = this._nextStagedMessageId;
     let data = {

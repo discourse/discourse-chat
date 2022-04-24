@@ -889,7 +889,6 @@ export default Component.extend({
     this._setDraftForChannel(null);
 
     if (this.previewing || this.chatChannel.isDraft) {
-
       return this._upsertChannelWithMessage(
         this.chatChannel,
         message,

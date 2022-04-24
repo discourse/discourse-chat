@@ -935,14 +935,19 @@ export default Component.extend({
         this.set("sendingloading", false);
       });
 
-    this.stageMessage(message, cooked, stagedId, uploads);
+    this.stageMessage(message, uploads, cooked);
     this._resetAfterSend();
     this._stickScrollToBottom();
     this.appEvents.trigger("chat-composer:reply-to-set", null);
     return Promise.resolve();
   },
 
-  stageMessage(message, cooked, stagedId, uploads) {
+  stageMessage(message, uploads, cooked = null) {
+    if (!cooked) {
+      cooked = this.cook(message);
+    }
+
+    const stagedId = this._nextStagedMessageId;
     const stagedMessage = this._prepareSingleMessage(
       // We need to add the user and created at for presentation of staged message
       {

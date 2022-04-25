@@ -128,10 +128,7 @@ export default Component.extend({
       cancel(this.stickyScrollTimer);
       this.stickyScrollTimer = null;
     }
-    if (this.registeredChatChannelId) {
-      this.messageBus.unsubscribe(`/chat/${this.registeredChatChannelId}`);
-      this.set("registeredChatChannelId", null);
-    }
+    this._cleanRegisteredChatChannelId();
     this._unloadedReplyIds = null;
     this.appEvents.off(
       "chat:cancel-message-selection",
@@ -145,13 +142,9 @@ export default Component.extend({
 
     this.set("targetMessageId", this.chat.messageId);
     if (this.registeredChatChannelId !== this.chatChannel.id) {
-      if (this.registeredChatChannelId) {
-        this.messageBus.unsubscribe(`/chat/${this.registeredChatChannelId}`);
-        this.messages.clear();
-      }
+      this._cleanRegisteredChatChannelId();
 
       this.messageLookup = {};
-      this.set("registeredChatChannelId", null);
       this.set("allPastMessagesLoaded", false);
       this.cancelEditing();
 
@@ -329,9 +322,7 @@ export default Component.extend({
     });
 
     this.setCanLoadMoreDetails(messages.resultSetMeta);
-    this.messageBus.subscribe(`/chat/${this.chatChannel.id}`, (busData) => {
-      this.handleMessage(busData);
-    });
+    this._subscribeToUpdates(this.chatChannel.id);
   },
 
   _prepareMessages(messages) {
@@ -1048,6 +1039,14 @@ export default Component.extend({
       });
   },
 
+  _cleanRegisteredChatChannelId() {
+    if (this.registeredChatChannelId) {
+      this._unsubscribeToUpdates(this.registeredChatChannelId);
+      this.messages.clear();
+      this.set("registeredChatChannelId", null);
+    }
+  },
+
   _resetAfterSend() {
     if (this._selfDeleted) {
       return;
@@ -1389,6 +1388,17 @@ export default Component.extend({
   @afterRender
   _focusComposer() {
     this.appEvents.trigger("chat:focus-composer");
+  },
+
+  _unsubscribeToUpdates(channelId) {
+    this.messageBus.unsubscribe(`/chat/${channelId}`);
+  },
+
+  _subscribeToUpdates(channelId) {
+    this._unsubscribeToUpdates(channelId);
+    this.messageBus.subscribe(`/chat/${channelId}`, (busData) => {
+      this.handleMessage(busData);
+    });
   },
 });
 

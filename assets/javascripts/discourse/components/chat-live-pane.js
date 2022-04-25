@@ -992,11 +992,12 @@ export default Component.extend({
             message,
             upload_ids: (uploads || []).mapBy("id"),
           },
-        }).then(() =>
+        }).then(() => {
+          this.chat.forceRefreshChannels();
           this.onSwitchChannel(ChatChannel.create(c), {
             replace: true,
-          })
-        )
+          });
+        })
       )
       .finally(() => {
         if (this.isDestroyed || this.isDestroying) {

@@ -59,6 +59,7 @@ export default Component.extend({
   allPastMessagesLoaded: false,
   previewing: false,
   sendingloading: false,
+  creatingChannel: false,
   selectingMessages: false,
   stickyScroll: true,
   stickyScrollTimer: null,
@@ -980,6 +981,7 @@ export default Component.extend({
     let response;
 
     try {
+      this.set("creatingChannel", true);
       this.incrementProperty("_nextStagedMessageId");
       if (!this.cook) {
         const cook = await this.chat.loadCookFunction(this.site.categories);
@@ -1023,6 +1025,7 @@ export default Component.extend({
         return;
       }
 
+      this.set("creatingChannel", false);
       this.set("previewing", false);
     }
   },
@@ -1126,9 +1129,9 @@ export default Component.extend({
     this._focusComposer();
   },
 
-  @discourseComputed("details.user_silenced")
-  canInteractWithChat(userSilenced) {
-    return !userSilenced;
+  @discourseComputed("details.user_silenced", "creatingChannel")
+  canInteractWithChat(userSilenced, creatingChannel) {
+    return !userSilenced && !creatingChannel;
   },
 
   @discourseComputed("messages.@each.selected")

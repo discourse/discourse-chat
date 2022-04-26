@@ -4,13 +4,13 @@ import discourseComputed from "discourse-common/utils/decorators";
 import showModal from "discourse/lib/show-modal";
 import { action, computed } from "@ember/object";
 import { inject as service } from "@ember/service";
-import { empty } from "@ember/object/computed";
+import { empty, reads } from "@ember/object/computed";
 import I18n from "I18n";
 
 export default Component.extend({
   tagName: "",
-  publicChannels: null,
-  directMessageChannels: null,
+  publicChannels: reads("chat.publicChannels.[]"),
+  directMessageChannels: reads("chat.directMessageChannels.[]"),
   inSidebar: false,
   toggleSection: null,
   publicChannelsEmpty: empty("publicChannels"),

@@ -2,12 +2,9 @@ import Component from "@ember/component";
 import { action } from "@ember/object";
 import { inject as service } from "@ember/service";
 import { withPluginApi } from "discourse/lib/plugin-api";
-import { reads } from "@ember/object/computed";
 
 export default Component.extend({
   tagName: "",
-  publicChannels: reads("chat.publicChannels.[]"),
-  directMessageChannels: reads("chat.directMessageChannels.[]"),
   toggleSection: null,
   chat: service(),
   router: service(),

@@ -326,10 +326,8 @@ export default Component.extend({
   @action
   fetchChannels() {
     this.set("loading", true);
-    this.chat.getChannels().then((channels) => {
+    this.chat.getChannels().then(() => {
       this.setProperties({
-        publicChannels: channels.publicChannels,
-        directMessageChannels: channels.directMessageChannels,
         activeChannel: null,
         loading: false,
         expanded: true,

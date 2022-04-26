@@ -60,19 +60,15 @@ class ChatMessage < ActiveRecord::Base
   end
 
   def excerpt
-    PrettyText.excerpt(cooked_for_excerpt, 50, {})
-  end
-
-  def cooked_for_excerpt
-    (cooked.blank? && uploads.present?) ? "<p>#{uploads.first.original_filename}</p>" : cooked
+    prettify = cooked
+    if (cooked == "" && uploads.present?)
+      prettify = uploads.first.original_filename
+    end
+    PrettyText.excerpt(prettify, 50, {})
   end
 
   def push_notification_excerpt
     Emoji.gsub_emoji_to_unicode(message).truncate(400)
-  end
-
-  def message_url
-    "#{Discourse.base_url}/chat/message/#{self.id}"
   end
 
   def add_flag(user)

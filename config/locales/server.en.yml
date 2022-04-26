@@ -117,7 +117,6 @@ en:
         one: "[%{email_prefix}] New chat message"
         other: "[%{email_prefix}] New chat messages"
       unsubscribe: "This chat summary is sent from %{site_link} when you are away. Change your %{email_preferences_link}, or %{unsubscribe_link} to unsubscribe."
-      view_message: "View message"
       view_messages:
         one: "View message"
         other: "View %{count} messages"

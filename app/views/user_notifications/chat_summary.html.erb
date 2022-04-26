@@ -39,20 +39,19 @@
             </td>
             <td style="width:99%;margin:0;padding:<%= rtl? ? '0 2em 0 0' : '0 0 0 2em' %>;vertical-align:top;">
               <%= email_excerpt(status.chat_message.cooked_for_excerpt) %>
-              <a href="<%= status.chat_message.message_url %>" style="padding:0 0 1em 0;">
-                <%= I18n.t("user_notifications.chat_summary.view_message") %>
-              </a>
             </td>
           </tr>
         <%- end %>
         <tr>
-          <%- if moreCount > 0 %>
-            <td colspan="100%" style="padding:<%= rtl? ? '2em 2em 0 0' : '2em 0 0 2em' %>">
-              <a href="<%=chat_channel.url%>">
+          <td colspan="100%" style="padding:<%= rtl? ? '2em 2em 0 0' : '2em 0 0 2em' %>">
+            <a href="<%=chat_channel.url%>">
+              <%- if moreCount == 0 %>
+                <%= I18n.t("user_notifications.chat_summary.view_messages", count: email_statuses.count)%>
+              <%- else %>
                 <%= I18n.t("user_notifications.chat_summary.view_more", count: moreCount)%>
-              </a>
-            <td>
-          <%- end %>
+              <%- end %>
+            </a>
+          </td>
         </tr>
       </tbody>
     </table>

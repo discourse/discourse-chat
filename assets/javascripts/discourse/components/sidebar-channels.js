@@ -2,11 +2,12 @@ import Component from "@ember/component";
 import { action } from "@ember/object";
 import { inject as service } from "@ember/service";
 import { withPluginApi } from "discourse/lib/plugin-api";
+import { reads } from "@ember/object/computed";
 
 export default Component.extend({
   tagName: "",
-  publicChannels: null,
-  directMessageChannels: null,
+  publicChannels: reads("chat.publicChannels.[]"),
+  directMessageChannels: reads("chat.directMessageChannels.[]"),
   toggleSection: null,
   chat: service(),
   router: service(),
@@ -48,12 +49,8 @@ export default Component.extend({
 
   @action
   fetchChannels() {
-    this.chat.getChannels().then((channels) => {
-      this.setProperties({
-        publicChannels: channels.publicChannels,
-        directMessageChannels: channels.directMessageChannels,
-        fetchedChannels: true,
-      });
+    this.chat.getChannels().then(() => {
+      this.set("fetchedChannels", true);
     });
   },
 

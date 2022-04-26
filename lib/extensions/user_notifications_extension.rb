@@ -2,12 +2,6 @@
 
 module DiscourseChat::UserNotificationsExtension
   def chat_summary(user, opts)
-    puts '############'
-    puts '############'
-    puts '############'
-    puts @email_statuses.any?
-    puts '############'
-    puts '############'
     @email_statuses = ChatMessageEmailStatus
       .includes(chat_message: [:chat_channel, :user])
       .where(user: user, status: ChatMessageEmailStatus::STATUSES[:unprocessed])

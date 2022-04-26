@@ -11,11 +11,6 @@ class DiscourseChat::ChatMailer
   def mail_notifications
     while users.exists?
       users.limit(100).each do |user|
-        puts "$$$$$$$$$$$$$$"
-        puts "$$$$$$$$$$$$$$"
-        puts user.inspect
-        puts "$$$$$$$$$$$$$$"
-        puts "$$$$$$$$$$$$$$"
         Jobs.enqueue(:user_email,
                      type: "chat_summary",
                      user_id: user.id,

@@ -879,6 +879,13 @@ export default Component.extend({
     this.set("sendingloading", true);
     this._setDraftForChannel(null);
 
+    // TODO: all send message logic is due for massive refactoring
+    // This is all the possible case Im currently aware of
+    // - answering to a public channel where you are not a member yet (preview = true)
+    // - answering to an existing direct channel you were not tracking yet through dm creator (channel draft)
+    // - answering to a new direct channel through DM creator (channel draft)
+    // - answer to a direct channel you were tracking (preview = false, not draft)
+    // - answer to a public channel you were tracking (preview = false, not draft)
     if (this.previewing || this.chatChannel.isDraft) {
       this.set("loading", true);
 
@@ -965,26 +972,22 @@ export default Component.extend({
     });
   },
 
-  _upsertChannelWithMessage(channel, message, uploads) {
+  async _upsertChannelWithMessage(channel, message, uploads) {
     let promise;
 
     if (channel.isDirectMessageChannel) {
       promise = ajax("/chat/direct_messages/create.json", {
         method: "POST",
         data: { usernames: channel.chatable.users.mapBy("username") },
-      });
+      }).then((response) => ChatChannel.create(response.chat_channel));
     } else {
       promise = ajax(`/chat/chat_channels/${channel.id}/follow`, {
         method: "POST",
-      });
+      }).then(() => channel);
     }
 
     return promise
-      .then((response) =>
-        this.chat.startTrackingChannel(
-          ChatChannel.create(response.chat_channel)
-        )
-      )
+      .then((c) => this.chat.startTrackingChannel(c))
       .then((c) =>
         ajax(`/chat/${c.id}.json`, {
           type: "POST",

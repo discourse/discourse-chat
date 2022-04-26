@@ -881,11 +881,11 @@ export default Component.extend({
 
     // TODO: all send message logic is due for massive refactoring
     // This is all the possible case Im currently aware of
-    // - answering to a public channel where you are not a member yet (preview = true)
-    // - answering to an existing direct channel you were not tracking yet through dm creator (channel draft)
-    // - answering to a new direct channel through DM creator (channel draft)
-    // - answer to a direct channel you were tracking (preview = false, not draft)
-    // - answer to a public channel you were tracking (preview = false, not draft)
+    // - messaging to a public channel where you are not a member yet (preview = true)
+    // - messaging to an existing direct channel you were not tracking yet through dm creator (channel draft)
+    // - messaging to a new direct channel through DM creator (channel draft)
+    // - message to a direct channel you were tracking (preview = false, not draft)
+    // - message to a public channel you were tracking (preview = false, not draft)
     if (this.previewing || this.chatChannel.isDraft) {
       this.set("loading", true);
 

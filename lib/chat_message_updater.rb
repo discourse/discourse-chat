@@ -31,11 +31,7 @@ class DiscourseChat::ChatMessageUpdater
       revision = save_revision!
       ChatPublisher.publish_edit!(@chat_channel, @chat_message)
       Jobs.enqueue(:process_chat_message, { chat_message_id: @chat_message.id })
-      mentioned_users_with_identifier = DiscourseChat::ChatNotifier.notify_edit(
-        chat_message: @chat_message,
-        timestamp: revision.created_at
-      )
-      update_email_statuses(mentioned_users_with_identifier)
+      DiscourseChat::ChatNotifier.notify_edit(chat_message: @chat_message, timestamp: revision.created_at)
     rescue => error
       @error = error
     end
@@ -85,13 +81,5 @@ class DiscourseChat::ChatMessageUpdater
 
   def save_revision!
     @chat_message.revisions.create!(old_message: @old_message_content, new_message: @chat_message.message)
-  end
-
-  def update_email_statuses(mentioned_users_with_identifier)
-    ChatMessageEmailStatus.message_edited(
-      chat_channel: @chat_channel,
-      chat_message: @chat_message,
-      mentioned_users_with_identifier: mentioned_users_with_identifier
-    )
   end
 end

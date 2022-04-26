@@ -59,18 +59,4 @@
   }}
 </div>
 
-<div class="control-group chat-setting controls-dropdown">
-  <label for="user_chat_email_frequency">{{i18n "chat.email_frequency.title"}}</label>
-  {{combo-box
-    valueProperty="value"
-    content=emailFrequencyOptions
-    value=model.user_option.chat_email_frequency
-    id="user_chat_email_frequency"
-    onChange=(action (mut model.user_option.chat_email_frequency))
-  }}
-  {{#if (eq model.user_option.chat_email_frequency "when_away")}}
-    <div class="control-instructions">{{i18n "chat.email_frequency.description"}}</div>
-  {{/if}}
-</div>
-
 {{save-controls id="user_chat_preference_save" model=model action=(action "save") saved=saved}}

@@ -81,7 +81,6 @@ after_initialize do
   load File.expand_path('../app/models/incoming_chat_webhook.rb', __FILE__)
   load File.expand_path('../app/models/reviewable_chat_message.rb', __FILE__)
   load File.expand_path('../app/models/chat_view.rb', __FILE__)
-  load File.expand_path('../app/models/chat_message_email_status.rb', __FILE__)
   load File.expand_path('../app/serializers/chat_webhook_event_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/chat_in_reply_to_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/chat_message_serializer.rb', __FILE__)
@@ -96,7 +95,6 @@ after_initialize do
   load File.expand_path('../app/serializers/user_chat_channel_membership_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/reviewable_chat_message_serializer.rb', __FILE__)
   load File.expand_path('../lib/chat_channel_fetcher.rb', __FILE__)
-  load File.expand_path('../lib/chat_mailer.rb', __FILE__)
   load File.expand_path('../lib/chat_message_creator.rb', __FILE__)
   load File.expand_path('../lib/chat_message_processor.rb', __FILE__)
   load File.expand_path('../lib/chat_message_updater.rb', __FILE__)
@@ -110,8 +108,6 @@ after_initialize do
   load File.expand_path('../lib/guardian_extensions.rb', __FILE__)
   load File.expand_path('../lib/extensions/topic_view_serializer_extension.rb', __FILE__)
   load File.expand_path('../lib/extensions/detailed_tag_serializer_extension.rb', __FILE__)
-  load File.expand_path('../lib/extensions/user_option_extension.rb', __FILE__)
-  load File.expand_path('../lib/extensions/user_notifications_extension.rb', __FILE__)
   load File.expand_path('../lib/slack_compatibility.rb', __FILE__)
   load File.expand_path('../lib/post_notification_handler.rb', __FILE__)
   load File.expand_path('../app/jobs/regular/process_chat_message.rb', __FILE__)
@@ -121,10 +117,7 @@ after_initialize do
   load File.expand_path('../app/jobs/regular/notify_users_watching_chat.rb', __FILE__)
   load File.expand_path('../app/jobs/scheduled/delete_old_chat_messages.rb', __FILE__)
   load File.expand_path('../app/jobs/scheduled/update_user_counts_for_chat_channels.rb', __FILE__)
-  load File.expand_path('../app/jobs/scheduled/email_chat_notifications.rb', __FILE__)
   load File.expand_path('../app/services/chat_publisher.rb', __FILE__)
-
-  UserNotifications.prepend_view_path("#{File.dirname(__FILE__)}/app/views")
 
   register_topic_custom_field_type(DiscourseChat::HAS_CHAT_ENABLED, :boolean)
   register_category_custom_field_type(DiscourseChat::HAS_CHAT_ENABLED, :boolean)
@@ -134,7 +127,6 @@ after_initialize do
   UserUpdater::OPTION_ATTR.push(:only_chat_push_notifications)
   UserUpdater::OPTION_ATTR.push(:chat_sound)
   UserUpdater::OPTION_ATTR.push(:ignore_channel_wide_mention)
-  UserUpdater::OPTION_ATTR.push(:chat_email_frequency)
 
   register_reviewable_type ReviewableChatMessage
 
@@ -153,8 +145,6 @@ after_initialize do
     Guardian.class_eval { include DiscourseChat::GuardianExtensions }
     TopicViewSerializer.class_eval { prepend DiscourseChat::TopicViewSerializerExtension }
     DetailedTagSerializer.class_eval { prepend DiscourseChat::DetailedTagSerializerExtension }
-    UserNotifications.class_eval { prepend DiscourseChat::UserNotificationsExtension }
-    UserOption.class_eval { prepend DiscourseChat::UserOptionExtension }
     Topic.class_eval {
       has_one :chat_channel, as: :chatable
     }
@@ -165,7 +155,6 @@ after_initialize do
       has_many :user_chat_channel_memberships, dependent: :destroy
       has_many :chat_message_reactions, dependent: :destroy
       has_many :chat_mentions
-      has_many :chat_message_email_statuses, dependent: :destroy
     }
   end
 
@@ -303,10 +292,6 @@ after_initialize do
 
   add_to_serializer(:user_option, :ignore_channel_wide_mention) do
     object.ignore_channel_wide_mention
-  end
-
-  add_to_serializer(:user_option, :chat_email_frequency) do
-    object.chat_email_frequency
   end
 
   RETENTION_SETTINGS_TO_USER_OPTION_FIELDS = {

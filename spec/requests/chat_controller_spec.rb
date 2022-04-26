@@ -567,20 +567,6 @@ RSpec.describe DiscourseChat::ChatController do
         expect(response.status).to eq(200)
       end
     end
-
-    it "marks chat_message_email_statuses as `processed`" do
-      sign_in(admin)
-      message = DiscourseChat::ChatMessageCreator.create(
-        chat_channel: dm_chat_channel,
-        user: admin,
-        content: "hi there"
-      ).chat_message
-
-      email_status_record = user.chat_message_email_statuses.find_by(chat_message_id: message.id)
-        expect {
-          delete "/chat/#{dm_chat_channel.id}/#{message.id}.json"
-        }.to change { email_status_record.reload.status }.to("processed")
-    end
   end
 
   RSpec.shared_examples "chat_message_restoration" do
@@ -680,40 +666,6 @@ RSpec.describe DiscourseChat::ChatController do
         let(:other_user) { second_user }
       end
     end
-
-    it "marks chat_message_email_status records as `unprocessed` if user hasn't read the restored message" do
-      sign_in(admin)
-      message = DiscourseChat::ChatMessageCreator.create(
-        chat_channel: dm_chat_channel,
-        user: admin,
-        content: "hi there"
-      ).chat_message
-
-      UserChatChannelMembership.create!(user: user, chat_channel: dm_chat_channel, last_read_message_id: nil)
-      email_status_record = user.chat_message_email_statuses.find_by(chat_message_id: message.id)
-      email_status_record.update!(status: ChatMessageEmailStatus::STATUSES[:processed])
-
-      expect {
-        put "/chat/#{dm_chat_channel.id}/restore/#{message.id}.json"
-      }.to change { email_status_record.reload.status }.to("unprocessed")
-    end
-
-    it "doesn't mark chat_message_email_status records as `unprocessed` if user already read restored message" do
-      sign_in(admin)
-      message = DiscourseChat::ChatMessageCreator.create(
-        chat_channel: dm_chat_channel,
-        user: admin,
-        content: "hi there"
-      ).chat_message
-
-      UserChatChannelMembership.create!(user: user, chat_channel: dm_chat_channel, last_read_message_id: message.id)
-      email_status_record = user.chat_message_email_statuses.find_by(chat_message_id: message.id)
-      email_status_record.update!(status: ChatMessageEmailStatus::STATUSES[:processed])
-
-      expect {
-        put "/chat/#{dm_chat_channel.id}/restore/#{message.id}.json"
-      }.not_to change { email_status_record.reload.status }
-    end
   end
 
   describe "#update_user_last_read" do
@@ -785,47 +737,6 @@ RSpec.describe DiscourseChat::ChatController do
       expect(response.status).to eq(200)
       expect(notification1.reload.read).to be true
       expect(notification2.reload.read).to be true
-    end
-
-    it "marks all chat_message_email_status records to `processed` for current_user" do
-      message1 = DiscourseChat::ChatMessageCreator.create(
-        chat_channel: dm_chat_channel,
-        user: admin,
-        content: "hi there"
-      ).chat_message
-      message2 = DiscourseChat::ChatMessageCreator.create(
-        chat_channel: dm_chat_channel,
-        user: admin,
-        content: "hi there again"
-      ).chat_message
-      message_ids = [message1.id, message2.id]
-      expect(
-        user
-          .chat_message_email_statuses
-          .where(chat_message_id: message_ids, status: ChatMessageEmailStatus::STATUSES[:unprocessed])
-          .count
-      ).to eq(2)
-
-      put "/chat/#{dm_chat_channel.id}/read/#{message2.id}.json"
-      expect(
-        user
-          .chat_message_email_statuses
-          .where(chat_message_id: message_ids, status: ChatMessageEmailStatus::STATUSES[:unprocessed])
-          .count
-      ).to eq(0)
-      expect(
-        user
-          .chat_message_email_statuses
-          .where(chat_message_id: message_ids, status: ChatMessageEmailStatus::STATUSES[:processed])
-          .count
-      ).to eq(2)
-
-      expect(
-        other_user
-          .chat_message_email_statuses
-          .where(chat_message_id: message_ids, status: ChatMessageEmailStatus::STATUSES[:unprocessed])
-          .count
-      ).to eq(2)
     end
   end
 

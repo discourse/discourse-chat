@@ -48,10 +48,3 @@ Fabricator(:user_chat_channel_membership_for_dm, from: :user_chat_channel_member
   desktop_notification_level 2
   mobile_notification_level 2
 end
-
-Fabricator(:chat_message_email_status) do
-  user
-  chat_message
-  status { ChatMessageEmailStatus::STATUSES[:unprocessed] }
-  type { ChatMessageEmailStatus::TYPES[:regular] }
-end

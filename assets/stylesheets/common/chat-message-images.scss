@@ -2,7 +2,6 @@ $max_image_height: 150px;
 
 .chat-message {
   aside.onebox {
-    width: max-content;
     max-width: -moz-fit-content;
     max-width: fit-content;
   }

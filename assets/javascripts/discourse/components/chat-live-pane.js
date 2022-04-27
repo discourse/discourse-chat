@@ -100,6 +100,11 @@ export default Component.extend({
       this,
       "highlightOrFetchMessage"
     );
+    this.appEvents.on(
+      "chat:toggle-select-mode",
+      this,
+      "onStartSelectingMessages"
+    );
 
     this._scrollerEl = this.element.querySelector(".chat-messages-scroll");
     this._scrollerEl.addEventListener(
@@ -122,6 +127,11 @@ export default Component.extend({
       "highlightOrFetchMessage"
     );
     this._stopLastReadRunner();
+    this.appEvents.off(
+      "chat:toggle-select-mode",
+      this,
+      "onStartSelectingMessages"
+    );
 
     // don't need to removeEventListener from scroller as the DOM element goes away
     if (this.stickyScrollTimer) {

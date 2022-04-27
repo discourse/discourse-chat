@@ -51,6 +51,10 @@ export default {
       appEvents.trigger("chat:open-insert-link-modal", { event });
     };
 
+    const toggleSelectMode = (event) => {
+      appEvents.trigger("chat:toggle-select-mode", { event });
+    };
+
     withPluginApi("0.12.1", (api) => {
       const mac = /Mac|iPod|iPhone|iPad/.test(navigator.platform);
       const mod = mac ? "meta" : "ctrl";
@@ -81,6 +85,9 @@ export default {
       });
 
       api.addKeyboardShortcut("alt+down", handleMoveDownShortcut, {
+        global: true,
+      });
+      api.addKeyboardShortcut(`${mod}+shift+s`, toggleSelectMode, {
         global: true,
       });
       api.addKeyboardShortcut(

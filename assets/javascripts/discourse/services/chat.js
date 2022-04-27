@@ -7,6 +7,7 @@ import { ajax } from "discourse/lib/ajax";
 import { A } from "@ember/array";
 import { generateCookFunction } from "discourse/lib/text";
 import { next } from "@ember/runloop";
+import { computed } from "@ember/object";
 import { Promise } from "rsvp";
 import ChatChannel, {
   CHANNEL_STATUSES,
@@ -53,10 +54,6 @@ export default Service.extend({
 
   init() {
     this._super(...arguments);
-    this.set(
-      "userCanChat",
-      this.currentUser?.has_chat_enabled && this.siteSettings.chat_enabled
-    );
 
     if (this.userCanChat) {
       this.set("allChannels", []);
@@ -75,6 +72,11 @@ export default Service.extend({
     }
   },
 
+  @computed("currentUser.has_chat_enabled", "siteSettings.chat_enabled")
+  get userCanChat() {
+    return this.currentUser?.has_chat_enabled && this.siteSettings.chat_enabled;
+  },
+
   willDestroy() {
     this._super(...arguments);
 
@@ -88,13 +90,16 @@ export default Service.extend({
     }
   },
 
+  @computed("router.currentRouteName")
   get isChatPage() {
     return (
       this.router.currentRouteName === "chat" ||
-      this.router.currentRouteName === "chat.channel"
+      this.router.currentRouteName === "chat.channel" ||
+      this.router.currentRouteName === "chat.loading"
     );
   },
 
+  @computed("router.currentRouteName")
   get isBrowsePage() {
     return this.router.currentRouteName === "chat.browse";
   },

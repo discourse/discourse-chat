@@ -82,6 +82,9 @@ en:
         open: "Open"
       archive:
         first_post_raw: "This topic is an archive of the [%{channel_name}](%{channel_url}) chat channel."
+      messages_moved:
+        one: "@%{acting_username} moved a message to the [%{channel_name}](%{first_moved_message_url}) channel."
+        other: "@%{acting_username} moved %{count} messages to the [%{channel_name}](%{first_moved_message_url}) channel."
 
     personal_chat: "personal chat"
 

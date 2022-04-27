@@ -103,6 +103,7 @@ after_initialize do
   load File.expand_path('../lib/chat_notifier.rb', __FILE__)
   load File.expand_path('../lib/chat_seeder.rb', __FILE__)
   load File.expand_path('../lib/chat_transcript_service.rb', __FILE__)
+  load File.expand_path('../lib/chat_message_move_service.rb', __FILE__)
   load File.expand_path('../lib/chat_channel_archive_service.rb', __FILE__)
   load File.expand_path('../lib/direct_message_channel_creator.rb', __FILE__)
   load File.expand_path('../lib/guardian_extensions.rb', __FILE__)
@@ -405,6 +406,7 @@ after_initialize do
     put '/:chat_channel_id/:message_id/rebake' => 'chat#rebake'
     post '/:chat_channel_id/:message_id/flag' => 'chat#flag'
     post '/:chat_channel_id/quote' => 'chat#quote_messages'
+    put '/:chat_channel_id/move_messages_to_channel' => 'chat#move_messages_to_channel'
     put '/:chat_channel_id/restore/:message_id' => 'chat#restore'
     get '/lookup/:message_id' => 'chat#lookup_message'
     put '/:chat_channel_id/read/:message_id' => 'chat#update_user_last_read'

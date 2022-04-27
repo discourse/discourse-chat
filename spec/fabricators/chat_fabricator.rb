@@ -14,6 +14,29 @@ Fabricator(:chat_message) do
   cooked_version ChatMessage::BAKED_VERSION
 end
 
+Fabricator(:chat_mention) do
+  chat_message { Fabricate(:chat_message) }
+  user { Fabricate(:user) }
+  notification { Fabricate(:notification) }
+end
+
+Fabricator(:chat_message_reaction) do
+  chat_message { Fabricate(:chat_message) }
+  user { Fabricate(:user) }
+  emoji { ["+1", "tada", "heart", "joffrey_facepalm"].sample }
+end
+
+Fabricator(:chat_upload) do
+  chat_message { Fabricate(:chat_message) }
+  upload { Fabricate(:upload) }
+end
+
+Fabricator(:chat_message_revision) do
+  chat_message { Fabricate(:chat_message) }
+  old_message { "something old" }
+  new_message { "something new" }
+end
+
 Fabricator(:reviewable_chat_message) do
   reviewable_by_moderator true
   type 'ReviewableChatMessage'
@@ -27,6 +50,11 @@ end
 
 Fabricator(:direct_message_channel) do
   users
+end
+
+Fabricator(:chat_webhook_event) do
+  chat_message { Fabricate(:chat_message) }
+  incoming_chat_webhook { |attrs| Fabricate(:incoming_chat_webhook, chat_channel: attrs[:chat_message].chat_channel) }
 end
 
 Fabricator(:incoming_chat_webhook) do

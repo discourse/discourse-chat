@@ -23,6 +23,12 @@ en:
       cancel_reply: "Cancel reply"
       chat_channels: "Channels"
       leave: "Leave channel"
+      move_to_channel:
+        title: "Move messages to channel"
+        instructions:
+          one: "You are moving <strong>1</strong> message. Select a destination channel. A placeholder message will be created in the <strong>%{channelTitle}</strong> channel to indicate that this message has been moved."
+          other: "You are moving <strong>%{count}</strong> messages. Select a destination channel. A placeholder message will be created in the <strong>%{channelTitle}</strong> channel to indicate that these messages have been moved."
+        confirm_move: "Move Messages"
       channel_settings:
         title: "Channel settings"
         close_channel: "Close Channel..."
@@ -31,7 +37,7 @@ en:
         delete_channel: "Delete Channel..."
       channel_archive:
         title: "Archive Channel"
-        instructions: "<p>Archiving a channel puts it into read-only mode and moves all messages from the channel into a new or existing topic. No new messages can be sent, and no existing messages can be edited or deleted.</p><p>Are you sure you want to archive the <strong>#%{channelTitle}</strong> channel?</p>"
+        instructions: "<p>Archiving a channel puts it into read-only mode and moves all messages from the channel into a new or existing topic. No new messages can be sent, and no existing messages can be edited or deleted.</p><p>Are you sure you want to archive the <strong>%{channelTitle}</strong> channel?</p>"
         process_started: "Archiving process has started. This modal will close shortly, and you will receive a personal message when the archive process is complete."
         retry: "Retry"
       channel_open:
@@ -247,6 +253,7 @@ en:
       selection:
         cancel: "Cancel"
         quote_selection: "Quote in Topic"
+        move_selection_to_channel: "Move to Channel"
         error: "There was an error moving the chat messages"
         title: "Move Chat to Topic"
         new_topic:

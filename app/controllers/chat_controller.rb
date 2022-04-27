@@ -340,6 +340,30 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     render json: success_json.merge(markdown: markdown)
   end
 
+  def move_messages_to_channel
+    params.require(:message_ids)
+    params.require(:destination_channel_id)
+
+    @chat_channel = ChatChannel.find_by(id: params[:chat_channel_id])
+    raise Discourse::NotFound if @chat_channel.blank?
+    raise Discourse::InvalidAccess if !guardian.can_see_chat_channel?(@chat_channel)
+
+    @destination_channel = ChatChannel.find_by(id: params[:destination_channel_id])
+    raise Discourse::NotFound if @destination_channel.blank?
+    raise Discourse::InvalidAccess if !guardian.can_see_chat_channel?(@destination_channel)
+
+    message_ids = params[:message_ids].map(&:to_i)
+    moved_messages = ChatMessageMoveService.new(
+      acting_user: current_user, source_channel: @chat_channel, message_ids: message_ids
+    ).move_to_channel(@destination_channel)
+
+    render json: success_json.merge(
+      destination_channel_id: @destination_channel.id,
+      destination_channel_title: @destination_channel.name,
+      first_moved_message_id: moved_messages.first.id
+    )
+  end
+
   def flag
     params.require([:chat_message_id])
     chat_message = ChatMessage

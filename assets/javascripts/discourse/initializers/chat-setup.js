@@ -78,14 +78,6 @@ export default {
       );
 
       api.addToHeaderIcons("header-chat-link");
-
-      // TODO: drop this once sidebar
-      // is not using widgets anymore
-      api.onPageChange(() => {
-        api.container
-          .lookup("service:appEvents")
-          .trigger("chat:rerender-header");
-      });
     });
   },
 

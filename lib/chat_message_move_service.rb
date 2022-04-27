@@ -17,6 +17,9 @@
 # notifications, revisions, mentions, uploads) will be updated to the new
 # message IDs via a moved_chat_messages temporary table.
 class ChatMessageMoveService
+  class NoMessagesFound < StandardError; end
+  class InvalidChannel < StandardError; end
+
   def initialize(acting_user:, source_channel:, message_ids:)
     @source_channel = source_channel
     @acting_user = acting_user
@@ -26,6 +29,14 @@ class ChatMessageMoveService
   end
 
   def move_to_channel(destination_channel)
+    if !@source_channel.public_channel? || !destination_channel.public_channel?
+      raise InvalidChannel.new(I18n.t("chat.errors.message_move_invalid_channel"))
+    end
+
+    if @ordered_source_message_ids.empty?
+      raise NoMessagesFound.new(I18n.t("chat.errors.message_move_no_messages_found"))
+    end
+
     moved_messages = nil
 
     ChatMessage.transaction do

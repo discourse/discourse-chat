@@ -28,6 +28,31 @@ describe ChatMessageMoveService do
       subject.move_to_channel(destination_channel)
     end
 
+    it "raises an error if either the source or destination channels are not public (they cannot be DM channels)" do
+      expect {
+        described_class.new(
+          acting_user: acting_user,
+          source_channel: Fabricate(:chat_channel, chatable: Fabricate(:direct_message_channel)),
+          message_ids: move_message_ids
+        ).move_to_channel(destination_channel)
+      }.to raise_error(ChatMessageMoveService::InvalidChannel)
+      expect {
+        described_class.new(
+          acting_user: acting_user,
+          source_channel: source_channel,
+          message_ids: move_message_ids
+        ).move_to_channel(Fabricate(:chat_channel, chatable: Fabricate(:direct_message_channel)))
+      }.to raise_error(ChatMessageMoveService::InvalidChannel)
+    end
+
+    it "raises an error if no messages are found using the message ids" do
+      other_channel = Fabricate(:chat_channel)
+      message1.update(chat_channel: other_channel)
+      message2.update(chat_channel: other_channel)
+      message3.update(chat_channel: other_channel)
+      expect { move! }.to raise_error(ChatMessageMoveService::NoMessagesFound)
+    end
+
     it "deletes the messages from the source channel" do
       move!
       expect(ChatMessage.where(id: move_message_ids)).to eq([])

@@ -49,7 +49,7 @@ Fabricator(:reviewable_chat_message) do
 end
 
 Fabricator(:direct_message_channel) do
-  users
+  users { [Fabricate(:user), Fabricate(:user)] }
 end
 
 Fabricator(:chat_webhook_event) do

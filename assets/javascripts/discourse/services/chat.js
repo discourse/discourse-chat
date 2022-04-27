@@ -94,7 +94,8 @@ export default Service.extend({
   get isChatPage() {
     return (
       this.router.currentRouteName === "chat" ||
-      this.router.currentRouteName === "chat.channel"
+      this.router.currentRouteName === "chat.channel" ||
+      this.router.currentRouteName === "chat.loading"
     );
   },
 

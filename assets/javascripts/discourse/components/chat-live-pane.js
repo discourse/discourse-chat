@@ -1301,9 +1301,11 @@ export default Component.extend({
       });
     }
 
-    this.element.querySelectorAll(".lazyYT").forEach((iframe) => {
-      $(iframe).lazyYT();
-    });
+    this.element
+      .querySelectorAll(".lazyYT:not(.lazyYT-video-loaded)")
+      .forEach((iframe) => {
+        $(iframe).lazyYT();
+      });
 
     decorateGithubOneboxBody(this.element);
   },

@@ -93,15 +93,19 @@ class ChatMessageMoveService
       RETURNING id
     SQL
 
-    @movement_metadata = []
-    moved_message_ids.each_with_index do |chat_message_id, idx|
-      @movement_metadata << { old_id: @ordered_source_message_ids[idx], new_id: chat_message_id }
+    @movement_metadata = moved_message_ids.map.with_index do |chat_message_id, idx|
+      {
+        old_id: @ordered_source_message_ids[idx],
+        new_id: chat_message_id
+      }
     end
     moved_message_ids
   end
 
-  # TODO: Mentions are createed in the CreateChatMentionNotifications job
-  # 3 seconds (or more) after the message is created/edited...
+  # TODO: Mentions are created in the CreateChatMentionNotifications job
+  # 3 seconds (or more) after the message is created/edited...means there
+  # is a race condition where if the move happens before the mention is
+  # created it doesn't get created for the new message.
   def update_references
     DB.exec(<<~SQL)
       UPDATE chat_message_reactions cmr

@@ -1,11 +1,9 @@
 import { test } from "qunit";
-import { isLegacyEmber } from "discourse-common/config/environment";
-import { click, currentURL, tap, visit } from "@ember/test-helpers";
+import { click, currentURL, visit } from "@ember/test-helpers";
 import {
   acceptance,
   exists,
   query,
-  visible,
 } from "discourse/tests/helpers/qunit-helpers";
 import {
   chatChannels,
@@ -87,6 +85,11 @@ acceptance(
       );
       const channelChooser = selectKit(".chat-move-message-channel-chooser");
       await channelChooser.expand();
+      assert.notOk(
+        channelChooser.rowByValue("7").exists(),
+        "the source channel is not in the destination channel selector"
+      );
+
       await channelChooser.selectRowByValue("11");
       await click(modalConfirmMoveButton);
       assert.strictEqual(

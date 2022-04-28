@@ -52,7 +52,7 @@ ru:
         confirm: "Я понимаю последствия, удалить канал"
         confirm_channel_name: "Введите название канала"
         process_started: "Процесс удаления канала запущен. Это окно закроется в ближайшее время, вы больше не увидите удалённый канал."
-      channel_list_popup:
+      channels_list_popup:
         browse: "Просмотр каналов"
         create: "Создать канал"
       click_to_join: "Нажмите здесь для просмотра доступных каналов."
@@ -106,7 +106,7 @@ ru:
       aria_roles:
         header: "Заголовок чата"
         composer: "Редактор чата"
-        channel_list: "Список каналов чата"
+        channels_list: "Список каналов чата"
       no_public_channels: "Вы не присоединились ни к одному каналу."
       only_chat_push_notifications:
         title: "Отправлять только push-уведомления в чате"

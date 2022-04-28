@@ -52,7 +52,7 @@ sv:
         confirm: "Jag förstår konsekvenserna, radera kanalen"
         confirm_channel_name: "Ange kanalnamn"
         process_started: "Processen för att radera kanalen har påbörjats. Denna modal kommer att stängas inom kort och du kommer inte längre att se den raderade kanalen någonstans."
-      channel_list_popup:
+      channels_list_popup:
         browse: "Bläddra bland kanaler"
         create: "Skapa en kanal"
       click_to_join: "Klicka här för att se tillgängliga kanaler."
@@ -97,7 +97,7 @@ sv:
       aria_roles:
         header: "Chatthuvud"
         composer: "Chattkompositör"
-        channel_list: "Lista över chattkanaler"
+        channels_list: "Lista över chattkanaler"
       no_public_channels: "Du har inte gått med i några kanaler."
       only_chat_push_notifications:
         title: "Skicka bara push-meddelanden för chatt"

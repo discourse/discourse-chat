@@ -18,7 +18,7 @@ fi:
       cancel_reply: "Peruuta vastaus"
       chat_channels: "Kanavat"
       leave: "Poistu kanavalta"
-      channel_list_popup:
+      channels_list_popup:
         browse: "Selaa kanavia"
         create: "Luo kanava"
       click_to_join: "Näytä saatavilla olevat kanavat napsauttamalla tätä."

@@ -9,7 +9,7 @@ import I18n from "I18n";
 import TextareaTextManipulation from "discourse/mixins/textarea-text-manipulation";
 import userSearch from "discourse/lib/user-search";
 import { action } from "@ember/object";
-import { cancel, throttle } from "@ember/runloop";
+import { cancel, next, throttle } from "@ember/runloop";
 import { categoryHashtagTriggerRule } from "discourse/lib/category-hashtags";
 import { cloneJSON } from "discourse-common/lib/object";
 import { findRawTemplate } from "discourse-common/lib/raw-templates";
@@ -40,6 +40,7 @@ export default Component.extend(TextareaTextManipulation, {
   classNames: ["chat-composer"],
   userSilenced: readOnly("details.user_silenced"),
   emojiStore: service("emoji-store"),
+  chatChannelDraftManager: service(),
   editingMessage: null,
   fullPage: false,
   onValueChange: null,
@@ -236,19 +237,23 @@ export default Component.extend(TextareaTextManipulation, {
   didReceiveAttrs() {
     this._super(...arguments);
 
+    const draft = this.chatChannelDraftManager.draftForChannel(
+      this.chatChannel
+    );
+
     if (
       !this.editingMessage &&
-      this.draft &&
+      draft.isValid &&
       this.chatChannel.canModifyMessages(this.currentUser)
     ) {
       // uses uploads from draft here...
       this.setProperties({
-        value: this.draft.value,
-        replyToMsg: this.draft.replyToMsg,
+        value: draft.value,
+        replyToMsg: draft.replyToMsg,
       });
 
-      this._syncUploads(this.draft.uploads);
-      this.setInReplyToMsg(this.draft.replyToMsg);
+      this._syncUploads(draft.uploads);
+      this.setInReplyToMsg(draft.replyToMsg);
     }
 
     if (this.editingMessage && !this.loading) {
@@ -288,7 +293,9 @@ export default Component.extend(TextareaTextManipulation, {
     }
 
     this.set("_uploads", cloneJSON(newUploads));
-    this.appEvents.trigger("chat-composer:load-uploads", this._uploads);
+    next(() => {
+      this.appEvents.trigger("chat-composer:load-uploads", this._uploads);
+    });
   },
 
   _inProgressUploadsChanged(inProgressUploads) {
@@ -718,6 +725,6 @@ export default Component.extend(TextareaTextManipulation, {
   @action
   uploadsChanged(uploads) {
     this.set("_uploads", uploads);
-    this.onValueChange?.(this.value, this._uploads, this.replyToMsg);
+    this.onValueChange?.(this.value, uploads, this.replyToMsg);
   },
 });

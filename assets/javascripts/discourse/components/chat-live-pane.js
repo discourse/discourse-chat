@@ -1,3 +1,4 @@
+import ChatChannelDraft from "discourse/plugins/discourse-chat/discourse/models/chat-channel-draft";
 import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import Component from "@ember/component";
 import discourseComputed, {
@@ -77,6 +78,7 @@ export default Component.extend({
   chat: service(),
   router: service(),
   chatComposerPresenceManager: service(),
+  chatChannelDraftManager: service(),
 
   getCachedChannelDetails: null,
   clearCachedChannelDetails: null,
@@ -154,11 +156,8 @@ export default Component.extend({
           .then((trackedChannel) => {
             this.set("previewing", !Boolean(trackedChannel));
             this.fetchMessages(this.chatChannel.id);
-            this.loadDraftForChannel(this.chatChannel.id);
             this._startLastReadRunner();
           });
-      } else {
-        this.set("draft", this.chat.getDraftForChannel("draft"));
       }
     }
     this.currentUserTimezone = this.currentUser?.resolvedTimezone(
@@ -203,10 +202,6 @@ export default Component.extend({
           this.focusComposer();
         });
     });
-  },
-
-  loadDraftForChannel(channelId) {
-    this.set("draft", this.chat.getDraftForChannel(channelId));
   },
 
   _fetchMoreMessages(direction) {
@@ -1198,8 +1193,18 @@ export default Component.extend({
         user: draft.replyToMsg.user,
       };
     }
-    this.chat.setDraftForChannel(this.chatChannel, draft);
-    this.set("draft", draft);
+
+    discourseDebounce(
+      this,
+      this._debouncedSetDraftForChannel,
+      ChatChannelDraft.create(draft),
+      2000
+    );
+  },
+
+  @bind
+  _debouncedSetDraftForChannel(draft) {
+    this.chatChannelDraftManager.sync(this.chatChannel, draft);
   },
 
   @action

@@ -9,6 +9,7 @@ import UppyUploadMixin from "discourse/mixins/uppy-upload";
 export default Component.extend(UppyUploadMixin, {
   classNames: ["chat-composer-uploads"],
   mediaOptimizationWorker: service(),
+  chatChannelDraftManager: service(),
   id: "chat-composer-uploader",
   type: "chat-composer",
   uploads: null,

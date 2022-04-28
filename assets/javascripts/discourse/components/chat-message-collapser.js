@@ -5,12 +5,11 @@ import escape from "discourse-common/lib/escape";
 import domFromString from "discourse-common/lib/dom-from-string";
 import I18n from "I18n";
 
-export default Component.extend({
-  tagName: "",
-
-  collapsed: false,
-  uploads: null,
-  cooked: null,
+export default class ChatMessageCollapser extends Component {
+  tagName = "";
+  collapsed = false;
+  uploads = null;
+  cooked = null;
 
   @computed("cooked")
   get youtubeCooked() {
@@ -30,7 +29,7 @@ export default Component.extend({
       }
       return acc;
     }, []);
-  },
+  }
 
   @computed("uploads")
   get uploadsHeader() {
@@ -41,7 +40,7 @@ export default Component.extend({
       name = I18n.t("chat.uploaded_files", { count: this.uploads.length });
     }
     return `<span class="chat-message-collapser-link-small">${name}</span>`;
-  },
+  }
 
   @computed("cooked")
   get imageOneboxCooked() {
@@ -61,7 +60,7 @@ export default Component.extend({
       }
       return acc;
     }, []);
-  },
+  }
 
   @computed("cooked")
   get imageCooked() {
@@ -82,28 +81,28 @@ export default Component.extend({
       }
       return acc;
     }, []);
-  },
+  }
 
   @computed("cooked")
   get hasYoutube() {
     return hasYoutube(this.cooked);
-  },
+  }
 
   @computed("uploads")
   get hasUploads() {
     return hasUploads(this.uploads);
-  },
+  }
 
   @computed("cooked")
   get hasImageOnebox() {
     return hasImageOnebox(this.cooked);
-  },
+  }
 
   @computed("cooked")
   get hasImage() {
     return hasImage(this.cooked);
-  },
-});
+  }
+}
 
 function youtubePredicate(e) {
   return (

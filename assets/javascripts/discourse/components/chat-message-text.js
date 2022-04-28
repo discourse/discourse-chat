@@ -7,6 +7,7 @@ export default Component.extend({
 
   cooked: null,
   uploads: null,
+  edited: false,
 
   @computed("cooked", "uploads")
   get isCollapsible() {

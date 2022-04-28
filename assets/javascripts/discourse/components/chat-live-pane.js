@@ -172,7 +172,9 @@ export default Component.extend({
       return Promise.resolve();
     }
 
-    this.set("loading", true);
+    if (!this.creatingChannel) {
+      this.set("loading", true);
+    }
 
     return this.chat.loadCookFunction(this.site.categories).then((cook) => {
       this.set("cook", cook);

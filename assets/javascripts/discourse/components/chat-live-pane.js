@@ -361,8 +361,8 @@ export default Component.extend({
         messageData.firstMessageOfTheDayAt = moment(
           messageData.created_at
         ).calendar(moment(), {
-          sameDay: "[Today]",
-          lastDay: "[Yesterday]",
+          sameDay: `[${I18n.t("chat.chat_message_separator.today")}]`,
+          lastDay: `[${I18n.t("chat.chat_message_separator.yesterday")}]`,
           lastWeek: "LL",
           sameElse: "LL",
         });

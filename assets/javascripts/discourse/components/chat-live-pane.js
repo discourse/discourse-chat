@@ -129,10 +129,7 @@ export default Component.extend({
       cancel(this.stickyScrollTimer);
       this.stickyScrollTimer = null;
     }
-    if (this.registeredChatChannelId) {
-      this.messageBus.unsubscribe(`/chat/${this.registeredChatChannelId}`);
-      this.set("registeredChatChannelId", null);
-    }
+    this._cleanRegisteredChatChannelId();
     this._unloadedReplyIds = null;
     this.appEvents.off(
       "chat:cancel-message-selection",
@@ -146,13 +143,9 @@ export default Component.extend({
 
     this.set("targetMessageId", this.chat.messageId);
     if (this.registeredChatChannelId !== this.chatChannel.id) {
-      if (this.registeredChatChannelId) {
-        this.messageBus.unsubscribe(`/chat/${this.registeredChatChannelId}`);
-        this.messages.clear();
-      }
+      this._cleanRegisteredChatChannelId();
 
       this.messageLookup = {};
-      this.set("registeredChatChannelId", null);
       this.set("allPastMessagesLoaded", false);
       this.cancelEditing();
 
@@ -330,9 +323,7 @@ export default Component.extend({
     });
 
     this.setCanLoadMoreDetails(messages.resultSetMeta);
-    this.messageBus.subscribe(`/chat/${this.chatChannel.id}`, (busData) => {
-      this.handleMessage(busData);
-    });
+    this._subscribeToUpdates(this.chatChannel.id);
   },
 
   _prepareMessages(messages) {
@@ -889,6 +880,13 @@ export default Component.extend({
     this.set("sendingloading", true);
     this._setDraftForChannel(null);
 
+    // TODO: all send message logic is due for massive refactoring
+    // This is all the possible case Im currently aware of
+    // - messaging to a public channel where you are not a member yet (preview = true)
+    // - messaging to an existing direct channel you were not tracking yet through dm creator (channel draft)
+    // - messaging to a new direct channel through DM creator (channel draft)
+    // - message to a direct channel you were tracking (preview = false, not draft)
+    // - message to a public channel you were tracking (preview = false, not draft)
     if (this.previewing || this.chatChannel.isDraft) {
       return this._upsertChannelWithMessage(
         this.chatChannel,
@@ -1060,6 +1058,14 @@ export default Component.extend({
         }
         this.set("sendingloading", false);
       });
+  },
+
+  _cleanRegisteredChatChannelId() {
+    if (this.registeredChatChannelId) {
+      this._unsubscribeToUpdates(this.registeredChatChannelId);
+      this.messages.clear();
+      this.set("registeredChatChannelId", null);
+    }
   },
 
   _resetAfterSend() {
@@ -1312,9 +1318,11 @@ export default Component.extend({
       });
     }
 
-    this.element.querySelectorAll(".lazyYT").forEach((iframe) => {
-      $(iframe).lazyYT();
-    });
+    this.element
+      .querySelectorAll(".lazyYT:not(.lazyYT-video-loaded)")
+      .forEach((iframe) => {
+        $(iframe).lazyYT();
+      });
 
     decorateGithubOneboxBody(this.element);
   },
@@ -1403,6 +1411,17 @@ export default Component.extend({
   @afterRender
   _focusComposer() {
     this.appEvents.trigger("chat:focus-composer");
+  },
+
+  _unsubscribeToUpdates(channelId) {
+    this.messageBus.unsubscribe(`/chat/${channelId}`);
+  },
+
+  _subscribeToUpdates(channelId) {
+    this._unsubscribeToUpdates(channelId);
+    this.messageBus.subscribe(`/chat/${channelId}`, (busData) => {
+      this.handleMessage(busData);
+    });
   },
 });
 

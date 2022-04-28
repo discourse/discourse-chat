@@ -12,20 +12,9 @@ const chatAttrs = [
   "only_chat_push_notifications",
   "ignore_channel_wide_mention",
   "chat_sound",
-  "chat_email_frequency",
-];
-
-const emailFrequencyOptions = [
-  { name: I18n.t(`chat.email_frequency.never`), value: "never" },
-  { name: I18n.t(`chat.email_frequency.when_away`), value: "when_away" },
 ];
 
 export default Controller.extend({
-  init() {
-    this._super(...arguments);
-    this.set("emailFrequencyOptions", emailFrequencyOptions);
-  },
-
   @discourseComputed
   chatSounds() {
     return Object.keys(CHAT_SOUNDS).map((value) => {

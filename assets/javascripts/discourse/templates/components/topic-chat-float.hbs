@@ -62,11 +62,7 @@
           }}
         {{/if}}
       {{else}}
-        {{channel-list
-          publicChannels=publicChannels
-          directMessageChannels=directMessageChannels
-          onSelect=(action "switchChannel")
-        }}
+        {{channel-list onSelect=(action "switchChannel")}}
       {{/if}}
     </div>
   </div>

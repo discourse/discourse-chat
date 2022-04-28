@@ -221,6 +221,14 @@ describe ChatMessage do
       expect(cooked).to eq("<p>■■■■■</p>")
     end
 
+    it "makes the message the excerpt if prettified excerpt is empty" do
+      PrettyText.stubs(:cook).returns("")
+      PrettyText.stubs(:excerpt).returns("")
+      message = Fabricate.build(:chat_message, message: "https://twitter.com/EffinBirds/status/1518743508378697729")
+
+      expect(message.excerpt).to eq "https://twitter.com/EffinBirds/status/1518743508378697729"
+    end
+
     it "excerpts upload file name if message is empty" do
       gif = Fabricate(:upload, original_filename: "cat.gif", width: 400, height: 300, extension: "gif")
       message = Fabricate.build(:chat_message, message: "")

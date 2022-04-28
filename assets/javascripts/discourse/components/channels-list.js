@@ -17,7 +17,7 @@ export default class ChannelsList extends Component {
   @reads("chat.directMessageChannels.[]") directMessageChannels;
   @empty("publicChannels") publicChannelsEmpty;
 
-  @computed("directMessageChannels")
+  @computed("directMessageChannels.@each.last_message_sent_at")
   get sortedDirectMessageChannels() {
     if (!this.directMessageChannels?.length) {
       return [];

@@ -102,10 +102,11 @@ class ChatMessageMoveService
     moved_message_ids
   end
 
-  # TODO: Mentions are created in the CreateChatMentionNotifications job
-  # 3 seconds (or more) after the message is created/edited...means there
-  # is a race condition where if the move happens before the mention is
-  # created it doesn't get created for the new message.
+  # NOTE: Mentions are created in the CreateChatMentionNotifications job
+  # 3 seconds (or more) after the message is created. If someone is super
+  # quick on the trigger moving them, then there will be no mention or
+  # notification created. We should keep an eye on this and see if it's a
+  # problem in the wild before overcomplicating things.
   def update_references
     DB.exec(<<~SQL)
       UPDATE chat_message_reactions cmr
@@ -145,6 +146,7 @@ class ChatMessageMoveService
 
   def delete_source_messages
     @source_messages.update_all(deleted_at: Time.zone.now, deleted_by_id: @acting_user.id)
+    ChatPublisher.publish_bulk_delete!(@source_channel, @source_message_ids)
   end
 
   def add_moved_placeholder(destination_channel, first_moved_message)

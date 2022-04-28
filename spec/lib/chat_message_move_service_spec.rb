@@ -53,10 +53,17 @@ describe ChatMessageMoveService do
       expect { move! }.to raise_error(ChatMessageMoveService::NoMessagesFound)
     end
 
-    it "deletes the messages from the source channel" do
-      move!
+    it "deletes the messages from the source channel and sends messagebus delete messages" do
+      messages = MessageBus.track_publish do
+        move!
+      end
       expect(ChatMessage.where(id: move_message_ids)).to eq([])
-      expect(ChatMessage.with_deleted.where(id: move_message_ids).count).to eq(3)
+      deleted_messages = ChatMessage.with_deleted.where(id: move_message_ids).order(:id)
+      expect(deleted_messages.count).to eq(3)
+      expect(messages.first.channel).to eq("/chat/#{source_channel.id}")
+      expect(messages.first.data[:typ]).to eq("bulk_delete")
+      expect(messages.first.data[:deleted_ids]).to eq(deleted_messages.map(&:id))
+      expect(messages.first.data[:deleted_at]).not_to eq(nil)
     end
 
     it "creates a message in the source channel to indicate that the messages have been moved" do

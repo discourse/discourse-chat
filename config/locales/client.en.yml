@@ -149,6 +149,10 @@ en:
         open_header: "Channel is open."
         open: "Open"
 
+      chat_message_separator:
+        today: Today
+        yesterday: Yesterday
+
       direct_message_creator:
         title: New Message
         prefix: "To:"

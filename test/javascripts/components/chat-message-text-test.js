@@ -50,5 +50,17 @@ discourseModule(
         assert.notOk(exists(".chat-message-collapser"));
       },
     });
+
+    componentTest("shows edits", {
+      template: hbs`{{chat-message-text cooked=cooked edited=true}}`,
+
+      beforeEach() {
+        this.set("cooked", "<p></p>");
+      },
+
+      async test(assert) {
+        assert.ok(exists(".chat-message-edited"));
+      },
+    });
   }
 );

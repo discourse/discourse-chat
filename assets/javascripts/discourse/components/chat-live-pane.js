@@ -59,6 +59,7 @@ export default Component.extend({
   allPastMessagesLoaded: false,
   previewing: false,
   sendingloading: false,
+  creatingChannel: false,
   selectingMessages: false,
   stickyScroll: true,
   stickyScrollTimer: null,
@@ -171,7 +172,9 @@ export default Component.extend({
       return Promise.resolve();
     }
 
-    this.set("loading", true);
+    if (!this.creatingChannel) {
+      this.set("loading", true);
+    }
 
     return this.chat.loadCookFunction(this.site.categories).then((cook) => {
       this.set("cook", cook);
@@ -887,8 +890,6 @@ export default Component.extend({
     // - message to a direct channel you were tracking (preview = false, not draft)
     // - message to a public channel you were tracking (preview = false, not draft)
     if (this.previewing || this.chatChannel.isDraft) {
-      this.set("loading", true);
-
       return this._upsertChannelWithMessage(
         this.chatChannel,
         message,
@@ -897,14 +898,13 @@ export default Component.extend({
         if (this._selfDeleted) {
           return;
         }
-        this.set("loading", false);
         this.set("sendingloading", false);
         this._resetAfterSend();
         this._stickScrollToBottom();
       });
     }
 
-    this.set("_nextStagedMessageId", this._nextStagedMessageId + 1);
+    this.incrementProperty("_nextStagedMessageId");
     const cooked = this.cook(message);
     const stagedId = this._nextStagedMessageId;
     let data = {
@@ -933,6 +933,15 @@ export default Component.extend({
         this.set("sendingloading", false);
       });
 
+    this.stageMessage(message, uploads, cooked);
+    this._resetAfterSend();
+    this._stickScrollToBottom();
+    this.appEvents.trigger("chat-composer:reply-to-set", null);
+    return Promise.resolve();
+  },
+
+  stageMessage(message, uploads, cooked) {
+    const stagedId = this._nextStagedMessageId;
     const stagedMessage = this._prepareSingleMessage(
       // We need to add the user and created at for presentation of staged message
       {
@@ -948,10 +957,6 @@ export default Component.extend({
       this.messages[this.messages.length - 1]
     );
     this.messages.pushObject(stagedMessage);
-    this._resetAfterSend();
-    this._stickScrollToBottom();
-    this.appEvents.trigger("chat-composer:reply-to-set", null);
-    return Promise.resolve();
   },
 
   @action
@@ -973,42 +978,56 @@ export default Component.extend({
   },
 
   async _upsertChannelWithMessage(channel, message, uploads) {
-    let promise;
+    let response;
 
-    if (channel.isDirectMessageChannel) {
-      promise = ajax("/chat/direct_messages/create.json", {
-        method: "POST",
-        data: { usernames: channel.chatable.users.mapBy("username") },
-      }).then((response) => ChatChannel.create(response.chat_channel));
-    } else {
-      promise = ajax(`/chat/chat_channels/${channel.id}/follow`, {
-        method: "POST",
-      }).then(() => channel);
-    }
+    try {
+      this.set("creatingChannel", true);
+      this.incrementProperty("_nextStagedMessageId");
+      if (!this.cook) {
+        const cook = await this.chat.loadCookFunction(this.site.categories);
+        this.set("cook", cook);
+      }
 
-    return promise
-      .then((c) => this.chat.startTrackingChannel(c))
-      .then((c) =>
-        ajax(`/chat/${c.id}.json`, {
-          type: "POST",
-          data: {
-            message,
-            upload_ids: (uploads || []).mapBy("id"),
-          },
-        }).then(() => {
-          this.chat.forceRefreshChannels();
-          this.onSwitchChannel(ChatChannel.create(c), {
-            replace: true,
-          });
-        })
-      )
-      .finally(() => {
-        if (this.isDestroyed || this.isDestroying) {
-          return;
-        }
+      const cooked = this.cook(message);
+      this.stageMessage(message, uploads, cooked);
+      if (channel.isDirectMessageChannel) {
+        response = await ajax("/chat/direct_messages/create.json", {
+          method: "POST",
+          data: { usernames: channel.chatable.users.mapBy("username") },
+        });
+      } else {
+        response = await ajax(`/chat/chat_channels/${channel.id}/follow`, {
+          method: "POST",
+        });
+      }
 
-        this.set("previewing", false);
+      let trackedChannel = await this.chat.startTrackingChannel(
+        ChatChannel.create(response.chat_channel)
+      );
+
+      await ajax(`/chat/${trackedChannel.id}.json`, {
+        type: "POST",
+        data: {
+          message,
+          upload_ids: (uploads || []).mapBy("id"),
+        },
       });
+
+      await this.onSwitchChannel(ChatChannel.create(trackedChannel), {
+        replace: true,
+      });
+    } catch (error) {
+      popupAjaxError(error);
+      // because we're dealing with a single message
+      this.messages.clear();
+    } finally {
+      if (this.isDestroyed || this.isDestroying) {
+        return;
+      }
+
+      this.set("creatingChannel", false);
+      this.set("previewing", false);
+    }
   },
 
   _onSendError(stagedId, error) {
@@ -1118,9 +1137,9 @@ export default Component.extend({
     this._focusComposer();
   },
 
-  @discourseComputed("details.user_silenced")
-  canInteractWithChat(userSilenced) {
-    return !userSilenced;
+  @discourseComputed("details.user_silenced", "creatingChannel")
+  canInteractWithChat(userSilenced, creatingChannel) {
+    return !userSilenced && !creatingChannel;
   },
 
   @discourseComputed("messages.@each.selected")

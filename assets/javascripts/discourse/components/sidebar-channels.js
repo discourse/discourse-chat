@@ -1,55 +1,26 @@
 import Component from "@ember/component";
-import { action } from "@ember/object";
+import { action, computed } from "@ember/object";
 import { inject as service } from "@ember/service";
-import { withPluginApi } from "discourse/lib/plugin-api";
 
-export default Component.extend({
-  tagName: "",
-  toggleSection: null,
-  chat: service(),
-  router: service(),
+export default class SidebarChannels extends Component {
+  tagName = "";
+  toggleSection = null;
 
-  show: false,
-  fetchedChannels: false,
+  @service chat;
+  @service router;
 
-  init() {
-    this._super(...arguments);
-
-    if (!this.chat.userCanChat) {
-      return;
-    }
-    this.appEvents.on("chat:refresh-channels", this, "fetchChannels");
-
-    withPluginApi("0.12.1", (api) => {
-      api.onPageChange(() => {
-        this.calcShouldShow();
-      });
-    });
-  },
-
-  willDestroyElement() {
-    this._super(...arguments);
-    this.appEvents.off("chat:refresh-channels", this, "fetchChannels");
-  },
-
-  calcShouldShow() {
-    this.set(
-      "show",
-      !this.currentUser.chat_isolated ||
+  @computed(
+    "currentUser.chat_isolated",
+    "chat.{userCanChat,isChatPage,isBrowsePage}"
+  )
+  get isDisplayed() {
+    return (
+      this.chat.userCanChat &&
+      (!this.currentUser.chat_isolated ||
         this.chat.isChatPage ||
-        this.chat.isBrowsePage
+        this.chat.isBrowsePage)
     );
-    if (this.show && !this.fetchedChannels) {
-      this.fetchChannels();
-    }
-  },
-
-  @action
-  fetchChannels() {
-    this.chat.getChannels().then(() => {
-      this.set("fetchedChannels", true);
-    });
-  },
+  }
 
   @action
   switchChannel(channel) {
@@ -62,5 +33,5 @@ export default Component.extend({
       this.appEvents.trigger("chat:open-channel", channel);
     }
     return false;
-  },
-});
+  }
+}

@@ -7,6 +7,7 @@ import { ajax } from "discourse/lib/ajax";
 import { A } from "@ember/array";
 import { generateCookFunction } from "discourse/lib/text";
 import { next } from "@ember/runloop";
+import { and, equal } from "@ember/object/computed";
 import { Promise } from "rsvp";
 import ChatChannel, {
   CHANNEL_STATUSES,
@@ -14,6 +15,7 @@ import ChatChannel, {
 } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import simpleCategoryHashMentionTransform from "discourse/plugins/discourse-chat/discourse/lib/simple-category-hash-mention-transform";
 import discourseDebounce from "discourse-common/lib/debounce";
+import discourseComputed from "discourse-common/utils/decorators";
 
 export const LIST_VIEW = "list_view";
 export const CHAT_VIEW = "chat_view";
@@ -53,10 +55,6 @@ export default Service.extend({
 
   init() {
     this._super(...arguments);
-    this.set(
-      "userCanChat",
-      this.currentUser?.has_chat_enabled && this.siteSettings.chat_enabled
-    );
 
     if (this.userCanChat) {
       this.set("allChannels", []);
@@ -75,6 +73,8 @@ export default Service.extend({
     }
   },
 
+  userCanChat: and("currentUser.has_chat_enabled", "siteSettings.chat_enabled"),
+
   willDestroy() {
     this._super(...arguments);
 
@@ -88,16 +88,16 @@ export default Service.extend({
     }
   },
 
-  get isChatPage() {
+  @discourseComputed("router.currentRouteName")
+  isChatPage(routeName) {
     return (
-      this.router.currentRouteName === "chat" ||
-      this.router.currentRouteName === "chat.channel"
+      routeName === "chat" ||
+      routeName === "chat.channel" ||
+      routeName === "chat.loading"
     );
   },
 
-  get isBrowsePage() {
-    return this.router.currentRouteName === "chat.browse";
-  },
+  isBrowsePage: equal("router.currentRouteName", "chat.browse"),
 
   setActiveChannel(channel) {
     this.set("activeChannel", channel);

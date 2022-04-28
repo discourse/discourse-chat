@@ -2,15 +2,14 @@ import Component from "@ember/component";
 import { computed } from "@ember/object";
 import { isCollapsible } from "discourse/plugins/discourse-chat/discourse/components/chat-message-collapser";
 
-export default Component.extend({
-  classNames: "chat-message-text",
+export default class ChatMessageText extends Component {
+  tagName = "";
+  cooked = null;
+  uploads = null;
+  edited = false;
 
-  cooked: null,
-  uploads: null,
-  edited: false,
-
-  @computed("cooked", "uploads")
+  @computed("cooked", "uploads.[]")
   get isCollapsible() {
     return isCollapsible(this.cooked, this.uploads);
-  },
-});
+  }
+}

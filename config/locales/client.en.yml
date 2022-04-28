@@ -47,7 +47,7 @@ en:
         confirm: "I understand the consequences, delete the channel"
         confirm_channel_name: "Enter channel name"
         process_started: "The process to delete the channel has started. This modal will close shortly, you will no longer see the deleted channel anywhere."
-      channel_list_popup:
+      channels_list_popup:
         browse: "Browse channels"
         create: "Create a channel"
 
@@ -91,7 +91,7 @@ en:
       aria_roles:
         header: "Chat header"
         composer: "Chat composer"
-        channel_list: "Chat channel list"
+        channels_list: "Chat channels list"
 
       no_public_channels: "You have not joined any channels."
       only_chat_push_notifications:
@@ -120,7 +120,7 @@ en:
       save: "Save"
       select: "Select"
       silence: "Silence user"
-      return_to_list: "Return to channel list"
+      return_to_list: "Return to channels list"
       scroll_to_bottom: "Scroll to bottom"
       sound:
         title: "Desktop chat notification sound"

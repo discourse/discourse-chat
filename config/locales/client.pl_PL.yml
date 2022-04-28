@@ -23,7 +23,7 @@ pl_PL:
       cancel_reply: "Anuluj odpowiedź"
       chat_channels: "Kanały"
       leave: "Opuść kanał"
-      channel_list_popup:
+      channels_list_popup:
         browse: "Przeglądaj kanały"
         create: "Utwórz kanał"
       click_to_join: "Kliknij tutaj, aby wyświetlić dostępne kanały."

@@ -37,7 +37,7 @@ fa_IR:
       channel_delete:
         title: "حذف کانال"
         confirm_channel_name: "نام کانال را وارد کنید"
-      channel_list_popup:
+      channels_list_popup:
         browse: "مرور کانال‌ها"
         create: "ایجاد کانال"
       click_to_join: "برای مشاهده کانال‌های موجود، اینجا را کلیک کنید."

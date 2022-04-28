@@ -1,4 +1,5 @@
 import Component from "@ember/component";
+import { isBlank } from "@ember/utils";
 import { action, computed } from "@ember/object";
 import { ajax } from "discourse/lib/ajax";
 import { inject as service } from "@ember/service";
@@ -22,6 +23,11 @@ export default class MoveToChannelModalInner extends Component {
     return this.chat.getChannels().then((channels) => {
       this.set("channels", channels);
     });
+  }
+
+  @computed("destinationChannelId")
+  get disableMoveButton() {
+    return isBlank(this.destinationChannelId);
   }
 
   @computed("channels.publicChannels")

@@ -550,19 +550,14 @@ export default Component.extend(TextareaTextManipulation, {
 
   @discourseComputed(
     "previewing",
-    "creatingChannel",
     "userSilenced",
     "chatChannel.{chatable.users.[],id,previewedChannel}"
   )
-  placeholder(previewing, creatingChannel, userSilenced, chatChannel) {
+  placeholder(previewing, userSilenced, chatChannel) {
     if (!chatChannel.canModifyMessages(this.currentUser)) {
       return I18n.t("chat.placeholder_new_message_disallowed", {
         status: channelStatusName(chatChannel.status).toLowerCase(),
       });
-    }
-
-    if (creatingChannel) {
-      return I18n.t("chat.placeholder_creating");
     }
 
     if (chatChannel.isDraft) {

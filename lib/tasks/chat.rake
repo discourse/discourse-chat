@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-if Rails.env.development?
+if ENV['ALLOW_DEV_POPULATE'] == '1'
   chat_task = Rake::Task['dev:populate']
   chat_task.enhance {
     SiteSetting.chat_enabled = true

@@ -75,7 +75,7 @@ describe DiscourseChat::MessageMover do
           "chat.channel.messages_moved",
           count: move_message_ids.length,
           acting_username: acting_user.username,
-          channel_name: destination_channel.name,
+          channel_name: destination_channel.title(acting_user),
           first_moved_message_url: destination_first_moved_message.url
         )
       )

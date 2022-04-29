@@ -359,7 +359,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
 
     render json: success_json.merge(
       destination_channel_id: destination_channel.id,
-      destination_channel_title: destination_channel.name,
+      destination_channel_title: destination_channel.title(current_user),
       first_moved_message_id: moved_messages.first.id
     )
   end

@@ -119,7 +119,7 @@ after_initialize do
   load File.expand_path('../app/jobs/scheduled/update_user_counts_for_chat_channels.rb', __FILE__)
   load File.expand_path('../app/services/chat_publisher.rb', __FILE__)
 
-  if ENV['ALLOW_DEV_POPULATE'] == '1'
+  if Rails.env.development? || ENV['ALLOW_DEV_POPULATE'] == '1'
     load File.expand_path('../lib/discourse_dev/public_channel.rb', __FILE__)
     load File.expand_path('../lib/discourse_dev/direct_channel.rb', __FILE__)
     load File.expand_path('../lib/discourse_dev/message.rb', __FILE__)

@@ -30,6 +30,7 @@ const MAX_RECENT_MSGS = 100;
 const STICKY_SCROLL_LENIENCE = 4;
 const READ_INTERVAL = 1000;
 const PAGE_SIZE = 50;
+const MESSAGES_ABOVE_NEW_MESSAGE_INDICATOR = 2;
 
 const PAST = "past";
 const FUTURE = "future";
@@ -184,7 +185,7 @@ export default Component.extend({
       };
 
       if (!this.targetMessageId) {
-        this._includeInmediateHistory(findArgs);
+        this._includeImmediateHistory(findArgs);
       }
 
       return this.store
@@ -423,13 +424,13 @@ export default Component.extend({
       ?.chat_message_id;
   },
 
-  _includeInmediateHistory(findArgs) {
-    let lastReadId = this._getLastReadId();
+  _includeImmediateHistory(findArgs) {
+    const lastReadId = this._getLastReadId();
 
     if (lastReadId) {
       // We are fetching the last read message, the two previous ones,
       // and the next 47 to complete a page.
-      const offset = 47;
+      const offset = PAGE_SIZE - MESSAGES_ABOVE_NEW_MESSAGE_INDICATOR;
       findArgs["messageId"] = lastReadId + offset;
       findArgs["direction"] = BOTH;
     }
@@ -456,9 +457,8 @@ export default Component.extend({
 
     if (newestUnreadMessage) {
       newestUnreadMessage.set("newestMessage", true);
-      const previousMessagesToDisplay = 3;
       newestUnreadScrollTarget =
-        newestUnreadScrollTarget - previousMessagesToDisplay;
+        newestUnreadScrollTarget - MESSAGES_ABOVE_NEW_MESSAGE_INDICATOR;
 
       if (newestUnreadScrollTarget < 0) {
         newestUnreadScrollTarget += Math.abs(newestUnreadScrollTarget);

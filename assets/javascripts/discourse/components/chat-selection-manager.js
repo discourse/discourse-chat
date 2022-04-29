@@ -1,6 +1,5 @@
 import Component from "@ember/component";
 import { action, computed } from "@ember/object";
-import { alias } from "@ember/object/computed";
 import showModal from "discourse/lib/show-modal";
 import { clipboardCopyAsync } from "discourse/lib/utilities";
 import { getOwner } from "discourse-common/lib/get-owner";
@@ -19,7 +18,6 @@ export default class AdminCustomizeColorsShowController extends Component {
   cancelSelecting = null;
 
   @service router;
-  @alias("currentUser.staff") showMoveMessages;
 
   @computed("selectedMessageIds.length")
   get anyMessagesSelected() {
@@ -27,7 +25,7 @@ export default class AdminCustomizeColorsShowController extends Component {
   }
 
   @action
-  moveMessagesToChannel() {
+  openMoveMessageModal() {
     showModal("chat-message-move-to-channel-modal").setProperties({
       sourceChannel: this.chatChannel,
       selectedMessageIds: this.selectedMessageIds,

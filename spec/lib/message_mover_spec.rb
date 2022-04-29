@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-describe ChatMessageMoveService do
+describe DiscourseChat::MessageMover do
   fab!(:acting_user) { Fabricate(:admin, username: "testmovechat") }
   fab!(:source_channel) { Fabricate(:chat_channel) }
   fab!(:destination_channel) { Fabricate(:chat_channel) }
@@ -35,14 +35,14 @@ describe ChatMessageMoveService do
           source_channel: Fabricate(:chat_channel, chatable: Fabricate(:direct_message_channel)),
           message_ids: move_message_ids
         ).move_to_channel(destination_channel)
-      }.to raise_error(ChatMessageMoveService::InvalidChannel)
+      }.to raise_error(DiscourseChat::MessageMover::InvalidChannel)
       expect {
         described_class.new(
           acting_user: acting_user,
           source_channel: source_channel,
           message_ids: move_message_ids
         ).move_to_channel(Fabricate(:chat_channel, chatable: Fabricate(:direct_message_channel)))
-      }.to raise_error(ChatMessageMoveService::InvalidChannel)
+      }.to raise_error(DiscourseChat::MessageMover::InvalidChannel)
     end
 
     it "raises an error if no messages are found using the message ids" do
@@ -50,7 +50,7 @@ describe ChatMessageMoveService do
       message1.update(chat_channel: other_channel)
       message2.update(chat_channel: other_channel)
       message3.update(chat_channel: other_channel)
-      expect { move! }.to raise_error(ChatMessageMoveService::NoMessagesFound)
+      expect { move! }.to raise_error(DiscourseChat::MessageMover::NoMessagesFound)
     end
 
     it "deletes the messages from the source channel and sends messagebus delete messages" do

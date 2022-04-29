@@ -18,7 +18,7 @@ es:
       cancel_reply: "Cancelar respuesta"
       chat_channels: "Canales"
       leave: "Abandonar canal"
-      channel_list_popup:
+      channels_list_popup:
         browse: "Examinar canales"
         create: "Crear un canal"
       click_to_join: "Haz clic aquí para ver los canales disponibles."

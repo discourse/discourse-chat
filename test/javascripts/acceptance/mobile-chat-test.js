@@ -20,10 +20,10 @@ acceptance("Discourse Chat - Mobile test", function (needs) {
     chat_enabled: true,
   });
 
-  test("Chat index route shows channel list", async function (assert) {
+  test("Chat index route shows channels list", async function (assert) {
     await visit("/latest");
     await click(".header-dropdown-toggle.open-chat");
     assert.equal(currentURL(), "/chat");
-    assert.ok(exists(".chat-channels"));
+    assert.ok(exists(".channels-list"));
   });
 });

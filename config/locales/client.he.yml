@@ -52,7 +52,7 @@ he:
         confirm: "ההשלכות ברורות לי, נא למחוק את הערוץ"
         confirm_channel_name: "נא למלא את שם הערוץ"
         process_started: "תהליך מחיקת הערוץ החל. חלונית צצה זו תיסגר בקרוב, הערוץ שנמחק לא יופיעו עוד בשום מקום."
-      channel_list_popup:
+      channels_list_popup:
         browse: "עיון בערוצים"
         create: "יצירת ערוץ"
       click_to_join: "לחיצה כאן תציג את הערוצים הזמינים."
@@ -101,7 +101,7 @@ he:
       aria_roles:
         header: "כותרת צ׳אט"
         composer: "כותב צ׳אט"
-        channel_list: "רשימת ערוצי צ׳אט"
+        channels_list: "רשימת ערוצי צ׳אט"
       no_public_channels: "לא הצטרפת לאף ערוץ."
       only_chat_push_notifications:
         title: "לשלוח התראות בדחיפה על הצ׳אט בלבד"
@@ -152,8 +152,8 @@ he:
         read_only: "לקריאה בלבד"
         archived_header: "הערוץ בארכיון."
         archived: "בארכיון"
-        archive_failed: "העברת הערוץ לארכיון נכשלה. %{completed}/%{total} הודעות הועברו לארכיון תחת <a target=\"_blank\" href=\"%{topic_url}\">נושא היעד</a>. נא לנסות להשלים את ההעברה לארכיון פעם נוספת."
-        archive_completed: "העברת הערוץ לארכיון הושלמה. אפשר למצוא את הארכיון תחת <a target=\"_blank\" href=\"%{topic_url}\">נושא היעד</a>."
+        archive_failed: 'העברת הערוץ לארכיון נכשלה. %{completed}/%{total} הודעות הועברו לארכיון תחת <a target="_blank" href="%{topic_url}">נושא היעד</a>. נא לנסות להשלים את ההעברה לארכיון פעם נוספת.'
+        archive_completed: 'העברת הערוץ לארכיון הושלמה. אפשר למצוא את הארכיון תחת <a target="_blank" href="%{topic_url}">נושא היעד</a>.'
         closed_header: "הערוץ סגור."
         closed: "סגור"
         open_header: "הערוץ פתוח."
@@ -286,8 +286,8 @@ he:
       chat_quoted: "<span>%{username}</span> %{description}"
       popup:
         chat_mention:
-          direct: '<span>אוזכרת בערוץ „%{channel}” על ידי</span> <span>%{username}</span>'
-          other: '<span>נוסף אזכור של %{identifier} בערוץ „%{channel}” על ידי</span> <span>%{username}</span>'
+          direct: "<span>אוזכרת בערוץ „%{channel}” על ידי</span> <span>%{username}</span>"
+          other: "<span>נוסף אזכור של %{identifier} בערוץ „%{channel}” על ידי</span> <span>%{username}</span>"
         direct_message_chat_mention:
           direct: "<span>אוזכרת בצ׳אט אישי על ידי</span> <span>%{username}</span>"
           other: "<span>נוסף אזכור של ‎%{identifier} בצ׳אט אישי על ידי</span> <span>%{username}</span>"

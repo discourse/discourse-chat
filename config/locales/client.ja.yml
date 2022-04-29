@@ -18,7 +18,7 @@ ja:
       cancel_reply: "返信をキャンセルする"
       chat_channels: "チャンネル"
       leave: "チャンネルから退出する"
-      channel_list_popup:
+      channels_list_popup:
         browse: "チャンネルを閲覧する"
         create: "チャンネルを作成する"
       click_to_join: "利用可能なチャンネルを表示するにはここをクリックします。"

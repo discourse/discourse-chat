@@ -91,4 +91,38 @@ discourseModule("Discourse Chat | Component | chat-message", function (hooks) {
       );
     },
   });
+
+  componentTest("Message with edits", {
+    template,
+
+    async beforeEach() {
+      this.setProperties({
+        message: EmberObject.create({
+          id: 178,
+          message: "tomtom",
+          cooked: "tomtom",
+          excerpt: "tomtom",
+          action_code: null,
+          created_at: "2021-07-22T08:14:16.950Z",
+          flag_count: 0,
+          user: null,
+          edited: true,
+        }),
+        setReplyTo: () => {},
+        replyMessageClicked: () => {},
+        editButtonClicked: () => {},
+        afterExpand: () => {},
+        selectingMessages: false,
+        onStartSelectingMessages: () => {},
+        onSelectMessage: () => {},
+        bulkSelectMessages: () => {},
+        fullPage: false,
+        afterReactionAdded: () => {},
+      });
+    },
+
+    async test(assert) {
+      assert.ok(exists(".chat-message-edited"));
+    },
+  });
 });

@@ -101,7 +101,11 @@ describe ChatMessage do
       msg1 = Fabricate(:chat_message, chat_channel: chat_channel, message: "this is the first message", user: user)
       msg2 = Fabricate(:chat_message, chat_channel: chat_channel, message: "and another cool one", user: user2)
       other_messages_to_quote = [msg1, msg2]
-      cooked = ChatMessage.cook(ChatTranscriptService.new(chat_channel, messages_or_ids: other_messages_to_quote.map(&:id)).generate_markdown)
+      cooked = ChatMessage.cook(
+        ChatTranscriptService.new(
+          chat_channel, Fabricate(:user), messages_or_ids: other_messages_to_quote.map(&:id)
+        ).generate_markdown
+      )
 
       expect(cooked).to eq(<<~COOKED.chomp)
         <div class="discourse-chat-transcript chat-transcript-chained" data-message-id="#{msg1.id}" data-username="chatbbcodeuser" data-datetime="#{msg1.created_at.iso8601}" data-channel-name="testchannel">

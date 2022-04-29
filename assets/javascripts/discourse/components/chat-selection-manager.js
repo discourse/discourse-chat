@@ -19,7 +19,6 @@ export default class AdminCustomizeColorsShowController extends Component {
   cancelSelecting = null;
 
   @service router;
-  @alias("currentUser.staff") showMoveMessages;
 
   @computed("selectedMessageIds.length")
   get anyMessagesSelected() {
@@ -27,7 +26,7 @@ export default class AdminCustomizeColorsShowController extends Component {
   }
 
   @action
-  moveMessagesToChannel() {
+  openMoveMessageModal() {
     showModal("chat-message-move-to-channel-modal").setProperties({
       sourceChannel: this.chatChannel,
       selectedMessageIds: this.selectedMessageIds,

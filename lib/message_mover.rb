@@ -16,7 +16,7 @@
 # all of the references associated to a chat message (e.g. reactions, bookmarks,
 # notifications, revisions, mentions, uploads) will be updated to the new
 # message IDs via a moved_chat_messages temporary table.
-class ChatMessageMoveService
+class DiscourseChat::MessageMover
   class NoMessagesFound < StandardError; end
   class InvalidChannel < StandardError; end
 

@@ -1,4 +1,5 @@
 import Component from "@ember/component";
+import discourseComputed from "discourse-common/utils/decorators";
 import { isBlank } from "@ember/utils";
 import { action, computed } from "@ember/object";
 import { ajax } from "discourse/lib/ajax";
@@ -12,32 +13,15 @@ export default class MoveToChannelModalInner extends Component {
   sourceChannel = null;
   destinationChannelId = null;
   selectedMessageIds = null;
-  channels = null;
-
-  didInsertElement() {
-    this._super(...arguments);
-    this._getInitialChannels();
-  }
-
-  _getInitialChannels() {
-    return this.chat.getChannels().then((channels) => {
-      this.set("channels", channels);
-    });
-  }
 
   @computed("destinationChannelId")
   get disableMoveButton() {
     return isBlank(this.destinationChannelId);
   }
 
-  @computed("channels.publicChannels")
-  get publicChannels() {
-    if (!this.channels) {
-      return [];
-    }
-    return this.channels.publicChannels.reject(
-      (chan) => chan.id === this.sourceChannel.id
-    );
+  @discourseComputed("chat.publicChannels.[]")
+  availableChannels(publicChannels) {
+    return publicChannels.reject((chan) => chan.id === this.sourceChannel.id);
   }
 
   get selectedMessageCount() {

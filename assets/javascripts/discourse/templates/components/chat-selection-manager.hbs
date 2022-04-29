@@ -10,7 +10,7 @@
       action=(action "quoteMessages")
     }}
 
-    {{#if showMoveMessages}}
+    {{#if currentUser.staff}}
       {{d-button
         id="chat-move-to-channel-btn"
         class="btn-secondary"
@@ -18,7 +18,7 @@
         label="chat.selection.move_selection_to_channel"
         title="chat.selection.move_selection_to_channel"
         disabled=(not anyMessagesSelected)
-        action=(action "moveMessagesToChannel")
+        action=(action "openMoveMessageModal")
       }}
     {{/if}}
 

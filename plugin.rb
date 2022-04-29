@@ -110,9 +110,6 @@ after_initialize do
   load File.expand_path('../lib/extensions/detailed_tag_serializer_extension.rb', __FILE__)
   load File.expand_path('../lib/slack_compatibility.rb', __FILE__)
   load File.expand_path('../lib/post_notification_handler.rb', __FILE__)
-  load File.expand_path('../lib/discourse_dev/public_channel.rb', __FILE__)
-  load File.expand_path('../lib/discourse_dev/direct_channel.rb', __FILE__)
-  load File.expand_path('../lib/discourse_dev/message.rb', __FILE__)
   load File.expand_path('../app/jobs/regular/process_chat_message.rb', __FILE__)
   load File.expand_path('../app/jobs/regular/chat_channel_archive.rb', __FILE__)
   load File.expand_path('../app/jobs/regular/chat_channel_delete.rb', __FILE__)
@@ -121,6 +118,12 @@ after_initialize do
   load File.expand_path('../app/jobs/scheduled/delete_old_chat_messages.rb', __FILE__)
   load File.expand_path('../app/jobs/scheduled/update_user_counts_for_chat_channels.rb', __FILE__)
   load File.expand_path('../app/services/chat_publisher.rb', __FILE__)
+
+  if Discourse.allow_dev_populate?
+    load File.expand_path('../lib/discourse_dev/public_channel.rb', __FILE__)
+    load File.expand_path('../lib/discourse_dev/direct_channel.rb', __FILE__)
+    load File.expand_path('../lib/discourse_dev/message.rb', __FILE__)
+  end
 
   register_topic_custom_field_type(DiscourseChat::HAS_CHAT_ENABLED, :boolean)
   register_category_custom_field_type(DiscourseChat::HAS_CHAT_ENABLED, :boolean)

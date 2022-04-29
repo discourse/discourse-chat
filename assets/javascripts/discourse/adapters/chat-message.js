@@ -7,11 +7,11 @@ export default RESTAdapter.extend({
     }
 
     let path = `/chat/${findArgs.channelId}/messages.json?page_size=${findArgs.pageSize}`;
-    if (findArgs.beforeMessageId) {
-      path += `&before_message_id=${findArgs.beforeMessageId}`;
+    if (findArgs.messageId) {
+      path += `&message_id=${findArgs.messageId}`;
     }
-    if (findArgs.afterMessageId) {
-      path += `&after_message_id=${findArgs.afterMessageId}`;
+    if (findArgs.direction) {
+      path += `&direction=${findArgs.direction}`;
     }
     return path;
   },

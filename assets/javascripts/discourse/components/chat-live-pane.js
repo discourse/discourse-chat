@@ -418,9 +418,9 @@ export default Component.extend({
         }
       });
     }
-    const lastReadId =
-      this.currentUser.chat_channel_tracking_state[this.chatChannel.id]
-        ?.chat_message_id;
+    const lastReadId = this.currentUser.chat_channel_tracking_state[
+      this.chatChannel.id
+    ]?.chat_message_id;
     if (!lastReadId) {
       return;
     }
@@ -600,7 +600,7 @@ export default Component.extend({
   },
 
   handleMessage(data) {
-    switch (data.typ) {
+    switch (data.type) {
       case "sent":
         this.handleSentMessage(data);
         break;

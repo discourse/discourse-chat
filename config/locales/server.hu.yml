@@ -87,7 +87,6 @@ hu:
         open: "Nyitott"
       archive:
         first_post_raw: "Ez a téma a(z) [%{channel_name}](%{channel_url}) csevegőcsatorna archívuma."
-      title_for_large_group_dm: "%{users} és még %{count} fő"
     personal_chat: "személyes csevegés"
   discourse_push_notifications:
     popup:
@@ -106,21 +105,3 @@ hu:
   reviewable_score_types:
     needs_review:
       title: "Felülvizsgálatra szorul"
-  user_notifications:
-    chat_summary:
-      deleted_user: "Törölt felhasználó"
-      description:
-        one: "Új csevegőüzenete érkezett"
-        other: "Új csevegőüzenetei érkeztek"
-      from: "%{site_name}"
-      subject:
-        one: "[%{email_prefix}] Új csevegőüzenet"
-        other: "[%{email_prefix}] Új csevegőüzenetek"
-      view_message: "Üzenet megtekintése"
-      view_messages:
-        one: "Üzenet megtekintése"
-        other: "%{count} üzenet megtekintése"
-      view_more:
-        one: "%{count} további üzenet megtekintése"
-        other: "%{count} további üzenet megtekintése"
-      your_chat_settings: "csevegési e-mail gyakoriságának beállítása"

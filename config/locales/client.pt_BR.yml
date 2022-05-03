@@ -18,9 +18,6 @@ pt_BR:
       cancel_reply: "Cancelar resposta"
       chat_channels: "Canais"
       leave: "Sair do canal"
-      channels_list_popup:
-        browse: "Navegar por canais"
-        create: "Criar um canal"
       click_to_join: "Clique aqui para visualizar os canais disponíveis."
       close: "Fechar"
       collapse: "Recolher gaveta de chat"
@@ -74,7 +71,6 @@ pt_BR:
       restore: "Restaurar mensagem excluída"
       save: "Salvar"
       select: "Selecionar"
-      return_to_list: "Retornar para lista de canais"
       scroll_to_bottom: "Rolar para a parte inferior"
       sound:
         title: "Som de notificação do chat no desktop"

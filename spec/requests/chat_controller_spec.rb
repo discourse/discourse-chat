@@ -188,6 +188,30 @@ RSpec.describe DiscourseChat::ChatController do
         expect(response.parsed_body["meta"]["can_load_more_future"]).to eq(true)
       end
     end
+
+    describe 'without direction (latest messages)' do
+      it 'signals there are no future messages' do
+        get "/chat/#{chat_channel.id}/messages.json", params: { page_size: page_size }
+
+        expect(response.parsed_body["meta"]["can_load_more_future"]).to eq(false)
+      end
+
+      it 'signals there are more messages in the past' do
+        get "/chat/#{chat_channel.id}/messages.json", params: { page_size: page_size }
+
+        expect(response.parsed_body["meta"]["can_load_more_past"]).to eq(true)
+      end
+
+      it 'signals there are no more messages' do
+        new_channel = Fabricate(:chat_channel)
+        Fabricate(:chat_message, chat_channel: new_channel, user: other_user, message: "message")
+        chat_messages_qty = 1
+
+        get "/chat/#{new_channel.id}/messages.json", params: { page_size: chat_messages_qty + 1 }
+
+        expect(response.parsed_body["meta"]["can_load_more_past"]).to eq(false)
+      end
+    end
   end
 
   describe "#enable_chat" do

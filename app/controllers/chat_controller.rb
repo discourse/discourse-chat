@@ -186,6 +186,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     else
       # When direction is blank, we'll return the latest messages.
       can_load_more_future = false
+      can_load_more_past = messages.size == page_size
     end
 
     chat_view = ChatView.new(

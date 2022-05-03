@@ -18,9 +18,6 @@ fi:
       cancel_reply: "Peruuta vastaus"
       chat_channels: "Kanavat"
       leave: "Poistu kanavalta"
-      channels_list_popup:
-        browse: "Selaa kanavia"
-        create: "Luo kanava"
       click_to_join: "Näytä saatavilla olevat kanavat napsauttamalla tätä."
       close: "Sulje"
       collapse: "Tiivistä chat-laatikko"
@@ -74,7 +71,6 @@ fi:
       restore: "Palauta poistettu viesti"
       save: "Tallenna"
       select: "Valitse"
-      return_to_list: "Palaa kanavaluetteloon"
       scroll_to_bottom: "Vieritä alas"
       sound:
         title: "Työpöytälaitteen chat-ilmoitusääni"

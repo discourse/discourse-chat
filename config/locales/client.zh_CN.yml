@@ -18,7 +18,7 @@ zh_CN:
       cancel_reply: "取消回复"
       chat_channels: "频道"
       leave: "离开频道"
-      channel_list_popup:
+      channels_list_popup:
         browse: "浏览频道"
         create: "创建频道"
       click_to_join: "点击此处查看可用频道。"

@@ -47,7 +47,7 @@ en:
         confirm: "I understand the consequences, delete the channel"
         confirm_channel_name: "Enter channel name"
         process_started: "The process to delete the channel has started. This modal will close shortly, you will no longer see the deleted channel anywhere."
-      channel_list_popup:
+      channels_list_popup:
         browse: "Browse channels"
         create: "Create a channel"
 
@@ -64,11 +64,6 @@ en:
         public_available: "There are public channels available for you to follow."
         start_direct_message: "You can also start a personal chat with one or more users."
         title: "Get started by joining a channel"
-      email_frequency:
-        description: "We'll only email you if we haven't seen you in the last 10 minutes."
-        never: "Never"
-        title: "Email Notifications"
-        when_away: "Only when away"
       enable: "Enable chat"
       flag: "Flag"
       flagged: "This message has been flagged for review"
@@ -96,7 +91,7 @@ en:
       aria_roles:
         header: "Chat header"
         composer: "Chat composer"
-        channel_list: "Chat channel list"
+        channels_list: "Chat channels list"
 
       no_public_channels: "You have not joined any channels."
       only_chat_push_notifications:
@@ -124,7 +119,7 @@ en:
       save: "Save"
       select: "Select"
       silence: "Silence user"
-      return_to_list: "Return to channel list"
+      return_to_list: "Return to channels list"
       scroll_to_bottom: "Scroll to bottom"
       sound:
         title: "Desktop chat notification sound"
@@ -152,6 +147,10 @@ en:
         closed: "Closed"
         open_header: "Channel is open."
         open: "Open"
+
+      chat_message_separator:
+        today: Today
+        yesterday: Yesterday
 
       direct_message_creator:
         title: New Message

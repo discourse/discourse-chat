@@ -111,7 +111,7 @@ describe DiscourseChat::ChatMessageUpdater do
       }.by(0)
   end
 
-  it "creates new, leaves existing, and removes old mentions and email statuses all at once" do
+  it "creates new, leaves existing, and removes old mentions all at once" do
     chat_message = create_chat_message(user1, "ping @#{user2.username} @#{user3.username}", public_chat_channel)
     DiscourseChat::ChatMessageUpdater.update(
       chat_message: chat_message,
@@ -119,11 +119,8 @@ describe DiscourseChat::ChatMessageUpdater do
     )
 
     expect(user2.chat_mentions.where(chat_message: chat_message)).not_to be_present
-    expect(user2.chat_message_email_statuses.where(chat_message: chat_message)).not_to be_present
     expect(user3.chat_mentions.where(chat_message: chat_message)).to be_present
-    expect(user3.chat_message_email_statuses.where(chat_message: chat_message)).to be_present
     expect(user4.chat_mentions.where(chat_message: chat_message)).to be_present
-    expect(user4.chat_message_email_statuses.where(chat_message: chat_message)).to be_present
   end
 
   it "does not create new mentions in direct message for users who don't have access" do
@@ -137,25 +134,19 @@ describe DiscourseChat::ChatMessageUpdater do
   end
 
   describe "group mentions" do
-    it "creates group mentions and email statuses on update" do
+    it "sends group mentions on update" do
       chat_message = create_chat_message(user1, "ping nobody", public_chat_channel)
       expect {
         DiscourseChat::ChatMessageUpdater.update(
           chat_message: chat_message,
           new_content: "ping @#{admin_group.name}"
         )
-      }.to change { ChatMention.where(chat_message: chat_message).count }.by(2)
-        .and change {
-          ChatMessageEmailStatus.where(chat_message: chat_message).count
-        }.by(2)
-
+      }.to change { ChatMention.count }.by(2)
       expect(admin1.chat_mentions.where(chat_message: chat_message)).to be_present
       expect(admin2.chat_mentions.where(chat_message: chat_message)).to be_present
-      expect(admin1.chat_message_email_statuses.where(chat_message: chat_message)).to be_present
-      expect(admin2.chat_message_email_statuses.where(chat_message: chat_message)).to be_present
     end
 
-    it "doesn't duplicate mention/email statuses when the user is already direct mentioned and then group mentioned" do
+    it "doesn't repeat mentions when the user is already direct mentioned and then group mentioned" do
       chat_message = create_chat_message(user1, "ping @#{admin2.username}", public_chat_channel)
       expect {
         DiscourseChat::ChatMessageUpdater.update(
@@ -165,12 +156,6 @@ describe DiscourseChat::ChatMessageUpdater do
       }.to change { admin1.chat_mentions.count }.by(1)
         .and change {
           admin2.chat_mentions.count
-        }.by(0)
-        .and change {
-          admin1.chat_message_email_statuses.where(chat_message: chat_message).count
-        }.by(1)
-        .and change {
-          admin2.chat_message_email_statuses.where(chat_message: chat_message).count
         }.by(0)
     end
 
@@ -182,13 +167,8 @@ describe DiscourseChat::ChatMessageUpdater do
           new_content: "ping nobody anymore!"
         )
       }.to change { ChatMention.where(chat_message: chat_message).count }.by(-2)
-        .and change {
-          ChatMessageEmailStatus.where(chat_message: chat_message).count
-        }.by(-2)
       expect(admin1.chat_mentions.where(chat_message: chat_message)).not_to be_present
       expect(admin2.chat_mentions.where(chat_message: chat_message)).not_to be_present
-      expect(admin1.chat_message_email_statuses.where(chat_message: chat_message)).not_to be_present
-      expect(admin2.chat_message_email_statuses.where(chat_message: chat_message)).not_to be_present
     end
   end
 

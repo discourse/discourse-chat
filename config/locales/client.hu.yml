@@ -52,7 +52,7 @@ hu:
         confirm: "Megértem a következményeket, a csatorna törlése"
         confirm_channel_name: "Adja meg a csatorna nevét"
         process_started: "A csatorna törlése megkezdődött. Ez a kérdésablak hamarosan bezárul, és már nem fogja látni a törölt csatornát."
-      channel_list_popup:
+      channels_list_popup:
         browse: "Csatornák böngészése"
         create: "Csatorna létrehozása"
       click_to_join: "Kattintson ide az elérhető csatornák megtekintéséhez."
@@ -100,7 +100,7 @@ hu:
       aria_roles:
         header: "Csevegés fejléce"
         composer: "Csevegés szerkesztője"
-        channel_list: "Csevegőcsatornák"
+        channels_list: "Csevegőcsatornák"
       no_public_channels: "Nem csatlakozott egyetlen csatornához sem."
       only_chat_push_notifications:
         title: "Csak csevegési leküldéses értesítések küldése"

@@ -1,7 +1,5 @@
 import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import Component from "@ember/component";
-import { clipboardCopyAsync } from "discourse/lib/utilities";
-import { getOwner } from "discourse-common/lib/get-owner";
 import discourseComputed, {
   afterRender,
   bind,
@@ -22,7 +20,7 @@ import { inject as service } from "@ember/service";
 import { Promise } from "rsvp";
 import { resetIdle } from "discourse/lib/desktop-notifications";
 import { resolveAllShortUrls } from "pretty-text/upload-short-url";
-import getURL, { samePrefix } from "discourse-common/lib/get-url";
+import { samePrefix } from "discourse-common/lib/get-url";
 import { spinnerHTML } from "discourse/helpers/loading-spinner";
 import { decorateGithubOneboxBody } from "discourse/initializers/onebox-decorators";
 import highlightSyntax from "discourse/lib/highlight-syntax";
@@ -116,6 +114,8 @@ export default Component.extend({
   },
 
   willDestroyElement() {
+    this._super(...arguments);
+
     this.appEvents.off(
       "chat-live-pane:highlight-message",
       this,
@@ -128,10 +128,7 @@ export default Component.extend({
       cancel(this.stickyScrollTimer);
       this.stickyScrollTimer = null;
     }
-    if (this.registeredChatChannelId) {
-      this.messageBus.unsubscribe(`/chat/${this.registeredChatChannelId}`);
-      this.set("registeredChatChannelId", null);
-    }
+    this._cleanRegisteredChatChannelId();
     this._unloadedReplyIds = null;
     this.appEvents.off(
       "chat:cancel-message-selection",
@@ -145,13 +142,9 @@ export default Component.extend({
 
     this.set("targetMessageId", this.chat.messageId);
     if (this.registeredChatChannelId !== this.chatChannel.id) {
-      if (this.registeredChatChannelId) {
-        this.messageBus.unsubscribe(`/chat/${this.registeredChatChannelId}`);
-        this.messages.clear();
-      }
+      this._cleanRegisteredChatChannelId();
 
       this.messageLookup = {};
-      this.set("registeredChatChannelId", null);
       this.set("allPastMessagesLoaded", false);
       this.cancelEditing();
 
@@ -329,9 +322,7 @@ export default Component.extend({
     });
 
     this.setCanLoadMoreDetails(messages.resultSetMeta);
-    this.messageBus.subscribe(`/chat/${this.chatChannel.id}`, (busData) => {
-      this.handleMessage(busData);
-    });
+    this._subscribeToUpdates(this.chatChannel.id);
   },
 
   _prepareMessages(messages) {
@@ -367,8 +358,8 @@ export default Component.extend({
         messageData.firstMessageOfTheDayAt = moment(
           messageData.created_at
         ).calendar(moment(), {
-          sameDay: "[Today]",
-          lastDay: "[Yesterday]",
+          sameDay: `[${I18n.t("chat.chat_message_separator.today")}]`,
+          lastDay: `[${I18n.t("chat.chat_message_separator.yesterday")}]`,
           lastWeek: "LL",
           sameElse: "LL",
         });
@@ -888,6 +879,13 @@ export default Component.extend({
     this.set("sendingloading", true);
     this._setDraftForChannel(null);
 
+    // TODO: all send message logic is due for massive refactoring
+    // This is all the possible case Im currently aware of
+    // - messaging to a public channel where you are not a member yet (preview = true)
+    // - messaging to an existing direct channel you were not tracking yet through dm creator (channel draft)
+    // - messaging to a new direct channel through DM creator (channel draft)
+    // - message to a direct channel you were tracking (preview = false, not draft)
+    // - message to a public channel you were tracking (preview = false, not draft)
     if (this.previewing || this.chatChannel.isDraft) {
       this.set("loading", true);
 
@@ -974,26 +972,22 @@ export default Component.extend({
     });
   },
 
-  _upsertChannelWithMessage(channel, message, uploads) {
+  async _upsertChannelWithMessage(channel, message, uploads) {
     let promise;
 
     if (channel.isDirectMessageChannel) {
       promise = ajax("/chat/direct_messages/create.json", {
         method: "POST",
         data: { usernames: channel.chatable.users.mapBy("username") },
-      });
+      }).then((response) => ChatChannel.create(response.chat_channel));
     } else {
       promise = ajax(`/chat/chat_channels/${channel.id}/follow`, {
         method: "POST",
-      });
+      }).then(() => channel);
     }
 
     return promise
-      .then((response) =>
-        this.chat.startTrackingChannel(
-          ChatChannel.create(response.chat_channel)
-        )
-      )
+      .then((c) => this.chat.startTrackingChannel(c))
       .then((c) =>
         ajax(`/chat/${c.id}.json`, {
           type: "POST",
@@ -1001,11 +995,12 @@ export default Component.extend({
             message,
             upload_ids: (uploads || []).mapBy("id"),
           },
-        }).then(() =>
+        }).then(() => {
+          this.chat.forceRefreshChannels();
           this.onSwitchChannel(ChatChannel.create(c), {
             replace: true,
-          })
-        )
+          });
+        })
       )
       .finally(() => {
         if (this.isDestroyed || this.isDestroying) {
@@ -1046,6 +1041,14 @@ export default Component.extend({
         }
         this.set("sendingloading", false);
       });
+  },
+
+  _cleanRegisteredChatChannelId() {
+    if (this.registeredChatChannelId) {
+      this._unsubscribeToUpdates(this.registeredChatChannelId);
+      this.messages.clear();
+      this.set("registeredChatChannelId", null);
+    }
   },
 
   _resetAfterSend() {
@@ -1115,23 +1118,9 @@ export default Component.extend({
     this._focusComposer();
   },
 
-  @discourseComputed()
-  canQuote() {
-    if (this.chatChannel.isDirectMessageChannel) {
-      return false;
-    }
-
-    return true;
-  },
-
   @discourseComputed("details.user_silenced")
   canInteractWithChat(userSilenced) {
     return !userSilenced;
-  },
-
-  @discourseComputed("messages.@each.selected")
-  anyMessagesSelected() {
-    return this.selectedMessageIds.length > 0;
   },
 
   @discourseComputed("messages.@each.selected")
@@ -1189,92 +1178,6 @@ export default Component.extend({
   @action
   onChannelTitleClick() {
     return this._goToChatableUrl();
-  },
-
-  @action
-  async quoteMessages() {
-    const quoteGenerationPromise = async () => {
-      const response = await ajax(
-        getURL(`/chat/${this.chatChannel.id}/quote.json`),
-        {
-          data: { message_ids: this.selectedMessageIds },
-          type: "POST",
-        }
-      );
-      return new Blob([response.markdown], {
-        type: "text/plain",
-      });
-    };
-
-    // copy the generated quote to the clipboard
-    if (!this.site.isMobileDevice && this.currentUser.chat_isolated) {
-      if (!isTesting()) {
-        return clipboardCopyAsync(quoteGenerationPromise)
-          .then(() => {
-            this._showCopyQuoteSuccess();
-          })
-          .catch(popupAjaxError);
-      } else {
-        // clipboard API throws errors in tests
-        return;
-      }
-    }
-
-    let quoteMarkdownBlob, quoteMarkdown;
-    try {
-      quoteMarkdownBlob = await quoteGenerationPromise();
-      quoteMarkdown = await quoteMarkdownBlob.text();
-    } catch (error) {
-      popupAjaxError(error);
-    }
-    const container = getOwner(this);
-    const composer = container.lookup("controller:composer");
-    const openOpts = {};
-
-    if (this.chatChannel.isCategoryChannel) {
-      openOpts.categoryId = this.chatChannel.chatable_id;
-    }
-
-    if (this.site.isMobileDevice) {
-      // go to the relevant chatable (e.g. category) and open the
-      // composer to insert text
-      this._goToChatableUrl().then(() => {
-        composer.focusComposer({
-          fallbackToNewTopic: true,
-          insertText: quoteMarkdown,
-          openOpts,
-        });
-      });
-    } else {
-      // open the composer and insert text, reply to the current
-      // topic if there is one, use the active draft if there is one
-      const topic = container.lookup("controller:topic");
-      composer.focusComposer({
-        fallbackToNewTopic: true,
-        topic: topic?.model,
-        insertText: quoteMarkdown,
-        openOpts,
-      });
-    }
-  },
-
-  _showCopyQuoteSuccess() {
-    this.set("showChatQuoteSuccess", true);
-
-    schedule("afterRender", () => {
-      if (this._selfDeleted) {
-        return;
-      }
-
-      const element = document.querySelector(".chat-selection-message");
-      element.addEventListener(
-        "animationend",
-        () => {
-          this.set("showChatQuoteSuccess", false);
-        },
-        { once: true }
-      );
-    });
   },
 
   @action
@@ -1398,9 +1301,11 @@ export default Component.extend({
       });
     }
 
-    this.element.querySelectorAll(".lazyYT").forEach((iframe) => {
-      $(iframe).lazyYT();
-    });
+    this.element
+      .querySelectorAll(".lazyYT:not(.lazyYT-video-loaded)")
+      .forEach((iframe) => {
+        $(iframe).lazyYT();
+      });
 
     decorateGithubOneboxBody(this.element);
   },
@@ -1489,6 +1394,17 @@ export default Component.extend({
   @afterRender
   _focusComposer() {
     this.appEvents.trigger("chat:focus-composer");
+  },
+
+  _unsubscribeToUpdates(channelId) {
+    this.messageBus.unsubscribe(`/chat/${channelId}`);
+  },
+
+  _subscribeToUpdates(channelId) {
+    this._unsubscribeToUpdates(channelId);
+    this.messageBus.subscribe(`/chat/${channelId}`, (busData) => {
+      this.handleMessage(busData);
+    });
   },
 });
 

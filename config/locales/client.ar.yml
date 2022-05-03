@@ -18,7 +18,7 @@ ar:
       cancel_reply: "إلغاء الرد"
       chat_channels: "القنوات"
       leave: "مغادرة القناة"
-      channel_list_popup:
+      channels_list_popup:
         browse: "استعراض القنوات"
         create: "إنشاء قناة"
       click_to_join: "انقر هنا لعرض القنوات المتاحة"

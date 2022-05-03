@@ -1,7 +1,5 @@
-{{#if show}}
-  {{channel-list
-    publicChannels=publicChannels
-    directMessageChannels=directMessageChannels
+{{#if isDisplayed}}
+  {{channels-list
     onSelect=(action "switchChannel")
     toggleSection=toggleSection
     inSidebar=true

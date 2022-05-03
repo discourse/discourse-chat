@@ -118,21 +118,6 @@ class ChatChannel < ActiveRecord::Base
     end
   end
 
-  def email_title(user)
-    if direct_message_channel?
-      usernames = (chatable.users.map(&:username) - [user.username]).map { |username| "@#{username}" }
-      if usernames.count > 5
-        return I18n.t("chat.channel.title_for_large_group_dm", users: usernames.take(5).join(", "), count: usernames.count - 5)
-      end
-
-      if usernames.count > 1
-        return usernames.join(", ")
-      end
-    end
-
-    title(user)
-  end
-
   def change_status(acting_user, target_status)
     return if !ChatChannel.statuses.include?(target_status.to_s)
     return if !Guardian.new(acting_user).can_change_channel_status?(self, target_status)

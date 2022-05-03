@@ -600,7 +600,7 @@ export default Component.extend({
   },
 
   handleMessage(data) {
-    switch (data.typ) {
+    switch (data.type) {
       case "sent":
         this.handleSentMessage(data);
         break;

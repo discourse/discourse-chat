@@ -70,12 +70,12 @@ acceptance("Discourse Chat - Flagging test", function (needs) {
     assert.ok(exists(".bootbox.in"));
     await click(".bootbox.in .btn-primary");
     await publishToMessageBus("/chat/75", {
-      typ: "self_flagged",
+      type: "self_flagged",
       chat_message_id: chatView.chat_messages[0].id,
       user_flag_status: 0,
     });
     await publishToMessageBus("/chat/75", {
-      typ: "flag",
+      type: "flag",
       chat_message_id: chatView.chat_messages[0].id,
       reviewable_id: 1,
     });

@@ -52,6 +52,14 @@ module ChatPublisher
     )
   end
 
+  def self.publish_bulk_delete!(chat_channel, deleted_message_ids)
+    MessageBus.publish(
+      "/chat/#{chat_channel.id}",
+      { typ: "bulk_delete", deleted_ids: deleted_message_ids, deleted_at: Time.zone.now },
+      permissions(chat_channel)
+    )
+  end
+
   def self.publish_restore!(chat_channel, chat_message)
     content = ChatMessageSerializer.new(chat_message, { scope: anonymous_guardian, root: :chat_message }).as_json
     content[:type] = :restore

@@ -613,6 +613,9 @@ export default Component.extend({
       case "delete":
         this.handleDeleteMessage(data);
         break;
+      case "bulk_delete":
+        this.handleBulkDeleteMessage(data);
+        break;
       case "reaction":
         this.handleReactionMessage(data);
         break;
@@ -697,6 +700,15 @@ export default Component.extend({
         edited: true,
       });
     }
+  },
+
+  handleBulkDeleteMessage(data) {
+    data.deleted_ids.forEach((deletedId) => {
+      this.handleDeleteMessage({
+        deleted_id: deletedId,
+        deleted_at: data.deleted_at,
+      });
+    });
   },
 
   handleDeleteMessage(data) {

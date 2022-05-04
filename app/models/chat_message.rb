@@ -15,6 +15,7 @@ class ChatMessage < ActiveRecord::Base
   has_many :chat_uploads
   has_many :uploads, through: :chat_uploads
   has_one :chat_webhook_event
+  has_one :chat_mention
 
   scope :in_public_channel, -> {
     joins(:chat_channel)
@@ -190,6 +191,10 @@ class ChatMessage < ActiveRecord::Base
 
     cooked = result.to_html if result.changed?
     cooked
+  end
+
+  def url
+    "#{Discourse.base_url}/chat/channel/#{self.chat_channel_id}/chat?messageId=#{self.id}"
   end
 
   private

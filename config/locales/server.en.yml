@@ -87,6 +87,8 @@ en:
       messages_moved:
         one: "@%{acting_username} moved a message to the [%{channel_name}](%{first_moved_message_url}) channel."
         other: "@%{acting_username} moved %{count} messages to the [%{channel_name}](%{first_moved_message_url}) channel."
+    bookmarkable:
+      notification_title: "message in %{channel_name}"
 
     personal_chat: "personal chat"
 

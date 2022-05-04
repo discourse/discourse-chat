@@ -106,6 +106,7 @@ after_initialize do
   load File.expand_path('../lib/chat_seeder.rb', __FILE__)
   load File.expand_path('../lib/chat_transcript_service.rb', __FILE__)
   load File.expand_path('../lib/message_mover.rb', __FILE__)
+  load File.expand_path('../lib/chat_message_bookmarkable.rb', __FILE__)
   load File.expand_path('../lib/chat_channel_archive_service.rb', __FILE__)
   load File.expand_path('../lib/direct_message_channel_creator.rb', __FILE__)
   load File.expand_path('../lib/guardian_extensions.rb', __FILE__)
@@ -139,6 +140,10 @@ after_initialize do
 
   register_reviewable_type ReviewableChatMessage
 
+  if SiteSetting.use_polymorphic_bookmarks
+    Bookmark.register_bookmarkable(ChatMessageBookmarkable)
+  end
+
   reloadable_patch do |plugin|
     ReviewableScore.add_new_types([:needs_review])
 
@@ -165,22 +170,6 @@ after_initialize do
       has_many :chat_message_reactions, dependent: :destroy
       has_many :chat_mentions
     }
-
-    if SiteSetting.use_polymorphic_bookmarks
-      Bookmark.register_bookmarkable(
-        model: ChatMessage,
-        serializer: UserChatMessageBookmarkSerializer,
-        list_query: lambda do |user, guardian|
-          user
-            .bookmarks_of_type("ChatMessage")
-            .joins("INNER JOIN chat_messages ON chat_messages.id = bookmarks.bookmarkable_id AND bookmarks.bookmarkable_type = 'ChatMessage'")
-        end,
-        search_query: lambda do |bookmarks, query, ts_query, &blk|
-          blk.call(bookmarks, "chat_messages.message ILIKE :q")
-        end,
-        preload_associations: [:chat_channel]
-      )
-    end
   end
 
   TopicQuery.add_custom_filter(::DiscourseChat::PLUGIN_NAME) do |results, topic_query|

@@ -457,16 +457,26 @@ export default Component.extend({
 
     if (newestUnreadMessage) {
       newestUnreadMessage.set("newestMessage", true);
-      newestUnreadScrollTarget =
-        newestUnreadScrollTarget - MESSAGES_ABOVE_NEW_MESSAGE_INDICATOR;
 
-      if (newestUnreadScrollTarget < 0) {
-        newestUnreadScrollTarget += Math.abs(newestUnreadScrollTarget);
+      // We add some additional offset here to ensure we'll display previous messages
+      // but won't push the new messages indicator too far down.
+      let showPreviousMessageOffset = 100;
+
+      if (this.fullPage) {
+        showPreviousMessageOffset = 200;
       }
 
-      newestUnreadMessage = this.messages[newestUnreadScrollTarget];
+      if (this.site.mobileView) {
+        showPreviousMessageOffset = 80;
+      }
 
-      return this.scrollToMessage(newestUnreadMessage.id);
+      const scrollOpts = {
+        highlight: false,
+        position: "top",
+        additionalTopOffset: showPreviousMessageOffset,
+      };
+
+      return this.scrollToMessage(newestUnreadMessage.id, scrollOpts);
     }
     this._stickScrollToBottom();
   },
@@ -491,7 +501,12 @@ export default Component.extend({
 
   scrollToMessage(
     messageId,
-    opts = { highlight: false, position: "top", autoExpand: false }
+    opts = {
+      highlight: false,
+      position: "top",
+      autoExpand: false,
+      additionalTopOffset: -20,
+    }
   ) {
     if (this._selfDeleted) {
       return;
@@ -513,7 +528,7 @@ export default Component.extend({
         this._scrollerEl.scrollTop =
           messageEl.offsetTop -
           (opts.position === "top"
-            ? this._scrollerEl.offsetTop - 20
+            ? this._scrollerEl.offsetTop + opts.additionalTopOffset
             : this._scrollerEl.offsetHeight);
       });
 

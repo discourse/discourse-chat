@@ -331,13 +331,37 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
   def quote_messages
     params.require(:message_ids)
 
-    @chat_channel = ChatChannel.find_by(id: params[:chat_channel_id])
-    raise Discourse::NotFound if @chat_channel.blank?
-    raise Discourse::InvalidAccess if !guardian.can_see_chat_channel?(@chat_channel)
+    chat_channel = DiscourseChat::ChatChannelFetcher.find_with_access_check(params[:chat_channel_id], guardian)
 
     message_ids = params[:message_ids].map(&:to_i)
-    markdown = ChatTranscriptService.new(@chat_channel, messages_or_ids: message_ids).generate_markdown
+    markdown = ChatTranscriptService.new(chat_channel, messages_or_ids: message_ids).generate_markdown
     render json: success_json.merge(markdown: markdown)
+  end
+
+  def move_messages_to_channel
+    params.require(:message_ids)
+    params.require(:destination_channel_id)
+
+    raise Discourse::InvalidAccess if !guardian.can_move_chat_messages?
+
+    chat_channel = DiscourseChat::ChatChannelFetcher.find_with_access_check(params[:chat_channel_id], guardian)
+    destination_channel = DiscourseChat::ChatChannelFetcher.find_with_access_check(params[:destination_channel_id], guardian)
+
+    message_ids = params[:message_ids].map(&:to_i)
+
+    begin
+      moved_messages = DiscourseChat::MessageMover.new(
+        acting_user: current_user, source_channel: chat_channel, message_ids: message_ids
+      ).move_to_channel(destination_channel)
+    rescue DiscourseChat::MessageMover::NoMessagesFound, DiscourseChat::MessageMover::InvalidChannel => err
+      return render_json_error(err.message)
+    end
+
+    render json: success_json.merge(
+      destination_channel_id: destination_channel.id,
+      destination_channel_title: destination_channel.title(current_user),
+      first_moved_message_id: moved_messages.first.id
+    )
   end
 
   def flag

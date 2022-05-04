@@ -15,6 +15,7 @@ class ChatMessage < ActiveRecord::Base
   has_many :chat_uploads
   has_many :uploads, through: :chat_uploads
   has_one :chat_webhook_event
+  has_one :chat_mention
 
   scope :in_public_channel, -> {
     joins(:chat_channel)

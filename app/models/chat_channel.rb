@@ -72,6 +72,10 @@ class ChatChannel < ActiveRecord::Base
     chatable_type == "DirectMessageChannel"
   end
 
+  def public_channel?
+    ChatChannel.public_channel_chatable_types.include?(chatable_type)
+  end
+
   def chatable_has_custom_fields?
     topic_channel? || category_channel?
   end

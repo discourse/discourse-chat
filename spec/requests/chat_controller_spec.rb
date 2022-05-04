@@ -1040,4 +1040,81 @@ RSpec.describe DiscourseChat::ChatController do
         .to change { ChatDraft.count }.by(-1)
     end
   end
+
+  describe "#move_messages_to_channel" do
+    fab!(:message_to_move1) { Fabricate(:chat_message, chat_channel: chat_channel, message: "some cool message") }
+    fab!(:message_to_move2) { Fabricate(:chat_message, chat_channel: chat_channel, message: "and another thing") }
+    fab!(:destination_channel) { Fabricate(:chat_channel) }
+    let(:message_ids) { [message_to_move1.id, message_to_move2.id] }
+
+    context "when the user is not admin" do
+      it "returns an access denied error" do
+        sign_in(user)
+        put "/chat/#{chat_channel.id}/move_messages_to_channel.json", params: {
+          destination_channel_id: destination_channel.id,
+          message_ids: message_ids
+        }
+        expect(response.status).to eq(403)
+      end
+    end
+
+    context "when the user is admin" do
+      before do
+        sign_in(admin)
+      end
+
+      it "shows an error if the source channel is not found" do
+        chat_channel.trash!
+        put "/chat/#{chat_channel.id}/move_messages_to_channel.json", params: {
+          destination_channel_id: destination_channel.id,
+          message_ids: message_ids
+        }
+        expect(response.status).to eq(404)
+      end
+
+      it "shows an error if the destination channel is not found" do
+        destination_channel.trash!
+        put "/chat/#{chat_channel.id}/move_messages_to_channel.json", params: {
+          destination_channel_id: destination_channel.id,
+          message_ids: message_ids
+        }
+        expect(response.status).to eq(404)
+      end
+
+      it "successfully moves the messages to the new channel" do
+        put "/chat/#{chat_channel.id}/move_messages_to_channel.json", params: {
+          destination_channel_id: destination_channel.id,
+          message_ids: message_ids
+        }
+        expect(response.status).to eq(200)
+        latest_destination_messages = destination_channel.chat_messages.last(2)
+        expect(latest_destination_messages.first.message).to eq("some cool message")
+        expect(latest_destination_messages.second.message).to eq("and another thing")
+        expect(message_to_move1.reload.deleted_at).not_to eq(nil)
+        expect(message_to_move2.reload.deleted_at).not_to eq(nil)
+      end
+
+      it "shows an error message when the destination channel is invalid" do
+        destination_channel.update!(chatable: Fabricate(:direct_message_channel, users: [admin, Fabricate(:user)]))
+        put "/chat/#{chat_channel.id}/move_messages_to_channel.json", params: {
+          destination_channel_id: destination_channel.id,
+          message_ids: message_ids
+        }
+        expect(response.status).to eq(422)
+        expect(response.parsed_body["errors"]).to include(I18n.t("chat.errors.message_move_invalid_channel"))
+      end
+
+      it "shows an error when none of the messages can be found" do
+        destroyed_message = Fabricate(:chat_message, chat_channel: chat_channel)
+        destroyed_message.trash!
+
+        put "/chat/#{chat_channel.id}/move_messages_to_channel.json", params: {
+          destination_channel_id: destination_channel.id,
+          message_ids: [destroyed_message]
+        }
+        expect(response.status).to eq(422)
+        expect(response.parsed_body["errors"]).to include(I18n.t("chat.errors.message_move_no_messages_found"))
+      end
+    end
+  end
 end

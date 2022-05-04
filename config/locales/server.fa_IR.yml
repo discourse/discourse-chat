@@ -33,7 +33,6 @@ fa_IR:
         archived: "بایگانی شده"
         closed: "بسته شد"
         open: "باز کردن"
-      title_for_large_group_dm: "%{users} و %{count} نفر دیگر"
     personal_chat: "گفتگوی شخصی"
   discourse_automation:
     scriptables:
@@ -42,17 +41,3 @@ fa_IR:
   reviewable_score_types:
     needs_review:
       title: "نیاز به بررسی دارد"
-  user_notifications:
-    chat_summary:
-      deleted_user: "کاربر حذف شده"
-      from: "%{site_name}"
-      subject:
-        one: "«%{email_prefix}» پیام گفتگو جدید"
-        other: "«%{email_prefix}» پیام گفتگو جدید"
-      view_message: "مشاهده پیام"
-      view_messages:
-        one: "مشاهده پیام"
-        other: "مشاهده %{count} پیام"
-      view_more:
-        one: "مشاهده %{count} پیام بیشتر"
-        other: "مشاهده %{count} پیام بیشتر"

@@ -18,9 +18,6 @@ ja:
       cancel_reply: "返信をキャンセルする"
       chat_channels: "チャンネル"
       leave: "チャンネルから退出する"
-      channels_list_popup:
-        browse: "チャンネルを閲覧する"
-        create: "チャンネルを作成する"
       click_to_join: "利用可能なチャンネルを表示するにはここをクリックします。"
       close: "閉じる"
       collapse: "チャットドロワーを折りたたむ"
@@ -71,7 +68,6 @@ ja:
       restore: "削除されたメッセージを復元する"
       save: "保存"
       select: "選択"
-      return_to_list: "チャンネルリストに戻る"
       scroll_to_bottom: "一番下にスクロール"
       sound:
         title: "デスクトップチャットの通知音"

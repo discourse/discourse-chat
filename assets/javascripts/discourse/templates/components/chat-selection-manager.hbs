@@ -9,6 +9,19 @@
       disabled=(not anyMessagesSelected)
       action=(action "quoteMessages")
     }}
+
+    {{#if currentUser.staff}}
+      {{d-button
+        id="chat-move-to-channel-btn"
+        class="btn-secondary"
+        icon="sign-out-alt"
+        label="chat.selection.move_selection_to_channel"
+        title="chat.selection.move_selection_to_channel"
+        disabled=(not anyMessagesSelected)
+        action=(action "openMoveMessageModal")
+      }}
+    {{/if}}
+
     {{d-button
       icon="times"
       class="btn-secondary cancel-btn"

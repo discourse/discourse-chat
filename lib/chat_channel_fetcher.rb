@@ -141,4 +141,11 @@ module DiscourseChat::ChatChannelFetcher
     unread_counts.default = 0
     unread_counts
   end
+
+  def self.find_with_access_check(channel_id, guardian)
+    chat_channel = ChatChannel.find_by(id: channel_id)
+    raise Discourse::NotFound if chat_channel.blank?
+    raise Discourse::InvalidAccess if !guardian.can_see_chat_channel?(chat_channel)
+    chat_channel
+  end
 end

@@ -388,9 +388,10 @@ export default Component.extend(TextareaTextManipulation, {
       treatAsTextarea: true,
 
       onKeyUp: (text, cp) => {
-        const matches = /(?:^|[\s.\?,@\/#!%&*;:\[\]{}=\-_()])(:(?!:).?[\w-]*:?(?!:)(?:t\d?)?:?) ?$/gi.exec(
-          text.substring(0, cp)
-        );
+        const matches =
+          /(?:^|[\s.\?,@\/#!%&*;:\[\]{}=\-_()])(:(?!:).?[\w-]*:?(?!:)(?:t\d?)?:?) ?$/gi.exec(
+            text.substring(0, cp)
+          );
 
         if (matches && matches[1]) {
           return [matches[1]];

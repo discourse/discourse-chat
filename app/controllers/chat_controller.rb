@@ -335,7 +335,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
 
     message_ids = params[:message_ids].map(&:to_i)
     markdown = ChatTranscriptService.new(
-      @chat_channel, current_user, messages_or_ids: message_ids
+      chat_channel, current_user, messages_or_ids: message_ids
     ).generate_markdown
     render json: success_json.merge(markdown: markdown)
   end

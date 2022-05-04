@@ -30,11 +30,9 @@ const MAX_RECENT_MSGS = 100;
 const STICKY_SCROLL_LENIENCE = 4;
 const READ_INTERVAL = 1000;
 const PAGE_SIZE = 50;
-const MESSAGES_ABOVE_NEW_MESSAGE_INDICATOR = 2;
 
-const PAST = "past";
-const FUTURE = "future";
-const BOTH = "both";
+const PAST = "Past";
+const FUTURE = "Future";
 
 let _chatMessageDecorators = [];
 
@@ -177,17 +175,11 @@ export default Component.extend({
 
     return this.chat.loadCookFunction(this.site.categories).then((cook) => {
       this.set("cook", cook);
-
       const findArgs = {
         channelId,
         targetMessageId: this.targetMessageId,
         pageSize: PAGE_SIZE,
       };
-
-      if (!this.targetMessageId) {
-        this._includeImmediateHistory(findArgs);
-      }
-
       return this.store
         .findAll("chat-message", findArgs)
         .then((messages) => {
@@ -241,9 +233,8 @@ export default Component.extend({
     const findArgs = {
       channelId: this.chatChannel.id,
       pageSize: PAGE_SIZE,
-      direction,
-      messageId,
     };
+    findArgs[`${loadingPast ? "before" : "after"}MessageId`] = messageId;
     const channelId = this.chatChannel.id;
 
     return this.store
@@ -419,23 +410,6 @@ export default Component.extend({
     return message.id || `staged-${message.stagedId}`;
   },
 
-  _getLastReadId() {
-    return this.currentUser.chat_channel_tracking_state[this.chatChannel.id]
-      ?.chat_message_id;
-  },
-
-  _includeImmediateHistory(findArgs) {
-    const lastReadId = this._getLastReadId();
-
-    if (lastReadId) {
-      // We are fetching the last read message, the two previous ones,
-      // and the next 47 to complete a page.
-      const offset = PAGE_SIZE - MESSAGES_ABOVE_NEW_MESSAGE_INDICATOR;
-      findArgs["messageId"] = lastReadId + offset;
-      findArgs["direction"] = BOTH;
-    }
-  },
-
   _markLastReadMessage(opts = { reRender: false }) {
     if (opts.reRender) {
       this.messages.forEach((m) => {
@@ -444,7 +418,9 @@ export default Component.extend({
         }
       });
     }
-    const lastReadId = this._getLastReadId();
+    const lastReadId =
+      this.currentUser.chat_channel_tracking_state[this.chatChannel.id]
+        ?.chat_message_id;
     if (!lastReadId) {
       return;
     }
@@ -452,20 +428,12 @@ export default Component.extend({
     this.set("lastSendReadMessageId", lastReadId);
     const indexOfLastReadyMessage =
       this.messages.findIndex((m) => m.id === lastReadId) || 0;
-    let newestUnreadScrollTarget = indexOfLastReadyMessage + 1;
-    let newestUnreadMessage = this.messages[newestUnreadScrollTarget];
+    const newestUnreadMessage = this.messages[indexOfLastReadyMessage + 1];
 
     if (newestUnreadMessage) {
       newestUnreadMessage.set("newestMessage", true);
-      newestUnreadScrollTarget =
-        newestUnreadScrollTarget - MESSAGES_ABOVE_NEW_MESSAGE_INDICATOR;
-
-      if (newestUnreadScrollTarget < 0) {
-        newestUnreadScrollTarget += Math.abs(newestUnreadScrollTarget);
-      }
-
-      newestUnreadMessage = this.messages[newestUnreadScrollTarget];
-
+      // We have the last read message from lookup, but now we need the index of the message,
+      // so that we can scroll to the message directly after it.
       return this.scrollToMessage(newestUnreadMessage.id);
     }
     this._stickScrollToBottom();

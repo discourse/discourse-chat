@@ -1,0 +1,29 @@
+{{#d-modal-body title="chat.move_to_channel.title"}}
+  <div id="chat-message-move-to-channel-modal-inner" class="chat-message-move-to-channel-modal-inner">
+    <p>{{html-safe (i18n "chat.move_to_channel.instructions" channelTitle=sourceChannel.title count=selectedMessageCount)}}</p>
+  </div>
+
+  {{chat-channel-chooser
+    class="chat-move-message-channel-chooser"
+    content=availableChannels
+    value=destinationChannelId
+    nameProperty="title"
+  }}
+
+{{/d-modal-body}}
+
+<div class="modal-footer">
+  {{d-button
+    class="btn-primary"
+    icon="sign-out-alt"
+    disabled=disableMoveButton
+    action=(action "moveMessages")
+    label="chat.move_to_channel.confirm_move"
+    id="chat-confirm-move-messages-to-channel"}}
+
+  {{d-button
+    label="cancel"
+    class="btn-flat"
+    action=(route-action "closeModal")
+  }}
+</div>

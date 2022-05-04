@@ -617,7 +617,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     );
 
     publishToMessageBus("/chat/9", {
-      typ: "sent",
+      type: "sent",
       stagedId: 1,
       chat_message: {
         id: 202,
@@ -671,7 +671,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
 
     const cooked = "<h1>hello there</h1>";
     publishToMessageBus(`/chat/9`, {
-      typ: "processed",
+      type: "processed",
       chat_message: {
         cooked,
         id: 175,
@@ -709,7 +709,7 @@ Widget.triangulate(arg: "test")
     await triggerKeyEvent(composerInput, "keydown", 13); // 13 is enter keycode
 
     publishToMessageBus("/chat/9", {
-      typ: "sent",
+      type: "sent",
       stagedId: 1,
       chat_message: {
         id: 202,
@@ -957,7 +957,7 @@ Widget.triangulate(arg: "test")
       action: "add",
       user: { id: 1, username: "eviltrout" },
       emoji: "heart",
-      typ: "reaction",
+      type: "reaction",
       chat_message_id: 176,
     });
 
@@ -971,7 +971,7 @@ Widget.triangulate(arg: "test")
       action: "add",
       user: { id: 77, username: "rando" },
       emoji: "sneezing_face",
-      typ: "reaction",
+      type: "reaction",
       chat_message_id: 176,
     });
     await chatSettled();
@@ -995,7 +995,7 @@ Widget.triangulate(arg: "test")
     const messages = queryAll(".chat-message-container");
     const lastMessage = messages[messages.length - 1];
     publishToMessageBus("/chat/9", {
-      typ: "sent",
+      type: "sent",
       stagedId: 1,
       chat_message: {
         id: 202,
@@ -1022,7 +1022,7 @@ Widget.triangulate(arg: "test")
       action: "add",
       user: { id: 1, username: "eviltrout" },
       emoji: "grin",
-      typ: "reaction",
+      type: "reaction",
       chat_message_id: 202,
     });
     await chatSettled();
@@ -1035,7 +1035,7 @@ Widget.triangulate(arg: "test")
   test("mention warning is rendered", async function (assert) {
     await visit("/chat/channel/9/Site");
     publishToMessageBus("/chat/9", {
-      typ: "mention_warning",
+      type: "mention_warning",
       cannot_see: [{ id: 75, username: "hawk" }],
       without_membership: [
         { id: 76, username: "eviltrout" },

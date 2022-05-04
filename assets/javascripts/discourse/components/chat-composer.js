@@ -388,10 +388,9 @@ export default Component.extend(TextareaTextManipulation, {
       treatAsTextarea: true,
 
       onKeyUp: (text, cp) => {
-        const matches =
-          /(?:^|[\s.\?,@\/#!%&*;:\[\]{}=\-_()])(:(?!:).?[\w-]*:?(?!:)(?:t\d?)?:?) ?$/gi.exec(
-            text.substring(0, cp)
-          );
+        const matches = /(?:^|[\s.\?,@\/#!%&*;:\[\]{}=\-_()])(:(?!:).?[\w-]*:?(?!:)(?:t\d?)?:?) ?$/gi.exec(
+          text.substring(0, cp)
+        );
 
         if (matches && matches[1]) {
           return [matches[1]];
@@ -450,10 +449,8 @@ export default Component.extend(TextareaTextManipulation, {
 
           // note this will only work for emojis starting with :
           // eg: :-)
-          let emojiTranslation = this.get("site.custom_emoji_translation");
-          if (emojiTranslation === undefined) {
-            emojiTranslation = {};
-          }
+          const emojiTranslation =
+            this.get("site.custom_emoji_translation") || {};
           const allTranslations = Object.assign(
             {},
             translations,

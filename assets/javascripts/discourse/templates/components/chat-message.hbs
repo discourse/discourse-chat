@@ -126,48 +126,42 @@
             </div>
           {{/unless}}
 
-          {{#if message.action_code}}
-            <span class="chat-action-text">
-              {{html-safe actionCodeText}}
-            </span>
-          {{else}}
-            {{#chat-message-text
-              cooked=message.cooked
-              uploads=message.uploads
-              edited=message.edited
-            }}
-              {{#if hasReactions}}
-                <div class="chat-message-reaction-list">
-                  {{#if reactionLabel}}
-                    <div class="reaction-users-list">
-                      {{replace-emoji reactionLabel}}
-                    </div>
-                  {{/if}}
+          {{#chat-message-text
+            cooked=message.cooked
+            uploads=message.uploads
+            edited=message.edited
+          }}
+            {{#if hasReactions}}
+              <div class="chat-message-reaction-list">
+                {{#if reactionLabel}}
+                  <div class="reaction-users-list">
+                    {{replace-emoji reactionLabel}}
+                  </div>
+                {{/if}}
 
-                  {{#each-in message.reactions as |emoji reactionAttrs|}}
-                    {{chat-message-reaction
-                      emoji=emoji
-                      count=reactionAttrs.count
-                      users=reactionAttrs.users
-                      reacted=reactionAttrs.reacted
-                      react=(action "react")
-                      showUsersList=(action "showUsersList")
-                      hideUsersList=(action "hideUsersList")
-                    }}
-                  {{/each-in}}
+                {{#each-in message.reactions as |emoji reactionAttrs|}}
+                  {{chat-message-reaction
+                    emoji=emoji
+                    count=reactionAttrs.count
+                    users=reactionAttrs.users
+                    reacted=reactionAttrs.reacted
+                    react=(action "react")
+                    showUsersList=(action "showUsersList")
+                    hideUsersList=(action "hideUsersList")
+                  }}
+                {{/each-in}}
 
-                  {{#if canInteractWithChat}}
-                    {{d-button
-                      class="chat-message-react-btn"
-                      action=(action "startReactionForReactionList")
-                      icon="discourse-emojis"
-                      title="chat.react"
-                    }}
-                  {{/if}}
-                </div>
-              {{/if}}
-            {{/chat-message-text}}
-          {{/if}}
+                {{#if canInteractWithChat}}
+                  {{d-button
+                    class="chat-message-react-btn"
+                    action=(action "startReactionForReactionList")
+                    icon="discourse-emojis"
+                    title="chat.react"
+                  }}
+                {{/if}}
+              </div>
+            {{/if}}
+          {{/chat-message-text}}
 
           {{#if message.error}}
             <div class="chat-send-error">

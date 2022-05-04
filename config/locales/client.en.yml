@@ -316,8 +316,6 @@ en:
       chat:
         enabled: '%{who} enabled <button class="btn-link open-chat">chat</button> %{when}'
         disabled: "%{who} closed chat %{when}"
-        post_created: "created a new post: %{excerpt}"
-        generic_small_action: "performed a topic management action"
     discourse_automation:
       scriptables:
         send_chat_message:

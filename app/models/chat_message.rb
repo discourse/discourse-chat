@@ -2,8 +2,14 @@
 
 class ChatMessage < ActiveRecord::Base
   include Trashable
-  self.ignored_columns = ["post_id"]
   attribute :has_oneboxes, default: false
+
+  # TODO (martin) Drop both these columns right after they are ignored,
+  # the post_id has been ignored for ages and action_code is not used.
+  self.ignored_columns = [
+    "post_id",
+    "action_code"
+  ]
 
   BAKED_VERSION = 2
 
@@ -248,7 +254,6 @@ end
 #  deleted_by_id   :integer
 #  in_reply_to_id  :integer
 #  message         :text
-#  action_code     :string
 #  cooked          :text
 #  cooked_version  :integer
 #

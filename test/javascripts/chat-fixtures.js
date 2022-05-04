@@ -129,7 +129,6 @@ const message0 = {
   message: messageContents[0],
   cooked: messageContents[0],
   excerpt: messageContents[0],
-  action_code: null,
   created_at: "2021-07-20T08:14:16.950Z",
   flag_count: 0,
   user: {
@@ -145,7 +144,6 @@ const message1 = {
   message: messageContents[1],
   cooked: messageContents[1],
   excerpt: messageContents[1],
-  action_code: null,
   created_at: "2021-07-20T08:14:22.043Z",
   flag_count: 0,
   user: {
@@ -179,7 +177,6 @@ const message2 = {
   message: messageContents[2],
   cooked: messageContents[2],
   excerpt: messageContents[2],
-  action_code: null,
   created_at: "2021-07-20T08:14:25.043Z",
   flag_count: 0,
   user: {
@@ -232,7 +229,6 @@ const message3 = {
     '<p>gg <a class="mention" href="/u/osama">@osama</a> <a class="mention" href="/u/mark">@mark</a> <a class="mention" href="/u/here">@here</a></p>',
   excerpt:
     '<p>gg <a class="mention" href="/u/osama">@osama</a> <a class="mention" href="/u/mark">@mark</a> <a class="mention" href="/u/here">@here</a></p>',
-  action_code: null,
   created_at: "2021-07-22T08:14:16.950Z",
   flag_count: 0,
   user: {

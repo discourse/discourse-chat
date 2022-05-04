@@ -31,7 +31,6 @@ acceptance("Discourse Chat - Chat live pane collapse", function (needs) {
               '<div class="onebox lazyYT lazyYT-container" data-youtube-id="aOWkVdU4NH0" data-youtube-title="Picnic with my cat (shaved ice &amp; lemonade)" data-parameters="feature=oembed&amp;wmode=opaque"> <a href="https:/*www.youtube.com/watch?v=aOWkVdU4NH0" target="_blank" rel="nofollow ugc noopener">*/ <img class="ytp-thumbnail-image" src="https://img.youtube.com/vi/aOWkVdU4NH0/hqdefault.jpg" title="Picnic with my cat (shaved ice &amp; lemonade)"></a></div>',
             excerpt:
               '<a href="https://www.youtube.com/watch?v=aOWkVdU4NH0">[Picnic with my cat (shaved ice &amp; lemonade&hellip;</a>',
-            action_code: null,
             created_at: "2021-07-20T08:14:16.950Z",
             flag_count: 0,
             user: {

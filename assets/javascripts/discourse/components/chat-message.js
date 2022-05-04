@@ -10,7 +10,6 @@ import discourseComputed, {
 } from "discourse-common/utils/decorators";
 import EmberObject, { action, computed } from "@ember/object";
 import { ajax } from "discourse/lib/ajax";
-import { autoUpdatingRelativeAge } from "discourse/lib/formatter";
 import { cancel, later, schedule } from "@ember/runloop";
 import { clipboardCopy } from "discourse/lib/utilities";
 import { inject as service } from "@ember/service";
@@ -302,7 +301,6 @@ export default Component.extend({
     "message.staged",
     "message.deleted_at",
     "message.in_reply_to",
-    "message.action_code",
     "message.error",
     "isHovered"
   )
@@ -381,7 +379,6 @@ export default Component.extend({
   @discourseComputed("message", "message.deleted_at", "chatChannel.status")
   showEditButton(message, deletedAt) {
     return (
-      !message.action_code &&
       !deletedAt &&
       this.currentUser.id === message.user?.id &&
       this.chatChannel.canModifyMessages(this.currentUser)
@@ -415,12 +412,9 @@ export default Component.extend({
 
   @discourseComputed("message")
   canManageDeletion(message) {
-    return (
-      !message.action_code &&
-      (this.currentUser?.id === message.user?.id
-        ? this.details.can_delete_self
-        : this.details.can_delete_others)
-    );
+    return this.currentUser?.id === message.user?.id
+      ? this.details.can_delete_self
+      : this.details.can_delete_others;
   },
 
   @discourseComputed("message.deleted_at", "chatChannel.status")
@@ -465,19 +459,6 @@ export default Component.extend({
       this.currentUser?.staff &&
       this.chatChannel.canModifyMessages(this.currentUser)
     );
-  },
-
-  @discourseComputed("message", "message.action_code")
-  actionCodeText(message, actionCode) {
-    const when = autoUpdatingRelativeAge(new Date(message.created_at), {
-      format: "medium-with-ago",
-    });
-
-    return I18n.t(`action_codes.${actionCode}`, {
-      excerpt: message.message,
-      when,
-      who: "[INVALID]",
-    });
   },
 
   @discourseComputed("message.reactions.@each")

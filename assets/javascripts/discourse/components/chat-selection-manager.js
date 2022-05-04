@@ -24,6 +24,11 @@ export default class AdminCustomizeColorsShowController extends Component {
     return this.selectedMessageIds.length > 0;
   }
 
+  @computed("chatChannel.isDirectMessageChannel")
+  get showMoveMessageButton() {
+    return this.currentUser.staff && !this.chatChannel.isDirectMessageChannel;
+  }
+
   @action
   openMoveMessageModal() {
     showModal("chat-message-move-to-channel-modal").setProperties({

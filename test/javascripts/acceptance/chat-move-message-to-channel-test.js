@@ -98,6 +98,20 @@ acceptance(
         "it goes to the destination channel after the move"
       );
     });
+
+    test("does not allow moving messages from a direct message channel", async function (assert) {
+      await visit("/chat/channel/75/@hawk");
+      assert.ok(exists(".chat-message-container"));
+      const firstMessage = query(".chat-message-container");
+      const dropdown = selectKit(".chat-message-container .more-buttons");
+      await dropdown.expand();
+      await dropdown.selectRowByValue("selectMessage");
+      assert.ok(firstMessage.classList.contains("selecting-messages"));
+      assert.notOk(
+        exists(".chat-live-pane #chat-move-to-channel-btn"),
+        "the move to channel button is not shown in direct message channels"
+      );
+    });
   }
 );
 

@@ -4,7 +4,6 @@ class ChatMessageSerializer < ApplicationSerializer
   attributes :id,
     :message,
     :cooked,
-    :action_code,
     :created_at,
     :excerpt,
     :deleted_at,

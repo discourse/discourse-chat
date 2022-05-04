@@ -3,6 +3,7 @@
 require 'rails_helper'
 
 describe DiscourseChat::PostNotificationHandler do
+  let(:acting_user) { Fabricate(:user) }
   let(:post) { Fabricate(:post) }
   let(:notified_users) { [] }
   let(:subject) { DiscourseChat::PostNotificationHandler.new(post, notified_users) }
@@ -34,7 +35,7 @@ describe DiscourseChat::PostNotificationHandler do
   end
 
   def update_post_with_chat_quote(messages)
-    quote_markdown = ChatTranscriptService.new(channel, messages_or_ids: messages).generate_markdown
+    quote_markdown = ChatTranscriptService.new(channel, acting_user, messages_or_ids: messages).generate_markdown
     post.update!(raw: post.raw + "\n\n" + quote_markdown)
   end
 

@@ -334,7 +334,9 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     chat_channel = DiscourseChat::ChatChannelFetcher.find_with_access_check(params[:chat_channel_id], guardian)
 
     message_ids = params[:message_ids].map(&:to_i)
-    markdown = ChatTranscriptService.new(chat_channel, messages_or_ids: message_ids).generate_markdown
+    markdown = ChatTranscriptService.new(
+      chat_channel, current_user, messages_or_ids: message_ids
+    ).generate_markdown
     render json: success_json.merge(markdown: markdown)
   end
 

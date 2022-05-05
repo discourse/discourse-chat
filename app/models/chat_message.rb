@@ -4,13 +4,6 @@ class ChatMessage < ActiveRecord::Base
   include Trashable
   attribute :has_oneboxes, default: false
 
-  # TODO (martin) Drop both these columns right after they are ignored,
-  # the post_id has been ignored for ages and action_code is not used.
-  self.ignored_columns = [
-    "post_id",
-    "action_code"
-  ]
-
   BAKED_VERSION = 2
 
   belongs_to :chat_channel

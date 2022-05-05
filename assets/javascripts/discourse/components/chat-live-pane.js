@@ -295,8 +295,8 @@ export default Component.extend({
       details: {
         chat_channel_id: this.chatChannel.id,
         chatable_type: this.chatChannel.chatable_type,
-        can_delete_self: true,
-        can_delete_others: this.currentUser.staff,
+        can_delete_self: messages.resultSetMeta.can_delete_self,
+        can_delete_others: messages.resultSetMeta.can_delete_others,
         can_flag: messages.resultSetMeta.can_flag,
         user_silenced: messages.resultSetMeta.user_silenced,
         can_moderate: messages.resultSetMeta.can_moderate,

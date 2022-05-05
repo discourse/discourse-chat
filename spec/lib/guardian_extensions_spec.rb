@@ -147,6 +147,18 @@ describe DiscourseChat::GuardianExtensions do
           expect(staff_guardian.can_moderate_chat?(channel.chatable)).to eq(true)
           expect(guardian.can_moderate_chat?(channel.chatable)).to eq(false)
         end
+
+        context "when enable_category_group_moderation is true" do
+          before { SiteSetting.enable_category_group_moderation = true }
+
+          it "returns true if the regular user is part of the reviewable_by_group for the category" do
+            mods = Fabricate(:group)
+            GroupUser.create(user: user, group: mods)
+            category.update!(reviewable_by_group: mods)
+            expect(staff_guardian.can_moderate_chat?(channel.chatable)).to eq(true)
+            expect(guardian.can_moderate_chat?(channel.chatable)).to eq(true)
+          end
+        end
       end
 
       context "for DM channel" do

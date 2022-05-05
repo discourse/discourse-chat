@@ -1,4 +1,5 @@
 import { test } from "qunit";
+import { cloneJSON } from "discourse-common/lib/object";
 import { click, currentURL, visit } from "@ember/test-helpers";
 import {
   acceptance,
@@ -11,11 +12,11 @@ import {
 } from "discourse/plugins/discourse-chat/chat-fixtures";
 import selectKit from "discourse/tests/helpers/select-kit-helper";
 
-function setupPretenders(server, helper) {
+function setupPretenders(server, helper, userAdmin = false) {
+  const chatViewCloned = cloneJSON(chatView);
+  chatViewCloned.meta.can_moderate = userAdmin;
+
   server.get("/chat/chat_channels.json", () => helper.response(chatChannels));
-  server.get("/chat/:chat_channel_id/messages.json", () =>
-    helper.response(chatView)
-  );
   server.post("/uploads/lookup-urls", () => {
     return helper.response([]);
   });
@@ -26,7 +27,12 @@ function setupPretenders(server, helper) {
       first_moved_message_id: 174,
     });
   });
-  server.get("/chat/lookup/:messageId.json", () => helper.response(chatView));
+  server.get("/chat/:chat_channel_id/messages.json", () =>
+    helper.response(chatViewCloned)
+  );
+  server.get("/chat/lookup/:messageId.json", () =>
+    helper.response(chatViewCloned)
+  );
 }
 
 acceptance(
@@ -46,7 +52,7 @@ acceptance(
     });
 
     needs.pretender((server, helper) => {
-      setupPretenders(server, helper);
+      setupPretenders(server, helper, true);
     });
 
     test("opens a modal for destination channel selection then redirects to the moved messages when done", async function (assert) {
@@ -133,6 +139,11 @@ acceptance(
 
     needs.pretender((server, helper) => {
       setupPretenders(server, helper);
+      server.get("/chat/9/messages.json", () => {
+        const chatViewCloned = cloneJSON(chatView);
+        chatViewCloned.meta.can_moderate = true;
+        return helper.response(chatViewCloned);
+      });
     });
 
     test("non-staff users cannot see the move to channel button", async function (assert) {
@@ -147,6 +158,21 @@ acceptance(
       assert.notOk(
         exists(".chat-live-pane #chat-move-to-channel-btn"),
         "non-staff users cannot see the move to channel button"
+      );
+    });
+
+    test("non-staff users can see the move to channel button if they can_moderate the channel", async function (assert) {
+      await visit("/chat/channel/9/Site");
+      assert.ok(exists(".chat-message-container"));
+      const firstMessage = query(".chat-message-container");
+      const dropdown = selectKit(".chat-message-container .more-buttons");
+      await dropdown.expand();
+      await dropdown.selectRowByValue("selectMessage");
+
+      assert.ok(firstMessage.classList.contains("selecting-messages"));
+      assert.ok(
+        exists(".chat-live-pane #chat-move-to-channel-btn"),
+        "non-staff users can see the move to channel button if can_moderate"
       );
     });
   }

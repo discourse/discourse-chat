@@ -185,12 +185,17 @@ class DiscourseChat::ChatNotifier
   end
 
   def group_name_mentions
-    @group_mentions_from_cooked ||= Nokogiri::HTML5.fragment(@chat_message.cooked).css(".mention-group").map(&:text)
+    @group_mentions_from_cooked ||= normalized_mentions(
+      Nokogiri::HTML5
+      .fragment(@chat_message.cooked)
+      .css(".mention-group")
+      .map(&:text)
+    )
   end
 
   def mentionable_groups
     @mentionable_groups ||= Group.mentionable(@user, include_public: false)
-      .where('LOWER(name) IN (?)', normalized_mentions(group_name_mentions))
+      .where('LOWER(name) IN (?)', group_name_mentions)
   end
 
   def expand_group_mentions(to_notify, already_covered_ids)
@@ -205,8 +210,13 @@ class DiscourseChat::ChatNotifier
     grouped = group_users_to_notify(reached_by_group)
 
     grouped[:already_participating].each do |user|
-      group = user.groups.detect { |g| mentionable_groups.include?(g) }
-      to_notify[group.name.downcase] << user.id
+      # When a user is a member of multiple mentioned groups,
+      # the most far to the left should take precedence.
+      ordered_group_names = group_name_mentions & mentionable_groups.map { |mg| mg.name.downcase }
+      user_group_names = user.groups.map { |ug| ug.name.downcase }
+      group_name = ordered_group_names.detect { |gn| user_group_names.include?(gn) }
+
+      to_notify[group_name] << user.id
     end
     already_covered_ids.concat(grouped[:already_participating])
 

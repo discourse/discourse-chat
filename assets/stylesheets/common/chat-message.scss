@@ -274,6 +274,8 @@
 }
 
 .chat-msgactions-hover {
+  @include unselectable;
+
   position: absolute;
   opacity: 0;
   padding-left: 4em;

@@ -16,9 +16,25 @@ import { inject as service } from "@ember/service";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { prioritizeNameInUx } from "discourse/lib/settings";
 import { Promise } from "rsvp";
+import { addChatMessageDecorator } from "discourse/plugins/discourse-chat/discourse/components/chat-live-pane";
 
-const HERE = "here";
-const ALL = "all";
+const HERE = "@here";
+const ALL = "@all";
+
+addChatMessageDecorator(function (chatMessage) {
+  if (!this.currentUser) {
+    return;
+  }
+
+  const highlightable = [`@${this.currentUser.username}`, HERE, ALL];
+
+  chatMessage.querySelectorAll(".mention").forEach((node) => {
+    const mention = node.textContent.trim();
+    if (highlightable.includes(mention)) {
+      node.classList.add("highlighted", "valid-mention");
+    }
+  });
+});
 
 export default Component.extend({
   ADD_REACTION: "add",
@@ -45,23 +61,6 @@ export default Component.extend({
     this.message.id
       ? this._subscribeToAppEvents()
       : this._waitForIdToBePopulated();
-  },
-
-  didInsertElement() {
-    this._super(...arguments);
-
-    if (!this.currentUser || !this.message) {
-      return;
-    }
-
-    this.messageContainer?.querySelectorAll(".mention").forEach((node) => {
-      const mention = node.textContent.trim().substring(1);
-      const highlightable = [this.currentUser.username, HERE, ALL];
-      if (highlightable.includes(mention)) {
-        node.classList.add("highlighted");
-        node.classList.add("valid-mention");
-      }
-    });
   },
 
   willDestroyElement() {

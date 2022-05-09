@@ -1479,7 +1479,8 @@ acceptance("Discourse Chat - plugin API", function (needs) {
     await visit("/chat/channel/75/@hawk");
 
     assert.equal(
-      document.querySelector(".chat-message-text").innerText,
+      document.querySelector('.chat-message-container[data-id="177"]')
+        .innerText,
       "test"
     );
   });

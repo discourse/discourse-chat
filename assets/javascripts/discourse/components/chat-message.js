@@ -83,7 +83,6 @@ export default Component.extend({
 
     schedule("afterRender", () => {
       if (!this.messageContainer) {
-        console.log("no container?");
         return;
       }
 

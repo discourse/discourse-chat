@@ -23,7 +23,11 @@ export default class ChatMessageCollapser extends Component {
         const header = htmlSafe(
           `<a target="_blank" class="chat-message-collapser-link" rel="noopener noreferrer" href="${link}">${title}</a>`
         );
-        acc.push({ header, body: e, needsCollapser: true });
+        const body = document.createElement("div");
+        body.className = "chat-message-collapser-youtube";
+        body.appendChild(e);
+
+        acc.push({ header, body, needsCollapser: true });
       } else {
         acc.push({ body: e, needsCollapser: false });
       }

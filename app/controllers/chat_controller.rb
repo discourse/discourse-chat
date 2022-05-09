@@ -5,8 +5,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
   FUTURE_MESSAGE_LIMIT = 40
   PAST = 'past'
   FUTURE = 'future'
-  BOTH = 'both'
-  CHAT_DIRECTIONS = [PAST, FUTURE, BOTH]
+  CHAT_DIRECTIONS = [PAST, FUTURE]
 
   before_action :find_chatable, only: [:enable_chat, :disable_chat]
   before_action :find_chat_message, only: [
@@ -184,12 +183,11 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     messages = messages.with_deleted if guardian.can_moderate_chat?(@chatable)
 
     if message_id.present?
-      condition = [PAST, BOTH].include?(direction) ? '<' : '>'
+      condition = direction == PAST ? '<' : '>'
       messages = messages.where("id #{condition} ?", message_id.to_i)
     end
 
-    order = :desc
-    order = :asc if direction == FUTURE
+    order = direction == FUTURE ? :asc : :desc
     messages = messages.order(id: order).limit(page_size).to_a
 
     can_load_more_past = nil
@@ -199,9 +197,6 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
       can_load_more_future = messages.size == page_size
     elsif direction == PAST
       can_load_more_past = messages.size == page_size
-    elsif direction == BOTH
-      can_load_more_past = messages.size == page_size
-      can_load_more_future = true
     else
       # When direction is blank, we'll return the latest messages.
       can_load_more_future = false

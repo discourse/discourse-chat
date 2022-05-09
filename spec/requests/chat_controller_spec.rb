@@ -179,28 +179,6 @@ RSpec.describe DiscourseChat::ChatController do
       end
     end
 
-    describe 'when direction is both ways' do
-      it 'returns messages before the ID' do
-        get "/chat/#{chat_channel.id}/messages.json", params: { message_id: message_30.id, direction: described_class::BOTH, page_size: page_size }
-        messages = response.parsed_body["chat_messages"]
-        expect(messages.count).to eq(page_size)
-        expect(messages.first["id"]).to eq(message_0.id)
-        expect(messages.last["id"]).to eq(message_29.id)
-      end
-
-      it "signals there are messages available both ways when the results size matches the page size" do
-        get "/chat/#{chat_channel.id}/messages.json", params: { message_id: message_30.id, direction: described_class::BOTH, page_size: page_size }
-        expect(response.parsed_body["meta"]["can_load_more_past"]).to eq(true)
-        expect(response.parsed_body["meta"]["can_load_more_future"]).to eq(true)
-      end
-
-      it "only signals there are messages available in the past when the results size doesn't matches" do
-        get "/chat/#{chat_channel.id}/messages.json", params: { message_id: message_10.id, direction: described_class::BOTH, page_size: page_size }
-        expect(response.parsed_body["meta"]["can_load_more_past"]).to eq(false)
-        expect(response.parsed_body["meta"]["can_load_more_future"]).to eq(true)
-      end
-    end
-
     describe 'without direction (latest messages)' do
       it 'signals there are no future messages' do
         get "/chat/#{chat_channel.id}/messages.json", params: { page_size: page_size }

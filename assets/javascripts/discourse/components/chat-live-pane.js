@@ -31,11 +31,9 @@ const MAX_RECENT_MSGS = 100;
 const STICKY_SCROLL_LENIENCE = 4;
 const READ_INTERVAL = 1000;
 const PAGE_SIZE = 50;
-const MESSAGES_ABOVE_NEW_MESSAGE_INDICATOR = 2;
 
 const PAST = "past";
 const FUTURE = "future";
-const BOTH = "both";
 
 export default Component.extend({
   classNameBindings: [":chat-live-pane", "sendingloading", "loading"],
@@ -171,13 +169,9 @@ export default Component.extend({
 
       const findArgs = {
         channelId,
-        targetMessageId: this.targetMessageId,
+        targetMessageId: this.targetMessageId || this._getLastReadId(),
         pageSize: PAGE_SIZE,
       };
-
-      if (!this.targetMessageId) {
-        this._includeImmediateHistory(findArgs);
-      }
 
       return this.store
         .findAll("chat-message", findArgs)
@@ -415,18 +409,6 @@ export default Component.extend({
       ?.chat_message_id;
   },
 
-  _includeImmediateHistory(findArgs) {
-    const lastReadId = this._getLastReadId();
-
-    if (lastReadId) {
-      // We are fetching the last read message, the two previous ones,
-      // and the next 47 to complete a page.
-      const offset = PAGE_SIZE - MESSAGES_ABOVE_NEW_MESSAGE_INDICATOR;
-      findArgs["messageId"] = lastReadId + offset;
-      findArgs["direction"] = BOTH;
-    }
-  },
-
   _markLastReadMessage(opts = { reRender: false }) {
     if (opts.reRender) {
       this.messages.forEach((m) => {
@@ -441,23 +423,16 @@ export default Component.extend({
     }
 
     this.set("lastSendReadMessageId", lastReadId);
-    const indexOfLastReadyMessage =
+    const indexOfLastReadMessage =
       this.messages.findIndex((m) => m.id === lastReadId) || 0;
-    let newestUnreadScrollTarget = indexOfLastReadyMessage + 1;
-    let newestUnreadMessage = this.messages[newestUnreadScrollTarget];
+    let newestUnreadMessage = this.messages[indexOfLastReadMessage + 1];
 
     if (newestUnreadMessage) {
       newestUnreadMessage.set("newestMessage", true);
-      newestUnreadScrollTarget =
-        newestUnreadScrollTarget - MESSAGES_ABOVE_NEW_MESSAGE_INDICATOR;
 
-      if (newestUnreadScrollTarget < 0) {
-        newestUnreadScrollTarget += Math.abs(newestUnreadScrollTarget);
-      }
+      next(() => this.scrollToMessage(newestUnreadMessage.id));
 
-      newestUnreadMessage = this.messages[newestUnreadScrollTarget];
-
-      return this.scrollToMessage(newestUnreadMessage.id);
+      return;
     }
     this._stickScrollToBottom();
   },
@@ -492,21 +467,24 @@ export default Component.extend({
       message.set("expanded", true);
     }
 
-    const messageEl = this._scrollerEl.querySelector(
-      `.chat-message-container[data-id='${messageId}']`
-    );
-    if (messageEl) {
-      schedule("afterRender", () => {
-        if (this._selfDeleted) {
-          return;
-        }
+    schedule("afterRender", () => {
+      const messageEl = this._scrollerEl.querySelector(
+        `.chat-message-container[data-id='${messageId}']`
+      );
 
-        this._scrollerEl.scrollTop =
-          messageEl.offsetTop -
-          (opts.position === "top"
-            ? this._scrollerEl.offsetTop - 20
-            : this._scrollerEl.offsetHeight);
-      });
+      if (!messageEl || this._selfDeleted) {
+        return;
+      }
+
+      // Ensure the focused message starts at 1/6 of pane
+      // to properly display separators
+      const aboveMessageOffset = this.element.clientHeight / 6;
+
+      this._scrollerEl.scrollTop =
+        messageEl.offsetTop -
+        (opts.position === "top"
+          ? this._scrollerEl.offsetTop + aboveMessageOffset
+          : this._scrollerEl.offsetHeight);
 
       if (opts.highlight) {
         messageEl.classList.add("highlighted");
@@ -524,7 +502,7 @@ export default Component.extend({
           }, 3000);
         }
       }
-    }
+    });
   },
 
   @afterRender

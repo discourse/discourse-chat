@@ -344,14 +344,12 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     params.require(:message_ids)
     params.require(:destination_channel_id)
 
-    raise Discourse::InvalidAccess if !guardian.can_move_chat_messages?
-
     chat_channel = DiscourseChat::ChatChannelFetcher.find_with_access_check(params[:chat_channel_id], guardian)
+    raise Discourse::InvalidAccess if !guardian.can_move_chat_messages?(chat_channel)
     destination_channel = DiscourseChat::ChatChannelFetcher.find_with_access_check(params[:destination_channel_id], guardian)
 
-    message_ids = params[:message_ids].map(&:to_i)
-
     begin
+      message_ids = params[:message_ids].map(&:to_i)
       moved_messages = DiscourseChat::MessageMover.new(
         acting_user: current_user, source_channel: chat_channel, message_ids: message_ids
       ).move_to_channel(destination_channel)

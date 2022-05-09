@@ -56,8 +56,6 @@ discourseModule("Discourse Chat | Component | chat-message", function (hooks) {
         }),
         canInteractWithChat: true,
         details: {
-          chat_channel_id: chatChannel.id,
-          chatable_type: chatChannel.chatable_type,
           can_delete_self: true,
           can_delete_others: true,
           can_flag: true,

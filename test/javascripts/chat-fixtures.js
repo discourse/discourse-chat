@@ -1,4 +1,4 @@
-import { cloneJSON } from "discourse-common/lib/object";
+import { cloneJSON, deepMerge } from "discourse-common/lib/object";
 export const messageContents = ["Hello world", "What up", "heyo!"];
 export const siteChannel = {
   chat_channel: {
@@ -239,11 +239,16 @@ const message3 = {
   },
 };
 
-export const chatView = {
-  meta: {
+export function generateChatView(loggedInUser, metaOverrides = {}) {
+  const metaDefaults = {
     can_flag: true,
-    channel_status: "open",
     user_silenced: false,
-  },
-  chat_messages: [message0, message1, message2, message3],
-};
+    can_moderate: loggedInUser.staff,
+    can_delete_self: true,
+    can_delete_others: loggedInUser.staff,
+  };
+  return {
+    meta: deepMerge(metaDefaults, metaOverrides),
+    chat_messages: [message0, message1, message2, message3],
+  };
+}

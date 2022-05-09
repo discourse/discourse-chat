@@ -27,6 +27,8 @@ export function resetChatMessageDecorators() {
   _chatMessageDecorators = [];
 }
 
+export const MENTION_KEYWORDS = ["here", "all"];
+
 export default Component.extend({
   ADD_REACTION: "add",
   REMOVE_REACTION: "remove",

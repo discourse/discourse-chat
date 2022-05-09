@@ -23,6 +23,12 @@ en:
       cancel_reply: "Cancel reply"
       chat_channels: "Channels"
       leave: "Leave channel"
+      move_to_channel:
+        title: "Move messages to channel"
+        instructions:
+          one: "You are moving <strong>1</strong> message. Select a destination channel. A placeholder message will be created in the <strong>%{channelTitle}</strong> channel to indicate that this message has been moved."
+          other: "You are moving <strong>%{count}</strong> messages. Select a destination channel. A placeholder message will be created in the <strong>%{channelTitle}</strong> channel to indicate that these messages have been moved."
+        confirm_move: "Move Messages"
       channel_settings:
         title: "Channel settings"
         close_channel: "Close Channel..."
@@ -31,7 +37,7 @@ en:
         delete_channel: "Delete Channel..."
       channel_archive:
         title: "Archive Channel"
-        instructions: "<p>Archiving a channel puts it into read-only mode and moves all messages from the channel into a new or existing topic. No new messages can be sent, and no existing messages can be edited or deleted.</p><p>Are you sure you want to archive the <strong>#%{channelTitle}</strong> channel?</p>"
+        instructions: "<p>Archiving a channel puts it into read-only mode and moves all messages from the channel into a new or existing topic. No new messages can be sent, and no existing messages can be edited or deleted.</p><p>Are you sure you want to archive the <strong>%{channelTitle}</strong> channel?</p>"
         process_started: "Archiving process has started. This modal will close shortly, and you will receive a personal message when the archive process is complete."
         retry: "Retry"
       channel_open:
@@ -47,7 +53,7 @@ en:
         confirm: "I understand the consequences, delete the channel"
         confirm_channel_name: "Enter channel name"
         process_started: "The process to delete the channel has started. This modal will close shortly, you will no longer see the deleted channel anywhere."
-      channel_list_popup:
+      channels_list_popup:
         browse: "Browse channels"
         create: "Create a channel"
 
@@ -91,7 +97,7 @@ en:
       aria_roles:
         header: "Chat header"
         composer: "Chat composer"
-        channel_list: "Chat channel list"
+        channels_list: "Chat channels list"
 
       no_public_channels: "You have not joined any channels."
       only_chat_push_notifications:
@@ -120,7 +126,7 @@ en:
       save: "Save"
       select: "Select"
       silence: "Silence user"
-      return_to_list: "Return to channel list"
+      return_to_list: "Return to channels list"
       scroll_to_bottom: "Scroll to bottom"
       sound:
         title: "Desktop chat notification sound"
@@ -148,6 +154,10 @@ en:
         closed: "Closed"
         open_header: "Channel is open."
         open: "Open"
+
+      chat_message_separator:
+        today: Today
+        yesterday: Yesterday
 
       direct_message_creator:
         title: New Message
@@ -248,6 +258,7 @@ en:
       selection:
         cancel: "Cancel"
         quote_selection: "Quote in Topic"
+        move_selection_to_channel: "Move to Channel"
         error: "There was an error moving the chat messages"
         title: "Move Chat to Topic"
         new_topic:
@@ -306,8 +317,6 @@ en:
       chat:
         enabled: '%{who} enabled <button class="btn-link open-chat">chat</button> %{when}'
         disabled: "%{who} closed chat %{when}"
-        post_created: "created a new post: %{excerpt}"
-        generic_small_action: "performed a topic management action"
     discourse_automation:
       scriptables:
         send_chat_message:

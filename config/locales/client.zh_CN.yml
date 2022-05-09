@@ -18,9 +18,6 @@ zh_CN:
       cancel_reply: "取消回复"
       chat_channels: "频道"
       leave: "离开频道"
-      channel_list_popup:
-        browse: "浏览频道"
-        create: "创建频道"
       click_to_join: "点击此处查看可用频道。"
       close: "关闭"
       collapse: "折叠聊天抽屉"
@@ -71,7 +68,6 @@ zh_CN:
       restore: "恢复已删除的消息"
       save: "保存"
       select: "选择"
-      return_to_list: "返回频道列表"
       scroll_to_bottom: "滚动到底部"
       sound:
         title: "桌面聊天通知声音"

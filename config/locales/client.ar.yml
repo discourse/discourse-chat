@@ -18,9 +18,6 @@ ar:
       cancel_reply: "إلغاء الرد"
       chat_channels: "القنوات"
       leave: "مغادرة القناة"
-      channel_list_popup:
-        browse: "استعراض القنوات"
-        create: "إنشاء قناة"
       click_to_join: "انقر هنا لعرض القنوات المتاحة"
       close: "إغلاق"
       collapse: "طي ساحب الدردشة"
@@ -86,7 +83,6 @@ ar:
       restore: "استعادة الرسالة المحذوفة"
       save: "حفظ"
       select: "تحديد"
-      return_to_list: "العودة إلى قائمة القنوات"
       scroll_to_bottom: "التمرير إلى الأسفل"
       sound:
         title: "صوت إشعارات دردشة سطح المكتب"

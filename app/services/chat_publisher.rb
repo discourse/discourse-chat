@@ -3,7 +3,7 @@
 module ChatPublisher
   def self.publish_new!(chat_channel, chat_message, staged_id)
     content = ChatMessageSerializer.new(chat_message, { scope: anonymous_guardian, root: :chat_message }).as_json
-    content[:typ] = :sent
+    content[:type] = :sent
     content[:stagedId] = staged_id
     permissions = permissions(chat_channel)
     MessageBus.publish("/chat/#{chat_channel.id}", content.as_json, permissions)
@@ -13,7 +13,7 @@ module ChatPublisher
   def self.publish_processed!(chat_message)
     chat_channel = chat_message.chat_channel
     content = {
-      typ: :processed,
+      type: :processed,
       chat_message: {
         id: chat_message.id,
         cooked: chat_message.cooked
@@ -24,7 +24,7 @@ module ChatPublisher
 
   def self.publish_edit!(chat_channel, chat_message)
     content = ChatMessageSerializer.new(chat_message, { scope: anonymous_guardian, root: :chat_message }).as_json
-    content[:typ] = :edit
+    content[:type] = :edit
     MessageBus.publish("/chat/#{chat_channel.id}", content.as_json, permissions(chat_channel))
   end
 
@@ -33,7 +33,7 @@ module ChatPublisher
       action: action,
       user: BasicUserSerializer.new(user, root: false).as_json,
       emoji: emoji,
-      typ: :reaction,
+      type: :reaction,
       chat_message_id: chat_message.id
     }
     MessageBus.publish("/chat/message-reactions/#{chat_message.id}", content.as_json, permissions(chat_channel))
@@ -47,14 +47,22 @@ module ChatPublisher
   def self.publish_delete!(chat_channel, chat_message)
     MessageBus.publish(
       "/chat/#{chat_channel.id}",
-      { typ: "delete", deleted_id: chat_message.id, deleted_at: chat_message.deleted_at },
+      { type: "delete", deleted_id: chat_message.id, deleted_at: chat_message.deleted_at },
+      permissions(chat_channel)
+    )
+  end
+
+  def self.publish_bulk_delete!(chat_channel, deleted_message_ids)
+    MessageBus.publish(
+      "/chat/#{chat_channel.id}",
+      { typ: "bulk_delete", deleted_ids: deleted_message_ids, deleted_at: Time.zone.now },
       permissions(chat_channel)
     )
   end
 
   def self.publish_restore!(chat_channel, chat_message)
     content = ChatMessageSerializer.new(chat_message, { scope: anonymous_guardian, root: :chat_message }).as_json
-    content[:typ] = :restore
+    content[:type] = :restore
     MessageBus.publish("/chat/#{chat_channel.id}", content.as_json, permissions(chat_channel))
   end
 
@@ -63,7 +71,7 @@ module ChatPublisher
     MessageBus.publish(
       "/chat/#{chat_message.chat_channel_id}",
       {
-        typ: "self_flagged",
+        type: "self_flagged",
         user_flag_status: ReviewableScore.statuses[:pending],
         chat_message_id: chat_message.id
       }.as_json,
@@ -74,7 +82,7 @@ module ChatPublisher
     MessageBus.publish(
       "/chat/#{chat_message.chat_channel_id}",
       {
-        typ: "flag",
+        type: "flag",
         chat_message_id: chat_message.id,
         reviewable_id: reviewable.id
       }.as_json,
@@ -111,7 +119,7 @@ module ChatPublisher
 
   def self.publish_inaccessible_mentions(user, chat_message, cannot_chat_users, without_membership)
     MessageBus.publish("/chat/#{chat_message.chat_channel_id}", {
-        typ: :mention_warning,
+        type: :mention_warning,
         chat_message_id: chat_message.id,
         cannot_see: ActiveModel::ArraySerializer.new(cannot_chat_users, each_serializer: BasicUserSerializer).as_json,
         without_membership: ActiveModel::ArraySerializer.new(without_membership, each_serializer: BasicUserSerializer).as_json,
@@ -120,10 +128,10 @@ module ChatPublisher
     )
   end
 
-  def self.publish_channel_edit(chat_channel)
+  def self.publish_channel_edit(chat_channel, acting_user)
     MessageBus.publish("/chat/channel-edits", {
         chat_channel_id: chat_channel.id,
-        name: chat_channel.name,
+        name: chat_channel.title(acting_user),
         description: chat_channel.description,
       },
       permissions(chat_channel)

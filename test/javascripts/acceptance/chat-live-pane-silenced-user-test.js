@@ -29,7 +29,6 @@ acceptance("Discourse Chat - Chat live pane", function (needs) {
             message: "hi",
             cooked: "<p>hi</p>",
             excerpt: "hi",
-            action_code: null,
             created_at: "2021-07-20T08:14:16.950Z",
             flag_count: 0,
             user: {

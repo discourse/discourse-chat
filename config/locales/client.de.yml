@@ -18,9 +18,6 @@ de:
       cancel_reply: "Antwort verwerfen"
       chat_channels: "Kanäle"
       leave: "Kanal verlassen"
-      channel_list_popup:
-        browse: "Kanäle durchsuchen"
-        create: "Kanal erstellen"
       click_to_join: "Klicke hier, um die verfügbaren Kanäle zu sehen."
       close: "Schließen"
       collapse: "Chat-Bereich ausblenden"
@@ -74,7 +71,6 @@ de:
       restore: "Gelöschte Nachricht wiederherstellen"
       save: "Speichern"
       select: "Auswählen"
-      return_to_list: "Zurück zur Kanalliste"
       scroll_to_bottom: "Nach unten scrollen"
       sound:
         title: "Desktop-Chat-Benachrichtigungston"

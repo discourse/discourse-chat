@@ -2,6 +2,7 @@ import showModal from "discourse/lib/show-modal";
 import {
   acceptance,
   exists,
+  loggedInUser,
   query,
   queryAll,
   updateCurrentUser,
@@ -18,7 +19,7 @@ import {
 } from "@ember/test-helpers";
 import {
   chatChannels,
-  chatView,
+  generateChatView,
 } from "discourse/plugins/discourse-chat/chat-fixtures";
 import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import { test } from "qunit";
@@ -39,7 +40,7 @@ if (!isLegacyEmber()) {
         helper.response(chatChannels)
       );
       server.get("/chat/:chatChannelId/messages.json", () =>
-        helper.response(chatView)
+        helper.response(generateChatView(loggedInUser()))
       );
       server.post("/uploads/lookup-urls", () => {
         return helper.response([]);

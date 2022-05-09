@@ -1,4 +1,4 @@
-// Styles to make channel list in sidebar match sidebar theme
+// Styles to make channels list in sidebar match sidebar theme
 .chat-enabled {
   .has-sidebar {
     .sidebar-header {
@@ -21,7 +21,7 @@
       }
     }
     .sidebar-container {
-      .chat-channels {
+      .channels-list {
         .chat-channel-divider {
           padding: 0 0.5em 0 1.75rem;
         }
@@ -36,7 +36,7 @@
   }
 
   .sidebar-container {
-    .chat-channels {
+    .channels-list {
       color: var(--primary);
       font-size: var(--font-down-1);
       padding-bottom: 2em;
@@ -53,7 +53,7 @@
         }
       }
 
-      .chat-channels-container {
+      .channels-list-container {
         margin-bottom: 1rem;
       }
 

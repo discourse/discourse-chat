@@ -18,7 +18,9 @@ class ChatViewSerializer < ApplicationSerializer
       can_flag: scope.can_flag_in_chat_channel?(object.chat_channel),
       channel_status: object.chat_channel.status,
       user_silenced: !scope.can_create_chat_message?,
-      can_moderate: scope.can_moderate_chat?(object.chat_channel.chatable)
+      can_moderate: scope.can_moderate_chat?(object.chat_channel.chatable),
+      can_delete_self: scope.can_delete_own_chats?(object.chat_channel.chatable),
+      can_delete_others: scope.can_delete_other_chats?(object.chat_channel.chatable),
     }
     meta_hash[:can_load_more_past] = object.can_load_more_past unless object.can_load_more_past.nil?
     meta_hash[:can_load_more_future] = object.can_load_more_future unless object.can_load_more_future.nil?

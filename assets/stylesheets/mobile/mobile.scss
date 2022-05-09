@@ -95,7 +95,7 @@ body.has-full-page-chat {
   }
 }
 
-.chat-channels .chat-channel-row {
+.channels-list .chat-channel-row {
   padding: 0 0.5em 0 0.25em;
 
   .category-chat-private .d-icon {
@@ -110,15 +110,15 @@ body.has-full-page-chat {
   }
 }
 
-.sidebar-container .chat-channels .chat-channel-divider {
+.sidebar-container .channels-list .chat-channel-divider {
   padding-left: 1em;
 }
 
-.chat-channels .chat-channel-divider {
+.channels-list .chat-channel-divider {
   padding: 0.25em 0.5em 0.25em;
 }
 
-.sidebar-container .chat-channels .chat-channel-row {
+.sidebar-container .channels-list .chat-channel-row {
   padding: 0.5em;
 }
 

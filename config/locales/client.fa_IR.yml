@@ -37,7 +37,7 @@ fa_IR:
       channel_delete:
         title: "حذف کانال"
         confirm_channel_name: "نام کانال را وارد کنید"
-      channel_list_popup:
+      channels_list_popup:
         browse: "مرور کانال‌ها"
         create: "ایجاد کانال"
       click_to_join: "برای مشاهده کانال‌های موجود، اینجا را کلیک کنید."
@@ -51,10 +51,6 @@ fa_IR:
         no_public_available: "هیچ کانال عمومی برای دنبال کردن شما در این زمان وجود ندارد."
         public_available: "کانال‌های عمومی در دسترس شما برای دنبال کردن وجود دارد."
         start_direct_message: "شما همچنین می‌توانید یک گفتگو شخصی را با یک یا چند کاربر شروع کنید."
-      email_frequency:
-        description: "ما فقط در صورتی به شما ایمیل می‌کنیم، که در ۱۰ دقیقه گذشته شما را ندیده‌ایم."
-        never: "هرگز"
-        title: "آگاه‌سازی‌های ایمیل"
       enable: "فعال کردن گفتگو"
       flag: "پرچم"
       flagged: "این پیام برای بررسی پرچم گذاری شده است"
@@ -73,6 +69,8 @@ fa_IR:
         without_membership:
           one: "%{usernames} هنوز در این کانال عضو نشده است."
           other: "%{usernames} هنوز در این کانال عضو نشده است."
+      aria_roles:
+        channels_list: "فهرست کانال‌های گفتگو"
       no_public_channels: "شما هنوز عضو هیچ کانالی نشده‌اید."
       open: "باز کردن گفتگو..."
       open_message: "پیام را در گفتگو باز کن"
@@ -85,7 +83,7 @@ fa_IR:
       restore: "بازگرداندن پیام حذف شده"
       save: "ذخیره"
       select: "انتخاب کنید"
-      return_to_list: "بازگشت به فهرست کانال"
+      return_to_list: "بازگشت به فهرست کانال‌ها"
       scroll_to_bottom: "حرکت به پایین"
       sound:
         title: "صدای آگاه‌سازی گفتگوی دسکتاپ"
@@ -102,6 +100,9 @@ fa_IR:
       you_flagged: "شما این پیام را پرچم گذاری کردید"
       user_deleted: "حذف شده"
       exit: "بازگشت"
+      chat_message_separator:
+        today: امروز
+        yesterday: دیروز
       direct_message_creator:
         title: پیام جدید
         prefix: "به:"

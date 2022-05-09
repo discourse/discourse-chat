@@ -2,7 +2,6 @@
 
 class ChatMessage < ActiveRecord::Base
   include Trashable
-  self.ignored_columns = ["post_id"]
   attribute :has_oneboxes, default: false
 
   BAKED_VERSION = 2
@@ -15,6 +14,7 @@ class ChatMessage < ActiveRecord::Base
   has_many :chat_uploads
   has_many :uploads, through: :chat_uploads
   has_one :chat_webhook_event
+  has_one :chat_mention
 
   scope :in_public_channel, -> {
     joins(:chat_channel)
@@ -192,6 +192,10 @@ class ChatMessage < ActiveRecord::Base
     cooked
   end
 
+  def url
+    "#{Discourse.base_url}/chat/channel/#{self.chat_channel_id}/chat?messageId=#{self.id}"
+  end
+
   private
 
   def block_duplicate?
@@ -243,12 +247,10 @@ end
 #  deleted_by_id   :integer
 #  in_reply_to_id  :integer
 #  message         :text
-#  action_code     :string
 #  cooked          :text
 #  cooked_version  :integer
 #
 # Indexes
 #
 #  index_chat_messages_on_chat_channel_id_and_created_at  (chat_channel_id,created_at)
-#  index_chat_messages_on_post_id                         (post_id)
 #

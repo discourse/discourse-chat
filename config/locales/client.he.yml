@@ -52,7 +52,7 @@ he:
         confirm: "ההשלכות ברורות לי, נא למחוק את הערוץ"
         confirm_channel_name: "נא למלא את שם הערוץ"
         process_started: "תהליך מחיקת הערוץ החל. חלונית צצה זו תיסגר בקרוב, הערוץ שנמחק לא יופיעו עוד בשום מקום."
-      channel_list_popup:
+      channels_list_popup:
         browse: "עיון בערוצים"
         create: "יצירת ערוץ"
       click_to_join: "לחיצה כאן תציג את הערוצים הזמינים."
@@ -68,11 +68,6 @@ he:
         public_available: "יש ערוצים ציבוריים שזמינים למעקב על ידיך."
         start_direct_message: "אפשר לפתוח בצ׳אט אישי עם משתמש אחד או יותר."
         title: "אפשר להתחיל על ידי הצטרפות לערוץ"
-      email_frequency:
-        description: "נשלח לך דוא״ל אם לא ראינו אותך ב־10 הדקות האחרונות."
-        never: "לעולם לא"
-        title: "הודעות בדוא״ל"
-        when_away: "רק כשלא במערכת"
       enable: "הפעלת צ׳אט"
       flag: "סימון בדגל"
       flagged: "הודעה זו סומנה לסקירה"
@@ -101,7 +96,7 @@ he:
       aria_roles:
         header: "כותרת צ׳אט"
         composer: "כותב צ׳אט"
-        channel_list: "רשימת ערוצי צ׳אט"
+        channels_list: "רשימת ערוצי צ׳אט"
       no_public_channels: "לא הצטרפת לאף ערוץ."
       only_chat_push_notifications:
         title: "לשלוח התראות בדחיפה על הצ׳אט בלבד"

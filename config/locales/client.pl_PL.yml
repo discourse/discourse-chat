@@ -23,7 +23,7 @@ pl_PL:
       cancel_reply: "Anuluj odpowiedź"
       chat_channels: "Kanały"
       leave: "Opuść kanał"
-      channel_list_popup:
+      channels_list_popup:
         browse: "Przeglądaj kanały"
         create: "Utwórz kanał"
       click_to_join: "Kliknij tutaj, aby wyświetlić dostępne kanały."
@@ -39,8 +39,6 @@ pl_PL:
         public_available: "Dostępne są kanały publiczne, które możesz śledzić."
         start_direct_message: "Możesz także rozpocząć osobisty czat z jednym lub kilkoma użytkownikami."
         title: "Rozpocznij, dołączając do kanału"
-      email_frequency:
-        never: "Nigdy"
       enable: "Włącz czat"
       flagged: "Ta wiadomość została oznaczona do sprawdzenia"
       invalid_access: "Nie masz dostępu do tego kanału czatu"
@@ -81,7 +79,6 @@ pl_PL:
       save: "Zapisz"
       select: "Wybierz"
       silence: "Wycisz użytkownika"
-      return_to_list: "Wróć do listy kanałów"
       scroll_to_bottom: "Przewiń na dół"
       sound:
         title: "Dźwięk powiadomienia czatu na pulpicie"

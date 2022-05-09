@@ -45,7 +45,7 @@ da:
       channel_delete:
         title: "Slet Kanal"
         confirm_channel_name: "Indtast kanalnavn"
-      channel_list_popup:
+      channels_list_popup:
         browse: "Gennemse kanaler"
         create: "Opret en kanal"
       click_to_join: "Klik her for at se tilgængelige kanaler."

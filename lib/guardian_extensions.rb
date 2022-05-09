@@ -2,9 +2,14 @@
 
 module DiscourseChat::GuardianExtensions
   def can_moderate_chat?(chatable)
-    chatable.class.name == "Topic" ?
-      can_perform_action_available_to_group_moderators?(chatable) :
+    case chatable.class.name
+    when "Topic"
+      can_perform_action_available_to_group_moderators?(chatable)
+    when "Category"
+      is_staff? || is_category_group_moderator?(chatable)
+    else
       is_staff?
+    end
   end
 
   def can_chat?(user)
@@ -36,6 +41,10 @@ module DiscourseChat::GuardianExtensions
   # name and description can be edited.
   def can_edit_chat_channel?
     is_staff?
+  end
+
+  def can_move_chat_messages?(channel)
+    can_moderate_chat?(channel.chatable)
   end
 
   def can_create_channel_message?(chat_channel)

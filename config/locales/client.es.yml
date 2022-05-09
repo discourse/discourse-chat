@@ -18,9 +18,6 @@ es:
       cancel_reply: "Cancelar respuesta"
       chat_channels: "Canales"
       leave: "Abandonar canal"
-      channel_list_popup:
-        browse: "Examinar canales"
-        create: "Crear un canal"
       click_to_join: "Haz clic aquí para ver los canales disponibles."
       close: "Cerrar"
       collapse: "Contraer contenedor del chat"
@@ -74,7 +71,6 @@ es:
       restore: "Restaurar mensaje eliminado"
       save: "Guardar"
       select: "Seleccionar"
-      return_to_list: "Volver a la lista de canales"
       scroll_to_bottom: "Desplazar hacia abajo"
       sound:
         title: "Sonido de notificación de chat de escritorio"

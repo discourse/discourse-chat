@@ -5,7 +5,7 @@ import hbs from "htmlbars-inline-precompile";
 import { discourseModule, exists } from "discourse/tests/helpers/qunit-helpers";
 
 discourseModule(
-  "Discourse Chat | Component | chat message text",
+  "Discourse Chat | Component | chat-message-text",
   function (hooks) {
     setupRenderingTest(hooks);
 
@@ -51,11 +51,23 @@ discourseModule(
       },
     });
 
-    componentTest("shows edits", {
+    componentTest("shows edits - regular message", {
       template: hbs`{{chat-message-text cooked=cooked edited=true}}`,
 
       beforeEach() {
         this.set("cooked", "<p></p>");
+      },
+
+      async test(assert) {
+        assert.ok(exists(".chat-message-edited"));
+      },
+    });
+
+    componentTest("shows edits - collapsible message", {
+      template: hbs`{{chat-message-text cooked=cooked edited=true}}`,
+
+      beforeEach() {
+        this.set("cooked", '<div class="onebox lazyYT-container"></div>');
       },
 
       async test(assert) {

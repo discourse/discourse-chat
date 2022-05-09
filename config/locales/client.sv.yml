@@ -52,7 +52,7 @@ sv:
         confirm: "Jag förstår konsekvenserna, radera kanalen"
         confirm_channel_name: "Ange kanalnamn"
         process_started: "Processen för att radera kanalen har påbörjats. Denna modal kommer att stängas inom kort och du kommer inte längre att se den raderade kanalen någonstans."
-      channel_list_popup:
+      channels_list_popup:
         browse: "Bläddra bland kanaler"
         create: "Skapa en kanal"
       click_to_join: "Klicka här för att se tillgängliga kanaler."
@@ -68,8 +68,6 @@ sv:
         public_available: "Det finns offentliga kanaler tillgängliga för dig att följa."
         start_direct_message: "Du kan också starta en personlig chatt med en eller flera användare."
         title: "Kom igång genom att gå med i en kanal"
-      email_frequency:
-        never: "Aldrig"
       enable: "Aktivera chatt"
       flag: "Flagga"
       flagged: "Detta meddelande har flaggats för granskning"
@@ -97,7 +95,7 @@ sv:
       aria_roles:
         header: "Chatthuvud"
         composer: "Chattkompositör"
-        channel_list: "Lista över chattkanaler"
+        channels_list: "Lista över chattkanaler"
       no_public_channels: "Du har inte gått med i några kanaler."
       only_chat_push_notifications:
         title: "Skicka bara push-meddelanden för chatt"
@@ -124,7 +122,7 @@ sv:
       save: "Spara"
       select: "Välj"
       silence: "Tysta användare"
-      return_to_list: "Återgå till kanallistan"
+      return_to_list: "Återgå till listan över kanaler"
       scroll_to_bottom: "Scrolla till botten"
       sound:
         title: "Meddelandeljud för chatt via dator"
@@ -152,6 +150,9 @@ sv:
         closed: "Stängd"
         open_header: "Kanalen är öppen."
         open: "Öppen"
+      chat_message_separator:
+        today: Idag
+        yesterday: Igår
       direct_message_creator:
         title: Nytt meddelande
         prefix: "Till:"

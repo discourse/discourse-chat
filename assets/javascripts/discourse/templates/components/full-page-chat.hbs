@@ -1,6 +1,6 @@
 <div class={{wrapperClassNames}}>
   {{#if showChannelSelector}}
-    {{channel-list onSelect=(action "switchChannel")}}
+    {{channels-list onSelect=(action "switchChannel")}}
   {{/if}}
   {{chat-live-pane
     chatChannel=chatChannel

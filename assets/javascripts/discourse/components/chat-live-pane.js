@@ -298,8 +298,8 @@ export default Component.extend({
       details: {
         chat_channel_id: this.chatChannel.id,
         chatable_type: this.chatChannel.chatable_type,
-        can_delete_self: true,
-        can_delete_others: this.currentUser.staff,
+        can_delete_self: messages.resultSetMeta.can_delete_self,
+        can_delete_others: messages.resultSetMeta.can_delete_others,
         can_flag: messages.resultSetMeta.can_flag,
         user_silenced: messages.resultSetMeta.user_silenced,
         can_moderate: messages.resultSetMeta.can_moderate,
@@ -361,8 +361,8 @@ export default Component.extend({
         messageData.firstMessageOfTheDayAt = moment(
           messageData.created_at
         ).calendar(moment(), {
-          sameDay: "[Today]",
-          lastDay: "[Yesterday]",
+          sameDay: `[${I18n.t("chat.chat_message_separator.today")}]`,
+          lastDay: `[${I18n.t("chat.chat_message_separator.yesterday")}]`,
           lastWeek: "LL",
           sameElse: "LL",
         });
@@ -603,7 +603,7 @@ export default Component.extend({
   },
 
   handleMessage(data) {
-    switch (data.typ) {
+    switch (data.type) {
       case "sent":
         this.handleSentMessage(data);
         break;
@@ -615,6 +615,9 @@ export default Component.extend({
         break;
       case "delete":
         this.handleDeleteMessage(data);
+        break;
+      case "bulk_delete":
+        this.handleBulkDeleteMessage(data);
         break;
       case "reaction":
         this.handleReactionMessage(data);
@@ -700,6 +703,15 @@ export default Component.extend({
         edited: true,
       });
     }
+  },
+
+  handleBulkDeleteMessage(data) {
+    data.deleted_ids.forEach((deletedId) => {
+      this.handleDeleteMessage({
+        deleted_id: deletedId,
+        deleted_at: data.deleted_at,
+      });
+    });
   },
 
   handleDeleteMessage(data) {

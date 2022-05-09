@@ -17,8 +17,17 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 import { prioritizeNameInUx } from "discourse/lib/settings";
 import { Promise } from "rsvp";
 
-const HERE = "here";
-const ALL = "all";
+let _chatMessageDecorators = [];
+
+export function addChatMessageDecorator(decorator) {
+  _chatMessageDecorators.push(decorator);
+}
+
+export function resetChatMessageDecorators() {
+  _chatMessageDecorators = [];
+}
+
+export const MENTION_KEYWORDS = ["here", "all"];
 
 export default Component.extend({
   ADD_REACTION: "add",
@@ -47,23 +56,6 @@ export default Component.extend({
       : this._waitForIdToBePopulated();
   },
 
-  didInsertElement() {
-    this._super(...arguments);
-
-    if (!this.currentUser || !this.message) {
-      return;
-    }
-
-    this.messageContainer?.querySelectorAll(".mention").forEach((node) => {
-      const mention = node.textContent.trim().substring(1);
-      const highlightable = [this.currentUser.username, HERE, ALL];
-      if (highlightable.includes(mention)) {
-        node.classList.add("highlighted");
-        node.classList.add("valid-mention");
-      }
-    });
-  },
-
   willDestroyElement() {
     this._super(...arguments);
     if (this.message.stagedId) {
@@ -86,6 +78,20 @@ export default Component.extend({
     );
 
     cancel(this._invitationSentTimer);
+  },
+
+  didReceiveAttrs() {
+    this._super(...arguments);
+
+    schedule("afterRender", () => {
+      if (!this.messageContainer) {
+        return;
+      }
+
+      _chatMessageDecorators.forEach((decorator) => {
+        decorator.call(this, this.messageContainer, this.chatChannel);
+      });
+    });
   },
 
   @computed("message.{id,stagedId}")

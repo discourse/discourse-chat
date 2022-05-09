@@ -2,7 +2,7 @@ import { withPluginApi } from "discourse/lib/plugin-api";
 import {
   addChatMessageDecorator,
   resetChatMessageDecorators,
-} from "discourse/plugins/discourse-chat/discourse/components/chat-live-pane";
+} from "discourse/plugins/discourse-chat/discourse/components/chat-message";
 
 export default {
   name: "chat-plugin-api",

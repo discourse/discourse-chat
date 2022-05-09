@@ -40,7 +40,12 @@ const imageCooked =
 
 const galleryCooked =
   "<p>written text</p>" +
-  '<div class="onebox imgur-album"><a href="https://imgur.com/gallery/yyVx5lJ"><span class="outer-box"><span><span class="album-title">Le tomtom album</span>    </span>  </span>  <img src="https://i.imgur.com/3mkbqo5.jpeg?fb" title="Solution" height="315" width="600"></a></div>' +
+  '<div class="onebox imgur-album">' +
+  '<a href="https://imgur.com/gallery/yyVx5lJ">' +
+  '<span class="outer-box"><span><span class="album-title">Le tomtom album</span></span></span>' +
+  '<img src="https://i.imgur.com/3mkbqo5.jpeg?fb" title="Solution" height="315" width="600">' +
+  "</a>" +
+  "</div>" +
   "<p>more written text</p>";
 
 discourseModule(

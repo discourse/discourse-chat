@@ -4,18 +4,16 @@ import { click, currentURL, visit } from "@ember/test-helpers";
 import {
   acceptance,
   exists,
+  loggedInUser,
   query,
 } from "discourse/tests/helpers/qunit-helpers";
 import {
   chatChannels,
-  chatView,
+  generateChatView,
 } from "discourse/plugins/discourse-chat/chat-fixtures";
 import selectKit from "discourse/tests/helpers/select-kit-helper";
 
-function setupPretenders(server, helper, userAdmin = false) {
-  const chatViewCloned = cloneJSON(chatView);
-  chatViewCloned.meta.can_moderate = userAdmin;
-
+function setupPretenders(server, helper) {
   server.get("/chat/chat_channels.json", () => helper.response(chatChannels));
   server.post("/uploads/lookup-urls", () => {
     return helper.response([]);
@@ -28,10 +26,10 @@ function setupPretenders(server, helper, userAdmin = false) {
     });
   });
   server.get("/chat/:chat_channel_id/messages.json", () =>
-    helper.response(chatViewCloned)
+    helper.response(generateChatView(loggedInUser()))
   );
   server.get("/chat/lookup/:messageId.json", () =>
-    helper.response(chatViewCloned)
+    helper.response(generateChatView(loggedInUser()))
   );
 }
 
@@ -52,7 +50,7 @@ acceptance(
     });
 
     needs.pretender((server, helper) => {
-      setupPretenders(server, helper, true);
+      setupPretenders(server, helper);
     });
 
     test("opens a modal for destination channel selection then redirects to the moved messages when done", async function (assert) {
@@ -140,9 +138,9 @@ acceptance(
     needs.pretender((server, helper) => {
       setupPretenders(server, helper);
       server.get("/chat/9/messages.json", () => {
-        const chatViewCloned = cloneJSON(chatView);
-        chatViewCloned.meta.can_moderate = true;
-        return helper.response(chatViewCloned);
+        return helper.response(
+          generateChatView(loggedInUser(), { can_moderate: true })
+        );
       });
     });
 

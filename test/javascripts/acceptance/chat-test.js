@@ -21,7 +21,7 @@ import { test } from "qunit";
 import {
   allChannels,
   chatChannels,
-  chatView,
+  generateChatView,
   directMessageChannels,
   messageContents,
   siteChannel,
@@ -57,7 +57,7 @@ const chatSettled = async () => {
 
 const baseChatPretenders = (server, helper) => {
   server.get("/chat/:chatChannelId/messages.json", () =>
-    helper.response(chatView)
+    helper.response(generateChatView(loggedInUser()))
   );
   server.post("/chat/:chatChannelId.json", () => {
     return helper.response({ success: "OK" });
@@ -126,7 +126,9 @@ const baseChatPretenders = (server, helper) => {
       seen_notification_id: null,
     });
   });
-  server.get("/chat/lookup/:messageId.json", () => helper.response(chatView));
+  server.get("/chat/lookup/:messageId.json", () =>
+    helper.response(generateChatView(loggedInUser()))
+  );
   server.post("/uploads/lookup-urls", () => {
     return helper.response([]);
   });
@@ -1675,11 +1677,6 @@ acceptance(
     needs.pretender((server, helper) => {
       baseChatPretenders(server, helper);
       chatChannelPretender(server, helper);
-      server.get("/chat/7/messages.json", () => {
-        const cloned = cloneJSON(chatView);
-        cloned.meta.status = CHANNEL_STATUSES.readOnly;
-        return helper.response(cloned);
-      });
       server.get("/chat/chat_channels.json", () => {
         const cloned = cloneJSON(chatChannels);
         cloned.public_channels.find((chan) => chan.id === 7).status =
@@ -1731,11 +1728,6 @@ acceptance(
     needs.pretender((server, helper) => {
       baseChatPretenders(server, helper);
       chatChannelPretender(server, helper);
-      server.get("/chat/7/messages.json", () => {
-        const cloned = cloneJSON(chatView);
-        cloned.meta.status = CHANNEL_STATUSES.closed;
-        return helper.response(cloned);
-      });
       server.get("/chat/chat_channels.json", () => {
         const cloned = cloneJSON(chatChannels);
         cloned.public_channels.find((chan) => chan.id === 7).status =
@@ -1787,11 +1779,6 @@ acceptance(
     needs.pretender((server, helper) => {
       baseChatPretenders(server, helper);
       chatChannelPretender(server, helper);
-      server.get("/chat/7/messages.json", () => {
-        const cloned = cloneJSON(chatView);
-        cloned.meta.status = CHANNEL_STATUSES.closed;
-        return helper.response(cloned);
-      });
       server.get("/chat/chat_channels.json", () => {
         const cloned = cloneJSON(chatChannels);
         cloned.public_channels.find((chan) => chan.id === 7).status =
@@ -1809,11 +1796,20 @@ acceptance(
       await visit("/chat/channel/7/Uncategorized");
       const dropdown = selectKit(".chat-message-container .more-buttons");
       await dropdown.expand();
-      assert.ok(exists(".select-kit-row[data-value='edit']"));
-      assert.ok(exists(".select-kit-row[data-value='deleteMessage']"));
-      assert.ok(exists(".select-kit-row[data-value='rebakeMessage']"));
-      assert.ok(exists(".reply-btn"));
-      assert.ok(exists(".react-btn"));
+      assert.ok(
+        exists(".select-kit-row[data-value='edit']"),
+        "the edit message button is shown"
+      );
+      assert.ok(
+        exists(".select-kit-row[data-value='deleteMessage']"),
+        "the delete message button is shown"
+      );
+      assert.ok(
+        exists(".select-kit-row[data-value='rebakeMessage']"),
+        "the rebake message button is shown"
+      );
+      assert.ok(exists(".reply-btn", "the reply button is shown"));
+      assert.ok(exists(".react-btn"), "the react button is shown");
     });
   }
 );
@@ -1833,11 +1829,6 @@ acceptance("Discourse Chat - Channel Replying Indicator", function (needs) {
   needs.pretender((server, helper) => {
     baseChatPretenders(server, helper);
     chatChannelPretender(server, helper);
-    server.get("/chat/7/messages.json", () => {
-      const cloned = cloneJSON(chatView);
-      cloned.meta.status = CHANNEL_STATUSES.closed;
-      return helper.response(cloned);
-    });
     server.get("/chat/chat_channels.json", () => {
       const cloned = cloneJSON(chatChannels);
       cloned.public_channels.find((chan) => chan.id === 7).status =

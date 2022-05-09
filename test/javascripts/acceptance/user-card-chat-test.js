@@ -3,13 +3,14 @@ import { cloneJSON } from "discourse-common/lib/object";
 import {
   acceptance,
   exists,
+  loggedInUser,
   query,
   visible,
 } from "discourse/tests/helpers/qunit-helpers";
 import { click, settled, visit } from "@ember/test-helpers";
 import {
   chatChannels,
-  chatView,
+  generateChatView,
   directMessageChannels,
 } from "discourse/plugins/discourse-chat/chat-fixtures";
 import { test } from "qunit";
@@ -36,7 +37,7 @@ if (!isLegacyEmber()) {
         helper.response(helper.response(directMessageChannels[0]))
       );
       server.get("/chat/:chatChannelId/messages.json", () =>
-        helper.response(chatView)
+        helper.response(generateChatView(loggedInUser()))
       );
       server.post("/chat/direct_messages/create.json", () => {
         return helper.response({

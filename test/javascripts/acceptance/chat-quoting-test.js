@@ -4,12 +4,13 @@ import { click, currentURL, tap, visit } from "@ember/test-helpers";
 import {
   acceptance,
   exists,
+  loggedInUser,
   query,
   visible,
 } from "discourse/tests/helpers/qunit-helpers";
 import {
   chatChannels,
-  chatView,
+  generateChatView,
 } from "discourse/plugins/discourse-chat/chat-fixtures";
 import selectKit from "discourse/tests/helpers/select-kit-helper";
 
@@ -24,7 +25,7 @@ function setupPretenders(server, helper) {
   server.post(`/chat/4/quote.json`, () => helper.response(quoteResponse));
   server.post(`/chat/7/quote.json`, () => helper.response(quoteResponse));
   server.get("/chat/:chat_channel_id/messages.json", () =>
-    helper.response(chatView)
+    helper.response(generateChatView(loggedInUser()))
   );
   server.post("/uploads/lookup-urls", () => {
     return helper.response([]);

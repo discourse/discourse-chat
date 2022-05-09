@@ -2,23 +2,26 @@ import { click, fillIn, visit } from "@ember/test-helpers";
 import {
   allChannels,
   chatChannels,
-  chatView,
+  generateChatView,
 } from "discourse/plugins/discourse-chat/chat-fixtures";
 import {
   acceptance,
   exists,
+  loggedInUser,
   query,
 } from "discourse/tests/helpers/qunit-helpers";
 import { test } from "qunit";
 
 const baseChatPretenders = (server, helper) => {
   server.get("/chat/:chatChannelId/messages.json", () =>
-    helper.response(chatView)
+    helper.response(generateChatView(loggedInUser()))
   );
   server.post("/chat/:chatChannelId.json", () => {
     return helper.response({ success: "OK" });
   });
-  server.get("/chat/lookup/:messageId.json", () => helper.response(chatView));
+  server.get("/chat/lookup/:messageId.json", () =>
+    helper.response(generateChatView(loggedInUser()))
+  );
   server.post("/uploads/lookup-urls", () => {
     return helper.response([]);
   });

@@ -2,12 +2,13 @@ import selectKit from "discourse/tests/helpers/select-kit-helper";
 import {
   acceptance,
   exists,
+  loggedInUser,
   publishToMessageBus,
   query,
 } from "discourse/tests/helpers/qunit-helpers";
 import {
   chatChannels,
-  chatView,
+  generateChatView,
 } from "discourse/plugins/discourse-chat/chat-fixtures";
 import { test } from "qunit";
 import { click, settled, visit } from "@ember/test-helpers";
@@ -29,6 +30,7 @@ const chatSettled = async () => {
 };
 
 acceptance("Discourse Chat - Flagging test", function (needs) {
+  let defaultChatView;
   needs.user({
     admin: false,
     moderator: false,
@@ -40,13 +42,16 @@ acceptance("Discourse Chat - Flagging test", function (needs) {
   needs.pretender((server, helper) => {
     server.get("/chat/chat_channels.json", () => helper.response(chatChannels));
     server.get("/chat/9/messages.json", () => {
-      let copy = cloneJSON(chatView);
-      copy.meta.can_flag = false;
-      copy.user_silenced = false;
-      return helper.response(copy);
+      return helper.response(
+        generateChatView(loggedInUser(), {
+          user_silenced: false,
+          can_flag: false,
+        })
+      );
     });
     server.get("/chat/75/messages.json", () => {
-      return helper.response(chatView);
+      defaultChatView = generateChatView(loggedInUser());
+      return helper.response(defaultChatView);
     });
     server.post("/uploads/lookup-urls", () => {
       return helper.response([]);
@@ -71,17 +76,17 @@ acceptance("Discourse Chat - Flagging test", function (needs) {
     await click(".bootbox.in .btn-primary");
     await publishToMessageBus("/chat/75", {
       type: "self_flagged",
-      chat_message_id: chatView.chat_messages[0].id,
+      chat_message_id: defaultChatView.chat_messages[0].id,
       user_flag_status: 0,
     });
     await publishToMessageBus("/chat/75", {
       type: "flag",
-      chat_message_id: chatView.chat_messages[0].id,
+      chat_message_id: defaultChatView.chat_messages[0].id,
       reviewable_id: 1,
     });
     await chatSettled();
     const reviewableLink = query(
-      `.chat-message-container[data-id='${chatView.chat_messages[0].id}'] .chat-message-flagged`
+      `.chat-message-container[data-id='${defaultChatView.chat_messages[0].id}'] .chat-message-flagged`
     );
     assert.ok(reviewableLink.href.endsWith("/review/1"));
   });

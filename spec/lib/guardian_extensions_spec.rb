@@ -153,7 +153,7 @@ describe DiscourseChat::GuardianExtensions do
 
           it "returns true if the regular user is part of the reviewable_by_group for the category" do
             mods = Fabricate(:group)
-            GroupUser.create(user: user, group: mods)
+            mods.add(user)
             category.update!(reviewable_by_group: mods)
             expect(staff_guardian.can_moderate_chat?(channel.chatable)).to eq(true)
             expect(guardian.can_moderate_chat?(channel.chatable)).to eq(true)

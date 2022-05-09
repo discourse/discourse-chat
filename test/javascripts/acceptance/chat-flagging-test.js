@@ -43,7 +43,6 @@ acceptance("Discourse Chat - Flagging test", function (needs) {
     server.get("/chat/9/messages.json", () => {
       return helper.response(
         generateChatView(loggedInUser(), {
-          user_silenced: false,
           can_flag: false,
         })
       );

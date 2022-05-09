@@ -1,5 +1,4 @@
 import { cloneJSON, deepMerge } from "discourse-common/lib/object";
-import { CHANNEL_STATUSES } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 export const messageContents = ["Hello world", "What up", "heyo!"];
 export const siteChannel = {
   chat_channel: {
@@ -240,11 +239,7 @@ const message3 = {
   },
 };
 
-export function generateChatView(
-  loggedInUser,
-  metaOverrides = {},
-  channelOverrides = {}
-) {
+export function generateChatView(loggedInUser, metaOverrides = {}) {
   const metaDefaults = {
     can_flag: true,
     user_silenced: false,
@@ -252,11 +247,8 @@ export function generateChatView(
     can_delete_self: true,
     can_delete_others: loggedInUser.staff,
   };
-  const channelData = deepMerge(
-    { status: CHANNEL_STATUSES.open },
-    channelOverrides
-  );
-  channelData.meta = deepMerge(metaDefaults, metaOverrides);
-  channelData.chat_messages = [message0, message1, message2, message3];
-  return channelData;
+  return {
+    meta: deepMerge(metaDefaults, metaOverrides),
+    chat_messages: [message0, message1, message2, message3],
+  };
 }

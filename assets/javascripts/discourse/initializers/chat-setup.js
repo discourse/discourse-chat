@@ -78,6 +78,25 @@ export default {
       );
 
       api.addToHeaderIcons("header-chat-link");
+
+      api.decorateChatMessage(function (chatMessage) {
+        if (!this.currentUser) {
+          return;
+        }
+
+        const highlightable = [
+          `@${this.currentUser.username}`,
+          "@here",
+          "@all",
+        ];
+
+        chatMessage.querySelectorAll(".mention").forEach((node) => {
+          const mention = node.textContent.trim();
+          if (highlightable.includes(mention)) {
+            node.classList.add("highlighted", "valid-mention");
+          }
+        });
+      });
     });
   },
 

@@ -34,16 +34,6 @@ const PAGE_SIZE = 50;
 const PAST = "Past";
 const FUTURE = "Future";
 
-let _chatMessageDecorators = [];
-
-export function addChatMessageDecorator(decorator) {
-  _chatMessageDecorators.push(decorator);
-}
-
-export function resetChatMessageDecorators() {
-  _chatMessageDecorators = [];
-}
-
 export default Component.extend({
   classNameBindings: [":chat-live-pane", "sendingloading", "loading"],
   topicId: null, // ?Number
@@ -578,12 +568,6 @@ export default Component.extend({
     this._pluginsDecorators();
     this._highlightCode();
     this._renderChatTranscriptDates();
-
-    document.querySelectorAll(".chat-message-text").forEach((chatMessageEl) => {
-      _chatMessageDecorators.forEach((decorator) => {
-        decorator.call(this, chatMessageEl, this.chatChannel);
-      });
-    });
   },
 
   @observes("floatHidden")

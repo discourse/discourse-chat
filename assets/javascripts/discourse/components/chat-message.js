@@ -16,25 +16,16 @@ import { inject as service } from "@ember/service";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { prioritizeNameInUx } from "discourse/lib/settings";
 import { Promise } from "rsvp";
-import { addChatMessageDecorator } from "discourse/plugins/discourse-chat/discourse/components/chat-live-pane";
 
-const HERE = "@here";
-const ALL = "@all";
+let _chatMessageDecorators = [];
 
-addChatMessageDecorator(function (chatMessage) {
-  if (!this.currentUser) {
-    return;
-  }
+export function addChatMessageDecorator(decorator) {
+  _chatMessageDecorators.push(decorator);
+}
 
-  const highlightable = [`@${this.currentUser.username}`, HERE, ALL];
-
-  chatMessage.querySelectorAll(".mention").forEach((node) => {
-    const mention = node.textContent.trim();
-    if (highlightable.includes(mention)) {
-      node.classList.add("highlighted", "valid-mention");
-    }
-  });
-});
+export function resetChatMessageDecorators() {
+  _chatMessageDecorators = [];
+}
 
 export default Component.extend({
   ADD_REACTION: "add",
@@ -85,6 +76,21 @@ export default Component.extend({
     );
 
     cancel(this._invitationSentTimer);
+  },
+
+  didReceiveAttrs() {
+    this._super(...arguments);
+
+    schedule("afterRender", () => {
+      if (!this.messageContainer) {
+        console.log("no container?");
+        return;
+      }
+
+      _chatMessageDecorators.forEach((decorator) => {
+        decorator.call(this, this.messageContainer, this.chatChannel);
+      });
+    });
   },
 
   @computed("message.{id,stagedId}")

@@ -1,5 +1,4 @@
 import { test } from "qunit";
-import { cloneJSON } from "discourse-common/lib/object";
 import { click, currentURL, visit } from "@ember/test-helpers";
 import {
   acceptance,

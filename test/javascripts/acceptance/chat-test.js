@@ -21,8 +21,8 @@ import { test } from "qunit";
 import {
   allChannels,
   chatChannels,
-  generateChatView,
   directMessageChannels,
+  generateChatView,
   messageContents,
   siteChannel,
 } from "discourse/plugins/discourse-chat/chat-fixtures";

@@ -10,8 +10,8 @@ import {
 import { click, settled, visit } from "@ember/test-helpers";
 import {
   chatChannels,
-  generateChatView,
   directMessageChannels,
+  generateChatView,
 } from "discourse/plugins/discourse-chat/chat-fixtures";
 import { test } from "qunit";
 import { isLegacyEmber } from "discourse-common/config/environment";

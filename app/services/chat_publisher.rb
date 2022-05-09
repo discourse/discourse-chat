@@ -98,8 +98,8 @@ module ChatPublisher
     )
   end
 
-  def self.publish_new_mention(user, chat_channel_id, chat_message_id)
-    MessageBus.publish("/chat/#{chat_channel_id}/new-mentions", { message_id: chat_message_id }.as_json, user_ids: [user.id])
+  def self.publish_new_mention(user_id, chat_channel_id, chat_message_id)
+    MessageBus.publish("/chat/#{chat_channel_id}/new-mentions", { message_id: chat_message_id }.as_json, user_ids: [user_id])
   end
 
   def self.publish_new_direct_message_channel(chat_channel, users)
@@ -117,14 +117,14 @@ module ChatPublisher
     MessageBus.publish("/topic/#{topic_id}", reload_topic: true)
   end
 
-  def self.publish_inaccessible_mentions(user, chat_message, cannot_chat_users, without_membership)
+  def self.publish_inaccessible_mentions(user_id, chat_message, cannot_chat_users, without_membership)
     MessageBus.publish("/chat/#{chat_message.chat_channel_id}", {
         type: :mention_warning,
         chat_message_id: chat_message.id,
         cannot_see: ActiveModel::ArraySerializer.new(cannot_chat_users, each_serializer: BasicUserSerializer).as_json,
         without_membership: ActiveModel::ArraySerializer.new(without_membership, each_serializer: BasicUserSerializer).as_json,
       },
-      user_ids: [user.id]
+      user_ids: [user_id]
     )
   end
 

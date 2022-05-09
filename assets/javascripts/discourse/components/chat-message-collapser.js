@@ -11,24 +11,9 @@ export default class ChatMessageCollapser extends Component {
   uploads = null;
   cooked = null;
 
-  @computed("cooked")
-  get youtubeCooked() {
-    const elements = Array.prototype.slice.call(domFromString(this.cooked));
-
-    return elements.reduce((acc, e) => {
-      if (youtubePredicate(e)) {
-        const id = e.dataset.youtubeId;
-        const link = `https://www.youtube.com/watch?v=${escape(id)}`;
-        const title = e.dataset.youtubeTitle;
-        const header = htmlSafe(
-          `<a target="_blank" class="chat-message-collapser-link" rel="noopener noreferrer" href="${link}">${title}</a>`
-        );
-        acc.push({ header, body: e, needsCollapser: true });
-      } else {
-        acc.push({ body: e, needsCollapser: false });
-      }
-      return acc;
-    }, []);
+  @computed("uploads")
+  get hasUploads() {
+    return hasUploads(this.uploads);
   }
 
   @computed("uploads")
@@ -43,7 +28,46 @@ export default class ChatMessageCollapser extends Component {
   }
 
   @computed("cooked")
-  get imageOneboxCooked() {
+  get cookedBodies() {
+    if (hasYoutube(this.cooked)) {
+      return this.youtubeCooked();
+    }
+
+    if (hasImageOnebox(this.cooked)) {
+      return this.imageOneboxCooked();
+    }
+
+    if (hasImage(this.cooked)) {
+      return this.imageCooked();
+    }
+
+    return [];
+  }
+
+  youtubeCooked() {
+    const elements = Array.prototype.slice.call(domFromString(this.cooked));
+
+    return elements.reduce((acc, e) => {
+      if (youtubePredicate(e)) {
+        const id = e.dataset.youtubeId;
+        const link = `https://www.youtube.com/watch?v=${escape(id)}`;
+        const title = e.dataset.youtubeTitle;
+        const header = htmlSafe(
+          `<a target="_blank" class="chat-message-collapser-link" rel="noopener noreferrer" href="${link}">${title}</a>`
+        );
+        const body = document.createElement("div");
+        body.className = "chat-message-collapser-youtube";
+        body.appendChild(e);
+
+        acc.push({ header, body, needsCollapser: true });
+      } else {
+        acc.push({ body: e, needsCollapser: false });
+      }
+      return acc;
+    }, []);
+  }
+
+  imageOneboxCooked() {
     const elements = Array.prototype.slice.call(domFromString(this.cooked));
 
     return elements.reduce((acc, e) => {
@@ -62,8 +86,7 @@ export default class ChatMessageCollapser extends Component {
     }, []);
   }
 
-  @computed("cooked")
-  get imageCooked() {
+  imageCooked() {
     const elements = Array.prototype.slice.call(domFromString(this.cooked));
 
     return elements.reduce((acc, e) => {
@@ -81,26 +104,6 @@ export default class ChatMessageCollapser extends Component {
       }
       return acc;
     }, []);
-  }
-
-  @computed("cooked")
-  get hasYoutube() {
-    return hasYoutube(this.cooked);
-  }
-
-  @computed("uploads")
-  get hasUploads() {
-    return hasUploads(this.uploads);
-  }
-
-  @computed("cooked")
-  get hasImageOnebox() {
-    return hasImageOnebox(this.cooked);
-  }
-
-  @computed("cooked")
-  get hasImage() {
-    return hasImage(this.cooked);
   }
 }
 

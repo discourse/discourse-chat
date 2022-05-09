@@ -11,8 +11,40 @@ export default class ChatMessageCollapser extends Component {
   uploads = null;
   cooked = null;
 
+  @computed("uploads")
+  get hasUploads() {
+    return hasUploads(this.uploads);
+  }
+
+  @computed("uploads")
+  get uploadsHeader() {
+    let name = "";
+    if (this.uploads.length === 1) {
+      name = this.uploads[0].original_filename;
+    } else {
+      name = I18n.t("chat.uploaded_files", { count: this.uploads.length });
+    }
+    return `<span class="chat-message-collapser-link-small">${name}</span>`;
+  }
+
   @computed("cooked")
-  get youtubeCooked() {
+  get cookedBodies() {
+    if (hasYoutube(this.cooked)) {
+      return this.youtubeCooked();
+    }
+
+    if (hasImageOnebox(this.cooked)) {
+      return this.imageOneboxCooked();
+    }
+
+    if (hasImage(this.cooked)) {
+      return this.imageCooked();
+    }
+
+    return [];
+  }
+
+  youtubeCooked() {
     const elements = Array.prototype.slice.call(domFromString(this.cooked));
 
     return elements.reduce((acc, e) => {
@@ -35,19 +67,7 @@ export default class ChatMessageCollapser extends Component {
     }, []);
   }
 
-  @computed("uploads")
-  get uploadsHeader() {
-    let name = "";
-    if (this.uploads.length === 1) {
-      name = this.uploads[0].original_filename;
-    } else {
-      name = I18n.t("chat.uploaded_files", { count: this.uploads.length });
-    }
-    return `<span class="chat-message-collapser-link-small">${name}</span>`;
-  }
-
-  @computed("cooked")
-  get imageOneboxCooked() {
+  imageOneboxCooked() {
     const elements = Array.prototype.slice.call(domFromString(this.cooked));
 
     return elements.reduce((acc, e) => {
@@ -66,8 +86,7 @@ export default class ChatMessageCollapser extends Component {
     }, []);
   }
 
-  @computed("cooked")
-  get imageCooked() {
+  imageCooked() {
     const elements = Array.prototype.slice.call(domFromString(this.cooked));
 
     return elements.reduce((acc, e) => {
@@ -85,26 +104,6 @@ export default class ChatMessageCollapser extends Component {
       }
       return acc;
     }, []);
-  }
-
-  @computed("cooked")
-  get hasYoutube() {
-    return hasYoutube(this.cooked);
-  }
-
-  @computed("uploads")
-  get hasUploads() {
-    return hasUploads(this.uploads);
-  }
-
-  @computed("cooked")
-  get hasImageOnebox() {
-    return hasImageOnebox(this.cooked);
-  }
-
-  @computed("cooked")
-  get hasImage() {
-    return hasImage(this.cooked);
   }
 }
 

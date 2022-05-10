@@ -458,6 +458,7 @@ body.composer-open .topic-chat-float-container {
 }
 
 .chat-user-avatar {
+  @include unselectable;
   display: flex;
   align-items: center;
 
@@ -529,6 +530,8 @@ body.composer-open .topic-chat-float-container {
 }
 
 .tc-reply-display {
+  @include unselectable;
+
   display: flex;
   align-items: center;
   text-overflow: ellipsis;

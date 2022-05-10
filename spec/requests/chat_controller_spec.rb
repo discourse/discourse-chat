@@ -66,13 +66,25 @@ RSpec.describe DiscourseChat::ChatController do
       user.update!(trust_level: 1)
       get "/chat/#{chat_channel.id}/messages.json", params: { page_size: page_size }
       expect(response.parsed_body["meta"]["can_moderate"]).to be false
+
       user.update!(trust_level: 4)
       get "/chat/#{chat_channel.id}/messages.json", params: { page_size: page_size }
       expect(response.parsed_body["meta"]["can_moderate"]).to be true
-      chat_channel.update!(chatable: Fabricate(:category))
+
+      category = Fabricate(:category)
+      chat_channel.update!(chatable: category)
       get "/chat/#{chat_channel.id}/messages.json", params: { page_size: page_size }
       expect(response.parsed_body["meta"]["can_moderate"]).to be false
+
       user.update!(admin: true)
+      get "/chat/#{chat_channel.id}/messages.json", params: { page_size: page_size }
+      expect(response.parsed_body["meta"]["can_moderate"]).to be true
+      user.update!(admin: false)
+
+      SiteSetting.enable_category_group_moderation = true
+      group = Fabricate(:group)
+      group.add(user)
+      category.update!(reviewable_by_group: group)
       get "/chat/#{chat_channel.id}/messages.json", params: { page_size: page_size }
       expect(response.parsed_body["meta"]["can_moderate"]).to be true
     end

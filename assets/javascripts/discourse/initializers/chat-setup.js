@@ -2,6 +2,7 @@ import { withPluginApi } from "discourse/lib/plugin-api";
 import I18n from "I18n";
 import { bind } from "discourse-common/utils/decorators";
 import { getOwner } from "discourse-common/lib/get-owner";
+import { MENTION_KEYWORDS } from "discourse/plugins/discourse-chat/discourse/components/chat-message";
 
 export default {
   name: "chat-setup",
@@ -78,6 +79,24 @@ export default {
       );
 
       api.addToHeaderIcons("header-chat-link");
+
+      api.decorateChatMessage(function (chatMessage) {
+        if (!this.currentUser) {
+          return;
+        }
+
+        const highlightable = [
+          `@${this.currentUser.username}`,
+          ...MENTION_KEYWORDS.map((k) => `@${k}`),
+        ];
+
+        chatMessage.querySelectorAll(".mention").forEach((node) => {
+          const mention = node.textContent.trim();
+          if (highlightable.includes(mention)) {
+            node.classList.add("highlighted", "valid-mention");
+          }
+        });
+      });
     });
   },
 

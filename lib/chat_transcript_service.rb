@@ -24,12 +24,14 @@ class ChatTranscriptService
 
     def initialize(
       channel: nil,
+      acting_user: nil,
       multiquote: false,
       chained: false,
       no_link: false,
       include_reactions: false
     )
       @channel = channel
+      @acting_user = acting_user
       @multiquote = multiquote
       @chained = chained
       @no_link = no_link
@@ -76,12 +78,13 @@ class ChatTranscriptService
     end
 
     def channel_attr
-      "channel=\"#{channel.name}\""
+      "channel=\"#{channel.title(@acting_user)}\""
     end
   end
 
-  def initialize(channel, messages_or_ids: [], opts: {})
+  def initialize(channel, acting_user, messages_or_ids: [], opts: {})
     @channel = channel
+    @acting_user = acting_user
 
     if messages_or_ids.all? { |m| m.is_a?(Numeric) }
       @message_ids = messages_or_ids
@@ -97,6 +100,7 @@ class ChatTranscriptService
     all_messages_same_user = messages.count(:user_id) == 1
     open_bbcode_tag = ChatTranscriptBBCode.new(
       channel: @channel,
+      acting_user: @acting_user,
       multiquote: messages.length > 1,
       chained: !all_messages_same_user,
       no_link: @opts[:no_link],
@@ -108,6 +112,7 @@ class ChatTranscriptService
         rendered_markdown << open_bbcode_tag.render
 
         open_bbcode_tag = ChatTranscriptBBCode.new(
+          acting_user: @acting_user,
           chained: !all_messages_same_user,
           no_link: @opts[:no_link],
           include_reactions: @opts[:include_reactions]

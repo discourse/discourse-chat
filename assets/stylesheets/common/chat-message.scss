@@ -200,6 +200,7 @@
 
   .chat-message-reaction-list,
   .chat-transcript-reactions {
+    @include unselectable;
     position: relative;
     margin-top: 0.25em;
     display: flex;
@@ -274,6 +275,8 @@
 }
 
 .chat-msgactions-hover {
+  @include unselectable;
+
   position: absolute;
   opacity: 0;
   padding-left: 4em;

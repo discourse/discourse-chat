@@ -3,12 +3,13 @@
 require 'rails_helper'
 
 describe ChatTranscriptService do
+  let(:acting_user) { Fabricate(:user) }
   let(:user1) { Fabricate(:user, username: "martinchat") }
   let(:user2) { Fabricate(:user, username: "brucechat") }
   let(:channel) { Fabricate(:chat_channel, name: "The Beam Discussions") }
 
   def service(message_ids, opts: {})
-    described_class.new(channel, messages_or_ids: Array.wrap(message_ids), opts: opts)
+    described_class.new(channel, acting_user, messages_or_ids: Array.wrap(message_ids), opts: opts)
   end
 
   it "generates a simple chat transcript from one message" do

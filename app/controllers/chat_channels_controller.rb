@@ -135,7 +135,7 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     chat_channel.description = params[:description] if params[:description]
     chat_channel.save!
 
-    ChatPublisher.publish_channel_edit(chat_channel)
+    ChatPublisher.publish_channel_edit(chat_channel, current_user)
     render_serialized(chat_channel, ChatChannelSerializer)
   end
 
@@ -271,7 +271,7 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
 
     guardian.ensure_can_delete_chat_channel!
 
-    if chat_channel.name.downcase != params[:channel_name_confirmation].downcase
+    if chat_channel.title(current_user).downcase != params[:channel_name_confirmation].downcase
       raise Discourse::InvalidParameters.new(:channel_name_confirmation)
     end
 
@@ -282,7 +282,7 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
           "chat_channel_delete",
           {
             chat_channel_id: chat_channel.id,
-            chat_channel_name: chat_channel.name
+            chat_channel_name: chat_channel.title(current_user)
           }
         )
       end

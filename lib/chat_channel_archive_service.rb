@@ -43,11 +43,12 @@ class DiscourseChat::ChatChannelArchiveService
     Jobs.enqueue(:chat_channel_archive, chat_channel_archive_id: chat_channel.chat_channel_archive.id)
   end
 
-  attr_reader :chat_channel_archive, :chat_channel
+  attr_reader :chat_channel_archive, :chat_channel, :chat_channel_title
 
   def initialize(chat_channel_archive)
     @chat_channel_archive = chat_channel_archive
     @chat_channel = chat_channel_archive.chat_channel
+    @chat_channel_title = chat_channel.title(chat_channel_archive.archived_by)
   end
 
   def execute
@@ -56,7 +57,7 @@ class DiscourseChat::ChatChannelArchiveService
     begin
       ensure_destination_topic_exists!
 
-      Rails.logger.info("Creating posts from message batches for #{chat_channel.name} archive, #{chat_channel_archive.total_messages} messages to archive (#{chat_channel_archive.total_messages / ARCHIVED_MESSAGES_PER_POST} posts).")
+      Rails.logger.info("Creating posts from message batches for #{chat_channel_title} archive, #{chat_channel_archive.total_messages} messages to archive (#{chat_channel_archive.total_messages / ARCHIVED_MESSAGES_PER_POST} posts).")
 
       # a batch should be idempotent, either the post is created and the
       # messages are deleted or we roll back the whole thing.
@@ -74,6 +75,7 @@ class DiscourseChat::ChatChannelArchiveService
         create_post(
           ChatTranscriptService.new(
             chat_channel,
+            chat_channel_archive.archived_by,
             messages_or_ids: chat_messages,
             opts: { no_link: true, include_reactions: true }
           ).generate_markdown
@@ -123,7 +125,7 @@ class DiscourseChat::ChatChannelArchiveService
 
   def ensure_destination_topic_exists!
     if !chat_channel_archive.destination_topic.present?
-      Rails.logger.info("Creating topic for #{chat_channel.name} archive.")
+      Rails.logger.info("Creating topic for #{chat_channel_title} archive.")
       Topic.transaction do
         topic_creator = TopicCreator.new(
           Discourse.system_user,
@@ -139,16 +141,16 @@ class DiscourseChat::ChatChannelArchiveService
         chat_channel_archive.update!(destination_topic: topic_creator.create)
       end
 
-      Rails.logger.info("Creating first post for #{chat_channel.name} archive.")
+      Rails.logger.info("Creating first post for #{chat_channel_title} archive.")
       create_post(
         I18n.t(
           "chat.channel.archive.first_post_raw",
-          channel_name: chat_channel.name,
+          channel_name: chat_channel_title,
           channel_url: chat_channel.url
         )
       )
     else
-      Rails.logger.info("Topic already exists for #{chat_channel.name} archive.")
+      Rails.logger.info("Topic already exists for #{chat_channel_title} archive.")
     end
 
     update_destination_topic_status
@@ -179,18 +181,18 @@ class DiscourseChat::ChatChannelArchiveService
       )
     end
 
-    Rails.logger.info("Archived #{chat_channel_archive.archived_messages} messages for #{chat_channel.name} archive.")
+    Rails.logger.info("Archived #{chat_channel_archive.archived_messages} messages for #{chat_channel_title} archive.")
   end
 
   def complete_archive
-    Rails.logger.info("Creating posts completed for #{chat_channel.name} archive.")
+    Rails.logger.info("Creating posts completed for #{chat_channel_title} archive.")
     chat_channel.archived!(chat_channel_archive.archived_by)
     notify_archiver(:success)
   end
 
   def notify_archiver(result, error: nil)
     base_translation_params = {
-      channel_name: chat_channel.name,
+      channel_name: chat_channel_title,
       topic_title: chat_channel_archive.destination_topic.title,
       topic_url: chat_channel_archive.destination_topic.url
     }
@@ -198,10 +200,10 @@ class DiscourseChat::ChatChannelArchiveService
     if result == :failed
       Discourse.warn_exception(
         error,
-        message: "Error when archiving chat channel #{chat_channel.name}.",
+        message: "Error when archiving chat channel #{chat_channel_title}.",
         env: {
           chat_channel_id: chat_channel.id,
-          chat_channel_name: chat_channel.name
+          chat_channel_name: chat_channel_title
         }
       )
       error_translation_params = base_translation_params.merge(

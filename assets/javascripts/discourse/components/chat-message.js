@@ -10,7 +10,6 @@ import discourseComputed, {
 } from "discourse-common/utils/decorators";
 import EmberObject, { action, computed } from "@ember/object";
 import { ajax } from "discourse/lib/ajax";
-import { autoUpdatingRelativeAge } from "discourse/lib/formatter";
 import { cancel, later, schedule } from "@ember/runloop";
 import { clipboardCopy } from "discourse/lib/utilities";
 import { inject as service } from "@ember/service";
@@ -18,8 +17,17 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 import { prioritizeNameInUx } from "discourse/lib/settings";
 import { Promise } from "rsvp";
 
-const HERE = "here";
-const ALL = "all";
+let _chatMessageDecorators = [];
+
+export function addChatMessageDecorator(decorator) {
+  _chatMessageDecorators.push(decorator);
+}
+
+export function resetChatMessageDecorators() {
+  _chatMessageDecorators = [];
+}
+
+export const MENTION_KEYWORDS = ["here", "all"];
 
 export default Component.extend({
   ADD_REACTION: "add",
@@ -48,23 +56,6 @@ export default Component.extend({
       : this._waitForIdToBePopulated();
   },
 
-  didInsertElement() {
-    this._super(...arguments);
-
-    if (!this.currentUser || !this.message) {
-      return;
-    }
-
-    this.messageContainer?.querySelectorAll(".mention").forEach((node) => {
-      const mention = node.textContent.trim().substring(1);
-      const highlightable = [this.currentUser.username, HERE, ALL];
-      if (highlightable.includes(mention)) {
-        node.classList.add("highlighted");
-        node.classList.add("valid-mention");
-      }
-    });
-  },
-
   willDestroyElement() {
     this._super(...arguments);
     if (this.message.stagedId) {
@@ -87,6 +78,20 @@ export default Component.extend({
     );
 
     cancel(this._invitationSentTimer);
+  },
+
+  didReceiveAttrs() {
+    this._super(...arguments);
+
+    schedule("afterRender", () => {
+      if (!this.messageContainer) {
+        return;
+      }
+
+      _chatMessageDecorators.forEach((decorator) => {
+        decorator.call(this, this.messageContainer, this.chatChannel);
+      });
+    });
   },
 
   @computed("message.{id,stagedId}")
@@ -302,7 +307,6 @@ export default Component.extend({
     "message.staged",
     "message.deleted_at",
     "message.in_reply_to",
-    "message.action_code",
     "message.error",
     "isHovered"
   )
@@ -381,7 +385,6 @@ export default Component.extend({
   @discourseComputed("message", "message.deleted_at", "chatChannel.status")
   showEditButton(message, deletedAt) {
     return (
-      !message.action_code &&
       !deletedAt &&
       this.currentUser.id === message.user?.id &&
       this.chatChannel.canModifyMessages(this.currentUser)
@@ -415,12 +418,9 @@ export default Component.extend({
 
   @discourseComputed("message")
   canManageDeletion(message) {
-    return (
-      !message.action_code &&
-      (this.currentUser?.id === message.user?.id
-        ? this.details.can_delete_self
-        : this.details.can_delete_others)
-    );
+    return this.currentUser?.id === message.user?.id
+      ? this.details.can_delete_self
+      : this.details.can_delete_others;
   },
 
   @discourseComputed("message.deleted_at", "chatChannel.status")
@@ -465,19 +465,6 @@ export default Component.extend({
       this.currentUser?.staff &&
       this.chatChannel.canModifyMessages(this.currentUser)
     );
-  },
-
-  @discourseComputed("message", "message.action_code")
-  actionCodeText(message, actionCode) {
-    const when = autoUpdatingRelativeAge(new Date(message.created_at), {
-      format: "medium-with-ago",
-    });
-
-    return I18n.t(`action_codes.${actionCode}`, {
-      excerpt: message.message,
-      when,
-      who: "[INVALID]",
-    });
   },
 
   @discourseComputed("message.reactions.@each")

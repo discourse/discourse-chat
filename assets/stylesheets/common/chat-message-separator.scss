@@ -1,4 +1,5 @@
 .chat-message-separator {
+  @include unselectable;
   margin: 0.25rem 0 0.25rem 1rem;
   display: flex;
   font-size: var(--font-down-1);

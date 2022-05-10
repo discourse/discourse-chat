@@ -34,16 +34,6 @@ const PAGE_SIZE = 50;
 const PAST = "Past";
 const FUTURE = "Future";
 
-let _chatMessageDecorators = [];
-
-export function addChatMessageDecorator(decorator) {
-  _chatMessageDecorators.push(decorator);
-}
-
-export function resetChatMessageDecorators() {
-  _chatMessageDecorators = [];
-}
-
 export default Component.extend({
   classNameBindings: [":chat-live-pane", "sendingloading", "loading"],
   topicId: null, // ?Number
@@ -295,8 +285,8 @@ export default Component.extend({
       details: {
         chat_channel_id: this.chatChannel.id,
         chatable_type: this.chatChannel.chatable_type,
-        can_delete_self: true,
-        can_delete_others: this.currentUser.staff,
+        can_delete_self: messages.resultSetMeta.can_delete_self,
+        can_delete_others: messages.resultSetMeta.can_delete_others,
         can_flag: messages.resultSetMeta.can_flag,
         user_silenced: messages.resultSetMeta.user_silenced,
         can_moderate: messages.resultSetMeta.can_moderate,
@@ -578,12 +568,6 @@ export default Component.extend({
     this._pluginsDecorators();
     this._highlightCode();
     this._renderChatTranscriptDates();
-
-    document.querySelectorAll(".chat-message-text").forEach((chatMessageEl) => {
-      _chatMessageDecorators.forEach((decorator) => {
-        decorator.call(this, chatMessageEl, this.chatChannel);
-      });
-    });
   },
 
   @observes("floatHidden")

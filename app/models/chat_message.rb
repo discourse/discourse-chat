@@ -2,7 +2,6 @@
 
 class ChatMessage < ActiveRecord::Base
   include Trashable
-  self.ignored_columns = ["post_id"]
   attribute :has_oneboxes, default: false
 
   BAKED_VERSION = 2
@@ -252,12 +251,10 @@ end
 #  deleted_by_id   :integer
 #  in_reply_to_id  :integer
 #  message         :text
-#  action_code     :string
 #  cooked          :text
 #  cooked_version  :integer
 #
 # Indexes
 #
 #  index_chat_messages_on_chat_channel_id_and_created_at  (chat_channel_id,created_at)
-#  index_chat_messages_on_post_id                         (post_id)
 #

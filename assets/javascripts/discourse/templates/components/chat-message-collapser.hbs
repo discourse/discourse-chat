@@ -9,32 +9,8 @@
       </div>
     {{/collapser}}
 
-  {{else if hasYoutube}}
-    {{#each youtubeCooked as |cooked|}}
-      {{#if cooked.needsCollapser}}
-        {{#collapser header=cooked.header}}
-          <div class="chat-message-collapser-youtube">
-            {{cooked.body}}
-          </div>
-        {{/collapser}}
-      {{else}}
-        {{cooked.body}}
-      {{/if}}
-    {{/each}}
-
-  {{else if hasImageOnebox}}
-    {{#each imageOneboxCooked as |cooked|}}
-      {{#if cooked.needsCollapser}}
-        {{#collapser header=cooked.header}}
-          {{cooked.body}}
-        {{/collapser}}
-      {{else}}
-        {{cooked.body}}
-      {{/if}}
-    {{/each}}
-
-  {{else if hasImage}}
-    {{#each imageCooked as |cooked|}}
+  {{else}}
+    {{#each cookedBodies as |cooked|}}
       {{#if cooked.needsCollapser}}
         {{#collapser header=cooked.header}}
           {{cooked.body}}

@@ -41,6 +41,10 @@ export default class ChatMessageCollapser extends Component {
       return this.imageCooked();
     }
 
+    if (hasGallery(this.cooked)) {
+      return this.galleryCooked();
+    }
+
     return [];
   }
 
@@ -97,6 +101,25 @@ export default class ChatMessageCollapser extends Component {
           `<a target="_blank" class="chat-message-collapser-link-small" rel="noopener noreferrer" href="${link}">${
             alt || link
           }</a>`
+        );
+        acc.push({ header, body: e, needsCollapser: true });
+      } else {
+        acc.push({ body: e, needsCollapser: false });
+      }
+      return acc;
+    }, []);
+  }
+
+  galleryCooked() {
+    const elements = Array.prototype.slice.call(domFromString(this.cooked));
+
+    return elements.reduce((acc, e) => {
+      if (galleryPredicate(e)) {
+        const link = e.firstElementChild.href;
+        const title = e.firstElementChild.firstElementChild.textContent;
+        e.firstElementChild.removeChild(e.firstElementChild.firstElementChild);
+        const header = htmlSafe(
+          `<a target="_blank" class="chat-message-collapser-link-small" rel="noopener noreferrer" href="${link}">${title}</a>`
         );
         acc.push({ header, body: e, needsCollapser: true });
       } else {
@@ -166,11 +189,26 @@ function hasImage(cooked) {
   return elements.some((e) => imagePredicate(e));
 }
 
+function galleryPredicate(e) {
+  return (
+    e.firstElementChild &&
+    e.firstElementChild.nodeName === "A" &&
+    e.firstElementChild.firstElementChild &&
+    e.firstElementChild.firstElementChild.classList.contains("outer-box")
+  );
+}
+
+function hasGallery(cooked) {
+  const elements = Array.prototype.slice.call(domFromString(cooked));
+  return elements.some((e) => galleryPredicate(e));
+}
+
 export function isCollapsible(cooked, uploads) {
   return (
     hasYoutube(cooked) ||
     hasImageOnebox(cooked) ||
     hasUploads(uploads) ||
-    hasImage(cooked)
+    hasImage(cooked) ||
+    hasGallery(cooked)
   );
 }

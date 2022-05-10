@@ -30,6 +30,7 @@ fa_IR:
           title: "نادیده گرفتن"
     channel:
       statuses:
+        read_only: "فقط خواندنی"
         archived: "بایگانی شده"
         closed: "بسته شد"
         open: "باز کردن"

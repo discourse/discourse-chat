@@ -48,6 +48,8 @@ ru:
       delete_channel_failed: "Не удалось удалить канал, попробуйте ещё раз."
       minimum_length_not_met: "Сообщение слишком короткое, оно должно содержать не менее %{minimum} символов."
       max_reactions_limit_reached: "Новые реакции на это сообщение запрещены."
+      message_move_invalid_channel: "Исходный и целевой каналы должны быть общедоступными."
+      message_move_no_messages_found: "Не найдено сообщений с указанными идентификаторами сообщений."
     reviewables:
       actions:
         agree:
@@ -87,6 +89,11 @@ ru:
         open: "Открыт"
       archive:
         first_post_raw: "Эта тема является архивом канала [%{channel_name}](%{channel_url})."
+      messages_moved:
+        one: "Пользователь @%{acting_username} переместил сообщение в канал [%{channel_name}](%{first_moved_message_url})."
+        few: "Пользователь @%{acting_username} переместил %{count} сообщения в канал [%{channel_name}](%{first_moved_message_url})."
+        many: "Пользователь @%{acting_username} переместил %{count} сообщений в канал [%{channel_name}](%{first_moved_message_url})."
+        other: "Пользователь @%{acting_username} переместил %{count} сообщений в канал [%{channel_name}](%{first_moved_message_url})."
     personal_chat: "личный чат"
   discourse_push_notifications:
     popup:

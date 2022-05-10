@@ -192,8 +192,6 @@ zh_CN:
       chat:
         enabled: '%{who} 于 %{when} 启用了<button class="btn-link open-chat">聊天</button>'
         disabled: "%{who} 于 %{when} 关闭了聊天"
-        post_created: "创建了新帖子：%{excerpt}"
-        generic_small_action: "执行了话题管理操作"
     discourse_automation:
       scriptables:
         send_chat_message:

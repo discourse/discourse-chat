@@ -37,7 +37,6 @@ sv:
         delete_channel: "Radera kanal..."
       channel_archive:
         title: "Arkivera kanal"
-        instructions: "<p>Arkivering av en kanal sätter den i skrivskyddat läge och flyttar alla meddelanden från kanalen till ett nytt eller existerande ämne. Inga nya meddelanden kan skickas, och inga befintliga meddelanden kan redigeras eller raderas.</p><p>Är du säker på att du vill arkivera <strong>#%{channelTitle}</strong> kanalen?</p>"
         process_started: "Arkiveringsprocessen har påbörjats. Denna modal kommer snart att stängas och du får ett personligt meddelande när arkiveringen är klar."
         retry: "Försök igen"
       channel_open:
@@ -292,8 +291,6 @@ sv:
       chat:
         enabled: '%{who} aktiverade <button class="btn-link open-chat">chatt</button> %{when}'
         disabled: "%{who} stängde chatten %{when}"
-        post_created: "skapade ett nytt inlägg: %{excerpt}"
-        generic_small_action: "utförde en åtgärd för ämneshantering"
     discourse_automation:
       scriptables:
         send_chat_message:

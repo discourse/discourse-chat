@@ -48,6 +48,8 @@ he:
       delete_channel_failed: "מחיקת הערוץ נכשלה, נא לנסות שוב."
       minimum_length_not_met: "ההודעה קצרה מדי, היא חייבת להיות ארוכה מ־%{minimum} תווים"
       max_reactions_limit_reached: "רגשות חדשים אסורים בהודעה זו."
+      message_move_invalid_channel: "ערוצי המקור והיעד חייבים להיות ערוצים ציבוריים."
+      message_move_no_messages_found: "לא נמצאו הודעות עם מזהי ההודעות שסופקו."
     reviewables:
       actions:
         agree:
@@ -87,6 +89,11 @@ he:
         open: "פתוח"
       archive:
         first_post_raw: "הנושא הזה הוא הארכיון של ערוץ הצ׳אט [%{channel_name}](%{channel_url})."
+      messages_moved:
+        one: "הודעה הועברה על ידי ‎@%{acting_username} לערוץ [%{channel_name}](%{first_moved_message_url})."
+        two: "%{count} הודעות הועברו על ידי ‎@%{acting_username} לערוץ [%{channel_name}](%{first_moved_message_url})."
+        many: "%{count} הודעות הועברו על ידי ‎@%{acting_username} לערוץ [%{channel_name}](%{first_moved_message_url})."
+        other: "%{count} הודעות הועברו על ידי ‎@%{acting_username} לערוץ [%{channel_name}](%{first_moved_message_url})."
     personal_chat: "צ׳אט אישי"
   discourse_push_notifications:
     popup:

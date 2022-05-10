@@ -11,6 +11,7 @@ class ChatMessage < ActiveRecord::Base
   belongs_to :in_reply_to, class_name: "ChatMessage"
   has_many :revisions, class_name: "ChatMessageRevision"
   has_many :reactions, class_name: "ChatMessageReaction"
+  has_many :bookmarks, as: :bookmarkable
   has_many :chat_uploads
   has_many :uploads, through: :chat_uploads
   has_one :chat_webhook_event

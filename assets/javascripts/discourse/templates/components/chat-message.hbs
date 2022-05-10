@@ -114,6 +114,14 @@
 
               {{format-chat-date message details}}
 
+              {{#if message.bookmarkModel.id}}
+                {{#if message.bookmarkModel.reminder_at}}
+                  {{d-icon "discourse-bookmark-clock"}}
+                {{else}}
+                  {{d-icon "bookmark"}}
+                {{/if}}
+              {{/if}}
+
               {{#if message.reviewable_id}}
                 {{#link-to "review.show" message.reviewable_id class="chat-message-flagged"}}
                   {{d-icon "flag" title="chat.flagged"}}

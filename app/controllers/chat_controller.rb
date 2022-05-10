@@ -407,6 +407,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
       .includes(:user)
       .includes(chat_webhook_event: :incoming_chat_webhook)
       .includes(reactions: :user)
+      .includes(:bookmarks)
       .includes(:uploads)
       .includes(chat_channel: :chatable)
   end

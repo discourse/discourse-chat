@@ -1,4 +1,5 @@
 import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
+import ChatMessage from "discourse/plugins/discourse-chat/discourse/models/chat-message";
 import Component from "@ember/component";
 import discourseComputed, {
   afterRender,
@@ -391,7 +392,7 @@ export default Component.extend({
     if (this.targetMessageId && this.targetMessageId === messageData.id) {
       messageData.expanded = true;
     }
-    const prepared = EmberObject.create(messageData);
+    const prepared = ChatMessage.create(messageData);
     this.messageLookup[messageData.messageLookupId] = prepared;
     return prepared;
   },

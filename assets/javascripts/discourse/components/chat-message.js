@@ -1,4 +1,6 @@
 import bootbox from "bootbox";
+import Bookmark from "discourse/models/bookmark";
+import { openBookmarkModal } from "discourse/controllers/bookmark";
 import { isTesting } from "discourse-common/config/environment";
 import Component from "@ember/component";
 import I18n from "I18n";
@@ -54,6 +56,7 @@ export default Component.extend({
     this.message.id
       ? this._subscribeToAppEvents()
       : this._waitForIdToBePopulated();
+    this.set("isBookmarked", this.message.bookmarkModel.id);
   },
 
   willDestroyElement() {
@@ -223,6 +226,19 @@ export default Component.extend({
       });
     }
 
+    if (this.showBookmarkButton) {
+      buttons.push({
+        id: "toggleBookmark",
+        name: this.isBookmarked
+          ? I18n.t("chat.bookmark_message_edit")
+          : I18n.t("chat.bookmark_message"),
+        icon: this.message.bookmarkModel.reminder_at
+          ? "discourse-bookmark-clock"
+          : "bookmark",
+        className: "oogabooka",
+      });
+    }
+
     return buttons;
   },
 
@@ -238,6 +254,7 @@ export default Component.extend({
       deleteMessage: this.deleteMessage,
       restore: this.restore,
       rebakeMessage: this.rebakeMessage,
+      toggleBookmark: this.toggleBookmark,
       startReactionForMsgActions: this.startReactionForMsgActions,
     };
   },
@@ -307,8 +324,10 @@ export default Component.extend({
     "message.staged",
     "message.deleted_at",
     "message.in_reply_to",
+    "message.action_code",
     "message.error",
-    "isHovered"
+    "isHovered",
+    "isBookmarked"
   )
   chatMessageClasses(
     staged,
@@ -316,7 +335,8 @@ export default Component.extend({
     inReplyTo,
     actionCode,
     error,
-    isHovered
+    isHovered,
+    isBookmarked
   ) {
     let classNames = ["chat-message"];
 
@@ -341,6 +361,9 @@ export default Component.extend({
     }
     if (isHovered) {
       classNames.push("chat-message-selected");
+    }
+    if (isBookmarked) {
+      classNames.push("chat-message-bookmarked");
     }
     return classNames.join(" ");
   },
@@ -457,6 +480,11 @@ export default Component.extend({
       deletedAt &&
       this.chatChannel.canModifyMessages(this.currentUser)
     );
+  },
+
+  @discourseComputed("chatChannel.status")
+  showBookmarkButton() {
+    return this.chatChannel.canModifyMessages(this.currentUser);
   },
 
   @discourseComputed("chatChannel.status")
@@ -814,6 +842,37 @@ export default Component.extend({
         type: "PUT",
       }
     ).catch(popupAjaxError);
+  },
+
+  @action
+  toggleBookmark() {
+    const bookmark = this.message.bookmarkModel;
+    return openBookmarkModal(
+      bookmark,
+      {
+        onAfterSave: (savedData) => {
+          console.log(savedData);
+          this.message.bookmarkModel = savedData;
+          this.set("isBookmarked", this.message.bookmarkModel.id);
+          // this.message.set("bookmarking", false);
+          // this.message.set("bookmarked", true);
+          // this.appEvents.trigger(
+          //   "bookmarks:changed",
+          //   savedData,
+          //   bookmark.attachedTo()
+          // );
+
+          // // TODO (martin) (2022-02-01) Remove these old bookmark events, replaced by bookmarks:changed.
+          // this.appEvents.trigger("topic:bookmark-toggled");
+        },
+        onAfterDelete: (topicBookmarked, bookmarkId) => {
+          console.log(topicBookmarked, bookmarkId);
+          this.set("isBookmarked", false);
+          // this.model.removeBookmark(bookmarkId);
+        },
+      },
+      { use_polymorphic_bookmarks: this.siteSettings.use_polymorphic_bookmarks }
+    );
   },
 
   @action

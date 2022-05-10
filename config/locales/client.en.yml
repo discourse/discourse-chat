@@ -121,6 +121,8 @@ en:
       edit: "Edit"
       copy_link: "Copy link"
       rebake_message: "Rebuild HTML"
+      bookmark_message: "Bookmark"
+      bookmark_message_edit: "Edit Bookmark"
       restore: "Restore deleted message"
       save: "Save"
       select: "Select"

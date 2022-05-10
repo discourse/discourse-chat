@@ -209,10 +209,6 @@ pl_PL:
       actions:
         chat_enable: "Włącz czat"
         chat_disable: "Zamknij czat"
-    action_codes:
-      chat:
-        post_created: "utworzył nowy post: %{excerpt}"
-        generic_small_action: "wykonano akcję zarządzania tematem"
     discourse_automation:
       scriptables:
         send_chat_message:

@@ -232,8 +232,6 @@ ar:
       chat:
         enabled: 'فعَّل %{who} <button class="btn-link open-chat">الدردشة</button> في %{when}'
         disabled: "أغلق %{who} الدردشة في %{when}"
-        post_created: "أنشأ منشورًا جديدًا: %{excerpt}"
-        generic_small_action: "اتخذ إجراءً بشأن إدارة الموضوع"
     discourse_automation:
       scriptables:
         send_chat_message:

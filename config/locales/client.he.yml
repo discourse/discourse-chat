@@ -29,6 +29,14 @@ he:
       cancel_reply: "ביטול תגובה"
       chat_channels: "ערוצים"
       leave: "יציאה מהערוץ"
+      move_to_channel:
+        title: "העברת הודעות לערוץ"
+        instructions:
+          one: "פעולה זו תעביר הודעה <strong>אחת</strong>. יש לבחור ערוץ יעד. הודעה ממלאת מקום תיווצר בערוץ <strong>%{channelTitle}</strong> כדי לציין שההודעה הזאת הועברה."
+          two: "פעולה זו תעביר <strong>%{count}</strong> הודעות. יש לבחור ערוץ יעד. הודעה ממלאת מקום תיווצר בערוץ <strong>%{channelTitle}</strong> כדי לציין שההודעות האלו הועברו."
+          many: "פעולה זו תעביר <strong>%{count}</strong> הודעות. יש לבחור ערוץ יעד. הודעה ממלאת מקום תיווצר בערוץ <strong>%{channelTitle}</strong> כדי לציין שההודעות האלו הועברו."
+          other: "פעולה זו תעביר <strong>%{count}</strong> הודעות. יש לבחור ערוץ יעד. הודעה ממלאת מקום תיווצר בערוץ <strong>%{channelTitle}</strong> כדי לציין שההודעות האלו הועברו."
+        confirm_move: "העברת הודעות"
       channel_settings:
         title: "הגדרות ערוץ"
         close_channel: "סגירת ערוץ…"
@@ -37,7 +45,7 @@ he:
         delete_channel: "מחיקת ערוץ…"
       channel_archive:
         title: "העברת ערוץ לארכיון"
-        instructions: "<p>העברת ערוץ לארכיון מעבירה אותו למצב לקריאה בלבד ומעביר את כל ההודעות מהערוץ לנושא חדש או קיים. אי אפשר לשלוח הודעות חדשות ואי אפשר לערוך או למחוק הודעות קיימות.</p><p>להעביר את הערוץ ‎<strong>#%{channelTitle}</strong> לארכיון?</p>"
+        instructions: "<p>העברת ערוץ לארכיון מעבירה אותו למצב לקריאה בלבד ומעביר את כל ההודעות מהערוץ לנושא חדש או קיים. אי אפשר לשלוח הודעות חדשות ואי אפשר לערוך או למחוק הודעות קיימות.</p><p>להעביר את הערוץ ‎<strong>%{channelTitle}</strong> לארכיון?</p>"
         process_started: "תהליך ההעברה לארכיון החל. חלונית צצה זו תיסגר בקרוב ותישלח אליך הודעה אישית כשתהליך ההעברה לארכיון יסתיים."
         retry: "לנסות שוב"
       channel_open:
@@ -93,6 +101,11 @@ he:
           many: "נשלחו הזמנות"
           other: "נשלחו הזמנות"
         invite: "הזמנה לערוץ"
+        without_membership:
+          one: "לא הצטרפו לערוץ הזה: %{usernames}."
+          two: "%{usernames} לא הצטרפו לערוץ הזה."
+          many: "%{usernames} לא הצטרפו לערוץ הזה."
+          other: "%{usernames} לא הצטרפו לערוץ הזה."
       aria_roles:
         header: "כותרת צ׳אט"
         composer: "כותב צ׳אט"
@@ -153,6 +166,9 @@ he:
         closed: "סגור"
         open_header: "הערוץ פתוח."
         open: "פתוח"
+      chat_message_separator:
+        today: היום
+        yesterday: אתמול
       direct_message_creator:
         title: הודעה חדשה
         prefix: "אל:"
@@ -240,6 +256,7 @@ he:
       selection:
         cancel: "ביטול"
         quote_selection: "ציטוט בנושא"
+        move_selection_to_channel: "העברה לערוץ"
         error: "אירעה שגיאה בהעברת הודעות הצ׳אט"
         title: "העברת צ׳אט לנושא"
         new_topic:
@@ -300,8 +317,6 @@ he:
       chat:
         enabled: 'ה<button class="btn-link open-chat">צ׳אט</button>הופעל על ידי%{who} ב־%{when}'
         disabled: "הצ׳אט %{when} נסגר על ידי %{who}"
-        post_created: "נוצר פוסט חדש: %{excerpt}"
-        generic_small_action: "בוצעה פעילות ניהול על הנושא"
     discourse_automation:
       scriptables:
         send_chat_message:

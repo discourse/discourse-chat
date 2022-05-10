@@ -153,7 +153,7 @@ describe DiscourseChat::ChatMessageCreator do
         DiscourseChat::ChatMessageCreator.create(
           chat_channel: public_chat_channel,
           user: user1,
-          content: "hello #{user_without_memberships.username}"
+          content: "hello @#{user_without_memberships.username}"
         )
       }.to change { ChatMention.count }.by(0)
     end
@@ -187,6 +187,20 @@ describe DiscourseChat::ChatMessageCreator do
           chat_channel: @direct_message_channel,
           user: user1,
           content: "hello there @#{user2.username} and @#{user3.username}"
+        )
+        # Only user2 should be notified
+      }.to change { user2.chat_mentions.count }.by(1)
+        .and change {
+               user3.chat_mentions.count
+             }.by(0)
+    end
+
+    it 'creates a mention notifications for group users that are participating in private chat' do
+      expect {
+        DiscourseChat::ChatMessageCreator.create(
+          chat_channel: @direct_message_channel,
+          user: user1,
+          content: "hello there @#{user_group.name}"
         )
         # Only user2 should be notified
       }.to change { user2.chat_mentions.count }.by(1)
@@ -429,72 +443,6 @@ describe DiscourseChat::ChatMessageCreator do
           )
         }.to change { ChatUpload.where(upload_id: upload1.id).count }.by(0)
       end
-    end
-  end
-
-  describe "manually running jobs" do
-    it "creates mention notifications and marks them as read if the user has already read the message" do
-      chat_message = DiscourseChat::ChatMessageCreator.create(
-        chat_channel: public_chat_channel,
-        user: user1,
-        content: "Hi @#{user2.username}"
-      ).chat_message
-
-      user2.user_chat_channel_memberships.where(chat_channel: public_chat_channel).update(
-        following: true,
-        last_read_message_id: chat_message.id
-      )
-
-      expect {
-        Jobs::CreateChatMentionNotifications.new.execute(user_ids: [user2.id], chat_message_id: chat_message.id, timestamp: chat_message.created_at)
-      }.to change { user2.chat_mentions.count }.by(1)
-      expect(user2.chat_mentions.last.notification.read).to be true
-    end
-
-    it "doesn't send chat message 'watching' notifications if the user has already read the message" do
-      chat_message = DiscourseChat::ChatMessageCreator.create(
-        chat_channel: public_chat_channel,
-        user: user1,
-        content: "Hi @#{user2.username}"
-      ).chat_message
-
-      user2.user_chat_channel_memberships.where(chat_channel: public_chat_channel).update(
-        following: true,
-        chat_channel: public_chat_channel,
-        last_read_message_id: chat_message.id,
-        desktop_notification_level: UserChatChannelMembership::NOTIFICATION_LEVELS[:always],
-        mobile_notification_level: UserChatChannelMembership::NOTIFICATION_LEVELS[:always],
-      )
-
-      PostAlerter.expects(:push_notification).never
-      Jobs::CreateChatMentionNotifications.new.execute(user_ids: [user2.id], chat_message_id: chat_message.id, timestamp: chat_message.created_at)
-    end
-
-    it "does nothing if there has been a revision in between enqueueing and running" do
-      chat_message = DiscourseChat::ChatMessageCreator.create(
-        chat_channel: public_chat_channel,
-        user: user1,
-        content: "Hi"
-      ).chat_message
-
-      user2.user_chat_channel_memberships.where(chat_channel: public_chat_channel).update(
-        following: true,
-        last_read_message_id: nil
-      )
-
-      DiscourseChat::ChatMessageUpdater.update(
-        chat_message: chat_message,
-        new_content: "hi there @#{user2.username}"
-      )
-
-      expect {
-        Jobs::CreateChatMentionNotifications.new.execute(user_ids: [user2.id], chat_message_id: chat_message.id, timestamp: chat_message.created_at)
-      }.not_to change { user2.chat_mentions.count }
-
-      # Now run again with the revision timestamp and the user will be notified
-      expect {
-        Jobs::CreateChatMentionNotifications.new.execute(user_ids: [user2.id], chat_message_id: chat_message.id, timestamp: chat_message.revisions.last.created_at)
-      }.to change { user2.chat_mentions.count }.by(1)
     end
   end
 

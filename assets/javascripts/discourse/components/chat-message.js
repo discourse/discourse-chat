@@ -310,22 +310,11 @@ export default Component.extend({
     "message.error",
     "isHovered"
   )
-  chatMessageClasses(
-    staged,
-    deletedAt,
-    inReplyTo,
-    actionCode,
-    error,
-    isHovered
-  ) {
+  chatMessageClasses(staged, deletedAt, inReplyTo, error, isHovered) {
     let classNames = ["chat-message"];
 
     if (staged) {
       classNames.push("chat-message-staged");
-    }
-    if (actionCode) {
-      classNames.push("chat-action");
-      classNames.push(`chat-action-${actionCode}`);
     }
     if (deletedAt) {
       classNames.push("deleted");

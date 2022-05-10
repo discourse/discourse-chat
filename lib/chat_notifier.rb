@@ -196,7 +196,7 @@ class DiscourseChat::ChatNotifier
   def expand_group_mentions(to_notify, already_covered_ids)
     return [] if mentionable_groups.empty?
 
-    mentionable_groups.each { |g| to_notify[g.name.downcase.to_sym] = [] }
+    mentionable_groups.each { |g| to_notify[g.name.downcase] = [] }
 
     reached_by_group = chat_users
       .joins(:groups).where(groups: mentionable_groups)
@@ -206,7 +206,7 @@ class DiscourseChat::ChatNotifier
 
     grouped[:already_participating].each do |user|
       group = user.groups.detect { |g| mentionable_groups.include?(g) }
-      to_notify[group.name.downcase.to_sym] << user.id
+      to_notify[group.name.downcase] << user.id
     end
     already_covered_ids.concat(grouped[:already_participating])
 

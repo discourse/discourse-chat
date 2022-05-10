@@ -173,7 +173,7 @@ describe DiscourseChat::ChatNotifier do
       end
 
       let(:mention) { "hello @#{group.name}!" }
-      let(:list_key) { group.name.to_sym }
+      let(:list_key) { group.name }
 
       include_examples 'ensure only channel members are notified'
     end
@@ -227,7 +227,7 @@ describe DiscourseChat::ChatNotifier do
           messages = MessageBus.track_publish("/chat/#{personal_chat_channel.id}") do
             to_notify = described_class.new(msg, msg.created_at).notify_new
 
-            expect(to_notify[group.name.to_sym]).to contain_exactly(user_2.id)
+            expect(to_notify[group.name]).to contain_exactly(user_2.id)
           end
 
           unreachable_msg = messages.first

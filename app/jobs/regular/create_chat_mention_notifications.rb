@@ -52,32 +52,36 @@ module Jobs
     end
 
     def build_payload_for(membership, identifier_type:)
-      translation_prefix = @is_direct_message_channel ?
-        "discourse_push_notifications.popup.direct_message_chat_mention" :
-        "discourse_push_notifications.popup.chat_mention"
-      translation_suffix = identifier_type == :direct_mentions ? "direct" : "other"
-
-      identifier_text = case identifier_type
-                        when :here_mentions
-                          'here'
-                        when :global_mentions
-                          'all'
-        else
-                          ''
-      end
-
-      {
-        translated_title: I18n.t("#{translation_prefix}.#{translation_suffix}",
-          username: @creator.username,
-          identifier: identifier_text,
-          channel: @chat_channel.title(membership.user)
-        ),
+      payload = {
         notification_type: Notification.types[:chat_mention],
         username: @creator.username,
         tag: DiscourseChat::ChatNotifier.push_notification_tag(:mention, @chat_channel.id),
         excerpt: @chat_message.push_notification_excerpt,
         post_url: "/chat/channel/#{@chat_channel.id}/#{@chat_channel.title(membership.user)}?messageId=#{@chat_message.id}"
       }
+
+      translation_prefix = @is_direct_message_channel ?
+        "discourse_push_notifications.popup.direct_message_chat_mention" :
+        "discourse_push_notifications.popup.chat_mention"
+      translation_suffix = identifier_type == :direct_mentions ? "direct" : "other"
+      identifier_text = case identifier_type
+                        when :here_mentions
+                          '@here'
+                        when :global_mentions
+                          '@all'
+                        when :direct_mentions
+                          ''
+        else
+                          "@#{identifier_type}"
+      end
+
+      payload[:translated_title] = I18n.t("#{translation_prefix}.#{translation_suffix}",
+        username: @creator.username,
+        identifier: identifier_text,
+        channel: @chat_channel.title(membership.user)
+      )
+
+      payload
     end
 
     def create_notification!(membership, notification_data)

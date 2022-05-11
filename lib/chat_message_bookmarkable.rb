@@ -14,10 +14,14 @@ class ChatMessageBookmarkable < BaseBookmarkable
   end
 
   def self.list_query(user, guardian)
-    user.bookmarks_of_type("ChatMessage").joins(
-      "INNER JOIN chat_messages ON chat_messages.id = bookmarks.bookmarkable_id AND
-        bookmarks.bookmarkable_type = 'ChatMessage'"
-    )
+    accessible_channel_ids = DiscourseChat::ChatChannelFetcher.all_secured_channel_ids(guardian)
+    return if accessible_channel_ids.empty?
+    user.bookmarks_of_type("ChatMessage")
+      .joins(
+        "INNER JOIN chat_messages ON chat_messages.id = bookmarks.bookmarkable_id
+          AND bookmarks.bookmarkable_type = 'ChatMessage'"
+      )
+      .where("chat_messages.chat_channel_id IN (?)", accessible_channel_ids)
   end
 
   def self.search_query(bookmarks, query, ts_query, &bookmarkable_search)

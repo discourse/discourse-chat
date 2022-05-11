@@ -61,6 +61,7 @@ export default class ChatMessageReaction extends Component {
     const popover = setupPopover(target, {
       interactive: false,
       allowHTML: true,
+      delay: 250,
       content: emojiUnescape(this.popoverContent),
       onClickOutside(instance) {
         instance.hide();

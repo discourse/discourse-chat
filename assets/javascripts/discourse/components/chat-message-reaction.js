@@ -1,67 +1,119 @@
+import { guidFor } from "@ember/object/internals";
 import Component from "@ember/component";
-import { bind } from "discourse-common/utils/decorators";
-import { cancel, later } from "@ember/runloop";
-import { fmt } from "discourse/lib/computed";
+import { action, computed } from "@ember/object";
+import { emojiUnescape, emojiUrlFor } from "discourse/lib/text";
+import setupPopover from "discourse/lib/d-popover";
+import I18n from "I18n";
+import { schedule } from "@ember/runloop";
 
-export default Component.extend({
-  classNames: "chat-message-reaction",
-  classNameBindings: ["reacted", "count:show", "emoji"],
-  attributeBindings: ["role", "tabindex"],
-  role: "button",
-  emoji: null,
-  showUsersList: null,
-  hideUsersList: null,
-  reacted: null,
-  enterEvent: null,
-  leaveEvent: null,
-  count: null,
-  _hoverTimer: null,
-  tabindex: 0,
+export default class ChatMessageReaction extends Component {
+  reaction = null;
+  showUsersList = false;
+  tagName = "";
+  react = null;
+  class = null;
 
-  emojiString: fmt("emoji", ":%@:"),
-
-  click() {
-    cancel(this._hoverTimer);
-    this.react(this.emoji, this.reacted ? "remove" : "add");
-    return false;
-  },
-
-  didInsertElement() {
+  didReceiveAttrs() {
     this._super(...arguments);
 
-    if (this.showUsersList && this.hideUsersList) {
-      this.setProperties({
-        enterEvent: this.site.mobileView ? "mouseover" : "mouseenter",
-        leaveEvent: this.site.mobileView ? "mouseout" : "mouseleave",
+    if (this.showUsersList) {
+      schedule("afterRender", () => {
+        this._popover?.destroy();
+        this._popover = this._setupPopover();
       });
-      this.element.addEventListener(this.enterEvent, this._handleMouseEnter);
-      this.element.addEventListener(this.leaveEvent, this._handleMouseLeave);
     }
-  },
+  }
 
   willDestroyElement() {
     this._super(...arguments);
 
-    if (this.showUsersList && this.hideUsersList) {
-      this.element.removeEventListener(this.enterEvent, this._handleMouseEnter);
-      this.element.removeEventListener(this.leaveEvent, this._handleMouseLeave);
-      cancel(this._hoverTimer);
+    this._popover?.destroy();
+  }
+
+  @computed
+  get componentId() {
+    return guidFor(this);
+  }
+
+  @computed("reaction.emoji")
+  get emojiString() {
+    return `:${this.reaction.emoji}:`;
+  }
+
+  @computed("reaction.emoji")
+  get emojiUrl() {
+    return emojiUrlFor(this.reaction.emoji);
+  }
+
+  @action
+  handleClick() {
+    this?.react(this.reaction.emoji, this.reaction.reacted ? "remove" : "add");
+    return false;
+  }
+
+  _setupPopover() {
+    const target = document.getElementById(this.componentId);
+
+    if (!target) {
+      return;
     }
-  },
 
-  @bind
-  _handleMouseEnter(event) {
-    cancel(this._hoverTimer);
+    const popover = setupPopover(target, {
+      interactive: false,
+      allowHTML: true,
+      delay: 250,
+      content: emojiUnescape(this.popoverContent),
+      onClickOutside(instance) {
+        instance.hide();
+      },
+      onTrigger(instance, event) {
+        // ensures we close other reactions popovers when triggering one
+        document
+          .querySelectorAll(".chat-message-reaction")
+          .forEach((chatMessageReaction) => {
+            chatMessageReaction?._tippy?.hide();
+          });
 
-    this._hoverTimer = later(() => {
-      this.showUsersList(this);
-    }, 500);
-    event.preventDefault();
-  },
+        event.stopPropagation();
+      },
+    });
 
-  @bind
-  _handleMouseLeave() {
-    cancel(this._hoverTimer);
-    this.hideUsersList();
-  },
-});
+    return popover?.id ? popover : null;
+  }
+
+  @computed("reaction")
+  get popoverContent() {
+    let usernames = this.reaction.users.mapBy("username").join(", ");
+    if (this.reaction.reacted) {
+      if (this.reaction.count === 1) {
+        return I18n.t("chat.reactions.only_you", {
+          emoji: this.reaction.emoji,
+        });
+      } else if (this.reaction.count > 1 && this.reaction.count < 6) {
+        return I18n.t("chat.reactions.and_others", {
+          usernames,
+          emoji: this.reaction.emoji,
+        });
+      } else if (this.reaction.count >= 6) {
+        return I18n.t("chat.reactions.you_others_and_more", {
+          usernames,
+          emoji: this.reaction.emoji,
+          more: this.reaction.count - 5,
+        });
+      }
+    } else {
+      if (this.reaction.count > 0 && this.reaction.count < 6) {
+        return I18n.t("chat.reactions.only_others", {
+          usernames,
+          emoji: this.reaction.emoji,
+        });
+      } else if (this.reaction.count >= 6) {
+        return I18n.t("chat.reactions.others_and_more", {
+          usernames,
+          emoji: this.reaction.emoji,
+          more: this.reaction.count - 5,
+        });
+      }
+    }
+  }
+}

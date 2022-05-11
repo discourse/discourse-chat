@@ -2,8 +2,7 @@
   <div class="chat-msgactions">
     {{#each emojiReactions as |reaction|}}
       {{chat-message-reaction
-        emoji=reaction.emoji
-        reacted=reaction.reacted
+        reaction=reaction
         react=messageActions.react
         class="show"
       }}

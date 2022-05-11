@@ -526,47 +526,6 @@ export default Component.extend({
   },
 
   @action
-  showUsersList(reaction) {
-    let list;
-    let usernames = reaction.users.map((u) => u.username).join(", ");
-    if (reaction.reacted) {
-      if (reaction.count === 1) {
-        list = I18n.t("chat.reactions.only_you", { emoji: reaction.emoji });
-      } else if (reaction.count > 1 && reaction.count < 6) {
-        list = I18n.t("chat.reactions.and_others", {
-          usernames,
-          emoji: reaction.emoji,
-        });
-      } else if (reaction.count >= 6) {
-        list = I18n.t("chat.reactions.you_others_and_more", {
-          usernames,
-          emoji: reaction.emoji,
-          more: reaction.count - 5,
-        });
-      }
-    } else {
-      if (reaction.count > 0 && reaction.count < 6) {
-        list = I18n.t("chat.reactions.only_others", {
-          usernames,
-          emoji: reaction.emoji,
-        });
-      } else if (reaction.count >= 6) {
-        list = I18n.t("chat.reactions.others_and_more", {
-          usernames,
-          emoji: reaction.emoji,
-          more: reaction.count - 5,
-        });
-      }
-    }
-    this.set("reactionLabel", list);
-  },
-
-  @action
-  hideUsersList() {
-    this.set("reactionLabel", null);
-  },
-
-  @action
   startReactionForMsgActions() {
     if (!this.messageContainer) {
       return;

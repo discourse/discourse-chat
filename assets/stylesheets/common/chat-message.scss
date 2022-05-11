@@ -566,3 +566,9 @@
     display: none;
   }
 }
+
+.chat-message-reaction {
+  > * {
+    pointer-events: none;
+  }
+}

@@ -139,25 +139,28 @@
                   </div>
                 {{/if}}
 
-                {{#each-in message.reactions as |emoji reactionAttrs|}}
+                {{#each-in message.reactions as |emoji attrs|}}
                   {{chat-message-reaction
-                    emoji=emoji
-                    count=reactionAttrs.count
-                    users=reactionAttrs.users
-                    reacted=reactionAttrs.reacted
+                    reaction=(hash
+                      emoji=emoji
+                      users=attrs.users
+                      count=attrs.count
+                      reacted=attrs.reacted
+                    )
                     react=(action "react")
-                    showUsersList=(action "showUsersList")
-                    hideUsersList=(action "hideUsersList")
+                    showUsersList=true
                   }}
                 {{/each-in}}
 
                 {{#if canInteractWithChat}}
+                {{#unless site.mobileView}}
                   {{d-button
                     class="chat-message-react-btn"
                     action=(action "startReactionForReactionList")
                     icon="discourse-emojis"
                     title="chat.react"
                   }}
+                {{/unless}}
                 {{/if}}
               </div>
             {{/if}}

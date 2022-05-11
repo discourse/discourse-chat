@@ -1,98 +1,111 @@
+import { guidFor } from "@ember/object/internals";
 import Component from "@ember/component";
-import { cancel, later } from "@ember/runloop";
 import { action, computed } from "@ember/object";
 import { emojiUrlFor } from "discourse/lib/text";
+import setupPopover from "discourse/lib/d-popover";
+import I18n from "I18n";
+import { schedule } from "@ember/runloop";
+import { emojiUnescape } from "discourse/lib/text";
 
 export default class ChatMessageReaction extends Component {
-  emoji = null;
-  showUsersList = null;
-  hideUsersList = null;
-  reacted = null;
-  count = null;
+  reaction = null;
+  showUsersList = false;
   tagName = "";
   react = null;
+  class = null;
 
-  @computed("emoji")
-  get emojiString() {
-    return `:${this.emoji}:`;
+  didReceiveAttrs() {
+    this._super(...arguments);
+
+    if (this.showUsersList) {
+      schedule("afterRender", () => {
+        this._popover?.destroy();
+        this._popover = this._setupPopover();
+      });
+    }
   }
 
-  @computed("emoji")
+  willDestroyElement() {
+    this._super(...arguments);
+
+    this._popover?.destroy();
+  }
+
+  @computed
+  get componentId() {
+    return guidFor(this);
+  }
+
+  @computed("reaction.emoji")
+  get emojiString() {
+    return `:${this.reaction.emoji}:`;
+  }
+
+  @computed("reaction.emoji")
   get emojiUrl() {
-    return emojiUrlFor(this.emoji);
+    return emojiUrlFor(this.reaction.emoji);
   }
 
   @action
   handleClick() {
-    if (this.capabilities.touch) {
-      return;
-    }
-
-    cancel(this._hoverTimer);
-    this?.react(this.emoji, this.reacted ? "remove" : "add");
+    this?.react(this.reaction.emoji, this.reaction.reacted ? "remove" : "add");
     return false;
   }
 
-  @action
-  handleTouchstart(event) {
-    if (!this.showUsersList) {
-      return;
-    }
+  _setupPopover() {
+    return setupPopover(document.getElementById(this.componentId), {
+      interactive: false,
+      allowHTML: true,
+      content: emojiUnescape(this.popoverContent),
+      onClickOutside(instance) {
+        instance.hide();
+      },
+      onTrigger(instance, event) {
+        // ensures we close other reactions popovers when triggering one
+        document
+          .querySelectorAll(".chat-message-reaction")
+          .forEach((chatMessageReaction) => {
+            chatMessageReaction?._tippy?.hide();
+          });
 
-    if (!this.capabilities.touch) {
-      return;
-    }
-
-    cancel(this._touchTimeout);
-    event.stopPropagation();
-
-    this._touchTimeout = later(() => {
-      this.showUsersList(this);
-    }, 400);
+        event.stopPropagation();
+      },
+    });
   }
 
-  @action
-  handleTouchend() {
-    if (!this.capabilities.touch) {
-      return;
+  @computed("reaction")
+  get popoverContent() {
+    let usernames = this.reaction.users.mapBy("username").join(", ");
+    if (this.reaction.reacted) {
+      if (this.reaction.count === 1) {
+        return I18n.t("chat.reactions.only_you", {
+          emoji: this.reaction.emoji,
+        });
+      } else if (this.reaction.count > 1 && this.reaction.count < 6) {
+        return I18n.t("chat.reactions.and_others", {
+          usernames,
+          emoji: this.reaction.emoji,
+        });
+      } else if (this.reaction.count >= 6) {
+        return I18n.t("chat.reactions.you_others_and_more", {
+          usernames,
+          emoji: this.reaction.emoji,
+          more: this.reaction.count - 5,
+        });
+      }
+    } else {
+      if (this.reaction.count > 0 && this.reaction.count < 6) {
+        return I18n.t("chat.reactions.only_others", {
+          usernames,
+          emoji: this.reaction.emoji,
+        });
+      } else if (this.reaction.count >= 6) {
+        return I18n.t("chat.reactions.others_and_more", {
+          usernames,
+          emoji: this.reaction.emoji,
+          more: this.reaction.count - 5,
+        });
+      }
     }
-
-    cancel(this._touchTimeout);
-
-    this?.react(this.emoji, this.reacted ? "remove" : "add");
-  }
-
-  @action
-  handleMouseover(event) {
-    if (this.site.mobileView) {
-      return;
-    }
-
-    if (!this.showUsersList) {
-      return;
-    }
-
-    event.stopPropagation();
-
-    cancel(this._hoverTimer);
-    this._hoverTimer = later(() => {
-      this.showUsersList(this);
-    }, 500);
-  }
-
-  @action
-  handleMouseout(event) {
-    if (this.site.mobileView) {
-      return;
-    }
-
-    if (!this.hideUsersList) {
-      return;
-    }
-
-    event.stopPropagation();
-
-    cancel(this._hoverTimer);
-    this.hideUsersList();
   }
 }

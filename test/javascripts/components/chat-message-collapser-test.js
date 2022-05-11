@@ -38,6 +38,16 @@ const imageCooked =
   "<p>and even more</p>" +
   '<p><img src="http://cat3.com" class="emoji"></p>';
 
+const galleryCooked =
+  "<p>written text</p>" +
+  '<div class="onebox imgur-album">' +
+  '<a href="https://imgur.com/gallery/yyVx5lJ">' +
+  '<span class="outer-box"><span><span class="album-title">Le tomtom album</span></span></span>' +
+  '<img src="https://i.imgur.com/3mkbqo5.jpeg?fb" title="Solution" height="315" width="600">' +
+  "</a>" +
+  "</div>" +
+  "<p>more written text</p>";
+
 discourseModule(
   "Discourse Chat | Component | chat message collapser youtube",
   function (hooks) {
@@ -514,6 +524,80 @@ discourseModule(
         assert.equal(links.length, 2);
         assert.equal(images.length, 3, "shows images and emoji");
         assert.equal(collapser.length, 2);
+      },
+    });
+  }
+);
+
+discourseModule(
+  "Discourse Chat | Component | chat message collapser gallaries",
+  function (hooks) {
+    setupRenderingTest(hooks);
+
+    componentTest("removes album title overlay", {
+      template: hbs`{{chat-message-collapser cooked=cooked}}`,
+
+      beforeEach() {
+        this.set("cooked", galleryCooked);
+      },
+
+      async test(assert) {
+        assert.notOk(visible(".album-title"), "album title removed");
+      },
+    });
+
+    componentTest("shows gallery link", {
+      template: hbs`{{chat-message-collapser cooked=cooked}}`,
+
+      beforeEach() {
+        this.set("cooked", galleryCooked);
+      },
+
+      async test(assert) {
+        assert.ok(
+          query(".chat-message-collapser-link-small").innerText.includes(
+            "Le tomtom album"
+          )
+        );
+      },
+    });
+
+    componentTest("shows all user written text", {
+      template: hbs`{{chat-message-collapser cooked=cooked}}`,
+
+      beforeEach() {
+        this.set("cooked", galleryCooked);
+      },
+
+      async test(assert) {
+        const text = document.querySelectorAll(".chat-message-collapser p");
+
+        assert.equal(text.length, 2, "shows all written text");
+        assert.strictEqual(text[0].innerText, "written text");
+        assert.strictEqual(text[1].innerText, "more written text");
+      },
+    });
+
+    componentTest("collapses and expands images", {
+      template: hbs`{{chat-message-collapser cooked=cooked}}`,
+
+      beforeEach() {
+        this.set("cooked", galleryCooked);
+      },
+
+      async test(assert) {
+        assert.ok(visible("img"), "image visible initially");
+
+        await click(
+          document.querySelectorAll(".chat-message-collapser-opened")[0],
+          "close preview"
+        );
+
+        assert.notOk(visible("img"), "image hidden");
+
+        await click(".chat-message-collapser-closed");
+
+        assert.ok(visible("img"), "image visible initially");
       },
     });
   }

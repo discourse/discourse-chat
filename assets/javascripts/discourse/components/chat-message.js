@@ -324,7 +324,6 @@ export default Component.extend({
     "message.staged",
     "message.deleted_at",
     "message.in_reply_to",
-    "message.action_code",
     "message.error",
     "isHovered",
     "isBookmarked"
@@ -333,7 +332,6 @@ export default Component.extend({
     staged,
     deletedAt,
     inReplyTo,
-    actionCode,
     error,
     isHovered,
     isBookmarked
@@ -342,10 +340,6 @@ export default Component.extend({
 
     if (staged) {
       classNames.push("chat-message-staged");
-    }
-    if (actionCode) {
-      classNames.push("chat-action");
-      classNames.push(`chat-action-${actionCode}`);
     }
     if (deletedAt) {
       classNames.push("deleted");

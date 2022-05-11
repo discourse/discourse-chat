@@ -154,7 +154,6 @@ da:
       chat:
         enabled: '%{who} aktiverede <button class="btn-link open-chat">chat</button> %{when}'
         disabled: "%{who} lukkede chat %{when}"
-        post_created: "oprettede et nyt indlæg: %{excerpt}"
     discourse_automation:
       scriptables:
         send_chat_message:

@@ -194,8 +194,6 @@ ja:
       chat:
         enabled: '%{who} が<button class="btn-link open-chat">チャット</button>を有効にしました: %{when}'
         disabled: "%{who} がチャットをクローズしました: %{when}"
-        post_created: "新しい投稿を作成しました: %{excerpt}"
-        generic_small_action: "トピック管理アクションを実行しました"
     discourse_automation:
       scriptables:
         send_chat_message:

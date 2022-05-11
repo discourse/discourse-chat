@@ -202,8 +202,6 @@ fi:
       chat:
         enabled: '%{who} otti <button class="btn-link open-chat">chatin</button> käyttöön %{when}'
         disabled: "%{who} sulki chatin %{when}"
-        post_created: "loi uuden viestin: %{excerpt}"
-        generic_small_action: "suoritti ketjunhallintatoiminnon"
     discourse_automation:
       scriptables:
         send_chat_message:

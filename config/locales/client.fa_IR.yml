@@ -10,6 +10,7 @@ fa_IR:
       logs:
         staff_actions:
           actions:
+            chat_channel_status_change: "وضعیت کانال گفتگو تغییر کرد"
             chat_channel_delete: "کانال گفتگو حذف شد"
     chat:
       dates:
@@ -22,12 +23,18 @@ fa_IR:
       cancel: "لغو"
       cancel_reply: "لغو پاسخ"
       chat_channels: "کانال‌ها"
+      leave: "ترک کانال"
+      move_to_channel:
+        title: "انتقال پیام‌ها به کانال"
+        confirm_move: "انتقال پیام‌ها"
       channel_settings:
         title: "تنظیمات کانال"
         close_channel: "بستن کانال..."
         open_channel: "باز کردن کانال..."
         archive_channel: "کانال بایگانی..."
         delete_channel: "حذف کانال..."
+      channel_archive:
+        title: "بایگانی کانال"
       channel_open:
         title: "باز کردن کانال"
         instructions: "کانال را باز می‌کند، همه کاربران قادر خواهند بود پیام جدید ارسال کنند و پیام‌های قبلی خود را ویرایش کنند."
@@ -100,6 +107,14 @@ fa_IR:
       you_flagged: "شما این پیام را پرچم گذاری کردید"
       user_deleted: "حذف شده"
       exit: "بازگشت"
+      channel_status:
+        read_only: "فقط خواندنی"
+        archived_header: "کانال بایگانی شده است"
+        archived: "بایگانی شده"
+        closed_header: "کانال بسته است"
+        closed: "بسته شد"
+        open_header: "کانال باز است"
+        open: "باز کن"
       chat_message_separator:
         today: امروز
         yesterday: دیروز
@@ -173,6 +188,9 @@ fa_IR:
       topic_button_title: "گفتگو"
     notifications:
       chat_quoted: "<span>%{username}</span> %{description}"
+      popup:
+        chat_message: "پیام گفتگو جدید"
+        chat_quoted: "%{username} پیام گفتگو شما را نقل کرد"
     topic:
       actions:
         chat_enable: "فعال کردن گفتگو"
@@ -181,7 +199,6 @@ fa_IR:
       chat:
         enabled: '%{who} فعال شد <button class="btn-link open-chat">گفتگو</button> %{when}'
         disabled: "%{who} گفتگو بسته شد %{when}"
-        post_created: "یک نوشته جدید ایجاد کرد: %{excerpt}"
     discourse_automation:
       scriptables:
         send_chat_message:
@@ -202,6 +219,8 @@ fa_IR:
     keyboard_shortcuts_help:
       chat:
         title: "گفتگو"
+        keyboard_shortcuts:
+          switch_channel_arrows: "%{shortcut} تغییر کانال"
     topic_statuses:
       chat:
         help: "گفتگو برای این موضوع فعال است"

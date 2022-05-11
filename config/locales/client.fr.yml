@@ -200,8 +200,6 @@ fr:
       chat:
         enabled: '%{who} a activé le <button class="btn-link open-chat">chat</button> %{when}'
         disabled: "%{who} a fermé le chat %{when}"
-        post_created: "a créé un nouveau message : %{excerpt}"
-        generic_small_action: "a effectué une action de gestion des sujets"
     discourse_automation:
       scriptables:
         send_chat_message:

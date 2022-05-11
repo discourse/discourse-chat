@@ -238,7 +238,6 @@ export default Component.extend({
         icon: this.bookmark?.reminder_at
           ? "discourse-bookmark-clock"
           : "bookmark",
-        className: "oogabooka",
       });
     }
 
@@ -328,10 +327,10 @@ export default Component.extend({
     "message.deleted_at",
     "message.in_reply_to",
     "message.error",
-    "isHovered",
-    "message.bookmark"
+    "message.bookmark",
+    "isHovered"
   )
-  chatMessageClasses(staged, deletedAt, inReplyTo, error, isHovered, bookmark) {
+  chatMessageClasses(staged, deletedAt, inReplyTo, error, bookmark, isHovered) {
     let classNames = ["chat-message"];
 
     if (staged) {
@@ -845,24 +844,18 @@ export default Component.extend({
         }),
       {
         onAfterSave: (savedData) => {
+          const bookmark = Bookmark.create(savedData);
           this.set("message.bookmark", savedData);
-          this.set("bookmark", Bookmark.create(savedData));
-          // this.message.set("bookmarking", false);
-          // this.message.set("bookmarked", true);
-          // this.appEvents.trigger(
-          //   "bookmarks:changed",
-          //   savedData,
-          //   bookmark.attachedTo()
-          // );
-
-          // // TODO (martin) (2022-02-01) Remove these old bookmark events, replaced by bookmarks:changed.
-          // this.appEvents.trigger("topic:bookmark-toggled");
+          this.set("bookmark", bookmark);
+          this.appEvents.trigger(
+            "bookmarks:changed",
+            savedData,
+            bookmark.attachedTo()
+          );
         },
-        onAfterDelete: (topicBookmarked, bookmarkId) => {
-          console.log(topicBookmarked, bookmarkId);
+        onAfterDelete: () => {
           this.set("bookmark", null);
           this.set("message.bookmark", null);
-          // this.model.removeBookmark(bookmarkId);
         },
       },
       { use_polymorphic_bookmarks: this.siteSettings.use_polymorphic_bookmarks }

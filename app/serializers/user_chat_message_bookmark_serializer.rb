@@ -8,7 +8,7 @@ class UserChatMessageBookmarkSerializer < UserBookmarkBaseSerializer
   end
 
   def fancy_title
-    @fancy_title ||= chat_message.chat_channel.name
+    @fancy_title ||= chat_message.chat_channel.title(scope.user)
   end
 
   def cooked

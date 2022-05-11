@@ -55,8 +55,8 @@ class ChatMessageSerializer < ApplicationSerializer
       reminder_at: users_bookmark.reminder_at,
       name: users_bookmark.name,
       auto_delete_preference: users_bookmark.auto_delete_preference,
-      bookmarkable_id: object.id,
-      bookmarkable_type: object.class.name
+      bookmarkable_id: users_bookmark.bookmarkable_id,
+      bookmarkable_type: users_bookmark.bookmarkable_type
     }
   end
 

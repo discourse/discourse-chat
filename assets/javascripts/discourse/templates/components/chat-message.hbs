@@ -114,11 +114,11 @@
 
               {{format-chat-date message details}}
 
-              {{#if message.bookmarkModel.id}}
-                {{#if message.bookmarkModel.reminder_at}}
-                  {{d-icon "discourse-bookmark-clock"}}
+              {{#if bookmark}}
+                {{#if bookmark.reminder_at}}
+                  {{d-icon "discourse-bookmark-clock" translatedtitle=bookmark.name}}
                 {{else}}
-                  {{d-icon "bookmark"}}
+                  {{d-icon "bookmark" translatedtitle=bookmark.name}}
                 {{/if}}
               {{/if}}
 

@@ -56,7 +56,9 @@ export default Component.extend({
     this.message.id
       ? this._subscribeToAppEvents()
       : this._waitForIdToBePopulated();
-    this.set("isBookmarked", this.message.bookmarkModel.id);
+    if (this.message.bookmark) {
+      this.set("bookmark", Bookmark.create(this.message.bookmark));
+    }
   },
 
   willDestroyElement() {
@@ -159,7 +161,8 @@ export default Component.extend({
     "showDeleteButton",
     "showRestoreButton",
     "showEditButton",
-    "showRebakeButton"
+    "showRebakeButton",
+    "bookmark"
   )
   secondaryButtons() {
     const buttons = [];
@@ -229,10 +232,10 @@ export default Component.extend({
     if (this.showBookmarkButton) {
       buttons.push({
         id: "toggleBookmark",
-        name: this.isBookmarked
+        name: this.bookmark
           ? I18n.t("chat.bookmark_message_edit")
           : I18n.t("chat.bookmark_message"),
-        icon: this.message.bookmarkModel.reminder_at
+        icon: this.bookmark?.reminder_at
           ? "discourse-bookmark-clock"
           : "bookmark",
         className: "oogabooka",
@@ -326,16 +329,9 @@ export default Component.extend({
     "message.in_reply_to",
     "message.error",
     "isHovered",
-    "isBookmarked"
+    "message.bookmark"
   )
-  chatMessageClasses(
-    staged,
-    deletedAt,
-    inReplyTo,
-    error,
-    isHovered,
-    isBookmarked
-  ) {
+  chatMessageClasses(staged, deletedAt, inReplyTo, error, isHovered, bookmark) {
     let classNames = ["chat-message"];
 
     if (staged) {
@@ -356,7 +352,7 @@ export default Component.extend({
     if (isHovered) {
       classNames.push("chat-message-selected");
     }
-    if (isBookmarked) {
+    if (bookmark) {
       classNames.push("chat-message-bookmarked");
     }
     return classNames.join(" ");
@@ -840,14 +836,17 @@ export default Component.extend({
 
   @action
   toggleBookmark() {
-    const bookmark = this.message.bookmarkModel;
     return openBookmarkModal(
-      bookmark,
+      this.bookmark ||
+        Bookmark.create({
+          bookmarkable_type: "ChatMessage",
+          bookmarkable_id: this.message.id,
+          user_id: this.currentUser.id,
+        }),
       {
         onAfterSave: (savedData) => {
-          console.log(savedData);
-          this.message.bookmarkModel = savedData;
-          this.set("isBookmarked", this.message.bookmarkModel.id);
+          this.set("message.bookmark", savedData);
+          this.set("bookmark", Bookmark.create(savedData));
           // this.message.set("bookmarking", false);
           // this.message.set("bookmarked", true);
           // this.appEvents.trigger(
@@ -861,7 +860,8 @@ export default Component.extend({
         },
         onAfterDelete: (topicBookmarked, bookmarkId) => {
           console.log(topicBookmarked, bookmarkId);
-          this.set("isBookmarked", false);
+          this.set("bookmark", null);
+          this.set("message.bookmark", null);
           // this.model.removeBookmark(bookmarkId);
         },
       },

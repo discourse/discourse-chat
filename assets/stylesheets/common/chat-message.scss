@@ -349,10 +349,6 @@
   }
 
   .more-buttons {
-    .d-icon-discourse-bookmark-clock {
-      color: var(--tertiary);
-    }
-
     .select-kit-header {
       background: none;
       border: 1px solid var(--primary-low);
@@ -442,11 +438,6 @@
 .chat-message-sender-data {
   color: var(--secondary-medium);
   width: 100%;
-
-  .d-icon-bookmark,
-  .d-icon-discourse-bookmark-clock {
-    font-size: var(--font-down-3);
-  }
 
   .names {
     color: var(--secondary-low);

@@ -140,10 +140,6 @@ after_initialize do
 
   register_reviewable_type ReviewableChatMessage
 
-  if SiteSetting.use_polymorphic_bookmarks
-    Bookmark.register_bookmarkable(ChatMessageBookmarkable)
-  end
-
   reloadable_patch do |plugin|
     ReviewableScore.add_new_types([:needs_review])
 
@@ -170,6 +166,10 @@ after_initialize do
       has_many :chat_message_reactions, dependent: :destroy
       has_many :chat_mentions
     }
+
+    if SiteSetting.use_polymorphic_bookmarks
+      Bookmark.register_bookmarkable(ChatMessageBookmarkable)
+    end
   end
 
   TopicQuery.add_custom_filter(::DiscourseChat::PLUGIN_NAME) do |results, topic_query|

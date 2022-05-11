@@ -52,7 +52,13 @@ export default class ChatMessageReaction extends Component {
   }
 
   _setupPopover() {
-    return setupPopover(document.getElementById(this.componentId), {
+    const target = document.getElementById(this.componentId);
+
+    if (!target) {
+      return;
+    }
+
+    const popover = setupPopover(target, {
       interactive: false,
       allowHTML: true,
       content: emojiUnescape(this.popoverContent),
@@ -70,6 +76,8 @@ export default class ChatMessageReaction extends Component {
         event.stopPropagation();
       },
     });
+
+    return popover?.id ? popover : null;
   }
 
   @computed("reaction")

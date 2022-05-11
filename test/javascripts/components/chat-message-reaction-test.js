@@ -15,7 +15,7 @@ discourseModule(
     setupRenderingTest(hooks);
 
     componentTest("accepts arbitrary class property", {
-      template: hbs`{{chat-message-reaction class="foo"}}`,
+      template: hbs`{{chat-message-reaction reaction=(hash emoji="heart") class="foo"}}`,
 
       async test(assert) {
         assert.ok(exists(".chat-message-reaction.foo"));
@@ -23,7 +23,7 @@ discourseModule(
     });
 
     componentTest("adds reacted class when user reacted", {
-      template: hbs`{{chat-message-reaction reacted=true}}`,
+      template: hbs`{{chat-message-reaction reaction=(hash emoji="heart" reacted=true)}}`,
 
       async test(assert) {
         assert.ok(exists(".chat-message-reaction.reacted"));
@@ -31,7 +31,7 @@ discourseModule(
     });
 
     componentTest("adds reaction name as class", {
-      template: hbs`{{chat-message-reaction emoji="heart"}}`,
+      template: hbs`{{chat-message-reaction reaction=(hash emoji="heart")}}`,
 
       async test(assert) {
         assert.ok(exists(".chat-message-reaction.heart"));
@@ -39,7 +39,7 @@ discourseModule(
     });
 
     componentTest("adds show class when count is positive", {
-      template: hbs`{{chat-message-reaction count=this.count}}`,
+      template: hbs`{{chat-message-reaction reaction=(hash emoji="heart" count=this.count)}}`,
 
       beforeEach() {
         this.set("count", 0);
@@ -55,7 +55,7 @@ discourseModule(
     });
 
     componentTest("title/alt attributes", {
-      template: hbs`{{chat-message-reaction emoji="heart"}}`,
+      template: hbs`{{chat-message-reaction reaction=(hash emoji="heart")}}`,
 
       async test(assert) {
         assert.equal(query(".chat-message-reaction").title, ":heart:");
@@ -64,7 +64,7 @@ discourseModule(
     });
 
     componentTest("count of reactions", {
-      template: hbs`{{chat-message-reaction count=this.count}}`,
+      template: hbs`{{chat-message-reaction reaction=(hash emoji="heart" count=this.count)}}`,
 
       beforeEach() {
         this.set("count", 0);
@@ -80,7 +80,7 @@ discourseModule(
     });
 
     componentTest("reaction’s image", {
-      template: hbs`{{chat-message-reaction emoji="heart"}}`,
+      template: hbs`{{chat-message-reaction reaction=(hash emoji="heart")}}`,
 
       async test(assert) {
         const src = query(".chat-message-reaction img").src;
@@ -89,7 +89,7 @@ discourseModule(
     });
 
     componentTest("click action", {
-      template: hbs`{{chat-message-reaction class="show" count=this.count react=this.react}}`,
+      template: hbs`{{chat-message-reaction class="show" reaction=(hash emoji="heart" count=this.count) react=this.react}}`,
 
       beforeEach() {
         this.set("count", 0);

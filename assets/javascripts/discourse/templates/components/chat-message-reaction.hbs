@@ -1,30 +1,29 @@
-<button
-  type="button"
-  {{on "click" (action "handleClick")}}
-  {{on "touchstart" (action "handleTouchstart")}}
-  {{on "touchend" (action "handleTouchend")}}
-  {{on "mouseover" (action "handleMouseover")}}
-  {{on "mouseout" (action "handleMouseout")}}
-  tabindex="0"
-  class={{concat
-    this.class
-    " chat-message-reaction "
-    this.emoji
-    (if this.reacted " reacted")
-    (if this.count " show")
-  }}
-  title={{this.emojiString}}
->
-  <img
-    loading="lazy"
-    class="emoji"
-    width="20"
-    height="20"
-    alt={{this.emojiString}}
-    src={{this.emojiUrl}}
+{{#if this.reaction}}
+  <button
+    id={{this.componentId}}
+    type="button"
+    {{on "click" (action "handleClick")}}
+    tabindex="0"
+    class={{concat
+      this.class
+      " chat-message-reaction "
+      this.reaction.emoji
+      (if this.reaction.reacted " reacted")
+      (if this.reaction.count " show")
+    }}
+    title={{this.emojiString}}
   >
+    <img
+      loading="lazy"
+      class="emoji"
+      width="20"
+      height="20"
+      alt={{this.emojiString}}
+      src={{this.emojiUrl}}
+    >
 
-  {{#if this.count}}
-    <span class="count">{{this.count}}</span>
-  {{/if}}
-</button>
+    {{#if this.reaction.count}}
+      <span class="count">{{this.reaction.count}}</span>
+    {{/if}}
+  </button>
+{{/if}}

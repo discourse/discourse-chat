@@ -1,67 +1,98 @@
 import Component from "@ember/component";
-import { bind } from "discourse-common/utils/decorators";
 import { cancel, later } from "@ember/runloop";
-import { fmt } from "discourse/lib/computed";
+import { action, computed } from "@ember/object";
+import { emojiUrlFor } from "discourse/lib/text";
 
-export default Component.extend({
-  classNames: "chat-message-reaction",
-  classNameBindings: ["reacted", "count:show", "emoji"],
-  attributeBindings: ["role", "tabindex"],
-  role: "button",
-  emoji: null,
-  showUsersList: null,
-  hideUsersList: null,
-  reacted: null,
-  enterEvent: null,
-  leaveEvent: null,
-  count: null,
-  _hoverTimer: null,
-  tabindex: 0,
+export default class ChatMessageReaction extends Component {
+  emoji = null;
+  showUsersList = null;
+  hideUsersList = null;
+  reacted = null;
+  count = null;
+  tagName = "";
+  react = null;
 
-  emojiString: fmt("emoji", ":%@:"),
+  @computed("emoji")
+  get emojiString() {
+    return `:${this.emoji}:`;
+  }
 
-  click() {
+  @computed("emoji")
+  get emojiUrl() {
+    return emojiUrlFor(this.emoji);
+  }
+
+  @action
+  handleClick() {
+    if (this.capabilities.touch) {
+      return;
+    }
+
     cancel(this._hoverTimer);
-    this.react(this.emoji, this.reacted ? "remove" : "add");
+    this?.react(this.emoji, this.reacted ? "remove" : "add");
     return false;
-  },
+  }
 
-  didInsertElement() {
-    this._super(...arguments);
-
-    if (this.showUsersList && this.hideUsersList) {
-      this.setProperties({
-        enterEvent: this.site.mobileView ? "mouseover" : "mouseenter",
-        leaveEvent: this.site.mobileView ? "mouseout" : "mouseleave",
-      });
-      this.element.addEventListener(this.enterEvent, this._handleMouseEnter);
-      this.element.addEventListener(this.leaveEvent, this._handleMouseLeave);
+  @action
+  handleTouchstart(event) {
+    if (!this.showUsersList) {
+      return;
     }
-  },
 
-  willDestroyElement() {
-    this._super(...arguments);
-
-    if (this.showUsersList && this.hideUsersList) {
-      this.element.removeEventListener(this.enterEvent, this._handleMouseEnter);
-      this.element.removeEventListener(this.leaveEvent, this._handleMouseLeave);
-      cancel(this._hoverTimer);
+    if (!this.capabilities.touch) {
+      return;
     }
-  },
 
-  @bind
-  _handleMouseEnter(event) {
+    cancel(this._touchTimeout);
+    event.stopPropagation();
+
+    this._touchTimeout = later(() => {
+      this.showUsersList(this);
+    }, 400);
+  }
+
+  @action
+  handleTouchend() {
+    if (!this.capabilities.touch) {
+      return;
+    }
+
+    cancel(this._touchTimeout);
+
+    this?.react(this.emoji, this.reacted ? "remove" : "add");
+  }
+
+  @action
+  handleMouseover(event) {
+    if (this.site.mobileView) {
+      return;
+    }
+
+    if (!this.showUsersList) {
+      return;
+    }
+
+    event.stopPropagation();
+
     cancel(this._hoverTimer);
-
     this._hoverTimer = later(() => {
       this.showUsersList(this);
     }, 500);
-    event.preventDefault();
-  },
+  }
 
-  @bind
-  _handleMouseLeave() {
+  @action
+  handleMouseout(event) {
+    if (this.site.mobileView) {
+      return;
+    }
+
+    if (!this.hideUsersList) {
+      return;
+    }
+
+    event.stopPropagation();
+
     cancel(this._hoverTimer);
     this.hideUsersList();
-  },
-});
+  }
+}

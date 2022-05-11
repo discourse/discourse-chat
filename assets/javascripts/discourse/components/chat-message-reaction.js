@@ -1,11 +1,10 @@
 import { guidFor } from "@ember/object/internals";
 import Component from "@ember/component";
 import { action, computed } from "@ember/object";
-import { emojiUrlFor } from "discourse/lib/text";
+import { emojiUnescape, emojiUrlFor } from "discourse/lib/text";
 import setupPopover from "discourse/lib/d-popover";
 import I18n from "I18n";
 import { schedule } from "@ember/runloop";
-import { emojiUnescape } from "discourse/lib/text";
 
 export default class ChatMessageReaction extends Component {
   reaction = null;

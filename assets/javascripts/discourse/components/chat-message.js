@@ -627,6 +627,10 @@ export default Component.extend({
       return;
     }
 
+    if (this.capabilities.canVibrate) {
+      navigator.vibrate(5);
+    }
+
     if (this.site.mobileView) {
       this.set("isHovered", false);
     }

@@ -58,6 +58,8 @@ export default class ChatMessageReaction extends Component {
       return;
     }
 
+    const canVibrate = this.capabilities.canVibrate;
+
     const popover = setupPopover(target, {
       interactive: false,
       allowHTML: true,
@@ -75,6 +77,10 @@ export default class ChatMessageReaction extends Component {
           });
 
         event.stopPropagation();
+
+        if (canVibrate) {
+          navigator.vibrate(5);
+        }
       },
     });
 

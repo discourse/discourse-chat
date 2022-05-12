@@ -11,6 +11,10 @@ export default Component.extend({
     this._super(...arguments);
 
     later(this._addFadeIn);
+
+    if (this.capabilities.canVibrate) {
+      navigator.vibrate(5);
+    }
   },
 
   @action

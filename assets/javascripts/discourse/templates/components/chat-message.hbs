@@ -70,60 +70,14 @@
         {{/if}}
 
         {{#if hideUserInfo}}
-          <div class="chat-message-left-gutter">
-            {{#if message.reviewable_id}}
-              {{#link-to "review.show" message.reviewable_id class="chat-message-flagged"}}
-                {{d-icon "flag" title="chat.flagged"}}
-              {{/link-to}}
-            {{else if (eq message.user_flag_status 0)}}
-              <div class="chat-message-flagged">
-                {{d-icon "flag" title="chat.you_flagged"}}
-              </div>
-            {{else}}
-              {{format-chat-date message details "tiny"}}
-            {{/if}}
-          </div>
+          {{chat-message-left-gutter message=@message details=@details}}
         {{else}}
-          {{#if message.chat_webhook_event.emoji}}
-            {{chat-emoji-avatar emoji=message.chat_webhook_event.emoji}}
-          {{else}}
-            {{#if message.user}}
-              {{chat-user-avatar user=message.user avatarSize="medium"}}
-            {{else}}
-              {{chat-emoji-avatar emoji=":wastebasket:"}}
-            {{/if}}
-          {{/if}}
+          {{chat-message-avatar message=@message}}
         {{/if}}
 
         <div class="chat-message-content">
           {{#unless hideUserInfo}}
-            <div class="chat-message-sender-data">
-              <span class={{usernameClasses}}>
-                {{#if message.chat_webhook_event.username}}
-                  {{message.chat_webhook_event.username}}
-                {{else}}
-                  <span role="button" class="clickable" data-user-card={{message.user.username}}>
-                    {{name}}
-                  </span>
-                {{/if}}
-              </span>
-
-              {{#if message.chat_webhook_event}}
-                <span class="tc-bot-indicator">{{i18n "chat.bot"}}</span>
-              {{/if}}
-
-              {{format-chat-date message details}}
-
-              {{#if message.reviewable_id}}
-                {{#link-to "review.show" message.reviewable_id class="chat-message-flagged"}}
-                  {{d-icon "flag" title="chat.flagged"}}
-                {{/link-to}}
-              {{else if (eq message.user_flag_status 0)}}
-                <div class="chat-message-flagged">
-                  {{d-icon "flag" title="chat.you_flagged"}}
-                </div>
-              {{/if}}
-            </div>
+            {{chat-message-info message=@message details=@details}}
           {{/unless}}
 
           {{#chat-message-text

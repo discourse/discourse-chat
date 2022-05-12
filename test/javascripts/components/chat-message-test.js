@@ -79,7 +79,7 @@ discourseModule("Discourse Chat | Component | chat-message", function (hooks) {
     async test(assert) {
       assert.equal(
         query(
-          ".chat-message .chat-message-sender-data .username"
+          ".chat-message .chat-message-info .username"
         ).innerText.trim(),
         I18n.t("chat.user_deleted")
       );

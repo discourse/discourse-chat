@@ -1,0 +1,11 @@
+<div class="chat-message-avatar">
+  {{#if @message.chat_webhook_event.emoji}}
+    {{chat-emoji-avatar emoji=@message.chat_webhook_event.emoji}}
+  {{else}}
+    {{#if @message.user}}
+      {{chat-user-avatar user=@message.user avatarSize="medium"}}
+    {{else}}
+      {{chat-emoji-avatar emoji=":wastebasket:"}}
+    {{/if}}
+  {{/if}}
+</div>

@@ -14,6 +14,8 @@ register_asset 'stylesheets/common/d-progress-bar.scss'
 register_asset 'stylesheets/common/incoming-chat-webhooks.scss'
 register_asset 'stylesheets/mobile/chat-message.scss', :mobile
 register_asset 'stylesheets/common/chat-message.scss'
+register_asset 'stylesheets/common/chat-message-left-gutter.scss'
+register_asset 'stylesheets/common/chat-message-info.scss'
 register_asset 'stylesheets/common/direct-message-creator.scss'
 register_asset 'stylesheets/common/chat-message-collapser.scss'
 register_asset 'stylesheets/common/chat-message-images.scss'

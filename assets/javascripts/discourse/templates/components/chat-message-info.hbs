@@ -1,0 +1,41 @@
+<div class="chat-message-info">
+  {{#if @message.chat_webhook_event}}
+    {{#if @message.chat_webhook_event.username}}
+      <span class="chat-message-info__username {{this.usernameClasses}}">
+        {{@message.chat_webhook_event.username}}
+      </span>
+    {{/if}}
+
+    <span class="chat-message-info__bot-indicator">
+      {{i18n "chat.bot"}}
+    </span>
+  {{else}}
+    <span
+      role="button"
+      class="chat-message-info__username {{this.usernameClasses}} clickable"
+      data-user-card={{@message.user.username}}
+    >
+      <span class="chat-message-info__username__name">{{this.name}}</span>
+
+      <span class="chat-message-info__user-avatar-flair">
+        {{user-avatar-flair user=@message.user}}
+      </span>
+    </span>
+  {{/if}}
+
+  <span class="chat-message-info__date">
+    {{format-chat-date @message @details}}
+  </span>
+
+  {{#if (or @message.reviewable_id (eq @message.user_flag_status 0))}}
+    <span class="chat-message-info__flag">
+      {{#if @message.reviewable_id}}
+        {{#link-to "review.show" @message.reviewable_id}}
+          {{d-icon "flag" title="chat.flagged"}}
+        {{/link-to}}
+      {{else if (eq @message.user_flag_status 0)}}
+        {{d-icon "flag" title="chat.you_flagged"}}
+      {{/if}}
+    </span>
+  {{/if}}
+</div>

@@ -719,7 +719,7 @@ export default Component.extend(TextareaTextManipulation, {
 
   @action
   uploadsChanged(uploads) {
-    this.set("_uploads", uploads);
+    this.set("_uploads", cloneJSON(uploads));
     this.onValueChange?.(this.value, this._uploads, this.replyToMsg);
   },
 });

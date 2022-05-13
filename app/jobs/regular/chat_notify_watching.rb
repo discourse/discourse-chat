@@ -23,7 +23,7 @@ module Jobs
                always_notification_level, always_notification_level)
         .merge(User.not_suspended)
         .each do |membership|
-          send_notifications(membership)
+        send_notifications(membership)
       end
     end
 

@@ -143,15 +143,15 @@ en:
       user_deleted: "deleted"
       exit: "back"
       channel_status:
-        read_only_header: "Channel is read only."
+        read_only_header: "Channel is read only"
         read_only: "Read Only"
-        archived_header: "Channel is archived."
+        archived_header: "Channel is archived"
         archived: "Archived"
         archive_failed: "Archive channel failed. %{completed}/%{total} messages have been archived in <a target=\"_blank\" href=\"%{topic_url}\">the destination topic</a>. Press retry to attempt to complete the archive."
-        archive_completed: "Archive channel completed. The archive can be found in <a target=\"_blank\" href=\"%{topic_url}\">the destination topic</a>."
-        closed_header: "Channel is closed."
+        archive_completed: "See <a target=\"_blank\" href=\"%{topic_url}\">the archive topic</a>"
+        closed_header: "Channel is closed"
         closed: "Closed"
-        open_header: "Channel is open."
+        open_header: "Channel is open"
         open: "Open"
 
       chat_message_separator:

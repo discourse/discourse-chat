@@ -60,9 +60,14 @@ class ChatMessage < ActiveRecord::Base
   end
 
   def excerpt
-    cooked_or_uploads = cooked.blank? && uploads.present? ? "<p>#{uploads.first.original_filename}</p>" : cooked
-    pretty_excerpt = PrettyText.excerpt(cooked_or_uploads, 50, {})
-    pretty_excerpt.blank? ? message : pretty_excerpt
+    # just show the URL if the whole message is a URL, because we cannot excerpt oneboxes
+    return message if UrlHelper.relaxed_parse(message).is_a?(URI)
+
+    # upload-only messages are better represented as the filename
+    return uploads.first.original_filename if cooked.blank? && uploads.present?
+
+    # this may return blank for some complex things like quotes, that is acceptable
+    PrettyText.excerpt(cooked, 50)
   end
 
   def push_notification_excerpt

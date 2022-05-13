@@ -82,6 +82,13 @@
             {{else}}
               {{format-chat-date message details "tiny"}}
             {{/if}}
+            {{#if message.bookmark}}
+              {{#if message.bookmark.reminder_at}}
+                {{d-icon "discourse-bookmark-clock" translatedtitle=message.bookmark.name}}
+              {{else}}
+                {{d-icon "bookmark" translatedtitle=message.bookmark.name}}
+              {{/if}}
+            {{/if}}
           </div>
         {{else}}
           {{#if message.chat_webhook_event.emoji}}
@@ -114,11 +121,11 @@
 
               {{format-chat-date message details}}
 
-              {{#if bookmark}}
-                {{#if bookmark.reminder_at}}
-                  {{d-icon "discourse-bookmark-clock" translatedtitle=bookmark.name}}
+              {{#if message.bookmark}}
+                {{#if message.bookmark.reminder_at}}
+                  {{d-icon "discourse-bookmark-clock" translatedtitle=message.bookmark.name}}
                 {{else}}
-                  {{d-icon "bookmark" translatedtitle=bookmark.name}}
+                  {{d-icon "bookmark" translatedtitle=message.bookmark.name}}
                 {{/if}}
               {{/if}}
 

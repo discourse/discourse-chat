@@ -572,3 +572,12 @@
     pointer-events: none;
   }
 }
+
+.chat-message-sender-data,
+.chat-message-left-gutter {
+  .d-icon-discourse-bookmark-clock,
+  .d-icon-bookmark {
+    color: var(--secondary-medium);
+    font-size: var(--font-down-2);
+  }
+}

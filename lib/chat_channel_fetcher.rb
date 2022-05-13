@@ -21,10 +21,15 @@ module DiscourseChat::ChatChannelFetcher
       -- secured topic chat channels
       #{ChatChannel.select(:id).joins(
           "INNER JOIN topics ON topics.id = chat_channels.chatable_id AND chat_channels.chatable_type = 'Topic'
-          LEFT JOIN categories ON categories.id = topics.category_id"
+          LEFT JOIN categories ON categories.id = topics.category_id
+          LEFT JOIN topic_allowed_users ON topic_allowed_users.topic_id = topics.id"
         ).where(
           "topics.category_id IS NULL OR topics.category_id IN (:allowed_category_ids)",
-          allowed_category_ids: guardian.allowed_category_ids).to_sql}
+          allowed_category_ids: guardian.allowed_category_ids
+        ).where(
+          "topics.archetype = 'regular' OR (topics.archetype = 'private_message' AND topic_allowed_users.user_id = :user_id)",
+          user_id: guardian.user.id
+        ).to_sql}
 
       UNION
 

@@ -57,7 +57,7 @@ export default Component.extend({
       ? this._subscribeToAppEvents()
       : this._waitForIdToBePopulated();
     if (this.message.bookmark) {
-      this.set("bookmark", Bookmark.create(this.message.bookmark));
+      this.set("message.bookmark", Bookmark.create(this.message.bookmark));
     }
   },
 
@@ -162,7 +162,7 @@ export default Component.extend({
     "showRestoreButton",
     "showEditButton",
     "showRebakeButton",
-    "bookmark"
+    "message.bookmark"
   )
   secondaryButtons() {
     const buttons = [];
@@ -232,10 +232,10 @@ export default Component.extend({
     if (this.showBookmarkButton) {
       buttons.push({
         id: "toggleBookmark",
-        name: this.bookmark
+        name: this.message.bookmark
           ? I18n.t("chat.bookmark_message_edit")
           : I18n.t("chat.bookmark_message"),
-        icon: this.bookmark?.reminder_at
+        icon: this.message.bookmark?.reminder_at
           ? "discourse-bookmark-clock"
           : "bookmark",
       });
@@ -799,7 +799,7 @@ export default Component.extend({
   @action
   toggleBookmark() {
     return openBookmarkModal(
-      this.bookmark ||
+      this.message.bookmark ||
         Bookmark.create({
           bookmarkable_type: "ChatMessage",
           bookmarkable_id: this.message.id,
@@ -808,8 +808,7 @@ export default Component.extend({
       {
         onAfterSave: (savedData) => {
           const bookmark = Bookmark.create(savedData);
-          this.set("message.bookmark", savedData);
-          this.set("bookmark", bookmark);
+          this.set("message.bookmark", bookmark);
           this.appEvents.trigger(
             "bookmarks:changed",
             savedData,
@@ -817,7 +816,6 @@ export default Component.extend({
           );
         },
         onAfterDelete: () => {
-          this.set("bookmark", null);
           this.set("message.bookmark", null);
         },
       },

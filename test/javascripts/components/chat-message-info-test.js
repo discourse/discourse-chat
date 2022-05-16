@@ -74,18 +74,6 @@ discourseModule(
       },
     });
 
-    componentTest("flair", {
-      template: hbs`{{chat-message-info message=message}}`,
-
-      beforeEach() {
-        this.set("message", { user: { flair_url: "fa-adjust" } });
-      },
-
-      async test(assert) {
-        assert.ok(exists(".avatar-flair .d-icon-adjust"));
-      },
-    });
-
     componentTest("reviewable", {
       template: hbs`{{chat-message-info message=message}}`,
 

@@ -33,32 +33,6 @@
   }
 }
 
-.chat-message-info__user-avatar-flair {
-  $size: 16px;
-  $icon-size: $size / 1.8;
-  margin-left: 0.25em;
-
-  .avatar-flair {
-    background-size: $size;
-    height: $size;
-    width: $size;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-repeat: no-repeat;
-
-    .d-icon {
-      height: $icon-size;
-      width: $icon-size;
-    }
-  }
-
-  & + .chat-message-info__date {
-    margin-left: 0.25em;
-  }
-}
-
 .chat-message-info__date {
   color: var(--primary-high);
   font-size: var(--font-down-1);

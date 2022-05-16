@@ -19,6 +19,11 @@ export default class ChatMessageInfo extends Component {
       : this.message.user.username;
   }
 
+  @computed("message.reviewable_id", "message.user_flag_status")
+  get isFlagged() {
+    return this.message?.reviewable_id || this.message?.user_flag_status === 0;
+  }
+
   @computed("message.user.name")
   get prioritizeName() {
     return (

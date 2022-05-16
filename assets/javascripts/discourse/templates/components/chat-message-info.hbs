@@ -27,13 +27,13 @@
     {{format-chat-date @message @details}}
   </span>
 
-  {{#if (or @message.reviewable_id (eq @message.user_flag_status 0))}}
+  {{#if @isFlagged}}
     <span class="chat-message-info__flag">
       {{#if @message.reviewable_id}}
         {{#link-to "review.show" @message.reviewable_id}}
           {{d-icon "flag" title="chat.flagged"}}
         {{/link-to}}
-      {{else if (eq @message.user_flag_status 0)}}
+      {{else}}
         {{d-icon "flag" title="chat.you_flagged"}}
       {{/if}}
     </span>

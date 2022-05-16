@@ -612,7 +612,10 @@ acceptance("Discourse Chat - without unread", function (needs) {
       lastMessage.querySelector(".chat-user-avatar"),
       "Avatar is present"
     );
-    assert.ok(lastMessage.querySelector(".full-name"), "Username is present");
+    assert.ok(
+      lastMessage.querySelector(".chat-message-info__username__name"),
+      "Username is present"
+    );
     assert.equal(
       lastMessage.querySelector(".chat-message-text").innerText.trim(),
       messageContent

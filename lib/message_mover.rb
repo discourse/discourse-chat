@@ -102,11 +102,6 @@ class DiscourseChat::MessageMover
     moved_message_ids
   end
 
-  # NOTE: Mentions are created in the CreateChatMentionNotifications job
-  # 3 seconds (or more) after the message is created. If someone is super
-  # quick on the trigger moving them, then there will be no mention or
-  # notification created. We should keep an eye on this and see if it's a
-  # problem in the wild before overcomplicating things.
   def update_references
     DB.exec(<<~SQL)
       UPDATE chat_message_reactions cmr

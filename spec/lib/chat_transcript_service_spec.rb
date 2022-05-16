@@ -16,7 +16,7 @@ describe ChatTranscriptService do
     message = Fabricate(:chat_message, user: user1, chat_channel: channel, message: "an extremely insightful response :)")
 
     expect(service(message.id).generate_markdown).to eq(<<~MARKDOWN)
-    [chat quote="martinchat;#{message.id};#{message.created_at.iso8601}" channel="The Beam Discussions"]
+    [chat quote="martinchat;#{message.id};#{message.created_at.iso8601}" channel="The Beam Discussions" channelId="#{channel.id}"]
     an extremely insightful response :)
     [/chat]
     MARKDOWN
@@ -29,7 +29,7 @@ describe ChatTranscriptService do
 
     rendered = service([message1.id, message2.id, message3.id]).generate_markdown
     expect(rendered).to eq(<<~MARKDOWN)
-    [chat quote="martinchat;#{message1.id};#{message1.created_at.iso8601}" channel="The Beam Discussions" multiQuote="true"]
+    [chat quote="martinchat;#{message1.id};#{message1.created_at.iso8601}" channel="The Beam Discussions" channelId="#{channel.id}" multiQuote="true"]
     an extremely insightful response :)
 
     if i say so myself
@@ -46,7 +46,7 @@ describe ChatTranscriptService do
 
     rendered = service([message3.id, message1.id, message2.id]).generate_markdown
     expect(rendered).to eq(<<~MARKDOWN)
-    [chat quote="martinchat;#{message1.id};#{message1.created_at.iso8601}" channel="The Beam Discussions" multiQuote="true"]
+    [chat quote="martinchat;#{message1.id};#{message1.created_at.iso8601}" channel="The Beam Discussions" channelId="#{channel.id}" multiQuote="true"]
     an extremely insightful response :)
 
     if i say so myself
@@ -62,7 +62,7 @@ describe ChatTranscriptService do
     message3 = Fabricate(:chat_message, user: user1, chat_channel: channel, message: "aw :(")
 
     expect(service([message1.id, message2.id, message3.id]).generate_markdown).to eq(<<~MARKDOWN)
-    [chat quote="martinchat;#{message1.id};#{message1.created_at.iso8601}" channel="The Beam Discussions" multiQuote="true" chained="true"]
+    [chat quote="martinchat;#{message1.id};#{message1.created_at.iso8601}" channel="The Beam Discussions" channelId="#{channel.id}" multiQuote="true" chained="true"]
     an extremely insightful response :)
     [/chat]
 
@@ -93,7 +93,7 @@ describe ChatTranscriptService do
     image_markdown = UploadMarkdown.new(image).to_markdown
 
     expect(service(message.id).generate_markdown).to eq(<<~MARKDOWN)
-    [chat quote="martinchat;#{message.id};#{message.created_at.iso8601}" channel="The Beam Discussions"]
+    [chat quote="martinchat;#{message.id};#{message.created_at.iso8601}" channel="The Beam Discussions" channelId="#{channel.id}"]
     #{video_markdown}
     #{audio_markdown}
     #{attachment_markdown}
@@ -110,7 +110,7 @@ describe ChatTranscriptService do
     image_markdown = UploadMarkdown.new(image).to_markdown
 
     expect(service(message.id).generate_markdown).to eq(<<~MARKDOWN)
-    [chat quote="martinchat;#{message.id};#{message.created_at.iso8601}" channel="The Beam Discussions"]
+    [chat quote="martinchat;#{message.id};#{message.created_at.iso8601}" channel="The Beam Discussions" channelId="#{channel.id}"]
     this is a cool and funny picture
 
     #{image_markdown}
@@ -122,7 +122,7 @@ describe ChatTranscriptService do
     message = Fabricate(:chat_message, user: user1, chat_channel: channel, message: "an extremely insightful response :)")
 
     expect(service(message.id, opts: { no_link: true }).generate_markdown).to eq(<<~MARKDOWN)
-    [chat quote="martinchat;#{message.id};#{message.created_at.iso8601}" channel="The Beam Discussions" noLink="true"]
+    [chat quote="martinchat;#{message.id};#{message.created_at.iso8601}" channel="The Beam Discussions" channelId="#{channel.id}" noLink="true"]
     an extremely insightful response :)
     [/chat]
     MARKDOWN
@@ -140,7 +140,7 @@ describe ChatTranscriptService do
     ChatMessageReaction.create!(chat_message: message3, user: Fabricate(:user, username: "ivar"), emoji: "sob")
 
     expect(service([message.id, message2.id, message3.id], opts: { include_reactions: true }).generate_markdown).to eq(<<~MARKDOWN)
-    [chat quote="martinchat;#{message.id};#{message.created_at.iso8601}" channel="The Beam Discussions" multiQuote="true" chained="true" reactions="+1:hvitserk;heart:bjorn,sigurd;money_mouth_face:ubbe"]
+    [chat quote="martinchat;#{message.id};#{message.created_at.iso8601}" channel="The Beam Discussions" channelId="#{channel.id}" multiQuote="true" chained="true" reactions="+1:hvitserk;heart:bjorn,sigurd;money_mouth_face:ubbe"]
     an extremely insightful response :)
 
     wow so tru

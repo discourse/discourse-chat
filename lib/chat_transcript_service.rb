@@ -45,7 +45,12 @@ class ChatTranscriptService
 
     def render
       attrs = [quote_attr(@message_data.first[:message])]
-      attrs << channel_attr if channel
+
+      if channel
+        attrs << channel_attr
+        attrs << channel_id_attr
+      end
+
       attrs << MULTIQUOTE_ATTR if multiquote
       attrs << CHAINED_ATTR if chained
       attrs << NO_LINK_ATTR if no_link
@@ -79,6 +84,10 @@ class ChatTranscriptService
 
     def channel_attr
       "channel=\"#{channel.title(@acting_user)}\""
+    end
+
+    def channel_id_attr
+      "channelId=\"#{channel.id}\""
     end
   end
 

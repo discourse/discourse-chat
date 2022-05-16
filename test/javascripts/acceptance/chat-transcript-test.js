@@ -43,6 +43,9 @@ function generateTranscriptHTML(messageContent, opts) {
   const channelDataAttr = opts.channel
     ? ` data-channel-name=\"${opts.channel}\"`
     : "";
+  const channelIdDataAttr = opts.channelId
+    ? ` data-channel-id=\"${opts.channelId}\"`
+    : "";
   const reactDataAttr = opts.reactions
     ? ` data-reactions=\"${opts.reactionsAttr}\"`
     : "";
@@ -60,18 +63,16 @@ function generateTranscriptHTML(messageContent, opts) {
       opts.messageId
     }\" data-username=\"${opts.username}\" data-datetime=\"${
       opts.datetime
-    }\"${reactDataAttr}${channelDataAttr}>`
+    }\"${reactDataAttr}${channelDataAttr}${channelIdDataAttr}>`
   );
 
   if (opts.channel && opts.multiQuote) {
     let originallySent = I18n.t("chat.quote.original_channel", {
       channel: opts.channel,
-      channelLink: `/chat/chat_channels/${encodeURIComponent(
-        opts.channel.toLowerCase()
-      )}`,
+      channelLink: `/chat/chat_channels/${opts.channelId}`,
     });
     if (opts.linkTabIndex) {
-      originallySent = originallySent.replace(">#", tabIndexHTML + ">#");
+      originallySent = originallySent.replace(">", tabIndexHTML + ">");
     }
     transcript.push(`<div class=\"chat-transcript-meta\">
 ${originallySent}</div>`);
@@ -95,9 +96,7 @@ ${innerDatetimeEl}</div>`);
 
   if (opts.channel && !opts.multiQuote) {
     transcript.push(
-      `<a class=\"chat-transcript-channel\" href="/chat/chat_channels/${encodeURIComponent(
-        opts.channel.toLowerCase()
-      )}"${tabIndexHTML}>
+      `<a class=\"chat-transcript-channel\" href="/chat/chat_channels/${opts.channelId}"${tabIndexHTML}>
 #${opts.channel}</a></div>`
     );
   } else {
@@ -201,13 +200,14 @@ acceptance("Discourse Chat | discourse-chat-transcript", function (needs) {
 
   test("renders the channel name if provided with multiQuote", function (assert) {
     assert.cookedChatTranscript(
-      `[chat quote="martin;2321;2022-01-25T05:40:39Z" channel="Cool Cats Club" multiQuote="true"]\nThis is a chat message.\n[/chat]`,
+      `[chat quote="martin;2321;2022-01-25T05:40:39Z" channel="Cool Cats Club" channelId="1234" multiQuote="true"]\nThis is a chat message.\n[/chat]`,
       { additionalOptions },
       generateTranscriptHTML("<p>This is a chat message.</p>", {
         messageId: "2321",
         username: "martin",
         datetime: "2022-01-25T05:40:39Z",
         channel: "Cool Cats Club",
+        channelId: "1234",
         multiQuote: true,
         timezone: "Australia/Brisbane",
       }),
@@ -217,13 +217,14 @@ acceptance("Discourse Chat | discourse-chat-transcript", function (needs) {
 
   test("renders the channel name if provided without multiQuote", function (assert) {
     assert.cookedChatTranscript(
-      `[chat quote="martin;2321;2022-01-25T05:40:39Z" channel="Cool Cats Club"]\nThis is a chat message.\n[/chat]`,
+      `[chat quote="martin;2321;2022-01-25T05:40:39Z" channel="Cool Cats Club" channelId="1234"]\nThis is a chat message.\n[/chat]`,
       { additionalOptions },
       generateTranscriptHTML("<p>This is a chat message.</p>", {
         messageId: "2321",
         username: "martin",
         datetime: "2022-01-25T05:40:39Z",
         channel: "Cool Cats Club",
+        channelId: "1234",
         timezone: "Australia/Brisbane",
       }),
       "renders the chat transcript with the channel name included next to the datetime"
@@ -232,13 +233,14 @@ acceptance("Discourse Chat | discourse-chat-transcript", function (needs) {
 
   test("renders with the chained attribute for more compact quotes", function (assert) {
     assert.cookedChatTranscript(
-      `[chat quote="martin;2321;2022-01-25T05:40:39Z" channel="Cool Cats Club" multiQuote="true" chained="true"]\nThis is a chat message.\n[/chat]`,
+      `[chat quote="martin;2321;2022-01-25T05:40:39Z" channel="Cool Cats Club" channelId="1234" multiQuote="true" chained="true"]\nThis is a chat message.\n[/chat]`,
       { additionalOptions },
       generateTranscriptHTML("<p>This is a chat message.</p>", {
         messageId: "2321",
         username: "martin",
         datetime: "2022-01-25T05:40:39Z",
         channel: "Cool Cats Club",
+        channelId: "1234",
         multiQuote: true,
         chained: true,
         timezone: "Australia/Brisbane",
@@ -249,13 +251,14 @@ acceptance("Discourse Chat | discourse-chat-transcript", function (needs) {
 
   test("renders with the noLink attribute to remove the links to the individual messages from the datetimes", function (assert) {
     assert.cookedChatTranscript(
-      `[chat quote="martin;2321;2022-01-25T05:40:39Z" channel="Cool Cats Club" multiQuote="true" noLink="true"]\nThis is a chat message.\n[/chat]`,
+      `[chat quote="martin;2321;2022-01-25T05:40:39Z" channel="Cool Cats Club" channelId="1234" multiQuote="true" noLink="true"]\nThis is a chat message.\n[/chat]`,
       { additionalOptions },
       generateTranscriptHTML("<p>This is a chat message.</p>", {
         messageId: "2321",
         username: "martin",
         datetime: "2022-01-25T05:40:39Z",
         channel: "Cool Cats Club",
+        channelId: "1234",
         multiQuote: true,
         noLink: true,
         timezone: "Australia/Brisbane",
@@ -267,13 +270,14 @@ acceptance("Discourse Chat | discourse-chat-transcript", function (needs) {
   test("renders with the reactions attribute", function (assert) {
     const reactionsAttr = "+1:martin;heart:martin,eviltrout";
     assert.cookedChatTranscript(
-      `[chat quote="martin;2321;2022-01-25T05:40:39Z" channel="Cool Cats Club" reactions="${reactionsAttr}"]\nThis is a chat message.\n[/chat]`,
+      `[chat quote="martin;2321;2022-01-25T05:40:39Z" channel="Cool Cats Club" channelId="1234" reactions="${reactionsAttr}"]\nThis is a chat message.\n[/chat]`,
       { additionalOptions },
       generateTranscriptHTML("<p>This is a chat message.</p>", {
         messageId: "2321",
         username: "martin",
         datetime: "2022-01-25T05:40:39Z",
         channel: "Cool Cats Club",
+        channelId: "1234",
         timezone: "Australia/Brisbane",
         reactionsAttr,
         reactions: [
@@ -538,7 +542,7 @@ acceptance(
       await fillIn(
         ".d-editor-input",
         `
-[chat quote="martin;2321;2022-01-25T05:40:39Z" channel="Cool Cats Club" multiQuote="true"]
+[chat quote="martin;2321;2022-01-25T05:40:39Z" channel="Cool Cats Club" channelId="1234" multiQuote="true"]
 http://www.example.com/has-title.html
 [/chat]`
       );
@@ -550,6 +554,7 @@ http://www.example.com/has-title.html
           username: "martin",
           datetime: "2022-01-25T05:40:39Z",
           channel: "Cool Cats Club",
+          channelId: "1234",
           multiQuote: true,
           linkTabIndex: true,
           showDateTimeText: true,

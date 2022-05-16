@@ -503,6 +503,20 @@ RSpec.describe DiscourseChat::ChatChannelsController do
       expect(response.parsed_body["chat_channel"]["id"]).to eq(channel.id)
     end
 
+    it "can find channel by chatable title/name" do
+      sign_in(user)
+
+      channel.update!(chatable: Fabricate(:topic, title: "A topic that is a chatable"))
+      get "/chat/chat_channels/#{UrlHelper.encode_component("A topic that is a chatable")}.json"
+      expect(response.status).to eq(200)
+      expect(response.parsed_body["chat_channel"]["id"]).to eq(channel.id)
+
+      channel.update!(chatable: Fabricate(:category, name: "Support Chat"))
+      get "/chat/chat_channels/#{UrlHelper.encode_component("Support Chat")}.json"
+      expect(response.status).to eq(200)
+      expect(response.parsed_body["chat_channel"]["id"]).to eq(channel.id)
+    end
+
     it "gives a not found error if the channel cannot be found by name or id" do
       channel.destroy
       sign_in(user)

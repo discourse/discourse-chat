@@ -27,7 +27,7 @@
     {{format-chat-date @message @details}}
   </span>
 
-  {{#if @isFlagged}}
+  {{#if this.isFlagged}}
     <span class="chat-message-info__flag">
       {{#if @message.reviewable_id}}
         {{#link-to "review.show" @message.reviewable_id}}

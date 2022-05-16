@@ -18,7 +18,11 @@ class DiscourseChat::ChatBaseController < ::ApplicationController
     rescue ArgumentError
     end
 
-    base_channel_relation = ChatChannel.includes(:chatable)
+    base_channel_relation = ChatChannel
+      .includes(:chatable)
+      .joins("LEFT JOIN topics ON topics.id = chat_channels.chatable_id AND chat_channels.chatable_type = 'Topic'")
+      .joins("LEFT JOIN categories ON categories.id = chat_channels.chatable_id AND chat_channels.chatable_type = 'Category'")
+
     if current_user.staff?
       base_channel_relation = base_channel_relation.includes(:chat_channel_archive)
     end
@@ -26,7 +30,14 @@ class DiscourseChat::ChatBaseController < ::ApplicationController
     if id_or_name.is_a? Integer
       @chat_channel = base_channel_relation.find_by(id: id_or_name)
     else
-      @chat_channel = base_channel_relation.find_by("LOWER(name) = ?", id_or_name.downcase)
+      @chat_channel = base_channel_relation.find_by(
+        "(
+          CASE WHEN chatable_type = 'Category' THEN LOWER(categories.name) = :name
+          WHEN chatable_type = 'Topic' THEN LOWER(topics.fancy_title) = :name
+          END
+        )
+        OR LOWER(chat_channels.name) = :name", name: id_or_name.downcase
+      )
     end
 
     raise Discourse::NotFound unless @chat_channel

@@ -978,7 +978,7 @@ RSpec.describe DiscourseChat::ChatController do
       expect(response.status).to eq(200)
       markdown = response.parsed_body["markdown"]
       expect(markdown).to eq(<<~EXPECTED)
-      [chat quote="#{user.username};#{message1.id};#{message1.created_at.iso8601}" channel="Cool Chat" multiQuote="true" chained="true"]
+      [chat quote="#{user.username};#{message1.id};#{message1.created_at.iso8601}" channel="Cool Chat" channelId="#{channel.id}" multiQuote="true" chained="true"]
       an extremely insightful response :)
       [/chat]
 

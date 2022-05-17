@@ -19,10 +19,9 @@ const chatTranscriptRule = {
     const multiQuote = !!tagInfo.attrs.multiQuote;
     const noLink = !!tagInfo.attrs.noLink;
     const channelName = tagInfo.attrs.channel;
-    const channelLink = channelName
-      ? options.getURL(
-          `/chat/chat_channels/${encodeURIComponent(channelName.toLowerCase())}`
-        )
+    const channelId = tagInfo.attrs.channelId;
+    const channelLink = channelId
+      ? options.getURL(`/chat/chat_channels/${channelId}`)
       : null;
 
     if (!username || !messageIdStart || !messageTimeStart) {
@@ -58,6 +57,10 @@ const chatTranscriptRule = {
         });
         state.push("div_chat_transcript_meta", "div", -1);
       }
+    }
+
+    if (channelId) {
+      wrapperDivToken.attrs.push(["data-channel-id", channelId]);
     }
 
     let userDivToken = state.push("div_chat_transcript_user", "div", 1);
@@ -209,6 +212,7 @@ export function setup(helper) {
     "span[title]",
     "div[data-message-id]",
     "div[data-channel-name]",
+    "div[data-channel-id]",
     "div[data-username]",
     "div[data-datetime]",
     "a.chat-transcript-channel",

@@ -45,7 +45,10 @@ export default Component.extend(TextareaTextManipulation, {
   inProgressUploads: null,
   composerEventPrefix: "chat",
   composerFocusSelector: ".chat-composer-input",
-  canAttachUploads: or("siteSettings.chat_allow_uploads", "foo"),
+  canAttachUploads: or(
+    "siteSettings.chat_allow_uploads",
+    "chatChannel.isDirectMessageChannel"
+  ),
 
   @discourseComputed(...chatComposerButtonsDependentKeys())
   inlineButtons() {

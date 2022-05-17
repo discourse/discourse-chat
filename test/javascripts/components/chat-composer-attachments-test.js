@@ -34,10 +34,13 @@ discourseModule(
           set(this.siteSettings, "chat_allow_uploads", false);
         },
         async test(assert) {
-          await click(".open-toolbar-btn");
-          assert.ok(visible(".chat-composer-toolbar #chat-upload-btn"));
+          await click(".chat-composer-dropdown__trigger-btn");
+          assert.ok(
+            visible(
+              ".chat-composer-dropdown__list__item.chat-upload-btn .chat-composer-dropdown__list__item__action"
+            )
+          );
         },
-        skip: true,
       }
     );
 

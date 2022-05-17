@@ -212,33 +212,4 @@ describe ChatChannel do
       ).to eq(true)
     end
   end
-
-  describe "#email_title" do
-    fab!(:small_dm_channel) {
-      Fabricate(:chat_channel, chatable: Fabricate(:direct_message_channel, users: [user1, user2, user3]))
-    }
-    fab!(:large_dm_channel) {
-      Fabricate(:chat_channel, chatable: Fabricate(:direct_message_channel, users: [user1, user2, user3, user4, user5, user6, user7]))
-    }
-
-    it "returns the correct usernames and remaing count for DM channel with many users" do
-      expect(large_dm_channel.email_title(user1)).to eq(
-        I18n.t(
-          "chat.channel.title_for_large_group_dm",
-          users: [user2, user3, user4, user5, user6].map { |u| "@#{u.username}" }.join(", "),
-          count: 1
-        )
-      )
-    end
-
-    it "returns the correct usernames DM channel with few users" do
-      expect(small_dm_channel.email_title(user1)).to eq("@#{user2.username}, @#{user3.username}")
-    end
-
-    it "returns the channel name for public channels" do
-      name = "This is the name!!"
-      public_topic_channel.update!(name: name)
-      expect(public_topic_channel.email_title(user1)).to eq(name)
-    end
-  end
 end

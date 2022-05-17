@@ -33,11 +33,11 @@ export function registerChatComposerButton(button) {
 
   if (
     !normalizedButton.icon &&
-    !normalizedButton.title &&
-    !normalizedButton.translatedTitle
+    !normalizedButton.label &&
+    !normalizedButton.translatedLabel
   ) {
     throw new Error(
-      `Attempted to register a chat composer button: ${button.id} with no icon or title.`
+      `Attempted to register a chat composer button: ${button.id} with no icon or label.`
     );
   }
 

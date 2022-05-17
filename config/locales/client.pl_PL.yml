@@ -133,7 +133,6 @@ pl_PL:
         bold_text: "pogrubiony tekst"
         code_text: "kod"
       quote:
-        original_channel: 'Oryginalnie wysłano w <a href="%{channelLink}">#%{channel}</a>'
         copy_success: "Cytat z czatu skopiowany do schowka."
       notification_levels:
         never: "Nigdy"

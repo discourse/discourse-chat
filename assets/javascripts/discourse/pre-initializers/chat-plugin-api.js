@@ -10,7 +10,7 @@ export default {
   after: "inject-discourse-objects",
 
   initialize() {
-    withPluginApi("1.1.0", (api) => {
+    withPluginApi("1.2.0", (api) => {
       const apiPrototype = Object.getPrototypeOf(api);
 
       if (!apiPrototype.hasOwnProperty("decorateChatMessage")) {

@@ -7,16 +7,6 @@ $float-height: 530px;
   --full-page-sidebar-width: 275px;
 }
 
-.chat-composer {
-  #chat-full-page-uploader,
-  #chat-widget-uploader {
-    display: none;
-  }
-  .drop-a-file {
-    display: none;
-  }
-}
-
 .chat-message-move-to-channel-modal-modal {
   .modal-inner-container {
     .chat-move-message-channel-chooser {
@@ -467,12 +457,6 @@ body.composer-open .topic-chat-float-container {
     flex-shrink: 0;
   }
 
-  .chat-message.is-reply .tc-reply-display &,
-  .chat-composer-message-details .tc-reply-display & {
-    padding-right: 0.5rem;
-    padding-left: 0.5rem;
-  }
-
   &.is-online {
     .chat-user-avatar-container .avatar {
       box-shadow: 0px 0px 0px 1px var(--success);
@@ -566,13 +550,14 @@ body.composer-open .topic-chat-float-container {
   overflow: hidden;
 
   .chat-messages-scroll {
-    margin-bottom: 0.5em;
+    padding-bottom: 0.5em;
     flex-grow: 1;
     overflow-y: scroll;
     scrollbar-color: var(--primary-low) transparent;
     transition: scrollbar-color 0.2s ease-in-out;
     display: flex;
     flex-direction: column-reverse;
+    position: relative;
 
     &::-webkit-scrollbar {
       width: 15px;
@@ -630,194 +615,6 @@ body.composer-open .topic-chat-float-container {
     .d-icon {
       color: var(--primary);
       margin: 0;
-    }
-  }
-
-  .chat-composer {
-    min-height: 1.5em;
-    flex-shrink: 0;
-    width: 100%;
-
-    .tc-reply-username {
-      font-weight: bold;
-    }
-
-    .chat-composer-row {
-      position: relative;
-      padding: 0 0.5em;
-      display: grid;
-
-      &::after {
-        content: attr(data-replicated-value) " ";
-        white-space: pre-wrap;
-        visibility: hidden;
-        outline: none;
-      }
-
-      .open-toolbar-btn {
-        position: absolute;
-        left: 16px;
-        top: 50%;
-        transform: translateY(-50%);
-        padding: 0.3em;
-        border-radius: 100%;
-        background: var(--primary-med-or-secondary-high);
-        border: 1px solid transparent;
-        &:focus {
-          border-color: var(--tertiary);
-        }
-        &:hover {
-          background: var(--primary-high);
-          .d-icon {
-            color: var(--primary-low);
-          }
-        }
-      }
-    }
-
-    .chat-composer-row > .chat-composer-input:focus {
-      outline: none;
-    }
-
-    .chat-composer-row > .chat-composer-input,
-    .chat-composer-row::after {
-      // `after` pseudo-element should match input styling exactly
-      // via https://css-tricks.com/the-cleanest-trick-for-autogrowing-textareas/
-      grid-area: 1 / 1 / 2 / 2;
-      margin: 0;
-      resize: none;
-      max-height: 125px;
-      padding: 8px;
-      background-color: var(--secondary);
-      border: 1px solid var(--primary-low-mid);
-      border-radius: 0.5em;
-      box-sizing: border-box;
-      word-break: break-word;
-      width: 100%;
-    }
-    .chat-composer-row.has-toolbar {
-      .chat-composer-input,
-      .chat-composer-row::after {
-        padding-left: 45px;
-      }
-    }
-    // composer scrollbar
-    .chat-composer-row > .chat-composer-input {
-      scrollbar-color: var(--primary-low-mid) transparent;
-      transition: scrollbar-color 0.2s ease-in-out;
-      &::-webkit-scrollbar-thumb {
-        background-color: var(--primary-low-mid);
-        border-radius: 6px;
-        border: 3px solid var(--secondary);
-      }
-      &:hover {
-        scrollbar-color: var(--primary-low-mid) transparent;
-        &::-webkit-scrollbar-thumb {
-          background-color: var(--primary-low-mid);
-        }
-      }
-      &::-webkit-scrollbar {
-        width: 12px;
-      }
-    }
-
-    .chat-composer-row > .chat-composer-input:disabled {
-      background-color: var(--primary-low);
-      border: 1px solid var(--primary-low-mid);
-    }
-
-    .chat-composer-message-details {
-      position: relative;
-      height: 100%;
-      max-height: calc(2em - 5px);
-      padding: 6px 0.75em;
-      border-top: 1px solid var(--primary-low);
-
-      .tc-reply-display {
-        width: calc(100% - 2em);
-      }
-    }
-
-    .cancel-message-action {
-      position: absolute;
-      top: 6px;
-      right: 5px;
-      padding: 4px;
-    }
-
-    .d-icon {
-      animation: color 0.2s ease-in-out;
-      color: var(--primary-low);
-    }
-  }
-
-  .chat-composer-toolbar {
-    position: absolute;
-    top: -42px;
-    left: 8px;
-    border-radius: 5px;
-    border: 1px solid var(--primary-low);
-    background: var(--secondary);
-
-    .btn-flat {
-      padding: 0.75em;
-      .d-icon {
-        font-size: var(--font-0);
-        color: var(--primary-medium);
-      }
-      &:hover {
-        background-color: var(--primary-low);
-        .d-icon {
-          color: var(--primary);
-        }
-      }
-    }
-  }
-
-  .chat-replying-indicator {
-    color: var(--primary-medium);
-    padding: 0 0.75em;
-    padding-bottom: unquote(
-      "max(calc(env(safe-area-inset-bottom) - 0.75em), 0.25em)"
-    );
-
-    .replying-text {
-      display: inline-flex;
-
-      font-size: var(--font-down-2);
-
-      &:before {
-        // unicode zero width space character
-        // Ensures the span height is consistent even when empty
-        content: "\200b";
-      }
-    }
-
-    .wave {
-      flex: 0 0 auto;
-      display: inline-flex;
-
-      .dot {
-        display: inline-block;
-        animation: tc-reply-wave 1.8s linear infinite;
-        &:nth-child(2) {
-          animation-delay: -1.6s;
-        }
-        &:nth-child(3) {
-          animation-delay: -1.4s;
-        }
-      }
-
-      @keyframes tc-reply-wave {
-        0%,
-        60%,
-        100% {
-          transform: initial;
-        }
-        30% {
-          transform: translateY(-0.2em);
-        }
-      }
     }
   }
 }
@@ -1363,18 +1160,6 @@ body.has-full-page-chat {
 
   > p:last-of-type {
     margin-bottom: 0.1em;
-  }
-}
-
-.chat-live-pane .chat-composer .chat-composer-row .chat-composer-input {
-  text-overflow: ellipsis;
-
-  &:placeholder-shown,
-  &::placeholder {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    padding-right: 1.25em;
   }
 }
 

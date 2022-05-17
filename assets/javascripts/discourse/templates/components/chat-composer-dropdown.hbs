@@ -1,0 +1,26 @@
+{{#if buttons.length}}
+  {{#d-popover
+    class="chat-composer-dropdown"
+    options=(hash arrow=null)
+    as |state|
+  }}
+    {{flat-button
+      disabled=isDisabled
+      class="chat-composer-dropdown__trigger-btn d-popover-trigger"
+      title="chat.composer.toggle_toolbar"
+      icon=(if state.isExpanded "minus" "plus")
+    }}
+    <ul class="chat-composer-dropdown__list">
+      {{#each buttons as |button|}}
+        <li class="chat-composer-dropdown__list__item {{button.id}}">
+          {{d-button
+            class="chat-composer-dropdown__list__item__action"
+            icon=button.icon
+            action=button.action
+            label=button.label
+          }}
+        </li>
+      {{/each}}
+    </ul>
+  {{/d-popover}}
+{{/if}}

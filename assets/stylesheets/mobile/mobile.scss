@@ -1,27 +1,3 @@
-.chat-live-pane .chat-composer .chat-composer-row {
-  .chat-composer-input {
-    padding-right: 40px;
-  }
-
-  .mobile-send-btn {
-    position: absolute;
-    padding: 10px;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    .d-icon {
-      color: var(--primary-low-mid);
-    }
-    &:not([disabled]) .d-icon {
-      color: var(--tertiary);
-    }
-  }
-}
-
-.chat-composer-uploads-container {
-  padding: 0.25em 0.75em;
-}
-
 .chat-message:not(.user-info-hidden) {
   padding: 0.75em 1em 0.1em;
 }
@@ -82,10 +58,6 @@ body.has-full-page-chat {
   }
 
   .chat-full-page-header {
-    background-color: var(--secondary);
-  }
-
-  .chat-composer {
     background-color: var(--secondary);
   }
 

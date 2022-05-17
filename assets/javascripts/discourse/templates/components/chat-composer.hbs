@@ -15,20 +15,20 @@
   }}
 {{/if}}
 
-<div role="region" aria-label={{i18n "chat.aria_roles.composer"}} class={{composerRowClasses}}>
-  {{#if showToolbar}}
-    <div class="chat-composer-toolbar">
-      {{#each toolbarButtons as |toolbarButton|}}
-        {{flat-button
-          action=(action toolbarButton.action)
-          class=toolbarButton.class
-          id=toolbarButton.id
-          icon=toolbarButton.icon
-          title=toolbarButton.title
-        }}
-      {{/each}}
-    </div>
-  {{/if}}
+{{emoji-picker
+  isActive=emojiPickerIsActive
+  isEditorFocused=isEditorFocused
+  emojiSelected=(action "onEmojiSelected")
+  onEmojiPickerClose=(action (mut emojiPickerIsActive) false)
+}}
+
+<div
+  role="region"
+  aria-label={{i18n "chat.aria_roles.composer"}}
+  class="chat-composer-container"
+>
+
+  {{chat-composer-dropdown buttons=dropdownButtons isDisabled=disableComposer}}
 
   {{d-textarea
     value=(readonly value)
@@ -42,32 +42,15 @@
     rows=1
   }}
 
-  {{#if this.toolbarButtons.length}}
-    {{flat-button
-      disabled=disableComposer
-      action=(action "toggleToolbar")
-      class="open-toolbar-btn"
-      title="chat.composer.toggle_toolbar"
-      icon=(if showToolbar "minus" "plus")
-    }}
-  {{/if}}
-
-  {{emoji-picker
-    isActive=emojiPickerIsActive
-    isEditorFocused=isEditorFocused
-    emojiSelected=(action "onEmojiSelected")
-    onEmojiPickerClose=(action (mut emojiPickerIsActive) false)
+  {{flat-button
+    action=(action "sendClicked")
+    icon="paper-plane"
+    class="icon-only send-btn chat-composer-inline-button"
+    title=sendTitle
+    disabled=sendDisabled
   }}
 
-  {{#if site.mobileView}}
-    {{flat-button
-      action=(action "sendClicked")
-      class="mobile-send-btn"
-      icon="paper-plane"
-      disabled=sendDisabled
-      title=sendTitle
-    }}
-  {{/if}}
+  {{chat-composer-inline-buttons buttons=inlineButtons}}
 </div>
 
 {{#if canAttachUploads}}

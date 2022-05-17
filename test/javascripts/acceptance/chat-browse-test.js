@@ -215,7 +215,7 @@ acceptance("Discourse Chat - chat browsing no channels", function (needs) {
     await click('.chat-user-avatar-container[data-user-card="hawk"]');
 
     assert.equal(
-      query(".chat-composer-row textarea").placeholder,
+      query(".chat-composer-input").placeholder,
       I18n.t("chat.placeholder_start_conversation", { usernames: "hawk" })
     );
   });

@@ -64,7 +64,7 @@ acceptance("Discourse Chat - Chat live pane", function (needs) {
 
   test("Textarea and message interactions are disabled when user is silenced", async function (assert) {
     await visit("/chat/channel/1/cat");
-    assert.equal(query(".chat-composer-row textarea").disabled, true);
+    assert.equal(query(".chat-composer-input").disabled, true);
     assert.notOk(exists(".chat-msgactions-hover"));
     assert.notOk(exists(".chat-message-react-btn"));
   });

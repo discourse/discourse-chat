@@ -16,32 +16,6 @@ discourseModule(
   function (hooks) {
     setupRenderingTest(hooks);
 
-    componentTest(
-      "Allow attachments setting doesn't apply to direct message channels",
-      {
-        template: hbs`{{chat-composer chatChannel=chatChannel canInteractWithChat=true}}`,
-
-        beforeEach() {
-          set(this.currentUser, "id", 1);
-          this.set(
-            "chatChannel",
-            ChatChannel.create({
-              chatable_type: "DirectMessageChannel",
-              chatable: {
-                users: [{ id: 1 }],
-              },
-            })
-          );
-          set(this.siteSettings, "chat_allow_uploads", false);
-        },
-
-        async test(assert) {
-          await click(".open-toolbar-btn");
-          assert.ok(visible(".chat-composer-toolbar #chat-upload-btn"));
-        },
-      }
-    );
-
     componentTest("Allow attachments setting applies to public channels", {
       template: hbs`{{chat-composer chatChannel=chatChannel canInteractWithChat=true}}`,
 

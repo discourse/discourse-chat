@@ -1334,7 +1334,7 @@ acceptance(
       await visit("/chat/channel/70/preview-me");
 
       assert.equal(
-        query(".chat-composer-row textarea").placeholder,
+        query(".chat-composer-input").placeholder,
         I18n.t("chat.placeholder_previewing")
       );
     });
@@ -1652,11 +1652,15 @@ acceptance("Discourse Chat - Insert Date", function (needs) {
 
   test("can use local date modal", async function (assert) {
     await visit("/chat/channel/7/Uncategorized");
-    await click(".open-toolbar-btn");
-    await click(".chat-local-dates-btn");
+    await click(".chat-composer-dropdown__trigger-btn");
+    await click(
+      ".chat-composer-dropdown__list__item.local-dates .chat-composer-dropdown__list__item__action"
+    );
 
     assert.ok(exists(".discourse-local-dates-create-modal"));
+
     await click(".modal-footer .btn-primary");
+
     assert.ok(
       query(".chat-composer-input").value.startsWith("[date"),
       "inserts date in composer input"

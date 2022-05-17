@@ -12,9 +12,9 @@
     }}
     <ul class="chat-composer-dropdown__list">
       {{#each buttons as |button|}}
-        <li class="chat-composer-dropdown__list__item {{button.id}}">
+        <li class="chat-composer-dropdown__item {{button.id}}">
           {{d-button
-            class="chat-composer-dropdown__list__item__action"
+            class="chat-composer-dropdown__action-btn {{button.id}}"
             icon=button.icon
             action=button.action
             label=button.label

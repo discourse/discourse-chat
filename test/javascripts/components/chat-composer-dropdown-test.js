@@ -20,9 +20,9 @@ discourseModule(
       async test(assert) {
         await click(".chat-composer-dropdown__trigger-btn");
 
-        assert.ok(exists(".chat-composer-dropdown__list__item.foo"));
+        assert.ok(exists(".chat-composer-dropdown__item.foo"));
         assert.ok(
-          exists(".chat-composer-dropdown__list__item.foo .d-icon-times")
+          exists(".chat-composer-dropdown__action-btn.foo .d-icon-times")
         );
       },
     });

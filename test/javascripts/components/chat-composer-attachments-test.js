@@ -36,9 +36,7 @@ discourseModule(
         async test(assert) {
           await click(".chat-composer-dropdown__trigger-btn");
           assert.ok(
-            visible(
-              ".chat-composer-dropdown__list__item.chat-upload-btn .chat-composer-dropdown__list__item__action"
-            )
+            visible(".chat-composer-dropdown__action-btn.chat-upload-btn")
           );
         },
       }

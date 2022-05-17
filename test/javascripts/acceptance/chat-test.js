@@ -1653,9 +1653,7 @@ acceptance("Discourse Chat - Insert Date", function (needs) {
   test("can use local date modal", async function (assert) {
     await visit("/chat/channel/7/Uncategorized");
     await click(".chat-composer-dropdown__trigger-btn");
-    await click(
-      ".chat-composer-dropdown__list__item.local-dates .chat-composer-dropdown__list__item__action"
-    );
+    await click(".chat-composer-dropdown__action-btn.local-dates");
 
     assert.ok(exists(".discourse-local-dates-create-modal"));
 

@@ -1847,7 +1847,7 @@ acceptance("Discourse Chat - Channel Replying Indicator", function (needs) {
     await joinChannel("/chat-reply/7", user);
 
     assert.equal(
-      query(".replying-text").innerText,
+      query(".chat-replying-indicator").innerText,
       I18n.t("chat.replying_indicator.single_user", {
         username: user.username,
       }) + " . . ."
@@ -1855,7 +1855,7 @@ acceptance("Discourse Chat - Channel Replying Indicator", function (needs) {
 
     await leaveChannel("/chat-reply/7", user);
 
-    assert.equal(query(".replying-text").innerText, "");
+    assert.notOk(exists(".chat-replying-indicator__text"));
   });
 });
 

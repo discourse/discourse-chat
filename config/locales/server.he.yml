@@ -50,6 +50,7 @@ he:
       max_reactions_limit_reached: "רגשות חדשים אסורים בהודעה זו."
       message_move_invalid_channel: "ערוצי המקור והיעד חייבים להיות ערוצים ציבוריים."
       message_move_no_messages_found: "לא נמצאו הודעות עם מזהי ההודעות שסופקו."
+      cannot_react_without_joining: "עליך להצטרף תחילה לערוץ כדי להגיב להודעות. ניתן לשלוח הודעה או להצטרף לערוץ ידנית מרשימת הערוצים."
     reviewables:
       actions:
         agree:
@@ -94,6 +95,10 @@ he:
         two: "%{count} הודעות הועברו על ידי ‎@%{acting_username} לערוץ [%{channel_name}](%{first_moved_message_url})."
         many: "%{count} הודעות הועברו על ידי ‎@%{acting_username} לערוץ [%{channel_name}](%{first_moved_message_url})."
         other: "%{count} הודעות הועברו על ידי ‎@%{acting_username} לערוץ [%{channel_name}](%{first_moved_message_url})."
+      dm_title:
+        single_user: "%{user}"
+        multi_user: "%{users}"
+        multi_user_truncated: "%{users} ו־%{leftover} נוספים"
     personal_chat: "צ׳אט אישי"
   discourse_push_notifications:
     popup:

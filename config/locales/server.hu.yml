@@ -92,6 +92,8 @@ hu:
       messages_moved:
         one: "@%{acting_username} áthelyezett egy üzenetet a(z) [%{channel_name}](%{first_moved_message_url}) csatornába."
         other: "@%{acting_username} áthelyezett %{count} üzenetet a(z) [%{channel_name}](%{first_moved_message_url}) csatornába."
+      dm_title:
+        multi_user_truncated: "%{users} és még %{leftover} fő"
     personal_chat: "személyes csevegés"
   discourse_push_notifications:
     popup:

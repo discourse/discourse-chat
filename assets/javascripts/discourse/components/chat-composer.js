@@ -685,7 +685,6 @@ export default Component.extend(TextareaTextManipulation, {
     }
 
     schedule("afterRender", () => {
-      this._textarea.style.height = "auto";
       this._textarea.style.height = this._textarea.scrollHeight + "px";
     });
   },

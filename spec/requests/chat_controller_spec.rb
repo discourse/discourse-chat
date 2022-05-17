@@ -368,7 +368,6 @@ RSpec.describe DiscourseChat::ChatController do
   end
 
   describe "#rebake" do
-    fab!(:chat_channel) { Fabricate(:chat_channel) }
     fab!(:chat_message) { Fabricate(:chat_message, chat_channel: chat_channel, user: user) }
 
     context "staff" do
@@ -447,7 +446,6 @@ RSpec.describe DiscourseChat::ChatController do
   end
 
   describe "#edit_message" do
-    fab!(:chat_channel) { Fabricate(:chat_channel) }
     fab!(:chat_message) { Fabricate(:chat_message, chat_channel: chat_channel, user: user) }
 
     it "errors when a user tries to edit another user's message" do
@@ -681,74 +679,78 @@ RSpec.describe DiscourseChat::ChatController do
   end
 
   describe "#update_user_last_read" do
-    fab!(:chat_channel) { Fabricate(:chat_channel, chatable: topic) }
-    fab!(:chat_message1) { Fabricate(:chat_message, chat_channel: chat_channel, user: user) }
-    fab!(:chat_message2) { Fabricate(:chat_message, chat_channel: chat_channel, user: user) }
+    before do
+      @message_1 = Fabricate(:chat_message, chat_channel: chat_channel, user: other_user)
+      @message_2 = Fabricate(:chat_message, chat_channel: chat_channel, user: other_user)
 
-    before { sign_in(user) }
-
-    it "updates timing records" do
-      existing_record = UserChatChannelMembership.create(
-        chat_channel: chat_channel,
-        last_read_message_id: 0,
-        user: user
-      )
-
-      expect {
-        put "/chat/#{chat_channel.id}/read/#{chat_message1.id}.json"
-      }.to change { UserChatChannelMembership.count }.by(0)
-      existing_record.reload
-      expect(existing_record.chat_channel_id).to eq(chat_channel.id)
-      expect(existing_record.last_read_message_id).to eq(chat_message1.id)
-      expect(existing_record.user_id).to eq(user.id)
+      sign_in(user)
     end
 
-    it "marks all mention notifications as read for the channel" do
-      UserChatChannelMembership.create(
-        chat_channel: chat_channel,
-        last_read_message_id: 0,
-        user: user
-      )
-      notification1 = Notification.create!(
-        notification_type: Notification.types[:chat_mention],
-        user: user,
-        high_priority: true,
-        data: {
-          message: 'chat.mention_notification',
-          chat_message_id: chat_message1.id,
-          chat_channel_id: chat_channel.id,
-          chat_channel_title: chat_channel.title(user),
-          mentioned_by_username: user.username,
-        }.to_json
-      )
-      ChatMention.create(
-        user: user,
-        chat_message: chat_message1,
-        notification: notification1
-      )
+    it 'returns a 404 when the user is not a channel member' do
+      put "/chat/#{chat_channel.id}/read/#{@message_1.id}.json"
 
-      notification2 = Notification.create!(
-        notification_type: Notification.types[:chat_group_mention],
-        user: user,
-        high_priority: true,
-        data: {
-          message: 'chat.mention_notification',
-          chat_message_id: chat_message2.id,
-          chat_channel_id: chat_channel.id,
-          chat_channel_title: chat_channel.title(user),
-          mentioned_by_username: user.username,
-        }.to_json
-      )
-      ChatMention.create(
-        user: user,
-        chat_message: chat_message2,
-        notification: notification2
-      )
+      expect(response.status).to eq(404)
+    end
 
-      put "/chat/#{chat_channel.id}/read/#{chat_message2.id}.json"
-      expect(response.status).to eq(200)
-      expect(notification1.reload.read).to be true
-      expect(notification2.reload.read).to be true
+    it 'returns a 404 when the user is not following the channel' do
+      Fabricate(:user_chat_channel_membership, chat_channel: chat_channel, user: user, following: false)
+
+      put "/chat/#{chat_channel.id}/read/#{@message_1.id}.json"
+
+      expect(response.status).to eq(404)
+    end
+
+    describe 'when the user is a channel member' do
+      before do
+        @user_membership = Fabricate(:user_chat_channel_membership, chat_channel: chat_channel, user: user)
+      end
+
+      it 'updates timing records' do
+        expect {
+          put "/chat/#{chat_channel.id}/read/#{@message_1.id}.json"
+        }.to change { UserChatChannelMembership.count }.by(0)
+
+        @user_membership.reload
+        expect(@user_membership.chat_channel_id).to eq(chat_channel.id)
+        expect(@user_membership.last_read_message_id).to eq(@message_1.id)
+        expect(@user_membership.user_id).to eq(user.id)
+      end
+
+      def create_notification_and_mention_for(user, sender, msg)
+        Notification.create!(
+          notification_type: Notification.types[:chat_mention],
+          user: user,
+          high_priority: true,
+          read: false,
+          data: {
+            message: 'chat.mention_notification',
+            chat_message_id: msg.id,
+            chat_channel_id: msg.chat_channel_id,
+            chat_channel_title: msg.chat_channel.title(user),
+            mentioned_by_username: sender.username,
+          }.to_json
+        ).tap do |notification|
+          ChatMention.create!(user: user, chat_message: msg, notification: notification)
+        end
+      end
+
+      it 'marks all mention notifications as read for the channel' do
+        notification = create_notification_and_mention_for(user, other_user, @message_1)
+
+        put "/chat/#{chat_channel.id}/read/#{@message_2.id}.json"
+        expect(response.status).to eq(200)
+        expect(notification.reload.read).to eq(true)
+      end
+
+      it "doesn't mark notifications of messages that weren't read yet" do
+        message_3 = Fabricate(:chat_message, chat_channel: chat_channel, user: other_user)
+        notification = create_notification_and_mention_for(user, other_user, message_3)
+
+        put "/chat/#{chat_channel.id}/read/#{@message_2.id}.json"
+
+        expect(response.status).to eq(200)
+        expect(notification.reload.read).to eq(false)
+      end
     end
   end
 

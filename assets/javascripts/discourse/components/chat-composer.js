@@ -685,15 +685,18 @@ export default Component.extend(TextareaTextManipulation, {
 
   @action
   resizeTextarea() {
-    if (!this._textarea) {
-      return;
-    }
-
     schedule("afterRender", () => {
+      if (!this._textarea) {
+        return;
+      }
+
       // this is a quirk which forces us to `auto` first or textarea
       // won't resize
       this._textarea.style.height = "auto";
-      this._textarea.style.height = this._textarea.scrollHeight + "px";
+
+      // +1 is to workaround a rounding error visible on electron
+      // causing scrollbars to show when they shouldn’t
+      this._textarea.style.height = this._textarea.scrollHeight + 1 + "px";
     });
   },
 });

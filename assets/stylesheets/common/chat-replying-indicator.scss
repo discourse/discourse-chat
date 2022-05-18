@@ -8,6 +8,7 @@
     "max(calc(env(safe-area-inset-bottom) - 0.75em), 0.25em)"
   );
   font-size: var(--font-down-2);
+  display: inline-flex;
 
   &:before {
     // unicode zero width space character

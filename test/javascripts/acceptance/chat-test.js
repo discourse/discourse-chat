@@ -373,13 +373,13 @@ acceptance("Discourse Chat - without unread", function (needs) {
   test("Reply-to line is hidden when reply-to message is directly above", async function (assert) {
     await visit("/chat/channel/9/Site");
     const messages = queryAll(".chat-message-container");
-    assert.notOk(messages[1].querySelector(".tc-reply-msg"));
+    assert.notOk(messages[1].querySelector(".chat-reply__excerpt"));
   });
 
   test("Reply-to line is present when reply-to message is not directly above", async function (assert) {
     await visit("/chat/channel/9/Site");
     const messages = queryAll(".chat-message-container");
-    const replyTo = messages[2].querySelector(".tc-reply-msg");
+    const replyTo = messages[2].querySelector(".chat-reply__excerpt");
     assert.ok(replyTo);
     assert.equal(replyTo.innerText.trim(), messageContents[0]);
   });
@@ -514,7 +514,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     );
     assert.equal(
       query(
-        ".chat-composer-message-details .tc-reply-username"
+        ".chat-composer-message-details .chat-reply__username"
       ).innerText.trim(),
       "markvanlan"
     );
@@ -533,7 +533,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     );
     assert.equal(
       query(
-        ".chat-composer-message-details .tc-reply-username"
+        ".chat-composer-message-details .chat-reply__username"
       ).innerText.trim(),
       "markvanlan"
     );

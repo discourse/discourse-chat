@@ -25,7 +25,7 @@
 
     .chat-replying-indicator__dot {
       display: inline-block;
-      animation: tc-reply-wave 1.8s linear infinite;
+      animation: chat-replying-indicator__wave 1.8s linear infinite;
       &:nth-child(2) {
         animation-delay: -1.6s;
       }
@@ -34,7 +34,7 @@
       }
     }
 
-    @keyframes tc-reply-wave {
+    @keyframes chat-replying-indicator__wave {
       0%,
       60%,
       100% {

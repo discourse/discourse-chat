@@ -16,6 +16,7 @@ import {
   settled,
   triggerKeyEvent,
   visit,
+  waitUntil,
 } from "@ember/test-helpers";
 import { test } from "qunit";
 import {
@@ -1653,6 +1654,15 @@ acceptance("Discourse Chat - Insert Date", function (needs) {
   test("can use local date modal", async function (assert) {
     await visit("/chat/channel/7/Uncategorized");
     await click(".chat-composer-dropdown__trigger-btn");
+
+    // can be dropped once ember legacy is gone
+    await waitUntil(
+      function () {
+        return exists(".chat-composer-dropdown__action-btn.local-dates");
+      },
+      { timeout: 2000 }
+    );
+
     await click(".chat-composer-dropdown__action-btn.local-dates");
 
     assert.ok(exists(".discourse-local-dates-create-modal"));

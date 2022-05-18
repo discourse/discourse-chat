@@ -9,7 +9,7 @@ import {
 } from "discourse/tests/helpers/qunit-helpers";
 import hbs from "htmlbars-inline-precompile";
 import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
-import { click } from "@ember/test-helpers";
+import { click, waitUntil } from "@ember/test-helpers";
 
 discourseModule(
   "Discourse Chat | Component | chat-composer attachments test",
@@ -35,6 +35,15 @@ discourseModule(
         },
         async test(assert) {
           await click(".chat-composer-dropdown__trigger-btn");
+
+          // can be dropped once ember legacy is gone
+          await waitUntil(
+            function () {
+              return exists(".chat-composer-dropdown__action-btn");
+            },
+            { timeout: 2000 }
+          );
+
           assert.ok(
             visible(".chat-composer-dropdown__action-btn.chat-upload-btn")
           );

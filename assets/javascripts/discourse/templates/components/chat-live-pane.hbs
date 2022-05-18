@@ -86,7 +86,8 @@
       selectedMessageIds=selectedMessageIds
       chatChannel=chatChannel
       canModerate=details.can_moderate
-      cancelSelecting=(action "cancelSelecting")}}
+      cancelSelecting=(action "cancelSelecting")
+    }}
   {{else}}
     {{chat-composer
       draft=draft
@@ -108,4 +109,6 @@
   {{/if}}
 {{/if}}
 
-{{chat-replying-indicator chatChannel=chatChannel}}
+<div class="chat-replying-indicator-container">
+  {{chat-replying-indicator chatChannel=chatChannel}}
+</div>

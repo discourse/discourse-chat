@@ -33,7 +33,7 @@ export default Component.extend(TextareaTextManipulation, {
   chatChannel: null,
   lastChatChannelId: null,
   chat: service(),
-  classNames: ["chat-composer"],
+  classNames: ["chat-composer-container"],
   userSilenced: readOnly("details.user_silenced"),
   emojiStore: service("emoji-store"),
   editingMessage: null,

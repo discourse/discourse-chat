@@ -1,3 +1,7 @@
+.chat-replying-indicator-container {
+  padding: 0 0.5rem;
+}
+
 .chat-replying-indicator {
   color: var(--primary-medium);
   padding-bottom: unquote(
@@ -19,7 +23,7 @@
     flex: 0 0 auto;
     display: inline-flex;
 
-    .chat-replying-indicator__wave__dot {
+    .chat-replying-indicator__dot {
       display: inline-block;
       animation: tc-reply-wave 1.8s linear infinite;
       &:nth-child(2) {

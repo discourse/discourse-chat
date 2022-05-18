@@ -8,6 +8,7 @@
     "max(calc(env(safe-area-inset-bottom) - 0.75em), 0.25em)"
   );
   font-size: var(--font-down-2);
+  display: inline-flex;
 
   &:before {
     // unicode zero width space character
@@ -22,8 +23,6 @@
   .chat-replying-indicator__wave {
     flex: 0 0 auto;
     display: inline-flex;
-    // negative margin to account for linebreak space
-    margin-left: -3px;
 
     .chat-replying-indicator__dot {
       display: inline-block;

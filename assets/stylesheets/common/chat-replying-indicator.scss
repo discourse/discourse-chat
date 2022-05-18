@@ -22,6 +22,8 @@
   .chat-replying-indicator__wave {
     flex: 0 0 auto;
     display: inline-flex;
+    // negative margin to account for linebreak space
+    margin-left: -3px;
 
     .chat-replying-indicator__dot {
       display: inline-block;

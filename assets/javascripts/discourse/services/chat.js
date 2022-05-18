@@ -1,8 +1,8 @@
+import deprecated from "discourse-common/lib/deprecated";
 import userSearch from "discourse/lib/user-search";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import Service, { inject as service } from "@ember/service";
 import Site from "discourse/models/site";
-import { addChatToolbarButton } from "discourse/plugins/discourse-chat/discourse/components/chat-composer";
 import { ajax } from "discourse/lib/ajax";
 import { A } from "@ember/array";
 import { generateCookFunction } from "discourse/lib/text";
@@ -866,7 +866,9 @@ export default Service.extend({
     );
   },
 
-  addToolbarButton(toolbarButton) {
-    addChatToolbarButton(toolbarButton);
+  addToolbarButton() {
+    deprecated(
+      "Use the new chat API `api.registerChatComposerButton` instead of `chat.addToolbarButton`"
+    );
   },
 });

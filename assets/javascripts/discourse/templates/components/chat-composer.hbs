@@ -23,10 +23,11 @@
 <div
   role="region"
   aria-label={{i18n "chat.aria_roles.composer"}}
-  class="chat-composer"
+  class="chat-composer {{if disableComposer "is-disabled"}}"
 >
-
-  {{chat-composer-dropdown buttons=dropdownButtons isDisabled=disableComposer}}
+  {{#unless disableComposer}}
+    {{chat-composer-dropdown buttons=dropdownButtons isDisabled=disableComposer}}
+  {{/unless}}
 
   {{d-textarea
     value=(readonly value)
@@ -48,7 +49,9 @@
     disabled=sendDisabled
   }}
 
-  {{chat-composer-inline-buttons buttons=inlineButtons}}
+  {{#unless disableComposer}}
+    {{chat-composer-inline-buttons buttons=inlineButtons}}
+  {{/unless}}
 </div>
 
 {{#if canAttachUploads}}

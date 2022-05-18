@@ -14,7 +14,7 @@
       {{#each buttons as |button|}}
         <li class="chat-composer-dropdown__item {{button.id}}">
           {{d-button
-            class="chat-composer-dropdown__action-btn {{button.id}}"
+            class=(concat "chat-composer-dropdown__action-btn " button.id)
             icon=button.icon
             action=button.action
             label=button.label

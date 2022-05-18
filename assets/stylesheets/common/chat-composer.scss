@@ -20,6 +20,11 @@
   border-radius: 6px;
   padding: 0.25rem;
 
+  &.is-disabled {
+    background-color: var(--primary-low);
+    border: 1px solid var(--primary-low-mid);
+  }
+
   .send-btn {
     padding: 0.4rem 0.5rem;
     border: 1px solid transparent;
@@ -62,11 +67,6 @@
     margin: 0;
     padding: 0.25rem 0.5rem;
     text-overflow: ellipsis;
-
-    &:disabled {
-      background-color: var(--primary-low);
-      border: 1px solid var(--primary-low-mid);
-    }
 
     &:placeholder-shown,
     &::placeholder {

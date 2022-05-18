@@ -10,15 +10,15 @@
   .drop-a-file {
     display: none;
   }
+}
 
-  .chat-composer {
-    display: flex;
-    align-items: center;
-    background-color: var(--secondary);
-    border: 1px solid var(--primary-low-mid);
-    border-radius: 6px;
-    padding: 0.25rem;
-  }
+.chat-composer {
+  display: flex;
+  align-items: center;
+  background-color: var(--secondary);
+  border: 1px solid var(--primary-low-mid);
+  border-radius: 6px;
+  padding: 0.25rem;
 
   .send-btn {
     padding: 0.4rem 0.5rem;
@@ -91,19 +91,19 @@
       width: 12px;
     }
   }
+}
 
-  .chat-composer-message-details {
-    padding: 0.25rem;
-    border-top: 1px solid var(--primary-low);
-    display: flex;
-    align-items: center;
+.chat-composer-message-details {
+  padding: 0.5rem 0.75rem;
+  border-top: 1px solid var(--primary-low);
+  display: flex;
+  align-items: center;
+  @include ellipsis;
+  position: relative;
+  height: 100%;
+  max-height: calc(2em - 5px);
 
-    .tc-reply-display {
-      width: 100%;
-    }
-
-    .tc-reply-username {
-      font-weight: bold;
-    }
+  .cancel-message-action {
+    margin-left: auto;
   }
 }

@@ -7,7 +7,7 @@
 
 .chat-message *,
 .chat-composer-row,
-.tc-reply-display,
+.chat-reply,
 .replying-text {
   @include unselectable;
 }

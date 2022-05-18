@@ -50,7 +50,11 @@
         {{/if}}
 
         {{#if message.in_reply_to}}
-          <div role="button" onclick={{action "viewReply"}} class="tc-reply-display">
+          <div
+            role="button"
+            onclick={{action "viewReply"}}
+            class="chat-reply is-direct-reply"
+          >
             {{d-icon "share" title="chat.in_reply_to"}}
 
             {{#if message.in_reply_to.chat_webhook_event.emoji}}
@@ -63,7 +67,7 @@
               {{/if}}
             {{/if}}
 
-            <span class="tc-reply-msg">
+            <span class="chat-reply__excerpt">
               {{replace-emoji message.in_reply_to.excerpt}}
             </span>
           </div>

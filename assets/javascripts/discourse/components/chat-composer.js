@@ -9,7 +9,7 @@ import I18n from "I18n";
 import TextareaTextManipulation from "discourse/mixins/textarea-text-manipulation";
 import userSearch from "discourse/lib/user-search";
 import { action } from "@ember/object";
-import { cancel, schedule, throttle } from "@ember/runloop";
+import { cancel, next, schedule, throttle } from "@ember/runloop";
 import { categoryHashtagTriggerRule } from "discourse/lib/category-hashtags";
 import { cloneJSON } from "discourse-common/lib/object";
 import { findRawTemplate } from "discourse-common/lib/raw-templates";
@@ -268,7 +268,9 @@ export default Component.extend(TextareaTextManipulation, {
   },
 
   _inProgressUploadsChanged(inProgressUploads) {
-    this.set("inProgressUploads", inProgressUploads);
+    next(() => {
+      this.set("inProgressUploads", inProgressUploads);
+    });
   },
 
   _replyToMsgChanged(replyToMsg) {
@@ -688,6 +690,9 @@ export default Component.extend(TextareaTextManipulation, {
     }
 
     schedule("afterRender", () => {
+      // this is a quirk which forces us to `auto` first or textarea
+      // won't resize
+      this._textarea.style.height = "auto";
       this._textarea.style.height = this._textarea.scrollHeight + "px";
     });
   },

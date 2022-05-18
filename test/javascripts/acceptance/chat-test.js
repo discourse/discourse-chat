@@ -553,25 +553,25 @@ acceptance("Discourse Chat - without unread", function (needs) {
     await click(".chat-channel-row.chat-channel-9");
     await click(".chat-message-container .reply-btn");
     // Reply-to line is present
-    assert.ok(exists(".chat-composer-message-details .tc-reply-display"));
+    assert.ok(exists(".chat-composer-message-details .chat-reply"));
     await click(".return-to-channels");
     await click(".chat-channel-row.chat-channel-7");
     // Reply-to line is gone since switching channels
-    assert.notOk(exists(".chat-composer-message-details .tc-reply-display"));
+    assert.notOk(exists(".chat-composer-message-details .chat-reply"));
     // Now click on reply btn and cancel it on channel 7
     await click(".chat-message-container .reply-btn");
-    await click(".chat-composer .cancel-message-action");
+    await click(".cancel-message-action");
 
     // Go back to channel 9 and check that reply-to is present
     await click(".return-to-channels");
     await click(".chat-channel-row.chat-channel-9");
     // Now reply-to should be back and loaded from draft
-    assert.ok(exists(".chat-composer-message-details .tc-reply-display"));
+    assert.ok(exists(".chat-composer-message-details .chat-reply"));
 
     // Go back one for time to channel 7 and make sure reply-to is gone
     await click(".return-to-channels");
     await click(".chat-channel-row.chat-channel-7");
-    assert.notOk(exists(".chat-composer-message-details .tc-reply-display"));
+    assert.notOk(exists(".chat-composer-message-details .chat-reply"));
   });
 
   test("Sending a message", async function (assert) {
@@ -777,7 +777,7 @@ Widget.triangulate(arg: "test")
     await dropdown.expand();
     await dropdown.selectRowByValue("edit");
 
-    assert.ok(exists(".chat-composer .chat-composer-message-details"));
+    assert.ok(exists(".chat-composer-message-details"));
     await triggerKeyEvent(".chat-composer", "keydown", 27); // 27 is escape
 
     // chat-composer-message-details will be gone as no message is being edited

@@ -13,13 +13,21 @@ register_asset 'stylesheets/common/common.scss'
 register_asset 'stylesheets/common/d-progress-bar.scss'
 register_asset 'stylesheets/common/incoming-chat-webhooks.scss'
 register_asset 'stylesheets/mobile/chat-message.scss', :mobile
+register_asset 'stylesheets/common/chat-reply.scss'
 register_asset 'stylesheets/common/chat-message.scss'
 register_asset 'stylesheets/common/chat-message-left-gutter.scss'
 register_asset 'stylesheets/common/chat-message-info.scss'
+register_asset 'stylesheets/common/chat-composer-inline-button.scss'
+register_asset 'stylesheets/common/chat-replying-indicator.scss'
+register_asset 'stylesheets/mobile/chat-replying-indicator.scss', :mobile
+register_asset 'stylesheets/common/chat-composer.scss'
+register_asset 'stylesheets/desktop/chat-composer.scss', :desktop
+register_asset 'stylesheets/mobile/chat-composer.scss', :mobile
 register_asset 'stylesheets/common/direct-message-creator.scss'
 register_asset 'stylesheets/common/chat-message-collapser.scss'
 register_asset 'stylesheets/common/chat-message-images.scss'
 register_asset 'stylesheets/common/chat-transcript.scss'
+register_asset 'stylesheets/common/chat-composer-dropdown.scss'
 register_asset 'stylesheets/common/chat-retention-reminder.scss'
 register_asset 'stylesheets/common/chat-composer-uploads.scss'
 register_asset 'stylesheets/common/chat-composer-upload.scss'

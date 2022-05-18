@@ -373,13 +373,13 @@ acceptance("Discourse Chat - without unread", function (needs) {
   test("Reply-to line is hidden when reply-to message is directly above", async function (assert) {
     await visit("/chat/channel/9/Site");
     const messages = queryAll(".chat-message-container");
-    assert.notOk(messages[1].querySelector(".tc-reply-msg"));
+    assert.notOk(messages[1].querySelector(".chat-reply__excerpt"));
   });
 
   test("Reply-to line is present when reply-to message is not directly above", async function (assert) {
     await visit("/chat/channel/9/Site");
     const messages = queryAll(".chat-message-container");
-    const replyTo = messages[2].querySelector(".tc-reply-msg");
+    const replyTo = messages[2].querySelector(".chat-reply__excerpt");
     assert.ok(replyTo);
     assert.equal(replyTo.innerText.trim(), messageContents[0]);
   });
@@ -514,7 +514,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     );
     assert.equal(
       query(
-        ".chat-composer-message-details .tc-reply-username"
+        ".chat-composer-message-details .chat-reply__username"
       ).innerText.trim(),
       "markvanlan"
     );
@@ -533,7 +533,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     );
     assert.equal(
       query(
-        ".chat-composer-message-details .tc-reply-username"
+        ".chat-composer-message-details .chat-reply__username"
       ).innerText.trim(),
       "markvanlan"
     );
@@ -553,25 +553,25 @@ acceptance("Discourse Chat - without unread", function (needs) {
     await click(".chat-channel-row.chat-channel-9");
     await click(".chat-message-container .reply-btn");
     // Reply-to line is present
-    assert.ok(exists(".chat-composer-message-details .tc-reply-display"));
+    assert.ok(exists(".chat-composer-message-details .chat-reply"));
     await click(".return-to-channels");
     await click(".chat-channel-row.chat-channel-7");
     // Reply-to line is gone since switching channels
-    assert.notOk(exists(".chat-composer-message-details .tc-reply-display"));
+    assert.notOk(exists(".chat-composer-message-details .chat-reply"));
     // Now click on reply btn and cancel it on channel 7
     await click(".chat-message-container .reply-btn");
-    await click(".chat-composer .cancel-message-action");
+    await click(".cancel-message-action");
 
     // Go back to channel 9 and check that reply-to is present
     await click(".return-to-channels");
     await click(".chat-channel-row.chat-channel-9");
     // Now reply-to should be back and loaded from draft
-    assert.ok(exists(".chat-composer-message-details .tc-reply-display"));
+    assert.ok(exists(".chat-composer-message-details .chat-reply"));
 
     // Go back one for time to channel 7 and make sure reply-to is gone
     await click(".return-to-channels");
     await click(".chat-channel-row.chat-channel-7");
-    assert.notOk(exists(".chat-composer-message-details .tc-reply-display"));
+    assert.notOk(exists(".chat-composer-message-details .chat-reply"));
   });
 
   test("Sending a message", async function (assert) {
@@ -777,7 +777,7 @@ Widget.triangulate(arg: "test")
     await dropdown.expand();
     await dropdown.selectRowByValue("edit");
 
-    assert.ok(exists(".chat-composer .chat-composer-message-details"));
+    assert.ok(exists(".chat-composer-message-details"));
     await triggerKeyEvent(".chat-composer", "keydown", 27); // 27 is escape
 
     // chat-composer-message-details will be gone as no message is being edited
@@ -1334,7 +1334,7 @@ acceptance(
       await visit("/chat/channel/70/preview-me");
 
       assert.equal(
-        query(".chat-composer-row textarea").placeholder,
+        query(".chat-composer-input").placeholder,
         I18n.t("chat.placeholder_previewing")
       );
     });
@@ -1652,11 +1652,13 @@ acceptance("Discourse Chat - Insert Date", function (needs) {
 
   test("can use local date modal", async function (assert) {
     await visit("/chat/channel/7/Uncategorized");
-    await click(".open-toolbar-btn");
-    await click(".chat-local-dates-btn");
+    await click(".chat-composer-dropdown__trigger-btn");
+    await click(".chat-composer-dropdown__action-btn.local-dates");
 
     assert.ok(exists(".discourse-local-dates-create-modal"));
+
     await click(".modal-footer .btn-primary");
+
     assert.ok(
       query(".chat-composer-input").value.startsWith("[date"),
       "inserts date in composer input"
@@ -1847,7 +1849,7 @@ acceptance("Discourse Chat - Channel Replying Indicator", function (needs) {
     await joinChannel("/chat-reply/7", user);
 
     assert.equal(
-      query(".replying-text").innerText,
+      query(".chat-replying-indicator").innerText,
       I18n.t("chat.replying_indicator.single_user", {
         username: user.username,
       }) + " . . ."
@@ -1855,7 +1857,7 @@ acceptance("Discourse Chat - Channel Replying Indicator", function (needs) {
 
     await leaveChannel("/chat-reply/7", user);
 
-    assert.equal(query(".replying-text").innerText, "");
+    assert.notOk(exists(".chat-replying-indicator__text"));
   });
 });
 

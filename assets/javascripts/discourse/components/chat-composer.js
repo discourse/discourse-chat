@@ -9,7 +9,7 @@ import I18n from "I18n";
 import TextareaTextManipulation from "discourse/mixins/textarea-text-manipulation";
 import userSearch from "discourse/lib/user-search";
 import { action } from "@ember/object";
-import { cancel, throttle } from "@ember/runloop";
+import { cancel, next, schedule, throttle } from "@ember/runloop";
 import { categoryHashtagTriggerRule } from "discourse/lib/category-hashtags";
 import { cloneJSON } from "discourse-common/lib/object";
 import { findRawTemplate } from "discourse-common/lib/raw-templates";
@@ -22,29 +22,24 @@ import { SKIP } from "discourse/lib/autocomplete";
 import { Promise } from "rsvp";
 import { translations } from "pretty-text/emoji/data";
 import { channelStatusName } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
+import {
+  chatComposerButtons,
+  chatComposerButtonsDependentKeys,
+} from "discourse/plugins/discourse-chat/discourse/lib/chat-composer-buttons";
 
 const THROTTLE_MS = 150;
-let outsideToolbarClick;
-
-const toolbarExtraButtons = [];
-
-export function addChatToolbarButton(toolbarButton) {
-  toolbarExtraButtons.push(toolbarButton);
-}
 
 export default Component.extend(TextareaTextManipulation, {
   chatChannel: null,
   lastChatChannelId: null,
-
   chat: service(),
-  classNames: ["chat-composer"],
+  classNames: ["chat-composer-container"],
   userSilenced: readOnly("details.user_silenced"),
   emojiStore: service("emoji-store"),
   editingMessage: null,
   fullPage: false,
   onValueChange: null,
   previewing: false,
-  showToolbar: false,
   timer: null,
   value: "",
   inProgressUploads: null,
@@ -55,9 +50,14 @@ export default Component.extend(TextareaTextManipulation, {
     "chatChannel.isDirectMessageChannel"
   ),
 
-  @discourseComputed("toolbarButtons")
-  composerRowClasses(buttons) {
-    return `chat-composer-row ${buttons.length ? "has-toolbar" : ""}`;
+  @discourseComputed(...chatComposerButtonsDependentKeys())
+  inlineButtons() {
+    return chatComposerButtons(this, "inline");
+  },
+
+  @discourseComputed(...chatComposerButtonsDependentKeys())
+  dropdownButtons() {
+    return chatComposerButtons(this, "dropdown");
   },
 
   @discourseComputed("fullPage")
@@ -74,31 +74,8 @@ export default Component.extend(TextareaTextManipulation, {
       this,
       "_inProgressUploadsChanged"
     );
-    outsideToolbarClick = this.toggleToolbar.bind(this);
 
-    const toolbarBtns = [];
-
-    if (this.canAttachUploads) {
-      toolbarBtns.push({
-        action: this.uploadClicked,
-        class: "upload-btn",
-        id: "chat-upload-btn",
-        icon: "far-image",
-        title: "chat.upload",
-      });
-    }
-
-    if (this.siteSettings.discourse_local_dates_enabled) {
-      toolbarBtns.push({
-        title: "discourse_local_dates.title",
-        id: "local-dates",
-        class: "chat-local-dates-btn",
-        icon: "calendar-alt",
-        action: this.insertDiscourseLocalDate,
-      });
-    }
     this.setProperties({
-      toolbarButtons: toolbarBtns.concat(toolbarExtraButtons),
       inProgressUploads: [],
       _uploads: [],
     });
@@ -162,7 +139,6 @@ export default Component.extend(TextareaTextManipulation, {
       this,
       "_inProgressUploadsChanged"
     );
-    window.removeEventListener("click", outsideToolbarClick);
 
     if (this.timer) {
       cancel(this.timer);
@@ -258,11 +234,11 @@ export default Component.extend(TextareaTextManipulation, {
       });
 
       this._syncUploads(this.editingMessage.uploads);
-      this._focusTextArea({ ensureAtEnd: true, resizeTextArea: false });
+      this._focusTextArea({ ensureAtEnd: true, resizeTextarea: false });
     }
 
     this.set("lastChatChannelId", this.chatChannel.id);
-    this._resizeTextArea();
+    this.resizeTextarea();
   },
 
   // the chat-composer needs to be able to set the internal list of uploads
@@ -292,7 +268,9 @@ export default Component.extend(TextareaTextManipulation, {
   },
 
   _inProgressUploadsChanged(inProgressUploads) {
-    this.set("inProgressUploads", inProgressUploads);
+    next(() => {
+      this.set("inProgressUploads", inProgressUploads);
+    });
   },
 
   _replyToMsgChanged(replyToMsg) {
@@ -303,6 +281,7 @@ export default Component.extend(TextareaTextManipulation, {
   @action
   onTextareaInput(value) {
     this.set("value", value);
+    this.resizeTextarea();
 
     // throttle, not debounce, because we do eventually want to react during the typing
     this.timer = throttle(this, this._handleTextareaInput, THROTTLE_MS);
@@ -310,7 +289,6 @@ export default Component.extend(TextareaTextManipulation, {
 
   @bind
   _handleTextareaInput() {
-    this._resizeTextArea();
     this._applyUserAutocomplete();
     this.onValueChange?.(this.value, this._uploads, this.replyToMsg);
   },
@@ -327,6 +305,13 @@ export default Component.extend(TextareaTextManipulation, {
         this.addText(this.getSelected(), markup);
       },
     });
+  },
+
+  // text-area-manipulation mixin override
+  addText() {
+    this._super(...arguments);
+
+    this.resizeTextarea();
   },
 
   _applyUserAutocomplete() {
@@ -499,7 +484,7 @@ export default Component.extend(TextareaTextManipulation, {
   },
 
   @afterRender
-  _focusTextArea(opts = { ensureAtEnd: false, resizeTextArea: true }) {
+  _focusTextArea(opts = { ensureAtEnd: false, resizeTextarea: true }) {
     if (this.chatChannel.isDraft) {
       return;
     }
@@ -510,23 +495,13 @@ export default Component.extend(TextareaTextManipulation, {
 
     this._textarea.focus();
 
-    if (opts.resizeTextArea) {
-      this._resizeTextArea();
+    if (opts.resizeTextarea) {
+      this.resizeTextarea();
     }
 
     if (opts.ensureAtEnd) {
       this._textarea.setSelectionRange(this.value.length, this.value.length);
     }
-  },
-
-  @afterRender
-  _resizeTextArea() {
-    if (!this._textarea) {
-      return;
-    }
-
-    this._textarea.parentNode.dataset.replicatedValue = this._textarea.value;
-    this.onChangeHeight?.();
   },
 
   @action
@@ -674,7 +649,7 @@ export default Component.extend(TextareaTextManipulation, {
       inReplyMsg: null,
     });
     this._syncUploads([]);
-    this._focusTextArea({ ensureAtEnd: true, resizeTextArea: true });
+    this._focusTextArea({ ensureAtEnd: true, resizeTextarea: true });
     this.onValueChange?.(this.value, this._uploads, this.replyToMsg);
   },
 
@@ -688,7 +663,7 @@ export default Component.extend(TextareaTextManipulation, {
   @action
   cancelEditing() {
     this.onCancelEditing();
-    this._focusTextArea({ ensureAtEnd: true, resizeTextArea: true });
+    this._focusTextArea({ ensureAtEnd: true, resizeTextarea: true });
   },
 
   _cursorIsOnEmptyLine() {
@@ -703,23 +678,22 @@ export default Component.extend(TextareaTextManipulation, {
   },
 
   @action
-  toggleToolbar() {
-    if (this.disableComposer) {
-      return;
-    }
-
-    this.set("showToolbar", !this.showToolbar);
-    if (this.showToolbar) {
-      window.addEventListener("click", outsideToolbarClick);
-    } else {
-      window.removeEventListener("click", outsideToolbarClick);
-    }
-    return false;
-  },
-
-  @action
   uploadsChanged(uploads) {
     this.set("_uploads", cloneJSON(uploads));
     this.onValueChange?.(this.value, this._uploads, this.replyToMsg);
+  },
+
+  @action
+  resizeTextarea() {
+    if (!this._textarea) {
+      return;
+    }
+
+    schedule("afterRender", () => {
+      // this is a quirk which forces us to `auto` first or textarea
+      // won't resize
+      this._textarea.style.height = "auto";
+      this._textarea.style.height = this._textarea.scrollHeight + "px";
+    });
   },
 });

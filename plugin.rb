@@ -192,11 +192,13 @@ after_initialize do
 
       chat_channel = message.chat_channel
       user = message.user
-      next if !chat_channel || user
+      next if !chat_channel || !user
     else
       chat_channel = ChatChannel.find_by(id: route[:channel_id])
       next if !chat_channel
     end
+
+    next if !Guardian.new.can_see_chat_channel?(chat_channel)
 
     name = if chat_channel.name.present?
       chat_channel.name
@@ -214,7 +216,9 @@ after_initialize do
     }
 
     if message.present?
+      args[:message_id] = message.id
       args[:username] = message.user.username
+      args[:avatar_url] = message.user.avatar_template_url.gsub("{size}", "20")
       args[:cooked] = message.cooked
       args[:created_at] = message.created_at
     end
@@ -250,6 +254,8 @@ after_initialize do
         I18n.t('chat.onebox.inline_to_topic_channel', topic_title: chat_channel.chatable.title)
       end
     end
+
+    next if !Guardian.new.can_see_chat_channel?(chat_channel)
 
     { url: url, title: title }
   end

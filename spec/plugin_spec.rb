@@ -150,4 +150,79 @@ describe 'discourse-chat' do
       end
     end
   end
+
+  describe "chat oneboxes" do
+    fab!(:chat_channel) { Fabricate(:chat_channel, chatable: Fabricate(:topic)) }
+    fab!(:user) { Fabricate(:user) }
+    let!(:chat_message) do
+      DiscourseChat::ChatMessageCreator.create(
+        chat_channel: chat_channel,
+        user: user,
+        in_reply_to_id: nil,
+        content: "Hello world!",
+        upload_ids: []
+      ).chat_message
+    end
+
+    let(:chat_url) { "#{Discourse.base_url}/chat/channel/#{chat_channel.id}" }
+
+    context "inline" do
+      it "renders channel" do
+        results = InlineOneboxer.new([chat_url], skip_cache: true).process
+        expect(results).to be_present
+        expect(results[0][:url]).to eq(chat_url)
+        expect(results[0][:title]).to eq("Chat ##{chat_channel.name}")
+      end
+
+      it "renders messages" do
+        results = InlineOneboxer.new(["#{chat_url}?messageId=#{chat_message.id}"], skip_cache: true).process
+        expect(results).to be_present
+        expect(results[0][:url]).to eq("#{chat_url}?messageId=#{chat_message.id}")
+        expect(results[0][:title]).to eq("##{chat_channel.name} - Message ##{chat_message.id} by #{chat_message.user.username}")
+      end
+    end
+
+    context "regular" do
+      it "renders channel" do
+        expect(Oneboxer.preview(chat_url)).to match_html <<~HTML
+          <aside class="onebox chat-onebox">
+            <article class="onebox-body chat-onebox-body">
+              <h3>
+                <a href="#{chat_url}">
+                    <span class="topic-chat-icon">
+                      <svg class="fa d-icon d-icon-far-comments svg-icon svg-string" xmlns="http://www.w3.org/2000/svg"><use href="#far-comments"></use></svg>
+                    </span>
+                  <span class="clear-badge">#{chat_channel.name}</span>
+                </a>
+              </h3>
+            </article>
+            <div class="clearfix"></div>
+          </aside>
+        HTML
+      end
+
+      it "renders messages" do
+        expect(Oneboxer.preview("#{chat_url}?messageId=#{chat_message.id}")).to match_html <<~HTML
+          <div class="discourse-chat-transcript" data-message-id="#{chat_message.id}" data-username="#{user.username}" data-datetime="#{chat_message.created_at}" data-channel-name="#{chat_channel.name}" data-channel-id="#{chat_channel.id}">
+            <div class="chat-transcript-user">
+              <div class="chat-transcript-user-avatar">
+                <img loading="lazy" alt="" width="20" height="20" src="#{user.avatar_template_url.gsub("{size}", "20")}" class="avatar" style="aspect-ratio: 20 / 20;">
+              </div>
+            <div class="chat-transcript-username">#{user.username}</div>
+              <div class="chat-transcript-datetime">
+                <a href="" title="#{chat_message.created_at}">#{chat_message.created_at}</a>
+              </div>
+              <a class="chat-transcript-channel" href="/chat/chat_channels/#{chat_channel.id}">
+                 <span class="topic-chat-icon">
+                   <svg class="fa d-icon d-icon-far-comments svg-icon svg-string" xmlns="http://www.w3.org/2000/svg"><use href="#far-comments"></use></svg>
+                 </span>
+                #{chat_channel.name}
+              </a>
+            </div>
+            <div class="chat-transcript-messages"><p>Hello world!</p></div>
+          </div>
+        HTML
+      end
+    end
+  end
 end

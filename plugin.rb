@@ -59,6 +59,13 @@ after_initialize do
     def self.allowed_group_ids
       SiteSetting.chat_allowed_groups.to_s.split("|").map(&:to_i)
     end
+
+    def self.onebox_template
+      @onebox_template ||= begin
+        path = "#{Rails.root}/plugins/discourse-chat/lib/onebox/templates/discourse_chat.mustache"
+        File.read(path)
+      end
+    end
   end
 
   SeedFu.fixture_paths << Rails.root.join("plugins", "discourse-chat", "db", "fixtures").to_s
@@ -173,6 +180,78 @@ after_initialize do
       results = results.includes(:chat_channel)
     end
     results
+  end
+
+  Oneboxer.register_local_handler('discourse_chat/chat') do |url, route|
+    queryParams = CGI.parse(URI.parse(url).query) rescue {}
+    messageId = queryParams['messageId']&.first
+
+    if messageId.present?
+      message = ChatMessage.find_by(id: messageId)
+      next if !message
+
+      chat_channel = message.chat_channel
+      user = message.user
+      next if !chat_channel || user
+    else
+      chat_channel = ChatChannel.find_by(id: route[:channel_id])
+      next if !chat_channel
+    end
+
+    name = if chat_channel.name.present?
+      chat_channel.name
+    elsif chat_channel.chatable_type == 'Topic'
+      chat_channel.chatable.title
+    end
+
+    args = {
+      url: url,
+      channel_id: chat_channel.id,
+      channel_name: name,
+      is_category: chat_channel.chatable_type == 'Category',
+      is_topic: chat_channel.chatable_type == 'Topic',
+      color: chat_channel.chatable_type == 'Category' ? chat_channel.chatable.color : nil,
+    }
+
+    if message.present?
+      args[:username] = message.user.username
+      args[:cooked] = message.cooked
+      args[:created_at] = message.created_at
+    end
+
+    Mustache.render(DiscourseChat.onebox_template, args)
+  end
+
+  InlineOneboxer.register_local_handler('discourse_chat/chat') do |url, route|
+    queryParams = CGI.parse(URI.parse(url).query) rescue {}
+    messageId = queryParams['messageId']&.first
+
+    if messageId.present?
+      message = ChatMessage.find_by(id: messageId)
+      next if !message
+
+      chat_channel = message.chat_channel
+      user = message.user
+      next if !chat_channel || !user
+
+      title = I18n.t(
+        'chat.onebox.inline_to_message',
+        message_id: message.id,
+        chat_channel: chat_channel.name,
+        username: user.username
+      )
+    else
+      chat_channel = ChatChannel.find_by(id: route[:channel_id])
+      next if !chat_channel
+
+      title = if chat_channel.name.present?
+        I18n.t('chat.onebox.inline_to_channel', chat_channel: chat_channel.name)
+      elsif chat_channel.chatable_type == 'Topic'
+        I18n.t('chat.onebox.inline_to_topic_channel', topic_title: chat_channel.chatable.title)
+      end
+    end
+
+    { url: url, title: title }
   end
 
   if respond_to?(:register_upload_unused)

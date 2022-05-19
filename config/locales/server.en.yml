@@ -95,6 +95,11 @@ en:
 
     personal_chat: "personal chat"
 
+    onebox:
+      inline_to_message: '#%{chat_channel} - Message #%{message_id} by %{username}'
+      inline_to_channel: 'Chat #%{chat_channel}'
+      inline_to_topic_channel: 'Chat for Topic %{topic_title}'
+
   discourse_push_notifications:
     popup:
       chat_mention:

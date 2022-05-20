@@ -1,6 +1,12 @@
 import { skip, test } from "qunit";
 import { isLegacyEmber } from "discourse-common/config/environment";
-import { click, currentURL, tap, visit } from "@ember/test-helpers";
+import {
+  click,
+  currentURL,
+  tap,
+  triggerEvent,
+  visit,
+} from "@ember/test-helpers";
 import {
   acceptance,
   exists,

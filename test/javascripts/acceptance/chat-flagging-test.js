@@ -11,7 +11,7 @@ import {
   generateChatView,
 } from "discourse/plugins/discourse-chat/chat-fixtures";
 import { test } from "qunit";
-import { click, settled, visit } from "@ember/test-helpers";
+import { click, settled, triggerEvent, visit } from "@ember/test-helpers";
 import { isLegacyEmber } from "discourse-common/config/environment";
 import { next } from "@ember/runloop";
 import { Promise } from "rsvp";

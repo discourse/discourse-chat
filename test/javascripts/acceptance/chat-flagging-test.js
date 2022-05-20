@@ -11,7 +11,7 @@ import {
   generateChatView,
 } from "discourse/plugins/discourse-chat/chat-fixtures";
 import { test } from "qunit";
-import { click, settled, visit } from "@ember/test-helpers";
+import { click, settled, triggerEvent, visit } from "@ember/test-helpers";
 import { isLegacyEmber } from "discourse-common/config/environment";
 import { next } from "@ember/runloop";
 import { Promise } from "rsvp";
@@ -65,6 +65,7 @@ acceptance("Discourse Chat - Flagging test", function (needs) {
   test("Flagging in public channel works", async function (assert) {
     await visit("/chat/channel/75/site");
     assert.notOk(exists(".chat-live-pane .chat-message .chat-message-flagged"));
+    await triggerEvent(".chat-message-container", "mouseenter");
     let moreBtns = selectKit(".chat-live-pane .chat-message .more-buttons");
     await moreBtns.expand();
     const content = moreBtns.displayedContent();
@@ -91,6 +92,7 @@ acceptance("Discourse Chat - Flagging test", function (needs) {
 
   test("Flag button isn't present for DM channel", async function (assert) {
     await visit("/chat/channel/9/@hawk");
+    await triggerEvent(".chat-message-container", "mouseenter");
     let moreBtns = selectKit(".chat-live-pane .chat-message .more-buttons");
     await moreBtns.expand();
     const content = moreBtns.displayedContent();

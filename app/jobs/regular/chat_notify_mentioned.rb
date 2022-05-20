@@ -101,7 +101,7 @@ module Jobs
       create_notification!(membership, notification_data)
 
       if !membership.desktop_notifications_never?
-        MessageBus.publish("/chat/notification-alert/#{membership.user_id}", os_payload, user_ids: [membership.user_id])
+        MessageBus.publish("/notification-alert/#{membership.user_id}", os_payload, user_ids: [membership.user_id])
       end
 
       if !membership.mobile_notifications_never?

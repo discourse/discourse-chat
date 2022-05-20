@@ -51,7 +51,7 @@ module Jobs
       }
 
       if membership.desktop_notifications_always?
-        MessageBus.publish("/chat/notification-alert/#{user.id}", payload, user_ids: [user.id])
+        MessageBus.publish("/notification-alert/#{user.id}", payload, user_ids: [user.id])
       end
 
       if membership.mobile_notifications_always?

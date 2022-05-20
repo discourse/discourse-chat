@@ -21,7 +21,7 @@ describe Jobs::ChatNotifyMentioned do
   end
 
   def track_desktop_notification(user: user_2, message:, to_notify_ids_map:, already_notified_user_ids: [])
-    MessageBus.track_publish("/chat/notification-alert/#{user.id}") do
+    MessageBus.track_publish("/notification-alert/#{user.id}") do
       subject.execute(
         chat_message_id: message.id,
         timestamp: message.created_at,

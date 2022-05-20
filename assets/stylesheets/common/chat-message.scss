@@ -320,7 +320,7 @@
     }
   }
 
-  .more-buttons {
+  .more-buttons.dropdown-select-box {
     .select-kit-header {
       background: none;
       border: 1px solid var(--primary-low);
@@ -358,6 +358,24 @@
             color: var(--primary);
           }
         }
+      }
+    }
+
+    .select-kit-body {
+      padding: 0.5rem;
+      box-shadow: shadow("card");
+      border: 1px solid var(--primary-low);
+    }
+
+    .select-kit-row {
+      .texts .name {
+        font-size: var(--font-0);
+        font-weight: 500;
+      }
+
+      .icons .d-icon {
+        font-size: var(--font-0);
+        color: var(--primary-medium);
       }
     }
   }

@@ -11,7 +11,8 @@ module DiscourseChat::UserNotificationsExtension
       .where(
         <<~SQL
           (cm.user_id = #{user.id} OR chat_channels.chatable_type = 'DirectMessageChannel') AND
-          (uccm.last_read_message_id IS NULL OR chat_messages.id > uccm.last_read_message_id)
+          (uccm.last_read_message_id IS NULL OR chat_messages.id > uccm.last_read_message_id) AND
+          (uccm.last_unread_mention_when_emailed_id IS NULL OR chat_messages.id > uccm.last_unread_mention_when_emailed_id)
         SQL
       ).to_a
     return if @messages.empty?
@@ -22,8 +23,7 @@ module DiscourseChat::UserNotificationsExtension
     opts = {
       from_alias: I18n.t('user_notifications.chat_summary.from', site_name: Email.site_title),
       subject: I18n.t('user_notifications.chat_summary.subject', count: @messages.size, email_prefix: @email_prefix, date: short_date(Time.now)),
-      add_unsubscribe_link: true,
-      unsubscribe_url: "#{Discourse.base_url}/email/unsubscribe/#{@unsubscribe_key}",
+      add_unsubscribe_link: false,
     }
 
     @grouped_mentions = @messages.group_by { |message| message.chat_channel }

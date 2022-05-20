@@ -96,6 +96,17 @@ describe UserNotifications do
 
           expect(email.to).to contain_exactly(@user.email)
         end
+
+        it 'returns an email if the user read all the messages included in the previous summary' do
+          @user_membership.update!(last_read_message_id: @chat_message.id, last_unread_mention_when_emailed_id: @chat_message.id)
+
+          new_message = Fabricate(:chat_message, user: @sender, chat_channel: @chat_channel)
+          Fabricate(:chat_mention, user: @user, chat_message: new_message)
+
+          email = described_class.chat_summary(@user, {})
+
+          expect(email.to).to contain_exactly(@user.email)
+        end
       end
 
       describe 'mail contents' do
@@ -183,6 +194,19 @@ describe UserNotifications do
 
           expect(more_messages_channel_link.attribute('href').value).to eq(@chat_channel.url)
           expect(more_messages_channel_link.text).to include(I18n.t("user_notifications.chat_summary.view_more", count: 1))
+        end
+
+        it "doesn't repeat mentions we already sent" do
+          @user_membership.update!(last_read_message_id: @chat_message.id - 1, last_unread_mention_when_emailed_id: @chat_message.id)
+
+          new_message = Fabricate(:chat_message, user: @sender, chat_channel: @chat_channel, cooked: 'New message')
+          Fabricate(:chat_mention, user: @user, chat_message: new_message)
+
+          email = described_class.chat_summary(@user, {})
+          body = email.html_part.body.to_s
+
+          expect(body).not_to include(@chat_message.cooked_for_excerpt)
+          expect(body).to include(new_message.cooked_for_excerpt)
         end
       end
     end

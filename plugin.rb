@@ -126,6 +126,7 @@ after_initialize do
   load File.expand_path('../lib/extensions/detailed_tag_serializer_extension.rb', __FILE__)
   load File.expand_path('../lib/extensions/user_option_extension.rb', __FILE__)
   load File.expand_path('../lib/extensions/user_notifications_extension.rb', __FILE__)
+  load File.expand_path('../lib/extensions/user_email_extension.rb', __FILE__)
   load File.expand_path('../lib/slack_compatibility.rb', __FILE__)
   load File.expand_path('../lib/post_notification_handler.rb', __FILE__)
   load File.expand_path('../app/jobs/regular/process_chat_message.rb', __FILE__)
@@ -186,6 +187,7 @@ after_initialize do
       has_many :chat_message_reactions, dependent: :destroy
       has_many :chat_mentions
     }
+    Jobs::UserEmail.class_eval { prepend DiscourseChat::UserEmailExtension }
 
     Bookmark.register_bookmarkable(ChatMessageBookmarkable)
   end

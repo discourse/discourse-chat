@@ -2,7 +2,7 @@
 
 module Jobs
   class EmailChatNotifications < ::Jobs::Scheduled
-    every 15.minutes
+    every 5.minutes
 
     def execute(args = {})
       return unless SiteSetting.chat_enabled

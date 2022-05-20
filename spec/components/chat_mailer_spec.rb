@@ -10,10 +10,7 @@ describe DiscourseChat::ChatMailer do
     SiteSetting.chat_allowed_groups = @chatters_group.id
 
     @sender = Fabricate(:user, group_ids: [@chatters_group.id])
-    @user_1 = Fabricate(:user, group_ids: [@chatters_group.id])
-
-    @last_emailed = 15.minutes.ago
-    @user_1.user_option.update!(last_emailed_for_chat: @last_emailed)
+    @user_1 = Fabricate(:user, group_ids: [@chatters_group.id], last_seen_at: 15.minutes.ago)
 
     @chat_channel = Fabricate(:chat_channel)
     @chat_message = Fabricate(:chat_message, user: @sender, chat_channel: @chat_channel)
@@ -28,9 +25,8 @@ describe DiscourseChat::ChatMailer do
     @private_channel = DiscourseChat::DirectMessageChannelCreator.create!([@sender, @user_1])
   end
 
-  def asert_summary_skipped(last_emailed_at: @last_emailed)
+  def asert_summary_skipped
     expect(job_enqueued?(job: :user_email, args: { type: "chat_summary", user_id: @user_1.id })).to eq(false)
-    expect(@user_1.user_option.reload.last_emailed_for_chat).to eq_time(last_emailed_at)
   end
 
   def assert_only_queued_once
@@ -40,19 +36,11 @@ describe DiscourseChat::ChatMailer do
 
   describe 'for chat mentions' do
     before do
-      Fabricate(:chat_mention, user: @user_1, chat_message: @chat_message)
+      @mention = Fabricate(:chat_mention, user: @user_1, chat_message: @chat_message)
     end
 
     it 'skips users without chat access' do
       @chatters_group.remove(@user_1)
-
-      subject.send_unread_mentions_summary
-
-      asert_summary_skipped
-    end
-
-    it 'skips suspended users' do
-      @user_1.update!(suspended_till: 5.months.from_now)
 
       subject.send_unread_mentions_summary
 
@@ -67,21 +55,12 @@ describe DiscourseChat::ChatMailer do
       asert_summary_skipped
     end
 
-    it 'skips users emailed recently' do
-      updated_last_emails = 1.minutes.ago
-      @user_1.user_option.update!(last_emailed_for_chat: updated_last_emails)
+    it "skips a job if the user haven't read the channel since the last summary" do
+      @user_membership.update!(last_unread_mention_when_emailed_id: @chat_message.id)
 
       subject.send_unread_mentions_summary
 
-      asert_summary_skipped(last_emailed_at: updated_last_emails)
-    end
-
-    it 'queues a job for users we never emailed before' do
-      @user_1.user_option.update!(last_emailed_for_chat: nil)
-
-      subject.send_unread_mentions_summary
-
-      assert_only_queued_once
+      asert_summary_skipped
     end
 
     it 'skips without chat enabled' do
@@ -114,15 +93,6 @@ describe DiscourseChat::ChatMailer do
       asert_summary_skipped
     end
 
-    it 'updates the last_emailed_for_chat timestamp' do
-      @user_membership.update!(last_read_message_id: @chat_message.id - 1)
-
-      subject.send_unread_mentions_summary
-
-      assert_only_queued_once
-      expect(@user_1.user_option.reload.last_emailed_for_chat).to be > @last_emailed
-    end
-
     it 'skips users with unread messages from a different channel' do
       @user_membership.update!(last_read_message_id: @chat_message.id)
       second_channel = Fabricate(:chat_channel)
@@ -149,6 +119,71 @@ describe DiscourseChat::ChatMailer do
 
       asert_summary_skipped
     end
+
+    it 'queues the job if the user has unread mentions and alread read all the messages in the previous summary' do
+      @user_membership.update!(last_read_message_id: @chat_message.id, last_unread_mention_when_emailed_id: @chat_message.id)
+      unread_message = Fabricate(:chat_message, chat_channel: @chat_channel, user: @sender)
+      Fabricate(:chat_mention, user: @user_1, chat_message: unread_message)
+
+      subject.send_unread_mentions_summary
+
+      expect_job_enqueued(job: :user_email, args: { type: "chat_summary", user_id: @user_1.id })
+      expect(Jobs::UserEmail.jobs.size).to eq(1)
+    end
+
+    it 'skips users who were seen recently' do
+      @user_1.update!(last_seen_at: 2.minutes.ago)
+
+      subject.send_unread_mentions_summary
+
+      asert_summary_skipped
+    end
+
+    it "doesn't mix mentions from other users" do
+      @mention.destroy!
+      user_2 = Fabricate(:user, groups: [@chatters_group], last_seen_at: 20.minutes.ago)
+      user_2_membership = Fabricate(:user_chat_channel_membership, user: user_2, chat_channel: @chat_channel, last_read_message_id: nil)
+      new_message = Fabricate(:chat_message, chat_channel: @chat_channel, user: @sender)
+      Fabricate(:chat_mention, user: user_2, chat_message: new_message)
+
+      subject.send_unread_mentions_summary
+
+      expect(job_enqueued?(job: :user_email, args: { type: "chat_summary", user_id: @user_1.id })).to eq(false)
+      expect_job_enqueued(job: :user_email, args: { type: "chat_summary", user_id: user_2.id })
+      expect(Jobs::UserEmail.jobs.size).to eq(1)
+    end
+
+    describe 'update the user membership after we send the email' do
+      before { Jobs.run_immediately! }
+
+      it "doesn't send the same summary the summary again if the user haven't read any channel messages since the last one" do
+        @user_membership.update!(last_read_message_id: @chat_message.id - 1)
+        subject.send_unread_mentions_summary
+
+        expect(@user_membership.reload.last_unread_mention_when_emailed_id).to eq(@chat_message.id)
+
+        another_channel_message = Fabricate(:chat_message, chat_channel: @chat_channel, user: @sender)
+        Fabricate(:chat_mention, user: @user_1, chat_message: another_channel_message)
+
+        expect { subject.send_unread_mentions_summary }.to change(Jobs::UserEmail.jobs, :size).by(0)
+      end
+
+      it 'only updates the last_message_read_when_emailed_id on the channel with unread mentions' do
+        another_channel = Fabricate(:chat_channel)
+        another_channel_message = Fabricate(:chat_message, chat_channel: another_channel, user: @sender)
+        Fabricate(:chat_mention, user: @user_1, chat_message: another_channel_message)
+        another_channel_membership = Fabricate(
+          :user_chat_channel_membership, user: @user_1, chat_channel: another_channel,
+                                         last_read_message_id: another_channel_message.id
+        )
+        @user_membership.update!(last_read_message_id: @chat_message.id - 1)
+
+        subject.send_unread_mentions_summary
+
+        expect(@user_membership.reload.last_unread_mention_when_emailed_id).to eq(@chat_message.id)
+        expect(another_channel_membership.reload.last_unread_mention_when_emailed_id).to be_nil
+      end
+    end
   end
 
   describe 'for direct messages' do
@@ -170,14 +205,15 @@ describe DiscourseChat::ChatMailer do
       assert_only_queued_once
     end
 
-    it "Doesn't mix mentions from other users when joining tables" do
-      user_2 = Fabricate(:user, groups: [@chatters_group])
-      Fabricate(:user_chat_channel_membership, user: user_2, chat_channel: @chat_channel, last_read_message_id: @chat_message.id)
+    it "Doesn't mix or update mentions from other users when joining tables" do
+      user_2 = Fabricate(:user, groups: [@chatters_group], last_seen_at: 20.minutes.ago)
+      user_2_membership = Fabricate(:user_chat_channel_membership, user: user_2, chat_channel: @chat_channel, last_read_message_id: @chat_message.id)
       Fabricate(:chat_mention, user: user_2, chat_message: @chat_message)
 
       subject.send_unread_mentions_summary
 
       assert_only_queued_once
+      expect(user_2_membership.reload.last_unread_mention_when_emailed_id).to be_nil
     end
   end
 end

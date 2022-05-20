@@ -71,7 +71,7 @@ en:
         start_direct_message: "You can also start a personal chat with one or more users."
         title: "Get started by joining a channel"
       email_frequency:
-        description: "We'll only email you if we haven't seen you in the last 10 minutes."
+        description: "We'll only email you if we haven't seen you in the last 15 minutes."
         never: "Never"
         title: "Email Notifications"
         when_away: "Only when away"

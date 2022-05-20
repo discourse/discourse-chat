@@ -5,11 +5,6 @@ require 'rails_helper'
 describe ChatChannel do
   fab!(:user1) { Fabricate(:user) }
   fab!(:user2) { Fabricate(:user) }
-  fab!(:user3) { Fabricate(:user) }
-  fab!(:user4) { Fabricate(:user) }
-  fab!(:user5) { Fabricate(:user) }
-  fab!(:user6) { Fabricate(:user) }
-  fab!(:user7) { Fabricate(:user) }
   fab!(:staff) { Fabricate(:user, admin: true) }
   fab!(:group) { Fabricate(:group) }
   fab!(:public_topic_channel) { Fabricate(:chat_channel, chatable: Fabricate(:topic)) }

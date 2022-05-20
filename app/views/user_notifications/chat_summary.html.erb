@@ -50,7 +50,7 @@
         <%- end %>
         <tr>
           <td colspan="100%" style="padding:<%= rtl? ? '2em 2em 0 0' : '2em 0 0 2em' %>">
-            <a class="more-messages-link" href="<%= chat_channel.url %>">
+            <a class="more-messages-link" href="<%= messages.first.url %>">
               <%- if other_messages_count <= 0 %>
                 <%= I18n.t("user_notifications.chat_summary.view_messages", count: messages.size)%>
               <%- else %>
@@ -69,8 +69,7 @@
     <td align="center">
       <%= raw(t 'user_notifications.chat_summary.unsubscribe',
               site_link: html_site_link,
-              email_preferences_link: link_to(t('user_notifications.chat_summary.your_chat_settings'), Discourse.base_url + '/my/preferences/chat')
-          )  
+              email_preferences_link: link_to(t('user_notifications.chat_summary.your_chat_settings'), Discourse.base_url + '/my/preferences/chat'))  
       %>
     </td>
   </tr>

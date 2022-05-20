@@ -28,9 +28,6 @@ class DiscourseChat::ChatMailer
     when_away_frequency = UserOption.chat_email_frequencies[:when_away]
     allowed_group_ids = DiscourseChat.allowed_group_ids
 
-    # If it's not the first time we send a summary, make sure the user read more messages
-    # since the last time we emailed them.
-
     User
       .select('users.id', 'ARRAY_AGG(ARRAY[uccm.id, c_msg.id]) AS memberships_with_unread_messages')
       .joins(:user_option)

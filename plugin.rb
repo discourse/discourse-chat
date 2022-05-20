@@ -206,10 +206,29 @@ after_initialize do
       chat_channel.chatable.title
     end
 
+    users = chat_channel
+      .user_chat_channel_memberships
+      .includes(:user)
+      .limit(10)
+      .map do |membership|
+        {
+          username: membership.user.username,
+          avatar_url: membership.user.avatar_template_url.gsub('{size}', '30'),
+        }
+      end
+
+    remaining_user_count_str = if chat_channel.user_count > users.size
+      I18n.t('chat.onebox.and_x_others', count: chat_channel.user_count - users.size)
+    end
+
     args = {
       url: url,
       channel_id: chat_channel.id,
       channel_name: name,
+      description: chat_channel.description,
+      user_count_str: I18n.t('chat.onebox.x_members', count: chat_channel.user_count),
+      users: users,
+      remaining_user_count_str: remaining_user_count_str,
       is_category: chat_channel.chatable_type == 'Category',
       is_topic: chat_channel.chatable_type == 'Topic',
       color: chat_channel.chatable_type == 'Category' ? chat_channel.chatable.color : nil,
@@ -218,7 +237,7 @@ after_initialize do
     if message.present?
       args[:message_id] = message.id
       args[:username] = message.user.username
-      args[:avatar_url] = message.user.avatar_template_url.gsub("{size}", "20")
+      args[:avatar_url] = message.user.avatar_template_url.gsub('{size}', '20')
       args[:cooked] = message.cooked
       args[:created_at] = message.created_at
     end

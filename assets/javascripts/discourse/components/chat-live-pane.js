@@ -65,6 +65,7 @@ export default Component.extend({
   targetMessageId: null,
 
   chat: service(),
+  chatDraftHandler: service(),
   router: service(),
   chatComposerPresenceManager: service(),
 
@@ -148,7 +149,7 @@ export default Component.extend({
             this._startLastReadRunner();
           });
       } else {
-        this.set("draft", this.chat.getDraftForChannel("draft"));
+        this.set("draft", this.chatDraftHandler.getDraftForChannel("draft"));
       }
     }
     this.currentUserTimezone = this.currentUser?.resolvedTimezone(
@@ -196,7 +197,7 @@ export default Component.extend({
   },
 
   loadDraftForChannel(channelId) {
-    this.set("draft", this.chat.getDraftForChannel(channelId));
+    this.set("draft", this.chatDraftHandler.getDraftForChannel(channelId));
   },
 
   _fetchMoreMessages(direction) {
@@ -1194,7 +1195,7 @@ export default Component.extend({
         user: draft.replyToMsg.user,
       };
     }
-    this.chat.setDraftForChannel(this.chatChannel, draft);
+    this.chatDraftHandler.setDraftForChannel(this.chatChannel, draft);
     this.set("draft", draft);
   },
 

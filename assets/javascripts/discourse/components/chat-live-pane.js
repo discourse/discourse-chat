@@ -1222,7 +1222,11 @@ export default Component.extend({
   },
 
   @action
-  onHoverMessage(message) {
+  onHoverMessage(message, options = {}) {
+    if (this.site.mobileView && options.desktopOnly) {
+      return;
+    }
+
     this.set(
       "hoveredMessageId",
       message?.id && message.id !== this.hoveredMessageId ? message.id : null

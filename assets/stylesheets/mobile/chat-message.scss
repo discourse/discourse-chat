@@ -154,6 +154,12 @@
           background: none;
           width: 100%;
           border: 0;
+          color: var(--primary);
+
+          &:focus,
+          .d-icon {
+            color: var(--primary);
+          }
         }
       }
     }

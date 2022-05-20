@@ -65,6 +65,7 @@ acceptance("Discourse Chat - Flagging test", function (needs) {
   test("Flagging in public channel works", async function (assert) {
     await visit("/chat/channel/75/site");
     assert.notOk(exists(".chat-live-pane .chat-message .chat-message-flagged"));
+    await triggerEvent(".chat-message-container", "mouseenter");
     let moreBtns = selectKit(".chat-live-pane .chat-message .more-buttons");
     await moreBtns.expand();
     const content = moreBtns.displayedContent();
@@ -91,6 +92,7 @@ acceptance("Discourse Chat - Flagging test", function (needs) {
 
   test("Flag button isn't present for DM channel", async function (assert) {
     await visit("/chat/channel/9/@hawk");
+    await triggerEvent(".chat-message-container", "mouseenter");
     let moreBtns = selectKit(".chat-live-pane .chat-message .more-buttons");
     await moreBtns.expand();
     const content = moreBtns.displayedContent();

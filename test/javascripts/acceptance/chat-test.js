@@ -1720,6 +1720,7 @@ acceptance(
 
     test("read only channels do not show the reply, react, delete, edit, restore, or rebuild options for messages", async function (assert) {
       await visit("/chat/channel/7/Uncategorized");
+      await triggerEvent(".chat-message-container", "mouseenter");
       const dropdown = selectKit(".chat-message-container .more-buttons");
       await dropdown.expand();
       assert.notOk(exists(".select-kit-row[data-value='edit']"));
@@ -1771,6 +1772,7 @@ acceptance(
 
     test("closed channels do not show the reply, react, delete, edit, restore, or rebuild options for messages", async function (assert) {
       await visit("/chat/channel/7/Uncategorized");
+      await triggerEvent(".chat-message-container", "mouseenter");
       const dropdown = selectKit(".chat-message-container .more-buttons");
       await dropdown.expand();
       assert.notOk(exists(".select-kit-row[data-value='edit']"));
@@ -1814,6 +1816,7 @@ acceptance(
 
     test("closed channels show the reply, react, delete, edit, restore, or rebuild options for messages", async function (assert) {
       await visit("/chat/channel/7/Uncategorized");
+      await triggerEvent(".chat-message-container", "mouseenter");
       const dropdown = selectKit(".chat-message-container .more-buttons");
       await dropdown.expand();
       assert.ok(

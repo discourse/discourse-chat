@@ -204,7 +204,7 @@ he:
         bold_text: "טקסט בולט"
         code_text: "טקסט קוד"
       quote:
-        original_channel: 'נשלח במקור ב־‎<a href="%{channelLink}">#%{channel}</a>‎'
+        original_channel: 'נשלח במקור ב־<a href="%{channelLink}">%{channel}</a>'
         copy_success: "ציטוט מהצ׳אט הועתק ללוח הגזירים."
       notification_levels:
         never: "לעולם לא"

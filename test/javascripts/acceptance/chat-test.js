@@ -14,6 +14,7 @@ import {
   currentURL,
   fillIn,
   settled,
+  triggerEvent,
   triggerKeyEvent,
   visit,
 } from "@ember/test-helpers";
@@ -373,13 +374,13 @@ acceptance("Discourse Chat - without unread", function (needs) {
   test("Reply-to line is hidden when reply-to message is directly above", async function (assert) {
     await visit("/chat/channel/9/Site");
     const messages = queryAll(".chat-message-container");
-    assert.notOk(messages[1].querySelector(".tc-reply-msg"));
+    assert.notOk(messages[1].querySelector(".chat-reply__excerpt"));
   });
 
   test("Reply-to line is present when reply-to message is not directly above", async function (assert) {
     await visit("/chat/channel/9/Site");
     const messages = queryAll(".chat-message-container");
-    const replyTo = messages[2].querySelector(".tc-reply-msg");
+    const replyTo = messages[2].querySelector(".chat-reply__excerpt");
     assert.ok(replyTo);
     assert.equal(replyTo.innerText.trim(), messageContents[0]);
   });
@@ -397,6 +398,8 @@ acceptance("Discourse Chat - without unread", function (needs) {
 
   test("Admin only controls are present", async function (assert) {
     await visit("/chat/channel/9/Site");
+    await triggerEvent(".chat-message-container[data-id='174']", "mouseenter");
+
     const currentUserDropdown = selectKit(
       ".chat-message-container[data-id='174'] .more-buttons"
     );
@@ -410,6 +413,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     await visit("/");
     updateCurrentUser({ admin: true, moderator: true });
     await visit("/chat/channel/9/Site");
+    await triggerEvent(".chat-message-container[data-id='174']", "mouseenter");
     await currentUserDropdown.expand();
 
     assert.ok(
@@ -425,7 +429,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     const notCurrentUserDropdown = selectKit(
       ".chat-message-container[data-id='175'] .more-buttons"
     );
-
+    await triggerEvent(".chat-message-container[data-id='175']", "mouseenter");
     await notCurrentUserDropdown.expand();
     assert.ok(
       notCurrentUserDropdown.rowByValue("silence").exists(),
@@ -436,6 +440,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
   test("Message controls are present and correct for permissions", async function (assert) {
     await visit("/chat/channel/9/Site");
     const messages = queryAll(".chat-message");
+    await triggerEvent(".chat-message-container[data-id='174']", "mouseenter");
 
     // User created this message
     assert.ok(
@@ -479,11 +484,11 @@ acceptance("Discourse Chat - without unread", function (needs) {
     );
 
     // User _didn't_ create this message
+    await triggerEvent(".chat-message-container[data-id='175']", "mouseenter");
     assert.ok(
       messages[1].querySelector(".reply-btn"),
       "it shows the reply button"
     );
-
     const notCurrentUserDropdown = selectKit(
       ".chat-message-container[data-id='175'] .more-buttons"
     );
@@ -507,6 +512,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
 
   test("pressing the reply button adds the indicator to the composer", async function (assert) {
     await visit("/chat/channel/9/Site");
+    await triggerEvent(".chat-message-container[data-id='174']", "mouseenter");
     await click(".reply-btn");
     assert.ok(
       exists(".chat-composer-message-details .d-icon-reply"),
@@ -514,7 +520,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     );
     assert.equal(
       query(
-        ".chat-composer-message-details .tc-reply-username"
+        ".chat-composer-message-details .chat-reply__username"
       ).innerText.trim(),
       "markvanlan"
     );
@@ -522,6 +528,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
 
   test("pressing the edit button fills the composer and indicates edit", async function (assert) {
     await visit("/chat/channel/9/Site");
+    await triggerEvent(".chat-message-container[data-id='174']", "mouseenter");
 
     const dropdown = selectKit(".more-buttons");
     await dropdown.expand();
@@ -533,7 +540,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     );
     assert.equal(
       query(
-        ".chat-composer-message-details .tc-reply-username"
+        ".chat-composer-message-details .chat-reply__username"
       ).innerText.trim(),
       "markvanlan"
     );
@@ -551,27 +558,30 @@ acceptance("Discourse Chat - without unread", function (needs) {
     await chatSettled();
     await click(".return-to-channels");
     await click(".chat-channel-row.chat-channel-9");
-    await click(".chat-message-container .reply-btn");
+    await triggerEvent(".chat-message-container[data-id='174']", "mouseenter");
+    await click(".chat-message-container[data-id='174'] .reply-btn");
     // Reply-to line is present
-    assert.ok(exists(".chat-composer-message-details .tc-reply-display"));
+    assert.ok(exists(".chat-composer-message-details .chat-reply"));
     await click(".return-to-channels");
     await click(".chat-channel-row.chat-channel-7");
     // Reply-to line is gone since switching channels
-    assert.notOk(exists(".chat-composer-message-details .tc-reply-display"));
+    assert.notOk(exists(".chat-composer-message-details .chat-reply"));
     // Now click on reply btn and cancel it on channel 7
-    await click(".chat-message-container .reply-btn");
-    await click(".chat-composer .cancel-message-action");
+
+    await triggerEvent(".chat-message-container[data-id='174']", "mouseenter");
+    await click(".chat-message-container[data-id='174'] .reply-btn");
+    await click(".cancel-message-action");
 
     // Go back to channel 9 and check that reply-to is present
     await click(".return-to-channels");
     await click(".chat-channel-row.chat-channel-9");
     // Now reply-to should be back and loaded from draft
-    assert.ok(exists(".chat-composer-message-details .tc-reply-display"));
+    assert.ok(exists(".chat-composer-message-details .chat-reply"));
 
     // Go back one for time to channel 7 and make sure reply-to is gone
     await click(".return-to-channels");
     await click(".chat-channel-row.chat-channel-7");
-    assert.notOk(exists(".chat-composer-message-details .tc-reply-display"));
+    assert.notOk(exists(".chat-composer-message-details .chat-reply"));
   });
 
   test("Sending a message", async function (assert) {
@@ -612,7 +622,10 @@ acceptance("Discourse Chat - without unread", function (needs) {
       lastMessage.querySelector(".chat-user-avatar"),
       "Avatar is present"
     );
-    assert.ok(lastMessage.querySelector(".full-name"), "Username is present");
+    assert.ok(
+      lastMessage.querySelector(".chat-message-info__username__name"),
+      "Username is present"
+    );
     assert.equal(
       lastMessage.querySelector(".chat-message-text").innerText.trim(),
       messageContent
@@ -769,12 +782,13 @@ Widget.triangulate(arg: "test")
 
   test("Pressing escape cancels editing", async function (assert) {
     await visit("/chat/channel/9/Site");
+    await triggerEvent(".chat-message-container[data-id='174']", "mouseenter");
 
     const dropdown = selectKit(".more-buttons");
     await dropdown.expand();
     await dropdown.selectRowByValue("edit");
 
-    assert.ok(exists(".chat-composer .chat-composer-message-details"));
+    assert.ok(exists(".chat-composer-message-details"));
     await triggerKeyEvent(".chat-composer", "keydown", 27); // 27 is escape
 
     // chat-composer-message-details will be gone as no message is being edited
@@ -869,6 +883,7 @@ Widget.triangulate(arg: "test")
     await visit("/chat/channel/9/Site");
 
     const firstMessage = query(".chat-message-container");
+    await triggerEvent(firstMessage, "mouseenter");
     const dropdown = selectKit(".chat-message-container .more-buttons");
     await dropdown.expand();
     await dropdown.selectRowByValue("selectMessage");
@@ -914,6 +929,7 @@ Widget.triangulate(arg: "test")
   test("Reacting works with no existing reactions", async function (assert) {
     await visit("/chat/channel/9/Site");
     const message = query(".chat-message-container");
+    await triggerEvent(message, "mouseenter");
     assert.notOk(message.querySelector(".chat-message-reaction-list"));
     await click(message.querySelector(".chat-msgactions .react-btn"));
     await click(message.querySelector(".emoji-picker .section-group .emoji"));
@@ -1010,6 +1026,7 @@ Widget.triangulate(arg: "test")
     await chatSettled();
 
     assert.deepEqual(lastMessage.dataset.id, "202");
+    await triggerEvent(lastMessage, "mouseenter");
     await click(lastMessage.querySelector(".chat-msgactions .react-btn"));
     await click(
       lastMessage.querySelector(
@@ -1331,7 +1348,7 @@ acceptance(
       await visit("/chat/channel/70/preview-me");
 
       assert.equal(
-        query(".chat-composer-row textarea").placeholder,
+        query(".chat-composer-input").placeholder,
         I18n.t("chat.placeholder_previewing")
       );
     });
@@ -1649,11 +1666,13 @@ acceptance("Discourse Chat - Insert Date", function (needs) {
 
   test("can use local date modal", async function (assert) {
     await visit("/chat/channel/7/Uncategorized");
-    await click(".open-toolbar-btn");
-    await click(".chat-local-dates-btn");
+    await click(".chat-composer-dropdown__trigger-btn");
+    await click(".chat-composer-dropdown__action-btn.local-dates");
 
     assert.ok(exists(".discourse-local-dates-create-modal"));
+
     await click(".modal-footer .btn-primary");
+
     assert.ok(
       query(".chat-composer-input").value.startsWith("[date"),
       "inserts date in composer input"
@@ -1701,6 +1720,7 @@ acceptance(
 
     test("read only channels do not show the reply, react, delete, edit, restore, or rebuild options for messages", async function (assert) {
       await visit("/chat/channel/7/Uncategorized");
+      await triggerEvent(".chat-message-container", "mouseenter");
       const dropdown = selectKit(".chat-message-container .more-buttons");
       await dropdown.expand();
       assert.notOk(exists(".select-kit-row[data-value='edit']"));
@@ -1752,6 +1772,7 @@ acceptance(
 
     test("closed channels do not show the reply, react, delete, edit, restore, or rebuild options for messages", async function (assert) {
       await visit("/chat/channel/7/Uncategorized");
+      await triggerEvent(".chat-message-container", "mouseenter");
       const dropdown = selectKit(".chat-message-container .more-buttons");
       await dropdown.expand();
       assert.notOk(exists(".select-kit-row[data-value='edit']"));
@@ -1795,6 +1816,7 @@ acceptance(
 
     test("closed channels show the reply, react, delete, edit, restore, or rebuild options for messages", async function (assert) {
       await visit("/chat/channel/7/Uncategorized");
+      await triggerEvent(".chat-message-container", "mouseenter");
       const dropdown = selectKit(".chat-message-container .more-buttons");
       await dropdown.expand();
       assert.ok(
@@ -1844,7 +1866,7 @@ acceptance("Discourse Chat - Channel Replying Indicator", function (needs) {
     await joinChannel("/chat-reply/7", user);
 
     assert.equal(
-      query(".replying-text").innerText,
+      query(".chat-replying-indicator").innerText,
       I18n.t("chat.replying_indicator.single_user", {
         username: user.username,
       }) + " . . ."
@@ -1852,7 +1874,7 @@ acceptance("Discourse Chat - Channel Replying Indicator", function (needs) {
 
     await leaveChannel("/chat-reply/7", user);
 
-    assert.equal(query(".replying-text").innerText, "");
+    assert.notOk(exists(".chat-replying-indicator__text"));
   });
 });
 

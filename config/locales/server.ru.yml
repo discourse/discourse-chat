@@ -50,6 +50,7 @@ ru:
       max_reactions_limit_reached: "Новые реакции на это сообщение запрещены."
       message_move_invalid_channel: "Исходный и целевой каналы должны быть общедоступными."
       message_move_no_messages_found: "Не найдено сообщений с указанными идентификаторами сообщений."
+      cannot_react_without_joining: "Чтобы реагировать на сообщения, вы должны присоединиться к каналу. Отправьте сообщение или присоединитесь к каналу вручную, выбрав его из списка каналов."
     reviewables:
       actions:
         agree:
@@ -94,6 +95,10 @@ ru:
         few: "Пользователь @%{acting_username} переместил %{count} сообщения в канал [%{channel_name}](%{first_moved_message_url})."
         many: "Пользователь @%{acting_username} переместил %{count} сообщений в канал [%{channel_name}](%{first_moved_message_url})."
         other: "Пользователь @%{acting_username} переместил %{count} сообщений в канал [%{channel_name}](%{first_moved_message_url})."
+      dm_title:
+        single_user: "%{user}"
+        multi_user: "%{users}"
+        multi_user_truncated: "%{users} и ещё %{leftover}"
     personal_chat: "личный чат"
   discourse_push_notifications:
     popup:

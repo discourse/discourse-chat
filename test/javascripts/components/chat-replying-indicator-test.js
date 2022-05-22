@@ -1,7 +1,11 @@
 import componentTest, {
   setupRenderingTest,
 } from "discourse/tests/helpers/component-test";
-import { discourseModule, query } from "discourse/tests/helpers/qunit-helpers";
+import {
+  discourseModule,
+  exists,
+  query,
+} from "discourse/tests/helpers/qunit-helpers";
 import hbs from "htmlbars-inline-precompile";
 import fabricate from "../helpers/fabricators";
 import MockPresenceChannel from "../helpers/mock-presence-channel";
@@ -25,7 +29,7 @@ discourseModule(
       },
 
       async test(assert) {
-        assert.equal(query(".replying-text").innerText, "");
+        assert.notOk(exists(".chat-replying-indicator__text"));
       },
     });
 
@@ -47,7 +51,7 @@ discourseModule(
         this.set("presenceChannel.users", [sam]);
 
         assert.equal(
-          query(".replying-text").innerText,
+          query(".chat-replying-indicator").innerText,
           `${sam.username} is typing . . .`
         );
       },
@@ -72,7 +76,7 @@ discourseModule(
         this.set("presenceChannel.users", [sam, mark]);
 
         assert.equal(
-          query(".replying-text").innerText,
+          query(".chat-replying-indicator").innerText,
           `${sam.username} and ${mark.username} are typing . . .`
         );
       },
@@ -98,7 +102,7 @@ discourseModule(
         this.set("presenceChannel.users", [sam, mark, joffrey]);
 
         assert.equal(
-          query(".replying-text").innerText,
+          query(".chat-replying-indicator").innerText,
           `${sam.username}, ${mark.username} and ${joffrey.username} are typing . . .`
         );
       },
@@ -125,7 +129,7 @@ discourseModule(
         this.set("presenceChannel.users", [sam, mark, joffrey, taylor]);
 
         assert.equal(
-          query(".replying-text").innerText,
+          query(".chat-replying-indicator").innerText,
           `${sam.username}, ${mark.username} and 2 others are typing . . .`
         );
       },
@@ -149,7 +153,7 @@ discourseModule(
         this.set("presenceChannel.users", [sam, this.currentUser]);
 
         assert.equal(
-          query(".replying-text").innerText,
+          query(".chat-replying-indicator").innerText,
           `${sam.username} is typing . . .`
         );
       },

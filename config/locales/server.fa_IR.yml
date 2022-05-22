@@ -34,6 +34,10 @@ fa_IR:
         archived: "بایگانی شده"
         closed: "بسته شد"
         open: "باز کردن"
+      dm_title:
+        single_user: "%{user}"
+        multi_user: "%{users}"
+        multi_user_truncated: "%{users} و %{leftover} نفر دیگر"
     personal_chat: "گفتگوی شخصی"
   discourse_automation:
     scriptables:

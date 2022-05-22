@@ -35,20 +35,6 @@
       }
     }
   }
-
-  .chat-composer {
-    margin: 0;
-
-    .chat-composer-message-details {
-      padding-left: 1em;
-      padding-right: 1.5em;
-    }
-  }
-}
-
-.chat-composer-row .emoji-picker.opened {
-  position: absolute;
-  bottom: 40px;
 }
 
 .chat-message:not(.user-info-hidden) {

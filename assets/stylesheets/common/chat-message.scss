@@ -66,15 +66,6 @@
     }
   }
 
-  .chat-message-left-gutter {
-    flex-shrink: 0;
-    width: var(--message-left-width);
-
-    .chat-message-flagged {
-      padding-left: 0.6em;
-    }
-  }
-
   &.chat-action {
     background-color: var(--highlight-medium);
   }
@@ -114,16 +105,6 @@
       "replyto replyto"
       "avatar message";
 
-    .tc-reply-display {
-      grid-area: replyto;
-      cursor: pointer;
-      height: 100%;
-
-      .d-icon {
-        color: var(--primary-high);
-      }
-    }
-
     .chat-user-avatar {
       grid-area: avatar;
     }
@@ -140,15 +121,6 @@
     word-break: break-word;
     overflow-wrap: break-word;
     min-width: 0;
-  }
-
-  .tc-bot-indicator {
-    text-transform: uppercase;
-    padding: 0.25em;
-    background: var(--primary-low);
-    border-radius: 3px;
-    font-size: var(--font-down-2);
-    margin-left: -0.25em;
   }
 
   .chat-message-text {
@@ -263,7 +235,7 @@
     }
   }
 
-  .chat-user-avatar .chat-user-avatar-container .avatar,
+  .chat-message-avatar .chat-user-avatar .chat-user-avatar-container .avatar,
   .chat-emoji-avatar .chat-emoji-avatar-container {
     width: 28px;
     height: 28px;
@@ -283,7 +255,7 @@
   padding-top: 0.25em;
   pointer-events: none;
   right: 0.25em;
-  top: -0.75em;
+  top: -1.5em;
   z-index: 2;
 }
 
@@ -348,7 +320,7 @@
     }
   }
 
-  .more-buttons {
+  .more-buttons.dropdown-select-box {
     .select-kit-header {
       background: none;
       border: 1px solid var(--primary-low);
@@ -386,6 +358,24 @@
             color: var(--primary);
           }
         }
+      }
+    }
+
+    .select-kit-body {
+      padding: 0.5rem;
+      box-shadow: shadow("card");
+      border: 1px solid var(--primary-low);
+    }
+
+    .select-kit-row {
+      .texts .name {
+        font-size: var(--font-0);
+        font-weight: 500;
+      }
+
+      .icons .d-icon {
+        font-size: var(--font-0);
+        color: var(--primary-medium);
       }
     }
   }
@@ -432,29 +422,6 @@
       width: auto;
       margin: 0;
     }
-  }
-}
-
-.chat-message-sender-data {
-  color: var(--secondary-medium);
-  width: 100%;
-
-  .names {
-    color: var(--secondary-low);
-    display: inline-block;
-    vertical-align: bottom;
-    margin-right: 0.3em;
-
-    &.first {
-      font-weight: bold;
-    }
-
-    span {
-      margin-right: 0;
-    }
-  }
-  .chat-message-flagged {
-    margin-left: 0.2em;
   }
 }
 

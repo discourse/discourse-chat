@@ -143,7 +143,26 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
 
   def update_user_last_read
     set_channel_and_chatable
-    set_user_last_read
+
+    membership = UserChatChannelMembership.find_by(user: current_user, chat_channel: @chat_channel, following: true)
+    raise Discourse::NotFound if membership.nil?
+    membership.update!(last_read_message_id: params[:message_id])
+
+    Notification
+      .where(notification_type: Notification.types[:chat_mention])
+      .where(user: current_user)
+      .where(read: false)
+      .joins('INNER JOIN chat_mentions ON chat_mentions.notification_id = notifications.id')
+      .joins('INNER JOIN chat_messages ON chat_mentions.chat_message_id = chat_messages.id')
+      .where('chat_messages.id <= ?', params[:message_id].to_i)
+      .where('chat_messages.chat_channel_id = ?', @chat_channel.id)
+      .update_all(read: true)
+
+    ChatPublisher.publish_user_tracking_state(
+      current_user,
+      @chat_channel.id,
+      params[:message_id]
+    )
 
     render json: success_json
   end
@@ -410,29 +429,6 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
       .includes(:bookmarks)
       .includes(:uploads)
       .includes(chat_channel: :chatable)
-  end
-
-  def set_user_last_read
-    UserChatChannelMembership
-      .where(user: current_user, chat_channel: @chat_channel)
-      .update_all(last_read_message_id: params[:message_id])
-
-    chat_mentions = ChatMention
-      .joins(:notification)
-      .joins(:chat_message)
-      .where(user: current_user)
-      .where(chat_message: { chat_channel_id: @chat_channel.id })
-      .where(notification: { read: false })
-
-    chat_mentions.each do |chat_mention|
-      chat_mention.notification.update(read: true)
-    end
-
-    ChatPublisher.publish_user_tracking_state(
-      current_user,
-      @chat_channel.id,
-      params[:message_id]
-    )
   end
 
   def find_chatable

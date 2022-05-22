@@ -194,7 +194,6 @@ hu:
         bold_text: "erős szöveg"
         code_text: "kódszöveg"
       quote:
-        original_channel: 'Eredetileg itt küldve: <a href="%{channelLink}">#%{channel}</a>'
         copy_success: "Csevegési idézet a vágólapra másolva."
       notification_levels:
         never: "Soha"

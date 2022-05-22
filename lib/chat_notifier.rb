@@ -40,7 +40,7 @@ class DiscourseChat::ChatNotifier
       inaccessible[:unreachable], inaccessible[:welcome_to_join]
     )
 
-    enqueue_mentioned_job(to_notify)
+    notify_mentioned_users(to_notify)
     notify_watching_users(except: mentioned_user_ids << @user.id)
 
     to_notify
@@ -68,7 +68,7 @@ class DiscourseChat::ChatNotifier
       inaccessible[:unreachable], inaccessible[:welcome_to_join]
     )
 
-    enqueue_mentioned_job(to_notify, already_notified_user_ids: already_notified_user_ids)
+    notify_mentioned_users(to_notify, already_notified_user_ids: already_notified_user_ids)
 
     to_notify
   end
@@ -220,8 +220,8 @@ class DiscourseChat::ChatNotifier
     ChatPublisher.publish_inaccessible_mentions(@user.id, @chat_message, unreachable, welcome_to_join)
   end
 
-  def enqueue_mentioned_job(to_notify, already_notified_user_ids: [])
-    Jobs.enqueue_in(3.seconds, :create_chat_mention_notifications, {
+  def notify_mentioned_users(to_notify, already_notified_user_ids: [])
+    Jobs.enqueue(:chat_notify_mentioned, {
       chat_message_id: @chat_message.id,
       to_notify_ids_map: to_notify.as_json,
       already_notified_user_ids: already_notified_user_ids,
@@ -230,7 +230,7 @@ class DiscourseChat::ChatNotifier
   end
 
   def notify_watching_users(except: [])
-    Jobs.enqueue_in(3.seconds, :notify_users_watching_chat, {
+    Jobs.enqueue(:chat_notify_watching, {
       chat_message_id: @chat_message.id,
       except_user_ids: except,
       timestamp: @timestamp.iso8601(6)

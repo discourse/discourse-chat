@@ -201,7 +201,7 @@ en:
         code_text: "code text"
 
       quote:
-        original_channel: 'Originally sent in <a href="%{channelLink}">#%{channel}</a>'
+        original_channel: 'Originally sent in <a href="%{channelLink}">%{channel}</a>'
         copy_success: "Chat quote copied to clipboard."
 
       notification_levels:

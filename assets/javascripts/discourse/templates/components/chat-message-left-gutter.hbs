@@ -1,0 +1,28 @@
+<div class="chat-message-left-gutter">
+  {{#if @message.reviewable_id}}
+    {{#link-to
+      "review.show"
+      @message.reviewable_id
+      class="chat-message-left-gutter__flag"
+    }}
+      {{d-icon "flag" title="chat.flagged"}}
+    {{/link-to}}
+  {{else if (eq @message.user_flag_status 0)}}
+    <div class="chat-message-left-gutter__flag">
+      {{d-icon "flag" title="chat.you_flagged"}}
+    </div>
+  {{else}}
+    <span class="chat-message-left-gutter__date">
+      {{format-chat-date @message @details "tiny"}}
+    </span>
+  {{/if}}
+  {{#if @message.bookmark}}
+    <span class="chat-message-left-gutter__bookmark">
+      {{#if @message.bookmark.reminder_at}}
+        {{d-icon "discourse-bookmark-clock" translatedtitle=@message.bookmark.name}}
+      {{else}}
+        {{d-icon "bookmark" translatedtitle=@message.bookmark.name}}
+      {{/if}}
+    </span>
+  {{/if}}
+</div>

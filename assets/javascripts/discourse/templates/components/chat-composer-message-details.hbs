@@ -1,15 +1,15 @@
 <div class="chat-composer-message-details">
-  <div class="tc-reply-display">
+  <div class="chat-reply">
     {{d-icon icon}}
     {{chat-user-avatar user=message.user}}
-    <span class="tc-reply-username">{{message.user.username}}</span>
-    <span class="tc-reply-msg">{{replace-emoji message.excerpt}}</span>
+    <span class="chat-reply__username">{{message.user.username}}</span>
+    <span class="chat-reply__excerpt">{{replace-emoji message.excerpt}}</span>
   </div>
 
   {{flat-button
     action=action
     class="cancel-message-action"
     icon="times-circle"
-    title=title
+    title="cancel"
   }}
 </div>

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Jobs
-  class CreateChatMentionNotifications < ::Jobs::Base
+  class ChatNotifyMentioned < ::Jobs::Base
 
     def execute(args = {})
       @chat_message = ChatMessage.includes(:user, :revisions, chat_channel: :chatable).find_by(id: args[:chat_message_id])

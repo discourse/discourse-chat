@@ -33,11 +33,13 @@ class DiscourseChat::ChatMessageReactor
   private
 
   def validate_channel_membership!
-    raise Discourse::InvalidAccess if !UserChatChannelMembership.exists?(
+    return if UserChatChannelMembership.exists?(
       chat_channel: @chat_channel,
       user: @user,
       following: true
     )
+
+    raise Discourse::InvalidAccess.new(nil, nil, custom_message: "chat.errors.cannot_react_without_joining")
   end
 
   def validate_channel_status!

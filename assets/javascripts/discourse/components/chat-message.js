@@ -16,7 +16,6 @@ import { cancel, later, schedule } from "@ember/runloop";
 import { clipboardCopy } from "discourse/lib/utilities";
 import { inject as service } from "@ember/service";
 import { popupAjaxError } from "discourse/lib/ajax-error";
-import { prioritizeNameInUx } from "discourse/lib/settings";
 import { Promise } from "rsvp";
 
 let _chatMessageDecorators = [];
@@ -143,11 +142,7 @@ export default Component.extend({
 
   @discourseComputed("canInteractWithChat", "message.staged", "isHovered")
   showActions(canInteractWithChat, messageStaged, isHovered) {
-    return (
-      canInteractWithChat &&
-      !messageStaged &&
-      (this.site.mobileView ? isHovered : true)
-    );
+    return canInteractWithChat && !messageStaged && isHovered;
   },
 
   @discourseComputed("message.deleted_at", "message.expanded")
@@ -355,43 +350,6 @@ export default Component.extend({
       classNames.push("chat-message-bookmarked");
     }
     return classNames.join(" ");
-  },
-
-  @discourseComputed("message.user")
-  name(user) {
-    if (!user) {
-      return I18n.t("chat.user_deleted");
-    }
-    return this.prioritizeName ? user.name : user.username;
-  },
-
-  @discourseComputed("message.user.name")
-  prioritizeName(name) {
-    return this.siteSettings.display_name_on_posts && prioritizeNameInUx(name);
-  },
-
-  @discourseComputed("message.user")
-  usernameClasses(user) {
-    const classes = this.prioritizeName
-      ? ["full-name names first"]
-      : ["username names first"];
-
-    if (!user) {
-      return classes;
-    }
-    if (user.staff) {
-      classes.push("staff");
-    }
-    if (user.admin) {
-      classes.push("admin");
-    }
-    if (user.moderator) {
-      classes.push("moderator");
-    }
-    if (user.groupModerator) {
-      classes.push("category-moderator");
-    }
-    return classes.join(" ");
   },
 
   @discourseComputed("message", "message.deleted_at", "chatChannel.status")

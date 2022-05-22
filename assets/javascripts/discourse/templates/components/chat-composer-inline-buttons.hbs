@@ -1,0 +1,7 @@
+{{#each buttons as |button|}}
+  {{d-button
+    icon=button.icon
+    class=(concat "chat-composer-inline-button " button.id)
+    action=(action button.action)
+  }}
+{{/each}}

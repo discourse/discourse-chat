@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Jobs
-  class NotifyUsersWatchingChat < ::Jobs::Base
+  class ChatNotifyWatching < ::Jobs::Base
     def execute(args = {})
       @chat_message = ChatMessage.includes(:user, chat_channel: :chatable).find_by(id: args[:chat_message_id])
       return if @chat_message.nil?
@@ -54,7 +54,7 @@ module Jobs
         MessageBus.publish("/chat/notification-alert/#{user.id}", payload, user_ids: [user.id])
       end
 
-      if membership.mobile_notifications_always? && !online_user_ids.include?(user.id)
+      if membership.mobile_notifications_always?
         PostAlerter.push_notification(user, payload)
       end
     end

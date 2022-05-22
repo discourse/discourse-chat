@@ -3,13 +3,40 @@ import I18n from "I18n";
 import { bind } from "discourse-common/utils/decorators";
 import { getOwner } from "discourse-common/lib/get-owner";
 import { MENTION_KEYWORDS } from "discourse/plugins/discourse-chat/discourse/components/chat-message";
+import { clearChatComposerButtons } from "discourse/plugins/discourse-chat/discourse/lib/chat-composer-buttons";
 
 export default {
   name: "chat-setup",
   initialize(container) {
     this.chatService = container.lookup("service:chat");
+    this.siteSettings = container.lookup("site-settings:main");
 
     withPluginApi("0.12.1", (api) => {
+      api.registerChatComposerButton({
+        id: "chat-upload-btn",
+        icon: "far-image",
+        label: "chat.upload",
+        position: "dropdown",
+        action: "uploadClicked",
+        dependentKeys: ["canAttachUploads"],
+        displayed() {
+          return this.canAttachUploads;
+        },
+      });
+
+      if (this.siteSettings.discourse_local_dates_enabled) {
+        api.registerChatComposerButton({
+          label: "discourse_local_dates.title",
+          id: "local-dates",
+          class: "chat-local-dates-btn",
+          icon: "calendar-alt",
+          position: "dropdown",
+          action() {
+            this.insertDiscourseLocalDate();
+          },
+        });
+      }
+
       // we want to decorate the chat quote dates regardless
       // of whether the current user has chat enabled
       api.decorateCookedElement(
@@ -103,5 +130,9 @@ export default {
   @bind
   documentTitleCountCallback() {
     return this.chatService.getDocumentTitleCount();
+  },
+
+  teardown() {
+    clearChatComposerButtons();
   },
 };

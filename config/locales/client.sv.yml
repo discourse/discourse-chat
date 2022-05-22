@@ -187,7 +187,6 @@ sv:
         bold_text: "stark text"
         code_text: "kod text"
       quote:
-        original_channel: 'Ursprungligen skickad i <a href="%{channelLink}">#%{channel}</a>'
         copy_success: "Chatt citat kopierades till urklipp."
       notification_levels:
         never: "Aldrig"

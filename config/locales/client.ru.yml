@@ -204,7 +204,7 @@ ru:
         bold_text: "Жирный"
         code_text: "Код"
       quote:
-        original_channel: 'Первоначально отправлено в <a href="%{channelLink}">#%{channel}</a>'
+        original_channel: 'Первоначально отправлено в <a href="%{channelLink}">%{channel}</a>'
         copy_success: "Цитата из чата скопирована в буфер обмена."
       notification_levels:
         never: "Никогда"

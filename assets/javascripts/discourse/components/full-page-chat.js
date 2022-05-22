@@ -1,4 +1,3 @@
-import afterTransition from "discourse/lib/after-transition";
 import Component from "@ember/component";
 import discourseComputed, { bind } from "discourse-common/utils/decorators";
 import { action } from "@ember/object";
@@ -103,27 +102,21 @@ export default Component.extend({
   },
 
   _calculateHeight() {
-    schedule("afterRender", () => {
-      afterTransition(document.querySelector("#reply-control"), () => {
-        const main = document.getElementById("main-outlet");
-        const padBottom = window
-          .getComputedStyle(main, null)
-          .getPropertyValue("padding-bottom");
-        const chatContainerCoords = document
-          .querySelector(".full-page-chat")
-          .getBoundingClientRect();
-        const elHeight =
-          window.innerHeight -
-          chatContainerCoords.y -
-          window.pageYOffset -
-          parseInt(padBottom, 10);
+    const main = document.getElementById("main-outlet"),
+      padBottom = window
+        .getComputedStyle(main, null)
+        .getPropertyValue("padding-bottom"),
+      chatContainerCoords = document
+        .querySelector(".full-page-chat")
+        .getBoundingClientRect();
 
-        document.body.style.setProperty(
-          "--full-page-chat-height",
-          `${elHeight}px`
-        );
-      });
-    });
+    const elHeight =
+      window.innerHeight -
+      chatContainerCoords.y -
+      window.pageYOffset -
+      parseInt(padBottom, 10);
+
+    document.body.style.setProperty("--full-page-chat-height", `${elHeight}px`);
   },
 
   _refreshChannel(channelId) {

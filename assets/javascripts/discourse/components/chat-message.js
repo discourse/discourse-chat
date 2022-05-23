@@ -1,5 +1,8 @@
 import bootbox from "bootbox";
-import Bookmark from "discourse/models/bookmark";
+import Bookmark, {
+  NO_REMINDER_ICON,
+  WITH_REMINDER_ICON,
+} from "discourse/models/bookmark";
 import { openBookmarkModal } from "discourse/controllers/bookmark";
 import { isTesting } from "discourse-common/config/environment";
 import Component from "@ember/component";
@@ -231,8 +234,8 @@ export default Component.extend({
           ? I18n.t("chat.bookmark_message_edit")
           : I18n.t("chat.bookmark_message"),
         icon: this.message.bookmark?.reminder_at
-          ? "discourse-bookmark-clock"
-          : "bookmark",
+          ? WITH_REMINDER_ICON
+          : NO_REMINDER_ICON,
       });
     }
 

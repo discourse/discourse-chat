@@ -23,12 +23,12 @@
     {{format-chat-date @message @details}}
   </span>
 
-  {{#if message.bookmark}}
+  {{#if @message.bookmark}}
     <span class="chat-message-info__bookmark">
-      {{#if message.bookmark.reminder_at}}
-        {{d-icon "discourse-bookmark-clock" translatedtitle=message.bookmark.name}}
+      {{#if @message.bookmark.reminder_at}}
+        {{d-icon "discourse-bookmark-clock" translatedtitle=@message.bookmark.name}}
       {{else}}
-        {{d-icon "bookmark" translatedtitle=message.bookmark.name}}
+        {{d-icon "bookmark" translatedtitle=@message.bookmark.name}}
       {{/if}}
     </span>
   {{/if}}

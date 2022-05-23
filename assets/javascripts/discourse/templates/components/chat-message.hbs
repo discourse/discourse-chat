@@ -7,6 +7,7 @@
   {{on "touchstart" this.handleTouchStart}}
   {{on "touchend" this.handleTouchEnd}}
   {{on "mouseenter" (fn this.onHoverMessage message (hash desktopOnly=true))}}
+  {{on "mouseleave" (fn this.onHoverMessage null)}}
   class={{messageContainerClasses}}
   data-id={{or message.id message.stagedId}}
 >

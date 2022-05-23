@@ -137,11 +137,7 @@ export default Component.extend({
 
   @discourseComputed("canInteractWithChat", "message.staged", "isHovered")
   showActions(canInteractWithChat, messageStaged, isHovered) {
-    return (
-      canInteractWithChat &&
-      !messageStaged &&
-      (this.site.mobileView ? isHovered : true)
-    );
+    return canInteractWithChat && !messageStaged && isHovered;
   },
 
   @discourseComputed("message.deleted_at", "message.expanded")

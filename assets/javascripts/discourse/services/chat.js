@@ -161,7 +161,7 @@ export default Service.extend({
   },
 
   truncateDirectMessageChannels(channels) {
-    return channels.slice(0, this.currentUser.chat_isolated ? 20 : 10);
+    return channels.slice(0, 20);
   },
 
   getActiveChannel() {

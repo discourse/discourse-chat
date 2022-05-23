@@ -28,6 +28,7 @@ discourseModule("Discourse Chat | Component | chat-message", function (hooks) {
       onSelectMessage=onSelectMessage
       bulkSelectMessages=bulkSelectMessages
       fullPage=fullPage
+      onHoverMessage=onHoverMessage
       afterReactionAdded=reStickScrollIfNeeded
     }}`;
 
@@ -73,6 +74,7 @@ discourseModule("Discourse Chat | Component | chat-message", function (hooks) {
         bulkSelectMessages: () => {},
         fullPage: false,
         afterReactionAdded: () => {},
+        onHoverMessage: () => {},
       });
     },
 
@@ -112,6 +114,7 @@ discourseModule("Discourse Chat | Component | chat-message", function (hooks) {
         bulkSelectMessages: () => {},
         fullPage: false,
         afterReactionAdded: () => {},
+        onHoverMessage: () => {},
       });
     },
 

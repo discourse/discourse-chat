@@ -1,6 +1,12 @@
 import { skip, test } from "qunit";
 import { isLegacyEmber } from "discourse-common/config/environment";
-import { click, currentURL, tap, visit } from "@ember/test-helpers";
+import {
+  click,
+  currentURL,
+  tap,
+  triggerEvent,
+  visit,
+} from "@ember/test-helpers";
 import {
   acceptance,
   exists,
@@ -159,6 +165,7 @@ acceptance(
       await visit("/chat/channel/7/Uncategorized");
       assert.ok(exists(".chat-message-container"));
       const firstMessage = query(".chat-message-container");
+      await triggerEvent(firstMessage, "mouseenter");
       const dropdown = selectKit(".chat-message-container .more-buttons");
       await dropdown.expand();
       await dropdown.selectRowByValue("selectMessage");

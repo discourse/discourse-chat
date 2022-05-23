@@ -40,7 +40,7 @@ export default class ChatDraftHandler extends Service {
 
     ajax("/chat/drafts", { type: "POST", data });
   }
-  
+
   @bind
   getForChannel(channelId) {
     return this._draftStore[channelId] || DEFAULT_DRAFT;

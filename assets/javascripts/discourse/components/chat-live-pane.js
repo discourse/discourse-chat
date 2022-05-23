@@ -1193,7 +1193,12 @@ export default Component.extend({
         user: draft.replyToMsg.user,
       };
     }
-    discourseDebounce(this, this.chatDraftHandler.setForChannel, { channelId: this.chatChannel.id, draft: draft }, 2000);
+    discourseDebounce(
+      this,
+      this.chatDraftHandler.setForChannel,
+      { channelId: this.chatChannel.id, draft: draft },
+      2000
+    );
   },
 
   @action

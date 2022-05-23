@@ -11,7 +11,8 @@ class ChatMessageSerializer < ApplicationSerializer
     :reviewable_id,
     :user_flag_status,
     :edited,
-    :reactions
+    :reactions,
+    :bookmark
 
   has_one :user, serializer: BasicUserSerializer, embed: :objects
   has_one :chat_webhook_event, serializer: ChatWebhookEventSerializer, embed: :objects
@@ -38,6 +39,25 @@ class ChatMessageSerializer < ApplicationSerializer
 
   def users_reactions
     @users_reactions ||= object.reactions.select { |reaction| reaction.user_id == scope&.user&.id }.map(&:emoji)
+  end
+
+  def users_bookmark
+    @user_bookmark ||= object.bookmarks.find { |bookmark| bookmark.user_id == scope&.user&.id }
+  end
+
+  def include_bookmark?
+    users_bookmark.present?
+  end
+
+  def bookmark
+    {
+      id: users_bookmark.id,
+      reminder_at: users_bookmark.reminder_at,
+      name: users_bookmark.name,
+      auto_delete_preference: users_bookmark.auto_delete_preference,
+      bookmarkable_id: users_bookmark.bookmarkable_id,
+      bookmarkable_type: users_bookmark.bookmarkable_type
+    }
   end
 
   def edited

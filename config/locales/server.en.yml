@@ -92,6 +92,8 @@ en:
         single_user: "%{user}"
         multi_user: "%{users}"
         multi_user_truncated: "%{users} and %{leftover} others"
+    bookmarkable:
+      notification_title: "message in %{channel_name}"
 
     personal_chat: "personal chat"
 

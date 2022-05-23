@@ -1,3 +1,4 @@
+import Bookmark from "discourse/models/bookmark";
 import componentTest, {
   setupRenderingTest,
 } from "discourse/tests/helpers/component-test";
@@ -57,6 +58,43 @@ discourseModule(
 
       async test(assert) {
         assert.ok(exists(".chat-message-info__date"));
+      },
+    });
+
+    componentTest("bookmark (with reminder)", {
+      template: hbs`{{chat-message-info message=message}}`,
+
+      beforeEach() {
+        this.set("message", {
+          bookmark: Bookmark.create({
+            reminder_at: moment(),
+            name: "some name",
+          }),
+        });
+      },
+
+      async test(assert) {
+        assert.ok(
+          exists(
+            ".chat-message-info__bookmark .d-icon-discourse-bookmark-clock"
+          )
+        );
+      },
+    });
+
+    componentTest("bookmark (no reminder)", {
+      template: hbs`{{chat-message-info message=message}}`,
+
+      beforeEach() {
+        this.set("message", {
+          bookmark: Bookmark.create({
+            name: "some name",
+          }),
+        });
+      },
+
+      async test(assert) {
+        assert.ok(exists(".chat-message-info__bookmark .d-icon-bookmark"));
       },
     });
 

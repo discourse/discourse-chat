@@ -16,4 +16,9 @@
       {{format-chat-date @message @details "tiny"}}
     </span>
   {{/if}}
+  {{#if @message.bookmark}}
+    <span class="chat-message-left-gutter__bookmark">
+      {{bookmark-icon bookmark=@message.bookmark}}
+    </span>
+  {{/if}}
 </div>

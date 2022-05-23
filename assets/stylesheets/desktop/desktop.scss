@@ -95,11 +95,11 @@
 
     .chat-live-pane,
     .chat-messages-scroll,
-    .chat-message:not(.highlighted):not(.deleted) {
+    .chat-message:not(.highlighted):not(.deleted):not(.chat-message-bookmarked) {
       background-color: transparent;
     }
 
-    .chat-message:not(.highlighted):not(.deleted):hover {
+    .chat-message:not(.highlighted):not(.deleted):not(.chat-message-bookmarked):hover {
       background-color: var(--primary-very-low);
     }
   }

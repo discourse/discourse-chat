@@ -105,6 +105,7 @@ after_initialize do
   load File.expand_path('../app/serializers/incoming_chat_webhook_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/admin_chat_index_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/user_chat_channel_membership_serializer.rb', __FILE__)
+  load File.expand_path('../app/serializers/user_chat_message_bookmark_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/reviewable_chat_message_serializer.rb', __FILE__)
   load File.expand_path('../lib/chat_channel_fetcher.rb', __FILE__)
   load File.expand_path('../lib/chat_message_creator.rb', __FILE__)
@@ -116,6 +117,7 @@ after_initialize do
   load File.expand_path('../lib/chat_seeder.rb', __FILE__)
   load File.expand_path('../lib/chat_transcript_service.rb', __FILE__)
   load File.expand_path('../lib/message_mover.rb', __FILE__)
+  load File.expand_path('../lib/chat_message_bookmarkable.rb', __FILE__)
   load File.expand_path('../lib/chat_channel_archive_service.rb', __FILE__)
   load File.expand_path('../lib/direct_message_channel_creator.rb', __FILE__)
   load File.expand_path('../lib/guardian_extensions.rb', __FILE__)
@@ -175,6 +177,8 @@ after_initialize do
       has_many :chat_message_reactions, dependent: :destroy
       has_many :chat_mentions
     }
+
+    Bookmark.register_bookmarkable(ChatMessageBookmarkable)
   end
 
   TopicQuery.add_custom_filter(::DiscourseChat::PLUGIN_NAME) do |results, topic_query|

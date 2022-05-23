@@ -22,3 +22,12 @@
   color: var(--secondary-medium);
   padding-left: calc(50% - 15px);
 }
+
+.chat-message-left-gutter__bookmark {
+  .d-icon-discourse-bookmark-clock,
+  .d-icon-bookmark {
+    color: var(--primary-low-mid);
+    font-size: var(--font-down-2);
+    margin-left: 0.5em;
+  }
+}

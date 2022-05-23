@@ -179,7 +179,7 @@ class ChatMessage < ActiveRecord::Base
   def self.cook(message, opts = {})
     cooked = PrettyText.cook(
       message,
-      features_override: MARKDOWN_FEATURES,
+      features_override: MARKDOWN_FEATURES + DiscoursePluginRegistry.chat_markdown_features.to_a,
       markdown_it_rules: MARKDOWN_IT_RULES,
       force_quote_link: true
     )

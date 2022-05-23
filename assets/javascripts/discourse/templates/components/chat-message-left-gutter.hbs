@@ -18,11 +18,7 @@
   {{/if}}
   {{#if @message.bookmark}}
     <span class="chat-message-left-gutter__bookmark">
-      {{#if @message.bookmark.reminder_at}}
-        {{d-icon "discourse-bookmark-clock" translatedtitle=@message.bookmark.name}}
-      {{else}}
-        {{d-icon "bookmark" translatedtitle=@message.bookmark.name}}
-      {{/if}}
+      {{bookmark-icon bookmark=@message.bookmark}}
     </span>
   {{/if}}
 </div>

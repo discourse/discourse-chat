@@ -53,6 +53,7 @@ add_admin_route 'chat.admin.title', 'chat'
 
 # Site setting validators must be loaded before initialize
 require_relative "lib/validators/chat_default_channel_validator.rb"
+require_relative "app/core_ext/plugin_instance.rb"
 
 after_initialize do
   module ::DiscourseChat

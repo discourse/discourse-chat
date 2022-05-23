@@ -1196,7 +1196,7 @@ export default Component.extend({
     discourseDebounce(
       this,
       this.chatDraftHandler.setForChannel,
-      { channelId: this.chatChannel.id, draft: draft },
+      { channelId: this.chatChannel.id, draft },
       2000
     );
   },

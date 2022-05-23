@@ -30,6 +30,7 @@ register_asset 'stylesheets/mobile/mobile.scss', :mobile
 register_asset 'stylesheets/desktop/desktop.scss', :desktop
 register_asset 'stylesheets/sidebar-extensions.scss'
 register_asset 'stylesheets/common/chat-message-separator.scss'
+register_asset 'stylesheets/common/chat-onebox.scss'
 
 register_svg_icon "comments"
 register_svg_icon "comment-slash"

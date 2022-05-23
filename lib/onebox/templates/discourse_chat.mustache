@@ -23,13 +23,12 @@
     <div class="chat-onebox-members">
       {{#users}}
         <a class="trigger-user-card" data-user-card="{{username}}" aria-hidden="true" tabindex="-1">
-          <img loading="lazy" alt="{{username}}" width="30" height="30" src="{{avatar_url}}" class="avatar" style="aspect-ratio: 30 / 30;">
+          <img loading="lazy" alt="{{username}}" width="30" height="30" src="{{avatar_url}}" class="avatar">
         </a>
       {{/users}}
       {{remaining_user_count_str}}
     </div>
   </article>
-  <div class="clearfix"></div>
 </aside>
 {{/cooked}}
 
@@ -38,7 +37,7 @@
   <div class="chat-transcript-user">
     <div class="chat-transcript-user-avatar">
       <a class="trigger-user-card" data-user-card="{{username}}" aria-hidden="true" tabindex="-1">
-        <img loading="lazy" alt="{{username}}" width="20" height="20" src="{{avatar_url}}" class="avatar" style="aspect-ratio: 20 / 20;">
+        <img loading="lazy" alt="{{username}}" width="20" height="20" src="{{avatar_url}}" class="avatar">
       </a>
     </div>
   <div class="chat-transcript-username">{{username}}</div>

@@ -198,7 +198,6 @@ describe 'discourse-chat' do
               <div class="chat-onebox-members-count">0 members</div>
               <div class="chat-onebox-members"></div>
             </article>
-            <div class="clearfix"></div>
         </aside>
 
         HTML
@@ -210,7 +209,7 @@ describe 'discourse-chat' do
           <div class="chat-transcript-user">
             <div class="chat-transcript-user-avatar">
               <a class="trigger-user-card" data-user-card="#{user.username}" aria-hidden="true" tabindex="-1">
-                <img loading="lazy" alt="#{user.username}" width="20" height="20" src="#{user.avatar_template_url.gsub("{size}", "20")}" class="avatar" style="aspect-ratio: 20 / 20;">
+                <img loading="lazy" alt="#{user.username}" width="20" height="20" src="#{user.avatar_template_url.gsub("{size}", "20")}" class="avatar">
               </a>
             </div>
             <div class="chat-transcript-username">#{user.username}</div>

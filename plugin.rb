@@ -177,9 +177,7 @@ after_initialize do
       has_many :chat_mentions
     }
 
-    if SiteSetting.use_polymorphic_bookmarks
-      Bookmark.register_bookmarkable(ChatMessageBookmarkable)
-    end
+    Bookmark.register_bookmarkable(ChatMessageBookmarkable)
   end
 
   TopicQuery.add_custom_filter(::DiscourseChat::PLUGIN_NAME) do |results, topic_query|

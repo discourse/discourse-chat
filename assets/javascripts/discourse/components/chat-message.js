@@ -779,8 +779,7 @@ export default Component.extend({
         onAfterDelete: () => {
           this.set("message.bookmark", null);
         },
-      },
-      { use_polymorphic_bookmarks: this.siteSettings.use_polymorphic_bookmarks }
+      }
     );
   },
 

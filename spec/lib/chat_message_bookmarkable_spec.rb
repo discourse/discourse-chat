@@ -12,7 +12,6 @@ describe ChatMessageBookmarkable do
   fab!(:private_category) { Fabricate(:private_category, group: Fabricate(:group)) }
 
   before do
-    SiteSetting.use_polymorphic_bookmarks = true
     Bookmark.register_bookmarkable(ChatMessageBookmarkable)
     UserChatChannelMembership.create(chat_channel: channel, user: user, following: true)
   end

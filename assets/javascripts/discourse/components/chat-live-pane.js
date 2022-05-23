@@ -145,11 +145,8 @@ export default Component.extend({
           .then((trackedChannel) => {
             this.set("previewing", !Boolean(trackedChannel));
             this.fetchMessages(this.chatChannel.id);
-            this.loadDraftForChannel(this.chatChannel.id);
             this._startLastReadRunner();
           });
-      } else {
-        this.set("draft", this.chatDraftHandler.getDraftForChannel("draft"));
       }
     }
     this.currentUserTimezone = this.currentUser?.resolvedTimezone(
@@ -194,10 +191,6 @@ export default Component.extend({
           this.focusComposer();
         });
     });
-  },
-
-  loadDraftForChannel(channelId) {
-    this.set("draft", this.chatDraftHandler.getDraftForChannel(channelId));
   },
 
   _fetchMoreMessages(direction) {
@@ -1125,6 +1118,11 @@ export default Component.extend({
     return messages.filter((m) => m.selected).map((m) => m.id);
   },
 
+  @discourseComputed("chatChannel.id")
+  draft(channelId) {
+    return this.chatDraftHandler.getForChannel(channelId);
+  },
+
   @action
   onStartSelectingMessages(message) {
     this._lastSelectedMessage = message;
@@ -1195,8 +1193,7 @@ export default Component.extend({
         user: draft.replyToMsg.user,
       };
     }
-    this.chatDraftHandler.setDraftForChannel(this.chatChannel, draft);
-    this.set("draft", draft);
+    discourseDebounce(this, this.chatDraftHandler.setForChannel, { channelId: this.chatChannel.id, draft: draft }, 2000);
   },
 
   @action

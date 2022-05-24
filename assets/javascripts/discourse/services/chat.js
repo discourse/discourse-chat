@@ -91,13 +91,12 @@ export default Service.extend({
 
   @discourseComputed("router.currentRouteName")
   isChatPage(routeName) {
-    let chatPage = (
+    let chatPage =
       routeName === "chat" ||
       routeName === "chat.channel" ||
-      routeName === "chat.loading"
-    );
+      routeName === "chat.loading";
     if (chatPage) {
-      this.set('chatWindowFullPage', true);
+      this.set("chatWindowFullPage", true);
     }
     return chatPage;
   },
@@ -133,7 +132,7 @@ export default Service.extend({
   },
 
   set chatWindowFullPage(value) {
-    return this.chatWindowStore.fullPage = value;
+    return this.chatWindowStore.set("fullPage", value);
   },
 
   get fullScreenChatOpen() {

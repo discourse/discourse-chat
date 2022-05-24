@@ -15,17 +15,17 @@ discourseModule(
     });
 
     test("fullPage", function (assert) {
-      this.chatWindowStore.fullPage = true
+      this.chatWindowStore.set("fullPage", true);
       assert.strictEqual(this.chatWindowStore.fullPage, true);
     });
 
     test("fullPageFalse", function (assert) {
-      this.chatWindowStore.fullPage = false
+      this.chatWindowStore.set("fullPage", false);
       assert.strictEqual(this.chatWindowStore.fullPage, false);
     });
 
     test("fullPageNull", function (assert) {
-      this.chatWindowStore.fullPage = null
+      this.chatWindowStore.set("fullPage", null);
       assert.strictEqual(this.chatWindowStore.fullPage, false);
     });
   }

@@ -20,6 +20,6 @@ export default Service.extend({
   },
 
   set fullPage(value) {
-    this.store.setObject({ key: FULL_PAGE, value: value });
+    this.store.setObject({ key: FULL_PAGE, value });
   },
 });

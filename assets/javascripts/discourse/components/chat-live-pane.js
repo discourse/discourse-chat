@@ -1182,7 +1182,7 @@ export default Component.extend({
   @action
   onCloseFullScreen(channel) {
     // update local storage
-    this.chatWindowStore.fullPage = false;
+    this.chatWindowStore.set("fullPage", false);
 
     // navigate to chatable url or homepage on compress
     if (this._goToChatableUrl() === false) {
@@ -1190,7 +1190,7 @@ export default Component.extend({
     }
 
     // re-open chat as docked window
-    this.appEvents.trigger("chat:open-channel", channel, { hello: 'test' });
+    this.appEvents.trigger("chat:open-channel", channel);
   },
 
   @action

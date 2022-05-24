@@ -253,7 +253,7 @@ export default Component.extend({
       activeChannel: null,
     });
 
-    this.chatWindowStore.fullPage = true
+    this.chatWindowStore.set("fullPage", true);
 
     if (channel) {
       return this.router.transitionTo(

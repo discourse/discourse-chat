@@ -29,7 +29,7 @@ describe DirectMessageChannel do
       expect(direct_message_channel.chat_channel_title_for_user(chat_channel, user1)).to eq(
         I18n.t(
           "chat.channel.dm_title.multi_user_truncated",
-          users: users[1..5].map { |u| "@#{u.username}" }.join(", "),
+          users: users[1..5].sort_by(&:username).map { |u| "@#{u.username}" }.join(", "),
           leftover: 2
         )
       )

@@ -61,6 +61,8 @@ da:
       isolate:
         title: "Isolér chat"
       new_messages: "nye beskeder"
+      bookmark_message: "Bogmærke"
+      bookmark_message_edit: "Rediger Bogmærke"
       save: "Gem"
       select: "Vælg"
       sounds:

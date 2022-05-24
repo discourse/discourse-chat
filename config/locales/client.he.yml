@@ -132,6 +132,8 @@ he:
       edit: "עריכה"
       copy_link: "העתקת קישור"
       rebake_message: "בניית HTML מחדש"
+      bookmark_message: "סימון"
+      bookmark_message_edit: "עריכת סימנייה"
       restore: "שחזור הודעה שנמחקה"
       save: "שמירה"
       select: "בחירה"

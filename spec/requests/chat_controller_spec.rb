@@ -135,9 +135,9 @@ RSpec.describe DiscourseChat::ChatController do
       expect(reactions[smile_emoji]["reacted"]).to be false
     end
 
-    describe "with 'before_message_id' param" do
+    describe "scrolling to the past" do
       it "returns the correct messages" do
-        get "/chat/#{chat_channel.id}/messages.json", params: { before_message_id: message_40.id, page_size: page_size }
+        get "/chat/#{chat_channel.id}/messages.json", params: { message_id: message_40.id, direction: described_class::PAST, page_size: page_size }
         messages = response.parsed_body["chat_messages"]
         expect(messages.count).to eq(page_size)
         expect(messages.first["id"]).to eq(message_10.id)
@@ -145,21 +145,21 @@ RSpec.describe DiscourseChat::ChatController do
       end
 
       it "returns 'can_load...' properly when there are more past messages" do
-        get "/chat/#{chat_channel.id}/messages.json", params: { before_message_id: message_40.id, page_size: page_size }
+        get "/chat/#{chat_channel.id}/messages.json", params: { message_id: message_40.id, direction: described_class::PAST, page_size: page_size }
         expect(response.parsed_body["meta"]["can_load_more_past"]).to be true
         expect(response.parsed_body["meta"]["can_load_more_future"]).to be_nil
       end
 
       it "returns 'can_load...' properly when there are no past messages" do
-        get "/chat/#{chat_channel.id}/messages.json", params: { before_message_id: message_3.id, page_size: page_size }
+        get "/chat/#{chat_channel.id}/messages.json", params: { message_id: message_3.id, direction: described_class::PAST, page_size: page_size }
         expect(response.parsed_body["meta"]["can_load_more_past"]).to be false
         expect(response.parsed_body["meta"]["can_load_more_future"]).to be_nil
       end
     end
 
-    describe "with 'after_message_id' param" do
+    describe "scrolling to the future" do
       it "returns the correct messages when there are many after" do
-        get "/chat/#{chat_channel.id}/messages.json", params: { after_message_id: message_10.id, page_size: page_size }
+        get "/chat/#{chat_channel.id}/messages.json", params: { message_id: message_10.id, direction: described_class::FUTURE, page_size: page_size }
         messages = response.parsed_body["chat_messages"]
         expect(messages.count).to eq(page_size)
         expect(messages.first["id"]).to eq(message_11.id)
@@ -167,27 +167,41 @@ RSpec.describe DiscourseChat::ChatController do
       end
 
       it "return 'can_load..' properly when there are future messages" do
-        get "/chat/#{chat_channel.id}/messages.json", params: { after_message_id: message_10.id, page_size: page_size }
+        get "/chat/#{chat_channel.id}/messages.json", params: { message_id: message_10.id, direction: described_class::FUTURE, page_size: page_size }
         expect(response.parsed_body["meta"]["can_load_more_past"]).to be_nil
         expect(response.parsed_body["meta"]["can_load_more_future"]).to be true
       end
 
       it "returns 'can_load..' properly when there are no future messages" do
-        get "/chat/#{chat_channel.id}/messages.json", params: { after_message_id: message_60.id, page_size: page_size }
+        get "/chat/#{chat_channel.id}/messages.json", params: { message_id: message_60.id, direction: described_class::FUTURE, page_size: page_size }
         expect(response.parsed_body["meta"]["can_load_more_past"]).to be_nil
         expect(response.parsed_body["meta"]["can_load_more_future"]).to be false
       end
     end
 
-    it "errors when both 'after_message_id' and 'before_message_id' are present" do
-      get "/chat/#{chat_channel.id}/messages.json", params: {
-        before_message_id: message_40.id,
-        after_message_id: message_20.id,
-        page_size: page_size
-      }
-      expect(response.status).to eq(400)
-    end
+    describe 'without direction (latest messages)' do
+      it 'signals there are no future messages' do
+        get "/chat/#{chat_channel.id}/messages.json", params: { page_size: page_size }
 
+        expect(response.parsed_body["meta"]["can_load_more_future"]).to eq(false)
+      end
+
+      it 'signals there are more messages in the past' do
+        get "/chat/#{chat_channel.id}/messages.json", params: { page_size: page_size }
+
+        expect(response.parsed_body["meta"]["can_load_more_past"]).to eq(true)
+      end
+
+      it 'signals there are no more messages' do
+        new_channel = Fabricate(:chat_channel)
+        Fabricate(:chat_message, chat_channel: new_channel, user: other_user, message: "message")
+        chat_messages_qty = 1
+
+        get "/chat/#{new_channel.id}/messages.json", params: { page_size: chat_messages_qty + 1 }
+
+        expect(response.parsed_body["meta"]["can_load_more_past"]).to eq(false)
+      end
+    end
   end
 
   describe "#enable_chat" do

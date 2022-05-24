@@ -108,6 +108,7 @@ en:
         description: "Do not send notifications for channel-wide mentions (@here and @all)"
       open: "Open chat"
       open_full_page: "Open full-screen chat"
+      close_full_page: "Close full-screen chat"
       open_message: "Open message in chat"
       placeholder_self: "Jot something down"
       placeholder_others: "Chat with %{messageRecipient}"

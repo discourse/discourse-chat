@@ -49,6 +49,7 @@ export default Service.extend({
   router: service(),
   sidebarActive: false,
   unreadUrgentCount: null,
+  chatWindowStore: service("chat-window-store"),
   _chatOpen: false,
   _fetchingChannels: null,
   _fullScreenChatOpen: false,
@@ -90,11 +91,15 @@ export default Service.extend({
 
   @discourseComputed("router.currentRouteName")
   isChatPage(routeName) {
-    return (
+    let chatPage = (
       routeName === "chat" ||
       routeName === "chat.channel" ||
       routeName === "chat.loading"
     );
+    if (chatPage) {
+      this.set('chatWindowFullPage', true);
+    }
+    return chatPage;
   },
 
   isBrowsePage: equal("router.currentRouteName", "chat.browse"),
@@ -125,6 +130,10 @@ export default Service.extend({
         );
       });
     });
+  },
+
+  set chatWindowFullPage(value) {
+    return this.chatWindowStore.fullPage = value;
   },
 
   get fullScreenChatOpen() {

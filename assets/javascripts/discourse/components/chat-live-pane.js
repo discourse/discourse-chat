@@ -25,6 +25,7 @@ import { spinnerHTML } from "discourse/helpers/loading-spinner";
 import { decorateGithubOneboxBody } from "discourse/initializers/onebox-decorators";
 import highlightSyntax from "discourse/lib/highlight-syntax";
 import { applyLocalDates } from "discourse/lib/local-dates";
+import { defaultHomepage } from "discourse/lib/utilities";
 
 const MAX_RECENT_MSGS = 100;
 const STICKY_SCROLL_LENIENCE = 4;
@@ -67,6 +68,7 @@ export default Component.extend({
   chat: service(),
   router: service(),
   chatComposerPresenceManager: service(),
+  chatWindowStore: service("chat-window-store"),
 
   getCachedChannelDetails: null,
   clearCachedChannelDetails: null,
@@ -1169,11 +1171,26 @@ export default Component.extend({
     if (this.chatChannel.chatable_url) {
       return this.router.transitionTo(this.chatChannel.chatable_url);
     }
+    return false;
   },
 
   @action
   onChannelTitleClick() {
     return this._goToChatableUrl();
+  },
+
+  @action
+  onCloseFullScreen(channel) {
+    // update local storage
+    this.chatWindowStore.fullPage = false;
+
+    // navigate to chatable url or homepage on compress
+    if (this._goToChatableUrl() === false) {
+      this.router.transitionTo(`discovery.${defaultHomepage()}`);
+    }
+
+    // re-open chat as docked window
+    this.appEvents.trigger("chat:open-channel", channel, { hello: 'test' });
   },
 
   @action

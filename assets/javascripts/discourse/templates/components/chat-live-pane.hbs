@@ -20,6 +20,13 @@
         {{chat-channel-status channel=chatChannel}}
       </div>
 
+      {{flat-button
+        class="chat-full-screen-button"
+        icon="discourse-compress"
+        action=(action "onCloseFullScreen" chatChannel)
+        title="chat.close_full_page"
+      }}
+
       {{chat-channel-archive-status channel=chatChannel}}
     </div>
   </div>

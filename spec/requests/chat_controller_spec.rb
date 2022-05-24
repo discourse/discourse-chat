@@ -222,15 +222,6 @@ RSpec.describe DiscourseChat::ChatController do
         expect(topic.reload.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]).to be true
       end
     end
-
-    describe "for tag" do
-      it "enables chat" do
-        sign_in(admin)
-        post "/chat/enable.json", params: { chatable_type: "tag", chatable_id: tag.id }
-        expect(response.status).to eq(200)
-        expect(ChatChannel.where(chatable: tag)).to be_present
-      end
-    end
   end
 
   describe "#disable_chat" do
@@ -264,16 +255,6 @@ RSpec.describe DiscourseChat::ChatController do
         expect(response.status).to eq(200)
         expect(chat_channel.reload.deleted_by_id).to eq(admin.id)
         expect(topic.reload.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]).to be_nil
-      end
-    end
-
-    describe "for tag" do
-      it "disables chat" do
-        sign_in(admin)
-        chat_channel = Fabricate(:chat_channel, chatable: tag)
-        post "/chat/disable.json", params: { chatable_type: "tag", chatable_id: tag.id }
-        expect(response.status).to eq(200)
-        expect(chat_channel.reload.deleted_by_id).to eq(admin.id)
       end
     end
   end

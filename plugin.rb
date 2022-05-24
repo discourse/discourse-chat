@@ -122,7 +122,6 @@ after_initialize do
   load File.expand_path('../lib/direct_message_channel_creator.rb', __FILE__)
   load File.expand_path('../lib/guardian_extensions.rb', __FILE__)
   load File.expand_path('../lib/extensions/topic_view_serializer_extension.rb', __FILE__)
-  load File.expand_path('../lib/extensions/detailed_tag_serializer_extension.rb', __FILE__)
   load File.expand_path('../lib/slack_compatibility.rb', __FILE__)
   load File.expand_path('../lib/post_notification_handler.rb', __FILE__)
   load File.expand_path('../app/jobs/regular/process_chat_message.rb', __FILE__)
@@ -165,7 +164,6 @@ after_initialize do
 
     Guardian.class_eval { include DiscourseChat::GuardianExtensions }
     TopicViewSerializer.class_eval { prepend DiscourseChat::TopicViewSerializerExtension }
-    DetailedTagSerializer.class_eval { prepend DiscourseChat::DetailedTagSerializerExtension }
     Topic.class_eval {
       has_one :chat_channel, as: :chatable
     }

@@ -435,7 +435,6 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     chatable_class = case params[:chatable_type].downcase
                      when "topic" then Topic
                      when "category" then Category
-                     when "tag" then Tag
     end
     @chatable = chatable_class.find_by(id: params[:chatable_id])
 

@@ -28,10 +28,6 @@ function defaultChatChannelForType(chatableType) {
     base.chatable = { color: "D56353", read_restricted: false };
   }
 
-  if (chatableType === CHATABLE_TYPES.tagChannel) {
-    base.title = "My tag title";
-  }
-
   return base;
 }
 

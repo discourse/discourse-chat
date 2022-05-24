@@ -29,11 +29,6 @@
           {{/let}}
         </span>
       {{/if}}
-    {{else if channel.isTagChannel}}
-      <span class="tag-chat-badge">
-        {{d-icon "tag"}}
-      </span>
-      <span class="tag-chat-name">{{channel.title}}</span>
     {{else if channel.isCategoryChannel}}
       <span
         class="category-chat-badge"

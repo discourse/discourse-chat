@@ -2,6 +2,9 @@
 
 module DiscourseChat::UserNotificationsExtension
   def chat_summary(user, opts)
+    guardian = Guardian.new(user)
+    return unless guardian.can_chat?(user)
+
     @messages = ChatMessage
       .joins(:user, :chat_channel)
       .where.not(user: user)
@@ -15,24 +18,26 @@ module DiscourseChat::UserNotificationsExtension
           (uccm.last_unread_mention_when_emailed_id IS NULL OR chat_messages.id > uccm.last_unread_mention_when_emailed_id)
         SQL
       ).to_a
-    return if @messages.empty?
+      return if @messages.empty?
 
-    @display_usernames = SiteSetting.prioritize_username_in_ux || !SiteSetting.enable_names
+      @grouped_mentions = @messages.group_by { |message| message.chat_channel }
+      @grouped_mentions = @grouped_mentions.select { |channel, _| guardian.can_see_chat_channel?(channel) }
+      return if @grouped_mentions.empty?
 
-    build_summary_for(user)
-    opts = {
-      from_alias: I18n.t('user_notifications.chat_summary.from', site_name: Email.site_title),
-      subject: I18n.t('user_notifications.chat_summary.subject', count: @messages.size, email_prefix: @email_prefix, date: short_date(Time.now)),
-      add_unsubscribe_link: false,
-    }
+      @grouped_mentions.each do |chat_channel, mentions|
+        @grouped_mentions[chat_channel] = mentions.sort_by(&:created_at)
+      end
+      @user = user
+      @user_tz = UserOption.user_tzinfo(user.id)
+      @display_usernames = SiteSetting.prioritize_username_in_ux || !SiteSetting.enable_names
 
-    @grouped_mentions = @messages.group_by { |message| message.chat_channel }
-    @grouped_mentions.each do |chat_channel, mentions|
-      @grouped_mentions[chat_channel] = mentions.sort_by(&:created_at)
+      build_summary_for(user)
+      opts = {
+        from_alias: I18n.t('user_notifications.chat_summary.from', site_name: Email.site_title),
+        subject: I18n.t('user_notifications.chat_summary.subject', count: @messages.size, email_prefix: @email_prefix, date: short_date(Time.now)),
+        add_unsubscribe_link: false,
+      }
+
+      build_email(user.email, opts)
     end
-    @user = user
-    @user_tz = UserOption.user_tzinfo(user.id)
-
-    build_email(user.email, opts)
-  end
 end

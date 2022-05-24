@@ -29,6 +29,22 @@ describe UserNotifications do
       before { Fabricate(:chat_mention, user: @user, chat_message: @chat_message) }
 
       describe 'selecting mentions' do
+        it "doesn't return an email if the user can't see chat" do
+          SiteSetting.chat_allowed_groups = ''
+
+          email = described_class.chat_summary(@user, {})
+
+          expect(email.to).to be_blank
+        end
+
+        it "doesn't return an email if the user can't see any of the included channels" do
+          @chat_channel.chatable.trash!
+
+          email = described_class.chat_summary(@user, {})
+
+          expect(email.to).to be_blank
+        end
+
         it "doesn't return an email if the user is not following the channel" do
           @user_membership.update!(following: false)
 

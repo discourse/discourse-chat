@@ -15,7 +15,7 @@ import discourseComputed, {
 } from "discourse-common/utils/decorators";
 import EmberObject, { action, computed } from "@ember/object";
 import { ajax } from "discourse/lib/ajax";
-import { cancel, later, schedule } from "@ember/runloop";
+import { cancel, later, once, schedule } from "@ember/runloop";
 import { clipboardCopy } from "discourse/lib/utilities";
 import { inject as service } from "@ember/service";
 import { popupAjaxError } from "discourse/lib/ajax-error";
@@ -90,14 +90,22 @@ export default Component.extend({
   didReceiveAttrs() {
     this._super(...arguments);
 
-    schedule("afterRender", () => {
-      if (!this.messageContainer) {
-        return;
-      }
+    if (!this.show || this.deletedAndCollapsed) {
+      this._decoratedMessageCooked = null;
+    } else if (this.message.cooked !== this._decoratedMessageCooked) {
+      once("afterRender", this.decorateMessageCooked);
+      this._decoratedMessageCooked = this.message.cooked;
+    }
+  },
 
-      _chatMessageDecorators.forEach((decorator) => {
-        decorator.call(this, this.messageContainer, this.chatChannel);
-      });
+  @bind
+  decorateMessageCooked() {
+    if (!this.messageContainer) {
+      return;
+    }
+
+    _chatMessageDecorators.forEach((decorator) => {
+      decorator.call(this, this.messageContainer, this.chatChannel);
     });
   },
 

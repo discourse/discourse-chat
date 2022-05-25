@@ -282,7 +282,8 @@
   }
 
   .react-btn,
-  .reply-btn {
+  .reply-btn,
+  .bookmark-btn {
     border: 1px solid transparent;
     border-bottom-color: var(--primary-low);
     border-radius: 0;
@@ -317,6 +318,10 @@
 
     .d-icon {
       color: var(--primary-low-mid);
+
+      &.bookmark-icon__bookmarked {
+        color: var(--tertiary);
+      }
     }
   }
 

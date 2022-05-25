@@ -1,8 +1,5 @@
 import bootbox from "bootbox";
-import Bookmark, {
-  NO_REMINDER_ICON,
-  WITH_REMINDER_ICON,
-} from "discourse/models/bookmark";
+import Bookmark from "discourse/models/bookmark";
 import { openBookmarkModal } from "discourse/controllers/bookmark";
 import { isTesting } from "discourse-common/config/environment";
 import Component from "@ember/component";
@@ -159,8 +156,7 @@ export default Component.extend({
     "showDeleteButton",
     "showRestoreButton",
     "showEditButton",
-    "showRebakeButton",
-    "message.bookmark"
+    "showRebakeButton"
   )
   secondaryButtons() {
     const buttons = [];
@@ -227,18 +223,6 @@ export default Component.extend({
       });
     }
 
-    if (this.showBookmarkButton) {
-      buttons.push({
-        id: "toggleBookmark",
-        name: this.message.bookmark
-          ? I18n.t("chat.bookmark_message_edit")
-          : I18n.t("chat.bookmark_message"),
-        icon: this.message.bookmark?.reminder_at
-          ? WITH_REMINDER_ICON
-          : NO_REMINDER_ICON,
-      });
-    }
-
     return buttons;
   },
 
@@ -263,6 +247,7 @@ export default Component.extend({
     return {
       canReact: this.canReact,
       canReply: this.canReply,
+      canBookmark: this.showBookmarkButton,
     };
   },
 

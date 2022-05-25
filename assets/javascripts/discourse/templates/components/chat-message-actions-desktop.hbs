@@ -26,6 +26,15 @@
       }}
     {{/if}}
 
+    {{#if messageCapabilities.canBookmark}}
+      {{#d-button
+        class="btn-flat bookmark-btn"
+        action=messageActions.toggleBookmark
+      }}
+        {{bookmark-icon bookmark=message.bookmark}}
+      {{/d-button}}
+    {{/if}}
+
     {{#if secondaryButtons.length}}
       {{dropdown-select-box
         class="more-buttons"

@@ -546,6 +546,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
 
   test("Reply-to is stored in draft", async function (assert) {
     this.chatService.set("sidebarActive", false);
+    this.chatService.set("chatWindowFullPage", false);
     await visit("/latest");
     this.appEvents.trigger("chat:toggle-open");
     await chatSettled();
@@ -1177,6 +1178,7 @@ acceptance(
     test("Chat float opens on header icon click when sidebar is not installed", async function (assert) {
       await visit("/t/internationalization-localization/280");
       this.chatService.set("sidebarActive", false);
+      this.chatService.set("chatWindowFullPage", false);
       await click(".header-dropdown-toggle.open-chat");
       assert.ok(visible(".topic-chat-float-container"), "chat float is open");
     });
@@ -1536,6 +1538,7 @@ acceptance("Discourse Chat - image uploads", function (needs) {
   test("uploading files in chat works", async function (assert) {
     await visit("/t/internationalization-localization/280");
     this.container.lookup("service:chat").set("sidebarActive", false);
+    this.container.lookup("service:chat").set("chatWindowFullPage", false);
     await click(".header-dropdown-toggle.open-chat");
 
     assert.ok(visible(".topic-chat-float-container"), "chat float is open");
@@ -1595,6 +1598,7 @@ acceptance("Discourse Chat - image uploads", function (needs) {
     assert.ok(exists(".d-editor-input"), "the composer input is visible");
 
     this.container.lookup("service:chat").set("sidebarActive", false);
+    this.container.lookup("service:chat").set("chatWindowFullPage", false);
     await click(".header-dropdown-toggle.open-chat");
     assert.ok(visible(".topic-chat-float-container"), "chat float is open");
 

@@ -43,6 +43,15 @@
           }}
         {{/if}}
 
+        {{#if messageCapabilities.canBookmark}}
+          {{#d-button
+            class="btn-flat bookmark-btn"
+            action=messageActions.toggleBookmark
+          }}
+            {{bookmark-icon bookmark=message.bookmark}}
+          {{/d-button}}
+        {{/if}}
+
         {{#if messageCapabilities.canReply}}
           {{d-button
             class="chat-message-action reply-btn btn-primary"

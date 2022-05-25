@@ -16,6 +16,7 @@ export default Component.extend({
   classNameBindings: [":topic-chat-float-container", "hidden"],
   chat: service(),
   router: service(),
+  chatWindowStore: service("chat-window-store"),
 
   hidden: true,
   loading: false,
@@ -252,6 +253,8 @@ export default Component.extend({
       activeChannel: null,
     });
 
+    this.chatWindowStore.set("fullPage", true);
+
     if (channel) {
       return this.router.transitionTo(
         "chat.channel",
@@ -344,7 +347,7 @@ export default Component.extend({
       this.set("activeChannel", null);
     }
 
-    if (this.site.mobileView || this.chat.isChatPage) {
+    if (this.site.mobileView) {
       return this.chat.openChannel(channel);
     }
 
@@ -363,6 +366,19 @@ export default Component.extend({
       expectPageChange: false,
       view: CHAT_VIEW,
     };
+
+    if (this.chatWindowStore.fullPage) {
+      if (channel) {
+        return this.router.transitionTo(
+          "chat.channel",
+          channel.id,
+          channel.title
+        );
+      }
+
+      return this.router.transitionTo("chat");
+    }
+
     this.chat.setActiveChannel(channel);
     this.setProperties(channelInfo);
     return Promise.resolve();

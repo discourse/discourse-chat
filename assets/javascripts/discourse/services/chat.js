@@ -25,9 +25,9 @@ const CHAT_ONLINE_OPTIONS = {
   browserHiddenTime: 300000, // Or the browser has been in the background for 5 minutes
 };
 
+// Tag used to be 1, but we no longer use that chatable.
 const PUBLIC_CHANNEL_SORT_PRIOS = {
   Category: 0,
-  Tag: 1,
   Topic: 2,
 };
 

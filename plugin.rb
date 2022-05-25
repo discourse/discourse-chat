@@ -123,7 +123,6 @@ after_initialize do
   load File.expand_path('../lib/direct_message_channel_creator.rb', __FILE__)
   load File.expand_path('../lib/guardian_extensions.rb', __FILE__)
   load File.expand_path('../lib/extensions/topic_view_serializer_extension.rb', __FILE__)
-  load File.expand_path('../lib/extensions/detailed_tag_serializer_extension.rb', __FILE__)
   load File.expand_path('../lib/extensions/user_option_extension.rb', __FILE__)
   load File.expand_path('../lib/extensions/user_notifications_extension.rb', __FILE__)
   load File.expand_path('../lib/extensions/user_email_extension.rb', __FILE__)
@@ -173,7 +172,6 @@ after_initialize do
 
     Guardian.class_eval { include DiscourseChat::GuardianExtensions }
     TopicViewSerializer.class_eval { prepend DiscourseChat::TopicViewSerializerExtension }
-    DetailedTagSerializer.class_eval { prepend DiscourseChat::DetailedTagSerializerExtension }
     UserNotifications.class_eval { prepend DiscourseChat::UserNotificationsExtension }
     UserOption.class_eval { prepend DiscourseChat::UserOptionExtension }
     Topic.class_eval {

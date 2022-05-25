@@ -747,7 +747,7 @@ Widget.triangulate(arg: "test")
     );
     assert.ok(
       exists(
-        ".chat-message-container[data-id='202'] .chat-message-text.hljs-complete code.lang-ruby.hljs"
+        ".chat-message-container[data-id='202'] .chat-message-text code.lang-ruby.hljs"
       ),
       "chat message code block has been highlighted as ruby code"
     );

@@ -1223,10 +1223,14 @@ export default Component.extend({
     }
     discourseDebounce(
       this,
-      this.chatDraftHandler.setForChannel,
+      this._handleDraft,
       { channelId: this.chatChannel.id, draft },
       2000
     );
+  },
+
+  _handleDraft({ channelId, draft }) {
+    this.chatDraftHandler.setForChannel(channelId, draft);
   },
 
   @action

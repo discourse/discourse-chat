@@ -21,7 +21,7 @@ export default class ChatDraftHandler extends Service {
   }
 
   @bind
-  setForChannel({ channelId, draft }) {
+  setForChannel(channelId, draft) {
     if (
       draft &&
       (draft.value || draft.uploads.length > 0 || draft.replyToMsg)

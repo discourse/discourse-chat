@@ -99,6 +99,8 @@ he:
         single_user: "%{user}"
         multi_user: "%{users}"
         multi_user_truncated: "%{users} ו־%{leftover} נוספים"
+    bookmarkable:
+      notification_title: "הודעה ב־%{channel_name}"
     personal_chat: "צ׳אט אישי"
   discourse_push_notifications:
     popup:

@@ -143,10 +143,11 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     params.require(:filter)
     filter = params[:filter]&.downcase
     memberships = UserChatChannelMembership.where(user: current_user)
-    public_channels = DiscourseChat::ChatChannelFetcher.public_channels_with_filter(
+    public_channels = DiscourseChat::ChatChannelFetcher.secured_public_channels(
       guardian,
       memberships,
-      filter
+      scope_with_membership: false,
+      filter: filter
     )
 
     users = User.joins(:user_option)

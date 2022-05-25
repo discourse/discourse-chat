@@ -11,6 +11,7 @@ class ChatMessage < ActiveRecord::Base
   belongs_to :in_reply_to, class_name: "ChatMessage"
   has_many :revisions, class_name: "ChatMessageRevision"
   has_many :reactions, class_name: "ChatMessageReaction"
+  has_many :bookmarks, as: :bookmarkable
   has_many :chat_uploads
   has_many :uploads, through: :chat_uploads
   has_one :chat_webhook_event
@@ -67,7 +68,11 @@ class ChatMessage < ActiveRecord::Base
     return uploads.first.original_filename if cooked.blank? && uploads.present?
 
     # this may return blank for some complex things like quotes, that is acceptable
-    PrettyText.excerpt(cooked, 50)
+    PrettyText.excerpt(cooked, 50, {})
+  end
+
+  def cooked_for_excerpt
+    (cooked.blank? && uploads.present?) ? "<p>#{uploads.first.original_filename}</p>" : cooked
   end
 
   def push_notification_excerpt
@@ -197,8 +202,12 @@ class ChatMessage < ActiveRecord::Base
     cooked
   end
 
+  def full_url
+    "#{Discourse.base_url}#{url}"
+  end
+
   def url
-    "#{Discourse.base_url}/chat/channel/#{self.chat_channel_id}/chat?messageId=#{self.id}"
+    "/chat/message/#{self.id}"
   end
 
   private

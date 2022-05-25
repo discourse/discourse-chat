@@ -38,6 +38,8 @@ fa_IR:
         single_user: "%{user}"
         multi_user: "%{users}"
         multi_user_truncated: "%{users} و %{leftover} نفر دیگر"
+    bookmarkable:
+      notification_title: "پیام در %{channel_name}"
     personal_chat: "گفتگوی شخصی"
   discourse_automation:
     scriptables:

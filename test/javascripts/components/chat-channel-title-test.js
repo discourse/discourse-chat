@@ -106,25 +106,6 @@ discourseModule(
       },
     });
 
-    componentTest("tag channel", {
-      template: hbs`{{chat-channel-title channel=channel}}`,
-
-      beforeEach() {
-        this.set(
-          "channel",
-          fabricate("chat-channel", {
-            chatable_type: CHATABLE_TYPES.tagChannel,
-          })
-        );
-      },
-
-      async test(assert) {
-        assert.ok(exists(".d-icon-tag"));
-
-        assert.equal(query(".tag-chat-name").innerText, this.channel.title);
-      },
-    });
-
     componentTest("direct message channel - one user", {
       template: hbs`{{chat-channel-title channel=channel}}`,
 

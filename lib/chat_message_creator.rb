@@ -39,7 +39,10 @@ class DiscourseChat::ChatMessageCreator
       ChatDraft.where(user_id: @user.id, chat_channel_id: @chat_channel.id).destroy_all
       ChatPublisher.publish_new!(@chat_channel, @chat_message, @staged_id)
       Jobs.enqueue(:process_chat_message, { chat_message_id: @chat_message.id })
-      DiscourseChat::ChatNotifier.notify_new(chat_message: @chat_message, timestamp: @chat_message.created_at)
+      DiscourseChat::ChatNotifier.notify_new(
+        chat_message: @chat_message,
+        timestamp: @chat_message.created_at
+      )
     rescue => error
       @error = error
     end
@@ -53,6 +56,7 @@ class DiscourseChat::ChatMessageCreator
 
   def validate_user_permissions!
     return if @guardian.can_create_chat_message!
+
     raise StandardError.new(
       I18n.t("chat.errors.user_cannot_send_message")
     )
@@ -60,6 +64,7 @@ class DiscourseChat::ChatMessageCreator
 
   def validate_channel_status!
     return if @guardian.can_create_channel_message?(@chat_channel)
+
     raise StandardError.new(
       I18n.t("chat.errors.channel_new_message_disallowed", status: @chat_channel.status_name)
     )

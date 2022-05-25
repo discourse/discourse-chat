@@ -17,7 +17,7 @@ class DirectMessageChannel < ActiveRecord::Base
     # all users deleted
     return chat_channel.id if !users.first
 
-    usernames_formatted = users.map { |u| "@#{u.username}" }
+    usernames_formatted = users.sort_by(&:username).map { |u| "@#{u.username}" }
     if usernames_formatted.size > 5
       return I18n.t(
         "chat.channel.dm_title.multi_user_truncated",

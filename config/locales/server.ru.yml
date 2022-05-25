@@ -99,6 +99,8 @@ ru:
         single_user: "%{user}"
         multi_user: "%{users}"
         multi_user_truncated: "%{users} и ещё %{leftover}"
+    bookmarkable:
+      notification_title: "Сообщение в канале %{channel_name}"
     personal_chat: "личный чат"
   discourse_push_notifications:
     popup:

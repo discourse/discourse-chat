@@ -440,6 +440,10 @@
     }
   }
 
+  .chat-message.chat-message-bookmarked {
+    background: var(--highlight-low);
+  }
+
   .not-mobile-device & .chat-message-reaction-list .chat-message-react-btn {
     display: none;
   }
@@ -472,6 +476,10 @@
   .not-mobile-device & .chat-message:hover,
   .chat-message.chat-message-selected {
     background: var(--primary-very-low);
+  }
+
+  .chat-message.chat-message-bookmarked {
+    background: var(--highlight-low);
   }
 }
 

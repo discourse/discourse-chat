@@ -6,15 +6,26 @@ import { action } from "@ember/object";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { CHAT_SOUNDS } from "discourse/plugins/discourse-chat/discourse/initializers/chat-notification-sounds";
 
-const chatAttrs = [
+const CHAT_ATTRS = [
   "chat_enabled",
   "chat_isolated",
   "only_chat_push_notifications",
   "ignore_channel_wide_mention",
   "chat_sound",
+  "chat_email_frequency",
+];
+
+const EMAIL_FREQUENCY_OPTIONS = [
+  { name: I18n.t(`chat.email_frequency.never`), value: "never" },
+  { name: I18n.t(`chat.email_frequency.when_away`), value: "when_away" },
 ];
 
 export default Controller.extend({
+  init() {
+    this._super(...arguments);
+    this.set("emailFrequencyOptions", EMAIL_FREQUENCY_OPTIONS);
+  },
+
   @discourseComputed
   chatSounds() {
     return Object.keys(CHAT_SOUNDS).map((value) => {
@@ -35,7 +46,7 @@ export default Controller.extend({
   save() {
     this.set("saved", false);
     return this.model
-      .save(chatAttrs)
+      .save(CHAT_ATTRS)
       .then(() => {
         this.set("saved", true);
         if (!isTesting()) {

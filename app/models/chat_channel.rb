@@ -56,10 +56,6 @@ class ChatChannel < ActiveRecord::Base
     chatable.url
   end
 
-  def tag_channel?
-    chatable_type == "Tag"
-  end
-
   def topic_channel?
     chatable_type == "Topic"
   end
@@ -115,8 +111,6 @@ class ChatChannel < ActiveRecord::Base
       chatable.fancy_title
     when "Category"
       chatable.name
-    when "Tag"
-      chatable.name
     when "DirectMessageChannel"
       chatable.chat_channel_title_for_user(self, user)
     end
@@ -155,7 +149,7 @@ class ChatChannel < ActiveRecord::Base
   end
 
   def self.public_channel_chatable_types
-    ["Topic", "Category", "Tag"]
+    ["Topic", "Category"]
   end
 
   def self.public_channels

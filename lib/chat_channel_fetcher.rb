@@ -16,9 +16,63 @@ module DiscourseChat::ChatChannelFetcher
     }
   end
 
-  def self.secured_public_channels(guardian, memberships, scope_with_membership: true)
+  def self.all_secured_channel_ids(guardian)
+    allowed_channel_ids_sql = <<~SQL
+      -- secured topic chat channels
+      #{ChatChannel.select(:id).joins(
+          "INNER JOIN topics ON topics.id = chat_channels.chatable_id AND chat_channels.chatable_type = 'Topic'
+          LEFT JOIN categories ON categories.id = topics.category_id
+          LEFT JOIN topic_allowed_users ON topic_allowed_users.topic_id = topics.id"
+        ).where(
+          "topics.category_id IS NULL OR topics.category_id IN (:allowed_category_ids)",
+          allowed_category_ids: guardian.allowed_category_ids
+        ).where(
+          "topics.archetype = 'regular' OR (topics.archetype = 'private_message' AND topic_allowed_users.user_id = :user_id)",
+          user_id: guardian.user.id
+        ).to_sql}
+
+      UNION
+
+      -- secured category chat channels
+      #{ChatChannel.select(:id).joins(
+          "INNER JOIN categories ON categories.id = chat_channels.chatable_id AND chat_channels.chatable_type = 'Category'"
+        ).where("categories.id IN (:allowed_category_ids)", allowed_category_ids: guardian.allowed_category_ids).to_sql}
+
+      UNION
+
+      -- secured direct message chat channels
+      #{ChatChannel.select(:id).joins(
+        "INNER JOIN direct_message_channels ON direct_message_channels.id = chat_channels.chatable_id
+            AND chat_channels.chatable_type = 'DirectMessageChannel'
+        INNER JOIN direct_message_users ON direct_message_users.direct_message_channel_id = direct_message_channels.id"
+        ).where("direct_message_users.user_id = :user_id", user_id: guardian.user.id).to_sql}
+    SQL
+
+    DB.query_single(<<~SQL, user_id: guardian.user.id)
+      SELECT chat_channel_id
+      FROM user_chat_channel_memberships
+      WHERE user_chat_channel_memberships.user_id = :user_id
+      AND user_chat_channel_memberships.chat_channel_id IN (
+        #{allowed_channel_ids_sql}
+      )
+    SQL
+  end
+
+  def self.secured_public_channels(guardian, memberships, scope_with_membership: true, filter: nil)
     channels = ChatChannel.includes(:chatable)
-    channels = channels.where(chatable_type: ChatChannel.public_channel_chatable_types)
+      .joins("LEFT JOIN categories ON categories.id = chat_channels.chatable_id AND chat_channels.chatable_type = 'Category'")
+      .joins("LEFT JOIN topics ON topics.id = chat_channels.chatable_id AND chat_channels.chatable_type = 'Topic'")
+      .where(
+        chatable_type: ChatChannel.public_channel_chatable_types,
+        status: ChatChannel.statuses[:open]
+      )
+
+    if filter
+      channels = channels.where(<<~SQL, filter: "%#{filter.downcase}%")
+        chat_channels.name ILIKE :filter OR categories.name ILIKE :filter OR topics.title ILIKE :filter
+      SQL
+    end
+
     if scope_with_membership
       channels = channels
         .joins(:user_chat_channel_memberships)
@@ -36,19 +90,6 @@ module DiscourseChat::ChatChannelFetcher
 
     preload_fields = Topic.instance_variable_get(:@custom_field_types).keys
     Topic.preload_custom_fields(channels.select { |c| c.chatable_type == 'Topic' }.map(&:chatable), preload_fields)
-  end
-
-  def self.public_channels_with_filter(guardian, memberships, filter)
-    channels = ChatChannel
-      .includes(:chatable)
-      .where(
-        chatable_type: ChatChannel.public_channel_chatable_types,
-        status: ChatChannel.statuses[:open]
-      )
-      .where("LOWER(name) LIKE ?", "#{filter}%")
-    channels = filter_public_channels(channels, memberships, guardian).to_a
-    preload_custom_fields_for(channels)
-    channels
   end
 
   def self.filter_public_channels(channels, memberships, guardian)

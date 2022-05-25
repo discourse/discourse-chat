@@ -24,9 +24,9 @@ const CHAT_ONLINE_OPTIONS = {
   browserHiddenTime: 300000, // Or the browser has been in the background for 5 minutes
 };
 
+// Tag used to be 1, but we no longer use that chatable.
 const PUBLIC_CHANNEL_SORT_PRIOS = {
   Category: 0,
-  Tag: 1,
   Topic: 2,
 };
 
@@ -48,6 +48,7 @@ export default Service.extend({
   router: service(),
   sidebarActive: false,
   unreadUrgentCount: null,
+  chatWindowStore: service("chat-window-store"),
   _chatOpen: false,
   _fetchingChannels: null,
   _fullScreenChatOpen: false,
@@ -82,11 +83,14 @@ export default Service.extend({
 
   @discourseComputed("router.currentRouteName")
   isChatPage(routeName) {
-    return (
+    let chatPage =
       routeName === "chat" ||
       routeName === "chat.channel" ||
-      routeName === "chat.loading"
-    );
+      routeName === "chat.loading";
+    if (chatPage) {
+      this.set("chatWindowFullPage", true);
+    }
+    return chatPage;
   },
 
   isBrowsePage: equal("router.currentRouteName", "chat.browse"),
@@ -117,6 +121,10 @@ export default Service.extend({
         );
       });
     });
+  },
+
+  set chatWindowFullPage(value) {
+    return this.chatWindowStore.set("fullPage", value);
   },
 
   get fullScreenChatOpen() {

@@ -75,6 +75,7 @@ export default createWidget("header-chat-link", {
     }
 
     if (this.site.mobileView || this.chat.sidebarActive) {
+      this.chat.set("chatWindowFullPage", true);
       return this.router.transitionTo("chat");
     } else {
       this.appEvents.trigger("chat:toggle-open");

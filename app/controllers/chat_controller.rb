@@ -3,6 +3,9 @@
 class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
   PAST_MESSAGE_LIMIT = 20
   FUTURE_MESSAGE_LIMIT = 40
+  PAST = 'past'
+  FUTURE = 'future'
+  CHAT_DIRECTIONS = [PAST, FUTURE]
 
   before_action :find_chatable, only: [:enable_chat, :disable_chat]
   before_action :find_chat_message, only: [
@@ -170,37 +173,39 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
   def messages
     set_channel_and_chatable
     page_size = params[:page_size]&.to_i || 1000
-    if page_size > 50 || (params[:before_message_id] && params[:after_message_id])
+    direction = params[:direction].to_s
+    message_id = params[:message_id]
+    if page_size > 50 || (message_id.blank? ^ direction.blank? && (direction.present? && !CHAT_DIRECTIONS.include?(direction)))
       raise Discourse::InvalidParameters
     end
 
     messages = preloaded_chat_message_query.where(chat_channel: @chat_channel)
-
-    order_direction = :desc
-    if params[:before_message_id]
-      messages = messages.where("id < ?", params[:before_message_id])
-    end
-
-    if params[:after_message_id]
-      messages = messages.where("id > ?", params[:after_message_id])
-      order_direction = :asc
-    end
-
     messages = messages.with_deleted if guardian.can_moderate_chat?(@chatable)
-    messages = messages.order(id: order_direction).limit(page_size)
 
-    can_load_more_past = params[:after_message_id] ? nil : messages.count == page_size
-    can_load_more_future = if !params[:before_message_id] && !params[:after_message_id]
-      false
-    elsif params[:before_message_id]
-      nil
-    elsif params[:after_message_id]
-      messages.count == page_size
+    if message_id.present?
+      condition = direction == PAST ? '<' : '>'
+      messages = messages.where("id #{condition} ?", message_id.to_i)
+    end
+
+    order = direction == FUTURE ? :asc : :desc
+    messages = messages.order(id: order).limit(page_size).to_a
+
+    can_load_more_past = nil
+    can_load_more_future = nil
+
+    if direction == FUTURE
+      can_load_more_future = messages.size == page_size
+    elsif direction == PAST
+      can_load_more_past = messages.size == page_size
+    else
+      # When direction is blank, we'll return the latest messages.
+      can_load_more_future = false
+      can_load_more_past = messages.size == page_size
     end
 
     chat_view = ChatView.new(
       chat_channel: @chat_channel,
-      chat_messages: params[:after_message_id] ? messages : messages.to_a.reverse,
+      chat_messages: direction == FUTURE ? messages : messages.reverse,
       user: current_user,
       can_load_more_past: can_load_more_past,
       can_load_more_future: can_load_more_future
@@ -426,6 +431,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
       .includes(:user)
       .includes(chat_webhook_event: :incoming_chat_webhook)
       .includes(reactions: :user)
+      .includes(:bookmarks)
       .includes(:uploads)
       .includes(chat_channel: :chatable)
   end
@@ -434,7 +440,6 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     chatable_class = case params[:chatable_type].downcase
                      when "topic" then Topic
                      when "category" then Category
-                     when "tag" then Tag
     end
     @chatable = chatable_class.find_by(id: params[:chatable_id])
 

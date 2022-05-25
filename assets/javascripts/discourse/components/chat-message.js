@@ -1,4 +1,9 @@
 import bootbox from "bootbox";
+import Bookmark, {
+  NO_REMINDER_ICON,
+  WITH_REMINDER_ICON,
+} from "discourse/models/bookmark";
+import { openBookmarkModal } from "discourse/controllers/bookmark";
 import { isTesting } from "discourse-common/config/environment";
 import Component from "@ember/component";
 import I18n from "I18n";
@@ -53,6 +58,9 @@ export default Component.extend({
     this.message.id
       ? this._subscribeToAppEvents()
       : this._waitForIdToBePopulated();
+    if (this.message.bookmark) {
+      this.set("message.bookmark", Bookmark.create(this.message.bookmark));
+    }
   },
 
   willDestroyElement() {
@@ -151,7 +159,8 @@ export default Component.extend({
     "showDeleteButton",
     "showRestoreButton",
     "showEditButton",
-    "showRebakeButton"
+    "showRebakeButton",
+    "message.bookmark"
   )
   secondaryButtons() {
     const buttons = [];
@@ -218,6 +227,18 @@ export default Component.extend({
       });
     }
 
+    if (this.showBookmarkButton) {
+      buttons.push({
+        id: "toggleBookmark",
+        name: this.message.bookmark
+          ? I18n.t("chat.bookmark_message_edit")
+          : I18n.t("chat.bookmark_message"),
+        icon: this.message.bookmark?.reminder_at
+          ? WITH_REMINDER_ICON
+          : NO_REMINDER_ICON,
+      });
+    }
+
     return buttons;
   },
 
@@ -233,6 +254,7 @@ export default Component.extend({
       deleteMessage: this.deleteMessage,
       restore: this.restore,
       rebakeMessage: this.rebakeMessage,
+      toggleBookmark: this.toggleBookmark,
       startReactionForMsgActions: this.startReactionForMsgActions,
     };
   },
@@ -303,9 +325,10 @@ export default Component.extend({
     "message.deleted_at",
     "message.in_reply_to",
     "message.error",
+    "message.bookmark",
     "isHovered"
   )
-  chatMessageClasses(staged, deletedAt, inReplyTo, error, isHovered) {
+  chatMessageClasses(staged, deletedAt, inReplyTo, error, bookmark, isHovered) {
     let classNames = ["chat-message"];
 
     if (staged) {
@@ -325,6 +348,9 @@ export default Component.extend({
     }
     if (isHovered) {
       classNames.push("chat-message-selected");
+    }
+    if (bookmark) {
+      classNames.push("chat-message-bookmarked");
     }
     return classNames.join(" ");
   },
@@ -404,6 +430,11 @@ export default Component.extend({
       deletedAt &&
       this.chatChannel.canModifyMessages(this.currentUser)
     );
+  },
+
+  @discourseComputed("chatChannel.status")
+  showBookmarkButton() {
+    return this.chatChannel.canModifyMessages(this.currentUser);
   },
 
   @discourseComputed("chatChannel.status")
@@ -724,6 +755,32 @@ export default Component.extend({
         type: "PUT",
       }
     ).catch(popupAjaxError);
+  },
+
+  @action
+  toggleBookmark() {
+    return openBookmarkModal(
+      this.message.bookmark ||
+        Bookmark.create({
+          bookmarkable_type: "ChatMessage",
+          bookmarkable_id: this.message.id,
+          user_id: this.currentUser.id,
+        }),
+      {
+        onAfterSave: (savedData) => {
+          const bookmark = Bookmark.create(savedData);
+          this.set("message.bookmark", bookmark);
+          this.appEvents.trigger(
+            "bookmarks:changed",
+            savedData,
+            bookmark.attachedTo()
+          );
+        },
+        onAfterDelete: () => {
+          this.set("message.bookmark", null);
+        },
+      }
+    );
   },
 
   @action

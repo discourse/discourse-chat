@@ -9,7 +9,7 @@ describe DiscourseChat::ChatNotifier do
     fab!(:user_2) { Fabricate(:user) }
 
     before do
-      @chat_group = Fabricate(:group, users: [user_1, user_2])
+      @chat_group = Fabricate(:group, users: [user_1, user_2], mentionable_level: Group::ALIAS_LEVELS[:everyone])
       SiteSetting.chat_allowed_groups = @chat_group.id
 
       [user_1, user_2].each { |u| Fabricate(:user_chat_channel_membership, chat_channel: channel, user: u) }
@@ -176,6 +176,23 @@ describe DiscourseChat::ChatNotifier do
       let(:list_key) { group.name }
 
       include_examples 'ensure only channel members are notified'
+
+      it 'establishes a far-left precedence among group mentions' do
+        Fabricate(:user_chat_channel_membership, chat_channel: channel, user: user_3, following: true)
+        msg = build_cooked_msg("Hello @#{@chat_group.name} and @#{group.name}", user_1)
+
+        to_notify = described_class.new(msg, msg.created_at).notify_new
+
+        expect(to_notify[@chat_group.name]).to contain_exactly(user_2.id, user_3.id)
+        expect(to_notify[list_key]).to be_empty
+
+        second_msg = build_cooked_msg("Hello @#{group.name} and @#{@chat_group.name}", user_1)
+
+        to_notify_2 = described_class.new(second_msg, second_msg.created_at).notify_new
+
+        expect(to_notify_2[list_key]).to contain_exactly(user_2.id, user_3.id)
+        expect(to_notify_2[@chat_group.name]).to be_empty
+      end
     end
 
     describe 'unreachable users' do

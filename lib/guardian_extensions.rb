@@ -97,8 +97,6 @@ module DiscourseChat::GuardianExtensions
       chat_channel.chatable.user_can_access?(@user)
     elsif chat_channel.category_channel?
       can_see_category?(chat_channel.chatable)
-    elsif chat_channel.tag_channel?
-      !hidden_tag_names.include?(chat_channel.chatable.name)
     else
       true
     end

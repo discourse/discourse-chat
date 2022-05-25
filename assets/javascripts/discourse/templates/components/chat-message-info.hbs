@@ -23,6 +23,12 @@
     {{format-chat-date @message @details}}
   </span>
 
+  {{#if @message.bookmark}}
+    <span class="chat-message-info__bookmark">
+      {{bookmark-icon bookmark=@message.bookmark}}
+    </span>
+  {{/if}}
+
   {{#if this.isFlagged}}
     <span class="chat-message-info__flag">
       {{#if @message.reviewable_id}}

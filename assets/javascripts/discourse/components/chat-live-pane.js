@@ -32,8 +32,8 @@ const STICKY_SCROLL_LENIENCE = 4;
 const READ_INTERVAL = 1000;
 const PAGE_SIZE = 50;
 
-const PAST = "Past";
-const FUTURE = "Future";
+const PAST = "past";
+const FUTURE = "future";
 
 export default Component.extend({
   classNameBindings: [":chat-live-pane", "sendingloading", "loading"],
@@ -166,11 +166,13 @@ export default Component.extend({
 
     return this.chat.loadCookFunction(this.site.categories).then((cook) => {
       this.set("cook", cook);
+
       const findArgs = {
         channelId,
-        targetMessageId: this.targetMessageId,
+        targetMessageId: this.targetMessageId || this._getLastReadId(),
         pageSize: PAGE_SIZE,
       };
+
       return this.store
         .findAll("chat-message", findArgs)
         .then((messages) => {
@@ -224,8 +226,9 @@ export default Component.extend({
     const findArgs = {
       channelId: this.chatChannel.id,
       pageSize: PAGE_SIZE,
+      direction,
+      messageId,
     };
-    findArgs[`${loadingPast ? "before" : "after"}MessageId`] = messageId;
     const channelId = this.chatChannel.id;
 
     return this.store
@@ -401,6 +404,11 @@ export default Component.extend({
     return message.id || `staged-${message.stagedId}`;
   },
 
+  _getLastReadId() {
+    return this.currentUser.chat_channel_tracking_state[this.chatChannel.id]
+      ?.chat_message_id;
+  },
+
   _markLastReadMessage(opts = { reRender: false }) {
     if (opts.reRender) {
       this.messages.forEach((m) => {
@@ -409,23 +417,22 @@ export default Component.extend({
         }
       });
     }
-    const lastReadId =
-      this.currentUser.chat_channel_tracking_state[this.chatChannel.id]
-        ?.chat_message_id;
+    const lastReadId = this._getLastReadId();
     if (!lastReadId) {
       return;
     }
 
     this.set("lastSendReadMessageId", lastReadId);
-    const indexOfLastReadyMessage =
+    const indexOfLastReadMessage =
       this.messages.findIndex((m) => m.id === lastReadId) || 0;
-    const newestUnreadMessage = this.messages[indexOfLastReadyMessage + 1];
+    let newestUnreadMessage = this.messages[indexOfLastReadMessage + 1];
 
     if (newestUnreadMessage) {
       newestUnreadMessage.set("newestMessage", true);
-      // We have the last read message from lookup, but now we need the index of the message,
-      // so that we can scroll to the message directly after it.
-      return this.scrollToMessage(newestUnreadMessage.id);
+
+      next(() => this.scrollToMessage(newestUnreadMessage.id));
+
+      return;
     }
     this._stickScrollToBottom();
   },
@@ -460,21 +467,24 @@ export default Component.extend({
       message.set("expanded", true);
     }
 
-    const messageEl = this._scrollerEl.querySelector(
-      `.chat-message-container[data-id='${messageId}']`
-    );
-    if (messageEl) {
-      schedule("afterRender", () => {
-        if (this._selfDeleted) {
-          return;
-        }
+    schedule("afterRender", () => {
+      const messageEl = this._scrollerEl.querySelector(
+        `.chat-message-container[data-id='${messageId}']`
+      );
 
-        this._scrollerEl.scrollTop =
-          messageEl.offsetTop -
-          (opts.position === "top"
-            ? this._scrollerEl.offsetTop - 20
-            : this._scrollerEl.offsetHeight);
-      });
+      if (!messageEl || this._selfDeleted) {
+        return;
+      }
+
+      // Ensure the focused message starts at 1/6 of pane
+      // to properly display separators
+      const aboveMessageOffset = this.element.clientHeight / 6;
+
+      this._scrollerEl.scrollTop =
+        messageEl.offsetTop -
+        (opts.position === "top"
+          ? this._scrollerEl.offsetTop + aboveMessageOffset
+          : this._scrollerEl.offsetHeight);
 
       if (opts.highlight) {
         messageEl.classList.add("highlighted");
@@ -492,7 +502,7 @@ export default Component.extend({
           }, 3000);
         }
       }
-    }
+    });
   },
 
   @afterRender

@@ -31,6 +31,8 @@ da:
         open: "Åben"
       archive:
         first_post_raw: "Dette emne er et arkiv af chatkanalen [%{channel_name}] (%{channel_url})."
+    bookmarkable:
+      notification_title: "besked i %{channel_name}"
     personal_chat: "personlig chat"
   discourse_push_notifications:
     popup:

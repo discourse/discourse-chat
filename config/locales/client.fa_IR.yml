@@ -87,6 +87,8 @@ fa_IR:
       reply: "پاسخ"
       edit: "ویرایش"
       copy_link: "کپی پیوند"
+      bookmark_message: "نشانک"
+      bookmark_message_edit: "ویرایش نشانک"
       restore: "بازگرداندن پیام حذف شده"
       save: "ذخیره"
       select: "انتخاب کنید"

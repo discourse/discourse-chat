@@ -132,6 +132,8 @@ ru:
       edit: "Изменить"
       copy_link: "Копировать ссылку"
       rebake_message: "Перестроить HTML"
+      bookmark_message: "Закладка"
+      bookmark_message_edit: "Редактировать закладку"
       restore: "Восстановить удаленное сообщение"
       save: "Сохранить"
       select: "Выбрать"

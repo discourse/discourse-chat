@@ -108,6 +108,7 @@ after_initialize do
   load File.expand_path('../app/serializers/user_chat_message_bookmark_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/reviewable_chat_message_serializer.rb', __FILE__)
   load File.expand_path('../lib/chat_channel_fetcher.rb', __FILE__)
+  load File.expand_path('../lib/chat_mailer.rb', __FILE__)
   load File.expand_path('../lib/chat_message_creator.rb', __FILE__)
   load File.expand_path('../lib/chat_message_processor.rb', __FILE__)
   load File.expand_path('../lib/chat_message_updater.rb', __FILE__)
@@ -122,6 +123,9 @@ after_initialize do
   load File.expand_path('../lib/direct_message_channel_creator.rb', __FILE__)
   load File.expand_path('../lib/guardian_extensions.rb', __FILE__)
   load File.expand_path('../lib/extensions/topic_view_serializer_extension.rb', __FILE__)
+  load File.expand_path('../lib/extensions/user_option_extension.rb', __FILE__)
+  load File.expand_path('../lib/extensions/user_notifications_extension.rb', __FILE__)
+  load File.expand_path('../lib/extensions/user_email_extension.rb', __FILE__)
   load File.expand_path('../lib/slack_compatibility.rb', __FILE__)
   load File.expand_path('../lib/post_notification_handler.rb', __FILE__)
   load File.expand_path('../app/jobs/regular/process_chat_message.rb', __FILE__)
@@ -131,6 +135,7 @@ after_initialize do
   load File.expand_path('../app/jobs/regular/chat_notify_watching.rb', __FILE__)
   load File.expand_path('../app/jobs/scheduled/delete_old_chat_messages.rb', __FILE__)
   load File.expand_path('../app/jobs/scheduled/update_user_counts_for_chat_channels.rb', __FILE__)
+  load File.expand_path('../app/jobs/scheduled/email_chat_notifications.rb', __FILE__)
   load File.expand_path('../app/services/chat_publisher.rb', __FILE__)
 
   if Discourse.allow_dev_populate?
@@ -138,6 +143,8 @@ after_initialize do
     load File.expand_path('../lib/discourse_dev/direct_channel.rb', __FILE__)
     load File.expand_path('../lib/discourse_dev/message.rb', __FILE__)
   end
+
+  UserNotifications.append_view_path(File.expand_path('../app/views', __FILE__))
 
   register_topic_custom_field_type(DiscourseChat::HAS_CHAT_ENABLED, :boolean)
   register_category_custom_field_type(DiscourseChat::HAS_CHAT_ENABLED, :boolean)
@@ -147,6 +154,7 @@ after_initialize do
   UserUpdater::OPTION_ATTR.push(:only_chat_push_notifications)
   UserUpdater::OPTION_ATTR.push(:chat_sound)
   UserUpdater::OPTION_ATTR.push(:ignore_channel_wide_mention)
+  UserUpdater::OPTION_ATTR.push(:chat_email_frequency)
 
   register_reviewable_type ReviewableChatMessage
 
@@ -164,6 +172,8 @@ after_initialize do
 
     Guardian.class_eval { include DiscourseChat::GuardianExtensions }
     TopicViewSerializer.class_eval { prepend DiscourseChat::TopicViewSerializerExtension }
+    UserNotifications.class_eval { prepend DiscourseChat::UserNotificationsExtension }
+    UserOption.class_eval { prepend DiscourseChat::UserOptionExtension }
     Topic.class_eval {
       has_one :chat_channel, as: :chatable
     }
@@ -175,6 +185,7 @@ after_initialize do
       has_many :chat_message_reactions, dependent: :destroy
       has_many :chat_mentions
     }
+    Jobs::UserEmail.class_eval { prepend DiscourseChat::UserEmailExtension }
 
     Bookmark.register_bookmarkable(ChatMessageBookmarkable)
   end
@@ -313,6 +324,10 @@ after_initialize do
 
   add_to_serializer(:user_option, :ignore_channel_wide_mention) do
     object.ignore_channel_wide_mention
+  end
+
+  add_to_serializer(:user_option, :chat_email_frequency) do
+    object.chat_email_frequency
   end
 
   RETENTION_SETTINGS_TO_USER_OPTION_FIELDS = {
@@ -481,4 +496,10 @@ after_initialize do
       params: %i[chat_channel_id]
     }
   })
+
+  # Dark mode email styles
+  Email::Styles.register_plugin_style do |fragment|
+    fragment.css('.chat-summary-header').each { |element| element[:dm] = 'header' }
+    fragment.css('.chat-summary-content').each { |element| element[:dm] = 'body' }
+  end
 end

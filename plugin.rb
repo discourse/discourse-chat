@@ -244,7 +244,7 @@ after_initialize do
     end
 
     Mustache.render(DiscourseChat.onebox_template, args)
-  end
+  end if Oneboxer.respond_to?(:register_local_handler)
 
   InlineOneboxer.register_local_handler('discourse_chat/chat') do |url, route|
     queryParams = CGI.parse(URI.parse(url).query) rescue {}
@@ -278,7 +278,7 @@ after_initialize do
     next if !Guardian.new.can_see_chat_channel?(chat_channel)
 
     { url: url, title: title }
-  end
+  end if InlineOneboxer.respond_to?(:register_local_handler)
 
   if respond_to?(:register_upload_unused)
     register_upload_unused do |uploads|

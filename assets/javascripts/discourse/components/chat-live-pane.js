@@ -7,10 +7,8 @@ import discourseComputed, {
   observes,
 } from "discourse-common/utils/decorators";
 import discourseDebounce from "discourse-common/lib/debounce";
-import DiscourseURL from "discourse/lib/url";
 import EmberObject, { action } from "@ember/object";
 import I18n from "I18n";
-import loadScript from "discourse/lib/load-script";
 import userPresent from "discourse/lib/user-presence";
 import { A } from "@ember/array";
 import { ajax } from "discourse/lib/ajax";
@@ -20,12 +18,7 @@ import { cancel, later, next, schedule } from "@ember/runloop";
 import { inject as service } from "@ember/service";
 import { Promise } from "rsvp";
 import { resetIdle } from "discourse/lib/desktop-notifications";
-import { resolveAllShortUrls } from "pretty-text/upload-short-url";
-import { samePrefix } from "discourse-common/lib/get-url";
-import { spinnerHTML } from "discourse/helpers/loading-spinner";
-import { decorateGithubOneboxBody } from "discourse/initializers/onebox-decorators";
-import highlightSyntax from "discourse/lib/highlight-syntax";
-import { applyLocalDates } from "discourse/lib/local-dates";
+
 import { defaultHomepage } from "discourse/lib/utilities";
 
 const MAX_RECENT_MSGS = 100;
@@ -183,7 +176,6 @@ export default Component.extend({
             return;
           }
           this.setMessageProps(messages);
-          this.decorateMessages();
         })
         .catch((err) => {
           throw err;
@@ -255,7 +247,6 @@ export default Component.extend({
             position: loadingPast ? "top" : "bottom",
           };
           this.scrollToMessage(messageId, scrollToMessageArgs);
-          this.decorateMessages();
         }
         this.setCanLoadMoreDetails(messages.resultSetMeta);
       })
@@ -572,18 +563,6 @@ export default Component.extend({
     }
   },
 
-  @action
-  @afterRender
-  decorateMessages() {
-    resolveAllShortUrls(ajax, this.siteSettings, this.element);
-    this.forceLinksToOpenNewTab();
-    lightbox(this.element.querySelectorAll("img:not(.emoji, .avatar)"));
-    this._scrollGithubOneboxes();
-    this._pluginsDecorators();
-    this._highlightCode();
-    this._renderChatTranscriptDates();
-  },
-
   @observes("floatHidden")
   onFloatHiddenChange() {
     if (!this.floatHidden) {
@@ -630,7 +609,6 @@ export default Component.extend({
         this.handleFlaggedMessage(data);
         break;
     }
-    this.decorateMessages();
   },
 
   handleSentMessage(data) {
@@ -1041,7 +1019,6 @@ export default Component.extend({
       data,
     })
       .then(() => {
-        this._resetHighlightForMessage(chatMessage.id);
         this._resetAfterSend();
       })
       .catch(popupAjaxError)
@@ -1286,27 +1263,6 @@ export default Component.extend({
     evt.preventDefault();
   },
 
-  @bind
-  forceLinksToOpenNewTab() {
-    if (this._selfDeleted) {
-      return;
-    }
-
-    const links = this.element.querySelectorAll(
-      ".chat-message-text a:not([target='_blank'])"
-    );
-    for (let linkIndex = 0; linkIndex < links.length; linkIndex++) {
-      const link = links[linkIndex];
-      if (
-        this.currentUser.chat_isolated ||
-        !DiscourseURL.isInternal(link.href) ||
-        !samePrefix(link.href)
-      ) {
-        link.setAttribute("target", "_blank");
-      }
-    }
-  },
-
   focusComposer() {
     if (
       this._selfDeleted ||
@@ -1319,113 +1275,6 @@ export default Component.extend({
     schedule("afterRender", () => {
       document.querySelector(".chat-composer-input")?.focus();
     });
-  },
-
-  _pluginsDecorators() {
-    applyLocalDates(
-      this.element.querySelectorAll(".discourse-local-date"),
-      this.siteSettings
-    );
-
-    if (this.siteSettings.spoiler_enabled) {
-      const applySpoiler = requirejs(
-        "discourse/plugins/discourse-spoiler-alert/lib/apply-spoiler"
-      ).default;
-      this.element.querySelectorAll(".spoiler").forEach((spoiler) => {
-        spoiler.classList.remove("spoiler");
-        spoiler.classList.add("spoiled");
-        applySpoiler(spoiler);
-      });
-    }
-
-    this.element
-      .querySelectorAll(".lazyYT:not(.lazyYT-video-loaded)")
-      .forEach((iframe) => {
-        $(iframe).lazyYT();
-      });
-
-    decorateGithubOneboxBody(this.element);
-  },
-
-  _getScrollParent(node, maxParentSelector) {
-    if (node === null || node.classList.contains(maxParentSelector)) {
-      return null;
-    }
-
-    if (node.scrollHeight > node.clientHeight) {
-      return node;
-    } else {
-      return this._getScrollParent(node.parentNode, maxParentSelector);
-    }
-  },
-
-  _scrollGithubOneboxes() {
-    this.element
-      .querySelectorAll(".onebox.githubblob li.selected")
-      .forEach((line) => {
-        const scrollingElement = this._getScrollParent(line, "onebox");
-
-        // most likely a very small file which doesn’t need scrolling
-        if (!scrollingElement) {
-          return;
-        }
-
-        const scrollBarWidth =
-          scrollingElement.offsetHeight - scrollingElement.clientHeight;
-
-        scrollingElement.scroll({
-          top:
-            line.offsetTop +
-            scrollBarWidth -
-            scrollingElement.offsetHeight / 2 +
-            line.offsetHeight / 2,
-        });
-      });
-  },
-
-  _resetHighlightForMessage(chatMessageId) {
-    document
-      .querySelector(
-        `.chat-message-container[data-id='${chatMessageId}'] .chat-message-text`
-      )
-      ?.classList.remove("hljs-complete");
-  },
-
-  _highlightCode() {
-    document.querySelectorAll(".chat-message-text").forEach((chatMessageEl) => {
-      // no need to do this for every single message every time a message changes
-      if (!chatMessageEl.classList.contains("hljs-complete")) {
-        highlightSyntax(chatMessageEl, this.siteSettings, this.session);
-        chatMessageEl.classList.add("hljs-complete");
-      }
-    });
-  },
-
-  _renderChatTranscriptDates() {
-    document
-      .querySelectorAll(".discourse-chat-transcript")
-      .forEach((transcriptEl) => {
-        const dateTimeRaw = transcriptEl.dataset["datetime"];
-        const dateTimeLinkEl = transcriptEl.querySelector(
-          ".chat-transcript-datetime a"
-        );
-
-        // same as highlight, no need to do this for every single message every time
-        // any message changes
-        if (dateTimeLinkEl.innerText !== "") {
-          return;
-        }
-
-        if (this.currentUserTimezone) {
-          dateTimeLinkEl.innerText = moment
-            .tz(dateTimeRaw, this.currentUserTimezone)
-            .format(I18n.t("dates.long_no_year"));
-        } else {
-          dateTimeLinkEl.innerText = moment(dateTimeRaw).format(
-            I18n.t("dates.long_no_year")
-          );
-        }
-      });
   },
 
   @afterRender
@@ -1444,23 +1293,3 @@ export default Component.extend({
     });
   },
 });
-
-function lightbox(images) {
-  loadScript("/javascripts/jquery.magnific-popup.min.js").then(function () {
-    $(images).magnificPopup({
-      type: "image",
-      closeOnContentClick: false,
-      mainClass: "mfp-zoom-in",
-      tClose: I18n.t("lightbox.close"),
-      tLoading: spinnerHTML,
-      image: {
-        verticalFit: true,
-      },
-      callbacks: {
-        elementParse: (item) => {
-          item.src = item.el[0].src;
-        },
-      },
-    });
-  });
-}

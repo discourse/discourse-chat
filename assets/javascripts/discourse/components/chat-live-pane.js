@@ -1210,6 +1210,7 @@ export default Component.extend({
 
   _handleDraft({ channelId, draft }) {
     this.chatDraftHandler.setForChannel(channelId, draft);
+    this.set("draft", draft);
   },
 
   @action

@@ -205,7 +205,7 @@ describe 'discourse-chat' do
 
       it "renders messages" do
         expect(Oneboxer.preview("#{chat_url}?messageId=#{chat_message.id}")).to match_html <<~HTML
-          <div class="discourse-chat-transcript" data-message-id="#{chat_message.id}" data-username="#{user.username}" data-datetime="#{chat_message.created_at}" data-channel-name="#{chat_channel.name}" data-channel-id="#{chat_channel.id}">
+          <div class="discourse-chat-transcript" data-message-id="#{chat_message.id}" data-username="#{user.username}" data-datetime="#{chat_message.created_at.iso8601}" data-channel-name="#{chat_channel.name}" data-channel-id="#{chat_channel.id}">
           <div class="chat-transcript-user">
             <div class="chat-transcript-user-avatar">
               <a class="trigger-user-card" data-user-card="#{user.username}" aria-hidden="true" tabindex="-1">

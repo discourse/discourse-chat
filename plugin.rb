@@ -263,6 +263,7 @@ after_initialize do
       args[:avatar_url] = message.user.avatar_template_url.gsub('{size}', '20')
       args[:cooked] = message.cooked
       args[:created_at] = message.created_at
+      args[:created_at_str] = message.created_at.iso8601
     end
 
     Mustache.render(DiscourseChat.onebox_template, args)

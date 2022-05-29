@@ -102,9 +102,9 @@ module DiscourseChat::ChatChannelFetcher
     unread_counts_per_channel = unread_counts(channels, guardian.user.id)
 
     channels.filter_map do |channel|
-      next unless guardian.can_see_chat_channel?(channel)
+      next if !guardian.can_see_chat_channel?(channel)
 
-      membership = memberships.detect { |m| m.chat_channel_id == channel.id }
+      membership = memberships.find { |m| m.chat_channel_id == channel.id }
       if membership
         channel = decorate_channel_from_membership(
           guardian.user.id,
@@ -151,16 +151,17 @@ module DiscourseChat::ChatChannelFetcher
 
     unread_counts_per_channel = unread_counts(channels, user_id)
 
-    channels.map do |channel|
+    channels.filter_map do |channel|
+      next if !guardian.can_see_chat_channel?(channel)
+
       channel = decorate_channel_from_membership(
         user_id,
         channel,
-        memberships.detect { |m| m.user_id == user_id && m.chat_channel_id == channel.id }
+        memberships.find { |m| m.user_id == user_id && m.chat_channel_id == channel.id }
       )
 
-      if !channel.muted
-        channel.unread_count = unread_counts_per_channel[channel.id]
-      end
+      # direct message channels cannot be muted, so we always need the unread count
+      channel.unread_count = unread_counts_per_channel[channel.id]
 
       channel
     end

@@ -50,7 +50,7 @@
         <%- end %>
         <tr>
           <td colspan="100%" style="padding:<%= rtl? ? '2em 2em 0 0' : '2em 0 0 2em' %>">
-            <a class="more-messages-link" href="<%= messages.first.url %>">
+            <a class="more-messages-link" href="<%= messages.first.full_url %>">
               <%- if other_messages_count <= 0 %>
                 <%= I18n.t("user_notifications.chat_summary.view_messages", count: messages.size)%>
               <%- else %>

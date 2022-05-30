@@ -57,7 +57,7 @@ class DiscourseChat::MessageMover
   private
 
   def find_messages(message_ids, channel)
-    ChatMessage.where(id: message_ids, chat_channel_id: channel.id).order(:created_at)
+    ChatMessage.where(id: message_ids, chat_channel_id: channel.id).order(created_at: :asc)
   end
 
   def create_temp_table
@@ -84,10 +84,29 @@ class DiscourseChat::MessageMover
   # We purposefully omit in_reply_to_id when creating the messages in the
   # new channel, because it could be pointing to a message that has not
   # been moved.
+  #
+  # NOTE: The contortions with ROW_NUMBER along with beginning the created_at
+  # time 5 seconds in the future are to ensure that the moved messages are
+  # always added to the end of the messages stream (which is ordered by
+  # created_at in ChatController) and spaced out appropriately for ordering
+  # in 0.5 second increments, so not all the timestamps appear identical in the UI.
   def create_destination_messages_in_channel(destination_channel)
-    moved_message_ids = DB.query_single(<<~SQL, message_ids: @ordered_source_message_ids, destination_channel_id: destination_channel.id)
+    query_args = {
+      message_ids: @ordered_source_message_ids,
+      destination_channel_id: destination_channel.id,
+      future_start: Time.zone.now + 5.seconds
+    }
+    moved_message_ids = DB.query_single(<<~SQL, query_args)
       INSERT INTO chat_messages(chat_channel_id, user_id, message, cooked, cooked_version, created_at, updated_at)
-      SELECT :destination_channel_id, user_id, message, cooked, cooked_version, CLOCK_TIMESTAMP(), CLOCK_TIMESTAMP()
+      SELECT :destination_channel_id,
+             user_id,
+             message,
+             cooked,
+             cooked_version,
+             :future_start::timestamp + (
+                ROW_NUMBER() OVER (ORDER BY chat_messages.created_at) * interval '1 second' / 2
+             ),
+             CURRENT_TIMESTAMP
       FROM chat_messages
       WHERE id IN (:message_ids)
       RETURNING id

@@ -188,7 +188,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     end
 
     order = direction == FUTURE ? :asc : :desc
-    messages = messages.order(id: order).limit(page_size).to_a
+    messages = messages.order(created_at: order).limit(page_size).to_a
 
     can_load_more_past = nil
     can_load_more_future = nil

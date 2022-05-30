@@ -789,12 +789,14 @@ export default Component.extend({
   },
 
   @bind
-  _updateLastReadMessage() {
+  _updateLastReadMessage(wait = READ_INTERVAL) {
+    cancel(this._updateReadTimer);
+
     if (this._selfDeleted) {
       return;
     }
 
-    return later(
+    this._updateReadTimer = later(
       this,
       () => {
         if (this._selfDeleted) {
@@ -828,9 +830,9 @@ export default Component.extend({
           });
         }
 
-        this._updateReadTimer = this._updateLastReadMessage();
+        this._updateLastReadMessage();
       },
-      READ_INTERVAL
+      wait
     );
   },
 
@@ -840,13 +842,8 @@ export default Component.extend({
 
   _startLastReadRunner() {
     if (!isTesting()) {
-      cancel(this._updateReadTimer);
       next(this, () => {
-        this._updateLastReadMessage();
-        this._updateReadTimer = later(
-          this._updateLastReadMessage,
-          READ_INTERVAL
-        );
+        this._updateLastReadMessage(0);
       });
     }
   },

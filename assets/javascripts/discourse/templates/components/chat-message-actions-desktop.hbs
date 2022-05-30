@@ -17,15 +17,6 @@
       }}
     {{/if}}
 
-    {{#if messageCapabilities.canReply}}
-      {{d-button
-        class="btn-flat reply-btn"
-        action=messageActions.reply
-        icon="reply"
-        title="chat.reply"
-      }}
-    {{/if}}
-
     {{#if messageCapabilities.canBookmark}}
       {{#d-button
         class="btn-flat bookmark-btn"
@@ -33,6 +24,15 @@
       }}
         {{bookmark-icon bookmark=message.bookmark}}
       {{/d-button}}
+    {{/if}}
+
+    {{#if messageCapabilities.canReply}}
+      {{d-button
+        class="btn-flat reply-btn"
+        action=messageActions.reply
+        icon="reply"
+        title="chat.reply"
+      }}
     {{/if}}
 
     {{#if secondaryButtons.length}}

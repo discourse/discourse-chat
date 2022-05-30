@@ -22,7 +22,6 @@ discourseModule("Discourse Chat | Component | chat-message", function (hooks) {
       setReplyTo=setReplyTo
       replyMessageClicked=replyMessageClicked
       editButtonClicked=editButtonClicked
-      afterExpand=decorateMessages
       selectingMessages=selectingMessages
       onStartSelectingMessages=onStartSelectingMessages
       onSelectMessage=onSelectMessage

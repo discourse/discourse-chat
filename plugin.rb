@@ -39,6 +39,7 @@ register_asset 'stylesheets/mobile/mobile.scss', :mobile
 register_asset 'stylesheets/desktop/desktop.scss', :desktop
 register_asset 'stylesheets/sidebar-extensions.scss'
 register_asset 'stylesheets/common/chat-message-separator.scss'
+register_asset 'stylesheets/common/chat-onebox.scss'
 
 register_svg_icon "comments"
 register_svg_icon "comment-slash"
@@ -68,6 +69,13 @@ after_initialize do
 
     def self.allowed_group_ids
       SiteSetting.chat_allowed_groups.to_s.split("|").map(&:to_i)
+    end
+
+    def self.onebox_template
+      @onebox_template ||= begin
+        path = "#{Rails.root}/plugins/discourse-chat/lib/onebox/templates/discourse_chat.mustache"
+        File.read(path)
+      end
     end
   end
 
@@ -197,6 +205,104 @@ after_initialize do
     end
     results
   end
+
+  Oneboxer.register_local_handler('discourse_chat/chat') do |url, route|
+    queryParams = CGI.parse(URI.parse(url).query) rescue {}
+    messageId = queryParams['messageId']&.first
+
+    if messageId.present?
+      message = ChatMessage.find_by(id: messageId)
+      next if !message
+
+      chat_channel = message.chat_channel
+      user = message.user
+      next if !chat_channel || !user
+    else
+      chat_channel = ChatChannel.find_by(id: route[:channel_id])
+      next if !chat_channel
+    end
+
+    next if !Guardian.new.can_see_chat_channel?(chat_channel)
+
+    name = if chat_channel.name.present?
+      chat_channel.name
+    elsif chat_channel.chatable_type == 'Topic'
+      chat_channel.chatable.title
+    end
+
+    users = chat_channel
+      .user_chat_channel_memberships
+      .includes(:user)
+      .limit(10)
+      .map do |membership|
+        {
+          username: membership.user.username,
+          avatar_url: membership.user.avatar_template_url.gsub('{size}', '30'),
+        }
+      end
+
+    remaining_user_count_str = if chat_channel.user_count > users.size
+      I18n.t('chat.onebox.and_x_others', count: chat_channel.user_count - users.size)
+    end
+
+    args = {
+      url: url,
+      channel_id: chat_channel.id,
+      channel_name: name,
+      description: chat_channel.description,
+      user_count_str: I18n.t('chat.onebox.x_members', count: chat_channel.user_count),
+      users: users,
+      remaining_user_count_str: remaining_user_count_str,
+      is_category: chat_channel.chatable_type == 'Category',
+      is_topic: chat_channel.chatable_type == 'Topic',
+      color: chat_channel.chatable_type == 'Category' ? chat_channel.chatable.color : nil,
+    }
+
+    if message.present?
+      args[:message_id] = message.id
+      args[:username] = message.user.username
+      args[:avatar_url] = message.user.avatar_template_url.gsub('{size}', '20')
+      args[:cooked] = message.cooked
+      args[:created_at] = message.created_at
+      args[:created_at_str] = message.created_at.iso8601
+    end
+
+    Mustache.render(DiscourseChat.onebox_template, args)
+  end if Oneboxer.respond_to?(:register_local_handler)
+
+  InlineOneboxer.register_local_handler('discourse_chat/chat') do |url, route|
+    queryParams = CGI.parse(URI.parse(url).query) rescue {}
+    messageId = queryParams['messageId']&.first
+
+    if messageId.present?
+      message = ChatMessage.find_by(id: messageId)
+      next if !message
+
+      chat_channel = message.chat_channel
+      user = message.user
+      next if !chat_channel || !user
+
+      title = I18n.t(
+        'chat.onebox.inline_to_message',
+        message_id: message.id,
+        chat_channel: chat_channel.name,
+        username: user.username
+      )
+    else
+      chat_channel = ChatChannel.find_by(id: route[:channel_id])
+      next if !chat_channel
+
+      title = if chat_channel.name.present?
+        I18n.t('chat.onebox.inline_to_channel', chat_channel: chat_channel.name)
+      elsif chat_channel.chatable_type == 'Topic'
+        I18n.t('chat.onebox.inline_to_topic_channel', topic_title: chat_channel.chatable.title)
+      end
+    end
+
+    next if !Guardian.new.can_see_chat_channel?(chat_channel)
+
+    { url: url, title: title }
+  end if InlineOneboxer.respond_to?(:register_local_handler)
 
   if respond_to?(:register_upload_unused)
     register_upload_unused do |uploads|

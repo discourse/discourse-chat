@@ -103,8 +103,6 @@
           color: var(--primary-medium);
           font-size: var(--font-up-4);
         }
-
-        border: 1px solid var(--primary-low);
       }
 
       .chat-message-reaction,
@@ -116,14 +114,22 @@
       .reply-btn,
       .react-btn,
       .bookmark-btn {
-        border-radius: 3px;
-        width: calc(100% / 4 - 1.5em);
+        flex-grow: 1;
         height: 42px;
       }
 
+      .bookmark-btn,
+      .react-btn {
+        > .svg-icon-title,
+        > .svg-icon {
+          font-size: var(--font-up-4);
+        }
+      }
+
       .reply-btn {
+        border-radius: 3px;
         .d-icon {
-          color: var(--secondary);
+          font-size: var(--font-up-4);
         }
       }
     }

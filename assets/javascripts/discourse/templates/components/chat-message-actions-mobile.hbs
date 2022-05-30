@@ -1,10 +1,18 @@
 <div class="chat-msgactions-backdrop">
-  <div role="button" class="collapse-area" {{on "touchstart" this.collapseMenu}}></div>
+  <div
+    role="button"
+    class="collapse-area"
+    {{on "touchstart" this.collapseMenu}}
+  ></div>
   <div class="chat-msgactions">
     <div class="selected-message-container">
       <div class="selected-message">
         {{chat-user-avatar user=message.user}}
-        <span {{on "touchstart" this.expandReply}} role="button" class="selected-message-reply {{if isExpanded "is-expanded"}}">
+        <span
+          {{on "touchstart" this.expandReply}}
+          role="button"
+          class="selected-message-reply {{if isExpanded "is-expanded"}}"
+        >
           {{message.message}}
         </span>
       </div>
@@ -37,7 +45,9 @@
 
           {{d-button
             class="btn-flat react-btn"
-            action=(action "actAndCloseMenu" messageActions.startReactionForMsgActions)
+            action=(action
+              "actAndCloseMenu" messageActions.startReactionForMsgActions
+            )
             icon="discourse-emojis"
             title="chat.react"
           }}
@@ -54,7 +64,7 @@
 
         {{#if messageCapabilities.canReply}}
           {{d-button
-            class="chat-message-action reply-btn btn-primary"
+            class="chat-message-action reply-btn btn-flat"
             action=(action "actAndCloseMenu" messageActions.reply)
             icon="reply"
             title="chat.reply"

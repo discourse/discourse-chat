@@ -47,7 +47,6 @@ acceptance("Chat Draft Handler", function (needs) {
     chatDraftHandler.setForChannel(1, {
       value: "",
     });
-
     assert.deepEqual(chatDraftHandler.getForChannel(1), DEFAULT_DRAFT);
   });
 });

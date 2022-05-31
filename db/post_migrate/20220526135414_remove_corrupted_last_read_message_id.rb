@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
 class RemoveCorruptedLastReadMessageId < ActiveRecord::Migration[7.0]
-  def change
+  def down
+    raise ActiveRecord::IrreversibleMigration
+  end
+
+  def up
     # Delete memberships for deleted channels
     execute <<~SQL
       DELETE FROM user_chat_channel_memberships uccm
@@ -36,5 +40,74 @@ class RemoveCorruptedLastReadMessageId < ActiveRecord::Migration[7.0]
         SELECT id FROM chat_messages WHERE chat_messages.chat_channel_id = uccm.chat_channel_id
       )
     SQL
+
+    # Nullify in_reply_to where message is deleted
+    execute <<~SQL
+      UPDATE chat_messages cm
+      SET in_reply_to_id = NULL
+      WHERE NOT EXISTS (
+        SELECT FROM chat_messages cm2
+        WHERE cm.in_reply_to_id = cm2.id
+      );
+    SQL
+
+    # Delete chat_message_revisions with no message linked
+    execute <<~SQL
+      DELETE FROM chat_message_revisions cmr
+      WHERE NOT EXISTS (
+        SELECT FROM chat_messages cm
+        WHERE cm.id = cmr.chat_message_id
+      );
+    SQL
+
+    # Delete chat_message_reactions with no message linked
+    execute <<~SQL
+      DELETE FROM chat_message_reactions cmr
+      WHERE NOT EXISTS (
+        SELECT FROM chat_messages cm
+        WHERE cm.id = cmr.chat_message_id
+      );
+    SQL
+
+    # Delete bookmarks with no message linked
+    execute <<~SQL
+      DELETE FROM bookmarks b
+      WHERE b.bookmarkable_type = 'ChatMessage'
+      AND NOT EXISTS (
+        SELECT FROM chat_messages cm
+        WHERE cm.id = b.bookmarkable_id
+      );
+    SQL
+
+    # Delete chat_mention with no message linked
+    execute <<~SQL
+      DELETE FROM chat_mentions
+      WHERE NOT EXISTS (
+        SELECT FROM chat_messages cm
+        WHERE cm.id = chat_mentions.chat_message_id
+      );
+    SQL
+
+    # Delete chat_webhook_event with no message linked
+    execute <<~SQL
+      DELETE FROM chat_webhook_events cwe
+      WHERE NOT EXISTS (
+        SELECT FROM chat_messages cm
+        WHERE cm.id = cwe.chat_message_id
+      );
+    SQL
+
+    # Delete chat_uploads with no message linked
+    execute <<~SQL
+      DELETE FROM chat_uploads
+      WHERE NOT EXISTS (
+        SELECT FROM chat_messages cm
+        WHERE cm.id = chat_uploads.chat_message_id
+      );
+    SQL
+
+    # usage has been dropped in https://github.com/discourse/discourse-chat/commit/1c110b71b28411dc7ac3ab9e3950e0bbf38d7970
+    # but apparently table never got dropped
+    drop_table :user_chat_channel_last_reads
   end
 end

@@ -363,4 +363,79 @@ describe ChatMessage do
       expect(message.send(:calc_in_the_past_seconds_for_duplicates, 1.0)).to eq(60)
     end
   end
+
+  describe '#destroy' do
+    it 'nullify messages with in_reply_to_id to this destroyed message' do
+      message_1 = Fabricate(:chat_message)
+      message_2 = Fabricate(:chat_message, in_reply_to_id: message_1.id)
+      message_3 = Fabricate(:chat_message, in_reply_to_id: message_2.id)
+
+      expect(message_2.in_reply_to_id).to eq(message_1.id)
+
+      message_1.destroy!
+
+      expect(message_2.reload.in_reply_to_id).to be_nil
+      expect(message_3.reload.in_reply_to_id).to eq(message_2.id)
+    end
+
+    it 'destroys chat_message_revisions' do
+      message_1 = Fabricate(:chat_message)
+      revision_1 = Fabricate(:chat_message_revision, chat_message: message_1)
+
+      message_1.destroy!
+
+      expect { revision_1.reload }.to raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it 'destroys chat_message_reactions' do
+      message_1 = Fabricate(:chat_message)
+      reaction_1 = Fabricate(:chat_message_reaction, chat_message: message_1)
+
+      message_1.destroy!
+
+      expect { reaction_1.reload }.to raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it 'destroys chat_mention' do
+      message_1 = Fabricate(:chat_message)
+      mention_1 = Fabricate(:chat_mention, chat_message: message_1)
+
+      message_1.destroy!
+
+      expect { mention_1.reload }.to raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it 'destroys chat_webhook_event' do
+      message_1 = Fabricate(:chat_message)
+      webhook_1 = Fabricate(:chat_webhook_event, chat_message: message_1)
+
+      message_1.destroy!
+
+      expect { webhook_1.reload }.to raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it 'destroys chat_uploads' do
+      message_1 = Fabricate(:chat_message)
+      chat_upload_1 = Fabricate(:chat_upload, chat_message: message_1)
+
+      message_1.destroy!
+
+      expect { chat_upload_1.reload }.to raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    context 'bookmarks' do
+      before do
+        Bookmark.register_bookmarkable(ChatMessageBookmarkable)
+      end
+
+      it 'destroys bookmarks' do
+        message_1 = Fabricate(:chat_message)
+        bookmark_1 = Fabricate(:bookmark, bookmarkable: message_1)
+
+        message_1.destroy!
+
+        expect { bookmark_1.reload }.to raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
+  end
 end

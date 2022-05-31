@@ -9,13 +9,14 @@ class ChatMessage < ActiveRecord::Base
   belongs_to :chat_channel
   belongs_to :user
   belongs_to :in_reply_to, class_name: "ChatMessage"
-  has_many :revisions, class_name: "ChatMessageRevision"
-  has_many :reactions, class_name: "ChatMessageReaction"
-  has_many :bookmarks, as: :bookmarkable
-  has_many :chat_uploads
+  has_many :replies, class_name: "ChatMessage", foreign_key: "in_reply_to_id", dependent: :nullify
+  has_many :revisions, class_name: "ChatMessageRevision", dependent: :destroy
+  has_many :reactions, class_name: "ChatMessageReaction", dependent: :destroy
+  has_many :bookmarks, as: :bookmarkable, dependent: :destroy
+  has_many :chat_uploads, dependent: :destroy
   has_many :uploads, through: :chat_uploads
-  has_one :chat_webhook_event
-  has_one :chat_mention
+  has_one :chat_webhook_event, dependent: :destroy
+  has_one :chat_mention, dependent: :destroy
 
   scope :in_public_channel, -> {
     joins(:chat_channel)

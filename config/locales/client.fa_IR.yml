@@ -58,6 +58,9 @@ fa_IR:
         no_public_available: "هیچ کانال عمومی برای دنبال کردن شما در این زمان وجود ندارد."
         public_available: "کانال‌های عمومی در دسترس شما برای دنبال کردن وجود دارد."
         start_direct_message: "شما همچنین می‌توانید یک گفتگو شخصی را با یک یا چند کاربر شروع کنید."
+      email_frequency:
+        never: "هرگز"
+        title: "آگاه‌سازی‌های ایمیل"
       enable: "فعال کردن گفتگو"
       flag: "پرچم"
       flagged: "این پیام برای بررسی پرچم گذاری شده است"
@@ -80,6 +83,7 @@ fa_IR:
         channels_list: "فهرست کانال‌های گفتگو"
       no_public_channels: "شما هنوز عضو هیچ کانالی نشده‌اید."
       open: "باز کردن گفتگو..."
+      close_full_page: "بستن گفتگو تمام صفحه"
       open_message: "پیام را در گفتگو باز کن"
       placeholder_start_conversation: شروع گفتگو با %{usernames}
       remove_upload: "حذف پرونده"

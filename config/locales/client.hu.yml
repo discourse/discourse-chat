@@ -74,6 +74,11 @@ hu:
         public_available: "Vannak nyilvános csatornák, melyeket követhet."
         start_direct_message: "Személyes csevegést is indíthat egy vagy több felhasználóval."
         title: "Kezdje azzal, hogy csatlakozik egy csatornához"
+      email_frequency:
+        description: "Csak akkor küldünk e-mailt, ha az elmúlt 15 percben nem láttuk."
+        never: "Soha"
+        title: "E-mail értesítések"
+        when_away: "Csak ha távol van"
       enable: "Csevegés engedélyezése"
       flag: "Jelentés"
       flagged: "Ezt az üzenetet felülvizsgálatra jelentették"

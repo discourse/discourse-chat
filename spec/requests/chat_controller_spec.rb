@@ -45,7 +45,7 @@ RSpec.describe DiscourseChat::ChatController do
       expect(response.status).to eq(400)
     end
 
-    it "returns the latest messages in created_at order" do
+    it "returns the latest messages in created_at, id order" do
       get "/chat/#{chat_channel.id}/messages.json", params: { page_size: page_size }
       messages = response.parsed_body["chat_messages"]
       expect(messages.count).to eq(page_size)
@@ -136,7 +136,7 @@ RSpec.describe DiscourseChat::ChatController do
     end
 
     describe "scrolling to the past" do
-      it "returns the correct messages in created_at order" do
+      it "returns the correct messages in created_at, id order" do
         get "/chat/#{chat_channel.id}/messages.json", params: { message_id: message_40.id, direction: described_class::PAST, page_size: page_size }
         messages = response.parsed_body["chat_messages"]
         expect(messages.count).to eq(page_size)
@@ -158,7 +158,7 @@ RSpec.describe DiscourseChat::ChatController do
     end
 
     describe "scrolling to the future" do
-      it "returns the correct messages in created_at order when there are many after" do
+      it "returns the correct messages in created_at, id order when there are many after" do
         get "/chat/#{chat_channel.id}/messages.json", params: { message_id: message_10.id, direction: described_class::FUTURE, page_size: page_size }
         messages = response.parsed_body["chat_messages"]
         expect(messages.count).to eq(page_size)

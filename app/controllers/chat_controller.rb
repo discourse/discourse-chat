@@ -187,8 +187,10 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
       messages = messages.where("id #{condition} ?", message_id.to_i)
     end
 
-    order = direction == FUTURE ? :asc : :desc
-    messages = messages.order(created_at: order).limit(page_size).to_a
+    # NOTE: This order is reversed when we return the ChatView below if the direction
+    # is not FUTURE.
+    order = direction == FUTURE ? "ASC" : "DESC"
+    messages = messages.order("created_at #{order}, id #{order}").limit(page_size).to_a
 
     can_load_more_past = nil
     can_load_more_future = nil

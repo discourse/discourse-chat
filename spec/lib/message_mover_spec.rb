@@ -81,18 +81,14 @@ describe DiscourseChat::MessageMover do
       )
     end
 
-    it "preserves the order of the messages in the destination channel with slightly spaced out future created_at dates" do
-      freeze_time
+    it "preserves the order of the messages in the destination channel" do
       move!
-      moved_messages = ChatMessage.where(chat_channel: destination_channel).order(created_at: :asc).last(3)
+      moved_messages = ChatMessage.where(chat_channel: destination_channel).order("created_at ASC, id ASC").last(3)
       expect(moved_messages.map(&:message)).to eq([
         "the first to be moved",
         "message deux @testmovechat",
         "the third message"
       ])
-      expect(moved_messages.first.created_at).to eq_time(Time.zone.now + 5.5.seconds)
-      expect(moved_messages.second.created_at).to eq_time(Time.zone.now + 6.seconds)
-      expect(moved_messages.third.created_at).to eq_time(Time.zone.now + 6.5.seconds)
     end
 
     it "updates references for reactions, uploads, revisions, mentions, etc." do
@@ -103,7 +99,7 @@ describe DiscourseChat::MessageMover do
       webhook_event = Fabricate(:chat_webhook_event, chat_message: message3)
       move!
 
-      moved_messages = ChatMessage.where(chat_channel: destination_channel).order(:created_at).last(3)
+      moved_messages = ChatMessage.where(chat_channel: destination_channel).order("created_at ASC, id ASC").last(3)
       expect(reaction.reload.chat_message_id).to eq(moved_messages.first.id)
       expect(upload.reload.chat_message_id).to eq(moved_messages.first.id)
       expect(mention.reload.chat_message_id).to eq(moved_messages.second.id)

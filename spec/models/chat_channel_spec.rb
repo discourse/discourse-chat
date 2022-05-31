@@ -154,6 +154,42 @@ describe ChatChannel do
     end
   end
 
+  describe ".public_channels" do
+    context 'a topic used as chatable is destroyed' do
+      fab!(:topic_channel_1) { Fabricate(:chat_channel, chatable: Fabricate(:topic)) }
+      fab!(:topic_channel_2) { Fabricate(:chat_channel, chatable: Fabricate(:topic)) }
+      fab!(:category_channel_1) { Fabricate(:chat_channel, chatable: Fabricate(:category)) }
+
+      before do
+        topic_channel_1.chatable.trash!
+      end
+
+      it 'doesn’t list the channel' do
+        ids = ChatChannel.public_channels.pluck(:chatable_id)
+        expect(ids).to_not include(topic_channel_1.chatable_id)
+        expect(ids).to include(topic_channel_2.chatable_id)
+        expect(ids).to include(category_channel_1.chatable_id)
+      end
+    end
+
+    context 'a category used as chatable is destroyed' do
+      fab!(:category_channel_1) { Fabricate(:chat_channel, chatable: Fabricate(:category)) }
+      fab!(:category_channel_2) { Fabricate(:chat_channel, chatable: Fabricate(:category)) }
+      fab!(:topic_channel_1) { Fabricate(:chat_channel, chatable: Fabricate(:topic)) }
+
+      before do
+        category_channel_1.chatable.destroy!
+      end
+
+      it 'doesn’t list the channel' do
+        ids = ChatChannel.public_channels.pluck(:chatable_id)
+        expect(ids).to_not include(category_channel_1.chatable_id)
+        expect(ids).to include(topic_channel_1.chatable_id)
+        expect(ids).to include(category_channel_2.chatable_id)
+      end
+    end
+  end
+
   describe "#archived!" do
     before do
       public_topic_channel.update!(status: :read_only)

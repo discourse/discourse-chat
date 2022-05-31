@@ -125,6 +125,7 @@ after_initialize do
   load File.expand_path('../lib/chat_notifier.rb', __FILE__)
   load File.expand_path('../lib/chat_seeder.rb', __FILE__)
   load File.expand_path('../lib/chat_transcript_service.rb', __FILE__)
+  load File.expand_path('../lib/duplicate_message_validator.rb', __FILE__)
   load File.expand_path('../lib/message_mover.rb', __FILE__)
   load File.expand_path('../lib/chat_message_bookmarkable.rb', __FILE__)
   load File.expand_path('../lib/chat_channel_archive_service.rb', __FILE__)

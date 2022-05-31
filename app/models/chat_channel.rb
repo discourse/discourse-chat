@@ -205,6 +205,8 @@ end
 #  name                    :string
 #  description             :text
 #  status                  :integer          default("open"), not null
+#  user_count              :integer          default(0), not null
+#  last_message_sent_at    :datetime         not null
 #
 # Indexes
 #

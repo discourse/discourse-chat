@@ -24,29 +24,26 @@ acceptance("Chat Draft Handler", function (needs) {
     });
   });
 
+  needs.hooks.beforeEach(function () {
+    Object.defineProperty(this, "chatDraftHandler", {
+      get: () => this.container.lookup("service:chat-draft-handler"),
+    });
+  });
+
   test("fetches the drafts correctly from current user", async function (assert) {
-    const chatDraftHandler = this.container.lookup(
-      "service:chat-draft-handler"
-    );
-    assert.deepEqual(chatDraftHandler.getForChannel(10), currentDraft);
+    assert.deepEqual(this.chatDraftHandler.getForChannel(10), currentDraft);
   });
 
   test("stores draft correctly", async function (assert) {
-    const chatDraftHandler = this.container.lookup(
-      "service:chat-draft-handler"
-    );
     const draft = { value: "Hello" };
-    chatDraftHandler.setForChannel(1, draft);
-    assert.deepEqual(chatDraftHandler.getForChannel(1), draft);
+    this.chatDraftHandler.setForChannel(1, draft);
+    assert.deepEqual(this.chatDraftHandler.getForChannel(1), draft);
   });
 
   test("returns default draft if draft is empty", async function (assert) {
-    const chatDraftHandler = this.container.lookup(
-      "service:chat-draft-handler"
-    );
-    chatDraftHandler.setForChannel(1, {
+    this.chatDraftHandler.setForChannel(1, {
       value: "",
     });
-    assert.deepEqual(chatDraftHandler.getForChannel(1), DEFAULT_DRAFT);
+    assert.deepEqual(this.chatDraftHandler.getForChannel(1), DEFAULT_DRAFT);
   });
 });

@@ -29,6 +29,12 @@ sv:
       cancel_reply: "Avbryt svar"
       chat_channels: "Kanaler"
       leave: "Lämna kanal"
+      move_to_channel:
+        title: "Flytta meddelanden till kanal"
+        instructions:
+          one: "Du flyttar <strong>1</strong> -meddelande. Välj en destinationskanal. Ett platshållarmeddelande kommer att skapas i kanalen <strong>%{channelTitle}</strong> för att indikera att detta meddelande har flyttats."
+          other: "Du flyttar <strong>%{count}</strong> meddelanden. Välj en destinationskanal. Ett platshållarmeddelande kommer att skapas i kanalen <strong>%{channelTitle}</strong> för att indikera att dessa meddelanden har flyttats."
+        confirm_move: "Flytta meddelanden"
       channel_settings:
         title: "Kanalinställningar"
         close_channel: "Stäng kanal..."
@@ -37,6 +43,7 @@ sv:
         delete_channel: "Radera kanal..."
       channel_archive:
         title: "Arkivera kanal"
+        instructions: "<p>Arkivering av en kanal sätter den i skrivskyddat läge och flyttar alla meddelanden från kanalen till ett nytt eller existerande ämne. Inga nya meddelanden kan skickas och inga befintliga meddelanden kan redigeras eller raderas.</p><p>Är du säker på att du vill arkivera kanalen <strong>%{channelTitle}</strong>?</p>"
         process_started: "Arkiveringsprocessen har påbörjats. Denna modal kommer snart att stängas och du får ett personligt meddelande när arkiveringen är klar."
         retry: "Försök igen"
       channel_open:
@@ -67,6 +74,11 @@ sv:
         public_available: "Det finns offentliga kanaler tillgängliga för dig att följa."
         start_direct_message: "Du kan också starta en personlig chatt med en eller flera användare."
         title: "Kom igång genom att gå med i en kanal"
+      email_frequency:
+        description: "Vi skickar bara e-post till dig om vi inte har sett dig under de senaste 15 minuterna."
+        never: "Aldrig"
+        title: "E-postaviseringar"
+        when_away: "Endast när du är borta"
       enable: "Aktivera chatt"
       flag: "Flagga"
       flagged: "Detta meddelande har flaggats för granskning"
@@ -104,6 +116,7 @@ sv:
         description: "Skicka inte meddelanden för kanalövergripande omnämnanden (@here och @all)."
       open: "Öppna chatt"
       open_full_page: "Öppna chatt i helskärmsläge"
+      close_full_page: "Stäng helskärmschatt"
       open_message: "Öppna meddelande i chatten"
       placeholder_self: "Gör en anteckning"
       placeholder_others: "Chatta med %{messageRecipient}"
@@ -117,6 +130,8 @@ sv:
       edit: "Redigera"
       copy_link: "Kopiera länk"
       rebake_message: "Omskapa HTML"
+      bookmark_message: "Bokmärke"
+      bookmark_message_edit: "Redigera bokmärke"
       restore: "Återställ raderat meddelande"
       save: "Spara"
       select: "Välj"
@@ -187,6 +202,7 @@ sv:
         bold_text: "stark text"
         code_text: "kod text"
       quote:
+        original_channel: 'Ursprungligen skickad i <a href="%{channelLink}">%{channel}</a>'
         copy_success: "Chatt citat kopierades till urklipp."
       notification_levels:
         never: "Aldrig"
@@ -238,6 +254,7 @@ sv:
       selection:
         cancel: "Avbryt"
         quote_selection: "Citat i ämne"
+        move_selection_to_channel: "Flytta till kanal"
         error: "Det uppstod ett fel när chattmeddelanden skulle flyttas"
         title: "Flytta chatt till ämne"
         new_topic:

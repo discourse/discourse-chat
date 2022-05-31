@@ -38,17 +38,17 @@ end
 #
 # Table name: user_chat_channel_memberships
 #
-#  id                                :bigint           not null, primary key
-#  user_id                           :integer          not null
-#  chat_channel_id                   :integer          not null
-#  last_read_message_id              :integer
-#  following                         :boolean          default(FALSE), not null
-#  muted                             :boolean          default(FALSE), not null
-#  desktop_notification_level        :integer          default("mention"), not null
-#  mobile_notification_level         :integer          default("mention"), not null
-#  created_at                        :datetime         not null
-#  updated_at                        :datetime         not null
-#  last_read_message_when_emailed_id :integer
+#  id                                  :bigint           not null, primary key
+#  user_id                             :integer          not null
+#  chat_channel_id                     :integer          not null
+#  last_read_message_id                :integer
+#  following                           :boolean          default(FALSE), not null
+#  muted                               :boolean          default(FALSE), not null
+#  desktop_notification_level          :integer          default("mention"), not null
+#  mobile_notification_level           :integer          default("mention"), not null
+#  created_at                          :datetime         not null
+#  updated_at                          :datetime         not null
+#  last_unread_mention_when_emailed_id :integer
 #
 # Indexes
 #

@@ -1,7 +1,7 @@
 import Service from "@ember/service";
 import { ajax } from "discourse/lib/ajax";
 
-const DEFAULT_DRAFT = {
+export const DEFAULT_DRAFT = {
   value: "",
   uploads: [],
   replyToMsg: null,
@@ -22,7 +22,7 @@ export default class ChatDraftHandler extends Service {
   setForChannel(channelId, draft) {
     if (
       draft &&
-      (draft.value || draft.uploads.length > 0 || draft.replyToMsg)
+      (draft.value || draft.uploads?.length > 0 || draft.replyToMsg)
     ) {
       this._draftStore[channelId] = draft;
     } else {

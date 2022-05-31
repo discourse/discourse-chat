@@ -69,14 +69,6 @@ acceptance("Discourse Chat | bookmarking | desktop", function (needs) {
       ),
       "the message actions icon shows the reminder icon"
     );
-    await click(message.querySelector(".chat-msgactions .bookmark-btn"));
-    assert.ok(
-      exists("#bookmark-reminder-modal"),
-      "it shows the bookmark modal to edit the bookmark"
-    );
-    assert.ok(exists("#tap_tile_custom.active"), "it selects custom");
-    assert.ok(exists(".tap-tile-date-input"), "it shows the custom date input");
-    assert.ok(exists(".tap-tile-time-input"), "it shows the custom time input");
   });
 
   test("can bookmark a message without reminder from the quick actions menu", async function (assert) {
@@ -102,11 +94,6 @@ acceptance("Discourse Chat | bookmarking | desktop", function (needs) {
     assert.ok(
       message.querySelector(".chat-msgactions .bookmark-btn .d-icon-bookmark"),
       "the message actions icon shows the bookmark icon"
-    );
-    await click(message.querySelector(".chat-msgactions .bookmark-btn"));
-    assert.ok(
-      exists("#bookmark-reminder-modal"),
-      "it shows the bookmark modal to edit the bookmark"
     );
   });
 });
@@ -163,20 +150,6 @@ if (!isLegacyEmber()) {
         ),
         "the message actions icon shows the reminder icon"
       );
-      await click(message.querySelector(".main-actions .bookmark-btn"));
-      assert.ok(
-        exists("#bookmark-reminder-modal"),
-        "it shows the bookmark modal to edit the bookmark"
-      );
-      assert.ok(exists("#tap_tile_custom.active"), "it selects custom");
-      assert.ok(
-        exists(".tap-tile-date-input"),
-        "it shows the custom date input"
-      );
-      assert.ok(
-        exists(".tap-tile-time-input"),
-        "it shows the custom time input"
-      );
     });
 
     test("can bookmark a message without reminder from the quick actions menu", async function (assert) {
@@ -201,11 +174,6 @@ if (!isLegacyEmber()) {
       assert.ok(
         message.querySelector(".main-actions .bookmark-btn .d-icon-bookmark"),
         "the message actions icon shows the bookmark icon"
-      );
-      await click(message.querySelector(".main-actions .bookmark-btn"));
-      assert.ok(
-        exists("#bookmark-reminder-modal"),
-        "it shows the bookmark modal to edit the bookmark"
       );
     });
   });

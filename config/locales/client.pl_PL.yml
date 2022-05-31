@@ -39,6 +39,8 @@ pl_PL:
         public_available: "Dostępne są kanały publiczne, które możesz śledzić."
         start_direct_message: "Możesz także rozpocząć osobisty czat z jednym lub kilkoma użytkownikami."
         title: "Rozpocznij, dołączając do kanału"
+      email_frequency:
+        never: "Nigdy"
       enable: "Włącz czat"
       flagged: "Ta wiadomość została oznaczona do sprawdzenia"
       invalid_access: "Nie masz dostępu do tego kanału czatu"

@@ -48,6 +48,9 @@ sv:
       delete_channel_failed: "Det gick inte att ta bort kanalen, försök igen."
       minimum_length_not_met: "Meddelandet är för kort, måste ha minst %{minimum} tecken."
       max_reactions_limit_reached: "Nya reaktioner är inte tillåtna för detta meddelande."
+      message_move_invalid_channel: "Käll- och destinationskanalen måste vara offentliga kanaler."
+      message_move_no_messages_found: "Inga meddelanden hittades med de angivna meddelande-ID:n."
+      cannot_react_without_joining: "Du måste gå med i kanalen först för att kunna reagera på meddelanden. Skicka ett meddelande eller gå med i kanalen manuellt från kanallistan."
     reviewables:
       actions:
         agree:
@@ -87,7 +90,26 @@ sv:
         open: "Öppen"
       archive:
         first_post_raw: "Detta ämne är ett arkiv av chatt kanalen [%{channel_name}](%{channel_url})."
+      messages_moved:
+        one: "@%{acting_username} flyttade ett meddelande till kanalen [%{channel_name}](%{first_moved_message_url})."
+        other: "@%{acting_username} flyttade %{count} meddelanden till kanalen [%{channel_name}](%{first_moved_message_url})."
+      dm_title:
+        single_user: "%{user}"
+        multi_user: "%{users}"
+        multi_user_truncated: "%{users} och %{leftover} andra"
+    bookmarkable:
+      notification_title: "meddelande i %{channel_name}"
     personal_chat: "personlig chatt"
+    onebox:
+      inline_to_message: 'Meddelande #%{message_id} av %{username} – #%{chat_channel}'
+      inline_to_channel: 'Chatt #%{chat_channel}'
+      inline_to_topic_channel: 'Chatt för ämne %{topic_title}'
+      x_members:
+        one: "%{count} medlem"
+        other: "%{count} medlemmar"
+      and_x_others:
+        one: "och %{count} annan"
+        other: "och %{count} andra"
   discourse_push_notifications:
     popup:
       chat_mention:
@@ -105,3 +127,21 @@ sv:
   reviewable_score_types:
     needs_review:
       title: "Behöver granskning"
+  user_notifications:
+    chat_summary:
+      deleted_user: "Raderad användare"
+      description:
+        one: "Du har ett nytt chattmeddelande"
+        other: "Du har nya chattmeddelanden"
+      from: "%{site_name}"
+      subject:
+        one: "[%{email_prefix}] Nytt chattmeddelande"
+        other: "[%{email_prefix}] Nya chattmeddelanden"
+      unsubscribe: "Den här chattsammanfattningen skickas från %{site_link} när du är borta. Ändra din %{email_preferences_link}."
+      view_messages:
+        one: "Visa meddelande"
+        other: "Visa %{count} meddelanden"
+      view_more:
+        one: "Visa %{count} mer meddelande"
+        other: "Visa %{count} fler meddelanden"
+      your_chat_settings: "preferens för frekvens av chattmeddelanden"

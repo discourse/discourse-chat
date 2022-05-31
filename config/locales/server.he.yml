@@ -102,6 +102,10 @@ he:
     bookmarkable:
       notification_title: "הודעה ב־%{channel_name}"
     personal_chat: "צ׳אט אישי"
+    onebox:
+      inline_to_message: 'הודעה מס׳ %{message_id} מאת ‎%{username}‏ – ‎#%{chat_channel}'
+      inline_to_channel: 'צ׳אט מס׳ %{chat_channel}'
+      inline_to_topic_channel: 'צ׳אט לנושא %{topic_title}'
   discourse_push_notifications:
     popup:
       chat_mention:
@@ -119,3 +123,29 @@ he:
   reviewable_score_types:
     needs_review:
       title: "נדרשת סקירה"
+  user_notifications:
+    chat_summary:
+      deleted_user: "משתמש שנמחק"
+      description:
+        one: "יש לך הודעה חדשה בצ׳אט"
+        two: "יש לך הודעות חדשות בצ׳אט"
+        many: "יש לך הודעות חדשות בצ׳אט"
+        other: "יש לך הודעות חדשות בצ׳אט"
+      from: "%{site_name}"
+      subject:
+        one: "[%{email_prefix}] הודעה חדשה בצ׳אט"
+        two: "[%{email_prefix}] הודעות חדשות בצ׳אט"
+        many: "[%{email_prefix}] הודעות חדשות בצ׳אט"
+        other: "[%{email_prefix}] הודעות חדשות בצ׳אט"
+      unsubscribe: "סיכום צ׳אט זה נשלח מהאתר %{site_link} כשנעדרת ממנו. ניתן לשנות את %{email_preferences_link} שלך."
+      view_messages:
+        one: "הצגת הודעה"
+        two: "הצגת %{count} הודעות"
+        many: "הצגת %{count} הודעות"
+        other: "הצגת %{count} הודעות"
+      view_more:
+        one: "הצגת הודעה נוספת %{count}"
+        two: "הצגת %{count} הודעות נוספות"
+        many: "הצגת %{count} הודעות נוספות"
+        other: "הצגת %{count} הודעות נוספות"
+      your_chat_settings: "העדפת תדירות דוא״ל צ׳אט"

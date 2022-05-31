@@ -139,7 +139,7 @@ describe UserNotifications do
 
           more_messages_channel_link = Nokogiri::HTML5.fragment(email.html_part.body.to_s).css(".more-messages-link")
 
-          expect(more_messages_channel_link.attribute('href').value).to eq(@chat_message.url)
+          expect(more_messages_channel_link.attribute('href').value).to eq(@chat_message.full_url)
           expect(more_messages_channel_link.text).to include(I18n.t("user_notifications.chat_summary.view_messages", count: 1))
         end
 
@@ -208,7 +208,7 @@ describe UserNotifications do
           email = described_class.chat_summary(@user, {})
           more_messages_channel_link = Nokogiri::HTML5.fragment(email.html_part.body.to_s).css(".more-messages-link")
 
-          expect(more_messages_channel_link.attribute('href').value).to eq(@chat_message.url)
+          expect(more_messages_channel_link.attribute('href').value).to eq(@chat_message.full_url)
           expect(more_messages_channel_link.text).to include(I18n.t("user_notifications.chat_summary.view_more", count: 1))
         end
 

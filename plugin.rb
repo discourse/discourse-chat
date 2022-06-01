@@ -13,6 +13,7 @@ register_asset 'stylesheets/common/common.scss'
 register_asset 'stylesheets/common/d-progress-bar.scss'
 register_asset 'stylesheets/common/incoming-chat-webhooks.scss'
 register_asset 'stylesheets/mobile/chat-message.scss', :mobile
+register_asset 'stylesheets/desktop/chat-message.scss', :desktop
 register_asset 'stylesheets/common/chat-reply.scss'
 register_asset 'stylesheets/common/chat-message.scss'
 register_asset 'stylesheets/common/chat-message-left-gutter.scss'

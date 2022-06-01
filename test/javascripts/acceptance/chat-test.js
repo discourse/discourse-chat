@@ -283,7 +283,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     const domParser = new DOMParser();
     // First is a direct mention from @hawk in #Site
     let mentionHtml = domParser.parseFromString(
-      I18n.t("notifications.popup.chat_mention.direct", {
+      I18n.t("notifications.popup.chat_mention.direct_html", {
         username: "hawk",
         identifier: null,
         channel: "Site",
@@ -294,7 +294,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
 
     // Second is a group mention from @hawk in #Site
     mentionHtml = domParser.parseFromString(
-      I18n.t("notifications.popup.chat_mention.other", {
+      I18n.t("notifications.popup.chat_mention.other_html", {
         username: "hawk",
         identifier: "@engineers",
         channel: "Site",
@@ -305,7 +305,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
 
     // Third is an `@all` mention from @hawk in #Site
     mentionHtml = domParser.parseFromString(
-      I18n.t("notifications.popup.chat_mention.other", {
+      I18n.t("notifications.popup.chat_mention.other_html", {
         username: "hawk",
         identifier: "@all",
         channel: "Site",

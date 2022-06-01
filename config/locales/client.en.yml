@@ -364,15 +364,21 @@ en:
       topic_button_title: "Chat"
 
     notifications:
+      chat_invitation: "invited you to join a chat channel"
+      chat_invitation_html: "<span>%{username}</span> <span>invited you to join a chat channel</span>"
       chat_quoted: "<span>%{username}</span> %{description}"
 
       popup:
         chat_mention:
-          direct: '<span>%{username}</span> <span>mentioned you in "%{channel}"</span>'
-          other: '<span>%{username}</span> <span>mentioned %{identifier} in "%{channel}"</span>'
+          direct: 'mentioned you in "%{channel}"'
+          direct_html: '<span>%{username}</span> <span>mentioned you in "%{channel}"</span>'
+          other: 'mentioned %{identifier} in "%{channel}"'
+          other_html: '<span>%{username}</span> <span>mentioned %{identifier} in "%{channel}"</span>'
         direct_message_chat_mention:
-          direct: "<span>%{username}</span> <span>mentioned you in personal chat</span>"
-          other: "<span>%{username}</span> <span>mentioned %{identifier} in personal chat</span>"
+          direct: "mentioned you in personal chat"
+          direct_html: "<span>%{username}</span> <span>mentioned you in personal chat</span>"
+          other: "mentioned %{identifier} in personal chat"
+          other_html: "<span>%{username}</span> <span>mentioned %{identifier} in personal chat</span>"
         chat_message: "New chat message"
         chat_quoted: "%{username} quoted your chat message"
 

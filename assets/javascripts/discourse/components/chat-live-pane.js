@@ -48,6 +48,7 @@ export default Component.extend({
   stickyScroll: true,
   stickyScrollTimer: null,
   showChatQuoteSuccess: false,
+  showCompressBtn: false,
 
   editingMessage: null, // ?Message
   replyToMsg: null, // ?Message
@@ -97,6 +98,8 @@ export default Component.extend({
     );
 
     this.appEvents.on("chat:cancel-message-selection", this, "cancelSelecting");
+
+    this.set("showCompressBtn", !this.currentUser.chat_isolated && !this.site.mobileView);
   },
 
   willDestroyElement() {

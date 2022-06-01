@@ -1,4 +1,4 @@
-import { test } from "qunit";
+import { skip, test } from "qunit";
 import { isLegacyEmber } from "discourse-common/config/environment";
 import {
   click,

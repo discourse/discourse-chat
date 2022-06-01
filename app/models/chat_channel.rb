@@ -154,6 +154,9 @@ class ChatChannel < ActiveRecord::Base
 
   def self.public_channels
     where(chatable_type: public_channel_chatable_types)
+      .where("topics.id IS NOT NULL OR categories.id IS NOT NULL")
+      .joins("LEFT JOIN categories ON categories.id = chat_channels.chatable_id AND chat_channels.chatable_type = 'Category'")
+      .joins("LEFT JOIN topics ON topics.id = chat_channels.chatable_id AND chat_channels.chatable_type = 'Topic' AND topics.deleted_at IS NULL")
   end
 
   def self.is_enabled?(t)
@@ -205,6 +208,8 @@ end
 #  name                    :string
 #  description             :text
 #  status                  :integer          default("open"), not null
+#  user_count              :integer          default(0), not null
+#  last_message_sent_at    :datetime         not null
 #
 # Indexes
 #

@@ -33,9 +33,7 @@ class ChatMessage < ActiveRecord::Base
 
   def validate_message(has_uploads:)
     WatchedWordsValidator.new(attributes: [:message]).validate(self)
-    if block_duplicate?
-      self.errors.add(:base, I18n.t("chat.errors.duplicate_message"))
-    end
+    DiscourseChat::DuplicateMessageValidator.new(self).validate
 
     if !has_uploads && message_too_short?
       self.errors.add(
@@ -211,37 +209,6 @@ class ChatMessage < ActiveRecord::Base
   end
 
   private
-
-  def block_duplicate?
-    sensitivity = SiteSetting.chat_duplicate_message_sensitivity
-    return false if sensitivity.zero?
-
-    # Check if the length of the message is too short to check for a duplicate message
-    return false if message.length < calc_min_message_length_for_duplicates(sensitivity)
-
-    # Check if there are enough users in the channel to check for a duplicate message
-    return false if (chat_channel.user_count || 0) < calc_min_user_count_for_duplicates(sensitivity)
-
-    chat_channel.chat_messages
-      .where("created_at > ?", calc_in_the_past_seconds_for_duplicates(sensitivity).seconds.ago)
-      .where(message: message)
-      .exists?
-  end
-
-  def calc_min_user_count_for_duplicates(sensitivity)
-    # Line generated from 0.1 sensitivity = 100 users and 1.0 sensitivity = 5 users.
-    (-1.0 * 105.5 * sensitivity + 110.55).to_i
-  end
-
-  def calc_min_message_length_for_duplicates(sensitivity)
-    # Line generated from 0.1 sensitivity = 30 chars and 1.0 sensitivity = 10 chars.
-    (-1.0 * 22.2 * sensitivity + 32.22).to_i
-  end
-
-  def calc_in_the_past_seconds_for_duplicates(sensitivity)
-    # Line generated from 0.1 sensitivity = 10 seconds and 1.0 sensitivity = 60 seconds.
-    (55.55 * sensitivity + 4.5).to_i
-  end
 
   def message_too_short?
     message.length < SiteSetting.chat_minimum_message_length

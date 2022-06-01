@@ -13,6 +13,7 @@ register_asset 'stylesheets/common/common.scss'
 register_asset 'stylesheets/common/d-progress-bar.scss'
 register_asset 'stylesheets/common/incoming-chat-webhooks.scss'
 register_asset 'stylesheets/mobile/chat-message.scss', :mobile
+register_asset 'stylesheets/desktop/chat-message.scss', :desktop
 register_asset 'stylesheets/common/chat-reply.scss'
 register_asset 'stylesheets/common/chat-message.scss'
 register_asset 'stylesheets/common/chat-message-left-gutter.scss'
@@ -125,6 +126,7 @@ after_initialize do
   load File.expand_path('../lib/chat_notifier.rb', __FILE__)
   load File.expand_path('../lib/chat_seeder.rb', __FILE__)
   load File.expand_path('../lib/chat_transcript_service.rb', __FILE__)
+  load File.expand_path('../lib/duplicate_message_validator.rb', __FILE__)
   load File.expand_path('../lib/message_mover.rb', __FILE__)
   load File.expand_path('../lib/chat_message_bookmarkable.rb', __FILE__)
   load File.expand_path('../lib/chat_channel_archive_service.rb', __FILE__)

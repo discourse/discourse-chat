@@ -45,11 +45,11 @@ RSpec.describe DiscourseChat::ChatController do
       expect(response.status).to eq(400)
     end
 
-    it "returns the latest messages" do
+    it "returns the latest messages in created_at, id order" do
       get "/chat/#{chat_channel.id}/messages.json", params: { page_size: page_size }
       messages = response.parsed_body["chat_messages"]
       expect(messages.count).to eq(page_size)
-      expect(messages.first["id"]).to be < messages.last["id"]
+      expect(messages.first["created_at"].to_time).to be < messages.last["created_at"].to_time
     end
 
     it "returns `can_flag=true` for public channels" do
@@ -136,12 +136,12 @@ RSpec.describe DiscourseChat::ChatController do
     end
 
     describe "scrolling to the past" do
-      it "returns the correct messages" do
+      it "returns the correct messages in created_at, id order" do
         get "/chat/#{chat_channel.id}/messages.json", params: { message_id: message_40.id, direction: described_class::PAST, page_size: page_size }
         messages = response.parsed_body["chat_messages"]
         expect(messages.count).to eq(page_size)
-        expect(messages.first["id"]).to eq(message_10.id)
-        expect(messages.last["id"]).to eq(message_39.id)
+        expect(messages.first["created_at"].to_time).to eq_time(message_10.created_at)
+        expect(messages.last["created_at"].to_time).to eq_time(message_39.created_at)
       end
 
       it "returns 'can_load...' properly when there are more past messages" do
@@ -158,12 +158,12 @@ RSpec.describe DiscourseChat::ChatController do
     end
 
     describe "scrolling to the future" do
-      it "returns the correct messages when there are many after" do
+      it "returns the correct messages in created_at, id order when there are many after" do
         get "/chat/#{chat_channel.id}/messages.json", params: { message_id: message_10.id, direction: described_class::FUTURE, page_size: page_size }
         messages = response.parsed_body["chat_messages"]
         expect(messages.count).to eq(page_size)
-        expect(messages.first["id"]).to eq(message_11.id)
-        expect(messages.last["id"]).to eq(message_40.id)
+        expect(messages.first["created_at"].to_time).to eq_time(message_11.created_at)
+        expect(messages.last["created_at"].to_time).to eq_time(message_40.created_at)
       end
 
       it "return 'can_load..' properly when there are future messages" do

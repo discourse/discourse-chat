@@ -136,7 +136,7 @@ describe 'RemoveCorruptedLastReadMessageIdMigration' do
       let!(:bookmark_1) { Fabricate(:bookmark, bookmarkable: message_1) }
       let!(:bookmark_2) { Fabricate(:bookmark, bookmarkable: message_2) }
 
-      it 'destroys ChatMessage of this message' do
+      it 'destroys ChatMessage bookmarks of this message' do
         message_1.delete
 
         run_migration

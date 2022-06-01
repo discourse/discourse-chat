@@ -1211,6 +1211,47 @@ acceptance(
 );
 
 acceptance(
+  "Discourse Chat - Acceptance Test show/hide close fullscreen chat button",
+  function (needs) {
+    needs.user({
+      admin: false,
+      moderator: false,
+      username: "eviltrout",
+      id: 1,
+      can_chat: true,
+      has_chat_enabled: true,
+    });
+    needs.settings({
+      chat_enabled: true,
+    });
+    needs.pretender((server, helper) => {
+      baseChatPretenders(server, helper);
+      siteChannelPretender(server, helper, { unread_count: 2, muted: false });
+      chatChannelPretender(server, helper, [
+        { id: 9, unread_count: 2, muted: false },
+      ]);
+    });
+    needs.hooks.beforeEach(function () {
+      Object.defineProperty(this, "chatService", {
+        get: () => this.container.lookup("service:chat"),
+      });
+    });
+
+    test("Close fullscreen chat button not present on chat_isolated", async function (assert) {
+      updateCurrentUser({ chat_isolated: true });
+      await visit("/chat/channel/9/Site");
+      assert.notOk(exists(".chat-full-screen-button"));
+    });
+
+    test("Close fullscreen chat button present", async function (assert) {
+      updateCurrentUser({ chat_isolated: false });
+      await visit("/chat/channel/9/Site");
+      assert.ok(exists(".chat-full-screen-button"));
+    });
+  }
+);
+
+acceptance(
   "Discourse Chat - Acceptance Test with unread DMs and public channel messages",
   function (needs) {
     needs.user({

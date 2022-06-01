@@ -154,8 +154,9 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
       raise Discourse::InvalidParameters.new(:message_id)
     end
 
-    chat_message = ChatMessage.find_by(chat_channel_id: @chat_channel.id, id: params[:message_id])
-    raise Discourse::NotFound unless chat_message
+    unless ChatMessage.exists?(chat_channel_id: @chat_channel.id, id: params[:message_id])
+      raise Discourse::NotFound
+    end
 
     membership.update!(last_read_message_id: params[:message_id])
 

@@ -675,14 +675,14 @@ RSpec.describe DiscourseChat::ChatController do
 
   describe "#update_user_last_read" do
     before do
-      @message_1 = Fabricate(:chat_message, chat_channel: chat_channel, user: other_user)
-      @message_2 = Fabricate(:chat_message, chat_channel: chat_channel, user: other_user)
-
       sign_in(user)
     end
 
+    fab!(:message_1) { Fabricate(:chat_message, chat_channel: chat_channel, user: other_user) }
+    fab!(:message_2) { Fabricate(:chat_message, chat_channel: chat_channel, user: other_user) }
+
     it 'returns a 404 when the user is not a channel member' do
-      put "/chat/#{chat_channel.id}/read/#{@message_1.id}.json"
+      put "/chat/#{chat_channel.id}/read/#{message_1.id}.json"
 
       expect(response.status).to eq(404)
     end
@@ -690,15 +690,13 @@ RSpec.describe DiscourseChat::ChatController do
     it 'returns a 404 when the user is not following the channel' do
       Fabricate(:user_chat_channel_membership, chat_channel: chat_channel, user: user, following: false)
 
-      put "/chat/#{chat_channel.id}/read/#{@message_1.id}.json"
+      put "/chat/#{chat_channel.id}/read/#{message_1.id}.json"
 
       expect(response.status).to eq(404)
     end
 
     describe 'when the user is a channel member' do
-      before do
-        @user_membership = Fabricate(:user_chat_channel_membership, chat_channel: chat_channel, user: user)
-      end
+      fab!(:membership) { Fabricate(:user_chat_channel_membership, chat_channel: chat_channel, user: user) }
 
       context 'message_id param doesn’t link to a message of the channel' do
         it 'raises a not found' do
@@ -710,11 +708,11 @@ RSpec.describe DiscourseChat::ChatController do
 
       context 'message_id param is inferior to existing last read' do
         before do
-          @user_membership.update!(last_read_message_id: @message_2.id)
+          membership.update!(last_read_message_id: message_2.id)
         end
 
         it 'raises an invalid request' do
-          put "/chat/#{chat_channel.id}/read/#{@message_1.id}.json"
+          put "/chat/#{chat_channel.id}/read/#{message_1.id}.json"
 
           expect(response.status).to eq(400)
           expect(response.parsed_body['errors'][0]).to match(/message_id/)
@@ -723,13 +721,13 @@ RSpec.describe DiscourseChat::ChatController do
 
       it 'updates timing records' do
         expect {
-          put "/chat/#{chat_channel.id}/read/#{@message_1.id}.json"
+          put "/chat/#{chat_channel.id}/read/#{message_1.id}.json"
         }.to change { UserChatChannelMembership.count }.by(0)
 
-        @user_membership.reload
-        expect(@user_membership.chat_channel_id).to eq(chat_channel.id)
-        expect(@user_membership.last_read_message_id).to eq(@message_1.id)
-        expect(@user_membership.user_id).to eq(user.id)
+        membership.reload
+        expect(membership.chat_channel_id).to eq(chat_channel.id)
+        expect(membership.last_read_message_id).to eq(message_1.id)
+        expect(membership.user_id).to eq(user.id)
       end
 
       def create_notification_and_mention_for(user, sender, msg)
@@ -751,9 +749,9 @@ RSpec.describe DiscourseChat::ChatController do
       end
 
       it 'marks all mention notifications as read for the channel' do
-        notification = create_notification_and_mention_for(user, other_user, @message_1)
+        notification = create_notification_and_mention_for(user, other_user, message_1)
 
-        put "/chat/#{chat_channel.id}/read/#{@message_2.id}.json"
+        put "/chat/#{chat_channel.id}/read/#{message_2.id}.json"
         expect(response.status).to eq(200)
         expect(notification.reload.read).to eq(true)
       end
@@ -762,7 +760,7 @@ RSpec.describe DiscourseChat::ChatController do
         message_3 = Fabricate(:chat_message, chat_channel: chat_channel, user: other_user)
         notification = create_notification_and_mention_for(user, other_user, message_3)
 
-        put "/chat/#{chat_channel.id}/read/#{@message_2.id}.json"
+        put "/chat/#{chat_channel.id}/read/#{message_2.id}.json"
 
         expect(response.status).to eq(200)
         expect(notification.reload.read).to eq(false)

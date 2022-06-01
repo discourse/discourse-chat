@@ -57,7 +57,7 @@ class DiscourseChat::MessageMover
   private
 
   def find_messages(message_ids, channel)
-    ChatMessage.where(id: message_ids, chat_channel_id: channel.id).order(:created_at)
+    ChatMessage.where(id: message_ids, chat_channel_id: channel.id).order("created_at ASC, id ASC")
   end
 
   def create_temp_table
@@ -85,9 +85,19 @@ class DiscourseChat::MessageMover
   # new channel, because it could be pointing to a message that has not
   # been moved.
   def create_destination_messages_in_channel(destination_channel)
-    moved_message_ids = DB.query_single(<<~SQL, message_ids: @ordered_source_message_ids, destination_channel_id: destination_channel.id)
+    query_args = {
+      message_ids: @ordered_source_message_ids,
+      destination_channel_id: destination_channel.id
+    }
+    moved_message_ids = DB.query_single(<<~SQL, query_args)
       INSERT INTO chat_messages(chat_channel_id, user_id, message, cooked, cooked_version, created_at, updated_at)
-      SELECT :destination_channel_id, user_id, message, cooked, cooked_version, CLOCK_TIMESTAMP(), CLOCK_TIMESTAMP()
+      SELECT :destination_channel_id,
+             user_id,
+             message,
+             cooked,
+             cooked_version,
+             CLOCK_TIMESTAMP(),
+             CLOCK_TIMESTAMP()
       FROM chat_messages
       WHERE id IN (:message_ids)
       RETURNING id

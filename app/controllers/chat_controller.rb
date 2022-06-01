@@ -149,6 +149,15 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
 
     membership = UserChatChannelMembership.find_by(user: current_user, chat_channel: @chat_channel, following: true)
     raise Discourse::NotFound if membership.nil?
+
+    if membership.last_read_message_id && params[:message_id].to_i < membership.last_read_message_id
+      raise Discourse::InvalidParameters.new(:message_id)
+    end
+
+    unless ChatMessage.exists?(chat_channel_id: @chat_channel.id, id: params[:message_id])
+      raise Discourse::NotFound
+    end
+
     membership.update!(last_read_message_id: params[:message_id])
 
     Notification

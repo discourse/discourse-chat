@@ -58,6 +58,14 @@ describe Jobs::DeleteOldChatMessages do
       SiteSetting.chat_channel_retention_days = 800
       expect { described_class.new.execute }.to change { ChatMessage.in_public_channel.count }.by(0)
     end
+
+    it "resets last_read_message_id from memberships" do
+      SiteSetting.chat_channel_retention_days = 20
+      membership = UserChatChannelMembership.create!(user: Fabricate(:user), chat_channel: public_channel, last_read_message_id: public_days_old_30.id, following: true, desktop_notification_level: 2, mobile_notification_level: 2)
+      described_class.new.execute
+
+      expect(membership.reload.last_read_message_id).to be_nil
+    end
   end
 
   describe "dm channels" do
@@ -73,6 +81,14 @@ describe Jobs::DeleteOldChatMessages do
     it "does nothing when no messages fall in the time range" do
       SiteSetting.chat_dm_retention_days = 800
       expect { described_class.new.execute }.to change { ChatMessage.in_dm_channel.count }.by(0)
+    end
+
+    it "resets last_read_message_id from memberships" do
+      SiteSetting.chat_dm_retention_days = 20
+      membership = UserChatChannelMembership.create!(user: Fabricate(:user), chat_channel: dm_channel, last_read_message_id: dm_days_old_30.id, following: true, desktop_notification_level: 2, mobile_notification_level: 2)
+      described_class.new.execute
+
+      expect(membership.reload.last_read_message_id).to be_nil
     end
   end
 end

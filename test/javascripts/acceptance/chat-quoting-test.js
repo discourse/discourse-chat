@@ -115,8 +115,6 @@ acceptance("Discourse Chat | quoting when topic open", async function (needs) {
   });
 
   test("it opens the composer for the topic and pastes in the quote", async function (assert) {
-    this.chatService.set("sidebarActive", false);
-    this.chatService.set("chatWindowFullPage", false);
     await visit("/t/internationalization-localization/280");
     await click(".header-dropdown-toggle.open-chat");
     assert.ok(visible(".topic-chat-float-container"), "chat float is open");

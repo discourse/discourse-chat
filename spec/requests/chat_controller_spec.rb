@@ -700,6 +700,27 @@ RSpec.describe DiscourseChat::ChatController do
         @user_membership = Fabricate(:user_chat_channel_membership, chat_channel: chat_channel, user: user)
       end
 
+      context 'message_id param doesn’t link to a message of the channel' do
+        it 'raises a not found' do
+          put "/chat/#{chat_channel.id}/read/-999.json"
+
+          expect(response.status).to eq(404)
+        end
+      end
+
+      context 'message_id param is inferior to existing last read' do
+        before do
+          @user_membership.update!(last_read_message_id: @message_2.id)
+        end
+
+        it 'raises an invalid request' do
+          put "/chat/#{chat_channel.id}/read/#{@message_1.id}.json"
+
+          expect(response.status).to eq(400)
+          expect(response.parsed_body['errors'][0]).to match(/message_id/)
+        end
+      end
+
       it 'updates timing records' do
         expect {
           put "/chat/#{chat_channel.id}/read/#{@message_1.id}.json"

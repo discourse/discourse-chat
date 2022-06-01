@@ -6,6 +6,7 @@ import { createWidget } from "discourse/widgets/widget";
 import bootbox from "bootbox";
 import { getOwner } from "discourse-common/lib/get-owner";
 import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
+import { htmlSafe } from "@ember/template";
 
 export default createWidget("chat-state-post-small-action", {
   click(event) {
@@ -26,14 +27,16 @@ export default createWidget("chat-state-post-small-action", {
   },
 
   html(attrs) {
-    const html = I18n.t(`action_codes.${attrs.actionCode}`, {
-      who: `<a class="mention" href="${userPath(attrs.actionCodeWho)}">@${
-        attrs.actionCodeWho
-      }</a>`,
-      when: autoUpdatingRelativeAge(new Date(attrs.created_at), {
-        format: "medium-with-ago-and-on",
-      }),
-    }).htmlSafe();
+    const html = htmlSafe(
+      I18n.t(`action_codes.${attrs.actionCode}`, {
+        who: `<a class="mention" href="${userPath(attrs.actionCodeWho)}">@${
+          attrs.actionCodeWho
+        }</a>`,
+        when: autoUpdatingRelativeAge(new Date(attrs.created_at), {
+          format: "medium-with-ago-and-on",
+        }),
+      })
+    );
 
     return new RawHtml({ html: `<span>${html}</span>` });
   },

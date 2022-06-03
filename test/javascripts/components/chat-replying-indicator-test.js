@@ -1,4 +1,3 @@
-import { settled } from "@ember/test-helpers";
 import componentTest, {
   setupRenderingTest,
 } from "discourse/tests/helpers/component-test";

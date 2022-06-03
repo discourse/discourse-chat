@@ -4,7 +4,6 @@ import { inject as service } from "@ember/service";
 import discourseComputed from "discourse-common/utils/decorators";
 import I18n from "I18n";
 import { fmt } from "discourse/lib/computed";
-import { next } from "@ember/runloop";
 
 export default Component.extend({
   tagName: "",
@@ -59,11 +58,6 @@ export default Component.extend({
 
     if (!this.chatChannel || this.chatChannel.isDraft) {
       this.presenceChannel?.unsubscribe();
-
-      next(() => {
-        this.set("presenceChannel", null);
-      });
-
       return;
     }
 

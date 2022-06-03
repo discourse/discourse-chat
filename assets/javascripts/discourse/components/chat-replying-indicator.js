@@ -57,6 +57,8 @@ export default Component.extend({
     this._super(...arguments);
 
     if (!this.chatChannel || this.chatChannel.isDraft) {
+      this.presenceChannel?.unsubscribe();
+      this.set("presenceChannel", null);
       return;
     }
 

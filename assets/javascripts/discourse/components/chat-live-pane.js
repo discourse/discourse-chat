@@ -678,7 +678,7 @@ export default Component.extend({
         message: data.chat_message.message,
         cooked: data.chat_message.cooked,
         excerpt: data.chat_message.excerpt,
-        uploads: cloneJson(data.chat_message.uploads),
+        uploads: cloneJSON(data.chat_message.uploads),
         edited: true,
       });
     }

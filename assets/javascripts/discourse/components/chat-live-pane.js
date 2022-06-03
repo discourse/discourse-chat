@@ -1,3 +1,4 @@
+import isElementInViewport from "discourse/lib/is-element-in-viewport";
 import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import ChatMessage from "discourse/plugins/discourse-chat/discourse/models/chat-message";
 import Component from "@ember/component";
@@ -267,6 +268,22 @@ export default Component.extend({
       });
   },
 
+  fillPaneAttempt(meta) {
+    if (meta?.can_load_more_past && this.messages.length <= PAGE_SIZE) {
+      const firstMessageId = this.messages.firstObject?.id;
+      if (!firstMessageId) {
+        return;
+      }
+
+      const messageContainer = document.querySelector(
+        `.chat-message-container[data-id="${firstMessageId}"]`
+      );
+      if (messageContainer && isElementInViewport(messageContainer)) {
+        this._fetchMoreMessages(PAST);
+      }
+    }
+  },
+
   setCanLoadMoreDetails(meta) {
     const metaKeys = Object.keys(meta);
     if (metaKeys.includes("can_load_more_past")) {
@@ -312,6 +329,8 @@ export default Component.extend({
       } else {
         this._markLastReadMessage();
       }
+
+      this.fillPaneAttempt(messages.resultSetMeta);
     });
 
     this.setCanLoadMoreDetails(messages.resultSetMeta);

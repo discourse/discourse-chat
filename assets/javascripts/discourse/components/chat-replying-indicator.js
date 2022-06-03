@@ -4,6 +4,7 @@ import { inject as service } from "@ember/service";
 import discourseComputed from "discourse-common/utils/decorators";
 import I18n from "I18n";
 import { fmt } from "discourse/lib/computed";
+import { next } from "@ember/runloop";
 
 export default Component.extend({
   tagName: "",
@@ -58,14 +59,22 @@ export default Component.extend({
 
     if (!this.chatChannel || this.chatChannel.isDraft) {
       this.presenceChannel?.unsubscribe();
-      this.set("presenceChannel", null);
+
+      next(() => {
+        this.set("presenceChannel", null);
+      });
+
       return;
     }
 
     if (this.presenceChannel?.name !== this.channelName) {
       this.presenceChannel?.unsubscribe();
-      this.set("presenceChannel", this.presence.getChannel(this.channelName));
-      this.presenceChannel.subscribe();
+
+      next(() => {
+        const presenceChannel = this.presence.getChannel(this.channelName);
+        this.set("presenceChannel", presenceChannel);
+        presenceChannel.subscribe();
+      });
     }
   },
 

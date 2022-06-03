@@ -1,3 +1,4 @@
+import { settled } from "@ember/test-helpers";
 import componentTest, {
   setupRenderingTest,
 } from "discourse/tests/helpers/component-test";
@@ -176,6 +177,8 @@ discourseModule(
         assert.ok(this.presenceChannel);
 
         this.set("chatChannel", fabricate("chat-channel", { isDraft: true }));
+
+        await settled();
 
         assert.notOk(this.presenceChannel);
       },

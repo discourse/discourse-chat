@@ -158,5 +158,27 @@ discourseModule(
         );
       },
     });
+
+    componentTest("resets presence when channel is draft", {
+      template: hbs`{{chat-replying-indicator presenceChannel=presenceChannel chatChannel=chatChannel}}`,
+
+      async beforeEach() {
+        this.set("chatChannel", fabricate("chat-channel"));
+        this.set(
+          "presenceChannel",
+          MockPresenceChannel.create({
+            name: `/chat-reply/${this.chatChannel.id}`,
+          })
+        );
+      },
+
+      async test(assert) {
+        assert.ok(this.presenceChannel);
+
+        this.set("chatChannel", fabricate("chat-channel", { isDraft: true }));
+
+        assert.notOk(this.presenceChannel);
+      },
+    });
   }
 );

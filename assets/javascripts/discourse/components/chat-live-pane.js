@@ -1,3 +1,4 @@
+import { cloneJSON } from "discourse-common/lib/object";
 import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import ChatMessage from "discourse/plugins/discourse-chat/discourse/models/chat-message";
 import Component from "@ember/component";
@@ -677,7 +678,7 @@ export default Component.extend({
         message: data.chat_message.message,
         cooked: data.chat_message.cooked,
         excerpt: data.chat_message.excerpt,
-        uploads: data.chat_message.uploads,
+        uploads: cloneJson(data.chat_message.uploads),
         edited: true,
       });
     }
@@ -929,7 +930,7 @@ export default Component.extend({
         message,
         cooked,
         stagedId,
-        uploads,
+        uploads: cloneJSON(uploads),
         staged: true,
         user: this.currentUser,
         in_reply_to: this.replyToMsg,

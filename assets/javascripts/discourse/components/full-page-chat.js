@@ -1,4 +1,3 @@
-import afterTransition from "discourse/lib/after-transition";
 import Component from "@ember/component";
 import discourseComputed, { bind } from "discourse-common/utils/decorators";
 import { action } from "@ember/object";

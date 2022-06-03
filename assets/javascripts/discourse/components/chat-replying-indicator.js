@@ -70,11 +70,9 @@ export default Component.extend({
     if (this.presenceChannel?.name !== this.channelName) {
       this.presenceChannel?.unsubscribe();
 
-      next(() => {
-        const presenceChannel = this.presence.getChannel(this.channelName);
-        this.set("presenceChannel", presenceChannel);
-        presenceChannel.subscribe();
-      });
+      const presenceChannel = this.presence.getChannel(this.channelName);
+      this.set("presenceChannel", presenceChannel);
+      presenceChannel.subscribe();
     }
   },
 

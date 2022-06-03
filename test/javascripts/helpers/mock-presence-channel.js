@@ -8,10 +8,14 @@ export default EmberObject.extend({
   },
 
   users: null,
-
-  async unsubscribe() {},
-
-  async subscribe() {},
-
   name: null,
+  subscribed: false,
+
+  async unsubscribe() {
+    this.set("subscribed", false);
+  },
+
+  async subscribe() {
+    this.set("subscribed", true);
+  },
 });

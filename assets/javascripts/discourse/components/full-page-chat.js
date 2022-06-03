@@ -41,6 +41,7 @@ export default Component.extend({
     document.body.classList.add("has-full-page-chat");
     this.chat.set("fullScreenChatOpen", true);
     schedule("afterRender", this._calculateHeight);
+    this.appEvents.on("composer:resized", this, "_calculateHeight");
   },
 
   willDestroyElement() {
@@ -52,6 +53,7 @@ export default Component.extend({
     document.removeEventListener("keydown", this._autoFocusChatComposer);
     document.body.classList.remove("has-full-page-chat");
     this.chat.set("fullScreenChatOpen", false);
+    this.appEvents.off("composer:resized", this, "_calculateHeight");
   },
 
   @bind

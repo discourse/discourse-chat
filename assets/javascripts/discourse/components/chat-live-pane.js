@@ -90,13 +90,9 @@ export default Component.extend({
     );
 
     this._scrollerEl = this.element.querySelector(".chat-messages-scroll");
-    this._scrollerEl.addEventListener(
-      "scroll",
-      () => {
-        this.stickyScrollTimer = discourseDebounce(this, this.onScroll, 50);
-      },
-      { passive: true }
-    );
+    this._scrollerEl.addEventListener("scroll", this.onScrollhandler, {
+      passive: true,
+    });
 
     this.appEvents.on("chat:cancel-message-selection", this, "cancelSelecting");
 
@@ -108,6 +104,10 @@ export default Component.extend({
 
   willDestroyElement() {
     this._super(...arguments);
+
+    this.element
+      .querySelector(".chat-messages-scroll")
+      ?.removeEventListener("scroll", this.onScrollhandler);
 
     this.appEvents.off(
       "chat-live-pane:highlight-message",
@@ -157,6 +157,12 @@ export default Component.extend({
     this.currentUserTimezone = this.currentUser?.resolvedTimezone(
       this.currentUser
     );
+  },
+
+  @bind
+  onScrollhandler() {
+    cancel(this.stickyScrollTimer);
+    this.stickyScrollTimer = discourseDebounce(this, this.onScroll, 100);
   },
 
   fetchMessages(channelId) {

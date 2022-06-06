@@ -148,8 +148,8 @@ export default {
       return;
     }
 
-    const noRefreshDuration = Date.now() - _lastForcedRefreshAt;
-    if (noRefreshDuration <= MIN_REFRESH_DURATION_MS) {
+    const duration = Date.now() - _lastForcedRefreshAt;
+    if (duration <= MIN_REFRESH_DURATION_MS) {
       return;
     }
 

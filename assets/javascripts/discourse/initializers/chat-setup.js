@@ -150,7 +150,7 @@ export default {
 
     const noRefreshDuration = Date.now() - _lastForcedRefreshAt;
     if (noRefreshDuration <= MIN_REFRESH_DURATION_MS) {
-      return false;
+      return;
     }
 
     _lastForcedRefreshAt = Date.now();

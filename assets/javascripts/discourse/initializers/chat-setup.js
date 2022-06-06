@@ -12,7 +12,7 @@ export default {
     this.siteSettings = container.lookup("site-settings:main");
     this.appEvents = container.lookup("service:appEvents");
 
-    document.addEventListener("visibilitychange", this.refreshChat);
+    document.addEventListener("visibilitychange", this.onVisibilityChange);
 
     withPluginApi("0.12.1", (api) => {
       api.registerChatComposerButton({
@@ -136,15 +136,15 @@ export default {
   },
 
   @bind
-  refreshChat() {
+  onVisibilityChange() {
     if (document.visibilityState === "visible") {
       this.chatService.getChannels();
-      this.appEvents.trigger("chat:focused-window");
+      this.appEvents.trigger("chat:window-visible");
     }
   },
 
   teardown() {
-    document.removeEventListener("visibilitychange", this.refreshChat);
+    document.removeEventListener("visibilitychange", this.onVisibilityChange);
     clearChatComposerButtons();
   },
 };

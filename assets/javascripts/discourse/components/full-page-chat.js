@@ -42,7 +42,7 @@ export default Component.extend({
     this.chat.set("fullScreenChatOpen", true);
     schedule("afterRender", this._calculateHeight);
     this.appEvents.on("composer:resized", this, "_calculateHeight");
-    this.appEvents.on("chat:focused-window", this, "_calculateHeight");
+    this.appEvents.on("chat:window-visible", this, "_calculateHeight");
   },
 
   willDestroyElement() {
@@ -55,7 +55,7 @@ export default Component.extend({
     document.body.classList.remove("has-full-page-chat");
     this.chat.set("fullScreenChatOpen", false);
     this.appEvents.off("composer:resized", this, "_calculateHeight");
-    this.appEvents.off("chat:focused-window", this, "_calculateHeight");
+    this.appEvents.off("chat:window-visible", this, "_calculateHeight");
   },
 
   @bind

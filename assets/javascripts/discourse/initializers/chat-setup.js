@@ -12,6 +12,8 @@ export default {
     this.siteSettings = container.lookup("site-settings:main");
     this.appEvents = container.lookup("service:appEvents");
 
+    this.appEvents.on("discourse:focus-changed", this, "_handleFocusChanged");
+
     document.addEventListener("visibilitychange", this.onVisibilityChange);
 
     withPluginApi("0.12.1", (api) => {
@@ -135,16 +137,16 @@ export default {
     return this.chatService.getDocumentTitleCount();
   },
 
-  @bind
-  onVisibilityChange() {
-    if (document.visibilityState === "visible") {
-      this.chatService.forceRefreshChannels();
-      this.appEvents.trigger("chat:window-visible");
-    }
-  },
-
   teardown() {
     document.removeEventListener("visibilitychange", this.onVisibilityChange);
+    this.appEvents.off("discourse:focus-changed", this, "_handleFocusChanged");
     clearChatComposerButtons();
+  },
+
+  @bind
+  _handleFocusChanged(hasFocus) {
+    if (hasFocus) {
+      this.chatService.forceRefreshChannels();
+    }
   },
 };

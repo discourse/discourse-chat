@@ -138,7 +138,7 @@ export default {
   @bind
   onVisibilityChange() {
     if (document.visibilityState === "visible") {
-      this.chatService.getChannels();
+      this.chatService.forceRefreshChannels();
       this.appEvents.trigger("chat:window-visible");
     }
   },

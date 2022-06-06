@@ -11,6 +11,8 @@ export default {
     this.chatService = container.lookup("service:chat");
     this.siteSettings = container.lookup("site-settings:main");
 
+    document.addEventListener("visibilitychange", this.refreshChannels);
+
     withPluginApi("0.12.1", (api) => {
       api.registerChatComposerButton({
         id: "chat-upload-btn",
@@ -132,7 +134,15 @@ export default {
     return this.chatService.getDocumentTitleCount();
   },
 
+  @bind
+  refreshChannels(event) {
+    if (document.visibilityState === "visible") {
+      this.chatService.getChannels();
+    }
+  },
+
   teardown() {
+    document.removeEventListener("visibilitychange", this.refreshChannels);
     clearChatComposerButtons();
   },
 };

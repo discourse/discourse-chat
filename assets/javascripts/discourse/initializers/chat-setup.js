@@ -11,10 +11,7 @@ export default {
     this.chatService = container.lookup("service:chat");
     this.siteSettings = container.lookup("site-settings:main");
     this.appEvents = container.lookup("service:appEvents");
-
     this.appEvents.on("discourse:focus-changed", this, "_handleFocusChanged");
-
-    document.addEventListener("visibilitychange", this.onVisibilityChange);
 
     withPluginApi("0.12.1", (api) => {
       api.registerChatComposerButton({
@@ -138,7 +135,6 @@ export default {
   },
 
   teardown() {
-    document.removeEventListener("visibilitychange", this.onVisibilityChange);
     this.appEvents.off("discourse:focus-changed", this, "_handleFocusChanged");
     clearChatComposerButtons();
   },

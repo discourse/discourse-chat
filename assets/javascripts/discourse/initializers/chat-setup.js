@@ -5,6 +5,9 @@ import { getOwner } from "discourse-common/lib/get-owner";
 import { MENTION_KEYWORDS } from "discourse/plugins/discourse-chat/discourse/components/chat-message";
 import { clearChatComposerButtons } from "discourse/plugins/discourse-chat/discourse/lib/chat-composer-buttons";
 
+let _lastForcedRefreshAt = Date.now();
+const MIN_REFRESH_DURATION_MS = 180000; // 3 minutes
+
 export default {
   name: "chat-setup",
   initialize(container) {
@@ -141,8 +144,16 @@ export default {
 
   @bind
   _handleFocusChanged(hasFocus) {
-    if (hasFocus) {
-      this.chatService.forceRefreshChannels();
+    if (!hasFocus) {
+      return;
     }
+
+    const noRefreshDuration = Date.now() - _lastForcedRefreshAt;
+    if (noRefreshDuration <= MIN_REFRESH_DURATION_MS) {
+      return false;
+    }
+
+    _lastForcedRefreshAt = Date.now();
+    this.chatService.forceRefreshChannels();
   },
 };

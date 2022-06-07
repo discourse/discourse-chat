@@ -78,12 +78,12 @@ da:
       user_deleted: "slettet"
       exit: "tilbage"
       channel_status:
-        read_only_header: "Kanalen er skrivebeskyttet."
+        read_only_header: "Kanalen er skrivebeskyttet"
         read_only: "Kun læsning"
-        archived_header: "Kanalen er arkiveret."
+        archived_header: "Kanalen er arkiveret"
         archived: "Arkiveret"
         closed: "Lukket"
-        open_header: "Kanalen er åben."
+        open_header: "Kanalen er åben"
         open: "Åbn"
       channel_selector:
         title: "Hop til kanal"
@@ -173,4 +173,3 @@ da:
         title: "Chat"
         keyboard_shortcuts:
           switch_channel_arrows: "%{shortcut} Skift kanal"
-          open_insert_link_modal: "%{shortcut} Indsæt hyperlink"

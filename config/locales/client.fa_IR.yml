@@ -115,11 +115,8 @@ fa_IR:
       exit: "بازگشت"
       channel_status:
         read_only: "فقط خواندنی"
-        archived_header: "کانال بایگانی شده است"
         archived: "بایگانی شده"
-        closed_header: "کانال بسته است"
         closed: "بسته شد"
-        open_header: "کانال باز است"
         open: "باز کن"
       chat_message_separator:
         today: امروز

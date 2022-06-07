@@ -154,15 +154,14 @@ sv:
       user_deleted: "borttagen"
       exit: "tillbaka"
       channel_status:
-        read_only_header: "Kanalen är skrivskyddad."
+        read_only_header: "Kanalen är skrivskyddad"
         read_only: "Endast läsning"
-        archived_header: "Kanalen är arkiverad."
+        archived_header: "Kanalen är arkiverad"
         archived: "Arkiverad"
         archive_failed: "Arkivering av kanalen misslyckades. %{completed}/%{total} meddelanden har arkiverats i <a target=\"_blank\" href=\"%{topic_url}\">destinationsämnet</a>. Tryck på försök igen för att försöka slutföra arkivet."
-        archive_completed: "Arkivering av kanalen är slutförd. Arkivet finns i <a target=\"_blank\" href=\"%{topic_url}\">destinationsämnet</a>."
-        closed_header: "Kanalen är stängd."
+        closed_header: "Kanalen är stängd"
         closed: "Stängd"
-        open_header: "Kanalen är öppen."
+        open_header: "Kanalen är öppen"
         open: "Öppen"
       chat_message_separator:
         today: Idag
@@ -330,7 +329,6 @@ sv:
         keyboard_shortcuts:
           switch_channel_arrows: "%{shortcut} Byt kanal"
           open_quick_channel_selector: "%{shortcut} Öppna snabbval av kanal"
-          open_insert_link_modal: "%{shortcut} Infoga hyperlänk"
     topic_statuses:
       chat:
         help: "Chatt är aktiverat för detta ämne"

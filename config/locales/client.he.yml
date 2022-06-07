@@ -164,15 +164,15 @@ he:
       user_deleted: "נמחק"
       exit: "חזרה"
       channel_status:
-        read_only_header: "הערוץ הוא לקריאה בלבד."
+        read_only_header: "הערוץ הוא לקריאה בלבד"
         read_only: "לקריאה בלבד"
-        archived_header: "הערוץ בארכיון."
+        archived_header: "הערוץ בארכיון"
         archived: "בארכיון"
         archive_failed: "העברת הערוץ לארכיון נכשלה. %{completed}/%{total} הודעות הועברו לארכיון תחת <a target=\"_blank\" href=\"%{topic_url}\">נושא היעד</a>. נא לנסות להשלים את ההעברה לארכיון פעם נוספת."
-        archive_completed: "העברת הערוץ לארכיון הושלמה. אפשר למצוא את הארכיון תחת <a target=\"_blank\" href=\"%{topic_url}\">נושא היעד</a>."
-        closed_header: "הערוץ סגור."
+        archive_completed: "אפשר לעיין ב<a target=\"_blank\" href=\"%{topic_url}\">ארכיון הנושא</a>"
+        closed_header: "הערוץ סגור"
         closed: "סגור"
-        open_header: "הערוץ פתוח."
+        open_header: "הערוץ פתוח"
         open: "פתוח"
       chat_message_separator:
         today: היום
@@ -348,7 +348,10 @@ he:
         keyboard_shortcuts:
           switch_channel_arrows: "%{shortcut} החלפת ערוץ"
           open_quick_channel_selector: "%{shortcut} פתיחת בורר הערוצים המהיר"
-          open_insert_link_modal: "%{shortcut} הוספת קישור"
+          open_insert_link_modal: "%{shortcut} הוספת קישור (עורך בלבד)"
+          composer_bold: "%{shortcut} מודגש (עורך בלבד)"
+          composer_italic: "%{shortcut} נטוי (עורך בלבד)"
+          composer_code: "%{shortcut} קוד (עורך בלבד)"
     topic_statuses:
       chat:
         help: "הצ׳אט מופעל בנושא הזה"

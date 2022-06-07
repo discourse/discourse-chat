@@ -703,7 +703,7 @@ export default Component.extend({
         message: data.chat_message.message,
         cooked: data.chat_message.cooked,
         excerpt: data.chat_message.excerpt,
-        uploads: cloneJSON(data.chat_message.uploads),
+        uploads: cloneJSON(data.chat_message.uploads || []),
         edited: true,
       });
     }
@@ -885,7 +885,7 @@ export default Component.extend({
   },
 
   @action
-  sendMessage(message, uploads) {
+  sendMessage(message, uploads = []) {
     resetIdle();
 
     if (this.sendingloading) {
@@ -927,7 +927,7 @@ export default Component.extend({
       message,
       cooked,
       staged_id: stagedId,
-      upload_ids: (uploads || []).map((upload) => upload.id),
+      upload_ids: uploads.map((upload) => upload.id),
     };
     if (this.replyToMsg) {
       data.in_reply_to_id = this.replyToMsg.id;

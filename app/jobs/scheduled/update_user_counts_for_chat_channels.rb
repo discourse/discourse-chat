@@ -15,7 +15,7 @@ module Jobs
       new_count = chat_channel
         .user_chat_channel_memberships
         .joins(:user)
-        .where(user: {active: true, suspended_till: nil, staged: false})
+        .where(user: { active: true, suspended_till: nil, staged: false })
         .where(following: true)
         .count
 

@@ -1,6 +1,4 @@
 import { decorateGithubOneboxBody } from "discourse/initializers/onebox-decorators";
-import { resolveAllShortUrls } from "pretty-text/upload-short-url";
-import { ajax } from "discourse/lib/ajax";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import highlightSyntax from "discourse/lib/highlight-syntax";
 import I18n from "I18n";
@@ -64,13 +62,6 @@ export default {
     api.decorateChatMessage(this.forceLinksToOpenNewTab, {
       id: "linksNewTab",
     });
-
-    api.decorateChatMessage(
-      (element) => resolveAllShortUrls(ajax, siteSettings, element),
-      {
-        id: "resolveShortUrls",
-      }
-    );
 
     api.decorateChatMessage(
       (element) =>

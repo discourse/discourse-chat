@@ -1,5 +1,5 @@
 {{#if (eq type IMAGE_TYPE)}}
-  <img class="chat-img-upload" data-orig-src={{upload.short_url}} height={{size.height}} width={{size.width}}>
+  <img class="chat-img-upload" data-orig-src={{upload.short_url}} height={{size.height}} width={{size.width}} src={{upload.url}}>
 {{else}}
-  <a class="chat-other-upload" data-orig-href={{upload.short_url}}>{{upload.original_filename}}</a>
+  <a class="chat-other-upload" data-orig-href={{upload.short_url}} href={{upload.url}}>{{upload.original_filename}}</a>
 {{/if}}

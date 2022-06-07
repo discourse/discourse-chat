@@ -960,6 +960,12 @@ body.has-full-page-chat {
       text-align: right;
       padding-right: 1em;
     }
+
+    .chat-channel-status {
+      .d-icon {
+        margin: 0 0.9rem 0 0.1rem;
+      }
+    }
   }
 
   .chat-channel-title {

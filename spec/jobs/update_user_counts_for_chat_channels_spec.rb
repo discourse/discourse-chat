@@ -8,6 +8,7 @@ describe Jobs::UpdateUserCountsForChatChannels do
   fab!(:user_1) { Fabricate(:user) }
   fab!(:user_2) { Fabricate(:user) }
   fab!(:user_3) { Fabricate(:user) }
+  fab!(:user_4) { Fabricate(:user) }
 
   it "sets the user_count correctly for each chat channel" do
     user_1.user_chat_channel_memberships.create!(chat_channel: chat_channel_1, following: true)
@@ -25,10 +26,14 @@ describe Jobs::UpdateUserCountsForChatChannels do
     expect(chat_channel_2.reload.user_count).to eq(3)
   end
 
-  it "doesn't count suspended users" do
+  it "does not count suspended, non-activated, nor staged users" do
     user_1.user_chat_channel_memberships.create!(chat_channel: chat_channel_1, following: true)
     user_2.user_chat_channel_memberships.create!(chat_channel: chat_channel_2, following: true)
+    user_3.user_chat_channel_memberships.create!(chat_channel: chat_channel_2, following: true)
+    user_4.user_chat_channel_memberships.create!(chat_channel: chat_channel_2, following: true)
     user_2.update(suspended_till: 3.weeks.from_now)
+    user_3.update(staged: true)
+    user_4.update(active: false)
 
     Jobs::UpdateUserCountsForChatChannels.new.execute
 

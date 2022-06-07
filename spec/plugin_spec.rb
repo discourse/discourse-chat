@@ -187,7 +187,7 @@ describe 'discourse-chat' do
     end
 
     context "regular" do
-      it "renders channel" do
+      it "renders channel, excluding inactive, staged, and suspended users" do
         user.user_chat_channel_memberships.create!(chat_channel: chat_channel, following: true)
         user_2.user_chat_channel_memberships.create!(chat_channel: chat_channel, following: true)
         user_3.user_chat_channel_memberships.create!(chat_channel: chat_channel, following: true)

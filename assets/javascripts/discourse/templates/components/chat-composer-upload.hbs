@@ -21,6 +21,7 @@
         title="chat.remove_upload"
       }}
     </div>
+
     <div class="bottom-data">
       {{#if isDone}}
         <span class="extension-pill">{{upload.extension}}</span>
@@ -30,7 +31,13 @@
         {{else}}
           <span class="uploading">{{i18n "uploading"}}</span>
         {{/if}}
-        <progress class="upload-progress" id="file" max="100" value={{upload.progress}}></progress>
+
+        <progress
+          class="upload-progress"
+          id="file"
+          max="100"
+          value={{upload.progress}}
+        ></progress>
       {{/if}}
     </div>
   </span>

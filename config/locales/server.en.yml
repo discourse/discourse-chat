@@ -98,9 +98,9 @@ en:
     personal_chat: "personal chat"
 
     onebox:
-      inline_to_message: 'Message #%{message_id} by %{username} – #%{chat_channel}'
-      inline_to_channel: 'Chat #%{chat_channel}'
-      inline_to_topic_channel: 'Chat for Topic %{topic_title}'
+      inline_to_message: "Message #%{message_id} by %{username} – #%{chat_channel}"
+      inline_to_channel: "Chat #%{chat_channel}"
+      inline_to_topic_channel: "Chat for Topic %{topic_title}"
 
       x_members:
         one: "%{count} member"

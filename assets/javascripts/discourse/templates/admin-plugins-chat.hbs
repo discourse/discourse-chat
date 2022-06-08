@@ -9,7 +9,9 @@
 
   <form class="form-vertical">
     <div class="control-group">
-      <label class="control-label">{{i18n "chat.incoming_webhooks.name"}}</label>
+      <label class="control-label">
+        {{i18n "chat.incoming_webhooks.name"}}
+      </label>
       {{input
         type="text"
         value=selectedWebhook.name
@@ -18,24 +20,30 @@
     </div>
 
     <div class="control-group">
-      <label class="control-label">{{i18n "chat.incoming_webhooks.description"}}</label>
-      {{textarea
-        value=selectedWebhook.description
-      }}
+      <label class="control-label">
+        {{i18n "chat.incoming_webhooks.description"}}
+      </label>
+      {{textarea value=selectedWebhook.description}}
     </div>
 
     <div class="control-group">
-      <label class="control-label">{{i18n "chat.incoming_webhooks.username"}}</label>
+      <label class="control-label">
+        {{i18n "chat.incoming_webhooks.username"}}
+      </label>
       {{input
         type="text"
         value=selectedWebhook.username
         placeholder=(i18n "chat.incoming_webhooks.system")
       }}
-      <div class="control-instructions">{{i18n "chat.incoming_webhooks.username_instructions"}}</div>
+      <div class="control-instructions">
+        {{i18n "chat.incoming_webhooks.username_instructions"}}
+      </div>
     </div>
 
     <div class="control-group">
-      <label class="control-label">{{i18n "chat.incoming_webhooks.post_to"}}</label>
+      <label class="control-label">
+        {{i18n "chat.incoming_webhooks.post_to"}}
+      </label>
       {{chat-channel-chooser
         content=model.chat_channels
         value=selectedWebhook.chat_channel.id
@@ -47,6 +55,7 @@
       <label class="control-label">
         {{#if selectedWebhook.emoji}}
           {{i18n "chat.incoming_webhooks.current_emoji"}}
+
           <span class="incoming-chat-webhooks-current-emoji">
             {{replace-emoji selectedWebhook.emoji}}
           </span>
@@ -54,12 +63,14 @@
           {{i18n "chat.incoming_webhooks.no_emoji"}}
         {{/if}}
       </label>
+
       {{emoji-picker
         isActive=emojiPickerIsActive
         isEditorFocused=true
         emojiSelected=(action "emojiSelected")
         onEmojiPickerClose=(action (mut emojiPickerIsActive) false)
       }}
+
       {{#unless emojiPickerIsActive}}
         {{d-button
           class="btn-primary"
@@ -72,7 +83,10 @@
           disabled=(not selectedWebhook.emoji)
         }}
       {{/unless}}
-      <div class="control-instructions">{{i18n "chat.incoming_webhooks.emoji_instructions"}}</div>
+
+      <div class="control-instructions">
+        {{i18n "chat.incoming_webhooks.emoji_instructions"}}
+      </div>
     </div>
 
     <div class="control-group">
@@ -89,8 +103,9 @@
     }}
   </form>
 {{else}}
-  {{!--  Index view   --}}
+  {{!  Index view   }}
   <h3>{{i18n "chat.incoming_webhooks.title"}}</h3>
+
   {{#if creatingNew}}
     <div class="new-incoming-webhook-container">
       {{input
@@ -133,20 +148,24 @@
             <div class="incoming-chat-webhooks--row--details--name">
               {{webhook.name}}
             </div>
+
             <div>
               {{#if webhook.emoji}}
                 {{replace-emoji webhook.emoji}}
               {{/if}}
+
               {{#if webhook.username}}
                 {{webhook.username}}
               {{else}}
                 {{i18n "chat.incoming_webhooks.system"}}
               {{/if}}
             </div>
+
             <div>{{chat-channel-title channel=webhook.chat_channel}}</div>
             <div>{{webhook.description}}</div>
             <div>{{webhook.url}}</div>
           </div>
+
           <div class="incoming-chat-webhooks--row--controls">
             <div>
               {{d-button

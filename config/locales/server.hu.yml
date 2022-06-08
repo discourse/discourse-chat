@@ -98,12 +98,12 @@ hu:
   discourse_push_notifications:
     popup:
       chat_mention:
-        direct: '%{username} megemlítette Önt a következő csatornán: „%{channel}”'
-        other: '%{username} megemlítette %{identifier} felhasználót a következő csatornán: „%{channel}”'
+        direct: "%{username} megemlítette Önt a következő csatornán: „%{channel}”"
+        other: "%{username} megemlítette %{identifier} felhasználót a következő csatornán: „%{channel}”"
       direct_message_chat_mention:
         direct: "%{username} megemlítette Önt egy személyes csevegésben"
         other: "%{username} megemlítette %{identifier} felhasználót egy személyes csevegésben"
-      new_chat_message: '%{username} üzenet küldött a következő csatornán: „%{channel}”'
+      new_chat_message: "%{username} üzenet küldött a következő csatornán: „%{channel}”"
       new_direct_chat_message: "%{username} üzenetet küldött egy személyes csevegésben"
   discourse_automation:
     scriptables:

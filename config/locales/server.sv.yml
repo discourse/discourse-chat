@@ -101,9 +101,9 @@ sv:
       notification_title: "meddelande i %{channel_name}"
     personal_chat: "personlig chatt"
     onebox:
-      inline_to_message: 'Meddelande #%{message_id} av %{username} – #%{chat_channel}'
-      inline_to_channel: 'Chatt #%{chat_channel}'
-      inline_to_topic_channel: 'Chatt för ämne %{topic_title}'
+      inline_to_message: "Meddelande #%{message_id} av %{username} – #%{chat_channel}"
+      inline_to_channel: "Chatt #%{chat_channel}"
+      inline_to_topic_channel: "Chatt för ämne %{topic_title}"
       x_members:
         one: "%{count} medlem"
         other: "%{count} medlemmar"

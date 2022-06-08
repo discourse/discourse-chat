@@ -1,11 +1,10 @@
 <div
-  class="{{rowClassNames}} {{if isUnfollowing "unfollowing"}}"
+  class="{{rowClassNames}}{{if isUnfollowing "unfollowing"}}"
   role="button"
   tabindex="0"
   {{on "click" this.handleClick}}
   data-id={{model.id}}
 >
-
   {{#if model.user}}
     {{avatar model imageSize="tiny"}}
     <span class="username">

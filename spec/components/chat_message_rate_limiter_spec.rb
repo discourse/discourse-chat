@@ -11,7 +11,7 @@ describe DiscourseChat::ChatMessageRateLimiter do
     RateLimiter.enable
     SiteSetting.chat_allowed_messages_for_trust_level_0 = 1
     SiteSetting.chat_allowed_messages_for_other_trust_levels = 2
-    SiteSetting.chat_auto_silience_duration = 30
+    SiteSetting.chat_auto_silence_duration = 30
   end
 
   after do
@@ -57,7 +57,7 @@ describe DiscourseChat::ChatMessageRateLimiter do
 
   it "doesn't silence the user even when the limit is broken if auto_silence_duration is set to 0" do
     SiteSetting.chat_allowed_messages_for_other_trust_levels = 1
-    SiteSetting.chat_auto_silience_duration = 0
+    SiteSetting.chat_auto_silence_duration = 0
     limiter.run!
     expect(user.reload.silenced?).to be false
 

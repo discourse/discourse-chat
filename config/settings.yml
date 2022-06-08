@@ -25,7 +25,7 @@ plugins:
     client: true
     max: 3652 # 10 years
     min: 0
-  chat_auto_silience_duration:
+  chat_auto_silence_duration:
     default: 30
     min: 0
   chat_allowed_messages_for_trust_level_0:

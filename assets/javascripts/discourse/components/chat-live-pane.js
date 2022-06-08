@@ -268,12 +268,6 @@ export default Component.extend({
               ? newMessages.concat(this.messages)
               : this.messages.concat(newMessages)
           );
-
-          const scrollToMessageArgs = {
-            highlight: false,
-            position: loadingPast ? "top" : "bottom",
-          };
-          this.scrollToMessage(messageId, scrollToMessageArgs);
         }
         this.setCanLoadMoreDetails(messages.resultSetMeta);
         return messages;

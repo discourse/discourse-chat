@@ -94,6 +94,7 @@ export default Component.extend({
     this._scrollerEl.addEventListener("scroll", this.onScrollhandler, {
       passive: true,
     });
+    window.addEventListener("resize", this.onResizeHandler);
 
     this.appEvents.on("chat:cancel-message-selection", this, "cancelSelecting");
 
@@ -110,6 +111,8 @@ export default Component.extend({
       .querySelector(".chat-messages-scroll")
       ?.removeEventListener("scroll", this.onScrollhandler);
 
+    window.removeEventListener("resize", this.onResizeHandler);
+
     this.appEvents.off(
       "chat-live-pane:highlight-message",
       this,
@@ -118,10 +121,10 @@ export default Component.extend({
     this._stopLastReadRunner();
 
     // don't need to removeEventListener from scroller as the DOM element goes away
-    if (this.stickyScrollTimer) {
-      cancel(this.stickyScrollTimer);
-      this.stickyScrollTimer = null;
-    }
+    cancel(this.stickyScrollTimer);
+
+    cancel(this.resizeHandler);
+
     this._cleanRegisteredChatChannelId();
     this._unloadedReplyIds = null;
     this.appEvents.off(
@@ -164,6 +167,17 @@ export default Component.extend({
   onScrollhandler() {
     cancel(this.stickyScrollTimer);
     this.stickyScrollTimer = discourseDebounce(this, this.onScroll, 100);
+  },
+
+  @bind
+  onResizeHandler() {
+    cancel(this.resizeHandler);
+    this.resizeHandler = discourseDebounce(
+      this,
+      this.fillPaneAttempt,
+      this.details,
+      250
+    );
   },
 
   fetchMessages(channelId) {
@@ -262,6 +276,7 @@ export default Component.extend({
           this.scrollToMessage(messageId, scrollToMessageArgs);
         }
         this.setCanLoadMoreDetails(messages.resultSetMeta);
+        return messages;
       })
       .catch((err) => {
         throw err;
@@ -276,19 +291,42 @@ export default Component.extend({
   },
 
   fillPaneAttempt(meta) {
-    if (meta?.can_load_more_past && this.messages.length <= PAGE_SIZE) {
+    // safeguard
+    if (this.messages.length > 200) {
+      return;
+    }
+
+    if (!meta?.can_load_more_past) {
+      return;
+    }
+
+    schedule("afterRender", () => {
       const firstMessageId = this.messages.firstObject?.id;
       if (!firstMessageId) {
         return;
       }
 
+      const scroller = document.querySelector(".chat-messages-container");
       const messageContainer = document.querySelector(
         `.chat-message-container[data-id="${firstMessageId}"]`
       );
-      if (messageContainer && isElementInViewport(messageContainer)) {
-        this._fetchMoreMessages(PAST);
+      if (
+        !scroller ||
+        !messageContainer ||
+        !isElementInViewport(messageContainer)
+      ) {
+        return;
       }
-    }
+
+      this._fetchMoreMessages(PAST).then((messages) => {
+        let originalscrollTop = scroller.scrollTop;
+
+        schedule("afterRender", () => {
+          scroller.scrollTo({ top: originalscrollTop });
+          this.fillPaneAttempt(messages?.resultSetMeta);
+        });
+      });
+    });
   },
 
   setCanLoadMoreDetails(meta) {

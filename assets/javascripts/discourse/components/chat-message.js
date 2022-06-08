@@ -1,8 +1,5 @@
 import bootbox from "bootbox";
-import Bookmark, {
-  NO_REMINDER_ICON,
-  WITH_REMINDER_ICON,
-} from "discourse/models/bookmark";
+import Bookmark from "discourse/models/bookmark";
 import { openBookmarkModal } from "discourse/controllers/bookmark";
 import { isTesting } from "discourse-common/config/environment";
 import Component from "@ember/component";
@@ -15,7 +12,7 @@ import discourseComputed, {
 } from "discourse-common/utils/decorators";
 import EmberObject, { action, computed } from "@ember/object";
 import { ajax } from "discourse/lib/ajax";
-import { cancel, later, schedule } from "@ember/runloop";
+import { cancel, later, once, schedule } from "@ember/runloop";
 import { clipboardCopy } from "discourse/lib/utilities";
 import { inject as service } from "@ember/service";
 import { popupAjaxError } from "discourse/lib/ajax-error";
@@ -90,14 +87,22 @@ export default Component.extend({
   didReceiveAttrs() {
     this._super(...arguments);
 
-    schedule("afterRender", () => {
-      if (!this.messageContainer) {
-        return;
-      }
+    if (!this.show || this.deletedAndCollapsed) {
+      this._decoratedMessageCooked = null;
+    } else if (this.message.cooked !== this._decoratedMessageCooked) {
+      once("afterRender", this.decorateMessageCooked);
+      this._decoratedMessageCooked = this.message.cooked;
+    }
+  },
 
-      _chatMessageDecorators.forEach((decorator) => {
-        decorator.call(this, this.messageContainer, this.chatChannel);
-      });
+  @bind
+  decorateMessageCooked() {
+    if (!this.messageContainer) {
+      return;
+    }
+
+    _chatMessageDecorators.forEach((decorator) => {
+      decorator.call(this, this.messageContainer, this.chatChannel);
     });
   },
 
@@ -159,8 +164,7 @@ export default Component.extend({
     "showDeleteButton",
     "showRestoreButton",
     "showEditButton",
-    "showRebakeButton",
-    "message.bookmark"
+    "showRebakeButton"
   )
   secondaryButtons() {
     const buttons = [];
@@ -227,18 +231,6 @@ export default Component.extend({
       });
     }
 
-    if (this.showBookmarkButton) {
-      buttons.push({
-        id: "toggleBookmark",
-        name: this.message.bookmark
-          ? I18n.t("chat.bookmark_message_edit")
-          : I18n.t("chat.bookmark_message"),
-        icon: this.message.bookmark?.reminder_at
-          ? WITH_REMINDER_ICON
-          : NO_REMINDER_ICON,
-      });
-    }
-
     return buttons;
   },
 
@@ -263,6 +255,7 @@ export default Component.extend({
     return {
       canReact: this.canReact,
       canReply: this.canReply,
+      canBookmark: this.showBookmarkButton,
     };
   },
 
@@ -744,7 +737,6 @@ export default Component.extend({
   @action
   expand() {
     this.message.set("expanded", true);
-    this.afterExpand();
   },
 
   @action

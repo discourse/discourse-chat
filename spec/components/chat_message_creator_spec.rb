@@ -12,6 +12,7 @@ describe DiscourseChat::ChatMessageCreator do
   fab!(:user_group) { Fabricate(:public_group, users: [user1, user2, user3], mentionable_level: Group::ALIAS_LEVELS[:everyone]) }
   fab!(:user_without_memberships) { Fabricate(:user) }
   fab!(:public_chat_channel) { Fabricate(:chat_channel, chatable: Fabricate(:topic)) }
+  fab!(:dm_chat_channel) { Fabricate(:chat_channel, chatable: Fabricate(:direct_message_channel, users: [user1, user2, user3])) }
 
   before do
     SiteSetting.chat_enabled = true

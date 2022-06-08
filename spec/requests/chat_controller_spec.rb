@@ -45,11 +45,11 @@ RSpec.describe DiscourseChat::ChatController do
       expect(response.status).to eq(400)
     end
 
-    it "returns the latest messages" do
+    it "returns the latest messages in created_at, id order" do
       get "/chat/#{chat_channel.id}/messages.json", params: { page_size: page_size }
       messages = response.parsed_body["chat_messages"]
       expect(messages.count).to eq(page_size)
-      expect(messages.first["id"]).to be < messages.last["id"]
+      expect(messages.first["created_at"].to_time).to be < messages.last["created_at"].to_time
     end
 
     it "returns `can_flag=true` for public channels" do
@@ -135,59 +135,73 @@ RSpec.describe DiscourseChat::ChatController do
       expect(reactions[smile_emoji]["reacted"]).to be false
     end
 
-    describe "with 'before_message_id' param" do
-      it "returns the correct messages" do
-        get "/chat/#{chat_channel.id}/messages.json", params: { before_message_id: message_40.id, page_size: page_size }
+    describe "scrolling to the past" do
+      it "returns the correct messages in created_at, id order" do
+        get "/chat/#{chat_channel.id}/messages.json", params: { message_id: message_40.id, direction: described_class::PAST, page_size: page_size }
         messages = response.parsed_body["chat_messages"]
         expect(messages.count).to eq(page_size)
-        expect(messages.first["id"]).to eq(message_10.id)
-        expect(messages.last["id"]).to eq(message_39.id)
+        expect(messages.first["created_at"].to_time).to eq_time(message_10.created_at)
+        expect(messages.last["created_at"].to_time).to eq_time(message_39.created_at)
       end
 
       it "returns 'can_load...' properly when there are more past messages" do
-        get "/chat/#{chat_channel.id}/messages.json", params: { before_message_id: message_40.id, page_size: page_size }
+        get "/chat/#{chat_channel.id}/messages.json", params: { message_id: message_40.id, direction: described_class::PAST, page_size: page_size }
         expect(response.parsed_body["meta"]["can_load_more_past"]).to be true
         expect(response.parsed_body["meta"]["can_load_more_future"]).to be_nil
       end
 
       it "returns 'can_load...' properly when there are no past messages" do
-        get "/chat/#{chat_channel.id}/messages.json", params: { before_message_id: message_3.id, page_size: page_size }
+        get "/chat/#{chat_channel.id}/messages.json", params: { message_id: message_3.id, direction: described_class::PAST, page_size: page_size }
         expect(response.parsed_body["meta"]["can_load_more_past"]).to be false
         expect(response.parsed_body["meta"]["can_load_more_future"]).to be_nil
       end
     end
 
-    describe "with 'after_message_id' param" do
-      it "returns the correct messages when there are many after" do
-        get "/chat/#{chat_channel.id}/messages.json", params: { after_message_id: message_10.id, page_size: page_size }
+    describe "scrolling to the future" do
+      it "returns the correct messages in created_at, id order when there are many after" do
+        get "/chat/#{chat_channel.id}/messages.json", params: { message_id: message_10.id, direction: described_class::FUTURE, page_size: page_size }
         messages = response.parsed_body["chat_messages"]
         expect(messages.count).to eq(page_size)
-        expect(messages.first["id"]).to eq(message_11.id)
-        expect(messages.last["id"]).to eq(message_40.id)
+        expect(messages.first["created_at"].to_time).to eq_time(message_11.created_at)
+        expect(messages.last["created_at"].to_time).to eq_time(message_40.created_at)
       end
 
       it "return 'can_load..' properly when there are future messages" do
-        get "/chat/#{chat_channel.id}/messages.json", params: { after_message_id: message_10.id, page_size: page_size }
+        get "/chat/#{chat_channel.id}/messages.json", params: { message_id: message_10.id, direction: described_class::FUTURE, page_size: page_size }
         expect(response.parsed_body["meta"]["can_load_more_past"]).to be_nil
         expect(response.parsed_body["meta"]["can_load_more_future"]).to be true
       end
 
       it "returns 'can_load..' properly when there are no future messages" do
-        get "/chat/#{chat_channel.id}/messages.json", params: { after_message_id: message_60.id, page_size: page_size }
+        get "/chat/#{chat_channel.id}/messages.json", params: { message_id: message_60.id, direction: described_class::FUTURE, page_size: page_size }
         expect(response.parsed_body["meta"]["can_load_more_past"]).to be_nil
         expect(response.parsed_body["meta"]["can_load_more_future"]).to be false
       end
     end
 
-    it "errors when both 'after_message_id' and 'before_message_id' are present" do
-      get "/chat/#{chat_channel.id}/messages.json", params: {
-        before_message_id: message_40.id,
-        after_message_id: message_20.id,
-        page_size: page_size
-      }
-      expect(response.status).to eq(400)
-    end
+    describe 'without direction (latest messages)' do
+      it 'signals there are no future messages' do
+        get "/chat/#{chat_channel.id}/messages.json", params: { page_size: page_size }
 
+        expect(response.parsed_body["meta"]["can_load_more_future"]).to eq(false)
+      end
+
+      it 'signals there are more messages in the past' do
+        get "/chat/#{chat_channel.id}/messages.json", params: { page_size: page_size }
+
+        expect(response.parsed_body["meta"]["can_load_more_past"]).to eq(true)
+      end
+
+      it 'signals there are no more messages' do
+        new_channel = Fabricate(:chat_channel)
+        Fabricate(:chat_message, chat_channel: new_channel, user: other_user, message: "message")
+        chat_messages_qty = 1
+
+        get "/chat/#{new_channel.id}/messages.json", params: { page_size: chat_messages_qty + 1 }
+
+        expect(response.parsed_body["meta"]["can_load_more_past"]).to eq(false)
+      end
+    end
   end
 
   describe "#enable_chat" do
@@ -220,15 +234,6 @@ RSpec.describe DiscourseChat::ChatController do
         expect(response.status).to eq(200)
         expect(topic.chat_channel).to be_present
         expect(topic.reload.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]).to be true
-      end
-    end
-
-    describe "for tag" do
-      it "enables chat" do
-        sign_in(admin)
-        post "/chat/enable.json", params: { chatable_type: "tag", chatable_id: tag.id }
-        expect(response.status).to eq(200)
-        expect(ChatChannel.where(chatable: tag)).to be_present
       end
     end
   end
@@ -264,16 +269,6 @@ RSpec.describe DiscourseChat::ChatController do
         expect(response.status).to eq(200)
         expect(chat_channel.reload.deleted_by_id).to eq(admin.id)
         expect(topic.reload.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]).to be_nil
-      end
-    end
-
-    describe "for tag" do
-      it "disables chat" do
-        sign_in(admin)
-        chat_channel = Fabricate(:chat_channel, chatable: tag)
-        post "/chat/disable.json", params: { chatable_type: "tag", chatable_id: tag.id }
-        expect(response.status).to eq(200)
-        expect(chat_channel.reload.deleted_by_id).to eq(admin.id)
       end
     end
   end
@@ -680,14 +675,14 @@ RSpec.describe DiscourseChat::ChatController do
 
   describe "#update_user_last_read" do
     before do
-      @message_1 = Fabricate(:chat_message, chat_channel: chat_channel, user: other_user)
-      @message_2 = Fabricate(:chat_message, chat_channel: chat_channel, user: other_user)
-
       sign_in(user)
     end
 
+    fab!(:message_1) { Fabricate(:chat_message, chat_channel: chat_channel, user: other_user) }
+    fab!(:message_2) { Fabricate(:chat_message, chat_channel: chat_channel, user: other_user) }
+
     it 'returns a 404 when the user is not a channel member' do
-      put "/chat/#{chat_channel.id}/read/#{@message_1.id}.json"
+      put "/chat/#{chat_channel.id}/read/#{message_1.id}.json"
 
       expect(response.status).to eq(404)
     end
@@ -695,25 +690,44 @@ RSpec.describe DiscourseChat::ChatController do
     it 'returns a 404 when the user is not following the channel' do
       Fabricate(:user_chat_channel_membership, chat_channel: chat_channel, user: user, following: false)
 
-      put "/chat/#{chat_channel.id}/read/#{@message_1.id}.json"
+      put "/chat/#{chat_channel.id}/read/#{message_1.id}.json"
 
       expect(response.status).to eq(404)
     end
 
     describe 'when the user is a channel member' do
-      before do
-        @user_membership = Fabricate(:user_chat_channel_membership, chat_channel: chat_channel, user: user)
+      fab!(:membership) { Fabricate(:user_chat_channel_membership, chat_channel: chat_channel, user: user) }
+
+      context 'message_id param doesn’t link to a message of the channel' do
+        it 'raises a not found' do
+          put "/chat/#{chat_channel.id}/read/-999.json"
+
+          expect(response.status).to eq(404)
+        end
+      end
+
+      context 'message_id param is inferior to existing last read' do
+        before do
+          membership.update!(last_read_message_id: message_2.id)
+        end
+
+        it 'raises an invalid request' do
+          put "/chat/#{chat_channel.id}/read/#{message_1.id}.json"
+
+          expect(response.status).to eq(400)
+          expect(response.parsed_body['errors'][0]).to match(/message_id/)
+        end
       end
 
       it 'updates timing records' do
         expect {
-          put "/chat/#{chat_channel.id}/read/#{@message_1.id}.json"
+          put "/chat/#{chat_channel.id}/read/#{message_1.id}.json"
         }.to change { UserChatChannelMembership.count }.by(0)
 
-        @user_membership.reload
-        expect(@user_membership.chat_channel_id).to eq(chat_channel.id)
-        expect(@user_membership.last_read_message_id).to eq(@message_1.id)
-        expect(@user_membership.user_id).to eq(user.id)
+        membership.reload
+        expect(membership.chat_channel_id).to eq(chat_channel.id)
+        expect(membership.last_read_message_id).to eq(message_1.id)
+        expect(membership.user_id).to eq(user.id)
       end
 
       def create_notification_and_mention_for(user, sender, msg)
@@ -735,9 +749,9 @@ RSpec.describe DiscourseChat::ChatController do
       end
 
       it 'marks all mention notifications as read for the channel' do
-        notification = create_notification_and_mention_for(user, other_user, @message_1)
+        notification = create_notification_and_mention_for(user, other_user, message_1)
 
-        put "/chat/#{chat_channel.id}/read/#{@message_2.id}.json"
+        put "/chat/#{chat_channel.id}/read/#{message_2.id}.json"
         expect(response.status).to eq(200)
         expect(notification.reload.read).to eq(true)
       end
@@ -746,7 +760,7 @@ RSpec.describe DiscourseChat::ChatController do
         message_3 = Fabricate(:chat_message, chat_channel: chat_channel, user: other_user)
         notification = create_notification_and_mention_for(user, other_user, message_3)
 
-        put "/chat/#{chat_channel.id}/read/#{@message_2.id}.json"
+        put "/chat/#{chat_channel.id}/read/#{message_2.id}.json"
 
         expect(response.status).to eq(200)
         expect(notification.reload.read).to eq(false)

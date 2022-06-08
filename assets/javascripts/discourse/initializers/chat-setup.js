@@ -5,11 +5,16 @@ import { getOwner } from "discourse-common/lib/get-owner";
 import { MENTION_KEYWORDS } from "discourse/plugins/discourse-chat/discourse/components/chat-message";
 import { clearChatComposerButtons } from "discourse/plugins/discourse-chat/discourse/lib/chat-composer-buttons";
 
+let _lastForcedRefreshAt;
+const MIN_REFRESH_DURATION_MS = 180000; // 3 minutes
+
 export default {
   name: "chat-setup",
   initialize(container) {
     this.chatService = container.lookup("service:chat");
     this.siteSettings = container.lookup("site-settings:main");
+    this.appEvents = container.lookup("service:appEvents");
+    this.appEvents.on("discourse:focus-changed", this, "_handleFocusChanged");
 
     withPluginApi("0.12.1", (api) => {
       api.registerChatComposerButton({
@@ -133,6 +138,25 @@ export default {
   },
 
   teardown() {
+    this.appEvents.off("discourse:focus-changed", this, "_handleFocusChanged");
+    _lastForcedRefreshAt = null;
     clearChatComposerButtons();
+  },
+
+  @bind
+  _handleFocusChanged(hasFocus) {
+    if (!hasFocus) {
+      return;
+    }
+
+    _lastForcedRefreshAt = _lastForcedRefreshAt || Date.now();
+
+    const duration = Date.now() - _lastForcedRefreshAt;
+    if (duration <= MIN_REFRESH_DURATION_MS) {
+      return;
+    }
+
+    _lastForcedRefreshAt = Date.now();
+    this.chatService.forceRefreshChannels();
   },
 };

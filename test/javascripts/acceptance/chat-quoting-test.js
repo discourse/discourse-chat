@@ -21,7 +21,7 @@ import {
 import selectKit from "discourse/tests/helpers/select-kit-helper";
 
 let quoteResponse = {
-  markdown: `[chat quote="martinchat;3875498;2022-02-04T01:12:15Z" channel="The Beam Discussions"]
+  markdown: `[chat quote="martinchat;3875498;2022-02-04T01:12:15Z" channel="The Beam Discussions" channelId="1234"]
   an extremely insightful response :)
   [/chat]`,
 };
@@ -56,12 +56,11 @@ acceptance("Discourse Chat | quoting out of topic", function (needs) {
     setupPretenders(server, helper);
   });
 
-  // TODO Something about these is weirdly flaky, causing an indexOf error in
-  // addImage for upload-protocol.js, no idea why.
   skip("it opens the composer and appends the quote", async function (assert) {
     await visit("/chat/channel/7/Uncategorized");
     assert.ok(exists(".chat-message-container"));
     const firstMessage = query(".chat-message-container");
+    await triggerEvent(firstMessage, "mouseenter");
     const dropdown = selectKit(".chat-message-container .more-buttons");
     await dropdown.expand();
     await dropdown.selectRowByValue("selectMessage");
@@ -115,14 +114,13 @@ acceptance("Discourse Chat | quoting when topic open", async function (needs) {
     setupPretenders(server, helper);
   });
 
-  // TODO Something about these is weirdly flaky, causing an indexOf error in
-  // addImage for upload-protocol.js, no idea why.
   skip("it opens the composer for the topic and pastes in the quote", async function (assert) {
     await visit("/t/internationalization-localization/280");
     await click(".header-dropdown-toggle.open-chat");
     assert.ok(visible(".topic-chat-float-container"), "chat float is open");
     assert.ok(exists(".chat-message-container"));
     const firstMessage = query(".chat-message-container");
+    await triggerEvent(firstMessage, "mouseenter");
     const dropdown = selectKit(".chat-message-container .more-buttons");
     await dropdown.expand();
     await dropdown.selectRowByValue("selectMessage");

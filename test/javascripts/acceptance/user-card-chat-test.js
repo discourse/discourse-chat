@@ -85,6 +85,7 @@ if (!isLegacyEmber()) {
 
     test("user card has chat button that opens the correct channel", async function (assert) {
       this.chatService.set("sidebarActive", false);
+      this.chatService.set("chatWindowFullPage", false);
       await visit("/latest");
       this.appEvents.trigger("chat:toggle-open");
       await settled();

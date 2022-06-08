@@ -70,6 +70,11 @@ en:
         public_available: "There are public channels available for you to follow."
         start_direct_message: "You can also start a personal chat with one or more users."
         title: "Get started by joining a channel"
+      email_frequency:
+        description: "We'll only email you if we haven't seen you in the last 15 minutes."
+        never: "Never"
+        title: "Email Notifications"
+        when_away: "Only when away"
       enable: "Enable chat"
       flag: "Flag"
       flagged: "This message has been flagged for review"
@@ -108,6 +113,7 @@ en:
         description: "Do not send notifications for channel-wide mentions (@here and @all)"
       open: "Open chat"
       open_full_page: "Open full-screen chat"
+      close_full_page: "Close full-screen chat"
       open_message: "Open message in chat"
       placeholder_self: "Jot something down"
       placeholder_others: "Chat with %{messageRecipient}"
@@ -145,15 +151,15 @@ en:
       user_deleted: "deleted"
       exit: "back"
       channel_status:
-        read_only_header: "Channel is read only."
+        read_only_header: "Channel is read only"
         read_only: "Read Only"
-        archived_header: "Channel is archived."
+        archived_header: "Channel is archived"
         archived: "Archived"
         archive_failed: "Archive channel failed. %{completed}/%{total} messages have been archived in <a target=\"_blank\" href=\"%{topic_url}\">the destination topic</a>. Press retry to attempt to complete the archive."
-        archive_completed: "Archive channel completed. The archive can be found in <a target=\"_blank\" href=\"%{topic_url}\">the destination topic</a>."
-        closed_header: "Channel is closed."
+        archive_completed: "See <a target=\"_blank\" href=\"%{topic_url}\">the archive topic</a>"
+        closed_header: "Channel is closed"
         closed: "Closed"
-        open_header: "Channel is open."
+        open_header: "Channel is open"
         open: "Open"
 
       chat_message_separator:
@@ -341,7 +347,10 @@ en:
         keyboard_shortcuts:
           switch_channel_arrows: "%{shortcut} Switch channel"
           open_quick_channel_selector: "%{shortcut} Open quick channel selector"
-          open_insert_link_modal: "%{shortcut} Insert hyperlink"
+          open_insert_link_modal: "%{shortcut} Insert hyperlink (composer only)"
+          composer_bold: "%{shortcut} Bold (composer only)"
+          composer_italic: "%{shortcut} Italic (composer only)"
+          composer_code: "%{shortcut} Code (composer only)"
     topic_statuses:
       chat:
         help: "Chat is enabled for this topic"

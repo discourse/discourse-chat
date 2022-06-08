@@ -334,33 +334,95 @@ describe ChatMessage do
     end
   end
 
-  describe "#calc_min_user_count_for_duplicates" do
-    it "is correct for some points" do
-      expect(message.send(:calc_min_user_count_for_duplicates, 0.1)).to eq(100)
-      expect(message.send(:calc_min_user_count_for_duplicates, 0.3)).to eq(78)
-      expect(message.send(:calc_min_user_count_for_duplicates, 0.5)).to eq(57)
-      expect(message.send(:calc_min_user_count_for_duplicates, 0.7)).to eq(36)
-      expect(message.send(:calc_min_user_count_for_duplicates, 1.0)).to eq(5)
+  describe "blocking duplicate messages" do
+    fab!(:channel) { Fabricate(:chat_channel, user_count: 10) }
+    fab!(:user1) { Fabricate(:user) }
+    fab!(:user2) { Fabricate(:user) }
+
+    before do
+      SiteSetting.chat_duplicate_message_sensitivity = 1
+    end
+
+    it "blocks duplicate messages for the message, channel user, and message age requirements" do
+      Fabricate(:chat_message, message: "this is duplicate", chat_channel: channel, user: user1)
+      message = ChatMessage.new(message: "this is duplicate", chat_channel: channel, user: user2)
+      message.validate_message(has_uploads: false)
+      expect(message.errors.full_messages).to include(I18n.t("chat.errors.duplicate_message"))
     end
   end
 
-  describe "#calc_min_message_length_for_duplicates" do
-    it "is correct for some points" do
-      expect(message.send(:calc_min_message_length_for_duplicates, 0.1)).to eq(30)
-      expect(message.send(:calc_min_message_length_for_duplicates, 0.3)).to eq(25)
-      expect(message.send(:calc_min_message_length_for_duplicates, 0.5)).to eq(21)
-      expect(message.send(:calc_min_message_length_for_duplicates, 0.7)).to eq(16)
-      expect(message.send(:calc_min_message_length_for_duplicates, 1.0)).to eq(10)
-    end
-  end
+  describe '#destroy' do
+    it 'nullify messages with in_reply_to_id to this destroyed message' do
+      message_1 = Fabricate(:chat_message)
+      message_2 = Fabricate(:chat_message, in_reply_to_id: message_1.id)
+      message_3 = Fabricate(:chat_message, in_reply_to_id: message_2.id)
 
-  describe "#calc_in_the_past_seconds_for_duplicates" do
-    it "is correct for some points" do
-      expect(message.send(:calc_in_the_past_seconds_for_duplicates, 0.1)).to eq(10)
-      expect(message.send(:calc_in_the_past_seconds_for_duplicates, 0.3)).to eq(21)
-      expect(message.send(:calc_in_the_past_seconds_for_duplicates, 0.5)).to eq(32)
-      expect(message.send(:calc_in_the_past_seconds_for_duplicates, 0.7)).to eq(43)
-      expect(message.send(:calc_in_the_past_seconds_for_duplicates, 1.0)).to eq(60)
+      expect(message_2.in_reply_to_id).to eq(message_1.id)
+
+      message_1.destroy!
+
+      expect(message_2.reload.in_reply_to_id).to be_nil
+      expect(message_3.reload.in_reply_to_id).to eq(message_2.id)
+    end
+
+    it 'destroys chat_message_revisions' do
+      message_1 = Fabricate(:chat_message)
+      revision_1 = Fabricate(:chat_message_revision, chat_message: message_1)
+
+      message_1.destroy!
+
+      expect { revision_1.reload }.to raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it 'destroys chat_message_reactions' do
+      message_1 = Fabricate(:chat_message)
+      reaction_1 = Fabricate(:chat_message_reaction, chat_message: message_1)
+
+      message_1.destroy!
+
+      expect { reaction_1.reload }.to raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it 'destroys chat_mention' do
+      message_1 = Fabricate(:chat_message)
+      mention_1 = Fabricate(:chat_mention, chat_message: message_1)
+
+      message_1.destroy!
+
+      expect { mention_1.reload }.to raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it 'destroys chat_webhook_event' do
+      message_1 = Fabricate(:chat_message)
+      webhook_1 = Fabricate(:chat_webhook_event, chat_message: message_1)
+
+      message_1.destroy!
+
+      expect { webhook_1.reload }.to raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it 'destroys chat_uploads' do
+      message_1 = Fabricate(:chat_message)
+      chat_upload_1 = Fabricate(:chat_upload, chat_message: message_1)
+
+      message_1.destroy!
+
+      expect { chat_upload_1.reload }.to raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    context 'bookmarks' do
+      before do
+        Bookmark.register_bookmarkable(ChatMessageBookmarkable)
+      end
+
+      it 'destroys bookmarks' do
+        message_1 = Fabricate(:chat_message)
+        bookmark_1 = Fabricate(:bookmark, bookmarkable: message_1)
+
+        message_1.destroy!
+
+        expect { bookmark_1.reload }.to raise_error(ActiveRecord::RecordNotFound)
+      end
     end
   end
 end

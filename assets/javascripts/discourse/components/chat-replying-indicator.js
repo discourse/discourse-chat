@@ -57,13 +57,16 @@ export default Component.extend({
     this._super(...arguments);
 
     if (!this.chatChannel || this.chatChannel.isDraft) {
+      this.presenceChannel?.unsubscribe();
       return;
     }
 
     if (this.presenceChannel?.name !== this.channelName) {
       this.presenceChannel?.unsubscribe();
-      this.set("presenceChannel", this.presence.getChannel(this.channelName));
-      this.presenceChannel.subscribe();
+
+      const presenceChannel = this.presence.getChannel(this.channelName);
+      this.set("presenceChannel", presenceChannel);
+      presenceChannel.subscribe();
     }
   },
 

@@ -29,28 +29,28 @@ export default class ChatMessageCollapser extends Component {
 
   @computed("cooked")
   get cookedBodies() {
-    if (hasYoutube(this.cooked)) {
-      return this.youtubeCooked();
+    const elements = Array.prototype.slice.call(domFromString(this.cooked));
+
+    if (hasYoutube(elements)) {
+      return this.youtubeCooked(elements);
     }
 
-    if (hasImageOnebox(this.cooked)) {
-      return this.imageOneboxCooked();
+    if (hasImageOnebox(elements)) {
+      return this.imageOneboxCooked(elements);
     }
 
-    if (hasImage(this.cooked)) {
-      return this.imageCooked();
+    if (hasImage(elements)) {
+      return this.imageCooked(elements);
     }
 
-    if (hasGallery(this.cooked)) {
-      return this.galleryCooked();
+    if (hasGallery(elements)) {
+      return this.galleryCooked(elements);
     }
 
     return [];
   }
 
-  youtubeCooked() {
-    const elements = Array.prototype.slice.call(domFromString(this.cooked));
-
+  youtubeCooked(elements) {
     return elements.reduce((acc, e) => {
       if (youtubePredicate(e)) {
         const id = e.dataset.youtubeId;
@@ -71,9 +71,7 @@ export default class ChatMessageCollapser extends Component {
     }, []);
   }
 
-  imageOneboxCooked() {
-    const elements = Array.prototype.slice.call(domFromString(this.cooked));
-
+  imageOneboxCooked(elements) {
     return elements.reduce((acc, e) => {
       if (imageOneboxPredicate(e)) {
         const link = animatedImagePredicate(e)
@@ -90,9 +88,7 @@ export default class ChatMessageCollapser extends Component {
     }, []);
   }
 
-  imageCooked() {
-    const elements = Array.prototype.slice.call(domFromString(this.cooked));
-
+  imageCooked(elements) {
     return elements.reduce((acc, e) => {
       if (imagePredicate(e)) {
         const link = e.firstElementChild.src;
@@ -110,9 +106,7 @@ export default class ChatMessageCollapser extends Component {
     }, []);
   }
 
-  galleryCooked() {
-    const elements = Array.prototype.slice.call(domFromString(this.cooked));
-
+  galleryCooked(elements) {
     return elements.reduce((acc, e) => {
       if (galleryPredicate(e)) {
         const link = e.firstElementChild.href;
@@ -138,8 +132,7 @@ function youtubePredicate(e) {
   );
 }
 
-function hasYoutube(cooked) {
-  const elements = Array.prototype.slice.call(domFromString(cooked));
+function hasYoutube(elements) {
   return elements.some((e) => youtubePredicate(e));
 }
 
@@ -166,8 +159,7 @@ function imageOneboxPredicate(e) {
   return animatedImagePredicate(e) || externalImageOnebox(e);
 }
 
-function hasImageOnebox(cooked) {
-  const elements = Array.prototype.slice.call(domFromString(cooked));
+function hasImageOnebox(elements) {
   return elements.some((e) => imageOneboxPredicate(e));
 }
 
@@ -184,8 +176,7 @@ function imagePredicate(e) {
   );
 }
 
-function hasImage(cooked) {
-  const elements = Array.prototype.slice.call(domFromString(cooked));
+function hasImage(elements) {
   return elements.some((e) => imagePredicate(e));
 }
 
@@ -198,17 +189,18 @@ function galleryPredicate(e) {
   );
 }
 
-function hasGallery(cooked) {
-  const elements = Array.prototype.slice.call(domFromString(cooked));
+function hasGallery(elements) {
   return elements.some((e) => galleryPredicate(e));
 }
 
 export function isCollapsible(cooked, uploads) {
+  const elements = Array.prototype.slice.call(domFromString(cooked));
+
   return (
-    hasYoutube(cooked) ||
-    hasImageOnebox(cooked) ||
+    hasYoutube(elements) ||
+    hasImageOnebox(elements) ||
     hasUploads(uploads) ||
-    hasImage(cooked) ||
-    hasGallery(cooked)
+    hasImage(elements) ||
+    hasGallery(elements)
   );
 }

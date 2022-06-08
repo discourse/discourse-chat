@@ -25,5 +25,7 @@ acceptance("Discourse Chat - Mobile test", function (needs) {
     await click(".header-dropdown-toggle.open-chat");
     assert.equal(currentURL(), "/chat");
     assert.ok(exists(".channels-list"));
+    await click(".chat-channel-row.chat-channel-7");
+    assert.notOk(exists(".chat-full-screen-button"));
   });
 });

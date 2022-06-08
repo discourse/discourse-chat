@@ -20,6 +20,15 @@
         {{chat-channel-status channel=chatChannel}}
       </div>
 
+      {{#if showCloseFullScreenBtn}}
+        {{flat-button
+          class="chat-full-screen-button"
+          icon="discourse-compress"
+          action=(action "onCloseFullScreen" chatChannel)
+          title="chat.close_full_page"
+        }}
+      {{/if}}
+
       {{chat-channel-archive-status channel=chatChannel}}
     </div>
   </div>
@@ -45,7 +54,6 @@
         setReplyTo=(action "setReplyTo")
         replyMessageClicked=(action "replyMessageClicked")
         editButtonClicked=(action "editButtonClicked")
-        afterExpand=(action "decorateMessages")
         selectingMessages=selectingMessages
         onStartSelectingMessages=onStartSelectingMessages
         onSelectMessage=onSelectMessage

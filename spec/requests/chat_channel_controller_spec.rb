@@ -10,11 +10,6 @@ RSpec.describe DiscourseChat::ChatChannelsController do
   fab!(:topic) { Fabricate(:topic, category: category) }
   fab!(:chat_channel) { Fabricate(:chat_channel, chatable: topic) }
   fab!(:dm_chat_channel) { Fabricate(:chat_channel, chatable: Fabricate(:direct_message_channel, users: [user, admin])) }
-  fab!(:tag_channel) { Fabricate(:chat_channel, chatable: Fabricate(:tag)) }
-
-  fab!(:staff_tag) { Fabricate(:tag) }
-  let!(:staff_tag_group) { Fabricate(:tag_group, permissions: { "staff" => 1 }, tag_names: [staff_tag.name]) }
-  fab!(:staff_tag_channel) { Fabricate(:chat_channel, chatable: staff_tag) }
 
   before do
     SiteSetting.chat_enabled = true
@@ -72,7 +67,7 @@ RSpec.describe DiscourseChat::ChatChannelsController do
 
         expect(response.status).to eq(200)
         expect(response.parsed_body["public_channels"].map { |channel| channel["id"] })
-          .to match_array([public_category_cc.id, public_topic_cc.id, one_off_cc.id, tag_channel.id, chat_channel.id])
+          .to match_array([public_category_cc.id, public_topic_cc.id, one_off_cc.id, chat_channel.id])
       end
 
       it "returns channels visible to user with private access" do
@@ -85,7 +80,6 @@ RSpec.describe DiscourseChat::ChatChannelsController do
             public_category_cc.id,
             public_topic_cc.id,
             one_off_cc.id,
-            tag_channel.id,
             chat_channel.id,
             private_category_cc.id,
             private_topic_cc.id
@@ -102,11 +96,9 @@ RSpec.describe DiscourseChat::ChatChannelsController do
             public_category_cc.id,
             public_topic_cc.id,
             one_off_cc.id,
-            tag_channel.id,
             chat_channel.id,
             private_category_cc.id,
             private_topic_cc.id,
-            staff_tag_channel.id
           ])
       end
 

@@ -83,7 +83,7 @@ describe DiscourseChat::MessageMover do
 
     it "preserves the order of the messages in the destination channel" do
       move!
-      moved_messages = ChatMessage.where(chat_channel: destination_channel).order("created_at ASC").last(3)
+      moved_messages = ChatMessage.where(chat_channel: destination_channel).order("created_at ASC, id ASC").last(3)
       expect(moved_messages.map(&:message)).to eq([
         "the first to be moved",
         "message deux @testmovechat",
@@ -99,7 +99,7 @@ describe DiscourseChat::MessageMover do
       webhook_event = Fabricate(:chat_webhook_event, chat_message: message3)
       move!
 
-      moved_messages = ChatMessage.where(chat_channel: destination_channel).order(:created_at).last(3)
+      moved_messages = ChatMessage.where(chat_channel: destination_channel).order("created_at ASC, id ASC").last(3)
       expect(reaction.reload.chat_message_id).to eq(moved_messages.first.id)
       expect(upload.reload.chat_message_id).to eq(moved_messages.first.id)
       expect(mention.reload.chat_message_id).to eq(moved_messages.second.id)

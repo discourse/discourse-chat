@@ -282,22 +282,12 @@
   }
 
   .react-btn,
-  .reply-btn {
-    border: 1px solid transparent;
-    border-bottom-color: var(--primary-low);
-    border-radius: 0;
-    border-top-color: var(--primary-low);
+  .reply-btn,
+  .bookmark-btn {
     margin-right: -1px;
     padding: 0.5em 0;
     width: 2.5em;
     transition: background 0.2s, border-color 0.2s;
-
-    &:hover {
-      background: var(--primary-low);
-      border-color: var(--primary-low-mid);
-      color: var(--primary-medium);
-      z-index: 1;
-    }
 
     &:focus {
       .d-icon {
@@ -317,6 +307,16 @@
 
     .d-icon {
       color: var(--primary-low-mid);
+
+      &.bookmark-icon__bookmarked {
+        color: var(--tertiary);
+      }
+    }
+  }
+
+  .reply-btn {
+    .d-icon {
+      color: var(--tertiary);
     }
   }
 

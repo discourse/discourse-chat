@@ -553,6 +553,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
 
   test("Reply-to is stored in draft", async function (assert) {
     this.chatService.set("sidebarActive", false);
+    this.chatService.set("chatWindowFullPage", false);
     await visit("/latest");
     this.appEvents.trigger("chat:toggle-open");
     await chatSettled();
@@ -746,7 +747,7 @@ Widget.triangulate(arg: "test")
     );
     assert.ok(
       exists(
-        ".chat-message-container[data-id='202'] .chat-message-text.hljs-complete code.lang-ruby.hljs"
+        ".chat-message-container[data-id='202'] .chat-message-text code.lang-ruby.hljs"
       ),
       "chat message code block has been highlighted as ruby code"
     );
@@ -1191,6 +1192,7 @@ acceptance(
     test("Chat float opens on header icon click when sidebar is not installed", async function (assert) {
       await visit("/t/internationalization-localization/280");
       this.chatService.set("sidebarActive", false);
+      this.chatService.set("chatWindowFullPage", false);
       await click(".header-dropdown-toggle.open-chat");
       assert.ok(visible(".topic-chat-float-container"), "chat float is open");
     });
@@ -1204,6 +1206,47 @@ acceptance(
         ),
         "Unread indicator present in header"
       );
+    });
+  }
+);
+
+acceptance(
+  "Discourse Chat - Acceptance Test show/hide close fullscreen chat button",
+  function (needs) {
+    needs.user({
+      admin: false,
+      moderator: false,
+      username: "eviltrout",
+      id: 1,
+      can_chat: true,
+      has_chat_enabled: true,
+    });
+    needs.settings({
+      chat_enabled: true,
+    });
+    needs.pretender((server, helper) => {
+      baseChatPretenders(server, helper);
+      siteChannelPretender(server, helper, { unread_count: 2, muted: false });
+      chatChannelPretender(server, helper, [
+        { id: 9, unread_count: 2, muted: false },
+      ]);
+    });
+    needs.hooks.beforeEach(function () {
+      Object.defineProperty(this, "chatService", {
+        get: () => this.container.lookup("service:chat"),
+      });
+    });
+
+    test("Close fullscreen chat button not present on chat_isolated", async function (assert) {
+      updateCurrentUser({ chat_isolated: true });
+      await visit("/chat/channel/9/Site");
+      assert.notOk(exists(".chat-full-screen-button"));
+    });
+
+    test("Close fullscreen chat button present", async function (assert) {
+      updateCurrentUser({ chat_isolated: false });
+      await visit("/chat/channel/9/Site");
+      assert.ok(exists(".chat-full-screen-button"));
     });
   }
 );
@@ -1433,11 +1476,11 @@ acceptance("Discourse Chat - chat preferences", function (needs) {
     assert.equal(currentURL(), "/latest");
   });
 
-  test("There are all 5 settings shown", async function (assert) {
+  test("There are all 6 settings shown", async function (assert) {
     this.chatService.set("sidebarActive", true);
     await visit("/u/eviltrout/preferences/chat");
     assert.equal(currentURL(), "/u/eviltrout/preferences/chat");
-    assert.equal(queryAll(".chat-setting").length, 5);
+    assert.equal(queryAll(".chat-setting").length, 6);
   });
 
   test("The user can save the settings", async function (assert) {
@@ -1450,6 +1493,8 @@ acceptance("Discourse Chat - chat preferences", function (needs) {
     await click("#user_chat_ignore_channel_wide_mention");
     await selectKit("#user_chat_sounds").expand();
     await selectKit("#user_chat_sounds").selectRowByValue("bell");
+    await selectKit("#user_chat_email_frequency").expand();
+    await selectKit("#user_chat_email_frequency").selectRowByValue("never");
 
     await click(".save-changes");
 
@@ -1461,6 +1506,7 @@ acceptance("Discourse Chat - chat preferences", function (needs) {
           chat_sound: "bell",
           only_chat_push_notifications: true,
           ignore_channel_wide_mention: true,
+          chat_email_frequency: "never",
         },
         type: "PUT",
       }),
@@ -1550,6 +1596,7 @@ acceptance("Discourse Chat - image uploads", function (needs) {
   test("uploading files in chat works", async function (assert) {
     await visit("/t/internationalization-localization/280");
     this.container.lookup("service:chat").set("sidebarActive", false);
+    this.container.lookup("service:chat").set("chatWindowFullPage", false);
     await click(".header-dropdown-toggle.open-chat");
 
     assert.ok(visible(".topic-chat-float-container"), "chat float is open");
@@ -1609,6 +1656,7 @@ acceptance("Discourse Chat - image uploads", function (needs) {
     assert.ok(exists(".d-editor-input"), "the composer input is visible");
 
     this.container.lookup("service:chat").set("sidebarActive", false);
+    this.container.lookup("service:chat").set("chatWindowFullPage", false);
     await click(".header-dropdown-toggle.open-chat");
     assert.ok(visible(".topic-chat-float-container"), "chat float is open");
 

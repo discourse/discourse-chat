@@ -97,6 +97,19 @@ en:
 
     personal_chat: "personal chat"
 
+    onebox:
+      inline_to_message: 'Message #%{message_id} by %{username} – #%{chat_channel}'
+      inline_to_channel: 'Chat #%{chat_channel}'
+      inline_to_topic_channel: 'Chat for Topic %{topic_title}'
+
+      x_members:
+        one: "%{count} member"
+        other: "%{count} members"
+
+      and_x_others:
+        one: "and %{count} other"
+        other: "and %{count} others"
+
   discourse_push_notifications:
     popup:
       chat_mention:
@@ -116,3 +129,22 @@ en:
   reviewable_score_types:
     needs_review:
       title: "Needs Review"
+
+  user_notifications:
+    chat_summary:
+      deleted_user: "Deleted user"
+      description:
+        one: "You have a new chat message"
+        other: "You have new chat messages"
+      from: "%{site_name}"
+      subject:
+        one: "[%{email_prefix}] New chat message"
+        other: "[%{email_prefix}] New chat messages"
+      unsubscribe: "This chat summary is sent from %{site_link} when you are away. Change your %{email_preferences_link}."
+      view_messages:
+        one: "View message"
+        other: "View %{count} messages"
+      view_more:
+        one: "View %{count} more message"
+        other: "View %{count} more messages"
+      your_chat_settings: "chat email frequency preference"

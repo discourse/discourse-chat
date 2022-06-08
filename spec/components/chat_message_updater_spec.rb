@@ -134,19 +134,20 @@ describe DiscourseChat::ChatMessageUpdater do
   end
 
   describe "group mentions" do
-    it "sends group mentions on update" do
+    it "creates group mentions on update" do
       chat_message = create_chat_message(user1, "ping nobody", public_chat_channel)
       expect {
         DiscourseChat::ChatMessageUpdater.update(
           chat_message: chat_message,
           new_content: "ping @#{admin_group.name}"
         )
-      }.to change { ChatMention.count }.by(2)
+      }.to change { ChatMention.where(chat_message: chat_message).count }.by(2)
+
       expect(admin1.chat_mentions.where(chat_message: chat_message)).to be_present
       expect(admin2.chat_mentions.where(chat_message: chat_message)).to be_present
     end
 
-    it "doesn't repeat mentions when the user is already direct mentioned and then group mentioned" do
+    it "doesn't duplicate mentions when the user is already direct mentioned and then group mentioned" do
       chat_message = create_chat_message(user1, "ping @#{admin2.username}", public_chat_channel)
       expect {
         DiscourseChat::ChatMessageUpdater.update(
@@ -167,6 +168,7 @@ describe DiscourseChat::ChatMessageUpdater do
           new_content: "ping nobody anymore!"
         )
       }.to change { ChatMention.where(chat_message: chat_message).count }.by(-2)
+
       expect(admin1.chat_mentions.where(chat_message: chat_message)).not_to be_present
       expect(admin2.chat_mentions.where(chat_message: chat_message)).not_to be_present
     end

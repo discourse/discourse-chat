@@ -86,17 +86,47 @@ export default {
       api.addKeyboardShortcut(
         `${mod}+b`,
         (event) => modifyComposerSelection(event, "bold"),
-        { global: true }
+        {
+          global: true,
+          help: {
+            category: "chat",
+            name: "chat.keyboard_shortcuts.composer_bold",
+            definition: {
+              keys1: ["meta", "b"],
+              keysDelimiter: "plus",
+            },
+          },
+        }
       );
       api.addKeyboardShortcut(
         `${mod}+i`,
         (event) => modifyComposerSelection(event, "italic"),
-        { global: true }
+        {
+          global: true,
+          help: {
+            category: "chat",
+            name: "chat.keyboard_shortcuts.composer_italic",
+            definition: {
+              keys1: ["meta", "i"],
+              keysDelimiter: "plus",
+            },
+          },
+        }
       );
       api.addKeyboardShortcut(
         `${mod}+e`,
         (event) => modifyComposerSelection(event, "code"),
-        { global: true }
+        {
+          global: true,
+          help: {
+            category: "chat",
+            name: "chat.keyboard_shortcuts.composer_code",
+            definition: {
+              keys1: ["meta", "e"],
+              keysDelimiter: "plus",
+            },
+          },
+        }
       );
       api.addKeyboardShortcut(
         `${mod}+l`,

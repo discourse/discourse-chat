@@ -15,7 +15,10 @@ module Jobs
       ChatMessage
         .in_public_channel
         .created_before(SiteSetting.chat_channel_retention_days.days.ago)
-        .destroy_all
+        .in_batches(of: 200).each do |relation|
+          destroyed_ids = relation.destroy_all.pluck(:id)
+          reset_last_read_message_id(destroyed_ids)
+        end
     end
 
     def delete_dm_channel_messages
@@ -24,11 +27,20 @@ module Jobs
       ChatMessage
         .in_dm_channel
         .created_before(SiteSetting.chat_dm_retention_days.days.ago)
-        .destroy_all
+        .in_batches(of: 200).each do |relation|
+          destroyed_ids = relation.destroy_all.pluck(:id)
+          reset_last_read_message_id(destroyed_ids)
+        end
     end
 
     def valid_day_value?(setting_name)
       (SiteSetting.public_send(setting_name) || 0).positive?
+    end
+
+    def reset_last_read_message_id(ids)
+      UserChatChannelMembership
+        .where(last_read_message_id: ids)
+        .update_all(last_read_message_id: nil)
     end
   end
 end

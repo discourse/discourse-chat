@@ -1,3 +1,5 @@
+import isElementInViewport from "discourse/lib/is-element-in-viewport";
+import { cloneJSON } from "discourse-common/lib/object";
 import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import ChatMessage from "discourse/plugins/discourse-chat/discourse/models/chat-message";
 import Component from "@ember/component";
@@ -7,10 +9,8 @@ import discourseComputed, {
   observes,
 } from "discourse-common/utils/decorators";
 import discourseDebounce from "discourse-common/lib/debounce";
-import DiscourseURL from "discourse/lib/url";
 import EmberObject, { action } from "@ember/object";
 import I18n from "I18n";
-import loadScript from "discourse/lib/load-script";
 import userPresent from "discourse/lib/user-presence";
 import { A } from "@ember/array";
 import { ajax } from "discourse/lib/ajax";
@@ -20,20 +20,16 @@ import { cancel, later, next, schedule } from "@ember/runloop";
 import { inject as service } from "@ember/service";
 import { Promise } from "rsvp";
 import { resetIdle } from "discourse/lib/desktop-notifications";
-import { resolveAllShortUrls } from "pretty-text/upload-short-url";
-import { samePrefix } from "discourse-common/lib/get-url";
-import { spinnerHTML } from "discourse/helpers/loading-spinner";
-import { decorateGithubOneboxBody } from "discourse/initializers/onebox-decorators";
-import highlightSyntax from "discourse/lib/highlight-syntax";
-import { applyLocalDates } from "discourse/lib/local-dates";
+
+import { defaultHomepage } from "discourse/lib/utilities";
 
 const MAX_RECENT_MSGS = 100;
 const STICKY_SCROLL_LENIENCE = 4;
 const READ_INTERVAL = 1000;
 const PAGE_SIZE = 50;
 
-const PAST = "Past";
-const FUTURE = "Future";
+const PAST = "past";
+const FUTURE = "future";
 
 export default Component.extend({
   classNameBindings: [":chat-live-pane", "sendingloading", "loading"],
@@ -54,6 +50,7 @@ export default Component.extend({
   stickyScroll: true,
   stickyScrollTimer: null,
   showChatQuoteSuccess: false,
+  showCloseFullScreenBtn: false,
 
   editingMessage: null, // ?Message
   replyToMsg: null, // ?Message
@@ -68,6 +65,7 @@ export default Component.extend({
   chat: service(),
   router: service(),
   chatComposerPresenceManager: service(),
+  chatWindowStore: service("chat-window-store"),
 
   getCachedChannelDetails: null,
   clearCachedChannelDetails: null,
@@ -93,19 +91,27 @@ export default Component.extend({
     );
 
     this._scrollerEl = this.element.querySelector(".chat-messages-scroll");
-    this._scrollerEl.addEventListener(
-      "scroll",
-      () => {
-        this.stickyScrollTimer = discourseDebounce(this, this.onScroll, 50);
-      },
-      { passive: true }
-    );
+    this._scrollerEl.addEventListener("scroll", this.onScrollhandler, {
+      passive: true,
+    });
+    window.addEventListener("resize", this.onResizeHandler);
 
     this.appEvents.on("chat:cancel-message-selection", this, "cancelSelecting");
+
+    this.set(
+      "showCloseFullScreenBtn",
+      !this.currentUser.chat_isolated && !this.site.mobileView
+    );
   },
 
   willDestroyElement() {
     this._super(...arguments);
+
+    this.element
+      .querySelector(".chat-messages-scroll")
+      ?.removeEventListener("scroll", this.onScrollhandler);
+
+    window.removeEventListener("resize", this.onResizeHandler);
 
     this.appEvents.off(
       "chat-live-pane:highlight-message",
@@ -115,10 +121,10 @@ export default Component.extend({
     this._stopLastReadRunner();
 
     // don't need to removeEventListener from scroller as the DOM element goes away
-    if (this.stickyScrollTimer) {
-      cancel(this.stickyScrollTimer);
-      this.stickyScrollTimer = null;
-    }
+    cancel(this.stickyScrollTimer);
+
+    cancel(this.resizeHandler);
+
     this._cleanRegisteredChatChannelId();
     this._unloadedReplyIds = null;
     this.appEvents.off(
@@ -157,6 +163,23 @@ export default Component.extend({
     );
   },
 
+  @bind
+  onScrollhandler() {
+    cancel(this.stickyScrollTimer);
+    this.stickyScrollTimer = discourseDebounce(this, this.onScroll, 100);
+  },
+
+  @bind
+  onResizeHandler() {
+    cancel(this.resizeHandler);
+    this.resizeHandler = discourseDebounce(
+      this,
+      this.fillPaneAttempt,
+      this.details,
+      250
+    );
+  },
+
   fetchMessages(channelId) {
     if (channelId === "draft") {
       return Promise.resolve();
@@ -166,11 +189,13 @@ export default Component.extend({
 
     return this.chat.loadCookFunction(this.site.categories).then((cook) => {
       this.set("cook", cook);
+
       const findArgs = {
         channelId,
-        targetMessageId: this.targetMessageId,
+        targetMessageId: this.targetMessageId || this._getLastReadId(),
         pageSize: PAGE_SIZE,
       };
+
       return this.store
         .findAll("chat-message", findArgs)
         .then((messages) => {
@@ -178,7 +203,6 @@ export default Component.extend({
             return;
           }
           this.setMessageProps(messages);
-          this.decorateMessages();
         })
         .catch((err) => {
           throw err;
@@ -224,8 +248,9 @@ export default Component.extend({
     const findArgs = {
       channelId: this.chatChannel.id,
       pageSize: PAGE_SIZE,
+      direction,
+      messageId,
     };
-    findArgs[`${loadingPast ? "before" : "after"}MessageId`] = messageId;
     const channelId = this.chatChannel.id;
 
     return this.store
@@ -249,9 +274,9 @@ export default Component.extend({
             position: loadingPast ? "top" : "bottom",
           };
           this.scrollToMessage(messageId, scrollToMessageArgs);
-          this.decorateMessages();
         }
         this.setCanLoadMoreDetails(messages.resultSetMeta);
+        return messages;
       })
       .catch((err) => {
         throw err;
@@ -263,6 +288,45 @@ export default Component.extend({
         this.set(loadingMoreKey, false);
         this.ignoreStickyScrolling = false;
       });
+  },
+
+  fillPaneAttempt(meta) {
+    // safeguard
+    if (this.messages.length > 200) {
+      return;
+    }
+
+    if (!meta?.can_load_more_past) {
+      return;
+    }
+
+    schedule("afterRender", () => {
+      const firstMessageId = this.messages.firstObject?.id;
+      if (!firstMessageId) {
+        return;
+      }
+
+      const scroller = document.querySelector(".chat-messages-container");
+      const messageContainer = document.querySelector(
+        `.chat-message-container[data-id="${firstMessageId}"]`
+      );
+      if (
+        !scroller ||
+        !messageContainer ||
+        !isElementInViewport(messageContainer)
+      ) {
+        return;
+      }
+
+      this._fetchMoreMessages(PAST).then((messages) => {
+        let originalscrollTop = scroller.scrollTop;
+
+        schedule("afterRender", () => {
+          scroller.scrollTo({ top: originalscrollTop });
+          this.fillPaneAttempt(messages?.resultSetMeta);
+        });
+      });
+    });
   },
 
   setCanLoadMoreDetails(meta) {
@@ -310,6 +374,8 @@ export default Component.extend({
       } else {
         this._markLastReadMessage();
       }
+
+      this.fillPaneAttempt(messages.resultSetMeta);
     });
 
     this.setCanLoadMoreDetails(messages.resultSetMeta);
@@ -401,6 +467,11 @@ export default Component.extend({
     return message.id || `staged-${message.stagedId}`;
   },
 
+  _getLastReadId() {
+    return this.currentUser.chat_channel_tracking_state[this.chatChannel.id]
+      ?.chat_message_id;
+  },
+
   _markLastReadMessage(opts = { reRender: false }) {
     if (opts.reRender) {
       this.messages.forEach((m) => {
@@ -409,23 +480,22 @@ export default Component.extend({
         }
       });
     }
-    const lastReadId =
-      this.currentUser.chat_channel_tracking_state[this.chatChannel.id]
-        ?.chat_message_id;
+    const lastReadId = this._getLastReadId();
     if (!lastReadId) {
       return;
     }
 
     this.set("lastSendReadMessageId", lastReadId);
-    const indexOfLastReadyMessage =
+    const indexOfLastReadMessage =
       this.messages.findIndex((m) => m.id === lastReadId) || 0;
-    const newestUnreadMessage = this.messages[indexOfLastReadyMessage + 1];
+    let newestUnreadMessage = this.messages[indexOfLastReadMessage + 1];
 
     if (newestUnreadMessage) {
       newestUnreadMessage.set("newestMessage", true);
-      // We have the last read message from lookup, but now we need the index of the message,
-      // so that we can scroll to the message directly after it.
-      return this.scrollToMessage(newestUnreadMessage.id);
+
+      next(() => this.scrollToMessage(newestUnreadMessage.id));
+
+      return;
     }
     this._stickScrollToBottom();
   },
@@ -460,21 +530,24 @@ export default Component.extend({
       message.set("expanded", true);
     }
 
-    const messageEl = this._scrollerEl.querySelector(
-      `.chat-message-container[data-id='${messageId}']`
-    );
-    if (messageEl) {
-      schedule("afterRender", () => {
-        if (this._selfDeleted) {
-          return;
-        }
+    schedule("afterRender", () => {
+      const messageEl = this._scrollerEl.querySelector(
+        `.chat-message-container[data-id='${messageId}']`
+      );
 
-        this._scrollerEl.scrollTop =
-          messageEl.offsetTop -
-          (opts.position === "top"
-            ? this._scrollerEl.offsetTop - 20
-            : this._scrollerEl.offsetHeight);
-      });
+      if (!messageEl || this._selfDeleted) {
+        return;
+      }
+
+      // Ensure the focused message starts at 1/6 of pane
+      // to properly display separators
+      const aboveMessageOffset = this.element.clientHeight / 6;
+
+      this._scrollerEl.scrollTop =
+        messageEl.offsetTop -
+        (opts.position === "top"
+          ? this._scrollerEl.offsetTop + aboveMessageOffset
+          : this._scrollerEl.offsetHeight);
 
       if (opts.highlight) {
         messageEl.classList.add("highlighted");
@@ -492,7 +565,7 @@ export default Component.extend({
           }, 3000);
         }
       }
-    }
+    });
   },
 
   @afterRender
@@ -559,18 +632,6 @@ export default Component.extend({
     }
   },
 
-  @action
-  @afterRender
-  decorateMessages() {
-    resolveAllShortUrls(ajax, this.siteSettings, this.element);
-    this.forceLinksToOpenNewTab();
-    lightbox(this.element.querySelectorAll("img:not(.emoji, .avatar)"));
-    this._scrollGithubOneboxes();
-    this._pluginsDecorators();
-    this._highlightCode();
-    this._renderChatTranscriptDates();
-  },
-
   @observes("floatHidden")
   onFloatHiddenChange() {
     if (!this.floatHidden) {
@@ -617,7 +678,6 @@ export default Component.extend({
         this.handleFlaggedMessage(data);
         break;
     }
-    this.decorateMessages();
   },
 
   handleSentMessage(data) {
@@ -681,7 +741,7 @@ export default Component.extend({
         message: data.chat_message.message,
         cooked: data.chat_message.cooked,
         excerpt: data.chat_message.excerpt,
-        uploads: data.chat_message.uploads,
+        uploads: cloneJSON(data.chat_message.uploads || []),
         edited: true,
       });
     }
@@ -799,12 +859,14 @@ export default Component.extend({
   },
 
   @bind
-  _updateLastReadMessage() {
+  _updateLastReadMessage(wait = READ_INTERVAL) {
+    cancel(this._updateReadTimer);
+
     if (this._selfDeleted) {
       return;
     }
 
-    return later(
+    this._updateReadTimer = later(
       this,
       () => {
         if (this._selfDeleted) {
@@ -838,9 +900,9 @@ export default Component.extend({
           });
         }
 
-        this._updateReadTimer = this._updateLastReadMessage();
+        this._updateLastReadMessage();
       },
-      READ_INTERVAL
+      wait
     );
   },
 
@@ -850,13 +912,8 @@ export default Component.extend({
 
   _startLastReadRunner() {
     if (!isTesting()) {
-      cancel(this._updateReadTimer);
       next(this, () => {
-        this._updateLastReadMessage();
-        this._updateReadTimer = later(
-          this._updateLastReadMessage,
-          READ_INTERVAL
-        );
+        this._updateLastReadMessage(0);
       });
     }
   },
@@ -866,7 +923,7 @@ export default Component.extend({
   },
 
   @action
-  sendMessage(message, uploads) {
+  sendMessage(message, uploads = []) {
     resetIdle();
 
     if (this.sendingloading) {
@@ -908,7 +965,7 @@ export default Component.extend({
       message,
       cooked,
       staged_id: stagedId,
-      upload_ids: (uploads || []).map((upload) => upload.id),
+      upload_ids: uploads.map((upload) => upload.id),
     };
     if (this.replyToMsg) {
       data.in_reply_to_id = this.replyToMsg.id;
@@ -936,7 +993,7 @@ export default Component.extend({
         message,
         cooked,
         stagedId,
-        uploads,
+        uploads: cloneJSON(uploads),
         staged: true,
         user: this.currentUser,
         in_reply_to: this.replyToMsg,
@@ -1028,7 +1085,6 @@ export default Component.extend({
       data,
     })
       .then(() => {
-        this._resetHighlightForMessage(chatMessage.id);
         this._resetAfterSend();
       })
       .catch(popupAjaxError)
@@ -1170,11 +1226,26 @@ export default Component.extend({
     if (this.chatChannel.chatable_url) {
       return this.router.transitionTo(this.chatChannel.chatable_url);
     }
+    return false;
   },
 
   @action
   onChannelTitleClick() {
     return this._goToChatableUrl();
+  },
+
+  @action
+  onCloseFullScreen(channel) {
+    // update local storage
+    this.chatWindowStore.set("fullPage", false);
+
+    // navigate to chatable url or homepage on compress
+    if (this._goToChatableUrl() === false) {
+      this.router.transitionTo(`discovery.${defaultHomepage()}`);
+    }
+
+    // re-open chat as docked window
+    this.appEvents.trigger("chat:open-channel", channel);
   },
 
   @action
@@ -1250,27 +1321,6 @@ export default Component.extend({
     evt.preventDefault();
   },
 
-  @bind
-  forceLinksToOpenNewTab() {
-    if (this._selfDeleted) {
-      return;
-    }
-
-    const links = this.element.querySelectorAll(
-      ".chat-message-text a:not([target='_blank'])"
-    );
-    for (let linkIndex = 0; linkIndex < links.length; linkIndex++) {
-      const link = links[linkIndex];
-      if (
-        this.currentUser.chat_isolated ||
-        !DiscourseURL.isInternal(link.href) ||
-        !samePrefix(link.href)
-      ) {
-        link.setAttribute("target", "_blank");
-      }
-    }
-  },
-
   focusComposer() {
     if (
       this._selfDeleted ||
@@ -1283,113 +1333,6 @@ export default Component.extend({
     schedule("afterRender", () => {
       document.querySelector(".chat-composer-input")?.focus();
     });
-  },
-
-  _pluginsDecorators() {
-    applyLocalDates(
-      this.element.querySelectorAll(".discourse-local-date"),
-      this.siteSettings
-    );
-
-    if (this.siteSettings.spoiler_enabled) {
-      const applySpoiler = requirejs(
-        "discourse/plugins/discourse-spoiler-alert/lib/apply-spoiler"
-      ).default;
-      this.element.querySelectorAll(".spoiler").forEach((spoiler) => {
-        spoiler.classList.remove("spoiler");
-        spoiler.classList.add("spoiled");
-        applySpoiler(spoiler);
-      });
-    }
-
-    this.element
-      .querySelectorAll(".lazyYT:not(.lazyYT-video-loaded)")
-      .forEach((iframe) => {
-        $(iframe).lazyYT();
-      });
-
-    decorateGithubOneboxBody(this.element);
-  },
-
-  _getScrollParent(node, maxParentSelector) {
-    if (node === null || node.classList.contains(maxParentSelector)) {
-      return null;
-    }
-
-    if (node.scrollHeight > node.clientHeight) {
-      return node;
-    } else {
-      return this._getScrollParent(node.parentNode, maxParentSelector);
-    }
-  },
-
-  _scrollGithubOneboxes() {
-    this.element
-      .querySelectorAll(".onebox.githubblob li.selected")
-      .forEach((line) => {
-        const scrollingElement = this._getScrollParent(line, "onebox");
-
-        // most likely a very small file which doesn’t need scrolling
-        if (!scrollingElement) {
-          return;
-        }
-
-        const scrollBarWidth =
-          scrollingElement.offsetHeight - scrollingElement.clientHeight;
-
-        scrollingElement.scroll({
-          top:
-            line.offsetTop +
-            scrollBarWidth -
-            scrollingElement.offsetHeight / 2 +
-            line.offsetHeight / 2,
-        });
-      });
-  },
-
-  _resetHighlightForMessage(chatMessageId) {
-    document
-      .querySelector(
-        `.chat-message-container[data-id='${chatMessageId}'] .chat-message-text`
-      )
-      ?.classList.remove("hljs-complete");
-  },
-
-  _highlightCode() {
-    document.querySelectorAll(".chat-message-text").forEach((chatMessageEl) => {
-      // no need to do this for every single message every time a message changes
-      if (!chatMessageEl.classList.contains("hljs-complete")) {
-        highlightSyntax(chatMessageEl, this.siteSettings, this.session);
-        chatMessageEl.classList.add("hljs-complete");
-      }
-    });
-  },
-
-  _renderChatTranscriptDates() {
-    document
-      .querySelectorAll(".discourse-chat-transcript")
-      .forEach((transcriptEl) => {
-        const dateTimeRaw = transcriptEl.dataset["datetime"];
-        const dateTimeLinkEl = transcriptEl.querySelector(
-          ".chat-transcript-datetime a"
-        );
-
-        // same as highlight, no need to do this for every single message every time
-        // any message changes
-        if (dateTimeLinkEl.innerText !== "") {
-          return;
-        }
-
-        if (this.currentUserTimezone) {
-          dateTimeLinkEl.innerText = moment
-            .tz(dateTimeRaw, this.currentUserTimezone)
-            .format(I18n.t("dates.long_no_year"));
-        } else {
-          dateTimeLinkEl.innerText = moment(dateTimeRaw).format(
-            I18n.t("dates.long_no_year")
-          );
-        }
-      });
   },
 
   @afterRender
@@ -1408,23 +1351,3 @@ export default Component.extend({
     });
   },
 });
-
-function lightbox(images) {
-  loadScript("/javascripts/jquery.magnific-popup.min.js").then(function () {
-    $(images).magnificPopup({
-      type: "image",
-      closeOnContentClick: false,
-      mainClass: "mfp-zoom-in",
-      tClose: I18n.t("lightbox.close"),
-      tLoading: spinnerHTML,
-      image: {
-        verticalFit: true,
-      },
-      callbacks: {
-        elementParse: (item) => {
-          item.src = item.el[0].src;
-        },
-      },
-    });
-  });
-}

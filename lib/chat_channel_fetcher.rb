@@ -58,9 +58,21 @@ module DiscourseChat::ChatChannelFetcher
     SQL
   end
 
-  def self.secured_public_channels(guardian, memberships, scope_with_membership: true)
+  def self.secured_public_channels(guardian, memberships, scope_with_membership: true, filter: nil)
     channels = ChatChannel.includes(:chatable)
-    channels = channels.where(chatable_type: ChatChannel.public_channel_chatable_types)
+      .joins("LEFT JOIN categories ON categories.id = chat_channels.chatable_id AND chat_channels.chatable_type = 'Category'")
+      .joins("LEFT JOIN topics ON topics.id = chat_channels.chatable_id AND chat_channels.chatable_type = 'Topic'")
+      .where(
+        chatable_type: ChatChannel.public_channel_chatable_types,
+        status: ChatChannel.statuses[:open]
+      )
+
+    if filter
+      channels = channels.where(<<~SQL, filter: "%#{filter.downcase}%")
+        chat_channels.name ILIKE :filter OR categories.name ILIKE :filter OR topics.title ILIKE :filter
+      SQL
+    end
+
     if scope_with_membership
       channels = channels
         .joins(:user_chat_channel_memberships)
@@ -80,19 +92,6 @@ module DiscourseChat::ChatChannelFetcher
     Topic.preload_custom_fields(channels.select { |c| c.chatable_type == 'Topic' }.map(&:chatable), preload_fields)
   end
 
-  def self.public_channels_with_filter(guardian, memberships, filter)
-    channels = ChatChannel
-      .includes(:chatable)
-      .where(
-        chatable_type: ChatChannel.public_channel_chatable_types,
-        status: ChatChannel.statuses[:open]
-      )
-      .where("LOWER(name) LIKE ?", "#{filter}%")
-    channels = filter_public_channels(channels, memberships, guardian).to_a
-    preload_custom_fields_for(channels)
-    channels
-  end
-
   def self.filter_public_channels(channels, memberships, guardian)
     mention_notifications = Notification.unread.where(
       user_id: guardian.user.id,
@@ -103,9 +102,9 @@ module DiscourseChat::ChatChannelFetcher
     unread_counts_per_channel = unread_counts(channels, guardian.user.id)
 
     channels.filter_map do |channel|
-      next unless guardian.can_see_chat_channel?(channel)
+      next if !guardian.can_see_chat_channel?(channel)
 
-      membership = memberships.detect { |m| m.chat_channel_id == channel.id }
+      membership = memberships.find { |m| m.chat_channel_id == channel.id }
       if membership
         channel = decorate_channel_from_membership(
           guardian.user.id,
@@ -152,16 +151,17 @@ module DiscourseChat::ChatChannelFetcher
 
     unread_counts_per_channel = unread_counts(channels, user_id)
 
-    channels.map do |channel|
+    channels.filter_map do |channel|
+      next if !guardian.can_see_chat_channel?(channel)
+
       channel = decorate_channel_from_membership(
         user_id,
         channel,
-        memberships.detect { |m| m.user_id == user_id && m.chat_channel_id == channel.id }
+        memberships.find { |m| m.user_id == user_id && m.chat_channel_id == channel.id }
       )
 
-      if !channel.muted
-        channel.unread_count = unread_counts_per_channel[channel.id]
-      end
+      # direct message channels cannot be muted, so we always need the unread count
+      channel.unread_count = unread_counts_per_channel[channel.id]
 
       channel
     end

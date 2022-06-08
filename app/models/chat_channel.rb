@@ -56,10 +56,6 @@ class ChatChannel < ActiveRecord::Base
     chatable.url
   end
 
-  def tag_channel?
-    chatable_type == "Tag"
-  end
-
   def topic_channel?
     chatable_type == "Topic"
   end
@@ -115,8 +111,6 @@ class ChatChannel < ActiveRecord::Base
       chatable.fancy_title
     when "Category"
       chatable.name
-    when "Tag"
-      chatable.name
     when "DirectMessageChannel"
       chatable.chat_channel_title_for_user(self, user)
     end
@@ -155,11 +149,14 @@ class ChatChannel < ActiveRecord::Base
   end
 
   def self.public_channel_chatable_types
-    ["Topic", "Category", "Tag"]
+    ["Topic", "Category"]
   end
 
   def self.public_channels
     where(chatable_type: public_channel_chatable_types)
+      .where("topics.id IS NOT NULL OR categories.id IS NOT NULL")
+      .joins("LEFT JOIN categories ON categories.id = chat_channels.chatable_id AND chat_channels.chatable_type = 'Category'")
+      .joins("LEFT JOIN topics ON topics.id = chat_channels.chatable_id AND chat_channels.chatable_type = 'Topic' AND topics.deleted_at IS NULL")
   end
 
   def self.is_enabled?(t)
@@ -211,6 +208,8 @@ end
 #  name                    :string
 #  description             :text
 #  status                  :integer          default("open"), not null
+#  user_count              :integer          default(0), not null
+#  last_message_sent_at    :datetime         not null
 #
 # Indexes
 #

@@ -9,13 +9,14 @@ class ChatMessage < ActiveRecord::Base
   belongs_to :chat_channel
   belongs_to :user
   belongs_to :in_reply_to, class_name: "ChatMessage"
-  has_many :revisions, class_name: "ChatMessageRevision"
-  has_many :reactions, class_name: "ChatMessageReaction"
-  has_many :bookmarks, as: :bookmarkable
-  has_many :chat_uploads
+  has_many :replies, class_name: "ChatMessage", foreign_key: "in_reply_to_id", dependent: :nullify
+  has_many :revisions, class_name: "ChatMessageRevision", dependent: :destroy
+  has_many :reactions, class_name: "ChatMessageReaction", dependent: :destroy
+  has_many :bookmarks, as: :bookmarkable, dependent: :destroy
+  has_many :chat_uploads, dependent: :destroy
   has_many :uploads, through: :chat_uploads
-  has_one :chat_webhook_event
-  has_one :chat_mention
+  has_one :chat_webhook_event, dependent: :destroy
+  has_one :chat_mention, dependent: :destroy
 
   scope :in_public_channel, -> {
     joins(:chat_channel)
@@ -33,9 +34,7 @@ class ChatMessage < ActiveRecord::Base
 
   def validate_message(has_uploads:)
     WatchedWordsValidator.new(attributes: [:message]).validate(self)
-    if block_duplicate?
-      self.errors.add(:base, I18n.t("chat.errors.duplicate_message"))
-    end
+    DiscourseChat::DuplicateMessageValidator.new(self).validate
 
     if !has_uploads && message_too_short?
       self.errors.add(
@@ -68,7 +67,11 @@ class ChatMessage < ActiveRecord::Base
     return uploads.first.original_filename if cooked.blank? && uploads.present?
 
     # this may return blank for some complex things like quotes, that is acceptable
-    PrettyText.excerpt(cooked, 50)
+    PrettyText.excerpt(cooked, 50, {})
+  end
+
+  def cooked_for_excerpt
+    (cooked.blank? && uploads.present?) ? "<p>#{uploads.first.original_filename}</p>" : cooked
   end
 
   def push_notification_excerpt
@@ -207,37 +210,6 @@ class ChatMessage < ActiveRecord::Base
   end
 
   private
-
-  def block_duplicate?
-    sensitivity = SiteSetting.chat_duplicate_message_sensitivity
-    return false if sensitivity.zero?
-
-    # Check if the length of the message is too short to check for a duplicate message
-    return false if message.length < calc_min_message_length_for_duplicates(sensitivity)
-
-    # Check if there are enough users in the channel to check for a duplicate message
-    return false if (chat_channel.user_count || 0) < calc_min_user_count_for_duplicates(sensitivity)
-
-    chat_channel.chat_messages
-      .where("created_at > ?", calc_in_the_past_seconds_for_duplicates(sensitivity).seconds.ago)
-      .where(message: message)
-      .exists?
-  end
-
-  def calc_min_user_count_for_duplicates(sensitivity)
-    # Line generated from 0.1 sensitivity = 100 users and 1.0 sensitivity = 5 users.
-    (-1.0 * 105.5 * sensitivity + 110.55).to_i
-  end
-
-  def calc_min_message_length_for_duplicates(sensitivity)
-    # Line generated from 0.1 sensitivity = 30 chars and 1.0 sensitivity = 10 chars.
-    (-1.0 * 22.2 * sensitivity + 32.22).to_i
-  end
-
-  def calc_in_the_past_seconds_for_duplicates(sensitivity)
-    # Line generated from 0.1 sensitivity = 10 seconds and 1.0 sensitivity = 60 seconds.
-    (55.55 * sensitivity + 4.5).to_i
-  end
 
   def message_too_short?
     message.length < SiteSetting.chat_minimum_message_length

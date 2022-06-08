@@ -21,8 +21,7 @@
   }
 
   .chat-transcript-channel {
-    font-size: var(--font-down-2-rem);
-    padding-left: 0.5rem;
+    font-size: var(--font-down-1-rem);
   }
 
   .chat-transcript-username {
@@ -33,7 +32,7 @@
   .chat-transcript-datetime {
     color: var(--primary-high);
     font-size: var(--font-down-2-rem);
-    padding-left: 0.5rem;
+    padding: 0 0.5rem;
 
     a {
       color: var(--primary-high);
@@ -52,6 +51,8 @@
 
   .chat-transcript-user {
     display: flex;
+    flex-wrap: wrap-reverse;
+    gap: 0.25rem 0;
     align-items: baseline;
 
     .chat-transcript-user-avatar {

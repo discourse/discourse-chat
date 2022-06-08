@@ -4,7 +4,6 @@ import I18n from "I18n";
 export const CHATABLE_TYPES = {
   directMessageChannel: "DirectMessageChannel",
   topicChannel: "Topic",
-  tagChannel: "Tag",
   categoryChannel: "Category",
 };
 export const CHANNEL_STATUSES = {
@@ -77,10 +76,6 @@ const ChatChannel = RestModel.extend({
 
   get isCategoryChannel() {
     return this.chatable_type === CHATABLE_TYPES.categoryChannel;
-  },
-
-  get isTagChannel() {
-    return this.chatable_type === CHATABLE_TYPES.tagChannel;
   },
 
   get isOpen() {

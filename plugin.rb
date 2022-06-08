@@ -13,6 +13,7 @@ register_asset 'stylesheets/common/common.scss'
 register_asset 'stylesheets/common/d-progress-bar.scss'
 register_asset 'stylesheets/common/incoming-chat-webhooks.scss'
 register_asset 'stylesheets/mobile/chat-message.scss', :mobile
+register_asset 'stylesheets/desktop/chat-message.scss', :desktop
 register_asset 'stylesheets/common/chat-reply.scss'
 register_asset 'stylesheets/common/chat-message.scss'
 register_asset 'stylesheets/common/chat-message-left-gutter.scss'
@@ -38,6 +39,7 @@ register_asset 'stylesheets/mobile/mobile.scss', :mobile
 register_asset 'stylesheets/desktop/desktop.scss', :desktop
 register_asset 'stylesheets/sidebar-extensions.scss'
 register_asset 'stylesheets/common/chat-message-separator.scss'
+register_asset 'stylesheets/common/chat-onebox.scss'
 
 register_svg_icon "comments"
 register_svg_icon "comment-slash"
@@ -67,6 +69,13 @@ after_initialize do
 
     def self.allowed_group_ids
       SiteSetting.chat_allowed_groups.to_s.split("|").map(&:to_i)
+    end
+
+    def self.onebox_template
+      @onebox_template ||= begin
+        path = "#{Rails.root}/plugins/discourse-chat/lib/onebox/templates/discourse_chat.mustache"
+        File.read(path)
+      end
     end
   end
 
@@ -108,6 +117,7 @@ after_initialize do
   load File.expand_path('../app/serializers/user_chat_message_bookmark_serializer.rb', __FILE__)
   load File.expand_path('../app/serializers/reviewable_chat_message_serializer.rb', __FILE__)
   load File.expand_path('../lib/chat_channel_fetcher.rb', __FILE__)
+  load File.expand_path('../lib/chat_mailer.rb', __FILE__)
   load File.expand_path('../lib/chat_message_creator.rb', __FILE__)
   load File.expand_path('../lib/chat_message_processor.rb', __FILE__)
   load File.expand_path('../lib/chat_message_updater.rb', __FILE__)
@@ -116,13 +126,16 @@ after_initialize do
   load File.expand_path('../lib/chat_notifier.rb', __FILE__)
   load File.expand_path('../lib/chat_seeder.rb', __FILE__)
   load File.expand_path('../lib/chat_transcript_service.rb', __FILE__)
+  load File.expand_path('../lib/duplicate_message_validator.rb', __FILE__)
   load File.expand_path('../lib/message_mover.rb', __FILE__)
   load File.expand_path('../lib/chat_message_bookmarkable.rb', __FILE__)
   load File.expand_path('../lib/chat_channel_archive_service.rb', __FILE__)
   load File.expand_path('../lib/direct_message_channel_creator.rb', __FILE__)
   load File.expand_path('../lib/guardian_extensions.rb', __FILE__)
   load File.expand_path('../lib/extensions/topic_view_serializer_extension.rb', __FILE__)
-  load File.expand_path('../lib/extensions/detailed_tag_serializer_extension.rb', __FILE__)
+  load File.expand_path('../lib/extensions/user_option_extension.rb', __FILE__)
+  load File.expand_path('../lib/extensions/user_notifications_extension.rb', __FILE__)
+  load File.expand_path('../lib/extensions/user_email_extension.rb', __FILE__)
   load File.expand_path('../lib/slack_compatibility.rb', __FILE__)
   load File.expand_path('../lib/post_notification_handler.rb', __FILE__)
   load File.expand_path('../app/jobs/regular/process_chat_message.rb', __FILE__)
@@ -132,6 +145,7 @@ after_initialize do
   load File.expand_path('../app/jobs/regular/chat_notify_watching.rb', __FILE__)
   load File.expand_path('../app/jobs/scheduled/delete_old_chat_messages.rb', __FILE__)
   load File.expand_path('../app/jobs/scheduled/update_user_counts_for_chat_channels.rb', __FILE__)
+  load File.expand_path('../app/jobs/scheduled/email_chat_notifications.rb', __FILE__)
   load File.expand_path('../app/services/chat_publisher.rb', __FILE__)
 
   if Discourse.allow_dev_populate?
@@ -139,6 +153,8 @@ after_initialize do
     load File.expand_path('../lib/discourse_dev/direct_channel.rb', __FILE__)
     load File.expand_path('../lib/discourse_dev/message.rb', __FILE__)
   end
+
+  UserNotifications.append_view_path(File.expand_path('../app/views', __FILE__))
 
   register_topic_custom_field_type(DiscourseChat::HAS_CHAT_ENABLED, :boolean)
   register_category_custom_field_type(DiscourseChat::HAS_CHAT_ENABLED, :boolean)
@@ -148,6 +164,7 @@ after_initialize do
   UserUpdater::OPTION_ATTR.push(:only_chat_push_notifications)
   UserUpdater::OPTION_ATTR.push(:chat_sound)
   UserUpdater::OPTION_ATTR.push(:ignore_channel_wide_mention)
+  UserUpdater::OPTION_ATTR.push(:chat_email_frequency)
 
   register_reviewable_type ReviewableChatMessage
 
@@ -165,7 +182,8 @@ after_initialize do
 
     Guardian.class_eval { include DiscourseChat::GuardianExtensions }
     TopicViewSerializer.class_eval { prepend DiscourseChat::TopicViewSerializerExtension }
-    DetailedTagSerializer.class_eval { prepend DiscourseChat::DetailedTagSerializerExtension }
+    UserNotifications.class_eval { prepend DiscourseChat::UserNotificationsExtension }
+    UserOption.class_eval { prepend DiscourseChat::UserOptionExtension }
     Topic.class_eval {
       has_one :chat_channel, as: :chatable
     }
@@ -177,6 +195,7 @@ after_initialize do
       has_many :chat_message_reactions, dependent: :destroy
       has_many :chat_mentions
     }
+    Jobs::UserEmail.class_eval { prepend DiscourseChat::UserEmailExtension }
 
     Bookmark.register_bookmarkable(ChatMessageBookmarkable)
   end
@@ -187,6 +206,104 @@ after_initialize do
     end
     results
   end
+
+  Oneboxer.register_local_handler('discourse_chat/chat') do |url, route|
+    queryParams = CGI.parse(URI.parse(url).query) rescue {}
+    messageId = queryParams['messageId']&.first
+
+    if messageId.present?
+      message = ChatMessage.find_by(id: messageId)
+      next if !message
+
+      chat_channel = message.chat_channel
+      user = message.user
+      next if !chat_channel || !user
+    else
+      chat_channel = ChatChannel.find_by(id: route[:channel_id])
+      next if !chat_channel
+    end
+
+    next if !Guardian.new.can_see_chat_channel?(chat_channel)
+
+    name = if chat_channel.name.present?
+      chat_channel.name
+    elsif chat_channel.chatable_type == 'Topic'
+      chat_channel.chatable.title
+    end
+
+    users = chat_channel
+      .user_chat_channel_memberships
+      .includes(:user)
+      .limit(10)
+      .map do |membership|
+        {
+          username: membership.user.username,
+          avatar_url: membership.user.avatar_template_url.gsub('{size}', '30'),
+        }
+      end
+
+    remaining_user_count_str = if chat_channel.user_count > users.size
+      I18n.t('chat.onebox.and_x_others', count: chat_channel.user_count - users.size)
+    end
+
+    args = {
+      url: url,
+      channel_id: chat_channel.id,
+      channel_name: name,
+      description: chat_channel.description,
+      user_count_str: I18n.t('chat.onebox.x_members', count: chat_channel.user_count),
+      users: users,
+      remaining_user_count_str: remaining_user_count_str,
+      is_category: chat_channel.chatable_type == 'Category',
+      is_topic: chat_channel.chatable_type == 'Topic',
+      color: chat_channel.chatable_type == 'Category' ? chat_channel.chatable.color : nil,
+    }
+
+    if message.present?
+      args[:message_id] = message.id
+      args[:username] = message.user.username
+      args[:avatar_url] = message.user.avatar_template_url.gsub('{size}', '20')
+      args[:cooked] = message.cooked
+      args[:created_at] = message.created_at
+      args[:created_at_str] = message.created_at.iso8601
+    end
+
+    Mustache.render(DiscourseChat.onebox_template, args)
+  end if Oneboxer.respond_to?(:register_local_handler)
+
+  InlineOneboxer.register_local_handler('discourse_chat/chat') do |url, route|
+    queryParams = CGI.parse(URI.parse(url).query) rescue {}
+    messageId = queryParams['messageId']&.first
+
+    if messageId.present?
+      message = ChatMessage.find_by(id: messageId)
+      next if !message
+
+      chat_channel = message.chat_channel
+      user = message.user
+      next if !chat_channel || !user
+
+      title = I18n.t(
+        'chat.onebox.inline_to_message',
+        message_id: message.id,
+        chat_channel: chat_channel.name,
+        username: user.username
+      )
+    else
+      chat_channel = ChatChannel.find_by(id: route[:channel_id])
+      next if !chat_channel
+
+      title = if chat_channel.name.present?
+        I18n.t('chat.onebox.inline_to_channel', chat_channel: chat_channel.name)
+      elsif chat_channel.chatable_type == 'Topic'
+        I18n.t('chat.onebox.inline_to_topic_channel', topic_title: chat_channel.chatable.title)
+      end
+    end
+
+    next if !Guardian.new.can_see_chat_channel?(chat_channel)
+
+    { url: url, title: title }
+  end if InlineOneboxer.respond_to?(:register_local_handler)
 
   if respond_to?(:register_upload_unused)
     register_upload_unused do |uploads|
@@ -315,6 +432,10 @@ after_initialize do
 
   add_to_serializer(:user_option, :ignore_channel_wide_mention) do
     object.ignore_channel_wide_mention
+  end
+
+  add_to_serializer(:user_option, :chat_email_frequency) do
+    object.chat_email_frequency
   end
 
   RETENTION_SETTINGS_TO_USER_OPTION_FIELDS = {
@@ -483,4 +604,10 @@ after_initialize do
       params: %i[chat_channel_id]
     }
   })
+
+  # Dark mode email styles
+  Email::Styles.register_plugin_style do |fragment|
+    fragment.css('.chat-summary-header').each { |element| element[:dm] = 'header' }
+    fragment.css('.chat-summary-content').each { |element| element[:dm] = 'body' }
+  end
 end

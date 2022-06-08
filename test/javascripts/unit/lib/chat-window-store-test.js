@@ -4,6 +4,7 @@ import { test } from "qunit";
 discourseModule("Discourse Chat | Unit | chat-window-store", function (hooks) {
   hooks.beforeEach(function () {
     this.chatWindowStore = this.container.lookup("service:chat-window-store");
+    this.chatWindowStore.set("fullPage", false);
   });
 
   test("defaults", function (assert) {

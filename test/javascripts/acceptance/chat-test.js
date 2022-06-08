@@ -270,6 +270,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
   });
 
   test("Clicking mention notification from outside chat opens the float", async function (assert) {
+    this.chatService.set("chatWindowFullPage", false);
     await visit("/t/internationalization-localization/280");
     await click(".header-dropdown-toggle.current-user");
     await click("#quick-access-notifications .chat-mention");

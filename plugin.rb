@@ -233,7 +233,7 @@ after_initialize do
 
     users = chat_channel
       .user_chat_channel_memberships
-      .includes(:user)
+      .includes(:user).where(user: User.activated.not_suspended.not_staged)
       .limit(10)
       .map do |membership|
         {

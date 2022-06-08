@@ -153,7 +153,11 @@ describe 'discourse-chat' do
 
   describe "chat oneboxes" do
     fab!(:chat_channel) { Fabricate(:chat_channel, chatable: Fabricate(:topic)) }
-    fab!(:user) { Fabricate(:user) }
+    fab!(:user) { Fabricate(:user, active: true) }
+    fab!(:user_2) { Fabricate(:user, active: false) }
+    fab!(:user_3) { Fabricate(:user, staged: true) }
+    fab!(:user_4) { Fabricate(:user, suspended_till: 3.weeks.from_now) }
+
     let!(:chat_message) do
       DiscourseChat::ChatMessageCreator.create(
         chat_channel: chat_channel,
@@ -183,7 +187,13 @@ describe 'discourse-chat' do
     end
 
     context "regular" do
-      it "renders channel" do
+      it "renders channel, excluding inactive, staged, and suspended users" do
+        user.user_chat_channel_memberships.create!(chat_channel: chat_channel, following: true)
+        user_2.user_chat_channel_memberships.create!(chat_channel: chat_channel, following: true)
+        user_3.user_chat_channel_memberships.create!(chat_channel: chat_channel, following: true)
+        user_4.user_chat_channel_memberships.create!(chat_channel: chat_channel, following: true)
+        Jobs::UpdateUserCountsForChatChannels.new.execute({})
+
         expect(Oneboxer.preview(chat_url)).to match_html <<~HTML
           <aside class="onebox chat-onebox">
             <article class="onebox-body chat-onebox-body">
@@ -195,8 +205,12 @@ describe 'discourse-chat' do
                   <span class="clear-badge">#{chat_channel.name}</span>
                 </a>
               </h3>
-              <div class="chat-onebox-members-count">0 members</div>
-              <div class="chat-onebox-members"></div>
+              <div class="chat-onebox-members-count">1 member</div>
+              <div class="chat-onebox-members">
+               <a class="trigger-user-card" data-user-card="#{user.username}" aria-hidden="true" tabindex="-1">
+                 <img loading="lazy" alt="#{user.username}" width="30" height="30" src="#{user.avatar_template_url.gsub('{size}', '30')}" class="avatar">
+               </a>
+              </div>
             </article>
         </aside>
 

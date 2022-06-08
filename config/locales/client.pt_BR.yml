@@ -157,7 +157,7 @@ pt_BR:
         title: "Webhooks recebidos"
         url: "URL"
         username: "Nome de usuário(a)"
-        username_instructions: "Nome de usuário(a) de robô que posta no canal. Padrão para \"sistema\" quando deixado em branco."
+        username_instructions: 'Nome de usuário(a) de robô que posta no canal. Padrão para "sistema" quando deixado em branco.'
       selection:
         cancel: "Cancelar"
         error: "Houve um erro ao mover as mensagens de chat"

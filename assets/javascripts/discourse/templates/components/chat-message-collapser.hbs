@@ -1,6 +1,7 @@
 <div class="chat-message-collapser">
   {{#if hasUploads}}
     {{html-safe cooked}}
+
     {{#collapser header=uploadsHeader}}
       <div class="chat-uploads">
         {{#each uploads as |upload|}}
@@ -8,7 +9,6 @@
         {{/each}}
       </div>
     {{/collapser}}
-
   {{else}}
     {{#each cookedBodies as |cooked|}}
       {{#if cooked.needsCollapser}}

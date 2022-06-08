@@ -21,6 +21,7 @@
             onClick=(action "onChannelTitleClick")
             onSelectChannel=(action "switchChannel")
           }}
+
           {{#if (and (not expanded) unreadCount)}}
             <span class="chat-unread-count">{{unreadCount}}</span>
           {{/if}}
@@ -38,6 +39,7 @@
       >
         {{d-icon "discourse-expand"}}
       </button>
+
       {{flat-button
         icon=this.expandIcon
         class="chat-expand"

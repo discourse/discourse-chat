@@ -1,5 +1,8 @@
 {{#d-modal-body title=modalTitle}}
-  <div id="chat-channel-toggle-open-modal-inner" class="chat-channel-toggle-open-modal-inner">
+  <div
+    id="chat-channel-toggle-open-modal-inner"
+    class="chat-channel-toggle-open-modal-inner"
+  >
     <p>{{html-safe instructions}}</p>
   </div>
 {{/d-modal-body}}
@@ -9,5 +12,6 @@
     class="btn-primary"
     action=(action "changeChannelStatus")
     label=buttonLabel
-    id="chat-confirm-toggle-open-channel"}}
+    id="chat-confirm-toggle-open-channel"
+  }}
 </div>

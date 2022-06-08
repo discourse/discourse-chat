@@ -103,9 +103,9 @@ ru:
       notification_title: "Сообщение в канале %{channel_name}"
     personal_chat: "личный чат"
     onebox:
-      inline_to_message: 'Сообщение №%{message_id} от пользователя %{username} — №%{chat_channel}'
-      inline_to_channel: 'Чат №%{chat_channel}'
-      inline_to_topic_channel: 'Чат по теме %{topic_title}'
+      inline_to_message: "Сообщение №%{message_id} от пользователя %{username} — №%{chat_channel}"
+      inline_to_channel: "Чат №%{chat_channel}"
+      inline_to_topic_channel: "Чат по теме %{topic_title}"
       x_members:
         one: "%{count} участник"
         few: "%{count} участника"

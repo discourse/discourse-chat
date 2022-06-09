@@ -1319,6 +1319,7 @@ acceptance(
     test("Chat float open to DM channel with unread messages with sidebar off", async function (assert) {
       await visit("/t/internationalization-localization/280");
       this.chatService.set("sidebarActive", false);
+      this.chatService.set("chatWindowFullPage", false);
       await click(".header-dropdown-toggle.open-chat");
       const chatContainer = query(".topic-chat-container");
       assert.ok(chatContainer.classList.contains("channel-75"));

@@ -6,6 +6,10 @@ discourseModule("Discourse Chat | Unit | chat-window-store", function (hooks) {
     this.chatWindowStore = this.container.lookup("service:chat-window-store");
   });
 
+  hooks.afterEach(function () {
+    this.chatWindowStore.set("fullPage", false);
+  });
+
   test("defaults", function (assert) {
     assert.strictEqual(this.chatWindowStore.fullPage, false);
   });

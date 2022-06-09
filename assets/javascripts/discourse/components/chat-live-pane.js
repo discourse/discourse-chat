@@ -180,7 +180,7 @@ export default Component.extend({
     );
   },
 
-  fetchMessages(channelId) {
+  fetchMessages(channelId, options = {}) {
     if (channelId === "draft") {
       return Promise.resolve();
     }
@@ -192,9 +192,13 @@ export default Component.extend({
 
       const findArgs = {
         channelId,
-        targetMessageId: this.targetMessageId || this._getLastReadId(),
         pageSize: PAGE_SIZE,
       };
+
+      if (!options.fetchFromLastMessage) {
+        findArgs["targetMessageId"] =
+          this.targetMessageId || this._getLastReadId();
+      }
 
       return this.store
         .findAll("chat-message", findArgs)
@@ -1309,10 +1313,15 @@ export default Component.extend({
   },
 
   @action
-  restickScrolling(evt) {
-    this.set("stickyScroll", true);
-    this._stickScrollToBottom();
-    evt.preventDefault();
+  restickScrolling(event) {
+    event.preventDefault();
+
+    return this.fetchMessages(this.chatChannel.id, {
+      fetchFromLastMessage: true,
+    }).then(() => {
+      this.set("stickyScroll", true);
+      this._stickScrollToBottom();
+    });
   },
 
   focusComposer() {

@@ -122,7 +122,7 @@ describe DiscourseChat::ChatChannelArchiveService do
         ChatUpload.create(chat_message: ChatMessage.last, upload: Fabricate(:upload))
         subject.new(@channel_archive).execute
         expect(@channel_archive.reload.complete?).to eq(true)
-        expect(@channel_archive.destination_topic.posts.last.post_uploads.count).to eq(1)
+        expect(@channel_archive.destination_topic.posts.last.upload_references.count).to eq(1)
       end
 
       it "successfully sends a private message to the archiving user" do

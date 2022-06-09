@@ -3,9 +3,9 @@
 {{chat-message-separator message=message}}
 
 <div
-  {{on "touchmove" this.handleTouchMove}}
-  {{on "touchstart" this.handleTouchStart}}
-  {{on "touchend" this.handleTouchEnd}}
+  {{on "touchmove" this.handleTouchMove passive=true}}
+  {{on "touchstart" this.handleTouchStart passive=true}}
+  {{on "touchend" this.handleTouchEnd passive=true}}
   {{on "mouseenter" (fn this.onHoverMessage message (hash desktopOnly=true))}}
   {{on "mouseleave" (fn this.onHoverMessage null)}}
   class={{messageContainerClasses}}

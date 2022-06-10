@@ -2,7 +2,7 @@
   <div
     role="button"
     class="collapse-area"
-    {{on "touchstart" this.collapseMenu}}
+    {{on "touchstart" this.collapseMenu passive=true}}
   >
   </div>
 
@@ -11,7 +11,7 @@
       <div class="selected-message">
         {{chat-user-avatar user=message.user}}
         <span
-          {{on "touchstart" this.expandReply}}
+          {{on "touchstart" this.expandReply passive=true}}
           role="button"
           class="selected-message-reply {{if isExpanded "is-expanded"}}"
         >

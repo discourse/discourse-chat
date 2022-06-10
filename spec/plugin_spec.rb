@@ -208,7 +208,7 @@ describe 'discourse-chat' do
               <div class="chat-onebox-members-count">1 member</div>
               <div class="chat-onebox-members">
                <a class="trigger-user-card" data-user-card="#{user.username}" aria-hidden="true" tabindex="-1">
-                 <img loading="lazy" alt="#{user.username}" width="30" height="30" src="#{user.avatar_template_url.gsub('{size}', '30')}" class="avatar">
+                 <img loading="lazy" alt="#{user.username}" width="30" height="30" src="#{user.avatar_template_url.gsub('{size}', '60')}" class="avatar">
                </a>
               </div>
             </article>

@@ -238,7 +238,7 @@ after_initialize do
       .map do |membership|
         {
           username: membership.user.username,
-          avatar_url: membership.user.avatar_template_url.gsub('{size}', '30'),
+          avatar_url: membership.user.avatar_template_url.gsub('{size}', '60'),
         }
       end
 

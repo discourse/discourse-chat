@@ -151,15 +151,14 @@ hu:
       user_deleted: "törölve"
       exit: "vissza"
       channel_status:
-        read_only_header: "A csatorna írásvédett."
+        read_only_header: "A csatorna írásvédett"
         read_only: "Csak olvasható"
-        archived_header: "A csatorna archiválva van."
+        archived_header: "A csatorna archiválva van"
         archived: "Archivált"
-        archive_failed: 'A csatorna archiválása nem sikerült.</a>%{completed}/%{total} üzenet archiválva lett a <a target="_blank" href="%{topic_url}">céltémában</a> . Nyomja meg az Újra gombot az archiválás befejezéséhez.'
-        archive_completed: 'A csatorna archiválása befejeződött. Az archívum <a target="_blank" href="%{topic_url}">a céltémában</a> található.'
-        closed_header: "A csatorna zárolt."
+        archive_failed: "A csatorna archiválása nem sikerült.</a>%{completed}/%{total} üzenet archiválva lett a <a target=\"_blank\" href=\"%{topic_url}\">céltémában</a> . Nyomja meg az Újra gombot az archiválás befejezéséhez."
+        closed_header: "A csatorna zárolt"
         closed: "Zárolt"
-        open_header: "A csatorna nyitott."
+        open_header: "A csatorna nyitott"
         open: "Nyitott"
       chat_message_separator:
         today: Ma
@@ -326,7 +325,6 @@ hu:
         keyboard_shortcuts:
           switch_channel_arrows: "%{shortcut} Csatorna váltása"
           open_quick_channel_selector: "%{shortcut} Gyors csatornaválasztó megnyitása"
-          open_insert_link_modal: "%{shortcut} Hiperhivatkozás beillesztése"
     topic_statuses:
       chat:
         help: "A csevegés engedélyezett ebben a témában"

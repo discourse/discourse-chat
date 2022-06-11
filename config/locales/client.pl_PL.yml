@@ -101,9 +101,9 @@ pl_PL:
       channel_status:
         read_only: "Tylko do odczytu"
         archived: "Zarchiwizowany"
-        closed_header: "Kanał jest zamknięty."
+        closed_header: "Kanał jest zamknięty"
         closed: "Zamknięty"
-        open_header: "Kanał jest otwarty."
+        open_header: "Kanał jest otwarty"
         open: "Otwarty"
       channel_selector:
         title: "Przejdź do kanału"

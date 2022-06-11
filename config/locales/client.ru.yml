@@ -164,15 +164,15 @@ ru:
       user_deleted: "удалён"
       exit: "Назад"
       channel_status:
-        read_only_header: "Канал только для чтения."
+        read_only_header: "Канал только для чтения"
         read_only: "Только для чтения"
-        archived_header: "Канал заархивирован."
+        archived_header: "Канал заархивирован"
         archived: "Архивирован"
-        archive_failed: 'Во время архивации поизошла ошибка. %{completed}/%{total} сообщений были заархивированы в <a target="_blank" href="%{topic_url}">целевой теме</a>. Нажмите ''Повторить'', чтобы попытаться завершить архивирование.'
-        archive_completed: 'Архивация канала завершена. Архив можно найти в <a target="_blank" href="%{topic_url}">целевой теме</a>.'
-        closed_header: "Канал закрыт."
+        archive_failed: "Во время архивации поизошла ошибка. %{completed}/%{total} сообщений были заархивированы в <a target=\"_blank\" href=\"%{topic_url}\">целевой теме</a>. Нажмите 'Повторить', чтобы попытаться завершить архивирование."
+        archive_completed: "См. <a target=\"_blank\" href=\"%{topic_url}\">архивную тему</a>."
+        closed_header: "Канал закрыт"
         closed: "Закрыт"
-        open_header: "Канал открыт."
+        open_header: "Канал открыт"
         open: "Открыт"
       chat_message_separator:
         today: Сегодня
@@ -348,7 +348,10 @@ ru:
         keyboard_shortcuts:
           switch_channel_arrows: "%{shortcut} Переключить канал"
           open_quick_channel_selector: "%{shortcut} Открыть переключатель каналов"
-          open_insert_link_modal: "%{shortcut} Вставить гиперссылку"
+          open_insert_link_modal: "%{shortcut} Вставить гиперссылку (только в редакторе)"
+          composer_bold: "%{shortcut} Жирный (только в редакторе)"
+          composer_italic: "%{shortcut} Курсив (только в редакторе)"
+          composer_code: "%{shortcut} Код (только в редакторе)"
     topic_statuses:
       chat:
         help: "Чат включён для этой темы"

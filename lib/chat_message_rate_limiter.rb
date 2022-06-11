@@ -31,7 +31,7 @@ class DiscourseChat::ChatMessageRateLimiter
   private
 
   def silence_user
-    silenced_for_minutes = SiteSetting.chat_auto_silience_duration
+    silenced_for_minutes = SiteSetting.chat_auto_silence_duration
     return unless silenced_for_minutes > 0
 
     UserSilencer.silence(

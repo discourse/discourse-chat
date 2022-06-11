@@ -43,6 +43,8 @@
                 <%= I18n.l(@user_tz.to_local(chat_message.created_at), format: :long) -%>
               </span>
             </td>
+          </tr>
+          <tr>
             <td style="width:99%;margin:0;padding:<%= rtl? ? '0 2em 0 0' : '0 0 0 2em' %>;vertical-align:top;">
               <%= email_excerpt(chat_message.cooked_for_excerpt) %>
             </td>

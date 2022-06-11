@@ -6,7 +6,7 @@
 
 pt_BR:
   site_settings:
-    chat_enabled: "Ative o plugin discourse-chat. Use a ação \"Ativar chat\" por tópico para configurar."
+    chat_enabled: 'Ative o plugin discourse-chat. Use a ação "Ativar chat" por tópico para configurar.'
     chat_allowed_groups: "Usuários(as) nestes grupos podem conversar."
   chat:
     errors:

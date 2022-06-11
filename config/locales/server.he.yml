@@ -103,18 +103,18 @@ he:
       notification_title: "הודעה ב־%{channel_name}"
     personal_chat: "צ׳אט אישי"
     onebox:
-      inline_to_message: 'הודעה מס׳ %{message_id} מאת ‎%{username}‏ – ‎#%{chat_channel}'
-      inline_to_channel: 'צ׳אט מס׳ %{chat_channel}'
-      inline_to_topic_channel: 'צ׳אט לנושא %{topic_title}'
+      inline_to_message: "הודעה מס׳ %{message_id} מאת ‎%{username}‏ – ‎#%{chat_channel}"
+      inline_to_channel: "צ׳אט מס׳ %{chat_channel}"
+      inline_to_topic_channel: "צ׳אט לנושא %{topic_title}"
   discourse_push_notifications:
     popup:
       chat_mention:
-        direct: 'אוזכרת בערוץ „%{channel}” על ידי %{username}'
-        other: 'נוסף אזכור של %{identifier} בערוץ „%{channel}” על ידי %{username}'
+        direct: "אוזכרת בערוץ „%{channel}” על ידי %{username}"
+        other: "נוסף אזכור של %{identifier} בערוץ „%{channel}” על ידי %{username}"
       direct_message_chat_mention:
         direct: "אוזכרת בצ׳אט אישי על ידי %{username}"
         other: "נוסף אזכור של ‎%{identifier} בצ׳אט אישי על ידי %{username}"
-      new_chat_message: 'נשחלה הודעה על ידי %{username} ב־„%{channel}”'
+      new_chat_message: "נשחלה הודעה על ידי %{username} ב־„%{channel}”"
       new_direct_chat_message: "נשלחה הודעה על ידי %{username} בצ׳אט אישי"
   discourse_automation:
     scriptables:

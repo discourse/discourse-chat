@@ -4,14 +4,24 @@
       <span class="search-icon">
         {{d-icon "search"}}
       </span>
-      {{input id="chat-channel-selector-input" type="text" onChange=(action "search") value=filter autocomplete="off"}}
+
+      {{input
+        id="chat-channel-selector-input"
+        type="text"
+        onChange=(action "search")
+        value=filter
+        autocomplete="off"
+      }}
     </div>
+
     <div class="channels">
       {{#conditional-loading-spinner condition=this.loading}}
         {{#each channels as |channel|}}
           {{chat-channel-selection-row model=channel onClick=switchChannel}}
         {{else}}
-          <div class="no-channels-notice">{{i18n "chat.channel_selector.no_channels"}}</div>
+          <div class="no-channels-notice">
+            {{i18n "chat.channel_selector.no_channels"}}
+          </div>
         {{/each}}
       {{/conditional-loading-spinner}}
     </div>

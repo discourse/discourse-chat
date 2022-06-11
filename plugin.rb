@@ -233,12 +233,12 @@ after_initialize do
 
     users = chat_channel
       .user_chat_channel_memberships
-      .includes(:user)
+      .includes(:user).where(user: User.activated.not_suspended.not_staged)
       .limit(10)
       .map do |membership|
         {
           username: membership.user.username,
-          avatar_url: membership.user.avatar_template_url.gsub('{size}', '30'),
+          avatar_url: membership.user.avatar_template_url.gsub('{size}', '60'),
         }
       end
 

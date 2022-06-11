@@ -44,11 +44,12 @@ export default {
       }
     );
 
+    const siteSettings = container.lookup("site-settings:main");
     api.decorateChatMessage(
       (element) =>
         highlightSyntax(
           element,
-          container.lookup("site-settings:main"),
+          siteSettings,
           container.lookup("session:main")
         ),
       { id: "highlightSyntax" }

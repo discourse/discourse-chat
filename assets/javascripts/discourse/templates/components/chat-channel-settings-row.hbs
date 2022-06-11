@@ -1,4 +1,7 @@
-<div class="{{chatChannelClass}} chat-channel-settings-row chat-channel-settings-row-{{channel.id}}">
+<div
+  class="{{chatChannelClass}}
+    chat-channel-settings-row chat-channel-settings-row-{{channel.id}}"
+>
   <div class="chat-channel-info">
     <div class="channel-title-container">
       {{#if editingName}}
@@ -20,9 +23,16 @@
         </div>
       {{else}}
         <div class="channel-title">
-          {{chat-channel-title channel=channel onClick=(action "previewChannel")}}
+          {{chat-channel-title
+            channel=channel
+            onClick=(action "previewChannel")
+          }}
           {{#if currentUser.staff}}
-            {{d-button icon="pencil-alt" class="edit-btn" action=(action "startEditingName")}}
+            {{d-button
+              icon="pencil-alt"
+              class="edit-btn"
+              action=(action "startEditingName")
+            }}
           {{/if}}
           {{#if currentUser.staff}}
             {{chat-channel-settings-btn channel=channel}}
@@ -40,7 +50,6 @@
 
       {{#if channel.expanded}}
         <div class="chat-channel-row-controls">
-
           <div class="controls">
             <label>{{i18n "chat.settings.mute"}}</label>
             {{combo-box
@@ -80,7 +89,7 @@
               action=(action "save")
               disabled=loading
               label="chat.settings.save"
-              }}
+            }}
             {{#if showSaveSuccess}}
               <span class="notification-settings-saved">
                 {{d-icon "check"}}
@@ -94,11 +103,16 @@
 
     <div class="chat-channel-data">
       {{#if channel.following}}
-        {{d-icon "check"}}<p class="channel-joined">{{i18n "chat.settings.followed"}}</p>
+        {{d-icon "check"}}
+        <p class="channel-joined">
+          {{i18n "chat.settings.followed"}}
+        </p>
       {{/if}}
+
       {{#if (and channel.description categoryChannel)}}
         <div class="chat-channel-description">
-          • {{html-safe channel.description}}
+          •
+          {{html-safe channel.description}}
         </div>
       {{/if}}
       {{chat-channel-status channel=channel format="short"}}

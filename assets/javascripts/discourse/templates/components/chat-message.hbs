@@ -1,11 +1,11 @@
-{{!-- template-lint-disable no-invalid-interactive --}}
+{{! template-lint-disable no-invalid-interactive }}
 
 {{chat-message-separator message=message}}
 
 <div
-  {{on "touchmove" this.handleTouchMove}}
-  {{on "touchstart" this.handleTouchStart}}
-  {{on "touchend" this.handleTouchEnd}}
+  {{on "touchmove" this.handleTouchMove passive=true}}
+  {{on "touchstart" this.handleTouchStart passive=true}}
+  {{on "touchend" this.handleTouchEnd passive=true}}
   {{on "mouseenter" (fn this.onHoverMessage message (hash desktopOnly=true))}}
   {{on "mouseleave" (fn this.onHoverMessage null)}}
   class={{messageContainerClasses}}
@@ -41,7 +41,10 @@
     {{else}}
       <div class={{chatMessageClasses}}>
         {{#if showActions}}
-          {{component (concat "chat-message-actions-" (if site.mobileView "mobile" "desktop"))
+          {{component
+            (concat
+              "chat-message-actions-" (if site.mobileView "mobile" "desktop")
+            )
             message=message
             emojiReactions=emojiReactions
             secondaryButtons=secondaryButtons
@@ -60,7 +63,9 @@
             {{d-icon "share" title="chat.in_reply_to"}}
 
             {{#if message.in_reply_to.chat_webhook_event.emoji}}
-              {{chat-emoji-avatar emoji=message.in_reply_to.chat_webhook_event.emoji}}
+              {{chat-emoji-avatar
+                emoji=message.in_reply_to.chat_webhook_event.emoji
+              }}
             {{else}}
               {{#if message.in_reply_to.user}}
                 {{chat-user-avatar user=message.in_reply_to.user}}
@@ -137,7 +142,10 @@
               {{#if message.mentionWarning.invitationSent}}
                 {{d-icon "check"}}
                 <span>
-                  {{i18n "chat.mention_warning.invitations_sent" count=message.mentionWarning.without_membership.length}}
+                  {{i18n
+                    "chat.mention_warning.invitations_sent"
+                    count=message.mentionWarning.without_membership.length
+                  }}
                 </span>
               {{else}}
                 {{flat-button
@@ -154,7 +162,11 @@
                 {{#if message.mentionWarning.without_membership}}
                   <p class="without-membership">
                     <span>{{mentionedWithoutMembershipText}}</span>
-                    <a class="invite-link" href onclick={{action "inviteMentioned"}}>
+                    <a
+                      class="invite-link"
+                      href
+                      onclick={{action "inviteMentioned"}}
+                    >
                       {{i18n "chat.mention_warning.invite"}}
                     </a>
                   </p>

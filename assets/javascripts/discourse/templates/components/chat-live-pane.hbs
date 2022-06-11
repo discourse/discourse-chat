@@ -17,6 +17,7 @@
             class="leave-channel btn-default"
           }}
         {{/chat-channel-title}}
+
         {{chat-channel-status channel=chatChannel}}
       </div>
 
@@ -45,6 +46,7 @@
     {{conditional-loading-spinner condition=this.loadingMoreFuture}}
 
     {{chat-retention-reminder chatChannel=chatChannel}}
+
     {{#each this.messages as |message|}}
       {{chat-message
         message=message
@@ -66,8 +68,10 @@
         onSwitchChannel=onSwitchChannel
       }}
     {{/each}}
+
     {{conditional-loading-spinner condition=this.loadingMorePast}}
   {{/conditional-loading-spinner}}
+
   {{#if allPastMessagesLoaded}}
     <div class="all-loaded-message">
       {{i18n "chat.all_loaded"}}

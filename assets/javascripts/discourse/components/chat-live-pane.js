@@ -94,6 +94,7 @@ export default Component.extend({
     this._scrollerEl.addEventListener("scroll", this.onScrollhandler, {
       passive: true,
     });
+    window.addEventListener("resize", this.onResizeHandler);
 
     this.appEvents.on("chat:cancel-message-selection", this, "cancelSelecting");
 
@@ -110,6 +111,8 @@ export default Component.extend({
       .querySelector(".chat-messages-scroll")
       ?.removeEventListener("scroll", this.onScrollhandler);
 
+    window.removeEventListener("resize", this.onResizeHandler);
+
     this.appEvents.off(
       "chat-live-pane:highlight-message",
       this,
@@ -118,10 +121,10 @@ export default Component.extend({
     this._stopLastReadRunner();
 
     // don't need to removeEventListener from scroller as the DOM element goes away
-    if (this.stickyScrollTimer) {
-      cancel(this.stickyScrollTimer);
-      this.stickyScrollTimer = null;
-    }
+    cancel(this.stickyScrollTimer);
+
+    cancel(this.resizeHandler);
+
     this._cleanRegisteredChatChannelId();
     this._unloadedReplyIds = null;
     this.appEvents.off(
@@ -166,7 +169,18 @@ export default Component.extend({
     this.stickyScrollTimer = discourseDebounce(this, this.onScroll, 100);
   },
 
-  fetchMessages(channelId) {
+  @bind
+  onResizeHandler() {
+    cancel(this.resizeHandler);
+    this.resizeHandler = discourseDebounce(
+      this,
+      this.fillPaneAttempt,
+      this.details,
+      250
+    );
+  },
+
+  fetchMessages(channelId, options = {}) {
     if (channelId === "draft") {
       return Promise.resolve();
     }
@@ -178,9 +192,13 @@ export default Component.extend({
 
       const findArgs = {
         channelId,
-        targetMessageId: this.targetMessageId || this._getLastReadId(),
         pageSize: PAGE_SIZE,
       };
+
+      if (!options.fetchFromLastMessage) {
+        findArgs["targetMessageId"] =
+          this.targetMessageId || this._getLastReadId();
+      }
 
       return this.store
         .findAll("chat-message", findArgs)
@@ -254,14 +272,9 @@ export default Component.extend({
               ? newMessages.concat(this.messages)
               : this.messages.concat(newMessages)
           );
-
-          const scrollToMessageArgs = {
-            highlight: false,
-            position: loadingPast ? "top" : "bottom",
-          };
-          this.scrollToMessage(messageId, scrollToMessageArgs);
         }
         this.setCanLoadMoreDetails(messages.resultSetMeta);
+        return messages;
       })
       .catch((err) => {
         throw err;
@@ -276,19 +289,42 @@ export default Component.extend({
   },
 
   fillPaneAttempt(meta) {
-    if (meta?.can_load_more_past && this.messages.length <= PAGE_SIZE) {
+    // safeguard
+    if (this.messages.length > 200) {
+      return;
+    }
+
+    if (!meta?.can_load_more_past) {
+      return;
+    }
+
+    schedule("afterRender", () => {
       const firstMessageId = this.messages.firstObject?.id;
       if (!firstMessageId) {
         return;
       }
 
+      const scroller = document.querySelector(".chat-messages-container");
       const messageContainer = document.querySelector(
         `.chat-message-container[data-id="${firstMessageId}"]`
       );
-      if (messageContainer && isElementInViewport(messageContainer)) {
-        this._fetchMoreMessages(PAST);
+      if (
+        !scroller ||
+        !messageContainer ||
+        !isElementInViewport(messageContainer)
+      ) {
+        return;
       }
-    }
+
+      this._fetchMoreMessages(PAST).then((messages) => {
+        let originalscrollTop = scroller.scrollTop;
+
+        schedule("afterRender", () => {
+          scroller.scrollTo({ top: originalscrollTop });
+          this.fillPaneAttempt(messages?.resultSetMeta);
+        });
+      });
+    });
   },
 
   setCanLoadMoreDetails(meta) {
@@ -703,7 +739,7 @@ export default Component.extend({
         message: data.chat_message.message,
         cooked: data.chat_message.cooked,
         excerpt: data.chat_message.excerpt,
-        uploads: cloneJSON(data.chat_message.uploads),
+        uploads: cloneJSON(data.chat_message.uploads || []),
         edited: true,
       });
     }
@@ -885,7 +921,7 @@ export default Component.extend({
   },
 
   @action
-  sendMessage(message, uploads) {
+  sendMessage(message, uploads = []) {
     resetIdle();
 
     if (this.sendingloading) {
@@ -927,7 +963,7 @@ export default Component.extend({
       message,
       cooked,
       staged_id: stagedId,
-      upload_ids: (uploads || []).map((upload) => upload.id),
+      upload_ids: uploads.map((upload) => upload.id),
     };
     if (this.replyToMsg) {
       data.in_reply_to_id = this.replyToMsg.id;
@@ -1277,10 +1313,15 @@ export default Component.extend({
   },
 
   @action
-  restickScrolling(evt) {
-    this.set("stickyScroll", true);
-    this._stickScrollToBottom();
-    evt.preventDefault();
+  restickScrolling(event) {
+    event.preventDefault();
+
+    return this.fetchMessages(this.chatChannel.id, {
+      fetchFromLastMessage: true,
+    }).then(() => {
+      this.set("stickyScroll", true);
+      this._stickScrollToBottom();
+    });
   },
 
   focusComposer() {

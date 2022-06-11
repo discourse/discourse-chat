@@ -719,6 +719,18 @@ RSpec.describe DiscourseChat::ChatController do
         end
       end
 
+      context 'message_id refers to deleted message' do
+        before do
+          message_1.trash!(Discourse.system_user)
+        end
+
+        it 'works' do
+          put "/chat/#{chat_channel.id}/read/#{message_1.id}.json"
+
+          expect(response.status).to eq(200)
+        end
+      end
+
       it 'updates timing records' do
         expect {
           put "/chat/#{chat_channel.id}/read/#{message_1.id}.json"

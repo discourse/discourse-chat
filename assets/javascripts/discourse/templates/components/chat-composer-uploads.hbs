@@ -17,7 +17,11 @@
   </div>
 {{/if}}
 
-{{pick-files-button allowMultiple=true fileInputId=fileUploadElementId fileInputClass="hidden-upload-field"}}
+{{pick-files-button
+  allowMultiple=true
+  fileInputId=fileUploadElementId
+  fileInputClass="hidden-upload-field"
+}}
 
 <div class="drop-a-file">
   <div class="drop-a-file-content">
@@ -26,6 +30,10 @@
       {{d-icon "file-video"}}
       {{d-icon "file-image"}}
     </div>
-    <p class="drop-a-file-content-text">{{d-icon "upload"}} Drop a file to upload it.</p>
+
+    <p class="drop-a-file-content-text">
+      {{d-icon "upload"}}
+      Drop a file to upload it.
+    </p>
   </div>
 </div>

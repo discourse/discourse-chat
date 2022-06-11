@@ -270,6 +270,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
   });
 
   test("Clicking mention notification from outside chat opens the float", async function (assert) {
+    this.chatService.set("chatWindowFullPage", false);
     await visit("/t/internationalization-localization/280");
     await click(".header-dropdown-toggle.current-user");
     await click("#quick-access-notifications .chat-mention");
@@ -1318,6 +1319,7 @@ acceptance(
     test("Chat float open to DM channel with unread messages with sidebar off", async function (assert) {
       await visit("/t/internationalization-localization/280");
       this.chatService.set("sidebarActive", false);
+      this.chatService.set("chatWindowFullPage", false);
       await click(".header-dropdown-toggle.open-chat");
       const chatContainer = query(".topic-chat-container");
       assert.ok(chatContainer.classList.contains("channel-75"));

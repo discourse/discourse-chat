@@ -4,6 +4,7 @@ import { action } from "@ember/object";
 import { reads } from "@ember/object/computed";
 import { schedule } from "@ember/runloop";
 import { inject as service } from "@ember/service";
+import { Promise } from "rsvp";
 
 export default Component.extend({
   tagName: "",
@@ -86,7 +87,7 @@ export default Component.extend({
     event.stopPropagation();
 
     const composer = document.querySelector(".chat-composer-input");
-    if (composer && !this.chatChannel.isDraft) {
+    if (composer && !this.chat.activeChannel.isDraft) {
       this.appEvents.trigger("chat:insert-text", event.key);
       composer.focus();
     }
@@ -124,7 +125,7 @@ export default Component.extend({
   },
 
   _refreshChannel(channelId) {
-    if (this.chatChannel.id === channelId) {
+    if (this.chat.activeChannel?.id === channelId) {
       this.refreshModel(true);
     }
   },
@@ -135,20 +136,9 @@ export default Component.extend({
   },
 
   @action
-  switchChannel(channel, options = {}) {
-    options = Object.assign({}, { replace: false, transition: true }, options);
-
-    if (options.replace) {
-      this.set("chatChannel", null);
-      this.set("chatChannel", channel);
-    }
-
-    if (
-      options.transition &&
-      (options.replace || channel.id !== this.chatChannel?.id)
-    ) {
-      return this.chat.openChannel(channel);
-    }
+  switchChannel(channel) {
+    this.chat.setActiveChannel(channel);
+    return this.chat.openChannel(channel);
   },
 
   _handleFocusChanged(hasFocus) {

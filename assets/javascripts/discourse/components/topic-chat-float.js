@@ -7,9 +7,9 @@ import {
   LIST_VIEW,
 } from "discourse/plugins/discourse-chat/discourse/services/chat";
 import { equal } from "@ember/object/computed";
-import { cancel, throttle } from "@ember/runloop";
+import { cancel, next, throttle } from "@ember/runloop";
 import { inject as service } from "@ember/service";
-import Promise from "rsvp";
+import { Promise } from "rsvp";
 
 export default Component.extend({
   chatView: equal("view", CHAT_VIEW),
@@ -128,7 +128,7 @@ export default Component.extend({
   },
 
   openChannelAtMessage(channel, messageId) {
-    if (this.activeChannel?.id === channel.id) {
+    if (this.chat.activeChannel?.id === channel.id) {
       // Already have this channel open. Fire app event to notify chat-live-pane
       // to highlight or fetch the message.
       this.appEvents.trigger("chat-live-pane:highlight-message", messageId);
@@ -140,8 +140,8 @@ export default Component.extend({
 
   chatEnabledForTopic(topic) {
     if (
-      !this.activeChannel ||
-      this.activeChannel.id === topic.chat_channel.id
+      !this.chat.activeChannel ||
+      this.chat.activeChannel?.id === topic.chat_channel.id
     ) {
       // Don't do anything if viewing another topic
       this.switchChannel(topic.chat_channel);
@@ -149,12 +149,8 @@ export default Component.extend({
   },
 
   chatDisabledForTopic(topic) {
-    if (
-      !this.hidden &&
-      this.activeChannel &&
-      this.activeChannel.id === topic.chat_channel.id
-    ) {
-      this.set("activeChannel", null);
+    if (!this.hidden && this.chat.activeChannel?.id === topic.chat_channel.id) {
+      this.chat.setActiveChannel(null);
       this.close();
     }
   },
@@ -230,14 +226,17 @@ export default Component.extend({
     }
   },
 
-  @discourseComputed("activeChannel", "currentUser.chat_channel_tracking_state")
+  @discourseComputed(
+    "chat.activeChannel",
+    "currentUser.chat_channel_tracking_state"
+  )
   unreadCount(activeChannel, trackingState) {
     return trackingState[activeChannel.id]?.unread_count || 0;
   },
 
   @action
   openInFullPage(e) {
-    const channel = this.activeChannel;
+    const channel = this.chat.activeChannel;
     if (e.which === 2) {
       // Middle mouse click
       window
@@ -250,8 +249,9 @@ export default Component.extend({
     // Since the mobile-file-upload button has an ID, a JS error will break things otherwise.
     this.setProperties({
       hidden: true,
-      activeChannel: null,
     });
+
+    this.chat.setActiveChannel(null);
 
     this.chatWindowStore.set("fullPage", true);
 
@@ -268,8 +268,8 @@ export default Component.extend({
 
   @action
   onChannelTitleClick() {
-    if (this.expanded && this.activeChannel.chatable_url) {
-      this.router.transitionTo(this.activeChannel.chatable_url);
+    if (this.expanded && this.chat.activeChannel?.chatable_url) {
+      this.router.transitionTo(this.chat.activeChannel.chatable_url);
     } else {
       this.set("expanded", true);
     }
@@ -300,7 +300,7 @@ export default Component.extend({
     } else {
       this.set("expanded", true);
       this.appEvents.trigger("chat:toggle-expand", this.expanded);
-      if (this.activeChannel) {
+      if (this.chat.activeChannel) {
         // Channel was previously open, so after expand we are done.
         return this.chat.setActiveChannel(null);
       }
@@ -331,41 +331,21 @@ export default Component.extend({
     this.set("loading", true);
     this.chat.getChannels().then(() => {
       this.setProperties({
-        activeChannel: null,
         loading: false,
         expanded: true,
         view: LIST_VIEW,
       });
+
+      this.chat.setActiveChannel(null);
     });
   },
 
   @action
-  switchChannel(channel, options = {}) {
-    options = Object.assign({}, { replace: true }, options);
-
-    if (options.replace) {
-      this.set("activeChannel", null);
+  switchChannel(channel) {
+    if (!channel) {
+      this.chat.setActiveChannel(null);
+      return this.router.transitionTo("chat").promise;
     }
-
-    if (this.site.mobileView) {
-      return this.chat.openChannel(channel);
-    }
-
-    if (this.currentUser.chat_isolated) {
-      const safeTitle = channel.title.replace(/\./g, "-");
-      return window
-        .open(getURL(`/chat/channel/${channel.id}/${safeTitle}`), "_blank")
-        .focus();
-    }
-
-    let channelInfo = {
-      activeChannel: channel,
-      loading: false,
-      hidden: false,
-      expanded: true,
-      expectPageChange: false,
-      view: CHAT_VIEW,
-    };
 
     if (this.chatWindowStore.fullPage) {
       if (channel) {
@@ -373,14 +353,23 @@ export default Component.extend({
           "chat.channel",
           channel.id,
           channel.title
-        );
+        ).promise;
       }
-
-      return this.router.transitionTo("chat");
     }
 
-    this.chat.setActiveChannel(channel);
-    this.setProperties(channelInfo);
-    return Promise.resolve();
+    this.chat.setActiveChannel(null);
+
+    return new Promise((resolve) => {
+      this.chat.setActiveChannel(channel);
+      this.set("expanded", true);
+      this.set("view", CHAT_VIEW);
+      this.set("loading", false);
+      this.set("hidden", false);
+      this.set("expectPageChange", false);
+
+      next(() => {
+        resolve();
+      });
+    });
   },
 });

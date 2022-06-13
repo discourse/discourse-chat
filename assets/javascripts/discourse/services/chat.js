@@ -481,12 +481,13 @@ export default Service.extend({
     return this._openFoundChannelAtMessage(channel);
   },
 
-  _openFoundChannelAtMessage(channel, messageId = null) {
+  async _openFoundChannelAtMessage(channel, messageId = null) {
     if (
       this.router.currentRouteName === "chat.channel" &&
       this.router.currentRoute.params.channelTitle === channel.title
     ) {
       this._fireOpenMessageAppEvent(messageId);
+      return Promise.resolve();
     } else if (
       Site.currentProp("mobileView") ||
       this.router.currentRouteName === "chat" ||
@@ -504,6 +505,7 @@ export default Service.extend({
       ).promise;
     } else {
       this._fireOpenFloatAppEvent(channel, messageId);
+      return Promise.resolve();
     }
   },
 

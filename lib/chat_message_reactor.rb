@@ -12,19 +12,25 @@ class DiscourseChat::ChatMessageReactor
   end
 
   def react!(message_id:, react_action:, emoji:)
+    @guardian.ensure_can_see_chat_channel!(@chat_channel)
+    @guardian.ensure_can_react!
+
+    validate_channel_status!
+
     if ![ADD_REACTION, REMOVE_REACTION].include?(react_action) || !Emoji.exists?(emoji)
       raise Discourse::InvalidParameters
     end
-
-    validate_channel_membership!
-    validate_channel_status!
 
     @chat_message = ChatMessage.find_by(id: message_id, chat_channel: @chat_channel)
     raise Discourse::NotFound unless @chat_message
 
     validate_max_reactions!(react_action, emoji)
 
-    execute_action(react_action, emoji)
+    ActiveRecord::Base.transaction do
+      enforce_channel_membership!
+      execute_action(react_action, emoji)
+    end
+
     publish_reaction(react_action, emoji)
 
     @chat_message
@@ -32,14 +38,16 @@ class DiscourseChat::ChatMessageReactor
 
   private
 
-  def validate_channel_membership!
-    return if UserChatChannelMembership.exists?(
+  def enforce_channel_membership!
+    existing_membership = UserChatChannelMembership.find_or_initialize_by(
       chat_channel: @chat_channel,
       user: @user,
-      following: true
     )
 
-    raise Discourse::InvalidAccess.new(nil, nil, custom_message: "chat.errors.cannot_react_without_joining")
+    unless existing_membership&.following
+      existing_membership.following = true
+      existing_membership.save!
+    end
   end
 
   def validate_channel_status!
@@ -67,7 +75,7 @@ class DiscourseChat::ChatMessageReactor
 
   def execute_action(react_action, emoji)
     if react_action == ADD_REACTION
-      @chat_message.reactions.find_or_create_by(user: @user, emoji: emoji)
+      @chat_message.reactions.find_or_create_by!(user: @user, emoji: emoji)
     else
       @chat_message.reactions.where(user: @user, emoji: emoji).destroy_all
     end

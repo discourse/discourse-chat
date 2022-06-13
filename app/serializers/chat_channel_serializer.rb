@@ -54,7 +54,7 @@ class ChatChannelSerializer < ApplicationSerializer
   end
 
   def include_archive_status?
-    scope.is_staff? && archive.present?
+    scope.is_staff? && object.archived? && archive.present?
   end
 
   def archive_completed

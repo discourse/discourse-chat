@@ -16,7 +16,6 @@ import { cancel, later, once, schedule } from "@ember/runloop";
 import { clipboardCopy } from "discourse/lib/utilities";
 import { inject as service } from "@ember/service";
 import { popupAjaxError } from "discourse/lib/ajax-error";
-import { Promise } from "rsvp";
 
 let _chatMessageDecorators = [];
 

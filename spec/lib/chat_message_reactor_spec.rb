@@ -31,7 +31,7 @@ describe DiscourseChat::ChatMessageReactor do
 
           it 'removes the reaction' do
             ChatPublisher.expects(:publish_reaction!).once
-            
+
             expect {
               reactor.react!(message_id: message_1.id, react_action: :remove, emoji: ':+1:')
             }.to change(ChatMessageReaction, :count).by(-1)
@@ -159,7 +159,7 @@ describe DiscourseChat::ChatMessageReactor do
             }.to raise_error(Discourse::InvalidAccess)
           end
         end
-        
+
         context 'channel is closed' do
           fab!(:chat_channel) { Fabricate(:chat_channel, status: :closed) }
           fab!(:reactor) { described_class.new(reacting_user, chat_channel) }
@@ -202,7 +202,7 @@ describe DiscourseChat::ChatMessageReactor do
             }.to raise_error(Discourse::InvalidAccess)
           end
         end
-        
+
         context 'channel is closed' do
           fab!(:chat_channel) { Fabricate(:chat_channel, status: :closed) }
           fab!(:reactor) { described_class.new(reacting_user, chat_channel) }
@@ -213,7 +213,7 @@ describe DiscourseChat::ChatMessageReactor do
             }.to raise_error(Discourse::InvalidAccess)
           end
         end
-        
+
         context 'channel is read only' do
           fab!(:chat_channel) { Fabricate(:chat_channel, status: :read_only) }
           fab!(:reactor) { described_class.new(reacting_user, chat_channel) }

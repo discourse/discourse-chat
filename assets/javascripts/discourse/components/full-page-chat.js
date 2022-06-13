@@ -4,7 +4,6 @@ import { action } from "@ember/object";
 import { reads } from "@ember/object/computed";
 import { schedule } from "@ember/runloop";
 import { inject as service } from "@ember/service";
-import { Promise } from "rsvp";
 
 export default Component.extend({
   tagName: "",

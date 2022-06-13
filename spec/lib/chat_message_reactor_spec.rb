@@ -35,7 +35,7 @@ describe DiscourseChat::ChatMessageReactor do
             expect {
               reactor.react!(message_id: message_1.id, react_action: :remove, emoji: ':+1:')
             }.to change(ChatMessageReaction, :count).by(-1)
-            
+
           end
 
           context 'the user is not member of channel' do
@@ -88,7 +88,7 @@ describe DiscourseChat::ChatMessageReactor do
         context 'a reaction with this emoji doesn’t exist' do
           it 'doesn’t create a new reaction' do
             ChatPublisher.expects(:publish_reaction!).once
-            
+
             expect {
               reactor.react!(message_id: message_1.id, react_action: :add, emoji: ':+1:')
             }.to change(ChatMessageReaction, :count).by(1)
@@ -170,7 +170,7 @@ describe DiscourseChat::ChatMessageReactor do
             }.to_not raise_error(Discourse::InvalidAccess)
           end
         end
-        
+
         context 'channel is read only' do
           fab!(:chat_channel) { Fabricate(:chat_channel, status: :read_only) }
           fab!(:reactor) { described_class.new(reacting_user, chat_channel) }

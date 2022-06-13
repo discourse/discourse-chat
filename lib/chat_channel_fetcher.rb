@@ -59,7 +59,7 @@ module DiscourseChat::ChatChannelFetcher
   end
 
   def self.secured_public_channels(guardian, memberships, scope_with_membership: true, filter: nil)
-    channels = ChatChannel.includes(:chatable)
+    channels = ChatChannel.includes(:chatable, :chat_channel_archive)
       .joins("LEFT JOIN categories ON categories.id = chat_channels.chatable_id AND chat_channels.chatable_type = 'Category'")
       .joins("LEFT JOIN topics ON topics.id = chat_channels.chatable_id AND chat_channels.chatable_type = 'Topic'")
       .where(

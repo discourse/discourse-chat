@@ -806,7 +806,7 @@ RSpec.describe DiscourseChat::ChatController do
 
     it "creates a membership when reacting to channel without a membership record" do
       sign_in(user)
-      
+
       expect {
         put "/chat/#{chat_channel_no_memberships.id}/react/#{chat_message_no_memberships.id}.json", params: { emoji: ":heart:", react_action: "add" }
       }.to change { UserChatChannelMembership.count }.by(1)

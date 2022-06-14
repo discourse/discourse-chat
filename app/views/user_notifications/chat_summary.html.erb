@@ -69,10 +69,16 @@
 <table class='summary-footer with-dir' style="margin-top:2em;width:100%">
   <tr>
     <td align="center">
-      <%= raw(t 'user_notifications.chat_summary.unsubscribe',
-              site_link: html_site_link,
-              email_preferences_link: link_to(t('user_notifications.chat_summary.your_chat_settings'), Discourse.base_url + '/my/preferences/chat'))  
-      %>
+      <%- if @unsubscribe_link %>
+        <%= raw(t 'user_notifications.chat_summary.unsubscribe',
+                site_link: html_site_link,
+                email_preferences_link: link_to(t('user_notifications.chat_summary.your_chat_settings'), @preferences_path),
+                unsubscribe_link: link_to(t('user_notifications.digest.click_here'), @unsubscribe_link)) %>
+      <%- else %>
+         <%= raw(t 'user_notifications.chat_summary.unsubscribe_no_link',
+                site_link: html_site_link,
+                email_preferences_link: link_to(t('user_notifications.chat_summary.your_chat_settings'), @preferences_path)) %>
+      <%- end %>
     </td>
   </tr>
 </table>

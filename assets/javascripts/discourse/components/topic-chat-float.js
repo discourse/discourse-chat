@@ -22,7 +22,6 @@ export default Component.extend({
   loading: false,
   expanded: true, // TODO - false when not first-load topic
   showClose: true, // TODO - false when on same topic
-  expectPageChange: false,
   sizeTimer: null,
   rafTimer: null,
   view: null,
@@ -365,7 +364,6 @@ export default Component.extend({
       this.set("view", CHAT_VIEW);
       this.set("loading", false);
       this.set("hidden", false);
-      this.set("expectPageChange", false);
 
       next(() => {
         resolve();

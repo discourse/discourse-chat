@@ -4,227 +4,106 @@ require 'rails_helper'
 
 describe DiscourseChat::ChatMessageReactor do
   fab!(:reacting_user) { Fabricate(:user) }
-  fab!(:chat_channel) { Fabricate(:chat_channel) }
-  fab!(:reactor) { described_class.new(reacting_user, chat_channel) }
-  fab!(:message_1) { Fabricate(:chat_message, chat_channel: chat_channel, user: reacting_user) }
+  fab!(:channel) { Fabricate(:chat_channel) }
+  fab!(:reactor) { described_class.new(reacting_user, channel) }
+  fab!(:message_1) { Fabricate(:chat_message, chat_channel: channel, user: reacting_user) }
+  let(:subject) { described_class.new(reacting_user, channel) }
 
-  describe '#react!' do
-    context 'user can’t see this channel' do
-      fab!(:chatable) { Fabricate(:direct_message_channel) }
-      fab!(:chat_channel) { Fabricate(:chat_channel, chatable: chatable) }
-      fab!(:message_1) { Fabricate(:chat_message, chat_channel: chat_channel) }
-      fab!(:reactor) { described_class.new(reacting_user, chat_channel) }
+  it 'raises an error if the user cannot see the channel' do
+    channel.update!(chatable: Fabricate(:private_category, group: Group[:staff]))
+    expect { subject.react!(message_id: message_1.id, react_action: :add, emoji: ':+1:') }.to raise_error(Discourse::InvalidAccess)
+  end
 
-      it 'raises an error' do
-        expect {
-          reactor.react!(message_id: message_1.id, react_action: :something, emoji: ':+1:')
-        }.to raise_error(Discourse::InvalidAccess)
+  it 'raises an error if the user cannot react' do
+    SpamRule::AutoSilence.new(reacting_user).silence_user
+    expect { subject.react!(message_id: message_1.id, react_action: :add, emoji: ':+1:') }.to raise_error(Discourse::InvalidAccess)
+  end
+
+  it 'raises an error if the channel status is not open' do
+    channel.update!(status: ChatChannel.statuses[:archived])
+    expect { subject.react!(message_id: message_1.id, react_action: :add, emoji: ':+1:') }.to raise_error(Discourse::InvalidAccess)
+    channel.update!(status: ChatChannel.statuses[:open])
+    expect { subject.react!(message_id: message_1.id, react_action: :add, emoji: ':+1:') }.to change(ChatMessageReaction, :count).by(1)
+  end
+
+  it 'raises an error if the reaction is not valid' do
+    expect { reactor.react!(message_id: message_1.id, react_action: :foo, emoji: ':+1:') }.to raise_error(Discourse::InvalidParameters)
+  end
+
+  it 'raises an error if the emoji does not exist' do
+    expect { reactor.react!(message_id: message_1.id, react_action: :add, emoji: ':woohoo:') }.to raise_error(Discourse::InvalidParameters)
+  end
+
+  it 'raises an error if the message is not found' do
+    expect { reactor.react!(message_id: -999, react_action: :add, emoji: ':woohoo:') }.to raise_error(Discourse::InvalidParameters)
+  end
+
+  context 'max reactions has been reached' do
+    before do
+      emojis = Emoji.all.slice(0, DiscourseChat::ChatMessageReactor::MAX_REACTIONS_LIMIT)
+      emojis.each do |emoji|
+        ChatMessageReaction.create!(chat_message: message_1, user: reacting_user, emoji: ":#{emoji.name}:")
       end
     end
 
-    context 'user can see this channel' do
-      context 'removing a reaction' do
-        context 'the reaction exists' do
-          before do
-            Fabricate(:chat_message_reaction, chat_message: message_1, user: reacting_user, emoji: ':+1:')
-          end
-
-          it 'removes the reaction' do
-            ChatPublisher.expects(:publish_reaction!).once
-
-            expect {
-              reactor.react!(message_id: message_1.id, react_action: :remove, emoji: ':+1:')
-            }.to change(ChatMessageReaction, :count).by(-1)
-
-          end
-
-          context 'the user is not member of channel' do
-            it 'creates a membership' do
-              expect {
-                reactor.react!(message_id: message_1.id, react_action: :remove, emoji: ':+1:')
-              }.to change(UserChatChannelMembership, :count).by(1)
-            end
-          end
-
-          context 'the user is member of channel' do
-            before do
-              Fabricate(:user_chat_channel_membership, chat_channel: chat_channel, user: reacting_user)
-            end
-
-            it 'doesn’t create a membership' do
-              expect {
-                reactor.react!(message_id: message_1.id, react_action: :remove, emoji: ':+1:')
-              }.to change(UserChatChannelMembership, :count).by(0)
-            end
-          end
-        end
-
-        context 'the reaction doesn’t exist' do
-          it 'doesn’t remove any reaction' do
-            ChatPublisher.expects(:publish_reaction!).once
-
-            expect {
-              reactor.react!(message_id: message_1.id, react_action: :remove, emoji: ':+1:')
-            }.to change(ChatMessageReaction, :count).by(0)
-          end
-        end
-      end
-
-      context 'adding a reaction' do
-        context 'a reaction with this emoji exists' do
-          before do
-            reactor.react!(message_id: message_1.id, react_action: :add, emoji: ':+1:')
-          end
-
-          it 'doesn’t create a new reaction' do
-            ChatPublisher.expects(:publish_reaction!).once
-
-            expect {
-              reactor.react!(message_id: message_1.id, react_action: :add, emoji: ':+1:')
-            }.to change(ChatMessageReaction, :count).by(0)
-          end
-        end
-
-        context 'a reaction with this emoji doesn’t exist' do
-          it 'doesn’t create a new reaction' do
-            ChatPublisher.expects(:publish_reaction!).once
-
-            expect {
-              reactor.react!(message_id: message_1.id, react_action: :add, emoji: ':+1:')
-            }.to change(ChatMessageReaction, :count).by(1)
-          end
-        end
-      end
-
-      context 'react_action is invalid' do
-        it 'raises an error' do
-          expect {
-            reactor.react!(message_id: message_1.id, react_action: :something, emoji: ':+1:')
-          }.to raise_error(Discourse::InvalidParameters)
-        end
-      end
-
-      context 'emoji is invalid' do
-        it 'raises an error' do
-          expect {
-            reactor.react!(message_id: message_1.id, react_action: :add, emoji: ':foo-bar-baz:')
-          }.to raise_error(Discourse::InvalidParameters)
-        end
-      end
-
-      context 'max reactions reached' do
-        before do
-          emojis = Emoji.all.slice(0, DiscourseChat::ChatMessageReactor::MAX_REACTIONS_LIMIT)
-          emojis.each do |emoji|
-            Fabricate(:chat_message_reaction, chat_message: message_1, emoji: emoji)
-          end
-        end
-
-        context 'adding a new reaction' do
-          it 'raises an error' do
-            expect {
-              reactor.react!(message_id: message_1.id, react_action: :add, emoji: ':heart:')
-            }.to raise_error(Discourse::InvalidAccess)
-          end
-        end
-
-        context 'removing reaction' do
-          it 'doesn’t raise an error' do
-            expect {
-              reactor.react!(message_id: message_1.id, react_action: :remove, emoji: Emoji.all.first)
-            }.to_not raise_error(Discourse::InvalidAccess)
-          end
-        end
-      end
-
-      context 'user is staff' do
-        fab!(:reacting_user) { Fabricate(:admin) }
-        fab!(:reactor) { described_class.new(reacting_user, chat_channel) }
-
-        context 'channel is opened' do
-          it 'doesn’t raise an error' do
-            expect {
-              reactor.react!(message_id: message_1.id, react_action: :add, emoji: ':+1:')
-            }.to_not raise_error(Discourse::InvalidAccess)
-          end
-        end
-
-        context 'channel is archived' do
-          fab!(:chat_channel) { Fabricate(:chat_channel, status: :archived) }
-          fab!(:reactor) { described_class.new(reacting_user, chat_channel) }
-
-          it 'raises an error' do
-            expect {
-              reactor.react!(message_id: message_1.id, react_action: :add, emoji: ':+1:')
-            }.to raise_error(Discourse::InvalidAccess)
-          end
-        end
-
-        context 'channel is closed' do
-          fab!(:chat_channel) { Fabricate(:chat_channel, status: :closed) }
-          fab!(:reactor) { described_class.new(reacting_user, chat_channel) }
-
-          it 'doesn’t raise an error' do
-            expect {
-              reactor.react!(message_id: message_1.id, react_action: :add, emoji: ':+1:')
-            }.to_not raise_error(Discourse::InvalidAccess)
-          end
-        end
-
-        context 'channel is read only' do
-          fab!(:chat_channel) { Fabricate(:chat_channel, status: :read_only) }
-          fab!(:reactor) { described_class.new(reacting_user, chat_channel) }
-
-          it 'raises an error' do
-            expect {
-              reactor.react!(message_id: message_1.id, react_action: :add, emoji: ':+1:')
-            }.to raise_error(Discourse::InvalidAccess)
-          end
-        end
-      end
-
-      context 'user is not staff' do
-        context 'channel is opened' do
-          it 'doesn’t raise an error' do
-            expect {
-              reactor.react!(message_id: message_1.id, react_action: :add, emoji: ':+1:')
-            }.to_not raise_error(Discourse::InvalidAccess)
-          end
-        end
-
-        context 'channel is archived' do
-          fab!(:chat_channel) { Fabricate(:chat_channel, status: :archived) }
-          fab!(:reactor) { described_class.new(reacting_user, chat_channel) }
-
-          it 'raises an error' do
-            expect {
-              reactor.react!(message_id: message_1.id, react_action: :add, emoji: ':+1:')
-            }.to raise_error(Discourse::InvalidAccess)
-          end
-        end
-
-        context 'channel is closed' do
-          fab!(:chat_channel) { Fabricate(:chat_channel, status: :closed) }
-          fab!(:reactor) { described_class.new(reacting_user, chat_channel) }
-
-          it 'raises an error' do
-            expect {
-              reactor.react!(message_id: message_1.id, react_action: :add, emoji: ':+1:')
-            }.to raise_error(Discourse::InvalidAccess)
-          end
-        end
-
-        context 'channel is read only' do
-          fab!(:chat_channel) { Fabricate(:chat_channel, status: :read_only) }
-          fab!(:reactor) { described_class.new(reacting_user, chat_channel) }
-
-          it 'raises an error' do
-            expect {
-              reactor.react!(message_id: message_1.id, react_action: :add, emoji: ':+1:')
-            }.to raise_error(Discourse::InvalidAccess)
-          end
-        end
-      end
+    it 'adding a reaction raises an error' do
+      expect {
+        reactor.react!(message_id: message_1.id, react_action: :add, emoji: ":#{Emoji.all.last.name}:")
+      }.to raise_error(Discourse::InvalidAccess)
     end
+
+    it 'removing a reaction works' do
+      expect {
+        reactor.react!(message_id: message_1.id, react_action: :add, emoji: ":#{Emoji.all.first.name}:")
+      }.to_not raise_error(Discourse::InvalidAccess)
+    end
+  end
+
+  it 'creates a membership when not present' do
+    expect {
+      reactor.react!(message_id: message_1.id, react_action: :add, emoji: ':heart:')
+    }.to change(UserChatChannelMembership, :count).by(1)
+  end
+
+  it 'doesn’t create a membership when present' do
+    UserChatChannelMembership.create!(user: reacting_user, chat_channel: channel, following: true)
+
+    expect {
+      reactor.react!(message_id: message_1.id, react_action: :add, emoji: ':heart:')
+    }.to change(UserChatChannelMembership, :count).by(0)
+  end
+
+  it 'can add a reaction' do
+    expect {
+      reactor.react!(message_id: message_1.id, react_action: :add, emoji: ':heart:')
+    }.to change(ChatMessageReaction, :count).by(1)
+  end
+
+  it 'doesn’t duplicate reactions' do
+    ChatMessageReaction.create!(chat_message: message_1, user: reacting_user, emoji: ":heart:")
+
+    expect {
+      reactor.react!(message_id: message_1.id, react_action: :add, emoji: ':heart:')
+    }.to change(ChatMessageReaction, :count).by(0)
+  end
+
+  it 'can remove an existing reaction' do
+    ChatMessageReaction.create!(chat_message: message_1, user: reacting_user, emoji: ":heart:")
+
+    expect {
+      reactor.react!(message_id: message_1.id, react_action: :remove, emoji: ':heart:')
+    }.to change(ChatMessageReaction, :count).by(-1)
+  end
+
+  it 'does nothing when removing if no reaction found' do
+    expect {
+      reactor.react!(message_id: message_1.id, react_action: :remove, emoji: ':heart:')
+    }.to change(ChatMessageReaction, :count).by(0)
+  end
+
+  it 'publishes the reaction' do
+    ChatPublisher.expects(:publish_reaction!).once
+
+    reactor.react!(message_id: message_1.id, react_action: :add, emoji: ':heart:')
   end
 end

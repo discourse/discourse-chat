@@ -143,18 +143,11 @@ describe "chat bbcode quoting in posts" do
   it "correctly renders inline and non-inline oneboxes combined with chat quotes" do
     full_onebox_html = <<~HTML.chomp
       <aside class="onebox wikipedia" data-onebox-src="https://en.wikipedia.org/wiki/Hyperlink" dir="ltr">
-        <header class="source">
-          <svg class="fa d-icon d-icon-fab-wikipedia-w svg-icon svg-string" xmlns="http://www.w3.org/2000/svg">
-            <use href="#fab-wikipedia-w"></use>
-          </svg>
-          <a href="https://en.wikipedia.org/wiki/Hyperlink" target="_blank" rel="nofollow ugc noopener" tabindex="-1">en.wikipedia.org</a>
-        </header>
         <article class="onebox-body">
-          <img src="//upload.wikimedia.org/wikipedia/commons/thumb/d/d5/Hyperlink-Wikipedia.svg/250px-Hyperlink-Wikipedia.svg.png" class="thumbnail">
           <h3>
-            <a href="https://en.wikipedia.org/wiki/Hyperlink" target="_blank" rel="nofollow ugc noopener" tabindex="-1">Hyperlink | History</a>
+            <a href="https://en.wikipedia.org/wiki/Hyperlink" target="_blank" rel="nofollow ugc noopener" tabindex="-1">Hyperlink</a>
           </h3>
-          <p>The term "link" was coined in 1965 (or possibly 1964) by Ted Nelson at the start of Project Xanadu. Nelson had been inspired by "As We May Think", a popular 1945 essay by Vannevar Bush. In the essay, Bush described a microfilm-based machine (the Memex) in which one could link any two pages of information into a "trail" of related information, and then scroll back and forth among pages in a trail as if they were on a single microfilm reel. In a series of books and articles published from 1964 thr...</p>
+          <p>This is a test</p>
         </article>
         <div class="onebox-metadata"></div>
         <div style="clear: both"></div>
@@ -166,7 +159,7 @@ describe "chat bbcode quoting in posts" do
       status: 200,
       body: "<html><head><title>Hyperlink - Wikipedia</title></head></html>"
     )
-    stub_request(:get, "http://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/Hyperlink-Wikipedia.svg/250px-Hyperlink-Wikipedia.svg.png").to_return(status: 200, body: "", headers: {})
+
     post.update!(raw: <<~MD)
 https://en.wikipedia.org/wiki/Hyperlink
 

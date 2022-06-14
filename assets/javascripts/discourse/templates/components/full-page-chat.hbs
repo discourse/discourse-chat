@@ -3,12 +3,14 @@
     {{channels-list onSelect=(action "switchChannel")}}
   {{/if}}
 
-  {{chat-live-pane
-    chatChannel=chat.activeChannel
-    expanded=true
-    floatHidden=false
-    fullPage=true
-    onBackClick=(action "navigateToIndex")
-    onSwitchChannel=(action "switchChannel")
-  }}
+  {{#if chat.activeChannel}}
+    {{chat-live-pane
+      chatChannel=chat.activeChannel
+      expanded=true
+      floatHidden=false
+      fullPage=true
+      onBackClick=(action "navigateToIndex")
+      onSwitchChannel=(action "switchChannel")
+    }}
+  {{/if}}
 </div>

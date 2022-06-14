@@ -139,4 +139,65 @@ describe "chat bbcode quoting in posts" do
       </div>
     COOKED
   end
+
+  it "correctly renders inline and non-inline oneboxes combined with chat quotes" do
+    full_onebox_html = <<~HTML.chomp
+      <aside class="onebox wikipedia" data-onebox-src="https://en.wikipedia.org/wiki/Hyperlink" dir="ltr">
+        <header class="source">
+          <svg class="fa d-icon d-icon-fab-wikipedia-w svg-icon svg-string" xmlns="http://www.w3.org/2000/svg">
+            <use href="#fab-wikipedia-w"></use>
+          </svg>
+          <a href="https://en.wikipedia.org/wiki/Hyperlink" target="_blank" rel="nofollow ugc noopener" tabindex="-1">en.wikipedia.org</a>
+        </header>
+        <article class="onebox-body">
+          <img src="//upload.wikimedia.org/wikipedia/commons/thumb/d/d5/Hyperlink-Wikipedia.svg/250px-Hyperlink-Wikipedia.svg.png" class="thumbnail">
+          <h3>
+            <a href="https://en.wikipedia.org/wiki/Hyperlink" target="_blank" rel="nofollow ugc noopener" tabindex="-1">Hyperlink | History</a>
+          </h3>
+          <p>The term "link" was coined in 1965 (or possibly 1964) by Ted Nelson at the start of Project Xanadu. Nelson had been inspired by "As We May Think", a popular 1945 essay by Vannevar Bush. In the essay, Bush described a microfilm-based machine (the Memex) in which one could link any two pages of information into a "trail" of related information, and then scroll back and forth among pages in a trail as if they were on a single microfilm reel. In a series of books and articles published from 1964 thr...</p>
+        </article>
+        <div class="onebox-metadata"></div>
+        <div style="clear: both"></div>
+      </aside>
+    HTML
+    SiteSetting.enable_inline_onebox_on_all_domains = true
+    Oneboxer.stubs(:cached_onebox).with("https://en.wikipedia.org/wiki/Hyperlink").returns(full_onebox_html)
+    stub_request(:get, "https://en.wikipedia.org/wiki/Hyperlink").to_return(
+      status: 200,
+      body: "<html><head><title>Hyperlink - Wikipedia</title></head></html>"
+    )
+    stub_request(:get, "http://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/Hyperlink-Wikipedia.svg/250px-Hyperlink-Wikipedia.svg.png").to_return(status: 200, body: "", headers: {})
+    post.update!(raw: <<~MD)
+https://en.wikipedia.org/wiki/Hyperlink
+
+[chat quote=\"martin;2321;2022-01-25T05:40:39Z\"]
+This is a chat message.
+[/chat]
+
+https://en.wikipedia.org/wiki/Hyperlink
+
+This is an inline onebox https://en.wikipedia.org/wiki/Hyperlink.
+    MD
+
+    expect(post.cooked.chomp).to eq(<<~COOKED.chomp)
+#{full_onebox_html}
+<div class="discourse-chat-transcript" data-message-id="2321" data-username="martin" data-datetime="2022-01-25T05:40:39Z">
+<div class="chat-transcript-user">
+<div class="chat-transcript-user-avatar"></div>
+<div class="chat-transcript-username">
+martin</div>
+<div class="chat-transcript-datetime">
+<a href="/chat/message/2321" title="2022-01-25T05:40:39Z"></a>
+</div>
+</div>
+<div class="chat-transcript-messages">
+<p>This is a chat message.</p>
+</div>
+</div>
+#{full_onebox_html}
+<p>This is an inline onebox <a href="https://en.wikipedia.org/wiki/Hyperlink" class="inline-onebox-loading" rel="noopener nofollow ugc">https://en.wikipedia.org/wiki/Hyperlink</a>.</p>
+    COOKED
+  ensure
+    InlineOneboxer.invalidate("https://en.wikipedia.org/wiki/Hyperlink")
+  end
 end

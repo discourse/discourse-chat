@@ -152,7 +152,7 @@ const chatTranscriptRule = {
     messagesToken.attrs = [["class", "chat-transcript-messages"]];
 
     // rendering chat message content with limited markdown rule subset
-    const token = state.push("html_raw", "", 0);
+    const token = state.push("html_raw", "", 1);
     token.content = customMarkdownCookFn(content);
     state.push("html_raw", "", -1);
 

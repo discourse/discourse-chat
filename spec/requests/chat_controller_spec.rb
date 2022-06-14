@@ -804,11 +804,13 @@ RSpec.describe DiscourseChat::ChatController do
       expect(response.status).to eq(400)
     end
 
-    it "errors when user tries to react to channel without a membership record" do
+    it "creates a membership when reacting to channel without a membership record" do
       sign_in(user)
-      put "/chat/#{chat_channel_no_memberships.id}/react/#{chat_message_no_memberships.id}.json", params: { emoji: ":heart:", react_action: "add" }
-      expect(response.status).to eq(403)
-      expect(response.parsed_body["errors"]).to include(I18n.t("chat.errors.cannot_react_without_joining"))
+
+      expect {
+        put "/chat/#{chat_channel_no_memberships.id}/react/#{chat_message_no_memberships.id}.json", params: { emoji: ":heart:", react_action: "add" }
+      }.to change { UserChatChannelMembership.count }.by(1)
+      expect(response.status).to eq(200)
     end
 
     it "errors when user tries to react to private channel they can't access" do

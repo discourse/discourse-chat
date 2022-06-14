@@ -16,7 +16,6 @@ import { cancel, later, once, schedule } from "@ember/runloop";
 import { clipboardCopy } from "discourse/lib/utilities";
 import { inject as service } from "@ember/service";
 import { popupAjaxError } from "discourse/lib/ajax-error";
-import { Promise } from "rsvp";
 
 let _chatMessageDecorators = [];
 
@@ -617,26 +616,29 @@ export default Component.extend({
       this.set("isHovered", false);
     }
 
-    // TODO: ideally all react logic wouldn't be on message but chat channel
-    // or at least chat-live-pane, this would avoid extra complexity
-    let promise;
-    if (this.previewing) {
-      promise = this.chat.upsertDmChannelForUser(
-        this.chatChannel,
-        this.currentUser
-      );
-    } else {
-      promise = Promise.resolve();
-    }
+    this._loadingReactions.push(emoji);
+    this._updateReactionsList(emoji, reactAction, this.currentUser);
 
-    promise.then(() => {
-      this._loadingReactions.push(emoji);
-      this._updateReactionsList(emoji, reactAction, this.currentUser);
-      this._publishReaction(emoji, reactAction);
+    return this._publishReaction(emoji, reactAction).then(() => {
       this.notifyPropertyChange("emojiReactions");
 
-      if (this.previewing) {
-        this.onSwitchChannel(this.chatChannel, { replace: true });
+      // creating reaction will create a membership if not present
+      // so we will fully refresh if we were previewing
+      if (this.previewing || this.chatChannel.isDraft) {
+        this.chat.forceRefreshChannels().then(() => {
+          return this.chat
+            .getChannelBy("id", this.chatChannel.id)
+            .then((reactedChannel) => {
+              this.onSwitchChannel(reactedChannel);
+            })
+            .finally(() => {
+              if (this.isDestroyed || this.isDestroying) {
+                return;
+              }
+
+              this.set("previewing", false);
+            });
+        });
       }
     });
   },

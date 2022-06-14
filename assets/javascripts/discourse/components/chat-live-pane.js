@@ -138,9 +138,9 @@ export default Component.extend({
     this._super(...arguments);
 
     this.set("targetMessageId", this.chat.messageId);
+
     if (this.registeredChatChannelId !== this.chatChannel.id) {
       this._cleanRegisteredChatChannelId();
-
       this.messageLookup = {};
       this.set("allPastMessagesLoaded", false);
       this.cancelEditing();
@@ -1049,9 +1049,7 @@ export default Component.extend({
           },
         }).then(() => {
           this.chat.forceRefreshChannels();
-          this.onSwitchChannel(ChatChannel.create(c), {
-            replace: true,
-          });
+          this.onSwitchChannel(ChatChannel.create(c));
         })
       )
       .finally(() => {

@@ -318,10 +318,7 @@ export default Component.extend({
   _fetchPreviewedChannel() {
     if (isEmpty(this.channel.chatable.users)) {
       this.channel.set("id", "draft");
-      this.onSwitchChannel?.(this.channel, {
-        replace: true,
-        transition: false,
-      });
+      this.onSwitchChannel?.(this.channel);
       return;
     }
 
@@ -332,10 +329,7 @@ export default Component.extend({
       .catch((error) => {
         if (error?.jqXHR?.status === 404) {
           this.channel.set("id", "draft");
-          this.onSwitchChannel?.(this.channel, {
-            replace: true,
-            transition: false,
-          });
+          this.onSwitchChannel?.(this.channel);
         } else {
           popupAjaxError(error);
         }
@@ -347,10 +341,7 @@ export default Component.extend({
         }
 
         this.channel.set("id", response.chat_channel.id);
-        this.onSwitchChannel?.(this.channel, {
-          replace: true,
-          transition: false,
-        });
+        this.onSwitchChannel?.(this.channel);
       })
       .catch(popupAjaxError)
       .finally(() => {

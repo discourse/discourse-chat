@@ -45,7 +45,6 @@ en:
       max_reactions_limit_reached: "New reactions are not allowed on this message."
       message_move_invalid_channel: "The source and destination channel must be public channels."
       message_move_no_messages_found: "No messages were found with the provided message IDs."
-      cannot_react_without_joining: "You must join the channel first to react to messages. Send a message or join the channel manually from the channel list."
     reviewables:
       actions:
         agree:

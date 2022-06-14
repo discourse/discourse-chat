@@ -10,7 +10,7 @@ he:
     chat_allowed_groups: "משתמשים בקבוצות אלו יכולים להשתתף בצ׳אט."
     chat_channel_retention_days: "הודעות הצ׳אט בערוצים הרגילים ישמרו למשך כמות כזאת של ימים. הגדרה לאפס תשמור את ההודעות לעד."
     chat_dm_retention_days: "הודעות הצ׳אט בערוצי הצ׳אט האישיים ישמרו למשך כמות כזאת של ימים. הגדרה לאפס תשמור את ההודעות לעד."
-    chat_auto_silience_duration: "מספר הדקות שבמהלכן שמשתמשים יושתקו כאשר הם חורגים ממגבלת קצב יצירת הודעת בצ׳אט. 0 משבית את ההשתקה האוטומטית."
+    chat_auto_silence_duration: "מספר הדקות שבמהלכן שמשתמשים יושתקו כאשר הם חורגים ממגבלת קצב יצירת הודעת בצ׳אט. 0 משבית את ההשתקה האוטומטית."
     chat_allowed_messages_for_trust_level_0: "מספר ההודעות שמשתמשים בדרגת אמון 0 רשאים לשלוח תוך 30 שניות. ‚0’ כדי להשבית את המגבלה."
     chat_allowed_messages_for_other_trust_levels: "מספר ההודעות שמשתמשים בדרגות אמון 1-4 רשאים לשלוח תוך 30 שניות. ‚0’ כדי להשבית את המגבלה."
     chat_silence_user_sensitivity: "הסבירות שמשתמש שסומן בצ׳אט יושתק אוטומטית."
@@ -50,7 +50,6 @@ he:
       max_reactions_limit_reached: "רגשות חדשים אסורים בהודעה זו."
       message_move_invalid_channel: "ערוצי המקור והיעד חייבים להיות ערוצים ציבוריים."
       message_move_no_messages_found: "לא נמצאו הודעות עם מזהי ההודעות שסופקו."
-      cannot_react_without_joining: "עליך להצטרף תחילה לערוץ כדי להגיב להודעות. ניתן לשלוח הודעה או להצטרף לערוץ ידנית מרשימת הערוצים."
     reviewables:
       actions:
         agree:
@@ -109,12 +108,12 @@ he:
   discourse_push_notifications:
     popup:
       chat_mention:
-        direct: "אוזכרת בערוץ „%{channel}” על ידי %{username}"
-        other: "נוסף אזכור של %{identifier} בערוץ „%{channel}” על ידי %{username}"
+        direct: 'אוזכרת בערוץ „%{channel}” על ידי %{username}'
+        other: 'נוסף אזכור של %{identifier} בערוץ „%{channel}” על ידי %{username}'
       direct_message_chat_mention:
         direct: "אוזכרת בצ׳אט אישי על ידי %{username}"
         other: "נוסף אזכור של ‎%{identifier} בצ׳אט אישי על ידי %{username}"
-      new_chat_message: "נשחלה הודעה על ידי %{username} ב־„%{channel}”"
+      new_chat_message: 'נשחלה הודעה על ידי %{username} ב־„%{channel}”'
       new_direct_chat_message: "נשלחה הודעה על ידי %{username} בצ׳אט אישי"
   discourse_automation:
     scriptables:

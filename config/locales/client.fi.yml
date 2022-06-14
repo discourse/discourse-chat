@@ -159,7 +159,7 @@ fi:
         title: "Saapuvat webhookit"
         url: "URL"
         username: "Käyttäjätunnus"
-        username_instructions: 'Kanavalle lähettävän botin käyttäjätunnus. Oletus on "järjestelmä", kun tämä jätetään tyhjäksi.'
+        username_instructions: "Kanavalle lähettävän botin käyttäjätunnus. Oletus on \"järjestelmä\", kun tämä jätetään tyhjäksi."
       selection:
         cancel: "Peruuta"
         error: "Chat-viestien siirtämisessä tapahtui virhe"

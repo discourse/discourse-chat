@@ -10,7 +10,7 @@ sv:
     chat_allowed_groups: "Användare i dessa grupper kan chatta."
     chat_channel_retention_days: "Chattmeddelanden i ordinarie kanaler kommer att behållas i så här många dagar. Sätt till '0' för att behålla meddelanden för alltid."
     chat_dm_retention_days: "Chattmeddelanden i personliga chattkanaler kommer att behållas i så här många dagar. Sätt till '0' för att behålla meddelanden för alltid."
-    chat_auto_silience_duration: "Antal minuter som användare kommer att tystas för när de överskrider gränsen för att skapa chattmeddelanden. Sätt till '0' för att inaktivera auto-tystning."
+    chat_auto_silence_duration: "Antal minuter som användare kommer att tystas när de överskrider antalsgränsen för skapande av chattmeddelanden. Ställ in på '0' för att inaktivera automatisk tystning."
     chat_allowed_messages_for_trust_level_0: "Antal meddelanden som användare på förtroendenivå 0 får skicka inom 30 sekunder. Ange '0' för att inaktivera gränsen."
     chat_allowed_messages_for_other_trust_levels: "Antal meddelanden som användare med förtroendenivå 1-4 får skicka inom 30 sekunder. Ange '0' för att inaktivera gränsen."
     chat_silence_user_sensitivity: "Sannolikheten för att en användare som flaggas i chatten automatiskt tystas."
@@ -50,7 +50,6 @@ sv:
       max_reactions_limit_reached: "Nya reaktioner är inte tillåtna för detta meddelande."
       message_move_invalid_channel: "Käll- och destinationskanalen måste vara offentliga kanaler."
       message_move_no_messages_found: "Inga meddelanden hittades med de angivna meddelande-ID:n."
-      cannot_react_without_joining: "Du måste gå med i kanalen först för att kunna reagera på meddelanden. Skicka ett meddelande eller gå med i kanalen manuellt från kanallistan."
     reviewables:
       actions:
         agree:

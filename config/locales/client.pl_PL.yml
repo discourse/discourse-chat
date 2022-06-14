@@ -178,7 +178,7 @@ pl_PL:
         title: "Przychodzące webhooki"
         url: "URL"
         username: "Nazwa użytkownika"
-        username_instructions: 'Nazwa użytkownika bota, który publikuje na kanale. Domyślnie "system" gdy pozostanie puste.'
+        username_instructions: "Nazwa użytkownika bota, który publikuje na kanale. Domyślnie \"system\" gdy pozostanie puste."
       selection:
         cancel: "Anuluj"
         error: "Wystąpił błąd podczas przenoszenia wiadomości czatu"

@@ -306,8 +306,8 @@ he:
       chat_quoted: "<span>%{username}</span> %{description}"
       popup:
         chat_mention:
-          direct: "<span>אוזכרת בערוץ „%{channel}” על ידי</span> <span>%{username}</span>"
-          other: "<span>נוסף אזכור של %{identifier} בערוץ „%{channel}” על ידי</span> <span>%{username}</span>"
+          direct: '<span>אוזכרת בערוץ „%{channel}” על ידי</span> <span>%{username}</span>'
+          other: '<span>נוסף אזכור של %{identifier} בערוץ „%{channel}” על ידי</span> <span>%{username}</span>'
         direct_message_chat_mention:
           direct: "<span>אוזכרת בצ׳אט אישי על ידי</span> <span>%{username}</span>"
           other: "<span>נוסף אזכור של ‎%{identifier} בצ׳אט אישי על ידי</span> <span>%{username}</span>"

@@ -202,7 +202,7 @@ export default Component.extend({
     this.element.style.setProperty("--composer-height", "40px");
   },
 
-  @discourseComputed("hidden", "expanded", "activeChannel")
+  @discourseComputed("hidden", "expanded", "chat.activeChannel")
   containerClassNames(hidden, expanded, activeChannel) {
     const classNames = ["topic-chat-container"];
     if (expanded) {

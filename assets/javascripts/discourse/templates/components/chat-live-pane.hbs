@@ -41,11 +41,11 @@
   onSwitchChannel=onSwitchChannel
 }}
 
+{{chat-retention-reminder chatChannel=chatChannel}}
+
 <div class="chat-messages-scroll chat-messages-container">
   {{#conditional-loading-spinner condition=this.loading}}
     {{conditional-loading-spinner condition=this.loadingMoreFuture}}
-
-    {{chat-retention-reminder chatChannel=chatChannel}}
 
     {{#each this.messages as |message|}}
       {{chat-message

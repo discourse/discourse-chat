@@ -15,10 +15,11 @@ export default Component.extend({
   hasUnread: gt("unreadCount", 0),
 
   @discourseComputed(
-    "currentUser.chat_channel_tracking_state.@each.{unread_count,unread_mentions}"
+    "currentUser.chat_channel_tracking_state.@each.{unread_count,unread_mentions}",
+    "channel.id"
   )
-  channelTrackingState(state) {
-    return state[this.channel.id];
+  channelTrackingState(state, channelId) {
+    return state?.[channelId];
   },
 
   @discourseComputed(

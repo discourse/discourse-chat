@@ -28,7 +28,7 @@ jobs:
       fail-fast: false
 
       matrix:
-        build_type: ["backend", "frontend-legacy", "frontend"]
+        build_type: ["backend", "frontend"]
 
     steps:
       - uses: actions/checkout@v3
@@ -144,11 +144,6 @@ jobs:
           if [ 0 -lt $(find plugins/${{ github.event.repository.name }}/test/javascripts -type f \( -name "*.js" -or -name "*.es6" \) 2> /dev/null | wc -l) ]; then
             echo "::set-output name=files_exist::true"
           fi
-
-      - name: Plugin QUnit
-        if: matrix.build_type == 'frontend-legacy' && steps.check_qunit.outputs.files_exist == 'true'
-        run: QUNIT_EMBER_CLI=0 bundle exec rake plugin:qunit['${{ github.event.repository.name }}','1200000']
-        timeout-minutes: 10
 
       - name: Plugin QUnit (Ember CLI)
         if: matrix.build_type == 'frontend' && steps.check_qunit.outputs.files_exist == 'true'

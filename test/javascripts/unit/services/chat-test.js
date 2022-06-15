@@ -1,11 +1,5 @@
 import { acceptance } from "discourse/tests/helpers/qunit-helpers";
 import { test } from "qunit";
-import {
-  chatComposerButtons,
-  chatComposerButtonsDependentKeys,
-  clearChatComposerButtons,
-  registerChatComposerButton,
-} from "discourse/plugins/discourse-chat/discourse/lib/chat-composer-buttons";
 
 acceptance("Discourse Chat | Unit | Service | chat", function (needs) {
   needs.hooks.beforeEach(function () {

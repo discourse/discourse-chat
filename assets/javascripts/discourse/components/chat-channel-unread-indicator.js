@@ -14,23 +14,32 @@ export default Component.extend({
 
   hasUnread: gt("unreadCount", 0),
 
-  currentUserTrackingState: reads("currentUser.chat_channel_tracking_state"),
-
-  @discourseComputed("currentUserTrackingState", "channel", "isDirectMessage")
-  isUrgent(trackingState, channel, isDirectMessage) {
-    if (!channel) {
-      return;
-    }
-
-    return isDirectMessage || trackingState?.[channel.id]?.unread_mentions > 0;
+  @discourseComputed(
+    "currentUser.chat_channel_tracking_state.@each.{unread_count,unread_mentions}"
+  )
+  channelTrackingState(state) {
+    return state[this.channel.id];
   },
 
-  @discourseComputed("currentUserTrackingState", "channel")
-  unreadCount(trackingState, channel) {
+  @discourseComputed(
+    "channelTrackingState.unread_mentions",
+    "channel",
+    "isDirectMessage"
+  )
+  isUrgent(unreadMentions, channel, isDirectMessage) {
     if (!channel) {
       return;
     }
 
-    return trackingState?.[channel.id]?.unread_count || 0;
+    return isDirectMessage || unreadMentions > 0;
+  },
+
+  @discourseComputed("channelTrackingState.unread_count", "channel")
+  unreadCount(unreadCount, channel) {
+    if (!channel) {
+      return;
+    }
+
+    return unreadCount || 0;
   },
 });

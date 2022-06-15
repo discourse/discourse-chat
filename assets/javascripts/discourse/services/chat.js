@@ -16,6 +16,7 @@ import ChatChannel, {
 import simpleCategoryHashMentionTransform from "discourse/plugins/discourse-chat/discourse/lib/simple-category-hash-mention-transform";
 import discourseDebounce from "discourse-common/lib/debounce";
 import discourseComputed from "discourse-common/utils/decorators";
+import EmberObject from "@ember/object";
 
 export const LIST_VIEW = "list_view";
 export const CHAT_VIEW = "chat_view";
@@ -299,6 +300,23 @@ export default Service.extend({
     this.set("hasFetchedChannels", false);
     this._unsubscribeFromAllChatChannels();
     return this.getChannels();
+  },
+
+  refreshTrackingState() {
+    return ajax("/chat/chat_channels.json")
+      .then((response) => {
+        this.currentUser.set("chat_channel_tracking_state", {});
+
+        (response.direct_message_channels || []).forEach((channel) => {
+          this._updateUserTrackingState(channel);
+        });
+        (response.public_channels || []).forEach((channel) => {
+          this._updateUserTrackingState(channel);
+        });
+      })
+      .finally(() => {
+        this.userChatChannelTrackingStateChanged();
+      });
   },
 
   _refreshChannels() {
@@ -640,7 +658,7 @@ export default Service.extend({
         const trackingState =
           this.currentUser.chat_channel_tracking_state[channel.id];
         if (busData.message_id > (trackingState.chat_message_id || 0)) {
-          trackingState.unread_count = trackingState.unread_count + 1;
+          trackingState.set("unread_count", trackingState.unread_count + 1);
         }
       }
       this.userChatChannelTrackingStateChanged();
@@ -662,8 +680,10 @@ export default Service.extend({
       const trackingState =
         this.currentUser.chat_channel_tracking_state[channel.id];
       if (trackingState) {
-        trackingState.unread_mentions =
-          (trackingState.unread_mentions || 0) + 1;
+        trackingState.set(
+          "unread_mentions",
+          (trackingState.unread_mentions || 0) + 1
+        );
         this.userChatChannelTrackingStateChanged();
       }
     });
@@ -733,9 +753,9 @@ export default Service.extend({
         const trackingState =
           this.currentUser.chat_channel_tracking_state[busData.chat_channel_id];
         if (trackingState) {
-          trackingState.chat_message_id = busData.chat_message_id;
-          trackingState.unread_count = 0;
-          trackingState.unread_mentions = 0;
+          trackingState.set("chat_message_id", busData.chat_message_id);
+          trackingState.set("unread_count", 0);
+          trackingState.set("unread_mentions", 0);
           this.userChatChannelTrackingStateChanged();
         }
       }
@@ -752,7 +772,7 @@ export default Service.extend({
     const trackingState =
       this.currentUser.chat_channel_tracking_state[channelId];
     if (trackingState) {
-      trackingState.unread_count = 0;
+      trackingState.set("unread_count", 0);
       this.userChatChannelTrackingStateChanged();
     }
   },
@@ -808,13 +828,14 @@ export default Service.extend({
   },
 
   _updateUserTrackingState(channel) {
-    this.currentUser.chat_channel_tracking_state[channel.id] = {
-      muted: channel.muted,
-      unread_count: channel.unread_count,
-      unread_mentions: channel.unread_mentions,
-      chatable_type: channel.chatable_type,
-      chat_message_id: channel.last_read_message_id,
-    };
+    this.currentUser.chat_channel_tracking_state[channel.id] =
+      EmberObject.create({
+        muted: channel.muted,
+        unread_count: channel.unread_count,
+        unread_mentions: channel.unread_mentions,
+        chatable_type: channel.chatable_type,
+        chat_message_id: channel.last_read_message_id,
+      });
   },
 
   upsertDmChannelForUser(channel, user) {

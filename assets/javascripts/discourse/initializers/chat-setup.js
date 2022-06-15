@@ -146,6 +146,7 @@ export default {
   @bind
   _handleFocusChanged(hasFocus) {
     if (!hasFocus) {
+      _lastForcedRefreshAt = Date.now();
       return;
     }
 
@@ -157,6 +158,6 @@ export default {
     }
 
     _lastForcedRefreshAt = Date.now();
-    this.chatService.forceRefreshChannels();
+    this.chatService.refreshTrackingState();
   },
 };

@@ -153,6 +153,14 @@ describe DiscourseChat::ChatMailer do
       expect(Jobs::UserEmail.jobs.size).to eq(1)
     end
 
+    it 'skips users when the message is older than 1 week' do
+      @chat_message.update!(created_at: 1.5.weeks.ago)
+
+      described_class.send_unread_mentions_summary
+
+      asert_summary_skipped
+    end
+
     describe 'update the user membership after we send the email' do
       before { Jobs.run_immediately! }
 

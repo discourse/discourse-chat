@@ -7,9 +7,9 @@ describe DiscourseChat::MessageMover do
   fab!(:source_channel) { Fabricate(:chat_channel) }
   fab!(:destination_channel) { Fabricate(:chat_channel) }
 
-  let!(:message1) { Fabricate(:chat_message, chat_channel: source_channel, message: "the first to be moved") }
-  let!(:message2) { Fabricate(:chat_message, chat_channel: source_channel, message: "message deux @testmovechat") }
-  let!(:message3) { Fabricate(:chat_message, chat_channel: source_channel, message: "the third message") }
+  let!(:message1) { Fabricate(:chat_message, chat_channel: source_channel, created_at: 3.minutes.ago, message: "the first to be moved") }
+  let!(:message2) { Fabricate(:chat_message, chat_channel: source_channel, created_at: 2.minutes.ago, message: "message deux @testmovechat") }
+  let!(:message3) { Fabricate(:chat_message, chat_channel: source_channel, created_at: 1.minute.ago, message: "the third message") }
   let!(:message4) { Fabricate(:chat_message, chat_channel: destination_channel) }
   let!(:message5) { Fabricate(:chat_message, chat_channel: destination_channel) }
   let!(:message6) { Fabricate(:chat_message, chat_channel: destination_channel) }

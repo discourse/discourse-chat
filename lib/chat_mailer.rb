@@ -41,6 +41,7 @@ class DiscourseChat::ChatMailer
       .joins('LEFT OUTER JOIN chat_mentions c_mentions ON c_mentions.chat_message_id = c_msg.id')
       .where(uccm: { following: true })
       .where('c_msg.deleted_at IS NULL AND c_msg.user_id <> users.id')
+      .where('c_msg.created_at > ?', 1.week.ago)
       .where(
         <<~SQL
           (c_mentions.user_id = uccm.user_id OR cc.chatable_type = 'DirectMessageChannel') AND

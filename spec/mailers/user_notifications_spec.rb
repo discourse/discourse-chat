@@ -123,6 +123,14 @@ describe UserNotifications do
 
           expect(email.to).to contain_exactly(@user.email)
         end
+
+        it "doesn't return an email if the mention is older than 1 week" do
+          @chat_message.update!(created_at: 1.5.weeks.ago)
+
+          email = described_class.chat_summary(@user, {})
+
+          expect(email.to).to be_blank
+        end
       end
 
       describe 'mail contents' do

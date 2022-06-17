@@ -8,6 +8,7 @@ module DiscourseChat::UserNotificationsExtension
     @messages = ChatMessage
       .joins(:user, :chat_channel)
       .where.not(user: user)
+      .where('chat_messages.created_at > ?', 1.week.ago)
       .joins('LEFT OUTER JOIN chat_mentions cm ON cm.chat_message_id = chat_messages.id')
       .joins('INNER JOIN user_chat_channel_memberships uccm ON uccm.chat_channel_id = chat_channels.id')
       .where(uccm: { following: true, user_id: user.id })

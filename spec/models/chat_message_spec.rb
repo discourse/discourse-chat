@@ -58,7 +58,7 @@ describe ChatMessage do
     it 'supports code rule' do
       cooked = ChatMessage.cook("    something = test")
 
-      expect(cooked).to eq("<pre><code>something = test</code></pre>")
+      expect(cooked).to eq("<pre><code>something = test\n</code></pre>")
     end
 
     it 'supports blockquote rule' do

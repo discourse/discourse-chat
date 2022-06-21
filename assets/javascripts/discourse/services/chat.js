@@ -865,7 +865,7 @@ export default Service.extend({
   },
 
   _saveDraft(channelId, draft) {
-    const data = { channel_id: channelId };
+    const data = { chat_channel_id: channelId };
     if (draft) {
       data.data = JSON.stringify(draft);
     }

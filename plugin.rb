@@ -2,7 +2,7 @@
 
 # name: discourse-chat
 # about: Chat inside Discourse
-# version: 0.3
+# version: 0.4
 # authors: Kane York, Mark VanLandingham, Martin Brennan, Joffrey Jaffeux
 # url: https://github.com/discourse/discourse-chat
 # transpile_js: true

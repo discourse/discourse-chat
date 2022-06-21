@@ -205,7 +205,22 @@ RSpec.describe DiscourseChat::ChatController do
   end
 
   describe "#enable_chat" do
-    describe "for topic" do
+    context "topic as chatable" do
+      it "ensures created channel can be seen" do
+        Guardian.any_instance.expects(:can_see_chat_channel?)
+
+        sign_in(admin)
+        post "/chat/enable.json", params: { chatable_type: "topic", chatable_id: topic.id }
+      end
+
+      it "ensures existing channel can be seen" do
+        channel = Fabricate(:chat_channel, chatable: topic)
+        Guardian.any_instance.expects(:can_see_chat_channel?).with(channel)
+
+        sign_in(admin)
+        post "/chat/enable.json", params: { chatable_type: "topic", chatable_id: topic.id }
+      end
+
       it "errors for non-staff" do
         sign_in(user)
         Fabricate(:chat_channel, chatable: topic)
@@ -226,6 +241,7 @@ RSpec.describe DiscourseChat::ChatController do
 
       it "Enables chat and follows the channel" do
         sign_in(admin)
+
         expect {
           post "/chat/enable.json", params: { chatable_type: "topic", chatable_id: topic.id }
         }.to change {
@@ -236,10 +252,40 @@ RSpec.describe DiscourseChat::ChatController do
         expect(topic.reload.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]).to be true
       end
     end
+
+    context "category as chatable" do
+      it "ensures created channel can be seen" do
+        category = Fabricate(:category)
+        channel = Fabricate(:chat_channel, chatable: category)
+
+        Guardian.any_instance.expects(:can_see_chat_channel?).with(channel)
+
+        sign_in(admin)
+        post "/chat/enable.json", params: { chatable_type: "category", chatable_id: category.id }
+      end
+
+      it "ensures existing channel can be seen" do
+        category = Fabricate(:category)
+
+        Guardian.any_instance.expects(:can_see_chat_channel?)
+
+        sign_in(admin)
+        post "/chat/enable.json", params: { chatable_type: "category", chatable_id: category.id }
+      end
+    end
   end
 
   describe "#disable_chat" do
-    describe "for topic" do
+    context "topic as chatable" do
+      it "ensures topic can be seen" do
+        channel = Fabricate(:chat_channel, chatable: topic)
+
+        Guardian.any_instance.expects(:can_see_chat_channel?).with(channel)
+
+        sign_in(admin)
+        post "/chat/disable.json", params: { chatable_type: "topic", chatable_id: topic.id }
+      end
+
       it "errors for non-staff" do
         sign_in(user)
         Fabricate(:chat_channel, chatable: topic)
@@ -269,6 +315,19 @@ RSpec.describe DiscourseChat::ChatController do
         expect(response.status).to eq(200)
         expect(chat_channel.reload.deleted_by_id).to eq(admin.id)
         expect(topic.reload.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]).to be_nil
+      end
+    end
+
+    context "category as chatable" do
+      it "ensures category can be seen" do
+        category = Fabricate(:category)
+        channel = Fabricate(:chat_channel, chatable: category)
+        message = Fabricate(:chat_message, chat_channel: channel)
+
+        Guardian.any_instance.expects(:can_see_chat_channel?).with(channel)
+
+        sign_in(admin)
+        post "/chat/disable.json", params: { chatable_type: "category", chatable_id: category.id }
       end
     end
   end
@@ -346,9 +405,13 @@ RSpec.describe DiscourseChat::ChatController do
       fab!(:chatable) { Fabricate(:direct_message_channel, users: [user1, user2]) }
       fab!(:direct_message_channel) { Fabricate(:chat_channel, chatable: chatable) }
 
-      it 'forces users to follow the channel' do
+      def create_memberships
         UserChatChannelMembership.create!(user: user1, chat_channel: direct_message_channel, following: true, desktop_notification_level: UserChatChannelMembership::NOTIFICATION_LEVELS[:always], mobile_notification_level: UserChatChannelMembership::NOTIFICATION_LEVELS[:always])
         UserChatChannelMembership.create!(user: user2, chat_channel: direct_message_channel, following: false, desktop_notification_level: UserChatChannelMembership::NOTIFICATION_LEVELS[:always], mobile_notification_level: UserChatChannelMembership::NOTIFICATION_LEVELS[:always])
+      end
+
+      it 'forces users to follow the channel' do
+        create_memberships
 
         expect(UserChatChannelMembership.find_by(user_id: user2.id).following).to be false
 
@@ -358,6 +421,20 @@ RSpec.describe DiscourseChat::ChatController do
         post "/chat/#{direct_message_channel.id}.json", params: { message: message }
 
         expect(UserChatChannelMembership.find_by(user_id: user2.id).following).to be true
+      end
+
+      it 'errors when the user is not part of the direct message channel' do
+        create_memberships
+
+        DirectMessageUser.find_by(user: user1, direct_message_channel: chatable).destroy!
+        sign_in(user1)
+        post "/chat/#{direct_message_channel.id}.json", params: { message: message }
+        expect(response.status).to eq(403)
+
+        UserChatChannelMembership.find_by(user_id: user2.id).update!(following: true)
+        sign_in(user2)
+        post "/chat/#{direct_message_channel.id}.json", params: { message: message }
+        expect(response.status).to eq(200)
       end
     end
   end
@@ -698,7 +775,7 @@ RSpec.describe DiscourseChat::ChatController do
     describe 'when the user is a channel member' do
       fab!(:membership) { Fabricate(:user_chat_channel_membership, chat_channel: chat_channel, user: user) }
 
-      context 'message_id param doesn’t link to a message of the channel' do
+      context "message_id param doesn't link to a message of the channel" do
         it 'raises a not found' do
           put "/chat/#{chat_channel.id}/read/-999.json"
 
@@ -1073,14 +1150,137 @@ RSpec.describe DiscourseChat::ChatController do
   describe "#set_draft" do
     fab!(:chat_channel) { Fabricate(:chat_channel) }
 
-    it "can create and destroy chat drafts" do
+    before do
       sign_in(user)
+    end
 
-      expect { post "/chat/drafts.json", params: { channel_id: chat_channel.id, data: "{}" } }
+    it "can create and destroy chat drafts" do
+      expect { post "/chat/drafts.json", params: { chat_channel_id: chat_channel.id, data: "{}" } }
         .to change { ChatDraft.count }.by(1)
 
-      expect { post "/chat/drafts.json", params: { channel_id: chat_channel.id } }
+      expect { post "/chat/drafts.json", params: { chat_channel_id: chat_channel.id } }
         .to change { ChatDraft.count }.by(-1)
+    end
+
+    it "cannot create chat drafts for a category channel the user cannot access" do
+      group = Fabricate(:group)
+      private_category = Fabricate(:private_category, group: group)
+      chat_channel.update!(chatable: private_category)
+
+      post "/chat/drafts.json", params: { chat_channel_id: chat_channel.id, data: "{}" }
+      expect(response.status).to eq(403)
+
+      GroupUser.create!(user: user, group: group)
+      expect { post "/chat/drafts.json", params: { chat_channel_id: chat_channel.id, data: "{}" } }
+        .to change { ChatDraft.count }.by(1)
+    end
+
+    it "cannot create chat drafts for a topic channel the user cannot access" do
+      group = Fabricate(:group)
+      private_category = Fabricate(:private_category, group: group)
+      chat_channel.update!(chatable: Fabricate(:topic, category: private_category))
+
+      post "/chat/drafts.json", params: { chat_channel_id: chat_channel.id, data: "{}" }
+      expect(response.status).to eq(403)
+
+      GroupUser.create!(user: user, group: group)
+      expect { post "/chat/drafts.json", params: { chat_channel_id: chat_channel.id, data: "{}" } }
+        .to change { ChatDraft.count }.by(1)
+    end
+
+    it "cannot create chat drafts for a direct message channel the user cannot access" do
+      chat_channel.update!(chatable: Fabricate(:direct_message_channel))
+
+      post "/chat/drafts.json", params: { chat_channel_id: chat_channel.id, data: "{}" }
+      expect(response.status).to eq(403)
+
+      DirectMessageUser.create(user: user, direct_message_channel: chat_channel.chatable)
+      expect { post "/chat/drafts.json", params: { chat_channel_id: chat_channel.id, data: "{}" } }
+        .to change { ChatDraft.count }.by(1)
+    end
+  end
+
+  describe "#message_link" do
+    it "ensures message's channel can be seen" do
+      channel = Fabricate(:chat_channel, chatable: Fabricate(:topic))
+      message = Fabricate(:chat_message, chat_channel: channel)
+
+      Guardian.any_instance.expects(:can_see_chat_channel?).with(channel)
+
+      sign_in(Fabricate(:user))
+      get "/chat/message/#{message.id}.json"
+    end
+  end
+
+  describe "#lookup_message" do
+    let!(:message) { Fabricate(:chat_message, chat_channel: channel) }
+    let!(:channel) { Fabricate(:chat_channel, chatable: chatable) }
+    let!(:chatable) { Fabricate(:direct_message_channel) }
+    fab!(:user) { Fabricate(:user) }
+
+    before do
+      sign_in(user)
+    end
+
+    it "ensures message's channel can be seen" do
+      Guardian.any_instance.expects(:can_see_chat_channel?).with(channel)
+      get "/chat/lookup/#{message.id}.json"
+    end
+
+    context "when the chat channel is for a category" do
+      let!(:chatable) { Fabricate(:category) }
+
+      it "ensures the user can access that category" do
+        get "/chat/lookup/#{message.id}.json"
+        expect(response.status).to eq(200)
+        expect(response.parsed_body["chat_messages"][0]["id"]).to eq(message.id)
+
+        group = Fabricate(:group)
+        chatable.update!(read_restricted: true)
+        Fabricate(:category_group, group: group, category: chatable)
+        get "/chat/lookup/#{message.id}.json"
+        expect(response.status).to eq(403)
+
+        GroupUser.create!(user: user, group: group)
+        get "/chat/lookup/#{message.id}.json"
+        expect(response.status).to eq(200)
+        expect(response.parsed_body["chat_messages"][0]["id"]).to eq(message.id)
+      end
+    end
+
+    context "when the chat channel is for a direct message channel" do
+      let!(:chatable) { Fabricate(:direct_message_channel) }
+
+      it "ensures the user can access that direct message channel" do
+        get "/chat/lookup/#{message.id}.json"
+        expect(response.status).to eq(403)
+
+        DirectMessageUser.create!(user: user, direct_message_channel: chatable)
+        get "/chat/lookup/#{message.id}.json"
+        expect(response.status).to eq(200)
+        expect(response.parsed_body["chat_messages"][0]["id"]).to eq(message.id)
+      end
+    end
+
+    context "when the chat channel is for a topic" do
+      let!(:chatable) { Fabricate(:topic) }
+
+      it "ensures the user can access that topic" do
+        get "/chat/lookup/#{message.id}.json"
+        expect(response.status).to eq(200)
+        expect(response.parsed_body["chat_messages"][0]["id"]).to eq(message.id)
+
+        group = Fabricate(:group)
+        private_category = Fabricate(:private_category, group: group)
+        chatable.update!(category: private_category)
+        get "/chat/lookup/#{message.id}.json"
+        expect(response.status).to eq(403)
+
+        GroupUser.create!(user: user, group: group)
+        get "/chat/lookup/#{message.id}.json"
+        expect(response.status).to eq(200)
+        expect(response.parsed_body["chat_messages"][0]["id"]).to eq(message.id)
+      end
     end
   end
 

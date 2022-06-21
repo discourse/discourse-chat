@@ -79,15 +79,15 @@ describe DiscourseChat::GuardianExtensions do
       end
 
       context "for direct message channels" do
-        fab!(:dm_channel) { DirectMessageChannel.create! }
+        fab!(:chatable) { Fabricate(:direct_message_channel) }
+        fab!(:channel) { Fabricate(:chat_channel, chatable: chatable) }
 
-        before do
-          channel.update(chatable_type: "DirectMessageType", chatable: dm_channel)
+        it "returns false if the user is not part of the direct message" do
+          expect(guardian.can_see_chat_channel?(channel)).to eq(false)
         end
 
         it "returns true if the user is part of the direct message" do
-          expect(guardian.can_see_chat_channel?(channel)).to eq(false)
-          DirectMessageUser.create(user: user, direct_message_channel_id: dm_channel.id)
+          DirectMessageUser.create!(user: user, direct_message_channel_id: chatable.id)
           expect(guardian.can_see_chat_channel?(channel)).to eq(true)
         end
       end

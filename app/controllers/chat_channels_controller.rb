@@ -1,6 +1,13 @@
 # frozen_string_literal: true
 
 class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
+  before_action :set_channel_and_chatable_with_access_check, except: [
+    :index,
+    :all,
+    :create,
+    :search
+  ]
+
   def index
     structured = DiscourseChat::ChatChannelFetcher.structured(guardian)
     render_serialized(structured, ChatChannelIndexSerializer, root: false)
@@ -17,13 +24,10 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
   end
 
   def show
-    set_channel_and_chatable
     render_serialized(@chat_channel, ChatChannelSerializer)
   end
 
   def follow
-    params.require(:chat_channel_id)
-
     membership = UserChatChannelMembership
       .includes(:chat_channel)
       .find_or_create_by(
@@ -47,8 +51,6 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
   end
 
   def unfollow
-    params.require(:chat_channel_id)
-
     membership = UserChatChannelMembership
       .includes(:chat_channel)
       .find_by(
@@ -66,7 +68,6 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
 
   def notification_settings
     params.require([
-      :chat_channel_id,
       :muted,
       :desktop_notification_level,
       :mobile_notification_level
@@ -198,22 +199,18 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
   end
 
   def archive
-    params.require(:chat_channel_id)
     params.require(:type)
 
     if params[:type] == "newTopic" ? params[:title].blank? : params[:topic_id].blank?
       raise Discourse::InvalidParameters
     end
 
-    chat_channel = ChatChannel.find_by(id: params[:chat_channel_id])
-    raise Discourse::NotFound if chat_channel.blank?
-
-    if !guardian.can_change_channel_status?(chat_channel, :read_only)
+    if !guardian.can_change_channel_status?(@chat_channel, :read_only)
       raise Discourse::InvalidAccess.new(I18n.t("chat.errors.channel_cannot_be_archived"))
     end
 
     DiscourseChat::ChatChannelArchiveService.begin_archive_process(
-      chat_channel: chat_channel,
+      chat_channel: @chat_channel,
       acting_user: current_user,
       topic_params: {
         topic_id: params[:topic_id],
@@ -227,23 +224,18 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
   end
 
   def retry_archive
-    params.require(:chat_channel_id)
+    guardian.ensure_can_change_channel_status!(@chat_channel, :archived)
 
-    chat_channel = ChatChannel.find_by(id: params[:chat_channel_id])
-    raise Discourse::NotFound if chat_channel.blank?
-    guardian.ensure_can_change_channel_status!(chat_channel, :archived)
-
-    archive = chat_channel.chat_channel_archive
+    archive = @chat_channel.chat_channel_archive
     raise Discourse::NotFound if archive.blank?
     raise Discourse::InvalidAccess if !archive.failed?
 
-    DiscourseChat::ChatChannelArchiveService.retry_archive_process(chat_channel: chat_channel)
+    DiscourseChat::ChatChannelArchiveService.retry_archive_process(chat_channel: @chat_channel)
 
     render json: success_json
   end
 
   def change_status
-    params.require(:chat_channel_id)
     params.require(:status)
 
     # we only want to use this endpoint for open/closed status changes,
@@ -254,36 +246,29 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
       raise Discourse::InvalidParameters
     end
 
-    chat_channel = ChatChannel.find_by(id: params[:chat_channel_id])
-    raise Discourse::NotFound if chat_channel.blank?
-
-    guardian.ensure_can_change_channel_status!(chat_channel, params[:status].to_sym)
-    chat_channel.public_send("#{params[:status]}!", current_user)
+    guardian.ensure_can_change_channel_status!(@chat_channel, params[:status].to_sym)
+    @chat_channel.public_send("#{params[:status]}!", current_user)
 
     render json: success_json
   end
 
   def destroy
-    params.require(:chat_channel_id)
     params.require(:channel_name_confirmation)
-
-    chat_channel = ChatChannel.find_by(id: params[:chat_channel_id])
-    raise Discourse::NotFound if chat_channel.blank?
 
     guardian.ensure_can_delete_chat_channel!
 
-    if chat_channel.title(current_user).downcase != params[:channel_name_confirmation].downcase
+    if @chat_channel.title(current_user).downcase != params[:channel_name_confirmation].downcase
       raise Discourse::InvalidParameters.new(:channel_name_confirmation)
     end
 
     begin
       ChatChannel.transaction do
-        chat_channel.trash!(current_user)
+        @chat_channel.trash!(current_user)
         StaffActionLogger.new(current_user).log_custom(
           "chat_channel_delete",
           {
-            chat_channel_id: chat_channel.id,
-            chat_channel_name: chat_channel.title(current_user)
+            chat_channel_id: @chat_channel.id,
+            chat_channel_name: @chat_channel.title(current_user)
           }
         )
       end
@@ -291,7 +276,7 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
       return render_json_error(I18n.t("chat.errors.delete_channel_failed"))
     end
 
-    Jobs.enqueue(:chat_channel_delete, { chat_channel_id: chat_channel.id })
+    Jobs.enqueue(:chat_channel_delete, { chat_channel_id: @chat_channel.id })
     render json: success_json
   end
 end

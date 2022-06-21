@@ -7,6 +7,9 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
   FUTURE = 'future'
   CHAT_DIRECTIONS = [PAST, FUTURE]
 
+  # Other endpoints use set_channel_and_chatable_with_access_check, but
+  # these endpoints require a standalone find because they need to be
+  # able to get deleted channels and recover them.
   before_action :find_chatable, only: [:enable_chat, :disable_chat]
   before_action :find_chat_message, only: [
     :delete,
@@ -16,6 +19,16 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     :rebake,
     :message_link
   ]
+  before_action :set_channel_and_chatable_with_access_check, except: [
+    :respond,
+    :enable_chat,
+    :disable_chat,
+    :message_link,
+    :lookup_message,
+    :set_user_chat_status,
+    :dismiss_retention_reminder,
+    :flag
+  ]
 
   def respond
     render
@@ -23,12 +36,18 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
 
   def enable_chat
     chat_channel = ChatChannel.with_deleted.find_by(chatable: @chatable)
+
+    if chat_channel
+      guardian.ensure_can_see_chat_channel!(chat_channel)
+    end
+
     if chat_channel && chat_channel.trashed?
       chat_channel.recover!
     elsif chat_channel
       return render_json_error I18n.t("chat.already_enabled")
     else
       chat_channel = ChatChannel.new(chatable: @chatable)
+      guardian.ensure_can_see_chat_channel!(chat_channel)
     end
 
     success = chat_channel.save
@@ -57,6 +76,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
 
   def disable_chat
     chat_channel = ChatChannel.with_deleted.find_by(chatable: @chatable)
+    guardian.ensure_can_see_chat_channel!(chat_channel)
     if chat_channel.trashed?
       return render json: success_json
     end
@@ -82,7 +102,6 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
   def create_message
     DiscourseChat::ChatMessageRateLimiter.run!(current_user)
 
-    set_channel_and_chatable
     @user_chat_channel_membership = UserChatChannelMembership.find_by(
       chat_channel: @chat_channel,
       user: current_user,
@@ -145,8 +164,6 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
   end
 
   def update_user_last_read
-    set_channel_and_chatable
-
     membership = UserChatChannelMembership.find_by(user: current_user, chat_channel: @chat_channel, following: true)
     raise Discourse::NotFound if membership.nil?
 
@@ -180,7 +197,6 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
   end
 
   def messages
-    set_channel_and_chatable
     page_size = params[:page_size]&.to_i || 1000
     direction = params[:direction].to_s
     message_id = params[:message_id]
@@ -226,7 +242,6 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
 
   def react
     params.require([:message_id, :emoji, :react_action])
-    set_channel_and_chatable
     guardian.ensure_can_react!
 
     DiscourseChat::ChatMessageReactor.new(
@@ -241,7 +256,6 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
   end
 
   def delete
-    set_channel_and_chatable
     guardian.ensure_can_delete_chat!(@message, @chatable)
 
     updated = @message.trash!(current_user)
@@ -274,20 +288,18 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
   def message_link
     return render_404 if @message.blank? || @message.deleted_at.present?
     return render_404 if @message.chat_channel.blank?
-    guardian.ensure_can_see!(@message.chat_channel.chatable)
+    set_channel_and_chatable_with_access_check(chat_channel_id: @message.chat_channel_id)
     render json: success_json.merge(
-      chat_channel_id: @message.chat_channel.id,
-      chat_channel_title: @message.chat_channel.title(current_user)
+      chat_channel_id: @chat_channel.id,
+      chat_channel_title: @chat_channel.title(current_user)
     )
   end
 
   def lookup_message
-    chat_channel = @message.chat_channel
-    chatable = chat_channel.chatable
-    guardian.ensure_can_see!(chatable)
+    set_channel_and_chatable_with_access_check(chat_channel_id: @message.chat_channel_id)
 
-    messages = preloaded_chat_message_query.where(chat_channel: chat_channel)
-    messages = messages.with_deleted if guardian.can_moderate_chat?(chatable)
+    messages = preloaded_chat_message_query.where(chat_channel: @chat_channel)
+    messages = messages.with_deleted if guardian.can_moderate_chat?(@chatable)
     past_messages = messages
       .where("created_at < ?", @message.created_at)
       .order(created_at: :desc)
@@ -302,7 +314,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     can_load_more_future = future_messages.count == FUTURE_MESSAGE_LIMIT
     messages = [past_messages.reverse, [@message], future_messages].reduce([], :concat)
     chat_view = ChatView.new(
-      chat_channel: chat_channel,
+      chat_channel: @chat_channel,
       chat_messages: messages,
       user: current_user,
       can_load_more_past: can_load_more_past,
@@ -321,7 +333,6 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
   def invite_users
     params.require(:user_ids)
 
-    set_channel_and_chatable
     users = User
       .includes(:groups)
       .joins(:user_option)
@@ -366,11 +377,9 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
   def quote_messages
     params.require(:message_ids)
 
-    chat_channel = DiscourseChat::ChatChannelFetcher.find_with_access_check(params[:chat_channel_id], guardian)
-
     message_ids = params[:message_ids].map(&:to_i)
     markdown = ChatTranscriptService.new(
-      chat_channel, current_user, messages_or_ids: message_ids
+      @chat_channel, current_user, messages_or_ids: message_ids
     ).generate_markdown
     render json: success_json.merge(markdown: markdown)
   end
@@ -379,14 +388,13 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     params.require(:message_ids)
     params.require(:destination_channel_id)
 
-    chat_channel = DiscourseChat::ChatChannelFetcher.find_with_access_check(params[:chat_channel_id], guardian)
-    raise Discourse::InvalidAccess if !guardian.can_move_chat_messages?(chat_channel)
+    raise Discourse::InvalidAccess if !guardian.can_move_chat_messages?(@chat_channel)
     destination_channel = DiscourseChat::ChatChannelFetcher.find_with_access_check(params[:destination_channel_id], guardian)
 
     begin
       message_ids = params[:message_ids].map(&:to_i)
       moved_messages = DiscourseChat::MessageMover.new(
-        acting_user: current_user, source_channel: chat_channel, message_ids: message_ids
+        acting_user: current_user, source_channel: @chat_channel, message_ids: message_ids
       ).move_to_channel(destination_channel)
     rescue DiscourseChat::MessageMover::NoMessagesFound, DiscourseChat::MessageMover::InvalidChannel => err
       return render_json_error(err.message)
@@ -406,6 +414,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
       .find_by(id: params[:chat_message_id])
 
     raise Discourse::InvalidParameters unless chat_message
+    set_channel_and_chatable_with_access_check(chat_channel_id: chat_message.chat_channel_id)
     guardian.ensure_can_flag_chat_message!(chat_message)
 
     if chat_message.reviewable_score_for(current_user).exists?
@@ -418,15 +427,13 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
   end
 
   def set_draft
-    channel_id = params.require(:channel_id)
-
     if params[:data].present?
       ChatDraft
-        .find_or_initialize_by(user: current_user, chat_channel_id: channel_id)
+        .find_or_initialize_by(user: current_user, chat_channel_id: @chat_channel.id)
         .update(data: params[:data])
     else
       ChatDraft
-        .where(user: current_user, chat_channel_id: channel_id)
+        .where(user: current_user, chat_channel_id: @chat_channel.id)
         .destroy_all
     end
 
@@ -453,8 +460,6 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
                      when "category" then Category
     end
     @chatable = chatable_class.find_by(id: params[:chatable_id])
-
-    guardian.ensure_can_see!(@chatable)
     guardian.ensure_can_moderate_chat!(@chatable)
   end
 

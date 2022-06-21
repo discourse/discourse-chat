@@ -11,38 +11,14 @@ class DiscourseChat::ChatBaseController < ::ApplicationController
     guardian.ensure_can_chat!(current_user)
   end
 
-  def set_channel_and_chatable
-    id_or_name = params[:chat_channel_id]
-    begin
-      id_or_name = Integer(id_or_name)
-    rescue ArgumentError
+  def set_channel_and_chatable_with_access_check(chat_channel_id: nil)
+    if chat_channel_id.blank?
+      params.require(:chat_channel_id)
     end
-
-    base_channel_relation = ChatChannel
-      .includes(:chatable)
-      .joins("LEFT JOIN topics ON topics.id = chat_channels.chatable_id AND chat_channels.chatable_type = 'Topic'")
-      .joins("LEFT JOIN categories ON categories.id = chat_channels.chatable_id AND chat_channels.chatable_type = 'Category'")
-
-    if current_user.staff?
-      base_channel_relation = base_channel_relation.includes(:chat_channel_archive)
-    end
-
-    if id_or_name.is_a? Integer
-      @chat_channel = base_channel_relation.find_by(id: id_or_name)
-    else
-      @chat_channel = base_channel_relation.find_by(
-        "(
-          CASE WHEN chatable_type = 'Category' THEN LOWER(categories.name) = :name
-          WHEN chatable_type = 'Topic' THEN LOWER(topics.fancy_title) = :name
-          END
-        )
-        OR LOWER(chat_channels.name) = :name", name: id_or_name.downcase
-      )
-    end
-
-    raise Discourse::NotFound unless @chat_channel
-
+    id_or_name = chat_channel_id || params[:chat_channel_id]
+    @chat_channel = DiscourseChat::ChatChannelFetcher.find_with_access_check(
+      id_or_name, guardian
+    )
     @chatable = @chat_channel.chatable
-    guardian.ensure_can_see_chat_channel!(@chat_channel)
   end
 end

@@ -184,8 +184,34 @@ module DiscourseChat::ChatChannelFetcher
     unread_counts
   end
 
-  def self.find_with_access_check(channel_id, guardian)
-    chat_channel = ChatChannel.find_by(id: channel_id)
+  def self.find_with_access_check(channel_id_or_name, guardian)
+    begin
+      channel_id_or_name = Integer(channel_id_or_name)
+    rescue ArgumentError
+    end
+
+    base_channel_relation = ChatChannel
+      .includes(:chatable)
+      .joins("LEFT JOIN topics ON topics.id = chat_channels.chatable_id AND chat_channels.chatable_type = 'Topic'")
+      .joins("LEFT JOIN categories ON categories.id = chat_channels.chatable_id AND chat_channels.chatable_type = 'Category'")
+
+    if guardian.user.staff?
+      base_channel_relation = base_channel_relation.includes(:chat_channel_archive)
+    end
+
+    if channel_id_or_name.is_a? Integer
+      chat_channel = base_channel_relation.find_by(id: channel_id_or_name)
+    else
+      chat_channel = base_channel_relation.find_by(
+        "(
+          CASE WHEN chatable_type = 'Category' THEN LOWER(categories.name) = :name
+          WHEN chatable_type = 'Topic' THEN LOWER(topics.fancy_title) = :name
+          END
+        )
+        OR LOWER(chat_channels.name) = :name", name: channel_id_or_name.downcase
+      )
+    end
+
     raise Discourse::NotFound if chat_channel.blank?
     raise Discourse::InvalidAccess if !guardian.can_see_chat_channel?(chat_channel)
     chat_channel

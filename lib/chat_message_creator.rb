@@ -54,14 +54,6 @@ class DiscourseChat::ChatMessageCreator
 
   private
 
-  def validate_user_permissions!
-    return if @guardian.can_create_chat_message!
-
-    raise StandardError.new(
-      I18n.t("chat.errors.user_cannot_send_message")
-    )
-  end
-
   def validate_channel_status!
     return if @guardian.can_create_channel_message?(@chat_channel)
 

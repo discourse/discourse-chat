@@ -294,15 +294,4 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     Jobs.enqueue(:chat_channel_delete, { chat_channel_id: chat_channel.id })
     render json: success_json
   end
-
-  private
-
-  def render_channel_for_chatable(channel)
-    if channel
-      guardian.ensure_can_see_chat_channel!(channel)
-      render_serialized(channel, ChatChannelSerializer)
-    else
-      render json: { chat_channel: nil }
-    end
-  end
 end

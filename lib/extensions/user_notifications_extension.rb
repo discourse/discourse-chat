@@ -33,11 +33,22 @@ module DiscourseChat::UserNotificationsExtension
       @display_usernames = SiteSetting.prioritize_username_in_ux || !SiteSetting.enable_names
 
       build_summary_for(user)
+      @preferences_path = "#{Discourse.base_url}/my/preferences/chat"
+
+      # TODO(roman): Remove after the 2.9 release
+      add_unsubscribe_link = UnsubscribeKey.respond_to?(:get_unsubscribe_strategy_for)
+
       opts = {
         from_alias: I18n.t('user_notifications.chat_summary.from', site_name: Email.site_title),
         subject: I18n.t('user_notifications.chat_summary.subject', count: @messages.size, email_prefix: @email_prefix, date: short_date(Time.now)),
-        add_unsubscribe_link: false,
+        add_unsubscribe_link: add_unsubscribe_link
       }
+
+      if add_unsubscribe_link
+        unsubscribe_key = UnsubscribeKey.create_key_for(@user, 'chat_summary')
+        @unsubscribe_link = "#{Discourse.base_url}/email/unsubscribe/#{unsubscribe_key}"
+        opts[:unsubscribe_url] = @unsubscribe_link
+      end
 
       build_email(user.email, opts)
     end

@@ -139,7 +139,8 @@ en:
       subject:
         one: "[%{email_prefix}] New chat message"
         other: "[%{email_prefix}] New chat messages"
-      unsubscribe: "This chat summary is sent from %{site_link} when you are away. Change your %{email_preferences_link}."
+      unsubscribe: "This chat summary is sent from %{site_link} when you are away. Change your %{email_preferences_link}, or %{unsubscribe_link} to unsubscribe."
+      unsubscribe_no_link: "This chat summary is sent from %{site_link} when you are away. Change your %{email_preferences_link}."
       view_messages:
         one: "View message"
         other: "View %{count} messages"
@@ -147,3 +148,9 @@ en:
         one: "View %{count} more message"
         other: "View %{count} more messages"
       your_chat_settings: "chat email frequency preference"
+
+  unsubscribe:
+    chat_summary:
+      select_title: "Set chat summary emails frequency to:"
+      never: Never
+      when_away: Only when away

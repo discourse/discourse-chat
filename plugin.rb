@@ -610,4 +610,10 @@ after_initialize do
     fragment.css('.chat-summary-header').each { |element| element[:dm] = 'header' }
     fragment.css('.chat-summary-content').each { |element| element[:dm] = 'body' }
   end
+
+  # TODO(roman): Remove `respond_to?` after 2.9 release
+  if respond_to?(:register_email_unsubscriber)
+    load File.expand_path('../lib/email_controller_helper/chat_summary_unsubscriber.rb', __FILE__)
+    register_email_unsubscriber('chat_summary', EmailControllerHelper::ChatSummaryUnsubscriber)
+  end
 end

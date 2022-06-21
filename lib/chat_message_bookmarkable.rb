@@ -19,6 +19,7 @@ class ChatMessageBookmarkable < BaseBookmarkable
     user.bookmarks_of_type("ChatMessage")
       .joins(
         "INNER JOIN chat_messages ON chat_messages.id = bookmarks.bookmarkable_id
+          AND chat_messages.deleted_at IS NULL
           AND bookmarks.bookmarkable_type = 'ChatMessage'"
       )
       .where("chat_messages.chat_channel_id IN (?)", accessible_channel_ids)

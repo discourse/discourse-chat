@@ -59,6 +59,12 @@ describe ChatMessageBookmarkable do
       guardian = Guardian.new(user)
       expect(subject.perform_list_query(user, guardian).map(&:id)).to match_array([bookmark1.id, bookmark2.id])
     end
+
+    it "does not return bookmarks for deleted messages" do
+      message1.trash!
+      guardian = Guardian.new(user)
+      expect(subject.perform_list_query(user, guardian).map(&:id)).to match_array([bookmark2.id])
+    end
   end
 
   describe "#perform_search_query" do

@@ -159,6 +159,7 @@ sv:
         archived_header: "Kanalen är arkiverad"
         archived: "Arkiverad"
         archive_failed: "Arkivering av kanalen misslyckades. %{completed}/%{total} meddelanden har arkiverats i <a target=\"_blank\" href=\"%{topic_url}\">destinationsämnet</a>. Tryck på försök igen för att försöka slutföra arkivet."
+        archive_completed: "Se det <a target=\"_blank\" href=\"%{topic_url}\">arkiverade ämnet</a>"
         closed_header: "Kanalen är stängd"
         closed: "Stängd"
         open_header: "Kanalen är öppen"

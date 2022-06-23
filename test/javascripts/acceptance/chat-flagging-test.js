@@ -13,10 +13,6 @@ import {
 import { test } from "qunit";
 import { click, settled, triggerEvent, visit } from "@ember/test-helpers";
 
-const chatSettled = async () => {
-  await settled();
-};
-
 acceptance("Discourse Chat - Flagging test", function (needs) {
   let defaultChatView;
   needs.user({
@@ -72,7 +68,7 @@ acceptance("Discourse Chat - Flagging test", function (needs) {
       chat_message_id: defaultChatView.chat_messages[0].id,
       reviewable_id: 1,
     });
-    await chatSettled();
+    await settled();
     const reviewableLink = query(
       `.chat-message-container[data-id='${defaultChatView.chat_messages[0].id}'] .chat-message-info__flag a`
     );

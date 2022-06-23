@@ -41,10 +41,6 @@ import * as ajaxlib from "discourse/lib/ajax";
 import I18n from "I18n";
 import { CHANNEL_STATUSES } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 
-const chatSettled = async () => {
-  await settled();
-};
-
 const baseChatPretenders = (server, helper) => {
   server.get("/chat/:chatChannelId/messages.json", () =>
     helper.response(generateChatView(loggedInUser()))
@@ -546,7 +542,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     this.chatService.set("chatWindowFullPage", false);
     await visit("/latest");
     this.appEvents.trigger("chat:toggle-open");
-    await chatSettled();
+    await settled();
     await click(".return-to-channels");
     await click(".chat-channel-row.chat-channel-9");
     await triggerEvent(".chat-message-container[data-id='174']", "mouseenter");
@@ -635,7 +631,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     });
 
     // Wait for DOM to rerender. Message should be un-staged
-    await chatSettled();
+    await settled();
 
     assert.equal(
       lastMessage.closest(".chat-message-container").dataset.id,
@@ -684,7 +680,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
       },
     });
 
-    await chatSettled();
+    await settled();
     assert.ok(
       query(
         ".chat-message-container[data-id='175'] .chat-message-text"
@@ -717,7 +713,7 @@ Widget.triangulate(arg: "test")
       },
     });
 
-    await chatSettled();
+    await settled();
 
     const messages = queryAll(".chat-message");
     const lastMessage = messages[messages.length - 1];
@@ -786,7 +782,7 @@ Widget.triangulate(arg: "test")
       message_id: 201,
       user_id: 2,
     });
-    await chatSettled();
+    await settled();
     assert.ok(
       exists(".header-dropdown-toggle.open-chat .chat-channel-unread-indicator")
     );
@@ -804,7 +800,7 @@ Widget.triangulate(arg: "test")
       message_id: 201,
       user_id: 2,
     });
-    await chatSettled();
+    await settled();
     assert.ok(
       exists(
         ".header-dropdown-toggle.open-chat .chat-channel-unread-indicator.urgent .number"
@@ -828,7 +824,7 @@ Widget.triangulate(arg: "test")
       message_id: 202,
       user_id: 2,
     });
-    await chatSettled();
+    await settled();
     assert.ok(
       exists(
         ".header-dropdown-toggle.open-chat .chat-channel-unread-indicator.urgent .number"
@@ -846,7 +842,7 @@ Widget.triangulate(arg: "test")
     publishToMessageBus("/chat/9/new-mentions", {
       message_id: 201,
     });
-    await chatSettled();
+    await settled();
     assert.ok(
       exists(
         ".header-dropdown-toggle.open-chat .chat-channel-unread-indicator.urgent .number"
@@ -973,7 +969,7 @@ Widget.triangulate(arg: "test")
       type: "reaction",
       chat_message_id: 176,
     });
-    await chatSettled();
+    await settled();
     const sneezingFaceReaction = lastMessage.querySelector(
       ".chat-message-reaction.sneezing_face"
     );
@@ -1004,7 +1000,7 @@ Widget.triangulate(arg: "test")
         cooked: "<p>hellloooo</p>",
       },
     });
-    await chatSettled();
+    await settled();
 
     assert.deepEqual(lastMessage.dataset.id, "202");
     await triggerEvent(lastMessage, "mouseenter");
@@ -1025,7 +1021,7 @@ Widget.triangulate(arg: "test")
       type: "reaction",
       chat_message_id: 202,
     });
-    await chatSettled();
+    await settled();
     await click(reaction);
     assert.notOk(
       lastMessage.querySelector(".chat-message-reaction.grin.reacted")
@@ -1043,7 +1039,7 @@ Widget.triangulate(arg: "test")
       ],
       chat_message_id: 176,
     });
-    await chatSettled();
+    await settled();
 
     assert.ok(
       exists(

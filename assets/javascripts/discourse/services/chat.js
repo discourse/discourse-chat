@@ -560,11 +560,12 @@ export default Service.extend({
 
     const newChannel = this.processChannel(channel);
     existingChannels.pushObject(newChannel);
-    this.currentUser.chat_channel_tracking_state[channel.id] = {
-      unread_count: 0,
-      unread_mentions: 0,
-      chatable_type: channel.chatable_type,
-    };
+    this.currentUser.chat_channel_tracking_state[channel.id] =
+      EmberObject.create({
+        unread_count: 1,
+        unread_mentions: 0,
+        chatable_type: channel.chatable_type,
+      });
     this.userChatChannelTrackingStateChanged();
     if (!channel.isDirectMessageChannel) {
       this.set("publicChannels", this.sortPublicChannels(this.publicChannels));

@@ -38,7 +38,7 @@
     {{#if secondaryButtons.length}}
       {{dropdown-select-box
         class="more-buttons"
-        options=(hash icon="ellipsis-v")
+        options=(hash icon="ellipsis-v" placement="bottom-end")
         content=secondaryButtons
         onChange=(action "handlesecondaryButtons")
       }}

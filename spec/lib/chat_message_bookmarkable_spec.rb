@@ -133,4 +133,36 @@ describe ChatMessageBookmarkable do
       expect(subject.can_see?(guardian, bookmark1)).to eq(true)
     end
   end
+
+  describe "#validate_before_create" do
+    it "raises InvalidAccess if the user cannot see the chat channel" do
+      expect { subject.validate_before_create(guardian, bookmark1.bookmarkable) }.not_to raise_error
+      bookmark1.bookmarkable.chat_channel.chatable.update(category: private_category)
+      expect { subject.validate_before_create(guardian, bookmark1.bookmarkable) }.to raise_error(Discourse::InvalidAccess)
+      private_category.groups.last.add(user)
+      bookmark1.reload
+      user.reload
+      guardian = Guardian.new(user)
+      expect { subject.validate_before_create(guardian, bookmark1.bookmarkable) }.not_to raise_error(Discourse::InvalidAccess)
+    end
+
+    it "raises InvalidAccess if the chat message is deleted" do
+      expect { subject.validate_before_create(guardian, bookmark1.bookmarkable) }.not_to raise_error
+      bookmark1.bookmarkable.trash!
+      bookmark1.reload
+      expect { subject.validate_before_create(guardian, bookmark1.bookmarkable) }.to raise_error(Discourse::InvalidAccess)
+    end
+  end
+
+  describe "#cleanup_deleted" do
+    it "deletes bookmarks for chat messages deleted more than 3 days ago" do
+      bookmark_post = Fabricate(:bookmark, bookmarkable: Fabricate(:post))
+      bookmark1.bookmarkable.trash!
+      bookmark1.bookmarkable.update!(deleted_at: 4.days.ago)
+      subject.cleanup_deleted
+      expect(Bookmark.exists?(id: bookmark1.id)).to eq(false)
+      expect(Bookmark.exists?(id: bookmark2.id)).to eq(true)
+      expect(Bookmark.exists?(id: bookmark_post.id)).to eq(true)
+    end
+  end
 end

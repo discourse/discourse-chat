@@ -29,6 +29,10 @@ class ChatMessageBookmarkable < BaseBookmarkable
     bookmarkable_search.call(bookmarks, "chat_messages.message ILIKE :q")
   end
 
+  def self.validate_before_create(guardian, bookmarkable)
+    raise Discourse::InvalidAccess if bookmarkable.blank? || !guardian.can_see_chat_channel?(bookmarkable.chat_channel)
+  end
+
   def self.reminder_handler(bookmark)
     bookmark.user.notifications.create!(
       notification_type: Notification.types[:bookmark_reminder],
@@ -50,5 +54,14 @@ class ChatMessageBookmarkable < BaseBookmarkable
 
   def self.can_see?(guardian, bookmark)
     guardian.can_see_chat_channel?(bookmark.bookmarkable.chat_channel)
+  end
+
+  def self.cleanup_deleted
+    DB.query(<<~SQL, grace_time: 3.days.ago)
+      DELETE FROM bookmarks b
+      USING chat_messages cm
+      WHERE b.bookmarkable_id = cm.id AND b.bookmarkable_type = 'ChatMessage'
+      AND (cm.deleted_at < :grace_time)
+    SQL
   end
 end

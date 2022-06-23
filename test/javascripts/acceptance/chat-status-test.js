@@ -1,5 +1,4 @@
 import { settled, visit } from "@ember/test-helpers";
-import { isLegacyEmber } from "discourse-common/config/environment";
 import { cloneJSON } from "discourse-common/lib/object";
 import {
   allChannels,
@@ -53,67 +52,64 @@ const baseChatPretenders = (server, helper) => {
   });
 };
 
-// TODO: Uncomment when we get rid of legacy ember
-if (!isLegacyEmber()) {
-  acceptance(
-    "Discourse Chat - Respond to /chat/channel-status archive message",
-    function (needs) {
-      needs.user({
-        admin: true,
-        moderator: true,
-        username: "tomtom",
-        id: 1,
-        can_chat: true,
-        has_chat_enabled: true,
+acceptance(
+  "Discourse Chat - Respond to /chat/channel-status archive message",
+  function (needs) {
+    needs.user({
+      admin: true,
+      moderator: true,
+      username: "tomtom",
+      id: 1,
+      can_chat: true,
+      has_chat_enabled: true,
+    });
+
+    needs.settings({
+      chat_enabled: true,
+      chat_allow_archiving_channels: true,
+    });
+
+    needs.pretender((server, helper) => {
+      baseChatPretenders(server, helper);
+    });
+
+    test("it clears any unread messages in the sidebar for the archived channel", async function (assert) {
+      await visit("/chat/channel/7/Uncategorized");
+      assert.ok(
+        exists("#chat-channel-row-4 .chat-channel-unread-indicator"),
+        "unread indicator shows for channel"
+      );
+
+      publishToMessageBus("/chat/channel-status", {
+        chat_channel_id: 4,
+        status: "archived",
       });
+      await settled();
+      assert.notOk(
+        exists("#chat-channel-row-4 .chat-channel-unread-indicator"),
+        "unread indicator should not show after archive status change"
+      );
+    });
 
-      needs.settings({
-        chat_enabled: true,
-        chat_allow_archiving_channels: true,
+    test("it changes the channel status in the header to archived", async function (assert) {
+      await visit("/chat/channel/4/Topic");
+      assert.notOk(
+        exists(".chat-channel-title-with-status .chat-channel-status"),
+        "channel status does not show if the channel is open"
+      );
+
+      publishToMessageBus("/chat/channel-status", {
+        chat_channel_id: 4,
+        status: "archived",
       });
-
-      needs.pretender((server, helper) => {
-        baseChatPretenders(server, helper);
-      });
-
-      test("it clears any unread messages in the sidebar for the archived channel", async function (assert) {
-        await visit("/chat/channel/7/Uncategorized");
-        assert.ok(
-          exists("#chat-channel-row-4 .chat-channel-unread-indicator"),
-          "unread indicator shows for channel"
-        );
-
-        publishToMessageBus("/chat/channel-status", {
-          chat_channel_id: 4,
-          status: "archived",
-        });
-        await settled();
-        assert.notOk(
-          exists("#chat-channel-row-4 .chat-channel-unread-indicator"),
-          "unread indicator should not show after archive status change"
-        );
-      });
-
-      test("it changes the channel status in the header to archived", async function (assert) {
-        await visit("/chat/channel/4/Topic");
-        assert.notOk(
-          exists(".chat-channel-title-with-status .chat-channel-status"),
-          "channel status does not show if the channel is open"
-        );
-
-        publishToMessageBus("/chat/channel-status", {
-          chat_channel_id: 4,
-          status: "archived",
-        });
-        await settled();
-        assert.strictEqual(
-          query(
-            ".chat-channel-title-with-status .chat-channel-status"
-          ).innerText.trim(),
-          I18n.t("chat.channel_status.archived_header"),
-          "channel status changes to archived"
-        );
-      });
-    }
-  );
-}
+      await settled();
+      assert.strictEqual(
+        query(
+          ".chat-channel-title-with-status .chat-channel-status"
+        ).innerText.trim(),
+        I18n.t("chat.channel_status.archived_header"),
+        "channel status changes to archived"
+      );
+    });
+  }
+);

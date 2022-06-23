@@ -1,5 +1,4 @@
 import { test } from "qunit";
-import { isLegacyEmber } from "discourse-common/config/environment";
 import { click, fillIn, tap, triggerEvent, visit } from "@ember/test-helpers";
 import {
   acceptance,
@@ -98,83 +97,78 @@ acceptance("Discourse Chat | bookmarking | desktop", function (needs) {
   });
 });
 
-// legacy ember has no tap helpers...
-if (!isLegacyEmber()) {
-  acceptance("Discourse Chat | bookmarking | mobile", function (needs) {
-    needs.user({
-      admin: false,
-      moderator: false,
-      username: "eviltrout",
-      id: 1,
-      can_chat: true,
-      has_chat_enabled: true,
-    });
-
-    needs.settings({
-      chat_enabled: true,
-    });
-
-    needs.pretender((server, helper) => {
-      setupPretenders(server, helper);
-      server.post("/bookmarks", () =>
-        helper.response({ id: 1, success: "OK" })
-      );
-    });
-
-    needs.mobileView();
-
-    test("can bookmark a message with reminder from the mobile long press menu", async function (assert) {
-      await visit("/chat/channel/7/Uncategorized");
-      assert.ok(exists(".chat-message-container"));
-      const message = query(".chat-message-container");
-
-      await tap(message);
-      await click(message.querySelector(".main-actions .bookmark-btn"));
-      assert.ok(
-        exists("#bookmark-reminder-modal"),
-        "it shows the bookmark modal"
-      );
-      await fillIn("input#bookmark-name", "Check this out later");
-      await click("#tap_tile_next_month");
-      assert.ok(
-        message.querySelector(
-          ".chat-message-info__bookmark .d-icon-discourse-bookmark-clock"
-        ),
-        "the message should be bookmarked and show the icon on the message info"
-      );
-
-      await tap(message);
-      assert.ok(
-        message.querySelector(
-          ".main-actions .bookmark-btn .d-icon-discourse-bookmark-clock"
-        ),
-        "the message actions icon shows the reminder icon"
-      );
-    });
-
-    test("can bookmark a message without reminder from the quick actions menu", async function (assert) {
-      await visit("/chat/channel/7/Uncategorized");
-      assert.ok(exists(".chat-message-container"));
-      const message = query(".chat-message-container");
-
-      await tap(message);
-      await click(message.querySelector(".main-actions .bookmark-btn"));
-      assert.ok(
-        exists("#bookmark-reminder-modal"),
-        "it shows the bookmark modal"
-      );
-      await fillIn("input#bookmark-name", "Check this out later");
-      await click("#tap_tile_none");
-      assert.ok(
-        message.querySelector(".chat-message-info__bookmark .d-icon-bookmark"),
-        "the message should be bookmarked and show the icon on the message info"
-      );
-
-      await tap(message);
-      assert.ok(
-        message.querySelector(".main-actions .bookmark-btn .d-icon-bookmark"),
-        "the message actions icon shows the bookmark icon"
-      );
-    });
+acceptance("Discourse Chat | bookmarking | mobile", function (needs) {
+  needs.user({
+    admin: false,
+    moderator: false,
+    username: "eviltrout",
+    id: 1,
+    can_chat: true,
+    has_chat_enabled: true,
   });
-}
+
+  needs.settings({
+    chat_enabled: true,
+  });
+
+  needs.pretender((server, helper) => {
+    setupPretenders(server, helper);
+    server.post("/bookmarks", () => helper.response({ id: 1, success: "OK" }));
+  });
+
+  needs.mobileView();
+
+  test("can bookmark a message with reminder from the mobile long press menu", async function (assert) {
+    await visit("/chat/channel/7/Uncategorized");
+    assert.ok(exists(".chat-message-container"));
+    const message = query(".chat-message-container");
+
+    await tap(message);
+    await click(message.querySelector(".main-actions .bookmark-btn"));
+    assert.ok(
+      exists("#bookmark-reminder-modal"),
+      "it shows the bookmark modal"
+    );
+    await fillIn("input#bookmark-name", "Check this out later");
+    await click("#tap_tile_next_month");
+    assert.ok(
+      message.querySelector(
+        ".chat-message-info__bookmark .d-icon-discourse-bookmark-clock"
+      ),
+      "the message should be bookmarked and show the icon on the message info"
+    );
+
+    await tap(message);
+    assert.ok(
+      message.querySelector(
+        ".main-actions .bookmark-btn .d-icon-discourse-bookmark-clock"
+      ),
+      "the message actions icon shows the reminder icon"
+    );
+  });
+
+  test("can bookmark a message without reminder from the quick actions menu", async function (assert) {
+    await visit("/chat/channel/7/Uncategorized");
+    assert.ok(exists(".chat-message-container"));
+    const message = query(".chat-message-container");
+
+    await tap(message);
+    await click(message.querySelector(".main-actions .bookmark-btn"));
+    assert.ok(
+      exists("#bookmark-reminder-modal"),
+      "it shows the bookmark modal"
+    );
+    await fillIn("input#bookmark-name", "Check this out later");
+    await click("#tap_tile_none");
+    assert.ok(
+      message.querySelector(".chat-message-info__bookmark .d-icon-bookmark"),
+      "the message should be bookmarked and show the icon on the message info"
+    );
+
+    await tap(message);
+    assert.ok(
+      message.querySelector(".main-actions .bookmark-btn .d-icon-bookmark"),
+      "the message actions icon shows the bookmark icon"
+    );
+  });
+});

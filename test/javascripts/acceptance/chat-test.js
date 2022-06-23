@@ -36,9 +36,6 @@ import {
 } from "discourse/tests/helpers/presence-pretender";
 import User from "discourse/models/user";
 import selectKit from "discourse/tests/helpers/select-kit-helper";
-import { next } from "@ember/runloop";
-import { Promise } from "rsvp";
-import { isLegacyEmber } from "discourse-common/config/environment";
 import sinon from "sinon";
 import * as ajaxlib from "discourse/lib/ajax";
 import I18n from "I18n";
@@ -46,14 +43,6 @@ import { CHANNEL_STATUSES } from "discourse/plugins/discourse-chat/discourse/mod
 
 const chatSettled = async () => {
   await settled();
-  if (isLegacyEmber()) {
-    // In the legacy environment, settled() doesn't always seem to work for us
-    // Using `next()` seems to work around the problem
-    // This hack can be removed once we're 100% Ember CLI
-    await new Promise((resolve) => {
-      next(resolve);
-    });
-  }
 };
 
 const baseChatPretenders = (server, helper) => {
@@ -704,16 +693,6 @@ acceptance("Discourse Chat - without unread", function (needs) {
   });
 
   test("Code highlighting in a message", async function (assert) {
-    // TODO (martin) Remove this when we completely remove legacy ember tests
-    if (isLegacyEmber()) {
-      assert.equal(
-        1,
-        1,
-        "skipping code highlighting test which does not work in legacy ember CI"
-      );
-      return;
-    }
-
     await visit("/chat/channel/9/Site");
     const messageContent = `Here's a message with code highlighting
 

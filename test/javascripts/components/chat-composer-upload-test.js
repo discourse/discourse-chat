@@ -9,166 +9,162 @@ import {
 import hbs from "htmlbars-inline-precompile";
 import I18n from "I18n";
 import { click } from "@ember/test-helpers";
-import { isLegacyEmber } from "discourse-common/config/environment";
 
-// TODO: Uncomment when we get rid of legacy ember
-if (!isLegacyEmber()) {
-  discourseModule(
-    "Discourse Chat | Component | chat-composer-upload",
-    function (hooks) {
-      setupRenderingTest(hooks);
+discourseModule(
+  "Discourse Chat | Component | chat-composer-upload",
+  function (hooks) {
+    setupRenderingTest(hooks);
 
-      componentTest("file - uploading in progress", {
-        template: hbs`{{chat-composer-upload upload=upload}}`,
+    componentTest("file - uploading in progress", {
+      template: hbs`{{chat-composer-upload upload=upload}}`,
 
-        beforeEach() {
-          this.set("upload", {
-            progress: 50,
-            extension: ".pdf",
-            fileName: "test.pdf",
-          });
-        },
+      beforeEach() {
+        this.set("upload", {
+          progress: 50,
+          extension: ".pdf",
+          fileName: "test.pdf",
+        });
+      },
 
-        async test(assert) {
-          assert.ok(exists(".upload-progress[value=50]"));
-          assert.strictEqual(
-            query(".uploading").innerText.trim(),
-            I18n.t("uploading")
-          );
-        },
-      });
+      async test(assert) {
+        assert.ok(exists(".upload-progress[value=50]"));
+        assert.strictEqual(
+          query(".uploading").innerText.trim(),
+          I18n.t("uploading")
+        );
+      },
+    });
 
-      componentTest("image - uploading in progress", {
-        template: hbs`{{chat-composer-upload upload=upload}}`,
+    componentTest("image - uploading in progress", {
+      template: hbs`{{chat-composer-upload upload=upload}}`,
 
-        beforeEach() {
-          this.set("upload", {
-            extension: ".png",
-            progress: 78,
-            fileName: "test.png",
-          });
-        },
+      beforeEach() {
+        this.set("upload", {
+          extension: ".png",
+          progress: 78,
+          fileName: "test.png",
+        });
+      },
 
-        async test(assert) {
-          assert.ok(exists(".d-icon-far-image"));
-          assert.ok(exists(".upload-progress[value=78]"));
-          assert.strictEqual(
-            query(".uploading").innerText.trim(),
-            I18n.t("uploading")
-          );
-        },
-      });
+      async test(assert) {
+        assert.ok(exists(".d-icon-far-image"));
+        assert.ok(exists(".upload-progress[value=78]"));
+        assert.strictEqual(
+          query(".uploading").innerText.trim(),
+          I18n.t("uploading")
+        );
+      },
+    });
 
-      componentTest("image - preprocessing upload in progress", {
-        template: hbs`{{chat-composer-upload upload=upload}}`,
+    componentTest("image - preprocessing upload in progress", {
+      template: hbs`{{chat-composer-upload upload=upload}}`,
 
-        beforeEach() {
-          this.set("upload", {
-            extension: ".png",
-            progress: 78,
-            fileName: "test.png",
-            processing: true,
-          });
-        },
+      beforeEach() {
+        this.set("upload", {
+          extension: ".png",
+          progress: 78,
+          fileName: "test.png",
+          processing: true,
+        });
+      },
 
-        async test(assert) {
-          assert.strictEqual(
-            query(".processing").innerText.trim(),
-            I18n.t("processing")
-          );
-        },
-      });
+      async test(assert) {
+        assert.strictEqual(
+          query(".processing").innerText.trim(),
+          I18n.t("processing")
+        );
+      },
+    });
 
-      componentTest("file - upload complete", {
-        template: hbs`{{chat-composer-upload isDone=true upload=upload}}`,
+    componentTest("file - upload complete", {
+      template: hbs`{{chat-composer-upload isDone=true upload=upload}}`,
 
-        beforeEach() {
-          this.set("upload", {
-            type: ".pdf",
-            original_filename: "some file.pdf",
-            extension: "pdf",
-          });
-        },
+      beforeEach() {
+        this.set("upload", {
+          type: ".pdf",
+          original_filename: "some file.pdf",
+          extension: "pdf",
+        });
+      },
 
-        async test(assert) {
-          assert.ok(exists(".d-icon-file-alt"));
-          assert.strictEqual(
-            query(".file-name").innerText.trim(),
-            "some file.pdf"
-          );
-          assert.strictEqual(query(".extension-pill").innerText.trim(), "pdf");
-        },
-      });
+      async test(assert) {
+        assert.ok(exists(".d-icon-file-alt"));
+        assert.strictEqual(
+          query(".file-name").innerText.trim(),
+          "some file.pdf"
+        );
+        assert.strictEqual(query(".extension-pill").innerText.trim(), "pdf");
+      },
+    });
 
-      componentTest("image - upload complete", {
-        template: hbs`{{chat-composer-upload isDone=true upload=upload}}`,
+    componentTest("image - upload complete", {
+      template: hbs`{{chat-composer-upload isDone=true upload=upload}}`,
 
-        beforeEach() {
-          this.set("upload", {
-            type: ".png",
-            original_filename: "bar_image.png",
-            extension: "png",
-            short_path: "/my-image.png",
-          });
-        },
+      beforeEach() {
+        this.set("upload", {
+          type: ".png",
+          original_filename: "bar_image.png",
+          extension: "png",
+          short_path: "/my-image.png",
+        });
+      },
 
-        async test(assert) {
-          assert.ok(exists("img.preview-img[src='/my-image.png']"));
-          assert.strictEqual(
-            query(".file-name").innerText.trim(),
-            "bar_image.png"
-          );
-          assert.strictEqual(query(".extension-pill").innerText.trim(), "png");
-        },
-      });
+      async test(assert) {
+        assert.ok(exists("img.preview-img[src='/my-image.png']"));
+        assert.strictEqual(
+          query(".file-name").innerText.trim(),
+          "bar_image.png"
+        );
+        assert.strictEqual(query(".extension-pill").innerText.trim(), "png");
+      },
+    });
 
-      componentTest("removing completed upload", {
-        template: hbs`{{chat-composer-upload isDone=true upload=upload onCancel=(action "removeUpload" upload)}}`,
+    componentTest("removing completed upload", {
+      template: hbs`{{chat-composer-upload isDone=true upload=upload onCancel=(action "removeUpload" upload)}}`,
 
-        beforeEach() {
-          this.set("uploadRemoved", false);
-          this.set("actions", {
-            removeUpload: () => {
-              this.set("uploadRemoved", true);
-            },
-          });
-          this.set("upload", {
-            type: ".png",
-            original_filename: "bar_image.png",
-            extension: "png",
-            short_path: "/my-image.png",
-          });
-        },
+      beforeEach() {
+        this.set("uploadRemoved", false);
+        this.set("actions", {
+          removeUpload: () => {
+            this.set("uploadRemoved", true);
+          },
+        });
+        this.set("upload", {
+          type: ".png",
+          original_filename: "bar_image.png",
+          extension: "png",
+          short_path: "/my-image.png",
+        });
+      },
 
-        async test(assert) {
-          await click(".remove-upload");
-          assert.strictEqual(this.uploadRemoved, true);
-        },
-      });
+      async test(assert) {
+        await click(".remove-upload");
+        assert.strictEqual(this.uploadRemoved, true);
+      },
+    });
 
-      componentTest("cancelling in progress upload", {
-        template: hbs`{{chat-composer-upload upload=upload onCancel=(action "removeUpload" upload)}}`,
+    componentTest("cancelling in progress upload", {
+      template: hbs`{{chat-composer-upload upload=upload onCancel=(action "removeUpload" upload)}}`,
 
-        beforeEach() {
-          this.set("uploadRemoved", false);
-          this.set("actions", {
-            removeUpload: () => {
-              this.set("uploadRemoved", true);
-            },
-          });
-          this.set("upload", {
-            type: ".png",
-            original_filename: "bar_image.png",
-            extension: "png",
-            short_path: "/my-image.png",
-          });
-        },
+      beforeEach() {
+        this.set("uploadRemoved", false);
+        this.set("actions", {
+          removeUpload: () => {
+            this.set("uploadRemoved", true);
+          },
+        });
+        this.set("upload", {
+          type: ".png",
+          original_filename: "bar_image.png",
+          extension: "png",
+          short_path: "/my-image.png",
+        });
+      },
 
-        async test(assert) {
-          await click(".remove-upload");
-          assert.strictEqual(this.uploadRemoved, true);
-        },
-      });
-    }
-  );
-}
+      async test(assert) {
+        await click(".remove-upload");
+        assert.strictEqual(this.uploadRemoved, true);
+      },
+    });
+  }
+);

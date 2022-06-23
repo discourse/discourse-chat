@@ -20,7 +20,6 @@ module DiscourseChat::UserNotificationsExtension
         SQL
       ).to_a
     return if @messages.empty?
-
     @grouped_messages = @messages.group_by { |message| message.chat_channel }
     @grouped_messages = @grouped_messages.select { |channel, _| guardian.can_see_chat_channel?(channel) }
     return if @grouped_messages.empty?
@@ -44,43 +43,60 @@ module DiscourseChat::UserNotificationsExtension
       opts[:unsubscribe_url] = @unsubscribe_link
     end
 
-    channels = @grouped_messages.keys
-
-    grouped_channels = channels.partition { |c| !c.direct_message_channel? }
-    non_dm_channels = grouped_channels.first
-    dm_channels = grouped_channels.last
-    first_channel = non_dm_channels.pop || dm_channels.pop
-
-    subject_opts = {
-      email_prefix: @email_prefix,
-      count: channels.size,
-      channel_title: first_channel.title(user),
-      others: other_channels_text(user, channels.size, first_channel, non_dm_channels, dm_channels)
-    }
-
-    subject_key = first_channel.direct_message_channel? ? 'direct_message' : 'chat_channel'
     opts = {
       from_alias: I18n.t('user_notifications.chat_summary.from', site_name: Email.site_title),
-      subject: I18n.t(with_subject_prefix(subject_key), **subject_opts),
+      subject: summary_subject(user, @grouped_messages),
       add_unsubscribe_link: add_unsubscribe_link,
     }
 
     build_email(user.email, opts)
   end
 
+  def summary_subject(user, grouped_messages)
+    channels = grouped_messages.keys
+    grouped_channels = channels.partition { |c| !c.direct_message_channel? }
+    non_dm_channels = grouped_channels.first
+    dm_users = grouped_channels.last.flat_map { |c| grouped_messages[c].map(&:user) }.uniq
+
+    total_count_for_subject = non_dm_channels.size + dm_users.size
+    first_message_from = non_dm_channels.pop
+    if first_message_from
+      first_message_title = first_message_from.title(user)
+      subject_key = 'chat_channel'
+    else
+      subject_key = 'direct_message'
+      first_message_from = dm_users.pop
+      first_message_title = first_message_from.username
+    end
+
+    subject_opts = {
+      email_prefix: @email_prefix,
+      count: total_count_for_subject,
+      message_title: first_message_title,
+      others: other_channels_text(user, total_count_for_subject, first_message_from, non_dm_channels, dm_users)
+    }
+
+    I18n.t(with_subject_prefix(subject_key), **subject_opts)
+  end
+
   def with_subject_prefix(key)
     "user_notifications.chat_summary.subject.#{key}"
   end
 
-  def other_channels_text(user, total_count, first_channel, other_non_dm_channels, other_dm_channels)
+  def other_channels_text(user, total_count, first_message_from, other_non_dm_channels, other_dm_users)
     return if total_count <= 1
     return I18n.t(with_subject_prefix('others'), count: total_count - 1) if total_count > 2
 
-    second_channel = other_non_dm_channels.pop || other_dm_channels.pop
-    second_channel_title = second_channel.title(user)
+    if other_non_dm_channels.empty?
+      second_message_from = other_dm_users.first
+      second_message_title = second_message_from.username
+    else
+      second_message_from = other_non_dm_channels.first
+      second_message_title = second_message_from.title(user)
+    end
 
-    return second_channel_title if first_channel.same_type?(second_channel)
+    return second_message_title if first_message_from.class == second_message_from.class
 
-    I18n.t(with_subject_prefix('other_direct_message'), channel_title: second_channel_title)
+    I18n.t(with_subject_prefix('other_direct_message'), message_title: second_message_title)
   end
 end

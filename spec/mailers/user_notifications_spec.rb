@@ -37,7 +37,7 @@ describe UserNotifications do
             'user_notifications.chat_summary.subject.direct_message',
             count: 1,
             email_prefix: SiteSetting.title,
-            channel_title: @dm_channel.title(@user)
+            message_title: @sender.username
           )
 
           email = described_class.chat_summary(@user, {})
@@ -45,7 +45,7 @@ describe UserNotifications do
           expect(email.subject).to eq(expected_subject)
         end
 
-        it 'includes all DM participants' do
+        it 'only includes the name of the user who sent the message even if the DM has multiple participants' do
           another_participant = Fabricate(:user, group_ids: [@chatters_group.id])
           Fabricate(:user_chat_channel_membership_for_dm, user: another_participant, chat_channel: @dm_channel)
           DirectMessageUser.create!(direct_message_channel: @dm_channel.chatable, user: another_participant)
@@ -53,7 +53,7 @@ describe UserNotifications do
             'user_notifications.chat_summary.subject.direct_message',
             count: 1,
             email_prefix: SiteSetting.title,
-            channel_title: ["@#{@sender.username}", "@#{another_participant.username}"].sort.join(', ')
+            message_title: @sender.username
           )
 
           email = described_class.chat_summary(@user, {})
@@ -68,11 +68,11 @@ describe UserNotifications do
 
           email = described_class.chat_summary(@user, {})
 
-          expect(email.subject).to include(@dm_channel.title(@user))
-          expect(email.subject).to include(dm_channel_2.title(@user))
+          expect(email.subject).to include(@sender.username)
+          expect(email.subject).to include(another_dm_user.username)
         end
 
-        it 'displays a count when there a more than two DMs with unread messages' do
+        it 'displays a count when there are more than two DMs with unread messages' do
           2.times do
             another_dm_user = Fabricate(:user, group_ids: [@chatters_group.id])
             dm_channel = DiscourseChat::DirectMessageChannelCreator.create!([another_dm_user, @user])
@@ -94,7 +94,7 @@ describe UserNotifications do
             'user_notifications.chat_summary.subject.chat_channel',
             count: 1,
             email_prefix: SiteSetting.title,
-            channel_title: @chat_channel.title(@user)
+            messsage_title: @chat_channel.title(@user)
           )
 
           email = described_class.chat_summary(@user, {})
@@ -115,7 +115,7 @@ describe UserNotifications do
           expect(email.subject).to include(another_chat_channel.title(@user))
         end
 
-        it 'displays a count when there a more than two channels with unread mentions' do
+        it 'displays a count when there are more than two channels with unread mentions' do
           2.times do |n|
             another_chat_channel = Fabricate(:chat_channel, name: "Test channel #{n}")
             another_chat_message = Fabricate(:chat_message, user: @sender, chat_channel: another_chat_channel)
@@ -138,10 +138,10 @@ describe UserNotifications do
           Fabricate(:chat_mention, user: @user, chat_message: @chat_message)
         end
 
-        it 'always include the DM second' do
+        it 'always includes the DM second' do
           expected_other_text = I18n.t(
             'user_notifications.chat_summary.subject.other_direct_message',
-            channel_title: @dm_channel.title(@user)
+            message_title: @sender.username
           )
 
           email = described_class.chat_summary(@user, {})

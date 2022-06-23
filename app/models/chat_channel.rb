@@ -165,6 +165,10 @@ class ChatChannel < ActiveRecord::Base
     ChatChannel.where(chatable: topic).exists?
   end
 
+  def same_type?(another_chat_channel)
+    chatable_type == another_chat_channel.chatable_type
+  end
+
   private
 
   def log_channel_status_change(acting_user:, new_status:, old_status:)

@@ -25,6 +25,132 @@ describe UserNotifications do
       expect(email.to).to be_blank
     end
 
+    describe 'email subject' do
+      context 'DM messages' do
+        before do
+          @dm_channel = DiscourseChat::DirectMessageChannelCreator.create!([@sender, @user])
+          Fabricate(:chat_message, user: @sender, chat_channel: @dm_channel)
+        end
+
+        it 'includes the sender username in the subject' do
+          expected_subject = I18n.t(
+            'user_notifications.chat_summary.subject.direct_message',
+            count: 1,
+            email_prefix: SiteSetting.title,
+            channel_title: @dm_channel.title(@user)
+          )
+
+          email = described_class.chat_summary(@user, {})
+
+          expect(email.subject).to eq(expected_subject)
+        end
+
+        it 'includes all DM participants' do
+          another_participant = Fabricate(:user, group_ids: [@chatters_group.id])
+          Fabricate(:user_chat_channel_membership_for_dm, user: another_participant, chat_channel: @dm_channel)
+          DirectMessageUser.create!(direct_message_channel: @dm_channel.chatable, user: another_participant)
+          expected_subject = I18n.t(
+            'user_notifications.chat_summary.subject.direct_message',
+            count: 1,
+            email_prefix: SiteSetting.title,
+            channel_title: ["@#{@sender.username}", "@#{another_participant.username}"].sort.join(', ')
+          )
+
+          email = described_class.chat_summary(@user, {})
+
+          expect(email.subject).to eq(expected_subject)
+        end
+
+        it 'includes both channel titles when there are exactly two with unread messages' do
+          another_dm_user = Fabricate(:user, group_ids: [@chatters_group.id])
+          dm_channel_2 = DiscourseChat::DirectMessageChannelCreator.create!([another_dm_user, @user])
+          chat_message = Fabricate(:chat_message, user: another_dm_user, chat_channel: dm_channel_2)
+
+          email = described_class.chat_summary(@user, {})
+
+          expect(email.subject).to include(@dm_channel.title(@user))
+          expect(email.subject).to include(dm_channel_2.title(@user))
+        end
+
+        it 'displays a count when there a more than two DMs with unread messages' do
+          2.times do
+            another_dm_user = Fabricate(:user, group_ids: [@chatters_group.id])
+            dm_channel = DiscourseChat::DirectMessageChannelCreator.create!([another_dm_user, @user])
+            chat_message = Fabricate(:chat_message, user: another_dm_user, chat_channel: dm_channel)
+          end
+          expected_count_text = I18n.t('user_notifications.chat_summary.subject.others', count: 2)
+
+          email = described_class.chat_summary(@user, {})
+
+          expect(email.subject).to include(expected_count_text)
+        end
+      end
+
+      context 'regular mentions' do
+        before { Fabricate(:chat_mention, user: @user, chat_message: @chat_message) }
+
+        it 'includes the sender username in the subject' do
+          expected_subject = I18n.t(
+            'user_notifications.chat_summary.subject.chat_channel',
+            count: 1,
+            email_prefix: SiteSetting.title,
+            channel_title: @chat_channel.title(@user)
+          )
+
+          email = described_class.chat_summary(@user, {})
+
+          expect(email.subject).to eq(expected_subject)
+        end
+
+        it 'includes both channel titles when there are exactly two with unread mentions' do
+          another_chat_channel = Fabricate(:chat_channel, name: 'Test channel')
+          another_chat_message = Fabricate(:chat_message, user: @sender, chat_channel: another_chat_channel)
+          Fabricate(:user_chat_channel_membership, chat_channel: another_chat_channel, user: @sender)
+          Fabricate(:user_chat_channel_membership, chat_channel: another_chat_channel, user: @user, last_read_message_id: another_chat_message.id - 2)
+          Fabricate(:chat_mention, user: @user, chat_message: another_chat_message)
+
+          email = described_class.chat_summary(@user, {})
+
+          expect(email.subject).to include(@chat_channel.title(@user))
+          expect(email.subject).to include(another_chat_channel.title(@user))
+        end
+
+        it 'displays a count when there a more than two channels with unread mentions' do
+          2.times do |n|
+            another_chat_channel = Fabricate(:chat_channel, name: "Test channel #{n}")
+            another_chat_message = Fabricate(:chat_message, user: @sender, chat_channel: another_chat_channel)
+            Fabricate(:user_chat_channel_membership, chat_channel: another_chat_channel, user: @sender)
+            Fabricate(:user_chat_channel_membership, chat_channel: another_chat_channel, user: @user, last_read_message_id: another_chat_message.id - 2)
+            Fabricate(:chat_mention, user: @user, chat_message: another_chat_message)
+          end
+          expected_count_text = I18n.t('user_notifications.chat_summary.subject.others', count: 2)
+
+          email = described_class.chat_summary(@user, {})
+
+          expect(email.subject).to include(expected_count_text)
+        end
+      end
+
+      context 'both unread DM messages and mentions' do
+        before do
+          @dm_channel = DiscourseChat::DirectMessageChannelCreator.create!([@sender, @user])
+          Fabricate(:chat_message, user: @sender, chat_channel: @dm_channel)
+          Fabricate(:chat_mention, user: @user, chat_message: @chat_message)
+        end
+
+        it 'always include the DM second' do
+          expected_other_text = I18n.t(
+            'user_notifications.chat_summary.subject.other_direct_message',
+            channel_title: @dm_channel.title(@user)
+          )
+
+          email = described_class.chat_summary(@user, {})
+
+          expect(email.subject).to include(expected_other_text)
+        end
+      end
+    end
+
     describe 'When there are mentions' do
       before { Fabricate(:chat_mention, user: @user, chat_message: @chat_message) }
 

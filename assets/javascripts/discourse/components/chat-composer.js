@@ -269,6 +269,10 @@ export default Component.extend(TextareaTextManipulation, {
 
   _inProgressUploadsChanged(inProgressUploads) {
     next(() => {
+      if (this.isDestroyed || this.isDestroying) {
+        return;
+      }
+
       this.set("inProgressUploads", inProgressUploads);
     });
   },

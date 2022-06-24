@@ -20,7 +20,7 @@
     </tr>
   </table>
 
-  <%- @grouped_mentions.each do |chat_channel, messages| %>
+  <%- @grouped_messages.each do |chat_channel, messages| %>
     <%- other_messages_count = messages.size - 2 %>
     <table class="chat-summary-content" style="padding:1em;margin-top:20px;width:100%;min-width:100%;background-color:#f7f7f7;">
       <tbody>

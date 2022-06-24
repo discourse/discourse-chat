@@ -4,6 +4,7 @@ import { bind } from "discourse-common/utils/decorators";
 import { getOwner } from "discourse-common/lib/get-owner";
 import { MENTION_KEYWORDS } from "discourse/plugins/discourse-chat/discourse/components/chat-message";
 import { clearChatComposerButtons } from "discourse/plugins/discourse-chat/discourse/lib/chat-composer-buttons";
+import { A } from '@ember/array';
 
 let _lastForcedRefreshAt;
 const MIN_REFRESH_DURATION_MS = 180000; // 3 minutes
@@ -123,6 +124,39 @@ export default {
             node.classList.add("highlighted", "valid-mention");
           }
         });
+      });
+
+      api.addSidebarSection({
+        header: {
+          title: "channels title",
+          text: "channels",
+          action: () => { alert("fsdfsd") }, // TODO
+          actionIcon: "cog",
+          actionTitle: I18n.t("sidebar.channels.settings.title")
+        },
+        links: (baseSectionLink) => {
+          const links = A([])
+          this.chatService.getChannels().then((channels) => {
+            channels.publicChannels.forEach((channel) => {
+              links.pushObject(
+                class ChatSectionLinkFromAjaxCall extends baseSectionLink {
+                  get name() {
+                    return channel.chatable_id;
+                  }
+                  get route() {
+                    return "discovery.latest";
+                  }
+                  get title() {
+                    return channel.title;
+                  }
+                  get text() {
+                    return channel.title;
+                  }
+                });
+            });
+          });
+          return links;
+        }
       });
     });
   },

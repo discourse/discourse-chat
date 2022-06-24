@@ -357,6 +357,10 @@ en:
         dm: "Personal chat history is retained for %{days} days."
 
       topic_button_title: "Chat"
+    sidebar:
+      channels:
+        settings:
+          title: "Channels settings"
 
     notifications:
       chat_quoted: "<span>%{username}</span> %{description}"

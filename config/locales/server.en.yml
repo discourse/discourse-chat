@@ -141,7 +141,7 @@ en:
           one: "[%{email_prefix}] New message from %{message_title}"
           other: "[%{email_prefix}] New messages from %{message_title} and %{others}"
         chat_channel:
-          one: "[%{email_prefix}] New message in %{message_tiel}"
+          one: "[%{email_prefix}] New message in %{message_title}"
           other: "[%{email_prefix}] New messages in %{message_title} and %{others}"
         other_direct_message: "from %{message_title}"
         others: "%{count} others"

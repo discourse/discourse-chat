@@ -43,6 +43,7 @@ describe UserNotifications do
           email = described_class.chat_summary(@user, {})
 
           expect(email.subject).to eq(expected_subject)
+          expect(email.subject).to include(@sender.username)
         end
 
         it 'only includes the name of the user who sent the message even if the DM has multiple participants' do
@@ -59,6 +60,8 @@ describe UserNotifications do
           email = described_class.chat_summary(@user, {})
 
           expect(email.subject).to eq(expected_subject)
+          expect(email.subject).to include(@sender.username)
+          expect(email.subject).not_to include(another_participant.username)
         end
 
         it 'includes both channel titles when there are exactly two with unread messages' do
@@ -94,12 +97,13 @@ describe UserNotifications do
             'user_notifications.chat_summary.subject.chat_channel',
             count: 1,
             email_prefix: SiteSetting.title,
-            messsage_title: @chat_channel.title(@user)
+            message_title: @chat_channel.title(@user)
           )
 
           email = described_class.chat_summary(@user, {})
 
           expect(email.subject).to eq(expected_subject)
+          expect(email.subject).to include(@chat_channel.title(@user))
         end
 
         it 'includes both channel titles when there are exactly two with unread mentions' do

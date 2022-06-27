@@ -3,7 +3,7 @@
 
 ## Documentation
 
-The Discourse Chat plugin adds chat functionality to your Discourse so it can natively support both, the long-form and short-form communication needs of your online community.
+The Discourse Chat plugin adds chat functionality to your Discourse so it can natively support both long-form and short-form communication needs of your online community.
 
 For more information, please see: https://meta.discourse.org/t/introducing-discourse-chat-beta/210734
 

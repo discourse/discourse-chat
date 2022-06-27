@@ -1,6 +1,11 @@
-# WARNING: EXPERIMENTAL
 
-This plugin is currently in an experimental state and not for use on production sites.
+:warning: This plugin is still in active development and may change frequently
+
+## Documentation
+
+The Discourse Chat plugin adds chat functionality to your Discourse so it can natively support both, the long-form and short-form communication needs of your online community.
+
+For more information, please see: https://meta.discourse.org/t/introducing-discourse-chat-beta/210734
 
 ## Plugin API
 

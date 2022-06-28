@@ -231,7 +231,6 @@ export default Component.extend({
     expanded,
     displayMembers,
     activeChannel,
-    chatView
   ) {
     const classNames = ["topic-chat-container"];
     if (expanded) {

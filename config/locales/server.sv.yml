@@ -133,10 +133,7 @@ sv:
         one: "Du har ett nytt chattmeddelande"
         other: "Du har nya chattmeddelanden"
       from: "%{site_name}"
-      subject:
-        one: "[%{email_prefix}] Nytt chattmeddelande"
-        other: "[%{email_prefix}] Nya chattmeddelanden"
-      unsubscribe: "Den här chattsammanfattningen skickas från %{site_link} när du är borta. Ändra din %{email_preferences_link}."
+      unsubscribe_no_link: "Den här chattsammanfattningen skickas från %{site_link} när du är borta. Ändra din %{email_preferences_link}."
       view_messages:
         one: "Visa meddelande"
         other: "Visa %{count} meddelanden"
@@ -144,3 +141,7 @@ sv:
         one: "Visa %{count} mer meddelande"
         other: "Visa %{count} fler meddelanden"
       your_chat_settings: "preferens för frekvens av chattmeddelanden"
+  unsubscribe:
+    chat_summary:
+      never: Aldrig
+      when_away: Endast när du är borta

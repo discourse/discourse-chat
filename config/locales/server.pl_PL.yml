@@ -49,3 +49,6 @@ pl_PL:
   reviewable_score_types:
     needs_review:
       title: "Wymaga przeglądu"
+  unsubscribe:
+    chat_summary:
+      never: Nigdy

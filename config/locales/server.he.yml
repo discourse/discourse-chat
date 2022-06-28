@@ -113,7 +113,7 @@ he:
       direct_message_chat_mention:
         direct: "אוזכרת בצ׳אט אישי על ידי %{username}"
         other: "נוסף אזכור של ‎%{identifier} בצ׳אט אישי על ידי %{username}"
-      new_chat_message: 'נשחלה הודעה על ידי %{username} ב־„%{channel}”'
+      new_chat_message: 'נשלחה הודעה על ידי %{username} ב־„%{channel}”'
       new_direct_chat_message: "נשלחה הודעה על ידי %{username} בצ׳אט אישי"
   discourse_automation:
     scriptables:
@@ -132,11 +132,10 @@ he:
         other: "יש לך הודעות חדשות בצ׳אט"
       from: "%{site_name}"
       subject:
-        one: "[%{email_prefix}] הודעה חדשה בצ׳אט"
-        two: "[%{email_prefix}] הודעות חדשות בצ׳אט"
-        many: "[%{email_prefix}] הודעות חדשות בצ׳אט"
-        other: "[%{email_prefix}] הודעות חדשות בצ׳אט"
-      unsubscribe: "סיכום צ׳אט זה נשלח מהאתר %{site_link} כשנעדרת ממנו. ניתן לשנות את %{email_preferences_link} שלך."
+        other_direct_message: "מאת %{message_title}"
+        others: "%{count} נוספים"
+      unsubscribe: "סיכום צ׳אט זה נשלח מהאתר %{site_link} כשנעדרת ממנו. ניתן לשנות את %{email_preferences_link} שלך או %{unsubscribe_link} כדי להפסיק לקבל הודעות."
+      unsubscribe_no_link: "סיכום צ׳אט זה נשלח מהאתר %{site_link} כשנעדרת ממנו. ניתן לשנות את %{email_preferences_link} שלך."
       view_messages:
         one: "הצגת הודעה"
         two: "הצגת %{count} הודעות"
@@ -148,3 +147,8 @@ he:
         many: "הצגת %{count} הודעות נוספות"
         other: "הצגת %{count} הודעות נוספות"
       your_chat_settings: "העדפת תדירות דוא״ל צ׳אט"
+  unsubscribe:
+    chat_summary:
+      select_title: "הגדרת תדירות הודעות סיכום בדוא״ל ל־:"
+      never: לעולם לא
+      when_away: רק כשלא במערכת

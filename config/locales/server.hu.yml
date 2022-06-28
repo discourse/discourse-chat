@@ -119,9 +119,6 @@ hu:
         one: "Új csevegőüzenete érkezett"
         other: "Új csevegőüzenetei érkeztek"
       from: "%{site_name}"
-      subject:
-        one: "[%{email_prefix}] Új csevegőüzenet"
-        other: "[%{email_prefix}] Új csevegőüzenetek"
       view_messages:
         one: "Üzenet megtekintése"
         other: "%{count} üzenet megtekintése"
@@ -129,3 +126,7 @@ hu:
         one: "%{count} további üzenet megtekintése"
         other: "%{count} további üzenet megtekintése"
       your_chat_settings: "csevegési e-mail gyakoriságának beállítása"
+  unsubscribe:
+    chat_summary:
+      never: Soha
+      when_away: Csak ha távol van

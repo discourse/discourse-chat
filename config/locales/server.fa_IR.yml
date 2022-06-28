@@ -56,11 +56,20 @@ fa_IR:
         other: "شما پیام‌های گفتگو جدیدی دارید"
       from: "%{site_name}"
       subject:
-        one: "«%{email_prefix}» پیام گفتگو جدید"
-        other: "«%{email_prefix}» پیام گفتگو جدید"
+        direct_message:
+          one: "[%{email_prefix}] پیام جدید از %{message_title}"
+          other: "[%{email_prefix}] پیام جدید %{message_title} و %{others}"
+        chat_channel:
+          one: "[%{email_prefix}] پیام جدید در %{message_title}"
+          other: "[%{email_prefix}] پیام جدید در %{message_title} و %{others}"
+        other_direct_message: "از %{message_title}"
+        others: "%{count} نفر دیگر"
       view_messages:
         one: "مشاهده پیام"
         other: "مشاهده %{count} پیام"
       view_more:
         one: "مشاهده %{count} پیام بیشتر"
         other: "مشاهده %{count} پیام بیشتر"
+  unsubscribe:
+    chat_summary:
+      never: هرگز

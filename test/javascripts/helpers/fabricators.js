@@ -25,7 +25,13 @@ function defaultChatChannelForType(chatableType) {
 
   if (chatableType === CHATABLE_TYPES.categoryChannel) {
     base.title = "My category title";
-    base.chatable = { color: "D56353", read_restricted: false };
+    base.name = "My category name";
+    base.chatable = {
+      id: 1,
+      color: "D56353",
+      read_restricted: false,
+      name: "My category",
+    };
   }
 
   return base;

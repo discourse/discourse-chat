@@ -1,0 +1,132 @@
+// Info header
+.channel-info-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+}
+
+.channel-info-header__title {
+  font-size: var(--font-up-2);
+  margin: 0;
+  padding-left: 1rem;
+}
+
+// Info tabs
+.chat-info-tabs {
+  padding: 0 1rem 1rem;
+}
+
+// About view
+.channel-info-about-view__title-input {
+  width: 100%;
+}
+
+.channel-info-about-view__description-input {
+  height: 150px;
+  width: 100%;
+}
+
+.channel-info-about-view__description__helper-text {
+  color: var(--primary-medium);
+}
+
+// Settings view
+.channel-settings-view__saved {
+  color: var(--success);
+  padding-left: 0.5rem;
+}
+
+.channel-settings-view__desktop-notification-level-selector,
+.channel-settings-view__mobile-notification-level-selector,
+.channel-settings-view__muted-selector {
+  width: 220px;
+}
+
+// Members list
+.channel-members-view-wrapper {
+  padding: 0 1rem 1rem;
+}
+
+.channel-members-view__search-input-container {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--primary-medium);
+
+  &.is-focused {
+    border: 1px solid var(--tertiary);
+  }
+
+  .d-icon {
+    padding: 0.5rem;
+  }
+}
+
+input.channel-members-view__search-input {
+  border: 0;
+  margin: 0;
+  outline: 0;
+  width: 100%;
+
+  &:focus {
+    border: 0;
+    outline: 0;
+  }
+}
+
+.channel-members-view__status {
+  display: flex;
+  align-items: center;
+}
+
+.channel-members-view__member-count {
+  color: var(--primary-medium);
+  margin-left: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.channel-members-view__list-container {
+  padding-top: 1em;
+}
+
+.channel-members-view__list-item {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0.25rem;
+
+  &:hover {
+    background-color: var(--tertiary-very-low);
+    border-radius: 0.25rem;
+  }
+
+  .chat-user-avatar {
+    margin-right: 0.5rem;
+  }
+}
+
+// Channel info edit title modal
+.chat-channel-edit-title-modal__title-input {
+  display: flex;
+  margin: 0;
+  min-width: 400px;
+}
+
+.chat-channel-edit-title-modal__description {
+  display: flex;
+  padding: 0.5rem 0;
+  color: var(--primary-medium);
+}
+
+// Channel info edit description modal
+.chat-channel-edit-description-modal__description-input {
+  display: flex;
+  margin: 0;
+  min-width: 400px;
+  min-height: 200px;
+}
+
+.chat-channel-edit-description-modal__description {
+  display: flex;
+  padding: 0.75rem 0 0.5rem;
+  color: var(--primary-medium);
+}

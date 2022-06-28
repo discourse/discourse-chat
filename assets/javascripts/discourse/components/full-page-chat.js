@@ -2,7 +2,6 @@ import Component from "@ember/component";
 import discourseComputed, { bind } from "discourse-common/utils/decorators";
 import { action } from "@ember/object";
 import { reads } from "@ember/object/computed";
-import { schedule } from "@ember/runloop";
 import { inject as service } from "@ember/service";
 
 export default Component.extend({
@@ -36,13 +35,7 @@ export default Component.extend({
     this._super(...arguments);
 
     this._scrollSidebarToBottom();
-    window.addEventListener("resize", this._calculateHeight, false);
     document.addEventListener("keydown", this._autoFocusChatComposer);
-    document.body.classList.add("has-full-page-chat");
-    this.chat.set("fullScreenChatOpen", true);
-    schedule("afterRender", this._calculateHeight);
-    this.appEvents.on("composer:resized", this, "_calculateHeight");
-    this.appEvents.on("discourse:focus-changed", this, "_handleFocusChanged");
   },
 
   willDestroyElement() {
@@ -50,12 +43,7 @@ export default Component.extend({
 
     this.appEvents.off("chat:refresh-channels", this, "refreshModel");
     this.appEvents.off("chat:refresh-channel", this, "_refreshChannel");
-    window.removeEventListener("resize", this._calculateHeight, false);
     document.removeEventListener("keydown", this._autoFocusChatComposer);
-    document.body.classList.remove("has-full-page-chat");
-    this.chat.set("fullScreenChatOpen", false);
-    this.appEvents.off("composer:resized", this, "_calculateHeight");
-    this.appEvents.off("discourse:focus-changed", this, "_handleFocusChanged");
   },
 
   @bind
@@ -105,24 +93,6 @@ export default Component.extend({
     }
   },
 
-  _calculateHeight() {
-    const main = document.getElementById("main-outlet"),
-      padBottom = window
-        .getComputedStyle(main, null)
-        .getPropertyValue("padding-bottom"),
-      chatContainerCoords = document
-        .querySelector(".full-page-chat")
-        .getBoundingClientRect();
-
-    const elHeight =
-      window.innerHeight -
-      chatContainerCoords.y -
-      window.pageYOffset -
-      parseInt(padBottom, 10);
-
-    document.body.style.setProperty("--full-page-chat-height", `${elHeight}px`);
-  },
-
   _refreshChannel(channelId) {
     if (this.chat.activeChannel?.id === channelId) {
       this.refreshModel(true);
@@ -138,11 +108,5 @@ export default Component.extend({
   switchChannel(channel) {
     this.chat.setActiveChannel(channel);
     return this.chat.openChannel(channel);
-  },
-
-  _handleFocusChanged(hasFocus) {
-    if (hasFocus) {
-      this._calculateHeight();
-    }
   },
 });

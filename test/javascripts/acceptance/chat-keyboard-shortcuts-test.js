@@ -137,6 +137,7 @@ acceptance("Discourse Chat - Keyboard shortcuts", function (needs) {
   });
 
   test("switching channel with alt+arrow keys in full page chat", async function (assert) {
+    this.container.lookup("service:chat").set("chatWindowFullPage", true);
     await visit("/chat/channel/75/@hawk");
     await triggerKeyEvent(document.body, "keydown", 40, { altKey: true }); // Down key
     assert.equal(currentURL(), "/chat/channel/76/@eviltrout");
@@ -233,7 +234,6 @@ acceptance("Discourse Chat - Keyboard shortcuts", function (needs) {
     await fillIn(composerInput, "This is a link to ");
     await focus(composerInput);
     await triggerKeyEvent(composerInput, "keydown", 76, { ctrlKey: true }); // ctrl+l
-
     assert.ok(exists(".insert-link.modal-body"), "hyperlink modal visible");
 
     await fillIn(".modal-body .link-url", "google.com");

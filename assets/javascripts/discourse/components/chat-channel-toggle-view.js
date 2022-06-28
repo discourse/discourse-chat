@@ -1,58 +1,61 @@
 import Component from "@ember/component";
 import { CHANNEL_STATUSES } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import I18n from "I18n";
-import discourseComputed from "discourse-common/utils/decorators";
-import { action } from "@ember/object";
+import { action, computed } from "@ember/object";
 import { ajax } from "discourse/lib/ajax";
 import { inject as service } from "@ember/service";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 
-export default Component.extend({
-  chat: service(),
-  tagName: "",
-  chatChannel: null,
+export default class ChatChannelToggleView extends Component {
+  @service chat;
+  @service router;
+  tagName = "";
+  channel = null;
+  onStatusChange = null;
 
+  @computed("channel.isClosed")
   get buttonLabel() {
-    if (this.chatChannel.isClosed) {
+    if (this.channel.isClosed) {
       return "chat.channel_settings.open_channel";
     } else {
       return "chat.channel_settings.close_channel";
     }
-  },
+  }
 
+  @computed("channel.isClosed")
   get instructions() {
-    if (this.chatChannel.isClosed) {
+    if (this.channel.isClosed) {
       return I18n.t("chat.channel_open.instructions");
     } else {
       return I18n.t("chat.channel_close.instructions");
     }
-  },
+  }
 
-  @discourseComputed()
-  modalTitle() {
-    if (this.chatChannel.isClosed) {
+  @computed("channel.isClosed")
+  get modalTitle() {
+    if (this.channel.isClosed) {
       return "chat.channel_open.title";
     } else {
       return "chat.channel_close.title";
     }
-  },
+  }
 
   @action
   changeChannelStatus() {
-    const status = this.chatChannel.isClosed
+    const status = this.channel.isClosed
       ? CHANNEL_STATUSES.open
       : CHANNEL_STATUSES.closed;
-    return ajax(
-      `/chat/chat_channels/${this.chatChannel.id}/change_status.json`,
-      {
-        method: "PUT",
-        data: { status },
-      }
-    )
+
+    return ajax(`/chat/chat_channels/${this.channel.id}/change_status.json`, {
+      method: "PUT",
+      data: { status },
+    })
       .then(() => {
-        this.chatChannel.set("status", status);
-        this.closeModal();
+        this.channel.set("status", status);
       })
-      .catch(popupAjaxError);
-  },
-});
+      .catch(popupAjaxError)
+      .finally(() => {
+        this.onStatusChange?.(this.channel);
+      });
+  }
+}

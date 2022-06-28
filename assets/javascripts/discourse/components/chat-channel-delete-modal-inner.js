@@ -47,11 +47,12 @@ export default Component.extend({
           messageClass: "success",
         });
         this.appEvents.trigger("chat-channel:deleted", this.chatChannel);
-        later(() => {
-          if (!isTesting()) {
+
+        if (!isTesting()) {
+          later(() => {
             this.closeModal();
-          }
-        }, 3000);
+          }, 3000);
+        }
       })
       .catch(popupAjaxError)
       .finally(() => this.set("deleting", false));

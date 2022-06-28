@@ -1,7 +1,6 @@
 import componentTest, {
   setupRenderingTest,
 } from "discourse/tests/helpers/component-test";
-import { click } from "@ember/test-helpers";
 import {
   discourseModule,
   exists,
@@ -24,25 +23,10 @@ discourseModule(
       },
 
       async test(assert) {
-        assert.equal(query(".topic-chat-name").innerText, this.channel.title);
-      },
-    });
-
-    componentTest("onClick handler", {
-      template: hbs`{{chat-channel-title channel=channel onClick=onClick}}`,
-
-      beforeEach() {
-        this.set("foo", 1);
-        this.set("channel", fabricate("chat-channel"));
-        this.set("onClick", () => this.set("foo", 2));
-      },
-
-      async test(assert) {
-        assert.equal(this.foo, 1);
-
-        await click(".chat-channel-title");
-
-        assert.equal(this.foo, 2);
+        assert.equal(
+          query(".chat-channel-title__name").innerText,
+          this.channel.title
+        );
       },
     });
 
@@ -60,11 +44,11 @@ discourseModule(
 
       async test(assert) {
         assert.equal(
-          query(".category-chat-badge").getAttribute("style"),
+          query(".chat-channel-title__category-badge").getAttribute("style"),
           `color: #${this.channel.chatable.color}`
         );
         assert.equal(
-          query(".category-chat-name").innerText,
+          query(".chat-channel-title__name").innerText,
           this.channel.title
         );
       },
@@ -126,8 +110,9 @@ discourseModule(
             `.chat-user-avatar-container .avatar[title="${user.username}"]`
           )
         );
+
         assert.equal(
-          query(`.dm-usernames .dm-username`).innerText,
+          query(".chat-channel-title__name").innerText,
           user.username
         );
       },
@@ -156,11 +141,11 @@ discourseModule(
         const users = this.channel.chatable.users;
 
         assert.equal(
-          parseInt(query(".dm-multi-count").innerText, 10),
+          parseInt(query(".chat-channel-title__users-count").innerText, 10),
           users.length
         );
         assert.equal(
-          query(".dm-usernames").innerText,
+          query(".chat-channel-title__name").innerText,
           users.mapBy("username").join(", ")
         );
       },

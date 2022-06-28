@@ -236,53 +236,6 @@ RSpec.describe DiscourseChat::ChatChannelsController do
     end
   end
 
-  describe "#notification_settings" do
-    fab!(:membership) { Fabricate(:user_chat_channel_membership, user: user, chat_channel: chat_channel) }
-
-    it "returns a 404 when the user isn't logged in" do
-      post "/chat/chat_channels/#{chat_channel.id}/notification_settings.json", params: {
-        muted: true,
-        desktop_notification_level: "mention",
-        mobile_notification_level: "mention"
-      }
-      expect(response.status).to eq(403)
-
-    end
-
-    it "requires the correct params" do
-      sign_in(user)
-      post "/chat/chat_channels/#{chat_channel.id}/notification_settings.json", params: {
-        muted: true,
-        desktop_notification_level: "mention"
-      }
-      expect(response.status).to eq(400)
-      post "/chat/chat_channels/#{chat_channel.id}/notification_settings.json", params: {
-        muted: true,
-        mobile_notification_level: "mention"
-      }
-      expect(response.status).to eq(400)
-      post "/chat/chat_channels/#{chat_channel.id}/notification_settings.json", params: {
-        mobile_notification_level: "mention",
-        desktop_notification_level: "mention"
-      }
-      expect(response.status).to eq(400)
-    end
-
-    it "saves all the correct fields" do
-      sign_in(user)
-      post "/chat/chat_channels/#{chat_channel.id}/notification_settings.json", params: {
-        muted: true,
-        desktop_notification_level: "always",
-        mobile_notification_level: "never"
-      }
-      expect(response.status).to eq(200)
-      membership = UserChatChannelMembership.find_by(user: user, chat_channel: chat_channel)
-      expect(membership.muted).to eq(true)
-      expect(membership.desktop_notification_level).to eq("always")
-      expect(membership.mobile_notification_level).to eq("never")
-    end
-  end
-
   describe "#create" do
     fab!(:category2) { Fabricate(:category) }
     fab!(:topic2) { Fabricate(:topic) }

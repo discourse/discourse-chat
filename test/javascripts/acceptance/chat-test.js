@@ -264,6 +264,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
   });
 
   test("Clicking mention notification inside other full page channel switches the channel", async function (assert) {
+    this.container.lookup("service:chat").set("chatWindowFullPage", true);
     await visit("/chat/channel/75/@hawk");
     await click(".header-dropdown-toggle.current-user");
     await click("#quick-access-notifications .chat-mention");
@@ -271,6 +272,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
   });
 
   test("Clicking mention notification inside other full page channel switches the channel", async function (assert) {
+    this.container.lookup("service:chat").set("chatWindowFullPage", true);
     await visit("/chat/channel/75/@hawk");
     await click(".header-dropdown-toggle.current-user");
     await click("#quick-access-notifications .chat-mention");
@@ -1280,17 +1282,6 @@ acceptance(
       );
     });
 
-    test("Unread indicator does show on chat page when use has chat_isolated", async function (assert) {
-      updateCurrentUser({ chat_isolated: true });
-      await visit("/chat/channel/9/Site");
-      await click(".header-dropdown-toggle.open-chat"); // Force re-render. Flakey otherwise.
-      assert.ok(
-        exists(
-          ".header-dropdown-toggle.open-chat .chat-channel-unread-indicator.urgent"
-        )
-      );
-    });
-
     test("Chat float open to DM channel with unread messages with sidebar off", async function (assert) {
       await visit("/t/internationalization-localization/280");
       this.chatService.set("sidebarActive", false);
@@ -1374,6 +1365,8 @@ acceptance(
     });
 
     test("Create channel modal", async function (assert) {
+      this.container.lookup("service:chat").set("chatWindowFullPage", true);
+
       await visit("/chat/channel/9/Site");
       const dropdown = selectKit(".edit-channels-dropdown");
       await dropdown.expand();
@@ -1922,15 +1915,6 @@ acceptance("Discourse Chat - Direct Message Creator", function (needs) {
     server.get("/u/search/users", () => {
       return helper.response([]);
     });
-  });
-
-  test("starting new dm resets draft state", async function (assert) {
-    const text = "What up what up";
-    await visit("/chat/channel/9/Site");
-    await fillIn(".chat-composer-input", text);
-    await visit("/chat/channel/draft/NewMessage");
-
-    assert.notEqual(document.querySelector(".chat-composer-input").value, text);
   });
 });
 

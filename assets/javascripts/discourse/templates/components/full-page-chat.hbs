@@ -4,6 +4,8 @@
   {{/if}}
 
   {{#if chat.activeChannel}}
+    {{compute-full-page-height}}
+
     {{chat-live-pane
       chatChannel=chat.activeChannel
       expanded=true

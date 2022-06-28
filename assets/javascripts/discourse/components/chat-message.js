@@ -466,9 +466,12 @@ export default Component.extend({
       data: { user_ids, chat_message_id: this.message.id },
     }).then(() => {
       this.message.set("mentionWarning.invitationSent", true);
-      this._invitationSentTimer = later(() => {
-        this.message.set("mentionWarning", null);
-      }, 3000);
+      this._invitationSentTimer = later(
+        () => {
+          this.message.set("mentionWarning", null);
+        },
+        isTesting() ? 0 : 3000
+      );
     });
     return false;
   },
@@ -827,11 +830,14 @@ export default Component.extend({
     url = url.indexOf("/") === 0 ? protocol + "//" + host + url : url;
     clipboardCopy(url);
 
-    later(() => {
-      this.messageContainer
-        ?.querySelector(".link-to-message-btn")
-        ?.classList?.remove("copied");
-    }, 250);
+    later(
+      () => {
+        this.messageContainer
+          ?.querySelector(".link-to-message-btn")
+          ?.classList?.remove("copied");
+      },
+      isTesting() ? 0 : 250
+    );
   },
 
   @discourseComputed("emojiReactionStore.favorites.[]")

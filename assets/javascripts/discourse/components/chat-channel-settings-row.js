@@ -2,9 +2,8 @@ import Component from "@ember/component";
 import discourseComputed from "discourse-common/utils/decorators";
 import I18n from "I18n";
 import { action } from "@ember/object";
-import { ajax } from "discourse/lib/ajax";
 import { inject as service } from "@ember/service";
-import { later } from "@ember/runloop";
+import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 
 const NOTIFICATION_LEVELS = [
@@ -34,43 +33,6 @@ export default Component.extend({
   @discourseComputed("channel.chatable_type")
   chatChannelClass(channelType) {
     return `${channelType.toLowerCase()}-chat-channel`;
-  },
-
-  @action
-  startEditingName() {
-    this.setProperties({
-      newName: this.channel.title,
-      editingName: true,
-    });
-    return false;
-  },
-
-  @discourseComputed("newName")
-  saveNameEditDisabled(name) {
-    return !name || name.trim() === "";
-  },
-
-  @action
-  cancelNameChange() {
-    this.set("editingName", false);
-  },
-
-  @action
-  saveNameChange() {
-    return ajax(`/chat/chat_channels/${this.channel.id}`, {
-      method: "POST",
-      data: {
-        name: this.newName.trim(),
-      },
-    })
-      .then((response) => {
-        this.set("editingName", false);
-        this.channel.setProperties({
-          title: response.chat_channel.title,
-          description: response.chat_channel.description,
-        });
-      })
-      .catch(popupAjaxError);
   },
 
   @action
@@ -110,51 +72,7 @@ export default Component.extend({
   },
 
   @action
-  toggleExpanded() {
-    this.channel.set("expanded", !this.channel.expanded);
-    const expandBtn = this.element.querySelector(
-      ".chat-channel-expand-settings"
-    );
-    if (expandBtn) {
-      expandBtn.blur(); // Button isn't losing focus naturally.
-    }
-    return false;
-  },
-
-  @action
-  save() {
-    this.set("loading", true);
-    return ajax(
-      `/chat/chat_channels/${this.channel.id}/notification_settings`,
-      {
-        method: "POST",
-        data: {
-          muted: this.channel.muted,
-          desktop_notification_level: this.channel.desktop_notification_level,
-          mobile_notification_level: this.channel.mobile_notification_level,
-        },
-      }
-    )
-      .then(() => {
-        this.setProperties({
-          loading: false,
-          showSaveSuccess: true,
-        });
-        later(() => {
-          if (!this.isDestroying && !this.isDestroyed) {
-            this.set("showSaveSuccess", false);
-          }
-        }, 2000);
-      })
-      .catch(popupAjaxError);
-  },
-
-  @action
   previewChannel() {
-    this.router.transitionTo(
-      "chat.channel",
-      this.channel.id,
-      this.channel.title
-    );
+    this.chat.openChannel(this.channel);
   },
 });

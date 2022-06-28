@@ -243,4 +243,26 @@ describe ChatChannel do
       ).to eq(true)
     end
   end
+
+  it 'is valid if name is long enough' do
+    SiteSetting.max_topic_title_length = 5
+    channel = described_class.new(name: 'a')
+    channel = described_class.new(name: 'a' * SiteSetting.max_topic_title_length)
+    expect(channel).to be_valid
+  end
+
+  it 'is invalid if name is too long' do
+    channel = described_class.new(name: 'a' * (SiteSetting.max_topic_title_length + 1))
+    expect(channel).to be_invalid
+  end
+
+  it 'is invalid if name is empty' do
+    channel = described_class.new(name: '')
+    expect(channel).to be_invalid
+  end
+
+  it 'is valid if name is nil' do
+    channel = described_class.new(name: nil)
+    expect(channel).to be_valid
+  end
 end

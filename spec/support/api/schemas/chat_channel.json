@@ -1,0 +1,39 @@
+{
+  "type": "object",
+  "required": [
+    "title",
+    "chatable",
+    "chatable_id",
+    "last_read_message_id",
+    "muted",
+    "unread_count",
+    "unread_mentions",
+    "last_message_sent_at",
+    "status",
+    "memberships_count",
+    "desktop_notification_level",
+    "mobile_notification_level",
+    "following"
+  ],
+  "properties": {
+    "id": { "type": "number" },
+    "chatable_type": { "type": "string" },
+    "chatable_url": { "type": "string" },
+    "title": { "type": "string" },
+    "chatable_id": { "type": "number" },
+    "last_read_message_id": { "type": ["number", "null"] },
+    "muted": { "type": "boolean" },
+    "unread_count": { "type": "number" },
+    "unread_mentions": { "type": "number" },
+    "last_message_sent_at": { "type": "string" },
+    "status": { "type": "string" },
+    "memberships_count": { "type": "number" },
+    "desktop_notification_level": { "type": "string" },
+    "mobile_notification_level": { "type": "string" },
+    "following": { "type": "boolean" },
+    "chatable": {
+      "type": "object",
+      "required": ["id", "title", "fancy_title", "slug", "posts_count"]
+    }
+  }
+}

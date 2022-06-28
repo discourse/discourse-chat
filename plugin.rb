@@ -10,10 +10,17 @@
 enabled_site_setting :chat_enabled
 
 register_asset 'stylesheets/common/common.scss'
+register_asset 'stylesheets/common/chat-drawer.scss'
+register_asset 'stylesheets/common/chat-channel-info.scss'
+register_asset 'stylesheets/common/chat-draft-channel.scss'
+register_asset 'stylesheets/common/chat-tabs.scss'
+register_asset 'stylesheets/common/chat-form.scss'
 register_asset 'stylesheets/common/d-progress-bar.scss'
 register_asset 'stylesheets/common/incoming-chat-webhooks.scss'
 register_asset 'stylesheets/mobile/chat-message.scss', :mobile
 register_asset 'stylesheets/desktop/chat-message.scss', :desktop
+register_asset 'stylesheets/common/chat-channel-title.scss'
+register_asset 'stylesheets/common/full-page-chat-header.scss'
 register_asset 'stylesheets/common/chat-reply.scss'
 register_asset 'stylesheets/common/chat-message.scss'
 register_asset 'stylesheets/common/chat-message-left-gutter.scss'
@@ -147,6 +154,11 @@ after_initialize do
   load File.expand_path('../app/jobs/scheduled/update_user_counts_for_chat_channels.rb', __FILE__)
   load File.expand_path('../app/jobs/scheduled/email_chat_notifications.rb', __FILE__)
   load File.expand_path('../app/services/chat_publisher.rb', __FILE__)
+  load File.expand_path('../app/controllers/api_controller.rb', __FILE__)
+  load File.expand_path('../app/controllers/api/chat_channels_controller.rb', __FILE__)
+  load File.expand_path('../app/controllers/api/chat_channel_memberships_controller.rb', __FILE__)
+  load File.expand_path('../app/controllers/api/chat_channel_notifications_settings_controller.rb', __FILE__)
+  load File.expand_path('../app/queries/chat_channel_memberships_query.rb', __FILE__)
 
   if Discourse.allow_dev_populate?
     load File.expand_path('../lib/discourse_dev/public_channel.rb', __FILE__)
@@ -458,11 +470,26 @@ after_initialize do
     DiscourseChat::PostNotificationHandler.new(post, notified).handle
   end
 
-  register_presence_channel_prefix("chat") do |channel|
-    next nil unless channel == "/chat/online"
+  register_presence_channel_prefix("chat") do |channel_name|
+    next nil unless channel_name == "/chat/online"
     config = PresenceChannel::Config.new
     config.allowed_group_ids = DiscourseChat.allowed_group_ids
     config
+  end
+
+  register_presence_channel_prefix("chat-channel-presence") do |channel_name|
+    if chat_channel_id = channel_name[/\/chat-channel-presence\/(\d+)/, 1]
+      chat_channel = ChatChannel.find(chat_channel_id)
+      config = PresenceChannel::Config.new
+      config.allowed_group_ids = chat_channel.allowed_group_ids
+      config.allowed_user_ids = chat_channel.allowed_user_ids
+      if config.allowed_group_ids.nil? && config.allowed_user_ids.nil?
+        config.public = true
+      end
+      config
+    end
+  rescue ActiveRecord::RecordNotFound
+    nil
   end
 
   register_presence_channel_prefix("chat-reply") do |channel_name|
@@ -508,6 +535,12 @@ after_initialize do
   end
 
   DiscourseChat::Engine.routes.draw do
+    namespace :api do
+      get '/chat_channels/:chat_channel_id/memberships' => 'chat_channel_memberships#index'
+      put '/chat_channels/:chat_channel_id' => 'chat_channels#update'
+      put '/chat_channels/:chat_channel_id/notifications_settings' => 'chat_channel_notifications_settings#update'
+    end
+
     # direct_messages_controller routes
     get '/direct_messages' => 'direct_messages#index'
     post '/direct_messages/create' => 'direct_messages#create'
@@ -536,8 +569,13 @@ after_initialize do
     # chat_controller routes
     get '/' => 'chat#respond'
     get '/browse' => 'chat#respond'
+    get '/draft-channel' => 'chat#respond'
     get '/channel/:channel_id' => 'chat#respond'
     get '/channel/:channel_id/:channel_title' => 'chat#respond'
+    get '/channel/:channel_id/:channel_title/info' => 'chat#respond'
+    get '/channel/:channel_id/:channel_title/info/about' => 'chat#respond'
+    get '/channel/:channel_id/:channel_title/info/members' => 'chat#respond'
+    get '/channel/:channel_id/:channel_title/info/settings' => 'chat#respond'
     post '/enable' => 'chat#enable_chat'
     post '/disable' => 'chat#disable_chat'
     post '/dismiss-retention-reminder' => 'chat#dismiss_retention_reminder'
@@ -615,5 +653,11 @@ after_initialize do
   if respond_to?(:register_email_unsubscriber)
     load File.expand_path('../lib/email_controller_helper/chat_summary_unsubscriber.rb', __FILE__)
     register_email_unsubscriber('chat_summary', EmailControllerHelper::ChatSummaryUnsubscriber)
+  end
+end
+
+if Rails.env == 'test'
+  Dir[Rails.root.join("plugins/discourse-chat/spec/support/**/*.rb")].each do |f|
+    require f
   end
 end

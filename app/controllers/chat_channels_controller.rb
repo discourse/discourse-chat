@@ -28,65 +28,36 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
   end
 
   def follow
-    membership = UserChatChannelMembership
-      .includes(:chat_channel)
-      .find_or_create_by(
-        user_id: current_user.id,
-        chat_channel_id: params[:chat_channel_id]
-      )
+    ActiveRecord::Base.transaction do
+      membership = UserChatChannelMembership
+        .includes(:chat_channel)
+        .find_or_initialize_by(
+          user_id: current_user.id,
+          chat_channel_id: params[:chat_channel_id]
+        )
 
-    if membership.following
-      return render_serialized(membership, UserChatChannelMembershipSerializer, root: false)
-    end
+      unless membership.following
+        membership.following = true
+        membership.save!
+        membership.chat_channel.update!(user_count: (membership.chat_channel.user_count || 0) + 1)
+      end
 
-    # Need to set following and `save` rather than `update` because it's possible this is a new
-    # record, since the membership is fetched with `find_or_create_by`.
-    membership.following = true
-    if (membership.save)
-      membership.chat_channel.update(user_count: (membership.chat_channel.user_count || 0) + 1)
       render_serialized(membership, UserChatChannelMembershipSerializer, root: false)
-    else
-      render_json_error(membership)
     end
   end
 
   def unfollow
-    membership = UserChatChannelMembership
-      .includes(:chat_channel)
-      .find_by(
-        user_id: current_user.id,
-        chat_channel_id: params[:chat_channel_id]
-      )
-    if (membership && membership.update(following: false))
+    ActiveRecord::Base.transaction do
+      membership = UserChatChannelMembership
+        .includes(:chat_channel)
+        .find_by!(
+          user_id: current_user.id,
+          chat_channel_id: params[:chat_channel_id]
+        )
+      membership.update!(following: false)
       new_user_count = [(membership.chat_channel.user_count || 0) - 1, 0].max
-      membership.chat_channel.update(user_count: new_user_count)
-      render json: success_json
-    else
-      render_json_error(membership)
-    end
-  end
-
-  def notification_settings
-    params.require([
-      :muted,
-      :desktop_notification_level,
-      :mobile_notification_level
-    ])
-
-    membership = UserChatChannelMembership.find_by(
-      user_id: current_user.id,
-      chat_channel_id: params[:chat_channel_id]
-    )
-    raise Discourse::NotFound unless membership
-
-    if membership.update(
-      muted: params[:muted],
-      desktop_notification_level: params[:desktop_notification_level],
-      mobile_notification_level: params[:mobile_notification_level]
-    )
-      render json: success_json
-    else
-      render_json_error(membership)
+      membership.chat_channel.update!(user_count: new_user_count)
+      render_serialized(membership, UserChatChannelMembershipSerializer, root: false)
     end
   end
 
@@ -136,7 +107,7 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     chat_channel.description = params[:description] if params[:description]
     chat_channel.save!
 
-    ChatPublisher.publish_channel_edit(chat_channel, current_user)
+    ChatPublisher.publish_chat_channel_edit(chat_channel, current_user)
     render_serialized(chat_channel, ChatChannelSerializer)
   end
 

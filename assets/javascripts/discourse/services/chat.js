@@ -20,6 +20,7 @@ import EmberObject from "@ember/object";
 
 export const LIST_VIEW = "list_view";
 export const CHAT_VIEW = "chat_view";
+export const DRAFT_CHANNEL_VIEW = "draft_channel_view";
 
 const CHAT_ONLINE_OPTIONS = {
   userUnseenTime: 300000, // 5 minutes seconds with no interaction
@@ -510,13 +511,14 @@ export default Service.extend({
       Site.currentProp("mobileView") ||
       this.router.currentRouteName === "chat" ||
       this.router.currentRouteName === "chat.channel" ||
-      this.currentUser.chat_isolated
+      this.currentUser.chat_isolated ||
+      this.chatWindowStore.fullPage
     ) {
       const queryParams = messageId ? { messageId } : {};
       return this.router.transitionTo(
         "chat.channel",
         channel.id,
-        channel.title,
+        channel.isDirectMessageChannel ? "-" : channel.title,
         {
           queryParams,
         }

@@ -18,6 +18,13 @@ export default DiscourseRoute.extend({
   },
 
   activate() {
+    this.chat.set("fullScreenChatOpen", true);
+    document.body.classList.add("has-full-page-chat");
+  },
+
+  deactivate() {
+    this.chat.set("fullScreenChatOpen", false);
+    document.body.classList.remove("has-full-page-chat");
     scrollTop();
   },
 });

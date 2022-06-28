@@ -1,0 +1,57 @@
+{{compute-full-page-height}}
+
+<div class={{wrapperClassNames}}>
+  {{#if (and (not site.mobileView) (not chat.sidebarActive))}}
+    {{channels-list onSelect=(action "switchChannel")}}
+  {{/if}}
+
+  <div class="chat-live-pane">
+    <div class="channel-info-header">
+      <h2 class="channel-info-header__title">{{model.chatChannel.title}}</h2>
+      <div class="channel-info-header__actions">
+        {{d-button
+          class="btn-flat"
+          icon="times"
+          action=(action "onBackToChannel")
+        }}
+      </div>
+    </div>
+
+    <div class="chat-tabs chat-info-tabs">
+      <ul class="chat-tabs-list" role="tablist">
+        {{#each tabs as |tab|}}
+          <li
+            class="chat-tabs-list__item"
+            role="tab"
+            aria-controls={{concat tab "-tab"}}
+          >
+            <LinkTo
+              @route={{concat "chat.channel.info." tab}}
+              @models={{array
+                model.chatChannel.id
+                (if
+                  model.chatChannel.isDirectMessageChannel
+                  "-"
+                  model.chatChannel.title
+                )
+              }}
+              class="chat-tabs-list__link"
+            >
+              {{i18n (concat "chat.channel_info.tabs." tab)}}
+            </LinkTo>
+          </li>
+        {{/each}}
+      </ul>
+
+      <div
+        id={{tab}}
+        class="chat-tabs__tabpanel"
+        aria-hidden={{notEq tab activeTab}}
+        role="tabpanel"
+        aria-labelledby={{concat tab "-tab"}}
+      >
+        {{outlet}}
+      </div>
+    </div>
+  </div>
+</div>

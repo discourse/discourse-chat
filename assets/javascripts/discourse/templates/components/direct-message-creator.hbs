@@ -5,17 +5,14 @@
       role="button"
       {{on "click" this.focusFilter}}
     >
-      {{d-progress-bar
-        key="dm-recipients-loader"
-        isLoading=(or isFiltering channel.isFetchingChannelPreview)
-      }}
+      {{d-progress-bar key="dm-recipients-loader" isLoading=isFiltering}}
 
       <span class="prefix">
         {{i18n "chat.direct_message_creator.prefix"}}
       </span>
 
       <div class="recipients">
-        {{#each channel.chatable.users as |selectedUser|}}
+        {{#each selectedUsers as |selectedUser|}}
           {{#d-button
             class=(concat
               "selected-user"

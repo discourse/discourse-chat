@@ -215,7 +215,7 @@ export default Component.extend(TextareaTextManipulation, {
     if (
       !this.editingMessage &&
       this.draft &&
-      this.chatChannel.canModifyMessages(this.currentUser)
+      this.chatChannel?.canModifyMessages(this.currentUser)
     ) {
       // uses uploads from draft here...
       this.setProperties({
@@ -269,6 +269,10 @@ export default Component.extend(TextareaTextManipulation, {
 
   _inProgressUploadsChanged(inProgressUploads) {
     next(() => {
+      if (this.isDestroying || this.isDestroyed) {
+        return;
+      }
+
       this.set("inProgressUploads", inProgressUploads);
     });
   },
@@ -511,15 +515,12 @@ export default Component.extend(TextareaTextManipulation, {
   },
 
   @discourseComputed(
-    "chatChannel.{id,isFetchingChannelPreview,previewedChannel,chatable.users.[]}",
+    "chatChannel.{id,chatable.users.[]}",
     "canInteractWithChat"
   )
   disableComposer(channel, canInteractWithChat) {
     return (
-      (channel.isDraft &&
-        (channel.previewedChannel ||
-          channel.isFetchingChannelPreview ||
-          isEmpty(channel.chatable.users))) ||
+      (channel.isDraft && isEmpty(channel?.chatable?.users)) ||
       !canInteractWithChat ||
       !channel.canModifyMessages(this.currentUser)
     );
@@ -528,7 +529,7 @@ export default Component.extend(TextareaTextManipulation, {
   @discourseComputed(
     "previewing",
     "userSilenced",
-    "chatChannel.{chatable.users.[],id,previewedChannel}"
+    "chatChannel.{chatable.users.[],id}"
   )
   placeholder(previewing, userSilenced, chatChannel) {
     if (!chatChannel.canModifyMessages(this.currentUser)) {
@@ -539,7 +540,7 @@ export default Component.extend(TextareaTextManipulation, {
 
     if (chatChannel.isDraft) {
       return I18n.t("chat.placeholder_start_conversation", {
-        usernames: chatChannel.chatable.users.length
+        usernames: chatChannel?.chatable?.users?.length
           ? chatChannel.chatable.users.mapBy("username").join(", ")
           : "...",
       });

@@ -1,45 +1,45 @@
-{{#if fullPage}}
-  <div class="chat-full-page-header {{if previewing "previewing"}}">
+{{#if (and fullPage includeHeader)}}
+  <div class="chat-full-page-header {{if previewing 'previewing'}}">
     <div class="chat-channel-header-details">
       {{#if site.mobileView}}
-        {{d-button class="btn-flat" icon="chevron-left" action=onBackClick}}
+        <div class="chat-full-page-header__left-actions">
+          {{d-button class="btn-flat" icon="chevron-left" action=onBackClick}}
+        </div>
       {{/if}}
 
-      <div class="chat-channel-title-with-status">
-        {{#chat-channel-title
-          onClick=(action "onChannelTitleClick")
-          channel=chatChannel
-        }}
-          {{component
-            (if site.mobileView "flat-button" "d-button")
-            icon="trash-alt"
-            action=(action "navigateToIndex")
-            class="leave-channel btn-default"
-          }}
-        {{/chat-channel-title}}
+      {{#link-to
+        infoTabRoute
+        chatChannel.id
+        (if chatChannel.isDirectMessageChannel "-" chatChannel.title)
+        class="chat-full-page-header__title"
+      }}
+        {{chat-channel-title channel=chatChannel}}
 
-        {{chat-channel-status channel=chatChannel}}
-      </div>
+        {{#if displayMembers}}
+          <span class="chat-channel-member-count">
+            {{i18n
+              "chat.channel.memberships_count"
+              count=chatChannel.memberships_count
+            }}
+          </span>
+        {{/if}}
+      {{/link-to}}
 
       {{#if showCloseFullScreenBtn}}
-        {{flat-button
-          class="chat-full-screen-button"
-          icon="discourse-compress"
-          action=(action "onCloseFullScreen" chatChannel)
-          title="chat.close_full_page"
-        }}
+        <div class="chat-full-page-header__right-actions">
+          {{flat-button
+            class="chat-full-screen-button"
+            icon="discourse-compress"
+            action=(action "onCloseFullScreen" chatChannel)
+            title="chat.close_full_page"
+          }}
+        </div>
       {{/if}}
-
-      {{chat-channel-archive-status channel=chatChannel}}
     </div>
+
+    {{chat-channel-status channel=chatChannel}}
   </div>
 {{/if}}
-
-{{direct-message-creator
-  channel=chatChannel
-  isLoading=sendingloading
-  onSwitchChannel=onSwitchChannel
-}}
 
 {{chat-retention-reminder chatChannel=chatChannel}}
 
@@ -120,7 +120,3 @@
     }}
   {{/if}}
 {{/if}}
-
-<div class="chat-replying-indicator-container">
-  {{chat-replying-indicator chatChannel=chatChannel}}
-</div>

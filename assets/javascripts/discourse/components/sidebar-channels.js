@@ -24,14 +24,6 @@ export default class SidebarChannels extends Component {
 
   @action
   switchChannel(channel) {
-    if (
-      this.site.mobileView ||
-      this.router.currentRouteName.startsWith("chat.")
-    ) {
-      this.router.transitionTo("chat.channel", channel.id, channel.title);
-    } else {
-      this.appEvents.trigger("chat:open-channel", channel);
-    }
-    return false;
+    this.chat.openChannel(channel);
   }
 }

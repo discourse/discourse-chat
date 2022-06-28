@@ -93,6 +93,7 @@ acceptance(
 
     test("it changes the channel status in the header to archived", async function (assert) {
       await visit("/chat/channel/4/Topic");
+
       assert.notOk(
         exists(".chat-channel-title-with-status .chat-channel-status"),
         "channel status does not show if the channel is open"
@@ -103,10 +104,9 @@ acceptance(
         status: "archived",
       });
       await settled();
+
       assert.strictEqual(
-        query(
-          ".chat-channel-title-with-status .chat-channel-status"
-        ).innerText.trim(),
+        query(".chat-channel-status").innerText.trim(),
         I18n.t("chat.channel_status.archived_header"),
         "channel status changes to archived"
       );

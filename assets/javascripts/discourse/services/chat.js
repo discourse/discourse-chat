@@ -507,7 +507,10 @@ export default Service.extend({
       this.chatWindowStore.fullPage ||
       this.fullScreenChatOpen
     ) {
-      if (this.activeChannel?.id === channel.id) {
+      if (
+        this.router.currentRouteName === "chat.channel.index" &&
+        this.activeChannel?.id === channel.id
+      ) {
         this._fireOpenMessageAppEvent(messageId);
         return Promise.resolve();
       }

@@ -502,18 +502,16 @@ export default Service.extend({
 
   async _openFoundChannelAtMessage(channel, messageId = null) {
     if (
-      this.router.currentRouteName === "chat.channel" &&
-      this.router.currentRoute.params.channelTitle === channel.title
-    ) {
-      this._fireOpenMessageAppEvent(messageId);
-      return Promise.resolve();
-    } else if (
       Site.currentProp("mobileView") ||
-      this.router.currentRouteName === "chat" ||
-      this.router.currentRouteName === "chat.channel" ||
       this.currentUser.chat_isolated ||
-      this.chatWindowStore.fullPage
+      this.chatWindowStore.fullPage ||
+      this.fullScreenChatOpen
     ) {
+      if (this.activeChannel?.id === channel.id) {
+        this._fireOpenMessageAppEvent(messageId);
+        return Promise.resolve();
+      }
+
       const queryParams = messageId ? { messageId } : {};
       return this.router.transitionTo(
         "chat.channel",

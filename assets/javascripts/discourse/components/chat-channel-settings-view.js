@@ -37,6 +37,10 @@ export default class ChatChannelSettingsView extends Component {
 
   @action
   saveNotificationSettings(key, value) {
+    if (this.channel[key] === value) {
+      return;
+    }
+
     const camelizedKey = camelize(`saved_${key}`);
     this.set(camelizedKey, false);
 

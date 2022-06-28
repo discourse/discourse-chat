@@ -39,8 +39,10 @@ export default Controller.extend(ModalFunctionality, {
   @discourseComputed("category")
   categoryHint(category) {
     if (category) {
+      const fullSlug = this._buildCategorySlug(category);
+
       return {
-        link: `/c/${escape(category.slug)}/edit/security`,
+        link: `/c/${escape(fullSlug)}/edit/security`,
         category: escape(category.name),
       };
     }
@@ -113,5 +115,15 @@ export default Controller.extend(ModalFunctionality, {
       name: "",
       description: "",
     });
+  },
+
+  _buildCategorySlug(category) {
+    const parent = category.parentCategory;
+
+    if (parent) {
+      return `${this._buildCategorySlug(parent)}/${category.slug}`;
+    } else {
+      return category.slug;
+    }
   },
 });

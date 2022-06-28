@@ -226,12 +226,7 @@ export default Component.extend({
     "chat.activeChannel",
     "chatView"
   )
-  containerClassNames(
-    hidden,
-    expanded,
-    displayMembers,
-    activeChannel,
-  ) {
+  containerClassNames(hidden, expanded, displayMembers, activeChannel) {
     const classNames = ["topic-chat-container"];
     if (expanded) {
       classNames.push("expanded");

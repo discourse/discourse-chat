@@ -24,7 +24,7 @@ export default class ChatChannelInfoIndexController extends Controller {
       tabs.push("about");
     }
 
-    if (this.model.chatChannel.membershipsCount > 1) {
+    if (this.model.chatChannel.membershipsCount >= 1) {
       tabs.push("members");
     }
 

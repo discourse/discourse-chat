@@ -16,7 +16,7 @@ export default class ChatChannelInfoIndexController extends Controller {
     return classNames.join(" ");
   }
 
-  @computed("model.chatChannel")
+  @computed("model.chatChannel.{membershipsCount,status}")
   get tabs() {
     const tabs = [];
 
@@ -24,7 +24,10 @@ export default class ChatChannelInfoIndexController extends Controller {
       tabs.push("about");
     }
 
-    if (this.model.chatChannel.membershipsCount >= 1) {
+    if (
+      this.model.chatChannel.isOpen &&
+      this.model.chatChannel.membershipsCount >= 1
+    ) {
       tabs.push("members");
     }
 

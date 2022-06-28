@@ -15,7 +15,7 @@ export default DiscourseRoute.extend({
     ]);
 
     return EmberObject.create({
-      chatChannel,
+      chatChannel: ChatChannel.create(chatChannel),
       channels,
     });
   },

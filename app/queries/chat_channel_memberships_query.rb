@@ -4,7 +4,7 @@ class ChatChannelMembershipsQuery
   def self.call(channel, limit: 50, offset: 0, username: nil)
     query = UserChatChannelMembership
       .includes(:user)
-      .where(chat_channel: channel)
+      .where(chat_channel: channel, following: true)
 
     if username.present?
       if SiteSetting.prioritize_username_in_ux

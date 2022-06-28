@@ -17,10 +17,11 @@ describe DiscourseChat::Api::ChatChannelMembershipsController do
     context 'memberships exist' do
       before do
         UserChatChannelMembership.create(user: user_1, chat_channel: channel_1, following: true)
+        UserChatChannelMembership.create(user: Fabricate(:user), chat_channel: channel_1, following: false)
         sign_in(user_1)
       end
 
-      it 'lists memberships' do
+      it 'lists followed memberships' do
         get "/chat/api/chat_channels/#{channel_1.id}/memberships.json"
 
         expect(response.parsed_body.length).to eq(1)

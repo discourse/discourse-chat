@@ -16,19 +16,28 @@ acceptance("Discourse Chat - Create channel modal", function (needs) {
     chat_enabled: true,
   });
 
+  const catsCategory = {
+    id: 1,
+    name: "Cats",
+    slug: "cats",
+    permission: 1,
+  };
+
   needs.site({
     categories: [
-      {
-        id: 1,
-        name: "Cats",
-        slug: "cats",
-        permission: 1,
-      },
+      catsCategory,
       {
         id: 2,
         name: maliciousText,
         slug: maliciousText,
         permission: 1,
+      },
+      {
+        id: 3,
+        name: "Kittens",
+        slug: "kittens",
+        permission: 1,
+        parentCategory: catsCategory,
       },
     ],
   });
@@ -74,6 +83,32 @@ acceptance("Discourse Chat - Create channel modal", function (needs) {
     );
     assert.ok(
       query(".create-channel-hint a").href.includes("/c/cats/edit/security")
+    );
+  });
+
+  test("links to selected category's security settings works with nested subcategories", async function (assert) {
+    await visit("/chat/channel/1/cat");
+
+    await click(".edit-channels-dropdown .select-kit-header-wrapper");
+    await click("li[data-value='openCreateChannelModal']");
+
+    assert.strictEqual(
+      query(".create-channel-hint a").innerText,
+      "category security settings"
+    );
+    assert.ok(query(".create-channel-hint a").href.includes("/categories"));
+
+    await click(".category-chooser .select-kit-header-wrapper");
+    await click(".category-chooser .select-kit-body li[title='Kittens']");
+
+    assert.strictEqual(
+      query(".create-channel-hint a").innerText,
+      "Kittens security settings"
+    );
+    assert.ok(
+      query(".create-channel-hint a").href.includes(
+        "/c/cats/kittens/edit/security"
+      )
     );
   });
 

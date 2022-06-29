@@ -79,6 +79,10 @@ export default class ChatChannelMembersView extends Component {
   }
 
   _focusSearch() {
+    if (this.site.mobileView) {
+      return;
+    }
+
     schedule("afterRender", () => {
       document.getElementsByClassName(this.inputSelector)[0]?.focus();
     });

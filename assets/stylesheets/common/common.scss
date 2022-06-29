@@ -415,6 +415,10 @@ $float-height: 530px;
   transition: opacity 50ms ease-in;
   opacity: 1;
 
+  .chat-channel-unread-indicator {
+    margin-left: 0.5rem;
+  }
+
   &.unfollowing {
     opacity: 0;
   }

@@ -134,6 +134,7 @@ $float-height: 530px;
   position: relative;
 
   .chat-channel-unread-indicator {
+    min-width: 10px;
     width: 10px;
     height: 10px;
     border-radius: 10px;
@@ -216,6 +217,7 @@ $float-height: 530px;
   .chat-channel-unread-indicator {
     width: 10px;
     height: 10px;
+    min-width: 10px;
     border-radius: 10px;
     border: 0;
     right: 7px;
@@ -498,7 +500,7 @@ $float-height: 530px;
     margin-left: auto;
     visibility: hidden;
 
-    > * {
+    .d-icon {
       pointer-events: none;
     }
 

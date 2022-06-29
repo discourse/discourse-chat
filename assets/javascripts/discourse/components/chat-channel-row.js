@@ -60,7 +60,7 @@ export default Component.extend({
   @action
   handleClick(event) {
     if (event.target.classList.contains("chat-channel-leave-btn")) {
-      return;
+      return true;
     }
 
     if (

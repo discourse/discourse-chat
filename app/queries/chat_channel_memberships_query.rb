@@ -8,7 +8,7 @@ class ChatChannelMembershipsQuery
       .where(chat_channel: channel, following: true)
 
     if username.present?
-      if SiteSetting.prioritize_username_in_ux
+      if SiteSetting.prioritize_username_in_ux || !SiteSetting.enable_names
         query = query
           .where('users.username_lower ILIKE ?', "%#{username}%")
       else
@@ -17,10 +17,10 @@ class ChatChannelMembershipsQuery
       end
     end
 
-    if SiteSetting.enable_names
-      query = query.order('users.username_lower DESC')
+    if SiteSetting.prioritize_username_in_ux || !SiteSetting.enable_names
+      query = query.order('users.username_lower ASC')
     else
-      query = query.order('users.name DESC')
+      query = query.order('users.name ASC, users.username_lower ASC')
     end
 
     query

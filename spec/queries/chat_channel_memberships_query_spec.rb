@@ -3,8 +3,8 @@
 require 'rails_helper'
 
 describe ChatChannelMembershipsQuery do
-  fab!(:user_1) { Fabricate(:user) }
-  fab!(:user_2) { Fabricate(:user) }
+  fab!(:user_1) { Fabricate(:user, username: 'Aline', name: 'Boetie') }
+  fab!(:user_2) { Fabricate(:user, username: 'Bertrand', name: 'Arlan') }
 
   before do
     SiteSetting.chat_enabled = true
@@ -96,7 +96,55 @@ describe ChatChannelMembershipsQuery do
         memberships = described_class.call(channel_1.id, username: user_1.username)
 
         expect(memberships.length).to eq(1)
-        expect(memberships[0].user.username).to eq(user_1.username)
+        expect(memberships[0].user).to eq(user_1)
+      end
+    end
+
+    describe 'memberships order' do
+      fab!(:channel_1) { Fabricate(:chat_channel, chatable: Fabricate(:topic)) }
+
+      before do
+        UserChatChannelMembership.create(user: user_1, chat_channel: channel_1, following: true)
+        UserChatChannelMembership.create(user: user_2, chat_channel: channel_1, following: true)
+      end
+
+      context 'prioritizes username in ux' do
+        before do
+          SiteSetting.prioritize_username_in_ux = true
+        end
+
+        it 'is using ascending order on username' do
+          memberships = described_class.call(channel_1.id)
+
+          expect(memberships[0].user).to eq(user_1)
+          expect(memberships[1].user).to eq(user_2)
+        end
+      end
+
+      context 'doesn’t prioritize username in ux' do
+        before do
+          SiteSetting.prioritize_username_in_ux = false
+        end
+
+        it 'is using ascending order on name' do
+          memberships = described_class.call(channel_1.id)
+
+          expect(memberships[0].user).to eq(user_2)
+          expect(memberships[1].user).to eq(user_1)
+        end
+
+        context 'enable names is disabled' do
+          before do
+            SiteSetting.enable_names = false
+          end
+
+          it 'is using ascending order on username' do
+            memberships = described_class.call(channel_1.id)
+
+            expect(memberships[0].user).to eq(user_1)
+            expect(memberships[1].user).to eq(user_2)
+          end
+        end
       end
     end
   end

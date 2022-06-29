@@ -100,4 +100,46 @@ describe ChatChannelMembershipsQuery do
       end
     end
   end
+
+  context 'user is staged' do
+    fab!(:channel_1) { Fabricate(:chat_channel, chatable: Fabricate(:topic)) }
+    fab!(:staged_user) { Fabricate(:staged) }
+
+    before do
+      UserChatChannelMembership.create(user: staged_user, chat_channel: channel_1, following: true)
+    end
+
+    it 'doesn’t list staged users' do
+      memberships = described_class.call(channel_1.id)
+      expect(memberships).to be_blank
+    end
+  end
+
+  context 'user is suspended' do
+    fab!(:channel_1) { Fabricate(:chat_channel, chatable: Fabricate(:topic)) }
+    fab!(:suspended_user) { Fabricate(:user, suspended_at: Time.now, suspended_till: 5.days.from_now) }
+
+    before do
+      UserChatChannelMembership.create(user: suspended_user, chat_channel: channel_1, following: true)
+    end
+
+    it 'doesn’t list suspended users' do
+      memberships = described_class.call(channel_1.id)
+      expect(memberships).to be_blank
+    end
+  end
+
+  context 'user is inactive' do
+    fab!(:channel_1) { Fabricate(:chat_channel, chatable: Fabricate(:topic)) }
+    fab!(:inactive_user) { Fabricate(:inactive_user) }
+
+    before do
+      UserChatChannelMembership.create(user: inactive_user, chat_channel: channel_1, following: true)
+    end
+
+    it 'doesn’t list inactive users' do
+      memberships = described_class.call(channel_1.id)
+      expect(memberships).to be_blank
+    end
+  end
 end

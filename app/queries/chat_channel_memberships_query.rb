@@ -4,6 +4,7 @@ class ChatChannelMembershipsQuery
   def self.call(channel, limit: 50, offset: 0, username: nil)
     query = UserChatChannelMembership
       .includes(:user)
+      .where(user: User.activated.not_suspended.not_staged)
       .where(chat_channel: channel, following: true)
 
     if username.present?

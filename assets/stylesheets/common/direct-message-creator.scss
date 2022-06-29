@@ -23,6 +23,7 @@
     align-items: flex-start;
     border-bottom: 1px solid var(--primary-low);
     cursor: text;
+    position: relative;
 
     &.is-focused {
       background: var(--primary-very-low);

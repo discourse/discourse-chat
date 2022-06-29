@@ -103,24 +103,26 @@
       </div>
     </div>
 
-    <div class="topic-chat-drawer-content">
-      {{#if (and chatView chat.activeChannel)}}
-        {{chat-live-pane
-          chatChannel=chat.activeChannel
-          expanded=this.expanded
-          floatHidden=this.hidden
-          fullPage=false
-          onSwitchChannel=(action "switchChannel")
-        }}
-      {{else if draftChannelView}}
-        {{chat-draft-channel-screen onSwitchChannel=(action "switchChannel")}}
-      {{else}}
-        {{channels-list
-          floatHidden=this.hidden
-          onOpenView=(action "openView")
-          onSelect=(action "switchChannel")
-        }}
-      {{/if}}
-    </div>
+    {{#if expanded}}
+      <div class="topic-chat-drawer-content">
+        {{#if (and chatView chat.activeChannel)}}
+          {{chat-live-pane
+            chatChannel=chat.activeChannel
+            expanded=this.expanded
+            floatHidden=this.hidden
+            fullPage=false
+            onSwitchChannel=(action "switchChannel")
+          }}
+        {{else if draftChannelView}}
+          {{chat-draft-channel-screen onSwitchChannel=(action "switchChannel")}}
+        {{else}}
+          {{channels-list
+            floatHidden=this.hidden
+            onOpenView=(action "openView")
+            onSelect=(action "switchChannel")
+          }}
+        {{/if}}
+      </div>
+    {{/if}}
   </div>
 </div>

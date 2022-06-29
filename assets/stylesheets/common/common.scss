@@ -206,86 +206,9 @@ $float-height: 530px;
       background: none;
     }
   }
-}
 
-.channels-list {
-  overflow-y: auto;
-  height: 100%;
-  padding-bottom: env(safe-area-inset-bottom);
-  position: relative;
-
-  .chat-channel-unread-indicator {
-    width: 10px;
-    height: 10px;
-    min-width: 10px;
-    border-radius: 10px;
-    border: 0;
-    right: 7px;
-    top: calc(50% - 5px);
-
-    &.urgent .number-wrap {
-      display: none;
-    }
-  }
-
-  .edit-channel-membership-btn,
-  .new-dm,
-  .chat-channel-leave-btn {
-    background: transparent;
-    color: var(--primary-medium);
-    font-size: var(--font-0-rem);
+  .chat-channel-title {
     padding: 0.5rem;
-
-    &:hover {
-      background: transparent;
-
-      .d-icon {
-        color: var(--primary);
-      }
-    }
-  }
-
-  .public-channel-empty-message {
-    margin: 0 0.5em 0.5em 0.5em;
-  }
-
-  .chat-channel-divider {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-weight: bold;
-    padding: 0.25rem 0.5rem 0.25rem 2rem;
-    font-family: var(--heading-font-family);
-    font-size: var(--font-down-1-rem);
-
-    .channel-title {
-      line-height: var(--line-height-medium);
-      text-transform: uppercase;
-    }
-  }
-
-  .edit-channels-dropdown {
-    .select-kit-header {
-      background: none;
-      border: none;
-      font-size: var(--font-0-rem);
-      padding: 0.5rem;
-
-      .d-icon {
-        color: var(--primary-medium);
-        margin: 0;
-      }
-
-      &:focus .d-icon,
-      &:hover .d-icon {
-        color: var(--primary);
-      }
-    }
-  }
-  .edit-channel-membership-btn {
-    &:hover {
-      background: none;
-    }
   }
 }
 

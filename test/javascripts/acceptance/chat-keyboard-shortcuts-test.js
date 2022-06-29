@@ -115,7 +115,7 @@ acceptance("Discourse Chat - Keyboard shortcuts", function (needs) {
       "#chat-channel-selector-modal-inner .chat-channel-selection-row.channel-row[data-id='75']"
     );
     assert.notOk(exists("#chat-channel-selector-modal-inner"));
-    assert.equal(currentURL(), "/chat/channel/75/@hawk");
+    assert.equal(currentURL(), "/chat/channel/75/hawk");
   });
 
   test("the current chat channel does not show in the channel selector list", async function (assert) {
@@ -140,7 +140,7 @@ acceptance("Discourse Chat - Keyboard shortcuts", function (needs) {
     this.container.lookup("service:chat").set("chatWindowFullPage", true);
     await visit("/chat/channel/75/@hawk");
     await triggerKeyEvent(document.body, "keydown", 40, { altKey: true }); // Down key
-    assert.equal(currentURL(), "/chat/channel/76/@eviltrout");
+    assert.equal(currentURL(), "/chat/channel/76/eviltrout");
     await triggerKeyEvent(document.body, "keydown", 40, { altKey: true }); // Down key
     assert.equal(currentURL(), "/chat/channel/9/site");
     await triggerKeyEvent(document.body, "keydown", 40, { altKey: true }); // Down key
@@ -148,9 +148,9 @@ acceptance("Discourse Chat - Keyboard shortcuts", function (needs) {
     await triggerKeyEvent(document.body, "keydown", 38, { altKey: true }); // Up key
     assert.equal(currentURL(), "/chat/channel/9/site");
     await triggerKeyEvent(document.body, "keydown", 38, { altKey: true }); // Up key
-    assert.equal(currentURL(), "/chat/channel/76/@eviltrout");
+    assert.equal(currentURL(), "/chat/channel/76/eviltrout");
     await triggerKeyEvent(document.body, "keydown", 38, { altKey: true }); // Up key
-    assert.equal(currentURL(), "/chat/channel/75/@hawk");
+    assert.equal(currentURL(), "/chat/channel/75/hawk");
   });
 
   test("switching channel with alt+arrow keys in float", async function (assert) {

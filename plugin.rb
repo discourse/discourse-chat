@@ -477,21 +477,6 @@ after_initialize do
     config
   end
 
-  register_presence_channel_prefix("chat-channel-presence") do |channel_name|
-    if chat_channel_id = channel_name[/\/chat-channel-presence\/(\d+)/, 1]
-      chat_channel = ChatChannel.find(chat_channel_id)
-      config = PresenceChannel::Config.new
-      config.allowed_group_ids = chat_channel.allowed_group_ids
-      config.allowed_user_ids = chat_channel.allowed_user_ids
-      if config.allowed_group_ids.nil? && config.allowed_user_ids.nil?
-        config.public = true
-      end
-      config
-    end
-  rescue ActiveRecord::RecordNotFound
-    nil
-  end
-
   register_presence_channel_prefix("chat-reply") do |channel_name|
     if chat_channel_id = channel_name[/\/chat-reply\/(\d+)/, 1]
       chat_channel = ChatChannel.find(chat_channel_id)

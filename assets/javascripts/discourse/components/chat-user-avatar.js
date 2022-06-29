@@ -5,19 +5,19 @@ import { inject as service } from "@ember/service";
 export default class ChatUserAvatar extends Component {
   tagName = "";
 
-  chat = service();
+  @service chat;
 
   user = null;
 
   avatarSize = "tiny";
 
-  onlineUsers = null;
-
-  @computed("onlineUsers.[]", "user.{id,username}")
+  @computed("chat.presenceChannel.users.[]", "user.{id,username}")
   get isOnline() {
+    const users = this.chat.presenceChannel?.users;
+
     return (
-      !!this.onlineUsers?.findBy("id", this.user?.id) ||
-      !!this.onlineUsers?.findBy("username", this.user?.username)
+      !!users?.findBy("id", this.user?.id) ||
+      !!users?.findBy("username", this.user?.username)
     );
   }
 }

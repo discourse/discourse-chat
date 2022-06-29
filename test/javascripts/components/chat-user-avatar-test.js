@@ -35,14 +35,13 @@ discourseModule(
     });
 
     componentTest("user is online", {
-      template: hbs`{{chat-user-avatar chat=chat user=user onlineUsers=onlineUsers}}`,
+      template: hbs`{{chat-user-avatar chat=chat user=user}}`,
 
       async beforeEach() {
         this.set("user", user);
         this.set("chat", {
           presenceChannel: { users: [{ id: user.id }] },
         });
-        this.set("onlineUsers", [user]);
       },
 
       async test(assert) {

@@ -159,6 +159,7 @@ after_initialize do
   load File.expand_path('../app/controllers/api/chat_channels_controller.rb', __FILE__)
   load File.expand_path('../app/controllers/api/chat_channel_memberships_controller.rb', __FILE__)
   load File.expand_path('../app/controllers/api/chat_channel_notifications_settings_controller.rb', __FILE__)
+  load File.expand_path('../app/controllers/api/category_chatables_controller.rb', __FILE__)
   load File.expand_path('../app/queries/chat_channel_memberships_query.rb', __FILE__)
 
   if Discourse.allow_dev_populate?
@@ -482,6 +483,9 @@ after_initialize do
       get '/chat_channels/:chat_channel_id/memberships' => 'chat_channel_memberships#index'
       put '/chat_channels/:chat_channel_id' => 'chat_channels#update'
       put '/chat_channels/:chat_channel_id/notifications_settings' => 'chat_channel_notifications_settings#update'
+
+      # hints controller. Only used by staff members, we don't want to leak category permissions.
+      get '/category-chatables/:id/permissions' => 'category_chatables#permissions', format: :json, constraints: StaffConstraint.new
     end
 
     # direct_messages_controller routes

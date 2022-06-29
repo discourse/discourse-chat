@@ -213,7 +213,11 @@ en:
         choose_category:
           label: "Choose a category"
           none: "select one..."
-          hint: 'Manage access by visiting <a href=%{link} target="_blank">%{category} security settings</a>'
+          default_hint: Manage access by visiting <a href=%{link} target="_blank">%{category} security settings</a>
+          hint_single: Users in %{hint_1} will have access to this channel per the <a href=%{link} target="_blank">security settings</a>
+          hint_multiple:
+            one: Users in %{hint_1} and %{hint_2} will have access to this channel per the <a href=%{link} target="_blank">security settings</a>
+            other: Users in %{hint_1} and %{count} other groups will have access to this channel per the <a href=%{link} target="_blank">security settings</a>
         create: "Create channel"
         description: "Description (optional)"
         name: "Channel name"

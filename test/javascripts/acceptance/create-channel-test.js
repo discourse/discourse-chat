@@ -60,6 +60,10 @@ acceptance("Discourse Chat - Create channel modal", function (needs) {
     server.get("/chat/chat_channels/:chatChannelId", () =>
       helper.response({ chat_channel: { id: 1, title: "something" } })
     );
+
+    server.get("/chat/api/category-chatables/:categoryId/permissions", () =>
+      helper.response({ permissions: ["@awesomeGroup"] })
+    );
   });
 
   test("links to categories and selected category's security settings", async function (assert) {
@@ -79,7 +83,7 @@ acceptance("Discourse Chat - Create channel modal", function (needs) {
 
     assert.strictEqual(
       query(".create-channel-hint a").innerText,
-      "Cats security settings"
+      "security settings"
     );
     assert.ok(
       query(".create-channel-hint a").href.includes("/c/cats/edit/security")
@@ -103,7 +107,7 @@ acceptance("Discourse Chat - Create channel modal", function (needs) {
 
     assert.strictEqual(
       query(".create-channel-hint a").innerText,
-      "Kittens security settings"
+      "security settings"
     );
     assert.ok(
       query(".create-channel-hint a").href.includes(
@@ -125,12 +129,33 @@ acceptance("Discourse Chat - Create channel modal", function (needs) {
 
     assert.strictEqual(
       query(".create-channel-hint a").innerText,
-      "<script></script> security settings"
+      "security settings"
     );
     assert.ok(
       query(".create-channel-hint a").href.includes(
         "c/%3Cscript%3E%3C/script%3E/edit/security"
       )
+    );
+  });
+
+  test("includes group names in the hint", async (assert) => {
+    await visit("/chat/channel/1/cat");
+
+    await click(".edit-channels-dropdown .select-kit-header-wrapper");
+    await click("li[data-value='openCreateChannelModal']");
+
+    assert.strictEqual(
+      query(".create-channel-hint a").innerText,
+      "category security settings"
+    );
+    assert.ok(query(".create-channel-hint a").href.includes("/categories"));
+
+    await click(".category-chooser .select-kit-header-wrapper");
+    await click(".category-chooser .select-kit-body li[title='Kittens']");
+
+    assert.strictEqual(
+      query(".create-channel-hint").innerText,
+      "Users in @awesomeGroup will have access to this channel per the security settings"
     );
   });
 });

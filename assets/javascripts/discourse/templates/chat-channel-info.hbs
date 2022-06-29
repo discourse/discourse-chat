@@ -7,7 +7,9 @@
 
   <div class="channel-info">
     <div class="channel-info-header">
-      <h2 class="channel-info-header__title">{{model.chatChannel.title}}</h2>
+      <h2 class="channel-info-header__title">
+        {{replace-emoji model.chatChannel.title}}
+      </h2>
       <div class="channel-info-header__actions">
         {{d-button
           class="btn-flat"

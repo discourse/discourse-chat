@@ -1,0 +1,23 @@
+.chat-tabs {
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-tabs-list {
+  display: inline-flex;
+  list-style: none;
+  margin: 0 0 1.5rem 0;
+  border-bottom: 1px solid var(--primary-low);
+}
+
+.chat-tabs-list__link,
+.chat-tabs-list__link:visited {
+  color: var(--primary-medium);
+  padding: 1em;
+  display: flex;
+
+  &.active {
+    color: var(--tertiary);
+    border-bottom: 4px solid var(--tertiary);
+  }
+}

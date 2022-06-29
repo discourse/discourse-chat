@@ -162,7 +162,7 @@ acceptance(
     });
 
     test("non-staff users can see the move to channel button if they can_moderate the channel", async function (assert) {
-      await visit("/chat/channel/9/Site");
+      await visit("/chat/channel/9/site");
       assert.ok(exists(".chat-message-container"));
       const firstMessage = query(".chat-message-container");
       await triggerEvent(firstMessage, "mouseenter");

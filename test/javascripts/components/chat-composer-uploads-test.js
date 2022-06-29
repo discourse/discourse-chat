@@ -83,6 +83,9 @@ discourseModule(
           "upload-mixin:chat-composer-uploader:add-files",
           image
         );
+
+        await settled();
+
         this.appEvents.on(
           "upload-mixin:chat-composer-uploader:upload-success",
           (fileName, upload) => {
@@ -93,6 +96,7 @@ discourseModule(
         );
 
         await settled();
+
         assert.strictEqual(queryAll(".chat-composer-upload").length, 1);
       },
     });
@@ -122,6 +126,7 @@ discourseModule(
 
       beforeEach() {
         setupUploadPretender();
+
         this.set("changedUploads", null);
         this.set("onUploadChanged", (uploads) => {
           this.set("changedUploads", uploads);
@@ -136,6 +141,9 @@ discourseModule(
           "upload-mixin:chat-composer-uploader:add-files",
           image
         );
+
+        await settled();
+
         this.appEvents.on(
           `upload-mixin:chat-composer-uploader:upload-cancelled`,
           (fileId) => {
@@ -149,9 +157,12 @@ discourseModule(
         );
 
         await settled();
+
         assert.strictEqual(queryAll(".chat-composer-upload").length, 1);
 
         await click(".remove-upload");
+        await settled();
+
         assert.strictEqual(queryAll(".chat-composer-upload").length, 0);
       },
     });

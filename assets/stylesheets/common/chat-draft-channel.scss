@@ -1,0 +1,17 @@
+.full-page-chat.teams-sidebar-on {
+  .chat-draft-channel {
+    grid-template-columns: 1fr;
+  }
+}
+
+.chat-draft-channel-screen {
+  height: var(--full-page-chat-height);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+
+  .chat-live-pane {
+    height: var(--full-page-chat-live-pane-height);
+  }
+}

@@ -8,56 +8,104 @@
       aria-label={{i18n "chat.aria_roles.header"}}
       class="topic-chat-drawer-header"
     >
-      {{#if chatView}}
+      {{#if (and draftChannelView this.expanded)}}
+        <div class="topic-chat-drawer-header__left-actions">
+          <div class="topic-chat-drawer-header__top-line">
+            {{flat-button
+              class="return-to-channels"
+              icon="chevron-left"
+              action=(action "fetchChannels")
+              title="chat.return_to_list"
+            }}
+          </div>
+        </div>
+
+        <span class="topic-chat-drawer-header__title">
+          <div class="topic-chat-drawer-header__top-line">
+            {{i18n "chat.direct_message_creator.title"}}
+          </div>
+        </span>
+      {{else if chatView}}
         {{#if this.expanded}}
-          {{flat-button
-            class="return-to-channels"
-            icon="chevron-left"
-            action=(action "fetchChannels")
-            title="chat.return_to_list"
-          }}
+          <div class="topic-chat-drawer-header__left-actions">
+            {{flat-button
+              class="return-to-channels"
+              icon="chevron-left"
+              action=(action "fetchChannels")
+              title="chat.return_to_list"
+            }}
+          </div>
         {{/if}}
 
         {{#if chat.activeChannel}}
-          {{chat-channel-title
-            channel=chat.activeChannel
-            onClick=(action "onChannelTitleClick")
-            onSelectChannel=(action "switchChannel")
+          {{#link-to
+            infoTabRoute
+            chat.activeChannel.id
+            chat.activeChannel.title
+            class="topic-chat-drawer-header__title"
           }}
+            <div class="topic-chat-drawer-header__top-line">
+              {{#chat-channel-title channel=chat.activeChannel}}
+                {{#if (and (not expanded) unreadCount)}}
+                  <span class="chat-unread-count">{{unreadCount}}</span>
+                {{/if}}
+              {{/chat-channel-title}}
+            </div>
 
-          {{#if (and (not expanded) unreadCount)}}
-            <span class="chat-unread-count">{{unreadCount}}</span>
-          {{/if}}
+            {{#if displayMembers}}
+              <div class="topic-chat-drawer-header__bottom-line">
+                <span class="chat-channel-member-count">
+                  {{i18n
+                    "chat.channel.memberships_count"
+                    count=chat.activeChannel.memberships_count
+                  }}
+                </span>
+              </div>
+            {{/if}}
+          {{/link-to}}
         {{/if}}
       {{else}}
-        <span class="no-channel-title">{{i18n "chat.heading"}}</span>
+        <span class="topic-chat-drawer-header__title">
+          <div class="topic-chat-drawer-header__top-line">
+            {{i18n "chat.heading"}}
+          </div>
+        </span>
       {{/if}}
 
-      <button
-        class="btn-flat chat-full-screen-btn"
-        onmouseup={{action "openInFullPage"}}
-        icon="discourse-expand"
-        title={{i18n "chat.open_full_page"}}
-        type="button"
-      >
-        {{d-icon "discourse-expand"}}
-      </button>
+      <div class="topic-chat-drawer-header__right-actions">
+        <div class="topic-chat-drawer-header__top-line">
+          <button
+            class="btn-flat chat-full-screen-btn"
+            onmouseup={{action "openInFullPage"}}
+            icon="discourse-expand"
+            title={{i18n "chat.open_full_page"}}
+            type="button"
+          >
+            {{d-icon "discourse-expand"}}
+          </button>
 
-      {{flat-button
-        icon=this.expandIcon
-        class="chat-expand"
-        action=(action "toggleExpand")
-        title="chat.collapse"
-      }}
+          {{flat-button
+            icon=this.expandIcon
+            class="chat-expand"
+            action=(action "toggleExpand")
+            title="chat.collapse"
+          }}
 
-      {{#if showClose}}
-        {{flat-button icon="times" action=(action "close") title="chat.close"}}
-      {{/if}}
+          {{#if showClose}}
+            {{flat-button
+              icon="times"
+              action=(action "close")
+              title="chat.close"
+              class="chat-close-btn"
+            }}
+          {{/if}}
+        </div>
+      </div>
     </div>
 
-    <div class="topic-chat-drawer-content">
-      {{#if chatView}}
-        {{#if chat.activeChannel}}
+    {{#if expanded}}
+      <div class="topic-chat-drawer-content">
+        {{#if (and chatView chat.activeChannel)}}
           {{chat-live-pane
             chatChannel=chat.activeChannel
             expanded=this.expanded
@@ -65,10 +113,16 @@
             fullPage=false
             onSwitchChannel=(action "switchChannel")
           }}
+        {{else if draftChannelView}}
+          {{chat-draft-channel-screen onSwitchChannel=(action "switchChannel")}}
+        {{else}}
+          {{channels-list
+            floatHidden=this.hidden
+            onOpenView=(action "openView")
+            onSelect=(action "switchChannel")
+          }}
         {{/if}}
-      {{else}}
-        {{channels-list onSelect=(action "switchChannel")}}
-      {{/if}}
-    </div>
+      </div>
+    {{/if}}
   </div>
 </div>

@@ -1,4 +1,3 @@
-import { popupAjaxError } from "discourse/lib/ajax-error";
 import { caretPosition } from "discourse/lib/utilities";
 import { isEmpty } from "@ember/utils";
 import Component from "@ember/component";
@@ -9,10 +8,12 @@ import { INPUT_DELAY } from "discourse-common/config/environment";
 import { inject as service } from "@ember/service";
 import { schedule } from "@ember/runloop";
 import { gt, not } from "@ember/object/computed";
+import { createDirectMessageChannelDraft } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 
 export default Component.extend({
   tagName: "",
   users: null,
+  selectedUsers: null,
   term: null,
   isFiltering: false,
   isFilterFocused: false,
@@ -27,6 +28,8 @@ export default Component.extend({
     this._super(...arguments);
 
     this.set("users", []);
+    this.set("selectedUsers", []);
+    this.set("channel", createDirectMessageChannelDraft());
   },
 
   didInsertElement() {
@@ -79,37 +82,34 @@ export default Component.extend({
       });
   },
 
-  shouldRenderResults: not("isFiltering", "channel.isFetchingChannelPreview"),
+  shouldRenderResults: not("isFiltering"),
 
   @action
   selectUser(user) {
-    this.channel.chatable.users.pushObject(user);
+    this.selectedUsers.pushObject(user);
     this.users.removeObject(user);
-    this.channel.set("previewedChannel", null);
-    this.channel.set("isFetchingChannelPreview", false);
-    this._fetchPreviewedChannel();
     this.set("users", []);
     this.set("focusedUser", null);
     this.set("highlightedSelectedUser", null);
     this.set("term", null);
     this.focusFilter();
+    this.onChangeSelectedUsers?.(this.selectedUsers);
   },
 
   @action
   deselectUser(user) {
-    this.channel.chatable.users.removeObject(user);
-    this.channel.set("previewedChannel", null);
-    this.channel.set("isFetchingChannelPreview", false);
-    this._fetchPreviewedChannel();
+    this.users.removeObject(user);
+    this.selectedUsers.removeObject(user);
     this.set("focusedUser", this.users.firstObject);
     this.set("highlightedSelectedUser", null);
     this.set("term", null);
 
-    if (isEmpty(this.channel.chatable.users)) {
+    if (isEmpty(this.selectedUsers)) {
       this.filterUsernames();
     }
 
     this.focusFilter();
+    this.onChangeSelectedUsers?.(this.selectedUsers);
   },
 
   @action
@@ -306,46 +306,5 @@ export default Component.extend({
         event.key === "ArrowUp" ? this.users.lastObject : this.users.firstObject
       );
     }
-  },
-
-  _formatUsernames() {
-    return (this.channel.chatable.users || [])
-      .mapBy("username")
-      .uniq()
-      .join(",");
-  },
-
-  _fetchPreviewedChannel() {
-    if (isEmpty(this.channel.chatable.users)) {
-      this.channel.set("id", "draft");
-      this.onSwitchChannel?.(this.channel);
-      return;
-    }
-
-    this.channel.set("isFetchingChannelPreview", true);
-
-    return this.chat
-      .getDmChannelForUsernames(this._formatUsernames())
-      .catch((error) => {
-        if (error?.jqXHR?.status === 404) {
-          this.channel.set("id", "draft");
-          this.onSwitchChannel?.(this.channel);
-        } else {
-          popupAjaxError(error);
-        }
-      })
-      .then((response) => {
-        if (!response || this.isDestroying || this.isDestroyed) {
-          this.set("previewedChannel", null);
-          return;
-        }
-
-        this.channel.set("id", response.chat_channel.id);
-        this.onSwitchChannel?.(this.channel);
-      })
-      .catch(popupAjaxError)
-      .finally(() => {
-        this.channel.set("isFetchingChannelPreview", false);
-      });
   },
 });

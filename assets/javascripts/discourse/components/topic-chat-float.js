@@ -4,6 +4,7 @@ import getURL from "discourse-common/lib/get-url";
 import { action } from "@ember/object";
 import {
   CHAT_VIEW,
+  DRAFT_CHANNEL_VIEW,
   LIST_VIEW,
 } from "discourse/plugins/discourse-chat/discourse/services/chat";
 import { equal } from "@ember/object/computed";
@@ -13,6 +14,7 @@ import { Promise } from "rsvp";
 
 export default Component.extend({
   chatView: equal("view", CHAT_VIEW),
+  draftChannelView: equal("view", DRAFT_CHANNEL_VIEW),
   classNameBindings: [":topic-chat-float-container", "hidden"],
   chat: service(),
   router: service(),
@@ -36,6 +38,7 @@ export default Component.extend({
 
     this._checkSize();
     this.appEvents.on("chat:navigated-to-full-page", this, "close");
+    this.appEvents.on("chat:open-view", this, "openView");
     this.appEvents.on("chat:toggle-open", this, "toggleChat");
     this.appEvents.on(
       "chat:open-channel-for-chatable",
@@ -71,6 +74,7 @@ export default Component.extend({
     }
 
     if (this.appEvents) {
+      this.appEvents.off("chat:open-view", this, "openView");
       this.appEvents.off("chat:navigated-to-full-page", this, "close");
       this.appEvents.off("chat:toggle-open", this, "toggleChat");
       this.appEvents.off(
@@ -126,15 +130,22 @@ export default Component.extend({
     this.switchChannel(channel);
   },
 
-  openChannelAtMessage(channel, messageId) {
-    if (this.chat.activeChannel?.id === channel.id) {
-      // Already have this channel open. Fire app event to notify chat-live-pane
-      // to highlight or fetch the message.
-      this.appEvents.trigger("chat-live-pane:highlight-message", messageId);
-    } else {
-      this.chat.set("messageId", messageId);
-      this.switchChannel(channel);
+  @discourseComputed("expanded", "chat.activeChannel")
+  displayMembers(expanded, channel) {
+    return expanded && !channel?.isDirectMessageChannel;
+  },
+
+  @discourseComputed("displayMembers")
+  infoTabRoute(displayMembers) {
+    if (displayMembers) {
+      return "chat.channel.info.members";
     }
+
+    return "chat.channel.info.settings";
+  },
+
+  openChannelAtMessage(channel, messageId) {
+    this.chat.openChannel(channel, messageId);
   },
 
   chatEnabledForTopic(topic) {
@@ -201,8 +212,14 @@ export default Component.extend({
     this.element.style.setProperty("--composer-height", "40px");
   },
 
-  @discourseComputed("hidden", "expanded", "chat.activeChannel")
-  containerClassNames(hidden, expanded, activeChannel) {
+  @discourseComputed(
+    "hidden",
+    "expanded",
+    "displayMembers",
+    "chat.activeChannel",
+    "chatView"
+  )
+  containerClassNames(hidden, expanded, displayMembers, activeChannel) {
     const classNames = ["topic-chat-container"];
     if (expanded) {
       classNames.push("expanded");
@@ -231,6 +248,17 @@ export default Component.extend({
   )
   unreadCount(activeChannel, trackingState) {
     return trackingState[activeChannel.id]?.unread_count || 0;
+  },
+
+  @action
+  openView(view) {
+    this.setProperties({
+      hidden: false,
+      expanded: true,
+    });
+
+    this.set("view", view);
+    this.appEvents.trigger("chat:float-toggled", this.hidden);
   },
 
   @action
@@ -263,15 +291,6 @@ export default Component.extend({
     }
 
     this.router.transitionTo("chat");
-  },
-
-  @action
-  onChannelTitleClick() {
-    if (this.expanded && this.chat.activeChannel?.chatable_url) {
-      this.router.transitionTo(this.chat.activeChannel.chatable_url);
-    } else {
-      this.set("expanded", true);
-    }
   },
 
   @action
@@ -343,17 +362,11 @@ export default Component.extend({
   switchChannel(channel) {
     if (!channel) {
       this.chat.setActiveChannel(null);
-      return this.router.transitionTo("chat").promise;
+      return this.router.transitionTo("chat");
     }
 
-    if (this.chatWindowStore.fullPage) {
-      if (channel) {
-        return this.router.transitionTo(
-          "chat.channel",
-          channel.id,
-          channel.title
-        ).promise;
-      }
+    if (this.chatWindowStore.fullPage && channel) {
+      this.chat.openChannel(channel);
     }
 
     this.chat.setActiveChannel(null);

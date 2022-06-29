@@ -1,5 +1,6 @@
 import RestModel from "discourse/models/rest";
 import I18n from "I18n";
+import { computed } from "@ember/object";
 
 export const CHATABLE_TYPES = {
   directMessageChannel: "DirectMessageChannel",
@@ -66,40 +67,58 @@ const ChatChannel = RestModel.extend({
 
   isDraft: false,
 
+  @computed("chatable_type")
   get isDirectMessageChannel() {
     return this.chatable_type === CHATABLE_TYPES.directMessageChannel;
   },
 
+  @computed("chatable_type")
   get isTopicChannel() {
     return this.chatable_type === CHATABLE_TYPES.topicChannel;
   },
 
+  @computed("chatable_type")
   get isCategoryChannel() {
     return this.chatable_type === CHATABLE_TYPES.categoryChannel;
   },
 
+  @computed("status")
   get isOpen() {
     return this.status === CHANNEL_STATUSES.open;
   },
 
+  @computed("status")
   get isReadOnly() {
     return this.status === CHANNEL_STATUSES.readOnly;
   },
 
+  @computed("status")
   get isClosed() {
     return this.status === CHANNEL_STATUSES.closed;
   },
 
+  @computed("status")
   get isArchived() {
     return this.status === CHANNEL_STATUSES.archived;
+  },
+
+  @computed(
+    "isDirectMessageChannel",
+    "memberships_count",
+    "chatable.users.length"
+  )
+  get membershipsCount() {
+    if (this.isDirectMessageChannel) {
+      return (this.chatable.users?.length || 0) + 1;
+    }
+
+    return this.memberships_count;
   },
 });
 
 export function createDirectMessageChannelDraft() {
   return ChatChannel.create({
-    id: "draft",
     isDraft: true,
-    title: I18n.t("chat.direct_message_creator.title"),
     chatable_type: CHATABLE_TYPES.directMessageChannel,
     chatable: {
       users: [],

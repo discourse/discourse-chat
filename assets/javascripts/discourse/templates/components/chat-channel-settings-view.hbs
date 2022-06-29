@@ -1,0 +1,127 @@
+{{#unless channel.isDirectMessageChannel}}
+  <div class="chat-form__section">
+    <div class="chat-form__field">
+      <label class="chat-form__label">
+        <span>{{i18n "chat.settings.mute"}}</span>
+      </label>
+      <div class="chat-form__control">
+        {{combo-box
+          content=mutedOptions
+          value=channel.muted
+          valueProperty="value"
+          class="channel-settings-view__muted-selector"
+          onChange=(action (fn this.saveNotificationSettings "muted"))
+        }}
+        {{#if savedMuted}}
+          <span class="channel-settings-view__saved">✓ Saved</span>
+        {{/if}}
+      </div>
+    </div>
+
+    {{#unless channel.muted}}
+      <div class="chat-form__field">
+        <label class="chat-form__label">
+          <span>{{i18n "chat.settings.desktop_notification_level"}}</span>
+        </label>
+        <div class="chat-form__control">
+          {{combo-box
+            content=notificationLevels
+            value=channel.desktop_notification_level
+            valueProperty="value"
+            class="channel-settings-view__desktop-notification-level-selector"
+            onChange=(action
+              (fn this.saveNotificationSettings "desktop_notification_level")
+            )
+          }}
+          {{#if savedDesktopNotificationLevel}}
+            <span class="channel-settings-view__saved">✓ Saved</span>
+          {{/if}}
+        </div>
+      </div>
+
+      <div class="chat-form__field">
+        <label class="chat-form__label">
+          <span>{{i18n "chat.settings.mobile_notification_level"}}</span>
+        </label>
+        <div class="chat-form__control">
+          {{combo-box
+            content=notificationLevels
+            value=channel.mobile_notification_level
+            valueProperty="value"
+            class="channel-settings-view__mobile-notification-level-selector"
+            onChange=(action
+              (fn this.saveNotificationSettings "mobile_notification_level")
+            )
+          }}
+          {{#if savedMobileNotificationLevel}}
+            <span class="channel-settings-view__saved">✓ Saved</span>
+          {{/if}}
+        </div>
+      </div>
+    {{/unless}}
+  </div>
+
+  <div class="chat-form__section">
+    {{#if (chat-guardian "can-edit-chat-channel")}}
+      {{#if (chat-guardian "can-archive-channel" channel)}}
+        <div class="chat-form__field">
+          {{d-button
+            action=(action "onArchiveChannel")
+            label="chat.channel_settings.archive_channel"
+            class="archive-btn chat-form__btn btn-flat"
+            icon="archive"
+          }}
+        </div>
+      {{/if}}
+
+      {{#if channel.isClosed}}
+        <div class="chat-form__field">
+          {{d-button
+            action=(action "onToggleChannelState")
+            label="chat.channel_settings.open_channel"
+            class="open-btn chat-form__btn btn-flat"
+            icon="unlock"
+          }}
+        </div>
+      {{else}}
+        <div class="chat-form__field">
+          {{d-button
+            action=(action "onToggleChannelState")
+            label="chat.channel_settings.close_channel"
+            class="close-btn chat-form__btn btn-flat"
+            icon="lock"
+          }}
+        </div>
+      {{/if}}
+
+      <div class="chat-form__field">
+        {{d-button
+          action=(action "onDeleteChannel")
+          label="chat.channel_settings.delete_channel"
+          class="delete-btn chat-form__btn btn-flat"
+          icon="trash-alt"
+        }}
+      </div>
+    {{/if}}
+  </div>
+{{/unless}}
+
+<div class="chat-form__section">
+  {{#if channel.following}}
+    {{d-button
+      action=(action "onLeaveChannel")
+      label="chat.channel_settings.leave_channel"
+      class="chat-form__btn leave-channel-btn btn-flat"
+      icon="sign-out-alt"
+      disabled=isLoading
+    }}
+  {{else}}
+    {{d-button
+      action=(action "onJoinChannel")
+      label="chat.channel_settings.join_channel"
+      class="chat-form__btn join-channel-btn btn-flat"
+      icon="sign-in-alt"
+      disabled=isLoading
+    }}
+  {{/if}}
+</div>

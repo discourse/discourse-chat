@@ -1,10 +1,10 @@
-import { createDirectMessageChannelDraft } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import Component from "@ember/component";
 import showModal from "discourse/lib/show-modal";
 import { action, computed } from "@ember/object";
 import { inject as service } from "@ember/service";
 import { empty, reads } from "@ember/object/computed";
 import I18n from "I18n";
+import { DRAFT_CHANNEL_VIEW } from "discourse/plugins/discourse-chat/discourse/services/chat";
 
 export default class ChannelsList extends Component {
   @service chat;
@@ -75,7 +75,14 @@ export default class ChannelsList extends Component {
 
   @action
   startCreatingDmChannel() {
-    return this.onSelect(createDirectMessageChannelDraft());
+    if (
+      this.site.mobileView ||
+      this.router.currentRouteName.startsWith("chat.")
+    ) {
+      this.router.transitionTo("chat.draft-channel");
+    } else {
+      this.appEvents.trigger("chat:open-view", DRAFT_CHANNEL_VIEW);
+    }
   }
 
   @action

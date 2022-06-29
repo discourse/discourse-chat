@@ -1,5 +1,5 @@
 import Controller from "@ember/controller";
 
-export default Controller.extend({
-  queryParams: ["messageId"],
-});
+export default class ChatChannelController extends Controller {
+  queryParams = ["messageId"];
+}

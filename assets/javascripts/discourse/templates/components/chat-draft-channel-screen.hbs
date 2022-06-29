@@ -1,0 +1,19 @@
+{{compute-full-page-height pageSelector=".chat-draft-channel-screen"}}
+{{compute-live-pane-height}}
+
+<div class="chat-draft-channel-screen">
+  {{direct-message-creator
+    onChangeSelectedUsers=(action "onChangeSelectedUsers")
+  }}
+
+  {{#if previewedChannel}}
+    {{chat-live-pane
+      chatChannel=previewedChannel
+      expanded=true
+      floatHidden=false
+      fullPage=true
+      includeHeader=false
+      onSwitchChannel=(action "onSwitchFromDraftChannel")
+    }}
+  {{/if}}
+</div>

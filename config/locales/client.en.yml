@@ -31,10 +31,14 @@ en:
         confirm_move: "Move Messages"
       channel_settings:
         title: "Channel settings"
-        close_channel: "Close Channel..."
-        open_channel: "Open Channel..."
-        archive_channel: "Archive Channel..."
-        delete_channel: "Delete Channel..."
+        edit: "Edit"
+        add: "Add"
+        close_channel: "Close Channel"
+        open_channel: "Open Channel"
+        archive_channel: "Archive Channel"
+        delete_channel: "Delete Channel"
+        join_channel: "Join Channel"
+        leave_channel: "Leave Channel"
       channel_archive:
         title: "Archive Channel"
         instructions: "<p>Archiving a channel puts it into read-only mode and moves all messages from the channel into a new or existing topic. No new messages can be sent, and no existing messages can be edited or deleted.</p><p>Are you sure you want to archive the <strong>%{channelTitle}</strong> channel?</p>"
@@ -166,6 +170,31 @@ en:
         today: Today
         yesterday: Yesterday
 
+      members_view:
+        filter_placeholder: Find members
+
+      about_view:
+        associated_topic: Linked topic
+        associated_category: Linked category
+        title: Title
+        description: Description
+
+      channel_info:
+        tabs:
+          about: About
+          members: Members
+          settings: Settings
+
+      channel_edit_title_modal:
+        title: Edit title
+        input_placeholder: Add a title
+        description: Give a short descriptive title to your channel
+
+      channel_edit_description_modal:
+        title: Edit description
+        input_placeholder: Add a description
+        description: Tell people what this channel is all about
+
       direct_message_creator:
         title: New Message
         prefix: "To:"
@@ -175,6 +204,13 @@ en:
       channel_selector:
         title: "Jump to channel"
         no_channels: "No channels match your search"
+
+      channel:
+        no_memberships: This channel has no members
+        no_memberships_found: No members found
+        memberships_count:
+          one: 1 member
+          other: "%{count} members"
 
       create_channel:
         choose_category:

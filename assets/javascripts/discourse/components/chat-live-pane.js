@@ -14,13 +14,12 @@ import I18n from "I18n";
 import userPresent from "discourse/lib/user-presence";
 import { A } from "@ember/array";
 import { ajax } from "discourse/lib/ajax";
-import { isTesting } from "discourse-common/config/environment";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { cancel, later, next, schedule } from "@ember/runloop";
 import { inject as service } from "@ember/service";
 import { Promise } from "rsvp";
 import { resetIdle } from "discourse/lib/desktop-notifications";
-
+import { isTesting } from "discourse-common/config/environment";
 import { defaultHomepage } from "discourse/lib/utilities";
 
 const MAX_RECENT_MSGS = 100;
@@ -51,6 +50,7 @@ export default Component.extend({
   stickyScrollTimer: null,
   showChatQuoteSuccess: false,
   showCloseFullScreenBtn: false,
+  includeHeader: true,
 
   editingMessage: null, // ?Message
   replyToMsg: null, // ?Message
@@ -139,28 +139,45 @@ export default Component.extend({
 
     this.set("targetMessageId", this.chat.messageId);
 
-    if (this.registeredChatChannelId !== this.chatChannel.id) {
+    if (
+      this.chatChannel &&
+      this.registeredChatChannelId !== this.chatChannel?.id
+    ) {
       this._cleanRegisteredChatChannelId();
       this.messageLookup = {};
       this.set("allPastMessagesLoaded", false);
       this.cancelEditing();
 
-      if (this.chatChannel?.id !== "draft") {
-        this.chat
-          .getChannelBy("id", this.chatChannel.id)
-          .then((trackedChannel) => {
+      this.chat
+        .getChannelBy("id", this.chatChannel.id)
+        .then((trackedChannel) => {
+          this.fetchMessages(this.chatChannel);
+
+          if (!this.chatChannel?.isDraft) {
             this.set("previewing", !Boolean(trackedChannel));
-            this.fetchMessages(this.chatChannel.id);
-            this.loadDraftForChannel(this.chatChannel.id);
             this._startLastReadRunner();
-          });
-      } else {
-        this.set("draft", this.chat.getDraftForChannel("draft"));
-      }
+            this.loadDraftForChannel(this.chatChannel.id);
+          }
+        });
     }
+
     this.currentUserTimezone = this.currentUser?.resolvedTimezone(
       this.currentUser
     );
+  },
+
+  @discourseComputed("chatChannel.isDirectMessageChannel")
+  displayMembers(isDirectMessageChannel) {
+    return !isDirectMessageChannel;
+  },
+
+  @discourseComputed("displayMembers")
+  infoTabRoute(displayMembers) {
+    if (displayMembers) {
+      return "chat.channel.info.members";
+    }
+
+    return "chat.channel.info.settings";
   },
 
   @bind
@@ -180,18 +197,14 @@ export default Component.extend({
     );
   },
 
-  fetchMessages(channelId, options = {}) {
-    if (channelId === "draft") {
-      return Promise.resolve();
-    }
-
+  fetchMessages(channel, options = {}) {
     this.set("loading", true);
 
     return this.chat.loadCookFunction(this.site.categories).then((cook) => {
       this.set("cook", cook);
 
       const findArgs = {
-        channelId,
+        channelId: channel.id,
         pageSize: PAGE_SIZE,
       };
 
@@ -203,7 +216,7 @@ export default Component.extend({
       return this.store
         .findAll("chat-message", findArgs)
         .then((messages) => {
-          if (this._selfDeleted || this.chatChannel.id !== channelId) {
+          if (this._selfDeleted || this.chatChannel.id !== channel.id) {
             return;
           }
           this.setMessageProps(messages);
@@ -212,7 +225,7 @@ export default Component.extend({
           throw err;
         })
         .finally(() => {
-          if (this._selfDeleted || this.chatChannel.id !== channelId) {
+          if (this._selfDeleted || this.chatChannel.id !== channel.id) {
             return;
           }
 
@@ -229,10 +242,6 @@ export default Component.extend({
   },
 
   _fetchMoreMessages(direction) {
-    if (this.chatChannel.isDraft) {
-      return Promise.resolve();
-    }
-
     const loadingPast = direction === PAST;
     const canLoadMore = loadingPast
       ? this.details.can_load_more_past
@@ -512,7 +521,7 @@ export default Component.extend({
       });
     } else {
       this.set("targetMessageId", messageId);
-      this.fetchMessages(this.chatChannel.id);
+      this.fetchMessages(this.chatChannel);
     }
   },
 
@@ -552,15 +561,24 @@ export default Component.extend({
         // Remove highlighted class, but keep `transition-slow` on for another 2 seconds
         // to ensure the background color fades smoothly out
         if (opts.highlight) {
-          later(() => {
-            messageEl.classList.add("transition-slow");
-          }, 2000);
-          later(() => {
-            messageEl.classList.remove("highlighted");
-            later(() => {
-              messageEl.classList.remove("transition-slow");
-            }, 2000);
-          }, 3000);
+          later(
+            () => {
+              messageEl.classList.add("transition-slow");
+            },
+            isTesting() ? 0 : 2000
+          );
+          later(
+            () => {
+              messageEl.classList.remove("highlighted");
+              later(
+                () => {
+                  messageEl.classList.remove("transition-slow");
+                },
+                isTesting() ? 0 : 2000
+              );
+            },
+            isTesting() ? 0 : 3000
+          );
         }
       }
     });
@@ -949,6 +967,7 @@ export default Component.extend({
         if (this._selfDeleted) {
           return;
         }
+        this.set("previewing", false);
         this.set("loading", false);
         this.set("sendingloading", false);
         this._resetAfterSend();
@@ -1027,7 +1046,7 @@ export default Component.extend({
   async _upsertChannelWithMessage(channel, message, uploads) {
     let promise;
 
-    if (channel.isDirectMessageChannel) {
+    if (channel.isDirectMessageChannel || channel.isDraft) {
       promise = ajax("/chat/direct_messages/create.json", {
         method: "POST",
         data: { usernames: channel.chatable.users.mapBy("username") },
@@ -1149,7 +1168,7 @@ export default Component.extend({
     if (this._unloadedReplyIds.includes(message.id)) {
       // Message is not present in the loaded messages. Fetch it!
       this.set("targetMessageId", message.id);
-      this.fetchMessages(this.chatChannel.id);
+      this.fetchMessages(this.chatChannel);
     } else {
       this.scrollToMessage(replyMessageFromLookup.id, {
         highlight: true,
@@ -1223,11 +1242,6 @@ export default Component.extend({
       return this.router.transitionTo(this.chatChannel.chatable_url);
     }
     return false;
-  },
-
-  @action
-  onChannelTitleClick() {
-    return this._goToChatableUrl();
   },
 
   @action
@@ -1314,7 +1328,7 @@ export default Component.extend({
   restickScrolling(event) {
     event.preventDefault();
 
-    return this.fetchMessages(this.chatChannel.id, {
+    return this.fetchMessages(this.chatChannel, {
       fetchFromLastMessage: true,
     }).then(() => {
       this.set("stickyScroll", true);

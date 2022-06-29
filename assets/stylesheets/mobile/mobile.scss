@@ -20,14 +20,7 @@ body.has-full-page-chat {
   max-width: 90vw;
   .chat-channel-settings-row {
     max-width: 100%;
-    .chat-channel-expand-settings {
-      .d-icon {
-        margin-right: 0;
-      }
-      .d-button-label {
-        display: none;
-      }
-    }
+
     .chat-channel-preview {
       display: none;
     }
@@ -111,15 +104,6 @@ body.has-full-page-chat {
 
 .chat-full-page-header {
   .chat-channel-header-details {
-    flex-flow: row wrap;
-    flex-direction: row;
-
-    .chat-channel-status {
-      flex-basis: 100%;
-      flex-grow: 0;
-      margin: 0;
-    }
-
     .chat-channel-retry-archive {
       flex-direction: column;
 

@@ -1,3 +1,4 @@
+import { slugify } from "discourse/lib/utilities";
 import deprecated from "discourse-common/lib/deprecated";
 import userSearch from "discourse/lib/user-search";
 import { popupAjaxError } from "discourse/lib/ajax-error";
@@ -20,6 +21,7 @@ import EmberObject from "@ember/object";
 
 export const LIST_VIEW = "list_view";
 export const CHAT_VIEW = "chat_view";
+export const DRAFT_CHANNEL_VIEW = "draft_channel_view";
 
 const CHAT_ONLINE_OPTIONS = {
   userUnseenTime: 300000, // 5 minutes seconds with no interaction
@@ -501,22 +503,28 @@ export default Service.extend({
 
   async _openFoundChannelAtMessage(channel, messageId = null) {
     if (
-      this.router.currentRouteName === "chat.channel" &&
-      this.router.currentRoute.params.channelTitle === channel.title
+      this.router.currentRouteName === "chat.channel.index" &&
+      this.activeChannel?.id === channel.id
     ) {
+      this.setActiveChannel(channel);
       this._fireOpenMessageAppEvent(messageId);
       return Promise.resolve();
-    } else if (
+    }
+
+    this.setActiveChannel(channel);
+
+    if (
       Site.currentProp("mobileView") ||
-      this.router.currentRouteName === "chat" ||
-      this.router.currentRouteName === "chat.channel" ||
-      this.currentUser.chat_isolated
+      this.currentUser.chat_isolated ||
+      this.chatWindowStore.fullPage ||
+      this.fullScreenChatOpen
     ) {
       const queryParams = messageId ? { messageId } : {};
+
       return this.router.transitionTo(
         "chat.channel",
         channel.id,
-        channel.title,
+        slugify(channel.title).slice(0, 100),
         {
           queryParams,
         }

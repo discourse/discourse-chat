@@ -2,7 +2,6 @@ import Controller from "@ember/controller";
 import discourseComputed from "discourse-common/utils/decorators";
 import { action } from "@ember/object";
 import { inject as service } from "@ember/service";
-import { createDirectMessageChannelDraft } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 
 export default Controller.extend({
   router: service(),
@@ -33,8 +32,6 @@ export default Controller.extend({
 
   @action
   startCreatingDmChannel() {
-    const channel = createDirectMessageChannelDraft();
-    return this.router.transitionTo("chat.channel", channel.id, channel.title)
-      .promise;
+    return this.router.transitionTo("chat.draft-channel").promise;
   },
 });

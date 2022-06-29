@@ -65,3 +65,9 @@
     onUploadChanged=(action "uploadsChanged")
   }}
 {{/if}}
+
+{{#unless chatChannel.isDraft}}
+  <div class="chat-replying-indicator-container">
+    {{chat-replying-indicator chatChannel=chatChannel}}
+  </div>
+{{/unless}}

@@ -25,6 +25,8 @@ class ChatChannel < ActiveRecord::Base
       archived: 3
   }, _scopes: false
 
+  validates :name, length: { maximum:  Proc.new { SiteSetting.max_topic_title_length } }, presence: true, allow_nil: true
+
   def open?
     self.status.to_sym == :open
   end

@@ -1,0 +1,56 @@
+{{#if (gt channel.membershipsCount 0)}}
+  {{chat-channel-presence
+    channel=channel
+    onChange=(action (mut onlineUsers) value="users")
+  }}
+
+  <div class="channel-members-view-wrapper">
+    <div
+      class={{concat
+        "channel-members-view__search-input-container"
+        (if isSearchFocused " is-focused")
+      }}
+    >
+      {{d-icon "search"}}
+      {{input
+        class=inputSelector
+        placeholder=(i18n "chat.members_view.filter_placeholder")
+        input=(action "onFilterMembers" value="target.value")
+        focus-in=(action (mut isSearchFocused) true)
+        focus-out=(action (mut isSearchFocused) false)
+      }}
+    </div>
+
+    <div class="channel-members-view__list-container">
+      <div class="channel-members-view__member-count">
+        {{i18n "chat.channel.memberships_count" count=channel.membershipsCount}}
+      </div>
+      <div role="list" class="channel-members-view__list">
+        {{#load-more
+          selector=".channel-members-view__list-item"
+          action=(action "loadMore")
+        }}
+          {{#each members as |member|}}
+            <a
+              class="channel-members-view__list-item"
+              href={{member.user.userPath}}
+              data-user-card={{member.user.username}}
+              tabindex="0"
+            >
+              {{chat-user-avatar user=member.user onlineUsers=onlineUsers}}
+              <span>{{member.user.username}}</span>
+            </a>
+          {{else}}
+            {{#unless isFetchingMembers}}
+              {{i18n "chat.channel.no_memberships_found"}}
+            {{/unless}}
+          {{/each}}
+        {{/load-more}}
+      </div>
+    </div>
+  </div>
+{{else}}
+  <div class="channel-members-view__no-members">
+    {{i18n "chat.channel.no_memberships"}}
+  </div>
+{{/if}}

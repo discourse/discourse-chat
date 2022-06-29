@@ -2,7 +2,6 @@ import {
   acceptance,
   exists,
   query,
-  updateCurrentUser,
 } from "discourse/tests/helpers/qunit-helpers";
 import { click, currentURL, fillIn, visit } from "@ember/test-helpers";
 import { test } from "qunit";
@@ -57,27 +56,18 @@ acceptance("Discourse Chat - chat browsing", function (needs) {
   test("Chat browse controls", async function (assert) {
     await visit("/chat/browse");
     const settingsRow = query(".chat-channel-settings-row");
-    assert.ok(
-      settingsRow.querySelector(".chat-channel-expand-settings"),
-      "Expand notifications button is present"
-    );
+
     assert.ok(
       settingsRow.querySelector(".chat-channel-unfollow"),
       "Unfollow button is present"
     );
-    await click(".chat-channel-expand-settings");
-    assert.ok(exists(".chat-channel-row-controls"), "Controls are present");
 
     await click(".chat-channel-unfollow");
-    assert.notOk(
-      settingsRow.querySelector(".chat-channel-expand-settings"),
-      "Expand notifications button is gone"
-    );
+
     assert.notOk(
       settingsRow.querySelector(".chat-channel-unfollow"),
       "Unfollow button is gone"
     );
-
     assert.ok(
       settingsRow.querySelector(".chat-channel-preview"),
       "Preview channel button is present"
@@ -85,32 +75,6 @@ acceptance("Discourse Chat - chat browsing", function (needs) {
     assert.ok(
       settingsRow.querySelector(".chat-channel-follow"),
       "Follow button is present"
-    );
-  });
-
-  test("Chat browse - edit name is present for staff", async function (assert) {
-    updateCurrentUser({ admin: true, moderator: true });
-    await visit("/chat/browse");
-    const settingsRow = query(".chat-channel-settings-row");
-    await click(
-      settingsRow.querySelector(
-        ".channel-title-container .channel-title .edit-btn"
-      )
-    );
-    assert.ok(exists(".channel-name-edit"));
-    await fillIn(".channel-name-edit .name-input", editedChannelName);
-    await click(settingsRow.querySelector(".channel-name-edit .save-btn"));
-    assert.equal(
-      settingsRow.querySelector(".chat-channel-title").innerText.trim(),
-      editedChannelName
-    );
-  });
-
-  test("Chat browse - edit name is hidden for normal user", async function (assert) {
-    updateCurrentUser({ admin: false, moderator: false });
-    await visit("/chat/browse");
-    assert.notOk(
-      exists(".chat-channel-settings-row .channel-title-container .edit-btn")
     );
   });
 });
@@ -188,6 +152,7 @@ acceptance("Discourse Chat - chat browsing no channels", function (needs) {
         chat_channel: {
           id: 75,
           title: "hawk",
+          chatable: { users: [hawkAsJson] },
         },
       });
     });
@@ -198,17 +163,13 @@ acceptance("Discourse Chat - chat browsing no channels", function (needs) {
 
   test("Chat browsing shows empty state with create dm UI", async function (assert) {
     await visit("/chat/browse");
+
     assert.notOk(exists(".chat-channel-settings-row"));
     assert.ok(exists(".start-creating-dm-btn"));
 
     await click(".start-creating-dm-btn");
 
-    assert.equal(
-      currentURL(),
-      `/chat/channel/draft/${encodeURIComponent(
-        I18n.t("chat.direct_message_creator.title")
-      )}`
-    );
+    assert.equal(currentURL(), "/chat/draft-channel");
     assert.ok(exists(".direct-message-creator"));
 
     await fillIn(".filter-usernames", "hawk");

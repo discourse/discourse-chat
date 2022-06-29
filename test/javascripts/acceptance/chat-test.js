@@ -264,17 +264,19 @@ acceptance("Discourse Chat - without unread", function (needs) {
   });
 
   test("Clicking mention notification inside other full page channel switches the channel", async function (assert) {
+    this.container.lookup("service:chat").set("chatWindowFullPage", true);
     await visit("/chat/channel/75/@hawk");
     await click(".header-dropdown-toggle.current-user");
     await click("#quick-access-notifications .chat-mention");
-    assert.equal(currentURL(), `/chat/channel/9/Site`);
+    assert.equal(currentURL(), `/chat/channel/9/site`);
   });
 
   test("Clicking mention notification inside other full page channel switches the channel", async function (assert) {
+    this.container.lookup("service:chat").set("chatWindowFullPage", true);
     await visit("/chat/channel/75/@hawk");
     await click(".header-dropdown-toggle.current-user");
     await click("#quick-access-notifications .chat-mention");
-    assert.equal(currentURL(), `/chat/channel/9/Site`);
+    assert.equal(currentURL(), `/chat/channel/9/site`);
   });
 
   test("Mention notifications contain the correct text and icon", async function (assert) {
@@ -319,7 +321,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
 
   test("notifications for current user and here/all are highlighted", async function (assert) {
     updateCurrentUser({ username: "osama" });
-    await visit("/chat/channel/9/Site");
+    await visit("/chat/channel/9/site");
     // 177 is message id from fixture
     const highlighted = [];
     const notHighlighted = [];
@@ -344,7 +346,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
   });
 
   test("Chat messages are populated when a channel is entered and images are rendered", async function (assert) {
-    await visit("/chat/channel/9/Site");
+    await visit("/chat/channel/9/site");
     const messages = queryAll(".chat-message .chat-message-text");
     assert.equal(messages[0].innerText.trim(), messageContents[0]);
 
@@ -358,13 +360,13 @@ acceptance("Discourse Chat - without unread", function (needs) {
   });
 
   test("Reply-to line is hidden when reply-to message is directly above", async function (assert) {
-    await visit("/chat/channel/9/Site");
+    await visit("/chat/channel/9/site");
     const messages = queryAll(".chat-message-container");
     assert.notOk(messages[1].querySelector(".chat-reply__excerpt"));
   });
 
   test("Reply-to line is present when reply-to message is not directly above", async function (assert) {
-    await visit("/chat/channel/9/Site");
+    await visit("/chat/channel/9/site");
     const messages = queryAll(".chat-message-container");
     const replyTo = messages[2].querySelector(".chat-reply__excerpt");
     assert.ok(replyTo);
@@ -383,7 +385,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
   });
 
   test("Admin only controls are present", async function (assert) {
-    await visit("/chat/channel/9/Site");
+    await visit("/chat/channel/9/site");
     await triggerEvent(".chat-message-container[data-id='174']", "mouseenter");
 
     const currentUserDropdown = selectKit(
@@ -398,7 +400,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
 
     await visit("/");
     updateCurrentUser({ admin: true, moderator: true });
-    await visit("/chat/channel/9/Site");
+    await visit("/chat/channel/9/site");
     await triggerEvent(".chat-message-container[data-id='174']", "mouseenter");
     await currentUserDropdown.expand();
 
@@ -424,7 +426,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
   });
 
   test("Message controls are present and correct for permissions", async function (assert) {
-    await visit("/chat/channel/9/Site");
+    await visit("/chat/channel/9/site");
     const messages = queryAll(".chat-message");
     await triggerEvent(".chat-message-container[data-id='174']", "mouseenter");
 
@@ -497,7 +499,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
   });
 
   test("pressing the reply button adds the indicator to the composer", async function (assert) {
-    await visit("/chat/channel/9/Site");
+    await visit("/chat/channel/9/site");
     await triggerEvent(".chat-message-container[data-id='174']", "mouseenter");
     await click(".reply-btn");
     assert.ok(
@@ -513,7 +515,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
   });
 
   test("pressing the edit button fills the composer and indicates edit", async function (assert) {
-    await visit("/chat/channel/9/Site");
+    await visit("/chat/channel/9/site");
     await triggerEvent(".chat-message-container[data-id='174']", "mouseenter");
 
     const dropdown = selectKit(".more-buttons");
@@ -572,7 +574,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
   });
 
   test("Sending a message", async function (assert) {
-    await visit("/chat/channel/9/Site");
+    await visit("/chat/channel/9/site");
     const messageContent = "Here's a message";
     const composerInput = query(".chat-composer-input");
     assert.deepEqual(
@@ -669,7 +671,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
   });
 
   test("cooked processing messages are handled properly", async function (assert) {
-    await visit("/chat/channel/9/Site");
+    await visit("/chat/channel/9/site");
 
     const cooked = "<h1>hello there</h1>";
     publishToMessageBus(`/chat/9`, {
@@ -689,7 +691,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
   });
 
   test("Code highlighting in a message", async function (assert) {
-    await visit("/chat/channel/9/Site");
+    await visit("/chat/channel/9/site");
     const messageContent = `Here's a message with code highlighting
 
 \`\`\`ruby
@@ -730,14 +732,14 @@ Widget.triangulate(arg: "test")
   });
 
   test("Drafts are saved and reloaded", async function (assert) {
-    await visit("/chat/channel/9/Site");
+    await visit("/chat/channel/9/site");
     await fillIn(".chat-composer-input", "Hi people");
 
     await visit("/chat/channel/75/@hawk");
     assert.equal(query(".chat-composer-input").value.trim(), "");
     await fillIn(".chat-composer-input", "What up what up");
 
-    await visit("/chat/channel/9/Site");
+    await visit("/chat/channel/9/site");
     assert.equal(query(".chat-composer-input").value.trim(), "Hi people");
     await fillIn(".chat-composer-input", "");
 
@@ -752,13 +754,13 @@ Widget.triangulate(arg: "test")
     assert.equal(query(".chat-composer-input").value.trim(), "");
 
     // Navigate away and back to make sure input didn't re-fill
-    await visit("/chat/channel/9/Site");
+    await visit("/chat/channel/9/site");
     await visit("/chat/channel/75/@hawk");
     assert.equal(query(".chat-composer-input").value.trim(), "");
   });
 
   test("Pressing escape cancels editing", async function (assert) {
-    await visit("/chat/channel/9/Site");
+    await visit("/chat/channel/9/site");
     await triggerEvent(".chat-message-container[data-id='174']", "mouseenter");
 
     const dropdown = selectKit(".more-buttons");
@@ -857,7 +859,7 @@ Widget.triangulate(arg: "test")
 
   test("message selection and live pane buttons for regular user", async function (assert) {
     updateCurrentUser({ admin: false, moderator: false });
-    await visit("/chat/channel/9/Site");
+    await visit("/chat/channel/9/site");
 
     const firstMessage = query(".chat-message-container");
     await triggerEvent(firstMessage, "mouseenter");
@@ -871,14 +873,14 @@ Widget.triangulate(arg: "test")
 
   test("message selection is not present for regular user", async function (assert) {
     updateCurrentUser({ admin: false, moderator: false });
-    await visit("/chat/channel/9/Site");
+    await visit("/chat/channel/9/site");
     assert.notOk(
       exists(".chat-message-container .chat-msgactions-hover .select-btn")
     );
   });
 
   test("creating a new direct message channel works", async function (assert) {
-    await visit("/chat/channel/9/Site");
+    await visit("/chat/channel/9/site");
     await click(".new-dm");
     await fillIn(".filter-usernames", "hawk");
     await click("li.user[data-username='hawk']");
@@ -904,7 +906,7 @@ Widget.triangulate(arg: "test")
   });
 
   test("Reacting works with no existing reactions", async function (assert) {
-    await visit("/chat/channel/9/Site");
+    await visit("/chat/channel/9/site");
     const message = query(".chat-message-container");
     await triggerEvent(message, "mouseenter");
     assert.notOk(message.querySelector(".chat-message-reaction-list"));
@@ -920,7 +922,7 @@ Widget.triangulate(arg: "test")
   });
 
   test("Reacting works with existing reactions", async function (assert) {
-    await visit("/chat/channel/9/Site");
+    await visit("/chat/channel/9/site");
     const messages = queryAll(".chat-message-container");
 
     // First 2 messages have no reactions; make sure the list isn't rendered
@@ -982,7 +984,7 @@ Widget.triangulate(arg: "test")
   });
 
   test("Reacting and unreacting works on newly created chat messages", async function (assert) {
-    await visit("/chat/channel/9/Site");
+    await visit("/chat/channel/9/site");
     const composerInput = query(".chat-composer-input");
     await fillIn(composerInput, "hellloooo");
     await focus(composerInput);
@@ -1029,7 +1031,7 @@ Widget.triangulate(arg: "test")
   });
 
   test("mention warning is rendered", async function (assert) {
-    await visit("/chat/channel/9/Site");
+    await visit("/chat/channel/9/site");
     publishToMessageBus("/chat/9", {
       type: "mention_warning",
       cannot_see: [{ id: 75, username: "hawk" }],
@@ -1046,6 +1048,7 @@ Widget.triangulate(arg: "test")
         ".chat-message-container[data-id='176'] .chat-message-mention-warning"
       )
     );
+
     assert.ok(
       query(
         ".chat-message-container[data-id='176'] .chat-message-mention-warning .cannot-see"
@@ -1069,7 +1072,7 @@ Widget.triangulate(arg: "test")
   });
 
   test("It displays a separator between days", async function (assert) {
-    await visit("/chat/channel/9/Site");
+    await visit("/chat/channel/9/site");
     assert.equal(
       query(".first-daily-message").innerText.trim(),
       "July 22, 2021"
@@ -1077,7 +1080,7 @@ Widget.triangulate(arg: "test")
   });
 
   test("pressing keys focuses composer in full page chat", async function (assert) {
-    await visit("/chat/channel/9/Site");
+    await visit("/chat/channel/9/site");
 
     document.activeElement.blur();
     await triggerKeyEvent(document.body, "keydown", 65); // 65 is `a` keycode
@@ -1215,13 +1218,13 @@ acceptance(
 
     test("Close fullscreen chat button not present on chat_isolated", async function (assert) {
       updateCurrentUser({ chat_isolated: true });
-      await visit("/chat/channel/9/Site");
+      await visit("/chat/channel/9/site");
       assert.notOk(exists(".chat-full-screen-button"));
     });
 
     test("Close fullscreen chat button present", async function (assert) {
       updateCurrentUser({ chat_isolated: false });
-      await visit("/chat/channel/9/Site");
+      await visit("/chat/channel/9/site");
       assert.ok(exists(".chat-full-screen-button"));
     });
   }
@@ -1276,17 +1279,6 @@ acceptance(
       assert.notOk(
         exists(
           ".header-dropdown-toggle.open-chat .chat-unread-urgent-indicator"
-        )
-      );
-    });
-
-    test("Unread indicator does show on chat page when use has chat_isolated", async function (assert) {
-      updateCurrentUser({ chat_isolated: true });
-      await visit("/chat/channel/9/Site");
-      await click(".header-dropdown-toggle.open-chat"); // Force re-render. Flakey otherwise.
-      assert.ok(
-        exists(
-          ".header-dropdown-toggle.open-chat .chat-channel-unread-indicator.urgent"
         )
       );
     });
@@ -1374,13 +1366,15 @@ acceptance(
     });
 
     test("Create channel modal", async function (assert) {
-      await visit("/chat/channel/9/Site");
+      this.container.lookup("service:chat").set("chatWindowFullPage", true);
+
+      await visit("/chat/channel/9/site");
       const dropdown = selectKit(".edit-channels-dropdown");
       await dropdown.expand();
       await dropdown.selectRowByValue("browseChannels");
 
       assert.equal(currentURL(), "/chat/browse");
-      await visit("/chat/channel/9/Site");
+      await visit("/chat/channel/9/site");
       await dropdown.expand();
       await dropdown.selectRowByValue("openCreateChannelModal");
       assert.ok(exists(".create-channel-modal-modal"));
@@ -1418,7 +1412,7 @@ acceptance(
       assert.notOk(query(".create-channel-modal-modal .btn.create").disabled);
 
       await click(".create-channel-modal-modal .btn.create");
-      assert.equal(currentURL(), "/chat/channel/88/Something");
+      assert.equal(currentURL(), "/chat/channel/88/something");
     });
   }
 );
@@ -1923,15 +1917,6 @@ acceptance("Discourse Chat - Direct Message Creator", function (needs) {
       return helper.response([]);
     });
   });
-
-  test("starting new dm resets draft state", async function (assert) {
-    const text = "What up what up";
-    await visit("/chat/channel/9/Site");
-    await fillIn(".chat-composer-input", text);
-    await visit("/chat/channel/draft/NewMessage");
-
-    assert.notEqual(document.querySelector(".chat-composer-input").value, text);
-  });
 });
 
 acceptance("Discourse Chat - Composer", function (needs) {
@@ -1953,7 +1938,7 @@ acceptance("Discourse Chat - Composer", function (needs) {
   });
 
   test("pasting html in composer", async function (assert) {
-    await visit("/chat/channel/9/Site");
+    await visit("/chat/channel/9/site");
 
     const clipboardEvent = new Event("paste", { bubbles: true });
     clipboardEvent.clipboardData = {

@@ -18,10 +18,18 @@ class ChatChannelSerializer < ApplicationSerializer
              :archive_completed,
              :archived_messages,
              :total_messages,
-             :archive_topic_id
+             :archive_topic_id,
+             :memberships_count,
+             :desktop_notification_level,
+             :mobile_notification_level,
+             :following
 
   def include_description?
     object.description.present?
+  end
+
+  def memberships_count
+    object.user_count
   end
 
   def include_muted?

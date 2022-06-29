@@ -1,21 +1,23 @@
 import Component from "@ember/component";
-import discourseComputed from "discourse-common/utils/decorators";
+import { computed } from "@ember/object";
 import { inject as service } from "@ember/service";
 
-export default Component.extend({
-  tagName: "",
+export default class ChatUserAvatar extends Component {
+  tagName = "";
 
-  chat: service(),
+  chat = service();
 
-  user: null,
+  user = null;
 
-  avatarSize: "tiny",
+  avatarSize = "tiny";
 
-  @discourseComputed("chat.presenceChannel.users.[]", "user.{id,username}")
-  isOnline(users, user) {
+  onlineUsers = null;
+
+  @computed("onlineUsers.[]", "user.{id,username}")
+  get isOnline() {
     return (
-      !!users?.findBy("id", user?.id) ||
-      !!users?.findBy("username", user?.username)
+      !!this.onlineUsers?.findBy("id", this.user?.id) ||
+      !!this.onlineUsers?.findBy("username", this.user?.username)
     );
-  },
-});
+  }
+}

@@ -145,7 +145,7 @@ export default Component.extend({
   },
 
   openChannelAtMessage(channel, messageId) {
-    this.chat.openChannel(channel, messageId)
+    this.chat.openChannel(channel, messageId);
   },
 
   chatEnabledForTopic(topic) {

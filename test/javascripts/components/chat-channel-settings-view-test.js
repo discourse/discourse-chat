@@ -197,6 +197,8 @@ discourseModule(
       beforeEach() {
         set(this.currentUser, "admin", true);
         set(this.currentUser, "has_chat_enabled", true);
+        set(this.siteSettings, "chat_enabled", true);
+
         this.set("channel", fabricate("chat-channel"));
       },
 
@@ -219,7 +221,7 @@ discourseModule(
       beforeEach() {
         set(this.currentUser, "admin", true);
         set(this.currentUser, "has_chat_enabled", true);
-        set(this.currentUser, "has_chat_enabled", true);
+        set(this.siteSettings, "chat_enabled", true);
         set(this.siteSettings, "chat_allow_archiving_channels", true);
         this.set("channel", fabricate("chat-channel"));
       },

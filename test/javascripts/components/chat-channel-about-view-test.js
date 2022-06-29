@@ -67,7 +67,10 @@ discourseModule(
       template: hbs`{{chat-channel-about-view channel=channel}}`,
 
       beforeEach() {
+        set(this.currentUser, "has_chat_enabled", true);
         set(this.currentUser, "admin", true);
+        set(this.siteSettings, "chat_enabled", true);
+
         this.set(
           "channel",
           fabricate("chat-channel", {
@@ -77,6 +80,7 @@ discourseModule(
       },
 
       async test(assert) {
+        // await pauseTest();
         assert.ok(exists(".edit-title-btn"));
         assert.ok(exists(".edit-description-btn"));
       },

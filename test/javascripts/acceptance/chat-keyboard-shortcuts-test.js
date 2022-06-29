@@ -142,11 +142,11 @@ acceptance("Discourse Chat - Keyboard shortcuts", function (needs) {
     await triggerKeyEvent(document.body, "keydown", 40, { altKey: true }); // Down key
     assert.equal(currentURL(), "/chat/channel/76/@eviltrout");
     await triggerKeyEvent(document.body, "keydown", 40, { altKey: true }); // Down key
-    assert.equal(currentURL(), "/chat/channel/9/Site");
+    assert.equal(currentURL(), "/chat/channel/9/site");
     await triggerKeyEvent(document.body, "keydown", 40, { altKey: true }); // Down key
-    assert.equal(currentURL(), "/chat/channel/7/Uncategorized");
+    assert.equal(currentURL(), "/chat/channel/7/uncategorized");
     await triggerKeyEvent(document.body, "keydown", 38, { altKey: true }); // Up key
-    assert.equal(currentURL(), "/chat/channel/9/Site");
+    assert.equal(currentURL(), "/chat/channel/9/site");
     await triggerKeyEvent(document.body, "keydown", 38, { altKey: true }); // Up key
     assert.equal(currentURL(), "/chat/channel/76/@eviltrout");
     await triggerKeyEvent(document.body, "keydown", 38, { altKey: true }); // Up key

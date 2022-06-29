@@ -80,7 +80,6 @@ discourseModule(
       },
 
       async test(assert) {
-        // await pauseTest();
         assert.ok(exists(".edit-title-btn"));
         assert.ok(exists(".edit-description-btn"));
       },

@@ -1,4 +1,6 @@
-<div class="full-page-chat">
+{{compute-full-page-height selector=".chat-draft-channel-screen"}}
+
+<div class="full-page-chat chat-draft-channel">
   {{#if (and (not site.mobileView) (not chat.sidebarActive))}}
     {{channels-list onSelect=(action "onSwitchChannel")}}
   {{/if}}

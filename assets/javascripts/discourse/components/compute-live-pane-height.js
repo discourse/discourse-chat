@@ -4,9 +4,10 @@ import Component from "@ember/component";
 import { schedule } from "@ember/runloop";
 import { isTesting } from "discourse-common/config/environment";
 
-export default class ComputeFullPageHeight extends Component {
+export default class ComputeLivePaneHeight extends Component {
   tagName = "";
-  selector = null;
+
+  selector = ".chat-live-pane";
 
   didInsertElement() {
     this._super(...arguments);
@@ -25,19 +26,19 @@ export default class ComputeFullPageHeight extends Component {
     this.appEvents.off("composer:resized", this, "_updateHeight");
     this.appEvents.off("discourse:focus-changed", this, "_updateHeight");
 
-    document.body.style.removeProperty("--full-page-chat-height");
+    document.body.style.removeProperty("--full-page-chat-live-pane-height");
   }
 
   @bind
   _updateHeight() {
-    if (!this.selector || isTesting()) {
+    if (isTesting()) {
       return;
     }
 
     schedule("afterRender", () => {
       if (document.querySelector(this.selector)) {
         document.body.style.setProperty(
-          "--full-page-chat-height",
+          "--full-page-chat-live-pane-height",
           `${this._calculateHeight(this.selector)}px`
         );
       }

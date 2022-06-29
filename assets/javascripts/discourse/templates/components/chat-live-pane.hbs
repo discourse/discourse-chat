@@ -47,6 +47,8 @@
   {{#conditional-loading-spinner condition=this.loading}}
     {{conditional-loading-spinner condition=this.loadingMoreFuture}}
 
+    {{compute-live-pane-height}}
+
     {{#each this.messages as |message|}}
       {{chat-message
         message=message

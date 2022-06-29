@@ -473,15 +473,13 @@
   font-style: italic;
 }
 
-.full-page-chat {
-  .not-mobile-device & .chat-message:hover,
-  .chat-message.chat-message-selected {
-    background: var(--primary-very-low);
-  }
+.chat-message-container:hover,
+.chat-message.chat-message-selected {
+  background: var(--primary-very-low);
+}
 
-  .chat-message.chat-message-bookmarked {
-    background: var(--highlight-low);
-  }
+.chat-message.chat-message-bookmarked {
+  background: var(--highlight-low);
 }
 
 .has-full-page-chat .chat-message .onebox:not(img),

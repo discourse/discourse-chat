@@ -108,7 +108,7 @@ describe ChatChannelMembershipsQuery do
         UserChatChannelMembership.create(user: user_2, chat_channel: channel_1, following: true)
       end
 
-      context 'prioritizes username is ux' do
+      context 'prioritizes username in ux' do
         before do
           SiteSetting.prioritize_username_in_ux = true
         end
@@ -121,7 +121,7 @@ describe ChatChannelMembershipsQuery do
         end
       end
 
-      context 'doesn’t prioritize username is ux' do
+      context 'doesn’t prioritize username in ux' do
         before do
           SiteSetting.prioritize_username_in_ux = false
         end

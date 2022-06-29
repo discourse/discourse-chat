@@ -1,11 +1,11 @@
-{{compute-full-page-height}}
+{{compute-full-page-height pageSelector=".channel-info"}}
 
 <div class={{wrapperClassNames}}>
   {{#if (and (not site.mobileView) (not chat.sidebarActive))}}
     {{channels-list onSelect=(action "switchChannel")}}
   {{/if}}
 
-  <div class="chat-live-pane">
+  <div class="channel-info">
     <div class="channel-info-header">
       <h2 class="channel-info-header__title">{{model.chatChannel.title}}</h2>
       <div class="channel-info-header__actions">

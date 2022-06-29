@@ -1,5 +1,6 @@
 .chat-draft-channel {
+  height: var(--full-page-chat-height);
   .chat-live-pane {
-    height: var(--full-page-chat-height);
+    height: var(--full-page-chat-live-pane-height);
   }
 }

@@ -4,7 +4,7 @@
   {{/if}}
 
   {{#if chat.activeChannel}}
-    {{compute-full-page-height}}
+    {{compute-full-page-height pageSelector=".chat-live-pane"}}
 
     {{chat-live-pane
       chatChannel=chat.activeChannel

@@ -1,1 +1,7 @@
-{{chat-draft-channel-screen onSwitchChannel=(action "onSwitchChannel")}}
+<div class="full-page-chat">
+  {{#if (and (not site.mobileView) (not chat.sidebarActive))}}
+    {{channels-list onSelect=(action "onSwitchChannel")}}
+  {{/if}}
+
+  {{chat-draft-channel-screen onSwitchChannel=(action "onSwitchChannel")}}
+</div>

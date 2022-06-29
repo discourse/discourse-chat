@@ -4,8 +4,7 @@
   }}
 
   {{#if previewedChannel}}
-    {{compute-full-page-height}}
-
+    {{compute-full-page-height pageSelector=".chat-draft-channel"}}
     {{chat-live-pane
       chatChannel=previewedChannel
       expanded=true
@@ -14,5 +13,7 @@
       includeHeader=false
       onSwitchChannel=(action "onSwitchFromDraftChannel")
     }}
+  {{else}}
+    {{compute-full-page-height pageSelector=".chat-draft-channel"}}
   {{/if}}
 </div>

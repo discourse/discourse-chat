@@ -1,9 +1,4 @@
 {{#if (gt channel.membershipsCount 0)}}
-  {{chat-channel-presence
-    channel=channel
-    onChange=(action (mut onlineUsers) value="users")
-  }}
-
   <div class="channel-members-view-wrapper">
     <div
       class={{concat
@@ -37,7 +32,7 @@
               data-user-card={{member.user.username}}
               tabindex="0"
             >
-              {{chat-user-avatar user=member.user onlineUsers=onlineUsers}}
+              {{chat-user-avatar user=member.user}}
               <span>{{member.user.username}}</span>
             </a>
           {{else}}

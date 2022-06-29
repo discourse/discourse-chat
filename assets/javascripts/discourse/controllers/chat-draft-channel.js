@@ -7,7 +7,6 @@ export default class ChatDraftChannelController extends Controller {
 
   @action
   onSwitchChannel(channel) {
-    this.chat.setActiveChannel(channel);
     return this.chat.openChannel(channel);
   }
 }

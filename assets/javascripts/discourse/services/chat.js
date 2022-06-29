@@ -1,3 +1,4 @@
+import { slugify } from "discourse/lib/utilities";
 import deprecated from "discourse-common/lib/deprecated";
 import userSearch from "discourse/lib/user-search";
 import { popupAjaxError } from "discourse/lib/ajax-error";
@@ -502,24 +503,28 @@ export default Service.extend({
 
   async _openFoundChannelAtMessage(channel, messageId = null) {
     if (
+      this.router.currentRouteName === "chat.channel.index" &&
+      this.activeChannel?.id === channel.id
+    ) {
+      this.setActiveChannel(channel);
+      this._fireOpenMessageAppEvent(messageId);
+      return Promise.resolve();
+    }
+
+    this.setActiveChannel(channel);
+
+    if (
       Site.currentProp("mobileView") ||
       this.currentUser.chat_isolated ||
       this.chatWindowStore.fullPage ||
       this.fullScreenChatOpen
     ) {
-      if (
-        this.router.currentRouteName === "chat.channel.index" &&
-        this.activeChannel?.id === channel.id
-      ) {
-        this._fireOpenMessageAppEvent(messageId);
-        return Promise.resolve();
-      }
-
       const queryParams = messageId ? { messageId } : {};
+
       return this.router.transitionTo(
         "chat.channel",
         channel.id,
-        channel.isDirectMessageChannel ? "-" : channel.title,
+        slugify(channel.title).slice(0, 100),
         {
           queryParams,
         }

@@ -106,7 +106,6 @@ export default Component.extend({
 
   @action
   switchChannel(channel) {
-    this.chat.setActiveChannel(channel);
     return this.chat.openChannel(channel);
   },
 });

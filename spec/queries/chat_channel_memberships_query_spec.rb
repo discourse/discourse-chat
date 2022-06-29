@@ -96,7 +96,7 @@ describe ChatChannelMembershipsQuery do
         memberships = described_class.call(channel_1.id, username: user_1.username)
 
         expect(memberships.length).to eq(1)
-        expect(memberships[0].user.username).to eq(user_1.username)
+        expect(memberships[0].user).to eq(user_1)
       end
     end
 
@@ -116,8 +116,8 @@ describe ChatChannelMembershipsQuery do
         it 'is using ascending order on username' do
           memberships = described_class.call(channel_1.id)
 
-          expect(memberships[0].user.username).to eq(user_1.username)
-          expect(memberships[1].user.username).to eq(user_2.username)
+          expect(memberships[0].user).to eq(user_1)
+          expect(memberships[1].user).to eq(user_2)
         end
       end
 
@@ -129,8 +129,8 @@ describe ChatChannelMembershipsQuery do
         it 'is using ascending order on name' do
           memberships = described_class.call(channel_1.id)
 
-          expect(memberships[0].user.username).to eq(user_2.username)
-          expect(memberships[1].user.username).to eq(user_1.username)
+          expect(memberships[0].user).to eq(user_2)
+          expect(memberships[1].user).to eq(user_1)
         end
 
         context 'enable names is disabled' do
@@ -141,8 +141,8 @@ describe ChatChannelMembershipsQuery do
           it 'is using ascending order on username' do
             memberships = described_class.call(channel_1.id)
 
-            expect(memberships[0].user.username).to eq(user_1.username)
-            expect(memberships[1].user.username).to eq(user_2.username)
+            expect(memberships[0].user).to eq(user_1)
+            expect(memberships[1].user).to eq(user_2)
           end
         end
       end

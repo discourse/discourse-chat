@@ -1,5 +1,7 @@
-.chat-draft-channel {
-  grid-template-columns: 1fr;
+.full-page-chat.teams-sidebar-on {
+  .chat-draft-channel {
+    grid-template-columns: 1fr;
+  }
 }
 
 .chat-draft-channel-screen {

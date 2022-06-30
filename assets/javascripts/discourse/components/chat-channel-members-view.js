@@ -79,7 +79,7 @@ export default class ChatChannelMembersView extends Component {
   }
 
   _focusSearch() {
-    if (this.site.isMobileDevice) {
+    if (this.capabilities.isIpadOS || this.site.mobileView) {
       return;
     }
 

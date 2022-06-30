@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
 module DiscourseChat::UserOptionExtension
+  # TODO: remove last_emailed_for_chat and chat_isolated in 2023
   def self.prepended(base)
     if base.ignored_columns
-      base.ignored_columns = base.ignored_columns + [:last_emailed_for_chat]
+      base.ignored_columns = base.ignored_columns + [:last_emailed_for_chat, :chat_isolated]
     else
-      base.ignored_columns = [:last_emailed_for_chat]
+      base.ignored_columns = [:last_emailed_for_chat, :chat_isolated]
     end
 
     def base.chat_email_frequencies

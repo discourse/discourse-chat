@@ -137,46 +137,6 @@ acceptance("Discourse Chat | quoting when topic open", async function (needs) {
   });
 });
 
-acceptance(
-  "Discourse Chat | quoting with chat isolated",
-  async function (needs) {
-    needs.user({
-      admin: false,
-      moderator: false,
-      username: "eviltrout",
-      id: 1,
-      can_chat: true,
-      has_chat_enabled: true,
-      chat_isolated: true,
-    });
-
-    needs.settings({
-      chat_enabled: true,
-    });
-
-    needs.pretender((server, helper) => {
-      setupPretenders(server, helper);
-    });
-
-    test("it copies the quote to the clipboard", async function (assert) {
-      await visit("/chat/channel/7/Uncategorized");
-      assert.ok(exists(".chat-message-container"));
-      const firstMessage = query(".chat-message-container");
-      await triggerEvent(firstMessage, "mouseenter");
-      const dropdown = selectKit(".chat-message-container .more-buttons");
-      await dropdown.expand();
-      await dropdown.selectRowByValue("selectMessage");
-
-      assert.ok(firstMessage.classList.contains("selecting-messages"));
-      await click("#chat-quote-btn");
-      assert.notOk(
-        exists("#reply-control.composer-action-createTopic"),
-        "the composer does not open"
-      );
-    });
-  }
-);
-
 acceptance("Discourse Chat | quoting on mobile", async function (needs) {
   needs.user({
     admin: false,

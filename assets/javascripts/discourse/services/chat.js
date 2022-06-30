@@ -92,20 +92,6 @@ export default Service.extend({
     }
   },
 
-  @discourseComputed("router.currentRouteName")
-  isChatPage(routeName) {
-    let chatPage =
-      routeName === "chat" ||
-      routeName === "chat.channel" ||
-      routeName === "chat.loading";
-    if (chatPage) {
-      this.set("chatWindowFullPage", true);
-    }
-    return chatPage;
-  },
-
-  isBrowsePage: equal("router.currentRouteName", "chat.browse"),
-
   setActiveChannel(channel) {
     this.set("activeChannel", channel);
   },
@@ -515,7 +501,6 @@ export default Service.extend({
 
     if (
       Site.currentProp("mobileView") ||
-      this.currentUser.chat_isolated ||
       this.chatWindowStore.fullPage ||
       this.fullScreenChatOpen
     ) {

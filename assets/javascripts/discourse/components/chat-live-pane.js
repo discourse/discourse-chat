@@ -98,10 +98,7 @@ export default Component.extend({
 
     this.appEvents.on("chat:cancel-message-selection", this, "cancelSelecting");
 
-    this.set(
-      "showCloseFullScreenBtn",
-      !this.currentUser.chat_isolated && !this.site.mobileView
-    );
+    this.set("showCloseFullScreenBtn", !this.site.mobileView);
   },
 
   willDestroyElement() {

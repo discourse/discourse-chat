@@ -53,7 +53,7 @@ export default class AdminCustomizeColorsShowController extends Component {
       });
     };
 
-    if (!this.site.isMobileDevice && this.currentUser.chat_isolated) {
+    if (!this.site.isMobileDevice) {
       return this._copyQuoteToClipboard(quoteGenerationPromise);
     }
 

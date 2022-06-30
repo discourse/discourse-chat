@@ -4,14 +4,12 @@ import Service from "@ember/service";
 
 let publicChannels;
 let userCanChat;
-let isBrowsePage;
-let isChatPage;
+let fullScreenChatOpen;
 
 class ChatStub extends Service {
   userCanChat = userCanChat;
   publicChannels = publicChannels;
-  isBrowsePage = isBrowsePage;
-  isChatPage = isChatPage;
+  fullScreenChatOpen = fullScreenChatOpen;
 }
 
 export function setup(context, options = {}) {
@@ -22,13 +20,13 @@ export function setup(context, options = {}) {
     ? options.publicChannels
     : [fabricate("chat-channel")];
   userCanChat = isPresent(options.userCanChat) ? options.userCanChat : true;
-  isBrowsePage = isPresent(options.isBrowsePage) ? options.isBrowsePage : false;
-  isChatPage = isPresent(options.isChatPage) ? options.isChatPage : false;
+  fullScreenChatOpen = isPresent(options.fullScreenChatOpen)
+    ? options.fullScreenChatOpen
+    : false;
 }
 
 export function teardown() {
   publicChannels = [];
   userCanChat = true;
-  isBrowsePage = false;
-  isChatPage = false;
+  fullScreenChatOpen = false;
 }

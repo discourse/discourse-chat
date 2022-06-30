@@ -785,6 +785,7 @@ Widget.triangulate(arg: "test")
       user_id: 2,
     });
     await settled();
+
     assert.ok(
       exists(".header-dropdown-toggle.open-chat .chat-channel-unread-indicator")
     );
@@ -1216,14 +1217,7 @@ acceptance(
       });
     });
 
-    test("Close fullscreen chat button not present on chat_isolated", async function (assert) {
-      updateCurrentUser({ chat_isolated: true });
-      await visit("/chat/channel/9/site");
-      assert.notOk(exists(".chat-full-screen-button"));
-    });
-
     test("Close fullscreen chat button present", async function (assert) {
-      updateCurrentUser({ chat_isolated: false });
       await visit("/chat/channel/9/site");
       assert.ok(exists(".chat-full-screen-button"));
     });
@@ -1265,16 +1259,6 @@ acceptance(
       let later = new Date();
       later.setTime(now.getTime() + 600000);
       updateCurrentUser({ do_not_disturb_until: later.toUTCString() });
-      await visit("/t/internationalization-localization/280");
-      assert.notOk(
-        exists(
-          ".header-dropdown-toggle.open-chat .chat-unread-urgent-indicator"
-        )
-      );
-    });
-
-    test("Unread indicator doesn't show on homepage when user has chat_isolated", async function (assert) {
-      updateCurrentUser({ chat_isolated: true });
       await visit("/t/internationalization-localization/280");
       assert.notOk(
         exists(
@@ -1447,11 +1431,11 @@ acceptance("Discourse Chat - chat preferences", function (needs) {
     assert.equal(currentURL(), "/latest");
   });
 
-  test("There are all 6 settings shown", async function (assert) {
+  test("There are all 5 settings shown", async function (assert) {
     this.chatService.set("sidebarActive", true);
     await visit("/u/eviltrout/preferences/chat");
     assert.equal(currentURL(), "/u/eviltrout/preferences/chat");
-    assert.equal(queryAll(".chat-setting").length, 6);
+    assert.equal(queryAll(".chat-setting").length, 5);
   });
 
   test("The user can save the settings", async function (assert) {
@@ -1460,7 +1444,6 @@ acceptance("Discourse Chat - chat preferences", function (needs) {
     await visit("/u/eviltrout/preferences/chat");
     await click("#user_chat_enabled");
     await click("#user_chat_only_push_notifications");
-    await click("#user_chat_isolated");
     await click("#user_chat_ignore_channel_wide_mention");
     await selectKit("#user_chat_sounds").expand();
     await selectKit("#user_chat_sounds").selectRowByValue("bell");
@@ -1473,7 +1456,6 @@ acceptance("Discourse Chat - chat preferences", function (needs) {
       spy.calledWithMatch("/u/eviltrout.json", {
         data: {
           chat_enabled: true,
-          chat_isolated: true,
           chat_sound: "bell",
           only_chat_push_notifications: true,
           ignore_channel_wide_mention: true,

@@ -5,7 +5,6 @@
 ### View mode
 
 - [ ] docked (windowed/drawer)
-- [ ] isolated (full-screen)
 
 ### Browsers
 

@@ -8,7 +8,6 @@ import { CHAT_SOUNDS } from "discourse/plugins/discourse-chat/discourse/initiali
 
 const CHAT_ATTRS = [
   "chat_enabled",
-  "chat_isolated",
   "only_chat_push_notifications",
   "ignore_channel_wide_mention",
   "chat_sound",

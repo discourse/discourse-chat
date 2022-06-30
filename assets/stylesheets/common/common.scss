@@ -494,6 +494,10 @@ $float-height: 530px;
     font-size: var(--font-down-1);
     color: $primary-high;
   }
+
+  .emoji {
+    margin-left: 0.3em;
+  }
 }
 
 .chat-channel-settings-row {

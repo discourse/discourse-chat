@@ -10,6 +10,12 @@
 >
   {{chat-channel-title channel=channel unreadIndicator=true}}
 
+  {{#if this.showUserStatus}}
+    {{emoji
+      channel.chatable.users.firstObject.status.emoji
+      title=channel.chatable.users.firstObject.status.description}}
+  {{/if}}
+
   {{#if options.leaveButton}}
     {{chat-channel-leave-btn
       channel=channel

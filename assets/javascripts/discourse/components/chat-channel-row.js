@@ -15,6 +15,22 @@ export default Component.extend({
   isDirectMessageRow: equal("channel.chatable_type", "DirectMessageChannel"),
   options: null,
 
+  didInsertElement() {
+    this._super(...arguments);
+
+    if (this.isDirectMessageRow) {
+      this.channel.chatable.users[0].trackStatus();
+    }
+  },
+
+  willDestroyElement() {
+    this._super(...arguments);
+
+    if (this.isDirectMessageRow) {
+      this.channel.chatable.users[0].stopTrackingStatus();
+    }
+  },
+
   @discourseComputed(
     "channel.id",
     "chat.activeChannel.id",
@@ -40,6 +56,13 @@ export default Component.extend({
       classes.push("muted");
     }
     return classes.join(" ");
+  },
+
+  @discourseComputed("channel")
+  showUserStatus(channel) {
+    return !!(
+      channel.chatable?.users?.length && channel.chatable.users[0].status
+    );
   },
 
   @action

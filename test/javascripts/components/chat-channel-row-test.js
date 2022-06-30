@@ -6,6 +6,7 @@ import hbs from "htmlbars-inline-precompile";
 import { click, triggerKeyEvent } from "@ember/test-helpers";
 import fabricators from "../helpers/fabricators";
 import { module } from "qunit";
+import { CHATABLE_TYPES } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 
 module("Discourse Chat | Component | chat-channel-row", function (hooks) {
   setupRenderingTest(hooks);
@@ -105,6 +106,21 @@ module("Discourse Chat | Component | chat-channel-row", function (hooks) {
 
     async test(assert) {
       assert.ok(exists(".chat-channel-row[tabindex=0]"));
+    },
+  });
+
+  componentTest("shows user status on the direct message channel", {
+    template: hbs`{{chat-channel-row channel=channel}}`,
+
+    beforeEach() {
+      const status = { description: "Off to dentist", emoji: "tooth" };
+      const channel = fabricators.directMessageChatChannel();
+      channel.chatable.users[0].status = status;
+      this.set("channel", channel);
+    },
+
+    async test(assert) {
+      assert.ok(exists(".emoji[title='Off to dentist']"));
     },
   });
 });

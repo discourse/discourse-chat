@@ -1,6 +1,7 @@
 import RestModel from "discourse/models/rest";
 import I18n from "I18n";
 import { computed } from "@ember/object";
+import User from "discourse/models/user";
 
 export const CHATABLE_TYPES = {
   directMessageChannel: "DirectMessageChannel",
@@ -112,6 +113,23 @@ const ChatChannel = RestModel.extend({
     }
 
     return this.memberships_count;
+  },
+});
+
+ChatChannel.reopenClass({
+  create(args) {
+    args = args || {};
+    this._intiUserModels(args);
+    return this._super(args);
+  },
+
+  _intiUserModels(args) {
+    if (args.chatable?.users?.length) {
+      for (let i = 0; i < args.chatable?.users?.length; i++) {
+        const userData = args.chatable.users[i];
+        args.chatable.users[i] = User.create(userData);
+      }
+    }
   },
 });
 

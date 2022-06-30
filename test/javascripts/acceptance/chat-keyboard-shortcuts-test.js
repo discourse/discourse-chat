@@ -5,7 +5,6 @@ import {
   loggedInUser,
   query,
   queryAll,
-  updateCurrentUser,
   visible,
 } from "discourse/tests/helpers/qunit-helpers";
 
@@ -72,8 +71,7 @@ acceptance("Discourse Chat - Keyboard shortcuts", function (needs) {
     });
   });
 
-  test("channel selector opens channel in float with chat not isolated", async function (assert) {
-    updateCurrentUser({ chat_isolated: false });
+  test("channel selector opens channel in float", async function (assert) {
     await visit("/latest");
 
     await showModal("chat-channel-selector-modal");
@@ -104,18 +102,6 @@ acceptance("Discourse Chat - Keyboard shortcuts", function (needs) {
     assert.ok(exists(".topic-chat-container.visible"));
     assert.notOk(exists("#chat-channel-selector-modal-inner"));
     assert.equal(currentURL(), "/latest");
-  });
-
-  test("channel selector opens full-page when chat is isolated", async function (assert) {
-    updateCurrentUser({ chat_isolated: true });
-    await visit("/latest");
-    await showModal("chat-channel-selector-modal");
-    await settled();
-    await click(
-      "#chat-channel-selector-modal-inner .chat-channel-selection-row.channel-row[data-id='75']"
-    );
-    assert.notOk(exists("#chat-channel-selector-modal-inner"));
-    assert.equal(currentURL(), "/chat/channel/75/hawk");
   });
 
   test("the current chat channel does not show in the channel selector list", async function (assert) {

@@ -85,9 +85,6 @@ en:
       invalid_access: "You don't have access to view this chat channel"
       invitation_notification: "<span>%{username}</span> <span>invited you to join a chat channel</span>"
       in_reply_to: "In reply to"
-      isolate:
-        title: "Isolate chat"
-        description: "Always open chat in a new tab"
       heading: "Chat"
       join: "Join"
       new_messages: "new messages"

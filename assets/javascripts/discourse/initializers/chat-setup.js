@@ -79,11 +79,6 @@ export default {
 
       document.body.classList.add("chat-enabled");
 
-      if (api.container.lookup("site:main").mobileView) {
-        const currentUser = api.container.lookup("current-user:main");
-        currentUser.chat_isolated = false;
-      }
-
       this.chatService.getChannels();
 
       const chatNotificationManager = container.lookup(

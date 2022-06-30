@@ -117,11 +117,7 @@ export default {
     );
     for (let linkIndex = 0; linkIndex < links.length; linkIndex++) {
       const link = links[linkIndex];
-      if (
-        this.currentUser.chat_isolated ||
-        !DiscourseURL.isInternal(link.href) ||
-        !samePrefix(link.href)
-      ) {
+      if (!DiscourseURL.isInternal(link.href) || !samePrefix(link.href)) {
         link.setAttribute("target", "_blank");
       }
     }

@@ -9,12 +9,9 @@ export default class SidebarChannels extends Component {
   @service chat;
   @service router;
 
-  @computed("currentUser.chat_isolated", "chat.{userCanChat,isFullPageChat}")
+  @computed("chat.{userCanChat,isFullPageChat}")
   get isDisplayed() {
-    return (
-      this.chat.userCanChat &&
-      (!this.currentUser.chat_isolated || this.chat.fullScreenChatOpen)
-    );
+    return this.chat.userCanChat && this.chat.fullScreenChatOpen;
   }
 
   @action

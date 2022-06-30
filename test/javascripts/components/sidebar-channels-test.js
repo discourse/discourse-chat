@@ -13,31 +13,11 @@ discourseModule(
   function (hooks) {
     setupRenderingTest(hooks);
 
-    componentTest("chat is not isolated", {
+    componentTest("default", {
       template: hbs`{{sidebar-channels}}`,
 
       beforeEach() {
-        this.set("currentUser.chat_isolated", false);
-
-        setupChatStub(this);
-      },
-
-      afterEach() {
-        teardownChatStub();
-      },
-
-      async test(assert) {
-        assert.ok(exists("[data-chat-channel-id]"));
-      },
-    });
-
-    componentTest("chat is on browse page", {
-      template: hbs`{{sidebar-channels}}`,
-
-      beforeEach() {
-        this.set("currentUser.chat_isolated", true);
-
-        setupChatStub(this, { isBrowsePage: true });
+        setupChatStub(this, { fullScreenChatOpen: true });
       },
 
       afterEach() {
@@ -53,9 +33,7 @@ discourseModule(
       template: hbs`{{sidebar-channels}}`,
 
       beforeEach() {
-        this.set("currentUser.chat_isolated", true);
-
-        setupChatStub(this, { isChatPage: true });
+        setupChatStub(this, { fullScreenChatOpen: true });
       },
 
       afterEach() {
@@ -71,9 +49,7 @@ discourseModule(
       template: hbs`{{sidebar-channels}}`,
 
       beforeEach() {
-        this.set("currentUser.chat_isolated", true);
-
-        setupChatStub(this);
+        setupChatStub(this, { userCanChat: false, fullScreenChatOpen: false });
       },
 
       afterEach() {
@@ -89,9 +65,7 @@ discourseModule(
       template: hbs`{{sidebar-channels}}`,
 
       beforeEach() {
-        this.set("currentUser.chat_isolated", false);
-
-        setupChatStub(this, { userCanChat: false });
+        setupChatStub(this, { userCanChat: false, fullScreenChatOpen: true });
       },
 
       afterEach() {

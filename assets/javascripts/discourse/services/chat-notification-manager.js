@@ -50,10 +50,6 @@ export default Service.extend({
   },
 
   shouldCountChatInDocTitle() {
-    if (this.currentUser.chat_isolated && !this.chat.isChatPage) {
-      return false;
-    }
-
     return this._countChatInDocTitle;
   },
 
@@ -102,10 +98,6 @@ export default Service.extend({
 
   _subscribeToChat(opts = { only: false }) {
     this.set("_countChatInDocTitle", true);
-
-    if (this.currentUser.chat_isolated && !this.chat.isChatPage) {
-      return;
-    }
 
     if (!this._subscribedToChat) {
       this.messageBus.subscribe(this._chatAlertChannel(), (data) =>

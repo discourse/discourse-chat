@@ -15,10 +15,7 @@ export default createWidget("header-chat-link", {
       return;
     }
 
-    if (
-      this.currentUser.isInDoNotDisturb() ||
-      (this.currentUser.chat_isolated && !this.chat.isChatPage)
-    ) {
+    if (this.currentUser.isInDoNotDisturb()) {
       return this.chatLinkHtml();
     }
 
@@ -42,7 +39,9 @@ export default createWidget("header-chat-link", {
 
   chatLinkHtml(indicatorNode) {
     return h(
-      `a.icon${this.chat.isChatPage || this.chat.chatOpen ? ".active" : ""}`,
+      `a.icon${
+        this.chat.fullScreenChatOpen || this.chat.chatOpen ? ".active" : ""
+      }`,
       { attributes: { tabindex: 0 } },
       [iconNode("comment"), indicatorNode].filter(Boolean)
     );
@@ -62,16 +61,8 @@ export default createWidget("header-chat-link", {
   },
 
   click() {
-    if (this.chat.isChatPage && !this.site.mobileView) {
+    if (this.chat.fullScreenChatOpen && !this.site.mobileView) {
       return;
-    }
-
-    if (this.currentUser.chat_isolated) {
-      if (this.capabilities.isPwa) {
-        return this.router.transitionTo("chat");
-      } else {
-        return window.open(getURL("/chat"), "_blank").focus();
-      }
     }
 
     if (this.site.mobileView || this.chat.sidebarActive) {

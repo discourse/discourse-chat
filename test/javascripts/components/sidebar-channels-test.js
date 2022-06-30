@@ -17,7 +17,7 @@ discourseModule(
       template: hbs`{{sidebar-channels}}`,
 
       beforeEach() {
-        setupChatStub(this, { fullScreenChatOpen: true });
+        setupChatStub(this);
       },
 
       afterEach() {
@@ -65,7 +65,7 @@ discourseModule(
       template: hbs`{{sidebar-channels}}`,
 
       beforeEach() {
-        setupChatStub(this, { userCanChat: false, fullScreenChatOpen: true });
+        setupChatStub(this, { userCanChat: false });
       },
 
       afterEach() {

@@ -9,7 +9,7 @@ export default class SidebarChannels extends Component {
   @service chat;
   @service router;
 
-  @computed("chat.{userCanChat}")
+  @computed("chat.userCanChat")
   get isDisplayed() {
     return this.chat.userCanChat;
   }

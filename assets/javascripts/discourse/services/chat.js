@@ -8,7 +8,7 @@ import { ajax } from "discourse/lib/ajax";
 import { A } from "@ember/array";
 import { generateCookFunction } from "discourse/lib/text";
 import { next } from "@ember/runloop";
-import { and, equal } from "@ember/object/computed";
+import { and } from "@ember/object/computed";
 import { Promise } from "rsvp";
 import ChatChannel, {
   CHANNEL_STATUSES,
@@ -16,7 +16,6 @@ import ChatChannel, {
 } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import simpleCategoryHashMentionTransform from "discourse/plugins/discourse-chat/discourse/lib/simple-category-hash-mention-transform";
 import discourseDebounce from "discourse-common/lib/debounce";
-import discourseComputed from "discourse-common/utils/decorators";
 import EmberObject from "@ember/object";
 
 export const LIST_VIEW = "list_view";

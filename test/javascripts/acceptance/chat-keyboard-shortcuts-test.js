@@ -5,7 +5,6 @@ import {
   loggedInUser,
   query,
   queryAll,
-  updateCurrentUser,
   visible,
 } from "discourse/tests/helpers/qunit-helpers";
 

@@ -1,5 +1,7 @@
 .channel-info {
   height: var(--full-page-chat-height);
+  display: flex;
+  flex-direction: column;
 }
 
 // Info header
@@ -8,17 +10,13 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
+  box-sizing: border-box;
 }
 
 .channel-info-header__title {
   font-size: var(--font-up-2);
   margin: 0;
   padding-left: 1rem;
-}
-
-// Info tabs
-.chat-info-tabs {
-  padding: 0 1rem 1rem;
 }
 
 // About view
@@ -49,7 +47,11 @@
 
 // Members list
 .channel-members-view-wrapper {
-  padding: 0 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 0 1rem;
 }
 
 .channel-members-view__search-input-container {
@@ -90,7 +92,12 @@ input.channel-members-view__search-input {
 }
 
 .channel-members-view__list-container {
-  padding-top: 1em;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  min-height: 1px;
+  overflow-y: auto;
+  height: var(--chat-pane-height, 100%);
 }
 
 .channel-members-view__list-item {

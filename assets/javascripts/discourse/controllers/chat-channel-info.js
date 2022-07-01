@@ -7,15 +7,6 @@ export default class ChatChannelInfoIndexController extends Controller {
   @service router;
   @service chat;
 
-  @computed("teamsSidebarOn")
-  get wrapperClassNames() {
-    const classNames = ["full-page-chat"];
-    if (this.chat.sidebarActive) {
-      classNames.push("teams-sidebar-on");
-    }
-    return classNames.join(" ");
-  }
-
   @computed("model.chatChannel.{membershipsCount,status}")
   get tabs() {
     const tabs = [];

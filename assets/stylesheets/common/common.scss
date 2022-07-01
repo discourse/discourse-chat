@@ -316,6 +316,7 @@ $float-height: 530px;
   position: relative;
   flex-direction: column;
   width: 100%;
+  min-height: 1px;
 
   .chat-messages-scroll {
     padding-bottom: 0.5em;
@@ -591,7 +592,10 @@ body.has-full-page-chat {
     Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
   display: grid;
   grid-template-columns: var(--full-page-sidebar-width) 1fr;
-  grid-template-rows: var(--full-page-chat-height);
+  grid-template-rows: var(
+    --full-page-chat-height,
+    calc(100vh - var(--header-offset))
+  );
 
   .channels-list {
     background: var(--primary-very-low);

@@ -1,18 +1,12 @@
 {{compute-full-page-height selector=".full-page-chat"}}
 
-<div class={{wrapperClassNames}}>
-  {{#if showChannelSelector}}
-    {{channels-list onSelect=(action "switchChannel")}}
-  {{/if}}
-
-  {{#if chat.activeChannel}}
-    {{chat-live-pane
-      chatChannel=chat.activeChannel
-      expanded=true
-      floatHidden=false
-      fullPage=true
-      onBackClick=(action "navigateToIndex")
-      onSwitchChannel=(action "switchChannel")
-    }}
-  {{/if}}
-</div>
+{{#if chat.activeChannel}}
+  {{chat-live-pane
+    chatChannel=chat.activeChannel
+    expanded=true
+    floatHidden=false
+    fullPage=true
+    onBackClick=(action "navigateToIndex")
+    onSwitchChannel=(action "switchChannel")
+  }}
+{{/if}}

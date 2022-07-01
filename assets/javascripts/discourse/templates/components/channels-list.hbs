@@ -2,6 +2,7 @@
   role="region"
   aria-label={{i18n "chat.aria_roles.channels_list"}}
   class="channels-list"
+  {{on "scroll" (action "storeScrollPosition")}}
 >
   <div class="chat-channel-divider">
     {{#if inSidebar}}

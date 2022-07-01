@@ -10,7 +10,7 @@
       {{#link-to
         infoTabRoute
         chatChannel.id
-        (if chatChannel.isDirectMessageChannel "-" chatChannel.title)
+        (slugify-channel chatChannel.title)
         class="chat-full-page-header__title"
       }}
         {{chat-channel-title channel=chatChannel}}

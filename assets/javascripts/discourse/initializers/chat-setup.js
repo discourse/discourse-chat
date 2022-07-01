@@ -130,12 +130,13 @@ export default {
         header: {
           title: "channels title",
           text: "channels",
-          action: () => { alert("fsdfsd") }, // TODO
+          // eslint-disable-next-line no-console
+          action: () => { console.log("fsdfsd"); }, // TODO
           actionIcon: "cog",
           actionTitle: I18n.t("sidebar.channels.settings.title")
         },
         links: (baseSectionLink) => {
-          const links = A([])
+          const links = A([]);
           this.chatService.getChannels().then((channels) => {
             channels.publicChannels.forEach((channel) => {
               links.pushObject(

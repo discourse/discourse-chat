@@ -1,1 +1,10 @@
-{{outlet}}
+{{#if chat.sidebarActive}}
+  <div class="full-page-chat teams-sidebar-on">
+    {{outlet}}
+  </div>
+{{else}}
+  <div class="full-page-chat">
+    {{channels-list onSelect=(action "switchChannel")}}
+    {{outlet}}
+  </div>
+{{/if}}

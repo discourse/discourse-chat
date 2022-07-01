@@ -16,31 +16,30 @@
       }}
     </div>
 
-    <div class="channel-members-view__list-container">
+    <div
+      class="channel-members-view__list-container"
+      {{on "scroll" (action "loadMore")}}
+    >
       <div class="channel-members-view__member-count">
         {{i18n "chat.channel.memberships_count" count=channel.membershipsCount}}
       </div>
+
       <div role="list" class="channel-members-view__list">
-        {{#load-more
-          selector=".channel-members-view__list-item"
-          action=(action "loadMore")
-        }}
-          {{#each members as |member|}}
-            <a
-              class="channel-members-view__list-item"
-              href={{member.user.userPath}}
-              data-user-card={{member.user.username}}
-              tabindex="0"
-            >
-              {{chat-user-avatar user=member.user}}
-              <span>{{member.user.username}}</span>
-            </a>
-          {{else}}
-            {{#unless isFetchingMembers}}
-              {{i18n "chat.channel.no_memberships_found"}}
-            {{/unless}}
-          {{/each}}
-        {{/load-more}}
+        {{#each members as |member|}}
+          <a
+            class="channel-members-view__list-item"
+            href={{member.user.userPath}}
+            data-user-card={{member.user.username}}
+            tabindex="0"
+          >
+            {{chat-user-avatar user=member.user avatarSize="medium"}}
+            <span>{{member.user.username}}</span>
+          </a>
+        {{else}}
+          {{#unless isFetchingMembers}}
+            {{i18n "chat.channel.no_memberships_found"}}
+          {{/unless}}
+        {{/each}}
       </div>
     </div>
   </div>

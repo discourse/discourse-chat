@@ -1,3 +1,4 @@
+import { isEmpty } from "@ember/utils";
 import { INPUT_DELAY } from "discourse-common/config/environment";
 import Component from "@ember/component";
 import { action } from "@ember/object";
@@ -17,6 +18,7 @@ export default class ChatChannelMembersView extends Component {
   offset = 0;
   filter = null;
   inputSelector = "channel-members-view__search-input";
+  canLoadMore = true;
 
   didInsertElement() {
     this._super(...arguments);
@@ -34,6 +36,7 @@ export default class ChatChannelMembersView extends Component {
   onFilterMembers(username) {
     this.set("filter", username);
     this.set("offset", 0);
+    this.set("canLoadMore", true);
 
     discourseDebounce(
       this,
@@ -46,6 +49,10 @@ export default class ChatChannelMembersView extends Component {
 
   @action
   loadMore() {
+    if (!this.canLoadMore) {
+      return;
+    }
+
     discourseDebounce(
       this,
       this.fetchMembers,
@@ -67,6 +74,11 @@ export default class ChatChannelMembersView extends Component {
       offset,
     })
       .then((response) => {
+        if (isEmpty(response)) {
+          this.set("canLoadMore", false);
+          return;
+        }
+
         if (this.offset === 0) {
           this.set("members", []);
         }

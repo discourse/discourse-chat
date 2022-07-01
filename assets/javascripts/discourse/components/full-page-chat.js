@@ -1,28 +1,12 @@
 import Component from "@ember/component";
-import discourseComputed, { bind } from "discourse-common/utils/decorators";
+import { bind } from "discourse-common/utils/decorators";
 import { action } from "@ember/object";
-import { reads } from "@ember/object/computed";
 import { inject as service } from "@ember/service";
 
 export default Component.extend({
   tagName: "",
-  teamsSidebarOn: reads("chat.sidebarActive"),
   router: service(),
   chat: service(),
-
-  @discourseComputed("teamsSidebarOn")
-  wrapperClassNames(teamsSidebarOn) {
-    const classNames = ["full-page-chat"];
-    if (teamsSidebarOn) {
-      classNames.push("teams-sidebar-on");
-    }
-    return classNames.join(" ");
-  },
-
-  @discourseComputed("site.mobileView", "teamsSidebarOn")
-  showChannelSelector(mobileView, sidebarOn) {
-    return !mobileView && !sidebarOn;
-  },
 
   init() {
     this._super(...arguments);

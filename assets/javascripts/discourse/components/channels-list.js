@@ -1,6 +1,8 @@
+import { bind } from "discourse-common/utils/decorators";
 import Component from "@ember/component";
 import showModal from "discourse/lib/show-modal";
 import { action, computed } from "@ember/object";
+import { schedule } from "@ember/runloop";
 import { inject as service } from "@ember/service";
 import { empty, reads } from "@ember/object/computed";
 import I18n from "I18n";
@@ -88,5 +90,29 @@ export default class ChannelsList extends Component {
   @action
   toggleChannelSection(section) {
     this.toggleSection(section);
+  }
+
+  didRender() {
+    this._super(...arguments);
+
+    schedule("afterRender", this._applyScrollPosition);
+  }
+
+  @action
+  storeScrollPosition() {
+    const scroller = document.querySelector(".channels-list");
+    if (scroller) {
+      const scrollTop = scroller.scrollTop || 0;
+      this.session.set("channels-list-position", scrollTop);
+    }
+  }
+
+  @bind
+  _applyScrollPosition() {
+    const data = this.session.get("channels-list-position");
+    if (data) {
+      const scroller = document.querySelector(".channels-list");
+      scroller.scrollTo(0, data);
+    }
   }
 }

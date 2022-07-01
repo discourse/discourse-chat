@@ -887,3 +887,7 @@ body.has-full-page-chat {
   font-size: var(--font-down-1);
   margin-left: 2rem;
 }
+
+.chat-browse {
+  overflow-y: auto;
+}

@@ -41,7 +41,7 @@ describe DiscourseChat::Api::ChatChannelsController do
 
     context 'user provided an empty name' do
       fab!(:user) { Fabricate(:admin) }
-      fab!(:chat_channel) { Fabricate(:chat_channel, name: 'something') }
+      fab!(:chat_channel) { Fabricate(:chat_channel, name: 'something', description: 'something else') }
 
       before { sign_in(user) }
 
@@ -50,18 +50,30 @@ describe DiscourseChat::Api::ChatChannelsController do
 
         expect(chat_channel.reload.name).to be_nil
       end
+
+      it 'doesn’t nullify the description' do
+        put "/chat/api/chat_channels/#{chat_channel.id}.json", params: { name: '  ' }
+
+        expect(chat_channel.reload.description).to eq('something else')
+      end
     end
 
     context 'user provided an empty description' do
       fab!(:user) { Fabricate(:admin) }
-      fab!(:chat_channel) { Fabricate(:chat_channel, description: 'something') }
+      fab!(:chat_channel) { Fabricate(:chat_channel, name: 'something else', description: 'something') }
 
       before { sign_in(user) }
 
       it 'nullifies the field and doesn’t store an empty string' do
-        put "/chat/api/chat_channels/#{chat_channel.id}.json", params: { description: '' }
+        put "/chat/api/chat_channels/#{chat_channel.id}.json", params: { description: '  ' }
 
         expect(chat_channel.reload.description).to be_nil
+      end
+
+      it 'doesn’t nullify the name' do
+        put "/chat/api/chat_channels/#{chat_channel.id}.json", params: { description: '  ' }
+
+        expect(chat_channel.reload.name).to eq('something else')
       end
     end
 

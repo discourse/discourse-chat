@@ -13,8 +13,9 @@ class DiscourseChat::Api::ChatChannelsController < DiscourseChat::Api
     end
 
     editable_params = params.permit(*CHAT_CHANNEL_EDITABLE_PARAMS)
-    editable_params[:name] = editable_params[:name].presence
-    editable_params[:description] = editable_params[:description].presence
+    editable_params.each do |k, v|
+      editable_params[k] = nil if editable_params[k].blank?
+    end
     chat_channel.update!(editable_params)
 
     ChatPublisher.publish_chat_channel_edit(chat_channel, current_user)

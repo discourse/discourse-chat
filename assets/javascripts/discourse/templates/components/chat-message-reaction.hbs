@@ -1,4 +1,4 @@
-{{#if this.reaction}}
+{{#if (and this.reaction this.emojiUrl)}}
   <button
     id={{this.componentId}}
     type="button"

@@ -641,15 +641,14 @@ export default Service.extend({
     }
 
     this.messageBus.subscribe(`/chat/${channel.id}/new-messages`, (busData) => {
+      const trackingState =
+        this.currentUser.chat_channel_tracking_state[channel.id];
+
       if (busData.user_id === this.currentUser.id) {
         // User sent message, update tracking state to no unread
-        this.currentUser.chat_channel_tracking_state[
-          channel.id
-        ].chat_message_id = busData.message_id;
+        trackingState.set("chat_message_id", busData.message_id);
       } else {
         // Message from other user. Increment trackings state
-        const trackingState =
-          this.currentUser.chat_channel_tracking_state[channel.id];
         if (busData.message_id > (trackingState.chat_message_id || 0)) {
           trackingState.set("unread_count", trackingState.unread_count + 1);
         }

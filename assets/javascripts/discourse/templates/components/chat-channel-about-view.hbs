@@ -41,7 +41,9 @@
       {{/if}}
     </label>
     <div class="chat-form__control">
-      <div class="channel-info-about-view__title">{{channel.title}}</div>
+      <div class="channel-info-about-view__title">
+        {{replace-emoji channel.title}}
+      </div>
     </div>
   </div>
 </div>

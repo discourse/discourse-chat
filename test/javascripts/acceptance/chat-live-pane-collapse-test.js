@@ -81,7 +81,7 @@ acceptance("Discourse Chat - Chat live pane collapse", function (needs) {
     );
 
     server.get("/chat/chat_channels/:chatChannelId", () =>
-      helper.response({ chat_channel: { id: 1 } })
+      helper.response({ chat_channel: { id: 1, title: "something" } })
     );
 
     server.post("/uploads/lookup-urls", () =>

@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
 module ChatHelper
-  def self.make_messages!(topic, users, count)
+  def self.make_messages!(chatable, users, count)
     users = [users] unless Array === users
     raise ArgumentError if users.length <= 0
 
-    topic = Fabricate(:topic) unless topic
-    chat_channel = Fabricate(:chat_channel, chatable: topic)
+    chatable = Fabricate(:category) unless chatable
+    chat_channel = Fabricate(:chat_channel, chatable: chatable)
 
     count.times do |n|
       ChatMessage.new(

@@ -87,9 +87,6 @@ module DiscourseChat::ChatChannelFetcher
   def self.preload_custom_fields_for(channels)
     preload_fields = Category.instance_variable_get(:@custom_field_types).keys
     Category.preload_custom_fields(channels.select { |c| c.chatable_type == 'Category' }.map(&:chatable), preload_fields)
-
-    preload_fields = Topic.instance_variable_get(:@custom_field_types).keys
-    Topic.preload_custom_fields(channels.select { |c| c.chatable_type == 'Topic' }.map(&:chatable), preload_fields)
   end
 
   def self.filter_public_channels(channels, memberships, guardian)

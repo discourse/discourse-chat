@@ -7,8 +7,7 @@ RSpec.describe DiscourseChat::ChatController do
   fab!(:other_user) { Fabricate(:user) }
   fab!(:admin) { Fabricate(:admin) }
   fab!(:category) { Fabricate(:category) }
-  fab!(:topic) { Fabricate(:topic, category: category) }
-  fab!(:chat_channel) { Fabricate(:chat_channel) }
+  fab!(:chat_channel) { Fabricate(:chat_channel, chatable: category) }
   fab!(:dm_chat_channel) { Fabricate(:chat_channel, chatable: Fabricate(:direct_message_channel, users: [user, other_user, admin])) }
   fab!(:tag) { Fabricate(:tag) }
 
@@ -63,16 +62,12 @@ RSpec.describe DiscourseChat::ChatController do
     end
 
     it "returns `can_moderate=true` based on whether the user can moderate the chatable" do
-      user.update!(trust_level: 1)
-      get "/chat/#{chat_channel.id}/messages.json", params: { page_size: page_size }
-      expect(response.parsed_body["meta"]["can_moderate"]).to be false
+      1.upto(4) do |n|
+        user.update!(trust_level: n)
+        get "/chat/#{chat_channel.id}/messages.json", params: { page_size: page_size }
+        expect(response.parsed_body["meta"]["can_moderate"]).to be false
+      end
 
-      user.update!(trust_level: 4)
-      get "/chat/#{chat_channel.id}/messages.json", params: { page_size: page_size }
-      expect(response.parsed_body["meta"]["can_moderate"]).to be true
-
-      category = Fabricate(:category)
-      chat_channel.update!(chatable: category)
       get "/chat/#{chat_channel.id}/messages.json", params: { page_size: page_size }
       expect(response.parsed_body["meta"]["can_moderate"]).to be false
 
@@ -205,54 +200,6 @@ RSpec.describe DiscourseChat::ChatController do
   end
 
   describe "#enable_chat" do
-    context "topic as chatable" do
-      it "ensures created channel can be seen" do
-        Guardian.any_instance.expects(:can_see_chat_channel?)
-
-        sign_in(admin)
-        post "/chat/enable.json", params: { chatable_type: "topic", chatable_id: topic.id }
-      end
-
-      it "ensures existing channel can be seen" do
-        channel = Fabricate(:chat_channel, chatable: topic)
-        Guardian.any_instance.expects(:can_see_chat_channel?).with(channel)
-
-        sign_in(admin)
-        post "/chat/enable.json", params: { chatable_type: "topic", chatable_id: topic.id }
-      end
-
-      it "errors for non-staff" do
-        sign_in(user)
-        Fabricate(:chat_channel, chatable: topic)
-        post "/chat/enable.json", params: { chatable_type: "topic", chatable_id: topic.id }
-        expect(response.status).to eq(403)
-
-        expect(topic.reload.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]).to be_nil
-      end
-
-      it "Returns a 422 when chat is already enabled" do
-        sign_in(admin)
-        Fabricate(:chat_channel, chatable: topic)
-        post "/chat/enable.json", params: { chatable_type: "topic", chatable_id: topic.id }
-        expect(response.status).to eq(422)
-
-        expect(topic.reload.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]).to be_nil
-      end
-
-      it "Enables chat and follows the channel" do
-        sign_in(admin)
-
-        expect {
-          post "/chat/enable.json", params: { chatable_type: "topic", chatable_id: topic.id }
-        }.to change {
-          admin.user_chat_channel_memberships.count
-        }.by(1)
-        expect(response.status).to eq(200)
-        expect(topic.chat_channel).to be_present
-        expect(topic.reload.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]).to be true
-      end
-    end
-
     context "category as chatable" do
       it "ensures created channel can be seen" do
         category = Fabricate(:category)
@@ -276,48 +223,6 @@ RSpec.describe DiscourseChat::ChatController do
   end
 
   describe "#disable_chat" do
-    context "topic as chatable" do
-      it "ensures topic can be seen" do
-        channel = Fabricate(:chat_channel, chatable: topic)
-
-        Guardian.any_instance.expects(:can_see_chat_channel?).with(channel)
-
-        sign_in(admin)
-        post "/chat/disable.json", params: { chatable_type: "topic", chatable_id: topic.id }
-      end
-
-      it "errors for non-staff" do
-        sign_in(user)
-        Fabricate(:chat_channel, chatable: topic)
-
-        post "/chat/disable.json", params: { chatable_type: "topic", chatable_id: topic.id }
-        expect(response.status).to eq(403)
-      end
-
-      it "Returns a 200 and does nothing when chat is already disabled" do
-        sign_in(admin)
-        chat_channel = Fabricate(:chat_channel, chatable: topic)
-        chat_channel.trash!
-
-        post "/chat/disable.json", params: { chatable_type: "topic", chatable_id: topic.id }
-        expect(response.status).to eq(200)
-        expect(chat_channel.reload.deleted_at).not_to be_nil
-      end
-
-      it "disables chat" do
-        sign_in(admin)
-        chat_channel = Fabricate(:chat_channel, chatable: topic)
-
-        topic.custom_fields[DiscourseChat::HAS_CHAT_ENABLED] = true
-        topic.save!
-
-        post "/chat/disable.json", params: { chatable_type: "topic", chatable_id: topic.id }
-        expect(response.status).to eq(200)
-        expect(chat_channel.reload.deleted_by_id).to eq(admin.id)
-        expect(topic.reload.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]).to be_nil
-      end
-    end
-
     context "category as chatable" do
       it "ensures category can be seen" do
         category = Fabricate(:category)
@@ -335,8 +240,8 @@ RSpec.describe DiscourseChat::ChatController do
   describe "#create_message" do
     let(:message) { "This is a message" }
 
-    describe "for topic" do
-      fab!(:chat_channel) { Fabricate(:chat_channel, chatable: topic) }
+    describe "for category" do
+      fab!(:chat_channel) { Fabricate(:chat_channel, chatable: category) }
 
       it "errors when the user is silenced" do
         UserSilencer.new(user).silence
@@ -616,23 +521,6 @@ RSpec.describe DiscourseChat::ChatController do
       ChatMessage.create(user: user, message: "this is a message", chat_channel: chat_channel)
     end
 
-    describe "for topic" do
-      fab!(:chat_channel) { Fabricate(:chat_channel, chatable: topic) }
-
-      it_behaves_like "chat_message_deletion" do
-        let(:other_user) { second_user }
-        let(:other_user_message) { second_user_message }
-      end
-
-      it "Allows users to delete their own messages" do
-        sign_in(user)
-        expect {
-          delete "/chat/#{chat_channel.id}/#{ChatMessage.last.id}.json"
-        }.to change { ChatMessage.count }.by(-1)
-        expect(response.status).to eq(200)
-      end
-    end
-
     describe "for category" do
       fab!(:chat_channel) { Fabricate(:chat_channel, chatable: category) }
 
@@ -715,30 +603,6 @@ RSpec.describe DiscourseChat::ChatController do
     before do
       message = ChatMessage.create(user: user, message: "this is a message", chat_channel: chat_channel)
       message.trash!
-    end
-
-    describe "for topic" do
-      fab!(:chat_channel) { Fabricate(:chat_channel, chatable: topic) }
-
-      it_behaves_like "chat_message_restoration" do
-        let(:other_user) { second_user }
-      end
-
-      it "doesn't allow restoration of posts on closed topics" do
-        sign_in(user)
-        topic.update(closed: true)
-
-        put "/chat/#{chat_channel.id}/restore/#{ChatMessage.unscoped.last.id}.json"
-        expect(response.status).to eq(403)
-      end
-
-      it "doesn't allow restoration of posts on archived topics" do
-        sign_in(user)
-        topic.update(archived: true)
-
-        put "/chat/#{chat_channel.id}/restore/#{ChatMessage.unscoped.last.id}.json"
-        expect(response.status).to eq(403)
-      end
     end
 
     describe "for category" do
@@ -1175,19 +1039,6 @@ RSpec.describe DiscourseChat::ChatController do
         .to change { ChatDraft.count }.by(1)
     end
 
-    it "cannot create chat drafts for a topic channel the user cannot access" do
-      group = Fabricate(:group)
-      private_category = Fabricate(:private_category, group: group)
-      chat_channel.update!(chatable: Fabricate(:topic, category: private_category))
-
-      post "/chat/drafts.json", params: { chat_channel_id: chat_channel.id, data: "{}" }
-      expect(response.status).to eq(403)
-
-      GroupUser.create!(user: user, group: group)
-      expect { post "/chat/drafts.json", params: { chat_channel_id: chat_channel.id, data: "{}" } }
-        .to change { ChatDraft.count }.by(1)
-    end
-
     it "cannot create chat drafts for a direct message channel the user cannot access" do
       chat_channel.update!(chatable: Fabricate(:direct_message_channel))
 
@@ -1202,7 +1053,7 @@ RSpec.describe DiscourseChat::ChatController do
 
   describe "#message_link" do
     it "ensures message's channel can be seen" do
-      channel = Fabricate(:chat_channel, chatable: Fabricate(:topic))
+      channel = Fabricate(:chat_channel, chatable: Fabricate(:category))
       message = Fabricate(:chat_message, chat_channel: channel)
 
       Guardian.any_instance.expects(:can_see_chat_channel?).with(channel)
@@ -1256,27 +1107,6 @@ RSpec.describe DiscourseChat::ChatController do
         expect(response.status).to eq(403)
 
         DirectMessageUser.create!(user: user, direct_message_channel: chatable)
-        get "/chat/lookup/#{message.id}.json"
-        expect(response.status).to eq(200)
-        expect(response.parsed_body["chat_messages"][0]["id"]).to eq(message.id)
-      end
-    end
-
-    context "when the chat channel is for a topic" do
-      let!(:chatable) { Fabricate(:topic) }
-
-      it "ensures the user can access that topic" do
-        get "/chat/lookup/#{message.id}.json"
-        expect(response.status).to eq(200)
-        expect(response.parsed_body["chat_messages"][0]["id"]).to eq(message.id)
-
-        group = Fabricate(:group)
-        private_category = Fabricate(:private_category, group: group)
-        chatable.update!(category: private_category)
-        get "/chat/lookup/#{message.id}.json"
-        expect(response.status).to eq(403)
-
-        GroupUser.create!(user: user, group: group)
         get "/chat/lookup/#{message.id}.json"
         expect(response.status).to eq(200)
         expect(response.parsed_body["chat_messages"][0]["id"]).to eq(message.id)

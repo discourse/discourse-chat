@@ -81,15 +81,6 @@
   }
 }
 
-.chat-channel-title__topic-badge {
-  color: var(--primary-medium);
-  font-size: var(--font-up-1);
-
-  + .chat-channel-title__name {
-    margin-left: 0.5rem;
-  }
-}
-
 .chat-channel-title .chat-user-avatar {
   font-size: var(--font-up-1);
 

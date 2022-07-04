@@ -2,38 +2,24 @@ import Controller from "@ember/controller";
 import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import discourseComputed from "discourse-common/utils/decorators";
 import escape from "discourse-common/lib/escape";
-import I18n from "I18n";
 import ModalFunctionality from "discourse/mixins/modal-functionality";
 import { ajax } from "discourse/lib/ajax";
 import { action } from "@ember/object";
+import { notEmpty } from "@ember/object/computed";
 import { inject as service } from "@ember/service";
 import { isBlank } from "@ember/utils";
 
 export default Controller.extend(ModalFunctionality, {
   chat: service(),
-
-  type: "category",
-  topic: null,
   category: null,
   categoryId: null,
   name: "",
   description: "",
+  categorySelected: notEmpty("category"),
 
-  @discourseComputed("type", "topic", "category")
-  entitySelected(type, topic, category) {
-    return (type === "topic" && topic) || (type === "category" && category);
-  },
-
-  @discourseComputed
-  types() {
-    return ["category", "topic"].map((id) => {
-      return { id, name: I18n.t(`chat.create_channel.types.${id}`) };
-    });
-  },
-
-  @discourseComputed("type", "topic", "category", "name")
-  createDisabled(type, topic, category, name) {
-    return !this.entitySelected || isBlank(name);
+  @discourseComputed("categorySelected", "name")
+  createDisabled(categorySelected, name) {
+    return !this.categorySelected || isBlank(name);
   },
 
   @discourseComputed("category")
@@ -65,30 +51,13 @@ export default Controller.extend(ModalFunctionality, {
   },
 
   @action
-  onTopicChange(topic) {
-    this.setProperties({
-      topic,
-      name: topic.fancy_title,
-    });
-  },
-
-  @action
-  onTopicCleared() {
-    this.setProperties({
-      topic: null,
-      name: "",
-    });
-  },
-
-  @action
   create() {
     if (this.createDisabled) {
       return;
     }
 
     const data = {
-      type: this.type,
-      id: this.type === "topic" ? this.topic.id : this.categoryId,
+      id: this.categoryId,
       name: this.name,
       description: this.description,
     };
@@ -108,10 +77,8 @@ export default Controller.extend(ModalFunctionality, {
 
   onClose() {
     this.setProperties({
-      type: "category",
       categoryId: null,
       category: null,
-      topic: null,
       name: "",
       description: "",
     });

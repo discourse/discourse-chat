@@ -7,8 +7,7 @@ RSpec.describe DiscourseChat::ChatChannelsController do
   fab!(:other_user) { Fabricate(:user, username: "someone-else-again") }
   fab!(:admin) { Fabricate(:admin, username: "someone-else") }
   fab!(:category) { Fabricate(:category) }
-  fab!(:topic) { Fabricate(:topic, category: category) }
-  fab!(:chat_channel) { Fabricate(:chat_channel, chatable: topic) }
+  fab!(:chat_channel) { Fabricate(:chat_channel, chatable: category) }
   fab!(:dm_chat_channel) { Fabricate(:chat_channel, chatable: Fabricate(:direct_message_channel, users: [user, admin])) }
 
   before do
@@ -21,23 +20,8 @@ RSpec.describe DiscourseChat::ChatChannelsController do
     fab!(:private_group) { Fabricate(:group) }
     fab!(:user_with_private_access) { Fabricate(:user, group_ids: [private_group.id]) }
 
-    fab!(:public_category_cc) { Fabricate(:chat_channel, chatable: category) }
-    fab!(:public_topic_cc) { Fabricate(:chat_channel, chatable: topic) }
-
     fab!(:private_category) { Fabricate(:private_category, group: private_group) }
     fab!(:private_category_cc) { Fabricate(:chat_channel, chatable: private_category) }
-
-    fab!(:private_topic) { Fabricate(:topic, category: private_category) }
-    fab!(:private_topic_cc) { Fabricate(:chat_channel, chatable: private_topic) }
-
-    fab!(:one_off_topic) { Fabricate(:topic) }
-    fab!(:one_off_cc) { Fabricate(:chat_channel, chatable: one_off_topic) }
-
-    # Create closed/archived topic chat channels. These will never be returned to anyone.
-    fab!(:closed_topic) { Fabricate(:closed_topic) }
-    fab!(:closed_topic_channel) { Fabricate(:chat_channel, chatable: closed_topic) }
-    fab!(:archived_topic) { Fabricate(:closed_topic) }
-    fab!(:archived_topic_channel) { Fabricate(:chat_channel, chatable: archived_topic) }
 
     describe "with memberships for all channels" do
       before do
@@ -67,7 +51,7 @@ RSpec.describe DiscourseChat::ChatChannelsController do
 
         expect(response.status).to eq(200)
         expect(response.parsed_body["public_channels"].map { |channel| channel["id"] })
-          .to match_array([public_category_cc.id, public_topic_cc.id, one_off_cc.id, chat_channel.id])
+          .to match_array([chat_channel.id])
       end
 
       it "returns channels visible to user with private access" do
@@ -77,12 +61,8 @@ RSpec.describe DiscourseChat::ChatChannelsController do
         expect(response.status).to eq(200)
         expect(response.parsed_body["public_channels"].map { |channel| channel["id"] })
           .to match_array([
-            public_category_cc.id,
-            public_topic_cc.id,
-            one_off_cc.id,
             chat_channel.id,
-            private_category_cc.id,
-            private_topic_cc.id
+            private_category_cc.id
           ])
       end
 
@@ -93,18 +73,13 @@ RSpec.describe DiscourseChat::ChatChannelsController do
         expect(response.status).to eq(200)
         expect(response.parsed_body["public_channels"].map { |channel| channel["id"] })
           .to match_array([
-            public_category_cc.id,
-            public_topic_cc.id,
-            one_off_cc.id,
             chat_channel.id,
             private_category_cc.id,
-            private_topic_cc.id,
           ])
       end
 
       it "doesn't error when a chat channel's chatable is destroyed" do
         sign_in(user_with_private_access)
-        topic.destroy!
         private_category.destroy!
 
         get "/chat/chat_channels.json"
@@ -115,13 +90,13 @@ RSpec.describe DiscourseChat::ChatChannelsController do
         sign_in(admin)
         Jobs.run_immediately!
         DiscourseChat::ChatMessageCreator.create(
-          chat_channel: public_category_cc,
+          chat_channel: chat_channel,
           user: user,
           content: "Hi @#{admin.username}"
         )
           get "/chat/chat_channels.json"
-          chat_channel = response.parsed_body["public_channels"].detect { |c| c["id"] == public_category_cc.id }
-          expect(chat_channel["unread_mentions"]).to eq(1)
+          cc = response.parsed_body["public_channels"].detect { |c| c["id"] == chat_channel.id }
+          expect(cc["unread_mentions"]).to eq(1)
       end
 
       describe "direct messages" do
@@ -238,7 +213,6 @@ RSpec.describe DiscourseChat::ChatChannelsController do
 
   describe "#create" do
     fab!(:category2) { Fabricate(:category) }
-    fab!(:topic2) { Fabricate(:topic) }
 
     it "errors for non-staff" do
       sign_in(user)
@@ -261,24 +235,8 @@ RSpec.describe DiscourseChat::ChatChannelsController do
     it "errors when the name is over SiteSetting.max_topic_title_length" do
       sign_in(admin)
       SiteSetting.max_topic_title_length = 10
-      put "/chat/chat_channels.json", params: { type: "topic", id: topic2.id, name: "Hi, this is over 10 characters" }
+      put "/chat/chat_channels.json", params: { type: "category", id: category2.id, name: "Hi, this is over 10 characters" }
       expect(response.status).to eq(400)
-    end
-
-    it "errors when channel for topic already exists" do
-      sign_in(admin)
-      ChatChannel.create!(chatable: topic2, name: "hihihi")
-
-      put "/chat/chat_channels.json", params: { type: "topic", id: topic2.id, name: "hi" }
-      expect(response.status).to eq(400)
-    end
-
-    it "creates a channel for topic that doesn't already have a channel" do
-      sign_in(admin)
-      expect {
-        put "/chat/chat_channels.json", params: { type: "topic", id: topic2.id, name: "Different name!" }
-      }.to change { ChatChannel.where(chatable: topic2).count }.by(1)
-      expect(response.status).to eq(200)
     end
 
     it "errors when channel for category and same name already exists" do
@@ -432,7 +390,7 @@ RSpec.describe DiscourseChat::ChatChannelsController do
   end
 
   describe "#show" do
-    fab!(:channel) { Fabricate(:chat_channel, chatable: topic, name: "My Great Channel & Stuff") }
+    fab!(:channel) { Fabricate(:chat_channel, chatable: category, name: "My Great Channel & Stuff") }
 
     it "can find channel by id" do
       sign_in(user)
@@ -451,11 +409,6 @@ RSpec.describe DiscourseChat::ChatChannelsController do
     it "can find channel by chatable title/name" do
       sign_in(user)
 
-      channel.update!(chatable: Fabricate(:topic, title: "A topic that is a chatable"))
-      get "/chat/chat_channels/#{UrlHelper.encode_component("A topic that is a chatable")}.json"
-      expect(response.status).to eq(200)
-      expect(response.parsed_body["chat_channel"]["id"]).to eq(channel.id)
-
       channel.update!(chatable: Fabricate(:category, name: "Support Chat"))
       get "/chat/chat_channels/#{UrlHelper.encode_component("Support Chat")}.json"
       expect(response.status).to eq(200)
@@ -473,7 +426,7 @@ RSpec.describe DiscourseChat::ChatChannelsController do
   end
 
   describe "#archive" do
-    fab!(:channel) { Fabricate(:chat_channel, chatable: topic, name: "The English Channel") }
+    fab!(:channel) { Fabricate(:chat_channel, chatable: category, name: "The English Channel") }
     let(:new_topic_params) { { type: "newTopic", title: "This is a test archive topic", category_id: category.id } }
     let(:existing_topic_params) { { type: "existingTopic", topic_id: Fabricate(:topic).id } }
 
@@ -538,7 +491,7 @@ RSpec.describe DiscourseChat::ChatChannelsController do
     fab!(:channel) do
       Fabricate(
         :chat_channel,
-        chatable: topic,
+        chatable: category,
         name: "The English Channel",
         status: :read_only
       )
@@ -593,7 +546,7 @@ RSpec.describe DiscourseChat::ChatChannelsController do
     fab!(:channel) do
       Fabricate(
         :chat_channel,
-        chatable: topic,
+        chatable: category,
         name: "Channel Orange",
         status: :open
       )
@@ -639,7 +592,7 @@ RSpec.describe DiscourseChat::ChatChannelsController do
     fab!(:channel) do
       Fabricate(
         :chat_channel,
-        chatable: topic,
+        chatable: category,
         name: "Ambrose Channel",
         status: :open
       )

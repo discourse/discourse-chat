@@ -13,7 +13,7 @@ describe ChatChannelMembershipsQuery do
 
   context 'chatable exists' do
     context 'chatable is public' do
-      fab!(:channel_1) { Fabricate(:chat_channel, chatable: Fabricate(:topic)) }
+      fab!(:channel_1) { Fabricate(:chat_channel) }
 
       context 'no memberships exists' do
         it 'returns an empty array' do
@@ -60,7 +60,7 @@ describe ChatChannelMembershipsQuery do
     end
 
     context 'pagination' do
-      fab!(:channel_1) { Fabricate(:chat_channel, chatable: Fabricate(:topic)) }
+      fab!(:channel_1) { Fabricate(:chat_channel) }
 
       before do
         UserChatChannelMembership.create(user: user_1, chat_channel: channel_1, following: true)
@@ -85,7 +85,7 @@ describe ChatChannelMembershipsQuery do
     end
 
     describe 'username param' do
-      fab!(:channel_1) { Fabricate(:chat_channel, chatable: Fabricate(:topic)) }
+      fab!(:channel_1) { Fabricate(:chat_channel) }
 
       before do
         UserChatChannelMembership.create(user: user_1, chat_channel: channel_1, following: true)
@@ -101,7 +101,7 @@ describe ChatChannelMembershipsQuery do
     end
 
     describe 'memberships order' do
-      fab!(:channel_1) { Fabricate(:chat_channel, chatable: Fabricate(:topic)) }
+      fab!(:channel_1) { Fabricate(:chat_channel) }
 
       before do
         UserChatChannelMembership.create(user: user_1, chat_channel: channel_1, following: true)
@@ -150,7 +150,7 @@ describe ChatChannelMembershipsQuery do
   end
 
   context 'user is staged' do
-    fab!(:channel_1) { Fabricate(:chat_channel, chatable: Fabricate(:topic)) }
+    fab!(:channel_1) { Fabricate(:chat_channel) }
     fab!(:staged_user) { Fabricate(:staged) }
 
     before do
@@ -164,7 +164,7 @@ describe ChatChannelMembershipsQuery do
   end
 
   context 'user is suspended' do
-    fab!(:channel_1) { Fabricate(:chat_channel, chatable: Fabricate(:topic)) }
+    fab!(:channel_1) { Fabricate(:chat_channel) }
     fab!(:suspended_user) { Fabricate(:user, suspended_at: Time.now, suspended_till: 5.days.from_now) }
 
     before do
@@ -178,7 +178,7 @@ describe ChatChannelMembershipsQuery do
   end
 
   context 'user is inactive' do
-    fab!(:channel_1) { Fabricate(:chat_channel, chatable: Fabricate(:topic)) }
+    fab!(:channel_1) { Fabricate(:chat_channel) }
     fab!(:inactive_user) { Fabricate(:inactive_user) }
 
     before do

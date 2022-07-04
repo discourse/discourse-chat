@@ -16,7 +16,7 @@ acceptance("Discourse Chat | Unit | Service | chat", function (needs) {
   needs.pretender((server, helper) => {
     server.get("/chat/chat_channels.json", () => {
       return helper.response({
-        public_channels: [{ id: 1, unread_count: 2 }],
+        public_channels: [{ id: 1, title: "something", unread_count: 2 }],
         direct_message_channels: [],
       });
     });

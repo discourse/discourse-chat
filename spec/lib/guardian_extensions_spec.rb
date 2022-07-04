@@ -56,28 +56,6 @@ describe DiscourseChat::GuardianExtensions do
     end
 
     describe "#can_see_chat_channel?" do
-      context "for topic channels" do
-        fab!(:topic) { Fabricate(:topic) }
-
-        before do
-          channel.update(chatable: topic)
-        end
-
-        it "returns false if the topic is closed or archived" do
-          expect(guardian.can_see_chat_channel?(channel)).to eq(true)
-          topic.update(closed: true)
-          expect(guardian.can_see_chat_channel?(channel)).to eq(false)
-          topic.update(closed: false, archived: true)
-          expect(guardian.can_see_chat_channel?(channel)).to eq(false)
-        end
-
-        it "returns false if the user can't see the topic (e.g. a private category)" do
-          expect(guardian.can_see_chat_channel?(channel)).to eq(true)
-          topic.update(category: Fabricate(:private_category, group: Fabricate(:group)))
-          expect(guardian.can_see_chat_channel?(channel)).to eq(false)
-        end
-      end
-
       context "for direct message channels" do
         fab!(:chatable) { Fabricate(:direct_message_channel) }
         fab!(:channel) { Fabricate(:chat_channel, chatable: chatable) }
@@ -121,21 +99,6 @@ describe DiscourseChat::GuardianExtensions do
     end
 
     describe "#can_moderate_chat?" do
-      context "for topic channel" do
-        fab!(:topic) { Fabricate(:topic) }
-
-        before do
-          channel.update(chatable: topic)
-        end
-
-        it "is based on whether the user is a group moderator or has high enough trust level, see core for details" do
-          Guardian.any_instance.stubs(:can_perform_action_available_to_group_moderators?).returns(true)
-          expect(guardian.can_moderate_chat?(channel.chatable)).to eq(true)
-          Guardian.any_instance.stubs(:can_perform_action_available_to_group_moderators?).returns(false)
-          expect(guardian.can_moderate_chat?(channel.chatable)).to eq(false)
-        end
-      end
-
       context "for category channel" do
         fab!(:category) { Fabricate(:category, read_restricted: true) }
 

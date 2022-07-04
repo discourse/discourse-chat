@@ -140,7 +140,6 @@ after_initialize do
   load File.expand_path('../lib/chat_channel_archive_service.rb', __FILE__)
   load File.expand_path('../lib/direct_message_channel_creator.rb', __FILE__)
   load File.expand_path('../lib/guardian_extensions.rb', __FILE__)
-  load File.expand_path('../lib/extensions/topic_view_serializer_extension.rb', __FILE__)
   load File.expand_path('../lib/extensions/user_option_extension.rb', __FILE__)
   load File.expand_path('../lib/extensions/user_notifications_extension.rb', __FILE__)
   load File.expand_path('../lib/extensions/user_email_extension.rb', __FILE__)
@@ -169,7 +168,6 @@ after_initialize do
 
   UserNotifications.append_view_path(File.expand_path('../app/views', __FILE__))
 
-  register_topic_custom_field_type(DiscourseChat::HAS_CHAT_ENABLED, :boolean)
   register_category_custom_field_type(DiscourseChat::HAS_CHAT_ENABLED, :boolean)
 
   UserUpdater::OPTION_ATTR.push(:chat_enabled)
@@ -188,17 +186,10 @@ after_initialize do
       limited_pretty_text_features: ChatMessage::MARKDOWN_FEATURES,
       limited_pretty_text_markdown_rules: ChatMessage::MARKDOWN_IT_RULES
     }
-    TopicList.preloaded_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
-    CategoryList.preloaded_topic_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
-    Search.preloaded_topic_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
 
     Guardian.class_eval { include DiscourseChat::GuardianExtensions }
-    TopicViewSerializer.class_eval { prepend DiscourseChat::TopicViewSerializerExtension }
     UserNotifications.class_eval { prepend DiscourseChat::UserNotificationsExtension }
     UserOption.class_eval { prepend DiscourseChat::UserOptionExtension }
-    Topic.class_eval {
-      has_one :chat_channel, as: :chatable
-    }
     Category.class_eval {
       has_one :chat_channel, as: :chatable
     }
@@ -210,13 +201,6 @@ after_initialize do
     Jobs::UserEmail.class_eval { prepend DiscourseChat::UserEmailExtension }
 
     Bookmark.register_bookmarkable(ChatMessageBookmarkable)
-  end
-
-  TopicQuery.add_custom_filter(::DiscourseChat::PLUGIN_NAME) do |results, topic_query|
-    if SiteSetting.chat_enabled
-      results = results.includes(:chat_channel)
-    end
-    results
   end
 
   Oneboxer.register_local_handler('discourse_chat/chat') do |url, route|
@@ -239,8 +223,6 @@ after_initialize do
 
     name = if chat_channel.name.present?
       chat_channel.name
-    elsif chat_channel.chatable_type == 'Topic'
-      chat_channel.chatable.title
     end
 
     users = chat_channel
@@ -267,7 +249,6 @@ after_initialize do
       users: users,
       remaining_user_count_str: remaining_user_count_str,
       is_category: chat_channel.chatable_type == 'Category',
-      is_topic: chat_channel.chatable_type == 'Topic',
       color: chat_channel.chatable_type == 'Category' ? chat_channel.chatable.color : nil,
     }
 
@@ -307,8 +288,6 @@ after_initialize do
 
       title = if chat_channel.name.present?
         I18n.t('chat.onebox.inline_to_channel', chat_channel: chat_channel.name)
-      elsif chat_channel.chatable_type == 'Topic'
-        I18n.t('chat.onebox.inline_to_topic_channel', topic_title: chat_channel.chatable.title)
       end
     end
 
@@ -330,16 +309,6 @@ after_initialize do
       ChatMessage.where("message LIKE ? OR message LIKE ?", "%#{upload.sha1}%", "%#{upload.base62_sha1}%").exists? ||
       ChatDraft.where("data LIKE ? OR data LIKE ?", "%#{upload.sha1}%", "%#{upload.base62_sha1}%").exists?
     end
-  end
-
-  add_to_serializer(:listable_topic, :has_chat_live) do
-    true
-  end
-
-  add_to_serializer(:listable_topic, :include_has_chat_live?) do
-    SiteSetting.chat_enabled &&
-      scope.can_chat?(scope.user) &&
-      object.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]
   end
 
   add_to_serializer(:user_card, :can_chat_user) do

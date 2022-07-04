@@ -41,7 +41,7 @@ acceptance("Discourse Chat | bookmarking | desktop", function (needs) {
   });
 
   test("can bookmark a message with reminder from the quick actions menu", async function (assert) {
-    await visit("/chat/channel/7/Uncategorized");
+    await visit("/chat/channel/4/public-category");
     assert.ok(exists(".chat-message-container"));
     const message = query(".chat-message-container");
 
@@ -71,7 +71,7 @@ acceptance("Discourse Chat | bookmarking | desktop", function (needs) {
   });
 
   test("can bookmark a message without reminder from the quick actions menu", async function (assert) {
-    await visit("/chat/channel/7/Uncategorized");
+    await visit("/chat/channel/4/public-category");
     assert.ok(exists(".chat-message-container"));
     const message = query(".chat-message-container");
 
@@ -119,7 +119,7 @@ acceptance("Discourse Chat | bookmarking | mobile", function (needs) {
   needs.mobileView();
 
   test("can bookmark a message with reminder from the mobile long press menu", async function (assert) {
-    await visit("/chat/channel/7/Uncategorized");
+    await visit("/chat/channel/4/public-category");
     assert.ok(exists(".chat-message-container"));
     const message = query(".chat-message-container");
 
@@ -148,7 +148,7 @@ acceptance("Discourse Chat | bookmarking | mobile", function (needs) {
   });
 
   test("can bookmark a message without reminder from the quick actions menu", async function (assert) {
-    await visit("/chat/channel/7/Uncategorized");
+    await visit("/chat/channel/4/public-category");
     assert.ok(exists(".chat-message-container"));
     const message = query(".chat-message-container");
 

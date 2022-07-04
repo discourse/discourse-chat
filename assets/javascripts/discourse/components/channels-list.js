@@ -71,7 +71,7 @@ export default class ChannelsList extends Component {
 
   @action
   openCreateChannelModal() {
-    showModal("create-channel-modal");
+    showModal("create-channel");
     return false;
   }
 

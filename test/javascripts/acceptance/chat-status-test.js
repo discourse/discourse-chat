@@ -33,8 +33,8 @@ const baseChatPretenders = (server, helper) => {
   });
   server.get("/chat/chat_channels.json", () => {
     let copy = cloneJSON(chatChannels);
-    let topicChannel = copy.public_channels.find((pc) => pc.id === 4);
-    topicChannel.unread_count = 2;
+    let modifiedChannel = copy.public_channels.find((pc) => pc.id === 4);
+    modifiedChannel.unread_count = 2;
     return helper.response(copy);
   });
 
@@ -74,7 +74,7 @@ acceptance(
     });
 
     test("it clears any unread messages in the sidebar for the archived channel", async function (assert) {
-      await visit("/chat/channel/7/Uncategorized");
+      await visit("/chat/channel/4/public-category");
       assert.ok(
         exists("#chat-channel-row-4 .chat-channel-unread-indicator"),
         "unread indicator shows for channel"

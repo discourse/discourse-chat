@@ -33,7 +33,7 @@
     "following": { "type": "boolean" },
     "chatable": {
       "type": "object",
-      "required": ["id", "title", "fancy_title", "slug", "posts_count"]
+      "required": ["id", "name", "slug", "color"]
     }
   }
 }

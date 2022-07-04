@@ -52,8 +52,6 @@ export default Component.extend({
       "openChannelAtMessage"
     );
     this.appEvents.on("chat:refresh-channels", this, "refreshChannels");
-    this.appEvents.on("topic-chat-enable", this, "chatEnabledForTopic");
-    this.appEvents.on("topic-chat-disable", this, "chatDisabledForTopic");
     this.appEvents.on("composer:closed", this, "_checkSize");
     this.appEvents.on("composer:will-close", this, "_setSizeWillClose");
     this.appEvents.on("composer:opened", this, "_checkSize");
@@ -89,8 +87,6 @@ export default Component.extend({
         "openChannelAtMessage"
       );
       this.appEvents.off("chat:refresh-channels", this, "refreshChannels");
-      this.appEvents.off("topic-chat-enable", this, "chatEnabledForTopic");
-      this.appEvents.off("topic-chat-disable", this, "chatDisabledForTopic");
       this.appEvents.off("composer:closed", this, "_checkSize");
       this.appEvents.off("composer:will-close", this, "_setSizeWillClose");
       this.appEvents.off("composer:opened", this, "_checkSize");
@@ -146,23 +142,6 @@ export default Component.extend({
 
   openChannelAtMessage(channel, messageId) {
     this.chat.openChannel(channel, messageId);
-  },
-
-  chatEnabledForTopic(topic) {
-    if (
-      !this.chat.activeChannel ||
-      this.chat.activeChannel?.id === topic.chat_channel.id
-    ) {
-      // Don't do anything if viewing another topic
-      this.switchChannel(topic.chat_channel);
-    }
-  },
-
-  chatDisabledForTopic(topic) {
-    if (!this.hidden && this.chat.activeChannel?.id === topic.chat_channel.id) {
-      this.chat.setActiveChannel(null);
-      this.close();
-    }
   },
 
   _dynamicCheckSize() {
@@ -264,6 +243,11 @@ export default Component.extend({
   @action
   openInFullPage(e) {
     const channel = this.chat.activeChannel;
+
+    if (!channel) {
+      return this.router.transitionTo("chat");
+    }
+
     if (e.which === 2) {
       // Middle mouse click
       window
@@ -274,23 +258,10 @@ export default Component.extend({
 
     // Set activeChannel to null to avoid a moment where the chat composer is rendered twice.
     // Since the mobile-file-upload button has an ID, a JS error will break things otherwise.
-    this.setProperties({
-      hidden: true,
-    });
-
+    this.set("hidden", true);
     this.chat.setActiveChannel(null);
-
     this.chatWindowStore.set("fullPage", true);
-
-    if (channel) {
-      return this.router.transitionTo(
-        "chat.channel",
-        channel.id,
-        channel.title
-      );
-    }
-
-    this.router.transitionTo("chat");
+    this.chat.openChannel(channel);
   },
 
   @action

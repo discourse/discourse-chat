@@ -10,7 +10,7 @@ describe 'discourse-chat' do
   end
 
   describe 'register_upload_unused' do
-    fab!(:chat_channel) { Fabricate(:chat_channel, chatable: Fabricate(:topic)) }
+    fab!(:chat_channel) { Fabricate(:chat_channel, chatable: Fabricate(:category)) }
     fab!(:user) { Fabricate(:user) }
     fab!(:upload) { Fabricate(:upload, user: user, created_at: 1.month.ago) }
     fab!(:unused_upload) { Fabricate(:upload, user: user, created_at: 1.month.ago) }
@@ -35,7 +35,7 @@ describe 'discourse-chat' do
   end
 
   describe 'register_upload_in_use' do
-    fab!(:chat_channel) { Fabricate(:chat_channel, chatable: Fabricate(:topic)) }
+    fab!(:chat_channel) { Fabricate(:chat_channel, chatable: Fabricate(:category)) }
     fab!(:user) { Fabricate(:user) }
     fab!(:message_upload) { Fabricate(:upload, user: user, created_at: 1.month.ago) }
     fab!(:draft_upload) { Fabricate(:upload, user: user, created_at: 1.month.ago) }
@@ -67,28 +67,6 @@ describe 'discourse-chat' do
       expect(Upload.exists?(id: message_upload.id)).to eq(true)
       expect(Upload.exists?(id: draft_upload.id)).to eq(true)
       expect(Upload.exists?(id: unused_upload.id)).to eq(false)
-    end
-  end
-
-  describe "topic view serializer extension" do
-    fab!(:topic) { Fabricate(:topic) }
-    fab!(:user) { Fabricate(:user) }
-    fab!(:chat_channel) { Fabricate(:chat_channel, chatable: topic) }
-
-    def topic_view
-      topic_view = TopicView.new(topic.id, user)
-      serializer = TopicViewSerializer.new(topic_view, scope: Guardian.new(user), root: false).as_json
-      JSON.parse(MultiJson.dump(serializer)).deep_symbolize_keys!
-    end
-
-    it "has_chat_live is true when the channel is open or closed, not read_only or archived" do
-      expect(topic_view[:has_chat_live]).to eq(true)
-      chat_channel.update!(status: "closed")
-      expect(topic_view[:has_chat_live]).to eq(true)
-      chat_channel.update!(status: "read_only")
-      expect(topic_view[:has_chat_live]).to eq(false)
-      chat_channel.update!(status: "archived")
-      expect(topic_view[:has_chat_live]).to eq(false)
     end
   end
 
@@ -152,7 +130,7 @@ describe 'discourse-chat' do
   end
 
   describe "chat oneboxes" do
-    fab!(:chat_channel) { Fabricate(:chat_channel, chatable: Fabricate(:topic)) }
+    fab!(:chat_channel) { Fabricate(:chat_channel, chatable: Fabricate(:category)) }
     fab!(:user) { Fabricate(:user, active: true) }
     fab!(:user_2) { Fabricate(:user, active: false) }
     fab!(:user_3) { Fabricate(:user, staged: true) }
@@ -199,9 +177,9 @@ describe 'discourse-chat' do
             <article class="onebox-body chat-onebox-body">
               <h3 class="chat-onebox-title">
                 <a href="#{chat_url}">
-                  <span class="topic-chat-icon">
-                    <svg class="fa d-icon d-icon-far-comments svg-icon svg-string" xmlns="http://www.w3.org/2000/svg"><use href="#far-comments"></use></svg>
-                  </span>
+                  <span class="category-chat-badge" style="color: ##{chat_channel.chatable.color}">
+                    <svg class="fa d-icon d-icon-hashtag svg-icon svg-string" xmlns="http://www.w3.org/2000/svg"><use href="#hashtag"></use></svg>
+                 </span>
                   <span class="clear-badge">#{chat_channel.name}</span>
                 </a>
               </h3>
@@ -231,9 +209,9 @@ describe 'discourse-chat' do
                 <a href="#{chat_url}?messageId=#{chat_message.id}" title="#{chat_message.created_at}">#{chat_message.created_at}</a>
               </div>
               <a class="chat-transcript-channel" href="/chat/chat_channels/#{chat_channel.id}">
-                  <span class="topic-chat-icon">
-                    <svg class="fa d-icon d-icon-far-comments svg-icon svg-string" xmlns="http://www.w3.org/2000/svg"><use href="#far-comments"></use></svg>
-                  </span>
+                <span class="category-chat-badge" style="color: ##{chat_channel.chatable.color}">
+                  <svg class="fa d-icon d-icon-hashtag svg-icon svg-string" xmlns="http://www.w3.org/2000/svg"><use href="#hashtag"></use></svg>
+                </span>
                 #{chat_channel.name}
               </a>
             </div>

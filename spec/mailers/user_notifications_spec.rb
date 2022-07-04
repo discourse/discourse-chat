@@ -168,7 +168,7 @@ describe UserNotifications do
         end
 
         it "doesn't return an email if the user can't see any of the included channels" do
-          @chat_channel.chatable.trash!
+          @chat_channel.chatable.destroy!
 
           email = described_class.chat_summary(@user, {})
 

@@ -10,12 +10,7 @@ module DiscourseDev
     end
 
     def data
-      chatable = nil
-      if Faker::Boolean.boolean(true_ratio: 0.5)
-        chatable = Category.random
-      else
-        chatable = Record.random(::Topic)
-      end
+      chatable = Category.random
 
       {
         chatable: chatable,

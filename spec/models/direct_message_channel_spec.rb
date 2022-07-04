@@ -5,7 +5,7 @@ require 'rails_helper'
 describe DirectMessageChannel do
   fab!(:user1) { Fabricate(:user, username: "chatdmfellow1") }
   fab!(:user2) { Fabricate(:user, username: "chatdmuser") }
-  fab!(:chat_channel) { Fabricate(:chat_channel, chatable: Fabricate(:topic)) }
+  fab!(:chat_channel) { Fabricate(:chat_channel) }
 
   describe "#chat_channel_title_for_user" do
     it "returns a nicely formatted name if it's more than one user" do

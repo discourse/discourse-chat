@@ -394,17 +394,6 @@ $float-height: 530px;
   }
 }
 
-.topic-title-chat-link {
-  padding: 0 0.1em;
-  cursor: pointer;
-}
-
-.d-header {
-  .topic-title-chat-link {
-    padding: 0 0.2em 0 0.25em;
-  }
-}
-
 .chat-channel-row {
   align-items: center;
   box-sizing: border-box;
@@ -791,8 +780,7 @@ body.has-full-page-chat {
   margin-bottom: 0;
 }
 
-.create-channel-modal-modal {
-  // I know `-modal-modal`.. but I like the JS file name
+.create-channel-modal {
   .modal-inner-container {
     width: 500px;
   }
@@ -867,13 +855,6 @@ body.has-full-page-chat {
     font-weight: 700;
     font-size: var(--font-up-1);
     line-height: var(--font-up-1);
-  }
-}
-
-.timeline-footer-controls {
-  .topic-chat-button {
-    margin: 0.5em 0 0 0;
-    display: inline;
   }
 }
 

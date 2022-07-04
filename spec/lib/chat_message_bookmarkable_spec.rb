@@ -5,11 +5,10 @@ require 'rails_helper'
 describe ChatMessageBookmarkable do
   fab!(:user) { Fabricate(:user) }
   fab!(:guardian) { Guardian.new(user) }
-  fab!(:topic) { Fabricate(:topic) }
   fab!(:other_category) { Fabricate(:private_category, group: Fabricate(:group)) }
-  fab!(:channel) { Fabricate(:chat_channel, chatable: topic) }
   fab!(:category_channel) { Fabricate(:chat_channel, chatable: other_category) }
   fab!(:private_category) { Fabricate(:private_category, group: Fabricate(:group)) }
+  fab!(:channel) { Fabricate(:chat_channel, chatable: Fabricate(:category)) }
 
   before do
     Bookmark.register_bookmarkable(ChatMessageBookmarkable)
@@ -26,16 +25,6 @@ describe ChatMessageBookmarkable do
 
   describe "#perform_list_query" do
     it "returns all the user's bookmarks" do
-      expect(subject.perform_list_query(user, guardian).map(&:id)).to match_array([bookmark1.id, bookmark2.id])
-    end
-
-    it "does not return bookmarks for messages inside topic chat channels the user cannot access" do
-      bookmark1.bookmarkable.chat_channel.chatable.update(category: private_category)
-      expect(subject.perform_list_query(user, guardian)).to eq(nil)
-      private_category.groups.last.add(user)
-      bookmark1.reload
-      user.reload
-      guardian = Guardian.new(user)
       expect(subject.perform_list_query(user, guardian).map(&:id)).to match_array([bookmark1.id, bookmark2.id])
     end
 
@@ -124,7 +113,7 @@ describe ChatMessageBookmarkable do
   describe "#can_see?" do
     it "returns false if the chat message is in a channel the user cannot see" do
       expect(subject.can_see?(guardian, bookmark1)).to eq(true)
-      bookmark1.bookmarkable.chat_channel.chatable.update(category: private_category)
+      bookmark1.bookmarkable.chat_channel.update!(chatable: private_category)
       expect(subject.can_see?(guardian, bookmark1)).to eq(false)
       private_category.groups.last.add(user)
       bookmark1.reload
@@ -137,7 +126,7 @@ describe ChatMessageBookmarkable do
   describe "#validate_before_create" do
     it "raises InvalidAccess if the user cannot see the chat channel" do
       expect { subject.validate_before_create(guardian, bookmark1.bookmarkable) }.not_to raise_error
-      bookmark1.bookmarkable.chat_channel.chatable.update(category: private_category)
+      bookmark1.bookmarkable.chat_channel.update!(chatable: private_category)
       expect { subject.validate_before_create(guardian, bookmark1.bookmarkable) }.to raise_error(Discourse::InvalidAccess)
       private_category.groups.last.add(user)
       bookmark1.reload

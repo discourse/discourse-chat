@@ -5,13 +5,10 @@ class ConvertChatableTopicsToCategories < ActiveRecord::Migration[7.0]
     # convert chatable topics to categories using topic's category_id or default category
     DB.exec(<<~SQL, uncategorized_category_id: SiteSetting.uncategorized_category_id)
       UPDATE chat_channels cc
-      SET chatable_type = 'Category', chatable_id = coalesce(
-        (
-          SELECT t.category_id
-          FROM topics t
-          WHERE cc.chatable_id = t.id
-        ),
-        :uncategorized_category_id
+      SET (chatable_type, chatable_id, name) = (
+        SELECT 'Category', coalesce(t.category_id, :uncategorized_category_id), coalesce(cc.name, t.title)
+        FROM topics t
+        WHERE cc.chatable_id = t.id
       )
       WHERE cc.chatable_type = 'Topic'
       SQL

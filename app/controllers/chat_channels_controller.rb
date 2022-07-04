@@ -28,37 +28,15 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
   end
 
   def follow
-    ActiveRecord::Base.transaction do
-      membership = UserChatChannelMembership
-        .includes(:chat_channel)
-        .find_or_initialize_by(
-          user_id: current_user.id,
-          chat_channel_id: params[:chat_channel_id]
-        )
+    membership = @chat_channel.join(current_user)
 
-      unless membership.following
-        membership.following = true
-        membership.save!
-        membership.chat_channel.update!(user_count: (membership.chat_channel.user_count || 0) + 1)
-      end
-
-      render_serialized(membership, UserChatChannelMembershipSerializer, root: false)
-    end
+    render_serialized(membership, UserChatChannelMembershipSerializer, root: false)
   end
 
   def unfollow
-    ActiveRecord::Base.transaction do
-      membership = UserChatChannelMembership
-        .includes(:chat_channel)
-        .find_by!(
-          user_id: current_user.id,
-          chat_channel_id: params[:chat_channel_id]
-        )
-      membership.update!(following: false)
-      new_user_count = [(membership.chat_channel.user_count || 0) - 1, 0].max
-      membership.chat_channel.update!(user_count: new_user_count)
-      render_serialized(membership, UserChatChannelMembershipSerializer, root: false)
-    end
+    membership = @chat_channel.remove(current_user)
+
+    render_serialized(membership, UserChatChannelMembershipSerializer, root: false)
   end
 
   def create
@@ -78,8 +56,17 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     chatable = Category.find_by(id: params[:id])
     raise Discourse::NotFound unless chatable
 
-    chat_channel = ChatChannel.create!(chatable: chatable, name: params[:name], description: params[:description], user_count: 1)
+    auto_join_users = ActiveRecord::Type::Boolean.new.deserialize(params[:auto_join_users]) || false
+
+    chat_channel = ChatChannel.create!(
+      chatable: chatable, name: params[:name], description: params[:description],
+      user_count: 1, auto_join_users: auto_join_users
+    )
     chat_channel.user_chat_channel_memberships.create!(user: current_user, following: true)
+
+    if chat_channel.auto_join_users
+      UserChatChannelMembership.async_auto_join_for(chat_channel)
+    end
 
     render_serialized(chat_channel, ChatChannelSerializer)
   end

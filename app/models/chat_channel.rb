@@ -27,6 +27,34 @@ class ChatChannel < ActiveRecord::Base
 
   validates :name, length: { maximum:  Proc.new { SiteSetting.max_topic_title_length } }, presence: true, allow_nil: true
 
+  def join(user)
+    ActiveRecord::Base.transaction do
+      membership = UserChatChannelMembership
+        .find_or_initialize_by(user_id: user.id, chat_channel: self)
+
+      if !membership.following
+        membership.following = true
+        membership.save!
+        update!(user_count: (user_count || 0) + 1)
+      end
+
+      membership
+    end
+  end
+
+  def remove(user)
+    ActiveRecord::Base.transaction do
+      membership = UserChatChannelMembership
+        .find_by!(user_id: user.id, chat_channel: self)
+
+      membership.update!(following: false)
+      new_user_count = [(user_count || 0) - 1, 0].max
+      update!(user_count: new_user_count)
+
+      membership
+    end
+  end
+
   def open?
     self.status.to_sym == :open
   end

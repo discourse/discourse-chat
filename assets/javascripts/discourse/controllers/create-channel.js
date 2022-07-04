@@ -27,6 +27,7 @@ export default Controller.extend(ModalFunctionality, {
   description: "",
   categorySelected: notEmpty("category"),
   categoryPermissionsHint: null,
+  autoJoinChannel: null,
 
   onShow() {
     this.set("categoryPermissionsHint", DEFAULT_HINT);
@@ -60,6 +61,7 @@ export default Controller.extend(ModalFunctionality, {
       id: this.categoryId,
       name: this.name,
       description: this.description,
+      auto_join_users: this.autoJoinChannel,
     };
 
     return ajax("/chat/chat_channels", { method: "PUT", data })

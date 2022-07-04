@@ -22,6 +22,12 @@ class UserChatChannelMembership < ActiveRecord::Base
 
   validate :changes_for_direct_message_channels
 
+  class << self
+    def async_auto_join_for(channel)
+      Jobs.enqueue(:auto_join_channel, chat_channel_id: channel.id)
+    end
+  end
+
   private
 
   def changes_for_direct_message_channels

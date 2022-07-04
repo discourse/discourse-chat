@@ -17,6 +17,7 @@
   ],
   "properties": {
     "id": { "type": "number" },
+    "auto_join_users": { "type": "boolean"},
     "chatable_type": { "type": "string" },
     "chatable_url": { "type": "string" },
     "title": { "type": "string" },

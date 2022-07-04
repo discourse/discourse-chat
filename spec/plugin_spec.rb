@@ -7,6 +7,7 @@ describe 'discourse-chat' do
     SiteSetting.clean_up_uploads = true
     SiteSetting.clean_orphan_uploads_grace_period_hours = 1
     Jobs::CleanUpUploads.new.reset_last_cleanup!
+    SiteSetting.chat_enabled = true
   end
 
   describe 'register_upload_unused' do
@@ -218,6 +219,82 @@ describe 'discourse-chat' do
           <div class="chat-transcript-messages"><p>Hello world!</p></div>
         </div>
         HTML
+      end
+    end
+  end
+
+  describe 'when a user is added to a group' do
+    fab!(:chatters_group) { Fabricate(:group) }
+    fab!(:category) { Fabricate(:category) }
+    fab!(:user) { Fabricate(:user) }
+
+    before do
+      @channel = Fabricate(:chat_channel, auto_join_users: true, chatable: category)
+      Fabricate(:category_group, category: category, group: chatters_group)
+    end
+
+    describe 'and the group has access to a channel through a category' do
+      it 'joins the user to the channel if auto-join is enabled' do
+        chatters_group.add(user)
+
+        membership = UserChatChannelMembership.find_by(user: user, chat_channel: @channel, following: true)
+
+        expect(membership).to be_present
+      end
+
+      it 'does nothing if auto-join is disabled' do
+        @channel.update!(auto_join_users: false)
+        chatters_group.add(user)
+
+        membership = UserChatChannelMembership.find_by(user: user, chat_channel: @channel, following: true)
+
+        expect(membership).to be_nil
+      end
+    end
+
+    describe "and the group doesn't has access to a channel through a category" do
+      before { chatters_group.add(user) }
+
+      it 'removes the user from the channel' do
+        chatters_group.remove(user)
+
+        membership = UserChatChannelMembership.find_by(user: user, chat_channel: @channel)
+
+        expect(membership.following).to eq(false)
+      end
+
+      it "doesn't remove the user if auto-join is disabled" do
+        @channel.update!(auto_join_users: false)
+        chatters_group.add(user)
+
+        chatters_group.remove(user)
+        membership = UserChatChannelMembership.find_by(user: user, chat_channel: @channel)
+
+        expect(membership.following).to eq(true)
+      end
+
+      it "doesn't remove the user if still has access through a different group" do
+        another_group = Fabricate(:group)
+        Fabricate(:category_group, category: category, group: another_group)
+        another_group.add(user)
+
+        chatters_group.remove(user)
+        membership = UserChatChannelMembership.find_by(user: user, chat_channel: @channel)
+
+        expect(membership.following).to eq(true)
+      end
+
+      it "doesn't remove the user from other channels where they still have access" do
+        another_group = Fabricate(:group)
+        another_category = Fabricate(:category)
+        Fabricate(:category_group, category: another_category, group: another_group)
+        another_channel = Fabricate(:chat_channel, auto_join_users: true, chatable: another_category)
+        another_group.add(user)
+
+        chatters_group.remove(user)
+        membership = UserChatChannelMembership.find_by(user: user, chat_channel: another_channel)
+
+        expect(membership.following).to eq(true)
       end
     end
   end

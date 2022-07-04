@@ -146,6 +146,8 @@ after_initialize do
   load File.expand_path('../lib/extensions/user_email_extension.rb', __FILE__)
   load File.expand_path('../lib/slack_compatibility.rb', __FILE__)
   load File.expand_path('../lib/post_notification_handler.rb', __FILE__)
+  load File.expand_path('../app/jobs/regular/auto_join_channel.rb', __FILE__)
+  load File.expand_path('../app/jobs/regular/auto_join_channel_batch.rb', __FILE__)
   load File.expand_path('../app/jobs/regular/process_chat_message.rb', __FILE__)
   load File.expand_path('../app/jobs/regular/chat_channel_archive.rb', __FILE__)
   load File.expand_path('../app/jobs/regular/chat_channel_delete.rb', __FILE__)
@@ -476,6 +478,30 @@ after_initialize do
 
   on(:reviewable_score_updated) do |reviewable|
     ReviewableChatMessage.on_score_updated(reviewable)
+  end
+
+  on(:user_added_to_group) do |user, group|
+    channels_to_add = ChatChannel
+      .distinct
+      .where(auto_join_users: true, chatable_type: 'Category')
+      .joins('INNER JOIN category_groups ON category_groups.category_id = chat_channels.chatable_id')
+      .where(category_groups: { group_id: group.id })
+
+    if channels_to_add.present?
+      channels_to_add.each { |channel| channel.join(user) }
+    end
+  end
+
+  on(:user_removed_from_group) do |user, group|
+    channels_to_remove = ChatChannel
+      .where(auto_join_users: true, chatable_type: 'Category')
+      .joins('INNER JOIN category_groups ON category_groups.category_id = chat_channels.chatable_id')
+      .group('chat_channels.id', 'category_groups.category_id')
+      .having('ARRAY[?] <@ ARRAY_AGG(category_groups.group_id) AND COUNT(*) = 1', [group.id])
+
+    if channels_to_remove.present?
+      channels_to_remove.each { |channel| channel.remove(user) }
+    end
   end
 
   DiscourseChat::Engine.routes.draw do

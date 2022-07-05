@@ -216,7 +216,7 @@ describe DiscourseChat::ChatNotifier do
       end
 
       context 'in a personal message' do
-        let(:personal_chat_channel) { DiscourseChat::DirectMessageChannelCreator.create!(acting_user: user_1, target_users: [user_1, user_2]) }
+        let(:personal_chat_channel) { DiscourseChat::DirectMessageChannelCreator.create!(target_users: [user_1, user_2]) }
 
         before { @chat_group.add(user_3) }
 

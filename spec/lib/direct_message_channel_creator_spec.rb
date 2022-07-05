@@ -13,14 +13,14 @@ describe DiscourseChat::DirectMessageChannelCreator do
     it "doesn't create a new chat channel" do
       existing_channel = nil
       expect {
-        existing_channel = subject.create!(acting_user: user_1, target_users: [user_1, user_2])
+        existing_channel = subject.create!(target_users: [user_1, user_2])
       }.to change { ChatChannel.count }.by(0)
       expect(existing_channel).to eq(dm_chat_channel)
     end
 
     it "creates UserChatChannelMembership records and sets their notification levels" do
       expect {
-        subject.create!(acting_user: user_1, target_users: [user_1, user_2])
+        subject.create!(target_users: [user_1, user_2])
       }.to change { UserChatChannelMembership.count }.by(2)
 
       user_1_membership = UserChatChannelMembership.find_by(user_id: user_1.id, chat_channel_id: dm_chat_channel)
@@ -33,7 +33,7 @@ describe DiscourseChat::DirectMessageChannelCreator do
 
     it "publishes the new DM channel message bus message for each user" do
       messages = MessageBus.track_publish do
-        subject.create!(acting_user: user_1, target_users: [user_1, user_2])
+        subject.create!(target_users: [user_1, user_2])
       end.filter { |m| m.channel == "/chat/new-direct-message-channel" }
       expect(messages.count).to eq(2)
       expect(messages.map { |m| JSON.parse(m[:data])["chat_channel"]["id"] }).to eq([dm_chat_channel.id, dm_chat_channel.id])
@@ -42,7 +42,7 @@ describe DiscourseChat::DirectMessageChannelCreator do
     it "allows a user to create a direct message to themself, without creating a new channel" do
       existing_channel = nil
       expect {
-        existing_channel = subject.create!(acting_user: user_1, target_users: [user_1])
+        existing_channel = subject.create!(target_users: [user_1])
       }.to change { ChatChannel.count }.by(0).and change { UserChatChannelMembership.count }.by(1)
       expect(existing_channel).to eq(own_chat_channel)
     end
@@ -50,7 +50,7 @@ describe DiscourseChat::DirectMessageChannelCreator do
     it "deduplicates target_users" do
       existing_channel = nil
       expect {
-        existing_channel = subject.create!(acting_user: user_1, target_users: [user_1, user_1])
+        existing_channel = subject.create!(target_users: [user_1, user_1])
       }.to change { ChatChannel.count }.by(0).and change { UserChatChannelMembership.count }.by(1)
       expect(existing_channel).to eq(own_chat_channel)
     end
@@ -59,13 +59,13 @@ describe DiscourseChat::DirectMessageChannelCreator do
   context "non existing direct message channel" do
     it "creates a new chat channel" do
       expect {
-        subject.create!(acting_user: user_1, target_users: [user_1, user_2])
+        subject.create!(target_users: [user_1, user_2])
       }.to change { ChatChannel.count }.by(1)
     end
 
     it "creates UserChatChannelMembership records and sets their notification levels" do
       expect {
-        subject.create!(acting_user: user_1, target_users: [user_1, user_2])
+        subject.create!(target_users: [user_1, user_2])
       }.to change { UserChatChannelMembership.count }.by(2)
 
       chat_channel = ChatChannel.last
@@ -79,7 +79,7 @@ describe DiscourseChat::DirectMessageChannelCreator do
 
     it "publishes the new DM channel message bus message for each user" do
       messages = MessageBus.track_publish do
-        subject.create!(acting_user: user_1, target_users: [user_1, user_2])
+        subject.create!(target_users: [user_1, user_2])
       end.filter { |m| m.channel == "/chat/new-direct-message-channel" }
 
       chat_channel = ChatChannel.last
@@ -89,13 +89,13 @@ describe DiscourseChat::DirectMessageChannelCreator do
 
     it "allows a user to create a direct message to themself" do
       expect {
-        subject.create!(acting_user: user_1, target_users: [user_1])
+        subject.create!(target_users: [user_1])
       }.to change { ChatChannel.count }.by(1).and change { UserChatChannelMembership.count }.by(1)
     end
 
     it "deduplicates target_users" do
       expect {
-        subject.create!(acting_user: user_1, target_users: [user_1, user_1])
+        subject.create!(target_users: [user_1, user_1])
       }.to change { ChatChannel.count }.by(1).and change { UserChatChannelMembership.count }.by(1)
     end
   end

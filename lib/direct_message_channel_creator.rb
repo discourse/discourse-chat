@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module DiscourseChat::DirectMessageChannelCreator
-  def self.create!(acting_user:, target_users:)
+  def self.create!(target_users:)
     unique_target_users = target_users.uniq
     direct_messages_channel = DirectMessageChannel.for_user_ids(unique_target_users.map(&:id))
     if direct_messages_channel

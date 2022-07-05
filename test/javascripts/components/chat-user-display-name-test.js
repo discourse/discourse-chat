@@ -6,16 +6,16 @@ import hbs from "htmlbars-inline-precompile";
 import { set } from "@ember/object";
 
 function displayname() {
-  return query(".chat-user-displayname").innerText.trim();
+  return query(".chat-user-display-name").innerText.trim();
 }
 
 discourseModule(
-  "Discourse Chat | Component | chat-user-displayname | prioritize username in UX",
+  "Discourse Chat | Component | chat-user-display-name | prioritize username in UX",
   function (hooks) {
     setupRenderingTest(hooks);
 
     componentTest("username and no name", {
-      template: hbs`{{chat-user-displayname user=user}}`,
+      template: hbs`{{chat-user-display-name user=user}}`,
 
       async beforeEach() {
         set(this.siteSettings, "prioritize_username_in_ux", true);
@@ -28,7 +28,7 @@ discourseModule(
     });
 
     componentTest("username and name", {
-      template: hbs`{{chat-user-displayname user=user}}`,
+      template: hbs`{{chat-user-display-name user=user}}`,
 
       async beforeEach() {
         set(this.siteSettings, "prioritize_username_in_ux", true);
@@ -43,12 +43,12 @@ discourseModule(
 );
 
 discourseModule(
-  "Discourse Chat | Component | chat-user-displayname | prioritize name in UX",
+  "Discourse Chat | Component | chat-user-display-name | prioritize name in UX",
   function (hooks) {
     setupRenderingTest(hooks);
 
     componentTest("no name", {
-      template: hbs`{{chat-user-displayname user=user}}`,
+      template: hbs`{{chat-user-display-name user=user}}`,
 
       async beforeEach() {
         set(this.siteSettings, "prioritize_username_in_ux", false);
@@ -61,7 +61,7 @@ discourseModule(
     });
 
     componentTest("name and username", {
-      template: hbs`{{chat-user-displayname user=user}}`,
+      template: hbs`{{chat-user-display-name user=user}}`,
 
       async beforeEach() {
         set(this.siteSettings, "prioritize_username_in_ux", false);

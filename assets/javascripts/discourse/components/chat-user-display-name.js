@@ -2,7 +2,7 @@ import Component from "@ember/component";
 import { computed } from "@ember/object";
 import { formatUsername } from "discourse/lib/utilities";
 
-export default class ChatUserDisplayname extends Component {
+export default class ChatUserDisplayName extends Component {
   tagName = "";
   user = null;
 

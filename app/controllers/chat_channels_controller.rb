@@ -64,7 +64,7 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
   def create
     params.require([:type, :id, :name])
     guardian.ensure_can_create_chat_channel!
-    raise Discourse::InvalidParameters unless ["category"].include?(params[:type].downcase)
+    raise Discourse::InvalidParameters unless params[:type].downcase == 'category'
     raise Discourse::InvalidParameters.new(:name) if params[:name].length > SiteSetting.max_topic_title_length
 
     chatable_type = "Category"

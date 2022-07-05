@@ -67,14 +67,13 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     raise Discourse::InvalidParameters unless params[:type].downcase == 'category'
     raise Discourse::InvalidParameters.new(:name) if params[:name].length > SiteSetting.max_topic_title_length
 
-    chatable_type = "Category"
-    existing_args = {
-      chatable_type: chatable_type,
-      chatable_id: params[:id]
-    }
-    existing_args[:name] = params[:name]
-    exists = ChatChannel.exists?(existing_args)
+    chatable_type = 'Category'
 
+    exists = ChatChannel.exists?(
+      chatable_type: chatable_type,
+      chatable_id: params[:id],
+      name: params[:name]
+    )
     if exists
       raise Discourse::InvalidParameters.new(I18n.t("chat.errors.channel_exists_for_category"))
     end

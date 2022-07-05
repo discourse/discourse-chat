@@ -10,6 +10,7 @@ module Jobs
 
       return "Channel not found" if channel.nil?
       return "Chatable is not a category" if !channel.category_channel?
+      return "Not an auto-join channel" if !channel.auto_join_users?
 
       query_args = {
         chat_channel_id: channel.id,

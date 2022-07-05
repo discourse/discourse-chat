@@ -8,7 +8,7 @@ describe Jobs::AutoJoinChannelBatch do
 
   before do
     @user = Fabricate(:user, last_seen_at: 15.minutes.ago)
-    @channel = Fabricate(:chat_channel, chatable: category)
+    @channel = Fabricate(:chat_channel, auto_join_users: true, chatable: category)
     @category_group = Fabricate(:category_group, category: category, group: chatters_group)
 
     chatters_group.add(@user)

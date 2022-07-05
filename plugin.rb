@@ -146,8 +146,9 @@ after_initialize do
   load File.expand_path('../lib/extensions/user_email_extension.rb', __FILE__)
   load File.expand_path('../lib/slack_compatibility.rb', __FILE__)
   load File.expand_path('../lib/post_notification_handler.rb', __FILE__)
-  load File.expand_path('../app/jobs/regular/auto_join_channel.rb', __FILE__)
+  load File.expand_path('../app/jobs/regular/auto_manage_channel_memberships.rb', __FILE__)
   load File.expand_path('../app/jobs/regular/auto_join_channel_batch.rb', __FILE__)
+  load File.expand_path('../app/jobs/regular/auto_remove_channel_batch.rb', __FILE__)
   load File.expand_path('../app/jobs/regular/process_chat_message.rb', __FILE__)
   load File.expand_path('../app/jobs/regular/chat_channel_archive.rb', __FILE__)
   load File.expand_path('../app/jobs/regular/chat_channel_delete.rb', __FILE__)
@@ -501,6 +502,18 @@ after_initialize do
 
     if channels_to_remove.present?
       channels_to_remove.each { |channel| channel.remove(user) }
+    end
+  end
+
+  on(:category_updated) do |category|
+    # TODO(roman): remove early return after 2.9 release.
+    # There's a bug on core where this event is triggered with an `#update` result (true/false)
+    return if !category.is_a?(Category)
+    category_channel = ChatChannel.find_by(auto_join_users: true, chatable: category)
+
+    if category_channel
+      UserChatChannelMembership.async_auto_join_for(category_channel)
+      UserChatChannelMembership.async_auto_remove_from(category_channel)
     end
   end
 

@@ -223,17 +223,18 @@ describe 'discourse-chat' do
     end
   end
 
-  describe 'when a user is added to a group' do
+  describe 'auto-joining users to a channel' do
     fab!(:chatters_group) { Fabricate(:group) }
     fab!(:category) { Fabricate(:category) }
-    fab!(:user) { Fabricate(:user) }
+    fab!(:user) { Fabricate(:user, last_seen_at: 15.minutes.ago) }
 
     before do
       @channel = Fabricate(:chat_channel, auto_join_users: true, chatable: category)
-      Fabricate(:category_group, category: category, group: chatters_group)
     end
 
-    describe 'and the group has access to a channel through a category' do
+    describe 'when a user is added to a group with access to a channel through a category' do
+      before { Fabricate(:category_group, category: category, group: chatters_group) }
+
       it 'joins the user to the channel if auto-join is enabled' do
         chatters_group.add(user)
 
@@ -252,8 +253,11 @@ describe 'discourse-chat' do
       end
     end
 
-    describe "and the group doesn't has access to a channel through a category" do
-      before { chatters_group.add(user) }
+    describe "when a user is removed from a group with access to a channel through a category" do
+      before do
+        Fabricate(:category_group, category: category, group: chatters_group)
+        chatters_group.add(user)
+      end
 
       it 'removes the user from the channel' do
         chatters_group.remove(user)
@@ -295,6 +299,54 @@ describe 'discourse-chat' do
         membership = UserChatChannelMembership.find_by(user: user, chat_channel: another_channel)
 
         expect(membership.following).to eq(true)
+      end
+    end
+
+    describe 'when category permissions change' do
+      before { Jobs.run_immediately! }
+
+      describe 'given permissions to a new group' do
+        let(:chatters_group_permission) do
+          { chatters_group.name => CategoryGroup.permission_types[:full] }
+        end
+
+        it 'adds the user to the channel' do
+          chatters_group.add(user)
+          apply_permissions_and_trigger_event(category, chatters_group_permission)
+
+          membership = UserChatChannelMembership.find_by(user: user, chat_channel: @channel)
+
+          expect(membership.following).to eq(true)
+        end
+
+        it 'does nothing if there is no channel for the category' do
+          another_category = Fabricate(:category)
+          chatters_group.add(user)
+          apply_permissions_and_trigger_event(another_category, chatters_group_permission)
+
+          membership = UserChatChannelMembership.find_by(user: user, chat_channel: @channel)
+
+          expect(membership).to be_nil
+        end
+      end
+
+      describe 'revoke group permissions' do
+        before do
+          Fabricate(:category_group, category: category, group: chatters_group)
+          chatters_group.add(user)
+        end
+
+        it 'removes the user from the group' do
+          apply_permissions_and_trigger_event(category, { 'staff' => CategoryGroup.permission_types[:full] })
+
+          membership = UserChatChannelMembership.find_by(user: user, chat_channel: @channel)
+
+          expect(membership.following).to eq(false)
+        end
+      end
+
+      def apply_permissions_and_trigger_event(category, permissions)
+        category.update!(permissions: permissions)
       end
     end
   end

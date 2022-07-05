@@ -31,10 +31,10 @@ da:
       leave: "Forlad kanal"
       channel_settings:
         title: "Kanal indstillinger"
-        close_channel: "Luk Kanal..."
-        open_channel: "Åbn Kanal..."
-        archive_channel: "Arkivér Kanal..."
-        delete_channel: "Slet Kanal..."
+        close_channel: "Luk Kanal"
+        open_channel: "Åbn Kanal"
+        archive_channel: "Arkivér Kanal"
+        delete_channel: "Slet Kanal"
       channel_archive:
         title: "Arkivér Kanal"
         retry: "Forsøg igen"
@@ -58,8 +58,6 @@ da:
       invalid_access: "Du har ikke adgang til at se denne chatkanal"
       invitation_notification: "<span>%{username}</span> <span>inviterede dig til at deltage i en chatkanal</span>"
       in_reply_to: "Som svar til"
-      isolate:
-        title: "Isolér chat"
       new_messages: "nye beskeder"
       bookmark_message: "Bogmærke"
       bookmark_message_edit: "Rediger Bogmærke"

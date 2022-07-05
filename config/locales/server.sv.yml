@@ -50,6 +50,7 @@ sv:
       max_reactions_limit_reached: "Nya reaktioner är inte tillåtna för detta meddelande."
       message_move_invalid_channel: "Käll- och destinationskanalen måste vara offentliga kanaler."
       message_move_no_messages_found: "Inga meddelanden hittades med de angivna meddelande-ID:n."
+      cant_update_direct_message_channel: "Egenskaper för direktmeddelandekanal såsom namn och beskrivning kan inte uppdateras."
     reviewables:
       actions:
         agree:
@@ -133,6 +134,16 @@ sv:
         one: "Du har ett nytt chattmeddelande"
         other: "Du har nya chattmeddelanden"
       from: "%{site_name}"
+      subject:
+        direct_message:
+          one: "[%{email_prefix}] Nytt meddelande från %{message_title}"
+          other: "[%{email_prefix}] Nya meddelanden från %{message_title} och %{others}"
+        chat_channel:
+          one: "[%{email_prefix}] Nytt meddelande i %{message_title}"
+          other: "[%{email_prefix}] Nya meddelanden i %{message_title} och %{others}"
+        other_direct_message: "från %{message_title}"
+        others: "%{count} andra"
+      unsubscribe: "Den här chattsammanfattningen skickas från %{site_link} när du är borta. Ändra din %{email_preferences_link} eller %{unsubscribe_link} för att avsluta prenumerationen."
       unsubscribe_no_link: "Den här chattsammanfattningen skickas från %{site_link} när du är borta. Ändra din %{email_preferences_link}."
       view_messages:
         one: "Visa meddelande"
@@ -143,5 +154,6 @@ sv:
       your_chat_settings: "preferens för frekvens av chattmeddelanden"
   unsubscribe:
     chat_summary:
+      select_title: "Ställ in e-postfrekvensen för chattsammanfattningar till:"
       never: Aldrig
       when_away: Endast när du är borta

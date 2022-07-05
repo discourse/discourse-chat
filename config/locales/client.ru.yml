@@ -39,10 +39,14 @@ ru:
         confirm_move: "Переместить сообщения"
       channel_settings:
         title: "Настройки канала"
-        close_channel: "Закрыть канал..."
-        open_channel: "Открыть канал..."
-        archive_channel: "Архивировать канал..."
-        delete_channel: "Удалить канал..."
+        edit: "Изменить"
+        add: "Добавить"
+        close_channel: "Закрыть канал"
+        open_channel: "Открыть канал"
+        archive_channel: "Архивировать канал"
+        delete_channel: "Удалить канал"
+        join_channel: "Присоединиться к каналу"
+        leave_channel: "Покинуть канал"
       channel_archive:
         title: "Архивировать канал"
         instructions: "<p>Архивация канала переводит его в режим только для чтения и перемещает все сообщения из канала в новую или существующую тему. В этом режиме нельзя отправлять новые сообщения, а существующие сообщения нельзя редактировать или удалять.</p><p>Вы действительно хотите заархивировать канал <strong>%{channelTitle}</strong>?</p>"
@@ -87,9 +91,6 @@ ru:
       invalid_access: "У вас нет доступа для просмотра этого канала"
       invitation_notification: "<span>Пользователь %{username}</span> <span> пригласил вас присоединиться к каналу</span>"
       in_reply_to: "В ответ на"
-      isolate:
-        title: "Изолировать чат"
-        description: "Всегда открывать чат в новой вкладке"
       heading: "Чат"
       join: "Подписаться"
       new_messages: "Новые сообщения"
@@ -177,6 +178,26 @@ ru:
       chat_message_separator:
         today: Сегодня
         yesterday: Вчера
+      members_view:
+        filter_placeholder: Найти участников
+      about_view:
+        associated_topic: Связанная тема
+        associated_category: Связанный раздел
+        title: Название
+        description: Описание
+      channel_info:
+        tabs:
+          about: Информация о канале
+          members: Участники
+          settings: Настройки
+      channel_edit_title_modal:
+        title: Изменить название
+        input_placeholder: Добавьте название
+        description: Дайте короткое описательное название вашему каналу
+      channel_edit_description_modal:
+        title: Изменить описание
+        input_placeholder: Добавить описание
+        description: Расскажите, о чем этот канал
       direct_message_creator:
         title: Новое сообщение
         prefix: "Кому:"
@@ -185,6 +206,14 @@ ru:
       channel_selector:
         title: "Перейти на канал"
         no_channels: "Нет каналов, соответствующих вашему запросу"
+      channel:
+        no_memberships: На этом канале нет участников
+        no_memberships_found: Участники не найдены
+        memberships_count:
+          one: 1 участник
+          few: "%{count} участника"
+          many: "%{count} участников"
+          other: "%{count} участников"
       create_channel:
         choose_category:
           label: "Выберите раздел"

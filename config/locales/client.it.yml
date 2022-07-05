@@ -36,9 +36,6 @@ it:
       flagged: "Questo messaggio è stato segnalato per la revisione"
       invalid_access: "Non hai accesso alla visualizzazione di questo canale chat"
       in_reply_to: "In risposta a"
-      isolate:
-        title: "Isola chat"
-        description: "Apri sempre la chat in una nuova scheda"
       heading: "Chat"
       new_messages: "nuovi messaggi"
       mention_warning:

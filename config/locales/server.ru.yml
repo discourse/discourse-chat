@@ -50,6 +50,7 @@ ru:
       max_reactions_limit_reached: "Новые реакции на это сообщение запрещены."
       message_move_invalid_channel: "Исходный и целевой каналы должны быть общедоступными."
       message_move_no_messages_found: "Не найдено сообщений с указанными идентификаторами сообщений."
+      cant_update_direct_message_channel: "Такие свойства канала как название и описание, не могут быть обновлены."
     reviewables:
       actions:
         agree:

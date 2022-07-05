@@ -36,9 +36,6 @@ pt_BR:
       flagged: "Esta mensagem foi sinalizada para revisão"
       invalid_access: "Você não tem acesso para ver este canal de chat"
       in_reply_to: "Em resposta a"
-      isolate:
-        title: "Isolar chat"
-        description: "Sempre abrir chat em uma nova aba"
       heading: "Chat"
       new_messages: "novas mensagens"
       mention_warning:

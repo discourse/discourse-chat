@@ -23,6 +23,8 @@ pl_PL:
       cancel_reply: "Anuluj odpowiedź"
       chat_channels: "Kanały"
       leave: "Opuść kanał"
+      channel_settings:
+        edit: "Edytuj"
       channels_list_popup:
         browse: "Przeglądaj kanały"
         create: "Utwórz kanał"
@@ -45,8 +47,6 @@ pl_PL:
       flagged: "Ta wiadomość została oznaczona do sprawdzenia"
       invalid_access: "Nie masz dostępu do tego kanału czatu"
       in_reply_to: "W odpowiedzi na"
-      isolate:
-        description: "Zawsze otwieraj czat w nowej karcie"
       heading: "Czat"
       join: "Dołącz"
       new_messages: "nowe wiadomości"
@@ -105,6 +105,8 @@ pl_PL:
         closed: "Zamknięty"
         open_header: "Kanał jest otwarty"
         open: "Otwarty"
+      about_view:
+        description: Opis
       channel_selector:
         title: "Przejdź do kanału"
         no_channels: "Żadne kanały nie pasują do Twojego wyszukiwania"

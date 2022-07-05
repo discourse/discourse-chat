@@ -36,9 +36,6 @@ fi:
       flagged: "Tämä viesti on liputettu käsiteltäväksi"
       invalid_access: "Sinulla ei ole tämän chat-kanavan katseluoikeutta"
       in_reply_to: "Vastauksena:"
-      isolate:
-        title: "Eristä chat"
-        description: "Avaa chat aina uuteen välilehteen"
       heading: "Chat"
       new_messages: "uusia viestejä"
       mention_warning:

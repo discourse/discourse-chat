@@ -36,9 +36,6 @@ es:
       flagged: "Este mensaje ha sido denunciado y se someterá a revisión"
       invalid_access: "No tienes acceso para ver este canal de chat"
       in_reply_to: "En respuesta a"
-      isolate:
-        title: "Aislar chat"
-        description: "Abrir siempre el chat en una pestaña nueva"
       heading: "Chat"
       new_messages: "nuevos mensajes"
       mention_warning:

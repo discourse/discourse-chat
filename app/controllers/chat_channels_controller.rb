@@ -76,8 +76,7 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     exists = ChatChannel.exists?(existing_args)
 
     if exists
-      translation_key = "channel_exists_for_category"
-      raise Discourse::InvalidParameters.new(I18n.t("chat.errors.#{translation_key}"))
+      raise Discourse::InvalidParameters.new(I18n.t("chat.errors.channel_exists_for_category"))
     end
 
     chatable = chatable_type.constantize.find_by(id: params[:id])

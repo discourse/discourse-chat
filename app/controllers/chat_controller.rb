@@ -446,10 +446,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
   end
 
   def find_chatable
-    chatable_class = case params[:chatable_type].downcase
-                     when "category" then Category
-    end
-    @chatable = chatable_class.find_by(id: params[:chatable_id])
+    @chatable = Category.find_by(id: params[:chatable_id])
     guardian.ensure_can_moderate_chat!(@chatable)
   end
 

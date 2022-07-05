@@ -839,10 +839,13 @@ export default Service.extend({
     return this.upsertDmChannelForUsernames(usernames);
   },
 
+  // @param {array} usernames - The usernames to create or fetch the direct message
+  // channel for. The current user will automatically be included in the channel
+  // when it is created.
   upsertDmChannelForUsernames(usernames) {
     return ajax("/chat/direct_messages/create.json", {
       method: "POST",
-      data: { usernames: usernames.uniq().join(",") },
+      data: { usernames: usernames.uniq() },
     })
       .then((response) => {
         const chatChannel = ChatChannel.create(response.chat_channel);
@@ -852,8 +855,13 @@ export default Service.extend({
       .catch(popupAjaxError);
   },
 
+  // @param {array} usernames - The usernames to fetch the direct message
+  // channel for. The current user will automatically be included as a
+  // participant to fetch the channel for.
   getDmChannelForUsernames(usernames) {
-    return ajax("/chat/direct_messages.json", { data: { usernames } });
+    return ajax("/chat/direct_messages.json", {
+      data: { usernames: usernames.uniq().join(",") },
+    });
   },
 
   _saveDraft(channelId, draft) {

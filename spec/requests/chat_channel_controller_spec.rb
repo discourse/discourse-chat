@@ -130,10 +130,10 @@ RSpec.describe DiscourseChat::ChatChannelsController do
         fab!(:user3) { Fabricate(:user) }
 
         before do
-          @dm1 = DiscourseChat::DirectMessageChannelCreator.create!([user1, user2])
-          @dm2 = DiscourseChat::DirectMessageChannelCreator.create!([user1, user3])
-          @dm3 = DiscourseChat::DirectMessageChannelCreator.create!([user1, user2, user3])
-          @dm4 = DiscourseChat::DirectMessageChannelCreator.create!([user2, user3])
+          @dm1 = DiscourseChat::DirectMessageChannelCreator.create!(acting_user: user1, target_users: [user1, user2])
+          @dm2 = DiscourseChat::DirectMessageChannelCreator.create!(acting_user: user1, target_users: [user1, user3])
+          @dm3 = DiscourseChat::DirectMessageChannelCreator.create!(acting_user: user1, target_users: [user1, user2, user3])
+          @dm4 = DiscourseChat::DirectMessageChannelCreator.create!(acting_user: user1, target_users: [user2, user3])
         end
 
         it "returns correct DMs for user1" do

@@ -19,15 +19,11 @@ export default class ChatDraftChannelScreen extends Component {
     this.onSwitchChannel?.(channel);
   }
 
-  _formatUsernames(users = []) {
-    return users.mapBy("username").uniq().join(",");
-  }
-
   _fetchPreviewedChannel(users) {
     this.set("previewedChannel", null);
 
     return this.chat
-      .getDmChannelForUsernames(this._formatUsernames(users))
+      .getDmChannelForUsernames(users.mapBy("username"))
       .then((response) => {
         this.set(
           "previewedChannel",

@@ -6,7 +6,7 @@ class DiscourseChat::DirectMessagesController < DiscourseChat::ChatBaseControlle
   def create
     guardian.ensure_can_chat!(current_user)
     users = users_from_usernames(current_user, params)
-    chat_channel = DiscourseChat::DirectMessageChannelCreator.create!(users)
+    chat_channel = DiscourseChat::DirectMessageChannelCreator.create!(acting_user: current_user, target_users: users)
     render_serialized(chat_channel, ChatChannelSerializer, root: "chat_channel")
   end
 
@@ -31,9 +31,16 @@ class DiscourseChat::DirectMessagesController < DiscourseChat::ChatBaseControlle
   def users_from_usernames(current_user, params)
     params.require(:usernames)
 
+    usernames = if params[:usernames].is_a?(String)
+      params[:usernames].split(",")
+    else
+      params[:usernames]
+    end
+
     users = [current_user]
-    if current_user.username != params[:usernames]
-      users.concat(User.where(username: params[:usernames].split(",")).to_a)
+    other_usernames = usernames - [current_user.username]
+    if other_usernames.any?
+      users.concat(User.where(username: other_usernames).to_a)
     end
     users
   end

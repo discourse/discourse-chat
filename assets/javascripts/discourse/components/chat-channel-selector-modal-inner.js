@@ -97,7 +97,7 @@ export default Component.extend({
   @action
   switchChannel(channel) {
     if (channel.user) {
-      return this.fetchChannelForUser(channel).then((response) => {
+      return this.fetchOrCreateChannelForUser(channel).then((response) => {
         this.chat
           .startTrackingChannel(ChatChannel.create(response.chat_channel))
           .then((newlyTracked) => {
@@ -159,10 +159,10 @@ export default Component.extend({
   },
 
   @action
-  fetchChannelForUser(user) {
+  fetchOrCreateChannelForUser(user) {
     return ajax("/chat/direct_messages/create.json", {
       method: "POST",
-      data: { usernames: user.username },
+      data: { usernames: [user.username] },
     }).catch(popupAjaxError);
   },
 

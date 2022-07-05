@@ -104,12 +104,12 @@ module ChatPublisher
 
   def self.publish_new_direct_message_channel(chat_channel, users)
     users.each do |user|
-      content = ChatChannelSerializer.new(
+      serialized_channel = ChatChannelSerializer.new(
         chat_channel,
         scope: Guardian.new(user), # We need a guardian here for direct messages
         root: :chat_channel
-      )
-      MessageBus.publish("/chat/new-direct-message-channel", content.as_json, user_ids: [user.id])
+      ).to_json
+      MessageBus.publish("/chat/new-direct-message-channel", serialized_channel, user_ids: [user.id])
     end
   end
 

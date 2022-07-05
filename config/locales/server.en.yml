@@ -32,7 +32,6 @@ en:
   chat:
     errors:
       channel_exists_for_category: "A channel already exists for this category and name"
-      channel_exists_for_topic: "A channel already exists for this topic"
       channel_new_message_disallowed: "The channel is %{status}, no new messages can be sent"
       channel_modify_message_disallowed: "The channel is %{status}, no messages can be edited or deleted"
       user_cannot_send_message: "You cannot send messages at this time."
@@ -138,7 +137,7 @@ en:
         other: "You have new chat messages"
       from: "%{site_name}"
       subject:
-        direct_message: 
+        direct_message:
           one: "[%{email_prefix}] New message from %{message_title}"
           other: "[%{email_prefix}] New messages from %{message_title} and %{others}"
         chat_channel:

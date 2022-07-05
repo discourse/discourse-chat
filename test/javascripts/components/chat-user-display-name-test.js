@@ -36,7 +36,7 @@ discourseModule(
       },
 
       async test(assert) {
-        assert.equal(displayname(), "bob - Bobcat");
+        assert.equal(displayname(), "bob — Bobcat");
       },
     });
   }
@@ -69,7 +69,7 @@ discourseModule(
       },
 
       async test(assert) {
-        assert.equal(displayname(), "Bobcat - bob");
+        assert.equal(displayname(), "Bobcat — bob");
       },
     });
   }

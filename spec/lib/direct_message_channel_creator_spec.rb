@@ -36,7 +36,8 @@ describe DiscourseChat::DirectMessageChannelCreator do
         subject.create!(target_users: [user_1, user_2])
       end.filter { |m| m.channel == "/chat/new-direct-message-channel" }
       expect(messages.count).to eq(2)
-      expect(messages.map { |m| JSON.parse(m[:data])["chat_channel"]["id"] }).to eq([dm_chat_channel.id, dm_chat_channel.id])
+      expect(messages.first[:data]).to be_kind_of(Hash)
+      expect(messages.map { |m| m[:data][:chat_channel][:id] }).to eq([dm_chat_channel.id, dm_chat_channel.id])
     end
 
     it "allows a user to create a direct message to themself, without creating a new channel" do
@@ -84,7 +85,8 @@ describe DiscourseChat::DirectMessageChannelCreator do
 
       chat_channel = ChatChannel.last
       expect(messages.count).to eq(2)
-      expect(messages.map { |m| JSON.parse(m[:data])["chat_channel"]["id"] }).to eq([chat_channel.id, chat_channel.id])
+      expect(messages.first[:data]).to be_kind_of(Hash)
+      expect(messages.map { |m| m[:data][:chat_channel][:id] }).to eq([chat_channel.id, chat_channel.id])
     end
 
     it "allows a user to create a direct message to themself" do

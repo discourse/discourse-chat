@@ -108,7 +108,7 @@ module ChatPublisher
         chat_channel,
         scope: Guardian.new(user), # We need a guardian here for direct messages
         root: :chat_channel
-      ).to_json
+      ).as_json
       MessageBus.publish("/chat/new-direct-message-channel", serialized_channel, user_ids: [user.id])
     end
   end

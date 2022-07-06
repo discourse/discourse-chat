@@ -4,7 +4,9 @@ import { bind } from "discourse-common/utils/decorators";
 import { getOwner } from "discourse-common/lib/get-owner";
 import { MENTION_KEYWORDS } from "discourse/plugins/discourse-chat/discourse/components/chat-message";
 import { clearChatComposerButtons } from "discourse/plugins/discourse-chat/discourse/lib/chat-composer-buttons";
-import { A } from '@ember/array';
+import { A } from "@ember/array";
+import { tracked } from "@glimmer/tracking";
+import showModal from "discourse/lib/show-modal";
 
 let _lastForcedRefreshAt;
 const MIN_REFRESH_DURATION_MS = 180000; // 3 minutes
@@ -125,39 +127,81 @@ export default {
           }
         });
       });
+      api.addSidebarSection((BaseSectionHeader, BaseSectionLink) => {
+        return class extends BaseSectionHeader {
+          @tracked sectionLinks = A([]);
 
-      api.addSidebarSection({
-        header: {
-          title: "channels title",
-          text: "channels",
-          // eslint-disable-next-line no-console
-          action: () => { console.log("fsdfsd"); }, // TODO
-          actionIcon: "cog",
-          actionTitle: I18n.t("sidebar.channels.settings.title")
-        },
-        links: (baseSectionLink) => {
-          const links = A([]);
-          this.chatService.getChannels().then((channels) => {
-            channels.publicChannels.forEach((channel) => {
-              links.pushObject(
-                class ChatSectionLinkFromAjaxCall extends baseSectionLink {
-                  get name() {
-                    return channel.chatable_id;
-                  }
-                  get route() {
-                    return "discovery.latest";
-                  }
-                  get title() {
-                    return channel.title;
-                  }
-                  get text() {
-                    return channel.title;
-                  }
-                });
+          constructor() {
+            super(...arguments);
+            this.chatService = container.lookup("service:chat");
+            this.chatService.getChannels().then((channels) => {
+              channels.publicChannels.forEach((channel) => {
+                this.sectionLinks.pushObject(
+                  new (class extends BaseSectionLink {
+                    get name() {
+                      return channel.chatable_id;
+                    }
+                    get route() {
+                      return "chat.channel";
+                    }
+                    get model() {
+                      return {
+                        ...channel,
+                        channelId: channel.id,
+                        channelTitle: channel.title,
+                      };
+                    }
+                    get title() {
+                      return channel.title;
+                    }
+                    get text() {
+                      return channel.title;
+                    }
+                  })()
+                );
+              });
             });
-          });
-          return links;
-        }
+          }
+
+          get name() {
+            return I18n.t("chat.chat_channels");
+          }
+
+          get title() {
+            return I18n.t("chat.chat_channels");
+          }
+
+          get text() {
+            return I18n.t("chat.chat_channels");
+          }
+
+          get actions() {
+            return [
+              {
+                id: "browseChannels",
+                title: I18n.t("chat.channels_list_popup.browse"),
+                action: () => {
+                  this.chatService.router.transitionTo("chat.browse");
+                },
+              },
+              {
+                id: "openCreateChannelModal",
+                title: I18n.t("chat.channels_list_popup.create"),
+                action: () => {
+                  showModal("create-channel-modal");
+                },
+              },
+            ];
+          }
+
+          get actionsIcon() {
+            return "cog";
+          }
+
+          get links() {
+            return this.sectionLinks;
+          }
+        };
       });
     });
   },

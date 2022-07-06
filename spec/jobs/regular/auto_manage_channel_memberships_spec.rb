@@ -37,9 +37,9 @@ describe Jobs::AutoManageChannelMemberships do
       same_id = 99
       another_category = Fabricate(:category, id: same_id)
       another_cgroup = Fabricate(:category_group, category: another_category, group: chatters_group)
-      topic = Fabricate(:topic, id: same_id)
+      dm_channel = Fabricate(:direct_message_channel, id: same_id)
       Fabricate(:group_user, user: @user, group: chatters_group)
-      @channel.update!(chatable: topic)
+      @channel.update!(chatable: dm_channel)
 
       assert_batches_enqueued(@channel, mode, 0)
     end

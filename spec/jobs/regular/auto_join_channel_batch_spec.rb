@@ -89,8 +89,8 @@ describe Jobs::AutoJoinChannelBatch do
     same_id = 99
     another_category = Fabricate(:category, id: same_id)
     another_cgroup = Fabricate(:category_group, category: another_category, group: chatters_group)
-    topic = Fabricate(:topic, id: same_id)
-    @channel.update!(chatable: topic)
+    dm_channel = Fabricate(:direct_message_channel, id: same_id)
+    @channel.update!(chatable: dm_channel)
 
     subject.execute(chat_channel_id: @channel.id, starts_at: @user.id, ends_at: @user.id)
 

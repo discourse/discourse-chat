@@ -7,6 +7,7 @@ import I18n from "I18n";
 import ModalFunctionality from "discourse/mixins/modal-functionality";
 import { ajax } from "discourse/lib/ajax";
 import { action } from "@ember/object";
+import { notEmpty } from "@ember/object/computed";
 import { inject as service } from "@ember/service";
 import { isBlank } from "@ember/utils";
 
@@ -26,7 +27,7 @@ export default Controller.extend(ModalFunctionality, {
   description: "",
   categorySelected: notEmpty("category"),
   categoryPermissionsHint: null,
-  autoJoinChannel: null,
+  autoJoinUsers: null,
 
   onShow() {
     this.set("categoryPermissionsHint", DEFAULT_HINT);
@@ -60,7 +61,7 @@ export default Controller.extend(ModalFunctionality, {
       id: this.categoryId,
       name: this.name,
       description: this.description,
-      auto_join_users: this.autoJoinChannel,
+      auto_join_users: this.autoJoinUsers,
     };
 
     return ajax("/chat/chat_channels", { method: "PUT", data })

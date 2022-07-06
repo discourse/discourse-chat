@@ -11,7 +11,7 @@ describe Jobs::AutoRemoveChannelBatch do
     @channel = Fabricate(:chat_channel, auto_join_users: true, chatable: category)
 
     chatters_group.add(@user)
-    @channel.join(@user)
+    @channel.add(@user)
   end
 
   it 'removes all valid users in the batch' do
@@ -23,7 +23,7 @@ describe Jobs::AutoRemoveChannelBatch do
 
   it "doesn't remove the user from other channels" do
     another_channel = Fabricate(:chat_channel)
-    another_channel.join(@user)
+    another_channel.add(@user)
 
     subject.execute(chat_channel_id: @channel.id, starts_at: @user.id, ends_at: @user.id)
 
@@ -33,7 +33,7 @@ describe Jobs::AutoRemoveChannelBatch do
 
   it "doesn't remove users outside the interval" do
     another_user = Fabricate(:user)
-    @channel.join(another_user)
+    @channel.add(another_user)
 
     subject.execute(chat_channel_id: @channel.id, starts_at: @user.id, ends_at: @user.id)
 

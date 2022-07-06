@@ -6,11 +6,13 @@ module Jobs
       return "starts_at or ends_at missing" if args[:starts_at].blank? || args[:ends_at].blank?
       return "End is higher than start" if args[:ends_at] < args[:starts_at]
 
-      channel = ChatChannel.find_by(id: args[:chat_channel_id])
+      channel = ChatChannel.find_by(
+        id: args[:chat_channel_id],
+        auto_join_users: true,
+        chatable_type: 'Category'
+      )
 
-      return "Channel not found" if channel.nil?
-      return "Chatable is not a category" if !channel.category_channel?
-      return "Not an auto-join channel" if !channel.auto_join_users?
+      return if !channel
 
       query_args = {
         chat_channel_id: channel.id,
@@ -19,12 +21,12 @@ module Jobs
         suspended_until: Time.zone.now,
         last_seen_at: 3.months.ago,
         channel_category: channel.chatable_id,
-        reason: UserChatChannelMembership.join_reasons[:automatic]
+        mode: UserChatChannelMembership.join_modes[:automatic]
       }
 
       records_created = DB.exec(<<~SQL, query_args)
-        INSERT INTO user_chat_channel_memberships (user_id, chat_channel_id, following, created_at, updated_at, join_reason)
-        SELECT DISTINCT(users.id), :chat_channel_id, TRUE, NOW(), NOW(), :reason
+        INSERT INTO user_chat_channel_memberships (user_id, chat_channel_id, following, created_at, updated_at, join_mode)
+        SELECT DISTINCT(users.id), :chat_channel_id, TRUE, NOW(), NOW(), :mode
         FROM users
         INNER JOIN user_options uo ON uo.user_id = users.id
         INNER JOIN group_users gu ON gu.user_id = users.id

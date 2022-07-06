@@ -489,7 +489,7 @@ after_initialize do
       .where(category_groups: { group_id: group.id })
 
     if channels_to_add.present?
-      channels_to_add.each { |channel| channel.join(user) }
+      channels_to_add.each { |channel| channel.add(user) }
     end
   end
 

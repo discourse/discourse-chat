@@ -6,11 +6,13 @@ module Jobs
       return "starts_at or ends_at missing" if args[:starts_at].blank? || args[:ends_at].blank?
       return "End is higher than start" if args[:ends_at] < args[:starts_at]
 
-      channel = ChatChannel.find_by(id: args[:chat_channel_id])
+      channel = ChatChannel.find_by(
+        id: args[:chat_channel_id],
+        auto_join_users: true,
+        chatable_type: 'Category'
+      )
 
-      return "Channel not found" if channel.nil?
-      return "Chatable is not a category" if !channel.category_channel?
-      return "Not an auto-join channel" if !channel.auto_join_users?
+      return if !channel
 
       query_args = {
         channel_id: channel.id,

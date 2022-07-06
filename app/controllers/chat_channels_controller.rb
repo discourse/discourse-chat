@@ -28,7 +28,7 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
   end
 
   def follow
-    membership = @chat_channel.join(current_user)
+    membership = @chat_channel.add(current_user)
 
     render_serialized(membership, UserChatChannelMembershipSerializer, root: false)
   end
@@ -59,8 +59,11 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     auto_join_users = ActiveRecord::Type::Boolean.new.deserialize(params[:auto_join_users]) || false
 
     chat_channel = ChatChannel.create!(
-      chatable: chatable, name: params[:name], description: params[:description],
-      user_count: 1, auto_join_users: auto_join_users
+      chatable: chatable,
+      name: params[:name],
+      description: params[:description],
+      user_count: 1,
+      auto_join_users: auto_join_users
     )
     chat_channel.user_chat_channel_memberships.create!(user: current_user, following: true)
 

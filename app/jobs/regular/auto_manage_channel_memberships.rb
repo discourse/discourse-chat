@@ -6,13 +6,16 @@ module Jobs
     REMOVE = 'remove'
 
     def execute(args)
-      channel = ChatChannel.find_by(id: args[:chat_channel_id])
       mode = args[:mode]
-
-      return if channel.nil?
-      return if !channel.category_channel?
-      return if !channel.auto_join_users?
       return if ![JOIN, REMOVE].include?(mode)
+
+      channel = ChatChannel.find_by(
+        id: args[:chat_channel_id],
+        auto_join_users: true,
+        chatable_type: 'Category'
+      )
+
+      return if !channel
 
       processed = 0
 

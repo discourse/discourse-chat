@@ -4,7 +4,6 @@ import getURL from "discourse-common/lib/get-url";
 import { action } from "@ember/object";
 import { equal } from "@ember/object/computed";
 import { inject as service } from "@ember/service";
-import { propertyEqual } from "discourse/lib/computed";
 
 export default Component.extend({
   tagName: "",
@@ -14,11 +13,18 @@ export default Component.extend({
   switchChannel: null,
   isUnfollowing: false,
   isDirectMessageRow: equal("channel.chatable_type", "DirectMessageChannel"),
-  active: propertyEqual("channel.id", "chat.activeChannel.id"),
   options: null,
 
-  init() {
-    this._super(...arguments);
+  @discourseComputed(
+    "channel.id",
+    "chat.activeChannel.id",
+    "router.currentRouteName"
+  )
+  active(channelId, activeChannelId, currentRouteName) {
+    return (
+      currentRouteName?.startsWith("chat.channel") &&
+      channelId === activeChannelId
+    );
   },
 
   @discourseComputed("active", "channel.{id,muted}", "channel.focused")

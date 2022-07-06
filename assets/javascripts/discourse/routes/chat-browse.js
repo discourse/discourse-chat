@@ -6,6 +6,10 @@ import { inject as service } from "@ember/service";
 export default DiscourseRoute.extend({
   chat: service(),
 
+  activate() {
+    this.chat.setActiveChannel(null);
+  },
+
   model() {
     return ajax("/chat/chat_channels/all.json").then((channels) => {
       const categoryChannels = [];

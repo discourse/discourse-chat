@@ -9,7 +9,7 @@ class UserChatChannelMembershipSerializer < ApplicationSerializer
              :user_count,
              :last_read_message_id
 
-  has_one :user, serializer: BasicUserSerializer, embed: :objects
+  has_one :user, serializer: BasicUserWithStatusSerializer, embed: :objects
 
   def user_count
     object.chat_channel.user_count

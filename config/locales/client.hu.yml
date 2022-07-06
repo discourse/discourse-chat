@@ -37,10 +37,11 @@ hu:
         confirm_move: "Üzenetek áthelyezése"
       channel_settings:
         title: "Csatornabeállítások"
-        close_channel: "Csatorna bezárása…"
-        open_channel: "Csatorna megnyitása…"
-        archive_channel: "Csatorna archiválása…"
-        delete_channel: "Csatorna törlése…"
+        edit: "Szerkesztés"
+        close_channel: "Csatorna bezárása"
+        open_channel: "Csatorna megnyitása"
+        archive_channel: "Csatorna archiválása"
+        delete_channel: "Csatorna törlése"
       channel_archive:
         title: "Csatorna archiválása"
         instructions: "<p>Egy csatorna archiválása írásvédett módba helyezi azt, és a csatorna összes üzenetét egy új vagy meglévő témába helyezi át. Új üzeneteket nem lehet küldeni, és a meglévő üzeneteket nem lehet szerkeszteni vagy törölni.</p><p>Biztos, hogy archiválja a(z) <strong>%{channelTitle}</strong> csatornát?</p>"
@@ -85,9 +86,6 @@ hu:
       invalid_access: "Nincs hozzáférése ennek a csevegőcsatornának a megtekintéséhez"
       invitation_notification: "<span>%{username}</span> <span>meghvta Önt, hogy csatlakozzon egy csevegőcsatornához</span>"
       in_reply_to: "Válaszul erre:"
-      isolate:
-        title: "Csevegés elkülönítése"
-        description: "A csevegést mindig új lapon nyissa meg"
       heading: "Csevegés"
       join: "Csatlakozás"
       new_messages: "új üzenetek"
@@ -163,6 +161,8 @@ hu:
       chat_message_separator:
         today: Ma
         yesterday: Tegnap
+      about_view:
+        description: Leírás
       direct_message_creator:
         title: Új üzenet
         prefix: "Címzett:"

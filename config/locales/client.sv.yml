@@ -37,10 +37,14 @@ sv:
         confirm_move: "Flytta meddelanden"
       channel_settings:
         title: "Kanalinställningar"
-        close_channel: "Stäng kanal..."
-        open_channel: "Öppna kanal..."
-        archive_channel: "Arkivera kanal..."
-        delete_channel: "Radera kanal..."
+        edit: "Redigera"
+        add: "Lägg till"
+        close_channel: "Stäng kanal"
+        open_channel: "Öppna kanal"
+        archive_channel: "Arkivera kanal"
+        delete_channel: "Radera kanal"
+        join_channel: "Gå med i kanal"
+        leave_channel: "Lämna kanal"
       channel_archive:
         title: "Arkivera kanal"
         instructions: "<p>Arkivering av en kanal sätter den i skrivskyddat läge och flyttar alla meddelanden från kanalen till ett nytt eller existerande ämne. Inga nya meddelanden kan skickas och inga befintliga meddelanden kan redigeras eller raderas.</p><p>Är du säker på att du vill arkivera kanalen <strong>%{channelTitle}</strong>?</p>"
@@ -85,9 +89,6 @@ sv:
       invalid_access: "Du har inte tillgång till den här chattkanalen"
       invitation_notification: "<span>%{username}</span> <span>bjöd in dig att gå med i en chattkanal</span>"
       in_reply_to: "Som svar på"
-      isolate:
-        title: "Isolera chatt"
-        description: "Öppna alltid chatt i en ny flik"
       heading: "Chatt"
       join: "Gå med"
       new_messages: "nya meddelanden"
@@ -167,6 +168,26 @@ sv:
       chat_message_separator:
         today: Idag
         yesterday: Igår
+      members_view:
+        filter_placeholder: Hitta medlemmar
+      about_view:
+        associated_topic: Länkat ämne
+        associated_category: Länkad kategori
+        title: Titel
+        description: Beskrivning
+      channel_info:
+        tabs:
+          about: Om
+          members: Medlemmar
+          settings: Inställningar
+      channel_edit_title_modal:
+        title: Redigera titel
+        input_placeholder: Lägg till en titel
+        description: Ge en kort beskrivande titel till din kanal
+      channel_edit_description_modal:
+        title: Redigera beskrivning
+        input_placeholder: Lägg till en beskrivning
+        description: Berätta för folk vad den här kanalen handlar om
       direct_message_creator:
         title: Nytt meddelande
         prefix: "Till:"
@@ -175,6 +196,12 @@ sv:
       channel_selector:
         title: "Byt till kanal"
         no_channels: "Inga kanaler matchar din sökning"
+      channel:
+        no_memberships: Denna kanal har inga medlemmar
+        no_memberships_found: Inga medlemmar hittades
+        memberships_count:
+          one: 1 medlem
+          other: "%{count} medlemmar"
       create_channel:
         choose_category:
           label: "Välj en kategori"
@@ -330,6 +357,10 @@ sv:
         keyboard_shortcuts:
           switch_channel_arrows: "%{shortcut} Byt kanal"
           open_quick_channel_selector: "%{shortcut} Öppna snabbval av kanal"
+          open_insert_link_modal: "%{shortcut} Infoga hyperlänk (endast kompositör)"
+          composer_bold: "%{shortcut} Fet (endast kompositör)"
+          composer_italic: "%{shortcut} Kursiv (endast kompositör)"
+          composer_code: "%{shortcut} Kod (endast kompositör)"
     topic_statuses:
       chat:
         help: "Chatt är aktiverat för detta ämne"

@@ -39,10 +39,14 @@ he:
         confirm_move: "העברת הודעות"
       channel_settings:
         title: "הגדרות ערוץ"
-        close_channel: "סגירת ערוץ…"
-        open_channel: "פתיחת ערוץ…"
-        archive_channel: "העברת ערוץ לארכיון…"
-        delete_channel: "מחיקת ערוץ…"
+        edit: "עריכה"
+        add: "הוספה"
+        close_channel: "סגירת ערוץ"
+        open_channel: "פתיחת ערוץ"
+        archive_channel: "העברת ערוץ לארכיון"
+        delete_channel: "מחיקת ערוץ"
+        join_channel: "הצטרפות לערוץ"
+        leave_channel: "יציאה מהערוץ"
       channel_archive:
         title: "העברת ערוץ לארכיון"
         instructions: "<p>העברת ערוץ לארכיון מעבירה אותו למצב לקריאה בלבד ומעביר את כל ההודעות מהערוץ לנושא חדש או קיים. אי אפשר לשלוח הודעות חדשות ואי אפשר לערוך או למחוק הודעות קיימות.</p><p>להעביר את הערוץ ‎<strong>%{channelTitle}</strong> לארכיון?</p>"
@@ -87,9 +91,6 @@ he:
       invalid_access: "אין לך גישה לצפות בערוץ הצ׳אט הזה"
       invitation_notification: "<span>הוזמנת להצטרף לערוץ צ׳אט על ידי</span> <span>%{username}</span>"
       in_reply_to: "בתגובה אל"
-      isolate:
-        title: "בידוד צ׳אט"
-        description: "תמיד לפתוח צ׳אט בלשונית חדשה"
       heading: "צ׳אט"
       join: "הצטרפות"
       new_messages: "הודעות חדשות"
@@ -177,6 +178,26 @@ he:
       chat_message_separator:
         today: היום
         yesterday: אתמול
+      members_view:
+        filter_placeholder: איתור חברים
+      about_view:
+        associated_topic: נושא מקושר
+        associated_category: קטגוריה מקושרת
+        title: כותרת
+        description: תיאור
+      channel_info:
+        tabs:
+          about: על אודות
+          members: חברים
+          settings: הגדרות
+      channel_edit_title_modal:
+        title: עריכת כותרת
+        input_placeholder: הוספת כותרת
+        description: נא לספק כותרת ברורה לערוץ שלך
+      channel_edit_description_modal:
+        title: עריכת תיאור
+        input_placeholder: הוספת תיאור
+        description: כדי לספר לאנשים על מה הערוץ הזה
       direct_message_creator:
         title: הודעה חדשה
         prefix: "אל:"
@@ -185,6 +206,14 @@ he:
       channel_selector:
         title: "קפיצה לערוץ"
         no_channels: "אין ערוצים שתואמים לחיפוש שלך"
+      channel:
+        no_memberships: אין חברים בערוץ הזה
+        no_memberships_found: לא נמצאו חברים
+        memberships_count:
+          one: חבר אחד
+          two: "%{count} חברים"
+          many: "%{count} חברים"
+          other: "%{count} חברים"
       create_channel:
         choose_category:
           label: "נא לבחור קטגוריה"

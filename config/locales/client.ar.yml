@@ -36,9 +36,6 @@ ar:
       flagged: "لقد تم الإبلاغ عن الرسالة للمراجعة"
       invalid_access: "ليس لديك إذن الوصول لعرض قناة الدردشة هذه"
       in_reply_to: "ردًا على"
-      isolate:
-        title: "عزل الدردشة"
-        description: "فتح الدردشة في علامة تبويب جديدة دائمًا"
       heading: "الدردشة"
       new_messages: "رسائل جديدة"
       mention_warning:

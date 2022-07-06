@@ -36,9 +36,6 @@ fr:
       flagged: "Ce message a été signalé pour examen"
       invalid_access: "Vous n'avez pas accès à ce canal de discussion"
       in_reply_to: "En réponse à"
-      isolate:
-        title: "Isoler la discussion"
-        description: "Toujours ouvrir le chat dans un nouvel onglet"
       heading: "Chat"
       new_messages: "nouveaux messages"
       mention_warning:

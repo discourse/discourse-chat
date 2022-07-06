@@ -36,9 +36,6 @@ ja:
       flagged: "このメッセージはレビュー目的で通報されました"
       invalid_access: "このチャットチャンネルを表示するためのアクセス権がありません"
       in_reply_to: "返信先"
-      isolate:
-        title: "チャットを分離する"
-        description: "常に新しいタブでチャットを開く"
       heading: "チャット"
       new_messages: "新しいメッセージ"
       mention_warning:

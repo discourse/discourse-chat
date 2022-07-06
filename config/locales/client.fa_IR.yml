@@ -29,10 +29,14 @@ fa_IR:
         confirm_move: "انتقال پیام‌ها"
       channel_settings:
         title: "تنظیمات کانال"
-        close_channel: "بستن کانال..."
-        open_channel: "باز کردن کانال..."
-        archive_channel: "کانال بایگانی..."
-        delete_channel: "حذف کانال..."
+        edit: "ویرایش"
+        add: "اضافه کردن"
+        close_channel: "بستن کانال"
+        open_channel: "باز کردن کانال"
+        archive_channel: "بایگانی کانال"
+        delete_channel: "حذف کانال"
+        join_channel: "پیوستن به کانال"
+        leave_channel: "ترک کانال"
       channel_archive:
         title: "بایگانی کانال"
       channel_open:
@@ -66,8 +70,6 @@ fa_IR:
       flagged: "این پیام برای بررسی پرچم گذاری شده است"
       invalid_access: "شما برای مشاهده گفتگوی این کانال دسترسی ندارید"
       in_reply_to: "در پاسخ به"
-      isolate:
-        description: "همیشه گفتگو را در یک برگه جدید باز کن"
       heading: "گفتگو"
       join: "پیوستن"
       new_messages: "پیام‌های جدید"
@@ -121,12 +123,38 @@ fa_IR:
       chat_message_separator:
         today: امروز
         yesterday: دیروز
+      members_view:
+        filter_placeholder: جستجوی اعضا
+      about_view:
+        associated_topic: موضوع مرتبط
+        associated_category: دسته‌بندی مرتبط
+        title: عنوان
+        description: توضیحات
+      channel_info:
+        tabs:
+          about: درباره
+          members: اعضا
+          settings: تنظيمات
+      channel_edit_title_modal:
+        title: ویرایش عنوان
+        input_placeholder: افزودن عنوان
+        description: یک عنوان توصیفی کوتاه به کانال خود بدهید
+      channel_edit_description_modal:
+        title: ویرایش توضیحات
+        input_placeholder: افزودن توضیحات
+        description: به بقیه افراد بگویید که این کانال در مورد چی هست
       direct_message_creator:
         title: پیام جدید
         prefix: "به:"
         no_results: هیج نتیجه‌ای نداشت
       channel_selector:
         no_channels: "هیچ کانالی با جستجوی شما مطابقت ندارد"
+      channel:
+        no_memberships: این کانال هنوز هیچ عضوی ندارد
+        no_memberships_found: هیچ عضوی یافت نشد
+        memberships_count:
+          one: ۱ عضو
+          other: "%{count} عضو"
       create_channel:
         choose_category:
           label: "انتخاب دسته‌بندی"

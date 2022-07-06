@@ -36,9 +36,6 @@ de:
       flagged: "Diese Nachricht wurde zur Überprüfung markiert"
       invalid_access: "Du bist nicht befugt, diesen Chat-Kanal anzuzeigen"
       in_reply_to: "Als Antwort auf"
-      isolate:
-        title: "Chat isolieren"
-        description: "Chat immer in einem neuen Tab öffnen"
       heading: "Chat"
       new_messages: "neue Nachrichten"
       mention_warning:

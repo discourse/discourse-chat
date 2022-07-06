@@ -50,6 +50,7 @@ he:
       max_reactions_limit_reached: "רגשות חדשים אסורים בהודעה זו."
       message_move_invalid_channel: "ערוצי המקור והיעד חייבים להיות ערוצים ציבוריים."
       message_move_no_messages_found: "לא נמצאו הודעות עם מזהי ההודעות שסופקו."
+      cant_update_direct_message_channel: "מאפייני ערוץ הודעות ישירות כמו שם ותיאור נעולים מפני עדכון."
     reviewables:
       actions:
         agree:
@@ -105,6 +106,16 @@ he:
       inline_to_message: "הודעה מס׳ %{message_id} מאת ‎%{username}‏ – ‎#%{chat_channel}"
       inline_to_channel: "צ׳אט מס׳ %{chat_channel}"
       inline_to_topic_channel: "צ׳אט לנושא %{topic_title}"
+      x_members:
+        one: "חבר %{count}"
+        two: "%{count} חברים"
+        many: "%{count} חברים"
+        other: "%{count} חברים"
+      and_x_others:
+        one: "ועוד %{count}"
+        two: "ו־%{count} נוספים"
+        many: "ו־%{count} נוספים"
+        other: "ו־%{count} נוספים"
   discourse_push_notifications:
     popup:
       chat_mention:
@@ -132,6 +143,16 @@ he:
         other: "יש לך הודעות חדשות בצ׳אט"
       from: "%{site_name}"
       subject:
+        direct_message:
+          one: "[%{email_prefix}] הודעה חדשה מאת %{message_title}"
+          two: "[%{email_prefix}] הודעה חדשה מאת %{message_title} ועוד %{others}"
+          many: "[%{email_prefix}] הודעה חדשה מאת %{message_title} ועוד %{others}"
+          other: "[%{email_prefix}] הודעה חדשה מאת %{message_title} ועוד %{others}"
+        chat_channel:
+          one: "[%{email_prefix}] הודעה חדשה תחת %{message_title}"
+          two: "[%{email_prefix}] הודעה חדשה תחת %{message_title} ועוד %{others}"
+          many: "[%{email_prefix}] הודעה חדשה תחת %{message_title} ועוד %{others}"
+          other: "[%{email_prefix}] הודעה חדשה תחת %{message_title} ועוד %{others}"
         other_direct_message: "מאת %{message_title}"
         others: "%{count} נוספים"
       unsubscribe: "סיכום צ׳אט זה נשלח מהאתר %{site_link} כשנעדרת ממנו. ניתן לשנות את %{email_preferences_link} שלך או %{unsubscribe_link} כדי להפסיק לקבל הודעות."

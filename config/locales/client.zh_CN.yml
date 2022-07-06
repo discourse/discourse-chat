@@ -36,9 +36,6 @@ zh_CN:
       flagged: "此消息已被举报，等待审核"
       invalid_access: "您无权查看此聊天频道"
       in_reply_to: "回复"
-      isolate:
-        title: "隔离聊天"
-        description: "始终在新标签页中打开聊天"
       heading: "聊天"
       new_messages: "新消息"
       mention_warning:

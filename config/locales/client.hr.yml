@@ -34,10 +34,10 @@ hr:
         confirm_move: "Premjesti poruke"
       channel_settings:
         title: "Postavke kanala"
-        close_channel: "Zatvori kanal..."
-        open_channel: "Otvori kanal..."
-        archive_channel: "Arhivski kanal..."
-        delete_channel: "Izbriši kanal..."
+        close_channel: "Zatvori kanal"
+        open_channel: "Otvori kanal"
+        archive_channel: "Arhiviraj kanal"
+        delete_channel: "Izbriši kanal"
       channel_archive:
         title: "Arhiviraj kanal"
         instructions: "<p>Arhiviranje kanala stavlja ga u način rada samo za čitanje i premješta sve poruke s kanala u novu ili postojeću temu. Ne mogu se slati nove poruke, niti se postojeće poruke ne mogu uređivati ili brisati.</p><p>Jeste li sigurni da želite arhivirati <strong>%{channelTitle}</strong> kanal?</p>"
@@ -77,9 +77,6 @@ hr:
       invalid_access: "Nemate pristup za pregled ovog kanala za chat"
       invitation_notification: "<span>%{username}</span> <span>vas je pozvao da se pridružite chat kanalu</span>"
       in_reply_to: "U odgovoru na"
-      isolate:
-        title: "Izolirajte chat"
-        description: "Uvijek otvorite chat u novoj kartici"
       heading: "Čet"
       join: "Pridružite se"
       new_messages: "nove poruke"

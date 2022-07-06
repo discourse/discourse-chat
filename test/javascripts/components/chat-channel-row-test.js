@@ -71,6 +71,32 @@ discourseModule(
       },
     });
 
+    componentTest(
+      "a row is active when the associated channel is active and visible",
+      {
+        template: hbs`{{chat-channel-row switchChannel=switchChannel channel=channel chat=chat router=router}}`,
+
+        beforeEach() {
+          this.set("channel", fabricate("chat-channel"));
+          this.set("chat", { activeChannel: this.channel });
+          this.set("router", { currentRouteName: "chat.channel" });
+        },
+
+        async test(assert) {
+          assert.ok(exists(".chat-channel-row.active"));
+
+          this.set("router.currentRouteName", "chat.browse");
+
+          assert.notOk(exists(".chat-channel-row.active"));
+
+          this.set("router.currentRouteName", "chat.channel");
+          this.set("chat.activeChannel", null);
+
+          assert.notOk(exists(".chat-channel-row.active"));
+        },
+      }
+    );
+
     componentTest("can receive a tab event", {
       template: hbs`{{chat-channel-row channel=channel}}`,
 

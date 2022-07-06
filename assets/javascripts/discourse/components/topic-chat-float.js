@@ -10,16 +10,15 @@ import {
 import { equal } from "@ember/object/computed";
 import { cancel, next, throttle } from "@ember/runloop";
 import { inject as service } from "@ember/service";
-import { Promise } from "rsvp";
 
 export default Component.extend({
+  listView: equal("view", LIST_VIEW),
   chatView: equal("view", CHAT_VIEW),
   draftChannelView: equal("view", DRAFT_CHANNEL_VIEW),
   classNameBindings: [":topic-chat-float-container", "hidden"],
   chat: service(),
   router: service(),
   chatWindowStore: service("chat-window-store"),
-
   hidden: true,
   loading: false,
   expanded: true, // TODO - false when not first-load topic
@@ -28,7 +27,6 @@ export default Component.extend({
   rafTimer: null,
   view: null,
   hasUnreadMessages: false,
-  activeChannel: null,
 
   didInsertElement() {
     this._super(...arguments);
@@ -234,10 +232,10 @@ export default Component.extend({
     this.setProperties({
       hidden: false,
       expanded: true,
+      view,
     });
 
-    this.set("view", view);
-    this.appEvents.trigger("chat:float-toggled", this.hidden);
+    this.appEvents.trigger("chat:float-toggled", false);
   },
 
   @action
@@ -318,7 +316,12 @@ export default Component.extend({
   @action
   fetchChannels() {
     this.set("loading", true);
+
     this.chat.getChannels().then(() => {
+      if (this.isDestroying || this.isDestroyed) {
+        return;
+      }
+
       this.setProperties({
         loading: false,
         expanded: true,
@@ -331,27 +334,21 @@ export default Component.extend({
 
   @action
   switchChannel(channel) {
-    if (!channel) {
-      this.chat.setActiveChannel(null);
-      return this.router.transitionTo("chat");
-    }
+    // we need next here to ensure we correctly let the time for routes transitions
+    // eg: deactivate hook of full page chat routes will set activeChannel to null
+    next(() => {
+      if (this.isDestroying || this.isDestroyed) {
+        return;
+      }
 
-    if (this.chatWindowStore.fullPage && channel) {
-      this.chat.openChannel(channel);
-    }
-
-    this.chat.setActiveChannel(null);
-
-    return new Promise((resolve) => {
       this.chat.setActiveChannel(channel);
-      this.set("expanded", true);
-      this.set("view", CHAT_VIEW);
-      this.set("loading", false);
-      this.set("hidden", false);
 
-      next(() => {
-        resolve();
-      });
+      if (!channel) {
+        this.openView(LIST_VIEW);
+        return;
+      }
+
+      this.openView(CHAT_VIEW);
     });
   },
 });

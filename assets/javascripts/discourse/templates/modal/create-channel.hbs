@@ -15,6 +15,11 @@
   {{/if}}
 
   <label class="create-channel-label">
+    {{input type="checkbox" checked=autoJoinChannel}}
+    {{i18n "chat.settings.enable_auto_join_users"}}
+  </label>
+
+  <label class="create-channel-label">
     {{i18n "chat.create_channel.name"}}
   </label>
   {{input class="create-channel-name-input" type="text" value=name}}

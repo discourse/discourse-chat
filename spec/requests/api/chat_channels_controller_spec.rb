@@ -50,17 +50,6 @@ describe DiscourseChat::Api::ChatChannelsController do
       expect(new_channel.auto_join_users).to eq(true)
     end
 
-    it 'ignores the auto_join option is channel is associated to a topic' do
-      topic = Fabricate(:topic)
-
-      put '/chat/chat_channels.json', params: params.merge(
-        type: topic.class.name, id: topic.id, auto_join_users: true
-      )
-      new_channel = ChatChannel.last
-
-      expect(new_channel.auto_join_users).to eq(false)
-    end
-
     describe 'triggers the auto-join process' do
       fab!(:chatters_group) { Fabricate(:group) }
       fab!(:user) { Fabricate(:user, last_seen_at: 15.minute.ago) }
@@ -206,63 +195,52 @@ describe DiscourseChat::Api::ChatChannelsController do
       end
 
       describe 'Updating a channel to add users automatically' do
-        it "doesn't update the attribute if the chatable is not a topic" do
+        it 'sets the channel to auto-update users automatically' do
           put "/chat/api/chat_channels/#{chat_channel.id}.json", params: { auto_join_users: true }
 
-          expect(response.parsed_body['auto_join_users']).to eq(false)
+          expect(response.parsed_body['auto_join_users']).to eq(true)
         end
 
-        context 'When channel is associated to a category' do
-          fab!(:category) { Fabricate(:category) }
-          before { chat_channel.update!(chatable: category) }
+        it 'tolds staff members to slow down when toggling auto-update multiple times' do
+          RateLimiter.enable
 
-          it 'sets the channel to auto-update users automatically' do
-            put "/chat/api/chat_channels/#{chat_channel.id}.json", params: { auto_join_users: true }
+          put "/chat/api/chat_channels/#{chat_channel.id}.json", params: { auto_join_users: true }
+          put "/chat/api/chat_channels/#{chat_channel.id}.json", params: { auto_join_users: false }
+          put "/chat/api/chat_channels/#{chat_channel.id}.json", params: { auto_join_users: true }
 
-            expect(response.parsed_body['auto_join_users']).to eq(true)
+          expect(response.status).to eq(429)
+        end
+
+        describe 'triggers the auto-join process' do
+          fab!(:chatters_group) { Fabricate(:group) }
+          fab!(:another_user) { Fabricate(:user, last_seen_at: 15.minute.ago) }
+
+          before do
+            Jobs.run_immediately!
+            Fabricate(:category_group, category: chat_channel.chatable, group: chatters_group)
+            chatters_group.add(another_user)
           end
 
-          it 'tolds staff members to slow down when toggling auto-update multiple times' do
-            RateLimiter.enable
-
+          it 'joins the user when auto_join_users is true' do
             put "/chat/api/chat_channels/#{chat_channel.id}.json", params: { auto_join_users: true }
+
+            created_channel_id = response.parsed_body['id']
+            membership_exists = UserChatChannelMembership.find_by(
+              user: another_user, chat_channel_id: created_channel_id, following: true
+            )
+
+            expect(membership_exists).to be_present
+          end
+
+          it "doesn't join the user when auto_join_users is false" do
             put "/chat/api/chat_channels/#{chat_channel.id}.json", params: { auto_join_users: false }
-            put "/chat/api/chat_channels/#{chat_channel.id}.json", params: { auto_join_users: true }
 
-            expect(response.status).to eq(429)
-          end
+            created_channel_id = response.parsed_body['id']
+            membership_exists = UserChatChannelMembership.find_by(
+              user: another_user, chat_channel_id: created_channel_id, following: true
+            )
 
-          describe 'triggers the auto-join process' do
-            fab!(:chatters_group) { Fabricate(:group) }
-            fab!(:another_user) { Fabricate(:user, last_seen_at: 15.minute.ago) }
-
-            before do
-              Jobs.run_immediately!
-              Fabricate(:category_group, category: category, group: chatters_group)
-              chatters_group.add(another_user)
-            end
-
-            it 'joins the user when auto_join_users is true' do
-              put "/chat/api/chat_channels/#{chat_channel.id}.json", params: { auto_join_users: true }
-
-              created_channel_id = response.parsed_body['id']
-              membership_exists = UserChatChannelMembership.find_by(
-                user: another_user, chat_channel_id: created_channel_id, following: true
-              )
-
-              expect(membership_exists).to be_present
-            end
-
-            it "doesn't join the user when auto_join_users is false" do
-              put "/chat/api/chat_channels/#{chat_channel.id}.json", params: { auto_join_users: false }
-
-              created_channel_id = response.parsed_body['id']
-              membership_exists = UserChatChannelMembership.find_by(
-                user: another_user, chat_channel_id: created_channel_id, following: true
-              )
-
-              expect(membership_exists).to be_nil
-            end
+            expect(membership_exists).to be_nil
           end
         end
       end

@@ -229,14 +229,13 @@ export default Component.extend({
 
   @action
   openView(view) {
-    console.log("openView", view);
     this.setProperties({
       hidden: false,
       expanded: true,
       view,
     });
 
-    // this.appEvents.trigger("chat:float-toggled", false);
+    this.appEvents.trigger("chat:float-toggled", false);
   },
 
   @action

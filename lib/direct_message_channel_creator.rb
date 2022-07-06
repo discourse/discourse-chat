@@ -1,26 +1,25 @@
 # frozen_string_literal: true
 
 module DiscourseChat::DirectMessageChannelCreator
-  attr_reader :chat_channel, :users
-
-  def self.create!(users)
-    direct_messages_channel = DirectMessageChannel.for_user_ids(users.map(&:id).uniq)
+  def self.create!(target_users:)
+    unique_target_users = target_users.uniq
+    direct_messages_channel = DirectMessageChannel.for_user_ids(unique_target_users.map(&:id))
     if direct_messages_channel
       chat_channel = ChatChannel.find_by!(chatable: direct_messages_channel)
     else
-      direct_messages_channel = DirectMessageChannel.create!(users: users)
+      direct_messages_channel = DirectMessageChannel.create!(user_ids: unique_target_users.map(&:id))
       chat_channel = ChatChannel.create!(chatable: direct_messages_channel)
     end
 
-    update_memberships(users, chat_channel.id)
-    ChatPublisher.publish_new_direct_message_channel(chat_channel, users)
+    update_memberships(unique_target_users, chat_channel.id)
+    ChatPublisher.publish_new_direct_message_channel(chat_channel, unique_target_users)
     chat_channel
   end
 
   private
 
-  def self.update_memberships(users, chat_channel_id)
-    users.each do |user|
+  def self.update_memberships(unique_target_users, chat_channel_id)
+    unique_target_users.each do |user|
       membership = UserChatChannelMembership.find_or_initialize_by(user_id: user.id, chat_channel_id: chat_channel_id)
 
       if membership.new_record?

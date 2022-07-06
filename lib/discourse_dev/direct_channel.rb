@@ -22,7 +22,7 @@ module DiscourseDev
     end
 
     def create!
-      DiscourseChat::DirectMessageChannelCreator.create!(data)
+      DiscourseChat::DirectMessageChannelCreator.create!(target_users: data)
     end
   end
 end

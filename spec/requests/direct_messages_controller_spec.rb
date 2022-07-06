@@ -54,6 +54,19 @@ RSpec.describe DiscourseChat::DirectMessagesController do
         expect(response.status).to eq(200)
         expect(response.parsed_body["chat_channel"]["id"]).to eq(channel.id)
       end
+
+      context "with more than two users" do
+        fab!(:user3) { Fabricate(:user) }
+        before do
+          channel.chatable.direct_message_users.create!(user_id: user3.id)
+        end
+
+        it "returns the channel" do
+          get "/chat/direct_messages.json", params: { usernames: [user1.username, user.username, user3.username].join(",") }
+          expect(response.status).to eq(200)
+          expect(response.parsed_body["chat_channel"]["id"]).to eq(channel.id)
+        end
+      end
     end
   end
 
@@ -61,7 +74,7 @@ RSpec.describe DiscourseChat::DirectMessagesController do
     shared_examples "creating dms" do
       it "creates a new dm channel with username(s) provided" do
         expect {
-          post "/chat/direct_messages/create.json", params: { usernames: usernames }
+          post "/chat/direct_messages/create.json", params: { usernames: [usernames] }
         }.to change { DirectMessageChannel.count }.by(1)
         expect(DirectMessageChannel.last.direct_message_users.map(&:user_id))
           .to match_array(direct_message_user_ids)
@@ -70,7 +83,7 @@ RSpec.describe DiscourseChat::DirectMessagesController do
       it "returns existing dm channel if one exists for username(s)" do
         create_dm_channel(direct_message_user_ids)
         expect {
-          post "/chat/direct_messages/create.json", params: { usernames: usernames }
+          post "/chat/direct_messages/create.json", params: { usernames: [usernames] }
         }.to change { DirectMessageChannel.count }.by(0)
       end
     end
@@ -83,14 +96,14 @@ RSpec.describe DiscourseChat::DirectMessagesController do
     end
 
     describe "dm with myself" do
-      let(:usernames) { user.username }
+      let(:usernames) { [user.username] }
       let(:direct_message_user_ids) { [user.id] }
 
       include_examples "creating dms"
     end
 
     describe "dm with two other users" do
-      let(:usernames) { [user1, user2, user3].map(&:username).join(",") }
+      let(:usernames) { [user1, user2, user3].map(&:username) }
       let(:direct_message_user_ids) { [user.id, user1.id, user2.id, user3.id] }
 
       include_examples "creating dms"
@@ -98,7 +111,7 @@ RSpec.describe DiscourseChat::DirectMessagesController do
 
     it "creates UserChatChannelMembership records" do
       users = [user2, user3]
-      usernames = users.map(&:username).join(",")
+      usernames = users.map(&:username)
       expect {
         post "/chat/direct_messages/create.json", params: { usernames: usernames }
       }.to change { UserChatChannelMembership.count }.by(3)

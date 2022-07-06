@@ -28,7 +28,7 @@ describe UserNotifications do
     describe 'email subject' do
       context 'DM messages' do
         before do
-          @dm_channel = DiscourseChat::DirectMessageChannelCreator.create!([@sender, @user])
+          @dm_channel = DiscourseChat::DirectMessageChannelCreator.create!(target_users: [@sender, @user])
           Fabricate(:chat_message, user: @sender, chat_channel: @dm_channel)
         end
 
@@ -66,7 +66,7 @@ describe UserNotifications do
 
         it 'includes both channel titles when there are exactly two with unread messages' do
           another_dm_user = Fabricate(:user, group_ids: [@chatters_group.id])
-          dm_channel_2 = DiscourseChat::DirectMessageChannelCreator.create!([another_dm_user, @user])
+          dm_channel_2 = DiscourseChat::DirectMessageChannelCreator.create!(target_users: [another_dm_user, @user])
           chat_message = Fabricate(:chat_message, user: another_dm_user, chat_channel: dm_channel_2)
 
           email = described_class.chat_summary(@user, {})
@@ -78,7 +78,7 @@ describe UserNotifications do
         it 'displays a count when there are more than two DMs with unread messages' do
           2.times do
             another_dm_user = Fabricate(:user, group_ids: [@chatters_group.id])
-            dm_channel = DiscourseChat::DirectMessageChannelCreator.create!([another_dm_user, @user])
+            dm_channel = DiscourseChat::DirectMessageChannelCreator.create!(target_users: [another_dm_user, @user])
             chat_message = Fabricate(:chat_message, user: another_dm_user, chat_channel: dm_channel)
           end
           expected_count_text = I18n.t('user_notifications.chat_summary.subject.others', count: 2)
@@ -137,7 +137,7 @@ describe UserNotifications do
 
       context 'both unread DM messages and mentions' do
         before do
-          @dm_channel = DiscourseChat::DirectMessageChannelCreator.create!([@sender, @user])
+          @dm_channel = DiscourseChat::DirectMessageChannelCreator.create!(target_users: [@sender, @user])
           Fabricate(:chat_message, user: @sender, chat_channel: @dm_channel)
           Fabricate(:chat_mention, user: @user, chat_message: @chat_message)
         end
@@ -235,7 +235,7 @@ describe UserNotifications do
 
         it 'returns an email when the user has unread private messages' do
           @user_membership.update!(last_read_message_id: @chat_message.id)
-          private_channel = DiscourseChat::DirectMessageChannelCreator.create!([@sender, @user])
+          private_channel = DiscourseChat::DirectMessageChannelCreator.create!(target_users: [@sender, @user])
           Fabricate(:chat_message, user: @sender, chat_channel: private_channel)
 
           email = described_class.chat_summary(@user, {})

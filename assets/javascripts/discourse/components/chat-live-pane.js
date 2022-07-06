@@ -1044,10 +1044,9 @@ export default Component.extend({
     let promise;
 
     if (channel.isDirectMessageChannel || channel.isDraft) {
-      promise = ajax("/chat/direct_messages/create.json", {
-        method: "POST",
-        data: { usernames: channel.chatable.users.mapBy("username") },
-      }).then((response) => ChatChannel.create(response.chat_channel));
+      promise = this.chat.upsertDmChannelForUsernames(
+        channel.chatable.users.mapBy("username")
+      );
     } else {
       promise = ajax(`/chat/chat_channels/${channel.id}/follow`, {
         method: "POST",

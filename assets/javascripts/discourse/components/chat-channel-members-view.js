@@ -74,17 +74,16 @@ export default class ChatChannelMembersView extends Component {
       offset,
     })
       .then((response) => {
-        if (isEmpty(response)) {
-          this.set("members", []);
-          this.set("canLoadMore", false);
-          return;
-        }
-
         if (this.offset === 0) {
           this.set("members", []);
         }
-        this.set("offset", this.offset + LIMIT);
-        this.members.pushObjects(response);
+
+        if (isEmpty(response)) {
+          this.set("canLoadMore", false);
+        } else {
+          this.set("offset", this.offset + LIMIT);
+          this.members.pushObjects(response);
+        }
       })
       .finally(() => {
         this.set("isFetchingMembers", false);

@@ -75,6 +75,7 @@ export default class ChatChannelMembersView extends Component {
     })
       .then((response) => {
         if (isEmpty(response)) {
+          this.set("members", []);
           this.set("canLoadMore", false);
           return;
         }

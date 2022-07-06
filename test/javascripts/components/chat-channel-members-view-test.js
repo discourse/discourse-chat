@@ -10,31 +10,107 @@ import hbs from "htmlbars-inline-precompile";
 import fabricate from "../helpers/fabricators";
 import I18n from "I18n";
 import { Promise } from "rsvp";
+import { fillIn } from "@ember/test-helpers";
+
+function fetchMembersHandler(channelId, params = {}) {
+  if (!params.username) {
+    return Promise.resolve([
+      { user: { id: 1, username: "jojo" } },
+      { user: { id: 2, username: "bob" } },
+    ]);
+  }
+
+  if (params.username === "jojo") {
+    return Promise.resolve([{ user: { id: 1, username: "jojo" } }]);
+  } else {
+    return Promise.resolve([]);
+  }
+}
+
+function setupState(context) {
+  context.set("fetchMembersHandler", fetchMembersHandler);
+  context.set("channel", fabricate("chat-channel"));
+  context.channel.set("memberships_count", 2);
+}
 
 discourseModule(
   "Discourse Chat | Component | chat-channel-members-view",
   function (hooks) {
     setupRenderingTest(hooks);
 
-    componentTest("state", {
+    componentTest("members count", {
       template: hbs`{{chat-channel-members-view channel=channel fetchMembersHandler=fetchMembersHandler}}`,
 
       beforeEach() {
-        this.set("fetchMembersHandler", () => {
-          return Promise.resolve([{ user: { id: 1, username: "jojo" } }]);
-        });
-        this.set("channel", fabricate("chat-channel"));
-        this.channel.set("memberships_count", 1);
+        setupState(this);
       },
 
       async test(assert) {
         assert.equal(
           query(".channel-members-view__member-count").innerText,
-          I18n.t("chat.channel.memberships_count", { count: 1 })
+          I18n.t("chat.channel.memberships_count", { count: 2 })
         );
+      },
+    });
+
+    componentTest("no filter", {
+      template: hbs`{{chat-channel-members-view channel=channel fetchMembersHandler=fetchMembersHandler}}`,
+
+      beforeEach() {
+        this.set("fetchMembersHandler", fetchMembersHandler);
+        this.set("channel", fabricate("chat-channel"));
+        this.channel.set("memberships_count", 2);
+      },
+
+      async test(assert) {
+        assert.ok(
+          exists(".channel-members-view__list-item[data-user-card='jojo']")
+        );
+        assert.ok(
+          exists(".channel-members-view__list-item[data-user-card='bob']")
+        );
+      },
+    });
+
+    componentTest("filter", {
+      template: hbs`{{chat-channel-members-view channel=channel fetchMembersHandler=fetchMembersHandler}}`,
+
+      beforeEach() {
+        setupState(this);
+      },
+
+      async test(assert) {
+        await fillIn(".channel-members-view__search-input", "jojo");
 
         assert.ok(
           exists(".channel-members-view__list-item[data-user-card='jojo']")
+        );
+        assert.notOk(
+          exists(".channel-members-view__list-item[data-user-card='bob']")
+        );
+      },
+    });
+
+    componentTest("filter with no results", {
+      template: hbs`{{chat-channel-members-view channel=channel fetchMembersHandler=fetchMembersHandler}}`,
+
+      beforeEach() {
+        setupState(this);
+      },
+
+      async test(assert) {
+        await fillIn(".channel-members-view__search-input", "cat");
+
+        assert.equal(
+          query(".channel-members-view__list").innerText.trim(),
+          I18n.t("chat.channel.no_memberships_found")
+        );
+
+        assert.notOk(
+          exists(".channel-members-view__list-item[data-user-card='jojo']")
+        );
+        assert.notOk(
+          exists(".channel-members-view__list-item[data-user-card='bob']")
         );
       },
     });

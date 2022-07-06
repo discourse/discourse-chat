@@ -33,7 +33,7 @@
             tabindex="0"
           >
             {{chat-user-avatar user=member.user avatarSize="medium"}}
-            <span>{{member.user.username}}</span>
+            {{chat-user-display-name user=member.user}}
           </a>
         {{else}}
           {{#unless isFetchingMembers}}

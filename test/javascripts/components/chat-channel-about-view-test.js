@@ -69,7 +69,7 @@ discourseModule(
       beforeEach() {
         set(this.currentUser, "has_chat_enabled", true);
         set(this.currentUser, "admin", true);
-        set(this.siteSettings, "chat_enabled", true);
+        this.siteSettings.chat_enabled = true;
 
         this.set(
           "channel",

@@ -49,6 +49,15 @@ describe Jobs::AutoJoinChannelBatch do
     expect(new_membership).to be_nil
   end
 
+  it "joins users with last_seen set to null" do
+    @user.update!(last_seen_at: nil)
+
+    subject.execute(chat_channel_id: @channel.id, starts_at: @user.id, ends_at: @user.id)
+
+    new_membership = UserChatChannelMembership.find_by(user: @user, chat_channel: @channel)
+    expect(new_membership.following).to eq(true)
+  end
+
   it "only joins group members with access to the category" do
     another_user = Fabricate(:user, last_seen_at: 15.minutes.ago)
 
@@ -113,5 +122,13 @@ describe Jobs::AutoJoinChannelBatch do
 
     new_membership = UserChatChannelMembership.find_by(user: @user, chat_channel: @channel)
     expect(new_membership.following).to eq(true)
+  end
+
+  it 'sets the join reason to automatic' do
+    subject.execute(chat_channel_id: @channel.id, starts_at: @user.id, ends_at: @user.id)
+
+    new_membership = UserChatChannelMembership.find_by(user: @user, chat_channel: @channel)
+    expect(new_membership.following).to eq(true)
+    expect(new_membership.automatic?).to eq(true)
   end
 end

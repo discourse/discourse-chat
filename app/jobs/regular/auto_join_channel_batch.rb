@@ -18,12 +18,13 @@ module Jobs
         end: args[:ends_at],
         suspended_until: Time.zone.now,
         last_seen_at: 3.months.ago,
-        channel_category: channel.chatable_id
+        channel_category: channel.chatable_id,
+        reason: UserChatChannelMembership.join_reasons[:automatic]
       }
 
       records_created = DB.exec(<<~SQL, query_args)
-        INSERT INTO user_chat_channel_memberships (user_id, chat_channel_id, following, created_at, updated_at)
-        SELECT DISTINCT(users.id), :chat_channel_id, TRUE, NOW(), NOW()
+        INSERT INTO user_chat_channel_memberships (user_id, chat_channel_id, following, created_at, updated_at, join_reason)
+        SELECT DISTINCT(users.id), :chat_channel_id, TRUE, NOW(), NOW(), :reason
         FROM users
         INNER JOIN user_options uo ON uo.user_id = users.id
         INNER JOIN group_users gu ON gu.user_id = users.id
@@ -34,7 +35,7 @@ module Jobs
         uo.chat_enabled AND
         (uccm.id IS NULL OR uccm.following IS NOT TRUE) AND
         (suspended_till IS NULL OR suspended_till <= :suspended_until) AND
-        last_seen_at > :last_seen_at AND
+        (last_seen_at IS NULL OR last_seen_at > :last_seen_at) AND
         cg.category_id = :channel_category
         ON CONFLICT (user_id, chat_channel_id) DO UPDATE SET following = true
       SQL

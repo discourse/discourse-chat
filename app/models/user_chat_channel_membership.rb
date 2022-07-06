@@ -20,6 +20,11 @@ class UserChatChannelMembership < ActiveRecord::Base
   enum desktop_notification_level: NOTIFICATION_LEVELS, _prefix: :desktop_notifications
   enum mobile_notification_level: NOTIFICATION_LEVELS, _prefix: :mobile_notifications
 
+  enum join_reason: {
+    manual: 0,
+    automatic: 1
+  }
+
   validate :changes_for_direct_message_channels
 
   class << self
@@ -59,6 +64,7 @@ end
 #  created_at                          :datetime         not null
 #  updated_at                          :datetime         not null
 #  last_unread_mention_when_emailed_id :integer
+#  join_reason                         :integer          default("manual"), not null
 #
 # Indexes
 #

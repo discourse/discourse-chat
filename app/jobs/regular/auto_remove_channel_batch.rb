@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'rails_helper'
-
 module Jobs
   class AutoRemoveChannelBatch < ::Jobs::Base
     def execute(args)

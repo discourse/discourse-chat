@@ -51,6 +51,13 @@ describe Jobs::AutoManageChannelMemberships do
       assert_batches_enqueued(@channel, mode, 0)
     end
 
+    it 'includes users with last_seen_at set to null' do
+      Fabricate(:group_user, user: @user, group: chatters_group)
+      @user.update!(last_seen_at: nil)
+
+      assert_batches_enqueued(@channel, mode, 1)
+    end
+
     it 'excludes users without chat enabled' do
       Fabricate(:group_user, user: @user, group: chatters_group)
       @user.user_option.update!(chat_enabled: false)

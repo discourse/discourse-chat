@@ -49,7 +49,7 @@ module Jobs
       User
         .distinct
         .select(:id, 'users.id AS query_user_id')
-        .where('last_seen_at > ?', 3.months.ago)
+        .where('last_seen_at IS NULL OR last_seen_at > ?', 3.months.ago)
         .joins(:user_option)
         .where(user_options: { chat_enabled: true })
         .joins(:group_users)

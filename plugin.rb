@@ -88,7 +88,7 @@ after_initialize do
     end
   end
 
-  SeedFu.fixture_paths << Rails.root.join("plugins", "discourse-chat", "db", "fixtures").to_s
+  register_seedfu_fixtures(Rails.root.join("plugins", "discourse-chat", "db", "fixtures"))
 
   load File.expand_path('../app/controllers/admin/admin_incoming_chat_webhooks_controller.rb', __FILE__)
   load File.expand_path('../app/controllers/chat_base_controller.rb', __FILE__)

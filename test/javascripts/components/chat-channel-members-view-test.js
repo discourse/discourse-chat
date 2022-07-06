@@ -10,9 +10,17 @@ import hbs from "htmlbars-inline-precompile";
 import fabricate from "../helpers/fabricators";
 import I18n from "I18n";
 import { Promise } from "rsvp";
-import { fillIn } from "@ember/test-helpers";
+import { fillIn, triggerEvent } from "@ember/test-helpers";
 
 function fetchMembersHandler(channelId, params = {}) {
+  if (params.offset === 50) {
+    return Promise.resolve([{ user: { id: 3, username: "clara" } }]);
+  }
+
+  if (params.offset === 100) {
+    return Promise.resolve([]);
+  }
+
   if (!params.username) {
     return Promise.resolve([
       { user: { id: 1, username: "jojo" } },
@@ -112,6 +120,38 @@ discourseModule(
         assert.notOk(
           exists(".channel-members-view__list-item[data-user-card='bob']")
         );
+      },
+    });
+
+    componentTest("loading more", {
+      template: hbs`{{chat-channel-members-view channel=channel fetchMembersHandler=fetchMembersHandler}}`,
+
+      beforeEach() {
+        this.set("fetchMembersHandler", fetchMembersHandler);
+        this.set("channel", fabricate("chat-channel"));
+        this.channel.set("memberships_count", 3);
+      },
+
+      async test(assert) {
+        await triggerEvent(".channel-members-view__list", "scroll");
+
+        ["jojo", "bob", "clara"].forEach((username) => {
+          assert.ok(
+            exists(
+              `.channel-members-view__list-item[data-user-card='${username}']`
+            )
+          );
+        });
+
+        await triggerEvent(".channel-members-view__list", "scroll");
+
+        ["jojo", "bob", "clara"].forEach((username) => {
+          assert.ok(
+            exists(
+              `.channel-members-view__list-item[data-user-card='${username}']`
+            )
+          );
+        });
       },
     });
   }

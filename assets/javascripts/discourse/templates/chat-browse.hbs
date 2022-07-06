@@ -7,14 +7,6 @@
     </div>
   {{/if}}
 
-  {{#if model.topicChannels}}
-    <div class="topic-channels">
-      {{#each model.topicChannels as |channel|}}
-        {{chat-channel-settings-row channel=channel}}
-      {{/each}}
-    </div>
-  {{/if}}
-
   {{#if noChannelsAvailable}}
     <div class="empty-state">
       <span class="empty-state-title">{{i18n "chat.empty_state.title"}}</span>

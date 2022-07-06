@@ -5,8 +5,8 @@ require 'rails_helper'
 RSpec.describe DiscourseChat::AdminIncomingChatWebhooksController do
   fab!(:admin) { Fabricate(:admin) }
   fab!(:user) { Fabricate(:user) }
-  fab!(:chat_channel1) { Fabricate(:chat_channel, chatable: Fabricate(:topic)) }
-  fab!(:chat_channel2) { Fabricate(:chat_channel, chatable: Fabricate(:topic)) }
+  fab!(:chat_channel1) { Fabricate(:chat_channel) }
+  fab!(:chat_channel2) { Fabricate(:chat_channel) }
 
   before do
     SiteSetting.chat_enabled = true

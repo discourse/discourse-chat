@@ -46,8 +46,6 @@ class ChatChannelSerializer < ApplicationSerializer
 
   def chatable
     case object.chatable_type
-    when "Topic"
-      BasicTopicSerializer.new(object.chatable, root: false).as_json
     when "Category"
       BasicCategorySerializer.new(object.chatable, root: false).as_json
     when "DirectMessageChannel"

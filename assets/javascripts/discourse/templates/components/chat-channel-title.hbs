@@ -51,17 +51,6 @@
         {{yield}}
       {{/if}}
     </div>
-  {{else if channel.isTopicChannel}}
-    <div class="chat-channel-title is-topic">
-      {{d-icon "far-comments" class="chat-channel-title__topic-badge"}}
-      <span class="chat-channel-title__name">
-        {{replace-emoji channel.title}}
-      </span>
-
-      {{#if (has-block)}}
-        {{yield}}
-      {{/if}}
-    </div>
   {{/if}}
 
   {{#if unreadIndicator}}

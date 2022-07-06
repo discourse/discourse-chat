@@ -78,11 +78,11 @@ acceptance("Discourse Chat - Keyboard shortcuts", function (needs) {
     await settled();
     assert.ok(exists("#chat-channel-selector-modal-inner"));
 
-    // All 6 channels should show because the input is blank
+    // All channels should show because the input is blank
     assert.equal(
       queryAll("#chat-channel-selector-modal-inner .chat-channel-selection-row")
         .length,
-      6
+      9
     );
 
     // Freaking keyup event isn't triggered by fillIn...
@@ -109,15 +109,15 @@ acceptance("Discourse Chat - Keyboard shortcuts", function (needs) {
     await showModal("chat-channel-selector-modal");
     await settled();
 
-    // Only 5 channels now instead of 6.
+    // All channels minus 1
     assert.equal(
       queryAll("#chat-channel-selector-modal-inner .chat-channel-selection-row")
         .length,
-      5
+      8
     );
     assert.notOk(
       exists(
-        "#chat-channel-selector-modal-inner .chat-channel-selection-row.chat-channel-75"
+        "#chat-channel-selector-modal-inner .chat-channel-selection-row.chat-channel-9"
       )
     );
   });
@@ -128,11 +128,11 @@ acceptance("Discourse Chat - Keyboard shortcuts", function (needs) {
     await triggerKeyEvent(document.body, "keydown", 40, { altKey: true }); // Down key
     assert.equal(currentURL(), "/chat/channel/76/eviltrout");
     await triggerKeyEvent(document.body, "keydown", 40, { altKey: true }); // Down key
-    assert.equal(currentURL(), "/chat/channel/9/site");
+    assert.equal(currentURL(), "/chat/channel/11/another-category");
     await triggerKeyEvent(document.body, "keydown", 40, { altKey: true }); // Down key
-    assert.equal(currentURL(), "/chat/channel/7/uncategorized");
+    assert.equal(currentURL(), "/chat/channel/4/public-category");
     await triggerKeyEvent(document.body, "keydown", 38, { altKey: true }); // Up key
-    assert.equal(currentURL(), "/chat/channel/9/site");
+    assert.equal(currentURL(), "/chat/channel/11/another-category");
     await triggerKeyEvent(document.body, "keydown", 38, { altKey: true }); // Up key
     assert.equal(currentURL(), "/chat/channel/76/eviltrout");
     await triggerKeyEvent(document.body, "keydown", 38, { altKey: true }); // Up key
@@ -149,25 +149,12 @@ acceptance("Discourse Chat - Keyboard shortcuts", function (needs) {
     assert.ok(query(".topic-chat-container").classList.contains("channel-4"));
 
     await triggerKeyEvent(document.body, "keydown", 40, { altKey: true }); // Down key
-    assert.ok(query(".topic-chat-container").classList.contains("channel-75"));
-
-    await triggerKeyEvent(document.body, "keydown", 40, { altKey: true }); // Down key
-    assert.ok(query(".topic-chat-container").classList.contains("channel-76"));
-
-    await triggerKeyEvent(document.body, "keydown", 40, { altKey: true }); // Down key
-    assert.ok(query(".topic-chat-container").classList.contains("channel-9"));
-
-    await triggerKeyEvent(document.body, "keydown", 40, { altKey: true }); // Down key
+    await settled();
     assert.ok(query(".topic-chat-container").classList.contains("channel-7"));
 
-    await triggerKeyEvent(document.body, "keydown", 40, { altKey: true }); // Down key
-    assert.ok(query(".topic-chat-container").classList.contains("channel-11"));
-
-    await triggerKeyEvent(document.body, "keydown", 40, { altKey: true }); // Down key
-    assert.ok(query(".topic-chat-container").classList.contains("channel-4"));
-
     await triggerKeyEvent(document.body, "keydown", 38, { altKey: true }); // Up key
-    assert.ok(query(".topic-chat-container").classList.contains("channel-11"));
+    await settled();
+    assert.ok(query(".topic-chat-container").classList.contains("channel-4"));
   });
 
   test("simple composer formatting shortcuts", async function (assert) {

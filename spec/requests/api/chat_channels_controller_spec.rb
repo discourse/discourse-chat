@@ -115,7 +115,7 @@ describe DiscourseChat::Api::ChatChannelsController do
       it 'returns a valid chat channel' do
         put "/chat/api/chat_channels/#{chat_channel.id}.json"
 
-        expect(response).to match_response_schema('chat_channel')
+        expect(response).to match_response_schema('category_chat_channel')
       end
     end
   end

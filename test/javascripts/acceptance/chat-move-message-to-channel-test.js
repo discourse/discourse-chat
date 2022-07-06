@@ -17,7 +17,7 @@ function setupPretenders(server, helper) {
   server.post("/uploads/lookup-urls", () => {
     return helper.response([]);
   });
-  server.put("/chat/7/move_messages_to_channel.json", () => {
+  server.put("/chat/4/move_messages_to_channel.json", () => {
     return helper.response({
       destination_channel_id: 11,
       destination_channel_title: "Coolest thing you have seen today",
@@ -53,7 +53,7 @@ acceptance(
     });
 
     test("opens a modal for destination channel selection then redirects to the moved messages when done", async function (assert) {
-      await visit("/chat/channel/7/Uncategorized");
+      await visit("/chat/channel/4/public-category");
       assert.ok(exists(".chat-message-container"));
       const firstMessage = query(".chat-message-container");
       await triggerEvent(firstMessage, "mouseenter");
@@ -90,12 +90,13 @@ acceptance(
       const channelChooser = selectKit(".chat-move-message-channel-chooser");
       await channelChooser.expand();
       assert.notOk(
-        channelChooser.rowByValue("7").exists(),
+        channelChooser.rowByValue("4").exists(),
         "the source channel is not in the destination channel selector"
       );
 
       await channelChooser.selectRowByValue("11");
       await click(modalConfirmMoveButton);
+
       assert.strictEqual(
         currentURL(),
         "/chat/channel/11/Coolest%20thing%20you%20have%20seen%20today",
@@ -138,7 +139,7 @@ acceptance(
 
     needs.pretender((server, helper) => {
       setupPretenders(server, helper);
-      server.get("/chat/9/messages.json", () => {
+      server.get("/chat/11/messages.json", () => {
         return helper.response(
           generateChatView(loggedInUser(), { can_moderate: true })
         );
@@ -146,7 +147,7 @@ acceptance(
     });
 
     test("non-staff users cannot see the move to channel button", async function (assert) {
-      await visit("/chat/channel/7/Uncategorized");
+      await visit("/chat/channel/4/public-category");
       assert.ok(exists(".chat-message-container"));
       const firstMessage = query(".chat-message-container");
       await triggerEvent(firstMessage, "mouseenter");
@@ -162,7 +163,7 @@ acceptance(
     });
 
     test("non-staff users can see the move to channel button if they can_moderate the channel", async function (assert) {
-      await visit("/chat/channel/9/site");
+      await visit("/chat/channel/11/another-category");
       assert.ok(exists(".chat-message-container"));
       const firstMessage = query(".chat-message-container");
       await triggerEvent(firstMessage, "mouseenter");

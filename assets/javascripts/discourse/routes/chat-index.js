@@ -13,11 +13,9 @@ export default DiscourseRoute.extend({
     // Otherwise, `setupController` will fetch all available
     return this.chat.getIdealFirstChannelIdAndTitle().then((channelInfo) => {
       if (channelInfo) {
-        return this.transitionTo(
-          "chat.channel",
-          channelInfo.id,
-          channelInfo.title
-        );
+        return this.chat.getChannelBy("id", channelInfo.id).then((c) => {
+          return this.chat.openChannel(c);
+        });
       } else {
         return this.transitionTo("chat.browse");
       }

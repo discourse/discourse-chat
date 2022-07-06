@@ -2,7 +2,7 @@
 
 Fabricator(:chat_channel) do
   name { ["Gaming Lounge", "Music Lodge", "Random", "Politics", "Sports Center", "Kino Buffs"].sample }
-  chatable { Fabricate(:topic) }
+  chatable { Fabricate(:category) }
   status { :open }
 end
 
@@ -60,7 +60,7 @@ end
 Fabricator(:incoming_chat_webhook) do
   name { sequence(:name) { |i| "#{i + 1}" } }
   key { sequence(:key) { |i| "#{i + 1}" } }
-  chat_channel { Fabricate(:chat_channel, chatable: Fabricate(:topic)) }
+  chat_channel { Fabricate(:chat_channel, chatable: Fabricate(:category)) }
 end
 
 Fabricator(:user_chat_channel_membership) do

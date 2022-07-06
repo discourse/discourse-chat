@@ -8,6 +8,7 @@ export default Controller.extend({
 
   init() {
     this._super(...arguments);
+
     this.appEvents.on("chat-channel:deleted", (chatChannel) => {
       if (chatChannel.isCategoryChannel) {
         this.set(
@@ -16,18 +17,13 @@ export default Controller.extend({
             (chan) => chan.id !== chatChannel.id
           )
         );
-      } else {
-        this.set(
-          "model.topicChannels",
-          this.model.topicChannels.filter((chan) => chan.id !== chatChannel.id)
-        );
       }
     });
   },
 
-  @discourseComputed("model.categoryChannels", "model.topicChannels")
-  noChannelsAvailable(categoryChannels, topicChannels) {
-    return !categoryChannels.length && !topicChannels.length;
+  @discourseComputed("model.categoryChannels")
+  noChannelsAvailable(categoryChannels) {
+    return !categoryChannels.length;
   },
 
   @action

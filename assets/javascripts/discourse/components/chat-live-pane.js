@@ -32,7 +32,6 @@ const FUTURE = "future";
 
 export default Component.extend({
   classNameBindings: [":chat-live-pane", "sendingloading", "loading"],
-  topicId: null, // ?Number
   chatChannel: null,
   fullPage: false,
   registeredChatChannelId: null, // ?Number

@@ -54,8 +54,6 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     if success && chat_channel.chatable_has_custom_fields?
       @chatable.custom_fields[DiscourseChat::HAS_CHAT_ENABLED] = true
       @chatable.save!
-
-      create_action_whisper(@chatable, 'enabled') if chat_channel.topic_channel?
     end
 
     if success
@@ -65,9 +63,6 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
       )
       membership.following = true
       membership.save!
-      if chat_channel.topic_channel?
-        ChatPublisher.publish_chat_changed_for_topic(@chatable.id)
-      end
       render_serialized(chat_channel, ChatChannelSerializer)
     else
       render_json_error(chat_channel)
@@ -89,10 +84,6 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
         @chatable.save!
       end
 
-      if chat_channel.topic_channel?
-        create_action_whisper(@chatable, 'disabled')
-        ChatPublisher.publish_chat_changed_for_topic(@chatable.id)
-      end
       render json: success_json
     else
       render_json_error(chat_channel)
@@ -455,11 +446,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
   end
 
   def find_chatable
-    chatable_class = case params[:chatable_type].downcase
-                     when "topic" then Topic
-                     when "category" then Category
-    end
-    @chatable = chatable_class.find_by(id: params[:chatable_id])
+    @chatable = Category.find_by(id: params[:chatable_id])
     guardian.ensure_can_moderate_chat!(@chatable)
   end
 
@@ -470,16 +457,5 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
       .find_by(id: params[:message_id])
 
     raise Discourse::NotFound unless @message
-  end
-
-  def create_action_whisper(topic, action)
-    topic.add_moderator_post(
-        current_user,
-        nil,
-        bump: false,
-        post_type: Post.types[:whisper],
-        action_code: "chat.#{action}",
-        custom_fields: { "action_code_who" => current_user.username }
-      )
   end
 end

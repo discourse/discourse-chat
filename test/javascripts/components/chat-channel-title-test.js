@@ -15,21 +15,6 @@ discourseModule(
   function (hooks) {
     setupRenderingTest(hooks);
 
-    componentTest("topic channel", {
-      template: hbs`{{chat-channel-title channel=channel}}`,
-
-      beforeEach() {
-        this.set("channel", fabricate("chat-channel"));
-      },
-
-      async test(assert) {
-        assert.equal(
-          query(".chat-channel-title__name").innerText,
-          this.channel.title
-        );
-      },
-    });
-
     componentTest("category channel", {
       template: hbs`{{chat-channel-title channel=channel}}`,
 

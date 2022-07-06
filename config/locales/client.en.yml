@@ -349,10 +349,6 @@ en:
         chat_mention: "Chat mention"
         chat_invitation: "Chat invitation"
         chat_quoted: "Chat quoted"
-    topic:
-      actions:
-        chat_enable: "Enable Chat"
-        chat_disable: "Close Chat"
     action_codes:
       chat:
         enabled: '%{who} enabled <button class="btn-link open-chat">chat</button> %{when}'

@@ -66,6 +66,10 @@ export default Component.extend({
       this.presenceChannel?.unsubscribe();
 
       next(() => {
+        if (this.isDestroyed || this.isDestroying) {
+          return;
+        }
+
         const presenceChannel = this.presence.getChannel(this.channelName);
         this.set("presenceChannel", presenceChannel);
         presenceChannel.subscribe();

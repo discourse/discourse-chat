@@ -113,10 +113,6 @@ module ChatPublisher
     end
   end
 
-  def self.publish_chat_changed_for_topic(topic_id)
-    MessageBus.publish("/topic/#{topic_id}", reload_topic: true)
-  end
-
   def self.publish_inaccessible_mentions(user_id, chat_message, cannot_chat_users, without_membership)
     MessageBus.publish("/chat/#{chat_message.chat_channel_id}", {
         type: :mention_warning,

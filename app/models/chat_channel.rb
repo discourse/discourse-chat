@@ -53,13 +53,8 @@ class ChatChannel < ActiveRecord::Base
 
   def chatable_url
     return nil if direct_message_channel?
-    return chatable.relative_url if topic_channel?
 
     chatable.url
-  end
-
-  def topic_channel?
-    chatable_type == "Topic"
   end
 
   def category_channel?
@@ -75,7 +70,7 @@ class ChatChannel < ActiveRecord::Base
   end
 
   def chatable_has_custom_fields?
-    topic_channel? || category_channel?
+    category_channel?
   end
 
   def allowed_user_ids
@@ -87,16 +82,12 @@ class ChatChannel < ActiveRecord::Base
   def allowed_group_ids
     if category_channel?
       chatable.secure_group_ids
-    elsif topic_channel? && chatable.category
-      chatable.category.secure_group_ids
     else
       nil
     end
   end
 
   def public_channel_title
-    return chatable.title.parameterize if topic_channel?
-
     chatable.name
   end
 
@@ -109,8 +100,6 @@ class ChatChannel < ActiveRecord::Base
 
   def title_from_chatable
     case chatable_type
-    when "Topic"
-      chatable.fancy_title
     when "Category"
       chatable.name
     when "DirectMessageChannel"
@@ -151,20 +140,13 @@ class ChatChannel < ActiveRecord::Base
   end
 
   def self.public_channel_chatable_types
-    ["Topic", "Category"]
+    ["Category"]
   end
 
   def self.public_channels
     where(chatable_type: public_channel_chatable_types)
-      .where("topics.id IS NOT NULL OR categories.id IS NOT NULL")
+      .where("categories.id IS NOT NULL")
       .joins("LEFT JOIN categories ON categories.id = chat_channels.chatable_id AND chat_channels.chatable_type = 'Category'")
-      .joins("LEFT JOIN topics ON topics.id = chat_channels.chatable_id AND chat_channels.chatable_type = 'Topic' AND topics.deleted_at IS NULL")
-  end
-
-  def self.is_enabled?(t)
-    return false if !SiteSetting.chat_enabled
-
-    ChatChannel.where(chatable: topic).exists?
   end
 
   private

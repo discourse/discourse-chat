@@ -3,8 +3,6 @@
 module DiscourseChat::GuardianExtensions
   def can_moderate_chat?(chatable)
     case chatable.class.name
-    when "Topic"
-      can_perform_action_available_to_group_moderators?(chatable)
     when "Category"
       is_staff? || is_category_group_moderator?(chatable)
     else
@@ -77,10 +75,6 @@ module DiscourseChat::GuardianExtensions
     end
   end
 
-  def can_move_chat_to_topic?(chat_channel)
-    is_staff? && can_modify_channel_message?(chat_channel)
-  end
-
   def can_rebake_chat_message?(message)
     return false if !can_modify_channel_message?(message.chat_channel)
     is_staff? || @user.has_trust_level?(TrustLevel[4])
@@ -89,11 +83,7 @@ module DiscourseChat::GuardianExtensions
   def can_see_chat_channel?(chat_channel)
     return false unless chat_channel.chatable
 
-    if chat_channel.topic_channel?
-      !chat_channel.chatable.closed &&
-        !chat_channel.chatable.archived &&
-        can_see_topic?(chat_channel.chatable)
-    elsif chat_channel.direct_message_channel?
+    if chat_channel.direct_message_channel?
       chat_channel.chatable.user_can_access?(@user)
     elsif chat_channel.category_channel?
       can_see_category?(chat_channel.chatable)
@@ -133,20 +123,10 @@ module DiscourseChat::GuardianExtensions
     return false if (SiteSetting.max_post_deletions_per_day < 1)
     return true if can_moderate_chat?(chatable)
 
-    if chatable.class.name == "Topic"
-      return false if !can_see_topic?(chatable)
-      return false if chatable.archived?
-      return false if chatable.closed?
-    end
-
     true
   end
 
   def can_delete_other_chats?(chatable)
-    if chatable.class.name == "Topic"
-      return false if chatable.archived?
-      return false if chatable.closed?
-    end
     return true if can_moderate_chat?(chatable)
 
     false
@@ -161,21 +141,12 @@ module DiscourseChat::GuardianExtensions
   end
 
   def can_restore_own_chats?(chatable)
-    if chatable.class.name == "Topic"
-      return false if !can_see_topic?(chatable)
-      return false if chatable.archived? || chatable.closed?
-    else
-      return false if !can_see_category?(chatable)
-    end
+    return false if !can_see_category?(chatable)
 
     true
   end
 
   def can_restore_other_chats?(chatable)
-    if chatable.class.name == "Topic"
-      return false if chatable.archived?
-    end
-
     can_moderate_chat?(chatable)
   end
 

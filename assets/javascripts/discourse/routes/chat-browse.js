@@ -9,7 +9,6 @@ export default DiscourseRoute.extend({
   model() {
     return ajax("/chat/chat_channels/all.json").then((channels) => {
       const categoryChannels = [];
-      const topicChannels = [];
 
       const allChannels = this.chat.sortPublicChannels(
         channels.map((channel) => ChatChannel.create(channel))
@@ -18,14 +17,11 @@ export default DiscourseRoute.extend({
       allChannels.forEach((channel) => {
         if (channel.isCategoryChannel) {
           categoryChannels.push(channel);
-        } else {
-          topicChannels.push(channel);
         }
       });
 
       return {
         categoryChannels,
-        topicChannels,
       };
     });
   },

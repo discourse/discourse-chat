@@ -11,21 +11,6 @@
   </div>
 {{/if}}
 
-{{#if channel.isTopicChannel}}
-  <div class="chat-form__section">
-    <div class="chat-form__field">
-      <label class="chat-form__label">
-        {{i18n "chat.about_view.associated_topic"}}
-      </label>
-      <div class="chat-form__control">
-        {{#link-to "topic" channel.chatable.slug channel.chatable.id}}
-          {{html-safe (replace-emoji channel.chatable.fancy_title)}}
-        {{/link-to}}
-      </div>
-    </div>
-  </div>
-{{/if}}
-
 <div class="chat-form__section">
   <div class="chat-form__field">
     <label class="chat-form__label">

@@ -27,12 +27,6 @@ const CHAT_ONLINE_OPTIONS = {
   browserHiddenTime: 300000, // Or the browser has been in the background for 5 minutes
 };
 
-// Tag used to be 1, but we no longer use that chatable.
-const PUBLIC_CHANNEL_SORT_PRIOS = {
-  Category: 0,
-  Topic: 2,
-};
-
 export default Service.extend({
   activeChannel: null,
   allChannels: null,
@@ -425,15 +419,7 @@ export default Service.extend({
   },
 
   sortPublicChannels(channels) {
-    return channels.sort((a, b) => {
-      const typeA = PUBLIC_CHANNEL_SORT_PRIOS[a.chatable_type];
-      const typeB = PUBLIC_CHANNEL_SORT_PRIOS[b.chatable_type];
-      if (typeA === typeB) {
-        return a.title.localeCompare(b.title);
-      } else {
-        return typeA < typeB ? -1 : 1;
-      }
-    });
+    return channels.sort((a, b) => a.title.localeCompare(b.title));
   },
 
   sortDirectMessageChannels(channels) {
@@ -697,11 +683,9 @@ export default Service.extend({
             }
 
             if (channelInfo) {
-              return this.router.transitionTo(
-                "chat.channel",
-                channelInfo.id,
-                channelInfo.title
-              );
+              this.getChannelBy("id", channelInfo.id).then((c) => {
+                return this.openChannel(c);
+              });
             } else {
               return this.router.transitionTo("chat");
             }

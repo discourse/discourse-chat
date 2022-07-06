@@ -4,7 +4,6 @@ import { computed } from "@ember/object";
 
 export const CHATABLE_TYPES = {
   directMessageChannel: "DirectMessageChannel",
-  topicChannel: "Topic",
   categoryChannel: "Category",
 };
 export const CHANNEL_STATUSES = {
@@ -70,11 +69,6 @@ const ChatChannel = RestModel.extend({
   @computed("chatable_type")
   get isDirectMessageChannel() {
     return this.chatable_type === CHATABLE_TYPES.directMessageChannel;
-  },
-
-  @computed("chatable_type")
-  get isTopicChannel() {
-    return this.chatable_type === CHATABLE_TYPES.topicChannel;
   },
 
   @computed("chatable_type")

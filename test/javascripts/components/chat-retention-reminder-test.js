@@ -25,7 +25,7 @@ discourseModule(
           ChatChannel.create({ chatable_type: "Category" })
         );
         set(this.currentUser, "needs_channel_retention_reminder", true);
-        set(this.siteSettings, "chat_channel_retention_days", 100);
+        this.siteSettings.chat_channel_retention_days = 100;
       },
 
       async test(assert) {
@@ -47,7 +47,7 @@ discourseModule(
             ChatChannel.create({ chatable_type: "Category" })
           );
           set(this.currentUser, "needs_channel_retention_reminder", false);
-          set(this.siteSettings, "chat_channel_retention_days", 100);
+          this.siteSettings.chat_channel_retention_days = 100;
         },
 
         async test(assert) {
@@ -65,7 +65,7 @@ discourseModule(
           ChatChannel.create({ chatable_type: "DirectMessageChannel" })
         );
         set(this.currentUser, "needs_dm_retention_reminder", true);
-        set(this.siteSettings, "chat_dm_retention_days", 100);
+        this.siteSettings.chat_dm_retention_days = 100;
       },
 
       async test(assert) {
@@ -85,7 +85,7 @@ discourseModule(
           ChatChannel.create({ chatable_type: "DirectMessageChannel" })
         );
         set(this.currentUser, "needs_dm_retention_reminder", false);
-        set(this.siteSettings, "chat_dm_retention_days", 100);
+        this.siteSettings.chat_dm_retention_days = 100;
       },
 
       async test(assert) {

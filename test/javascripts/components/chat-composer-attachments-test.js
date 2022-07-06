@@ -31,7 +31,7 @@ discourseModule(
               },
             })
           );
-          set(this.siteSettings, "chat_allow_uploads", false);
+          this.siteSettings.chat_allow_uploads = false;
         },
         async test(assert) {
           await click(".chat-composer-dropdown__trigger-btn");
@@ -57,7 +57,7 @@ discourseModule(
             chatable: {},
           })
         );
-        set(this.siteSettings, "chat_allow_uploads", false);
+        this.siteSettings.chat_allow_uploads = false;
       },
 
       async test(assert) {

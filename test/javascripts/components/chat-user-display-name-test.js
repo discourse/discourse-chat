@@ -3,7 +3,6 @@ import componentTest, {
 } from "discourse/tests/helpers/component-test";
 import { discourseModule, query } from "discourse/tests/helpers/qunit-helpers";
 import hbs from "htmlbars-inline-precompile";
-import { set } from "@ember/object";
 
 function displayname() {
   return query(".chat-user-display-name").innerText.trim();
@@ -18,7 +17,7 @@ discourseModule(
       template: hbs`{{chat-user-display-name user=user}}`,
 
       async beforeEach() {
-        set(this.siteSettings, "prioritize_username_in_ux", true);
+        this.siteSettings.prioritize_username_in_ux = true;
         this.set("user", { username: "bob", name: null });
       },
 
@@ -31,7 +30,7 @@ discourseModule(
       template: hbs`{{chat-user-display-name user=user}}`,
 
       async beforeEach() {
-        set(this.siteSettings, "prioritize_username_in_ux", true);
+        this.siteSettings.prioritize_username_in_ux = true;
         this.set("user", { username: "bob", name: "Bobcat" });
       },
 
@@ -51,7 +50,7 @@ discourseModule(
       template: hbs`{{chat-user-display-name user=user}}`,
 
       async beforeEach() {
-        set(this.siteSettings, "prioritize_username_in_ux", false);
+        this.siteSettings.prioritize_username_in_ux = false;
         this.set("user", { username: "bob", name: null });
       },
 
@@ -64,7 +63,7 @@ discourseModule(
       template: hbs`{{chat-user-display-name user=user}}`,
 
       async beforeEach() {
-        set(this.siteSettings, "prioritize_username_in_ux", false);
+        this.siteSettings.prioritize_username_in_ux = false;
         this.set("user", { username: "bob", name: "Bobcat" });
       },
 

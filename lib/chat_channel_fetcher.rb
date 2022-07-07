@@ -18,21 +18,6 @@ module DiscourseChat::ChatChannelFetcher
 
   def self.all_secured_channel_ids(guardian)
     allowed_channel_ids_sql = <<~SQL
-      -- secured topic chat channels
-      #{ChatChannel.select(:id).joins(
-          "INNER JOIN topics ON topics.id = chat_channels.chatable_id AND chat_channels.chatable_type = 'Topic'
-          LEFT JOIN categories ON categories.id = topics.category_id
-          LEFT JOIN topic_allowed_users ON topic_allowed_users.topic_id = topics.id"
-        ).where(
-          "topics.category_id IS NULL OR topics.category_id IN (:allowed_category_ids)",
-          allowed_category_ids: guardian.allowed_category_ids
-        ).where(
-          "topics.archetype = 'regular' OR (topics.archetype = 'private_message' AND topic_allowed_users.user_id = :user_id)",
-          user_id: guardian.user.id
-        ).to_sql}
-
-      UNION
-
       -- secured category chat channels
       #{ChatChannel.select(:id).joins(
           "INNER JOIN categories ON categories.id = chat_channels.chatable_id AND chat_channels.chatable_type = 'Category'"
@@ -61,7 +46,6 @@ module DiscourseChat::ChatChannelFetcher
   def self.secured_public_channels(guardian, memberships, scope_with_membership: true, filter: nil)
     channels = ChatChannel.includes(:chatable, :chat_channel_archive)
       .joins("LEFT JOIN categories ON categories.id = chat_channels.chatable_id AND chat_channels.chatable_type = 'Category'")
-      .joins("LEFT JOIN topics ON topics.id = chat_channels.chatable_id AND chat_channels.chatable_type = 'Topic'")
       .where(
         chatable_type: ChatChannel.public_channel_chatable_types,
         status: ChatChannel.statuses[:open]
@@ -69,7 +53,7 @@ module DiscourseChat::ChatChannelFetcher
 
     if filter
       channels = channels.where(<<~SQL, filter: "%#{filter.downcase}%")
-        chat_channels.name ILIKE :filter OR categories.name ILIKE :filter OR topics.title ILIKE :filter
+        chat_channels.name ILIKE :filter OR categories.name ILIKE :filter
       SQL
     end
 
@@ -189,7 +173,6 @@ module DiscourseChat::ChatChannelFetcher
 
     base_channel_relation = ChatChannel
       .includes(:chatable)
-      .joins("LEFT JOIN topics ON topics.id = chat_channels.chatable_id AND chat_channels.chatable_type = 'Topic'")
       .joins("LEFT JOIN categories ON categories.id = chat_channels.chatable_id AND chat_channels.chatable_type = 'Category'")
 
     if guardian.user.staff?
@@ -199,14 +182,7 @@ module DiscourseChat::ChatChannelFetcher
     if channel_id_or_name.is_a? Integer
       chat_channel = base_channel_relation.find_by(id: channel_id_or_name)
     else
-      chat_channel = base_channel_relation.find_by(
-        "(
-          CASE WHEN chatable_type = 'Category' THEN LOWER(categories.name) = :name
-          WHEN chatable_type = 'Topic' THEN LOWER(topics.fancy_title) = :name
-          END
-        )
-        OR LOWER(chat_channels.name) = :name", name: channel_id_or_name.downcase
-      )
+      chat_channel = base_channel_relation.find_by("LOWER(categories.name) = :name OR LOWER(chat_channels.name) = :name", name: channel_id_or_name.downcase)
     end
 
     raise Discourse::NotFound if chat_channel.blank?

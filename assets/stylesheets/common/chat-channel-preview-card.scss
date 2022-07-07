@@ -1,6 +1,5 @@
 .chat-channel-preview-card {
-  margin: 1em auto 3em auto;
-  width: 500px;
+  margin: 1rem 1rem 2rem 1rem;
   padding: 2rem 1rem;
   background-color: var(--primary-50);
   display: flex;
@@ -27,6 +26,6 @@
   }
 
   &__browse-all {
-    font-size: .875rem;
+    font-size: 0.875rem;
   }
 }

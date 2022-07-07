@@ -2,7 +2,6 @@ import Component from "@ember/component";
 import { action, computed } from "@ember/object";
 import { inject as service } from "@ember/service";
 import ChatApi from "discourse/plugins/discourse-chat/discourse/lib/chat-api";
-import { popupAjaxError } from "discourse/lib/ajax-error";
 import showModal from "discourse/lib/show-modal";
 import I18n from "I18n";
 import { camelize } from "@ember/string";
@@ -23,9 +22,6 @@ const MUTED_OPTIONS = [
 export default class ChatChannelSettingsView extends Component {
   tagName = "";
   channel = null;
-  isJoiningChannel = false;
-  isLeavingChannel = false;
-  isLoading = false;
   @service chat;
   @service router;
   notificationLevels = NOTIFICATION_LEVELS;
@@ -104,39 +100,5 @@ export default class ChatChannelSettingsView extends Component {
   onToggleChannelState() {
     const controller = showModal("chat-channel-toggle");
     controller.set("chatChannel", this.channel);
-  }
-
-  @action
-  onJoinChannel() {
-    this.set("isJoiningChannel", true);
-    this.set("isLoading", true);
-
-    return ChatApi.followChatChannel(this.channel.id)
-      .then((membership) => {
-        this.channel.set("following", true);
-        this.channel.set("memberships_count", membership.user_count);
-
-        return this.chat
-          .forceRefreshChannels()
-          .then(() => this.chat.openChannel(this.channel));
-      })
-      .catch(popupAjaxError);
-  }
-
-  @action
-  onLeaveChannel() {
-    this.set("isLeavingChannel", true);
-    this.set("isLoading", true);
-
-    return ChatApi.unfollowChatChannel(this.channel.id)
-      .then((membership) => {
-        this.channel.set("following", false);
-        this.channel.set("memberships_count", membership.user_count);
-
-        return this.chat
-          .forceRefreshChannels()
-          .then(() => this.chat.openChannel(this.channel));
-      })
-      .catch(popupAjaxError);
   }
 }

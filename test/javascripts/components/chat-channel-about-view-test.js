@@ -6,8 +6,9 @@ import {
 } from "discourse/tests/helpers/qunit-helpers";
 import hbs from "htmlbars-inline-precompile";
 import fabricate from "../helpers/fabricators";
-import { render } from "@ember/test-helpers";
+import { render, settled } from "@ember/test-helpers";
 import { test } from "qunit";
+import I18n from "I18n";
 
 discourseModule(
   "Discourse Chat | Component | chat-channel-about-view | admin user",
@@ -40,6 +41,14 @@ discourseModule(
       assert.equal(
         query(".category-name").innerText,
         this.channel.chatable.name
+      );
+
+      this.channel.set("description", null);
+      await settled();
+
+      assert.equal(
+        query(".channel-info-about-view__description__helper-text").innerText,
+        I18n.t("chat.channel_edit_description_modal.description")
       );
     });
 
@@ -101,6 +110,11 @@ discourseModule(
         query(".category-name").innerText,
         this.channel.chatable.name
       );
+
+      this.channel.set("description", null);
+      await settled();
+
+      assert.notOk(exists(".channel-info-about-view__description"));
     });
 
     test("edit title", async function (assert) {

@@ -216,26 +216,20 @@ RSpec.describe DiscourseChat::ChatChannelsController do
 
     it "errors for non-staff" do
       sign_in(user)
-      put "/chat/chat_channels.json", params: { type: "category", id: category2.id, name: "hi" }
+      put "/chat/chat_channels.json", params: { id: category2.id, name: "hi" }
       expect(response.status).to eq(403)
-    end
-
-    it "errors when type is not category/topic" do
-      sign_in(admin)
-      put "/chat/chat_channels.json", params: { type: "beeep", id: category2.id, name: "hi" }
-      expect(response.status).to eq(400)
     end
 
     it "errors when chatable doesn't exist" do
       sign_in(admin)
-      put "/chat/chat_channels.json", params: { type: "category", id: Category.last.id + 1, name: "hi" }
+      put "/chat/chat_channels.json", params: { id: Category.last.id + 1, name: "hi" }
       expect(response.status).to eq(404)
     end
 
     it "errors when the name is over SiteSetting.max_topic_title_length" do
       sign_in(admin)
       SiteSetting.max_topic_title_length = 10
-      put "/chat/chat_channels.json", params: { type: "category", id: category2.id, name: "Hi, this is over 10 characters" }
+      put "/chat/chat_channels.json", params: { id: category2.id, name: "Hi, this is over 10 characters" }
       expect(response.status).to eq(400)
     end
 
@@ -244,7 +238,7 @@ RSpec.describe DiscourseChat::ChatChannelsController do
       name = "beep boop hi"
       ChatChannel.create!(chatable: category2, name: name)
 
-      put "/chat/chat_channels.json", params: { type: "category", id: category2.id, name: name }
+      put "/chat/chat_channels.json", params: { id: category2.id, name: name }
       expect(response.status).to eq(400)
     end
 
@@ -253,7 +247,7 @@ RSpec.describe DiscourseChat::ChatChannelsController do
       ChatChannel.create!(chatable: category2, name: "this is a name")
 
       expect {
-        put "/chat/chat_channels.json", params: { type: "category", id: category2.id, name: "Different name!" }
+        put "/chat/chat_channels.json", params: { id: category2.id, name: "Different name!" }
       }.to change { ChatChannel.where(chatable: category2).count }.by(1)
       expect(response.status).to eq(200)
     end
@@ -261,7 +255,7 @@ RSpec.describe DiscourseChat::ChatChannelsController do
     it "creates a user_chat_channel_membership when the channel is created" do
       sign_in(admin)
       expect {
-        put "/chat/chat_channels.json", params: { type: "category", id: category2.id, name: "hi hi" }
+        put "/chat/chat_channels.json", params: { id: category2.id, name: "hi hi" }
       }.to change { UserChatChannelMembership.where(user: admin).count }.by(1)
       expect(response.status).to eq(200)
     end

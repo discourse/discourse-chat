@@ -137,7 +137,8 @@ export default Component.extend({
 
     if (
       this.chatChannel &&
-      this.registeredChatChannelId !== this.chatChannel?.id
+      this.chatChannel.id &&
+      this.registeredChatChannelId !== this.chatChannel.id
     ) {
       this._cleanRegisteredChatChannelId();
       this.messageLookup = {};
@@ -149,7 +150,7 @@ export default Component.extend({
         .then((trackedChannel) => {
           this.fetchMessages(this.chatChannel);
 
-          if (!this.chatChannel?.isDraft) {
+          if (!this.chatChannel.isDraft) {
             this.set("previewing", !Boolean(trackedChannel));
             this._startLastReadRunner();
             this.loadDraftForChannel(this.chatChannel.id);

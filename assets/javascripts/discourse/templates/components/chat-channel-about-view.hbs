@@ -67,3 +67,23 @@
     </div>
   </div>
 </div>
+
+<div class="chat-form__section">
+  {{#if channel.following}}
+    {{d-button
+      action=(action "onLeaveChannel")
+      label="chat.channel_settings.leave_channel"
+      class="chat-form__btn leave-channel-btn btn-flat"
+      icon="sign-out-alt"
+      disabled=isLoading
+    }}
+  {{else}}
+    {{d-button
+      action=(action "onJoinChannel")
+      label="chat.channel_settings.join_channel"
+      class="chat-form__btn join-channel-btn btn-flat"
+      icon="sign-in-alt"
+      disabled=isLoading
+    }}
+  {{/if}}
+</div>

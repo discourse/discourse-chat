@@ -256,6 +256,7 @@ export default Component.extend({
 
     // Set activeChannel to null to avoid a moment where the chat composer is rendered twice.
     // Since the mobile-file-upload button has an ID, a JS error will break things otherwise.
+    this.set("expanded", false);
     this.set("hidden", true);
     this.chat.setActiveChannel(null);
     this.chatWindowStore.set("fullPage", true);

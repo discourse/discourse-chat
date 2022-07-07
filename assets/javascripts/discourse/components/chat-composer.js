@@ -90,10 +90,7 @@ export default Component.extend(TextareaTextManipulation, {
     this._applyEmojiAutocomplete(this._$textarea);
     this.appEvents.on("chat:focus-composer", this, "_focusTextArea");
     this.appEvents.on("chat:insert-text", this, "insertText");
-
-    if (!this.site.mobileView) {
-      this._focusTextArea();
-    }
+    this._focusTextArea();
 
     this.appEvents.on("chat:modify-selection", this, "_modifySelection");
     this.appEvents.on(
@@ -497,8 +494,6 @@ export default Component.extend(TextareaTextManipulation, {
       return;
     }
 
-    this._textarea.focus();
-
     if (opts.resizeTextarea) {
       this.resizeTextarea();
     }
@@ -506,6 +501,14 @@ export default Component.extend(TextareaTextManipulation, {
     if (opts.ensureAtEnd) {
       this._textarea.setSelectionRange(this.value.length, this.value.length);
     }
+
+    if (this.capabilities.isIpadOS || this.site.mobileView) {
+      return;
+    }
+
+    schedule("afterRender", () => {
+      this._textarea?.focus();
+    });
   },
 
   @action

@@ -112,30 +112,6 @@ discourseModule(
         assert.equal(sk.header().value(), "false");
       },
     });
-
-    componentTest("join", {
-      template: hbs`{{chat-channel-settings-view channel=channel chat=chat}}`,
-
-      beforeEach() {
-        this.set("channel", fabricate("chat-channel"));
-      },
-
-      async test(assert) {
-        assert.ok(exists(".join-channel-btn"));
-      },
-    });
-
-    componentTest("leave", {
-      template: hbs`{{chat-channel-settings-view channel=channel chat=chat}}`,
-
-      beforeEach() {
-        this.set("channel", fabricate("chat-channel", { following: true }));
-      },
-
-      async test(assert) {
-        assert.ok(exists(".leave-channel-btn"));
-      },
-    });
   }
 );
 
@@ -143,23 +119,6 @@ discourseModule(
   "Discourse Chat | Component | chat-channel-settings-view | Direct Message channel - regular user",
   function (hooks) {
     setupRenderingTest(hooks);
-
-    componentTest("join", {
-      template: hbs`{{chat-channel-settings-view channel=channel chat=chat}}`,
-
-      beforeEach() {
-        this.set(
-          "channel",
-          fabricate("chat-channel", {
-            chatable_type: CHATABLE_TYPES.directMessageChannel,
-          })
-        );
-      },
-
-      async test(assert) {
-        assert.ok(exists(".join-channel-btn"));
-      },
-    });
 
     componentTest("notification settings", {
       template: hbs`{{chat-channel-settings-view channel=channel chat=chat}}`,

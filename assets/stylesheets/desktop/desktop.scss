@@ -162,3 +162,10 @@
     }
   }
 }
+
+.has-sidebar-page.has-full-page-chat {
+  .full-page-chat {
+    grid-template-columns: 1fr;
+    overflow: inherit;
+  }
+}

@@ -7,6 +7,6 @@ class DiscourseChat::Api::CategoryChatablesController < ApplicationController
       .where(category_groups: { category_id: params[:id] })
       .pluck(:name).map! { |name| "@#{name}" }
 
-    render json: { permissions: permissions }
+    render json: permissions, root: false
   end
 end

@@ -1,4 +1,5 @@
 import Controller from "@ember/controller";
+import ChatApi from "discourse/plugins/discourse-chat/discourse/lib/chat-api";
 import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import discourseComputed from "discourse-common/utils/decorators";
 import escape from "discourse-common/lib/escape";
@@ -10,6 +11,13 @@ import { notEmpty } from "@ember/object/computed";
 import { inject as service } from "@ember/service";
 import { isBlank } from "@ember/utils";
 
+const DEFAULT_HINT = I18n.t(
+  "chat.create_channel.choose_category.default_hint",
+  {
+    link: "/categories",
+    category: "category",
+  }
+);
 
 export default Controller.extend(ModalFunctionality, {
   chat: service(),
@@ -18,10 +26,10 @@ export default Controller.extend(ModalFunctionality, {
   name: "",
   description: "",
   categorySelected: notEmpty("category"),
-  categoryHintText: null,
+  categoryPermissionsHint: null,
 
   onShow() {
-    this.set("categoryHintText", this._defaultHint());
+    this.set("categoryPermissionsHint", DEFAULT_HINT);
   },
 
   @discourseComputed("categorySelected", "name")
@@ -34,7 +42,7 @@ export default Controller.extend(ModalFunctionality, {
     let category = categoryId
       ? this.site.categories.findBy("id", categoryId)
       : null;
-    this._updateCategoryHint(category);
+    this._updatePermissionsHint(category);
     this.setProperties({
       categoryId,
       category,
@@ -73,7 +81,7 @@ export default Controller.extend(ModalFunctionality, {
       category: null,
       name: "",
       description: "",
-      categoryHintText: this._defaultHint(),
+      categoryPermissionsHint: DEFAULT_HINT,
     });
   },
 
@@ -87,26 +95,17 @@ export default Controller.extend(ModalFunctionality, {
     }
   },
 
-  _defaultHint() {
-    return I18n.t("chat.create_channel.choose_category.default_hint", {
-      link: "/categories",
-      category: "category",
-    });
-  },
-
-  _updateCategoryHint(category) {
+  _updatePermissionsHint(category) {
     if (category) {
       const fullSlug = this._buildCategorySlug(category);
 
-      return ajax(`/chat/api/category-chatables/${category.id}/permissions.json`).then((response) => {
-        const groupHints = response.permissions;
-
+      return ChatApi.categoryPermissions(category.id).then((groupHints) => {
         if (groupHints?.length > 0) {
           const translationKey =
             groupHints.length === 1 ? "hint_single" : "hint_multiple";
 
           this.set(
-            "categoryHintText",
+            "categoryPermissionsHint",
             I18n.t(`chat.create_channel.choose_category.${translationKey}`, {
               link: `/c/${escape(fullSlug)}/edit/security`,
               hint_1: groupHints[0],
@@ -114,10 +113,17 @@ export default Controller.extend(ModalFunctionality, {
               count: groupHints.length,
             })
           );
+        } else {
+          this.set(
+            "categoryPermissionsHint",
+            I18n.t("chat.create_channel.choose_category.public_category_hint", {
+              category: escape(category.name),
+            })
+          );
         }
       });
     } else {
-      this.set("categoryHintText", this._defaultHint());
+      this.set("categoryPermissionsHint", DEFAULT_HINT);
     }
   },
 });

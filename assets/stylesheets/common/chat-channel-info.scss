@@ -45,6 +45,12 @@
   width: 220px;
 }
 
+.chat-form__btn.delete-btn {
+  .d-icon {
+    color: var(--danger);
+  }
+}
+
 // Members list
 .channel-members-view-wrapper {
   display: flex;

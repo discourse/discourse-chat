@@ -198,7 +198,7 @@ export default {
                 id: "openCreateChannelModal",
                 title: I18n.t("chat.channels_list_popup.create"),
                 action: () => {
-                  showModal("create-channel-modal");
+                  showModal("create-channel");
                 },
               },
             ];

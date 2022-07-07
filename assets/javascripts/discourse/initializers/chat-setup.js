@@ -138,9 +138,11 @@ export default {
           get name() {
             return this.channel.chatable_id;
           }
+
           get route() {
             return "chat.channel";
           }
+
           get model() {
             return {
               ...this.channel,
@@ -148,9 +150,11 @@ export default {
               channelTitle: this.channel.title,
             };
           }
+
           get title() {
             return this.channel.title;
           }
+
           get text() {
             return this.channel.title;
           }
@@ -159,18 +163,35 @@ export default {
         const SidebarChatSection = class extends BaseSectionHeader {
           @tracked sectionLinks = A([]);
 
-          constructor() {
+          constructor({ sidebar }) {
             super(...arguments);
 
+            this.sidebar = sidebar;
             this.chatService = container.lookup("service:chat");
+            this.sidebar.appEvents.on(
+              "chat:refresh-channels",
+              this._refreshChannels
+            );
+          }
+
+          willDestroy() {
+            this.sidebar.appEvents.off(
+              "chat:refresh-channels",
+              this._refreshChannels
+            );
+          }
+
+          @bind
+          _refreshChannels() {
+            const newSectionLinks = [];
 
             this.chatService.getChannels().then((channels) => {
               channels.publicChannels.forEach((channel) => {
-                this.sectionLinks.pushObject(
-                  new SidebarChatSectionLink({ channel })
-                );
+                newSectionLinks.push(new SidebarChatSectionLink({ channel }));
               });
             });
+
+            this.sectionLinks = newSectionLinks;
           }
 
           get name() {

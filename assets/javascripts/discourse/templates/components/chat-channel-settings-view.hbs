@@ -62,7 +62,7 @@
   </div>
 
   {{#if (chat-guardian "can-edit-chat-channel")}}
-    {{#if channel.isCategoryChannel}}
+    {{#if autoJoinAvailable}}
       <div class="chat-form__section">
         <div class="chat-form__field">
           {{#if channel.auto_join_users}}

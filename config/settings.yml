@@ -78,3 +78,5 @@ plugins:
     min: 0
     default: 10000
     hidden: true
+    client: true
+    

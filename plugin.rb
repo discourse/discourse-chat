@@ -148,7 +148,6 @@ after_initialize do
   load File.expand_path('../lib/post_notification_handler.rb', __FILE__)
   load File.expand_path('../app/jobs/regular/auto_manage_channel_memberships.rb', __FILE__)
   load File.expand_path('../app/jobs/regular/auto_join_channel_batch.rb', __FILE__)
-  load File.expand_path('../app/jobs/regular/auto_remove_channel_batch.rb', __FILE__)
   load File.expand_path('../app/jobs/regular/process_chat_message.rb', __FILE__)
   load File.expand_path('../app/jobs/regular/chat_channel_archive.rb', __FILE__)
   load File.expand_path('../app/jobs/regular/chat_channel_delete.rb', __FILE__)
@@ -513,7 +512,6 @@ after_initialize do
 
     if category_channel
       UserChatChannelMembership.async_auto_join_for(category_channel)
-      UserChatChannelMembership.async_auto_remove_from(category_channel)
     end
   end
 

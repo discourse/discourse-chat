@@ -29,11 +29,7 @@ class UserChatChannelMembership < ActiveRecord::Base
 
   class << self
     def async_auto_join_for(channel)
-      Jobs.enqueue(:auto_manage_channel_memberships, mode: Jobs::AutoManageChannelMemberships::JOIN, chat_channel_id: channel.id)
-    end
-
-    def async_auto_remove_from(channel)
-      Jobs.enqueue(:auto_manage_channel_memberships, mode: Jobs::AutoManageChannelMemberships::REMOVE, chat_channel_id: channel.id)
+      Jobs.enqueue(:auto_manage_channel_memberships, chat_channel_id: channel.id)
     end
   end
 

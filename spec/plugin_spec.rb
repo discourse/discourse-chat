@@ -330,21 +330,6 @@ describe 'discourse-chat' do
         end
       end
 
-      describe 'revoke group permissions' do
-        before do
-          Fabricate(:category_group, category: category, group: chatters_group)
-          chatters_group.add(user)
-        end
-
-        it 'removes the user from the group' do
-          apply_permissions_and_trigger_event(category, { 'staff' => CategoryGroup.permission_types[:full] })
-
-          membership = UserChatChannelMembership.find_by(user: user, chat_channel: @channel)
-
-          expect(membership.following).to eq(false)
-        end
-      end
-
       def apply_permissions_and_trigger_event(category, permissions)
         category.update!(permissions: permissions)
       end

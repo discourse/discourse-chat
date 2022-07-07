@@ -67,7 +67,7 @@ export default Controller.extend(ModalFunctionality, {
         const chatChannel = ChatChannel.create(response.chat_channel);
         return this.chat.startTrackingChannel(chatChannel).then(() => {
           this.send("closeModal");
-          this.appEvents.trigger("chat:open-channel", chatChannel);
+          this.chat.openChannel(chatChannel);
         });
       })
       .catch((e) => {

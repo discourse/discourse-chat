@@ -1,0 +1,12 @@
+<div class="chat-channel-preview-card">
+  {{chat-channel-title channel=chatChannel}}
+  <p class="chat-channel-preview-card__description">{{or chatChannel.description "-"}}</p>
+  {{d-button
+    action=(action "onJoinChannel")
+    label="chat.channel_settings.join_channel"
+    class="chat-channel-preview-card__join-channel-button btn-primary"
+  }}
+  <p class="chat-channel-preview-card__browse-all">
+    <a href="/chat/browse">{{i18n "chat.browse_all_channels"}}</a>
+  </p>
+</div>

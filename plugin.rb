@@ -11,6 +11,7 @@ enabled_site_setting :chat_enabled
 
 register_asset 'stylesheets/common/common.scss'
 register_asset 'stylesheets/common/chat-drawer.scss'
+register_asset 'stylesheets/common/chat-channel-preview-card.scss'
 register_asset 'stylesheets/common/chat-channel-info.scss'
 register_asset 'stylesheets/mobile/chat-channel-info.scss', :mobile
 register_asset 'stylesheets/common/chat-draft-channel.scss'

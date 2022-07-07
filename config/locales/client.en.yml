@@ -23,6 +23,7 @@ en:
       cancel_reply: "Cancel reply"
       chat_channels: "Channels"
       leave: "Leave channel"
+      browse_all_channels: "Browse all channels"
       move_to_channel:
         title: "Move messages to channel"
         instructions:

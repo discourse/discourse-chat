@@ -62,15 +62,12 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
   end
 
   def create
-    params.require([:type, :id, :name])
+    params.require([:id, :name])
     guardian.ensure_can_create_chat_channel!
-    raise Discourse::InvalidParameters unless params[:type].downcase == 'category'
     raise Discourse::InvalidParameters.new(:name) if params[:name].length > SiteSetting.max_topic_title_length
 
-    chatable_type = 'Category'
-
     exists = ChatChannel.exists?(
-      chatable_type: chatable_type,
+      chatable_type: 'Category',
       chatable_id: params[:id],
       name: params[:name]
     )
@@ -78,7 +75,7 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
       raise Discourse::InvalidParameters.new(I18n.t("chat.errors.channel_exists_for_category"))
     end
 
-    chatable = chatable_type.constantize.find_by(id: params[:id])
+    chatable = Category.find_by(id: params[:id])
     raise Discourse::NotFound unless chatable
 
     chat_channel = ChatChannel.create!(chatable: chatable, name: params[:name], description: params[:description], user_count: 1)

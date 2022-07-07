@@ -1,0 +1,32 @@
+.chat-channel-preview-card {
+  margin: 1em auto 3em auto;
+  width: 500px;
+  padding: 2rem 1rem;
+  background-color: var(--primary-50);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  &__description {
+    color: var(--primary-600);
+  }
+
+  .chat-channel-title__name {
+    font-size: 1.25rem;
+  }
+
+  &__join-channel-button {
+    font-size: 1.25rem;
+    border: 1px solid transparent;
+    border-radius: 0.25rem;
+    line-height: normal;
+    box-sizing: border-box;
+    padding: 0.5em 0.65em;
+    font-weight: normal;
+    cursor: pointer;
+  }
+
+  &__browse-all {
+    font-size: .875rem;
+  }
+}

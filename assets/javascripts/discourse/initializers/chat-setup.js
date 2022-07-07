@@ -50,8 +50,9 @@ export default {
       api.decorateCookedElement(
         (elem) => {
           const currentUser = getOwner(this).lookup("current-user:main");
-          const currentUserTimezone =
-            currentUser?.resolvedTimezone(currentUser);
+          const currentUserTimezone = currentUser?.resolvedTimezone(
+            currentUser
+          );
           const chatTranscriptElements = elem.querySelectorAll(
             ".discourse-chat-transcript"
           );
@@ -128,36 +129,45 @@ export default {
         });
       });
       api.addSidebarSection((BaseSectionHeader, BaseSectionLink) => {
-        return class extends BaseSectionHeader {
+        const SidebarChatSectionLink = class extends BaseSectionLink {
+          constructor({ channel }) {
+            super(...arguments);
+            this.channel = channel;
+          }
+
+          get name() {
+            return this.channel.chatable_id;
+          }
+          get route() {
+            return "chat.channel";
+          }
+          get model() {
+            return {
+              ...this.channel,
+              channelId: this.channel.id,
+              channelTitle: this.channel.title,
+            };
+          }
+          get title() {
+            return this.channel.title;
+          }
+          get text() {
+            return this.channel.title;
+          }
+        };
+
+        const SidebarChatSection = class extends BaseSectionHeader {
           @tracked sectionLinks = A([]);
 
           constructor() {
             super(...arguments);
+
             this.chatService = container.lookup("service:chat");
+
             this.chatService.getChannels().then((channels) => {
               channels.publicChannels.forEach((channel) => {
                 this.sectionLinks.pushObject(
-                  new (class extends BaseSectionLink {
-                    get name() {
-                      return channel.chatable_id;
-                    }
-                    get route() {
-                      return "chat.channel";
-                    }
-                    get model() {
-                      return {
-                        ...channel,
-                        channelId: channel.id,
-                        channelTitle: channel.title,
-                      };
-                    }
-                    get title() {
-                      return channel.title;
-                    }
-                    get text() {
-                      return channel.title;
-                    }
-                  })()
+                  new SidebarChatSectionLink({ channel })
                 );
               });
             });
@@ -202,6 +212,8 @@ export default {
             return this.sectionLinks;
           }
         };
+
+        return SidebarChatSection;
       });
     });
   },

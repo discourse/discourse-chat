@@ -242,6 +242,11 @@ export default Component.extend({
   openInFullPage(e) {
     const channel = this.chat.activeChannel;
 
+    this.set("expanded", false);
+    this.set("hidden", true);
+    this.chat.setActiveChannel(null);
+    this.chatWindowStore.set("fullPage", true);
+
     if (!channel) {
       return this.router.transitionTo("chat");
     }
@@ -254,12 +259,6 @@ export default Component.extend({
       return false;
     }
 
-    // Set activeChannel to null to avoid a moment where the chat composer is rendered twice.
-    // Since the mobile-file-upload button has an ID, a JS error will break things otherwise.
-    this.set("expanded", false);
-    this.set("hidden", true);
-    this.chat.setActiveChannel(null);
-    this.chatWindowStore.set("fullPage", true);
     this.chat.openChannel(channel);
   },
 
@@ -273,7 +272,7 @@ export default Component.extend({
   close() {
     this.setProperties({
       hidden: true,
-      expanded: true,
+      expanded: false,
     });
     this.chat.setActiveChannel(null);
     this.appEvents.trigger("chat:float-toggled", this.hidden);

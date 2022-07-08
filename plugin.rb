@@ -46,6 +46,7 @@ register_asset 'stylesheets/common/chat-channel-selector-modal.scss'
 register_asset 'stylesheets/mobile/mobile.scss', :mobile
 register_asset 'stylesheets/desktop/desktop.scss', :desktop
 register_asset 'stylesheets/sidebar-extensions.scss'
+register_asset 'stylesheets/desktop/sidebar-extensions.scss', :desktop
 register_asset 'stylesheets/common/chat-message-separator.scss'
 register_asset 'stylesheets/common/chat-onebox.scss'
 

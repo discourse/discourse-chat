@@ -134,3 +134,12 @@
     }
   }
 }
+
+.has-sidebar-page.chat-enabled {
+  .sidebar-container .channels-list {
+    padding-bottom: 0;
+    .chat-channel-divider {
+      padding-right: 0;
+    }
+  }
+}

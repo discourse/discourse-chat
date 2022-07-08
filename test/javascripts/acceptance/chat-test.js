@@ -118,6 +118,10 @@ const baseChatPretenders = (server, helper) => {
   server.post("/uploads/lookup-urls", () => {
     return helper.response([]);
   });
+
+  server.get("/chat/api/category-chatables/:categoryId/permissions.json", () =>
+    helper.response([])
+  );
 };
 
 function siteChannelPretender(

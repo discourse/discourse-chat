@@ -2,6 +2,7 @@ import { skip, test } from "qunit";
 import {
   click,
   currentURL,
+  settled,
   tap,
   triggerEvent,
   visit,
@@ -165,6 +166,8 @@ acceptance("Discourse Chat | quoting on mobile", async function (needs) {
 
     assert.ok(firstMessage.classList.contains("selecting-messages"));
     await click("#chat-quote-btn");
+    await settled();
+
     assert.equal(
       currentURL(),
       "/c/uncategorized/1",

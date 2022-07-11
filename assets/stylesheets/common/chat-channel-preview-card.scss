@@ -11,11 +11,11 @@
   }
 
   .chat-channel-title__name {
-    font-size: 1.25rem;
+    font-size: var(--font-up-2);
   }
 
-  &__join-channel-button {
-    font-size: 1.25rem;
+  &__join-channel-btn {
+    font-size: var(--font-up-2);
     border: 1px solid transparent;
     border-radius: 0.25rem;
     line-height: normal;
@@ -26,6 +26,6 @@
   }
 
   &__browse-all {
-    font-size: 0.875rem;
+    font-size: var(--font-down-1);
   }
 }

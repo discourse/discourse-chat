@@ -1,4 +1,5 @@
 import Component from "@ember/component";
+import { isEmpty } from "@ember/utils";
 import ChatApi from "discourse/plugins/discourse-chat/discourse/lib/chat-api";
 import { action, computed } from "@ember/object";
 import { inject as service } from "@ember/service";
@@ -26,5 +27,9 @@ export default class ChatChannelPreviewCard extends Component {
           .then(() => this.chat.openChannel(this.chatChannel));
       })
       .catch(popupAjaxError);
+  }
+
+  get hasDescription() {
+    return !isEmpty(this.chatChannel.description);
   }
 }

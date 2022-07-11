@@ -99,10 +99,7 @@ export default class ChatChannelSettingsView extends Component {
     );
   }
 
-  @computed(
-    "siteSettings.max_chat_auto_joined_users",
-    "channel.isCategoryChannel"
-  )
+  @computed("channel.isCategoryChannel")
   get autoJoinAvailable() {
     return (
       this.siteSettings.max_chat_auto_joined_users > 0 &&

@@ -131,4 +131,14 @@ describe Jobs::AutoJoinChannelBatch do
     expect(new_membership.following).to eq(true)
     expect(new_membership.automatic?).to eq(true)
   end
+
+  it 'skips anonymous users' do
+    user_2 = Fabricate(:anonymous)
+    chatters_group.add(user_2)
+
+    subject.execute(chat_channel_id: @channel.id, starts_at: @user.id, ends_at: user_2.id)
+
+    new_membership = UserChatChannelMembership.find_by(user: user_2, chat_channel: @channel)
+    expect(new_membership).to be_nil
+  end
 end

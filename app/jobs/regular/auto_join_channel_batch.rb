@@ -34,6 +34,7 @@ module Jobs
         LEFT OUTER JOIN user_chat_channel_memberships uccm ON
           uccm.chat_channel_id = :chat_channel_id AND uccm.user_id = users.id
         WHERE users.id >= :start and users.id <= :end AND
+        NOT EXISTS(SELECT 1 FROM anonymous_users a WHERE a.user_id = users.id) AND
         uo.chat_enabled AND
         (uccm.id IS NULL OR uccm.following IS NOT TRUE) AND
         (suspended_till IS NULL OR suspended_till <= :suspended_until) AND

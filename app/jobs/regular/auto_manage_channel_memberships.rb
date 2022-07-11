@@ -34,6 +34,7 @@ module Jobs
       category = channel.chatable
 
       users = User
+        .human_users
         .distinct
         .select(:id, 'users.id AS query_user_id')
         .where('last_seen_at IS NULL OR last_seen_at > ?', 3.months.ago)

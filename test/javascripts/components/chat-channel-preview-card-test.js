@@ -6,7 +6,7 @@ import {
 } from "discourse/tests/helpers/qunit-helpers";
 import hbs from "htmlbars-inline-precompile";
 import fabricate from "../helpers/fabricators";
-import { render } from "@ember/test-helpers";
+import { render, settled } from "@ember/test-helpers";
 import { test } from "qunit";
 
 discourseModule(
@@ -53,7 +53,7 @@ discourseModule(
       );
 
       this.channel.set("description", null);
-      await render(hbs`{{chat-channel-preview-card channel=channel}}`);
+      await settled();
 
       assert.notOk(
         exists(".chat-channel-preview-card__description"),

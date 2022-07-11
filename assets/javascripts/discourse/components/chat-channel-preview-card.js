@@ -36,7 +36,7 @@ export default class ChatChannelPreviewCard extends Component {
     return !isEmpty(this.channel.description);
   }
 
-  @computed("channel.description")
+  @computed("hasDescription")
   get cardClasses() {
     return `chat-channel-preview-card ${
       !this.hasDescription ? "chat-channel-preview-card--no-description" : ""

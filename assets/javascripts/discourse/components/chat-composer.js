@@ -39,7 +39,6 @@ export default Component.extend(TextareaTextManipulation, {
   editingMessage: null,
   fullPage: false,
   onValueChange: null,
-  previewing: false,
   timer: null,
   value: "",
   inProgressUploads: null,
@@ -529,12 +528,8 @@ export default Component.extend(TextareaTextManipulation, {
     );
   },
 
-  @discourseComputed(
-    "previewing",
-    "userSilenced",
-    "chatChannel.{chatable.users.[],id}"
-  )
-  placeholder(previewing, userSilenced, chatChannel) {
+  @discourseComputed("userSilenced", "chatChannel.{chatable.users.[],id}")
+  placeholder(userSilenced, chatChannel) {
     if (!chatChannel.canModifyMessages(this.currentUser)) {
       return I18n.t("chat.placeholder_new_message_disallowed", {
         status: channelStatusName(chatChannel.status).toLowerCase(),
@@ -549,9 +544,7 @@ export default Component.extend(TextareaTextManipulation, {
       });
     }
 
-    if (previewing) {
-      return I18n.t("chat.placeholder_previewing");
-    } else if (userSilenced) {
+    if (userSilenced) {
       return I18n.t("chat.placeholder_silenced");
     } else {
       return this.messageRecipient(chatChannel);

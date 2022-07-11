@@ -4,54 +4,56 @@
   class="channels-list"
   {{on "scroll" (action "storeScrollPosition")}}
 >
-  <div class="chat-channel-divider">
-    {{#if inSidebar}}
-      <span
-        class="title-caret"
-        id="public-channels-caret"
-        role="button"
-        title="toggle nav list"
-        {{action "toggleChannelSection" "public-channels"}}
-        data-toggleable="public-channels"
-      >
-        {{d-icon "angle-up"}}
-      </span>
-    {{/if}}
-    <span class="channel-title">{{i18n "chat.chat_channels"}}</span>
-    {{#if currentUser.staff}}
-      {{dropdown-select-box
-        options=(hash icon="cog" placementStrategy="absolute")
-        content=channelsActions
-        onChange=(action "handleChannelAction")
-        class="edit-channels-dropdown"
-      }}
-    {{else}}
-      {{d-button
-        action=(action "browseChannels")
-        icon="pencil-alt"
-        class="btn-flat edit-channel-membership-btn title-action"
-      }}
-    {{/if}}
-  </div>
-
-  <div id="public-channels" class={{publicChannelClasses}}>
-    {{#if publicChannelsEmpty}}
-      <div class="public-channel-empty-message">
-        <span class="channel-title">{{i18n "chat.no_public_channels"}}</span>
-        {{#link-to "chat.browse"}}
-          {{i18n "chat.click_to_join"}}
-        {{/link-to}}
-      </div>
-    {{else}}
-      {{#each publicChannels as |channel|}}
-        {{chat-channel-row
-          channel=channel
-          switchChannel=onSelect
-          options=(hash settingsButton=true)
+  {{#unless hidePublicChannels}}
+    <div class="chat-channel-divider">
+      {{#if inSidebar}}
+        <span
+          class="title-caret"
+          id="public-channels-caret"
+          role="button"
+          title="toggle nav list"
+          {{action "toggleChannelSection" "public-channels"}}
+          data-toggleable="public-channels"
+        >
+          {{d-icon "angle-up"}}
+        </span>
+      {{/if}}
+      <span class="channel-title">{{i18n "chat.chat_channels"}}</span>
+      {{#if currentUser.staff}}
+        {{dropdown-select-box
+          options=(hash icon="cog" placementStrategy="absolute")
+          content=channelsActions
+          onChange=(action "handleChannelAction")
+          class="edit-channels-dropdown"
         }}
-      {{/each}}
-    {{/if}}
-  </div>
+      {{else}}
+        {{d-button
+          action=(action "browseChannels")
+          icon="pencil-alt"
+          class="btn-flat edit-channel-membership-btn title-action"
+        }}
+      {{/if}}
+    </div>
+
+    <div id="public-channels" class={{publicChannelClasses}}>
+      {{#if publicChannelsEmpty}}
+        <div class="public-channel-empty-message">
+          <span class="channel-title">{{i18n "chat.no_public_channels"}}</span>
+          {{#link-to "chat.browse"}}
+            {{i18n "chat.click_to_join"}}
+          {{/link-to}}
+        </div>
+      {{else}}
+        {{#each publicChannels as |channel|}}
+          {{chat-channel-row
+            channel=channel
+            switchChannel=onSelect
+            options=(hash settingsButton=true)
+          }}
+        {{/each}}
+      {{/if}}
+    </div>
+  {{/unless}}
 
   {{plugin-outlet
     name="below-public-chat-channels"

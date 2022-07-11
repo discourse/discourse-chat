@@ -50,9 +50,8 @@ export default {
       api.decorateCookedElement(
         (elem) => {
           const currentUser = getOwner(this).lookup("current-user:main");
-          const currentUserTimezone = currentUser?.resolvedTimezone(
-            currentUser
-          );
+          const currentUserTimezone =
+            currentUser?.resolvedTimezone(currentUser);
           const chatTranscriptElements = elem.querySelectorAll(
             ".discourse-chat-transcript"
           );
@@ -128,114 +127,156 @@ export default {
           }
         });
       });
-      api.addSidebarSection((BaseSectionHeader, BaseSectionLink) => {
-        const SidebarChatSectionLink = class extends BaseSectionLink {
-          constructor({ channel }) {
-            super(...arguments);
-            this.channel = channel;
-          }
+      api.addSidebarSection(
+        (BaseCustomSidebarSection, BaseCustomSidebarSectionLink) => {
+          const SidebarChatSectionLink = class extends BaseCustomSidebarSectionLink {
+            constructor({ channel }) {
+              super(...arguments);
+              this.channel = channel;
+            }
 
-          get name() {
-            return this.channel.chatable_id;
-          }
+            get name() {
+              return this.channel.chatable_id;
+            }
 
-          get route() {
-            return "chat.channel";
-          }
+            get route() {
+              return "chat.channel";
+            }
 
-          get model() {
-            return {
-              ...this.channel,
-              channelId: this.channel.id,
-              channelTitle: this.channel.title,
-            };
-          }
+            get model() {
+              return {
+                chatChannel: this.channel,
+                channelId: this.channel.id,
+                channelTitle: this.channel.chatable.slug,
+              };
+            }
 
-          get title() {
-            return this.channel.title;
-          }
+            get title() {
+              return this.channel.title;
+            }
 
-          get text() {
-            return this.channel.title;
-          }
-        };
+            get text() {
+              return this.channel.title;
+            }
 
-        const SidebarChatSection = class extends BaseSectionHeader {
-          @tracked sectionLinks = A([]);
+            get prefixIcon() {
+              return "hashtag";
+            }
 
-          constructor({ sidebar }) {
-            super(...arguments);
+            get prefixIconColor() {
+              return this.channel.chatable.color;
+            }
 
-            this.sidebar = sidebar;
-            this.chatService = container.lookup("service:chat");
-            this.sidebar.appEvents.on(
-              "chat:refresh-channels",
-              this._refreshChannels
-            );
-          }
+            get prefixIconBadge() {
+              return this.channel.chatable.read_restricted && "lock";
+            }
 
-          willDestroy() {
-            this.sidebar.appEvents.off(
-              "chat:refresh-channels",
-              this._refreshChannels
-            );
-          }
+            get suffixIcon() {
+              return this.channel.unread_count > 0 && "circle";
+            }
 
-          @bind
-          _refreshChannels() {
-            const newSectionLinks = [];
+            get suffixCssClass() {
+              return this.channel.unread_mentions > 0 ? "urgent" : "unread";
+            }
+          };
 
-            this.chatService.getChannels().then((channels) => {
-              channels.publicChannels.forEach((channel) => {
-                newSectionLinks.push(new SidebarChatSectionLink({ channel }));
+          const SidebarChatSection = class extends BaseCustomSidebarSection {
+            @tracked sectionLinks = A([]);
+
+            constructor({ sidebar }) {
+              super(...arguments);
+
+              this.sidebar = sidebar;
+              this.chatService = container.lookup("service:chat");
+              this.sidebar.appEvents.on(
+                "chat:refresh-channels",
+                this._refreshChannels
+              );
+              this.sidebar.appEvents.on(
+                "chat:navigated-to-full-page",
+                this._refreshChannels
+              );
+              this.currentUser = getOwner(this).lookup("current-user:main");
+            }
+
+            willDestroy() {
+              this.sidebar.appEvents.off(
+                "chat:refresh-channels",
+                this._refreshChannels
+              );
+              this.sidebar.appEvents.off(
+                "chat:navigated-to-full-page",
+                this._refreshChannels
+              );
+            }
+
+            @bind
+            _refreshChannels() {
+              const newSectionLinks = [];
+              this.chatService.getChannels().then((channels) => {
+                channels.publicChannels.forEach((channel) => {
+                  const trackingState =
+                    this.currentUser.chat_channel_tracking_state[channel.id];
+                  if (channel === this.chatService.activeChannel) {
+                    channel.unread_count = 0;
+                    channel.unread_mentions = 0;
+                  } else {
+                    channel.unread_count = trackingState.unread_count;
+                    channel.unread_mentions = trackingState.unread_mentions;
+                  }
+                  newSectionLinks.push(new SidebarChatSectionLink({ channel }));
+                });
               });
-            });
+              this.sectionLinks = newSectionLinks;
+            }
 
-            this.sectionLinks = newSectionLinks;
-          }
+            get name() {
+              return I18n.t("chat.chat_channels");
+            }
 
-          get name() {
-            return I18n.t("chat.chat_channels");
-          }
+            get title() {
+              return I18n.t("chat.chat_channels");
+            }
 
-          get title() {
-            return I18n.t("chat.chat_channels");
-          }
+            get text() {
+              return I18n.t("chat.chat_channels");
+            }
 
-          get text() {
-            return I18n.t("chat.chat_channels");
-          }
-
-          get actions() {
-            return [
-              {
-                id: "browseChannels",
-                title: I18n.t("chat.channels_list_popup.browse"),
-                action: () => {
-                  this.chatService.router.transitionTo("chat.browse");
+            get actions() {
+              const currentUser = getOwner(this).lookup("current-user:main");
+              const actions = [
+                {
+                  id: "browseChannels",
+                  title: I18n.t("chat.channels_list_popup.browse"),
+                  action: () => {
+                    this.chatService.router.transitionTo("chat.browse");
+                  },
                 },
-              },
-              {
-                id: "openCreateChannelModal",
-                title: I18n.t("chat.channels_list_popup.create"),
-                action: () => {
-                  showModal("create-channel");
-                },
-              },
-            ];
-          }
+              ];
+              if (currentUser.staff) {
+                actions.push({
+                  id: "openCreateChannelModal",
+                  title: I18n.t("chat.channels_list_popup.create"),
+                  action: () => {
+                    showModal("create-channel");
+                  },
+                });
+              }
+              return actions;
+            }
 
-          get actionsIcon() {
-            return "cog";
-          }
+            get actionsIcon() {
+              return "cog";
+            }
 
-          get links() {
-            return this.sectionLinks;
-          }
-        };
+            get links() {
+              return this.sectionLinks;
+            }
+          };
 
-        return SidebarChatSection;
-      });
+          return SidebarChatSection;
+        }
+      );
     });
   },
 

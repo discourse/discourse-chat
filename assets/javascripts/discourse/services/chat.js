@@ -629,6 +629,7 @@ export default Service.extend({
         dmChatChannel.set("last_message_sent_at", new Date());
         this.reSortDirectMessageChannels();
       }
+      this.appEvents.trigger("chat:refresh-channels");
     });
   },
 
@@ -642,6 +643,7 @@ export default Service.extend({
           (trackingState.unread_mentions || 0) + 1
         );
         this.userChatChannelTrackingStateChanged();
+        this.appEvents.trigger("chat:refresh-channels");
       }
     });
   },
@@ -712,6 +714,7 @@ export default Service.extend({
           trackingState.set("unread_count", 0);
           trackingState.set("unread_mentions", 0);
           this.userChatChannelTrackingStateChanged();
+          this.appEvents.trigger("chat:refresh-channels");
         }
       }
     );

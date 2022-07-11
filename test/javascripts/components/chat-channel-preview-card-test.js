@@ -6,9 +6,8 @@ import {
 } from "discourse/tests/helpers/qunit-helpers";
 import hbs from "htmlbars-inline-precompile";
 import fabricate from "../helpers/fabricators";
-import { render, settled } from "@ember/test-helpers";
+import { render } from "@ember/test-helpers";
 import { test } from "qunit";
-import I18n from "I18n";
 
 discourseModule(
   "Discourse Chat | Component | chat-channel-preview-card",

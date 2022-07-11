@@ -14,9 +14,6 @@ export default class ChatChannelPreviewCard extends Component {
 
   @action
   onJoinChannel() {
-    this.set("isJoiningChannel", true);
-    this.set("isLoading", true);
-
     return ChatApi.followChatChannel(this.channel.id)
       .then((membership) => {
         this.channel.setProperties({

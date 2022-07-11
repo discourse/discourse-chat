@@ -19,8 +19,13 @@ export default class ChatChannelAboutView extends Component {
 
     return ChatApi.followChatChannel(this.channel.id)
       .then((membership) => {
-        this.channel.set("following", true);
-        this.channel.set("memberships_count", membership.user_count);
+        this.channel.setProperties({
+          following: true,
+          muted: membership.muted,
+          desktop_notification_level: membership.desktop_notification_level,
+          mobile_notification_level: membership.mobile_notification_level,
+          memberships_count: membership.user_count,
+        });
 
         return this.chat
           .forceRefreshChannels()

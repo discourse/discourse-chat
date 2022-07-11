@@ -6,8 +6,15 @@
   flex-direction: column;
   align-items: center;
 
+  &--no-description {
+    .chat-channel-title {
+      margin-bottom: 1.5rem;
+    }
+  }
+
   &__description {
     color: var(--primary-600);
+    text-align: center;
   }
 
   .chat-channel-title__name {

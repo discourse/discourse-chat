@@ -33,7 +33,15 @@ export default class ChatChannelPreviewCard extends Component {
       .catch(popupAjaxError);
   }
 
+  @computed("channel.description")
   get hasDescription() {
     return !isEmpty(this.channel.description);
+  }
+
+  @computed("channel.description")
+  get cardClasses() {
+    return `chat-channel-preview-card ${
+      !this.hasDescription ? "chat-channel-preview-card--no-description" : ""
+    }`.trim();
   }
 }

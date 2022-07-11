@@ -60,7 +60,7 @@ discourseModule(
         "no line is left for the channel description if there is none"
       );
 
-      assert.notOk(
+      assert.ok(
         exists(".chat-channel-preview-card--no-description"),
         "it adds a modifier class for styling"
       );

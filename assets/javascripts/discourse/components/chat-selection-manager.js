@@ -117,7 +117,7 @@ export default class AdminCustomizeColorsShowController extends Component {
     if (this.site.isMobileDevice) {
       // go to the relevant chatable (e.g. category) and open the
       // composer to insert text
-      this._goToChatableUrl().then(() => {
+      return this._goToChatableUrl().then(() => {
         composer.focusComposer({
           fallbackToNewTopic: true,
           insertText: quoteMarkdown,

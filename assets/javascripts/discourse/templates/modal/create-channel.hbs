@@ -8,15 +8,11 @@
     options=(hash none="chat.create_channel.choose_category.none")
   }}
 
-  <div class="create-channel-hint">
-    {{html-safe
-      (i18n
-        "chat.create_channel.choose_category.hint"
-        link=categoryHint.link
-        category=categoryHint.category
-      )
-    }}
-  </div>
+  {{#if categoryPermissionsHint}}
+    <div class="create-channel-hint">
+      {{html-safe categoryPermissionsHint}}
+    </div>
+  {{/if}}
 
   <label class="create-channel-label">
     {{i18n "chat.create_channel.name"}}

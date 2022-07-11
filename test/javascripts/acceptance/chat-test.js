@@ -118,6 +118,10 @@ const baseChatPretenders = (server, helper) => {
   server.post("/uploads/lookup-urls", () => {
     return helper.response([]);
   });
+
+  server.get("/chat/api/category-chatables/:categoryId/permissions.json", () =>
+    helper.response([])
+  );
 };
 
 function siteChannelPretender(
@@ -1304,14 +1308,6 @@ acceptance(
       server.get("/chat/chat_channels/:chatChannelId", () => {
         return helper.response(siteChannel);
       });
-      server.get("/chat/chat_channels/70", () => {
-        return helper.response({
-          chat_channel: {
-            id: 70,
-            title: "preview-me",
-          },
-        });
-      });
       server.put("/chat/chat_channels", () => {
         return helper.response({
           chat_channel: {
@@ -1328,15 +1324,6 @@ acceptance(
           },
         });
       });
-    });
-
-    test("Composer placeholder is specific when previewing", async function (assert) {
-      await visit("/chat/channel/70/preview-me");
-
-      assert.equal(
-        query(".chat-composer-input").placeholder,
-        I18n.t("chat.placeholder_previewing")
-      );
     });
 
     test("Create channel modal", async function (assert) {

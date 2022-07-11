@@ -4,9 +4,9 @@
   </div>
 {{else}}
   <div class="full-page-chat">
-    {{#unless site.mobileView}}
+    {{#if (and (not currentUser.experimental_sidebar_enabled) (not site.mobileView))}}
       {{channels-list onSelect=(action "switchChannel")}}
-    {{/unless}}
+    {{/if}}
 
     {{outlet}}
   </div>

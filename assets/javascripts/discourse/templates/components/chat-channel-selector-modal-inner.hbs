@@ -8,8 +8,8 @@
       {{input
         id="chat-channel-selector-input"
         type="text"
-        onChange=(action "search")
         value=filter
+        input=(action "search" value="target.value")
         autocomplete="off"
       }}
     </div>

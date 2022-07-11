@@ -33,37 +33,59 @@
   </div>
 </div>
 
-<div class="chat-form__section">
-  <div class="chat-form__field">
-    <label class="chat-form__label">
-      <span>{{i18n "chat.about_view.description"}}</span>
-      {{#if (chat-guardian "can-edit-chat-channel")}}
-        <div class="chat-form__label-actions">
-          {{d-button
-            class="edit-description-btn btn-flat"
-            label=(if
-              channel.description.length
-              "chat.channel_settings.edit"
-              "chat.channel_settings.add"
-            )
-            action=(if
-              onEditChatChannelDescription onEditChatChannelDescription
-            )
-          }}
-        </div>
-      {{/if}}
-    </label>
-
-    <div class="chat-form__control">
-      <div class="channel-info-about-view__description">
-        {{#if channel.description.length}}
-          {{channel.description}}
-        {{else}}
-          <div class="channel-info-about-view__description__helper-text">
-            {{i18n "chat.channel_edit_description_modal.description"}}
+{{#if (or (chat-guardian "can-edit-chat-channel") channel.description.length)}}
+  <div class="chat-form__section">
+    <div class="chat-form__field">
+      <label class="chat-form__label">
+        <span>{{i18n "chat.about_view.description"}}</span>
+        {{#if (chat-guardian "can-edit-chat-channel")}}
+          <div class="chat-form__label-actions">
+            {{d-button
+              class="edit-description-btn btn-flat"
+              label=(if
+                channel.description.length
+                "chat.channel_settings.edit"
+                "chat.channel_settings.add"
+              )
+              action=(if
+                onEditChatChannelDescription onEditChatChannelDescription
+              )
+            }}
           </div>
         {{/if}}
+      </label>
+
+      <div class="chat-form__control">
+        <div class="channel-info-about-view__description">
+          {{#if channel.description.length}}
+            {{channel.description}}
+          {{else}}
+            <div class="channel-info-about-view__description__helper-text">
+              {{i18n "chat.channel_edit_description_modal.description"}}
+            </div>
+          {{/if}}
+        </div>
       </div>
     </div>
   </div>
+{{/if}}
+
+<div class="chat-form__section">
+  {{#if channel.following}}
+    {{d-button
+      action=(action "onLeaveChannel")
+      label="chat.channel_settings.leave_channel"
+      class="chat-form__btn leave-channel-btn btn-flat"
+      icon="sign-out-alt"
+      disabled=isLoading
+    }}
+  {{else}}
+    {{d-button
+      action=(action "onJoinChannel")
+      label="chat.channel_settings.join_channel"
+      class="chat-form__btn join-channel-btn btn-flat"
+      icon="sign-in-alt"
+      disabled=isLoading
+    }}
+  {{/if}}
 </div>

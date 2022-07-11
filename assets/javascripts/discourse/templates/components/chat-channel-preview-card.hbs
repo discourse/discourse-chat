@@ -1,12 +1,18 @@
-<div class="chat-channel-preview-card">
-  {{chat-channel-title channel=chatChannel}}
-  <p class="chat-channel-preview-card__description">{{or chatChannel.description "-"}}</p>
+<div class={{cardClasses}}>
+  {{chat-channel-title channel=channel}}
+  {{#if hasDescription}}
+    <p
+      class="chat-channel-preview-card__description"
+    >{{channel.description}}</p>
+  {{/if}}
   {{d-button
     action=(action "onJoinChannel")
     label="chat.channel_settings.join_channel"
-    class="chat-channel-preview-card__join-channel-button btn-primary"
+    class="chat-channel-preview-card__join-channel-btn btn-primary"
   }}
   <p class="chat-channel-preview-card__browse-all">
-    <a href="/chat/browse">{{i18n "chat.browse_all_channels"}}</a>
+    <LinkTo @route="chat.browse">
+      {{i18n "chat.browse_all_channels"}}
+    </LinkTo>
   </p>
 </div>

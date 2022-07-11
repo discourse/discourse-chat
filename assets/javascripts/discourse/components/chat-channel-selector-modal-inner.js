@@ -6,6 +6,8 @@ import { bind } from "discourse-common/utils/decorators";
 import { schedule } from "@ember/runloop";
 import { inject as service } from "@ember/service";
 import { popupAjaxError } from "discourse/lib/ajax-error";
+import discourseDebounce from "discourse-common/lib/debounce";
+import { INPUT_DELAY } from "discourse-common/config/environment";
 
 export default Component.extend({
   chat: service(),
@@ -114,9 +116,9 @@ export default Component.extend({
   @action
   search() {
     if (this.filter.trim()) {
-      this.fetchChannelsFromServer();
+      discourseDebounce(this.fetchChannelsFromServer, INPUT_DELAY, this);
     } else {
-      this.getInitialChannels();
+      discourseDebounce(this.getInitialChannels, INPUT_DELAY, this);
     }
   },
 

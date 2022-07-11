@@ -1,5 +1,5 @@
 {{#if (and fullPage includeHeader)}}
-  <div class="chat-full-page-header {{if previewing "previewing"}}">
+  <div class="chat-full-page-header {{if previewing 'previewing'}}">
     <div class="chat-channel-header-details">
       {{#if site.mobileView}}
         <div class="chat-full-page-header__left-actions">
@@ -102,7 +102,7 @@
     }}
   {{else}}
     {{#if previewing}}
-      {{chat-channel-preview-card chatChannel=chatChannel details=this.details}}
+      {{chat-channel-preview-card channel=chatChannel}}
     {{else}}
       {{chat-composer
         draft=draft
@@ -117,7 +117,6 @@
         setInReplyToMsg=this.setInReplyToMsg
         onEditLastMessageRequested=this.editLastMessageRequested
         onValueChange=(action "composerValueChanged")
-        previewing=previewing
         fullPage=fullPage
         chatChannel=chatChannel
       }}

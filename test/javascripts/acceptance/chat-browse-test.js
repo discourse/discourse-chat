@@ -116,20 +116,6 @@ acceptance("Discourse Chat - chat browsing", function (needs) {
       exists(".chat-channel-preview-card"),
       "it shows the preview card for the channel"
     );
-    assert.equal(
-      query(".chat-channel-preview-card__description").innerText,
-      "Important stuff is announced here.",
-      "the channel description is shown"
-    );
-    assert.ok(
-      exists(".chat-channel-preview-card__join-channel-btn"),
-      "it shows the join button"
-    );
-    assert.equal(
-      query(".chat-channel-title__name").innerText,
-      "announcements",
-      "it shows the channel title"
-    );
 
     await click(".chat-channel-preview-card__join-channel-btn");
     assert.ok(

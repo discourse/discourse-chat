@@ -1,7 +1,7 @@
 <div class="chat-channel-preview-card">
-  {{chat-channel-title channel=chatChannel}}
+  {{chat-channel-title channel=channel}}
   {{#if hasDescription}}
-    <p class="chat-channel-preview-card__description">{{chatChannel.description}}</p>
+    <p class="chat-channel-preview-card__description">{{channel.description}}</p>
   {{/if}}
   {{d-button
     action=(action "onJoinChannel")

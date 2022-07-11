@@ -1,6 +1,8 @@
+import { generateChatView } from "discourse/plugins/discourse-chat/chat-fixtures";
 import {
   acceptance,
   exists,
+  loggedInUser,
   query,
 } from "discourse/tests/helpers/qunit-helpers";
 import { click, currentURL, fillIn, visit } from "@ember/test-helpers";
@@ -30,9 +32,26 @@ acceptance("Discourse Chat - chat browsing", function (needs) {
           chatable_type: "Category",
           chatable: {},
           following: true,
+          title: "announcements",
         },
       ]);
     });
+
+    server.get("/chat/chat_channels/1", () => {
+      return helper.response({
+        chat_channel: {
+          id: 1,
+          title: "announcements",
+          description: "Important stuff is announced here.",
+          chatable_id: 1,
+          chatable_type: "Category",
+        },
+      });
+    });
+
+    server.get("/chat/:chatChannelId/messages.json", () =>
+      helper.response(generateChatView(loggedInUser()))
+    );
 
     server.get("/chat/chat_channels.json", () =>
       helper.response({
@@ -75,6 +94,31 @@ acceptance("Discourse Chat - chat browsing", function (needs) {
     assert.ok(
       settingsRow.querySelector(".chat-channel-follow"),
       "Follow button is present"
+    );
+  });
+
+  test("Previewing a channel", async function (assert) {
+    await visit("/chat/browse");
+    await click(".chat-channel-unfollow");
+    await click(".chat-channel-preview");
+
+    assert.ok(
+      exists(".chat-channel-preview-card"),
+      "it shows the preview card for the channel"
+    );
+    assert.equal(
+      query(".chat-channel-preview-card__description").innerText,
+      "Important stuff is announced here.",
+      "the channel description is shown"
+    );
+    assert.ok(
+      exists(".chat-channel-preview-card__join-channel-btn"),
+      "it shows the join button"
+    );
+    assert.equal(
+      query(".chat-channel-title__name").innerText,
+      "announcements",
+      "it shows the channel title"
     );
   });
 });

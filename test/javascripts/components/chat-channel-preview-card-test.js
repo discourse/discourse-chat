@@ -51,19 +51,22 @@ discourseModule(
         this.channel.description,
         "the channel description is shown"
       );
+    });
 
-      // this.channel.set("description", null);
-      // await settled();
+    test("no channel description", async function (assert) {
+      this.channel.set("description", null);
 
-      // assert.notOk(
-      //   exists(".chat-channel-preview-card__description"),
-      //   "no line is left for the channel description if there is none"
-      // );
+      await render(hbs`{{chat-channel-preview-card channel=channel}}`);
 
-      // assert.ok(
-      //   exists(".chat-channel-preview-card--no-description"),
-      //   "it adds a modifier class for styling"
-      // );
+      assert.notOk(
+        exists(".chat-channel-preview-card__description"),
+        "no line is left for the channel description if there is none"
+      );
+
+      assert.ok(
+        exists(".chat-channel-preview-card--no-description"),
+        "it adds a modifier class for styling"
+      );
     });
 
     test("join", async function (assert) {

@@ -28,6 +28,6 @@ export default Controller.extend({
 
   @action
   startCreatingDmChannel() {
-    return this.router.transitionTo("chat.draft-channel").promise;
+    return this.router.transitionTo("chat.draft-channel");
   },
 });

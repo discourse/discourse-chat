@@ -1,4 +1,5 @@
 import isElementInViewport from "discourse/lib/is-element-in-viewport";
+import ChatApi from "discourse/plugins/discourse-chat/discourse/lib/chat-api";
 import { cloneJSON } from "discourse-common/lib/object";
 import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import ChatMessage from "discourse/plugins/discourse-chat/discourse/models/chat-message";
@@ -1024,9 +1025,7 @@ export default Component.extend({
 
   @action
   joinChannel() {
-    return ajax(`/chat/chat_channels/${this.chatChannel.id}/follow`, {
-      method: "POST",
-    }).then(() => {
+    return ChatApi.followChatChannel(this.chatChannel.id).then(() => {
       this.setProperties({
         id: null,
       });
@@ -1048,9 +1047,7 @@ export default Component.extend({
         channel.chatable.users.mapBy("username")
       );
     } else {
-      promise = ajax(`/chat/chat_channels/${channel.id}/follow`, {
-        method: "POST",
-      }).then(() => channel);
+      promise = ChatApi.followChatChannel(channel.id).then(() => channel);
     }
 
     return promise

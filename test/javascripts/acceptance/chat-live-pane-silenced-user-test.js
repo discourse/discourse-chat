@@ -52,13 +52,15 @@ acceptance("Discourse Chat - Chat live pane", function (needs) {
 
     server.get("/chat/chat_channels.json", () =>
       helper.response({
-        public_channels: [],
+        public_channels: [{ id: 1, title: "something", following: true }],
         direct_message_channels: [],
       })
     );
 
     server.get("/chat/chat_channels/:chatChannelId", () =>
-      helper.response({ chat_channel: { id: 1, title: "something" } })
+      helper.response({
+        chat_channel: { id: 1, title: "something", following: true },
+      })
     );
   });
 

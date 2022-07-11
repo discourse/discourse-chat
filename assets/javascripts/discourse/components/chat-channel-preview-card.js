@@ -1,22 +1,19 @@
 import Component from "@ember/component";
-import { action } from "@ember/object";
-import ChatApi from "discourse/plugins/discourse-chat/discourse/lib/chat-api";
 import { popupAjaxError } from "discourse/lib/ajax-error";
+import { isEmpty } from "@ember/utils";
+import ChatApi from "discourse/plugins/discourse-chat/discourse/lib/chat-api";
+import { action, computed } from "@ember/object";
 import { inject as service } from "@ember/service";
 
-export default class ChatChannelAboutView extends Component {
+export default class ChatChannelPreviewCard extends Component {
   tagName = "";
-  channel = null;
-  onEditChatChannelTitle = null;
-  onEditChatChannelDescription = null;
-  isLoading = false;
 
   @service chat;
 
+  channel = null;
+
   @action
   onJoinChannel() {
-    this.set("isLoading", true);
-
     return ChatApi.followChatChannel(this.channel.id)
       .then((membership) => {
         this.channel.setProperties({
@@ -34,19 +31,15 @@ export default class ChatChannelAboutView extends Component {
       .catch(popupAjaxError);
   }
 
-  @action
-  onLeaveChannel() {
-    this.set("isLoading", true);
+  @computed("channel.description")
+  get hasDescription() {
+    return !isEmpty(this.channel.description);
+  }
 
-    return ChatApi.unfollowChatChannel(this.channel.id)
-      .then((membership) => {
-        this.channel.set("following", false);
-        this.channel.set("memberships_count", membership.user_count);
-
-        return this.chat
-          .forceRefreshChannels()
-          .then(() => this.chat.openChannel(this.channel));
-      })
-      .catch(popupAjaxError);
+  @computed("hasDescription")
+  get cardClasses() {
+    return `chat-channel-preview-card ${
+      !this.hasDescription ? "chat-channel-preview-card--no-description" : ""
+    }`.trim();
   }
 }

@@ -101,22 +101,25 @@
       cancelSelecting=(action "cancelSelecting")
     }}
   {{else}}
-    {{chat-composer
-      draft=draft
-      details=this.details
-      canInteractWithChat=canInteractWithChat
-      sendMessage=(action "sendMessage")
-      editMessage=(action "editMessage")
-      setReplyTo=(action "setReplyTo")
-      loading=sendingloading
-      editingMessage=(readonly this.editingMessage)
-      onCancelEditing=this.cancelEditing
-      setInReplyToMsg=this.setInReplyToMsg
-      onEditLastMessageRequested=this.editLastMessageRequested
-      onValueChange=(action "composerValueChanged")
-      previewing=previewing
-      fullPage=fullPage
-      chatChannel=chatChannel
-    }}
+    {{#if previewing}}
+      {{chat-channel-preview-card channel=chatChannel}}
+    {{else}}
+      {{chat-composer
+        draft=draft
+        details=this.details
+        canInteractWithChat=canInteractWithChat
+        sendMessage=(action "sendMessage")
+        editMessage=(action "editMessage")
+        setReplyTo=(action "setReplyTo")
+        loading=sendingloading
+        editingMessage=(readonly this.editingMessage)
+        onCancelEditing=this.cancelEditing
+        setInReplyToMsg=this.setInReplyToMsg
+        onEditLastMessageRequested=this.editLastMessageRequested
+        onValueChange=(action "composerValueChanged")
+        fullPage=fullPage
+        chatChannel=chatChannel
+      }}
+    {{/if}}
   {{/if}}
 {{/if}}

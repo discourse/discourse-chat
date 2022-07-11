@@ -23,6 +23,7 @@ en:
       cancel_reply: "Cancel reply"
       chat_channels: "Channels"
       leave: "Leave channel"
+      browse_all_channels: "Browse all channels"
       move_to_channel:
         title: "Move messages to channel"
         instructions:
@@ -118,7 +119,6 @@ en:
       open_message: "Open message in chat"
       placeholder_self: "Jot something down"
       placeholder_others: "Chat with %{messageRecipient}"
-      placeholder_previewing: "Send a message to join the conversation."
       placeholder_new_message_disallowed: "Channel is %{status}, you cannot send new messages right now."
       placeholder_silenced: "You cannot send messages at this time."
       placeholder_start_conversation: Start a conversation with %{usernames}

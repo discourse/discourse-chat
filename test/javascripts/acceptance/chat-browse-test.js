@@ -1,6 +1,8 @@
+import { generateChatView } from "discourse/plugins/discourse-chat/chat-fixtures";
 import {
   acceptance,
   exists,
+  loggedInUser,
   query,
 } from "discourse/tests/helpers/qunit-helpers";
 import { click, currentURL, fillIn, visit } from "@ember/test-helpers";
@@ -30,9 +32,35 @@ acceptance("Discourse Chat - chat browsing", function (needs) {
           chatable_type: "Category",
           chatable: {},
           following: true,
+          title: "announcements",
         },
       ]);
     });
+
+    server.get("/chat/chat_channels/1", () => {
+      return helper.response({
+        chat_channel: {
+          id: 1,
+          title: "announcements",
+          description: "Important stuff is announced here.",
+          chatable_id: 1,
+          chatable_type: "Category",
+        },
+      });
+    });
+
+    server.post("/chat/chat_channels/1/follow.json", () => {
+      return helper.response({
+        muted: false,
+        desktop_notification_level: 1,
+        mobile_notification_level: 1,
+        user_count: 10,
+      });
+    });
+
+    server.get("/chat/:chatChannelId/messages.json", () =>
+      helper.response(generateChatView(loggedInUser()))
+    );
 
     server.get("/chat/chat_channels.json", () =>
       helper.response({
@@ -44,6 +72,7 @@ acceptance("Discourse Chat - chat browsing", function (needs) {
     server.post("/chat/chat_channels/:chatChannelId/unfollow", () => {
       return helper.response({ success: "OK" });
     });
+
     server.post("/chat/chat_channels/:chat_channel_id", () => {
       return helper.response({
         chat_channel: {
@@ -75,6 +104,23 @@ acceptance("Discourse Chat - chat browsing", function (needs) {
     assert.ok(
       settingsRow.querySelector(".chat-channel-follow"),
       "Follow button is present"
+    );
+  });
+
+  test("Previewing a channel", async function (assert) {
+    await visit("/chat/browse");
+    await click(".chat-channel-unfollow");
+    await click(".chat-channel-preview");
+
+    assert.ok(
+      exists(".chat-channel-preview-card"),
+      "it shows the preview card for the channel"
+    );
+
+    await click(".chat-channel-preview-card__join-channel-btn");
+    assert.ok(
+      exists(".chat-channel-preview-card"),
+      "it no longer shows the preview card for the channel"
     );
   });
 });

@@ -464,7 +464,7 @@ export default Service.extend({
         response.chat_channel.id,
         response.chat_channel.title,
         { queryParams }
-      ).promise;
+      );
     });
   },
 
@@ -498,7 +498,7 @@ export default Service.extend({
         {
           queryParams,
         }
-      ).promise;
+      );
     } else {
       this._fireOpenFloatAppEvent(channel, messageId);
       return Promise.resolve();

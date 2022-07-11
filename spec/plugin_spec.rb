@@ -253,55 +253,6 @@ describe 'discourse-chat' do
       end
     end
 
-    describe "when a user is removed from a group with access to a channel through a category" do
-      before do
-        Fabricate(:category_group, category: category, group: chatters_group)
-        chatters_group.add(user)
-      end
-
-      it 'removes the user from the channel' do
-        chatters_group.remove(user)
-
-        membership = UserChatChannelMembership.find_by(user: user, chat_channel: @channel)
-
-        expect(membership.following).to eq(false)
-      end
-
-      it "doesn't remove the user if auto-join is disabled" do
-        @channel.update!(auto_join_users: false)
-        chatters_group.add(user)
-
-        chatters_group.remove(user)
-        membership = UserChatChannelMembership.find_by(user: user, chat_channel: @channel)
-
-        expect(membership.following).to eq(true)
-      end
-
-      it "doesn't remove the user if still has access through a different group" do
-        another_group = Fabricate(:group)
-        Fabricate(:category_group, category: category, group: another_group)
-        another_group.add(user)
-
-        chatters_group.remove(user)
-        membership = UserChatChannelMembership.find_by(user: user, chat_channel: @channel)
-
-        expect(membership.following).to eq(true)
-      end
-
-      it "doesn't remove the user from other channels where they still have access" do
-        another_group = Fabricate(:group)
-        another_category = Fabricate(:category)
-        Fabricate(:category_group, category: another_category, group: another_group)
-        another_channel = Fabricate(:chat_channel, auto_join_users: true, chatable: another_category)
-        another_group.add(user)
-
-        chatters_group.remove(user)
-        membership = UserChatChannelMembership.find_by(user: user, chat_channel: another_channel)
-
-        expect(membership.following).to eq(true)
-      end
-    end
-
     describe 'when category permissions change' do
       before { Jobs.run_immediately! }
 

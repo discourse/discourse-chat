@@ -3,142 +3,153 @@
 require 'rails_helper'
 
 describe Jobs::AutoJoinChannelBatch do
-  fab!(:chatters_group) { Fabricate(:group) }
-  fab!(:category) { Fabricate(:category) }
+  describe '#execute' do
+    fab!(:category) { Fabricate(:category) }
+    let(:user) { Fabricate(:user, last_seen_at: 15.minutes.ago) }
+    let(:channel) { Fabricate(:chat_channel, auto_join_users: true, chatable: category) }
 
-  before do
-    @user = Fabricate(:user, last_seen_at: 15.minutes.ago)
-    @channel = Fabricate(:chat_channel, auto_join_users: true, chatable: category)
-    @category_group = Fabricate(:category_group, category: category, group: chatters_group)
+    it 'joins all valid users in the batch' do
+      subject.execute(chat_channel_id: channel.id, starts_at: user.id, ends_at: user.id)
 
-    chatters_group.add(@user)
-  end
+      new_membership = UserChatChannelMembership.find_by(user: user, chat_channel: channel)
+      expect(new_membership.following).to eq(true)
+    end
 
-  it 'joins all valid users in the batch' do
-    subject.execute(chat_channel_id: @channel.id, starts_at: @user.id, ends_at: @user.id)
+    it "doesn't join users outside the batch" do
+      another_user = Fabricate(:user, last_seen_at: 15.minutes.ago)
 
-    new_membership = UserChatChannelMembership.find_by(user: @user, chat_channel: @channel)
-    expect(new_membership.following).to eq(true)
-  end
+      subject.execute(chat_channel_id: channel.id, starts_at: user.id, ends_at: user.id)
 
-  it "doesn't join users outside the batch" do
-    another_user = Fabricate(:user)
-    chatters_group.add(another_user)
+      new_membership = UserChatChannelMembership.find_by(user: another_user, chat_channel: channel)
+      expect(new_membership).to be_nil
+    end
 
-    subject.execute(chat_channel_id: @channel.id, starts_at: @user.id, ends_at: @user.id)
+    it "doesn't join suspended users" do
+      user.update!(suspended_till: 1.year.from_now)
 
-    new_membership = UserChatChannelMembership.find_by(user: another_user, chat_channel: @channel)
-    expect(new_membership).to be_nil
-  end
+      subject.execute(chat_channel_id: channel.id, starts_at: user.id, ends_at: user.id)
 
-  it "doesn't join suspended users" do
-    @user.update!(suspended_till: 1.year.from_now)
+      new_membership = UserChatChannelMembership.find_by(user: user, chat_channel: channel)
+      expect(new_membership).to be_nil
+    end
 
-    subject.execute(chat_channel_id: @channel.id, starts_at: @user.id, ends_at: @user.id)
+    it "doesn't join users last_seen more than 3 months ago" do
+      user.update!(last_seen_at: 4.months.ago)
 
-    new_membership = UserChatChannelMembership.find_by(user: @user, chat_channel: @channel)
-    expect(new_membership).to be_nil
-  end
+      subject.execute(chat_channel_id: channel.id, starts_at: user.id, ends_at: user.id)
 
-  it "doesn't join users last_seen more than 3 months ago" do
-    @user.update!(last_seen_at: 4.months.ago)
+      new_membership = UserChatChannelMembership.find_by(user: user, chat_channel: channel)
+      expect(new_membership).to be_nil
+    end
 
-    subject.execute(chat_channel_id: @channel.id, starts_at: @user.id, ends_at: @user.id)
+    it "joins users with last_seen set to null" do
+      user.update!(last_seen_at: nil)
 
-    new_membership = UserChatChannelMembership.find_by(user: @user, chat_channel: @channel)
-    expect(new_membership).to be_nil
-  end
+      subject.execute(chat_channel_id: channel.id, starts_at: user.id, ends_at: user.id)
 
-  it "joins users with last_seen set to null" do
-    @user.update!(last_seen_at: nil)
+      new_membership = UserChatChannelMembership.find_by(user: user, chat_channel: channel)
+      expect(new_membership.following).to eq(true)
+    end
 
-    subject.execute(chat_channel_id: @channel.id, starts_at: @user.id, ends_at: @user.id)
+    it 'does nothing if the channel is invalid' do
+      subject.execute(chat_channel_id: -1, starts_at: user.id, ends_at: user.id)
 
-    new_membership = UserChatChannelMembership.find_by(user: @user, chat_channel: @channel)
-    expect(new_membership.following).to eq(true)
-  end
+      memberships = UserChatChannelMembership.where(user: user)
+      expect(memberships).to be_empty
+    end
 
-  it "only joins group members with access to the category" do
-    another_user = Fabricate(:user, last_seen_at: 15.minutes.ago)
+    it 'does nothing if the channel chatable is not a category' do
+      same_id = 99
+      another_category = Fabricate(:category, id: same_id)
+      dm_channel = Fabricate(:direct_message_channel, id: same_id)
+      channel.update!(chatable: dm_channel)
 
-    subject.execute(chat_channel_id: @channel.id, starts_at: @user.id, ends_at: another_user.id)
+      subject.execute(chat_channel_id: channel.id, starts_at: user.id, ends_at: user.id)
 
-    new_membership = UserChatChannelMembership.find_by(user: another_user, chat_channel: @channel)
-    expect(new_membership).to be_nil
-  end
+      memberships = UserChatChannelMembership.where(user: user)
+      expect(memberships).to be_empty
+    end
 
-  it "works if the user has access through more than one group" do
-    second_chatters_group = Fabricate(:group)
-    Fabricate(:category_group, category: category, group: second_chatters_group)
-    second_chatters_group.add(@user)
+    it 'updates the channel user_count' do
+      initial_count = channel.user_count
 
-    subject.execute(chat_channel_id: @channel.id, starts_at: @user.id, ends_at: @user.id)
+      subject.execute(chat_channel_id: channel.id, starts_at: user.id, ends_at: user.id)
 
-    new_membership = UserChatChannelMembership.find_by(user: @user, chat_channel: @channel)
-    expect(new_membership.following).to eq(true)
-  end
+      expect(channel.reload.user_count).to eq(initial_count + 1)
+    end
 
-  it 'does nothing if the channel is invalid' do
-    subject.execute(chat_channel_id: -1, starts_at: @user.id, ends_at: @user.id)
+    it 'ignores users without chat_enabled' do
+      user.user_option.update!(chat_enabled: false)
 
-    memberships = UserChatChannelMembership.where(user: @user)
-    expect(memberships).to be_empty
-  end
+      subject.execute(chat_channel_id: channel.id, starts_at: user.id, ends_at: user.id)
 
-  it 'does nothing if the channel chatable is not a category' do
-    same_id = 99
-    another_category = Fabricate(:category, id: same_id)
-    another_cgroup = Fabricate(:category_group, category: another_category, group: chatters_group)
-    dm_channel = Fabricate(:direct_message_channel, id: same_id)
-    @channel.update!(chatable: dm_channel)
+      memberships = UserChatChannelMembership.where(user: user)
+      expect(memberships).to be_empty
+    end
 
-    subject.execute(chat_channel_id: @channel.id, starts_at: @user.id, ends_at: @user.id)
+    it 'sets the join reason to automatic' do
+      subject.execute(chat_channel_id: channel.id, starts_at: user.id, ends_at: user.id)
 
-    memberships = UserChatChannelMembership.where(user: @user)
-    expect(memberships).to be_empty
-  end
+      new_membership = UserChatChannelMembership.find_by(user: user, chat_channel: channel)
+      expect(new_membership.following).to eq(true)
+      expect(new_membership.automatic?).to eq(true)
+    end
 
-  it 'updates the channel user_count' do
-    initial_count = @channel.user_count
+    it 'skips anonymous users' do
+      user_2 = Fabricate(:anonymous)
 
-    subject.execute(chat_channel_id: @channel.id, starts_at: @user.id, ends_at: @user.id)
+      subject.execute(chat_channel_id: channel.id, starts_at: user.id, ends_at: user_2.id)
 
-    expect(@channel.reload.user_count).to eq(initial_count + 1)
-  end
+      new_membership = UserChatChannelMembership.find_by(user: user_2, chat_channel: channel)
+      expect(new_membership).to be_nil
+    end
 
-  it 'ignores users without chat_enabled' do
-    @user.user_option.update!(chat_enabled: false)
+    it 'adds every user in the batch' do
+      user
+      user_2 = Fabricate(:user, last_seen_at: 15.minutes.ago)
 
-    subject.execute(chat_channel_id: @channel.id, starts_at: @user.id, ends_at: @user.id)
+      subject.execute(chat_channel_id: channel.id, starts_at: user.id, ends_at: user_2.id)
 
-    memberships = UserChatChannelMembership.where(user: @user)
-    expect(memberships).to be_empty
-  end
+      new_membership = UserChatChannelMembership.find_by(user: user_2, chat_channel: channel)
+      expect(new_membership.following).to eq(true)
+    end
 
-  it 'adds users that were members at some point' do
-    UserChatChannelMembership.create!(chat_channel: @channel, user: @user, following: false)
+    describe "context when the channel's category is read restricted" do
+      fab!(:chatters_group) { Fabricate(:group) }
+      let(:private_category) { Fabricate(:private_category, group: chatters_group) }
+      let(:channel) { Fabricate(:chat_channel, auto_join_users: true, chatable: private_category) }
 
-    subject.execute(chat_channel_id: @channel.id, starts_at: @user.id, ends_at: @user.id)
+      before { chatters_group.add(user) }
 
-    new_membership = UserChatChannelMembership.find_by(user: @user, chat_channel: @channel)
-    expect(new_membership.following).to eq(true)
-  end
+      it "only joins group members with access to the category" do
+        another_user = Fabricate(:user, last_seen_at: 15.minutes.ago)
 
-  it 'sets the join reason to automatic' do
-    subject.execute(chat_channel_id: @channel.id, starts_at: @user.id, ends_at: @user.id)
+        subject.execute(chat_channel_id: channel.id, starts_at: user.id, ends_at: another_user.id)
 
-    new_membership = UserChatChannelMembership.find_by(user: @user, chat_channel: @channel)
-    expect(new_membership.following).to eq(true)
-    expect(new_membership.automatic?).to eq(true)
-  end
+        new_membership = UserChatChannelMembership.find_by(user: another_user, chat_channel: channel)
+        expect(new_membership).to be_nil
+      end
 
-  it 'skips anonymous users' do
-    user_2 = Fabricate(:anonymous)
-    chatters_group.add(user_2)
+      it "works if the user has access through more than one group" do
+        second_chatters_group = Fabricate(:group)
+        Fabricate(:category_group, category: category, group: second_chatters_group)
+        second_chatters_group.add(user)
 
-    subject.execute(chat_channel_id: @channel.id, starts_at: @user.id, ends_at: user_2.id)
+        subject.execute(chat_channel_id: channel.id, starts_at: user.id, ends_at: user.id)
 
-    new_membership = UserChatChannelMembership.find_by(user: user_2, chat_channel: @channel)
-    expect(new_membership).to be_nil
+        new_membership = UserChatChannelMembership.find_by(user: user, chat_channel: channel)
+        expect(new_membership.following).to eq(true)
+      end
+
+      it 'joins every user with access to the category' do
+        another_user = Fabricate(:user, last_seen_at: 15.minutes.ago)
+        chatters_group.add(another_user)
+
+        subject.execute(chat_channel_id: channel.id, starts_at: user.id, ends_at: another_user.id)
+
+        new_membership = UserChatChannelMembership.find_by(user: another_user, chat_channel: channel)
+        expect(new_membership.following).to eq(true)
+      end
+    end
   end
 end

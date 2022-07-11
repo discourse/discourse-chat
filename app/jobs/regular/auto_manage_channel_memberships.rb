@@ -34,7 +34,7 @@ module Jobs
       category = channel.chatable
 
       users = User
-        .human_users
+        .real
         .distinct
         .select(:id, 'users.id AS query_user_id')
         .where('last_seen_at IS NULL OR last_seen_at > ?', 3.months.ago)
@@ -47,9 +47,9 @@ module Jobs
             uccm.user_id = users.id
           SQL
         )
-        .where('uccm.id IS NULL OR uccm.following IS NOT TRUE')
+        .where('uccm.id IS NULL')
 
-      if category.read_restricted
+      if category.read_restricted?
         users = users
           .joins(:group_users)
           .joins('INNER JOIN category_groups cg ON cg.group_id = group_users.group_id')

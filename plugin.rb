@@ -492,18 +492,6 @@ after_initialize do
     end
   end
 
-  on(:user_removed_from_group) do |user, group|
-    channels_to_remove = ChatChannel
-      .where(auto_join_users: true, chatable_type: 'Category')
-      .joins('INNER JOIN category_groups ON category_groups.category_id = chat_channels.chatable_id')
-      .group('chat_channels.id', 'category_groups.category_id')
-      .having('ARRAY[?] <@ ARRAY_AGG(category_groups.group_id) AND COUNT(*) = 1', [group.id])
-
-    if channels_to_remove.present?
-      channels_to_remove.each { |channel| channel.remove(user) }
-    end
-  end
-
   on(:category_updated) do |category|
     # TODO(roman): remove early return after 2.9 release.
     # There's a bug on core where this event is triggered with an `#update` result (true/false)

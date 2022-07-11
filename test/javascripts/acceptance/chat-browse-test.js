@@ -49,6 +49,15 @@ acceptance("Discourse Chat - chat browsing", function (needs) {
       });
     });
 
+    server.post("/chat/chat_channels/1/follow.json", () => {
+      return helper.response({
+        muted: false,
+        desktop_notification_level: 1,
+        mobile_notification_level: 1,
+        user_count: 10,
+      });
+    });
+
     server.get("/chat/:chatChannelId/messages.json", () =>
       helper.response(generateChatView(loggedInUser()))
     );
@@ -63,6 +72,7 @@ acceptance("Discourse Chat - chat browsing", function (needs) {
     server.post("/chat/chat_channels/:chatChannelId/unfollow", () => {
       return helper.response({ success: "OK" });
     });
+
     server.post("/chat/chat_channels/:chat_channel_id", () => {
       return helper.response({
         chat_channel: {
@@ -119,6 +129,12 @@ acceptance("Discourse Chat - chat browsing", function (needs) {
       query(".chat-channel-title__name").innerText,
       "announcements",
       "it shows the channel title"
+    );
+
+    await click(".chat-channel-preview-card__join-channel-btn");
+    assert.ok(
+      exists(".chat-channel-preview-card"),
+      "it no longer shows the preview card for the channel"
     );
   });
 });

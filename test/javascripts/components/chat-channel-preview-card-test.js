@@ -60,6 +60,11 @@ discourseModule(
         exists(".chat-channel-preview-card__description"),
         "no line is left for the channel description if there is none"
       );
+
+      assert.notOk(
+        exists(".chat-channel-preview-card--no-description"),
+        "it adds a modifier class for styling"
+      );
     });
 
     test("join", async function (assert) {

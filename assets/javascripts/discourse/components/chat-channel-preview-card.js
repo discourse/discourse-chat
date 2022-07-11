@@ -1,4 +1,5 @@
 import Component from "@ember/component";
+import { popupAjaxError } from "discourse/lib/ajax-error";
 import { isEmpty } from "@ember/utils";
 import ChatApi from "discourse/plugins/discourse-chat/discourse/lib/chat-api";
 import { action, computed } from "@ember/object";

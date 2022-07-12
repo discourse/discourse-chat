@@ -61,6 +61,24 @@ describe Jobs::AutoManageChannelMemberships do
       assert_batches_enqueued(channel, 0)
     end
 
+    it 'skips non-active users' do
+      user.update!(active: false)
+
+      assert_batches_enqueued(channel, 0)
+    end
+
+    it 'skips suspended users' do
+      user.update!(suspended_till: 3.years.from_now)
+
+      assert_batches_enqueued(channel, 0)
+    end
+
+    it 'skips staged users' do
+      user.update!(staged: true)
+
+      assert_batches_enqueued(channel, 0)
+    end
+
     context 'when the category has read restricted access' do
       fab!(:chatters_group) { Fabricate(:group) }
       let(:private_category) { Fabricate(:private_category, group: chatters_group) }

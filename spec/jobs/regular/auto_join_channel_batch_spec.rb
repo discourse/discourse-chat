@@ -5,14 +5,13 @@ require 'rails_helper'
 describe Jobs::AutoJoinChannelBatch do
   describe '#execute' do
     fab!(:category) { Fabricate(:category) }
-    let(:user) { Fabricate(:user, last_seen_at: 15.minutes.ago) }
+    let!(:user) { Fabricate(:user, last_seen_at: 15.minutes.ago) }
     let(:channel) { Fabricate(:chat_channel, auto_join_users: true, chatable: category) }
 
     it 'joins all valid users in the batch' do
       subject.execute(chat_channel_id: channel.id, starts_at: user.id, ends_at: user.id)
 
-      new_membership = UserChatChannelMembership.find_by(user: user, chat_channel: channel)
-      expect(new_membership.following).to eq(true)
+      assert_users_follows_channel(channel, [user])
     end
 
     it "doesn't join users outside the batch" do
@@ -20,8 +19,8 @@ describe Jobs::AutoJoinChannelBatch do
 
       subject.execute(chat_channel_id: channel.id, starts_at: user.id, ends_at: user.id)
 
-      new_membership = UserChatChannelMembership.find_by(user: another_user, chat_channel: channel)
-      expect(new_membership).to be_nil
+      assert_users_follows_channel(channel, [user])
+      assert_user_skipped(channel, another_user)
     end
 
     it "doesn't join suspended users" do
@@ -29,8 +28,7 @@ describe Jobs::AutoJoinChannelBatch do
 
       subject.execute(chat_channel_id: channel.id, starts_at: user.id, ends_at: user.id)
 
-      new_membership = UserChatChannelMembership.find_by(user: user, chat_channel: channel)
-      expect(new_membership).to be_nil
+      assert_user_skipped(channel, user)
     end
 
     it "doesn't join users last_seen more than 3 months ago" do
@@ -38,8 +36,7 @@ describe Jobs::AutoJoinChannelBatch do
 
       subject.execute(chat_channel_id: channel.id, starts_at: user.id, ends_at: user.id)
 
-      new_membership = UserChatChannelMembership.find_by(user: user, chat_channel: channel)
-      expect(new_membership).to be_nil
+      assert_user_skipped(channel, user)
     end
 
     it "joins users with last_seen set to null" do
@@ -47,15 +44,13 @@ describe Jobs::AutoJoinChannelBatch do
 
       subject.execute(chat_channel_id: channel.id, starts_at: user.id, ends_at: user.id)
 
-      new_membership = UserChatChannelMembership.find_by(user: user, chat_channel: channel)
-      expect(new_membership.following).to eq(true)
+      assert_users_follows_channel(channel, [user])
     end
 
     it 'does nothing if the channel is invalid' do
       subject.execute(chat_channel_id: -1, starts_at: user.id, ends_at: user.id)
 
-      memberships = UserChatChannelMembership.where(user: user)
-      expect(memberships).to be_empty
+      assert_user_skipped(channel, user)
     end
 
     it 'does nothing if the channel chatable is not a category' do
@@ -66,8 +61,7 @@ describe Jobs::AutoJoinChannelBatch do
 
       subject.execute(chat_channel_id: channel.id, starts_at: user.id, ends_at: user.id)
 
-      memberships = UserChatChannelMembership.where(user: user)
-      expect(memberships).to be_empty
+      assert_user_skipped(channel, user)
     end
 
     it 'updates the channel user_count' do
@@ -83,15 +77,13 @@ describe Jobs::AutoJoinChannelBatch do
 
       subject.execute(chat_channel_id: channel.id, starts_at: user.id, ends_at: user.id)
 
-      memberships = UserChatChannelMembership.where(user: user)
-      expect(memberships).to be_empty
+      assert_user_skipped(channel, user)
     end
 
     it 'sets the join reason to automatic' do
       subject.execute(chat_channel_id: channel.id, starts_at: user.id, ends_at: user.id)
 
       new_membership = UserChatChannelMembership.find_by(user: user, chat_channel: channel)
-      expect(new_membership.following).to eq(true)
       expect(new_membership.automatic?).to eq(true)
     end
 
@@ -100,18 +92,34 @@ describe Jobs::AutoJoinChannelBatch do
 
       subject.execute(chat_channel_id: channel.id, starts_at: user.id, ends_at: user_2.id)
 
-      new_membership = UserChatChannelMembership.find_by(user: user_2, chat_channel: channel)
-      expect(new_membership).to be_nil
+      assert_users_follows_channel(channel, [user])
+      assert_user_skipped(channel, user_2)
+    end
+
+    it 'skips non-active users' do
+      user_2 = Fabricate(:user, active: false, last_seen_at: 15.minutes.ago)
+
+      subject.execute(chat_channel_id: channel.id, starts_at: user.id, ends_at: user_2.id)
+
+      assert_users_follows_channel(channel, [user])
+      assert_user_skipped(channel, user_2)
+    end
+
+    it 'skips staged users' do
+      user_2 = Fabricate(:user, staged: true, last_seen_at: 15.minutes.ago)
+
+      subject.execute(chat_channel_id: channel.id, starts_at: user.id, ends_at: user_2.id)
+
+      assert_users_follows_channel(channel, [user])
+      assert_user_skipped(channel, user_2)
     end
 
     it 'adds every user in the batch' do
-      user
       user_2 = Fabricate(:user, last_seen_at: 15.minutes.ago)
 
       subject.execute(chat_channel_id: channel.id, starts_at: user.id, ends_at: user_2.id)
 
-      new_membership = UserChatChannelMembership.find_by(user: user_2, chat_channel: channel)
-      expect(new_membership.following).to eq(true)
+      assert_users_follows_channel(channel, [user, user_2])
     end
 
     describe "context when the channel's category is read restricted" do
@@ -126,8 +134,8 @@ describe Jobs::AutoJoinChannelBatch do
 
         subject.execute(chat_channel_id: channel.id, starts_at: user.id, ends_at: another_user.id)
 
-        new_membership = UserChatChannelMembership.find_by(user: another_user, chat_channel: channel)
-        expect(new_membership).to be_nil
+        assert_users_follows_channel(channel, [user])
+        assert_user_skipped(channel, another_user)
       end
 
       it "works if the user has access through more than one group" do
@@ -137,8 +145,7 @@ describe Jobs::AutoJoinChannelBatch do
 
         subject.execute(chat_channel_id: channel.id, starts_at: user.id, ends_at: user.id)
 
-        new_membership = UserChatChannelMembership.find_by(user: user, chat_channel: channel)
-        expect(new_membership.following).to eq(true)
+        assert_users_follows_channel(channel, [user])
       end
 
       it 'joins every user with access to the category' do
@@ -147,9 +154,18 @@ describe Jobs::AutoJoinChannelBatch do
 
         subject.execute(chat_channel_id: channel.id, starts_at: user.id, ends_at: another_user.id)
 
-        new_membership = UserChatChannelMembership.find_by(user: another_user, chat_channel: channel)
-        expect(new_membership.following).to eq(true)
+        assert_users_follows_channel(channel, [user, another_user])
       end
     end
+  end
+
+  def assert_users_follows_channel(channel, users)
+    new_memberships = UserChatChannelMembership.where(user: users, chat_channel: channel)
+    expect(new_memberships.all?(&:following)).to eq(true)
+  end
+
+  def assert_user_skipped(channel, user)
+    new_membership = UserChatChannelMembership.find_by(user: user, chat_channel: channel)
+    expect(new_membership).to be_nil
   end
 end

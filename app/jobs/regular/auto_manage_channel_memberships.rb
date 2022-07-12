@@ -35,6 +35,9 @@ module Jobs
 
       users = User
         .real
+        .activated
+        .not_suspended
+        .not_staged
         .distinct
         .select(:id, 'users.id AS query_user_id')
         .where('last_seen_at IS NULL OR last_seen_at > ?', 3.months.ago)

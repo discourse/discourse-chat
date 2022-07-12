@@ -122,6 +122,16 @@ describe Jobs::AutoJoinChannelBatch do
       assert_users_follows_channel(channel, [user, user_2])
     end
 
+    it 'publishes a message only to joined users' do
+      messages = MessageBus.track_publish("/chat/new-channel") do
+        subject.execute(chat_channel_id: channel.id, starts_at: user.id, ends_at: user.id)
+      end
+
+      expect(messages.size).to eq(1)
+      expect(messages.first.data.dig(:chat_channel, :id)).to eq(channel.id)
+      expect(messages.first.data.dig(:chat_channel, :memberships_count)).to eq(1)
+    end
+
     describe "context when the channel's category is read restricted" do
       fab!(:chatters_group) { Fabricate(:group) }
       let(:private_category) { Fabricate(:private_category, group: chatters_group) }

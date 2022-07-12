@@ -12,7 +12,7 @@ module DiscourseChat::DirectMessageChannelCreator
     end
 
     update_memberships(unique_target_users, chat_channel.id)
-    ChatPublisher.publish_new_direct_message_channel(chat_channel, unique_target_users)
+    ChatPublisher.publish_new_channel(chat_channel, unique_target_users)
     chat_channel
   end
 

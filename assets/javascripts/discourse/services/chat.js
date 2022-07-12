@@ -55,7 +55,7 @@ export default Service.extend({
 
     if (this.userCanChat) {
       this.set("allChannels", []);
-      this._subscribeToNewDmChannelUpdates();
+      this._subscribeToNewChannelUpdates();
       this._subscribeToUserTrackingChannel();
       this._subscribeToChannelEdits();
       this._subscribeToChannelStatusChange();
@@ -607,14 +607,14 @@ export default Service.extend({
     this.messageBus.unsubscribe("/chat/channel-edits");
   },
 
-  _subscribeToNewDmChannelUpdates() {
-    this.messageBus.subscribe("/chat/new-direct-message-channel", (busData) => {
+  _subscribeToNewChannelUpdates() {
+    this.messageBus.subscribe("/chat/new-channel", (busData) => {
       this.startTrackingChannel(ChatChannel.create(busData.chat_channel));
     });
   },
 
   _unsubscribeFromNewDmChannelUpdates() {
-    this.messageBus.unsubscribe("/chat/new-direct-message-channel");
+    this.messageBus.unsubscribe("/chat/new-channel");
   },
 
   _subscribeToSingleUpdateChannel(channel) {

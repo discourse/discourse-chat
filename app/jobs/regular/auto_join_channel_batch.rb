@@ -27,13 +27,18 @@ module Jobs
         mode: UserChatChannelMembership.join_modes[:automatic]
       }
 
-      records_created = DB.exec(create_memberships_query(category), query_args)
+      new_member_ids = DB.query_single(create_memberships_query(category), query_args)
 
-      DB.exec(<<~SQL, channel_id: channel.id, joined: records_created)
+      DB.exec(<<~SQL, channel_id: channel.id, joined: new_member_ids.size)
         UPDATE chat_channels
         SET user_count = user_count + :joined
         WHERE id = :channel_id
       SQL
+
+      ChatPublisher.publish_new_channel(
+        channel.reload,
+        User.where(id: new_member_ids)
+      )
     end
 
     private
@@ -71,7 +76,7 @@ module Jobs
         SQL
       end
 
-      query
+      query += 'RETURNING user_chat_channel_memberships.user_id'
     end
   end
 end

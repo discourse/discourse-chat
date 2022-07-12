@@ -120,7 +120,7 @@ const baseChatPretenders = (server, helper) => {
   });
 
   server.get("/chat/api/category-chatables/:categoryId/permissions.json", () =>
-    helper.response([])
+    helper.response({ allowed_groups: ["@everyone"], private: false })
   );
 };
 

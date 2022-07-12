@@ -566,6 +566,10 @@ $float-height: 530px;
   }
 }
 
+body.has-sidebar-page.has-full-page-chat #main-outlet-wrapper {
+  gap: 0;
+}
+
 body.has-full-page-chat {
   .alert-error,
   .alert-info,

@@ -6,12 +6,10 @@
 
 fi:
   site_settings:
-    chat_enabled: "Ota discourse-chat-lisäosa käyttöön. Määritä käyttämällä aihekohtaista Ota chat käyttöön -toimintoa."
     chat_allowed_groups: "Näiden ryhmien käyttäjät voivat keskustella chatissa."
   chat:
     errors:
       channel_exists_for_category: "Tällä alueella ja nimellä on jo olemassa kanava"
-      channel_exists_for_topic: "Tällä ketjulla on jo olemassa kanava"
     reviewables:
       actions:
         agree:

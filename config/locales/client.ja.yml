@@ -86,7 +86,6 @@ ja:
         choose_category:
           label: "カテゴリを選択する"
           none: "1 つ選択してください..."
-          hint: '<a href=%{link} target="_blank">%{category} のセキュリティ設定</a>に移動し、アクセス権を管理します'
         create: "チャンネルを作成"
         description: "説明（オプション）"
         name: "チャンネル名"
@@ -183,10 +182,6 @@ ja:
       titles:
         chat_mention: "チャットのメンション"
         chat_invitation: "チャットの招待状"
-    topic:
-      actions:
-        chat_enable: "チャットを有効にする"
-        chat_disable: "チャットを閉じる"
     action_codes:
       chat:
         enabled: '%{who} が<button class="btn-link open-chat">チャット</button>を有効にしました: %{when}'

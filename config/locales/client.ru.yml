@@ -29,6 +29,7 @@ ru:
       cancel_reply: "Отменить ответ"
       chat_channels: "Каналы"
       leave: "Покинуть канал"
+      browse_all_channels: "Просмотреть все каналы"
       move_to_channel:
         title: "Переместить сообщения в канал"
         instructions:
@@ -129,7 +130,6 @@ ru:
       open_message: "Открыть сообщение в чате"
       placeholder_self: "Напишите что-нибудь"
       placeholder_others: "Чат с %{messageRecipient}"
-      placeholder_previewing: "Отправьте сообщение, чтобы присоединиться к беседе."
       placeholder_new_message_disallowed: "Канал %{status}, в данный момент вы не можете отправлять новые сообщения."
       placeholder_silenced: "В настоящее время вы не можете отправлять сообщения."
       placeholder_start_conversation: Начать беседу с пользователем %{usernames}
@@ -218,7 +218,14 @@ ru:
         choose_category:
           label: "Выберите раздел"
           none: "выберите раздел..."
-          hint: 'Управляйте доступом через настройки безопасности раздела <a href=%{link} target="_blank">%{category}</a>'
+          default_hint: Управляйте доступом к разделу через <a href=%{link} target="_blank">%{category}настройки безопасности</a>
+          public_category_hint: "Раздел %{category} является общедоступным. Все будут иметь доступ к этому каналу."
+          hint_single: Пользователи группы %{hint_1} будут иметь доступ к этому каналу в соответствии с <a href=%{link} target="_blank">настройками безопасности</a>
+          hint_multiple:
+            one: Пользователи группы %{hint_1} и группы %{hint_2} будут иметь доступ к этому каналу в соответствии с <a href=%{link} target="_blank">настройками безопасности</a>
+            few: Пользователи группы %{hint_1} и ещё %{count} групп будут иметь доступ к этому каналу в соответствии с <a href=%{link} target="_blank">настройками безопасности</a>
+            many: Пользователи группы %{hint_1} и ещё %{count} групп будут иметь доступ к этому каналу в соответствии с <a href=%{link} target="_blank">настройками безопасности</a>
+            other: Пользователи группы %{hint_1} и ещё %{count} групп будут иметь доступ к этому каналу в соответствии с <a href=%{link} target="_blank">настройками безопасности</a>
         create: "Создать канал"
         description: "Описание (необязательно)"
         name: "Название канала"
@@ -346,10 +353,6 @@ ru:
         chat_mention: "Упоминание в чате"
         chat_invitation: "Приглашение в чат"
         chat_quoted: "Цитирование чата"
-    topic:
-      actions:
-        chat_enable: "Включить чат"
-        chat_disable: "Отключить чат"
     action_codes:
       chat:
         enabled: '%{who} включил <button class="btn-link open-chat">чат</button> %{when}'

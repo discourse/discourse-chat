@@ -121,7 +121,6 @@ sv:
       open_message: "Öppna meddelande i chatten"
       placeholder_self: "Gör en anteckning"
       placeholder_others: "Chatta med %{messageRecipient}"
-      placeholder_previewing: "Skicka ett meddelande för att delta i konversationen."
       placeholder_new_message_disallowed: "Kanalen är %{status}, du kan inte skicka nya meddelanden just nu."
       placeholder_silenced: "Du kan inte skicka meddelanden just nu."
       placeholder_start_conversation: Starta en konversation med %{usernames}
@@ -206,7 +205,7 @@ sv:
         choose_category:
           label: "Välj en kategori"
           none: "Välj en..."
-          hint: 'Hantera åtkomst genom att besöka <a href=%{link} target="_blank">%{category} säkerhetsinställningar</a>'
+          default_hint: Hantera åtkomst genom att besöka <a href=%{link} target="_blank">%{category} säkerhetsinställningar</a>
         create: "Skapa kanal"
         description: "Beskrivning (valfritt)"
         name: "Kanalnamn"
@@ -326,10 +325,6 @@ sv:
         chat_mention: "Chatt omnämnande"
         chat_invitation: "Chattinbjudan"
         chat_quoted: "Chatt citerad"
-    topic:
-      actions:
-        chat_enable: "Aktivera chatt"
-        chat_disable: "Stäng chatt"
     action_codes:
       chat:
         enabled: '%{who} aktiverade <button class="btn-link open-chat">chatt</button> %{when}'

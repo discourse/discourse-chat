@@ -6,12 +6,10 @@
 
 ar:
   site_settings:
-    chat_enabled: "تفعيل المكوِّن الإضافي discourse-chat. استخدم إجراء \"تفعيل الدردشة\" لكل موضوع للإعداد."
     chat_allowed_groups: "يمكن للمستخدمين في هذه المجموعات الدردشة."
   chat:
     errors:
       channel_exists_for_category: "توجد قناة بالفعل في هذه الفئة وبهذا الاسم"
-      channel_exists_for_topic: "توجد قناة بالفعل لهذا الموضوع"
     reviewables:
       actions:
         agree:

@@ -90,7 +90,6 @@ it:
         choose_category:
           label: "Scegli una categoria"
           none: "selezionane una..."
-          hint: 'Gestisci l''accesso visitando le <a href=%{link} target="_blank">impostazioni di sicurezza di %{category}</a>'
         create: "Crea canale"
         description: "Descrizione (facoltativa)"
         name: "Nome del canale"
@@ -189,10 +188,6 @@ it:
       titles:
         chat_mention: "Menzione in chat"
         chat_invitation: "Invito alla chat"
-    topic:
-      actions:
-        chat_enable: "Abilita chat"
-        chat_disable: "Chiudi chat"
     action_codes:
       chat:
         enabled: '%{who} ha abilitato la <button class="btn-link open-chat">chat</button> %{when}'

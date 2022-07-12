@@ -117,7 +117,6 @@ hu:
       open_message: "Üzenet megnyitása a csevegésben"
       placeholder_self: "Jegyezzen le valamit"
       placeholder_others: "Csevegés vele: %{messageRecipient}"
-      placeholder_previewing: "Küldjön üzenetet, hogy csatlakozzon a beszélgetéshez."
       placeholder_new_message_disallowed: "A csatorna „%{status}”, jelenleg nem küldhet új üzeneteket."
       placeholder_silenced: "Jelenleg nem küldhet üzeneteket."
       placeholder_start_conversation: 'Beszélgetés kezdése a következőkkel: %{usernames}'
@@ -175,7 +174,7 @@ hu:
         choose_category:
           label: "Válasszon kategóriát"
           none: "válasszon egyet…"
-          hint: 'Kezelje a hozzáférést a(z) <a href=%{link} target="_blank">%{category} biztonsági beállításainak</a> felkeresésével'
+          default_hint: Kezelje a hozzáférést a(z) <a href=%{link} target="_blank">%{category} biztonsági beállításainak</a> felkeresésével
         create: "Csatorna létrehozása"
         description: "Leírás (nem kötelező)"
         name: "Csatorna neve"
@@ -294,10 +293,6 @@ hu:
         chat_mention: "Csevegési megemlítés"
         chat_invitation: "Csevegési meghívó"
         chat_quoted: "Csevegés idézve"
-    topic:
-      actions:
-        chat_enable: "Csevegés engedélyezése"
-        chat_disable: "Csevegés bezárása"
     action_codes:
       chat:
         enabled: '%{who} engedélyezte a <button class="btn-link open-chat">csevegést</button> %{when}'

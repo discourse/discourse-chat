@@ -6,7 +6,7 @@
 
 he:
   site_settings:
-    chat_enabled: "יש להפעיל את התוסף discourse-chat. הפעולה ‚הפעלת צ׳אט’ בנושא תאפשר להגדיר אותו."
+    chat_enabled: "הפעלת תוסף discourse-chat."
     chat_allowed_groups: "משתמשים בקבוצות אלו יכולים להשתתף בצ׳אט."
     chat_channel_retention_days: "הודעות הצ׳אט בערוצים הרגילים ישמרו למשך כמות כזאת של ימים. הגדרה לאפס תשמור את ההודעות לעד."
     chat_dm_retention_days: "הודעות הצ׳אט בערוצי הצ׳אט האישיים ישמרו למשך כמות כזאת של ימים. הגדרה לאפס תשמור את ההודעות לעד."
@@ -37,7 +37,6 @@ he:
   chat:
     errors:
       channel_exists_for_category: "כבר קיים ערוץ לקטגוריה ולשם האלו"
-      channel_exists_for_topic: "כבר קיים ערוץ לנושא הזה"
       channel_new_message_disallowed: "הערוץ %{status}, לא ניתן לשלוח הודעות חדשות"
       channel_modify_message_disallowed: "הערוץ %{status}, לא ניתן לערוך או למחוק הודעות"
       user_cannot_send_message: "אין לך אפשרות לשלוח הודעות כרגע."

@@ -6,12 +6,10 @@
 
 de:
   site_settings:
-    chat_enabled: "Aktiviere das discourse-chat-Plug-in. Verwende die themenspezifische Aktion „Chat aktivieren“, um es einzurichten."
     chat_allowed_groups: "Benutzer in diesen Gruppen können chatten."
   chat:
     errors:
       channel_exists_for_category: "Für diese Kategorie und diesen Namen existiert bereits ein Kanal"
-      channel_exists_for_topic: "Für dieses Thema existiert bereits ein Kanal"
     reviewables:
       actions:
         agree:

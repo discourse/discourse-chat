@@ -6,12 +6,10 @@
 
 it:
   site_settings:
-    chat_enabled: "Abilita il plugin discourse-chat. Usa l'azione «Abilita chat» per singolo argomento per eseguire la configurazione."
     chat_allowed_groups: "Gli utenti di questi gruppi possono partecipare alla chat."
   chat:
     errors:
       channel_exists_for_category: "Esiste già un canale per questa categoria e questo nome"
-      channel_exists_for_topic: "Esiste già un canale per questo argomento"
     reviewables:
       actions:
         agree:

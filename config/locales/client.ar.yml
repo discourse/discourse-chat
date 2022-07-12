@@ -106,7 +106,6 @@ ar:
         choose_category:
           label: "اختيار فئة"
           none: "اختر واحدة..."
-          hint: 'إدارة الوصول من خلال زيارة <a href=%{link} target="_blank">%{category} إعدادات الأمان</a>'
         create: "إنشاء قناة"
         description: "الوصف (اختياري)"
         name: "اسم القناة"
@@ -221,10 +220,6 @@ ar:
       titles:
         chat_mention: "إشارة في الدردشة"
         chat_invitation: "دعوة الدردشة"
-    topic:
-      actions:
-        chat_enable: "تفعيل الدردشة"
-        chat_disable: "إغلاق الدردشة"
     action_codes:
       chat:
         enabled: 'فعَّل %{who} <button class="btn-link open-chat">الدردشة</button> في %{when}'

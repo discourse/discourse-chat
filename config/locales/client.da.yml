@@ -146,10 +146,6 @@ da:
         chat_mention: "Chat omtale"
         chat_invitation: "Chat invitation"
         chat_quoted: "Chat citeret"
-    topic:
-      actions:
-        chat_enable: "Aktiver Chat"
-        chat_disable: "Luk Chat"
     action_codes:
       chat:
         enabled: '%{who} aktiverede <button class="btn-link open-chat">chat</button> %{when}'

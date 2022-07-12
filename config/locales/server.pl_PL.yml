@@ -10,7 +10,6 @@ pl_PL:
   chat:
     errors:
       channel_exists_for_category: "Istnieje już kanał dla tej kategorii i nazwy"
-      channel_exists_for_topic: "Istnieje już kanał dla tego tematu"
       user_cannot_send_message: "W tej chwili nie możesz wysyłać wiadomości."
       rate_limit_exceeded: "Przekroczono limit wiadomości na czacie, które można wysłać w ciągu 30 sekund"
       max_reactions_limit_reached: "Nowe reakcje nie są dozwolone w tej wiadomości."

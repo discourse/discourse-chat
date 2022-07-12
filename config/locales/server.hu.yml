@@ -6,7 +6,6 @@
 
 hu:
   site_settings:
-    chat_enabled: "Engedélyezze a discourse-chat bővítményt. A beállításhoz használja a témánkénti „Csevegés engedélyezése” műveletet."
     chat_allowed_groups: "Ezen csoportok felhasználói cseveghetnek."
     chat_channel_retention_days: "A normál csatornákon lévő csevegőüzenetek ennyi napig maradnak meg. Állítsa „0”-ra, hogy örökre megtartsa az üzeneteket."
     chat_dm_retention_days: "A személyes csevegési csatornákon lévő csevegőüzenetek ennyi napig maradnak meg. Állítsa „0”-ra, hogy örökre megtartsa az üzeneteket."
@@ -37,7 +36,6 @@ hu:
   chat:
     errors:
       channel_exists_for_category: "Már létezik csatorna ehhez a kategóriával, és ezzel a névvel"
-      channel_exists_for_topic: "Már létezik csatorna ehhez a témához"
       channel_new_message_disallowed: "A csatorna „%{status}”, új üzenet nem küldhető"
       channel_modify_message_disallowed: "A csatorna „%{status}”, az üzenetek nem szerkeszthetők vagy törölhetők"
       user_cannot_send_message: "Jelenleg nem küldhet üzeneteket."

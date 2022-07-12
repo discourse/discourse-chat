@@ -134,7 +134,7 @@ $float-height: 530px;
   position: relative;
 
   .chat-channel-unread-indicator {
-    min-width: 10px;
+    flex-shrink: 0;
     width: 10px;
     height: 10px;
     border-radius: 10px;

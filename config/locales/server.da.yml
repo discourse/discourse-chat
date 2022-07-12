@@ -5,8 +5,6 @@
 # https://translate.discourse.org/
 
 da:
-  site_settings:
-    chat_enabled: "Aktivér discourse-chat-plugin'et. Brug per-emne 'Aktiver chat' handlingen for at konfigurere."
   chat:
     reviewables:
       actions:

@@ -6,12 +6,10 @@
 
 zh_CN:
   site_settings:
-    chat_enabled: "启用 discourse-chat 插件。使用按话题“启用聊天”操作进行设置。"
     chat_allowed_groups: "这些群组中的用户可以聊天。"
   chat:
     errors:
       channel_exists_for_category: "此类别和名称的频道已经存在"
-      channel_exists_for_topic: "此话题的频道已经存在"
     reviewables:
       actions:
         agree:

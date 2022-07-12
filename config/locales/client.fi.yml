@@ -90,7 +90,6 @@ fi:
         choose_category:
           label: "Valitse alue"
           none: "valitse yksi..."
-          hint: 'Hallinnoi käyttöoikeutta <a href=%{link} target="_blank">alueen %{category} turvallisuusasetuksissa</a>'
         create: "Luo kanava"
         description: "Kuvaus (valinnainen)"
         name: "Kanavan nimi"
@@ -191,10 +190,6 @@ fi:
       titles:
         chat_mention: "Chat-maininta"
         chat_invitation: "Chat-kutsu"
-    topic:
-      actions:
-        chat_enable: "Ota chat käyttöön"
-        chat_disable: "Sulje chat"
     action_codes:
       chat:
         enabled: '%{who} otti <button class="btn-link open-chat">chatin</button> käyttöön %{when}'

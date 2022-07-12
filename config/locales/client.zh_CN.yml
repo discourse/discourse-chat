@@ -86,7 +86,6 @@ zh_CN:
         choose_category:
           label: "选择一个类别"
           none: "选择一个…"
-          hint: '访问<a href=%{link} target="_blank">%{category}安全设置</a>管理访问'
         create: "创建频道"
         description: "描述（可选）"
         name: "频道名称"
@@ -181,10 +180,6 @@ zh_CN:
       titles:
         chat_mention: "聊天提及"
         chat_invitation: "聊天邀请"
-    topic:
-      actions:
-        chat_enable: "启用聊天"
-        chat_disable: "关闭聊天"
     action_codes:
       chat:
         enabled: '%{who} 于 %{when} 启用了<button class="btn-link open-chat">聊天</button>'

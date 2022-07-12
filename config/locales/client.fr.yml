@@ -90,7 +90,6 @@ fr:
         choose_category:
           label: "Choisir une catégorie"
           none: "sélectionnez-en une…"
-          hint: 'Gérer l''accès en visitant <a href=%{link} target="_blank">les paramètres de sécurité de %{category}</a>'
         create: "Créer un canal"
         description: "Description (facultative)"
         name: "Nom du canal"
@@ -189,10 +188,6 @@ fr:
       titles:
         chat_mention: "Mention de chat"
         chat_invitation: "Invitation à rejoindre le chat"
-    topic:
-      actions:
-        chat_enable: "Activer le chat"
-        chat_disable: "Fermer le chat"
     action_codes:
       chat:
         enabled: '%{who} a activé le <button class="btn-link open-chat">chat</button> %{when}'

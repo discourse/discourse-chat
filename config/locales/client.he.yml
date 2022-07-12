@@ -29,6 +29,7 @@ he:
       cancel_reply: "ביטול תגובה"
       chat_channels: "ערוצים"
       leave: "יציאה מהערוץ"
+      browse_all_channels: "עיון בכל הערוצים"
       move_to_channel:
         title: "העברת הודעות לערוץ"
         instructions:
@@ -129,7 +130,6 @@ he:
       open_message: "פתיחת הודעה בצ׳אט"
       placeholder_self: "לקשקש משהו"
       placeholder_others: "צ׳אט עם %{messageRecipient}"
-      placeholder_previewing: "כדי להצטרף לדיון נא לשלוח הודעה."
       placeholder_new_message_disallowed: "הערוץ %{status}, אין לך אפשרות לשלוח הודעות חדשות כעת."
       placeholder_silenced: "אין לך אפשרות לשלוח הודעות כרגע."
       placeholder_start_conversation: פתיחת דיון עם %{usernames}
@@ -218,7 +218,14 @@ he:
         choose_category:
           label: "נא לבחור קטגוריה"
           none: "נא לבחור אחד…"
-          hint: 'ניתן לנהל את הגישה באמצעות ביקור ב<a href=%{link} target="_blank">הגדרות האבטחה של %{category}</a>'
+          default_hint: ניתן לנהל את הגישה באמצעות ביקור ב<a href=%{link} target="_blank">הגדרות האבטחה של %{category}</a>
+          public_category_hint: "%{category} היא קטגוריה ציבורית. לכולם תהיה גישה לערוץ הזה."
+          hint_single: למשתמשים ב־%{hint_1} תהיה גישה לערוץ בהתאם ל<a href=%{link} target="_blank">הגדרות האבטחה</a>
+          hint_multiple:
+            one: למשתמשים ב־%{hint_1} וב־%{hint_2} תהיה גישה לערוץ בהתאם ל<a href=%{link} target="_blank">הגדרות האבטחה</a>
+            two: למשתמשים ב־%{hint_1} וב־%{count} קבוצות נוספות תהיה גישה לערוץ בהתאם ל<a href=%{link} target="_blank">הגדרות האבטחה</a>
+            many: למשתמשים ב־%{hint_1} וב־%{count} קבוצות נוספות תהיה גישה לערוץ בהתאם ל<a href=%{link} target="_blank">הגדרות האבטחה</a>
+            other: למשתמשים ב־%{hint_1} וב־%{count} קבוצות נוספות תהיה גישה לערוץ בהתאם ל<a href=%{link} target="_blank">הגדרות האבטחה</a>
         create: "יצירת ערוץ"
         description: "תיאור (רשות)"
         name: "שם הערוץ"
@@ -346,10 +353,6 @@ he:
         chat_mention: "איזכור בצ׳אט"
         chat_invitation: "הזמנה לצ׳אט"
         chat_quoted: "הצ׳אט צוטט"
-    topic:
-      actions:
-        chat_enable: "הפעלת צ׳אט"
-        chat_disable: "סגירת צ׳אט"
     action_codes:
       chat:
         enabled: 'ה<button class="btn-link open-chat">צ׳אט</button>הופעל על ידי%{who} ב־%{when}'

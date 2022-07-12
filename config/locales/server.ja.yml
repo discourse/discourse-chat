@@ -6,12 +6,10 @@
 
 ja:
   site_settings:
-    chat_enabled: "discourse-chat プラグインを有効にします。トピックごとに「チャットを有効にする」アクションを使用してセットアップします。"
     chat_allowed_groups: "これらのグループのユーザーはチャットできます。"
   chat:
     errors:
       channel_exists_for_category: "このカテゴリと名前のチャンネルはすでに存在します"
-      channel_exists_for_topic: "このトピックのチャンネルはすでに存在します"
     reviewables:
       actions:
         agree:

@@ -23,6 +23,7 @@ pl_PL:
       cancel_reply: "Anuluj odpowiedź"
       chat_channels: "Kanały"
       leave: "Opuść kanał"
+      browse_all_channels: "Przeglądaj wszystkie kanały"
       channel_settings:
         edit: "Edytuj"
       channels_list_popup:
@@ -114,7 +115,7 @@ pl_PL:
         choose_category:
           label: "Wybierz kategorię"
           none: "wybierz jeden..."
-          hint: 'Zarządzaj dostępem, odwiedzając <a href=%{link} target="_blank">ustawienia bezpieczeństwa %{category} </a>'
+          default_hint: Zarządzaj dostępem, odwiedzając <a href=%{link} target="_blank">ustawienia bezpieczeństwa %{category} </a>
         create: "Utwórz kanał"
         description: "Opis (opcjonalnie)"
         name: "Nazwa kanału"
@@ -208,10 +209,6 @@ pl_PL:
       popup:
         chat_message: "Nowa wiadomość na czacie"
         chat_quoted: "%{username} zacytował Twoją wiadomość na czacie"
-    topic:
-      actions:
-        chat_enable: "Włącz czat"
-        chat_disable: "Zamknij czat"
     discourse_automation:
       scriptables:
         send_chat_message:

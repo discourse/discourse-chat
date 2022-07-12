@@ -6,7 +6,7 @@
 
 sv:
   site_settings:
-    chat_enabled: "Aktivera insticksprogrammet för discourse-chatt. Använd åtgärden 'Aktivera chatt' per ämne för att konfigurera."
+    chat_enabled: "Aktivera tillägget discourse-chatt."
     chat_allowed_groups: "Användare i dessa grupper kan chatta."
     chat_channel_retention_days: "Chattmeddelanden i ordinarie kanaler kommer att behållas i så här många dagar. Sätt till '0' för att behålla meddelanden för alltid."
     chat_dm_retention_days: "Chattmeddelanden i personliga chattkanaler kommer att behållas i så här många dagar. Sätt till '0' för att behålla meddelanden för alltid."
@@ -37,7 +37,6 @@ sv:
   chat:
     errors:
       channel_exists_for_category: "En kanal finns redan för denna kategori och namn"
-      channel_exists_for_topic: "En kanal finns redan för detta ämne"
       channel_new_message_disallowed: "Kanalen är %{status}, inga nya meddelanden kan skickas"
       channel_modify_message_disallowed: "Kanalen är %{status}, inga meddelanden kan redigeras eller tas bort"
       user_cannot_send_message: "Du kan inte skicka meddelanden just nu."

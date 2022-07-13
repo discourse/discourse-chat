@@ -259,8 +259,8 @@ en:
         always: "For all activity"
 
       settings:
-        enable_auto_join_users: "Automatically join all new and existing users"
-        disable_auto_join_users: "Stop automatically joining users"
+        enable_auto_join_users: "Automatically add all new and existing users"
+        disable_auto_join_users: "Stop automatically adding new users"
         auto_join_users_warning: "Every user who isn't a member of this channel and has access to the %{category} category will join. Are you sure?"
         desktop_notification_level: "Desktop notifications"
         follow: "Join"

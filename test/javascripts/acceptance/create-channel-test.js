@@ -64,7 +64,12 @@ acceptance("Discourse Chat - Create channel modal", function (needs) {
 
     server.get(
       "/chat/api/category-chatables/:categoryId/permissions.json",
-      () => helper.response(["@awesomeGroup"])
+      () =>
+        helper.response({
+          allowed_groups: ["@awesomeGroup"],
+          members_count: 2,
+          private: true,
+        })
     );
   });
 

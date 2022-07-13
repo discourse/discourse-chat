@@ -15,24 +15,53 @@ describe DiscourseChat::Api::CategoryChatablesController do
       it 'returns a list with the group names that could access a chat channel' do
         get "/chat/api/category-chatables/#{private_category.id}/permissions.json"
 
-        expect(response.parsed_body).to contain_exactly("@#{group.name}")
+        expect(response.parsed_body['allowed_groups']).to contain_exactly("@#{group.name}")
+        expect(response.parsed_body['members_count']).to eq(0)
+        expect(response.parsed_body['private']).to eq(true)
       end
 
       it "doesn't return group names from other categories" do
+        a_member = Fabricate(:user)
         group_2 = Fabricate(:group)
+        group_2.add(a_member)
         category_2 = Fabricate(:private_category, group: group_2)
 
         get "/chat/api/category-chatables/#{category_2.id}/permissions.json"
 
-        expect(response.parsed_body).to contain_exactly("@#{group_2.name}")
+        expect(response.parsed_body['allowed_groups']).to contain_exactly("@#{group_2.name}")
+        expect(response.parsed_body['members_count']).to eq(1)
+        expect(response.parsed_body['private']).to eq(true)
       end
 
-      it "returns an empty list when the category doesn't have group permissions" do
+      it "returns the everyone group when a category is public" do
+        Fabricate(:user)
         category_2 = Fabricate(:category)
+        everyone_group = Group.find(Group::AUTO_GROUPS[:everyone])
 
         get "/chat/api/category-chatables/#{category_2.id}/permissions.json"
 
-        expect(response.parsed_body).to be_empty
+        expect(response.parsed_body['allowed_groups']).to contain_exactly("@#{everyone_group.name}")
+        expect(response.parsed_body['members_count']).to be_nil
+        expect(response.parsed_body['private']).to eq(false)
+      end
+
+      it "includes the number of users with access" do
+        number_of_users = 3
+        number_of_users.times do
+          group.add(Fabricate(:user))
+        end
+
+        get "/chat/api/category-chatables/#{private_category.id}/permissions.json"
+
+        expect(response.parsed_body['allowed_groups']).to contain_exactly("@#{group.name}")
+        expect(response.parsed_body['members_count']).to eq(number_of_users)
+        expect(response.parsed_body['private']).to eq(true)
+      end
+
+      it 'returns a 404 when passed an invalid category' do
+        get "/chat/api/category-chatables/-99/permissions.json"
+
+        expect(response.status).to eq(404)
       end
     end
 

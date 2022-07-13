@@ -2,33 +2,26 @@
 
 class ChatSeeder
   def execute(args = {})
-    return unless SiteSetting.needs_chat_seeded
+    return if !SiteSetting.needs_chat_seeded
 
     begin
-      staff_category = Category.find_by(id: SiteSetting.staff_category_id)
-      chat_channel = create_staff_chat_channel(staff_category)
-      auto_join_users(chat_channel)
+      create_category_channel_from(SiteSetting.staff_category_id)
+      create_category_channel_from(SiteSetting.meta_category_id)
     rescue => error
-      Rails.logger.warn("Error seeding chat staff category - #{error.inspect}")
+      Rails.logger.warn("Error seeding chat category - #{error.inspect}")
     ensure
       SiteSetting.needs_chat_seeded = false
     end
   end
 
-  def create_staff_chat_channel(staff_category)
-    return unless staff_category
+  def create_category_channel_from(category_id)
+    category = Category.find_by(id: category_id)
+    return if category.nil?
 
-    chat_channel = ChatChannel.create(chatable: staff_category)
-    staff_category.custom_fields[DiscourseChat::HAS_CHAT_ENABLED] = true
-    staff_category.save!
+    chat_channel = ChatChannel.create!(chatable: category, auto_join_users: true)
+    category.custom_fields[DiscourseChat::HAS_CHAT_ENABLED] = true
+    category.save!
+    UserChatChannelMembership.enforce_automatic_channel_memberships(chat_channel)
     chat_channel
-  end
-
-  def auto_join_users(chat_channel)
-    group_ids = chat_channel.allowed_group_ids
-    users = User.not_suspended.joins(:group_users).where(group_users: { group_id:  group_ids }).uniq
-    users.each do |user|
-      UserChatChannelMembership.create!(user: user, chat_channel: chat_channel, following: true)
-    end
   end
 end

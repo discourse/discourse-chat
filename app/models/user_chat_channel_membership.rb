@@ -20,7 +20,25 @@ class UserChatChannelMembership < ActiveRecord::Base
   enum desktop_notification_level: NOTIFICATION_LEVELS, _prefix: :desktop_notifications
   enum mobile_notification_level: NOTIFICATION_LEVELS, _prefix: :mobile_notifications
 
+  enum join_mode: {
+    manual: 0,
+    automatic: 1
+  }
+
   validate :changes_for_direct_message_channels
+
+  class << self
+    def enforce_automatic_channel_memberships(channel)
+      Jobs.enqueue(:auto_manage_channel_memberships, chat_channel_id: channel.id)
+    end
+
+    def enforce_automatic_user_membership(channel, user)
+      Jobs.enqueue(
+        :auto_join_channel_batch,
+        chat_channel_id: channel.id, starts_at: user.id, ends_at: user.id
+      )
+    end
+  end
 
   private
 
@@ -49,6 +67,7 @@ end
 #  created_at                          :datetime         not null
 #  updated_at                          :datetime         not null
 #  last_unread_mention_when_emailed_id :integer
+#  join_mode                           :integer          default("manual"), not null
 #
 # Indexes
 #

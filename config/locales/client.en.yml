@@ -210,15 +210,20 @@ en:
           other: "%{count} members"
 
       create_channel:
+        auto_join_users:
+          public_category_warning: "%{category} is a public category. Automatically add every user to this channel?"
+          warning_groups: 
+            one: Automatically add %{members_count} users from %{group_1}?
+            other: Automatically add %{members_count} users from %{group_1} and %{group_2}?
+          warning_multiple_groups: Automatically add %{members_count} users from %{group_1} and %{count} others?
         choose_category:
           label: "Choose a category"
           none: "select one..."
           default_hint: Manage access by visiting <a href=%{link} target="_blank">%{category} security settings</a>
-          public_category_hint: "%{category} is a public category. Everyone will have access to this channel."
-          hint_single: Users in %{hint_1} will have access to this channel per the <a href=%{link} target="_blank">security settings</a>
-          hint_multiple:
-            one: Users in %{hint_1} and %{hint_2} will have access to this channel per the <a href=%{link} target="_blank">security settings</a>
-            other: Users in %{hint_1} and %{count} other groups will have access to this channel per the <a href=%{link} target="_blank">security settings</a>
+          hint_groups:
+            one: Users in %{hint_1} will have access to this channel per the <a href=%{link} target="_blank">security settings</a>
+            other: Users in %{hint_1} and %{hint_2} will have access to this channel per the <a href=%{link} target="_blank">security settings</a> 
+          hint_multiple_groups: Users in %{hint_1} and %{count} other groups will have access to this channel per the <a href=%{link} target="_blank">security settings</a>
         create: "Create channel"
         description: "Description (optional)"
         name: "Channel name"
@@ -254,6 +259,9 @@ en:
         always: "For all activity"
 
       settings:
+        enable_auto_join_users: "Automatically join all new and existing users"
+        disable_auto_join_users: "Stop automatically joining users"
+        auto_join_users_warning: "Every user who isn't a member of this channel and has access to the %{category} category will join. Are you sure?"
         desktop_notification_level: "Desktop notifications"
         follow: "Join"
         followed: "Joined"

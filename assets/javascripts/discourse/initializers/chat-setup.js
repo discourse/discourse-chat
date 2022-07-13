@@ -4,7 +4,6 @@ import { bind } from "discourse-common/utils/decorators";
 import { getOwner } from "discourse-common/lib/get-owner";
 import { MENTION_KEYWORDS } from "discourse/plugins/discourse-chat/discourse/components/chat-message";
 import { clearChatComposerButtons } from "discourse/plugins/discourse-chat/discourse/lib/chat-composer-buttons";
-import { A } from "@ember/array";
 import { tracked } from "@glimmer/tracking";
 import showModal from "discourse/lib/show-modal";
 
@@ -127,6 +126,9 @@ export default {
           }
         });
       });
+    });
+
+    withPluginApi("1.3.0", (api) => {
       api.addSidebarSection(
         (BaseCustomSidebarSection, BaseCustomSidebarSectionLink) => {
           const SidebarChatSectionLink = class extends BaseCustomSidebarSectionLink {
@@ -181,30 +183,29 @@ export default {
           };
 
           const SidebarChatSection = class extends BaseCustomSidebarSection {
-            @tracked sectionLinks = A([]);
+            @tracked sectionLinks = [];
 
             constructor({ sidebar }) {
               super(...arguments);
 
               this.sidebar = sidebar;
               this.chatService = container.lookup("service:chat");
-              this.sidebar.appEvents.on(
-                "chat:refresh-channels",
-                this._refreshChannels
-              );
-              this.sidebar.appEvents.on(
+              this.currentUser = container.lookup("current-user:main");
+              this.appEvents = container.lookup("service:appEvents");
+              this.appEvents.on("chat:refresh-channels", this._refreshChannels);
+              this.appEvents.on(
                 "chat:navigated-to-full-page",
                 this._refreshChannels
               );
-              this.currentUser = getOwner(this).lookup("current-user:main");
             }
 
             willDestroy() {
-              this.sidebar.appEvents.off(
+              this._super(...arguments);
+              this.appEvents.off(
                 "chat:refresh-channels",
                 this._refreshChannels
               );
-              this.sidebar.appEvents.off(
+              this.appEvents.off(
                 "chat:navigated-to-full-page",
                 this._refreshChannels
               );
@@ -243,7 +244,6 @@ export default {
             }
 
             get actions() {
-              const currentUser = getOwner(this).lookup("current-user:main");
               const actions = [
                 {
                   id: "browseChannels",
@@ -253,7 +253,7 @@ export default {
                   },
                 },
               ];
-              if (currentUser.staff) {
+              if (this.currentUser.staff) {
                 actions.push({
                   id: "openCreateChannelModal",
                   title: I18n.t("chat.channels_list_popup.create"),

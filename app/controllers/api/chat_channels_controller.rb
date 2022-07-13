@@ -27,7 +27,7 @@ class DiscourseChat::Api::ChatChannelsController < DiscourseChat::Api
     ChatPublisher.publish_chat_channel_edit(chat_channel, current_user)
 
     if chat_channel.category_channel? && chat_channel.auto_join_users
-      UserChatChannelMembership.async_auto_join_for(chat_channel)
+      UserChatChannelMembership.enforce_automatic_channel_memberships(chat_channel)
     end
 
     render_serialized(chat_channel, ChatChannelSerializer, root: false)

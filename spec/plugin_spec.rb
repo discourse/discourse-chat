@@ -228,31 +228,51 @@ describe 'discourse-chat' do
     fab!(:user) { Fabricate(:user, last_seen_at: 15.minutes.ago) }
     let!(:channel) { Fabricate(:chat_channel, auto_join_users: true, chatable: category) }
 
+    before { Jobs.run_immediately! }
+
+    def assert_user_following_state(user, channel, following:)
+      membership = UserChatChannelMembership.find_by(user: user, chat_channel: channel)
+
+      following ? (expect(membership.following).to eq(true)) : (expect(membership).to be_nil)
+    end
+
     describe 'when a user is added to a group with access to a channel through a category' do
       let!(:category) { Fabricate(:private_category, group: chatters_group) }
 
       it 'joins the user to the channel if auto-join is enabled' do
         chatters_group.add(user)
 
-        membership = UserChatChannelMembership.find_by(user: user, chat_channel: channel, following: true)
-
-        expect(membership).to be_present
+        assert_user_following_state(user, channel, following: true)
       end
 
       it 'does nothing if auto-join is disabled' do
         channel.update!(auto_join_users: false)
-        chatters_group.add(user)
 
-        membership = UserChatChannelMembership.find_by(user: user, chat_channel: channel, following: true)
+        assert_user_following_state(user, channel, following: false)
+      end
+    end
 
-        expect(membership).to be_nil
+    describe 'when a user is created' do
+      fab!(:category) { Fabricate(:category) }
+      let(:user) { Fabricate.build(:user) }
+
+      it 'queues a job to auto-join the user' do
+        user.save!
+
+        assert_user_following_state(user, channel, following: true)
+      end
+
+      it 'does nothing if auto-join is disabled' do
+        channel.update!(auto_join_users: false)
+
+        user.save!
+
+        assert_user_following_state(user, channel, following: false)
       end
     end
 
     describe 'when category permissions change' do
       fab!(:category) { Fabricate(:category) }
-
-      before { Jobs.run_immediately! }
 
       let(:chatters_group_permission) do
         { chatters_group.name => CategoryGroup.permission_types[:full] }
@@ -264,19 +284,15 @@ describe 'discourse-chat' do
 
           category.update!(permissions: chatters_group_permission)
 
-          membership = UserChatChannelMembership.find_by(user: user, chat_channel: channel)
-          expect(membership.following).to eq(true)
+          assert_user_following_state(user, channel, following: true)
         end
 
         it 'does nothing if there is no channel for the category' do
-          channel.destroy!
           another_category = Fabricate(:category)
-          chatters_group.add(user)
 
           another_category.update!(permissions: chatters_group_permission)
 
-          membership = UserChatChannelMembership.find_by(user: user, chat_channel: channel)
-          expect(membership).to be_nil
+          assert_user_following_state(user, channel, following: false)
         end
       end
     end

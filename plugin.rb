@@ -480,6 +480,12 @@ after_initialize do
     ReviewableChatMessage.on_score_updated(reviewable)
   end
 
+  on(:user_created) do |user|
+    ChatChannel.where(auto_join_users: true).each do |channel|
+      UserChatChannelMembership.enforce_automatic_user_membership(channel, user)
+    end
+  end
+
   on(:user_added_to_group) do |user, group|
     channels_to_add = ChatChannel
       .distinct
@@ -487,8 +493,8 @@ after_initialize do
       .joins('INNER JOIN category_groups ON category_groups.category_id = chat_channels.chatable_id')
       .where(category_groups: { group_id: group.id })
 
-    if channels_to_add.present?
-      channels_to_add.each { |channel| channel.add(user) }
+    channels_to_add.each do |channel|
+      UserChatChannelMembership.enforce_automatic_user_membership(channel, user)
     end
   end
 
@@ -499,7 +505,7 @@ after_initialize do
     category_channel = ChatChannel.find_by(auto_join_users: true, chatable: category)
 
     if category_channel
-      UserChatChannelMembership.async_auto_join_for(category_channel)
+      UserChatChannelMembership.enforce_automatic_channel_memberships(category_channel)
     end
   end
 

@@ -3,7 +3,7 @@
     {{outlet}}
   </div>
 {{else}}
-  <div class="full-page-chat">
+  <div class="full-page-chat {{if currentUser.experimental_sidebar_enabled "full-page-chat-sidebar-enabled" ""}}">
     {{#if (and (not currentUser.experimental_sidebar_enabled) (not site.mobileView))}}
       {{channels-list onSelect=(action "switchChannel")}}
     {{/if}}

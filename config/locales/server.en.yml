@@ -45,6 +45,7 @@ en:
       message_move_invalid_channel: "The source and destination channel must be public channels."
       message_move_no_messages_found: "No messages were found with the provided message IDs."
       cant_update_direct_message_channel: "Direct message channel properties like name and description can’t be udpated."
+      not_accepting_dms: "Sorry, %{username} is not accepting messages at the moment."
     reviewables:
       actions:
         agree:

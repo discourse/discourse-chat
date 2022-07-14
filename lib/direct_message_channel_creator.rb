@@ -1,25 +1,29 @@
 # frozen_string_literal: true
 
 module DiscourseChat::DirectMessageChannelCreator
-  def self.create!(target_users:)
-    unique_target_users = target_users.uniq
-    direct_messages_channel = DirectMessageChannel.for_user_ids(unique_target_users.map(&:id))
+  class NotAllowed < StandardError; end
+
+  def self.create!(acting_user:, target_users:)
+    target_users.uniq!
+    direct_messages_channel = DirectMessageChannel.for_user_ids(target_users.map(&:id))
     if direct_messages_channel
       chat_channel = ChatChannel.find_by!(chatable: direct_messages_channel)
     else
-      direct_messages_channel = DirectMessageChannel.create!(user_ids: unique_target_users.map(&:id))
+      ensure_actor_can_communicate!(acting_user, target_users)
+      direct_messages_channel = DirectMessageChannel.create!(user_ids: target_users.map(&:id))
       chat_channel = ChatChannel.create!(chatable: direct_messages_channel)
     end
 
-    update_memberships(unique_target_users, chat_channel.id)
-    ChatPublisher.publish_new_direct_message_channel(chat_channel, unique_target_users)
+    update_memberships(target_users, chat_channel.id)
+    ChatPublisher.publish_new_direct_message_channel(chat_channel, target_users)
     chat_channel
   end
 
   private
 
-  def self.update_memberships(unique_target_users, chat_channel_id)
-    unique_target_users.each do |user|
+  # TODO (martin) Do this in a single query instead of using AR in a loop
+  def self.update_memberships(target_users, chat_channel_id)
+    target_users.each do |user|
       membership = UserChatChannelMembership.find_or_initialize_by(user_id: user.id, chat_channel_id: chat_channel_id)
 
       if membership.new_record?
@@ -31,6 +35,14 @@ module DiscourseChat::DirectMessageChannelCreator
 
       membership.following = true
       membership.save!
+    end
+  end
+
+  def self.ensure_actor_can_communicate!(acting_user, target_users)
+    UserCommScreener.new(
+      acting_user: acting_user, target_usernames: target_users.map(&:username)
+    ).preventing_actor_communication.each do |username|
+      raise NotAllowed.new(I18n.t("chat.errors.not_accepting_dms", username: username))
     end
   end
 end

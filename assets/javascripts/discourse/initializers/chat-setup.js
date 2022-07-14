@@ -163,19 +163,27 @@ export default {
               return this.channel.title;
             }
 
-            get prefixIcon() {
+            get prefixType() {
+              return "icon";
+            }
+
+            get prefixValue() {
               return "hashtag";
             }
 
-            get prefixIconColor() {
+            get prefixColor() {
               return this.channel.chatable.color;
             }
 
-            get prefixIconBadge() {
+            get prefixBadge() {
               return this.channel.chatable.read_restricted ? "lock" : "";
             }
 
-            get suffixIcon() {
+            get suffixType() {
+              return "icon";
+            }
+
+            get suffixValue() {
               return this.channel.unread_count > 0 ? "circle" : "";
             }
 

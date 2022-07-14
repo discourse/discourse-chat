@@ -320,7 +320,7 @@ RSpec.describe DiscourseChat::ChatController do
 
         expect(UserChatChannelMembership.find_by(user_id: user2.id).following).to be false
 
-        ChatPublisher.expects(:publish_new_direct_message_channel).once
+        ChatPublisher.expects(:publish_new_channel).once
 
         sign_in(user1)
         post "/chat/#{direct_message_channel.id}.json", params: { message: message }

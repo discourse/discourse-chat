@@ -2,6 +2,7 @@
 
 class ChatChannelSerializer < ApplicationSerializer
   attributes :id,
+             :auto_join_users,
              :chatable,
              :chatable_id,
              :chatable_type,
@@ -81,6 +82,10 @@ class ChatChannelSerializer < ApplicationSerializer
 
   def archive_topic_id
     archive.destination_topic_id
+  end
+
+  def include_auto_join_users?
+    scope.can_edit_chat_channel?
   end
 
   alias_method :include_archive_topic_id?, :include_archive_status?

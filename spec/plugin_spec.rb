@@ -7,6 +7,7 @@ describe 'discourse-chat' do
     SiteSetting.clean_up_uploads = true
     SiteSetting.clean_orphan_uploads_grace_period_hours = 1
     Jobs::CleanUpUploads.new.reset_last_cleanup!
+    SiteSetting.chat_enabled = true
   end
 
   describe 'register_upload_unused' do
@@ -218,6 +219,81 @@ describe 'discourse-chat' do
           <div class="chat-transcript-messages"><p>Hello world!</p></div>
         </div>
         HTML
+      end
+    end
+  end
+
+  describe 'auto-joining users to a channel' do
+    fab!(:chatters_group) { Fabricate(:group) }
+    fab!(:user) { Fabricate(:user, last_seen_at: 15.minutes.ago) }
+    let!(:channel) { Fabricate(:chat_channel, auto_join_users: true, chatable: category) }
+
+    before { Jobs.run_immediately! }
+
+    def assert_user_following_state(user, channel, following:)
+      membership = UserChatChannelMembership.find_by(user: user, chat_channel: channel)
+
+      following ? (expect(membership.following).to eq(true)) : (expect(membership).to be_nil)
+    end
+
+    describe 'when a user is added to a group with access to a channel through a category' do
+      let!(:category) { Fabricate(:private_category, group: chatters_group) }
+
+      it 'joins the user to the channel if auto-join is enabled' do
+        chatters_group.add(user)
+
+        assert_user_following_state(user, channel, following: true)
+      end
+
+      it 'does nothing if auto-join is disabled' do
+        channel.update!(auto_join_users: false)
+
+        assert_user_following_state(user, channel, following: false)
+      end
+    end
+
+    describe 'when a user is created' do
+      fab!(:category) { Fabricate(:category) }
+      let(:user) { Fabricate.build(:user) }
+
+      it 'queues a job to auto-join the user' do
+        user.save!
+
+        assert_user_following_state(user, channel, following: true)
+      end
+
+      it 'does nothing if auto-join is disabled' do
+        channel.update!(auto_join_users: false)
+
+        user.save!
+
+        assert_user_following_state(user, channel, following: false)
+      end
+    end
+
+    describe 'when category permissions change' do
+      fab!(:category) { Fabricate(:category) }
+
+      let(:chatters_group_permission) do
+        { chatters_group.name => CategoryGroup.permission_types[:full] }
+      end
+
+      describe 'given permissions to a new group' do
+        it 'adds the user to the channel' do
+          chatters_group.add(user)
+
+          category.update!(permissions: chatters_group_permission)
+
+          assert_user_following_state(user, channel, following: true)
+        end
+
+        it 'does nothing if there is no channel for the category' do
+          another_category = Fabricate(:category)
+
+          another_category.update!(permissions: chatters_group_permission)
+
+          assert_user_following_state(user, channel, following: false)
+        end
       end
     end
   end

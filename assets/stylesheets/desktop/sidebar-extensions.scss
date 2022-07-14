@@ -1,6 +1,4 @@
-.has-sidebar-page.has-full-page-chat {
-  .full-page-chat {
-    grid-template-columns: 1fr;
-    overflow: inherit;
-  }
+.full-page-chat.full-page-chat-sidebar-enabled {
+  grid-template-columns: 1fr;
+  overflow: inherit;
 }

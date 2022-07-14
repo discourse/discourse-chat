@@ -61,6 +61,30 @@
     {{/unless}}
   </div>
 
+  {{#if (chat-guardian "can-edit-chat-channel")}}
+    {{#if autoJoinAvailable}}
+      <div class="chat-form__section">
+        <div class="chat-form__field">
+          {{#if channel.auto_join_users}}
+            {{d-button
+              action=(action "onDisableAutoJoinUsers")
+              label="chat.settings.disable_auto_join_users"
+              class="archive-btn chat-form__btn btn-flat"
+              icon="minus-circle"
+            }}
+          {{else}}
+            {{d-button
+              action=(action "onEnableAutoJoinUsers")
+              label="chat.settings.enable_auto_join_users"
+              class="archive-btn chat-form__btn btn-flat"
+              icon="user-plus"
+            }}
+          {{/if}}
+        </div>
+      </div>
+    {{/if}}
+  {{/if}}
+
   <div class="chat-form__section">
     {{#if (chat-guardian "can-edit-chat-channel")}}
       {{#if (chat-guardian "can-archive-channel" channel)}}

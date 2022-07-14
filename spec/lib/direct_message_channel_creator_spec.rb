@@ -35,10 +35,11 @@ describe DiscourseChat::DirectMessageChannelCreator do
     it "publishes the new DM channel message bus message for each user" do
       messages = MessageBus.track_publish do
         subject.create!(acting_user: user_1, target_users: [user_1, user_2])
-      end.filter { |m| m.channel == "/chat/new-direct-message-channel" }
+      end.filter { |m| m.channel == "/chat/new-channel" }
+
       expect(messages.count).to eq(2)
       expect(messages.first[:data]).to be_kind_of(Hash)
-      expect(messages.map { |m| m[:data][:chat_channel][:id] }).to eq([dm_chat_channel.id, dm_chat_channel.id])
+      expect(messages.map { |m| m.dig(:data, :chat_channel, :id) }).to eq([dm_chat_channel.id, dm_chat_channel.id])
     end
 
     it "allows a user to create a direct message to themself, without creating a new channel" do
@@ -82,12 +83,12 @@ describe DiscourseChat::DirectMessageChannelCreator do
     it "publishes the new DM channel message bus message for each user" do
       messages = MessageBus.track_publish do
         subject.create!(acting_user: user_1, target_users: [user_1, user_2])
-      end.filter { |m| m.channel == "/chat/new-direct-message-channel" }
+      end.filter { |m| m.channel == "/chat/new-channel" }
 
       chat_channel = ChatChannel.last
       expect(messages.count).to eq(2)
       expect(messages.first[:data]).to be_kind_of(Hash)
-      expect(messages.map { |m| m[:data][:chat_channel][:id] }).to eq([chat_channel.id, chat_channel.id])
+      expect(messages.map { |m| m.dig(:data, :chat_channel, :id) }).to eq([chat_channel.id, chat_channel.id])
     end
 
     it "allows a user to create a direct message to themself" do

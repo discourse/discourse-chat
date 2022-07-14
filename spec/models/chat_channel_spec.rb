@@ -240,4 +240,68 @@ describe ChatChannel do
     channel = described_class.new(name: nil)
     expect(channel).to be_valid
   end
+
+  describe '#join' do
+    before { group.add(user1) }
+
+    it 'creates a membership for the user and updates the count' do
+      initial_count = private_category_channel.user_count
+
+      membership = private_category_channel.add(user1)
+
+      expect(membership.following).to eq(true)
+      expect(membership.user).to eq(user1)
+      expect(membership.chat_channel).to eq(private_category_channel)
+      expect(private_category_channel.reload.user_count).to eq(initial_count + 1)
+    end
+
+    it 'updates an existing membership for the user and updates the count' do
+      initial_count = private_category_channel.user_count
+      membership = UserChatChannelMembership.create!(chat_channel: private_category_channel, user: user1, following: false)
+
+      private_category_channel.add(user1)
+
+      expect(membership.reload.following).to eq(true)
+      expect(private_category_channel.reload.user_count).to eq(initial_count + 1)
+    end
+
+    it 'does nothing if the user is already a member' do
+      initial_count = private_category_channel.user_count
+      membership = UserChatChannelMembership.create!(chat_channel: private_category_channel, user: user1, following: true)
+
+      private_category_channel.add(user1)
+
+      expect(private_category_channel.reload.user_count).to eq(initial_count)
+    end
+  end
+
+  describe '#remove' do
+    before do
+      group.add(user1)
+      @membership = private_category_channel.add(user1)
+      private_category_channel.reload
+    end
+
+    it 'updates the membership for the user and decreates the count' do
+      initial_count = private_category_channel.user_count
+
+      membership = private_category_channel.remove(user1)
+
+      expect(@membership.reload.following).to eq(false)
+      expect(private_category_channel.reload.user_count).to eq(initial_count - 1)
+    end
+
+    it "fails if the user doesn't have a membership" do
+      expect { private_category_channel.remove(user2) }.to raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it 'does nothing if the user is not following the channel' do
+      initial_count = private_category_channel.user_count
+      @membership.update!(following: false)
+
+      private_category_channel.remove(user1)
+
+      expect(private_category_channel.reload.user_count).to eq(initial_count)
+    end
+  end
 end

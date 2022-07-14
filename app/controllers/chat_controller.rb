@@ -128,7 +128,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
 
     if @chat_channel.direct_message_channel?
       @chat_channel.user_chat_channel_memberships.update_all(following: true)
-      ChatPublisher.publish_new_direct_message_channel(@chat_channel, @chat_channel.chatable.users)
+      ChatPublisher.publish_new_channel(@chat_channel, @chat_channel.chatable.users)
     end
 
     ChatPublisher.publish_user_tracking_state(

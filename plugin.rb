@@ -90,7 +90,7 @@ after_initialize do
     end
   end
 
-  SeedFu.fixture_paths << Rails.root.join("plugins", "discourse-chat", "db", "fixtures").to_s
+  register_seedfu_fixtures(Rails.root.join("plugins", "discourse-chat", "db", "fixtures"))
 
   load File.expand_path('../app/controllers/admin/admin_incoming_chat_webhooks_controller.rb', __FILE__)
   load File.expand_path('../app/controllers/chat_base_controller.rb', __FILE__)
@@ -148,6 +148,8 @@ after_initialize do
   load File.expand_path('../lib/extensions/user_email_extension.rb', __FILE__)
   load File.expand_path('../lib/slack_compatibility.rb', __FILE__)
   load File.expand_path('../lib/post_notification_handler.rb', __FILE__)
+  load File.expand_path('../app/jobs/regular/auto_manage_channel_memberships.rb', __FILE__)
+  load File.expand_path('../app/jobs/regular/auto_join_channel_batch.rb', __FILE__)
   load File.expand_path('../app/jobs/regular/process_chat_message.rb', __FILE__)
   load File.expand_path('../app/jobs/regular/chat_channel_archive.rb', __FILE__)
   load File.expand_path('../app/jobs/regular/chat_channel_delete.rb', __FILE__)
@@ -478,6 +480,35 @@ after_initialize do
 
   on(:reviewable_score_updated) do |reviewable|
     ReviewableChatMessage.on_score_updated(reviewable)
+  end
+
+  on(:user_created) do |user|
+    ChatChannel.where(auto_join_users: true).each do |channel|
+      UserChatChannelMembership.enforce_automatic_user_membership(channel, user)
+    end
+  end
+
+  on(:user_added_to_group) do |user, group|
+    channels_to_add = ChatChannel
+      .distinct
+      .where(auto_join_users: true, chatable_type: 'Category')
+      .joins('INNER JOIN category_groups ON category_groups.category_id = chat_channels.chatable_id')
+      .where(category_groups: { group_id: group.id })
+
+    channels_to_add.each do |channel|
+      UserChatChannelMembership.enforce_automatic_user_membership(channel, user)
+    end
+  end
+
+  on(:category_updated) do |category|
+    # TODO(roman): remove early return after 2.9 release.
+    # There's a bug on core where this event is triggered with an `#update` result (true/false)
+    return if !category.is_a?(Category)
+    category_channel = ChatChannel.find_by(auto_join_users: true, chatable: category)
+
+    if category_channel
+      UserChatChannelMembership.enforce_automatic_channel_memberships(category_channel)
+    end
   end
 
   DiscourseChat::Engine.routes.draw do

@@ -1,3 +1,4 @@
+import bootbox from "bootbox";
 import Component from "@ember/component";
 import { action, computed } from "@ember/object";
 import { inject as service } from "@ember/service";
@@ -30,6 +31,20 @@ export default class ChatChannelSettingsView extends Component {
   savedDesktopNotificationLevel = false;
   savedMobileNotificationLevel = false;
   savedMuted = false;
+
+  _updateAutoJoinUsers(value) {
+    return ChatApi.modifyChatChannel(this.channel.id, {
+      auto_join_users: value,
+    })
+      .then((chatChannel) => {
+        this.channel.set("auto_join_users", chatChannel.auto_join_users);
+      })
+      .catch((event) => {
+        if (event.jqXHR?.responseJSON?.errors) {
+          this.flash(event.jqXHR.responseJSON.errors.join("\n"), "error");
+        }
+      });
+  }
 
   @action
   saveNotificationSettings(key, value) {
@@ -84,6 +99,14 @@ export default class ChatChannelSettingsView extends Component {
     );
   }
 
+  @computed("channel.isCategoryChannel")
+  get autoJoinAvailable() {
+    return (
+      this.siteSettings.max_chat_auto_joined_users > 0 &&
+      this.channel.isCategoryChannel
+    );
+  }
+
   @action
   onArchiveChannel() {
     const controller = showModal("chat-channel-archive-modal");
@@ -100,5 +123,24 @@ export default class ChatChannelSettingsView extends Component {
   onToggleChannelState() {
     const controller = showModal("chat-channel-toggle");
     controller.set("chatChannel", this.channel);
+  }
+
+  @action
+  onDisableAutoJoinUsers() {
+    this._updateAutoJoinUsers(false);
+  }
+
+  @action
+  onEnableAutoJoinUsers() {
+    bootbox.confirm(
+      I18n.t("chat.settings.auto_join_users_warning", {
+        category: this.channel.chatable.name,
+      }),
+      (confirmed) => {
+        if (confirmed) {
+          this._updateAutoJoinUsers(true);
+        }
+      }
+    );
   }
 }

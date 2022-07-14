@@ -24,7 +24,7 @@ describe DiscourseChat::ChatMessageCreator do
       Fabricate(:user_chat_channel_membership, chat_channel: public_chat_channel, user: user)
     end
 
-    @direct_message_channel = DiscourseChat::DirectMessageChannelCreator.create!(target_users: [user1, user2])
+    @direct_message_channel = DiscourseChat::DirectMessageChannelCreator.create!(acting_user: user1, target_users: [user1, user2])
   end
 
   describe "Integration tests with jobs running immediately" do

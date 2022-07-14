@@ -40,9 +40,14 @@ module DiscourseChat::DirectMessageChannelCreator
 
   def self.ensure_actor_can_communicate!(acting_user, target_users)
     UserCommScreener.new(
-      acting_user: acting_user, target_usernames: target_users.map(&:username)
-    ).preventing_actor_communication.each do |username|
-      raise NotAllowed.new(I18n.t("chat.errors.not_accepting_dms", username: username))
+      acting_user: acting_user, target_user_ids: target_users.map(&:id)
+    ).preventing_actor_communication.each do |user_id|
+      raise NotAllowed.new(
+        I18n.t(
+          "chat.errors.not_accepting_dms",
+          username: target_users.find { |user| user.id == user_id }.username
+        )
+      )
     end
   end
 end

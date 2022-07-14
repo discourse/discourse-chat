@@ -2,6 +2,7 @@
 
 module Jobs
   class ChatNotifyMentioned < ::Jobs::Base
+    delegate :direct_message_channel?, to: :@chat_channel
 
     def execute(args = {})
       @chat_message = ChatMessage.includes(:user, :revisions, chat_channel: :chatable).find_by(id: args[:chat_message_id])
@@ -9,7 +10,6 @@ module Jobs
 
       @creator = @chat_message.user
       @chat_channel = @chat_message.chat_channel
-      @is_direct_message_channel = @chat_channel.direct_message_channel?
       @already_notified_user_ids = args[:already_notified_user_ids] || []
       user_ids_to_notify = args[:to_notify_ids_map] || {}
 
@@ -33,10 +33,10 @@ module Jobs
         chat_message_id: @chat_message.id,
         chat_channel_id: @chat_channel.id,
         mentioned_by_username: @creator.username,
-        is_direct_message_channel: @is_direct_message_channel
+        is_direct_message_channel: direct_message_channel?
       }
 
-      data[:chat_channel_title] = @chat_channel.title(membership.user) unless @is_direct_message_channel
+      data[:chat_channel_title] = @chat_channel.title(membership.user) unless direct_message_channel?
       return data if identifier_type == :direct_mentions
 
       case identifier_type
@@ -60,7 +60,7 @@ module Jobs
         post_url: "/chat/channel/#{@chat_channel.id}/#{@chat_channel.title(membership.user)}?messageId=#{@chat_message.id}"
       }
 
-      translation_prefix = @is_direct_message_channel ?
+      translation_prefix = direct_message_channel? ?
         "discourse_push_notifications.popup.direct_message_chat_mention" :
         "discourse_push_notifications.popup.chat_mention"
       translation_suffix = identifier_type == :direct_mentions ? "direct" : "other"

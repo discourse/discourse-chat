@@ -7,11 +7,11 @@ describe Jobs::ChatNotifyMentioned do
   fab!(:user_2) { Fabricate(:user) }
   fab!(:public_channel) { Fabricate(:chat_channel) }
 
-  let!(:personal_chat_channel) { DiscourseChat::DirectMessageChannelCreator.create!(target_users: [user_1, user_2]) }
+  let!(:personal_chat_channel) { DiscourseChat::DirectMessageChannelCreator.create!(acting_user: user_1, target_users: [user_1, user_2]) }
 
   before do
     @chat_group = Fabricate(:group, users: [user_1, user_2])
-    @personal_chat_channel = DiscourseChat::DirectMessageChannelCreator.create!(target_users: [user_1, user_2])
+    @personal_chat_channel = DiscourseChat::DirectMessageChannelCreator.create!(acting_user: user_1, target_users: [user_1, user_2])
 
     [user_1, user_2].each { |u| Fabricate(:user_chat_channel_membership, chat_channel: public_channel, user: u) }
   end

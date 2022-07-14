@@ -16,6 +16,7 @@ class DiscourseChat::ChatMessageProcessor
 
   def run!
     post_process_oneboxes
+    DiscourseEvent.trigger(:chat_message_processed, @doc, @model)
   end
 
   def large_images

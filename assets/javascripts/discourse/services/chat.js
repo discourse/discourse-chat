@@ -1,4 +1,4 @@
-import { slugify } from "discourse/lib/utilities";
+import slugifyChannel from "discourse/plugins/discourse-chat/discourse/lib/slugify-channel";
 import deprecated from "discourse-common/lib/deprecated";
 import userSearch from "discourse/lib/user-search";
 import { popupAjaxError } from "discourse/lib/ajax-error";
@@ -494,7 +494,7 @@ export default Service.extend({
       return this.router.transitionTo(
         "chat.channel",
         channel.id,
-        slugify(channel.title).slice(0, 100),
+        slugifyChannel(channel.title),
         {
           queryParams,
         }

@@ -28,6 +28,12 @@ module ChatPublisher
     MessageBus.publish("/chat/#{chat_channel.id}", content.as_json, permissions(chat_channel))
   end
 
+  def self.publish_refresh!(chat_channel, chat_message)
+    content = ChatMessageSerializer.new(chat_message, { scope: anonymous_guardian, root: :chat_message }).as_json
+    content[:type] = :refresh
+    MessageBus.publish("/chat/#{chat_channel.id}", content.as_json, permissions(chat_channel))
+  end
+
   def self.publish_reaction!(chat_channel, chat_message, action, user, emoji)
     content = {
       action: action,

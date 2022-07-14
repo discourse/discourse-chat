@@ -69,6 +69,8 @@ export default Component.extend({
       );
     }
 
+    this.appEvents.off("chat:refresh-message", this, "_refreshedMessage");
+
     this.appEvents.off(
       "chat-message:reaction-picker-opened",
       this,
@@ -95,6 +97,13 @@ export default Component.extend({
   },
 
   @bind
+  _refreshedMessage(message) {
+    if (message.id === this.message.id) {
+      this.decorateMessageCooked();
+    }
+  },
+
+  @bind
   decorateMessageCooked() {
     if (!this.messageContainer) {
       return;
@@ -117,6 +126,8 @@ export default Component.extend({
     if (!this.message.id || this._hasSubscribedToAppEvents) {
       return;
     }
+
+    this.appEvents.on("chat:refresh-message", this, "_refreshedMessage");
 
     this.appEvents.on(
       "chat-message:reaction-picker-opened",

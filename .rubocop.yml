@@ -1,2 +1,3 @@
 inherit_gem:
   rubocop-discourse: default.yml
+  syntax_tree: config/rubocop.yml

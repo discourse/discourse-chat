@@ -46,7 +46,7 @@ acceptance("Discourse Chat - Keyboard shortcuts", function (needs) {
 
     server.get("/chat/chat_channels/search", () => {
       return helper.response({
-        public_channels: [ChatChannel.create({ id: 3, name: "seventeen" })],
+        public_channels: [ChatChannel.create({ id: 3, title: "seventeen" })],
         direct_message_channels: [
           ChatChannel.create({
             id: 4,

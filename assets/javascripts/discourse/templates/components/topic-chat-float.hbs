@@ -42,7 +42,7 @@
             {{#link-to
               infoTabRoute
               chat.activeChannel.id
-              chat.activeChannel.title
+              (slugify-channel chat.activeChannel.title)
               class="topic-chat-drawer-header__title"
             }}
               <div class="topic-chat-drawer-header__top-line">

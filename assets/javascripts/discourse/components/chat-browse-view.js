@@ -70,7 +70,7 @@ export default class ChatBrowseView extends Component {
   }
 
   @action
-  onScroll(event) {
+  onScroll() {
     if (this.isLoading) {
       return;
     }

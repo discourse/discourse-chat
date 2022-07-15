@@ -10,10 +10,10 @@
   {{/if}}
 
   <Input
-    @class="dc-filter-input"
-    @input={{if @filterAction @filterAction (noop)}}
-    @focus-in={{action (mut this.isFocused) true}}
-    @focus-out={{action (mut this.isFocused) false}}
+    class="dc-filter-input"
+    {{on "input" (if @filterAction @filterAction (noop))}}
+    {{on "focusin" (action (mut this.isFocused) true)}}
+    {{on "focusout" (action (mut this.isFocused) false)}}
     ...attributes
   />
 

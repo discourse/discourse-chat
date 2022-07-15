@@ -47,11 +47,11 @@ discourseModule(
 
     test("Focused state", async function (assert) {
       await render(hbs`<DcFilterInput @filterAction={{this.action}} />`);
-      await triggerEvent(".dc-filter-input", "focus");
+      await triggerEvent(".dc-filter-input", "focusin");
 
       assert.ok(exists(".dc-filter-input-container.is-focused"));
 
-      await triggerEvent(".dc-filter-input", "blur");
+      await triggerEvent(".dc-filter-input", "focusout");
 
       assert.notOk(exists(".dc-filter-input-container.is-focused"));
     });

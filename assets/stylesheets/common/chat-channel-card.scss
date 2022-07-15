@@ -1,0 +1,95 @@
+.chat-channel-card {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding: 1.25rem 0;
+  border-bottom: 1px solid var(--primary-low);
+  min-height: 0;
+  min-width: 0;
+
+  &__description {
+    color: var(--primary-medium);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 1px;
+    max-width: 100%;
+
+    .-closed &,
+    .-archived & {
+      opacity: 0.5;
+    }
+  }
+
+  &__setting {
+    position: absolute;
+    right: 0;
+    top: 1.25rem;
+    svg {
+      fill: var(--primary-medium);
+    }
+
+    .-archived & {
+      opacity: 0.5;
+    }
+  }
+
+  &__members {
+    margin-left: auto;
+    font-size: 0.875rem;
+    color: var(--tertiary-high);
+  }
+
+  &__name {
+    display: inline-block;
+    margin-bottom: 0.5rem;
+    color: var(--primary);
+    font-size: 1.15rem;
+    text-decoration: none;
+    padding-right: 1.25rem;
+    @include ellipsis;
+
+    &:visited,
+    &:hover {
+      color: var(--primary);
+    }
+
+    .-closed &,
+    .-archived & {
+      opacity: 0.5;
+    }
+  }
+
+  &__tag {
+    border-radius: 10px;
+    margin-right: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    font-weight: bold;
+
+    &.-muted {
+      color: var(--primary-medium);
+      background-color: var(--primary-low);
+    }
+    &.-joined {
+      color: var(--success); //success
+      background-color: var(--success-low);
+    }
+
+    &.-closed,
+    &.-archived {
+      display: inline-block;
+      padding-left: 0;
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  &__cta {
+    flex-grow: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    margin-top: 1rem;
+  }
+}

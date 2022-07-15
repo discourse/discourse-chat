@@ -108,45 +108,57 @@ describe DiscourseChat::ChatChannelFetcher do
   end
 
   describe "#secured_public_channels" do
-    let(:scope_with_membership) { false }
+    let(:following) { false }
 
     it "does not include DM channels" do
       expect(subject.secured_public_channels(
-        guardian, memberships, scope_with_membership: scope_with_membership
+        guardian, memberships, following: following
       ).map(&:id)).to match_array([category_channel.id])
     end
 
     it "can filter by channel name, or category name" do
       expect(subject.secured_public_channels(
-        guardian, memberships, scope_with_membership: scope_with_membership, filter: "support"
+        guardian, memberships, following: following, filter: "support"
       ).map(&:id)).to match_array([category_channel.id])
 
       category_channel.update!(name: "cool stuff")
 
       expect(subject.secured_public_channels(
-        guardian, memberships, scope_with_membership: scope_with_membership, filter: "cool stuff"
+        guardian, memberships, following: following, filter: "cool stuff"
+      ).map(&:id)).to match_array([category_channel.id])
+    end
+
+    it "can filter by status" do
+      expect(subject.secured_public_channels(
+        guardian, memberships, status: "closed"
+      ).map(&:id)).to match_array([])
+
+      category_channel.closed!(Discourse.system_user)
+
+      expect(subject.secured_public_channels(
+        guardian, memberships, status: "closed"
       ).map(&:id)).to match_array([category_channel.id])
     end
 
     it "does not show the user category channels they cannot access" do
       category_channel.update!(chatable: private_category)
       expect(subject.secured_public_channels(
-        guardian, memberships, scope_with_membership: scope_with_membership
+        guardian, memberships, following: following
       ).map(&:id)).to be_empty
     end
 
     context "when scoping to the user's channel memberships" do
-      let(:scope_with_membership) { true }
+      let(:following) { true }
 
       it "only returns channels where the user is a member and is following the channel" do
         expect(subject.secured_public_channels(
-          guardian, memberships, scope_with_membership: scope_with_membership
+          guardian, memberships, following: following
         ).map(&:id)).to be_empty
 
         UserChatChannelMembership.create!(user: user1, chat_channel: category_channel, following: true)
 
         expect(subject.secured_public_channels(
-          guardian, memberships, scope_with_membership: scope_with_membership
+          guardian, memberships, following: following
         ).map(&:id)).to match_array([category_channel.id])
       end
 
@@ -157,7 +169,7 @@ describe DiscourseChat::ChatChannelFetcher do
         Fabricate(:chat_message, user: user2, chat_channel: category_channel)
 
         result_category_channel = subject.secured_public_channels(
-          guardian, memberships, scope_with_membership: scope_with_membership
+          guardian, memberships, following: following
         ).find { |chan| chan.id == category_channel.id }
 
         expect(result_category_channel.unread_count).to eq(2)
@@ -166,7 +178,7 @@ describe DiscourseChat::ChatChannelFetcher do
         membership.update!(muted: true)
 
         result_category_channel = subject.secured_public_channels(
-          guardian, memberships, scope_with_membership: scope_with_membership
+          guardian, memberships, following: following
         ).find { |chan| chan.id == category_channel.id }
 
         expect(result_category_channel.unread_count).to eq(0)

@@ -1,229 +1,115 @@
-import { generateChatView } from "discourse/plugins/discourse-chat/chat-fixtures";
 import {
   acceptance,
-  exists,
-  loggedInUser,
   query,
+  queryAll,
 } from "discourse/tests/helpers/qunit-helpers";
 import { click, currentURL, fillIn, visit } from "@ember/test-helpers";
 import { test } from "qunit";
 import I18n from "I18n";
+import fabricate from "../helpers/fabricators";
+import { isEmpty } from "@ember/utils";
 
-acceptance("Discourse Chat - chat browsing", function (needs) {
-  const editedChannelName = "this is an edit test!";
+acceptance("Discourse Chat - browse channels", function (needs) {
+  needs.user({ has_chat_enabled: true, can_chat: true });
 
-  needs.user({
-    admin: true,
-    moderator: true,
-    username: "eviltrout",
-    id: 1,
-    can_chat: true,
-    has_chat_enabled: true,
-  });
-  needs.settings({
-    chat_enabled: true,
-  });
+  needs.settings({ chat_enabled: true });
+
   needs.pretender((server, helper) => {
-    server.get("/chat/chat_channels/all.json", () => {
-      return helper.response([
-        {
-          id: 1,
-          chatable_id: 1,
-          chatable_type: "Category",
-          chatable: {},
-          following: true,
-          title: "announcements",
-        },
-      ]);
-    });
-
-    server.get("/chat/chat_channels/1", () => {
+    // we don't need anything in the sidebar for this test
+    server.get("/chat/chat_channels.json", () => {
       return helper.response({
-        chat_channel: {
-          id: 1,
-          title: "announcements",
-          description: "Important stuff is announced here.",
-          chatable_id: 1,
-          chatable_type: "Category",
-        },
-      });
-    });
-
-    server.post("/chat/chat_channels/1/follow.json", () => {
-      return helper.response({
-        muted: false,
-        desktop_notification_level: 1,
-        mobile_notification_level: 1,
-        user_count: 10,
-      });
-    });
-
-    server.get("/chat/:chatChannelId/messages.json", () =>
-      helper.response(generateChatView(loggedInUser()))
-    );
-
-    server.get("/chat/chat_channels.json", () =>
-      helper.response({
         public_channels: [],
         direct_message_channels: [],
-      })
-    );
-
-    server.post("/chat/chat_channels/:chatChannelId/unfollow", () => {
-      return helper.response({ success: "OK" });
+      });
     });
 
-    server.post("/chat/chat_channels/:chat_channel_id", () => {
-      return helper.response({
-        chat_channel: {
-          title: editedChannelName,
-        },
-      });
+    server.get("/chat/api/chat_channels.json", (request) => {
+      const params = request.queryParams;
+
+      if (!isEmpty(params.filter)) {
+        if (params.filter === "foo") {
+          return helper.response([fabricate("chat-channel")]);
+        } else {
+          return helper.response([]);
+        }
+      }
+
+      const channels = [];
+      if (isEmpty(params.status) || params.status === "open") {
+        channels.push(fabricate("chat-channel"));
+        channels.push(fabricate("chat-channel"));
+      }
+
+      if (params.status === "closed" || isEmpty(params.status)) {
+        channels.push(fabricate("chat-channel", { status: "closed" }));
+      }
+
+      if (params.status === "archived" || isEmpty(params.status)) {
+        channels.push(fabricate("chat-channel", { status: "archived" }));
+      }
+
+      return helper.response(channels);
     });
   });
 
-  test("Chat browse controls", async function (assert) {
+  test("Defaults to open filter", async function (assert) {
     await visit("/chat/browse");
-    const settingsRow = query(".chat-channel-settings-row");
-
-    assert.ok(
-      settingsRow.querySelector(".chat-channel-unfollow"),
-      "Unfollow button is present"
-    );
-
-    await click(".chat-channel-unfollow");
-
-    assert.notOk(
-      settingsRow.querySelector(".chat-channel-unfollow"),
-      "Unfollow button is gone"
-    );
-    assert.ok(
-      settingsRow.querySelector(".chat-channel-preview"),
-      "Preview channel button is present"
-    );
-    assert.ok(
-      settingsRow.querySelector(".chat-channel-follow"),
-      "Follow button is present"
-    );
+    assert.equal(currentURL(), "/chat/browse/open");
   });
 
-  test("Previewing a channel", async function (assert) {
-    await visit("/chat/browse");
-    await click(".chat-channel-unfollow");
-    await click(".chat-channel-preview");
-
-    assert.ok(
-      exists(".chat-channel-preview-card"),
-      "it shows the preview card for the channel"
-    );
-
-    await click(".chat-channel-preview-card__join-channel-btn");
-    assert.ok(
-      exists(".chat-channel-preview-card"),
-      "it no longer shows the preview card for the channel"
-    );
-  });
-});
-
-acceptance("Discourse Chat - chat browsing no channels", function (needs) {
-  needs.user({
-    admin: true,
-    moderator: true,
-    username: "eviltrout",
-    id: 1,
-    can_chat: true,
-    has_chat_enabled: true,
-  });
-  needs.settings({
-    chat_enabled: true,
-  });
-  needs.pretender((server, helper) => {
-    server.get("/chat/chat_channels/all.json", () => {
-      return helper.response([]);
-    });
-
-    server.get("/chat/chat_channels.json", () =>
-      helper.response({
-        public_channels: [],
-        direct_message_channels: [],
-      })
-    );
-    const hawkAsJson = {
-      username: "hawk",
-      id: 2,
-      name: "hawk",
-      avatar_template:
-        "https://avatars.discourse.org/v3/letter/t/41988e/{size}.png",
-    };
-    server.get("/u/search/users", () => {
-      return helper.response({
-        users: [hawkAsJson],
-      });
-    });
-    server.post("/chat/direct_messages/create.json", () => {
-      return helper.response({
-        chat_channel: {
-          chat_channels: [],
-          chatable: { users: [hawkAsJson] },
-          chatable_id: 16,
-          chatable_type: "DirectMessageChannel",
-          chatable_url: null,
-          id: 75,
-          last_read_message_id: null,
-          title: "@hawk",
-          unread_count: 0,
-          unread_mentions: 0,
-          last_message_sent_at: "2021-11-08T21:26:05.710Z",
-        },
-      });
-    });
-    server.get("/chat/chat_channels/:chatChannelId", () => {
-      return helper.response({
-        chat_channel: {
-          id: 75,
-        },
-      });
-    });
-    server.get("/chat/:chatChannelId/messages.json", () => {
-      return helper.response({
-        meta: {
-          can_flag: true,
-          user_silenced: false,
-        },
-        chat_messages: [],
-      });
-    });
-    server.get("/chat/direct_messages.json", () => {
-      return helper.response({
-        chat_channel: {
-          id: 75,
-          title: "hawk",
-          chatable: { users: [hawkAsJson] },
-        },
-      });
-    });
-    server.get("/u/hawk/card.json", () => {
-      return helper.response({});
-    });
-  });
-
-  test("Chat browsing shows empty state with create dm UI", async function (assert) {
+  test("All filter", async function (assert) {
     await visit("/chat/browse");
 
-    assert.notOk(exists(".chat-channel-settings-row"));
-    assert.ok(exists(".start-creating-dm-btn"));
+    await click(".chat-browse-view__filter-link.-all");
 
-    await click(".start-creating-dm-btn");
+    assert.equal(currentURL(), "/chat/browse/all");
+    assert.equal(queryAll(".chat-browse-channel-card").length, 4);
+  });
 
-    assert.equal(currentURL(), "/chat/draft-channel");
-    assert.ok(exists(".direct-message-creator"));
+  test("Open filter", async function (assert) {
+    await visit("/chat/browse");
 
-    await fillIn(".filter-usernames", "hawk");
-    await click('.chat-user-avatar-container[data-user-card="hawk"]');
+    await click(".chat-browse-view__filter-link.-open");
+
+    assert.equal(currentURL(), "/chat/browse/open");
+    assert.equal(queryAll(".chat-browse-channel-card").length, 2);
+  });
+
+  test("Closed filter", async function (assert) {
+    await visit("/chat/browse");
+
+    await click(".chat-browse-view__filter-link.-closed");
+
+    assert.equal(currentURL(), "/chat/browse/closed");
+    assert.equal(queryAll(".chat-browse-channel-card").length, 1);
+  });
+
+  test("Archived filter", async function (assert) {
+    await visit("/chat/browse");
+
+    await click(".chat-browse-view__filter-link.-archived");
+
+    assert.equal(currentURL(), "/chat/browse/archived");
+    assert.equal(queryAll(".chat-browse-channel-card").length, 1);
+  });
+
+  test("Filtering results", async function (assert) {
+    await visit("/chat/browse");
+
+    assert.equal(queryAll(".chat-browse-channel-card").length, 2);
+
+    await fillIn(".filter-input input", "foo");
+
+    assert.equal(queryAll(".chat-browse-channel-card").length, 1);
+  });
+
+  test("No results", async function (assert) {
+    await visit("/chat/browse");
+    await fillIn(".filter-input input", "bar");
 
     assert.equal(
-      query(".chat-composer-input").placeholder,
-      I18n.t("chat.placeholder_start_conversation", { usernames: "hawk" })
+      query(".empty-state-title").innerText.trim(),
+      I18n.t("chat.empty_state.title")
     );
   });
 });

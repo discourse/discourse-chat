@@ -9,8 +9,12 @@
 
 enabled_site_setting :chat_enabled
 
+register_asset 'stylesheets/mixins/chat-scrollbar.scss'
 register_asset 'stylesheets/common/core-extensions.scss'
+register_asset 'stylesheets/common/chat-channel-card.scss'
+register_asset 'stylesheets/common/dc-filter-input.scss'
 register_asset 'stylesheets/common/common.scss'
+register_asset 'stylesheets/common/chat-browse.scss'
 register_asset 'stylesheets/common/chat-drawer.scss'
 register_asset 'stylesheets/common/chat-channel-preview-card.scss'
 register_asset 'stylesheets/common/chat-channel-info.scss'
@@ -513,6 +517,7 @@ after_initialize do
 
   DiscourseChat::Engine.routes.draw do
     namespace :api do
+      get '/chat_channels' => 'chat_channels#index'
       get '/chat_channels/:chat_channel_id/memberships' => 'chat_channel_memberships#index'
       put '/chat_channels/:chat_channel_id' => 'chat_channels#update'
       put '/chat_channels/:chat_channel_id/notifications_settings' => 'chat_channel_notifications_settings#update'
@@ -549,6 +554,10 @@ after_initialize do
     # chat_controller routes
     get '/' => 'chat#respond'
     get '/browse' => 'chat#respond'
+    get '/browse/all' => 'chat#respond'
+    get '/browse/closed' => 'chat#respond'
+    get '/browse/open' => 'chat#respond'
+    get '/browse/archived' => 'chat#respond'
     get '/draft-channel' => 'chat#respond'
     get '/channel/:channel_id' => 'chat#respond'
     get '/channel/:channel_id/:channel_title' => 'chat#respond'

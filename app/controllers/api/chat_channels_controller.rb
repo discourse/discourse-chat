@@ -4,6 +4,20 @@ CHAT_CHANNEL_EDITABLE_PARAMS = %i[name description]
 CATEGORY_CHAT_CHANNEL_EDITABLE_PARAMS = %i[auto_join_users]
 
 class DiscourseChat::Api::ChatChannelsController < DiscourseChat::Api
+  def index
+    options = {
+      status: params[:status] ? ChatChannel.statuses[params[:status]] : nil
+    }.merge(params.permit(:filter, :limit, :offset)).symbolize_keys!
+
+    channels = DiscourseChat::ChatChannelFetcher.secured_public_channels(
+      guardian,
+      UserChatChannelMembership.where(user: current_user),
+      options
+    )
+
+    render_serialized(channels, ChatChannelSerializer)
+  end
+
   def update
     guardian.ensure_can_edit_chat_channel!
 

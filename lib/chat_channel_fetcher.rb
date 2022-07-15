@@ -43,26 +43,30 @@ module DiscourseChat::ChatChannelFetcher
     SQL
   end
 
-  def self.secured_public_channels(guardian, memberships, scope_with_membership: true, filter: nil)
+  def self.secured_public_channels(guardian, memberships, options = { following: true })
     channels = ChatChannel.includes(:chatable, :chat_channel_archive)
       .joins("LEFT JOIN categories ON categories.id = chat_channels.chatable_id AND chat_channels.chatable_type = 'Category'")
-      .where(
-        chatable_type: ChatChannel.public_channel_chatable_types,
-        status: ChatChannel.statuses[:open]
-      )
+      .where(chatable_type: ChatChannel.public_channel_chatable_types)
 
-    if filter
-      channels = channels.where(<<~SQL, filter: "%#{filter.downcase}%")
-        chat_channels.name ILIKE :filter OR categories.name ILIKE :filter
-      SQL
+    if options[:status].present?
+      channels = channels.where(status: options[:status])
     end
 
-    if scope_with_membership
+    if options[:filter].present?
+      channels = channels
+        .where(<<~SQL, filter: "%#{options[:filter].downcase}%")
+          chat_channels.name ILIKE :filter OR categories.name ILIKE :filter
+        SQL
+        .order('chat_channels.name ASC, categories.name ASC')
+    end
+
+    if options[:following].present?
       channels = channels
         .joins(:user_chat_channel_memberships)
         .where(user_chat_channel_memberships: { user_id: guardian.user.id, following: true })
     end
 
+    channels = channels.limit(options[:limit] || 20).offset(options[:offset] || 0)
     channels = filter_public_channels(channels, memberships, guardian).to_a
     preload_custom_fields_for(channels)
     channels

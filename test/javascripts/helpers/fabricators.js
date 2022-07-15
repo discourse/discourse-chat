@@ -6,6 +6,7 @@ function defaultChatChannelForType(chatableType) {
   const base = {
     id: 1,
     chatable_type: chatableType,
+    status: "open",
     chatable: {
       users: [
         {

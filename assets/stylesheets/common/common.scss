@@ -132,6 +132,7 @@ $float-height: 530px;
   height: 100%;
   padding-bottom: env(safe-area-inset-bottom);
   position: relative;
+  @include chat-scrollbar;
 
   .chat-channel-unread-indicator {
     flex-shrink: 0;
@@ -866,8 +867,4 @@ body.has-full-page-chat {
 .chat-channel-status {
   padding-top: 1rem;
   font-weight: 500;
-}
-
-.chat-browse {
-  overflow-y: auto;
 }

@@ -1,0 +1,23 @@
+<div
+  class={{concat
+    @class
+    " dc-filter-input-container"
+    (if this.isFocused " is-focused")
+  }}
+>
+  {{#if @icons.left}}
+    {{d-icon @icons.left class="-left"}}
+  {{/if}}
+
+  <Input
+    @class="dc-filter-input"
+    @input={{if @filterAction @filterAction (noop)}}
+    @focus-in={{action (mut this.isFocused) true}}
+    @focus-out={{action (mut this.isFocused) false}}
+    ...attributes
+  />
+
+  {{#if @icons.right}}
+    {{d-icon @icons.right class="-right"}}
+  {{/if}}
+</div>

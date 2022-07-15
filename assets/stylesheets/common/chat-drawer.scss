@@ -111,14 +111,10 @@ body.composer-open .topic-chat-float-container {
   width: 100%;
   font-weight: 700;
   padding: 0 0.5rem;
+  cursor: pointer;
 
   .chat-channel-title {
     padding: 0;
-  }
-
-  .chat-channel-member-count {
-    margin-top: -0.25rem;
-    margin-left: 1.55rem;
   }
 }
 

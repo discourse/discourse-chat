@@ -38,31 +38,29 @@
         {{/if}}
 
         {{#if chat.activeChannel}}
-          {{#link-to
-            infoTabRoute
-            chat.activeChannel.id
-            chat.activeChannel.title
-            class="topic-chat-drawer-header__title"
-          }}
-            <div class="topic-chat-drawer-header__top-line">
-              {{#chat-channel-title channel=chat.activeChannel}}
-                {{#if (and (not expanded) unreadCount)}}
-                  <span class="chat-unread-count">{{unreadCount}}</span>
-                {{/if}}
-              {{/chat-channel-title}}
-            </div>
-
-            {{#if displayMembers}}
-              <div class="topic-chat-drawer-header__bottom-line">
-                <span class="chat-channel-member-count">
-                  {{i18n
-                    "chat.channel.memberships_count"
-                    count=chat.activeChannel.memberships_count
-                  }}
-                </span>
+          {{#if expanded}}
+            {{#link-to
+              infoTabRoute
+              chat.activeChannel.id
+              chat.activeChannel.title
+              class="topic-chat-drawer-header__title"
+            }}
+              <div class="topic-chat-drawer-header__top-line">
+                {{#chat-channel-title channel=chat.activeChannel}}
+                {{/chat-channel-title}}
               </div>
-            {{/if}}
-          {{/link-to}}
+            {{/link-to}}
+          {{else}}
+            <div role="button" {{action "toggleExpand"}} class="topic-chat-drawer-header__title">
+              <div class="topic-chat-drawer-header__top-line">
+                {{#chat-channel-title channel=chat.activeChannel}}
+                  {{#if unreadCount}}
+                    <span class="chat-unread-count">{{unreadCount}}</span>
+                  {{/if}}
+                {{/chat-channel-title}}
+              </div>
+            </div>
+          {{/if}}
         {{/if}}
       {{else}}
         <span class="topic-chat-drawer-header__title">
@@ -74,15 +72,17 @@
 
       <div class="topic-chat-drawer-header__right-actions">
         <div class="topic-chat-drawer-header__top-line">
-          <button
-            class="btn-flat chat-full-screen-btn"
-            onmouseup={{action "openInFullPage"}}
-            icon="discourse-expand"
-            title={{i18n "chat.open_full_page"}}
-            type="button"
-          >
-            {{d-icon "discourse-expand"}}
-          </button>
+          {{#if expanded}}
+            <button
+              class="btn-flat chat-full-screen-btn"
+              onmouseup={{action "openInFullPage"}}
+              icon="discourse-expand"
+              title={{i18n "chat.open_full_page"}}
+              type="button"
+            >
+              {{d-icon "discourse-expand"}}
+            </button>
+          {{/if}}
 
           {{flat-button
             icon=this.expandIcon

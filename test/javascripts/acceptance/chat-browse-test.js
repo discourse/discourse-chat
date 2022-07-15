@@ -59,53 +59,49 @@ acceptance("Discourse Chat - browse channels", function (needs) {
 
   test("All filter", async function (assert) {
     await visit("/chat/browse");
-
     await click(".chat-browse-view__filter-link.-all");
 
     assert.equal(currentURL(), "/chat/browse/all");
-    assert.equal(queryAll(".chat-browse-channel-card").length, 4);
+    assert.equal(queryAll(".chat-channel-card").length, 4);
   });
 
   test("Open filter", async function (assert) {
     await visit("/chat/browse");
-
     await click(".chat-browse-view__filter-link.-open");
 
     assert.equal(currentURL(), "/chat/browse/open");
-    assert.equal(queryAll(".chat-browse-channel-card").length, 2);
+    assert.equal(queryAll(".chat-channel-card").length, 2);
   });
 
   test("Closed filter", async function (assert) {
     await visit("/chat/browse");
-
     await click(".chat-browse-view__filter-link.-closed");
 
     assert.equal(currentURL(), "/chat/browse/closed");
-    assert.equal(queryAll(".chat-browse-channel-card").length, 1);
+    assert.equal(queryAll(".chat-channel-card").length, 1);
   });
 
   test("Archived filter", async function (assert) {
     await visit("/chat/browse");
-
     await click(".chat-browse-view__filter-link.-archived");
 
     assert.equal(currentURL(), "/chat/browse/archived");
-    assert.equal(queryAll(".chat-browse-channel-card").length, 1);
+    assert.equal(queryAll(".chat-channel-card").length, 1);
   });
 
   test("Filtering results", async function (assert) {
     await visit("/chat/browse");
 
-    assert.equal(queryAll(".chat-browse-channel-card").length, 2);
+    assert.equal(queryAll(".chat-channel-card").length, 2);
 
-    await fillIn(".filter-input input", "foo");
+    await fillIn(".dc-filter-input", "foo");
 
-    assert.equal(queryAll(".chat-browse-channel-card").length, 1);
+    assert.equal(queryAll(".chat-channel-card").length, 1);
   });
 
   test("No results", async function (assert) {
     await visit("/chat/browse");
-    await fillIn(".filter-input input", "bar");
+    await fillIn(".dc-filter-input", "bar");
 
     assert.equal(
       query(".empty-state-title").innerText.trim(),

@@ -670,6 +670,9 @@ export default Component.extend({
       case "edit":
         this.handleEditMessage(data);
         break;
+      case "refresh":
+        this.handleRefreshMessage(data);
+        break;
       case "delete":
         this.handleDeleteMessage(data);
         break;
@@ -745,6 +748,13 @@ export default Component.extend({
     if (message) {
       message.set("cooked", data.chat_message.cooked);
       this.reStickScrollIfNeeded();
+    }
+  },
+
+  handleRefreshMessage(data) {
+    const message = this.messageLookup[data.chat_message.id];
+    if (message) {
+      this.appEvents.trigger("chat:refresh-message", message);
     }
   },
 

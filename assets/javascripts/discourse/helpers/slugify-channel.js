@@ -1,8 +1,8 @@
-import { slugify } from "discourse/lib/utilities";
+import slugifyChannel from "discourse/plugins/discourse-chat/discourse/lib/slugify-channel";
 import Helper from "@ember/component/helper";
 
 export default class SlugifyChannel extends Helper {
   compute(inputs) {
-    return slugify(inputs[0]).slice(0, 100);
+    return slugifyChannel(inputs[0]);
   }
 }

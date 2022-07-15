@@ -85,7 +85,7 @@ acceptance("Discourse Chat - User card test", function (needs) {
     await visit("/latest");
     this.appEvents.trigger("chat:toggle-open");
     await settled();
-    await click(".return-to-channels");
+    await click(".topic-chat-drawer-header__return-to-channels-btn");
     await click(".chat-channel-row.chat-channel-9");
     await click("[data-user-card='hawk']");
     assert.ok(exists(".user-card-chat-btn"));

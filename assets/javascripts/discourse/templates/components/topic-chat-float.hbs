@@ -12,7 +12,7 @@
         <div class="topic-chat-drawer-header__left-actions">
           <div class="topic-chat-drawer-header__top-line">
             {{flat-button
-              class="return-to-channels"
+              class="topic-chat-drawer-header__return-to-channels-btn"
               icon="chevron-left"
               action=(action "fetchChannels")
               title="chat.return_to_list"
@@ -29,7 +29,7 @@
         {{#if this.expanded}}
           <div class="topic-chat-drawer-header__left-actions">
             {{flat-button
-              class="return-to-channels"
+              class="topic-chat-drawer-header__return-to-channels-btn"
               icon="chevron-left"
               action=(action "fetchChannels")
               title="chat.return_to_list"
@@ -70,10 +70,10 @@
       {{/if}}
 
       <div class="topic-chat-drawer-header__right-actions">
-        <div class="topic-chat-drawer-header__top-line">
+        <div class="topic-chat-drawer-header__top-line {{topLineClass}}">
           {{#if expanded}}
             <button
-              class="btn-flat chat-full-screen-btn"
+              class="btn-flat topic-chat-drawer-header__full-screen-btn"
               onmouseup={{action "openInFullPage"}}
               icon="discourse-expand"
               title={{i18n "chat.open_full_page"}}
@@ -85,7 +85,7 @@
 
           {{flat-button
             icon=this.expandIcon
-            class="chat-expand"
+            class="topic-chat-drawer-header__expand-btn"
             action=(action "toggleExpand")
             title="chat.collapse"
           }}
@@ -95,7 +95,7 @@
               icon="times"
               action=(action "close")
               title="chat.close"
-              class="chat-close-btn"
+              class="topic-chat-drawer-header__close-btn"
             }}
           {{/if}}
         </div>

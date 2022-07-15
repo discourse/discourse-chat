@@ -550,13 +550,13 @@ acceptance("Discourse Chat - without unread", function (needs) {
     this.appEvents.trigger("chat:toggle-open");
     await settled();
 
-    await click(".return-to-channels");
+    await click(".topic-chat-drawer-header__return-to-channels-btn");
     await click(".chat-channel-row.chat-channel-9");
     await triggerEvent(".chat-message-container[data-id='174']", "mouseenter");
     await click(".chat-message-container[data-id='174'] .reply-btn");
     // Reply-to line is present
     assert.ok(exists(".chat-composer-message-details .chat-reply"));
-    await click(".return-to-channels");
+    await click(".topic-chat-drawer-header__return-to-channels-btn");
     await click(".chat-channel-row.chat-channel-11");
     // Reply-to line is gone since switching channels
     assert.notOk(exists(".chat-composer-message-details .chat-reply"));
@@ -567,13 +567,13 @@ acceptance("Discourse Chat - without unread", function (needs) {
     await click(".cancel-message-action");
 
     // Go back to channel 9 and check that reply-to is present
-    await click(".return-to-channels");
+    await click(".topic-chat-drawer-header__return-to-channels-btn");
     await click(".chat-channel-row.chat-channel-9");
     // Now reply-to should be back and loaded from draft
     assert.ok(exists(".chat-composer-message-details .chat-reply"));
 
     // Go back one for time to channel 7 and make sure reply-to is gone
-    await click(".return-to-channels");
+    await click(".topic-chat-drawer-header__return-to-channels-btn");
     await click(".chat-channel-row.chat-channel-11");
     assert.notOk(exists(".chat-composer-message-details .chat-reply"));
   });
@@ -1150,7 +1150,7 @@ acceptance(
       await visit("/t/internationalization-localization/280");
       this.chatService.set("sidebarActive", false);
       await visit(".header-dropdown-toggle.open-chat");
-      await click(".chat-full-screen-btn");
+      await click(".topic-chat-drawer-header__full-screen-btn");
 
       assert.equal(currentURL(), `/chat/channel/11/another-category`);
     });
@@ -1219,6 +1219,87 @@ acceptance(
     test("Close fullscreen chat button present", async function (assert) {
       await visit("/chat/channel/11/another-category");
       assert.ok(exists(".chat-full-screen-button"));
+    });
+  }
+);
+
+acceptance(
+  "Discourse Chat - Expand and collapse chat drawer (topic-chat-float)",
+  function (needs) {
+    needs.user({
+      admin: false,
+      moderator: false,
+      username: "eviltrout",
+      id: 1,
+      can_chat: true,
+      has_chat_enabled: true,
+    });
+    needs.settings({
+      chat_enabled: true,
+    });
+    needs.pretender((server, helper) => {
+      baseChatPretenders(server, helper);
+      siteChannelPretender(server, helper, { unread_count: 2, muted: false });
+      chatChannelPretender(server, helper, [
+        { id: 9, unread_count: 2, muted: false },
+      ]);
+    });
+    needs.hooks.beforeEach(function () {
+      Object.defineProperty(this, "chatService", {
+        get: () => this.container.lookup("service:chat"),
+      });
+    });
+
+    test("chat drawer can be collapsed and expanded", async function (assert) {
+      await visit("/t/internationalization-localization/280");
+      this.chatService.set("sidebarActive", false);
+      await click(".header-dropdown-toggle.open-chat");
+      assert.ok(
+        visible(".topic-chat-drawer-header__top-line--expanded"),
+        "chat float is expanded"
+      );
+      await click(".topic-chat-drawer-header__expand-btn");
+      assert.ok(
+        visible(".topic-chat-drawer-header__top-line--collapsed"),
+        "chat float is collapsed"
+      );
+      await click(".topic-chat-drawer-header__expand-btn");
+      assert.ok(
+        visible(".topic-chat-drawer-header__top-line--expanded"),
+        "chat float is expanded"
+      );
+    });
+
+    test("chat drawer title links to channel info when expanded", async function (assert) {
+      await visit("/t/internationalization-localization/280");
+      this.chatService.set("sidebarActive", false);
+      await click(".header-dropdown-toggle.open-chat");
+      assert.ok(
+        visible(".topic-chat-drawer-header__top-line--expanded"),
+        "chat float is expanded"
+      );
+      await click(".topic-chat-drawer-header__title");
+      assert.equal(currentURL(), `/chat/channel/9/Site/info/settings`);
+    });
+
+    test("chat drawer title expands the chat drawer when collapsed", async function (assert) {
+      await visit("/t/internationalization-localization/280");
+      this.chatService.set("sidebarActive", false);
+      await click(".header-dropdown-toggle.open-chat");
+      assert.ok(
+        visible(".topic-chat-drawer-header__top-line--expanded"),
+        "chat float is expanded"
+      );
+      await click(".topic-chat-drawer-header__expand-btn");
+      assert.ok(
+        visible(".topic-chat-drawer-header__top-line--collapsed"),
+        "chat float is collapsed"
+      );
+      await click(".topic-chat-drawer-header__title");
+      assert.ok(
+        visible(".topic-chat-drawer-header__top-line--expanded"),
+        "chat float is expanded"
+      );
     });
   }
 );

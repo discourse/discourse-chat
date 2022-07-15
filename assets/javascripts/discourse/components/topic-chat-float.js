@@ -124,6 +124,12 @@ export default Component.extend({
     this.switchChannel(channel);
   },
 
+  @discourseComputed("expanded")
+  topLineClass(expanded) {
+    const baseClass = "topic-chat-drawer-header__top-line";
+    return expanded ? baseClass + "--expanded" : baseClass + "--collapsed";
+  },
+
   @discourseComputed("expanded", "chat.activeChannel")
   displayMembers(expanded, channel) {
     return expanded && !channel?.isDirectMessageChannel;

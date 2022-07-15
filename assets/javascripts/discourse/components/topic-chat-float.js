@@ -127,7 +127,7 @@ export default Component.extend({
   @discourseComputed("expanded")
   topLineClass(expanded) {
     const baseClass = "topic-chat-drawer-header__top-line";
-    return expanded ? baseClass + "--expanded" : baseClass + "--collapsed";
+    return expanded ? `${baseClass}--expanded` : `${baseClass}--collapsed`;
   },
 
   @discourseComputed("expanded", "chat.activeChannel")

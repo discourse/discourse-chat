@@ -1279,7 +1279,7 @@ acceptance(
         "chat float is expanded"
       );
       await click(".topic-chat-drawer-header__title");
-      assert.equal(currentURL(), `/chat/channel/9/Site/info/settings`);
+      assert.equal(currentURL(), `/chat/channel/9/site/info/settings`);
     });
 
     test("chat drawer title expands the chat drawer when collapsed", async function (assert) {

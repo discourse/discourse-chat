@@ -371,19 +371,34 @@ $float-height: 530px;
     bottom: 1em;
     border-radius: 100%;
     left: 50%;
-    opacity: 20%;
+    opacity: 75%;
     padding: 0.5em;
     position: absolute;
     transform: translateX(-50%);
     z-index: 2;
 
     &:hover {
-      opacity: 75%;
+      background: var(--primary-medium);
+      opacity: 100%;
     }
 
     .d-icon {
       color: var(--primary);
       margin: 0;
+    }
+
+    &.unread-messages {
+      opacity: 85%;
+      border-radius: 0;
+      transition: border-radius 0.1s linear;
+
+      &:hover {
+        opacity: 100%;
+      }
+
+      .d-icon {
+        margin: 0 0 0 0.5em;
+      }
     }
   }
 }

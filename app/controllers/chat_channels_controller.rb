@@ -99,7 +99,8 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
       guardian,
       memberships,
       following: false,
-      filter: filter
+      filter: filter,
+      status: :open
     )
 
     users = User.joins(:user_option)

@@ -67,6 +67,7 @@ en:
       collapse: "Collapse Chat Drawer"
       confirm_flag: "Are you sure you want to flag %{username}'s message?"
       deleted: "A message was deleted. [view]"
+      hidden: "A message was hidden. [view]"
       delete: "Delete"
       edited: "edited"
       empty_state:

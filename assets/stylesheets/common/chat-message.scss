@@ -1,8 +1,9 @@
-.chat-message-deleted {
+.chat-message-deleted,
+.chat-message-hidden {
   margin-left: calc(var(--message-left-width) + 0.75em);
   padding: 0;
 
-  .chat-message-expand-deleted {
+  .chat-message-expand {
     color: var(--primary-low-mid);
     padding: 0.25em;
 

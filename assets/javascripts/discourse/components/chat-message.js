@@ -11,6 +11,7 @@ import discourseComputed, {
   bind,
 } from "discourse-common/utils/decorators";
 import EmberObject, { action, computed } from "@ember/object";
+import { and, not } from "@ember/object/computed";
 import { ajax } from "discourse/lib/ajax";
 import { cancel, later, once, schedule } from "@ember/runloop";
 import { clipboardCopy } from "discourse/lib/utilities";
@@ -163,10 +164,9 @@ export default Component.extend({
     return canInteractWithChat && !messageStaged && isHovered;
   },
 
-  @discourseComputed("message.deleted_at", "message.expanded")
-  deletedAndCollapsed(deletedAt, expanded) {
-    return deletedAt && !expanded;
-  },
+  deletedAndCollapsed: and("message.deleted_at", "collapsed"),
+  hiddenAndCollapsed: and("message.hidden", "collapsed"),
+  collapsed: not("message.expanded"),
 
   @discourseComputed(
     "selectingMessages",

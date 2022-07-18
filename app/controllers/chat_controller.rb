@@ -291,6 +291,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
 
     messages = preloaded_chat_message_query.where(chat_channel: @chat_channel)
     messages = messages.with_deleted if guardian.can_moderate_chat?(@chatable)
+
     past_messages = messages
       .where("created_at < ?", @message.created_at)
       .order(created_at: :desc)

@@ -61,6 +61,15 @@ RSpec.describe DiscourseChat::ChatController do
       expect(response.parsed_body["meta"]["can_flag"]).to be false
     end
 
+    it "returns `hidden=true` for users that the current user is ignoring" do
+      user2 = Fabricate(:user)
+      message_40.update(user: user2)
+      Fabricate(:ignored_user, ignored_user: user2, user: user, expiring_at: 1.day.from_now)
+      get "/chat/#{chat_channel.id}/messages.json", params: { page_size: page_size }
+      expect(response.status).to eq(200)
+      expect(response.parsed_body["chat_messages"].find { |cm| cm["id"] == message_40.id }["hidden"]).to eq(true)
+    end
+
     it "returns `can_moderate=true` based on whether the user can moderate the chatable" do
       1.upto(4) do |n|
         user.update!(trust_level: n)
@@ -1096,6 +1105,15 @@ RSpec.describe DiscourseChat::ChatController do
         get "/chat/lookup/#{message.id}.json"
         expect(response.status).to eq(200)
         expect(response.parsed_body["chat_messages"][0]["id"]).to eq(message.id)
+      end
+
+      it "ensures messages from users the current user is ignoring are hidden" do
+        user2 = Fabricate(:user)
+        message2 = Fabricate(:chat_message, user: user2, chat_channel: channel)
+        Fabricate(:ignored_user, ignored_user: user2, user: user, expiring_at: 1.day.from_now)
+        get "/chat/lookup/#{message.id}.json"
+        expect(response.status).to eq(200)
+        expect(response.parsed_body["chat_messages"].find { |cm| cm["id"] == message2.id }["hidden"]).to eq(true)
       end
     end
 

@@ -418,7 +418,7 @@ export default {
               this._refreshPms();
             }
 
-            teardown() {
+            willDestory() {
               this.sidebar.appEvents.off(
                 "chat:refresh-channels",
                 this._refreshPms

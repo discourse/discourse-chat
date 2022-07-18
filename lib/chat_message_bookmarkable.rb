@@ -34,17 +34,15 @@ class ChatMessageBookmarkable < BaseBookmarkable
   end
 
   def self.reminder_handler(bookmark)
-    bookmark.user.notifications.create!(
-      notification_type: Notification.types[:bookmark_reminder],
+    send_reminder_notification(
+      bookmark,
       data: {
         title: I18n.t(
           "chat.bookmarkable.notification_title",
           channel_name: bookmark.bookmarkable.chat_channel.title(bookmark.user)
         ),
-        display_username: bookmark.user.username,
-        bookmark_name: bookmark.name,
         bookmarkable_url: bookmark.bookmarkable.url
-      }.to_json
+      }
     )
   end
 

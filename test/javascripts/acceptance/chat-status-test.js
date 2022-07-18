@@ -28,9 +28,6 @@ const baseChatPretenders = (server, helper) => {
   server.post("/uploads/lookup-urls", () => {
     return helper.response([]);
   });
-  server.get("/chat/chat_channels/all.json", () => {
-    return helper.response(allChannels());
-  });
   server.get("/chat/chat_channels.json", () => {
     let copy = cloneJSON(chatChannels);
     let modifiedChannel = copy.public_channels.find((pc) => pc.id === 4);

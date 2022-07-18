@@ -539,7 +539,6 @@ after_initialize do
     # chat_channel_controller routes
     get '/chat_channels' => 'chat_channels#index'
     put '/chat_channels' => 'chat_channels#create'
-    get '/chat_channels/all' => 'chat_channels#all'
     get '/chat_channels/search' => 'chat_channels#search'
     post '/chat_channels/:chat_channel_id' => 'chat_channels#edit'
     post '/chat_channels/:chat_channel_id/notification_settings' => 'chat_channels#notification_settings'

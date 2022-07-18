@@ -2,18 +2,18 @@
   display: flex;
   flex-direction: column;
   position: relative;
-  padding: 1.25rem 0;
-  border-bottom: 1px solid var(--primary-low);
+  padding: 1.25rem;
+  background-color: var(--primary-very-low);
+  border-radius: 5px;
   min-height: 0;
   min-width: 0;
 
   &__description {
     color: var(--primary-medium);
-    white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis;
-    min-width: 1px;
-    max-width: 100%;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
 
     .-closed &,
     .-archived & {
@@ -23,7 +23,7 @@
 
   &__setting {
     position: absolute;
-    right: 0;
+    right: 1.25rem;
     top: 1.25rem;
     svg {
       fill: var(--primary-medium);
@@ -67,14 +67,15 @@
     text-transform: uppercase;
     font-size: 0.7rem;
     font-weight: bold;
+    background-color: var(--secondary);
 
     &.-muted {
       color: var(--primary-medium);
-      background-color: var(--primary-low);
+      border: 1px solid var(--primary-low-mid);
     }
     &.-joined {
-      color: var(--success); //success
-      background-color: var(--success-low);
+      color: var(--success);
+      border: 1px solid var(--success);
     }
 
     &.-closed,

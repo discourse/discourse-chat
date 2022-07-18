@@ -68,7 +68,7 @@ module DiscourseChat::ChatChannelFetcher
         .where(user_chat_channel_memberships: { user_id: guardian.user.id, following: true })
     end
 
-    options[:limit] = options[:limit].to_i.clamp(1, MAX_RESULTS)
+    options[:limit] = (options[:limit] || MAX_RESULTS).to_i.clamp(1, MAX_RESULTS)
     options[:offset] = [options[:offset].to_i, 0].max
 
     channels = channels.limit(options[:limit]).offset(options[:offset])

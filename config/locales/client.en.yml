@@ -34,12 +34,12 @@ en:
         title: "Channel settings"
         edit: "Edit"
         add: "Add"
-        close_channel: "Close Channel"
-        open_channel: "Open Channel"
-        archive_channel: "Archive Channel"
-        delete_channel: "Delete Channel"
-        join_channel: "Join Channel"
-        leave_channel: "Leave Channel"
+        close_channel: "Close channel"
+        open_channel: "Open channel"
+        archive_channel: "Archive channel"
+        delete_channel: "Delete channel"
+        join_channel: "Join"
+        leave_channel: "Leave channel"
       channel_archive:
         title: "Archive Channel"
         instructions: "<p>Archiving a channel puts it into read-only mode and moves all messages from the channel into a new or existing topic. No new messages can be sent, and no existing messages can be edited or deleted.</p><p>Are you sure you want to archive the <strong>%{channelTitle}</strong> channel?</p>"
@@ -164,7 +164,7 @@ en:
         open: "Open"
 
       browse:
-        title: Browse channels
+        title: Channels
         filter_all: All
         filter_open: Opened
         filter_closed: Closed

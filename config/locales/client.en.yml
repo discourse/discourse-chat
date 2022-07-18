@@ -69,12 +69,12 @@ en:
       deleted: "A message was deleted. [view]"
       delete: "Delete"
       edited: "edited"
+      muted: "muted"
+      joined: "joined"
       empty_state:
-        create_personal_chat: "Start a Personal Chat"
-        no_public_available: "There are no public channels available for you to follow at this time."
-        public_available: "There are public channels available for you to follow."
-        start_direct_message: "You can also start a personal chat with one or more users."
-        title: "Get started by joining a channel"
+        direct_message_cta: "Start a personal Chat"
+        direct_message: "You can also start a personal chat with one or more users."
+        title: "No channels found"
       email_frequency:
         description: "We'll only email you if we haven't seen you in the last 15 minutes."
         never: "Never"
@@ -163,6 +163,14 @@ en:
         open_header: "Channel is open"
         open: "Open"
 
+      browse:
+        title: Browse channels
+        filter_all: All
+        filter_open: Opened
+        filter_closed: Closed
+        filter_archived: Archived
+        filter_input_placeholder: Search channel by name
+
       chat_message_separator:
         today: Today
         yesterday: Yesterday
@@ -212,7 +220,7 @@ en:
       create_channel:
         auto_join_users:
           public_category_warning: "%{category} is a public category. Automatically add every user to this channel?"
-          warning_groups: 
+          warning_groups:
             one: Automatically add %{members_count} users from %{group_1}?
             other: Automatically add %{members_count} users from %{group_1} and %{group_2}?
           warning_multiple_groups: Automatically add %{members_count} users from %{group_1} and %{count} others?
@@ -222,7 +230,7 @@ en:
           default_hint: Manage access by visiting <a href=%{link} target="_blank">%{category} security settings</a>
           hint_groups:
             one: Users in %{hint_1} will have access to this channel per the <a href=%{link} target="_blank">security settings</a>
-            other: Users in %{hint_1} and %{hint_2} will have access to this channel per the <a href=%{link} target="_blank">security settings</a> 
+            other: Users in %{hint_1} and %{hint_2} will have access to this channel per the <a href=%{link} target="_blank">security settings</a>
           hint_multiple_groups: Users in %{hint_1} and %{count} other groups will have access to this channel per the <a href=%{link} target="_blank">security settings</a>
         create: "Create channel"
         description: "Description (optional)"

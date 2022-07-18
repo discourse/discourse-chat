@@ -8,6 +8,8 @@
       {{channels-list onSelect=(action "switchChannel")}}
     {{/if}}
 
-    {{outlet}}
+    <div id="main-chat-outlet">
+      {{outlet}}
+    </div>
   </div>
 {{/if}}

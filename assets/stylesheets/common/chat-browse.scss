@@ -1,0 +1,86 @@
+.chat-browse-view {
+  position: relative;
+  height: calc(100vh - var(--header-offset));
+  overflow-y: scroll;
+  @include chat-scrollbar;
+
+  &__title {
+    height: 50px;
+    box-sizing: border-box;
+    padding: 1rem;
+    margin: 0;
+  }
+
+  &__content_wrapper {
+    padding: 1rem;
+    box-sizing: border-box;
+  }
+
+  &__cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 2.5rem;
+
+    @include breakpoint(tablet) {
+      grid-template-columns: repeat(1, 1fr);
+    }
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+
+    @include breakpoint(tablet) {
+      flex-direction: column;
+
+      .dc-filter-input-container,
+      nav {
+        @include breakpoint(tablet) {
+          text-align: left;
+          width: 100%;
+        }
+      }
+    }
+  }
+
+  &__filters {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    margin: 0;
+
+    @include breakpoint(tablet) {
+      justify-content: flex-start;
+    }
+  }
+
+  &__filter {
+    display: inline;
+
+    &:first-child .chat-browse-view__filter-link {
+      padding-left: 0;
+    }
+    &:last-child .chat-browse-view__filter-link {
+      padding-right: 0;
+    }
+  }
+
+  &__filter-link,
+  &__filter-link:visited {
+    color: var(--primary);
+    font-size: var(--font-up-2);
+    padding: 0 0.25rem;
+
+    @include breakpoint(tablet) {
+      font-size: var(--font-up-1);
+    }
+
+    &.active {
+      color: var(--danger-medium);
+      text-decoration: underline var(--danger-medium);
+    }
+  }
+}

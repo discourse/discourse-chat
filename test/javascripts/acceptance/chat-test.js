@@ -1415,7 +1415,7 @@ acceptance(
       await dropdown.expand();
       await dropdown.selectRowByValue("browseChannels");
 
-      assert.equal(currentURL(), "/chat/browse");
+      assert.equal(currentURL(), "/chat/browse/open");
       await visit("/chat/channel/11/another-category");
       await dropdown.expand();
       await dropdown.selectRowByValue("openCreateChannelModal");

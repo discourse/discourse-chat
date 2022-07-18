@@ -1,0 +1,33 @@
+import { setupRenderingTest } from "discourse/tests/helpers/component-test";
+import { discourseModule } from "discourse/tests/helpers/qunit-helpers";
+import hbs from "htmlbars-inline-precompile";
+import { render, settled } from "@ember/test-helpers";
+import { test } from "qunit";
+
+discourseModule(
+  "Discourse Chat | Component | on-visibility-action",
+  function (hooks) {
+    setupRenderingTest(hooks);
+
+    test("Calling an action on visibility gained", async function (assert) {
+      this.set("value", null);
+      this.set("display", false);
+      this.set("action", () => {
+        this.set("value", "foo");
+      });
+
+      this.set("root", document.querySelector("#ember-testing"));
+
+      await render(
+        hbs`{{#if display}}{{on-visibility-action action=action root=root}}{{/if}}`
+      );
+
+      assert.equal(this.value, null);
+
+      this.set("display", true);
+      await settled();
+
+      assert.equal(this.value, "foo");
+    });
+  }
+);

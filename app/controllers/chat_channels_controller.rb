@@ -17,7 +17,7 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     channels = DiscourseChat::ChatChannelFetcher.secured_public_channels(
       guardian,
       UserChatChannelMembership.where(user: current_user),
-      scope_with_membership: false
+      following: false
     )
 
     render_serialized(channels, ChatChannelSettingsSerializer)
@@ -98,8 +98,9 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     public_channels = DiscourseChat::ChatChannelFetcher.secured_public_channels(
       guardian,
       memberships,
-      scope_with_membership: false,
-      filter: filter
+      following: false,
+      filter: filter,
+      status: :open
     )
 
     users = User.joins(:user_option)

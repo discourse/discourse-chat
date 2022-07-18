@@ -96,6 +96,11 @@ const ChatChannel = RestModel.extend({
     return this.status === CHANNEL_STATUSES.archived;
   },
 
+  @computed("isArchived", "isOpen")
+  get isJoinable() {
+    return this.isOpen && !this.isArchived;
+  },
+
   @computed(
     "isDirectMessageChannel",
     "memberships_count",

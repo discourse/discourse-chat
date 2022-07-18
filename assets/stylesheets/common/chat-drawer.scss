@@ -111,14 +111,10 @@ body.composer-open .topic-chat-float-container {
   width: 100%;
   font-weight: 700;
   padding: 0 0.5rem;
+  cursor: pointer;
 
   .chat-channel-title {
     padding: 0;
-  }
-
-  .chat-channel-member-count {
-    margin-top: -0.25rem;
-    margin-left: 1.55rem;
   }
 }
 
@@ -175,10 +171,10 @@ body.composer-open .topic-chat-float-container {
     }
   }
 
-  .return-to-channels,
-  .chat-close-btn,
-  .chat-full-screen-btn,
-  .chat-expand {
+  &__return-to-channels-btn,
+  &__close-btn,
+  &__full-screen-btn,
+  &__expand-btn {
     height: 100%;
     max-height: 2.5rem;
     width: 2.5rem;

@@ -102,9 +102,10 @@ describe ChatMessageBookmarkable do
             "chat.bookmarkable.notification_title",
             channel_name: bookmark1.bookmarkable.chat_channel.title(bookmark1.user)
           ),
+          bookmarkable_url: bookmark1.bookmarkable.url,
           display_username: bookmark1.user.username,
           bookmark_name: bookmark1.name,
-          bookmarkable_url: bookmark1.bookmarkable.url
+          bookmark_id: bookmark1.id
         }.to_json
       )
     end

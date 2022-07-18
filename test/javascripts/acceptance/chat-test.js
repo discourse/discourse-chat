@@ -20,7 +20,6 @@ import {
 } from "@ember/test-helpers";
 import { test } from "qunit";
 import {
-  allChannels,
   chatChannels,
   directMessageChannels,
   generateChatView,
@@ -1383,9 +1382,6 @@ acceptance(
     needs.pretender((server, helper) => {
       baseChatPretenders(server, helper);
       chatChannelPretender(server, helper);
-      server.get("/chat/chat_channels/all.json", () => {
-        return helper.response(allChannels());
-      });
       server.get("/chat/chat_channels/:chatChannelId", () => {
         return helper.response(siteChannel);
       });

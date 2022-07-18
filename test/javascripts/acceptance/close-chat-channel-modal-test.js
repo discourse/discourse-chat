@@ -9,7 +9,6 @@ acceptance("Discourse Chat - delete chat channel modal", function (needs) {
   needs.settings({ chat_enabled: true });
 
   needs.pretender((server, helper) => {
-    // we don't need anything in the sidebar for this test
     server.get("/chat/chat_channels.json", () => {
       return helper.response({
         public_channels: [fabricators.chatChannel({ id: 2 })],

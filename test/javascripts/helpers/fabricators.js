@@ -2,6 +2,7 @@ import ChatChannel, {
   CHATABLE_TYPES,
 } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import { Fabricator } from "./fabricator";
+import EmberObject from "@ember/object";
 
 const userFabricator = Fabricator({
   id: 1,
@@ -22,7 +23,7 @@ const directChannelChatableFabricator = Fabricator({
   users: [userFabricator({ id: 1, username: "bob" })],
 });
 
-const chatMessageFabricator = Fabricator({
+const chatChannelMessageFabricator = Fabricator({
   id: 1,
   chat_channel_id: 1,
   user_id: 1,
@@ -50,4 +51,6 @@ export default {
   chatChannel: (options) => ChatChannel.create(chatChannelFabricator(options)),
   directMessageChatChannel: (options) =>
     ChatChannel.create(directMessageChannelFabricator(options)),
+  chatChannelMessage: (options) =>
+    EmberObject.create(chatChannelMessageFabricator(options)),
 };

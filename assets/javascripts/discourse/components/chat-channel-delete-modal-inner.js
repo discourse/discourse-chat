@@ -1,6 +1,4 @@
 import Component from "@ember/component";
-import { isTesting } from "discourse-common/config/environment";
-import { later } from "@ember/runloop";
 import { isEmpty } from "@ember/utils";
 import I18n from "I18n";
 import discourseComputed from "discourse-common/utils/decorators";

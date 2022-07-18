@@ -7,7 +7,7 @@ import {
   query,
 } from "discourse/tests/helpers/qunit-helpers";
 import hbs from "htmlbars-inline-precompile";
-import fabricate from "../helpers/fabricators";
+import fabricators from "../helpers/fabricators";
 import MockPresenceChannel from "../helpers/mock-presence-channel";
 
 discourseModule(
@@ -19,7 +19,7 @@ discourseModule(
       template: hbs`{{chat-replying-indicator presenceChannel=presenceChannel chatChannel=chatChannel}}`,
 
       async beforeEach() {
-        this.set("chatChannel", fabricate("chat-channel"));
+        this.set("chatChannel", fabricators.chatChannel());
         this.set(
           "presenceChannel",
           MockPresenceChannel.create({
@@ -37,7 +37,7 @@ discourseModule(
       template: hbs`{{chat-replying-indicator presenceChannel=presenceChannel chatChannel=chatChannel}}`,
 
       async beforeEach() {
-        this.set("chatChannel", fabricate("chat-channel"));
+        this.set("chatChannel", fabricators.chatChannel());
         this.set(
           "presenceChannel",
           MockPresenceChannel.create({
@@ -61,7 +61,7 @@ discourseModule(
       template: hbs`{{chat-replying-indicator presenceChannel=presenceChannel chatChannel=chatChannel}}`,
 
       async beforeEach() {
-        this.set("chatChannel", fabricate("chat-channel"));
+        this.set("chatChannel", fabricators.chatChannel());
         this.set(
           "presenceChannel",
           MockPresenceChannel.create({
@@ -86,7 +86,7 @@ discourseModule(
       template: hbs`{{chat-replying-indicator presenceChannel=presenceChannel chatChannel=chatChannel}}`,
 
       async beforeEach() {
-        this.set("chatChannel", fabricate("chat-channel"));
+        this.set("chatChannel", fabricators.chatChannel());
         this.set(
           "presenceChannel",
           MockPresenceChannel.create({
@@ -112,7 +112,7 @@ discourseModule(
       template: hbs`{{chat-replying-indicator presenceChannel=presenceChannel chatChannel=chatChannel}}`,
 
       async beforeEach() {
-        this.set("chatChannel", fabricate("chat-channel"));
+        this.set("chatChannel", fabricators.chatChannel());
         this.set(
           "presenceChannel",
           MockPresenceChannel.create({
@@ -139,7 +139,7 @@ discourseModule(
       template: hbs`{{chat-replying-indicator presenceChannel=presenceChannel chatChannel=chatChannel}}`,
 
       async beforeEach() {
-        this.set("chatChannel", fabricate("chat-channel"));
+        this.set("chatChannel", fabricators.chatChannel());
         this.set(
           "presenceChannel",
           MockPresenceChannel.create({
@@ -163,7 +163,7 @@ discourseModule(
       template: hbs`{{chat-replying-indicator presenceChannel=presenceChannel chatChannel=chatChannel}}`,
 
       async beforeEach() {
-        this.set("chatChannel", fabricate("chat-channel"));
+        this.set("chatChannel", fabricators.chatChannel());
         this.set(
           "presenceChannel",
           MockPresenceChannel.create({
@@ -176,7 +176,7 @@ discourseModule(
       async test(assert) {
         assert.ok(this.presenceChannel.subscribed);
 
-        this.set("chatChannel", fabricate("chat-channel", { isDraft: true }));
+        this.set("chatChannel", fabricators.chatChannel({ isDraft: true }));
 
         assert.notOk(this.presenceChannel.subscribed);
       },

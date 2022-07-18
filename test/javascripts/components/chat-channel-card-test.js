@@ -5,7 +5,7 @@ import {
   query,
 } from "discourse/tests/helpers/qunit-helpers";
 import hbs from "htmlbars-inline-precompile";
-import fabricate from "../helpers/fabricators";
+import fabricators from "../helpers/fabricators";
 import { render } from "@ember/test-helpers";
 import { test } from "qunit";
 import I18n from "I18n";
@@ -16,7 +16,7 @@ discourseModule(
     setupRenderingTest(hooks);
 
     hooks.beforeEach(function () {
-      this.set("channel", fabricate("chat-channel"));
+      this.set("channel", fabricators.chatChannel());
       this.channel.set(
         "description",
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."

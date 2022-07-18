@@ -8,9 +8,11 @@ import { action } from "@ember/object";
 import { ajax } from "discourse/lib/ajax";
 import { inject as service } from "@ember/service";
 import { popupAjaxError } from "discourse/lib/ajax-error";
+import discourseLater from "discourse-common/lib/later";
 
 export default Component.extend({
   chat: service(),
+  router: service(),
   tagName: "",
   chatChannel: null,
   channelNameConfirmation: null,
@@ -46,13 +48,11 @@ export default Component.extend({
           text: I18n.t("chat.channel_delete.process_started"),
           messageClass: "success",
         });
-        this.appEvents.trigger("chat-channel:deleted", this.chatChannel);
 
-        if (!isTesting()) {
-          later(() => {
-            this.closeModal();
-          }, 3000);
-        }
+        discourseLater(() => {
+          this.closeModal();
+          this.router.transitionTo("chat");
+        }, 3000);
       })
       .catch(popupAjaxError)
       .finally(() => this.set("deleting", false));

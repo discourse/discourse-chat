@@ -6,7 +6,7 @@ import {
 import { click, currentURL, fillIn, visit } from "@ember/test-helpers";
 import { test } from "qunit";
 import I18n from "I18n";
-import fabricate from "../helpers/fabricators";
+import fabricators from "../helpers/fabricators";
 import { isEmpty } from "@ember/utils";
 
 acceptance("Discourse Chat - browse channels", function (needs) {
@@ -28,7 +28,7 @@ acceptance("Discourse Chat - browse channels", function (needs) {
 
       if (!isEmpty(params.filter)) {
         if (params.filter === "foo") {
-          return helper.response([fabricate("chat-channel")]);
+          return helper.response([fabricators.chatChannel()]);
         } else {
           return helper.response([]);
         }
@@ -36,16 +36,16 @@ acceptance("Discourse Chat - browse channels", function (needs) {
 
       const channels = [];
       if (isEmpty(params.status) || params.status === "open") {
-        channels.push(fabricate("chat-channel"));
-        channels.push(fabricate("chat-channel"));
+        channels.push(fabricators.chatChannel());
+        channels.push(fabricators.chatChannel());
       }
 
       if (params.status === "closed" || isEmpty(params.status)) {
-        channels.push(fabricate("chat-channel", { status: "closed" }));
+        channels.push(fabricators.chatChannel({ status: "closed" }));
       }
 
       if (params.status === "archived" || isEmpty(params.status)) {
-        channels.push(fabricate("chat-channel", { status: "archived" }));
+        channels.push(fabricators.chatChannel({ status: "archived" }));
       }
 
       return helper.response(channels);

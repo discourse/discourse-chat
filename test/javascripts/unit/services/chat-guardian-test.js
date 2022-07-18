@@ -1,7 +1,7 @@
 import { acceptance } from "discourse/tests/helpers/qunit-helpers";
 import { test } from "qunit";
 import { set } from "@ember/object";
-import fabricate from "../../helpers/fabricators";
+import fabricators from "../../helpers/fabricators";
 
 acceptance("Discourse Chat | Unit | Service | chat-guardian", function (needs) {
   needs.hooks.beforeEach(function () {
@@ -69,7 +69,7 @@ acceptance("Discourse Chat | Unit | Service | chat-guardian", function (needs) {
   });
 
   test("#canArchiveChannel", async function (assert) {
-    const channel = fabricate("chat-channel");
+    const channel = fabricators.chatChannel();
 
     set(this.currentUser, "has_chat_enabled", true);
     set(this.currentUser, "admin", true);

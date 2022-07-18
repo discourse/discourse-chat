@@ -5,7 +5,7 @@ import {
   query,
 } from "discourse/tests/helpers/qunit-helpers";
 import hbs from "htmlbars-inline-precompile";
-import fabricate from "../helpers/fabricators";
+import fabricators from "../helpers/fabricators";
 import { render, settled } from "@ember/test-helpers";
 import { test } from "qunit";
 import I18n from "I18n";
@@ -18,7 +18,7 @@ discourseModule(
     hooks.beforeEach(function () {
       this.set(
         "channel",
-        fabricate("chat-channel", { chatable_type: "Category" })
+        fabricators.chatChannel({ chatable_type: "Category" })
       );
       this.channel.set("description", "foo");
       this.currentUser.set("admin", true);
@@ -87,7 +87,7 @@ discourseModule(
     hooks.beforeEach(function () {
       this.set(
         "channel",
-        fabricate("chat-channel", { chatable_type: "Category" })
+        fabricators.chatChannel({ chatable_type: "Category" })
       );
       this.channel.set("description", "foo");
       this.currentUser.set("has_chat_enabled", true);

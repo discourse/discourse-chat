@@ -1,7 +1,6 @@
 import { settled, visit } from "@ember/test-helpers";
 import { cloneJSON } from "discourse-common/lib/object";
 import {
-  allChannels,
   chatChannels,
   generateChatView,
 } from "discourse/plugins/discourse-chat/chat-fixtures";

@@ -20,7 +20,6 @@ import {
 } from "@ember/test-helpers";
 import { test } from "qunit";
 import {
-  allChannels,
   chatChannels,
   directMessageChannels,
   generateChatView,

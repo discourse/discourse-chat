@@ -134,9 +134,10 @@ export default {
       api.addSidebarSection(
         (BaseCustomSidebarSection, BaseCustomSidebarSectionLink) => {
           const SidebarChatSectionLink = class extends BaseCustomSidebarSectionLink {
-            constructor({ channel }) {
+            constructor({ channel, chatService }) {
               super(...arguments);
               this.channel = channel;
+              this.chatService = chatService;
             }
 
             get name() {
@@ -192,6 +193,14 @@ export default {
             get suffixCSSClass() {
               return this.channel.unread_mentions > 0 ? "urgent" : "unread";
             }
+
+            get currentWhen() {
+              return (
+                this.chatService.router.currentRouteName?.startsWith(
+                  "chat.channel"
+                ) && this.channel.id === this.chatService.activeChannel.id
+              );
+            }
           };
 
           const SidebarChatSection = class extends BaseCustomSidebarSection {
@@ -227,7 +236,12 @@ export default {
               const newSectionLinks = [];
               this.chatService.getChannels().then((channels) => {
                 channels.publicChannels.forEach((channel) => {
-                  newSectionLinks.push(new SidebarChatSectionLink({ channel }));
+                  newSectionLinks.push(
+                    new SidebarChatSectionLink({
+                      channel,
+                      chatService: this.chatService,
+                    })
+                  );
                 });
               });
               this.sectionLinks = newSectionLinks;
@@ -373,6 +387,14 @@ export default {
             }
             get hoverTitle() {
               return I18n.t("chat.direct_messages.leave");
+            }
+
+            get currentWhen() {
+              return (
+                this.chatService.router.currentRouteName?.startsWith(
+                  "chat.channel"
+                ) && this.channel.id === this.chatService.activeChannel.id
+              );
             }
           };
 

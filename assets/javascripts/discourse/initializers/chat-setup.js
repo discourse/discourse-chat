@@ -386,6 +386,7 @@ export default {
                 this.chatService.unfollowChannel(this.channel);
               };
             }
+
             get hoverTitle() {
               return I18n.t("chat.direct_messages.leave");
             }

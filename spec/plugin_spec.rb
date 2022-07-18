@@ -271,30 +271,6 @@ describe 'discourse-chat' do
       end
     end
 
-    describe 'when a user is activated' do
-      fab!(:category) { Fabricate(:category) }
-
-      it 'queues a job to auto-join the user' do
-        user = Fabricate(:user, active: false)
-
-        assert_user_following_state(user, channel, following: false)
-
-        user.update!(active: true)
-
-        assert_user_following_state(user, channel, following: true)
-      end
-
-      it 'does nothing if another attribute is updated' do
-        user = Fabricate(:user, active: false)
-
-        assert_user_following_state(user, channel, following: false)
-
-        user.update!(username: 'different')
-
-        assert_user_following_state(user, channel, following: false)
-      end
-    end
-
     describe 'when category permissions change' do
       fab!(:category) { Fabricate(:category) }
 

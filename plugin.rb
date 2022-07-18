@@ -492,10 +492,10 @@ after_initialize do
     end
   end
 
-  add_model_callback(User, :after_commit, on: :update) do
-    if saved_change_to_active? && active?
+  on(:user_confirmed_email) do |user|
+    if user.active?
       ChatChannel.where(auto_join_users: true).each do |channel|
-        UserChatChannelMembership.enforce_automatic_user_membership(channel, self)
+        UserChatChannelMembership.enforce_automatic_user_membership(channel, user)
       end
     end
   end

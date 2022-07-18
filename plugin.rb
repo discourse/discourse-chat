@@ -492,6 +492,14 @@ after_initialize do
     end
   end
 
+  add_model_callback(User, :after_commit, on: :update) do
+    if saved_change_to_active? && active?
+      ChatChannel.where(auto_join_users: true).each do |channel|
+        UserChatChannelMembership.enforce_automatic_user_membership(channel, self)
+      end
+    end
+  end
+
   on(:user_added_to_group) do |user, group|
     channels_to_add = ChatChannel
       .distinct

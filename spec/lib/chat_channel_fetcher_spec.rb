@@ -140,6 +140,26 @@ describe DiscourseChat::ChatChannelFetcher do
       ).map(&:id)).to match_array([category_channel.id])
     end
 
+    it "ensures offset is >= 0" do
+      expect(subject.secured_public_channels(
+        guardian, memberships, offset: -235
+      ).map(&:id)).to match_array([category_channel.id])
+    end
+
+    it "ensures limit is > 0" do
+      expect(subject.secured_public_channels(
+        guardian, memberships, limit: -1, offset: 0
+      ).map(&:id)).to match_array([category_channel.id])
+    end
+
+    it "ensures limit has a max value" do
+      25.times { Fabricate(:chat_channel) }
+
+      expect(subject.secured_public_channels(
+        guardian, memberships, limit: 25
+      ).length).to eq(DiscourseChat::ChatChannelFetcher::MAX_RESULTS)
+    end
+
     it "does not show the user category channels they cannot access" do
       category_channel.update!(chatable: private_category)
       expect(subject.secured_public_channels(

@@ -75,14 +75,6 @@ export default {
             get suffixCSSClass() {
               return this.channel.unread_mentions > 0 ? "urgent" : "unread";
             }
-
-            get currentWhen() {
-              return (
-                this.chatService.router.currentRouteName?.startsWith(
-                  "chat.channel"
-                ) && this.channel.id === this.chatService.activeChannel?.id
-              );
-            }
           };
 
           const SidebarChatChannelsSection = class extends BaseCustomSidebarSection {
@@ -271,14 +263,6 @@ export default {
 
             get hoverTitle() {
               return I18n.t("chat.direct_messages.leave");
-            }
-
-            get currentWhen() {
-              return (
-                this.chatService.router.currentRouteName?.startsWith(
-                  "chat.channel"
-                ) && this.channel.id === this.chatService.activeChannel?.id
-              );
             }
           };
 

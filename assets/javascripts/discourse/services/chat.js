@@ -473,12 +473,13 @@ export default Service.extend({
 
     if (this.fullPageChat.isActive || this.fullPageChat.isPreferred) {
       const queryParams = messageId ? { messageId } : {};
-      return this.router.transitionTo(
-        "chat.channel",
-        channel.id,
-        slugifyChannel(channel.title),
-        { queryParams }
-      );
+
+      return this.router.transitionTo("chat.channel", {
+        chatChannel: channel,
+        channelId: channel.id,
+        channelTitle: channel.chatable.slug,
+        ...queryParams,
+      });
     } else {
       this._fireOpenFloatAppEvent(channel, messageId);
       return Promise.resolve();

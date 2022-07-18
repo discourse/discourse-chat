@@ -41,6 +41,15 @@ describe ChatSeeder do
     expect(SiteSetting.needs_chat_seeded).to eq(false)
   end
 
+  it 'applies a different name to the meta category channel' do
+    expected_name = I18n.t('chat.channel.default_titles.site_feedback')
+
+    ChatSeeder.new.execute
+
+    site_feedback_channel = ChatChannel.find_by(chatable: site_feedback_category)
+    expect(site_feedback_channel.name).to eq(expected_name)
+  end
+
   it "does nothing when 'SiteSetting.needs_chat_seeded' is false" do
     SiteSetting.needs_chat_seeded = false
 

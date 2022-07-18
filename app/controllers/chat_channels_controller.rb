@@ -92,22 +92,20 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
       status: :open
     )
 
-    users = User.joins(:user_option)
+    users = User.joins(:user_option).where.not(id: current_user.id)
     unless DiscourseChat.allowed_group_ids.include?(Group::AUTO_GROUPS[:everyone])
       users = users.joins(:groups).where(groups: { id: DiscourseChat.allowed_group_ids })
     end
 
     users = users.where(user_option: { chat_enabled: true })
-    like_filter = "#{filter}%"
-    if SiteSetting.enable_names
-      users = users.where("LOWER(users.name) LIKE ? OR LOWER(users.username) LIKE ?", like_filter, like_filter)
+    like_filter = "%#{filter}%"
+    if SiteSetting.prioritize_username_in_ux || !SiteSetting.enable_names
+      users = users.where("users.username_lower ILIKE ?", like_filter)
     else
-      users = users.where("LOWER(users.username) LIKE ?", like_filter)
+      users = users.where("LOWER(users.name) ILIKE ? OR users.username_lower ILIKE ?", like_filter, like_filter)
     end
 
     users = users.limit(25).uniq
-    # Need to filter out current user for chat channel query
-    users.reject! { |user| user.id === current_user.id }
 
     direct_message_channels = users.count > 0 ?
       ChatChannel

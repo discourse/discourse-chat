@@ -2,7 +2,7 @@
   position: relative;
   height: calc(100vh - var(--header-offset));
   overflow-y: scroll;
-  @include chat-scrollbar;
+  @include chat-scrollbar(var(--secondary));
 
   &__title {
     box-sizing: border-box;

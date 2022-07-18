@@ -21,6 +21,8 @@ describe DiscourseChat::ChatChannelFetcher do
 
   describe ".structured" do
     it "returns open channel only" do
+      category_channel.user_chat_channel_memberships.create!(user: user1, following: true)
+
       channels = subject.structured(guardian)[:public_channels]
 
       expect(channels).to contain_exactly(category_channel)
@@ -29,6 +31,17 @@ describe DiscourseChat::ChatChannelFetcher do
       channels = subject.structured(guardian)[:public_channels]
 
       expect(channels).to be_blank
+    end
+
+    it "returns followed channel only" do
+      channels = subject.structured(guardian)[:public_channels]
+
+      expect(channels).to be_blank
+
+      category_channel.user_chat_channel_memberships.create!(user: user1, following: true)
+      channels = subject.structured(guardian)[:public_channels]
+
+      expect(channels).to contain_exactly(category_channel)
     end
   end
 

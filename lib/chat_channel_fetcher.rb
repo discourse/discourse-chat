@@ -9,7 +9,8 @@ module DiscourseChat::ChatChannelFetcher
       public_channels: secured_public_channels(
         guardian,
         memberships,
-        status: :open
+        status: :open,
+        following: true
       ),
       direct_message_channels: secured_direct_message_channels(
         guardian.user.id,

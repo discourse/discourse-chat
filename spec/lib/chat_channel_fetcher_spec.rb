@@ -19,6 +19,19 @@ describe DiscourseChat::ChatChannelFetcher do
     UserChatChannelMembership.where(user: user1)
   end
 
+  describe ".structured" do
+    it "returns open channel only" do
+      channels = subject.structured(guardian)[:public_channels]
+
+      expect(channels).to contain_exactly(category_channel)
+
+      category_channel.closed!(Discourse.system_user)
+      channels = subject.structured(guardian)[:public_channels]
+
+      expect(channels).to be_blank
+    end
+  end
+
   describe ".unread_counts" do
     context "user is member of the channel" do
       before do

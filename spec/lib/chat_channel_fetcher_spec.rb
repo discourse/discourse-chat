@@ -30,6 +30,17 @@ describe DiscourseChat::ChatChannelFetcher do
 
       expect(channels).to be_blank
     end
+
+    it "returns followed channel only" do
+      channels = subject.structured(guardian)[:public_channels]
+
+      expect(channels).to be_blank
+
+      category_channel.user_chat_channel_memberships.create!(user: user1, following: true)
+      channels = subject.structured(guardian)[:public_channels]
+
+      expect(channels).to contain_exactly(category_channel)
+    end
   end
 
   describe ".unread_counts" do

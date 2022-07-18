@@ -458,7 +458,7 @@ export default Component.extend({
         messageData.hideUserInfo = true;
       }
     }
-    messageData.expanded = !messageData.hidden && !messageData.deleted_at;
+    messageData.expanded = !(messageData.hidden || messageData.deleted_at);
     messageData.messageLookupId = this._generateMessageLookupId(messageData);
     if (this.targetMessageId && this.targetMessageId === messageData.id) {
       messageData.expanded = true;

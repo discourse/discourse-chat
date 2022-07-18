@@ -14,7 +14,7 @@ module DiscourseChat::DirectMessageChannelCreator
       chat_channel = ChatChannel.create!(chatable: direct_messages_channel)
     end
 
-    update_memberships(unique_target_users, chat_channel.id)
+    update_memberships(target_users, chat_channel.id)
     ChatPublisher.publish_new_channel(chat_channel, target_users)
 
     chat_channel

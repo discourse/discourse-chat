@@ -106,6 +106,7 @@ class ChatMessageSerializer < ApplicationSerializer
   end
 
   def hidden
+    return false if scope.anonymous?
     ignored_user_ids.include?(object.user_id)
   end
 

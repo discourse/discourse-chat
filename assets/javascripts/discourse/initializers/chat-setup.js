@@ -198,7 +198,7 @@ export default {
               return (
                 this.chatService.router.currentRouteName?.startsWith(
                   "chat.channel"
-                ) && this.channel.id === this.chatService.activeChannel.id
+                ) && this.channel.id === this.chatService.activeChannel?.id
               );
             }
           };
@@ -218,6 +218,7 @@ export default {
                 "chat:navigated-to-full-page",
                 this._refreshChannels
               );
+              this._refreshChannels();
             }
 
             teardown() {
@@ -243,8 +244,8 @@ export default {
                     })
                   );
                 });
+                this.sectionLinks = newSectionLinks;
               });
-              this.sectionLinks = newSectionLinks;
             }
 
             get name() {
@@ -393,7 +394,7 @@ export default {
               return (
                 this.chatService.router.currentRouteName?.startsWith(
                   "chat.channel"
-                ) && this.channel.id === this.chatService.activeChannel.id
+                ) && this.channel.id === this.chatService.activeChannel?.id
               );
             }
           };
@@ -413,6 +414,7 @@ export default {
                 "chat:navigated-to-full-page",
                 this._refreshPms
               );
+              this._refreshPms();
             }
 
             teardown() {
@@ -438,8 +440,8 @@ export default {
                     })
                   );
                 });
+                this.sectionLinks = newSectionLinks;
               });
-              this.sectionLinks = newSectionLinks;
             }
 
             get name() {

@@ -1,57 +1,57 @@
 import ChatChannel, {
   CHATABLE_TYPES,
 } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
+import { Fabricator } from "./fabricator";
+import EmberObject from "@ember/object";
 
-function defaultChatChannelForType(chatableType) {
-  const base = {
-    id: 1,
-    chatable_type: chatableType,
-    status: "open",
-    chatable: {
-      users: [
-        {
-          id: 1,
-          username: "hawk",
-          name: null,
-          avatar_template:
-            "https://avatars.discourse.org/v3/letter/t/41988e/{size}.png",
-        },
-      ],
-    },
-  };
+const userFabricator = Fabricator({
+  id: 1,
+  username: "hawk",
+  name: null,
+  avatar_template:
+    "https://avatars.discourse.org/v3/letter/t/41988e/{size}.png",
+});
 
-  if (chatableType === CHATABLE_TYPES.topicChannel) {
-    base.title = "My topic title";
-  }
+const categoryChatableFabricator = Fabricator({
+  id: 1,
+  color: "D56353",
+  read_restricted: false,
+  name: "My category",
+});
 
-  if (chatableType === CHATABLE_TYPES.categoryChannel) {
-    base.title = "My category title";
-    base.name = "My category name";
-    base.chatable = {
-      id: 1,
-      color: "D56353",
-      read_restricted: false,
-      name: "My category",
-    };
-  }
+const directChannelChatableFabricator = Fabricator({
+  users: [userFabricator({ id: 1, username: "bob" })],
+});
 
-  return base;
-}
+const chatChannelMessageFabricator = Fabricator({
+  id: 1,
+  chat_channel_id: 1,
+  user_id: 1,
+  cooked: "This is a test message",
+});
 
-export default function fabricate(model, options = {}) {
-  let base;
+const directMessageChannelFabricator = Fabricator({
+  id: 1,
+  chatable_type: CHATABLE_TYPES.directMessageChannel,
+  status: "open",
+  chatable: directChannelChatableFabricator(),
+  __model: "ChatChannel",
+});
 
-  if (model === "chat-channel") {
-    base = defaultChatChannelForType(
-      options.chatable_type || CHATABLE_TYPES.topicChannel
-    );
-  } else {
-    throw `Unkown fabricator ${model}`;
-  }
+const chatChannelFabricator = Fabricator({
+  id: 1,
+  chatable_type: CHATABLE_TYPES.categoryChannel,
+  status: "open",
+  title: "My category title",
+  name: "My category name",
+  chatable: categoryChatableFabricator(),
+  __model: "ChatChannel",
+});
 
-  const final = Object.assign(base, options);
-  switch (model) {
-    case "chat-channel":
-      return ChatChannel.create(final);
-  }
-}
+export default {
+  chatChannel: (options) => chatChannelFabricator(options),
+  directMessageChatChannel: (options) =>
+    directMessageChannelFabricator(options),
+  chatChannelMessage: (options) =>
+    EmberObject.create(chatChannelMessageFabricator(options)),
+};

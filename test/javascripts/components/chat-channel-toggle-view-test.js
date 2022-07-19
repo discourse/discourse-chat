@@ -4,7 +4,7 @@ import componentTest, {
 import { discourseModule, query } from "discourse/tests/helpers/qunit-helpers";
 import { click } from "@ember/test-helpers";
 import hbs from "htmlbars-inline-precompile";
-import fabricate from "../helpers/fabricators";
+import fabricators from "../helpers/fabricators";
 import I18n from "I18n";
 import pretender from "discourse/tests/helpers/create-pretender";
 
@@ -17,7 +17,7 @@ discourseModule(
       template: hbs`{{chat-channel-toggle-view channel=channel}}`,
 
       beforeEach() {
-        this.set("channel", fabricate("chat-channel", { status: "closed" }));
+        this.set("channel", fabricators.chatChannel({ status: "closed" }));
       },
 
       async test(assert) {
@@ -36,7 +36,7 @@ discourseModule(
       template: hbs`{{chat-channel-toggle-view channel=channel}}`,
 
       beforeEach() {
-        this.set("channel", fabricate("chat-channel", { status: "closed" }));
+        this.set("channel", fabricators.chatChannel({ status: "closed" }));
       },
 
       async test(assert) {
@@ -64,7 +64,7 @@ discourseModule(
       template: hbs`{{chat-channel-toggle-view channel=channel}}`,
 
       beforeEach() {
-        this.set("channel", fabricate("chat-channel", { status: "open" }));
+        this.set("channel", fabricators.chatChannel({ status: "open" }));
       },
 
       async test(assert) {
@@ -83,7 +83,7 @@ discourseModule(
       template: hbs`{{chat-channel-toggle-view channel=channel}}`,
 
       beforeEach() {
-        this.set("channel", fabricate("chat-channel", { status: "open" }));
+        this.set("channel", fabricators.chatChannel({ status: "open" }));
       },
 
       async test(assert) {

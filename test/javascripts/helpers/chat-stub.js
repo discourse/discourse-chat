@@ -1,4 +1,4 @@
-import fabricate from "../helpers/fabricators";
+import fabricators from "../helpers/fabricators";
 import { isPresent } from "@ember/utils";
 import Service from "@ember/service";
 
@@ -18,7 +18,7 @@ export function setup(context, options = {}) {
 
   publicChannels = isPresent(options.publicChannels)
     ? options.publicChannels
-    : [fabricate("chat-channel")];
+    : [fabricators.chatChannel()];
   userCanChat = isPresent(options.userCanChat) ? options.userCanChat : true;
   fullScreenChatOpen = isPresent(options.fullScreenChatOpen)
     ? options.fullScreenChatOpen

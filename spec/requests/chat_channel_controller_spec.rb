@@ -3,9 +3,9 @@
 require 'rails_helper'
 
 RSpec.describe DiscourseChat::ChatChannelsController do
-  fab!(:user) { Fabricate(:user, username: "someone") }
-  fab!(:other_user) { Fabricate(:user, username: "someone-else-again") }
-  fab!(:admin) { Fabricate(:admin, username: "someone-else") }
+  fab!(:user) { Fabricate(:user, username: "johndoe", name: "John Doe") }
+  fab!(:other_user) { Fabricate(:user, username: "janemay", name: "Jane May") }
+  fab!(:admin) { Fabricate(:admin, username: "andyjones", name: "Andy Jones") }
   fab!(:category) { Fabricate(:category) }
   fab!(:chat_channel) { Fabricate(:chat_channel, chatable: category) }
   fab!(:dm_chat_channel) { Fabricate(:chat_channel, chatable: Fabricate(:direct_message_channel, users: [user, admin])) }
@@ -334,8 +334,8 @@ RSpec.describe DiscourseChat::ChatChannelsController do
         get "/chat/chat_channels/search.json", params: { filter: "so" }
         expect(response.status).to eq(200)
         expect(response.parsed_body["public_channels"][0]["id"]).to eq(chat_channel.id)
-        expect(response.parsed_body["direct_message_channels"][0]["id"]).to eq(dm_chat_channel.id)
-        expect(response.parsed_body["users"].map { |u| u["id"] }).to match_array([user.id, other_user.id])
+        expect(response.parsed_body["direct_message_channels"].count).to eq(0)
+        expect(response.parsed_body["users"].count).to eq(0)
       end
 
       it "returns the correct channels with filter 'something'" do
@@ -346,12 +346,20 @@ RSpec.describe DiscourseChat::ChatChannelsController do
         expect(response.parsed_body["users"].count).to eq(0)
       end
 
-      it "returns the correct channels with filter 'someone'" do
-        get "/chat/chat_channels/search.json", params: { filter: "someone" }
+      it "returns the correct channels with filter 'andyjones'" do
+        get "/chat/chat_channels/search.json", params: { filter: "andyjones" }
         expect(response.status).to eq(200)
         expect(response.parsed_body["public_channels"].count).to eq(0)
         expect(response.parsed_body["direct_message_channels"][0]["id"]).to eq(dm_chat_channel.id)
-        expect(response.parsed_body["users"].map { |u| u["id"] }).to match_array([user.id, other_user.id])
+        expect(response.parsed_body["users"].count).to eq(0)
+      end
+
+      it "returns the current user inside the users array if their username matches the filter too" do
+        user.update(username: "andysmith")
+        get "/chat/chat_channels/search.json", params: { filter: "andy" }
+        expect(response.status).to eq(200)
+        expect(response.parsed_body["direct_message_channels"][0]["id"]).to eq(dm_chat_channel.id)
+        expect(response.parsed_body["users"].map { |u| u["id"] }).to match_array([user.id])
       end
 
       it "returns no channels with a whacky filter" do
@@ -379,6 +387,68 @@ RSpec.describe DiscourseChat::ChatChannelsController do
         chat_channel.update(status: ChatChannel.statuses[:open])
         get "/chat/chat_channels/search.json", params: { filter: "so" }
         expect(response.parsed_body["public_channels"][0]["id"]).to eq(chat_channel.id)
+      end
+
+      it "only finds users by username_lower if not enable_names" do
+        SiteSetting.enable_names = false
+        get "/chat/chat_channels/search.json", params: { filter: "Andy J" }
+        expect(response.status).to eq(200)
+        expect(response.parsed_body["public_channels"].count).to eq(0)
+        expect(response.parsed_body["direct_message_channels"].count).to eq(0)
+
+        get "/chat/chat_channels/search.json", params: { filter: "andyjones" }
+        expect(response.status).to eq(200)
+        expect(response.parsed_body["public_channels"].count).to eq(0)
+        expect(response.parsed_body["direct_message_channels"][0]["id"]).to eq(dm_chat_channel.id)
+      end
+
+      it "only finds users by username if prioritize_username_in_ux" do
+        SiteSetting.prioritize_username_in_ux = true
+        get "/chat/chat_channels/search.json", params: { filter: "Andy J" }
+        expect(response.status).to eq(200)
+        expect(response.parsed_body["public_channels"].count).to eq(0)
+        expect(response.parsed_body["direct_message_channels"].count).to eq(0)
+
+        get "/chat/chat_channels/search.json", params: { filter: "andyjones" }
+        expect(response.status).to eq(200)
+        expect(response.parsed_body["public_channels"].count).to eq(0)
+        expect(response.parsed_body["direct_message_channels"][0]["id"]).to eq(dm_chat_channel.id)
+      end
+
+      it "can find users by name or username if not prioritize_username_in_ux and enable_names" do
+        SiteSetting.prioritize_username_in_ux = false
+        SiteSetting.enable_names = true
+        get "/chat/chat_channels/search.json", params: { filter: "Andy J" }
+        expect(response.status).to eq(200)
+        expect(response.parsed_body["public_channels"].count).to eq(0)
+        expect(response.parsed_body["direct_message_channels"][0]["id"]).to eq(dm_chat_channel.id)
+
+        get "/chat/chat_channels/search.json", params: { filter: "andyjones" }
+        expect(response.status).to eq(200)
+        expect(response.parsed_body["public_channels"].count).to eq(0)
+        expect(response.parsed_body["direct_message_channels"][0]["id"]).to eq(dm_chat_channel.id)
+      end
+
+      it "does not return DM channels for users who do not have chat enabled" do
+        admin.user_option.update!(chat_enabled: false)
+        get "/chat/chat_channels/search.json", params: { filter: "andyjones" }
+        expect(response.status).to eq(200)
+        expect(response.parsed_body["direct_message_channels"].count).to eq(0)
+      end
+
+      it "does not return DM channels for users who are not in the chat allowed group" do
+        group = Fabricate(:group, name: "chatpeeps")
+        SiteSetting.chat_allowed_groups = group.id
+        GroupUser.create(user: user, group: group)
+
+        get "/chat/chat_channels/search.json", params: { filter: "andyjones" }
+        expect(response.status).to eq(200)
+        expect(response.parsed_body["direct_message_channels"].count).to eq(0)
+
+        GroupUser.create(user: admin, group: group)
+        get "/chat/chat_channels/search.json", params: { filter: "andyjones" }
+        expect(response.status).to eq(200)
+        expect(response.parsed_body["direct_message_channels"][0]["id"]).to eq(dm_chat_channel.id)
       end
     end
   end

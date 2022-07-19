@@ -76,6 +76,7 @@ export default Component.extend({
   _updateReadTimer: null,
   lastSendReadMessageId: null,
   _scrollerEl: null,
+  _visibleMessagesObserver: null,
 
   init() {
     this._super(...arguments);
@@ -108,6 +109,8 @@ export default Component.extend({
     document.addEventListener("scroll", this._forceBodyScroll, {
       passive: true,
     });
+
+    this._visibleMessagesObserver = this._setupVisibleMessagesObserver();
   },
 
   willDestroyElement() {
@@ -140,6 +143,8 @@ export default Component.extend({
     );
 
     document.removeEventListener("scroll", this._forceBodyScroll);
+
+    this._visibleMessagesObserver.disconnect();
   },
 
   didReceiveAttrs() {
@@ -308,6 +313,9 @@ export default Component.extend({
             ? newMessages.lastObject
             : newMessages.firstObject;
           this.scrollToMessage(focusedMessage.messageLookupId);
+          schedule("afterRender", () => {
+            this._observeMessages(newMessages);
+          });
         }
         this.setCanLoadMoreDetails(messages.resultSetMeta);
         return messages;
@@ -390,6 +398,8 @@ export default Component.extend({
       if (this._selfDeleted) {
         return;
       }
+
+      this._observeMessages(this.messages);
 
       if (this.targetMessageId) {
         this.scrollToMessage(this.targetMessageId, {
@@ -940,11 +950,15 @@ export default Component.extend({
           this.messages?.length &&
           this.messages[this.messages.length - 1].id > latestUnreadMsgId
         ) {
-          latestUnreadMsgId = this._findNextUnreadMessage(
-            0,
-            this.messages.length - 1,
-            this.lastSendReadMessageId
+          const visibleMessages = document.querySelectorAll(
+            ".chat-message-container.visible"
           );
+          if (visibleMessages?.length > 0) {
+            latestUnreadMsgId = parseInt(
+              visibleMessages[visibleMessages.length - 1].dataset.id,
+              10
+            );
+          }
         }
 
         const hasUnreadMessages =
@@ -970,53 +984,6 @@ export default Component.extend({
       },
       wait
     );
-  },
-
-  // Recursive binary search to find an unread message in the viewport.
-  _findNextUnreadMessage(start, end, lastReadMessageId) {
-    if (end < start) {
-      return this.messages[end]?.id;
-    }
-
-    const candidateIdx = Math.round((start + end) / 2);
-    const unreadCandidateId = this.messages[candidateIdx]?.id;
-
-    if (!unreadCandidateId) {
-      return this.messages[end]?.id;
-    }
-
-    if (unreadCandidateId > lastReadMessageId) {
-      const messageElem = document.querySelector(
-        `.chat-message-container[data-id="${unreadCandidateId}"]`
-      );
-
-      if (this._messageVisible(messageElem)) {
-        return unreadCandidateId;
-      } else {
-        // Right half but not visible yet. Keep searching.
-        return this._findNextUnreadMessage(
-          start,
-          candidateIdx - 1,
-          lastReadMessageId
-        );
-      }
-    } else {
-      // Wrong half. Look in the rest of the array
-      return this._findNextUnreadMessage(
-        candidateIdx + 1,
-        end,
-        lastReadMessageId
-      );
-    }
-  },
-
-  _messageVisible(message) {
-    const { bottom, height, top } = message.getBoundingClientRect();
-    const containerRect = this._scrollerEl.getBoundingClientRect();
-
-    return top <= containerRect.top
-      ? containerRect.top - top <= height
-      : bottom - containerRect.bottom <= height;
   },
 
   _floatOpenAndFocused() {
@@ -1485,5 +1452,35 @@ export default Component.extend({
     } else {
       this.appEvents.trigger("sidebar:scroll-to-element", "sidebar-container");
     }
+  },
+
+  _setupVisibleMessagesObserver() {
+    const options = {
+      root: document.querySelector(".chat-messages-container"),
+      rootMargin: "0px",
+      threshold: 1.0,
+    };
+
+    const callback = (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("visible");
+        } else {
+          entry.target.classList.remove("visible");
+        }
+      });
+    };
+
+    return new IntersectionObserver(callback, options);
+  },
+
+  _observeMessages(messages) {
+    messages.forEach((message) => {
+      this._visibleMessagesObserver.observe(
+        document.querySelector(
+          `.chat-message-container[data-id="${message.id}"]`
+        )
+      );
+    });
   },
 });

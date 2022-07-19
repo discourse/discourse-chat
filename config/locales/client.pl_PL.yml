@@ -26,6 +26,8 @@ pl_PL:
       browse_all_channels: "Przeglądaj wszystkie kanały"
       channel_settings:
         edit: "Edytuj"
+        join_channel: "Dołącz"
+        leave_channel: "Opuść kanał"
       channels_list_popup:
         browse: "Przeglądaj kanały"
         create: "Utwórz kanał"
@@ -37,11 +39,7 @@ pl_PL:
       delete: "Usuń"
       edited: "edytowano"
       empty_state:
-        create_personal_chat: "Rozpocznij czat osobisty"
-        no_public_available: "Obecnie nie ma dostępnych kanałów publicznych do obserwowania."
-        public_available: "Dostępne są kanały publiczne, które możesz śledzić."
-        start_direct_message: "Możesz także rozpocząć osobisty czat z jednym lub kilkoma użytkownikami."
-        title: "Rozpocznij, dołączając do kanału"
+        direct_message: "Możesz także rozpocząć osobisty czat z jednym lub kilkoma użytkownikami."
       email_frequency:
         never: "Nigdy"
       enable: "Włącz czat"
@@ -106,6 +104,10 @@ pl_PL:
         closed: "Zamknięty"
         open_header: "Kanał jest otwarty"
         open: "Otwarty"
+      browse:
+        title: Kanały
+        filter_closed: Zamknięty
+        filter_archived: Zarchiwizowany
       about_view:
         description: Opis
       channel_selector:

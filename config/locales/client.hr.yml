@@ -34,10 +34,8 @@ hr:
         confirm_move: "Premjesti poruke"
       channel_settings:
         title: "Postavke kanala"
-        close_channel: "Zatvori kanal"
-        open_channel: "Otvori kanal"
-        archive_channel: "Arhiviraj kanal"
-        delete_channel: "Izbriši kanal"
+        join_channel: "Pridružite se"
+        leave_channel: "Napusti kanal"
       channel_archive:
         title: "Arhiviraj kanal"
         instructions: "<p>Arhiviranje kanala stavlja ga u način rada samo za čitanje i premješta sve poruke s kanala u novu ili postojeću temu. Ne mogu se slati nove poruke, niti se postojeće poruke ne mogu uređivati ili brisati.</p><p>Jeste li sigurni da želite arhivirati <strong>%{channelTitle}</strong> kanal?</p>"
@@ -66,11 +64,7 @@ hr:
       delete: "Izbriši"
       edited: "uredio"
       empty_state:
-        create_personal_chat: "Započnite osobni chat"
-        no_public_available: "Trenutno nema dostupnih javnih kanala koje možete pratiti."
-        public_available: "Postoje javni kanali koje možete pratiti."
-        start_direct_message: "Također možete započeti osobni razgovor s jednim ili više korisnika."
-        title: "Započnite pridruživanjem kanalu"
+        direct_message: "Također možete započeti osobni razgovor s jednim ili više korisnika."
       enable: "Omogući chat"
       flag: "Prijavi"
       flagged: "Ova poruka je označena za pregled"
@@ -98,3 +92,5 @@ hr:
       aria_roles:
         header: "Zaglavlje chata"
         composer: "Skladatelj chata"
+      browse:
+        title: Kanali

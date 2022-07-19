@@ -1091,18 +1091,18 @@ Widget.triangulate(arg: "test")
     await visit("/chat/channel/11/another-category");
 
     document.activeElement.blur();
-    await triggerKeyEvent(document.body, "keydown", "A");
+    await triggerKeyEvent(document.body, "keydown", 65); // 65 is `a` keycode
     let composer = query(".chat-composer-input");
     assert.equal(composer.value, "a");
     assert.equal(document.activeElement, composer);
 
     document.activeElement.blur();
-    await triggerKeyEvent(document.body, "keydown", "A");
+    await triggerKeyEvent(document.body, "keydown", 65);
     assert.equal(composer.value, "aa");
     assert.equal(document.activeElement, composer);
 
     document.activeElement.blur();
-    await triggerKeyEvent(document.body, "keydown", 191); // 191 is "?"
+    await triggerKeyEvent(document.body, "keydown", 191); // 191 is `?`
     assert.notEqual(
       document.activeElement,
       composer,

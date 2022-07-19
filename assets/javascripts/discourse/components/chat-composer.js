@@ -249,7 +249,7 @@ export default Component.extend(TextareaTextManipulation, {
     const newUploadIds = newUploads.mapBy("id");
 
     // don't need to load the uploads into chat-composer-uploads if
-    // nothing has changed notherwise we would rerender for no reason
+    // nothing has changed otherwise we would rerender for no reason
     if (
       currentUploadIds.length === newUploadIds.length &&
       newUploadIds.every((newUploadId) =>

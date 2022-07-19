@@ -135,7 +135,7 @@ discourseModule(
       },
     });
 
-    componentTest("filters current user from list of replyers", {
+    componentTest("filters current user from list of repliers", {
       template: hbs`{{chat-replying-indicator presenceChannel=presenceChannel chatChannel=chatChannel}}`,
 
       async beforeEach() {

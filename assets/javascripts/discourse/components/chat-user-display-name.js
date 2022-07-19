@@ -17,7 +17,7 @@ export default class ChatUserDisplayName extends Component {
   }
 
   @computed("user.username")
-  get formatedUsername() {
+  get formattedUsername() {
     return formatUsername(this.user?.username);
   }
 

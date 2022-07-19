@@ -2,7 +2,7 @@
 
 ##
 # Processes slack-formatted text messages, as Mattermost does with
-# Slack incoming webhook interopability, for example links in the
+# Slack incoming webhook interoperability, for example links in the
 # format <LINK> and <LINK|TEXT>, <!here> and <!all> mentions.
 #
 # See https://api.slack.com/reference/surfaces/formatting for all of

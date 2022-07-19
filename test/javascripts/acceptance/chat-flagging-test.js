@@ -49,14 +49,19 @@ acceptance("Discourse Chat - Flagging test", function (needs) {
 
   test("Flagging in public channel works", async function (assert) {
     await visit("/chat/channel/75/site");
+
     assert.notOk(exists(".chat-live-pane .chat-message .chat-message-flagged"));
     await triggerEvent(".chat-message-container", "mouseenter");
-    let moreBtns = selectKit(".chat-live-pane .chat-message .more-buttons");
-    await moreBtns.expand();
-    const content = moreBtns.displayedContent();
+
+    let moreButtons = selectKit(".chat-live-pane .chat-message .more-buttons");
+    await moreButtons.expand();
+
+    const content = moreButtons.displayedContent();
     assert.ok(content.find((row) => row.id === "flag"));
-    await moreBtns.selectRowByValue("flag");
+
+    await moreButtons.selectRowByValue("flag");
     assert.ok(exists(".bootbox.in"));
+
     await click(".bootbox.in .btn-primary");
     await publishToMessageBus("/chat/75", {
       type: "self_flagged",
@@ -69,6 +74,7 @@ acceptance("Discourse Chat - Flagging test", function (needs) {
       reviewable_id: 1,
     });
     await settled();
+
     const reviewableLink = query(
       `.chat-message-container[data-id='${defaultChatView.chat_messages[0].id}'] .chat-message-info__flag a`
     );
@@ -78,9 +84,11 @@ acceptance("Discourse Chat - Flagging test", function (needs) {
   test("Flag button isn't present for DM channel", async function (assert) {
     await visit("/chat/channel/9/@hawk");
     await triggerEvent(".chat-message-container", "mouseenter");
-    let moreBtns = selectKit(".chat-live-pane .chat-message .more-buttons");
-    await moreBtns.expand();
-    const content = moreBtns.displayedContent();
+
+    let moreButtons = selectKit(".chat-live-pane .chat-message .more-buttons");
+    await moreButtons.expand();
+
+    const content = moreButtons.displayedContent();
     assert.notOk(content.find((row) => row.id === "flag"));
   });
 });

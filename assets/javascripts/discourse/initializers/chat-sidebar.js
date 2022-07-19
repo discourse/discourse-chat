@@ -251,7 +251,7 @@ export default {
             }
 
             get text() {
-              return this.channel.title;
+              return this.channel.title.replaceAll("@", "");
             }
 
             get prefixType() {

@@ -4,7 +4,6 @@ import { defaultHomepage } from "discourse/lib/utilities";
 import { inject as service } from "@ember/service";
 import { scrollTop } from "discourse/mixins/scroll-top";
 import { schedule } from "@ember/runloop";
-import { action } from "@ember/object";
 
 export default DiscourseRoute.extend({
   chat: service(),

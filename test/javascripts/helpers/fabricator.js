@@ -1,17 +1,14 @@
 // heavily inspired from https://github.com/travelperk/fabricator
 
-import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
-import EmberObject from "@ember/object";
-
-function Fabricator(attributes = {}) {
-  const fabricate = (opts) => Fabricate(attributes, opts);
+function Fabricator(Model, attributes = {}) {
+  const fabricate = (opts) => Fabricate(Model, attributes, opts);
   fabricate.extend = (opts = {}) => Fabricator({ ...attributes, ...opts });
   return fabricate;
 }
 
-function Fabricate(attributes, opts = {}) {
+function Fabricate(Model, attributes, opts = {}) {
   if (typeof attributes === "function") {
-    return attributes.apply();
+    return attributes();
   }
 
   const extendedModel = { ...attributes, ...opts };
@@ -22,15 +19,7 @@ function Fabricate(attributes, opts = {}) {
     return o;
   }, {});
 
-  // TODO: improve with more models and maybe automatic model creation
-  let emberModel;
-  if (object.__model === "ChatChannel") {
-    emberModel = ChatChannel.create(object);
-  } else {
-    emberModel = EmberObject.create(object);
-  }
-
-  return emberModel;
+  return Model.create(object);
 }
 
 export { Fabricator };

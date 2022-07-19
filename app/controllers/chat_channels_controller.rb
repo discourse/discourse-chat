@@ -93,7 +93,7 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     )
 
     users = User.joins(:user_option).where.not(id: current_user.id)
-    unless DiscourseChat.allowed_group_ids.include?(Group::AUTO_GROUPS[:everyone])
+    if !DiscourseChat.allowed_group_ids.include?(Group::AUTO_GROUPS[:everyone])
       users = users.joins(:groups).where(groups: { id: DiscourseChat.allowed_group_ids })
     end
 

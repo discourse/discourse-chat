@@ -65,7 +65,7 @@ discourseModule(
       },
 
       async test(assert) {
-        await triggerKeyEvent(".chat-channel-row", "keyup", 13);
+        await triggerKeyEvent(".chat-channel-row", "keyup", "Enter");
 
         assert.strictEqual(this.switchedChannel, this.channel.id);
       },

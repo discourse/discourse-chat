@@ -7,7 +7,6 @@ import {
   queryAll,
   visible,
 } from "discourse/tests/helpers/qunit-helpers";
-
 import {
   click,
   currentURL,
@@ -21,7 +20,11 @@ import {
   generateChatView,
 } from "discourse/plugins/discourse-chat/chat-fixtures";
 import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
+import { KEY_MODIFIER } from "discourse/plugins/discourse-chat/discourse/initializers/chat-keyboard-shortcuts";
 import { test } from "qunit";
+
+const MODIFIER_OPTIONS =
+  KEY_MODIFIER === "meta" ? { metaKey: true } : { ctrlKey: true };
 
 acceptance("Discourse Chat - Keyboard shortcuts", function (needs) {
   needs.user({
@@ -32,6 +35,7 @@ acceptance("Discourse Chat - Keyboard shortcuts", function (needs) {
     can_chat: true,
     has_chat_enabled: true,
   });
+
   needs.pretender((server, helper) => {
     server.get("/chat/chat_channels.json", () => helper.response(chatChannels));
     server.get("/chat/:chatChannelId/messages.json", () =>
@@ -167,7 +171,7 @@ acceptance("Discourse Chat - Keyboard shortcuts", function (needs) {
     await focus(composerInput);
     composerInput.selectionStart = 0;
     composerInput.selectionEnd = 9;
-    await triggerKeyEvent(composerInput, "keydown", 66, { ctrlKey: true }); // ctrl+b
+    await triggerKeyEvent(composerInput, "keydown", "B", MODIFIER_OPTIONS);
     await settled();
     assert.strictEqual(
       composerInput.value,
@@ -178,7 +182,7 @@ acceptance("Discourse Chat - Keyboard shortcuts", function (needs) {
     await focus(composerInput);
     composerInput.selectionStart = 0;
     composerInput.selectionEnd = 9;
-    await triggerKeyEvent(composerInput, "keydown", 73, { ctrlKey: true }); // ctrl+i
+    await triggerKeyEvent(composerInput, "keydown", "I", MODIFIER_OPTIONS);
     await settled();
     assert.strictEqual(
       composerInput.value,
@@ -189,7 +193,7 @@ acceptance("Discourse Chat - Keyboard shortcuts", function (needs) {
     await focus(composerInput);
     composerInput.selectionStart = 0;
     composerInput.selectionEnd = 9;
-    await triggerKeyEvent(composerInput, "keydown", 69, { ctrlKey: true }); // ctrl+e
+    await triggerKeyEvent(composerInput, "keydown", "E", MODIFIER_OPTIONS);
     await settled();
     assert.strictEqual(
       composerInput.value,
@@ -200,13 +204,18 @@ acceptance("Discourse Chat - Keyboard shortcuts", function (needs) {
 
   test("insert link shortcut", async function (assert) {
     await visit("/latest");
+
     this.chatService.set("sidebarActive", false);
     await click(".header-dropdown-toggle.open-chat");
-    await settled();
-    const composerInput = query(".chat-composer-input");
-    await fillIn(composerInput, "This is a link to ");
-    await focus(composerInput);
-    await triggerKeyEvent(composerInput, "keydown", 76, { ctrlKey: true }); // ctrl+l
+
+    await focus(".chat-composer-input");
+    await fillIn(".chat-composer-input", "This is a link to ");
+    await triggerKeyEvent(
+      ".chat-composer-input",
+      "keydown",
+      "L",
+      MODIFIER_OPTIONS
+    );
     assert.ok(exists(".insert-link.modal-body"), "hyperlink modal visible");
 
     await fillIn(".modal-body .link-url", "google.com");
@@ -214,7 +223,7 @@ acceptance("Discourse Chat - Keyboard shortcuts", function (needs) {
     await click(".modal-footer button.btn-primary");
 
     assert.strictEqual(
-      composerInput.value,
+      query(".chat-composer-input").value,
       "This is a link to [Google](https://google.com)",
       "adds link with url and text, prepends 'https://'"
     );

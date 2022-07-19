@@ -183,7 +183,7 @@ export default Service.extend({
     });
 
     const trimmedFilter = filter.trim();
-    const downcasedFilter = filter.toLowerCase();
+    const lowerCasedFilter = filter.toLowerCase();
     const { activeChannel } = this;
 
     return sortedChannels.filter((channel) => {
@@ -202,15 +202,15 @@ export default Service.extend({
         let userFound = false;
         channel.chatable.users.forEach((user) => {
           if (
-            user.username.toLowerCase().includes(downcasedFilter) ||
-            user.name?.toLowerCase().includes(downcasedFilter)
+            user.username.toLowerCase().includes(lowerCasedFilter) ||
+            user.name?.toLowerCase().includes(lowerCasedFilter)
           ) {
             return (userFound = true);
           }
         });
         return userFound;
       } else {
-        return channel.title.toLowerCase().includes(downcasedFilter);
+        return channel.title.toLowerCase().includes(lowerCasedFilter);
       }
     });
   },

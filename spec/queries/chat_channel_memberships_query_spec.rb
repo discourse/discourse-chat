@@ -27,7 +27,7 @@ describe ChatChannelMembershipsQuery do
           UserChatChannelMembership.create(user: user_2, chat_channel: channel_1, following: true)
         end
 
-        it 'returns the membersips' do
+        it 'returns the memberships' do
           memberships = described_class.call(channel_1.id)
 
           expect(memberships.pluck(:user_id)).to contain_exactly(user_1.id, user_2.id)
@@ -51,7 +51,7 @@ describe ChatChannelMembershipsQuery do
           UserChatChannelMembership.create!(user: user_2, chat_channel: channel_1, following: true, desktop_notification_level: UserChatChannelMembership::NOTIFICATION_LEVELS[:always], mobile_notification_level: UserChatChannelMembership::NOTIFICATION_LEVELS[:always])
         end
 
-        it 'returns the membersips' do
+        it 'returns the memberships' do
           memberships = described_class.call(channel_1.id)
 
           expect(memberships.pluck(:user_id)).to contain_exactly(user_1.id, user_2.id)

@@ -45,7 +45,7 @@ discourseModule(
       },
     });
 
-    componentTest("none of the conditions are fullfilled", {
+    componentTest("none of the conditions are fulfilled", {
       template: hbs`{{sidebar-channels}}`,
 
       beforeEach() {

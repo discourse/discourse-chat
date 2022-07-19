@@ -25,7 +25,7 @@ describe DiscourseChat::ChatMailer do
     @private_channel = DiscourseChat::DirectMessageChannelCreator.create!(target_users: [@sender, @user_1])
   end
 
-  def asert_summary_skipped
+  def assert_summary_skipped
     expect(job_enqueued?(job: :user_email, args: { type: "chat_summary", user_id: @user_1.id })).to eq(false)
   end
 
@@ -44,7 +44,7 @@ describe DiscourseChat::ChatMailer do
 
       described_class.send_unread_mentions_summary
 
-      asert_summary_skipped
+      assert_summary_skipped
     end
 
     it 'skips users with summaries disabled' do
@@ -52,7 +52,7 @@ describe DiscourseChat::ChatMailer do
 
       described_class.send_unread_mentions_summary
 
-      asert_summary_skipped
+      assert_summary_skipped
     end
 
     it "skips a job if the user haven't read the channel since the last summary" do
@@ -60,7 +60,7 @@ describe DiscourseChat::ChatMailer do
 
       described_class.send_unread_mentions_summary
 
-      asert_summary_skipped
+      assert_summary_skipped
     end
 
     it 'skips without chat enabled' do
@@ -68,7 +68,7 @@ describe DiscourseChat::ChatMailer do
 
       described_class.send_unread_mentions_summary
 
-      asert_summary_skipped
+      assert_summary_skipped
     end
 
     it 'queues a job for users that was mentioned and never read the channel before' do
@@ -82,7 +82,7 @@ describe DiscourseChat::ChatMailer do
 
       described_class.send_unread_mentions_summary
 
-      asert_summary_skipped
+      assert_summary_skipped
     end
 
     it 'skips the job when the user is not following the channel anymore' do
@@ -90,7 +90,7 @@ describe DiscourseChat::ChatMailer do
 
       described_class.send_unread_mentions_summary
 
-      asert_summary_skipped
+      assert_summary_skipped
     end
 
     it 'skips users with unread messages from a different channel' do
@@ -100,7 +100,7 @@ describe DiscourseChat::ChatMailer do
 
       described_class.send_unread_mentions_summary
 
-      asert_summary_skipped
+      assert_summary_skipped
     end
 
     it 'only queues the job once for users who are member of multiple groups with chat access' do
@@ -117,10 +117,10 @@ describe DiscourseChat::ChatMailer do
 
       described_class.send_unread_mentions_summary
 
-      asert_summary_skipped
+      assert_summary_skipped
     end
 
-    it 'queues the job if the user has unread mentions and alread read all the messages in the previous summary' do
+    it 'queues the job if the user has unread mentions and already read all the messages in the previous summary' do
       @user_membership.update!(last_read_message_id: @chat_message.id, last_unread_mention_when_emailed_id: @chat_message.id)
       unread_message = Fabricate(:chat_message, chat_channel: @chat_channel, user: @sender)
       Fabricate(:chat_mention, user: @user_1, chat_message: unread_message)
@@ -136,7 +136,7 @@ describe DiscourseChat::ChatMailer do
 
       described_class.send_unread_mentions_summary
 
-      asert_summary_skipped
+      assert_summary_skipped
     end
 
     it "doesn't mix mentions from other users" do
@@ -158,7 +158,7 @@ describe DiscourseChat::ChatMailer do
 
       described_class.send_unread_mentions_summary
 
-      asert_summary_skipped
+      assert_summary_skipped
     end
 
     describe 'update the user membership after we send the email' do

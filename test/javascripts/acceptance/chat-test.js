@@ -37,7 +37,7 @@ import {
 import User from "discourse/models/user";
 import selectKit from "discourse/tests/helpers/select-kit-helper";
 import sinon from "sinon";
-import * as ajaxlib from "discourse/lib/ajax";
+import * as ajaxModule from "discourse/lib/ajax";
 import I18n from "I18n";
 import { CHANNEL_STATUSES } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 
@@ -1475,7 +1475,7 @@ acceptance("Discourse Chat - chat preferences", function (needs) {
 
   test("The user can save the settings", async function (assert) {
     updateCurrentUser({ has_chat_enabled: false });
-    const spy = sinon.spy(ajaxlib, "ajax");
+    const spy = sinon.spy(ajaxModule, "ajax");
     await visit("/u/eviltrout/preferences/chat");
     await click("#user_chat_enabled");
     await click("#user_chat_only_push_notifications");

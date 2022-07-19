@@ -31,7 +31,7 @@ acceptance("Discourse Chat - delete chat channel modal", function (needs) {
     });
   });
 
-  test("Redirectiong after deleting a channel", async function (assert) {
+  test("Redirection after deleting a channel", async function (assert) {
     await visit("chat/channel/1/-/info/settings");
     await click(".delete-btn");
     await fillIn("#channel-delete-confirm-name", "My category title");

@@ -6,9 +6,9 @@ const FULL_PAGE = "fullPage";
 const STORE_NAMESPACE_CHAT_WINDOW = "discourse_chat_window_";
 
 export default class FullPageChat extends Service {
-  this.store = new KeyValueStore(STORE_NAMESPACE_CHAT_WINDOW);
-  this._fromTransition = null;
-  this._isActive = false;
+  store = new KeyValueStore(STORE_NAMESPACE_CHAT_WINDOW);
+  _fromTransition = null;
+  _isActive = false;
 
   enter(fromTransition) {
     this._fromTransition = fromTransition;

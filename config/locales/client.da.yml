@@ -31,10 +31,7 @@ da:
       leave: "Forlad kanal"
       channel_settings:
         title: "Kanal indstillinger"
-        close_channel: "Luk Kanal"
-        open_channel: "Åbn Kanal"
-        archive_channel: "Arkivér Kanal"
-        delete_channel: "Slet Kanal"
+        leave_channel: "Forlad kanal"
       channel_archive:
         title: "Arkivér Kanal"
         retry: "Forsøg igen"
@@ -52,8 +49,6 @@ da:
       close: "Luk"
       delete: "Slet"
       edited: "redigeret"
-      empty_state:
-        create_personal_chat: "Start en personlig chat"
       enable: "Aktiver chat"
       invalid_access: "Du har ikke adgang til at se denne chatkanal"
       invitation_notification: "<span>%{username}</span> <span>inviterede dig til at deltage i en chatkanal</span>"
@@ -83,6 +78,10 @@ da:
         closed: "Lukket"
         open_header: "Kanalen er åben"
         open: "Åbn"
+      browse:
+        title: Kanaler
+        filter_closed: Lukket
+        filter_archived: Arkiveret
       channel_selector:
         title: "Hop til kanal"
         no_channels: "Ingen kanaler matcher din søgning"
@@ -110,6 +109,9 @@ da:
         code_text: "kode tekst"
       quote:
         copy_success: "Chat-citat kopieret til udklipsholderen."
+      settings:
+        enable_auto_join_users: "Tilføj automatisk alle nye og eksisterende brugere"
+        disable_auto_join_users: "Stop automatisk tilføjelse af nye brugere"
       incoming_webhooks:
         system: "system"
         url: "URL"

@@ -25,12 +25,6 @@ zh_CN:
       deleted: "一条消息已被删除。[查看]"
       delete: "删除"
       edited: "已编辑"
-      empty_state:
-        create_personal_chat: "开始个人聊天"
-        no_public_available: "目前没有可供您关注的公共频道。"
-        public_available: "有公共频道可供您关注。"
-        start_direct_message: "您还可以与一位或多位用户开始个人聊天。"
-        title: "首先加入频道"
       enable: "启用聊天"
       flag: "举报"
       flagged: "此消息已被举报，等待审核"

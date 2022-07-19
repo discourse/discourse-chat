@@ -36,10 +36,11 @@ fa_IR:
         open_channel: "باز کردن کانال"
         archive_channel: "بایگانی کانال"
         delete_channel: "حذف کانال"
-        join_channel: "پیوستن به کانال"
+        join_channel: "پیوستن"
         leave_channel: "ترک کانال"
       channel_archive:
         title: "بایگانی کانال"
+        retry: "تلاش مجدد"
       channel_open:
         title: "باز کردن کانال"
         instructions: "کانال را باز می‌کند، همه کاربران قادر خواهند بود پیام جدید ارسال کنند و پیام‌های قبلی خود را ویرایش کنند."
@@ -58,11 +59,12 @@ fa_IR:
       deleted: "یک پیام حذف شد. [view]"
       delete: "حذف"
       edited: "ویرایش شده"
+      muted: "بی‌صدا شد"
+      joined: "پیوستن"
       empty_state:
-        create_personal_chat: "شروع گفتگوی شخصی"
-        no_public_available: "هیچ کانال عمومی برای دنبال کردن شما در این زمان وجود ندارد."
-        public_available: "کانال‌های عمومی در دسترس شما برای دنبال کردن وجود دارد."
-        start_direct_message: "شما همچنین می‌توانید یک گفتگو شخصی را با یک یا چند کاربر شروع کنید."
+        direct_message_cta: "شروع گفتگوی شخصی"
+        direct_message: "شما همچنین می‌توانید یک گفتگو شخصی را با یک یا چند کاربر شروع کنید."
+        title: "هیچ کانالی پیدا نشد"
       email_frequency:
         never: "هرگز"
         title: "آگاه‌سازی‌های ایمیل"
@@ -119,8 +121,17 @@ fa_IR:
       channel_status:
         read_only: "فقط خواندنی"
         archived: "بایگانی شده"
+        closed_header: "کانال بسته است"
         closed: "بسته شد"
+        open_header: "کانال باز است"
         open: "باز کن"
+      browse:
+        title: کانال‌ها
+        filter_all: همه
+        filter_open: باز شد
+        filter_closed: بسته شد
+        filter_archived: بایگانی شد
+        filter_input_placeholder: کانال را با نام جستجو کنید
       chat_message_separator:
         today: امروز
         yesterday: دیروز
@@ -157,6 +168,12 @@ fa_IR:
           one: ۱ عضو
           other: "%{count} عضو"
       create_channel:
+        auto_join_users:
+          public_category_warning: "%{category} یک دسته‌بندی عمومی است. هر کاربر به صورت خودکار به این کانال اضافه شود؟"
+          warning_groups:
+            one: به طور خودکار %{members_count} کاربر از گروه %{group_1} اضافه شود؟
+            other: به طور خودکار %{members_count} کاربر از گروه %{group_1} و %{group_2} اضافه شود؟
+          warning_multiple_groups: به طور خودکار %{members_count} کاربر از گروه %{group_1} و %{count} نفر دیگر اضافه شود؟
         choose_category:
           label: "انتخاب دسته‌بندی"
           none: "یکی را انتخاب کنید..."
@@ -210,6 +227,7 @@ fa_IR:
       selection:
         cancel: "انصراف"
         quote_selection: "نقل قول در موضوع"
+        move_selection_to_channel: "انتقال به کانال"
         error: "در انتقال پیام‌های گفتگو خطایی رخ داده"
         title: "انتقال گفتگو به موضوع"
         new_topic:
@@ -223,6 +241,9 @@ fa_IR:
       popup:
         chat_message: "پیام گفتگو جدید"
         chat_quoted: "%{username} پیام گفتگو شما را نقل کرد"
+      titles:
+        chat_mention: "اشاره گفتگو"
+        chat_invitation: "دعوت‌نامه گفتگو"
     action_codes:
       chat:
         enabled: '%{who} فعال شد <button class="btn-link open-chat">گفتگو</button> %{when}'

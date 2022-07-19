@@ -96,25 +96,5 @@ discourseModule(
         "it does not show the join channel button"
       );
     });
-
-    test("archived channel", async function (assert) {
-      this.channel.set("status", "archived");
-      await render(hbs`{{chat-channel-preview-card channel=channel}}`);
-
-      assert.notOk(
-        exists(".chat-channel-preview-card__join-channel-btn"),
-        "it does not show the join channel button"
-      );
-    });
-
-    test("read_only channel", async function (assert) {
-      this.channel.set("status", "read_only");
-      await render(hbs`{{chat-channel-preview-card channel=channel}}`);
-
-      assert.notOk(
-        exists(".chat-channel-preview-card__join-channel-btn"),
-        "it does not show the join channel button"
-      );
-    });
   }
 );

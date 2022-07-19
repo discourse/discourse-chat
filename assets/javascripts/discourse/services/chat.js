@@ -634,9 +634,14 @@ export default Service.extend({
         // User sent message, update tracking state to no unread
         trackingState.set("chat_message_id", busData.message_id);
       } else {
-        // Message from other user. Increment trackings state
-        if (busData.message_id > (trackingState.chat_message_id || 0)) {
-          trackingState.set("unread_count", trackingState.unread_count + 1);
+        // Ignored user sent message, update tracking state to no unread
+        if (this.currentUser.ignored_users.includes(busData.username)) {
+          trackingState.set("chat_message_id", busData.message_id);
+        } else {
+          // Message from other user. Increment trackings state
+          if (busData.message_id > (trackingState.chat_message_id || 0)) {
+            trackingState.set("unread_count", trackingState.unread_count + 1);
+          }
         }
       }
       this.userChatChannelTrackingStateChanged();

@@ -7,7 +7,11 @@ module ChatPublisher
     content[:stagedId] = staged_id
     permissions = permissions(chat_channel)
     MessageBus.publish("/chat/#{chat_channel.id}", content.as_json, permissions)
-    MessageBus.publish("/chat/#{chat_channel.id}/new-messages", { message_id: chat_message.id, user_id: chat_message.user_id }, permissions)
+    MessageBus.publish(
+      "/chat/#{chat_channel.id}/new-messages",
+      { message_id: chat_message.id, user_id: chat_message.user.id, username: chat_message.user.username },
+      permissions
+    )
   end
 
   def self.publish_processed!(chat_message)

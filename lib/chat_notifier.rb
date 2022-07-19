@@ -69,7 +69,6 @@ class DiscourseChat::ChatNotifier
     to_notify
   end
 
-  # TODO (martin) Add tests...there are none
   def notify_edit
     existing_notifications = ChatMention.includes(:user, :notification).where(chat_message: @chat_message)
     already_notified_user_ids = existing_notifications.map(&:user_id)

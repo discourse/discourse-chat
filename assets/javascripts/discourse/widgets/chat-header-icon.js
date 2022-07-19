@@ -65,8 +65,8 @@ export default createWidget("header-chat-link", {
       return;
     }
 
-    if (this.chat.sidebarActive || this.fullPageChat.isPrefered) {
-      this.fullPageChat.isPrefered = true;
+    if (this.chat.sidebarActive || this.fullPageChat.isPreferred) {
+      this.fullPageChat.isPreferred = true;
       return this.router.transitionTo("chat");
     } else {
       this.appEvents.trigger("chat:toggle-open");

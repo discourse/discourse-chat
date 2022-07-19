@@ -1,21 +1,27 @@
-import { acceptance, exists } from "discourse/tests/helpers/qunit-helpers";
+import {
+  acceptance,
+  exists,
+  loggedInUser,
+} from "discourse/tests/helpers/qunit-helpers";
 import { click, currentURL, visit } from "@ember/test-helpers";
-import { chatChannels } from "discourse/plugins/discourse-chat/chat-fixtures";
+import {
+  chatChannels,
+  generateChatView,
+} from "discourse/plugins/discourse-chat/chat-fixtures";
 import { test } from "qunit";
 
 acceptance("Discourse Chat - Mobile test", function (needs) {
-  needs.user({
-    admin: false,
-    moderator: false,
-    username: "eviltrout",
-    id: 1,
-    can_chat: true,
-    has_chat_enabled: true,
-  });
+  needs.user({ can_chat: true, has_chat_enabled: true });
+
   needs.mobileView();
+
   needs.pretender((server, helper) => {
     server.get("/chat/chat_channels.json", () => helper.response(chatChannels));
+    server.get("/chat/:id/messages.json", () =>
+      helper.response(generateChatView(loggedInUser()))
+    );
   });
+
   needs.settings({
     chat_enabled: true,
   });

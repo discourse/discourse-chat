@@ -8,6 +8,7 @@ import { inject as service } from "@ember/service";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import discourseDebounce from "discourse-common/lib/debounce";
 import { INPUT_DELAY } from "discourse-common/config/environment";
+import { isPresent } from "@ember/utils";
 
 export default Component.extend({
   chat: service(),
@@ -115,21 +116,26 @@ export default Component.extend({
 
   @action
   search() {
-    if (this.filter.trim()) {
-      discourseDebounce(this.fetchChannelsFromServer, INPUT_DELAY, this);
+    if (isPresent(this.filter?.trim())) {
+      discourseDebounce(
+        this,
+        this.fetchChannelsFromServer,
+        this.filter.trim(),
+        INPUT_DELAY
+      );
     } else {
-      discourseDebounce(this.getInitialChannels, INPUT_DELAY, this);
+      discourseDebounce(this, this.getInitialChannels, INPUT_DELAY);
     }
   },
 
   @action
-  fetchChannelsFromServer() {
+  fetchChannelsFromServer(filter) {
     this.setProperties({
       loading: true,
       searchIndex: this.searchIndex + 1,
     });
     const thisSearchIndex = this.searchIndex;
-    ajax("/chat/chat_channels/search", { data: { filter: this.filter } })
+    ajax("/chat/chat_channels/search", { data: { filter } })
       .then((searchModel) => {
         if (this.searchIndex === thisSearchIndex) {
           this.set("searchModel", searchModel);

@@ -1,23 +1,10 @@
 {
   "type": "object",
-  "required": [
-    "title",
-    "chatable",
-    "chatable_id",
-    "last_read_message_id",
-    "muted",
-    "unread_count",
-    "unread_mentions",
-    "last_message_sent_at",
-    "status",
-    "memberships_count",
-    "desktop_notification_level",
-    "mobile_notification_level",
-    "following"
-  ],
+  "additionalProperties": {
+    "auto_join_users": { "type": "boolean" }
+  },
   "properties": {
     "id": { "type": "number" },
-    "auto_join_users": { "type": "boolean"},
     "chatable_type": { "type": "string" },
     "chatable_url": { "type": "string" },
     "title": { "type": "string" },

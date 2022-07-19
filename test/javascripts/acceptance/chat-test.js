@@ -20,7 +20,6 @@ import {
 } from "@ember/test-helpers";
 import { test } from "qunit";
 import {
-  allChannels,
   chatChannels,
   directMessageChannels,
   generateChatView,
@@ -1383,9 +1382,6 @@ acceptance(
     needs.pretender((server, helper) => {
       baseChatPretenders(server, helper);
       chatChannelPretender(server, helper);
-      server.get("/chat/chat_channels/all.json", () => {
-        return helper.response(allChannels());
-      });
       server.get("/chat/chat_channels/:chatChannelId", () => {
         return helper.response(siteChannel);
       });
@@ -1415,7 +1411,7 @@ acceptance(
       await dropdown.expand();
       await dropdown.selectRowByValue("browseChannels");
 
-      assert.equal(currentURL(), "/chat/browse");
+      assert.equal(currentURL(), "/chat/browse/open");
       await visit("/chat/channel/11/another-category");
       await dropdown.expand();
       await dropdown.selectRowByValue("openCreateChannelModal");

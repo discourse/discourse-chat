@@ -1,0 +1,77 @@
+{{#if channel}}
+  <div
+    class={{concat
+      "chat-channel-card"
+      (if channel.isClosed " -closed")
+      (if channel.isArchived " -archived")
+    }}
+  >
+    {{#link-to
+      "chat.channel.info.settings"
+      channel.id
+      (slugify-channel channel.title)
+      class="chat-channel-card__setting"
+      tabindex="-1"
+    }}
+      {{d-icon "cog"}}
+    {{/link-to}}
+
+    {{#link-to
+      "chat.channel"
+      channel.id
+      (slugify-channel channel.title)
+      class="chat-channel-card__name"
+    }}
+      {{replace-emoji channel.title}}
+    {{/link-to}}
+
+    {{#if channel.description}}
+      <div class="chat-channel-card__description">
+        {{replace-emoji channel.description}}
+      </div>
+    {{/if}}
+
+    <div class="chat-channel-card__cta">
+      {{#if channel.following}}
+        <div class="chat-channel-card__tags">
+          <span class="chat-channel-card__tag -joined">
+            {{i18n "chat.joined"}}
+          </span>
+
+          {{#if channel.muted}}
+            {{#link-to
+              "chat.channel.info.settings"
+              channel.id
+              (slugify-channel channel.title)
+              class="chat-channel-card__tag -muted"
+              tabindex="-1"
+            }}
+              {{i18n "chat.muted"}}
+            {{/link-to}}
+          {{/if}}
+        </div>
+      {{else if channel.isJoinable}}
+        {{d-button
+          label="chat.channel_settings.join_channel"
+          action=(action "onJoinChannel" channel)
+          class="btn-primary btn-small chat-channel-card__join-btn"
+        }}
+      {{/if}}
+
+      {{#if (gt channel.membershipsCount 0)}}
+        {{#link-to
+          "chat.channel.info.members"
+          channel.id
+          (slugify-channel channel.title)
+          class="chat-channel-card__members"
+          tabindex="-1"
+        }}
+          {{i18n
+            "chat.channel.memberships_count"
+            count=channel.membershipsCount
+          }}
+        {{/link-to}}
+      {{/if}}
+    </div>
+  </div>
+{{/if}}

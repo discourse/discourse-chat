@@ -8,6 +8,79 @@ describe DiscourseChat::Api::ChatChannelsController do
     SiteSetting.chat_allowed_groups = Group::AUTO_GROUPS[:everyone]
   end
 
+  describe '#index' do
+    context 'anonymous user' do
+      it 'returns a 403' do
+        get '/chat/api/chat_channels.json'
+        expect(response.status).to eq(403)
+      end
+    end
+
+    describe 'params' do
+      fab!(:opened_channel) { Fabricate(:chat_channel, name: 'foo') }
+      fab!(:closed_channel) { Fabricate(:chat_channel, name: 'bar', status: :closed) }
+
+      before { sign_in(Fabricate(:user)) }
+
+      it 'returns all channels by default' do
+        get '/chat/api/chat_channels.json'
+
+        expect(response.status).to eq(200)
+        expect(response.parsed_body.length).to eq(2)
+      end
+
+      it 'returns serialized channels ' do
+        get '/chat/api/chat_channels.json'
+
+        expect(response.status).to eq(200)
+        response.parsed_body.each do |channel|
+          expect(channel).to match_response_schema('category_chat_channel')
+        end
+      end
+
+      describe 'filter' do
+        it 'returns channels filtered by name' do
+          get '/chat/api/chat_channels.json?filter=foo'
+
+          expect(response.status).to eq(200)
+          results = response.parsed_body
+          expect(results.length).to eq(1)
+          expect(results[0]['title']).to eq('foo')
+        end
+      end
+
+      describe 'status' do
+        it 'returns channels with the status' do
+          get '/chat/api/chat_channels.json?status=closed'
+
+          expect(response.status).to eq(200)
+          results = response.parsed_body
+          expect(results.length).to eq(1)
+          expect(results[0]['status']).to eq('closed')
+        end
+      end
+
+      describe 'limit' do
+        it 'returns a number of channel equal to the limit' do
+          get '/chat/api/chat_channels.json?limit=1'
+
+          expect(response.status).to eq(200)
+          results = response.parsed_body
+          expect(results.length).to eq(1)
+        end
+      end
+      describe 'offset' do
+        it 'returns channels from the offset' do
+          get '/chat/api/chat_channels.json?offset=2'
+
+          expect(response.status).to eq(200)
+          results = response.parsed_body
+          expect(results.length).to eq(0)
+        end
+      end
+    end
+  end
+
   describe '#create' do
     fab!(:admin) { Fabricate(:admin) }
     fab!(:category) { Fabricate(:category) }
@@ -191,7 +264,7 @@ describe DiscourseChat::Api::ChatChannelsController do
       it 'returns a valid chat channel' do
         put "/chat/api/chat_channels/#{chat_channel.id}.json"
 
-        expect(response).to match_response_schema('category_chat_channel')
+        expect(response.parsed_body).to match_response_schema('category_chat_channel')
       end
 
       describe 'Updating a channel to add users automatically' do

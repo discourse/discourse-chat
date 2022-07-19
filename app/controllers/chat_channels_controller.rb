@@ -3,7 +3,6 @@
 class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
   before_action :set_channel_and_chatable_with_access_check, except: [
     :index,
-    :all,
     :create,
     :search
   ]
@@ -11,16 +10,6 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
   def index
     structured = DiscourseChat::ChatChannelFetcher.structured(guardian)
     render_serialized(structured, ChatChannelIndexSerializer, root: false)
-  end
-
-  def all
-    channels = DiscourseChat::ChatChannelFetcher.secured_public_channels(
-      guardian,
-      UserChatChannelMembership.where(user: current_user),
-      scope_with_membership: false
-    )
-
-    render_serialized(channels, ChatChannelSettingsSerializer)
   end
 
   def show
@@ -98,8 +87,9 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     public_channels = DiscourseChat::ChatChannelFetcher.secured_public_channels(
       guardian,
       memberships,
-      scope_with_membership: false,
-      filter: filter
+      following: false,
+      filter: filter,
+      status: :open
     )
 
     users = User.joins(:user_option)

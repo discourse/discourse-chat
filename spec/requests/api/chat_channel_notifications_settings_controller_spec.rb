@@ -51,7 +51,7 @@ describe DiscourseChat::Api::ChatChannelNotificationsSettingsController do
         }
 
         expect(response.status).to eq(200)
-        expect(response).to match_response_schema('user_chat_channel_membership')
+        expect(response.parsed_body).to match_response_schema('user_chat_channel_membership')
 
         membership.reload
 

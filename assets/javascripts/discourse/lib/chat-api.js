@@ -1,6 +1,6 @@
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
-
+import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 export default class ChatApi {
   static async chatChannelMemberships(channelId, data) {
     return await ajax(`/chat/api/chat_channels/${channelId}/memberships.json`, {
@@ -16,6 +16,21 @@ export default class ChatApi {
         data,
       }
     ).catch(popupAjaxError);
+  }
+
+  static async chatChannels(data = {}) {
+    if (data?.status === "all") {
+      delete data.status;
+    }
+
+    return await ajax(`/chat/api/chat_channels.json`, {
+      method: "GET",
+      data,
+    })
+      .then((channels) =>
+        channels.map((channel) => ChatChannel.create(channel))
+      )
+      .catch(popupAjaxError);
   }
 
   static async modifyChatChannel(channelId, data) {

@@ -92,6 +92,9 @@ en:
         single_user: "%{user}"
         multi_user: "%{users}"
         multi_user_truncated: "%{users} and %{leftover} others"
+
+      default_titles:
+        site_feedback: "General"
     bookmarkable:
       notification_title: "message in %{channel_name}"
 

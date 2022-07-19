@@ -1,7 +1,6 @@
 import { settled, visit } from "@ember/test-helpers";
 import { cloneJSON } from "discourse-common/lib/object";
 import {
-  allChannels,
   chatChannels,
   generateChatView,
 } from "discourse/plugins/discourse-chat/chat-fixtures";
@@ -27,9 +26,6 @@ const baseChatPretenders = (server, helper) => {
   );
   server.post("/uploads/lookup-urls", () => {
     return helper.response([]);
-  });
-  server.get("/chat/chat_channels/all.json", () => {
-    return helper.response(allChannels());
   });
   server.get("/chat/chat_channels.json", () => {
     let copy = cloneJSON(chatChannels);

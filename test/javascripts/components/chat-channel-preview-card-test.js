@@ -85,5 +85,15 @@ discourseModule(
         "it shows a link to browse all channels"
       );
     });
+
+    test("closed channel", async function (assert) {
+      this.channel.set("status", "closed");
+      await render(hbs`{{chat-channel-preview-card channel=channel}}`);
+
+      assert.notOk(
+        exists(".chat-channel-preview-card__join-channel-btn"),
+        "it does not show the join channel button"
+      );
+    });
   }
 );

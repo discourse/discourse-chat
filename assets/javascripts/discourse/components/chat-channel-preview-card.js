@@ -3,6 +3,7 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 import { isEmpty } from "@ember/utils";
 import ChatApi from "discourse/plugins/discourse-chat/discourse/lib/chat-api";
 import { action, computed } from "@ember/object";
+import { readOnly } from "@ember/object/computed";
 import { inject as service } from "@ember/service";
 
 export default class ChatChannelPreviewCard extends Component {
@@ -11,6 +12,8 @@ export default class ChatChannelPreviewCard extends Component {
   @service chat;
 
   channel = null;
+
+  @readOnly("channel.isOpen") showJoinButton;
 
   @action
   onJoinChannel() {

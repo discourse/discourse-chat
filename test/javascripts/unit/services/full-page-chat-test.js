@@ -28,10 +28,10 @@ discourseModule(
       assert.strictEqual(this.fullPageChat.isActive, false);
     });
 
-    test("isPrefered", function (assert) {
-      assert.strictEqual(this.fullPageChat.isPrefered, false);
-      this.fullPageChat.isPrefered = true;
-      assert.strictEqual(this.fullPageChat.isPrefered, true);
+    test("isPreferred", function (assert) {
+      assert.strictEqual(this.fullPageChat.isPreferred, false);
+      this.fullPageChat.isPreferred = true;
+      assert.strictEqual(this.fullPageChat.isPreferred, true);
     });
 
     test("previous transition", function (assert) {

@@ -251,7 +251,7 @@ export default Component.extend({
     this.set("expanded", false);
     this.set("hidden", true);
     this.chat.setActiveChannel(null);
-    this.fullPageChat.isPrefered = true;
+    this.fullPageChat.isPreferred = true;
 
     if (!channel) {
       return this.router.transitionTo("chat");

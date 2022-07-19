@@ -1246,12 +1246,12 @@ export default Component.extend({
 
   @action
   onCloseFullScreen(channel) {
-    this.fullPageChat.isPrefered = false;
+    this.fullPageChat.isPreferred = false;
     this.appEvents.trigger("chat:open-channel", channel);
 
-    const transition = this.fullPageChat.exit();
-    if (transition) {
-      this._replayTransition(transition);
+    const fromTransition = this.fullPageChat.exit();
+    if (fromTransition) {
+      this._replayTransition(fromTransition);
     } else {
       this.router.transitionTo(`discovery.${defaultHomepage()}`);
     }

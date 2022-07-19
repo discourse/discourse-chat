@@ -470,21 +470,18 @@ export default Service.extend({
 
     this.setActiveChannel(channel);
 
-    next(() => {
-      if (this.fullPageChat.isActive || this.fullPageChat.isPrefered) {
-        const queryParams = messageId ? { messageId } : {};
-
-        return this.router.transitionTo(
-          "chat.channel",
-          channel.id,
-          slugifyChannel(channel.title),
-          { queryParams }
-        );
-      } else {
-        this._fireOpenFloatAppEvent(channel, messageId);
-        return Promise.resolve();
-      }
-    });
+    if (this.fullPageChat.isActive || this.fullPageChat.isPreferred) {
+      const queryParams = messageId ? { messageId } : {};
+      return this.router.transitionTo(
+        "chat.channel",
+        channel.id,
+        slugifyChannel(channel.title),
+        { queryParams }
+      );
+    } else {
+      this._fireOpenFloatAppEvent(channel, messageId);
+      return Promise.resolve();
+    }
   },
 
   _fireOpenFloatAppEvent(channel, messageId = null) {

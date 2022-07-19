@@ -9,7 +9,6 @@ import {
 } from "discourse/tests/helpers/qunit-helpers";
 import hbs from "htmlbars-inline-precompile";
 import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
-import EmberObject from "@ember/object";
 import I18n from "I18n";
 import { test } from "qunit";
 

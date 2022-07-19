@@ -65,7 +65,7 @@ export default Component.extend({
   chat: service(),
   router: service(),
   chatComposerPresenceManager: service(),
-  chatWindowStore: service("chat-window-store"),
+  fullPageChat: service(),
 
   getCachedChannelDetails: null,
   clearCachedChannelDetails: null,
@@ -199,6 +199,10 @@ export default Component.extend({
     this.set("loading", true);
 
     return this.chat.loadCookFunction(this.site.categories).then((cook) => {
+      if (this.isDestroying || this.isDestroyed) {
+        return;
+      }
+
       this.set("cook", cook);
 
       const findArgs = {
@@ -1240,25 +1244,17 @@ export default Component.extend({
     return this.messages.findIndex((m) => m.id === message.id);
   },
 
-  _goToChatableUrl() {
-    if (this.chatChannel.chatable_url) {
-      return this.router.transitionTo(this.chatChannel.chatable_url);
-    }
-    return false;
-  },
-
   @action
   onCloseFullScreen(channel) {
-    // update local storage
-    this.chatWindowStore.set("fullPage", false);
+    this.fullPageChat.isPrefered = false;
+    this.appEvents.trigger("chat:open-channel", channel);
 
-    // navigate to chatable url or homepage on compress
-    if (this._goToChatableUrl() === false) {
+    const transition = this.fullPageChat.exit();
+    if (transition) {
+      this._replayTransition(transition);
+    } else {
       this.router.transitionTo(`discovery.${defaultHomepage()}`);
     }
-
-    // re-open chat as docked window
-    this.appEvents.trigger("chat:open-channel", channel);
   },
 
   @action
@@ -1367,5 +1363,18 @@ export default Component.extend({
     this.messageBus.subscribe(`/chat/${channelId}`, (busData) => {
       this.handleMessage(busData);
     });
+  },
+
+  _replayTransition(transition) {
+    const routeName = transition.name;
+    let params = Object.values(transition.params);
+    transition = transition.parent;
+
+    while (transition.parent) {
+      params = params.concat(Object.values(transition.params));
+      transition = transition.parent;
+    }
+
+    this.router.transitionTo(routeName, ...params.reverse());
   },
 });

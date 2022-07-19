@@ -14,7 +14,8 @@ export default DiscourseRoute.extend({
     return this.chat.getIdealFirstChannelIdAndTitle().then((channelInfo) => {
       if (channelInfo) {
         return this.chat.getChannelBy("id", channelInfo.id).then((c) => {
-          return this.chat.openChannel(c);
+          this.chat.openChannel(c);
+          return;
         });
       } else {
         return this.transitionTo("chat.browse");

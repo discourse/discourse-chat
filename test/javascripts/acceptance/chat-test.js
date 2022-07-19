@@ -13,6 +13,7 @@ import {
   click,
   currentURL,
   fillIn,
+  focus,
   settled,
   triggerEvent,
   triggerKeyEvent,

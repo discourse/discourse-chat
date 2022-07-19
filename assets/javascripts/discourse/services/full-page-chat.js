@@ -29,8 +29,8 @@ export default class FullPageChat extends Service {
   }
 
   get isPrefered() {
-    return (
-      Site.currentProp("mobileView") || this.store.getObject(FULL_PAGE) || false
+    return !!(
+      Site.currentProp("mobileView") || this.store.getObject(FULL_PAGE)
     );
   }
 

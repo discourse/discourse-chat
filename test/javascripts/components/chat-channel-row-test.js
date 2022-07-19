@@ -3,8 +3,8 @@ import componentTest, {
 } from "discourse/tests/helpers/component-test";
 import { discourseModule, exists } from "discourse/tests/helpers/qunit-helpers";
 import hbs from "htmlbars-inline-precompile";
-import fabricate from "../helpers/fabricators";
 import { click, triggerKeyEvent } from "@ember/test-helpers";
+import fabricators from "../helpers/fabricators";
 
 discourseModule(
   "Discourse Chat | Component | chat-channel-row",
@@ -15,7 +15,7 @@ discourseModule(
       template: hbs`{{chat-channel-row channel=channel options=(hash leaveButton=true)}}`,
 
       beforeEach() {
-        this.set("channel", fabricate("chat-channel"));
+        this.set("channel", fabricators.chatChannel());
       },
 
       async test(assert) {
@@ -27,7 +27,7 @@ discourseModule(
       template: hbs`{{chat-channel-row channel=channel}}`,
 
       beforeEach() {
-        this.set("channel", fabricate("chat-channel"));
+        this.set("channel", fabricators.chatChannel());
       },
 
       async test(assert) {
@@ -40,7 +40,7 @@ discourseModule(
 
       beforeEach() {
         this.set("switchedChannel", null);
-        this.set("channel", fabricate("chat-channel"));
+        this.set("channel", fabricators.chatChannel());
         this.set("switchChannel", (channel) =>
           this.set("switchedChannel", channel.id)
         );
@@ -58,14 +58,14 @@ discourseModule(
 
       beforeEach() {
         this.set("switchedChannel", null);
-        this.set("channel", fabricate("chat-channel"));
+        this.set("channel", fabricators.chatChannel());
         this.set("switchChannel", (channel) =>
           this.set("switchedChannel", channel.id)
         );
       },
 
       async test(assert) {
-        await triggerKeyEvent(".chat-channel-row", "keyup", 13);
+        await triggerKeyEvent(".chat-channel-row", "keyup", "Enter");
 
         assert.strictEqual(this.switchedChannel, this.channel.id);
       },
@@ -77,7 +77,7 @@ discourseModule(
         template: hbs`{{chat-channel-row switchChannel=switchChannel channel=channel chat=chat router=router}}`,
 
         beforeEach() {
-          this.set("channel", fabricate("chat-channel"));
+          this.set("channel", fabricators.chatChannel());
           this.set("chat", { activeChannel: this.channel });
           this.set("router", { currentRouteName: "chat.channel" });
         },
@@ -101,7 +101,7 @@ discourseModule(
       template: hbs`{{chat-channel-row channel=channel}}`,
 
       beforeEach() {
-        this.set("channel", fabricate("chat-channel"));
+        this.set("channel", fabricators.chatChannel());
       },
 
       async test(assert) {

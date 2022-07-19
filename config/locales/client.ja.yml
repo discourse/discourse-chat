@@ -25,12 +25,6 @@ ja:
       deleted: "メッセージは削除されました。[view]"
       delete: "削除"
       edited: "編集済み"
-      empty_state:
-        create_personal_chat: "パーソナルチャットを開始"
-        no_public_available: "現在、フォローできる公開チャンネルはありません。"
-        public_available: "フォローできる公開チャンネルがあります。"
-        start_direct_message: "1 人または複数のユーザーとパーソナルチャットを開始することもできます。"
-        title: "チャンネルに参加することから始めましょう"
       enable: "チャットを有効にする"
       flag: "通報する"
       flagged: "このメッセージはレビュー目的で通報されました"

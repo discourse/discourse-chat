@@ -331,7 +331,7 @@ describe DiscourseChat::ChatNotifier do
           expect(unreachable_users).to contain_exactly(user_3.id)
         end
 
-        it 'notify posts of users who are part of the mentioned group but participanting' do
+        it 'notify posts of users who are part of the mentioned group but participating' do
           group = Fabricate(:public_group, users: [user_2, user_3], mentionable_level: Group::ALIAS_LEVELS[:everyone])
           msg = build_cooked_msg("Hello @#{group.name}", user_1, chat_channel: personal_chat_channel)
 

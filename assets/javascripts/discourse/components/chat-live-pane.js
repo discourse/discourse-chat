@@ -32,7 +32,7 @@ const PAST = "past";
 const FUTURE = "future";
 
 export default Component.extend({
-  classNameBindings: [":chat-live-pane", "sendingloading", "loading"],
+  classNameBindings: [":chat-live-pane", "sendingLoading", "loading"],
   chatChannel: null,
   fullPage: false,
   registeredChatChannelId: null, // ?Number
@@ -44,7 +44,7 @@ export default Component.extend({
 
   allPastMessagesLoaded: false,
   previewing: false,
-  sendingloading: false,
+  sendingLoading: false,
   selectingMessages: false,
   stickyScroll: true,
   stickyScrollTimer: null,
@@ -91,7 +91,7 @@ export default Component.extend({
     );
 
     this._scrollerEl = this.element.querySelector(".chat-messages-scroll");
-    this._scrollerEl.addEventListener("scroll", this.onScrollhandler, {
+    this._scrollerEl.addEventListener("scroll", this.onScrollHandler, {
       passive: true,
     });
     window.addEventListener("resize", this.onResizeHandler);
@@ -106,7 +106,7 @@ export default Component.extend({
 
     this.element
       .querySelector(".chat-messages-scroll")
-      ?.removeEventListener("scroll", this.onScrollhandler);
+      ?.removeEventListener("scroll", this.onScrollHandler);
 
     window.removeEventListener("resize", this.onResizeHandler);
 
@@ -179,7 +179,7 @@ export default Component.extend({
   },
 
   @bind
-  onScrollhandler() {
+  onScrollHandler() {
     cancel(this.stickyScrollTimer);
     this.stickyScrollTimer = discourseDebounce(this, this.onScroll, 100);
   },
@@ -324,10 +324,10 @@ export default Component.extend({
       }
 
       this._fetchMoreMessages(PAST).then((messages) => {
-        let originalscrollTop = scroller.scrollTop;
+        let originalScrollTop = scroller.scrollTop;
 
         schedule("afterRender", () => {
-          scroller.scrollTo({ top: originalscrollTop });
+          scroller.scrollTo({ top: originalScrollTop });
           this.fillPaneAttempt(messages?.resultSetMeta);
         });
       });
@@ -964,11 +964,11 @@ export default Component.extend({
   sendMessage(message, uploads = []) {
     resetIdle();
 
-    if (this.sendingloading) {
+    if (this.sendingLoading) {
       return;
     }
 
-    this.set("sendingloading", true);
+    this.set("sendingLoading", true);
     this._setDraftForChannel(null);
 
     // TODO: all send message logic is due for massive refactoring
@@ -991,7 +991,7 @@ export default Component.extend({
         }
         this.set("previewing", false);
         this.set("loading", false);
-        this.set("sendingloading", false);
+        this.set("sendingLoading", false);
         this._resetAfterSend();
         this._stickScrollToBottom();
       });
@@ -1023,7 +1023,7 @@ export default Component.extend({
         if (this._selfDeleted) {
           return;
         }
-        this.set("sendingloading", false);
+        this.set("sendingLoading", false);
       });
 
     const stagedMessage = this._prepareSingleMessage(
@@ -1107,7 +1107,7 @@ export default Component.extend({
 
   @action
   editMessage(chatMessage, newContent, uploads) {
-    this.set("sendingloading", true);
+    this.set("sendingLoading", true);
     let data = {
       new_message: newContent,
       upload_ids: (uploads || []).map((upload) => upload.id),
@@ -1124,7 +1124,7 @@ export default Component.extend({
         if (this._selfDeleted) {
           return;
         }
-        this.set("sendingloading", false);
+        this.set("sendingLoading", false);
       });
   },
 

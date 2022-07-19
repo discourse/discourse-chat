@@ -5,9 +5,9 @@ import {
   query,
 } from "discourse/tests/helpers/qunit-helpers";
 import hbs from "htmlbars-inline-precompile";
-import fabricate from "../helpers/fabricators";
 import { render } from "@ember/test-helpers";
 import { test } from "qunit";
+import fabricators from "../helpers/fabricators";
 
 discourseModule(
   "Discourse Chat | Component | chat-channel-preview-card",
@@ -17,13 +17,12 @@ discourseModule(
     hooks.beforeEach(function () {
       this.set(
         "channel",
-        fabricate("chat-channel", { chatable_type: "Category" })
+        fabricators.chatChannel({ chatable_type: "Category" })
       );
       this.channel.setProperties({
         description: "Important stuff is announced here.",
         title: "announcements",
       });
-      this.channel.chatable.color = "800080";
       this.currentUser.set("has_chat_enabled", true);
       this.siteSettings.chat_enabled = true;
     });
@@ -84,6 +83,16 @@ discourseModule(
       assert.ok(
         exists(".chat-channel-preview-card__browse-all"),
         "it shows a link to browse all channels"
+      );
+    });
+
+    test("closed channel", async function (assert) {
+      this.channel.set("status", "closed");
+      await render(hbs`{{chat-channel-preview-card channel=channel}}`);
+
+      assert.notOk(
+        exists(".chat-channel-preview-card__join-channel-btn"),
+        "it does not show the join channel button"
       );
     });
   }

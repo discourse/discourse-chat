@@ -3,7 +3,7 @@ import componentTest, {
 } from "discourse/tests/helpers/component-test";
 import { discourseModule, exists } from "discourse/tests/helpers/qunit-helpers";
 import hbs from "htmlbars-inline-precompile";
-import fabricate from "../helpers/fabricators";
+import fabricators from "../helpers/fabricators";
 import selectKit from "discourse/tests/helpers/select-kit-helper";
 import pretender from "discourse/tests/helpers/create-pretender";
 import { CHATABLE_TYPES } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
@@ -32,7 +32,7 @@ discourseModule(
       template: hbs`{{chat-channel-settings-view channel=channel}}`,
 
       beforeEach() {
-        this.set("channel", fabricate("chat-channel"));
+        this.set("channel", fabricators.chatChannel());
       },
 
       async test(assert) {
@@ -61,7 +61,7 @@ discourseModule(
       template: hbs`{{chat-channel-settings-view channel=channel}}`,
 
       beforeEach() {
-        this.set("channel", fabricate("chat-channel"));
+        this.set("channel", fabricators.chatChannel());
       },
 
       async test(assert) {
@@ -90,7 +90,7 @@ discourseModule(
       template: hbs`{{chat-channel-settings-view channel=channel}}`,
 
       beforeEach() {
-        this.set("channel", fabricate("chat-channel"));
+        this.set("channel", fabricators.chatChannel());
       },
 
       async test(assert) {
@@ -126,7 +126,7 @@ discourseModule(
       beforeEach() {
         this.set(
           "channel",
-          fabricate("chat-channel", {
+          fabricators.chatChannel({
             chatable_type: CHATABLE_TYPES.directMessageChannel,
           })
         );
@@ -158,7 +158,7 @@ discourseModule(
         set(this.currentUser, "has_chat_enabled", true);
         this.siteSettings.chat_enabled = true;
 
-        this.set("channel", fabricate("chat-channel"));
+        this.set("channel", fabricators.chatChannel());
       },
 
       async test(assert) {
@@ -182,7 +182,7 @@ discourseModule(
         set(this.currentUser, "has_chat_enabled", true);
         this.siteSettings.chat_enabled = true;
         this.siteSettings.chat_allow_archiving_channels = true;
-        this.set("channel", fabricate("chat-channel"));
+        this.set("channel", fabricators.chatChannel());
       },
 
       async test(assert) {

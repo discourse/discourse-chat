@@ -7,7 +7,7 @@ import {
   query,
 } from "discourse/tests/helpers/qunit-helpers";
 import hbs from "htmlbars-inline-precompile";
-import fabricate from "../helpers/fabricators";
+import fabricators from "../helpers/fabricators";
 import { CHATABLE_TYPES } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 
 discourseModule(
@@ -21,7 +21,7 @@ discourseModule(
       beforeEach() {
         this.set(
           "channel",
-          fabricate("chat-channel", {
+          fabricators.chatChannel({
             chatable_type: CHATABLE_TYPES.categoryChannel,
           })
         );
@@ -45,7 +45,7 @@ discourseModule(
       beforeEach() {
         this.set(
           "channel",
-          fabricate("chat-channel", {
+          fabricators.chatChannel({
             chatable_type: CHATABLE_TYPES.categoryChannel,
             chatable: { read_restricted: true },
           })
@@ -63,7 +63,7 @@ discourseModule(
       beforeEach() {
         this.set(
           "channel",
-          fabricate("chat-channel", {
+          fabricators.chatChannel({
             chatable_type: CHATABLE_TYPES.categoryChannel,
             chatable: { read_restricted: false },
           })
@@ -79,12 +79,7 @@ discourseModule(
       template: hbs`{{chat-channel-title channel=channel}}`,
 
       beforeEach() {
-        this.set(
-          "channel",
-          fabricate("chat-channel", {
-            chatable_type: CHATABLE_TYPES.directMessageChannel,
-          })
-        );
+        this.set("channel", fabricators.directMessageChatChannel());
       },
 
       async test(assert) {
@@ -107,9 +102,7 @@ discourseModule(
       template: hbs`{{chat-channel-title channel=channel}}`,
 
       beforeEach() {
-        const channel = fabricate("chat-channel", {
-          chatable_type: CHATABLE_TYPES.directMessageChannel,
-        });
+        const channel = fabricators.directMessageChatChannel();
 
         channel.chatable.users.push({
           id: 2,
@@ -140,7 +133,7 @@ discourseModule(
       template: hbs`{{chat-channel-title channel=channel unreadIndicator=unreadIndicator}}`,
 
       beforeEach() {
-        const channel = fabricate("chat-channel", {
+        const channel = fabricators.chatChannel({
           chatable_type: CHATABLE_TYPES.directMessageChannel,
         });
 

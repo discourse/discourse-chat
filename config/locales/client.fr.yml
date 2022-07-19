@@ -25,12 +25,6 @@ fr:
       deleted: "Un message a été supprimé. [view]"
       delete: "Supprimer"
       edited: "modifié"
-      empty_state:
-        create_personal_chat: "Commencer une discussion privé"
-        no_public_available: "Il n'y a pas de canaux publics à suivre pour le moment."
-        public_available: "Des canaux publics sont à votre disposition."
-        start_direct_message: "Vous pouvez également démarrer une discussion personnelle avec un ou plusieurs utilisateurs."
-        title: "Commencez par rejoindre un canal"
       enable: "Activer le chat"
       flag: "Drapeau"
       flagged: "Ce message a été signalé pour examen"

@@ -1,8 +1,13 @@
 import { withPluginApi } from "discourse/lib/plugin-api";
 import showModal from "discourse/lib/show-modal";
 
+const APPLE =
+  navigator.platform.startsWith("Mac") || navigator.platform === "iPhone";
+export const KEY_MODIFIER = APPLE ? "meta" : "ctrl";
+
 export default {
   name: "chat-keyboard-shortcuts",
+
   initialize(container) {
     const chatService = container.lookup("service:chat");
     if (!chatService.userCanChat) {
@@ -52,10 +57,7 @@ export default {
     };
 
     withPluginApi("0.12.1", (api) => {
-      const mac = /Mac|iPod|iPhone|iPad/.test(navigator.platform);
-      const mod = mac ? "meta" : "ctrl";
-
-      api.addKeyboardShortcut(`${mod}+k`, openChannelSelector, {
+      api.addKeyboardShortcut(`${KEY_MODIFIER}+k`, openChannelSelector, {
         global: true,
         help: {
           category: "chat",
@@ -84,7 +86,7 @@ export default {
         global: true,
       });
       api.addKeyboardShortcut(
-        `${mod}+b`,
+        `${KEY_MODIFIER}+b`,
         (event) => modifyComposerSelection(event, "bold"),
         {
           global: true,
@@ -99,7 +101,7 @@ export default {
         }
       );
       api.addKeyboardShortcut(
-        `${mod}+i`,
+        `${KEY_MODIFIER}+i`,
         (event) => modifyComposerSelection(event, "italic"),
         {
           global: true,
@@ -114,7 +116,7 @@ export default {
         }
       );
       api.addKeyboardShortcut(
-        `${mod}+e`,
+        `${KEY_MODIFIER}+e`,
         (event) => modifyComposerSelection(event, "code"),
         {
           global: true,
@@ -129,7 +131,7 @@ export default {
         }
       );
       api.addKeyboardShortcut(
-        `${mod}+l`,
+        `${KEY_MODIFIER}+l`,
         (event) => openInsertLinkModal(event),
         {
           global: true,

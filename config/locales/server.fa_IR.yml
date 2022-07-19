@@ -36,9 +36,20 @@ fa_IR:
         single_user: "%{user}"
         multi_user: "%{users}"
         multi_user_truncated: "%{users} و %{leftover} نفر دیگر"
+      default_titles:
+        site_feedback: "عمومی"
     bookmarkable:
       notification_title: "پیام در %{channel_name}"
     personal_chat: "گفتگوی شخصی"
+    onebox:
+      inline_to_channel: "گفتگو #%{chat_channel}"
+      inline_to_topic_channel: "گفتگو برای موضوع %{topic_title}"
+      x_members:
+        one: "%{count} عضو"
+        other: "%{count} عضو"
+      and_x_others:
+        one: "و %{count} نفر دیگر"
+        other: "و %{count} نفر دیگر"
   discourse_automation:
     scriptables:
       send_chat_message:

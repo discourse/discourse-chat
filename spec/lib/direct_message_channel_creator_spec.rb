@@ -42,7 +42,7 @@ describe DiscourseChat::DirectMessageChannelCreator do
       expect(messages.map { |m| m.dig(:data, :chat_channel, :id) }).to eq([dm_chat_channel.id, dm_chat_channel.id])
     end
 
-    it "allows a user to create a direct message to themself, without creating a new channel" do
+    it "allows a user to create a direct message to themselves, without creating a new channel" do
       existing_channel = nil
       expect {
         existing_channel = subject.create!(acting_user: user_1, target_users: [user_1])
@@ -91,7 +91,7 @@ describe DiscourseChat::DirectMessageChannelCreator do
       expect(messages.map { |m| m.dig(:data, :chat_channel, :id) }).to eq([chat_channel.id, chat_channel.id])
     end
 
-    it "allows a user to create a direct message to themself" do
+    it "allows a user to create a direct message to themselves" do
       expect {
         subject.create!(acting_user: user_1, target_users: [user_1])
       }.to change { ChatChannel.count }.by(1).and change { UserChatChannelMembership.count }.by(1)

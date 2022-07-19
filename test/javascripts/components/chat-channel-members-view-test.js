@@ -7,7 +7,7 @@ import {
   query,
 } from "discourse/tests/helpers/qunit-helpers";
 import hbs from "htmlbars-inline-precompile";
-import fabricate from "../helpers/fabricators";
+import fabricators from "../helpers/fabricators";
 import I18n from "I18n";
 import { Promise } from "rsvp";
 import { fillIn, triggerEvent } from "@ember/test-helpers";
@@ -37,7 +37,7 @@ function fetchMembersHandler(channelId, params = {}) {
 
 function setupState(context) {
   context.set("fetchMembersHandler", fetchMembersHandler);
-  context.set("channel", fabricate("chat-channel"));
+  context.set("channel", fabricators.chatChannel());
   context.channel.set("memberships_count", 2);
 }
 
@@ -66,7 +66,7 @@ discourseModule(
 
       beforeEach() {
         this.set("fetchMembersHandler", fetchMembersHandler);
-        this.set("channel", fabricate("chat-channel"));
+        this.set("channel", fabricators.chatChannel());
         this.channel.set("memberships_count", 2);
       },
 
@@ -128,7 +128,7 @@ discourseModule(
 
       beforeEach() {
         this.set("fetchMembersHandler", fetchMembersHandler);
-        this.set("channel", fabricate("chat-channel"));
+        this.set("channel", fabricators.chatChannel());
         this.channel.set("memberships_count", 3);
       },
 

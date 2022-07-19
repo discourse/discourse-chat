@@ -25,12 +25,6 @@ ar:
       deleted: "تم حذف رسالة. [view]"
       delete: "حذف"
       edited: "تم التعديل"
-      empty_state:
-        create_personal_chat: "بدء دردشة شخصية"
-        no_public_available: "لا تتوفَّر قنوات عامة لك لمتابعتها في الوقت الحالي."
-        public_available: "تتوفَّر قنوات عامة لك لمتابعتها."
-        start_direct_message: "يمكنك أيضًا بدء دردشة شخصية مع أحد المستخدمين أو أكثر."
-        title: "البدء بالانضمام إلى قناة"
       enable: "تفعيل الدردشة"
       flag: "الإبلاغ"
       flagged: "لقد تم الإبلاغ عن الرسالة للمراجعة"

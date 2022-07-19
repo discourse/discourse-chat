@@ -530,7 +530,7 @@ discourseModule(
 );
 
 discourseModule(
-  "Discourse Chat | Component | chat message collapser gallaries",
+  "Discourse Chat | Component | chat message collapser galleries",
   function (hooks) {
     setupRenderingTest(hooks);
 

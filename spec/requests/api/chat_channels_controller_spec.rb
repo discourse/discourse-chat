@@ -274,7 +274,7 @@ describe DiscourseChat::Api::ChatChannelsController do
           expect(response.parsed_body['auto_join_users']).to eq(true)
         end
 
-        it 'tolds staff members to slow down when toggling auto-update multiple times' do
+        it 'tells staff members to slow down when toggling auto-update multiple times' do
           RateLimiter.enable
 
           put "/chat/api/chat_channels/#{chat_channel.id}.json", params: { auto_join_users: true }

@@ -25,12 +25,6 @@ es:
       deleted: "Se eliminó un mensaje. [view]"
       delete: "Eliminar"
       edited: "editado"
-      empty_state:
-        create_personal_chat: "Iniciar un chat personal"
-        no_public_available: "No hay canales públicos disponibles para que los sigas en este momento."
-        public_available: "Hay canales públicos disponibles para que los sigas."
-        start_direct_message: "También puedes iniciar un chat personal con uno o más usuarios."
-        title: "Comienza uniéndote a un canal"
       enable: "Habilitar chat"
       flag: "Denunciar"
       flagged: "Este mensaje ha sido denunciado y se someterá a revisión"

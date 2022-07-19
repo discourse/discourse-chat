@@ -10,7 +10,7 @@ export default class OnVisibilityAction extends Component {
 
   @computed
   get onVisibilityActionId() {
-    return "on-vibility-action-" + guidFor(this);
+    return "on-visibility-action-" + guidFor(this);
   }
 
   _element() {

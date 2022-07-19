@@ -1,5 +1,7 @@
 import { cloneJSON, deepMerge } from "discourse-common/lib/object";
+
 export const messageContents = ["Hello world", "What up", "heyo!"];
+
 export const siteChannel = {
   chat_channel: {
     chatable: null,
@@ -12,6 +14,7 @@ export const siteChannel = {
     muted: false,
   },
 };
+
 export const directMessageChannels = [
   {
     chat_channel: {
@@ -59,7 +62,7 @@ const chatables = {
   },
   8: {
     id: 8,
-    name: "Pulic category",
+    name: "Public category",
     slug: "public_category",
     posts_count: 1,
   },

@@ -1,7 +1,7 @@
 import { setupRenderingTest } from "discourse/tests/helpers/component-test";
 import { discourseModule } from "discourse/tests/helpers/qunit-helpers";
 import hbs from "htmlbars-inline-precompile";
-import { render, settled } from "@ember/test-helpers";
+import { render, waitUntil } from "@ember/test-helpers";
 import { test } from "qunit";
 
 discourseModule(
@@ -25,7 +25,7 @@ discourseModule(
       assert.equal(this.value, null);
 
       this.set("display", true);
-      await settled();
+      await waitUntil(() => this.value !== null);
 
       assert.equal(this.value, "foo");
     });

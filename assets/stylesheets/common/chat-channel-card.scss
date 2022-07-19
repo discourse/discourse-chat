@@ -23,8 +23,9 @@
 
   &__setting {
     position: absolute;
-    right: 1.25rem;
-    top: 1.25rem;
+    right: 0.25rem;
+    top: 0.25rem;
+    padding: 1rem;
     svg {
       fill: var(--primary-medium);
     }

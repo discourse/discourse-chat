@@ -25,12 +25,6 @@ fi:
       deleted: "Viesti poistettiin. [näytä]"
       delete: "Poista"
       edited: "muokattu"
-      empty_state:
-        create_personal_chat: "Aloita henkilökohtainen chat"
-        no_public_available: "Tällä hetkellä ei ole saatavilla julkisia kanavia, joita voit seurata."
-        public_available: "Saatavilla on julkisia kanavia, joita voit seurata."
-        start_direct_message: "Voit myös aloittaa henkilökohtaisen chatin yhden tai useamman käyttäjän kanssa."
-        title: "Aloita liittymällä kanavalle"
       enable: "Ota chat käyttöön"
       flag: "Liputa"
       flagged: "Tämä viesti on liputettu käsiteltäväksi"

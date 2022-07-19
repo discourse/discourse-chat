@@ -94,9 +94,9 @@ describe ChatMessageBookmarkable do
   describe "#reminder_handler" do
     it "creates a notification for the user with the correct details" do
       expect { subject.send_reminder_notification(bookmark1) }.to change { Notification.count }.by(1)
-      notif = user.notifications.last
-      expect(notif.notification_type).to eq(Notification.types[:bookmark_reminder])
-      expect(notif.data).to eq(
+      notification = user.notifications.last
+      expect(notification.notification_type).to eq(Notification.types[:bookmark_reminder])
+      expect(notification.data).to eq(
         {
           title: I18n.t(
             "chat.bookmarkable.notification_title",

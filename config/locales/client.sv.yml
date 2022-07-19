@@ -39,11 +39,7 @@ sv:
         title: "Kanalinställningar"
         edit: "Redigera"
         add: "Lägg till"
-        close_channel: "Stäng kanal"
-        open_channel: "Öppna kanal"
-        archive_channel: "Arkivera kanal"
-        delete_channel: "Radera kanal"
-        join_channel: "Gå med i kanal"
+        join_channel: "Gå med"
         leave_channel: "Lämna kanal"
       channel_archive:
         title: "Arkivera kanal"
@@ -72,12 +68,9 @@ sv:
       deleted: "Ett meddelande raderades. [view]"
       delete: "Radera"
       edited: "redigerad"
+      joined: "anslöt sig"
       empty_state:
-        create_personal_chat: "Starta en personlig chatt"
-        no_public_available: "Det finns inga offentliga kanaler tillgängliga för dig att följa just nu."
-        public_available: "Det finns offentliga kanaler tillgängliga för dig att följa."
-        start_direct_message: "Du kan också starta en personlig chatt med en eller flera användare."
-        title: "Kom igång genom att gå med i en kanal"
+        direct_message: "Du kan också starta en personlig chatt med en eller flera användare."
       email_frequency:
         description: "Vi skickar bara e-post till dig om vi inte har sett dig under de senaste 15 minuterna."
         never: "Aldrig"
@@ -164,6 +157,10 @@ sv:
         closed: "Stängd"
         open_header: "Kanalen är öppen"
         open: "Öppen"
+      browse:
+        title: Kanaler
+        filter_closed: Stängd
+        filter_archived: Arkiverad
       chat_message_separator:
         today: Idag
         yesterday: Igår

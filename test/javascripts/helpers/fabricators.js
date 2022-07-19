@@ -1,57 +1,49 @@
 import ChatChannel, {
   CHATABLE_TYPES,
 } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
+import EmberObject from "@ember/object";
+import { Fabricator } from "./fabricator";
 
-function defaultChatChannelForType(chatableType) {
-  const base = {
+const userFabricator = Fabricator(EmberObject, {
+  id: 1,
+  username: "hawk",
+  name: null,
+  avatar_template:
+    "https://avatars.discourse.org/v3/letter/t/41988e/{size}.png",
+});
+
+const categoryChatableFabricator = Fabricator(EmberObject, {
+  id: 1,
+  color: "D56353",
+  read_restricted: false,
+  name: "My category",
+});
+
+const directChannelChatableFabricator = Fabricator(EmberObject, {
+  users: [userFabricator({ id: 1, username: "bob" })],
+});
+
+export default {
+  chatChannel: Fabricator(ChatChannel, {
     id: 1,
-    chatable_type: chatableType,
+    chatable_type: CHATABLE_TYPES.categoryChannel,
     status: "open",
-    chatable: {
-      users: [
-        {
-          id: 1,
-          username: "hawk",
-          name: null,
-          avatar_template:
-            "https://avatars.discourse.org/v3/letter/t/41988e/{size}.png",
-        },
-      ],
-    },
-  };
+    title: "My category title",
+    name: "My category name",
+    chatable: categoryChatableFabricator(),
+  }),
 
-  if (chatableType === CHATABLE_TYPES.topicChannel) {
-    base.title = "My topic title";
-  }
+  chatChannelMessage: Fabricator(EmberObject, {
+    id: 1,
+    chat_channel_id: 1,
+    user_id: 1,
+    cooked: "This is a test message",
+  }),
 
-  if (chatableType === CHATABLE_TYPES.categoryChannel) {
-    base.title = "My category title";
-    base.name = "My category name";
-    base.chatable = {
-      id: 1,
-      color: "D56353",
-      read_restricted: false,
-      name: "My category",
-    };
-  }
-
-  return base;
-}
-
-export default function fabricate(model, options = {}) {
-  let base;
-
-  if (model === "chat-channel") {
-    base = defaultChatChannelForType(
-      options.chatable_type || CHATABLE_TYPES.topicChannel
-    );
-  } else {
-    throw `Unkown fabricator ${model}`;
-  }
-
-  const final = Object.assign(base, options);
-  switch (model) {
-    case "chat-channel":
-      return ChatChannel.create(final);
-  }
-}
+  directMessageChatChannel: Fabricator(ChatChannel, {
+    id: 1,
+    chatable_type: CHATABLE_TYPES.directMessageChannel,
+    status: "open",
+    chatable: directChannelChatableFabricator(),
+  }),
+};

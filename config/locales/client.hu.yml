@@ -38,10 +38,8 @@ hu:
       channel_settings:
         title: "Csatornabeállítások"
         edit: "Szerkesztés"
-        close_channel: "Csatorna bezárása"
-        open_channel: "Csatorna megnyitása"
-        archive_channel: "Csatorna archiválása"
-        delete_channel: "Csatorna törlése"
+        join_channel: "Csatlakozás"
+        leave_channel: "Csatorna elhagyása"
       channel_archive:
         title: "Csatorna archiválása"
         instructions: "<p>Egy csatorna archiválása írásvédett módba helyezi azt, és a csatorna összes üzenetét egy új vagy meglévő témába helyezi át. Új üzeneteket nem lehet küldeni, és a meglévő üzeneteket nem lehet szerkeszteni vagy törölni.</p><p>Biztos, hogy archiválja a(z) <strong>%{channelTitle}</strong> csatornát?</p>"
@@ -69,12 +67,9 @@ hu:
       deleted: "Egy üzenet törölve lett. [megtekintés]"
       delete: "Törlés"
       edited: "szerkesztve"
+      joined: "csatlakozott"
       empty_state:
-        create_personal_chat: "Személyes csevegés indítása"
-        no_public_available: "Jelenleg nem állnak rendelkezésre nyilvános csatornák, melyeket követhetne."
-        public_available: "Vannak nyilvános csatornák, melyeket követhet."
-        start_direct_message: "Személyes csevegést is indíthat egy vagy több felhasználóval."
-        title: "Kezdje azzal, hogy csatlakozik egy csatornához"
+        direct_message: "Személyes csevegést is indíthat egy vagy több felhasználóval."
       email_frequency:
         description: "Csak akkor küldünk e-mailt, ha az elmúlt 15 percben nem láttuk."
         never: "Soha"
@@ -157,6 +152,10 @@ hu:
         closed: "Zárolt"
         open_header: "A csatorna nyitott"
         open: "Nyitott"
+      browse:
+        title: Csatornák
+        filter_closed: Zárolt
+        filter_archived: Archivált
       chat_message_separator:
         today: Ma
         yesterday: Tegnap

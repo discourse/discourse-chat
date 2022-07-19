@@ -1,4 +1,3 @@
-import slugifyChannel from "discourse/plugins/discourse-chat/discourse/lib/slugify-channel";
 import deprecated from "discourse-common/lib/deprecated";
 import userSearch from "discourse/lib/user-search";
 import { popupAjaxError } from "discourse/lib/ajax-error";
@@ -85,7 +84,6 @@ export default Service.extend({
   },
 
   setActiveChannel(channel) {
-    channel?.setProperties({ unread_count: 0, unread_mentions: 0 });
     this.set("activeChannel", channel);
   },
 
@@ -618,7 +616,6 @@ export default Service.extend({
         // Message from other user. Increment trackings state
         if (busData.message_id > (trackingState.chat_message_id || 0)) {
           trackingState.set("unread_count", trackingState.unread_count + 1);
-          channel.set("unread_count", trackingState.unread_count);
         }
       }
       this.userChatChannelTrackingStateChanged();
@@ -632,7 +629,6 @@ export default Service.extend({
         dmChatChannel.set("last_message_sent_at", new Date());
         this.reSortDirectMessageChannels();
       }
-      this.appEvents.trigger("chat:refresh-channels");
     });
   },
 
@@ -645,9 +641,7 @@ export default Service.extend({
           "unread_mentions",
           (trackingState.unread_mentions || 0) + 1
         );
-        channel.set("unread_mentions", trackingState.unread_mentions);
         this.userChatChannelTrackingStateChanged();
-        this.appEvents.trigger("chat:refresh-channels");
       }
     });
   },
@@ -718,7 +712,6 @@ export default Service.extend({
           trackingState.set("unread_count", 0);
           trackingState.set("unread_mentions", 0);
           this.userChatChannelTrackingStateChanged();
-          this.appEvents.trigger("chat:refresh-channels");
         }
       }
     );
@@ -741,6 +734,7 @@ export default Service.extend({
 
   userChatChannelTrackingStateChanged() {
     this._recalculateUnreadMessages();
+    this.appEvents.trigger("chat:user-tracking-state-changed");
   },
 
   _recalculateUnreadMessages() {

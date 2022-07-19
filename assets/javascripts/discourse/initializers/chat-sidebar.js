@@ -10,16 +10,40 @@ import { avatarUrl } from "discourse/lib/utilities";
 export default {
   name: "chat-sidebar",
   initialize(container) {
-    this.chatService = container.lookup("service:chat");
-
     withPluginApi("1.3.0", (api) => {
       api.addSidebarSection(
         (BaseCustomSidebarSection, BaseCustomSidebarSectionLink) => {
           const SidebarChatChannelsSectionLink = class extends BaseCustomSidebarSectionLink {
+            @tracked chatChannelTrackingState =
+              this.chatService.currentUser.chat_channel_tracking_state[
+                this.channel.id
+              ];
+
             constructor({ channel, chatService }) {
               super(...arguments);
               this.channel = channel;
               this.chatService = chatService;
+
+              this.chatService.appEvents.on(
+                "chat:user-tracking-state-changed",
+                this._refreshTrackingState
+              );
+            }
+
+            @bind
+            willDestroy() {
+              this.chatService.appEvents.off(
+                "chat:user-tracking-state-changed",
+                this._refreshTrackingState
+              );
+            }
+
+            @bind
+            _refreshTrackingState() {
+              this.chatChannelTrackingState =
+                this.chatService.currentUser.chat_channel_tracking_state[
+                  this.channel.id
+                ];
             }
 
             get name() {
@@ -47,7 +71,6 @@ export default {
             get text() {
               return this.channel.title;
             }
-
             get prefixType() {
               return "icon";
             }
@@ -69,16 +92,24 @@ export default {
             }
 
             get suffixValue() {
-              return this.channel.unread_count > 0 ? "circle" : "";
+              return this.chatChannelTrackingState.unread_count > 0
+                ? "circle"
+                : "";
             }
 
             get suffixCSSClass() {
-              return this.channel.unread_mentions > 0 ? "urgent" : "unread";
+              return this.chatChannelTrackingState.unread_mentions > 0
+                ? "urgent"
+                : "unread";
             }
           };
 
           const SidebarChatChannelsSection = class extends BaseCustomSidebarSection {
             @tracked sectionLinks = [];
+
+            @tracked sectionIndicator =
+              this.chatService.publicChannels &&
+              this.chatService.publicChannels[0].unread_count;
 
             constructor() {
               super(...arguments);
@@ -88,20 +119,13 @@ export default {
                 "chat:refresh-channels",
                 this._refreshChannels
               );
-              this.chatService.appEvents.on(
-                "chat:navigated-to-full-page",
-                this._refreshChannels
-              );
               this._refreshChannels();
             }
 
+            @bind
             willDestroy() {
               this.chatService.appEvents.off(
                 "chat:refresh-channels",
-                this._refreshChannels
-              );
-              this.chatService.appEvents.off(
-                "chat:navigated-to-full-page",
                 this._refreshChannels
               );
             }
@@ -172,10 +196,36 @@ export default {
       api.addSidebarSection(
         (BaseCustomSidebarSection, BaseCustomSidebarSectionLink) => {
           const SidebarChatDirectMessagesSectionLink = class extends BaseCustomSidebarSectionLink {
+            @tracked chatChannelTrackingState =
+              this.chatService.currentUser.chat_channel_tracking_state[
+                this.channel.id
+              ];
+
             constructor({ channel, chatService }) {
               super(...arguments);
               this.channel = channel;
               this.chatService = chatService;
+
+              this.chatService.appEvents.on(
+                "chat:user-tracking-state-changed",
+                this._refreshTrackingState
+              );
+            }
+
+            @bind
+            willDestroy() {
+              this.chatService.appEvents.off(
+                "chat:user-tracking-state-changed",
+                this._refreshTrackingState
+              );
+            }
+
+            @bind
+            _refreshTrackingState() {
+              this.chatChannelTrackingState =
+                this.chatService.currentUser.chat_channel_tracking_state[
+                  this.channel.id
+                ];
             }
 
             get name() {
@@ -240,7 +290,9 @@ export default {
             }
 
             get suffixValue() {
-              return this.channel.unread_count > 0 && "circle";
+              return this.chatChannelTrackingState.unread_count > 0
+                ? "circle"
+                : "";
             }
 
             get suffixCSSClass() {
@@ -277,20 +329,13 @@ export default {
                 "chat:refresh-channels",
                 this._refreshPms
               );
-              this.sidebar.appEvents.on(
-                "chat:navigated-to-full-page",
-                this._refreshPms
-              );
               this._refreshPms();
             }
 
+            @bind
             willDestroy() {
               this.sidebar.appEvents.off(
                 "chat:refresh-channels",
-                this._refreshPms
-              );
-              this.sidebar.appEvents.off(
-                "chat:navigated-to-full-page",
                 this._refreshPms
               );
             }

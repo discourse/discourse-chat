@@ -1,8 +1,9 @@
 import KeyValueStore from "discourse/lib/key-value-store";
 import Service from "@ember/service";
+import Site from "discourse/models/site";
+
 const FULL_PAGE = "fullPage";
 const STORE_NAMESPACE_CHAT_WINDOW = "discourse_chat_window_";
-import Site from "discourse/models/site";
 
 export default class FullPageChat extends Service {
   constructor() {

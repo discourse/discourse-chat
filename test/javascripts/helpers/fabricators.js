@@ -35,6 +35,7 @@ const directMessageChannelFabricator = Fabricator({
   chatable_type: CHATABLE_TYPES.directMessageChannel,
   status: "open",
   chatable: directChannelChatableFabricator(),
+  __model: "ChatChannel",
 });
 
 const chatChannelFabricator = Fabricator({
@@ -48,9 +49,9 @@ const chatChannelFabricator = Fabricator({
 });
 
 export default {
-  chatChannel: (options) => ChatChannel.create(chatChannelFabricator(options)),
+  chatChannel: (options) => chatChannelFabricator(options),
   directMessageChatChannel: (options) =>
-    ChatChannel.create(directMessageChannelFabricator(options)),
+    directMessageChannelFabricator(options),
   chatChannelMessage: (options) =>
     EmberObject.create(chatChannelMessageFabricator(options)),
 };

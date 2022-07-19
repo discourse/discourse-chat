@@ -1367,14 +1367,13 @@ export default Component.extend({
 
   _replayTransition(transition) {
     const routeName = transition.name;
-    let params = Object.values(transition.params);
-    transition = transition.parent;
+    let params = [];
 
-    while (transition.parent) {
-      params = params.concat(Object.values(transition.params));
+    do {
+      params = Object.values(transition.params).concat(params);
       transition = transition.parent;
-    }
+    } while (transition);
 
-    this.router.transitionTo(routeName, ...params.reverse());
+    this.router.transitionTo(routeName, ...params);
   },
 });

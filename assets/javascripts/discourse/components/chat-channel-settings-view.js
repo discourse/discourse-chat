@@ -6,8 +6,7 @@ import ChatApi from "discourse/plugins/discourse-chat/discourse/lib/chat-api";
 import showModal from "discourse/lib/show-modal";
 import I18n from "I18n";
 import { camelize } from "@ember/string";
-import { later } from "@ember/runloop";
-import { isTesting } from "discourse-common/config/environment";
+import discourseLater from "discourse-common/lib/later";
 
 const NOTIFICATION_LEVELS = [
   { name: I18n.t("chat.notification_levels.never"), value: "never" },
@@ -74,16 +73,13 @@ export default class ChatChannelSettingsView extends Component {
         this.set(camelizedKey, true);
       })
       .finally(() => {
-        later(
-          () => {
-            if (this.isDestroying || this.isDestroyed) {
-              return;
-            }
+        discourseLater(() => {
+          if (this.isDestroying || this.isDestroyed) {
+            return;
+          }
 
-            this.set(camelizedKey, false);
-          },
-          isTesting() ? 0 : 2000
-        );
+          this.set(camelizedKey, false);
+        }, 2000);
       });
   }
 

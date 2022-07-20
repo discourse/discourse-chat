@@ -1,4 +1,3 @@
-import { Fabricator } from "./fabricator";
 import ChatChannel, {
   CHATABLE_TYPES,
 } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";

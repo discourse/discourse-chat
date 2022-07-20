@@ -1972,6 +1972,8 @@ acceptance("Discourse Chat - Composer", function (needs) {
       .querySelector(".chat-composer-input")
       .dispatchEvent(clipboardEvent);
 
+    await settled();
+
     assert.equal(document.querySelector(".chat-composer-input").value, "Foo");
   });
 });

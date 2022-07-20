@@ -118,11 +118,15 @@ discourseModule(
         const users = this.channel.chatable.users;
 
         assert.equal(
-          parseInt(query(".chat-channel-title__users-count").innerText, 10),
+          parseInt(
+            query(".chat-channel-title__users-count").innerText.trim(),
+            10
+          ),
           users.length
         );
+
         assert.equal(
-          query(".chat-channel-title__name").innerText,
+          query(".chat-channel-title__name").innerText.trim(),
           users.mapBy("username").join(", ")
         );
       },

@@ -16,12 +16,13 @@ import userPresent from "discourse/lib/user-presence";
 import { A } from "@ember/array";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
-import { cancel, later, next, schedule } from "@ember/runloop";
+import { cancel, next, schedule } from "@ember/runloop";
+import discourseLater from "discourse-common/lib/later";
 import { inject as service } from "@ember/service";
 import { Promise } from "rsvp";
 import { resetIdle } from "discourse/lib/desktop-notifications";
-import { isTesting } from "discourse-common/config/environment";
 import { defaultHomepage } from "discourse/lib/utilities";
+import { isTesting } from "discourse-common/config/environment";
 
 const MAX_RECENT_MSGS = 100;
 const STICKY_SCROLL_LENIENCE = 4;
@@ -556,27 +557,21 @@ export default Component.extend({
 
       if (opts.highlight) {
         messageEl.classList.add("highlighted");
+
         // Remove highlighted class, but keep `transition-slow` on for another 2 seconds
         // to ensure the background color fades smoothly out
         if (opts.highlight) {
-          later(
-            () => {
-              messageEl.classList.add("transition-slow");
-            },
-            isTesting() ? 0 : 2000
-          );
-          later(
-            () => {
-              messageEl.classList.remove("highlighted");
-              later(
-                () => {
-                  messageEl.classList.remove("transition-slow");
-                },
-                isTesting() ? 0 : 2000
-              );
-            },
-            isTesting() ? 0 : 3000
-          );
+          discourseLater(() => {
+            messageEl.classList.add("transition-slow");
+          }, 2000);
+
+          discourseLater(() => {
+            messageEl.classList.remove("highlighted");
+
+            discourseLater(() => {
+              messageEl.classList.remove("transition-slow");
+            }, 2000);
+          }, 3000);
         }
       }
     });

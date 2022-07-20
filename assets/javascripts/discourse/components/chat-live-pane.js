@@ -1249,9 +1249,9 @@ export default Component.extend({
     this.fullPageChat.isPreferred = false;
     this.appEvents.trigger("chat:open-channel", channel);
 
-    const fromTransition = this.fullPageChat.exit();
-    if (fromTransition) {
-      this._replayTransition(fromTransition);
+    const previousRouteInfo = this.fullPageChat.exit();
+    if (previousRouteInfo) {
+      this._transitionToRoute(previousRouteInfo);
     } else {
       this.router.transitionTo(`discovery.${defaultHomepage()}`);
     }
@@ -1365,14 +1365,14 @@ export default Component.extend({
     });
   },
 
-  _replayTransition(transition) {
-    const routeName = transition.name;
+  _transitionToRoute(routeInfo) {
+    const routeName = routeInfo.name;
     let params = [];
 
     do {
-      params = Object.values(transition.params).concat(params);
-      transition = transition.parent;
-    } while (transition);
+      params = Object.values(routeInfo.params).concat(params);
+      routeInfo = routeInfo.parent;
+    } while (routeInfo);
 
     this.router.transitionTo(routeName, ...params);
   },

@@ -7,17 +7,17 @@ const STORE_NAMESPACE_CHAT_WINDOW = "discourse_chat_window_";
 
 export default class FullPageChat extends Service {
   store = new KeyValueStore(STORE_NAMESPACE_CHAT_WINDOW);
-  _fromTransition = null;
+  _previousRouteInfo = null;
   _isActive = false;
 
-  enter(fromTransition) {
-    this._fromTransition = fromTransition;
+  enter(previousRouteInfo) {
+    this._previousRouteInfo = previousRouteInfo;
     this._isActive = true;
   }
 
   exit() {
     this._isActive = false;
-    return this._fromTransition;
+    return this._previousRouteInfo;
   }
 
   get isActive() {

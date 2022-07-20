@@ -34,14 +34,14 @@ discourseModule(
       assert.strictEqual(this.fullPageChat.isPreferred, true);
     });
 
-    test("previous transition", function (assert) {
+    test("previous route", function (assert) {
       const name = "foo";
       const params = { id: 1, slug: "bar" };
       this.fullPageChat.enter({ name, params });
-      const transition = this.fullPageChat.exit();
+      const routeInfo = this.fullPageChat.exit();
 
-      assert.equal(transition.name, name);
-      assert.equal(transition.params, params);
+      assert.strictEqual(routeInfo.name, name);
+      assert.deepEqual(routeInfo.params, params);
     });
   }
 );

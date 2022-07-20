@@ -5,7 +5,7 @@
       (if channel.isClosed " -closed")
       (if channel.isArchived " -archived")
     }}
-    style="border-left-color: #{{channel.chatable.color}}"
+    style="border-left-color: #{{html-safe channel.chatable.color}}"
   >
     {{#link-to
       "chat.channel.info.settings"

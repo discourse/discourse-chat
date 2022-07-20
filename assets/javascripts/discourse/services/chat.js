@@ -1,3 +1,4 @@
+import slugifyChannel from "discourse/plugins/discourse-chat/discourse/lib/slugify-channel";
 import deprecated from "discourse-common/lib/deprecated";
 import userSearch from "discourse/lib/user-search";
 import { popupAjaxError } from "discourse/lib/ajax-error";
@@ -471,13 +472,12 @@ export default Service.extend({
 
     if (this.fullPageChat.isActive || this.fullPageChat.isPreferred) {
       const queryParams = messageId ? { messageId } : {};
-
-      return this.router.transitionTo("chat.channel", {
-        chatChannel: channel,
-        channelId: channel.id,
-        channelTitle: channel.chatable.slug,
-        ...queryParams,
-      });
+      return this.router.transitionTo(
+        "chat.channel",
+        channel.id,
+        slugifyChannel(channel.title),
+        { queryParams }
+      );
     } else {
       this._fireOpenFloatAppEvent(channel, messageId);
       return Promise.resolve();

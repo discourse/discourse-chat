@@ -2,6 +2,10 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+
+  &__back-btn {
+    margin: 1rem 0 0 1rem;
+  }
 }
 
 // Info header

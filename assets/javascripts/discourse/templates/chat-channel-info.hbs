@@ -1,4 +1,9 @@
 <div class="channel-info">
+  <LinkTo @route="chat.browse" class="channel-info__back-btn">
+    {{d-icon "chevron-left"}}
+    {{i18n "chat.channel_info.back-to-all-channels"}}
+  </LinkTo>
+
   <div class="channel-info-header">
     <h2 class="channel-info-header__title">
       {{replace-emoji model.chatChannel.title}}

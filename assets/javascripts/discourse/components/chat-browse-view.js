@@ -8,7 +8,6 @@ import discourseDebounce from "discourse-common/lib/debounce";
 import { bind } from "discourse-common/utils/decorators";
 
 const TABS = ["all", "open", "closed", "archived"];
-
 const PER_PAGE = 20;
 
 export default class ChatBrowseView extends Component {
@@ -17,13 +16,9 @@ export default class ChatBrowseView extends Component {
   @service router;
 
   @tracked isLoading = false;
-
   @tracked channels = [];
-
   tabs = TABS;
-
   offset = 0;
-
   canLoadMore = true;
 
   didReceiveAttrs() {
@@ -42,31 +37,26 @@ export default class ChatBrowseView extends Component {
 
     this.isLoading = true;
 
-    return ChatApi.chatChannels(
-      Object.assign(
-        {},
-        {
-          limit: PER_PAGE,
-          offset: this.offset,
-          status: this.status,
-          filter: this.filter,
-        },
-        params
-      )
-    )
-      .then((results) => {
-        if (results.length) {
-          this.channels.pushObjects(results);
-        }
-
-        if (results.length < PER_PAGE) {
-          this.canLoadMore = false;
-        }
-      })
-      .finally(() => {
-        this.offset = this.offset + PER_PAGE;
-        this.isLoading = false;
+    try {
+      const results = await ChatApi.chatChannels({
+        limit: PER_PAGE,
+        offset: this.offset,
+        status: this.status,
+        filter: this.filter,
+        ...params,
       });
+
+      if (results.length) {
+        this.channels.pushObjects(results);
+      }
+
+      if (results.length < PER_PAGE) {
+        this.canLoadMore = false;
+      }
+    } finally {
+      this.offset = this.offset + PER_PAGE;
+      this.isLoading = false;
+    }
   }
 
   @action

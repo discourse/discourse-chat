@@ -26,7 +26,7 @@ function mockChat(context, options = {}) {
 }
 
 discourseModule(
-  "Discourse chat | Component | direct-message-creator",
+  "Discourse Chat | Component | direct-message-creator",
   function (hooks) {
     setupRenderingTest(hooks);
 

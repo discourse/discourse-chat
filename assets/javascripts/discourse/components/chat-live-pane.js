@@ -885,7 +885,7 @@ export default Component.extend({
       return;
     }
 
-    this._updateReadTimer = later(
+    this._updateReadTimer = discourseLater(
       this,
       () => {
         if (this._selfDeleted) {

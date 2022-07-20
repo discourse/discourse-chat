@@ -13,9 +13,11 @@ acceptance("Discourse Chat - Chat live pane collapse", function (needs) {
     can_chat: true,
     has_chat_enabled: true,
   });
+
   needs.settings({
     chat_enabled: true,
   });
+
   needs.pretender((server, helper) => {
     server.get("/chat/:chatChannelId/messages.json", () =>
       helper.response({
@@ -28,7 +30,7 @@ acceptance("Discourse Chat - Chat live pane collapse", function (needs) {
             id: 1,
             message: "https://www.youtube.com/watch?v=aOWkVdU4NH0",
             cooked:
-              '<div class="onebox lazyYT lazyYT-container" data-youtube-id="aOWkVdU4NH0" data-youtube-title="Picnic with my cat (shaved ice &amp; lemonade)" data-parameters="feature=oembed&amp;wmode=opaque"> <a href="https:/*www.youtube.com/watch?v=aOWkVdU4NH0" target="_blank" rel="nofollow ugc noopener">*/ <img class="ytp-thumbnail-image" src="https://img.youtube.com/vi/aOWkVdU4NH0/hqdefault.jpg" title="Picnic with my cat (shaved ice &amp; lemonade)"></a></div>',
+              '<div class="onebox lazyYT lazyYT-container" data-youtube-id="aOWkVdU4NH0" data-youtube-title="Picnic with my cat (shaved ice &amp; lemonade)" data-parameters="feature=oembed&amp;wmode=opaque"> <a href="https://www.youtube.com/watch?v=aOWkVdU4NH0" target="_blank" rel="nofollow ugc noopener"> <img class="ytp-thumbnail-image" src="/images/discourse-logo-sketch.png" title="Picnic with my cat (shaved ice &amp; lemonade)"></a></div>',
             excerpt:
               '<a href="https://www.youtube.com/watch?v=aOWkVdU4NH0">[Picnic with my cat (shaved ice &amp; lemonade&hellip;</a>',
             created_at: "2021-07-20T08:14:16.950Z",

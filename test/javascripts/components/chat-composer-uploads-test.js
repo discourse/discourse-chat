@@ -15,7 +15,7 @@ const fakeUpload = {
   type: ".png",
   extension: "png",
   name: "myfile.png",
-  short_path: "/my-image.png",
+  short_path: "/images/avatar.png",
 };
 
 const mockUploadResponse = {
@@ -26,11 +26,11 @@ const mockUploadResponse = {
   id: 202,
   original_filename: "avatar.PNG.jpg",
   retain_hours: null,
-  short_path: "/uploads/short-url/yoj8pf9DdIeHRRULyw7i57GAYdz.jpeg",
+  short_path: "/images/avatar.png",
   short_url: "upload://yoj8pf9DdIeHRRULyw7i57GAYdz.jpeg",
   thumbnail_height: 320,
   thumbnail_width: 690,
-  url: "//testbucket.s3.dualstack.us-east-2.amazonaws.com/original/1X/f1095d89269ff22e1818cf54b73e857261851019.jpeg",
+  url: "/images/avatar.png",
   width: 1920,
 };
 

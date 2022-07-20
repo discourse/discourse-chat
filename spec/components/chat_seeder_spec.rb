@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'rails_helper'
+require "rails_helper"
 
 describe ChatSeeder do
   fab!(:staff_category) { Fabricate(:private_category, group: Group[:staff]) }
@@ -22,7 +22,8 @@ describe ChatSeeder do
     expect(channel.auto_join_users).to eq(true)
 
     expected_members_count = GroupUser.where(group: group).count
-    memberships_count = UserChatChannelMembership.automatic.where(chat_channel: channel, following: true).count
+    memberships_count =
+      UserChatChannelMembership.automatic.where(chat_channel: channel, following: true).count
 
     expect(memberships_count).to eq(expected_members_count)
   end
@@ -41,8 +42,8 @@ describe ChatSeeder do
     expect(SiteSetting.needs_chat_seeded).to eq(false)
   end
 
-  it 'applies a different name to the meta category channel' do
-    expected_name = I18n.t('chat.channel.default_titles.site_feedback')
+  it "applies a different name to the meta category channel" do
+    expected_name = I18n.t("chat.channel.default_titles.site_feedback")
 
     ChatSeeder.new.execute
 

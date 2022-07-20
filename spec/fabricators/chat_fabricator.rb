@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 Fabricator(:chat_channel) do
-  name { ["Gaming Lounge", "Music Lodge", "Random", "Politics", "Sports Center", "Kino Buffs"].sample }
+  name do
+    ["Gaming Lounge", "Music Lodge", "Random", "Politics", "Sports Center", "Kino Buffs"].sample
+  end
   chatable { Fabricate(:category) }
   status { :open }
 end
@@ -23,7 +25,7 @@ end
 Fabricator(:chat_message_reaction) do
   chat_message { Fabricate(:chat_message) }
   user { Fabricate(:user) }
-  emoji { ["+1", "tada", "heart", "joffrey_facepalm"].sample }
+  emoji { %w[+1 tada heart joffrey_facepalm].sample }
 end
 
 Fabricator(:chat_upload) do
@@ -39,22 +41,20 @@ end
 
 Fabricator(:reviewable_chat_message) do
   reviewable_by_moderator true
-  type 'ReviewableChatMessage'
+  type "ReviewableChatMessage"
   created_by { Fabricate(:user) }
-  target_type 'ChatMessage'
+  target_type "ChatMessage"
   target { Fabricate(:chat_message) }
-  reviewable_scores { |p| [
-    Fabricate.build(:reviewable_score, reviewable_id: p[:id]),
-  ]}
+  reviewable_scores { |p| [Fabricate.build(:reviewable_score, reviewable_id: p[:id])] }
 end
 
-Fabricator(:direct_message_channel) do
-  users { [Fabricate(:user), Fabricate(:user)] }
-end
+Fabricator(:direct_message_channel) { users { [Fabricate(:user), Fabricate(:user)] } }
 
 Fabricator(:chat_webhook_event) do
   chat_message { Fabricate(:chat_message) }
-  incoming_chat_webhook { |attrs| Fabricate(:incoming_chat_webhook, chat_channel: attrs[:chat_message].chat_channel) }
+  incoming_chat_webhook do |attrs|
+    Fabricate(:incoming_chat_webhook, chat_channel: attrs[:chat_message].chat_channel)
+  end
 end
 
 Fabricator(:incoming_chat_webhook) do

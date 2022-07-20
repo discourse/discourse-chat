@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-MEMBERSHIP_EDITABLE_PARAMS = [:muted, :desktop_notification_level, :mobile_notification_level]
+MEMBERSHIP_EDITABLE_PARAMS = %i[muted desktop_notification_level mobile_notification_level]
 
 class DiscourseChat::Api::ChatChannelNotificationsSettingsController < DiscourseChat::Api::ChatChannelsController
   def update

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'rails_helper'
+require "rails_helper"
 
 describe DirectMessageChannelSerializer do
   describe "#user" do
@@ -9,7 +9,12 @@ describe DirectMessageChannelSerializer do
       you = Fabricate.build(:user)
       direct_message_channel = Fabricate.build(:direct_message_channel, users: [me, you])
 
-      serializer = DirectMessageChannelSerializer.new(direct_message_channel, scope: Guardian.new(me), root: false)
+      serializer =
+        DirectMessageChannelSerializer.new(
+          direct_message_channel,
+          scope: Guardian.new(me),
+          root: false,
+        )
 
       expect(serializer.users).to eq([you])
     end
@@ -20,7 +25,12 @@ describe DirectMessageChannelSerializer do
       other_you = Fabricate.build(:user)
       direct_message_channel = Fabricate.build(:direct_message_channel, users: [me, you, other_you])
 
-      serializer = DirectMessageChannelSerializer.new(direct_message_channel, scope: Guardian.new(me), root: false)
+      serializer =
+        DirectMessageChannelSerializer.new(
+          direct_message_channel,
+          scope: Guardian.new(me),
+          root: false,
+        )
 
       expect(serializer.users).to match_array([you, other_you])
     end
@@ -29,7 +39,12 @@ describe DirectMessageChannelSerializer do
       me = Fabricate.build(:user)
       direct_message_channel = Fabricate.build(:direct_message_channel, users: [me])
 
-      serializer = DirectMessageChannelSerializer.new(direct_message_channel, scope: Guardian.new(me), root: false)
+      serializer =
+        DirectMessageChannelSerializer.new(
+          direct_message_channel,
+          scope: Guardian.new(me),
+          root: false,
+        )
 
       expect(serializer.users).to eq([me])
     end

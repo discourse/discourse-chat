@@ -3,7 +3,13 @@
 class ChatView
   attr_reader :user, :chat_channel, :chat_messages, :can_load_more_past, :can_load_more_future
 
-  def initialize(chat_channel:, chat_messages:, user:, can_load_more_past: nil, can_load_more_future: nil)
+  def initialize(
+    chat_channel:,
+    chat_messages:,
+    user:,
+    can_load_more_past: nil,
+    can_load_more_future: nil
+  )
     @chat_channel = chat_channel
     @chat_messages = chat_messages
     @user = user
@@ -44,13 +50,13 @@ class ChatView
 
     ids = {}
 
-    DB.query(
-      sql,
-      pending: ReviewableScore.statuses[:pending],
-      message_ids: @chat_messages.map(&:id)
-    ).each do |row|
-      ids[row.target_id] = row.reviewable_id
-    end
+    DB
+      .query(
+        sql,
+        pending: ReviewableScore.statuses[:pending],
+        message_ids: @chat_messages.map(&:id),
+      )
+      .each { |row| ids[row.target_id] = row.reviewable_id }
 
     ids
   end
@@ -72,13 +78,9 @@ class ChatView
 
     statuses = {}
 
-    DB.query(
-      sql,
-      message_ids: @chat_messages.map(&:id),
-      user_id: @user.id
-    ).each do |row|
-      statuses[row.target_id] = row.status
-    end
+    DB
+      .query(sql, message_ids: @chat_messages.map(&:id), user_id: @user.id)
+      .each { |row| statuses[row.target_id] = row.status }
 
     statuses
   end

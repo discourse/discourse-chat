@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe DiscourseChat::DirectMessagesController do
   fab!(:user) { Fabricate(:user) }
@@ -24,9 +24,7 @@ RSpec.describe DiscourseChat::DirectMessagesController do
 
   describe "#index" do
     context "user is not allowed to chat" do
-      before do
-        SiteSetting.chat_allowed_groups = nil
-      end
+      before { SiteSetting.chat_allowed_groups = nil }
 
       it "returns a forbidden error" do
         get "/chat/direct_messages.json", params: { usernames: user1.username }
@@ -42,12 +40,12 @@ RSpec.describe DiscourseChat::DirectMessagesController do
     end
 
     context "channel exists" do
-      let!(:channel) {
+      let!(:channel) do
         direct_messages_channel = DirectMessageChannel.create!
         direct_messages_channel.direct_message_users.create!(user_id: user.id)
         direct_messages_channel.direct_message_users.create!(user_id: user1.id)
         ChatChannel.create!(chatable: direct_messages_channel)
-      }
+      end
 
       it "returns the channel" do
         get "/chat/direct_messages.json", params: { usernames: user1.username }
@@ -57,12 +55,13 @@ RSpec.describe DiscourseChat::DirectMessagesController do
 
       context "with more than two users" do
         fab!(:user3) { Fabricate(:user) }
-        before do
-          channel.chatable.direct_message_users.create!(user_id: user3.id)
-        end
+        before { channel.chatable.direct_message_users.create!(user_id: user3.id) }
 
         it "returns the channel" do
-          get "/chat/direct_messages.json", params: { usernames: [user1.username, user.username, user3.username].join(",") }
+          get "/chat/direct_messages.json",
+              params: {
+                usernames: [user1.username, user.username, user3.username].join(","),
+              }
           expect(response.status).to eq(200)
           expect(response.parsed_body["chat_channel"]["id"]).to eq(channel.id)
         end
@@ -76,8 +75,9 @@ RSpec.describe DiscourseChat::DirectMessagesController do
         expect {
           post "/chat/direct_messages/create.json", params: { usernames: [usernames] }
         }.to change { DirectMessageChannel.count }.by(1)
-        expect(DirectMessageChannel.last.direct_message_users.map(&:user_id))
-          .to match_array(direct_message_user_ids)
+        expect(DirectMessageChannel.last.direct_message_users.map(&:user_id)).to match_array(
+          direct_message_user_ids,
+        )
       end
 
       it "returns existing dm channel if one exists for username(s)" do

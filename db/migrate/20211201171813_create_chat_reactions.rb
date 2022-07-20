@@ -9,8 +9,8 @@ class CreateChatReactions < ActiveRecord::Migration[6.1]
     end
 
     add_index :chat_message_reactions,
-      [:chat_message_id, :user_id, :emoji],
-      unique: true,
-      name: :chat_message_reactions_index
+              %i[chat_message_id user_id emoji],
+              unique: true,
+              name: :chat_message_reactions_index
   end
 end

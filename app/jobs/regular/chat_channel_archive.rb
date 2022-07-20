@@ -9,7 +9,9 @@ module Jobs
 
       # this should not really happen, but better to do this than throw an error
       if channel_archive.blank?
-        Rails.logger.warn("Chat channel archive #{args[:chat_channel_archive_id]} could not be found, aborting archive job.")
+        Rails.logger.warn(
+          "Chat channel archive #{args[:chat_channel_archive_id]} could not be found, aborting archive job.",
+        )
         return
       end
 
@@ -17,10 +19,8 @@ module Jobs
 
       DistributedMutex.synchronize(
         "archive_chat_channel_#{channel_archive.chat_channel_id}",
-        validity: 20.minutes
-      ) do
-        DiscourseChat::ChatChannelArchiveService.new(channel_archive).execute
-      end
+        validity: 20.minutes,
+      ) { DiscourseChat::ChatChannelArchiveService.new(channel_archive).execute }
     end
   end
 end

@@ -6,24 +6,12 @@ class UserChatChannelMembership < ActiveRecord::Base
   belongs_to :last_read_message, class_name: "ChatMessage", optional: true
 
   DEFAULT_NOTIFICATION_LEVEL = :mention
-  NOTIFICATION_LEVELS = {
-    never: 0,
-    mention: 1,
-    always: 2
-  }
-  VALIDATED_ATTRS = [
-    :following,
-    :muted,
-    :desktop_notification_level,
-    :mobile_notification_level
-  ]
+  NOTIFICATION_LEVELS = { never: 0, mention: 1, always: 2 }
+  VALIDATED_ATTRS = %i[following muted desktop_notification_level mobile_notification_level]
   enum desktop_notification_level: NOTIFICATION_LEVELS, _prefix: :desktop_notifications
   enum mobile_notification_level: NOTIFICATION_LEVELS, _prefix: :mobile_notifications
 
-  enum join_mode: {
-    manual: 0,
-    automatic: 1
-  }
+  enum join_mode: { manual: 0, automatic: 1 }
 
   validate :changes_for_direct_message_channels
 
@@ -35,7 +23,9 @@ class UserChatChannelMembership < ActiveRecord::Base
     def enforce_automatic_user_membership(channel, user)
       Jobs.enqueue(
         :auto_join_channel_batch,
-        chat_channel_id: channel.id, starts_at: user.id, ends_at: user.id
+        chat_channel_id: channel.id,
+        starts_at: user.id,
+        ends_at: user.id,
       )
     end
   end
@@ -43,7 +33,8 @@ class UserChatChannelMembership < ActiveRecord::Base
   private
 
   def changes_for_direct_message_channels
-    needs_validation = VALIDATED_ATTRS.any? { |attr| changed_attribute_names_to_save.include?(attr.to_s) }
+    needs_validation =
+      VALIDATED_ATTRS.any? { |attr| changed_attribute_names_to_save.include?(attr.to_s) }
     if needs_validation && chat_channel.direct_message_channel?
       errors.add(:muted) if muted
       errors.add(:desktop_notification_level) if desktop_notification_level.to_sym != :always

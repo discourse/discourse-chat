@@ -44,10 +44,8 @@ class DiscourseChat::ChatMessageReactor
   end
 
   def enforce_channel_membership!
-    existing_membership = UserChatChannelMembership.find_or_initialize_by(
-      chat_channel: @chat_channel,
-      user: @user,
-    )
+    existing_membership =
+      UserChatChannelMembership.find_or_initialize_by(chat_channel: @chat_channel, user: @user)
 
     unless existing_membership&.following
       existing_membership.following = true
@@ -58,23 +56,24 @@ class DiscourseChat::ChatMessageReactor
   def validate_channel_status!
     return if @guardian.can_create_channel_message?(@chat_channel)
     raise Discourse::InvalidAccess.new(
-      nil,
-      nil,
-      custom_message: "chat.errors.channel_modify_message_disallowed",
-      custom_message_params: { status: @chat_channel.status_name }
-    )
+            nil,
+            nil,
+            custom_message: "chat.errors.channel_modify_message_disallowed",
+            custom_message_params: {
+              status: @chat_channel.status_name,
+            },
+          )
   end
 
   def validate_max_reactions!(message, react_action, emoji)
     if react_action == ADD_REACTION &&
-      message.reactions.count('DISTINCT emoji') >= MAX_REACTIONS_LIMIT &&
-      !message.reactions.exists?(emoji: emoji)
-
+         message.reactions.count("DISTINCT emoji") >= MAX_REACTIONS_LIMIT &&
+         !message.reactions.exists?(emoji: emoji)
       raise Discourse::InvalidAccess.new(
-        nil,
-        nil,
-        custom_message: "chat.errors.max_reactions_limit_reached"
-      )
+              nil,
+              nil,
+              custom_message: "chat.errors.max_reactions_limit_reached",
+            )
     end
   end
 
@@ -87,12 +86,6 @@ class DiscourseChat::ChatMessageReactor
   end
 
   def publish_reaction(message, react_action, emoji)
-    ChatPublisher.publish_reaction!(
-      @chat_channel,
-      message,
-      react_action,
-      @user,
-      emoji
-    )
+    ChatPublisher.publish_reaction!(@chat_channel, message, react_action, @user, emoji)
   end
 end

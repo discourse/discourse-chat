@@ -8,7 +8,15 @@ class DiscourseChat::ChatMessageCreator
     instance
   end
 
-  def initialize(chat_channel:, in_reply_to_id: nil, user:, content:, staged_id: nil, incoming_chat_webhook: nil, upload_ids: nil)
+  def initialize(
+    chat_channel:,
+    in_reply_to_id: nil,
+    user:,
+    content:,
+    staged_id: nil,
+    incoming_chat_webhook: nil,
+    upload_ids: nil
+  )
     @chat_channel = chat_channel
     @user = user
     @guardian = Guardian.new(user)
@@ -19,12 +27,13 @@ class DiscourseChat::ChatMessageCreator
     @upload_ids = upload_ids || []
     @error = nil
 
-    @chat_message = ChatMessage.new(
-      chat_channel: @chat_channel,
-      user_id: @user.id,
-      in_reply_to_id: @in_reply_to_id,
-      message: @content,
-    )
+    @chat_message =
+      ChatMessage.new(
+        chat_channel: @chat_channel,
+        user_id: @user.id,
+        in_reply_to_id: @in_reply_to_id,
+        message: @content,
+      )
   end
 
   def create
@@ -41,7 +50,7 @@ class DiscourseChat::ChatMessageCreator
       Jobs.enqueue(:process_chat_message, { chat_message_id: @chat_message.id })
       DiscourseChat::ChatNotifier.notify_new(
         chat_message: @chat_message,
-        timestamp: @chat_message.created_at
+        timestamp: @chat_message.created_at,
       )
     rescue => error
       @error = error
@@ -58,8 +67,8 @@ class DiscourseChat::ChatMessageCreator
     return if @guardian.can_create_channel_message?(@chat_channel)
 
     raise StandardError.new(
-      I18n.t("chat.errors.channel_new_message_disallowed", status: @chat_channel.status_name)
-    )
+            I18n.t("chat.errors.channel_new_message_disallowed", status: @chat_channel.status_name),
+          )
   end
 
   def validate_message!(has_uploads:)
@@ -73,7 +82,7 @@ class DiscourseChat::ChatMessageCreator
     return if @incoming_chat_webhook.blank?
     ChatWebhookEvent.create(
       chat_message: @chat_message,
-      incoming_chat_webhook: @incoming_chat_webhook
+      incoming_chat_webhook: @incoming_chat_webhook,
     )
   end
 

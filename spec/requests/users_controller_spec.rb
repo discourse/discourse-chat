@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 describe UsersController do
-  describe '#perform_account_activation' do
+  describe "#perform_account_activation" do
     let(:user) { Fabricate(:user, active: false) }
     let(:email_token) { Fabricate(:email_token, user: user) }
     let!(:channel) { Fabricate(:chat_channel, auto_join_users: true) }
@@ -13,7 +13,7 @@ describe UsersController do
       SiteSetting.chat_enabled = true
     end
 
-    it 'triggers the auto-join process' do
+    it "triggers the auto-join process" do
       put "/u/activate-account/#{email_token.token}"
 
       expect(response.status).to eq(200)

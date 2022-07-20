@@ -5,23 +5,26 @@ module DiscourseChat::UserNotificationsExtension
     guardian = Guardian.new(user)
     return unless guardian.can_chat?(user)
 
-    @messages = ChatMessage
-      .joins(:user, :chat_channel)
-      .where.not(user: user)
-      .where('chat_messages.created_at > ?', 1.week.ago)
-      .joins('LEFT OUTER JOIN chat_mentions cm ON cm.chat_message_id = chat_messages.id')
-      .joins('INNER JOIN user_chat_channel_memberships uccm ON uccm.chat_channel_id = chat_channels.id')
-      .where(uccm: { following: true, user_id: user.id })
-      .where(
-        <<~SQL
+    @messages =
+      ChatMessage
+        .joins(:user, :chat_channel)
+        .where.not(user: user)
+        .where("chat_messages.created_at > ?", 1.week.ago)
+        .joins("LEFT OUTER JOIN chat_mentions cm ON cm.chat_message_id = chat_messages.id")
+        .joins(
+          "INNER JOIN user_chat_channel_memberships uccm ON uccm.chat_channel_id = chat_channels.id",
+        )
+        .where(uccm: { following: true, user_id: user.id })
+        .where(<<~SQL)
           (cm.user_id = #{user.id} OR chat_channels.chatable_type = 'DirectMessageChannel') AND
           (uccm.last_read_message_id IS NULL OR chat_messages.id > uccm.last_read_message_id) AND
           (uccm.last_unread_mention_when_emailed_id IS NULL OR chat_messages.id > uccm.last_unread_mention_when_emailed_id)
         SQL
-      ).to_a
+        .to_a
     return if @messages.empty?
     @grouped_messages = @messages.group_by { |message| message.chat_channel }
-    @grouped_messages = @grouped_messages.select { |channel, _| guardian.can_see_chat_channel?(channel) }
+    @grouped_messages =
+      @grouped_messages.select { |channel, _| guardian.can_see_chat_channel?(channel) }
     return if @grouped_messages.empty?
 
     @grouped_messages.each do |chat_channel, messages|
@@ -38,13 +41,13 @@ module DiscourseChat::UserNotificationsExtension
     add_unsubscribe_link = UnsubscribeKey.respond_to?(:get_unsubscribe_strategy_for)
 
     if add_unsubscribe_link
-      unsubscribe_key = UnsubscribeKey.create_key_for(@user, 'chat_summary')
+      unsubscribe_key = UnsubscribeKey.create_key_for(@user, "chat_summary")
       @unsubscribe_link = "#{Discourse.base_url}/email/unsubscribe/#{unsubscribe_key}"
       opts[:unsubscribe_url] = @unsubscribe_link
     end
 
     opts = {
-      from_alias: I18n.t('user_notifications.chat_summary.from', site_name: Email.site_title),
+      from_alias: I18n.t("user_notifications.chat_summary.from", site_name: Email.site_title),
       subject: summary_subject(user, @grouped_messages),
       add_unsubscribe_link: add_unsubscribe_link,
     }
@@ -62,9 +65,9 @@ module DiscourseChat::UserNotificationsExtension
     first_message_from = non_dm_channels.pop
     if first_message_from
       first_message_title = first_message_from.title(user)
-      subject_key = 'chat_channel'
+      subject_key = "chat_channel"
     else
-      subject_key = 'direct_message'
+      subject_key = "direct_message"
       first_message_from = dm_users.pop
       first_message_title = first_message_from.username
     end
@@ -73,7 +76,14 @@ module DiscourseChat::UserNotificationsExtension
       email_prefix: @email_prefix,
       count: total_count_for_subject,
       message_title: first_message_title,
-      others: other_channels_text(user, total_count_for_subject, first_message_from, non_dm_channels, dm_users)
+      others:
+        other_channels_text(
+          user,
+          total_count_for_subject,
+          first_message_from,
+          non_dm_channels,
+          dm_users,
+        ),
     }
 
     I18n.t(with_subject_prefix(subject_key), **subject_opts)
@@ -83,9 +93,15 @@ module DiscourseChat::UserNotificationsExtension
     "user_notifications.chat_summary.subject.#{key}"
   end
 
-  def other_channels_text(user, total_count, first_message_from, other_non_dm_channels, other_dm_users)
+  def other_channels_text(
+    user,
+    total_count,
+    first_message_from,
+    other_non_dm_channels,
+    other_dm_users
+  )
     return if total_count <= 1
-    return I18n.t(with_subject_prefix('others'), count: total_count - 1) if total_count > 2
+    return I18n.t(with_subject_prefix("others"), count: total_count - 1) if total_count > 2
 
     if other_non_dm_channels.empty?
       second_message_from = other_dm_users.first
@@ -97,6 +113,6 @@ module DiscourseChat::UserNotificationsExtension
 
     return second_message_title if first_message_from.class == second_message_from.class
 
-    I18n.t(with_subject_prefix('other_direct_message'), message_title: second_message_title)
+    I18n.t(with_subject_prefix("other_direct_message"), message_title: second_message_title)
   end
 end

@@ -16,11 +16,12 @@ class ChatMessageBookmarkable < BaseBookmarkable
   def self.list_query(user, guardian)
     accessible_channel_ids = DiscourseChat::ChatChannelFetcher.all_secured_channel_ids(guardian)
     return if accessible_channel_ids.empty?
-    user.bookmarks_of_type("ChatMessage")
+    user
+      .bookmarks_of_type("ChatMessage")
       .joins(
         "INNER JOIN chat_messages ON chat_messages.id = bookmarks.bookmarkable_id
           AND chat_messages.deleted_at IS NULL
-          AND bookmarks.bookmarkable_type = 'ChatMessage'"
+          AND bookmarks.bookmarkable_type = 'ChatMessage'",
       )
       .where("chat_messages.chat_channel_id IN (?)", accessible_channel_ids)
   end
@@ -30,19 +31,22 @@ class ChatMessageBookmarkable < BaseBookmarkable
   end
 
   def self.validate_before_create(guardian, bookmarkable)
-    raise Discourse::InvalidAccess if bookmarkable.blank? || !guardian.can_see_chat_channel?(bookmarkable.chat_channel)
+    if bookmarkable.blank? || !guardian.can_see_chat_channel?(bookmarkable.chat_channel)
+      raise Discourse::InvalidAccess
+    end
   end
 
   def self.reminder_handler(bookmark)
     send_reminder_notification(
       bookmark,
       data: {
-        title: I18n.t(
-          "chat.bookmarkable.notification_title",
-          channel_name: bookmark.bookmarkable.chat_channel.title(bookmark.user)
-        ),
-        bookmarkable_url: bookmark.bookmarkable.url
-      }
+        title:
+          I18n.t(
+            "chat.bookmarkable.notification_title",
+            channel_name: bookmark.bookmarkable.chat_channel.title(bookmark.user),
+          ),
+        bookmarkable_url: bookmark.bookmarkable.url,
+      },
     )
   end
 

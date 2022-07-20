@@ -1,19 +1,16 @@
-
 # frozen_string_literal: true
 
-task 'chat_messages:rebake_uncooked_chat_messages' => :environment do
+task "chat_messages:rebake_uncooked_chat_messages" => :environment do
   # rebaking uncooked chat_messages can very quickly saturate sidekiq
   # this provides an insurance policy so you can safely run and stop
   # this rake task without worrying about your sidekiq imploding
   Jobs.run_immediately!
 
-  ENV['RAILS_DB'] ? rebake_uncooked_chat_messages : rebake_uncooked_chat_messages_all_sites
+  ENV["RAILS_DB"] ? rebake_uncooked_chat_messages : rebake_uncooked_chat_messages_all_sites
 end
 
 def rebake_uncooked_chat_messages_all_sites
-  RailsMultisite::ConnectionManagement.each_connection do |db|
-    rebake_uncooked_chat_messages
-  end
+  RailsMultisite::ConnectionManagement.each_connection { |db| rebake_uncooked_chat_messages }
 end
 
 def rebake_uncooked_chat_messages
@@ -31,9 +28,7 @@ def rebake_uncooked_chat_messages
     # may have been cooked in interim
     chat_message = uncooked.where(id: id).first
 
-    if chat_message
-      rebake_chat_message(chat_message)
-    end
+    rebake_chat_message(chat_message) if chat_message
 
     print_status(rebaked += 1, total)
   end
@@ -42,21 +37,22 @@ def rebake_uncooked_chat_messages
 end
 
 def rebake_chat_message(chat_message, opts = {})
-  if !opts[:priority]
-    opts[:priority] = :ultra_low
-  end
+  opts[:priority] = :ultra_low if !opts[:priority]
   chat_message.rebake!(**opts)
 rescue => e
-  puts "", "Failed to rebake chat message (chat_message_id: #{chat_message.id})", e, e.backtrace.join("\n")
+  puts "",
+       "Failed to rebake chat message (chat_message_id: #{chat_message.id})",
+       e,
+       e.backtrace.join("\n")
 end
 
-task 'chat:make_channel_to_test_archiving', [:user_for_membership] => :environment do |t, args|
+task "chat:make_channel_to_test_archiving", [:user_for_membership] => :environment do |t, args|
   user_for_membership = args[:user_for_membership]
 
   # do not want this running in production!
   return if !Rails.env.development?
 
-  require 'fabrication'
+  require "fabrication"
   Dir[Rails.root.join("spec/fabricators/*.rb")].each { |f| require f }
 
   messages = [
@@ -77,7 +73,7 @@ task 'chat:make_channel_to_test_archiving', [:user_for_membership] => :environme
     "Nullam porttitor leo a leo `cursus`, id hendrerit dui ultrices.",
     "Pellentesque ut @#{user_for_membership} ut ex pulvinar pharetra sit amet ac leo.",
     "Vestibulum sit amet enim et lectus tincidunt rhoncus hendrerit in enim.",
-    <<~MSG
+    <<~MSG,
       some bigger message
 
       ```ruby
@@ -91,11 +87,24 @@ task 'chat:make_channel_to_test_archiving', [:user_for_membership] => :environme
   chat_channel = nil
 
   Topic.transaction do
-    topic = Fabricate(:topic, user: make_test_user, title: "Testing topic for chat archiving #{SecureRandom.hex(4)}")
-    Fabricate(:post, topic: topic, user: topic.user, raw: "This is some cool first post for archive stuff")
-    chat_channel = ChatChannel.create(
-      chatable: topic, chatable_type: "Topic", name: "testing channel for archiving #{SecureRandom.hex(4)}"
+    topic =
+      Fabricate(
+        :topic,
+        user: make_test_user,
+        title: "Testing topic for chat archiving #{SecureRandom.hex(4)}",
+      )
+    Fabricate(
+      :post,
+      topic: topic,
+      user: topic.user,
+      raw: "This is some cool first post for archive stuff",
     )
+    chat_channel =
+      ChatChannel.create(
+        chatable: topic,
+        chatable_type: "Topic",
+        name: "testing channel for archiving #{SecureRandom.hex(4)}",
+      )
   end
 
   puts "topic: #{topic.id}, #{topic.title}"
@@ -120,7 +129,7 @@ task 'chat:make_channel_to_test_archiving', [:user_for_membership] => :environme
       chat_channel: chat_channel,
       last_read_message_id: 0,
       user: User.find_by(username: user_for_membership),
-      following: true
+      following: true,
     )
   end
 

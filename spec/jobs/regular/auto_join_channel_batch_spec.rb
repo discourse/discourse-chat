@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
-require 'rails_helper'
+require "rails_helper"
 
 describe Jobs::AutoJoinChannelBatch do
-  describe '#execute' do
+  describe "#execute" do
     fab!(:category) { Fabricate(:category) }
     let!(:user) { Fabricate(:user, last_seen_at: 15.minutes.ago) }
     let(:channel) { Fabricate(:chat_channel, auto_join_users: true, chatable: category) }
 
-    it 'joins all valid users in the batch' do
+    it "joins all valid users in the batch" do
       subject.execute(chat_channel_id: channel.id, starts_at: user.id, ends_at: user.id)
 
       assert_users_follows_channel(channel, [user])
@@ -47,13 +47,13 @@ describe Jobs::AutoJoinChannelBatch do
       assert_users_follows_channel(channel, [user])
     end
 
-    it 'does nothing if the channel is invalid' do
+    it "does nothing if the channel is invalid" do
       subject.execute(chat_channel_id: -1, starts_at: user.id, ends_at: user.id)
 
       assert_user_skipped(channel, user)
     end
 
-    it 'does nothing if the channel chatable is not a category' do
+    it "does nothing if the channel chatable is not a category" do
       same_id = 99
       another_category = Fabricate(:category, id: same_id)
       dm_channel = Fabricate(:direct_message_channel, id: same_id)
@@ -64,7 +64,7 @@ describe Jobs::AutoJoinChannelBatch do
       assert_user_skipped(channel, user)
     end
 
-    it 'updates the channel user_count' do
+    it "updates the channel user_count" do
       initial_count = channel.user_count
 
       subject.execute(chat_channel_id: channel.id, starts_at: user.id, ends_at: user.id)
@@ -72,7 +72,7 @@ describe Jobs::AutoJoinChannelBatch do
       expect(channel.reload.user_count).to eq(initial_count + 1)
     end
 
-    it 'ignores users without chat_enabled' do
+    it "ignores users without chat_enabled" do
       user.user_option.update!(chat_enabled: false)
 
       subject.execute(chat_channel_id: channel.id, starts_at: user.id, ends_at: user.id)
@@ -80,14 +80,14 @@ describe Jobs::AutoJoinChannelBatch do
       assert_user_skipped(channel, user)
     end
 
-    it 'sets the join reason to automatic' do
+    it "sets the join reason to automatic" do
       subject.execute(chat_channel_id: channel.id, starts_at: user.id, ends_at: user.id)
 
       new_membership = UserChatChannelMembership.find_by(user: user, chat_channel: channel)
       expect(new_membership.automatic?).to eq(true)
     end
 
-    it 'skips anonymous users' do
+    it "skips anonymous users" do
       user_2 = Fabricate(:anonymous)
 
       subject.execute(chat_channel_id: channel.id, starts_at: user.id, ends_at: user_2.id)
@@ -96,7 +96,7 @@ describe Jobs::AutoJoinChannelBatch do
       assert_user_skipped(channel, user_2)
     end
 
-    it 'skips non-active users' do
+    it "skips non-active users" do
       user_2 = Fabricate(:user, active: false, last_seen_at: 15.minutes.ago)
 
       subject.execute(chat_channel_id: channel.id, starts_at: user.id, ends_at: user_2.id)
@@ -105,7 +105,7 @@ describe Jobs::AutoJoinChannelBatch do
       assert_user_skipped(channel, user_2)
     end
 
-    it 'skips staged users' do
+    it "skips staged users" do
       user_2 = Fabricate(:user, staged: true, last_seen_at: 15.minutes.ago)
 
       subject.execute(chat_channel_id: channel.id, starts_at: user.id, ends_at: user_2.id)
@@ -114,7 +114,7 @@ describe Jobs::AutoJoinChannelBatch do
       assert_user_skipped(channel, user_2)
     end
 
-    it 'adds every user in the batch' do
+    it "adds every user in the batch" do
       user_2 = Fabricate(:user, last_seen_at: 15.minutes.ago)
 
       subject.execute(chat_channel_id: channel.id, starts_at: user.id, ends_at: user_2.id)
@@ -122,10 +122,11 @@ describe Jobs::AutoJoinChannelBatch do
       assert_users_follows_channel(channel, [user, user_2])
     end
 
-    it 'publishes a message only to joined users' do
-      messages = MessageBus.track_publish("/chat/new-channel") do
-        subject.execute(chat_channel_id: channel.id, starts_at: user.id, ends_at: user.id)
-      end
+    it "publishes a message only to joined users" do
+      messages =
+        MessageBus.track_publish("/chat/new-channel") do
+          subject.execute(chat_channel_id: channel.id, starts_at: user.id, ends_at: user.id)
+        end
 
       expect(messages.size).to eq(1)
       expect(messages.first.data.dig(:chat_channel, :id)).to eq(channel.id)
@@ -158,7 +159,7 @@ describe Jobs::AutoJoinChannelBatch do
         assert_users_follows_channel(channel, [user])
       end
 
-      it 'joins every user with access to the category' do
+      it "joins every user with access to the category" do
         another_user = Fabricate(:user, last_seen_at: 15.minutes.ago)
         chatters_group.add(another_user)
 

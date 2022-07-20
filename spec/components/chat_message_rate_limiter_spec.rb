@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'rails_helper'
+require "rails_helper"
 
 describe DiscourseChat::ChatMessageRateLimiter do
   fab!(:user) { Fabricate(:user, trust_level: 3) }
@@ -14,9 +14,7 @@ describe DiscourseChat::ChatMessageRateLimiter do
     SiteSetting.chat_auto_silence_duration = 30
   end
 
-  after do
-    limiter.clear!
-  end
+  after { limiter.clear! }
 
   it "does nothing when rate limits are not exceeded" do
     limiter.run!
@@ -29,9 +27,7 @@ describe DiscourseChat::ChatMessageRateLimiter do
       expect(user.reload.silenced?).to be false
     end
 
-    expect {
-      limiter.run!
-    }.to raise_error(RateLimiter::LimitExceeded)
+    expect { limiter.run! }.to raise_error(RateLimiter::LimitExceeded)
 
     expect(user.reload.silenced?).to be true
     expect(user.silenced_till).to be_within(0.1).of(30.minutes.from_now)
@@ -41,9 +37,7 @@ describe DiscourseChat::ChatMessageRateLimiter do
     user.update(trust_level: 0) # Should only be able to run once without hitting limit
     limiter.run!
     expect(user.reload.silenced?).to be false
-    expect {
-      limiter.run!
-    }.to raise_error(RateLimiter::LimitExceeded)
+    expect { limiter.run! }.to raise_error(RateLimiter::LimitExceeded)
     expect(user.reload.silenced?).to be true
   end
 
@@ -61,9 +55,7 @@ describe DiscourseChat::ChatMessageRateLimiter do
     limiter.run!
     expect(user.reload.silenced?).to be false
 
-    expect {
-      limiter.run!
-    }.to raise_error(RateLimiter::LimitExceeded)
+    expect { limiter.run! }.to raise_error(RateLimiter::LimitExceeded)
     expect(user.reload.silenced?).to be false
   end
 
@@ -71,15 +63,12 @@ describe DiscourseChat::ChatMessageRateLimiter do
     SiteSetting.chat_allowed_messages_for_other_trust_levels = 1
     limiter.run!
 
-    expect {
-      limiter.run!
-    }.to raise_error(RateLimiter::LimitExceeded)
-      .and change {
-             UserHistory.where(
-               target_user: user,
-               acting_user: Discourse.system_user,
-               action: UserHistory.actions[:silence_user]
-             ).count
-           }.by(1)
+    expect { limiter.run! }.to raise_error(RateLimiter::LimitExceeded).and change {
+            UserHistory.where(
+              target_user: user,
+              acting_user: Discourse.system_user,
+              action: UserHistory.actions[:silence_user],
+            ).count
+          }.by(1)
   end
 end

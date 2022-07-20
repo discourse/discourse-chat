@@ -8,6 +8,9 @@ class CreateChatMentions < ActiveRecord::Migration[6.1]
       t.timestamps
     end
 
-    add_index :chat_mentions, [:chat_message_id, :user_id, :notification_id], unique: true, name: "chat_mentions_index"
+    add_index :chat_mentions,
+              %i[chat_message_id user_id notification_id],
+              unique: true,
+              name: "chat_mentions_index"
   end
 end

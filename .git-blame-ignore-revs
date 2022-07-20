@@ -1,0 +1,6 @@
+# Only add no-op commits to this file
+# To prevent these commits to show in git blame
+# git config blame.ignoreRevsFile .git-blame-ignore-revs
+
+# DEV: Add syntax_tree code format for ruby
+3f5704c810fb6d424410db8e9f7b524b219785fa

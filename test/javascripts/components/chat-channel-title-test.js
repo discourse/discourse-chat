@@ -92,7 +92,7 @@ discourseModule(
         );
 
         assert.equal(
-          query(".chat-channel-title__name").innerText,
+          query(".chat-channel-title__name").innerText.trim(),
           user.username
         );
       },

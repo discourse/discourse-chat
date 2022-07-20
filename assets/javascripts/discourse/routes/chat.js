@@ -7,27 +7,29 @@ import { schedule } from "@ember/runloop";
 
 export default DiscourseRoute.extend({
   chat: service(),
+  router: service(),
+  fullPageChat: service(),
 
   titleToken() {
     return I18n.t("chat.title_capitalized");
   },
 
-  beforeModel() {
+  beforeModel(transition) {
     if (!this.chat.userCanChat) {
       return this.transitionTo(`discovery.${defaultHomepage()}`);
     }
+
+    this.fullPageChat.enter(transition?.from);
   },
 
   activate() {
-    this.chat.set("fullScreenChatOpen", true);
-
     schedule("afterRender", () => {
       document.body.classList.add("has-full-page-chat");
     });
   },
 
   deactivate() {
-    this.chat.set("fullScreenChatOpen", false);
+    this.fullPageChat.exit();
     this.chat.setActiveChannel(null);
     schedule("afterRender", () => {
       document.body.classList.remove("has-full-page-chat");

@@ -45,10 +45,9 @@ export default Service.extend({
   router: service(),
   sidebarActive: false,
   unreadUrgentCount: null,
-  chatWindowStore: service("chat-window-store"),
+  fullPageChat: service(),
   _chatOpen: false,
   _fetchingChannels: null,
-  _fullScreenChatOpen: false,
 
   init() {
     this._super(...arguments);
@@ -113,19 +112,6 @@ export default Service.extend({
     });
   },
 
-  set chatWindowFullPage(value) {
-    return this.chatWindowStore.set("fullPage", value);
-  },
-
-  get fullScreenChatOpen() {
-    return this._fullScreenChatOpen;
-  },
-
-  set fullScreenChatOpen(status) {
-    this.set("_fullScreenChatOpen", status);
-    this._updatePresence();
-  },
-
   get chatOpen() {
     return this._chatOpen;
   },
@@ -137,7 +123,7 @@ export default Service.extend({
 
   _updatePresence() {
     next(() => {
-      if (this.fullScreenChatOpen || this.chatOpen) {
+      if (this.fullPageChat.isActive || this.chatOpen) {
         this.presenceChannel.enter({ activeOptions: CHAT_ONLINE_OPTIONS });
       } else {
         this.presenceChannel.leave();
@@ -311,7 +297,7 @@ export default Service.extend({
         this.setProperties({
           publicChannels: A(
             this.sortPublicChannels(
-              channels.public_channels.map((channel) =>
+              (channels.public_channels || []).map((channel) =>
                 this.processChannel(channel)
               )
             )
@@ -320,7 +306,7 @@ export default Service.extend({
           // uses a computed property to keep them ordered by `last_message_sent_at`.
           directMessageChannels: A(
             this.sortDirectMessageChannels(
-              channels.direct_message_channels.map((channel) =>
+              (channels.direct_message_channels || []).map((channel) =>
                 this.processChannel(channel)
               )
             )
@@ -462,7 +448,7 @@ export default Service.extend({
       return this.router.transitionTo(
         "chat.channel",
         response.chat_channel.id,
-        response.chat_channel.title,
+        slugifyChannel(response.chat_channel.title),
         { queryParams }
       );
     });
@@ -484,20 +470,13 @@ export default Service.extend({
 
     this.setActiveChannel(channel);
 
-    if (
-      Site.currentProp("mobileView") ||
-      this.chatWindowStore.fullPage ||
-      this.fullScreenChatOpen
-    ) {
+    if (this.fullPageChat.isActive || this.fullPageChat.isPreferred) {
       const queryParams = messageId ? { messageId } : {};
-
       return this.router.transitionTo(
         "chat.channel",
         channel.id,
         slugifyChannel(channel.title),
-        {
-          queryParams,
-        }
+        { queryParams }
       );
     } else {
       this._fireOpenFloatAppEvent(channel, messageId);

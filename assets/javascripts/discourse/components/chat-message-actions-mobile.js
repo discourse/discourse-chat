@@ -1,6 +1,7 @@
 import Component from "@ember/component";
 import { later } from "@ember/runloop";
 import { action } from "@ember/object";
+import { isTesting } from "discourse-common/config/environment";
 
 export default Component.extend({
   tagName: "",
@@ -12,7 +13,7 @@ export default Component.extend({
 
     later(this._addFadeIn);
 
-    if (this.capabilities.canVibrate) {
+    if (this.capabilities.canVibrate && !isTesting()) {
       navigator.vibrate(5);
     }
   },

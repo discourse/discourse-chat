@@ -114,6 +114,9 @@ export default {
             constructor() {
               super(...arguments);
 
+              if (container.isDestroyed) {
+                return;
+              }
               this.chatService = container.lookup("service:chat");
               this.chatService.appEvents.on(
                 "chat:refresh-channels",
@@ -124,6 +127,9 @@ export default {
 
             @bind
             willDestroy() {
+              if (!this.chatService) {
+                return;
+              }
               this.chatService.appEvents.off(
                 "chat:refresh-channels",
                 this._refreshChannels
@@ -324,6 +330,9 @@ export default {
             constructor() {
               super(...arguments);
 
+              if (container.isDestroyed) {
+                return;
+              }
               this.chatService = container.lookup("service:chat");
               this.sidebar.appEvents.on(
                 "chat:refresh-channels",
@@ -334,6 +343,9 @@ export default {
 
             @bind
             willDestroy() {
+              if (container.isDestroyed) {
+                return;
+              }
               this.sidebar.appEvents.off(
                 "chat:refresh-channels",
                 this._refreshPms

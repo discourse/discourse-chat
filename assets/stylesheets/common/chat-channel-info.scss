@@ -2,6 +2,10 @@
   height: var(--full-page-chat-height);
   display: flex;
   flex-direction: column;
+
+  &__back-btn {
+    margin: 1rem 0 0 1rem;
+  }
 }
 
 // Info header
@@ -16,7 +20,6 @@
 .channel-info-header__title {
   font-size: var(--font-up-2);
   margin: 0;
-  padding-left: 1rem;
 }
 
 // About view

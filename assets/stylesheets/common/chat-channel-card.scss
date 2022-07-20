@@ -33,6 +33,7 @@
     right: 0.25rem;
     top: 0.25rem;
     padding: 1rem;
+
     svg {
       fill: var(--primary-medium);
     }
@@ -49,14 +50,17 @@
   }
 
   &__name {
-    display: inline-flex;
+    @include ellipsis;
+  }
+
+  &__name-container {
+    display: flex;
     align-items: center;
     margin-bottom: 0.5rem;
     color: var(--primary);
     font-size: 1.15rem;
     text-decoration: none;
-    padding-right: 1.25rem;
-    @include ellipsis;
+    max-width: 80%;
 
     &:visited,
     &:hover {

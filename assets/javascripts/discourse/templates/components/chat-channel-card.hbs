@@ -21,9 +21,11 @@
       "chat.channel"
       channel.id
       (slugify-channel channel.title)
-      class="chat-channel-card__name"
+      class="chat-channel-card__name-container"
     }}
-      <span>{{replace-emoji channel.title}}</span>
+      <span class="chat-channel-card__name">{{replace-emoji
+          channel.title
+        }}</span>
       {{#if channel.chatable.read_restricted}}
         {{d-icon "lock" class="chat-channel-card__read-restricted"}}
       {{/if}}

@@ -405,3 +405,9 @@ en:
     topic_statuses:
       chat:
         help: "Chat is enabled for this topic"
+    user:
+      allow_private_messages: "Allow other users to send me personal messages and chat direct messages"
+      muted_users_instructions: "Suppress all notifications, personal messages, and chat direct messages from these users."
+      allowed_pm_users_instructions: "Only allow personal messages or chat direct messages from these users."
+      allow_private_messages_from_specific_users: "Only allow specific users to send me personal messages or chat direct messages"
+      ignored_users_instructions: "Suppress all posts, messages, notifications, personal messages, and chat direct messages from these users."

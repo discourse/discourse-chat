@@ -4,9 +4,17 @@ class ChatChannelMembershipsQuery
   def self.call(channel, limit: 50, offset: 0, username: nil)
     query =
       UserChatChannelMembership
-        .includes(:user)
+        .joins(:user)
         .where(user: User.activated.not_suspended.not_staged)
         .where(chat_channel: channel, following: true)
+
+    if channel.category_channel? && channel.allowed_group_ids
+      query =
+        query.joins(user: :group_users).where(
+          "group_users.group_id IN (?)",
+          channel.allowed_group_ids,
+        )
+    end
 
     if username.present?
       if SiteSetting.prioritize_username_in_ux || !SiteSetting.enable_names

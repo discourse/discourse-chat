@@ -1,5 +1,7 @@
 import { cloneJSON, deepMerge } from "discourse-common/lib/object";
+
 export const messageContents = ["Hello world", "What up", "heyo!"];
+
 export const siteChannel = {
   chat_channel: {
     chatable: null,
@@ -12,6 +14,7 @@ export const siteChannel = {
     muted: false,
   },
 };
+
 export const directMessageChannels = [
   {
     chat_channel: {
@@ -59,7 +62,7 @@ const chatables = {
   },
   8: {
     id: 8,
-    name: "Pulic category",
+    name: "Public category",
     slug: "public_category",
     posts_count: 1,
   },
@@ -202,7 +205,7 @@ const message1 = {
       short_url: "upload://vYozObYao54I6G3x8wvOf73epfX.pdf",
       thumbnail_height: null,
       thumbnail_width: null,
-      url: "//localhost:3000/uploads/default/original/1X/e0172973d7eff927b875995eb86b162da961b9e1.pdf",
+      url: "/images/avatar.png",
       width: null,
     },
   ],
@@ -235,7 +238,7 @@ const message2 = {
       short_url: "upload://2LbadI7uOM7JsXyVoc12dHUjJYo.png",
       thumbnail_height: 224,
       thumbnail_width: 689,
-      url: "//testbucket.s3.dualstack.us-east-2.amazonaws.com/original/1X/f1095d89269ff22e1818cf54b73e857261851019.jpeg",
+      url: "/images/avatar.png",
       width: 1209,
     },
   ],

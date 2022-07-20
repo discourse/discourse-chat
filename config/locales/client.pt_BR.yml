@@ -25,12 +25,6 @@ pt_BR:
       deleted: "Uma mensagem foi excluída. [view]"
       delete: "Excluir"
       edited: "editou"
-      empty_state:
-        create_personal_chat: "Iniciar um chat pessoal"
-        no_public_available: "Não há canais públicos disponíveis para você seguir neste momento."
-        public_available: "Há canais públicos disponíveis para você seguir."
-        start_direct_message: "Você também pode iniciar um chat pessoal com um(as) ou mais usuários(as)."
-        title: "Comece entrando em um canal"
       enable: "Ativar chat"
       flag: "Sinalizar"
       flagged: "Esta mensagem foi sinalizada para revisão"

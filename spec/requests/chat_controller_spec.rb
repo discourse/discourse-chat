@@ -728,7 +728,7 @@ RSpec.describe DiscourseChat::ChatController do
 
     fab!(:private_chat_channel) { Fabricate(:chat_channel, chatable: Fabricate(:private_category, group: Fabricate(:group))) }
     fab!(:private_chat_message) { Fabricate(:chat_message, chat_channel: private_chat_channel, user: admin) }
-    fab!(:priate_user_membership) { Fabricate(:user_chat_channel_membership, chat_channel: private_chat_channel, user: user) }
+    fab!(:private_user_membership) { Fabricate(:user_chat_channel_membership, chat_channel: private_chat_channel, user: user) }
 
     fab!(:chat_channel_no_memberships) { Fabricate(:chat_channel) }
     fab!(:chat_message_no_memberships) { Fabricate(:chat_message, chat_channel: chat_channel_no_memberships, user: user) }

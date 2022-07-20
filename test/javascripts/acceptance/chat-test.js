@@ -13,6 +13,7 @@ import {
   click,
   currentURL,
   fillIn,
+  focus,
   settled,
   triggerEvent,
   triggerKeyEvent,
@@ -36,7 +37,7 @@ import {
 import User from "discourse/models/user";
 import selectKit from "discourse/tests/helpers/select-kit-helper";
 import sinon from "sinon";
-import * as ajaxlib from "discourse/lib/ajax";
+import * as ajaxModule from "discourse/lib/ajax";
 import I18n from "I18n";
 import { CHANNEL_STATUSES } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 
@@ -198,8 +199,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
       username: "hawk",
       id: 2,
       name: "hawk",
-      avatar_template:
-        "https://avatars.discourse.org/v3/letter/t/41988e/{size}.png",
+      avatar_template: "/letter_avatar_proxy/v4/letter/t/41988e/{size}.png",
     };
     server.get("/u/search/users", () => {
       return helper.response({
@@ -594,7 +594,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     );
     await focus(composerInput);
 
-    await triggerKeyEvent(composerInput, "keydown", 13); // 13 is enter keycode
+    await triggerKeyEvent(composerInput, "keydown", "Enter");
 
     assert.equal(composerInput.innerText.trim(), "", "composer input cleared");
 
@@ -654,7 +654,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     const nextMessageContent = "What up what up!";
     await fillIn(composerInput, nextMessageContent);
     await focus(composerInput);
-    await triggerKeyEvent(composerInput, "keydown", 13); // 13 is enter keycode
+    await triggerKeyEvent(composerInput, "keydown", "Enter");
 
     messages = queryAll(".chat-message");
     lastMessage = messages[messages.length - 1];
@@ -705,7 +705,7 @@ Widget.triangulate(arg: "test")
     const composerInput = query(".chat-composer-input");
     await fillIn(composerInput, messageContent);
     await focus(composerInput);
-    await triggerKeyEvent(composerInput, "keydown", 13); // 13 is enter keycode
+    await triggerKeyEvent(composerInput, "keydown", "Enter");
 
     publishToMessageBus("/chat/11", {
       type: "sent",
@@ -754,7 +754,7 @@ Widget.triangulate(arg: "test")
     // Send a message
     const composerTextarea = query(".chat-composer-input");
     await focus(composerTextarea);
-    await triggerKeyEvent(composerTextarea, "keydown", 13); // 13 is enter keycode
+    await triggerKeyEvent(composerTextarea, "keydown", "Enter");
 
     assert.equal(query(".chat-composer-input").value.trim(), "");
 
@@ -773,7 +773,7 @@ Widget.triangulate(arg: "test")
     await dropdown.selectRowByValue("edit");
 
     assert.ok(exists(".chat-composer-message-details"));
-    await triggerKeyEvent(".chat-composer", "keydown", 27); // 27 is escape
+    await triggerKeyEvent(".chat-composer", "keydown", "Escape");
 
     // chat-composer-message-details will be gone as no message is being edited
     assert.notOk(exists(".chat-composer .chat-composer-message-details"));
@@ -994,7 +994,8 @@ Widget.triangulate(arg: "test")
     const composerInput = query(".chat-composer-input");
     await fillIn(composerInput, "hellloooo");
     await focus(composerInput);
-    await triggerKeyEvent(composerInput, "keydown", 13); // 13 is enter keycode. Send message
+    await triggerKeyEvent(composerInput, "keydown", "Enter");
+
     const messages = queryAll(".chat-message-container");
     const lastMessage = messages[messages.length - 1];
     publishToMessageBus("/chat/11", {
@@ -1100,7 +1101,7 @@ Widget.triangulate(arg: "test")
     assert.equal(document.activeElement, composer);
 
     document.activeElement.blur();
-    await triggerKeyEvent(document.body, "keydown", 191); // 191 is ?
+    await triggerKeyEvent(document.body, "keydown", 191); // 191 is `?`
     assert.notEqual(
       document.activeElement,
       composer,
@@ -1108,7 +1109,7 @@ Widget.triangulate(arg: "test")
     );
 
     document.activeElement.blur();
-    await triggerKeyEvent(document.body, "keydown", 13); // 13 is `Enter` keycode
+    await triggerKeyEvent(document.body, "keydown", "Enter");
     assert.notEqual(
       document.activeElement,
       composer,
@@ -1473,7 +1474,7 @@ acceptance("Discourse Chat - chat preferences", function (needs) {
 
   test("The user can save the settings", async function (assert) {
     updateCurrentUser({ has_chat_enabled: false });
-    const spy = sinon.spy(ajaxlib, "ajax");
+    const spy = sinon.spy(ajaxModule, "ajax");
     await visit("/u/eviltrout/preferences/chat");
     await click("#user_chat_enabled");
     await click("#user_chat_only_push_notifications");
@@ -1567,11 +1568,11 @@ acceptance("Discourse Chat - image uploads", function (needs) {
           id: 202,
           original_filename: "avatar.PNG.jpg",
           retain_hours: null,
-          short_path: "/uploads/short-url/yoj8pf9DdIeHRRULyw7i57GAYdz.jpeg",
+          short_path: "/images/avatar.png",
           short_url: "upload://yoj8pf9DdIeHRRULyw7i57GAYdz.jpeg",
           thumbnail_height: 320,
           thumbnail_width: 690,
-          url: "//testbucket.s3.dualstack.us-east-2.amazonaws.com/original/1X/f1095d89269ff22e1818cf54b73e857261851019.jpeg",
+          url: "/images/avatar.png",
           width: 1920,
         });
       },

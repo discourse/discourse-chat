@@ -105,12 +105,12 @@ discourseModule(
           type: ".png",
           original_filename: "bar_image.png",
           extension: "png",
-          short_path: "/my-image.png",
+          short_path: "/images/avatar.png",
         });
       },
 
       async test(assert) {
-        assert.ok(exists("img.preview-img[src='/my-image.png']"));
+        assert.ok(exists("img.preview-img[src='/images/avatar.png']"));
         assert.strictEqual(
           query(".file-name").innerText.trim(),
           "bar_image.png"
@@ -133,7 +133,7 @@ discourseModule(
           type: ".png",
           original_filename: "bar_image.png",
           extension: "png",
-          short_path: "/my-image.png",
+          short_path: "/images/avatar.png",
         });
       },
 
@@ -157,7 +157,7 @@ discourseModule(
           type: ".png",
           original_filename: "bar_image.png",
           extension: "png",
-          short_path: "/my-image.png",
+          short_path: "/images/avatar.png",
         });
       },
 

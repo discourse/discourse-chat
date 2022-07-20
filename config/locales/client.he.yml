@@ -42,11 +42,7 @@ he:
         title: "הגדרות ערוץ"
         edit: "עריכה"
         add: "הוספה"
-        close_channel: "סגירת ערוץ"
-        open_channel: "פתיחת ערוץ"
-        archive_channel: "העברת ערוץ לארכיון"
-        delete_channel: "מחיקת ערוץ"
-        join_channel: "הצטרפות לערוץ"
+        join_channel: "הצטרפות"
         leave_channel: "יציאה מהערוץ"
       channel_archive:
         title: "העברת ערוץ לארכיון"
@@ -75,12 +71,12 @@ he:
       deleted: "הודעה נמחקה. [צפייה]"
       delete: "מחיקה"
       edited: "נערך"
+      muted: "מושתק"
+      joined: "הצטרפת"
       empty_state:
-        create_personal_chat: "התחלת צ׳אט אישי"
-        no_public_available: "אין ערוצים ציבוריים שזמינים למעקב על ידיך כרגע."
-        public_available: "יש ערוצים ציבוריים שזמינים למעקב על ידיך."
-        start_direct_message: "אפשר לפתוח בצ׳אט אישי עם משתמש אחד או יותר."
-        title: "אפשר להתחיל על ידי הצטרפות לערוץ"
+        direct_message_cta: "התחלת צ׳אט אישי"
+        direct_message: "אפשר לפתוח בצ׳אט אישי עם משתמש אחד או יותר."
+        title: "לא נמצאו ערוצים"
       email_frequency:
         description: "נשלח לך דוא״ל אם לא ראינו אותך ב־15 הדקות האחרונות."
         never: "לעולם לא"
@@ -175,6 +171,13 @@ he:
         closed: "סגור"
         open_header: "הערוץ פתוח"
         open: "פתוח"
+      browse:
+        title: ערוצים
+        filter_all: הכול
+        filter_open: נפתחו
+        filter_closed: נסגרו
+        filter_archived: בארכיון
+        filter_input_placeholder: חיפוש ערוץ לפי שם
       chat_message_separator:
         today: היום
         yesterday: אתמול
@@ -215,17 +218,18 @@ he:
           many: "%{count} חברים"
           other: "%{count} חברים"
       create_channel:
+        auto_join_users:
+          public_category_warning: "%{category} היא קטגוריה ציבורית. להוסיף כל משתמש לערוץ הזה אוטומטית?"
         choose_category:
           label: "נא לבחור קטגוריה"
           none: "נא לבחור אחד…"
           default_hint: ניתן לנהל את הגישה באמצעות ביקור ב<a href=%{link} target="_blank">הגדרות האבטחה של %{category}</a>
-          public_category_hint: "%{category} היא קטגוריה ציבורית. לכולם תהיה גישה לערוץ הזה."
-          hint_single: למשתמשים ב־%{hint_1} תהיה גישה לערוץ בהתאם ל<a href=%{link} target="_blank">הגדרות האבטחה</a>
-          hint_multiple:
-            one: למשתמשים ב־%{hint_1} וב־%{hint_2} תהיה גישה לערוץ בהתאם ל<a href=%{link} target="_blank">הגדרות האבטחה</a>
-            two: למשתמשים ב־%{hint_1} וב־%{count} קבוצות נוספות תהיה גישה לערוץ בהתאם ל<a href=%{link} target="_blank">הגדרות האבטחה</a>
-            many: למשתמשים ב־%{hint_1} וב־%{count} קבוצות נוספות תהיה גישה לערוץ בהתאם ל<a href=%{link} target="_blank">הגדרות האבטחה</a>
-            other: למשתמשים ב־%{hint_1} וב־%{count} קבוצות נוספות תהיה גישה לערוץ בהתאם ל<a href=%{link} target="_blank">הגדרות האבטחה</a>
+          hint_groups:
+            one: למשתמשים ב־%{hint_1} תהיה גישה לערוץ בהתאם ל<a href=%{link} target="_blank">הגדרות האבטחה</a>
+            two: למשתמשים ב־%{hint_1} וב־%{hint_2} תהיה גישה לערוץ בהתאם ל<a href=%{link} target="_blank">הגדרות האבטחה</a>
+            many: למשתמשים ב־%{hint_1} וב־%{hint_2} תהיה גישה לערוץ בהתאם ל<a href=%{link} target="_blank">הגדרות האבטחה</a>
+            other: למשתמשים ב־%{hint_1} וב־%{hint_2} תהיה גישה לערוץ בהתאם ל<a href=%{link} target="_blank">הגדרות האבטחה</a>
+          hint_multiple_groups: למשתמשים ב־%{hint_1} וב־%{count} קבוצות נוספות תהיה גישה לערוץ בהתאם ל<a href=%{link} target="_blank">הגדרות האבטחה</a>
         create: "יצירת ערוץ"
         description: "תיאור (רשות)"
         name: "שם הערוץ"
@@ -255,6 +259,9 @@ he:
         mention: "רק אזכורים"
         always: "לכל פעילות"
       settings:
+        enable_auto_join_users: "להוסיף אוטומטית את כל המשתמשים החדשים והקיימים"
+        disable_auto_join_users: "להפסיק להוסיף משתמשים חדשים אוטומטית"
+        auto_join_users_warning: "כל משתמש שאינו חבר בערוץ הזה ויש לו גישה לקטגוריה %{category} יצטרף. זה בסדר?"
         desktop_notification_level: "התראות שולחן עבודה"
         follow: "הצטרפות"
         followed: "הצטרפות"

@@ -108,8 +108,7 @@ discourseModule(
           id: 2,
           username: "joffrey",
           name: null,
-          avatar_template:
-            "https://avatars.discourse.org/v3/letter/t/31188e/{size}.png",
+          avatar_template: "/letter_avatar_proxy/v3/letter/t/31188e/{size}.png",
         });
 
         this.set("channel", channel);

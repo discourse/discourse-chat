@@ -7,7 +7,7 @@ export default Component.extend({
   messageActions: null,
 
   @action
-  handlesecondaryButtons(id) {
+  handleSecondaryButtons(id) {
     this.messageActions?.[id]?.();
   },
 });

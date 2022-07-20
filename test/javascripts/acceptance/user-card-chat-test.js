@@ -46,7 +46,7 @@ acceptance("Discourse Chat - User card test", function (needs) {
                 id: 2,
                 name: "hawk",
                 avatar_template:
-                  "https://avatars.discourse.org/v3/letter/t/41988e/{size}.png",
+                  "/letter_avatar_proxy/v3/letter/t/41988e/{size}.png",
               },
             ],
           },

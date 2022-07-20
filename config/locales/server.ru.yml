@@ -98,6 +98,8 @@ ru:
         single_user: "%{user}"
         multi_user: "%{users}"
         multi_user_truncated: "%{users} и ещё %{leftover}"
+      default_titles:
+        site_feedback: "Общий"
     bookmarkable:
       notification_title: "Сообщение в канале %{channel_name}"
     personal_chat: "личный чат"

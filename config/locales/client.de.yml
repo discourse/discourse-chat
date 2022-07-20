@@ -25,12 +25,6 @@ de:
       deleted: "Eine Nachricht wurde gelöscht. [Anzeigen]"
       delete: "Löschen"
       edited: "bearbeitet"
-      empty_state:
-        create_personal_chat: "Persönlichen Chat beginnen"
-        no_public_available: "Zurzeit gibt es keine öffentlichen Kanäle, denen du folgen kannst."
-        public_available: "Es gibt öffentliche Kanäle, denen du folgen kannst."
-        start_direct_message: "Du kannst auch einen persönlichen Chat mit einem oder mehreren Benutzern beginnen."
-        title: "Beginne, indem du einem Kanal beitrittst"
       enable: "Chat aktivieren"
       flag: "Melden"
       flagged: "Diese Nachricht wurde zur Überprüfung markiert"

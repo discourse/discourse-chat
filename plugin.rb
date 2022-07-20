@@ -140,6 +140,7 @@ after_initialize do
   load File.expand_path('../lib/chat_message_reactor.rb', __FILE__)
   load File.expand_path('../lib/chat_notifier.rb', __FILE__)
   load File.expand_path('../lib/chat_seeder.rb', __FILE__)
+  load File.expand_path('../lib/chat_statistics.rb', __FILE__)
   load File.expand_path('../lib/chat_transcript_service.rb', __FILE__)
   load File.expand_path('../lib/duplicate_message_validator.rb', __FILE__)
   load File.expand_path('../lib/message_mover.rb', __FILE__)
@@ -649,6 +650,18 @@ after_initialize do
   if respond_to?(:register_email_unsubscriber)
     load File.expand_path('../lib/email_controller_helper/chat_summary_unsubscriber.rb', __FILE__)
     register_email_unsubscriber('chat_summary', EmailControllerHelper::ChatSummaryUnsubscriber)
+  end
+
+  register_about_stat_group("chat_messages", show_in_ui: true) do
+    DiscourseChat::Statistics.about_messages
+  end
+
+  register_about_stat_group("chat_channels") do
+    DiscourseChat::Statistics.about_channels
+  end
+
+  register_about_stat_group("chat_users") do
+    DiscourseChat::Statistics.about_users
   end
 end
 

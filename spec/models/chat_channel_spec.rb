@@ -282,7 +282,7 @@ describe ChatChannel do
       private_category_channel.reload
     end
 
-    it 'updates the membership for the user and decreates the count' do
+    it 'updates the membership for the user and decreases the count' do
       initial_count = private_category_channel.user_count
 
       membership = private_category_channel.remove(user1)

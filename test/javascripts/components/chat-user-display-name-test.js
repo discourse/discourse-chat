@@ -4,7 +4,7 @@ import componentTest, {
 import { discourseModule, query } from "discourse/tests/helpers/qunit-helpers";
 import hbs from "htmlbars-inline-precompile";
 
-function displayname() {
+function displayName() {
   return query(".chat-user-display-name").innerText.trim();
 }
 
@@ -22,7 +22,7 @@ discourseModule(
       },
 
       async test(assert) {
-        assert.equal(displayname(), "bob");
+        assert.equal(displayName(), "bob");
       },
     });
 
@@ -35,7 +35,7 @@ discourseModule(
       },
 
       async test(assert) {
-        assert.equal(displayname(), "bob — Bobcat");
+        assert.equal(displayName(), "bob — Bobcat");
       },
     });
   }
@@ -55,7 +55,7 @@ discourseModule(
       },
 
       async test(assert) {
-        assert.equal(displayname(), "bob");
+        assert.equal(displayName(), "bob");
       },
     });
 
@@ -68,7 +68,7 @@ discourseModule(
       },
 
       async test(assert) {
-        assert.equal(displayname(), "Bobcat — bob");
+        assert.equal(displayName(), "Bobcat — bob");
       },
     });
   }

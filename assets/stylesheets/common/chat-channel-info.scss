@@ -1,7 +1,11 @@
 .channel-info {
   display: flex;
   flex-direction: column;
-  height: 100%;
+
+  &__back-btn {
+    font-size: var(--font-down-1);
+    margin: 0 0 1rem 0;
+  }
 }
 
 // Info header
@@ -11,10 +15,11 @@
   align-items: flex-start;
   padding: 1rem;
   box-sizing: border-box;
+}
 
-  &__actions .btn-flat {
-    margin-right: -0.65em; //correcting alignment to offset padding
-  }
+.channel-info__back-btn {
+  margin-bottom: 1rem;
+  display: block;
 }
 
 .channel-info-header__title {

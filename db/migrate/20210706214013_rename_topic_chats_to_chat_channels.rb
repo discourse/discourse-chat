@@ -15,7 +15,7 @@ class RenameTopicChatsToChatChannels < ActiveRecord::Migration[6.1]
       change_column :chat_channels, :chatable_id, :integer, unique: false
       add_column :chat_channels, :chatable_type, :string
       change_column_null :chat_channels, :chatable_type, false
-      add_index :chat_channels, [:chatable_id, :chatable_type]
+      add_index :chat_channels, %i[chatable_id chatable_type]
 
       # topic_chat_messages table changes
       rename_table :topic_chat_messages, :chat_messages

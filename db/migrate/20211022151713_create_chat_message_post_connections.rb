@@ -8,8 +8,8 @@ class CreateChatMessagePostConnections < ActiveRecord::Migration[6.1]
     end
 
     add_index :chat_message_post_connections,
-      [:post_id, :chat_message_id],
-      unique: true,
-      name: "chat_message_post_connections_index"
+              %i[post_id chat_message_id],
+              unique: true,
+              name: "chat_message_post_connections_index"
   end
 end

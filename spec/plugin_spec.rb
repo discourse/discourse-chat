@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'rails_helper'
+require "rails_helper"
 
-describe 'discourse-chat' do
+describe "discourse-chat" do
   before do
     SiteSetting.clean_up_uploads = true
     SiteSetting.clean_orphan_uploads_grace_period_hours = 1
@@ -10,7 +10,7 @@ describe 'discourse-chat' do
     SiteSetting.chat_enabled = true
   end
 
-  describe 'register_upload_unused' do
+  describe "register_upload_unused" do
     fab!(:chat_channel) { Fabricate(:chat_channel, chatable: Fabricate(:category)) }
     fab!(:user) { Fabricate(:user) }
     fab!(:upload) { Fabricate(:upload, user: user, created_at: 1.month.ago) }
@@ -22,11 +22,11 @@ describe 'discourse-chat' do
         user: user,
         in_reply_to_id: nil,
         content: "Hello world!",
-        upload_ids: [upload.id]
+        upload_ids: [upload.id],
       )
     end
 
-    it 'marks uploads with ChatUpload in use' do
+    it "marks uploads with ChatUpload in use" do
       unused_upload
 
       expect { Jobs::CleanUpUploads.new.execute({}) }.to change { Upload.count }.by(-1)
@@ -35,7 +35,7 @@ describe 'discourse-chat' do
     end
   end
 
-  describe 'register_upload_in_use' do
+  describe "register_upload_in_use" do
     fab!(:chat_channel) { Fabricate(:chat_channel, chatable: Fabricate(:category)) }
     fab!(:user) { Fabricate(:user) }
     fab!(:message_upload) { Fabricate(:upload, user: user, created_at: 1.month.ago) }
@@ -48,7 +48,7 @@ describe 'discourse-chat' do
         user: user,
         in_reply_to_id: nil,
         content: "Hello world! #{message_upload.sha1}",
-        upload_ids: []
+        upload_ids: [],
       )
     end
 
@@ -56,11 +56,12 @@ describe 'discourse-chat' do
       ChatDraft.create!(
         user: user,
         chat_channel: chat_channel,
-        data: "{\"value\":\"hello world \",\"uploads\":[\"#{draft_upload.sha1}\"],\"replyToMsg\":null}"
+        data:
+          "{\"value\":\"hello world \",\"uploads\":[\"#{draft_upload.sha1}\"],\"replyToMsg\":null}",
       )
     end
 
-    it 'marks uploads with ChatUpload in use' do
+    it "marks uploads with ChatUpload in use" do
       draft_upload
       unused_upload
 
@@ -79,9 +80,7 @@ describe 'discourse-chat' do
     fab!(:group) { Fabricate(:group) }
 
     context "when chat enabled" do
-      before do
-        SiteSetting.chat_enabled = true
-      end
+      before { SiteSetting.chat_enabled = true }
 
       it "returns true if the target user and the guardian user is in the DiscourseChat.allowed_group_ids" do
         SiteSetting.chat_allowed_groups = group.id
@@ -120,9 +119,7 @@ describe 'discourse-chat' do
     end
 
     context "when chat not enabled" do
-      before do
-        SiteSetting.chat_enabled = false
-      end
+      before { SiteSetting.chat_enabled = false }
 
       it "returns false" do
         expect(serializer.can_chat_user).to eq(false)
@@ -143,7 +140,7 @@ describe 'discourse-chat' do
         user: user,
         in_reply_to_id: nil,
         content: "Hello world!",
-        upload_ids: []
+        upload_ids: [],
       ).chat_message
     end
 
@@ -158,10 +155,13 @@ describe 'discourse-chat' do
       end
 
       it "renders messages" do
-        results = InlineOneboxer.new(["#{chat_url}?messageId=#{chat_message.id}"], skip_cache: true).process
+        results =
+          InlineOneboxer.new(["#{chat_url}?messageId=#{chat_message.id}"], skip_cache: true).process
         expect(results).to be_present
         expect(results[0][:url]).to eq("#{chat_url}?messageId=#{chat_message.id}")
-        expect(results[0][:title]).to eq("Message ##{chat_message.id} by #{chat_message.user.username} – ##{chat_channel.name}")
+        expect(results[0][:title]).to eq(
+          "Message ##{chat_message.id} by #{chat_message.user.username} – ##{chat_channel.name}",
+        )
       end
     end
 
@@ -187,7 +187,7 @@ describe 'discourse-chat' do
               <div class="chat-onebox-members-count">1 member</div>
               <div class="chat-onebox-members">
                <a class="trigger-user-card" data-user-card="#{user.username}" aria-hidden="true" tabindex="-1">
-                 <img loading="lazy" alt="#{user.username}" width="30" height="30" src="#{user.avatar_template_url.gsub('{size}', '60')}" class="avatar">
+                 <img loading="lazy" alt="#{user.username}" width="30" height="30" src="#{user.avatar_template_url.gsub("{size}", "60")}" class="avatar">
                </a>
               </div>
             </article>
@@ -223,7 +223,7 @@ describe 'discourse-chat' do
     end
   end
 
-  describe 'auto-joining users to a channel' do
+  describe "auto-joining users to a channel" do
     fab!(:chatters_group) { Fabricate(:group) }
     fab!(:user) { Fabricate(:user, last_seen_at: 15.minutes.ago) }
     let!(:channel) { Fabricate(:chat_channel, auto_join_users: true, chatable: category) }
@@ -236,33 +236,33 @@ describe 'discourse-chat' do
       following ? (expect(membership.following).to eq(true)) : (expect(membership).to be_nil)
     end
 
-    describe 'when a user is added to a group with access to a channel through a category' do
+    describe "when a user is added to a group with access to a channel through a category" do
       let!(:category) { Fabricate(:private_category, group: chatters_group) }
 
-      it 'joins the user to the channel if auto-join is enabled' do
+      it "joins the user to the channel if auto-join is enabled" do
         chatters_group.add(user)
 
         assert_user_following_state(user, channel, following: true)
       end
 
-      it 'does nothing if auto-join is disabled' do
+      it "does nothing if auto-join is disabled" do
         channel.update!(auto_join_users: false)
 
         assert_user_following_state(user, channel, following: false)
       end
     end
 
-    describe 'when a user is created' do
+    describe "when a user is created" do
       fab!(:category) { Fabricate(:category) }
       let(:user) { Fabricate.build(:user) }
 
-      it 'queues a job to auto-join the user' do
+      it "queues a job to auto-join the user" do
         user.save!
 
         assert_user_following_state(user, channel, following: true)
       end
 
-      it 'does nothing if auto-join is disabled' do
+      it "does nothing if auto-join is disabled" do
         channel.update!(auto_join_users: false)
 
         user.save!
@@ -271,15 +271,15 @@ describe 'discourse-chat' do
       end
     end
 
-    describe 'when category permissions change' do
+    describe "when category permissions change" do
       fab!(:category) { Fabricate(:category) }
 
       let(:chatters_group_permission) do
         { chatters_group.name => CategoryGroup.permission_types[:full] }
       end
 
-      describe 'given permissions to a new group' do
-        it 'adds the user to the channel' do
+      describe "given permissions to a new group" do
+        it "adds the user to the channel" do
           chatters_group.add(user)
 
           category.update!(permissions: chatters_group_permission)
@@ -287,7 +287,7 @@ describe 'discourse-chat' do
           assert_user_following_state(user, channel, following: true)
         end
 
-        it 'does nothing if there is no channel for the category' do
+        it "does nothing if there is no channel for the category" do
           another_category = Fabricate(:category)
 
           another_category.update!(permissions: chatters_group_permission)

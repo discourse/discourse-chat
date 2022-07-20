@@ -1,15 +1,15 @@
 # frozen_string_literal: true
 
-require 'rails_helper'
+require "rails_helper"
 
 describe EmailController do
-  describe 'unsubscribing from chat email settings' do
+  describe "unsubscribing from chat email settings" do
     fab!(:user) { Fabricate(:user) }
 
-    it 'updates an user chat summary frequency' do
+    it "updates an user chat summary frequency" do
       SiteSetting.chat_enabled = true
-      never_freq = 'never'
-      key = UnsubscribeKey.create_key_for(user, 'chat_summary')
+      never_freq = "never"
+      key = UnsubscribeKey.create_key_for(user, "chat_summary")
       user.user_option.when_away!
 
       post "/email/unsubscribe/#{key}.json", params: { chat_email_frequency: never_freq }

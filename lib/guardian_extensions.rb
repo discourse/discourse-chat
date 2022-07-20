@@ -114,9 +114,11 @@ module DiscourseChat::GuardianExtensions
     return false if @user.silenced?
     return false if !can_modify_channel_message?(message.chat_channel)
 
-    message.user_id == current_user.id ?
-      can_delete_own_chats?(chatable) :
+    if message.user_id == current_user.id
+      can_delete_own_chats?(chatable)
+    else
       can_delete_other_chats?(chatable)
+    end
   end
 
   def can_delete_own_chats?(chatable)
@@ -135,9 +137,11 @@ module DiscourseChat::GuardianExtensions
   def can_restore_chat?(message, chatable)
     return false if !can_modify_channel_message?(message.chat_channel)
 
-    message.user_id == current_user.id ?
-      can_restore_own_chats?(chatable) :
+    if message.user_id == current_user.id
+      can_restore_own_chats?(chatable)
+    else
       can_delete_other_chats?(chatable)
+    end
   end
 
   def can_restore_own_chats?(chatable)

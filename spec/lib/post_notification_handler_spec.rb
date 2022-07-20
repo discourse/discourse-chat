@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'rails_helper'
+require "rails_helper"
 
 describe DiscourseChat::PostNotificationHandler do
   let(:acting_user) { Fabricate(:user) }
@@ -10,23 +10,17 @@ describe DiscourseChat::PostNotificationHandler do
 
   fab!(:channel) { Fabricate(:chat_channel) }
   fab!(:message1) do
-    Fabricate(
-      :chat_message,
-      chat_channel: channel,
-      message: "hey this is the first message :)"
-    )
+    Fabricate(:chat_message, chat_channel: channel, message: "hey this is the first message :)")
   end
   fab!(:message2) do
     Fabricate(
       :chat_message,
       chat_channel: channel,
-      message: "our true enemy. has yet. to reveal himself."
+      message: "our true enemy. has yet. to reveal himself.",
     )
   end
 
-  before do
-    Notification.destroy_all
-  end
+  before { Notification.destroy_all }
 
   def expect_no_notification
     return_val = nil
@@ -35,7 +29,8 @@ describe DiscourseChat::PostNotificationHandler do
   end
 
   def update_post_with_chat_quote(messages)
-    quote_markdown = ChatTranscriptService.new(channel, acting_user, messages_or_ids: messages).generate_markdown
+    quote_markdown =
+      ChatTranscriptService.new(channel, acting_user, messages_or_ids: messages).generate_markdown
     post.update!(raw: post.raw + "\n\n" + quote_markdown)
   end
 
@@ -57,15 +52,30 @@ describe DiscourseChat::PostNotificationHandler do
   it "sends notifications to all of the quoted users" do
     update_post_with_chat_quote([message1, message2])
     subject.handle
-    expect(Notification.where(user: message1.user, notification_type: Notification.types[:chat_quoted]).count).to eq(1)
-    expect(Notification.where(user: message2.user, notification_type: Notification.types[:chat_quoted]).count).to eq(1)
+    expect(
+      Notification.where(
+        user: message1.user,
+        notification_type: Notification.types[:chat_quoted],
+      ).count,
+    ).to eq(1)
+    expect(
+      Notification.where(
+        user: message2.user,
+        notification_type: Notification.types[:chat_quoted],
+      ).count,
+    ).to eq(1)
   end
 
   it "does not send the same chat_quoted notification twice to the same post and user" do
     update_post_with_chat_quote([message1, message2])
     subject.handle
     subject.handle
-    expect(Notification.where(user: message1.user, notification_type: Notification.types[:chat_quoted]).count).to eq(1)
+    expect(
+      Notification.where(
+        user: message1.user,
+        notification_type: Notification.types[:chat_quoted],
+      ).count,
+    ).to eq(1)
   end
 
   it "does not send a notification if the user has got a reply notification to the quoted user for the same post" do
@@ -75,10 +85,15 @@ describe DiscourseChat::PostNotificationHandler do
       notification_type: Notification.types[:replied],
       post_number: post.post_number,
       topic: post.topic,
-      user: message1.user
+      user: message1.user,
     )
     subject.handle
-    expect(Notification.where(user: message1.user, notification_type: Notification.types[:chat_quoted]).count).to eq(0)
+    expect(
+      Notification.where(
+        user: message1.user,
+        notification_type: Notification.types[:chat_quoted],
+      ).count,
+    ).to eq(0)
   end
 
   context "when some users have already been notified for the post" do
@@ -87,8 +102,18 @@ describe DiscourseChat::PostNotificationHandler do
     it "does not send notifications to those users" do
       update_post_with_chat_quote([message1, message2])
       subject.handle
-      expect(Notification.where(user: message1.user, notification_type: Notification.types[:chat_quoted]).count).to eq(0)
-      expect(Notification.where(user: message2.user, notification_type: Notification.types[:chat_quoted]).count).to eq(1)
+      expect(
+        Notification.where(
+          user: message1.user,
+          notification_type: Notification.types[:chat_quoted],
+        ).count,
+      ).to eq(0)
+      expect(
+        Notification.where(
+          user: message2.user,
+          notification_type: Notification.types[:chat_quoted],
+        ).count,
+      ).to eq(1)
     end
   end
 end

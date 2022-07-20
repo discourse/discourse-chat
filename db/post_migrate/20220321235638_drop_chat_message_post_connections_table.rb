@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'migration/table_dropper'
+require "migration/table_dropper"
 
 class DropChatMessagePostConnectionsTable < ActiveRecord::Migration[6.1]
   def up

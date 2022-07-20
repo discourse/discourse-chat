@@ -13,9 +13,14 @@ class DiscourseChat::ChatMessageRateLimiter
   def run!
     return if @user.staff?
 
-    allowed_message_count = @user.trust_level == TrustLevel[0] ?
-      SiteSetting.chat_allowed_messages_for_trust_level_0 :
-      SiteSetting.chat_allowed_messages_for_other_trust_levels
+    allowed_message_count =
+      (
+        if @user.trust_level == TrustLevel[0]
+          SiteSetting.chat_allowed_messages_for_trust_level_0
+        else
+          SiteSetting.chat_allowed_messages_for_other_trust_levels
+        end
+      )
     return if allowed_message_count.zero?
 
     @rate_limiter = RateLimiter.new(@user, "create_chat_message", allowed_message_count, 30.seconds)
@@ -38,7 +43,7 @@ class DiscourseChat::ChatMessageRateLimiter
       @user,
       Discourse.system_user,
       silenced_till: silenced_for_minutes.minutes.from_now,
-      reason: I18n.t("chat.errors.rate_limit_exceeded")
+      reason: I18n.t("chat.errors.rate_limit_exceeded"),
     )
   end
 end

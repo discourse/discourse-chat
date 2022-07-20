@@ -3,34 +3,38 @@
 class ChatChannel < ActiveRecord::Base
   include Trashable
   attribute :muted, default: false
-  attribute :desktop_notification_level, default: UserChatChannelMembership::DEFAULT_NOTIFICATION_LEVEL
-  attribute :mobile_notification_level, default: UserChatChannelMembership::DEFAULT_NOTIFICATION_LEVEL
+  attribute :desktop_notification_level,
+            default: UserChatChannelMembership::DEFAULT_NOTIFICATION_LEVEL
+  attribute :mobile_notification_level,
+            default: UserChatChannelMembership::DEFAULT_NOTIFICATION_LEVEL
   attribute :following, default: false
   attribute :unread_count, default: 0
   attribute :unread_mentions, default: 0
   attribute :last_read_message_id, default: nil
 
   belongs_to :chatable, polymorphic: true
-  belongs_to :direct_message_channel, -> { where(chat_channels: { chatable_type: 'DirectMessageChannel' }) }, foreign_key: 'chatable_id'
+  belongs_to :direct_message_channel,
+             -> { where(chat_channels: { chatable_type: "DirectMessageChannel" }) },
+             foreign_key: "chatable_id"
 
   has_many :chat_messages
   has_many :user_chat_channel_memberships
 
   has_one :chat_channel_archive
 
-  enum status: {
-      open: 0,
-      read_only: 1,
-      closed: 2,
-      archived: 3
-  }, _scopes: false
+  enum status: { open: 0, read_only: 1, closed: 2, archived: 3 }, _scopes: false
 
-  validates :name, length: { maximum:  Proc.new { SiteSetting.max_topic_title_length } }, presence: true, allow_nil: true
+  validates :name,
+            length: {
+              maximum: Proc.new { SiteSetting.max_topic_title_length },
+            },
+            presence: true,
+            allow_nil: true
 
   def add(user)
     ActiveRecord::Base.transaction do
-      membership = UserChatChannelMembership
-        .find_or_initialize_by(user_id: user.id, chat_channel: self)
+      membership =
+        UserChatChannelMembership.find_or_initialize_by(user_id: user.id, chat_channel: self)
 
       if !membership.following
         membership.following = true
@@ -44,8 +48,7 @@ class ChatChannel < ActiveRecord::Base
 
   def remove(user)
     ActiveRecord::Base.transaction do
-      membership = UserChatChannelMembership
-        .find_by!(user_id: user.id, chat_channel: self)
+      membership = UserChatChannelMembership.find_by!(user_id: user.id, chat_channel: self)
 
       if membership.following
         membership.update!(following: false)
@@ -104,17 +107,11 @@ class ChatChannel < ActiveRecord::Base
   end
 
   def allowed_user_ids
-    direct_message_channel? ?
-      chatable.user_ids :
-      nil
+    direct_message_channel? ? chatable.user_ids : nil
   end
 
   def allowed_group_ids
-    if category_channel?
-      chatable.secure_group_ids
-    else
-      nil
-    end
+    category_channel? ? chatable.secure_group_ids : nil
   end
 
   def public_channel_title
@@ -145,7 +142,7 @@ class ChatChannel < ActiveRecord::Base
     log_channel_status_change(
       acting_user: acting_user,
       new_status: target_status,
-      old_status: old_status
+      old_status: old_status,
     )
   end
 
@@ -174,9 +171,9 @@ class ChatChannel < ActiveRecord::Base
   end
 
   def self.public_channels
-    where(chatable_type: public_channel_chatable_types)
-      .where("categories.id IS NOT NULL")
-      .joins("LEFT JOIN categories ON categories.id = chat_channels.chatable_id AND chat_channels.chatable_type = 'Category'")
+    where(chatable_type: public_channel_chatable_types).where("categories.id IS NOT NULL").joins(
+      "LEFT JOIN categories ON categories.id = chat_channels.chatable_id AND chat_channels.chatable_type = 'Category'",
+    )
   end
 
   private
@@ -189,7 +186,7 @@ class ChatChannel < ActiveRecord::Base
       :chat_channel_status_change,
       channel: self,
       old_status: old_status,
-      new_status: new_status
+      new_status: new_status,
     )
 
     StaffActionLogger.new(acting_user).log_custom(
@@ -198,8 +195,8 @@ class ChatChannel < ActiveRecord::Base
         chat_channel_id: self.id,
         chat_channel_name: self.name,
         previous_value: old_status,
-        new_value: new_status
-      }
+        new_value: new_status,
+      },
     )
 
     ChatPublisher.publish_channel_status(self)

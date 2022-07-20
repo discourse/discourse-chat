@@ -8,6 +8,6 @@ class CreateChatUploads < ActiveRecord::Migration[6.1]
       t.timestamps
     end
 
-    add_index :chat_uploads, [:chat_message_id, :upload_id], unique: true
+    add_index :chat_uploads, %i[chat_message_id upload_id], unique: true
   end
 end

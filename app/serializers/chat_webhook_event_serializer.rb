@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
 class ChatWebhookEventSerializer < ApplicationSerializer
-  attributes :username,
-             :emoji
+  attributes :username, :emoji
 end

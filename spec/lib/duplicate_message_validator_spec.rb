@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'rails_helper'
+require "rails_helper"
 
 describe DiscourseChat::DuplicateMessageValidator do
   let(:chat_channel) { Fabricate(:chat_channel) }
@@ -21,7 +21,13 @@ describe DiscourseChat::DuplicateMessageValidator do
 
     chat_channel.update!(user_count: 100)
     message = "this is a 30 char message for test"
-    dupe = Fabricate(:chat_message, created_at: 1.second.ago, message: message, chat_channel: chat_channel)
+    dupe =
+      Fabricate(
+        :chat_message,
+        created_at: 1.second.ago,
+        message: message,
+        chat_channel: chat_channel,
+      )
     expect(message_blocked?(message)).to eq(true)
 
     expect(message_blocked?("blah")).to eq(false)
@@ -34,7 +40,13 @@ describe DiscourseChat::DuplicateMessageValidator do
     SiteSetting.chat_duplicate_message_sensitivity = 0.5
     chat_channel.update!(user_count: 57)
     message = "this is a 21 char msg"
-    dupe = Fabricate(:chat_message, created_at: 1.second.ago, message: message, chat_channel: chat_channel)
+    dupe =
+      Fabricate(
+        :chat_message,
+        created_at: 1.second.ago,
+        message: message,
+        chat_channel: chat_channel,
+      )
     expect(message_blocked?(message)).to eq(true)
 
     expect(message_blocked?("blah")).to eq(false)
@@ -47,7 +59,13 @@ describe DiscourseChat::DuplicateMessageValidator do
     SiteSetting.chat_duplicate_message_sensitivity = 1.0
     chat_channel.update!(user_count: 5)
     message = "10 char msg"
-    dupe = Fabricate(:chat_message, created_at: 1.second.ago, message: message, chat_channel: chat_channel)
+    dupe =
+      Fabricate(
+        :chat_message,
+        created_at: 1.second.ago,
+        message: message,
+        chat_channel: chat_channel,
+      )
     expect(message_blocked?(message)).to eq(true)
 
     expect(message_blocked?("blah")).to eq(false)

@@ -3,12 +3,12 @@
 describe "chat bbcode quoting in posts" do
   fab!(:post) { Fabricate(:post) }
 
-  before do
-    SiteSetting.chat_enabled = true
-  end
+  before { SiteSetting.chat_enabled = true }
 
   it "can render the simplest version" do
-    post.update!(raw: "[chat quote=\"martin;2321;2022-01-25T05:40:39Z\"]\nThis is a chat message.\n[/chat]")
+    post.update!(
+      raw: "[chat quote=\"martin;2321;2022-01-25T05:40:39Z\"]\nThis is a chat message.\n[/chat]",
+    )
     expect(post.cooked.chomp).to eq(<<~COOKED.chomp)
       <div class="discourse-chat-transcript" data-message-id="2321" data-username="martin" data-datetime="2022-01-25T05:40:39Z">
       <div class="chat-transcript-user">
@@ -27,7 +27,10 @@ describe "chat bbcode quoting in posts" do
   end
 
   it "renders the channel name if provided with multiQuote" do
-    post.update!(raw: "[chat quote=\"martin;2321;2022-01-25T05:40:39Z\" channel=\"Cool Cats Club\" channelId=\"1234\" multiQuote=\"true\"]\nThis is a chat message.\n[/chat]")
+    post.update!(
+      raw:
+        "[chat quote=\"martin;2321;2022-01-25T05:40:39Z\" channel=\"Cool Cats Club\" channelId=\"1234\" multiQuote=\"true\"]\nThis is a chat message.\n[/chat]",
+    )
     expect(post.cooked.chomp).to eq(<<~COOKED.chomp)
       <div class="discourse-chat-transcript" data-message-id="2321" data-username="martin" data-datetime="2022-01-25T05:40:39Z" data-channel-name="Cool Cats Club" data-channel-id="1234">
       <div class="chat-transcript-meta">
@@ -49,7 +52,10 @@ describe "chat bbcode quoting in posts" do
   end
 
   it "renders the channel name if provided without multiQuote" do
-    post.update!(raw: "[chat quote=\"martin;2321;2022-01-25T05:40:39Z\" channel=\"Cool Cats Club\" channelId=\"1234\"]\nThis is a chat message.\n[/chat]")
+    post.update!(
+      raw:
+        "[chat quote=\"martin;2321;2022-01-25T05:40:39Z\" channel=\"Cool Cats Club\" channelId=\"1234\"]\nThis is a chat message.\n[/chat]",
+    )
     expect(post.cooked.chomp).to eq(<<~COOKED.chomp)
       <div class="discourse-chat-transcript" data-message-id="2321" data-username="martin" data-datetime="2022-01-25T05:40:39Z" data-channel-name="Cool Cats Club" data-channel-id="1234">
       <div class="chat-transcript-user">
@@ -70,7 +76,10 @@ describe "chat bbcode quoting in posts" do
   end
 
   it "renders with the chained attribute for more compact quotes" do
-    post.update!(raw: "[chat quote=\"martin;2321;2022-01-25T05:40:39Z\" channel=\"Cool Cats Club\" channelId=\"1234\" chained=\"true\"]\nThis is a chat message.\n[/chat]")
+    post.update!(
+      raw:
+        "[chat quote=\"martin;2321;2022-01-25T05:40:39Z\" channel=\"Cool Cats Club\" channelId=\"1234\" chained=\"true\"]\nThis is a chat message.\n[/chat]",
+    )
     expect(post.cooked.chomp).to eq(<<~COOKED.chomp)
       <div class="discourse-chat-transcript chat-transcript-chained" data-message-id="2321" data-username="martin" data-datetime="2022-01-25T05:40:39Z" data-channel-name="Cool Cats Club" data-channel-id="1234">
       <div class="chat-transcript-user">
@@ -91,7 +100,10 @@ describe "chat bbcode quoting in posts" do
   end
 
   it "renders with the noLink attribute to remove the links to the individual messages from the datetimes" do
-    post.update!(raw: "[chat quote=\"martin;2321;2022-01-25T05:40:39Z\" channel=\"Cool Cats Club\" channelId=\"1234\" multiQuote=\"true\" noLink=\"true\"]\nThis is a chat message.\n[/chat]")
+    post.update!(
+      raw:
+        "[chat quote=\"martin;2321;2022-01-25T05:40:39Z\" channel=\"Cool Cats Club\" channelId=\"1234\" multiQuote=\"true\" noLink=\"true\"]\nThis is a chat message.\n[/chat]",
+    )
     expect(post.cooked.chomp).to eq(<<~COOKED.chomp)
       <div class="discourse-chat-transcript" data-message-id="2321" data-username="martin" data-datetime="2022-01-25T05:40:39Z" data-channel-name="Cool Cats Club" data-channel-id="1234">
       <div class="chat-transcript-meta">
@@ -114,7 +126,10 @@ describe "chat bbcode quoting in posts" do
 
   it "renders with the reactions attribute" do
     reactions_attr = "+1:martin;heart:martin,eviltrout"
-    post.update!(raw: "[chat quote=\"martin;2321;2022-01-25T05:40:39Z\" channel=\"Cool Cats Club\" channelId=\"1234\" reactions=\"#{reactions_attr}\"]\nThis is a chat message.\n[/chat]")
+    post.update!(
+      raw:
+        "[chat quote=\"martin;2321;2022-01-25T05:40:39Z\" channel=\"Cool Cats Club\" channelId=\"1234\" reactions=\"#{reactions_attr}\"]\nThis is a chat message.\n[/chat]",
+    )
     expect(post.cooked.chomp).to eq(<<~COOKED.chomp)
       <div class="discourse-chat-transcript" data-message-id="2321" data-username="martin" data-datetime="2022-01-25T05:40:39Z" data-reactions="+1:martin;heart:martin,eviltrout" data-channel-name="Cool Cats Club" data-channel-id="1234">
       <div class="chat-transcript-user">
@@ -154,10 +169,13 @@ describe "chat bbcode quoting in posts" do
       </aside>
     HTML
     SiteSetting.enable_inline_onebox_on_all_domains = true
-    Oneboxer.stubs(:cached_onebox).with("https://en.wikipedia.org/wiki/Hyperlink").returns(full_onebox_html)
+    Oneboxer
+      .stubs(:cached_onebox)
+      .with("https://en.wikipedia.org/wiki/Hyperlink")
+      .returns(full_onebox_html)
     stub_request(:get, "https://en.wikipedia.org/wiki/Hyperlink").to_return(
       status: 200,
-      body: "<html><head><title>Hyperlink - Wikipedia</title></head></html>"
+      body: "<html><head><title>Hyperlink - Wikipedia</title></head></html>",
     )
 
     post.update!(raw: <<~MD)

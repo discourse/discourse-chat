@@ -1,15 +1,13 @@
 # frozen_string_literal: true
 
-require 'rails_helper'
+require "rails_helper"
 
-describe 'Plugin API for discourse_chat' do
-  before do
-    SiteSetting.chat_enabled = true
-  end
+describe "Plugin API for discourse_chat" do
+  before { SiteSetting.chat_enabled = true }
 
   let(:metadata) do
     metadata = Plugin::Metadata.new
-    metadata.name = 'test'
+    metadata.name = "test"
     metadata
   end
 
@@ -19,8 +17,8 @@ describe 'Plugin API for discourse_chat' do
     plugin
   end
 
-  context 'discourse_chat.enable_markdown_feature' do
-    it 'stores the markdown feature' do
+  context "discourse_chat.enable_markdown_feature" do
+    it "stores the markdown feature" do
       plugin_instance.discourse_chat.enable_markdown_feature(:foo)
 
       expect(DiscoursePluginRegistry.chat_markdown_features.include?(:foo)).to be_truthy

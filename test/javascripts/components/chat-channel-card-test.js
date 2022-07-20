@@ -104,5 +104,16 @@ discourseModule(
 
       assert.ok(exists(".chat-channel-card__setting"));
     });
+
+    test("Read restricted chatable", async function (assert) {
+      this.channel.set("chatable.read_restricted", true);
+      await render(hbs`{{chat-channel-card channel=channel}}`);
+
+      assert.ok(exists(".d-icon-lock"));
+      assert.equal(
+        query(".chat-channel-card").style.borderLeftColor,
+        "rgb(213, 99, 83)"
+      );
+    });
   }
 );

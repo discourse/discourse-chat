@@ -2,7 +2,7 @@ import {
   acceptance,
   loggedInUser,
 } from "discourse/tests/helpers/qunit-helpers";
-import { click, currentURL, settled, visit } from "@ember/test-helpers";
+import { click, currentURL, visit } from "@ember/test-helpers";
 import { generateChatView } from "discourse/plugins/discourse-chat/chat-fixtures";
 import { test } from "qunit";
 import fabricators from "../helpers/fabricators";

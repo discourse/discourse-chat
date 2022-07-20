@@ -622,7 +622,7 @@ export default Component.extend({
       return;
     }
 
-    if (this.capabilities.canVibrate) {
+    if (this.capabilities.canVibrate && !isTesting()) {
       navigator.vibrate(5);
     }
 

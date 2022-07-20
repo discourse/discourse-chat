@@ -199,8 +199,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
       username: "hawk",
       id: 2,
       name: "hawk",
-      avatar_template:
-        "https://avatars.discourse.org/v3/letter/t/41988e/{size}.png",
+      avatar_template: "/letter_avatar_proxy/v4/letter/t/41988e/{size}.png",
     };
     server.get("/u/search/users", () => {
       return helper.response({
@@ -1569,11 +1568,11 @@ acceptance("Discourse Chat - image uploads", function (needs) {
           id: 202,
           original_filename: "avatar.PNG.jpg",
           retain_hours: null,
-          short_path: "/uploads/short-url/yoj8pf9DdIeHRRULyw7i57GAYdz.jpeg",
+          short_path: "/images/avatar.png",
           short_url: "upload://yoj8pf9DdIeHRRULyw7i57GAYdz.jpeg",
           thumbnail_height: 320,
           thumbnail_width: 690,
-          url: "//testbucket.s3.dualstack.us-east-2.amazonaws.com/original/1X/f1095d89269ff22e1818cf54b73e857261851019.jpeg",
+          url: "/images/avatar.png",
           width: 1920,
         });
       },

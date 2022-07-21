@@ -58,9 +58,12 @@ export default Component.extend({
     return classes.join(" ");
   },
 
-  @discourseComputed("channel")
-  showUserStatus(channel) {
-    return !!(this.isDirectMessageRow && channel.chatable.users[0].status);
+  @discourseComputed(
+    "isDirectMessageRow",
+    "channel.chatable.users.@each.status"
+  )
+  showUserStatus(isDirectMessageRow) {
+    return !!(isDirectMessageRow && this.channel.chatable.users[0].status);
   },
 
   @action
@@ -113,5 +116,5 @@ export default Component.extend({
   onLeaveChannel() {
     this.set("isUnfollowing", true);
     this.chat.unfollowChannel(this.channel);
-  },
+  }
 });

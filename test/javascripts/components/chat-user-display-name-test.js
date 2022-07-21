@@ -1,14 +1,15 @@
 import componentTest, {
   setupRenderingTest,
 } from "discourse/tests/helpers/component-test";
-import { discourseModule, query } from "discourse/tests/helpers/qunit-helpers";
+import { query } from "discourse/tests/helpers/qunit-helpers";
 import hbs from "htmlbars-inline-precompile";
+import { module } from "qunit";
 
 function displayName() {
   return query(".chat-user-display-name").innerText.trim();
 }
 
-discourseModule(
+module(
   "Discourse Chat | Component | chat-user-display-name | prioritize username in UX",
   function (hooks) {
     setupRenderingTest(hooks);
@@ -41,7 +42,7 @@ discourseModule(
   }
 );
 
-discourseModule(
+module(
   "Discourse Chat | Component | chat-user-display-name | prioritize name in UX",
   function (hooks) {
     setupRenderingTest(hooks);

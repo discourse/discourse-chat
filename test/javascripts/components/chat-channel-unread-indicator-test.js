@@ -2,9 +2,10 @@ import { set } from "@ember/object";
 import componentTest, {
   setupRenderingTest,
 } from "discourse/tests/helpers/component-test";
-import { discourseModule, exists } from "discourse/tests/helpers/qunit-helpers";
+import { exists } from "discourse/tests/helpers/qunit-helpers";
 import hbs from "htmlbars-inline-precompile";
 import { CHATABLE_TYPES } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
+import { module } from "qunit";
 
 const directMessageChannel = {
   id: 1,
@@ -22,7 +23,7 @@ const topicChannel = {
   },
 };
 
-discourseModule(
+module(
   "Discourse Chat | Component | chat-channel-unread-indicator",
   function (hooks) {
     setupRenderingTest(hooks);

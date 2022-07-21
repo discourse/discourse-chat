@@ -1,13 +1,14 @@
 import componentTest, {
   setupRenderingTest,
 } from "discourse/tests/helpers/component-test";
-import { discourseModule, exists } from "discourse/tests/helpers/qunit-helpers";
+import { exists } from "discourse/tests/helpers/qunit-helpers";
 import hbs from "htmlbars-inline-precompile";
 import fabricators from "../helpers/fabricators";
 import selectKit from "discourse/tests/helpers/select-kit-helper";
 import pretender from "discourse/tests/helpers/create-pretender";
 import { CHATABLE_TYPES } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import { set } from "@ember/object";
+import { module } from "qunit";
 
 function membershipFixture(id, options = {}) {
   options = Object.assign({}, options, { muted: false, following: true });
@@ -23,7 +24,7 @@ function membershipFixture(id, options = {}) {
   };
 }
 
-discourseModule(
+module(
   "Discourse Chat | Component | chat-channel-settings-view | Public channel - regular user",
   function (hooks) {
     setupRenderingTest(hooks);
@@ -115,7 +116,7 @@ discourseModule(
   }
 );
 
-discourseModule(
+module(
   "Discourse Chat | Component | chat-channel-settings-view | Direct Message channel - regular user",
   function (hooks) {
     setupRenderingTest(hooks);
@@ -145,7 +146,7 @@ discourseModule(
   }
 );
 
-discourseModule(
+module(
   "Discourse Chat | Component | chat-channel-settings-view | Public channel - admin user",
   function (hooks) {
     setupRenderingTest(hooks);
@@ -169,7 +170,7 @@ discourseModule(
   }
 );
 
-discourseModule(
+module(
   "Discourse Chat | Component | chat-channel-settings-view | Archived Public channel - admin user",
   function (hooks) {
     setupRenderingTest(hooks);

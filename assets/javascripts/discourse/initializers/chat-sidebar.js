@@ -1,3 +1,4 @@
+import slugifyChannel from "discourse/plugins/discourse-chat/discourse/lib/slugify-channel";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import I18n from "I18n";
 import { bind } from "discourse-common/utils/decorators";
@@ -60,7 +61,7 @@ export default {
               return {
                 chatChannel: this.channel,
                 channelId: this.channel.id,
-                channelTitle: this.channel.chatable.slug,
+                channelTitle: slugifyChannel(this.channel.title),
               };
             }
 
@@ -248,7 +249,7 @@ export default {
               return {
                 chatChannel: this.channel,
                 channelId: this.channel.id,
-                channelTitle: this.channel.chatable.slug,
+                channelTitle: slugifyChannel(this.channel.title),
               };
             }
 

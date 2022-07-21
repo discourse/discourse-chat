@@ -1,16 +1,17 @@
-import discourseComputed from "discourse-common/utils/decorators";
 import Component from "@ember/component";
+import { computed } from "@ember/object";
 import { gt, reads } from "@ember/object/computed";
 
-export default Component.extend({
-  tagName: "",
-  channel: null,
-  multiDm: gt("users.length", 1),
-  users: reads("channel.chatable.users.[]"),
-  unreadIndicator: false,
+export default class ChatChannelTitle extends Component {
+  tagName = "";
+  channel = null;
+  unreadIndicator = false;
 
-  @discourseComputed("users")
-  usernames(users) {
-    return users.mapBy("username").join(", ");
-  },
-});
+  @reads("channel.chatable.users.[]") users;
+  @gt("users.length", 1) multiDm;
+
+  @computed("users")
+  get usernames() {
+    return this.users.mapBy("username").join(", ");
+  }
+}

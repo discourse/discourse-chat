@@ -61,7 +61,7 @@ module Jobs
           users.staged IS FALSE AND users.active AND
           NOT EXISTS(SELECT 1 FROM anonymous_users a WHERE a.user_id = users.id) AND
           (suspended_till IS NULL OR suspended_till <= :suspended_until) AND
-          (last_seen_at IS NULL OR last_seen_at > :last_seen_at) AND
+          (last_seen_at > :last_seen_at) AND
           uo.chat_enabled AND
           uccm.id IS NULL
       SQL

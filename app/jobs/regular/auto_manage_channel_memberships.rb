@@ -12,7 +12,12 @@ module Jobs
 
       return if !channel
 
-      processed = 0
+      processed =
+        UserChatChannelMembership.where(
+          chat_channel: channel,
+          following: true,
+          join_mode: UserChatChannelMembership.join_modes[:automatic],
+        ).count
 
       auto_join_query(channel).find_in_batches do |batch|
         break if processed >= SiteSetting.max_chat_auto_joined_users
@@ -44,7 +49,7 @@ module Jobs
           .not_staged
           .distinct
           .select(:id, "users.id AS query_user_id")
-          .where("last_seen_at IS NULL OR last_seen_at > ?", 3.months.ago)
+          .where("last_seen_at > ?", 3.months.ago)
           .joins(:user_option)
           .where(user_options: { chat_enabled: true })
           .joins(<<~SQL)

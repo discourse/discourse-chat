@@ -167,6 +167,7 @@ after_initialize do
   load File.expand_path("../app/jobs/scheduled/delete_old_chat_messages.rb", __FILE__)
   load File.expand_path("../app/jobs/scheduled/update_user_counts_for_chat_channels.rb", __FILE__)
   load File.expand_path("../app/jobs/scheduled/email_chat_notifications.rb", __FILE__)
+  load File.expand_path("../app/jobs/scheduled/auto_join_users.rb", __FILE__)
   load File.expand_path("../app/services/chat_publisher.rb", __FILE__)
   load File.expand_path("../app/controllers/api_controller.rb", __FILE__)
   load File.expand_path("../app/controllers/api/chat_channels_controller.rb", __FILE__)
@@ -485,10 +486,18 @@ after_initialize do
 
   on(:reviewable_score_updated) { |reviewable| ReviewableChatMessage.on_score_updated(reviewable) }
 
-  on(:user_created) do |user|
-    ChatChannel
-      .where(auto_join_users: true)
-      .each { |channel| UserChatChannelMembership.enforce_automatic_user_membership(channel, user) }
+  add_model_callback(User, :after_commit) do
+    if saved_change_to_last_seen_at?
+      old_value = self.previous_changes[:last_seen_at].first
+
+      if !old_value && last_seen_at?
+        ChatChannel
+          .where(auto_join_users: true)
+          .each do |channel|
+            UserChatChannelMembership.enforce_automatic_user_membership(channel, self)
+          end
+      end
+    end
   end
 
   on(:user_confirmed_email) do |user|

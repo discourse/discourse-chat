@@ -31,12 +31,6 @@ describe Jobs::AutoManageChannelMemberships do
       assert_batches_enqueued(channel, 0)
     end
 
-    it "includes users with last_seen_at set to null" do
-      user.update!(last_seen_at: nil)
-
-      assert_batches_enqueued(channel, 1)
-    end
-
     it "excludes users without chat enabled" do
       user.user_option.update!(chat_enabled: false)
 
@@ -45,6 +39,19 @@ describe Jobs::AutoManageChannelMemberships do
 
     it "respects the max_chat_auto_joined_users setting" do
       SiteSetting.max_chat_auto_joined_users = 0
+
+      assert_batches_enqueued(channel, 0)
+    end
+
+    it "does nothing when we already reached the max_chat_auto_joined_users limit" do
+      SiteSetting.max_chat_auto_joined_users = 1
+      user_2 = Fabricate(:user, last_seen_at: 2.minutes.ago)
+      UserChatChannelMembership.create!(
+        user: user_2,
+        chat_channel: channel,
+        following: true,
+        join_mode: UserChatChannelMembership.join_modes[:automatic],
+      )
 
       assert_batches_enqueued(channel, 0)
     end

@@ -146,6 +146,9 @@
     .select-kit-header:hover svg.d-icon {
       color: var(--primary-medium);
     }
+    a.sidebar-section-link {
+      width: calc(var(--d-sidebar-width) - 20px);
+    }
   }
   .sidebar-section-link-suffix.icon {
     align-items: center;

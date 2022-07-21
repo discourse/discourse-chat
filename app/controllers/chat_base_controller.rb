@@ -12,13 +12,9 @@ class DiscourseChat::ChatBaseController < ::ApplicationController
   end
 
   def set_channel_and_chatable_with_access_check(chat_channel_id: nil)
-    if chat_channel_id.blank?
-      params.require(:chat_channel_id)
-    end
+    params.require(:chat_channel_id) if chat_channel_id.blank?
     id_or_name = chat_channel_id || params[:chat_channel_id]
-    @chat_channel = DiscourseChat::ChatChannelFetcher.find_with_access_check(
-      id_or_name, guardian
-    )
+    @chat_channel = DiscourseChat::ChatChannelFetcher.find_with_access_check(id_or_name, guardian)
     @chatable = @chat_channel.chatable
   end
 end

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe DiscourseChat::ChatChannelsController do
   fab!(:user) { Fabricate(:user, username: "johndoe", name: "John Doe") }
@@ -8,7 +8,9 @@ RSpec.describe DiscourseChat::ChatChannelsController do
   fab!(:admin) { Fabricate(:admin, username: "andyjones", name: "Andy Jones") }
   fab!(:category) { Fabricate(:category) }
   fab!(:chat_channel) { Fabricate(:chat_channel, chatable: category) }
-  fab!(:dm_chat_channel) { Fabricate(:chat_channel, chatable: Fabricate(:direct_message_channel, users: [user, admin])) }
+  fab!(:dm_chat_channel) do
+    Fabricate(:chat_channel, chatable: Fabricate(:direct_message_channel, users: [user, admin]))
+  end
 
   before do
     SiteSetting.chat_enabled = true
@@ -26,9 +28,14 @@ RSpec.describe DiscourseChat::ChatChannelsController do
     describe "with memberships for all channels" do
       before do
         ChatChannel.all.each do |cc|
-          model = cc.direct_message_channel? ?
-            :user_chat_channel_membership_for_dm :
-            :user_chat_channel_membership
+          model =
+            (
+              if cc.direct_message_channel?
+                :user_chat_channel_membership_for_dm
+              else
+                :user_chat_channel_membership
+              end
+            )
 
           Fabricate(model, chat_channel: cc, user: user)
           Fabricate(model, chat_channel: cc, user: user_with_private_access)
@@ -50,8 +57,9 @@ RSpec.describe DiscourseChat::ChatChannelsController do
         get "/chat/chat_channels.json"
 
         expect(response.status).to eq(200)
-        expect(response.parsed_body["public_channels"].map { |channel| channel["id"] })
-          .to match_array([chat_channel.id])
+        expect(
+          response.parsed_body["public_channels"].map { |channel| channel["id"] },
+        ).to match_array([chat_channel.id])
       end
 
       it "returns channels visible to user with private access" do
@@ -59,11 +67,9 @@ RSpec.describe DiscourseChat::ChatChannelsController do
         get "/chat/chat_channels.json"
 
         expect(response.status).to eq(200)
-        expect(response.parsed_body["public_channels"].map { |channel| channel["id"] })
-          .to match_array([
-            chat_channel.id,
-            private_category_cc.id
-          ])
+        expect(
+          response.parsed_body["public_channels"].map { |channel| channel["id"] },
+        ).to match_array([chat_channel.id, private_category_cc.id])
       end
 
       it "returns all channels for admin" do
@@ -71,11 +77,9 @@ RSpec.describe DiscourseChat::ChatChannelsController do
         get "/chat/chat_channels.json"
 
         expect(response.status).to eq(200)
-        expect(response.parsed_body["public_channels"].map { |channel| channel["id"] })
-          .to match_array([
-            chat_channel.id,
-            private_category_cc.id,
-          ])
+        expect(
+          response.parsed_body["public_channels"].map { |channel| channel["id"] },
+        ).to match_array([chat_channel.id, private_category_cc.id])
       end
 
       it "doesn't error when a chat channel's chatable is destroyed" do
@@ -92,11 +96,11 @@ RSpec.describe DiscourseChat::ChatChannelsController do
         DiscourseChat::ChatMessageCreator.create(
           chat_channel: chat_channel,
           user: user,
-          content: "Hi @#{admin.username}"
+          content: "Hi @#{admin.username}",
         )
-          get "/chat/chat_channels.json"
-          cc = response.parsed_body["public_channels"].detect { |c| c["id"] == chat_channel.id }
-          expect(cc["unread_mentions"]).to eq(1)
+        get "/chat/chat_channels.json"
+        cc = response.parsed_body["public_channels"].detect { |c| c["id"] == chat_channel.id }
+        expect(cc["unread_mentions"]).to eq(1)
       end
 
       describe "direct messages" do
@@ -105,34 +109,53 @@ RSpec.describe DiscourseChat::ChatChannelsController do
         fab!(:user3) { Fabricate(:user) }
 
         before do
-          @dm1 = DiscourseChat::DirectMessageChannelCreator.create!(acting_user: user1, target_users: [user1, user2])
-          @dm2 = DiscourseChat::DirectMessageChannelCreator.create!(acting_user: user1, target_users: [user1, user3])
-          @dm3 = DiscourseChat::DirectMessageChannelCreator.create!(acting_user: user1, target_users: [user1, user2, user3])
-          @dm4 = DiscourseChat::DirectMessageChannelCreator.create!(acting_user: user1, target_users: [user2, user3])
+          @dm1 =
+            DiscourseChat::DirectMessageChannelCreator.create!(
+              acting_user: user1,
+              target_users: [user1, user2],
+            )
+          @dm2 =
+            DiscourseChat::DirectMessageChannelCreator.create!(
+              acting_user: user1,
+              target_users: [user1, user3],
+            )
+          @dm3 =
+            DiscourseChat::DirectMessageChannelCreator.create!(
+              acting_user: user1,
+              target_users: [user1, user2, user3],
+            )
+          @dm4 =
+            DiscourseChat::DirectMessageChannelCreator.create!(
+              acting_user: user1,
+              target_users: [user2, user3],
+            )
         end
 
         it "returns correct DMs for user1" do
           sign_in(user1)
 
           get "/chat/chat_channels.json"
-          expect(response.parsed_body["direct_message_channels"].map { |c| c["id"] })
-            .to match_array([@dm1.id, @dm2.id, @dm3.id])
+          expect(
+            response.parsed_body["direct_message_channels"].map { |c| c["id"] },
+          ).to match_array([@dm1.id, @dm2.id, @dm3.id])
         end
 
         it "returns correct DMs for user2" do
           sign_in(user2)
 
           get "/chat/chat_channels.json"
-          expect(response.parsed_body["direct_message_channels"].map { |c| c["id"] })
-            .to match_array([@dm1.id, @dm3.id, @dm4.id])
+          expect(
+            response.parsed_body["direct_message_channels"].map { |c| c["id"] },
+          ).to match_array([@dm1.id, @dm3.id, @dm4.id])
         end
 
         it "returns correct DMs for user3" do
           sign_in(user3)
 
           get "/chat/chat_channels.json"
-          expect(response.parsed_body["direct_message_channels"].map { |c| c["id"] })
-            .to match_array([@dm2.id, @dm3.id, @dm4.id])
+          expect(
+            response.parsed_body["direct_message_channels"].map { |c| c["id"] },
+          ).to match_array([@dm2.id, @dm3.id, @dm4.id])
         end
 
         it "correctly set unread_count for DMs" do
@@ -140,10 +163,11 @@ RSpec.describe DiscourseChat::ChatChannelsController do
           DiscourseChat::ChatMessageCreator.create(
             chat_channel: @dm2,
             user: user1,
-            content: "What's going on?!"
+            content: "What's going on?!",
           )
           get "/chat/chat_channels.json"
-          dm2_response = response.parsed_body["direct_message_channels"].detect { |c| c["id"] == @dm2.id }
+          dm2_response =
+            response.parsed_body["direct_message_channels"].detect { |c| c["id"] == @dm2.id }
           expect(dm2_response["unread_count"]).to eq(1)
         end
       end
@@ -153,9 +177,7 @@ RSpec.describe DiscourseChat::ChatChannelsController do
   describe "#follow" do
     it "creates a user_chat_channel_membership record if one doesn't exist" do
       sign_in(user)
-      expect {
-        post "/chat/chat_channels/#{chat_channel.id}/follow.json"
-      }.to change {
+      expect { post "/chat/chat_channels/#{chat_channel.id}/follow.json" }.to change {
         UserChatChannelMembership.where(user_id: user.id, following: true).count
       }.by(1)
       expect(response.status).to eq(200)
@@ -163,15 +185,14 @@ RSpec.describe DiscourseChat::ChatChannelsController do
 
     it "updates 'following' to true for existing record" do
       sign_in(user)
-      membership_record = UserChatChannelMembership.create!(
-        chat_channel_id: chat_channel.id,
-        user_id: user.id,
-        following: false
-      )
+      membership_record =
+        UserChatChannelMembership.create!(
+          chat_channel_id: chat_channel.id,
+          user_id: user.id,
+          following: false,
+        )
 
-      expect {
-        post "/chat/chat_channels/#{chat_channel.id}/follow.json"
-      }.to change {
+      expect { post "/chat/chat_channels/#{chat_channel.id}/follow.json" }.to change {
         membership_record.reload.following
       }.to(true).from(false)
       expect(response.status).to eq(200)
@@ -181,15 +202,14 @@ RSpec.describe DiscourseChat::ChatChannelsController do
   describe "#unfollow" do
     it "updates 'following' to false for existing record" do
       sign_in(user)
-      membership_record = UserChatChannelMembership.create!(
-        chat_channel_id: chat_channel.id,
-        user_id: user.id,
-        following: true
-      )
+      membership_record =
+        UserChatChannelMembership.create!(
+          chat_channel_id: chat_channel.id,
+          user_id: user.id,
+          following: true,
+        )
 
-      expect {
-        post "/chat/chat_channels/#{chat_channel.id}/unfollow.json"
-      }.to change {
+      expect { post "/chat/chat_channels/#{chat_channel.id}/unfollow.json" }.to change {
         membership_record.reload.following
       }.to(false).from(true)
       expect(response.status).to eq(200)
@@ -197,13 +217,14 @@ RSpec.describe DiscourseChat::ChatChannelsController do
 
     it "allows to unfollow a direct_message_channel" do
       sign_in(user)
-      membership_record = UserChatChannelMembership.create!(
-        chat_channel_id: dm_chat_channel.id,
-        user_id: user.id,
-        following: true,
-        desktop_notification_level: 2,
-        mobile_notification_level: 2,
-      )
+      membership_record =
+        UserChatChannelMembership.create!(
+          chat_channel_id: dm_chat_channel.id,
+          user_id: user.id,
+          following: true,
+          desktop_notification_level: 2,
+          mobile_notification_level: 2,
+        )
 
       post "/chat/chat_channels/#{dm_chat_channel.id}/unfollow.json"
       expect(response.status).to eq(200)
@@ -229,7 +250,11 @@ RSpec.describe DiscourseChat::ChatChannelsController do
     it "errors when the name is over SiteSetting.max_topic_title_length" do
       sign_in(admin)
       SiteSetting.max_topic_title_length = 10
-      put "/chat/chat_channels.json", params: { id: category2.id, name: "Hi, this is over 10 characters" }
+      put "/chat/chat_channels.json",
+          params: {
+            id: category2.id,
+            name: "Hi, this is over 10 characters",
+          }
       expect(response.status).to eq(400)
     end
 
@@ -301,7 +326,11 @@ RSpec.describe DiscourseChat::ChatChannelsController do
       sign_in(admin)
       new_name = "beep boop"
       new_description = "this is something"
-      post "/chat/chat_channels/#{chat_channel.id}.json", params: { name: new_name, description: new_description }
+      post "/chat/chat_channels/#{chat_channel.id}.json",
+           params: {
+             name: new_name,
+             description: new_description,
+           }
       expect(response.status).to eq(200)
       expect(chat_channel.reload.name).to eq(new_name)
       expect(chat_channel.description).to eq(new_description)
@@ -309,7 +338,6 @@ RSpec.describe DiscourseChat::ChatChannelsController do
   end
 
   describe "#search" do
-
     describe "without chat permissions" do
       it "errors errors for anon" do
         get "/chat/chat_channels/search.json", params: { filter: "so" }
@@ -454,7 +482,9 @@ RSpec.describe DiscourseChat::ChatChannelsController do
   end
 
   describe "#show" do
-    fab!(:channel) { Fabricate(:chat_channel, chatable: category, name: "My Great Channel & Stuff") }
+    fab!(:channel) do
+      Fabricate(:chat_channel, chatable: category, name: "My Great Channel & Stuff")
+    end
 
     it "can find channel by id" do
       sign_in(user)
@@ -491,7 +521,9 @@ RSpec.describe DiscourseChat::ChatChannelsController do
 
   describe "#archive" do
     fab!(:channel) { Fabricate(:chat_channel, chatable: category, name: "The English Channel") }
-    let(:new_topic_params) { { type: "newTopic", title: "This is a test archive topic", category_id: category.id } }
+    let(:new_topic_params) do
+      { type: "newTopic", title: "This is a test archive topic", category_id: category.id }
+    end
     let(:existing_topic_params) { { type: "existingTopic", topic_id: Fabricate(:topic).id } }
 
     it "returns error if user is not staff" do
@@ -529,7 +561,14 @@ RSpec.describe DiscourseChat::ChatChannelsController do
       sign_in(admin)
       put "/chat/chat_channels/#{channel.id}/archive.json", params: new_topic_params
       channel_archive = ChatChannelArchive.find_by(chat_channel: channel)
-      expect(job_enqueued?(job: :chat_channel_archive, args: { chat_channel_archive_id: channel_archive.id })).to eq(true)
+      expect(
+        job_enqueued?(
+          job: :chat_channel_archive,
+          args: {
+            chat_channel_archive_id: channel_archive.id,
+          },
+        ),
+      ).to eq(true)
       expect(channel.reload.status).to eq("read_only")
     end
 
@@ -537,7 +576,14 @@ RSpec.describe DiscourseChat::ChatChannelsController do
       sign_in(admin)
       put "/chat/chat_channels/#{channel.id}/archive.json", params: existing_topic_params
       channel_archive = ChatChannelArchive.find_by(chat_channel: channel)
-      expect(job_enqueued?(job: :chat_channel_archive, args: { chat_channel_archive_id: channel_archive.id })).to eq(true)
+      expect(
+        job_enqueued?(
+          job: :chat_channel_archive,
+          args: {
+            chat_channel_archive_id: channel_archive.id,
+          },
+        ),
+      ).to eq(true)
       expect(channel.reload.status).to eq("read_only")
     end
 
@@ -553,19 +599,14 @@ RSpec.describe DiscourseChat::ChatChannelsController do
 
   describe "#retry_archive" do
     fab!(:channel) do
-      Fabricate(
-        :chat_channel,
-        chatable: category,
-        name: "The English Channel",
-        status: :read_only
-      )
+      Fabricate(:chat_channel, chatable: category, name: "The English Channel", status: :read_only)
     end
     fab!(:archive) do
       ChatChannelArchive.create!(
         chat_channel: channel,
         destination_topic_title: "test archive topic title",
         archived_by: admin,
-        total_messages: 10
+        total_messages: 10,
       )
     end
 
@@ -602,18 +643,15 @@ RSpec.describe DiscourseChat::ChatChannelsController do
       archive.update!(archive_error: "bad stuff", archived_messages: 1)
       put "/chat/chat_channels/#{channel.id}/retry_archive.json"
       expect(response.status).to eq(200)
-      expect(job_enqueued?(job: :chat_channel_archive, args: { chat_channel_archive_id: archive.id })).to eq(true)
+      expect(
+        job_enqueued?(job: :chat_channel_archive, args: { chat_channel_archive_id: archive.id }),
+      ).to eq(true)
     end
   end
 
   describe "#change_status" do
     fab!(:channel) do
-      Fabricate(
-        :chat_channel,
-        chatable: category,
-        name: "Channel Orange",
-        status: :open
-      )
+      Fabricate(:chat_channel, chatable: category, name: "Channel Orange", status: :open)
     end
 
     it "returns error if user is not staff" do
@@ -654,45 +692,54 @@ RSpec.describe DiscourseChat::ChatChannelsController do
 
   describe "#delete" do
     fab!(:channel) do
-      Fabricate(
-        :chat_channel,
-        chatable: category,
-        name: "Ambrose Channel",
-        status: :open
-      )
+      Fabricate(:chat_channel, chatable: category, name: "Ambrose Channel", status: :open)
     end
 
     it "returns error if user is not staff" do
       sign_in(user)
-      delete "/chat/chat_channels/#{channel.id}.json", params: { channel_name_confirmation: "ambrose channel" }
+      delete "/chat/chat_channels/#{channel.id}.json",
+             params: {
+               channel_name_confirmation: "ambrose channel",
+             }
       expect(response.status).to eq(403)
     end
 
     it "returns a 404 if the channel does not exist" do
       channel.destroy!
       sign_in(admin)
-      delete "/chat/chat_channels/#{channel.id}.json", params: { channel_name_confirmation: "ambrose channel" }
+      delete "/chat/chat_channels/#{channel.id}.json",
+             params: {
+               channel_name_confirmation: "ambrose channel",
+             }
       expect(response.status).to eq(404)
     end
 
     it "returns a 400 if the channel_name_confirmation does not match the channel name" do
       sign_in(admin)
-      delete "/chat/chat_channels/#{channel.id}.json", params: { channel_name_confirmation: "some Other channel" }
+      delete "/chat/chat_channels/#{channel.id}.json",
+             params: {
+               channel_name_confirmation: "some Other channel",
+             }
       expect(response.status).to eq(400)
     end
 
     it "deletes the channel right away and enqueues the background job to delete all its chat messages and related content" do
       sign_in(admin)
-      delete "/chat/chat_channels/#{channel.id}.json", params: { channel_name_confirmation: "ambrose channel" }
+      delete "/chat/chat_channels/#{channel.id}.json",
+             params: {
+               channel_name_confirmation: "ambrose channel",
+             }
       expect(response.status).to eq(200)
       expect(channel.reload.trashed?).to eq(true)
-      expect(job_enqueued?(job: :chat_channel_delete, args: { chat_channel_id: channel.id })).to eq(true)
+      expect(job_enqueued?(job: :chat_channel_delete, args: { chat_channel_id: channel.id })).to eq(
+        true,
+      )
       expect(
         UserHistory.exists?(
           acting_user_id: admin.id,
           action: UserHistory.actions[:custom_staff],
-          custom_type: "chat_channel_delete"
-        )
+          custom_type: "chat_channel_delete",
+        ),
       ).to eq(true)
     end
   end

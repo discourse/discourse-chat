@@ -16,9 +16,9 @@ class ConvertChatableTopicsToCategories < ActiveRecord::Migration[7.0]
     # soft delete all posts small actions
     DB.exec(
       "UPDATE posts SET deleted_at = :deleted_at, deleted_by_id = :deleted_by_id WHERE action_code IN (:action_codes)",
-      action_codes: ['chat.enabled', 'chat.disabled'],
+      action_codes: %w[chat.enabled chat.disabled],
       deleted_at: Time.zone.now,
-      deleted_by_id: Discourse::SYSTEM_USER_ID
+      deleted_by_id: Discourse::SYSTEM_USER_ID,
     )
 
     # removes all chat custom fields

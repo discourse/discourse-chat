@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'rails_helper'
+require "rails_helper"
 
 describe DiscourseChat::ChatMessageCreator do
   fab!(:admin1) { Fabricate(:admin) }
@@ -8,11 +8,28 @@ describe DiscourseChat::ChatMessageCreator do
   fab!(:user1) { Fabricate(:user, group_ids: [Group::AUTO_GROUPS[:everyone]]) }
   fab!(:user2) { Fabricate(:user) }
   fab!(:user3) { Fabricate(:user) }
-  fab!(:admin_group) { Fabricate(:public_group, users: [admin1, admin2], mentionable_level: Group::ALIAS_LEVELS[:everyone]) }
-  fab!(:user_group) { Fabricate(:public_group, users: [user1, user2, user3], mentionable_level: Group::ALIAS_LEVELS[:everyone]) }
+  fab!(:admin_group) do
+    Fabricate(
+      :public_group,
+      users: [admin1, admin2],
+      mentionable_level: Group::ALIAS_LEVELS[:everyone],
+    )
+  end
+  fab!(:user_group) do
+    Fabricate(
+      :public_group,
+      users: [user1, user2, user3],
+      mentionable_level: Group::ALIAS_LEVELS[:everyone],
+    )
+  end
   fab!(:user_without_memberships) { Fabricate(:user) }
   fab!(:public_chat_channel) { Fabricate(:chat_channel, chatable: Fabricate(:topic)) }
-  fab!(:dm_chat_channel) { Fabricate(:chat_channel, chatable: Fabricate(:direct_message_channel, users: [user1, user2, user3])) }
+  fab!(:dm_chat_channel) do
+    Fabricate(
+      :chat_channel,
+      chatable: Fabricate(:direct_message_channel, users: [user1, user2, user3]),
+    )
+  end
 
   before do
     SiteSetting.chat_enabled = true
@@ -24,23 +41,31 @@ describe DiscourseChat::ChatMessageCreator do
       Fabricate(:user_chat_channel_membership, chat_channel: public_chat_channel, user: user)
     end
 
-    @direct_message_channel = DiscourseChat::DirectMessageChannelCreator.create!(acting_user: user1, target_users: [user1, user2])
+    @direct_message_channel =
+      DiscourseChat::DirectMessageChannelCreator.create!(
+        acting_user: user1,
+        target_users: [user1, user2],
+      )
   end
 
   describe "Integration tests with jobs running immediately" do
-    before do
-      Jobs.run_immediately!
-    end
+    before { Jobs.run_immediately! }
 
     it "errors when length is less than `chat_minimum_message_length`" do
       SiteSetting.chat_minimum_message_length = 10
-      creator = DiscourseChat::ChatMessageCreator.create(
-        chat_channel: public_chat_channel,
-        user: user1,
-        content: "2 short"
-      )
+      creator =
+        DiscourseChat::ChatMessageCreator.create(
+          chat_channel: public_chat_channel,
+          user: user1,
+          content: "2 short",
+        )
       expect(creator.failed?).to eq(true)
-      expect(creator.error.message).to match(I18n.t("chat.errors.minimum_length_not_met", { minimum: SiteSetting.chat_minimum_message_length }))
+      expect(creator.error.message).to match(
+        I18n.t(
+          "chat.errors.minimum_length_not_met",
+          { minimum: SiteSetting.chat_minimum_message_length },
+        ),
+      )
     end
 
     it "allows message creation when length is less than `chat_minimum_message_length` when upload is present" do
@@ -51,7 +76,7 @@ describe DiscourseChat::ChatMessageCreator do
           chat_channel: public_chat_channel,
           user: user1,
           content: "2 short",
-          upload_ids: [upload.id]
+          upload_ids: [upload.id],
         )
       }.to change { ChatMessage.count }.by(1)
     end
@@ -61,7 +86,7 @@ describe DiscourseChat::ChatMessageCreator do
         DiscourseChat::ChatMessageCreator.create(
           chat_channel: public_chat_channel,
           user: user1,
-          content: "this is a message"
+          content: "this is a message",
         )
       }.to change { ChatMessage.count }.by(1)
     end
@@ -71,21 +96,20 @@ describe DiscourseChat::ChatMessageCreator do
         DiscourseChat::ChatMessageCreator.create(
           chat_channel: public_chat_channel,
           user: user1,
-          content: "this is a @#{user1.username} message with @system @mentions @#{user2.username} and @#{user3.username}"
+          content:
+            "this is a @#{user1.username} message with @system @mentions @#{user2.username} and @#{user3.username}",
         )
         # Only 2 mentions are created because user mentioned themselves, system, and an invalid username.
-      }.to change { ChatMention.count }.by(2)
-        .and change {
-               user1.chat_mentions.count
-             }.by(0)
+      }.to change { ChatMention.count }.by(2).and change { user1.chat_mentions.count }.by(0)
     end
 
     it "mentions are case insensitive" do
-      expect { DiscourseChat::ChatMessageCreator.create(
-        chat_channel: public_chat_channel,
-        user: user1,
-        content: "Hey @#{user2.username.upcase}"
-      )
+      expect {
+        DiscourseChat::ChatMessageCreator.create(
+          chat_channel: public_chat_channel,
+          user: user1,
+          content: "Hey @#{user2.username.upcase}",
+        )
       }.to change { user2.chat_mentions.count }.by(1)
     end
 
@@ -94,16 +118,18 @@ describe DiscourseChat::ChatMessageCreator do
         DiscourseChat::ChatMessageCreator.create(
           chat_channel: public_chat_channel,
           user: user1,
-          content: "@all"
+          content: "@all",
         )
       }.to change { ChatMention.count }.by(4)
 
-      UserChatChannelMembership.where(user: user2, chat_channel: public_chat_channel).update_all(following: false)
+      UserChatChannelMembership.where(user: user2, chat_channel: public_chat_channel).update_all(
+        following: false,
+      )
       expect {
         DiscourseChat::ChatMessageCreator.create(
           chat_channel: public_chat_channel,
           user: user1,
-          content: "again! @all"
+          content: "again! @all",
         )
       }.to change { ChatMention.count }.by(3)
     end
@@ -118,7 +144,7 @@ describe DiscourseChat::ChatMessageCreator do
         DiscourseChat::ChatMessageCreator.create(
           chat_channel: public_chat_channel,
           user: user1,
-          content: "@here"
+          content: "@here",
         )
       }.to change { ChatMention.count }.by(2)
     end
@@ -129,7 +155,7 @@ describe DiscourseChat::ChatMessageCreator do
         DiscourseChat::ChatMessageCreator.create(
           chat_channel: public_chat_channel,
           user: user1,
-          content: "@here @#{user2.username}"
+          content: "@here @#{user2.username}",
         )
       }.to change { user2.chat_mentions.count }.by(1)
     end
@@ -144,7 +170,7 @@ describe DiscourseChat::ChatMessageCreator do
         DiscourseChat::ChatMessageCreator.create(
           chat_channel: public_chat_channel,
           user: user1,
-          content: "@here plus @#{user3.username}"
+          content: "@here plus @#{user3.username}",
         )
       }.to change { user3.chat_mentions.count }.by(1)
     end
@@ -154,7 +180,7 @@ describe DiscourseChat::ChatMessageCreator do
         DiscourseChat::ChatMessageCreator.create(
           chat_channel: public_chat_channel,
           user: user1,
-          content: "hello @#{user_without_memberships.username}"
+          content: "hello @#{user_without_memberships.username}",
         )
       }.to change { ChatMention.count }.by(0)
     end
@@ -166,7 +192,7 @@ describe DiscourseChat::ChatMessageCreator do
         DiscourseChat::ChatMessageCreator.create(
           chat_channel: public_chat_channel,
           user: user1,
-          content: "hi @#{user2.username} @#{user3.username}"
+          content: "hi @#{user2.username} @#{user3.username}",
         )
       }.to change { ChatMention.count }.by(0)
     end
@@ -177,7 +203,7 @@ describe DiscourseChat::ChatMessageCreator do
         DiscourseChat::ChatMessageCreator.create(
           chat_channel: public_chat_channel,
           user: user1,
-          content: "hi @#{user2.username}"
+          content: "hi @#{user2.username}",
         )
       }.to change { ChatMention.count }.by(0)
     end
@@ -187,36 +213,33 @@ describe DiscourseChat::ChatMessageCreator do
         DiscourseChat::ChatMessageCreator.create(
           chat_channel: @direct_message_channel,
           user: user1,
-          content: "hello there @#{user2.username} and @#{user3.username}"
+          content: "hello there @#{user2.username} and @#{user3.username}",
         )
         # Only user2 should be notified
-      }.to change { user2.chat_mentions.count }.by(1)
-        .and change {
-               user3.chat_mentions.count
-             }.by(0)
+      }.to change { user2.chat_mentions.count }.by(1).and change { user3.chat_mentions.count }.by(0)
     end
 
-    it 'creates a mention notifications for group users that are participating in private chat' do
+    it "creates a mention notifications for group users that are participating in private chat" do
       expect {
         DiscourseChat::ChatMessageCreator.create(
           chat_channel: @direct_message_channel,
           user: user1,
-          content: "hello there @#{user_group.name}"
+          content: "hello there @#{user_group.name}",
         )
         # Only user2 should be notified
-      }.to change { user2.chat_mentions.count }.by(1)
-        .and change {
-               user3.chat_mentions.count
-             }.by(0)
+      }.to change { user2.chat_mentions.count }.by(1).and change { user3.chat_mentions.count }.by(0)
     end
 
     it "publishes inaccessible mentions when user isn't aren't a part of the channel" do
-      user3.user_chat_channel_memberships.where(chat_channel: public_chat_channel).update(following: false)
+      user3
+        .user_chat_channel_memberships
+        .where(chat_channel: public_chat_channel)
+        .update(following: false)
       ChatPublisher.expects(:publish_inaccessible_mentions).once
       DiscourseChat::ChatMessageCreator.create(
         chat_channel: public_chat_channel,
         user: admin1,
-        content: "hello @#{user3.username}"
+        content: "hello @#{user3.username}",
       )
     end
 
@@ -226,7 +249,7 @@ describe DiscourseChat::ChatMessageCreator do
       DiscourseChat::ChatMessageCreator.create(
         chat_channel: public_chat_channel,
         user: admin1,
-        content: "hello @#{user3.username}"
+        content: "hello @#{user3.username}",
       )
     end
 
@@ -235,7 +258,7 @@ describe DiscourseChat::ChatMessageCreator do
       DiscourseChat::ChatMessageCreator.create(
         chat_channel: public_chat_channel,
         user: admin1,
-        content: "hello @#{admin2.username}"
+        content: "hello @#{admin2.username}",
       )
     end
 
@@ -245,7 +268,7 @@ describe DiscourseChat::ChatMessageCreator do
         DiscourseChat::ChatMessageCreator.create(
           chat_channel: @direct_message_channel,
           user: user1,
-          content: "hello @#{user2.username}"
+          content: "hello @#{user2.username}",
         )
       }.to change { user2.chat_mentions.count }.by(0)
     end
@@ -255,7 +278,7 @@ describe DiscourseChat::ChatMessageCreator do
         DiscourseChat::ChatMessageCreator.create(
           chat_channel: public_chat_channel,
           user: user1,
-          content: "@all"
+          content: "@all",
         )
       }.to change { ChatMention.count }.by(4)
 
@@ -264,7 +287,7 @@ describe DiscourseChat::ChatMessageCreator do
         DiscourseChat::ChatMessageCreator.create(
           chat_channel: public_chat_channel,
           user: user1,
-          content: "hi! @all"
+          content: "hi! @all",
         )
       }.to change { ChatMention.count }.by(3)
     end
@@ -281,7 +304,7 @@ describe DiscourseChat::ChatMessageCreator do
         DiscourseChat::ChatMessageCreator.create(
           chat_channel: public_chat_channel,
           user: user1,
-          content: "@here"
+          content: "@here",
         )
       }.to change { ChatMention.count }.by(1)
     end
@@ -292,12 +315,11 @@ describe DiscourseChat::ChatMessageCreator do
           DiscourseChat::ChatMessageCreator.create(
             chat_channel: public_chat_channel,
             user: user1,
-            content: "hello @#{admin_group.name}"
+            content: "hello @#{admin_group.name}",
           )
-        }.to change { admin1.chat_mentions.count }.by(1)
-          .and change {
-            admin2.chat_mentions.count
-          }.by(1)
+        }.to change { admin1.chat_mentions.count }.by(1).and change {
+                admin2.chat_mentions.count
+              }.by(1)
       end
 
       it "doesn't mention users twice if they are direct mentioned and group mentioned" do
@@ -305,12 +327,11 @@ describe DiscourseChat::ChatMessageCreator do
           DiscourseChat::ChatMessageCreator.create(
             chat_channel: public_chat_channel,
             user: user1,
-            content: "hello @#{admin_group.name} @#{admin1.username} and @#{admin2.username}"
+            content: "hello @#{admin_group.name} @#{admin1.username} and @#{admin2.username}",
           )
-        }.to change { admin1.chat_mentions.count }.by(1)
-          .and change {
-            admin2.chat_mentions.count
-          }.by(1)
+        }.to change { admin1.chat_mentions.count }.by(1).and change {
+                admin2.chat_mentions.count
+              }.by(1)
       end
 
       it "creates chat mentions for group mentions and direct mentions" do
@@ -318,15 +339,11 @@ describe DiscourseChat::ChatMessageCreator do
           DiscourseChat::ChatMessageCreator.create(
             chat_channel: public_chat_channel,
             user: user1,
-            content: "hello @#{admin_group.name} @#{user2.username}"
+            content: "hello @#{admin_group.name} @#{user2.username}",
           )
-        }.to change { admin1.chat_mentions.count }.by(1)
-          .and change {
-            admin2.chat_mentions.count
-          }.by(1)
-          .and change {
-            user2.chat_mentions.count
-          }.by(1)
+        }.to change { admin1.chat_mentions.count }.by(1).and change {
+                admin2.chat_mentions.count
+              }.by(1).and change { user2.chat_mentions.count }.by(1)
       end
 
       it "creates chat mentions for group mentions and direct mentions" do
@@ -334,18 +351,13 @@ describe DiscourseChat::ChatMessageCreator do
           DiscourseChat::ChatMessageCreator.create(
             chat_channel: public_chat_channel,
             user: user1,
-            content: "hello @#{admin_group.name} @#{user_group.name}"
+            content: "hello @#{admin_group.name} @#{user_group.name}",
           )
-        }.to change { admin1.chat_mentions.count }.by(1)
-          .and change {
-            admin2.chat_mentions.count
-          }.by(1)
-          .and change {
-            user2.chat_mentions.count
-          }.by(1)
-          .and change {
-            user3.chat_mentions.count
-          }.by(1)
+        }.to change { admin1.chat_mentions.count }.by(1).and change {
+                admin2.chat_mentions.count
+              }.by(1).and change { user2.chat_mentions.count }.by(1).and change {
+                            user3.chat_mentions.count
+                          }.by(1)
       end
 
       it "doesn't create chat mentions for group mentions where the group is un-mentionable" do
@@ -354,7 +366,7 @@ describe DiscourseChat::ChatMessageCreator do
           DiscourseChat::ChatMessageCreator.create(
             chat_channel: public_chat_channel,
             user: user1,
-            content: "hello @#{admin_group.name}"
+            content: "hello @#{admin_group.name}",
           )
         }.to change { ChatMention.count }.by(0)
       end
@@ -362,9 +374,9 @@ describe DiscourseChat::ChatMessageCreator do
 
     describe "push notifications" do
       before do
-        UserChatChannelMembership
-          .where(user: user1, chat_channel: public_chat_channel)
-          .update(mobile_notification_level: UserChatChannelMembership::NOTIFICATION_LEVELS[:always])
+        UserChatChannelMembership.where(user: user1, chat_channel: public_chat_channel).update(
+          mobile_notification_level: UserChatChannelMembership::NOTIFICATION_LEVELS[:always],
+        )
         PresenceChannel.clear_all!
       end
 
@@ -373,7 +385,7 @@ describe DiscourseChat::ChatMessageCreator do
         DiscourseChat::ChatMessageCreator.create(
           chat_channel: public_chat_channel,
           user: user2,
-          content: "Beep boop"
+          content: "Beep boop",
         )
       end
 
@@ -383,7 +395,7 @@ describe DiscourseChat::ChatMessageCreator do
         DiscourseChat::ChatMessageCreator.create(
           chat_channel: public_chat_channel,
           user: user2,
-          content: "Beep boop"
+          content: "Beep boop",
         )
       end
     end
@@ -399,7 +411,7 @@ describe DiscourseChat::ChatMessageCreator do
             chat_channel: public_chat_channel,
             user: user1,
             content: "Beep boop",
-            upload_ids: [upload1.id]
+            upload_ids: [upload1.id],
           )
         }.to change { ChatUpload.where(upload_id: upload1.id).count }.by(1)
       end
@@ -410,14 +422,11 @@ describe DiscourseChat::ChatMessageCreator do
             chat_channel: public_chat_channel,
             user: user1,
             content: "Beep boop",
-            upload_ids: [upload1.id, upload2.id]
+            upload_ids: [upload1.id, upload2.id],
           )
-        }.to change {
-          ChatUpload.where(upload_id: upload1.id).count
-        }.by(1)
-          .and change {
-            ChatUpload.where(upload_id: upload2.id).count
-          }.by(1)
+        }.to change { ChatUpload.where(upload_id: upload1.id).count }.by(1).and change {
+                ChatUpload.where(upload_id: upload2.id).count
+              }.by(1)
       end
 
       it "filters out uploads that weren't uploaded by the user" do
@@ -426,11 +435,9 @@ describe DiscourseChat::ChatMessageCreator do
             chat_channel: public_chat_channel,
             user: user1,
             content: "Beep boop",
-            upload_ids: [private_upload.id]
+            upload_ids: [private_upload.id],
           )
-        }.to change {
-          ChatUpload.where(upload_id: private_upload.id).count
-        }.by(0)
+        }.to change { ChatUpload.where(upload_id: private_upload.id).count }.by(0)
       end
 
       it "doesn't attach uploads when `chat_allow_uploads` is false" do
@@ -440,7 +447,7 @@ describe DiscourseChat::ChatMessageCreator do
             chat_channel: public_chat_channel,
             user: user1,
             content: "Beep boop",
-            upload_ids: [upload1.id]
+            upload_ids: [upload1.id],
           )
         }.to change { ChatUpload.where(upload_id: upload1.id).count }.by(0)
       end
@@ -454,7 +461,7 @@ describe DiscourseChat::ChatMessageCreator do
       DiscourseChat::ChatMessageCreator.create(
         chat_channel: public_chat_channel,
         user: user1,
-        content: "Hi @#{user2.username}"
+        content: "Hi @#{user2.username}",
       )
     end.to change { ChatDraft.count }.by(-1)
   end
@@ -463,31 +470,39 @@ describe DiscourseChat::ChatMessageCreator do
     fab!(:watched_word) { Fabricate(:watched_word) }
 
     it "errors when a blocked word is present" do
-      creator = DiscourseChat::ChatMessageCreator.create(
-        chat_channel: public_chat_channel,
-        user: user1,
-        content: "bad word - #{watched_word.word}"
-      )
+      creator =
+        DiscourseChat::ChatMessageCreator.create(
+          chat_channel: public_chat_channel,
+          user: user1,
+          content: "bad word - #{watched_word.word}",
+        )
       expect(creator.failed?).to eq(true)
-      expect(creator.error.message).to match(I18n.t("contains_blocked_word", { word: watched_word.word }))
+      expect(creator.error.message).to match(
+        I18n.t("contains_blocked_word", { word: watched_word.word }),
+      )
     end
   end
 
   describe "channel statuses" do
     def create_message(user)
-      DiscourseChat::ChatMessageCreator.create(chat_channel: public_chat_channel, user: user, content: "test message")
+      DiscourseChat::ChatMessageCreator.create(
+        chat_channel: public_chat_channel,
+        user: user,
+        content: "test message",
+      )
     end
 
     context "when channel is closed" do
-      before do
-        public_chat_channel.update(status: :closed)
-      end
+      before { public_chat_channel.update(status: :closed) }
 
       it "errors when trying to create the message for non-staff" do
         creator = create_message(user1)
         expect(creator.failed?).to eq(true)
         expect(creator.error.message).to eq(
-          I18n.t("chat.errors.channel_new_message_disallowed", status: public_chat_channel.status_name)
+          I18n.t(
+            "chat.errors.channel_new_message_disallowed",
+            status: public_chat_channel.status_name,
+          ),
         )
       end
 
@@ -497,39 +512,47 @@ describe DiscourseChat::ChatMessageCreator do
     end
 
     context "when channel is read_only" do
-      before do
-        public_chat_channel.update(status: :read_only)
-      end
+      before { public_chat_channel.update(status: :read_only) }
 
       it "errors when trying to create the message for all users" do
         creator = create_message(user1)
         expect(creator.failed?).to eq(true)
         expect(creator.error.message).to eq(
-          I18n.t("chat.errors.channel_new_message_disallowed", status: public_chat_channel.status_name)
+          I18n.t(
+            "chat.errors.channel_new_message_disallowed",
+            status: public_chat_channel.status_name,
+          ),
         )
         creator = create_message(admin1)
         expect(creator.failed?).to eq(true)
         expect(creator.error.message).to eq(
-          I18n.t("chat.errors.channel_new_message_disallowed", status: public_chat_channel.status_name)
+          I18n.t(
+            "chat.errors.channel_new_message_disallowed",
+            status: public_chat_channel.status_name,
+          ),
         )
       end
     end
 
     context "when channel is archived" do
-      before do
-        public_chat_channel.update(status: :archived)
-      end
+      before { public_chat_channel.update(status: :archived) }
 
       it "errors when trying to create the message for all users" do
         creator = create_message(user1)
         expect(creator.failed?).to eq(true)
         expect(creator.error.message).to eq(
-          I18n.t("chat.errors.channel_new_message_disallowed", status: public_chat_channel.status_name)
+          I18n.t(
+            "chat.errors.channel_new_message_disallowed",
+            status: public_chat_channel.status_name,
+          ),
         )
         creator = create_message(admin1)
         expect(creator.failed?).to eq(true)
         expect(creator.error.message).to eq(
-          I18n.t("chat.errors.channel_new_message_disallowed", status: public_chat_channel.status_name)
+          I18n.t(
+            "chat.errors.channel_new_message_disallowed",
+            status: public_chat_channel.status_name,
+          ),
         )
       end
     end

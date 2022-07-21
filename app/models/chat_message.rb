@@ -18,19 +18,19 @@ class ChatMessage < ActiveRecord::Base
   has_one :chat_webhook_event, dependent: :destroy
   has_one :chat_mention, dependent: :destroy
 
-  scope :in_public_channel, -> {
-    joins(:chat_channel)
-      .where(chat_channel: { chatable_type: ChatChannel.public_channel_chatable_types })
-  }
+  scope :in_public_channel,
+        -> {
+          joins(:chat_channel).where(
+            chat_channel: {
+              chatable_type: ChatChannel.public_channel_chatable_types,
+            },
+          )
+        }
 
-  scope :in_dm_channel, -> {
-    joins(:chat_channel)
-      .where(chat_channel: { chatable_type: "DirectMessageChannel" })
-  }
+  scope :in_dm_channel,
+        -> { joins(:chat_channel).where(chat_channel: { chatable_type: "DirectMessageChannel" }) }
 
-  scope :created_before, -> (date) {
-    where("chat_messages.created_at < ?", date)
-  }
+  scope :created_before, ->(date) { where("chat_messages.created_at < ?", date) }
 
   def validate_message(has_uploads:)
     WatchedWordsValidator.new(attributes: [:message]).validate(self)
@@ -39,7 +39,10 @@ class ChatMessage < ActiveRecord::Base
     if !has_uploads && message_too_short?
       self.errors.add(
         :base,
-        I18n.t("chat.errors.minimum_length_not_met", minimum: SiteSetting.chat_minimum_message_length)
+        I18n.t(
+          "chat.errors.minimum_length_not_met",
+          minimum: SiteSetting.chat_minimum_message_length,
+        ),
       )
     end
   end
@@ -48,14 +51,10 @@ class ChatMessage < ActiveRecord::Base
     return if uploads.blank?
 
     now = Time.now
-    record_attrs = uploads.map do |upload|
-      {
-        upload_id: upload.id,
-        chat_message_id: self.id,
-        created_at: now,
-        updated_at: now
-      }
-    end
+    record_attrs =
+      uploads.map do |upload|
+        { upload_id: upload.id, chat_message_id: self.id, created_at: now, updated_at: now }
+      end
     ChatUpload.insert_all!(record_attrs)
   end
 
@@ -79,16 +78,9 @@ class ChatMessage < ActiveRecord::Base
   end
 
   def add_flag(user)
-    reviewable = ReviewableChatMessage.needs_review!(
-      created_by: user,
-      target: self,
-    )
+    reviewable = ReviewableChatMessage.needs_review!(created_by: user, target: self)
     reviewable.update(target_created_by: self.user)
-    reviewable.add_score(
-      user,
-      ReviewableScore.types[:needs_review],
-      force_review: true
-    )
+    reviewable.add_score(user, ReviewableScore.types[:needs_review], force_review: true)
     reviewable
   end
 
@@ -102,16 +94,13 @@ class ChatMessage < ActiveRecord::Base
     if self.message.present?
       msg = self.message
 
-      if self.chat_uploads.any?
-        markdown << msg + "\n"
-      else
-        markdown << msg
-      end
+      self.chat_uploads.any? ? markdown << msg + "\n" : markdown << msg
     end
 
-    self.chat_uploads.order(:created_at).each do |chat_upload|
-      markdown << UploadMarkdown.new(chat_upload.upload).to_markdown
-    end
+    self
+      .chat_uploads
+      .order(:created_at)
+      .each { |chat_upload| markdown << UploadMarkdown.new(chat_upload.upload).to_markdown }
 
     markdown.reject(&:empty?).join("\n")
   end
@@ -124,13 +113,8 @@ class ChatMessage < ActiveRecord::Base
   def rebake!(invalidate_oneboxes: false, priority: nil)
     previous_cooked = self.cooked
     new_cooked = self.class.cook(message, invalidate_oneboxes: invalidate_oneboxes)
-    update_columns(
-      cooked: new_cooked,
-      cooked_version: BAKED_VERSION
-    )
-    args = {
-      chat_message_id: self.id,
-    }
+    update_columns(cooked: new_cooked, cooked_version: BAKED_VERSION)
+    args = { chat_message_id: self.id }
     args[:queue] = priority.to_s if priority && priority != :normal
     args[:is_dirty] = true if previous_cooked != new_cooked
 
@@ -138,10 +122,10 @@ class ChatMessage < ActiveRecord::Base
   end
 
   def self.uncooked
-    where('cooked_version <> ? or cooked_version IS NULL', BAKED_VERSION)
+    where("cooked_version <> ? or cooked_version IS NULL", BAKED_VERSION)
   end
 
-  MARKDOWN_FEATURES = %w{
+  MARKDOWN_FEATURES = %w[
     anchor
     bbcode-block
     bbcode-inline
@@ -162,9 +146,9 @@ class ChatMessage < ActiveRecord::Base
     text-post-process
     upload-protocol
     watched-words
-  }
+  ]
 
-  MARKDOWN_IT_RULES = %w{
+  MARKDOWN_IT_RULES = %w[
     autolink
     list
     backticks
@@ -178,24 +162,26 @@ class ChatMessage < ActiveRecord::Base
     strikethrough
     blockquote
     emphasis
-  }
+  ]
 
   def self.cook(message, opts = {})
-    cooked = PrettyText.cook(
-      message,
-      features_override: MARKDOWN_FEATURES + DiscoursePluginRegistry.chat_markdown_features.to_a,
-      markdown_it_rules: MARKDOWN_IT_RULES,
-      force_quote_link: true
-    )
+    cooked =
+      PrettyText.cook(
+        message,
+        features_override: MARKDOWN_FEATURES + DiscoursePluginRegistry.chat_markdown_features.to_a,
+        markdown_it_rules: MARKDOWN_IT_RULES,
+        force_quote_link: true,
+      )
 
-    result = Oneboxer.apply(cooked) do |url|
-      if opts[:invalidate_oneboxes]
-        Oneboxer.invalidate(url)
-        InlineOneboxer.invalidate(url)
+    result =
+      Oneboxer.apply(cooked) do |url|
+        if opts[:invalidate_oneboxes]
+          Oneboxer.invalidate(url)
+          InlineOneboxer.invalidate(url)
+        end
+        onebox = Oneboxer.cached_onebox(url)
+        onebox
       end
-      onebox = Oneboxer.cached_onebox(url)
-      onebox
-    end
 
     cooked = result.to_html if result.changed?
     cooked

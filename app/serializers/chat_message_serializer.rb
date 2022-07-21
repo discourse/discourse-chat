@@ -2,18 +2,18 @@
 
 class ChatMessageSerializer < ApplicationSerializer
   attributes :id,
-    :message,
-    :cooked,
-    :created_at,
-    :excerpt,
-    :deleted_at,
-    :deleted_by_id,
-    :reviewable_id,
-    :user_flag_status,
-    :edited,
-    :reactions,
-    :bookmark,
-    :hidden
+             :message,
+             :cooked,
+             :created_at,
+             :excerpt,
+             :deleted_at,
+             :deleted_by_id,
+             :reviewable_id,
+             :user_flag_status,
+             :edited,
+             :reactions,
+             :bookmark,
+             :hidden
 
   has_one :user, serializer: BasicUserSerializer, embed: :objects
   has_one :chat_webhook_event, serializer: ChatWebhookEventSerializer, embed: :objects
@@ -22,17 +22,21 @@ class ChatMessageSerializer < ApplicationSerializer
 
   def reactions
     reactions_hash = {}
-    object.reactions.group_by(&:emoji).each do |emoji, reactions|
-      users = reactions[0..6].map(&:user).filter { |user| user.id != scope&.user&.id }[0..5]
+    object
+      .reactions
+      .group_by(&:emoji)
+      .each do |emoji, reactions|
+        users = reactions[0..6].map(&:user).filter { |user| user.id != scope&.user&.id }[0..5]
 
-      next unless Emoji.exists?(emoji)
+        next unless Emoji.exists?(emoji)
 
-      reactions_hash[emoji] = {
-        count: reactions.count,
-        users: ActiveModel::ArraySerializer.new(users, each_serializer: BasicUserSerializer).as_json,
-        reacted: users_reactions.include?(emoji)
-      }
-    end
+        reactions_hash[emoji] = {
+          count: reactions.count,
+          users:
+            ActiveModel::ArraySerializer.new(users, each_serializer: BasicUserSerializer).as_json,
+          reacted: users_reactions.include?(emoji),
+        }
+      end
     reactions_hash
   end
 
@@ -41,7 +45,8 @@ class ChatMessageSerializer < ApplicationSerializer
   end
 
   def users_reactions
-    @users_reactions ||= object.reactions.select { |reaction| reaction.user_id == scope&.user&.id }.map(&:emoji)
+    @users_reactions ||=
+      object.reactions.select { |reaction| reaction.user_id == scope&.user&.id }.map(&:emoji)
   end
 
   def users_bookmark
@@ -59,7 +64,7 @@ class ChatMessageSerializer < ApplicationSerializer
       name: users_bookmark.name,
       auto_delete_preference: users_bookmark.auto_delete_preference,
       bookmarkable_id: users_bookmark.bookmarkable_id,
-      bookmarkable_type: users_bookmark.bookmarkable_type
+      bookmarkable_type: users_bookmark.bookmarkable_type,
     }
   end
 

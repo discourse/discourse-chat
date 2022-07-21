@@ -7,7 +7,9 @@ module Jobs
 
       # this should not really happen, but better to do this than throw an error
       if chat_channel.blank?
-        Rails.logger.warn("Chat channel #{args[:chat_channel_id]} could not be found, aborting delete job.")
+        Rails.logger.warn(
+          "Chat channel #{args[:chat_channel_id]} could not be found, aborting delete job.",
+        )
         return
       end
 
@@ -23,7 +25,9 @@ module Jobs
         ChatDraft.where(chat_channel: chat_channel).delete_all
         UserChatChannelMembership.where(chat_channel: chat_channel).delete_all
 
-        Rails.logger.debug("Deleting chat messages, mentions, revisions, and uploads for channel #{chat_channel.id}")
+        Rails.logger.debug(
+          "Deleting chat messages, mentions, revisions, and uploads for channel #{chat_channel.id}",
+        )
         ChatMessage.transaction do
           chat_messages = ChatMessage.where(chat_channel: chat_channel)
           message_ids = chat_messages.select(:id)
@@ -38,7 +42,8 @@ module Jobs
           # only the messages and the channel are Trashable, everything else gets
           # permanently destroyed
           chat_messages.update_all(
-            deleted_by_id: chat_channel.deleted_by_id, deleted_at: Time.zone.now
+            deleted_by_id: chat_channel.deleted_by_id,
+            deleted_at: Time.zone.now,
           )
         end
       end

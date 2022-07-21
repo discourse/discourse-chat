@@ -6,11 +6,12 @@ module Jobs
       return "starts_at or ends_at missing" if args[:starts_at].blank? || args[:ends_at].blank?
       return "End is higher than start" if args[:ends_at] < args[:starts_at]
 
-      channel = ChatChannel.find_by(
-        id: args[:chat_channel_id],
-        auto_join_users: true,
-        chatable_type: 'Category'
-      )
+      channel =
+        ChatChannel.find_by(
+          id: args[:chat_channel_id],
+          auto_join_users: true,
+          chatable_type: "Category",
+        )
 
       return if !channel
 
@@ -24,7 +25,7 @@ module Jobs
         suspended_until: Time.zone.now,
         last_seen_at: 3.months.ago,
         channel_category: channel.chatable_id,
-        mode: UserChatChannelMembership.join_modes[:automatic]
+        mode: UserChatChannelMembership.join_modes[:automatic],
       }
 
       new_member_ids = DB.query_single(create_memberships_query(category), query_args)
@@ -35,10 +36,7 @@ module Jobs
         WHERE id = :channel_id
       SQL
 
-      ChatPublisher.publish_new_channel(
-        channel.reload,
-        User.where(id: new_member_ids)
-      )
+      ChatPublisher.publish_new_channel(channel.reload, User.where(id: new_member_ids))
     end
 
     private
@@ -53,12 +51,10 @@ module Jobs
           uccm.chat_channel_id = :chat_channel_id AND uccm.user_id = users.id
       SQL
 
-      if category.read_restricted?
-        query += <<~SQL
+      query += <<~SQL if category.read_restricted?
           INNER JOIN group_users gu ON gu.user_id = users.id
           LEFT OUTER JOIN category_groups cg ON cg.group_id = gu.group_id
         SQL
-      end
 
       query += <<~SQL
         WHERE (users.id >= :start AND users.id <= :end) AND
@@ -70,13 +66,11 @@ module Jobs
           uccm.id IS NULL
       SQL
 
-      if category.read_restricted?
-        query += <<~SQL
+      query += <<~SQL if category.read_restricted?
           AND cg.category_id = :channel_category
         SQL
-      end
 
-      query += 'RETURNING user_chat_channel_memberships.user_id'
+      query += "RETURNING user_chat_channel_memberships.user_id"
     end
   end
 end

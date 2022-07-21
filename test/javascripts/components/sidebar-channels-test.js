@@ -9,7 +9,7 @@ import {
 } from "../helpers/chat-stub";
 
 discourseModule(
-  "Discourse chat | Component | sidebar-channels",
+  "Discourse Chat | Component | sidebar-channels",
   function (hooks) {
     setupRenderingTest(hooks);
 

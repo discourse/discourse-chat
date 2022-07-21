@@ -17,8 +17,10 @@
 # notifications, revisions, mentions, uploads) will be updated to the new
 # message IDs via a moved_chat_messages temporary table.
 class DiscourseChat::MessageMover
-  class NoMessagesFound < StandardError; end
-  class InvalidChannel < StandardError; end
+  class NoMessagesFound < StandardError
+  end
+  class InvalidChannel < StandardError
+  end
 
   def initialize(acting_user:, source_channel:, message_ids:)
     @source_channel = source_channel
@@ -41,10 +43,11 @@ class DiscourseChat::MessageMover
 
     ChatMessage.transaction do
       create_temp_table
-      moved_messages = find_messages(
-        create_destination_messages_in_channel(destination_channel),
-        destination_channel
-      )
+      moved_messages =
+        find_messages(
+          create_destination_messages_in_channel(destination_channel),
+          destination_channel,
+        )
       bulk_insert_movement_metadata
       update_references
       delete_source_messages
@@ -74,10 +77,10 @@ class DiscourseChat::MessageMover
   end
 
   def bulk_insert_movement_metadata
-    values_sql = @movement_metadata.map do |mm|
-      "(#{mm[:old_id]}, #{mm[:new_id]})"
-    end.join(",\n")
-    DB.exec("INSERT INTO moved_chat_messages(old_chat_message_id, new_chat_message_id) VALUES #{values_sql}")
+    values_sql = @movement_metadata.map { |mm| "(#{mm[:old_id]}, #{mm[:new_id]})" }.join(",\n")
+    DB.exec(
+      "INSERT INTO moved_chat_messages(old_chat_message_id, new_chat_message_id) VALUES #{values_sql}",
+    )
   end
 
   ##
@@ -87,7 +90,7 @@ class DiscourseChat::MessageMover
   def create_destination_messages_in_channel(destination_channel)
     query_args = {
       message_ids: @ordered_source_message_ids,
-      destination_channel_id: destination_channel.id
+      destination_channel_id: destination_channel.id,
     }
     moved_message_ids = DB.query_single(<<~SQL, query_args)
       INSERT INTO chat_messages(chat_channel_id, user_id, message, cooked, cooked_version, created_at, updated_at)
@@ -103,12 +106,10 @@ class DiscourseChat::MessageMover
       RETURNING id
     SQL
 
-    @movement_metadata = moved_message_ids.map.with_index do |chat_message_id, idx|
-      {
-        old_id: @ordered_source_message_ids[idx],
-        new_id: chat_message_id
-      }
-    end
+    @movement_metadata =
+      moved_message_ids.map.with_index do |chat_message_id, idx|
+        { old_id: @ordered_source_message_ids[idx], new_id: chat_message_id }
+      end
     moved_message_ids
   end
 
@@ -158,13 +159,14 @@ class DiscourseChat::MessageMover
     DiscourseChat::ChatMessageCreator.create(
       chat_channel: @source_channel,
       user: Discourse.system_user,
-      content: I18n.t(
-        "chat.channel.messages_moved",
-        count: @source_message_ids.length,
-        acting_username: @acting_user.username,
-        channel_name: destination_channel.title(@acting_user),
-        first_moved_message_url: first_moved_message.url
-      )
+      content:
+        I18n.t(
+          "chat.channel.messages_moved",
+          count: @source_message_ids.length,
+          acting_username: @acting_user.username,
+          channel_name: destination_channel.title(@acting_user),
+          first_moved_message_url: first_moved_message.url,
+        ),
     )
   end
 end

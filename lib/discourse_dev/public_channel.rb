@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'discourse_dev/record'
-require 'faker'
+require "discourse_dev/record"
+require "faker"
 
 module DiscourseDev
   class PublicChannel < Record
@@ -23,18 +23,25 @@ module DiscourseDev
 
     def create!
       super do |channel|
-        Faker::Number.between(from: 5, to: 10).times do
-          if Faker::Boolean.boolean(true_ratio: 0.5)
-            admin_username = DiscourseDev::Config.new.config[:admin][:username] rescue nil
-            admin_user = ::User.find_by(username: admin_username) if admin_username
-          end
+        Faker::Number
+          .between(from: 5, to: 10)
+          .times do
+            if Faker::Boolean.boolean(true_ratio: 0.5)
+              admin_username =
+                begin
+                  DiscourseDev::Config.new.config[:admin][:username]
+                rescue StandardError
+                  nil
+                end
+              admin_user = ::User.find_by(username: admin_username) if admin_username
+            end
 
-          ::UserChatChannelMembership.find_or_create_by!(
-            user: admin_user || User.new.create!,
-            chat_channel: channel,
-            following: true,
-          )
-        end
+            ::UserChatChannelMembership.find_or_create_by!(
+              user: admin_user || User.new.create!,
+              chat_channel: channel,
+              following: true,
+            )
+          end
       end
     end
   end

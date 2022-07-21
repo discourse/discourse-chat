@@ -1,41 +1,74 @@
 # frozen_string_literal: true
 
-require 'rails_helper'
+require "rails_helper"
 
 describe Jobs::DeleteOldChatMessages do
-  base_date = DateTime.parse('2020-12-01 00:00 UTC')
+  base_date = DateTime.parse("2020-12-01 00:00 UTC")
 
   fab!(:public_channel) { Fabricate(:chat_channel) }
-  fab!(:public_days_old_0) {
+  fab!(:public_days_old_0) do
     Fabricate(:chat_message, chat_channel: public_channel, message: "hi", created_at: base_date)
-  }
-  fab!(:public_days_old_10) {
-    Fabricate(:chat_message, chat_channel: public_channel, message: "hi", created_at: base_date - 10.days - 1.second)
-  }
-  fab!(:public_days_old_20) {
-    Fabricate(:chat_message, chat_channel: public_channel, message: "hi", created_at: base_date - 20.days - 1.second)
-  }
-  fab!(:public_days_old_30) {
-    Fabricate(:chat_message, chat_channel: public_channel, message: "hi", created_at: base_date - 30.days - 1.second)
-  }
-
-  fab!(:dm_channel) { Fabricate(:chat_channel, chatable: Fabricate(:direct_message_channel, users: [Fabricate(:user)])) }
-  fab!(:dm_days_old_0) {
-    Fabricate(:chat_message, chat_channel: dm_channel, message: "hi", created_at: base_date)
-  }
-  fab!(:dm_days_old_10) {
-    Fabricate(:chat_message, chat_channel: dm_channel, message: "hi", created_at: base_date - 10.days - 1.second)
-  }
-  fab!(:dm_days_old_20) {
-    Fabricate(:chat_message, chat_channel: dm_channel, message: "hi", created_at: base_date - 20.days - 1.second)
-  }
-  fab!(:dm_days_old_30) {
-    Fabricate(:chat_message, chat_channel: dm_channel, message: "hi", created_at: base_date - 30.days - 1.second)
-  }
-
-  before do
-    freeze_time(base_date)
   end
+  fab!(:public_days_old_10) do
+    Fabricate(
+      :chat_message,
+      chat_channel: public_channel,
+      message: "hi",
+      created_at: base_date - 10.days - 1.second,
+    )
+  end
+  fab!(:public_days_old_20) do
+    Fabricate(
+      :chat_message,
+      chat_channel: public_channel,
+      message: "hi",
+      created_at: base_date - 20.days - 1.second,
+    )
+  end
+  fab!(:public_days_old_30) do
+    Fabricate(
+      :chat_message,
+      chat_channel: public_channel,
+      message: "hi",
+      created_at: base_date - 30.days - 1.second,
+    )
+  end
+
+  fab!(:dm_channel) do
+    Fabricate(
+      :chat_channel,
+      chatable: Fabricate(:direct_message_channel, users: [Fabricate(:user)]),
+    )
+  end
+  fab!(:dm_days_old_0) do
+    Fabricate(:chat_message, chat_channel: dm_channel, message: "hi", created_at: base_date)
+  end
+  fab!(:dm_days_old_10) do
+    Fabricate(
+      :chat_message,
+      chat_channel: dm_channel,
+      message: "hi",
+      created_at: base_date - 10.days - 1.second,
+    )
+  end
+  fab!(:dm_days_old_20) do
+    Fabricate(
+      :chat_message,
+      chat_channel: dm_channel,
+      message: "hi",
+      created_at: base_date - 20.days - 1.second,
+    )
+  end
+  fab!(:dm_days_old_30) do
+    Fabricate(
+      :chat_message,
+      chat_channel: dm_channel,
+      message: "hi",
+      created_at: base_date - 30.days - 1.second,
+    )
+  end
+
+  before { freeze_time(base_date) }
 
   it "doesn't delete messages when settings are 0" do
     SiteSetting.chat_channel_retention_days = 0
@@ -61,7 +94,15 @@ describe Jobs::DeleteOldChatMessages do
 
     it "resets last_read_message_id from memberships" do
       SiteSetting.chat_channel_retention_days = 20
-      membership = UserChatChannelMembership.create!(user: Fabricate(:user), chat_channel: public_channel, last_read_message_id: public_days_old_30.id, following: true, desktop_notification_level: 2, mobile_notification_level: 2)
+      membership =
+        UserChatChannelMembership.create!(
+          user: Fabricate(:user),
+          chat_channel: public_channel,
+          last_read_message_id: public_days_old_30.id,
+          following: true,
+          desktop_notification_level: 2,
+          mobile_notification_level: 2,
+        )
       described_class.new.execute
 
       expect(membership.reload.last_read_message_id).to be_nil
@@ -85,7 +126,15 @@ describe Jobs::DeleteOldChatMessages do
 
     it "resets last_read_message_id from memberships" do
       SiteSetting.chat_dm_retention_days = 20
-      membership = UserChatChannelMembership.create!(user: Fabricate(:user), chat_channel: dm_channel, last_read_message_id: dm_days_old_30.id, following: true, desktop_notification_level: 2, mobile_notification_level: 2)
+      membership =
+        UserChatChannelMembership.create!(
+          user: Fabricate(:user),
+          chat_channel: dm_channel,
+          last_read_message_id: dm_days_old_30.id,
+          following: true,
+          desktop_notification_level: 2,
+          mobile_notification_level: 2,
+        )
       described_class.new.execute
 
       expect(membership.reload.last_read_message_id).to be_nil

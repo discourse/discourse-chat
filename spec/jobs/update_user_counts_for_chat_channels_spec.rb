@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'rails_helper'
+require "rails_helper"
 
 describe Jobs::UpdateUserCountsForChatChannels do
   fab!(:chat_channel_1) { Fabricate(:chat_channel, user_count: 0) }

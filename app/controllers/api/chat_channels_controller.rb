@@ -5,15 +5,16 @@ CATEGORY_CHAT_CHANNEL_EDITABLE_PARAMS = %i[auto_join_users]
 
 class DiscourseChat::Api::ChatChannelsController < DiscourseChat::Api
   def index
-    options = {
-      status: params[:status] ? ChatChannel.statuses[params[:status]] : nil
-    }.merge(params.permit(:filter, :limit, :offset)).symbolize_keys!
+    options = { status: params[:status] ? ChatChannel.statuses[params[:status]] : nil }.merge(
+      params.permit(:filter, :limit, :offset),
+    ).symbolize_keys!
 
-    channels = DiscourseChat::ChatChannelFetcher.secured_public_channels(
-      guardian,
-      UserChatChannelMembership.where(user: current_user),
-      options
-    )
+    channels =
+      DiscourseChat::ChatChannelFetcher.secured_public_channels(
+        guardian,
+        UserChatChannelMembership.where(user: current_user),
+        options,
+      )
 
     render_serialized(channels, ChatChannelSerializer)
   end
@@ -24,13 +25,13 @@ class DiscourseChat::Api::ChatChannelsController < DiscourseChat::Api
     chat_channel = find_chat_channel
 
     if chat_channel.direct_message_channel?
-      raise Discourse::InvalidParameters.new(I18n.t("chat.errors.cant_update_direct_message_channel"))
+      raise Discourse::InvalidParameters.new(
+              I18n.t("chat.errors.cant_update_direct_message_channel"),
+            )
     end
 
     params_to_edit = editable_params(params, chat_channel)
-    params_to_edit.each do |k, v|
-      params_to_edit[k] = nil if params_to_edit[k].blank?
-    end
+    params_to_edit.each { |k, v| params_to_edit[k] = nil if params_to_edit[k].blank? }
 
     if ActiveRecord::Type::Boolean.new.deserialize(params_to_edit[:auto_join_users])
       auto_join_limiter(chat_channel).performed!
@@ -56,23 +57,29 @@ class DiscourseChat::Api::ChatChannelsController < DiscourseChat::Api
   end
 
   def find_membership
-    membership = UserChatChannelMembership
-      .includes(:user, :chat_channel)
-      .find_by!(user: current_user, chat_channel_id: params.require(:chat_channel_id))
+    membership =
+      UserChatChannelMembership.includes(:user, :chat_channel).find_by!(
+        user: current_user,
+        chat_channel_id: params.require(:chat_channel_id),
+      )
     guardian.ensure_can_see_chat_channel!(membership.chat_channel)
     membership
   end
 
   def auto_join_limiter(chat_channel)
-    RateLimiter.new(current_user, "auto_join_users_channel_#{chat_channel.id}", 1, 3.minutes, apply_limit_to_staff: true)
+    RateLimiter.new(
+      current_user,
+      "auto_join_users_channel_#{chat_channel.id}",
+      1,
+      3.minutes,
+      apply_limit_to_staff: true,
+    )
   end
 
   def editable_params(params, chat_channel)
     permitted_params = CHAT_CHANNEL_EDITABLE_PARAMS
 
-    if chat_channel.category_channel?
-      permitted_params += CATEGORY_CHAT_CHANNEL_EDITABLE_PARAMS
-    end
+    permitted_params += CATEGORY_CHAT_CHANNEL_EDITABLE_PARAMS if chat_channel.category_channel?
 
     params.permit(*permitted_params)
   end

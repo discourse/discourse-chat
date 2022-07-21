@@ -13,10 +13,11 @@ import discourseComputed, {
 import EmberObject, { action, computed } from "@ember/object";
 import { and, not } from "@ember/object/computed";
 import { ajax } from "discourse/lib/ajax";
-import { cancel, later, once, schedule } from "@ember/runloop";
+import { cancel, once, schedule } from "@ember/runloop";
 import { clipboardCopy } from "discourse/lib/utilities";
 import { inject as service } from "@ember/service";
 import { popupAjaxError } from "discourse/lib/ajax-error";
+import discourseLater from "discourse-common/lib/later";
 
 let _chatMessageDecorators = [];
 
@@ -290,7 +291,7 @@ export default Component.extend({
         this._handleLongPress();
       }
 
-      this._isPressingHandler = later(this._handleLongPress, 500);
+      this._isPressingHandler = discourseLater(this._handleLongPress, 500);
     }
   },
 
@@ -472,18 +473,17 @@ export default Component.extend({
   @action
   inviteMentioned() {
     const user_ids = this.message.mentionWarning.without_membership.mapBy("id");
+
     ajax(`/chat/${this.details.chat_channel_id}/invite`, {
       method: "PUT",
       data: { user_ids, chat_message_id: this.message.id },
     }).then(() => {
       this.message.set("mentionWarning.invitationSent", true);
-      this._invitationSentTimer = later(
-        () => {
-          this.message.set("mentionWarning", null);
-        },
-        isTesting() ? 0 : 3000
-      );
+      this._invitationSentTimer = discourseLater(() => {
+        this.message.set("mentionWarning", null);
+      }, 3000);
     });
+
     return false;
   },
 
@@ -622,7 +622,7 @@ export default Component.extend({
       return;
     }
 
-    if (this.capabilities.canVibrate) {
+    if (this.capabilities.canVibrate && !isTesting()) {
       navigator.vibrate(5);
     }
 
@@ -841,14 +841,11 @@ export default Component.extend({
     url = url.indexOf("/") === 0 ? protocol + "//" + host + url : url;
     clipboardCopy(url);
 
-    later(
-      () => {
-        this.messageContainer
-          ?.querySelector(".link-to-message-btn")
-          ?.classList?.remove("copied");
-      },
-      isTesting() ? 0 : 250
-    );
+    discourseLater(() => {
+      this.messageContainer
+        ?.querySelector(".link-to-message-btn")
+        ?.classList?.remove("copied");
+    }, 250);
   },
 
   @discourseComputed("emojiReactionStore.favorites.[]")

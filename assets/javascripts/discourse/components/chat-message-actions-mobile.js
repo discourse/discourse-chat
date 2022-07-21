@@ -1,6 +1,7 @@
 import Component from "@ember/component";
-import { later } from "@ember/runloop";
+import discourseLater from "discourse-common/lib/later";
 import { action } from "@ember/object";
+import { isTesting } from "discourse-common/config/environment";
 
 export default Component.extend({
   tagName: "",
@@ -10,9 +11,9 @@ export default Component.extend({
   didInsertElement() {
     this._super(...arguments);
 
-    later(this._addFadeIn);
+    discourseLater(this._addFadeIn);
 
-    if (this.capabilities.canVibrate) {
+    if (this.capabilities.canVibrate && !isTesting()) {
       navigator.vibrate(5);
     }
   },
@@ -42,7 +43,7 @@ export default Component.extend({
 
     // we don't want to remove the component right away as it's animating
     // 200 is equal to the duration of the css animation
-    later(() => {
+    discourseLater(() => {
       if (this.isDestroying || this.isDestroyed) {
         return;
       }

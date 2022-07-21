@@ -1,7 +1,6 @@
 import Component from "@ember/component";
 import I18n from "I18n";
-import { isTesting } from "discourse-common/config/environment";
-import { later } from "@ember/runloop";
+import discourseLater from "discourse-common/lib/later";
 import { isEmpty } from "@ember/utils";
 import discourseComputed from "discourse-common/utils/decorators";
 import { action } from "@ember/object";
@@ -44,11 +43,11 @@ export default Component.extend({
           text: I18n.t("chat.channel_archive.process_started"),
           messageClass: "success",
         });
+
         this.chatChannel.set("status", CHANNEL_STATUSES.archived);
-        later(() => {
-          if (!isTesting()) {
-            this.closeModal();
-          }
+
+        discourseLater(() => {
+          this.closeModal();
         }, 3000);
       })
       .catch(popupAjaxError)

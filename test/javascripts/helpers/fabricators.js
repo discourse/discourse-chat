@@ -8,8 +8,7 @@ const userFabricator = Fabricator(EmberObject, {
   id: 1,
   username: "hawk",
   name: null,
-  avatar_template:
-    "https://avatars.discourse.org/v3/letter/t/41988e/{size}.png",
+  avatar_template: "/letter_avatar_proxy/v3/letter/t/41988e/{size}.png",
 });
 
 const categoryChatableFabricator = Fabricator(EmberObject, {

@@ -22,6 +22,6 @@ class CreateChatTables < ActiveRecord::Migration[6.0]
       t.text :message
     end
 
-    add_index :topic_chat_messages, [:topic_id, :created_at]
+    add_index :topic_chat_messages, %i[topic_id created_at]
   end
 end

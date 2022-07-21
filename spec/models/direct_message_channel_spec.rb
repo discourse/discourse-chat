@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'rails_helper'
+require "rails_helper"
 
 describe DirectMessageChannel do
   fab!(:user1) { Fabricate(:user, username: "chatdmfellow1") }
@@ -15,23 +15,25 @@ describe DirectMessageChannel do
       expect(direct_message_channel.chat_channel_title_for_user(chat_channel, user1)).to eq(
         I18n.t(
           "chat.channel.dm_title.multi_user",
-          users: [user3, user2].map { |u| "@#{u.username}" }.join(", ")
-        )
+          users: [user3, user2].map { |u| "@#{u.username}" }.join(", "),
+        ),
       )
     end
 
     it "returns a nicely formatted truncated name if it's more than 5 users" do
       user3 = Fabricate.build(:user, username: "chatdmregent")
 
-      users = [user1, user2, user3].concat(5.times.map.with_index { |i| Fabricate(:user, username: "chatdmuser#{i}") })
+      users = [user1, user2, user3].concat(
+        5.times.map.with_index { |i| Fabricate(:user, username: "chatdmuser#{i}") },
+      )
       direct_message_channel = Fabricate(:direct_message_channel, users: users)
 
       expect(direct_message_channel.chat_channel_title_for_user(chat_channel, user1)).to eq(
         I18n.t(
           "chat.channel.dm_title.multi_user_truncated",
           users: users[1..5].sort_by(&:username).map { |u| "@#{u.username}" }.join(", "),
-          leftover: 2
-        )
+          leftover: 2,
+        ),
       )
     end
 
@@ -39,7 +41,7 @@ describe DirectMessageChannel do
       direct_message_channel = Fabricate(:direct_message_channel, users: [user1, user2])
 
       expect(direct_message_channel.chat_channel_title_for_user(chat_channel, user1)).to eq(
-        I18n.t("chat.channel.dm_title.single_user", user: "@#{user2.username}")
+        I18n.t("chat.channel.dm_title.single_user", user: "@#{user2.username}"),
       )
     end
 
@@ -47,7 +49,7 @@ describe DirectMessageChannel do
       direct_message_channel = Fabricate(:direct_message_channel, users: [user1])
 
       expect(direct_message_channel.chat_channel_title_for_user(chat_channel, user1)).to eq(
-        I18n.t("chat.channel.dm_title.single_user", user: "@#{user1.username}")
+        I18n.t("chat.channel.dm_title.single_user", user: "@#{user1.username}"),
       )
     end
 
@@ -56,7 +58,9 @@ describe DirectMessageChannel do
       user2.destroy!
       direct_message_channel.reload
 
-      expect(direct_message_channel.chat_channel_title_for_user(chat_channel, user1)).to eq chat_channel.id
+      expect(
+        direct_message_channel.chat_channel_title_for_user(chat_channel, user1),
+      ).to eq chat_channel.id
     end
   end
 end

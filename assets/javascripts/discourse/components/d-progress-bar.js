@@ -1,7 +1,8 @@
 // temporary stuff to be moved in core with discourse-loading-slider
 
 import Component from "@ember/component";
-import { cancel, later, schedule } from "@ember/runloop";
+import { cancel, schedule } from "@ember/runloop";
+import discourseLater from "discourse-common/lib/later";
 
 const STORE_LOADING_TIMES = 5;
 const DEFAULT_LOADING_TIME = 0.3;
@@ -55,10 +56,9 @@ export default Component.extend({
   start() {
     this.set("startedAt", Date.now());
 
-    this.scheduled.push(later(this, "startLoading"));
-
+    this.scheduled.push(discourseLater(this, "startLoading"));
     this.scheduled.push(
-      later(this, "stillLoading", STILL_LOADING_DURATION * 1000)
+      discourseLater(this, "stillLoading", STILL_LOADING_DURATION * 1000)
     );
   },
 

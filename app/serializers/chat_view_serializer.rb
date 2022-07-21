@@ -9,7 +9,7 @@ class ChatViewSerializer < ApplicationSerializer
       each_serializer: ChatMessageSerializer,
       reviewable_ids: object.reviewable_ids,
       user_flag_statuses: object.user_flag_statuses,
-      scope: scope
+      scope: scope,
     )
   end
 
@@ -23,7 +23,9 @@ class ChatViewSerializer < ApplicationSerializer
       can_delete_others: scope.can_delete_other_chats?(object.chat_channel.chatable),
     }
     meta_hash[:can_load_more_past] = object.can_load_more_past unless object.can_load_more_past.nil?
-    meta_hash[:can_load_more_future] = object.can_load_more_future unless object.can_load_more_future.nil?
+    meta_hash[
+      :can_load_more_future
+    ] = object.can_load_more_future unless object.can_load_more_future.nil?
     meta_hash
   end
 end

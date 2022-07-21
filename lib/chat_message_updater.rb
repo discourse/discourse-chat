@@ -33,7 +33,7 @@ class DiscourseChat::ChatMessageUpdater
       Jobs.enqueue(:process_chat_message, { chat_message_id: @chat_message.id })
       DiscourseChat::ChatNotifier.notify_edit(
         chat_message: @chat_message,
-        timestamp: revision.created_at
+        timestamp: revision.created_at,
       )
     rescue => error
       @error = error
@@ -49,8 +49,11 @@ class DiscourseChat::ChatMessageUpdater
   def validate_channel_status!
     return if @guardian.can_modify_channel_message?(@chat_channel)
     raise StandardError.new(
-      I18n.t("chat.errors.channel_modify_message_disallowed", status: @chat_channel.status_name)
-    )
+            I18n.t(
+              "chat.errors.channel_modify_message_disallowed",
+              status: @chat_channel.status_name,
+            ),
+          )
   end
 
   def validate_message!(has_uploads:)
@@ -83,6 +86,9 @@ class DiscourseChat::ChatMessageUpdater
   end
 
   def save_revision!
-    @chat_message.revisions.create!(old_message: @old_message_content, new_message: @chat_message.message)
+    @chat_message.revisions.create!(
+      old_message: @old_message_content,
+      new_message: @chat_message.message,
+    )
   end
 end

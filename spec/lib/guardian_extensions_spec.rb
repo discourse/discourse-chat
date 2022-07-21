@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'rails_helper'
+require "rails_helper"
 
 describe DiscourseChat::GuardianExtensions do
   fab!(:user) { Fabricate(:user) }
@@ -9,9 +9,7 @@ describe DiscourseChat::GuardianExtensions do
   fab!(:staff_guardian) { Guardian.new(staff) }
   fab!(:chat_group) { Fabricate(:group) }
 
-  before do
-    SiteSetting.chat_allowed_groups = chat_group.id
-  end
+  before { SiteSetting.chat_allowed_groups = chat_group.id }
 
   it "cannot chat if the user is not in the DiscourseChat.allowed_group_ids" do
     SiteSetting.chat_allowed_groups = ""
@@ -73,9 +71,7 @@ describe DiscourseChat::GuardianExtensions do
       context "for category channel" do
         fab!(:category) { Fabricate(:category, read_restricted: true) }
 
-        before do
-          channel.update(chatable: category)
-        end
+        before { channel.update(chatable: category) }
 
         it "returns true if the user can see the category" do
           expect(Guardian.new(user).can_see_chat_channel?(channel)).to eq(false)
@@ -102,9 +98,7 @@ describe DiscourseChat::GuardianExtensions do
       context "for category channel" do
         fab!(:category) { Fabricate(:category, read_restricted: true) }
 
-        before do
-          channel.update(chatable: category)
-        end
+        before { channel.update(chatable: category) }
 
         it "returns true for staff and false for regular users" do
           expect(staff_guardian.can_moderate_chat?(channel.chatable)).to eq(true)
@@ -127,9 +121,7 @@ describe DiscourseChat::GuardianExtensions do
       context "for DM channel" do
         fab!(:dm_channel) { DirectMessageChannel.create! }
 
-        before do
-          channel.update(chatable_type: "DirectMessageType", chatable: dm_channel)
-        end
+        before { channel.update(chatable_type: "DirectMessageType", chatable: dm_channel) }
 
         it "returns true for staff and false for regular users" do
           expect(staff_guardian.can_moderate_chat?(channel.chatable)).to eq(true)

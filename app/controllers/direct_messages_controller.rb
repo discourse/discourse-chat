@@ -23,10 +23,11 @@ class DiscourseChat::DirectMessagesController < DiscourseChat::ChatBaseControlle
 
     direct_message_channel = DirectMessageChannel.for_user_ids(users.map(&:id).uniq)
     if direct_message_channel
-      chat_channel = ChatChannel.find_by(
-        chatable_id: direct_message_channel.id,
-        chatable_type: 'DirectMessageChannel'
-      )
+      chat_channel =
+        ChatChannel.find_by(
+          chatable_id: direct_message_channel.id,
+          chatable_type: "DirectMessageChannel",
+        )
       render_serialized(chat_channel, ChatChannelSerializer, root: "chat_channel")
     else
       render body: nil, status: 404
@@ -38,17 +39,12 @@ class DiscourseChat::DirectMessagesController < DiscourseChat::ChatBaseControlle
   def users_from_usernames(current_user, params)
     params.require(:usernames)
 
-    usernames = if params[:usernames].is_a?(String)
-      params[:usernames].split(",")
-    else
-      params[:usernames]
-    end
+    usernames =
+      (params[:usernames].is_a?(String) ? params[:usernames].split(",") : params[:usernames])
 
     users = [current_user]
     other_usernames = usernames - [current_user.username]
-    if other_usernames.any?
-      users.concat(User.where(username: other_usernames).to_a)
-    end
+    users.concat(User.where(username: other_usernames).to_a) if other_usernames.any?
     users
   end
 end

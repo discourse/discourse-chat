@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'discourse_dev/record'
-require 'faker'
+require "discourse_dev/record"
+require "faker"
 
 module DiscourseDev
   class DirectChannel < Record
@@ -15,10 +15,7 @@ module DiscourseDev
         admin_user = ::User.find_by(username: admin_username)
       end
 
-      [
-        User.new.create!,
-        admin_user || User.new.create!
-      ]
+      [User.new.create!, admin_user || User.new.create!]
     end
 
     def create!

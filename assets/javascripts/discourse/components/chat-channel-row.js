@@ -60,9 +60,7 @@ export default Component.extend({
 
   @discourseComputed("channel")
   showUserStatus(channel) {
-    return !!(
-      channel.chatable?.users?.length && channel.chatable.users[0].status
-    );
+    return !!(this.isDirectMessageRow && channel.chatable.users[0].status);
   },
 
   @action

@@ -1,17 +1,14 @@
 import componentTest, {
   setupRenderingTest,
 } from "discourse/tests/helpers/component-test";
-import {
-  discourseModule,
-  exists,
-  query,
-} from "discourse/tests/helpers/qunit-helpers";
+import { exists, query } from "discourse/tests/helpers/qunit-helpers";
 import hbs from "htmlbars-inline-precompile";
 import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import EmberObject from "@ember/object";
 import I18n from "I18n";
+import { module } from "qunit";
 
-discourseModule("Discourse Chat | Component | chat-message", function (hooks) {
+module("Discourse Chat | Component | chat-message", function (hooks) {
   setupRenderingTest(hooks);
 
   const template = hbs`{{chat-message

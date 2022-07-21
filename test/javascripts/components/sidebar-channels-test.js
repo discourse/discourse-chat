@@ -2,79 +2,77 @@ import componentTest, {
   setupRenderingTest,
 } from "discourse/tests/helpers/component-test";
 import hbs from "htmlbars-inline-precompile";
-import { discourseModule, exists } from "discourse/tests/helpers/qunit-helpers";
+import { exists } from "discourse/tests/helpers/qunit-helpers";
 import {
   setup as setupChatStub,
   teardown as teardownChatStub,
 } from "../helpers/chat-stub";
+import { module } from "qunit";
 
-discourseModule(
-  "Discourse Chat | Component | sidebar-channels",
-  function (hooks) {
-    setupRenderingTest(hooks);
+module("Discourse Chat | Component | sidebar-channels", function (hooks) {
+  setupRenderingTest(hooks);
 
-    componentTest("default", {
-      template: hbs`{{sidebar-channels}}`,
+  componentTest("default", {
+    template: hbs`{{sidebar-channels}}`,
 
-      beforeEach() {
-        setupChatStub(this);
-      },
+    beforeEach() {
+      setupChatStub(this);
+    },
 
-      afterEach() {
-        teardownChatStub();
-      },
+    afterEach() {
+      teardownChatStub();
+    },
 
-      async test(assert) {
-        assert.ok(exists("[data-chat-channel-id]"));
-      },
-    });
+    async test(assert) {
+      assert.ok(exists("[data-chat-channel-id]"));
+    },
+  });
 
-    componentTest("chat is on chat page", {
-      template: hbs`{{sidebar-channels}}`,
+  componentTest("chat is on chat page", {
+    template: hbs`{{sidebar-channels}}`,
 
-      beforeEach() {
-        setupChatStub(this, { fullScreenChatOpen: true });
-      },
+    beforeEach() {
+      setupChatStub(this, { fullScreenChatOpen: true });
+    },
 
-      afterEach() {
-        teardownChatStub();
-      },
+    afterEach() {
+      teardownChatStub();
+    },
 
-      async test(assert) {
-        assert.ok(exists("[data-chat-channel-id]"));
-      },
-    });
+    async test(assert) {
+      assert.ok(exists("[data-chat-channel-id]"));
+    },
+  });
 
-    componentTest("none of the conditions are fulfilled", {
-      template: hbs`{{sidebar-channels}}`,
+  componentTest("none of the conditions are fulfilled", {
+    template: hbs`{{sidebar-channels}}`,
 
-      beforeEach() {
-        setupChatStub(this, { userCanChat: false, fullScreenChatOpen: false });
-      },
+    beforeEach() {
+      setupChatStub(this, { userCanChat: false, fullScreenChatOpen: false });
+    },
 
-      afterEach() {
-        teardownChatStub();
-      },
+    afterEach() {
+      teardownChatStub();
+    },
 
-      async test(assert) {
-        assert.notOk(exists("[data-chat-channel-id]"));
-      },
-    });
+    async test(assert) {
+      assert.notOk(exists("[data-chat-channel-id]"));
+    },
+  });
 
-    componentTest("user cant chat", {
-      template: hbs`{{sidebar-channels}}`,
+  componentTest("user cant chat", {
+    template: hbs`{{sidebar-channels}}`,
 
-      beforeEach() {
-        setupChatStub(this, { userCanChat: false });
-      },
+    beforeEach() {
+      setupChatStub(this, { userCanChat: false });
+    },
 
-      afterEach() {
-        teardownChatStub();
-      },
+    afterEach() {
+      teardownChatStub();
+    },
 
-      async test(assert) {
-        assert.notOk(exists("[data-chat-channel-id]"));
-      },
-    });
-  }
-);
+    async test(assert) {
+      assert.notOk(exists("[data-chat-channel-id]"));
+    },
+  });
+});

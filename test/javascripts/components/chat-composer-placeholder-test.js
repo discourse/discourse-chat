@@ -2,11 +2,12 @@ import { set } from "@ember/object";
 import componentTest, {
   setupRenderingTest,
 } from "discourse/tests/helpers/component-test";
-import { discourseModule, query } from "discourse/tests/helpers/qunit-helpers";
+import { query } from "discourse/tests/helpers/qunit-helpers";
 import hbs from "htmlbars-inline-precompile";
 import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
+import { module } from "qunit";
 
-discourseModule(
+module(
   "Discourse Chat | Component | chat-composer placeholder",
   function (hooks) {
     setupRenderingTest(hooks);

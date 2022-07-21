@@ -3,15 +3,12 @@ import { set } from "@ember/object";
 import componentTest, {
   setupRenderingTest,
 } from "discourse/tests/helpers/component-test";
-import {
-  discourseModule,
-  exists,
-  query,
-} from "discourse/tests/helpers/qunit-helpers";
+import { exists, query } from "discourse/tests/helpers/qunit-helpers";
 import hbs from "htmlbars-inline-precompile";
 import I18n from "I18n";
+import { module } from "qunit";
 
-discourseModule(
+module(
   "Discourse Chat | Component | chat-retention-reminder",
   function (hooks) {
     setupRenderingTest(hooks);

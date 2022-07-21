@@ -1,10 +1,11 @@
 import componentTest, {
   setupRenderingTest,
 } from "discourse/tests/helpers/component-test";
-import { discourseModule, exists } from "discourse/tests/helpers/qunit-helpers";
+import { exists } from "discourse/tests/helpers/qunit-helpers";
 import hbs from "htmlbars-inline-precompile";
+import { module } from "qunit";
 
-discourseModule(
+module(
   "Discourse Chat | Component | chat-composer-inline-buttons",
   function (hooks) {
     setupRenderingTest(hooks);

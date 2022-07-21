@@ -1,16 +1,13 @@
 import componentTest, {
   setupRenderingTest,
 } from "discourse/tests/helpers/component-test";
-import {
-  discourseModule,
-  exists,
-  query,
-} from "discourse/tests/helpers/qunit-helpers";
+import { exists, query } from "discourse/tests/helpers/qunit-helpers";
 import hbs from "htmlbars-inline-precompile";
 import fabricators from "../helpers/fabricators";
 import MockPresenceChannel from "../helpers/mock-presence-channel";
+import { module } from "qunit";
 
-discourseModule(
+module(
   "Discourse Chat | Component | chat-replying-indicator",
   function (hooks) {
     setupRenderingTest(hooks);

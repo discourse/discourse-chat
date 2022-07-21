@@ -7,7 +7,7 @@ import fabricators from "../helpers/fabricators";
 import I18n from "I18n";
 import { Promise } from "rsvp";
 import { fillIn, triggerEvent } from "@ember/test-helpers";
-import { module, test } from "qunit";
+import { module } from "qunit";
 
 function fetchMembersHandler(channelId, params = {}) {
   if (params.offset === 50) {

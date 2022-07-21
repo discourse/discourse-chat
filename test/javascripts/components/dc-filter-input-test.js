@@ -2,8 +2,7 @@ import { setupRenderingTest } from "discourse/tests/helpers/component-test";
 import { exists } from "discourse/tests/helpers/qunit-helpers";
 import hbs from "htmlbars-inline-precompile";
 import { fillIn, render, triggerEvent } from "@ember/test-helpers";
-import { test } from "qunit";
-import { module } from "qunit";
+import { module, test } from "qunit";
 
 module("Discourse Chat | Component | dc-filter-input", function (hooks) {
   setupRenderingTest(hooks);

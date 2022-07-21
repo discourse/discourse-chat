@@ -7,6 +7,8 @@ import {
 import { test } from "qunit";
 import { visit } from "@ember/test-helpers";
 import { directMessageChannels } from "discourse/plugins/discourse-chat/chat-fixtures";
+import { cloneJSON } from "discourse-common/lib/object";
+import I18n from "I18n";
 
 acceptance("Discourse Chat - Core Sidebar", function (needs) {
   needs.user({ experimental_sidebar_enabled: true, has_chat_enabled: true });
@@ -15,7 +17,7 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
     enable_experimental_sidebar: true,
   });
   needs.pretender((server, helper) => {
-    let directChannels = directMessageChannels.mapBy("chat_channel");
+    let directChannels = cloneJSON(directMessageChannels).mapBy("chat_channel");
     directChannels[0].chatable.users = [directChannels[0].chatable.users[0]];
     directChannels[0].unread_count = 1;
 
@@ -59,10 +61,12 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
       query(
         ".sidebar-section-chat-channels .sidebar-section-header-text"
       ).textContent.trim(),
-      "Channels",
+      I18n.t("chat.chat_channels"),
       "displays correct channels section title"
     );
-    const links = queryAll(".sidebar-section-chat-channels a");
+    const links = queryAll(
+      ".sidebar-section-chat-channels a.sidebar-section-link"
+    );
     assert.strictEqual(
       links
         .eq(0)
@@ -82,7 +86,7 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
     assert.strictEqual(
       links[0].textContent.trim(),
       "dev",
-      "displays dev name in a link"
+      "displays channel name in the link"
     );
     assert.ok(
       !exists(links.eq(0).find(".sidebar-section-link-suffix")[0]),
@@ -106,7 +110,7 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
     assert.strictEqual(
       links[1].textContent.trim(),
       "general",
-      "displays general name in a link"
+      "displays channel name in the link"
     );
     assert.strictEqual(
       links
@@ -127,7 +131,7 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
     assert.strictEqual(
       links[2].textContent.trim(),
       "random",
-      "displays random name in a link"
+      "displays channel name in the link"
     );
     assert.strictEqual(
       links
@@ -146,10 +150,12 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
       query(
         ".sidebar-section-chat-dms .sidebar-section-header-text"
       ).textContent.trim(),
-      "Personal chat",
+      I18n.t("chat.direct_messages.title"),
       "displays correct direct messages section title"
     );
-    const directLinks = queryAll(".sidebar-section-chat-dms a");
+    const directLinks = queryAll(
+      ".sidebar-section-chat-dms a.sidebar-section-link"
+    );
     assert.strictEqual(
       directLinks
         .eq(0)

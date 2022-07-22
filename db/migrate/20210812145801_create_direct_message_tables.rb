@@ -13,8 +13,8 @@ class CreateDirectMessageTables < ActiveRecord::Migration[6.1]
     end
 
     add_index :direct_message_users,
-      [:direct_message_channel_id, :user_id],
-      unique: true,
-      name: "direct_message_users_index"
+              %i[direct_message_channel_id user_id],
+              unique: true,
+              name: "direct_message_users_index"
   end
 end

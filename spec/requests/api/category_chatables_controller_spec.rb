@@ -1,23 +1,23 @@
 # frozen_string_literal: true
 
-require 'rails_helper'
+require "rails_helper"
 
 describe DiscourseChat::Api::CategoryChatablesController do
-  describe '#access_by_category' do
+  describe "#access_by_category" do
     fab!(:group) { Fabricate(:group) }
     fab!(:private_category) { Fabricate(:private_category, group: group) }
 
-    context 'signed in as an admin' do
+    context "signed in as an admin" do
       fab!(:admin) { Fabricate(:admin) }
 
       before { sign_in(admin) }
 
-      it 'returns a list with the group names that could access a chat channel' do
+      it "returns a list with the group names that could access a chat channel" do
         get "/chat/api/category-chatables/#{private_category.id}/permissions.json"
 
-        expect(response.parsed_body['allowed_groups']).to contain_exactly("@#{group.name}")
-        expect(response.parsed_body['members_count']).to eq(0)
-        expect(response.parsed_body['private']).to eq(true)
+        expect(response.parsed_body["allowed_groups"]).to contain_exactly("@#{group.name}")
+        expect(response.parsed_body["members_count"]).to eq(0)
+        expect(response.parsed_body["private"]).to eq(true)
       end
 
       it "doesn't return group names from other categories" do
@@ -28,9 +28,9 @@ describe DiscourseChat::Api::CategoryChatablesController do
 
         get "/chat/api/category-chatables/#{category_2.id}/permissions.json"
 
-        expect(response.parsed_body['allowed_groups']).to contain_exactly("@#{group_2.name}")
-        expect(response.parsed_body['members_count']).to eq(1)
-        expect(response.parsed_body['private']).to eq(true)
+        expect(response.parsed_body["allowed_groups"]).to contain_exactly("@#{group_2.name}")
+        expect(response.parsed_body["members_count"]).to eq(1)
+        expect(response.parsed_body["private"]).to eq(true)
       end
 
       it "returns the everyone group when a category is public" do
@@ -40,45 +40,43 @@ describe DiscourseChat::Api::CategoryChatablesController do
 
         get "/chat/api/category-chatables/#{category_2.id}/permissions.json"
 
-        expect(response.parsed_body['allowed_groups']).to contain_exactly("@#{everyone_group.name}")
-        expect(response.parsed_body['members_count']).to be_nil
-        expect(response.parsed_body['private']).to eq(false)
+        expect(response.parsed_body["allowed_groups"]).to contain_exactly("@#{everyone_group.name}")
+        expect(response.parsed_body["members_count"]).to be_nil
+        expect(response.parsed_body["private"]).to eq(false)
       end
 
       it "includes the number of users with access" do
         number_of_users = 3
-        number_of_users.times do
-          group.add(Fabricate(:user))
-        end
+        number_of_users.times { group.add(Fabricate(:user)) }
 
         get "/chat/api/category-chatables/#{private_category.id}/permissions.json"
 
-        expect(response.parsed_body['allowed_groups']).to contain_exactly("@#{group.name}")
-        expect(response.parsed_body['members_count']).to eq(number_of_users)
-        expect(response.parsed_body['private']).to eq(true)
+        expect(response.parsed_body["allowed_groups"]).to contain_exactly("@#{group.name}")
+        expect(response.parsed_body["members_count"]).to eq(number_of_users)
+        expect(response.parsed_body["private"]).to eq(true)
       end
 
-      it 'returns a 404 when passed an invalid category' do
+      it "returns a 404 when passed an invalid category" do
         get "/chat/api/category-chatables/-99/permissions.json"
 
         expect(response.status).to eq(404)
       end
     end
 
-    context 'as anon' do
-      it 'returns a 404' do
+    context "as anon" do
+      it "returns a 404" do
         get "/chat/api/category-chatables/#{private_category.id}/permissions.json"
 
         expect(response.status).to eq(404)
       end
     end
 
-    context 'signed in as a regular user' do
+    context "signed in as a regular user" do
       fab!(:user) { Fabricate(:user) }
 
       before { sign_in(user) }
 
-      it 'returns a 404' do
+      it "returns a 404" do
         get "/chat/api/category-chatables/#{private_category.id}/permissions.json"
 
         expect(response.status).to eq(404)

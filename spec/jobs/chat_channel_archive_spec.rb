@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'rails_helper'
+require "rails_helper"
 
 describe Jobs::ChatChannelArchive do
   fab!(:chat_channel) { Fabricate(:chat_channel) }
@@ -12,15 +12,11 @@ describe Jobs::ChatChannelArchive do
       archived_by: user,
       destination_topic_title: "This will be the archive topic",
       destination_category_id: category.id,
-      total_messages: 10
+      total_messages: 10,
     )
   end
 
-  before do
-    10.times do
-      Fabricate(:chat_message, chat_channel: chat_channel)
-    end
-  end
+  before { 10.times { Fabricate(:chat_message, chat_channel: chat_channel) } }
 
   def run_job
     described_class.new.execute(chat_channel_archive_id: chat_archive.id)

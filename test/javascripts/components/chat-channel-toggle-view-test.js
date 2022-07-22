@@ -1,14 +1,15 @@
 import componentTest, {
   setupRenderingTest,
 } from "discourse/tests/helpers/component-test";
-import { discourseModule, query } from "discourse/tests/helpers/qunit-helpers";
+import { query } from "discourse/tests/helpers/qunit-helpers";
 import { click } from "@ember/test-helpers";
 import hbs from "htmlbars-inline-precompile";
 import fabricators from "../helpers/fabricators";
 import I18n from "I18n";
 import pretender from "discourse/tests/helpers/create-pretender";
+import { module } from "qunit";
 
-discourseModule(
+module(
   "Discourse Chat | Component | chat-channel-toggle-view | closed channel",
   function (hooks) {
     setupRenderingTest(hooks);
@@ -55,7 +56,7 @@ discourseModule(
   }
 );
 
-discourseModule(
+module(
   "Discourse Chat | Component | chat-channel-toggle-view | opened channel",
   function (hooks) {
     setupRenderingTest(hooks);

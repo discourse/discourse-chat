@@ -1,16 +1,13 @@
 import componentTest, {
   setupRenderingTest,
 } from "discourse/tests/helpers/component-test";
-import {
-  discourseModule,
-  exists,
-  query,
-} from "discourse/tests/helpers/qunit-helpers";
+import { exists, query } from "discourse/tests/helpers/qunit-helpers";
 import hbs from "htmlbars-inline-precompile";
 import fabricators from "../helpers/fabricators";
 import I18n from "I18n";
 import { Promise } from "rsvp";
 import { fillIn, triggerEvent } from "@ember/test-helpers";
+import { module } from "qunit";
 
 function fetchMembersHandler(channelId, params = {}) {
   if (params.offset === 50) {
@@ -41,7 +38,7 @@ function setupState(context) {
   context.channel.set("memberships_count", 2);
 }
 
-discourseModule(
+module(
   "Discourse Chat | Component | chat-channel-members-view",
   function (hooks) {
     setupRenderingTest(hooks);

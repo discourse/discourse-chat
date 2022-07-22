@@ -12,17 +12,21 @@ class DirectMessageChannel < ActiveRecord::Base
     users = direct_message_users.map(&:user) - [acting_user]
 
     # direct message to self
-    return I18n.t("chat.channel.dm_title.single_user", user: "@#{acting_user.username}") if users.empty?
+    if users.empty?
+      return I18n.t("chat.channel.dm_title.single_user", user: "@#{acting_user.username}")
+    end
 
     # all users deleted
     return chat_channel.id if !users.first
 
     usernames_formatted = users.sort_by(&:username).map { |u| "@#{u.username}" }
     if usernames_formatted.size > 5
-      return I18n.t(
-        "chat.channel.dm_title.multi_user_truncated",
-        users: usernames_formatted[0..4].join(", "),
-        leftover: usernames_formatted.length - 5
+      return(
+        I18n.t(
+          "chat.channel.dm_title.multi_user_truncated",
+          users: usernames_formatted[0..4].join(", "),
+          leftover: usernames_formatted.length - 5,
+        )
       )
     end
 

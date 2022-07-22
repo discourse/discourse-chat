@@ -3,11 +3,8 @@ import componentTest, {
 } from "discourse/tests/helpers/component-test";
 import { click } from "@ember/test-helpers";
 import hbs from "htmlbars-inline-precompile";
-import {
-  discourseModule,
-  query,
-  visible,
-} from "discourse/tests/helpers/qunit-helpers";
+import { query, visible } from "discourse/tests/helpers/qunit-helpers";
+import { module } from "qunit";
 
 const youtubeCooked =
   "<p>written text</p>" +
@@ -48,7 +45,7 @@ const galleryCooked =
   "</div>" +
   "<p>more written text</p>";
 
-discourseModule(
+module(
   "Discourse Chat | Component | chat message collapser youtube",
   function (hooks) {
     setupRenderingTest(hooks);
@@ -156,7 +153,7 @@ discourseModule(
   }
 );
 
-discourseModule(
+module(
   "Discourse Chat | Component | chat message collapser images",
   function (hooks) {
     setupRenderingTest(hooks);
@@ -225,7 +222,7 @@ discourseModule(
   }
 );
 
-discourseModule(
+module(
   "Discourse Chat | Component | chat message collapser animated image",
   function (hooks) {
     setupRenderingTest(hooks);
@@ -321,7 +318,7 @@ discourseModule(
   }
 );
 
-discourseModule(
+module(
   "Discourse Chat | Component | chat message collapser external image onebox",
   function (hooks) {
     setupRenderingTest(hooks);
@@ -415,7 +412,7 @@ discourseModule(
   }
 );
 
-discourseModule(
+module(
   "Discourse Chat | Component | chat message collapser images",
   function (hooks) {
     setupRenderingTest(hooks);
@@ -533,7 +530,7 @@ discourseModule(
   }
 );
 
-discourseModule(
+module(
   "Discourse Chat | Component | chat message collapser galleries",
   function (hooks) {
     setupRenderingTest(hooks);

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_dependency 'reviewable_serializer'
+require_dependency "reviewable_serializer"
 
 class ReviewableChatMessageSerializer < ReviewableSerializer
   has_one :chat_message, serializer: ChatMessageSerializer, root: false, embed: :objects

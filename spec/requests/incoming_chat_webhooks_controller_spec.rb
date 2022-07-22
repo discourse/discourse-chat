@@ -1,18 +1,16 @@
 # frozen_string_literal: true
 
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe DiscourseChat::IncomingChatWebhooksController do
   fab!(:chat_channel) { Fabricate(:chat_channel) }
   fab!(:webhook) { Fabricate(:incoming_chat_webhook, chat_channel: chat_channel) }
 
-  before do
-    SiteSetting.chat_debug_webhook_payloads = true
-  end
+  before { SiteSetting.chat_debug_webhook_payloads = true }
 
   describe "#create_message" do
     it "errors with invalid key" do
-      post '/chat/hooks/null.json'
+      post "/chat/hooks/null.json"
       expect(response.status).to eq(400)
     end
 
@@ -43,7 +41,7 @@ RSpec.describe DiscourseChat::IncomingChatWebhooksController do
       }.to change { ChatMessage.where(chat_channel: chat_channel).count }.by(0)
       expect(response.status).to eq(422)
       expect(response.parsed_body["errors"]).to include(
-        "Sorry, you can't post the word '#{watched_word.word}'; it's not allowed."
+        "Sorry, you can't post the word '#{watched_word.word}'; it's not allowed.",
       )
     end
 
@@ -54,16 +52,14 @@ RSpec.describe DiscourseChat::IncomingChatWebhooksController do
       }.to change { ChatMessage.where(chat_channel: chat_channel).count }.by(0)
       expect(response.status).to eq(422)
       expect(response.parsed_body["errors"]).to include(
-        I18n.t("chat.errors.channel_new_message_disallowed", status: chat_channel.status_name)
+        I18n.t("chat.errors.channel_new_message_disallowed", status: chat_channel.status_name),
       )
     end
 
     it "rate limits" do
       RateLimiter.enable
       RateLimiter.clear_all!
-      10.times do
-        post "/chat/hooks/#{webhook.key}.json", params: { text: "A new signup woo!" }
-      end
+      10.times { post "/chat/hooks/#{webhook.key}.json", params: { text: "A new signup woo!" } }
       expect(response.status).to eq(200)
 
       post "/chat/hooks/#{webhook.key}.json", params: { text: "A new signup woo!" }
@@ -86,16 +82,20 @@ RSpec.describe DiscourseChat::IncomingChatWebhooksController do
           {
             color: "#F4511E",
             title: "New+alert:+#46353",
-            text: "\"[StatusCake]+https://www.test_notification.com+(StatusCake+Test+Alert):+Down,\"",
-            fallback: "New+alert:+\"[StatusCake]+https://www.test_notification.com+(StatusCake+Test+Alert):+Down,\"+<https://eu.opsg.in/a/i/test/blahguid|46353>\nTags:+",
-            title_link: "https://eu.opsg.in/a/i/test/blahguid"
-          }
+            text:
+              "\"[StatusCake]+https://www.test_notification.com+(StatusCake+Test+Alert):+Down,\"",
+            fallback:
+              "New+alert:+\"[StatusCake]+https://www.test_notification.com+(StatusCake+Test+Alert):+Down,\"+<https://eu.opsg.in/a/i/test/blahguid|46353>\nTags:+",
+            title_link: "https://eu.opsg.in/a/i/test/blahguid",
+          },
         ],
       }
-      expect {
-        post "/chat/hooks/#{webhook.key}/slack.json", params: payload_data
-      }.to change { ChatMessage.where(chat_channel: chat_channel).count }.by(1)
-      expect(ChatMessage.last.message).to eq("New alert: \"[StatusCake] https://www.test_notification.com (StatusCake Test Alert): Down,\" [46353](https://eu.opsg.in/a/i/test/blahguid)\nTags: ")
+      expect { post "/chat/hooks/#{webhook.key}/slack.json", params: payload_data }.to change {
+        ChatMessage.where(chat_channel: chat_channel).count
+      }.by(1)
+      expect(ChatMessage.last.message).to eq(
+        "New alert: \"[StatusCake] https://www.test_notification.com (StatusCake Test Alert): Down,\" [46353](https://eu.opsg.in/a/i/test/blahguid)\nTags: ",
+      )
       expect {
         post "/chat/hooks/#{webhook.key}/slack.json", params: { payload: payload_data }
       }.to change { ChatMessage.where(chat_channel: chat_channel).count }.by(1)
@@ -107,16 +107,20 @@ RSpec.describe DiscourseChat::IncomingChatWebhooksController do
           {
             color: "#F4511E",
             title: "New+alert:+#46353",
-            text: "\"[StatusCake]+https://www.test_notification.com+(StatusCake+Test+Alert):+Down,\"",
-            fallback: "New+alert:+\"[StatusCake]+https://www.test_notification.com+(StatusCake+Test+Alert):+Down,\"+<https://eu.opsg.in/a/i/test/blahguid|46353>\nTags:+",
-            title_link: "https://eu.opsg.in/a/i/test/blahguid"
-          }
+            text:
+              "\"[StatusCake]+https://www.test_notification.com+(StatusCake+Test+Alert):+Down,\"",
+            fallback:
+              "New+alert:+\"[StatusCake]+https://www.test_notification.com+(StatusCake+Test+Alert):+Down,\"+<https://eu.opsg.in/a/i/test/blahguid|46353>\nTags:+",
+            title_link: "https://eu.opsg.in/a/i/test/blahguid",
+          },
         ],
       }
       expect {
         post "/chat/hooks/#{webhook.key}/slack.json", params: { payload: payload_data.to_json }
       }.to change { ChatMessage.where(chat_channel: chat_channel).count }.by(1)
-      expect(ChatMessage.last.message).to eq("New alert: \"[StatusCake] https://www.test_notification.com (StatusCake Test Alert): Down,\" [46353](https://eu.opsg.in/a/i/test/blahguid)\nTags: ")
+      expect(ChatMessage.last.message).to eq(
+        "New alert: \"[StatusCake] https://www.test_notification.com (StatusCake Test Alert): Down,\" [46353](https://eu.opsg.in/a/i/test/blahguid)\nTags: ",
+      )
     end
   end
 end

@@ -1,8 +1,7 @@
-import { discourseModule } from "discourse/tests/helpers/qunit-helpers";
-import { test } from "qunit";
+import { module, test } from "qunit";
 import slugifyChannel from "discourse/plugins/discourse-chat/discourse/lib/slugify-channel";
 
-discourseModule("Discourse Chat | Unit | slugify-channel", function () {
+module("Discourse Chat | Unit | slugify-channel", function () {
   test("defaults", function (assert) {
     assert.equal(slugifyChannel("Foo bar"), "foo-bar");
   });

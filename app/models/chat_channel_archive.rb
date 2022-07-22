@@ -2,13 +2,12 @@
 
 class ChatChannelArchive < ActiveRecord::Base
   belongs_to :chat_channel
-  belongs_to :archived_by, class_name: 'User'
+  belongs_to :archived_by, class_name: "User"
 
-  belongs_to :destination_topic, class_name: 'Topic'
+  belongs_to :destination_topic, class_name: "Topic"
 
   def complete?
-    self.archived_messages >= self.total_messages &&
-      self.chat_channel.chat_messages.count.zero?
+    self.archived_messages >= self.total_messages && self.chat_channel.chat_messages.count.zero?
   end
 
   def failed?

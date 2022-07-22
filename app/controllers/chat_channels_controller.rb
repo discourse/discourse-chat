@@ -1,11 +1,7 @@
 # frozen_string_literal: true
 
 class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
-  before_action :set_channel_and_chatable_with_access_check, except: [
-    :index,
-    :create,
-    :search
-  ]
+  before_action :set_channel_and_chatable_with_access_check, except: %i[index create search]
 
   def index
     structured = DiscourseChat::ChatChannelFetcher.structured(guardian)
@@ -29,15 +25,14 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
   end
 
   def create
-    params.require([:id, :name])
+    params.require(%i[id name])
     guardian.ensure_can_create_chat_channel!
-    raise Discourse::InvalidParameters.new(:name) if params[:name].length > SiteSetting.max_topic_title_length
+    if params[:name].length > SiteSetting.max_topic_title_length
+      raise Discourse::InvalidParameters.new(:name)
+    end
 
-    exists = ChatChannel.exists?(
-      chatable_type: 'Category',
-      chatable_id: params[:id],
-      name: params[:name]
-    )
+    exists =
+      ChatChannel.exists?(chatable_type: "Category", chatable_id: params[:id], name: params[:name])
     if exists
       raise Discourse::InvalidParameters.new(I18n.t("chat.errors.channel_exists_for_category"))
     end
@@ -47,13 +42,14 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
 
     auto_join_users = ActiveRecord::Type::Boolean.new.deserialize(params[:auto_join_users]) || false
 
-    chat_channel = ChatChannel.create!(
-      chatable: chatable,
-      name: params[:name],
-      description: params[:description],
-      user_count: 1,
-      auto_join_users: auto_join_users
-    )
+    chat_channel =
+      ChatChannel.create!(
+        chatable: chatable,
+        name: params[:name],
+        description: params[:description],
+        user_count: 1,
+        auto_join_users: auto_join_users,
+      )
     chat_channel.user_chat_channel_memberships.create!(user: current_user, following: true)
 
     if chat_channel.auto_join_users
@@ -84,13 +80,14 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     params.require(:filter)
     filter = params[:filter]&.downcase
     memberships = UserChatChannelMembership.where(user: current_user)
-    public_channels = DiscourseChat::ChatChannelFetcher.secured_public_channels(
-      guardian,
-      memberships,
-      following: false,
-      filter: filter,
-      status: :open
-    )
+    public_channels =
+      DiscourseChat::ChatChannelFetcher.secured_public_channels(
+        guardian,
+        memberships,
+        following: false,
+        filter: filter,
+        status: :open,
+      )
 
     users = User.joins(:user_option).where.not(id: current_user.id)
     if !DiscourseChat.allowed_group_ids.include?(Group::AUTO_GROUPS[:everyone])
@@ -102,24 +99,37 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     if SiteSetting.prioritize_username_in_ux || !SiteSetting.enable_names
       users = users.where("users.username_lower ILIKE ?", like_filter)
     else
-      users = users.where("LOWER(users.name) ILIKE ? OR users.username_lower ILIKE ?", like_filter, like_filter)
+      users =
+        users.where(
+          "LOWER(users.name) ILIKE ? OR users.username_lower ILIKE ?",
+          like_filter,
+          like_filter,
+        )
     end
 
     users = users.limit(25).uniq
 
-    direct_message_channels = users.count > 0 ?
-      ChatChannel
-        .includes(chatable: :users)
-        .joins(direct_message_channel: :direct_message_users)
-        .group(1)
-        .having("ARRAY[?] <@ ARRAY_AGG(user_id) AND ARRAY[?] && ARRAY_AGG(user_id)", [current_user.id], users.map(&:id)) : []
+    direct_message_channels =
+      (
+        if users.count > 0
+          ChatChannel
+            .includes(chatable: :users)
+            .joins(direct_message_channel: :direct_message_users)
+            .group(1)
+            .having(
+              "ARRAY[?] <@ ARRAY_AGG(user_id) AND ARRAY[?] && ARRAY_AGG(user_id)",
+              [current_user.id],
+              users.map(&:id),
+            )
+        else
+          []
+        end
+      )
 
     user_ids_with_channel = []
     direct_message_channels.each do |dm_channel|
       user_ids = dm_channel.chatable.users.map(&:id)
-      if user_ids.count < 3
-        user_ids_with_channel.concat(user_ids)
-      end
+      user_ids_with_channel.concat(user_ids) if user_ids.count < 3
     end
 
     users_without_channel = users.filter { |u| !user_ids_with_channel.include?(u.id) }
@@ -130,11 +140,15 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
       users_without_channel << current_user
     end
 
-    render_serialized({
-      public_channels: public_channels,
-      direct_message_channels: direct_message_channels,
-      users: users_without_channel
-    }, ChatChannelSearchSerializer, root: false)
+    render_serialized(
+      {
+        public_channels: public_channels,
+        direct_message_channels: direct_message_channels,
+        users: users_without_channel,
+      },
+      ChatChannelSearchSerializer,
+      root: false,
+    )
   end
 
   def archive
@@ -155,8 +169,8 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
         topic_id: params[:topic_id],
         topic_title: params[:title],
         category_id: params[:category_id],
-        tags: params[:tags]
-      }
+        tags: params[:tags],
+      },
     )
 
     render json: success_json
@@ -179,9 +193,8 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
 
     # we only want to use this endpoint for open/closed status changes,
     # the others are more "special" and are handled by the archive endpoint
-    if !ChatChannel.statuses.keys.include?(params[:status]) ||
-        params[:status] == "read_only" ||
-        params[:status] == "archive"
+    if !ChatChannel.statuses.keys.include?(params[:status]) || params[:status] == "read_only" ||
+         params[:status] == "archive"
       raise Discourse::InvalidParameters
     end
 
@@ -207,8 +220,8 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
           "chat_channel_delete",
           {
             chat_channel_id: @chat_channel.id,
-            chat_channel_name: @chat_channel.title(current_user)
-          }
+            chat_channel_name: @chat_channel.title(current_user),
+          },
         )
       end
     rescue ActiveRecord::Rollback

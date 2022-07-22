@@ -1,16 +1,12 @@
 import { setupRenderingTest } from "discourse/tests/helpers/component-test";
-import {
-  discourseModule,
-  exists,
-  query,
-} from "discourse/tests/helpers/qunit-helpers";
+import { exists, query } from "discourse/tests/helpers/qunit-helpers";
 import hbs from "htmlbars-inline-precompile";
 import fabricators from "../helpers/fabricators";
 import { render, settled } from "@ember/test-helpers";
-import { test } from "qunit";
+import { module, test } from "qunit";
 import I18n from "I18n";
 
-discourseModule(
+module(
   "Discourse Chat | Component | chat-channel-about-view | admin user",
   function (hooks) {
     setupRenderingTest(hooks);
@@ -79,7 +75,7 @@ discourseModule(
   }
 );
 
-discourseModule(
+module(
   "Discourse Chat | Component | chat-channel-about-view | regular user",
   function (hooks) {
     setupRenderingTest(hooks);

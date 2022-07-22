@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe DiscourseChat::AdminIncomingChatWebhooksController do
   fab!(:admin) { Fabricate(:admin) }
@@ -8,9 +8,7 @@ RSpec.describe DiscourseChat::AdminIncomingChatWebhooksController do
   fab!(:chat_channel1) { Fabricate(:chat_channel) }
   fab!(:chat_channel2) { Fabricate(:chat_channel) }
 
-  before do
-    SiteSetting.chat_enabled = true
-  end
+  before { SiteSetting.chat_enabled = true }
 
   describe "#index" do
     fab!(:existing1) { Fabricate(:incoming_chat_webhook) }
@@ -26,17 +24,14 @@ RSpec.describe DiscourseChat::AdminIncomingChatWebhooksController do
       sign_in(admin)
       get "/admin/plugins/chat.json"
       expect(response.status).to eq(200)
-      expect(response.parsed_body["incoming_chat_webhooks"].map { |webhook| webhook["id"] }).to match_array([existing1.id, existing2.id])
+      expect(
+        response.parsed_body["incoming_chat_webhooks"].map { |webhook| webhook["id"] },
+      ).to match_array([existing1.id, existing2.id])
     end
   end
 
   describe "#create" do
-    let(:attrs) {
-      {
-        name: "Test1",
-        chat_channel_id: chat_channel1.id
-      }
-    }
+    let(:attrs) { { name: "Test1", chat_channel_id: chat_channel1.id } }
 
     it "blocks non-admin" do
       sign_in(user)
@@ -58,15 +53,19 @@ RSpec.describe DiscourseChat::AdminIncomingChatWebhooksController do
 
     it "errors when chat_channel isn't valid" do
       sign_in(admin)
-      post "/admin/plugins/chat/hooks.json", params: { name: "test1a", chat_channel_id: ChatChannel.last.id + 1 }
+      post "/admin/plugins/chat/hooks.json",
+           params: {
+             name: "test1a",
+             chat_channel_id: ChatChannel.last.id + 1,
+           }
       expect(response.status).to eq(404)
     end
 
     it "creates a new incoming_chat_webhook record" do
       sign_in(admin)
-      expect {
-        post "/admin/plugins/chat/hooks.json", params: attrs
-      }.to change { IncomingChatWebhook.count }.by(1)
+      expect { post "/admin/plugins/chat/hooks.json", params: attrs }.to change {
+        IncomingChatWebhook.count
+      }.by(1)
       expect(response.parsed_body["name"]).to eq(attrs[:name])
       expect(response.parsed_body["chat_channel"]["id"]).to eq(attrs[:chat_channel_id])
       expect(response.parsed_body["url"]).not_to be_nil
@@ -75,15 +74,15 @@ RSpec.describe DiscourseChat::AdminIncomingChatWebhooksController do
 
   describe "#update" do
     fab!(:existing) { Fabricate(:incoming_chat_webhook, chat_channel: chat_channel1) }
-    let(:attrs) {
+    let(:attrs) do
       {
         name: "update test",
         chat_channel_id: chat_channel2.id,
         emoji: ":slight_smile:",
         description: "It does stuff!",
-        username: "beep boop"
+        username: "beep boop",
       }
-    }
+    end
 
     it "errors for non-admin" do
       sign_in(user)
@@ -129,9 +128,9 @@ RSpec.describe DiscourseChat::AdminIncomingChatWebhooksController do
 
     it "destroys incoming_chat_webhook records" do
       sign_in(admin)
-      expect {
-        delete "/admin/plugins/chat/hooks/#{existing.id}.json"
-      }.to change { IncomingChatWebhook.count }.by(-1)
+      expect { delete "/admin/plugins/chat/hooks/#{existing.id}.json" }.to change {
+        IncomingChatWebhook.count
+      }.by(-1)
     end
   end
 end

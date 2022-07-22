@@ -3,141 +3,133 @@ import componentTest, {
   setupRenderingTest,
 } from "discourse/tests/helpers/component-test";
 import hbs from "htmlbars-inline-precompile";
-import {
-  discourseModule,
-  exists,
-  query,
-} from "discourse/tests/helpers/qunit-helpers";
+import { exists, query } from "discourse/tests/helpers/qunit-helpers";
 import I18n from "I18n";
+import { module } from "qunit";
 
-discourseModule(
-  "Discourse Chat | Component | chat-message-info",
-  function (hooks) {
-    setupRenderingTest(hooks);
+module("Discourse Chat | Component | chat-message-info", function (hooks) {
+  setupRenderingTest(hooks);
 
-    componentTest("chat_webhook_event", {
-      template: hbs`{{chat-message-info message=message}}`,
+  componentTest("chat_webhook_event", {
+    template: hbs`{{chat-message-info message=message}}`,
 
-      beforeEach() {
-        this.set("message", { chat_webhook_event: { username: "discobot" } });
-      },
+    beforeEach() {
+      this.set("message", { chat_webhook_event: { username: "discobot" } });
+    },
 
-      async test(assert) {
-        assert.equal(
-          query(".chat-message-info__username").innerText.trim(),
-          this.message.chat_webhook_event.username
-        );
-        assert.equal(
-          query(".chat-message-info__bot-indicator").innerText.trim(),
-          I18n.t("chat.bot")
-        );
-      },
-    });
+    async test(assert) {
+      assert.equal(
+        query(".chat-message-info__username").innerText.trim(),
+        this.message.chat_webhook_event.username
+      );
+      assert.equal(
+        query(".chat-message-info__bot-indicator").innerText.trim(),
+        I18n.t("chat.bot")
+      );
+    },
+  });
 
-    componentTest("user", {
-      template: hbs`{{chat-message-info message=message}}`,
+  componentTest("user", {
+    template: hbs`{{chat-message-info message=message}}`,
 
-      beforeEach() {
-        this.set("message", { user: { username: "discobot" } });
-      },
+    beforeEach() {
+      this.set("message", { user: { username: "discobot" } });
+    },
 
-      async test(assert) {
-        assert.equal(
-          query(".chat-message-info__username").innerText.trim(),
-          this.message.user.username
-        );
-      },
-    });
+    async test(assert) {
+      assert.equal(
+        query(".chat-message-info__username").innerText.trim(),
+        this.message.user.username
+      );
+    },
+  });
 
-    componentTest("date", {
-      template: hbs`{{chat-message-info message=message}}`,
+  componentTest("date", {
+    template: hbs`{{chat-message-info message=message}}`,
 
-      beforeEach() {
-        this.set("message", { created_at: moment() });
-      },
+    beforeEach() {
+      this.set("message", { created_at: moment() });
+    },
 
-      async test(assert) {
-        assert.ok(exists(".chat-message-info__date"));
-      },
-    });
+    async test(assert) {
+      assert.ok(exists(".chat-message-info__date"));
+    },
+  });
 
-    componentTest("bookmark (with reminder)", {
-      template: hbs`{{chat-message-info message=message}}`,
+  componentTest("bookmark (with reminder)", {
+    template: hbs`{{chat-message-info message=message}}`,
 
-      beforeEach() {
-        this.set("message", {
-          bookmark: Bookmark.create({
-            reminder_at: moment(),
-            name: "some name",
-          }),
-        });
-      },
+    beforeEach() {
+      this.set("message", {
+        bookmark: Bookmark.create({
+          reminder_at: moment(),
+          name: "some name",
+        }),
+      });
+    },
 
-      async test(assert) {
-        assert.ok(
-          exists(
-            ".chat-message-info__bookmark .d-icon-discourse-bookmark-clock"
-          )
-        );
-      },
-    });
+    async test(assert) {
+      assert.ok(
+        exists(".chat-message-info__bookmark .d-icon-discourse-bookmark-clock")
+      );
+    },
+  });
 
-    componentTest("bookmark (no reminder)", {
-      template: hbs`{{chat-message-info message=message}}`,
+  componentTest("bookmark (no reminder)", {
+    template: hbs`{{chat-message-info message=message}}`,
 
-      beforeEach() {
-        this.set("message", {
-          bookmark: Bookmark.create({
-            name: "some name",
-          }),
-        });
-      },
+    beforeEach() {
+      this.set("message", {
+        bookmark: Bookmark.create({
+          name: "some name",
+        }),
+      });
+    },
 
-      async test(assert) {
-        assert.ok(exists(".chat-message-info__bookmark .d-icon-bookmark"));
-      },
-    });
+    async test(assert) {
+      assert.ok(exists(".chat-message-info__bookmark .d-icon-bookmark"));
+    },
+  });
 
-    componentTest("no user", {
-      template: hbs`{{chat-message-info message=message}}`,
+  componentTest("no user", {
+    template: hbs`{{chat-message-info message=message}}`,
 
-      beforeEach() {
-        this.set("message", {});
-      },
-      async test(assert) {
-        assert.equal(
-          query(".chat-message-info__username").innerText.trim(),
-          I18n.t("chat.user_deleted")
-        );
-      },
-    });
+    beforeEach() {
+      this.set("message", {});
+    },
+    async test(assert) {
+      assert.equal(
+        query(".chat-message-info__username").innerText.trim(),
+        I18n.t("chat.user_deleted")
+      );
+    },
+  });
 
-    componentTest("reviewable", {
-      template: hbs`{{chat-message-info message=message}}`,
+  componentTest("reviewable", {
+    template: hbs`{{chat-message-info message=message}}`,
 
-      beforeEach() {
-        this.set("message", {
-          user: { username: "discobot" },
-          user_flag_status: 0,
-        });
-      },
+    beforeEach() {
+      this.set("message", {
+        user: { username: "discobot" },
+        user_flag_status: 0,
+      });
+    },
 
-      async test(assert) {
-        assert.equal(
-          query(".chat-message-info__flag > .svg-icon-title").title,
-          I18n.t("chat.you_flagged")
-        );
+    async test(assert) {
+      assert.equal(
+        query(".chat-message-info__flag > .svg-icon-title").title,
+        I18n.t("chat.you_flagged")
+      );
 
-        this.set("message", {
-          user: { username: "discobot" },
-          reviewable_id: 1,
-        });
+      this.set("message", {
+        user: { username: "discobot" },
+        reviewable_id: 1,
+      });
 
-        assert.equal(
-          query(".chat-message-info__flag a .svg-icon-title").title,
-          I18n.t("chat.flagged")
-        );
-      },
-    });
-  }
-);
+      assert.equal(
+        query(".chat-message-info__flag a .svg-icon-title").title,
+        I18n.t("chat.flagged")
+      );
+    },
+  });
+});

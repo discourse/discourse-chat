@@ -5,6 +5,7 @@
       (if channel.isClosed " -closed")
       (if channel.isArchived " -archived")
     }}
+    style={{border-color channel.chatable.color}}
   >
     {{#link-to
       "chat.channel.info.settings"
@@ -20,9 +21,14 @@
       "chat.channel"
       channel.id
       (slugify-channel channel.title)
-      class="chat-channel-card__name"
+      class="chat-channel-card__name-container"
     }}
-      {{replace-emoji channel.title}}
+      <span class="chat-channel-card__name">
+        {{replace-emoji channel.title}}
+      </span>
+      {{#if channel.chatable.read_restricted}}
+        {{d-icon "lock" class="chat-channel-card__read-restricted"}}
+      {{/if}}
     {{/link-to}}
 
     {{#if channel.description}}

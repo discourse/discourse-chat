@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'rails_helper'
+require "rails_helper"
 
 describe ChatChannel do
   fab!(:user1) { Fabricate(:user) }
@@ -9,7 +9,9 @@ describe ChatChannel do
   fab!(:group) { Fabricate(:group) }
   fab!(:private_category) { Fabricate(:private_category, group: group) }
   fab!(:private_category_channel) { Fabricate(:chat_channel, chatable: private_category) }
-  fab!(:direct_message_channel) { Fabricate(:chat_channel, chatable: Fabricate(:direct_message_channel, users: [user1, user2])) }
+  fab!(:direct_message_channel) do
+    Fabricate(:chat_channel, chatable: Fabricate(:direct_message_channel, users: [user1, user2]))
+  end
 
   describe "#allowed_user_ids" do
     it "is correct for each channel type" do
@@ -26,9 +28,7 @@ describe ChatChannel do
   end
 
   describe "#closed!" do
-    before do
-      private_category_channel.update!(status: :open)
-    end
+    before { private_category_channel.update!(status: :open) }
 
     it "does nothing if user is not staff" do
       private_category_channel.closed!(user1)
@@ -37,19 +37,19 @@ describe ChatChannel do
 
     it "closes the channel, logs a staff action, and sends an event" do
       events = []
-      messages = MessageBus.track_publish do
-        events = DiscourseEvent.track_events do
-          private_category_channel.closed!(staff)
+      messages =
+        MessageBus.track_publish do
+          events = DiscourseEvent.track_events { private_category_channel.closed!(staff) }
         end
-      end
 
-      expect(events).to include(event_name: :chat_channel_status_change, params: [{
-        channel: private_category_channel,
-        old_status: :open,
-        new_status: :closed
-      }])
+      expect(events).to include(
+        event_name: :chat_channel_status_change,
+        params: [{ channel: private_category_channel, old_status: :open, new_status: :closed }],
+      )
       expect(messages.first.channel).to eq("/chat/channel-status")
-      expect(messages.first.data).to eq({ chat_channel_id: private_category_channel.id, status: "closed" })
+      expect(messages.first.data).to eq(
+        { chat_channel_id: private_category_channel.id, status: "closed" },
+      )
       expect(private_category_channel.reload.closed?).to eq(true)
 
       expect(
@@ -58,16 +58,14 @@ describe ChatChannel do
           action: UserHistory.actions[:custom_staff],
           custom_type: "chat_channel_status_change",
           new_value: :closed,
-          previous_value: :open
-        )
+          previous_value: :open,
+        ),
       ).to eq(true)
     end
   end
 
   describe "#open!" do
-    before do
-      private_category_channel.update!(status: :closed)
-    end
+    before { private_category_channel.update!(status: :closed) }
 
     it "does nothing if user is not staff" do
       private_category_channel.open!(user1)
@@ -82,19 +80,19 @@ describe ChatChannel do
 
     it "opens the channel, logs a staff action, and sends an event" do
       events = []
-      messages = MessageBus.track_publish do
-        events = DiscourseEvent.track_events do
-          private_category_channel.open!(staff)
+      messages =
+        MessageBus.track_publish do
+          events = DiscourseEvent.track_events { private_category_channel.open!(staff) }
         end
-      end
 
-      expect(events).to include(event_name: :chat_channel_status_change, params: [{
-        channel: private_category_channel,
-        old_status: :closed,
-        new_status: :open
-      }])
+      expect(events).to include(
+        event_name: :chat_channel_status_change,
+        params: [{ channel: private_category_channel, old_status: :closed, new_status: :open }],
+      )
       expect(messages.first.channel).to eq("/chat/channel-status")
-      expect(messages.first.data).to eq({ chat_channel_id: private_category_channel.id, status: "open" })
+      expect(messages.first.data).to eq(
+        { chat_channel_id: private_category_channel.id, status: "open" },
+      )
       expect(private_category_channel.reload.open?).to eq(true)
 
       expect(
@@ -103,16 +101,14 @@ describe ChatChannel do
           action: UserHistory.actions[:custom_staff],
           custom_type: "chat_channel_status_change",
           new_value: :open,
-          previous_value: :closed
-        )
+          previous_value: :closed,
+        ),
       ).to eq(true)
     end
   end
 
   describe "#read_only!" do
-    before do
-      private_category_channel.update!(status: :open)
-    end
+    before { private_category_channel.update!(status: :open) }
 
     it "does nothing if user is not staff" do
       private_category_channel.read_only!(user1)
@@ -121,19 +117,19 @@ describe ChatChannel do
 
     it "marks the channel read_only, logs a staff action, and sends an event" do
       events = []
-      messages = MessageBus.track_publish do
-        events = DiscourseEvent.track_events do
-          private_category_channel.read_only!(staff)
+      messages =
+        MessageBus.track_publish do
+          events = DiscourseEvent.track_events { private_category_channel.read_only!(staff) }
         end
-      end
 
-      expect(events).to include(event_name: :chat_channel_status_change, params: [{
-        channel: private_category_channel,
-        old_status: :open,
-        new_status: :read_only
-      }])
+      expect(events).to include(
+        event_name: :chat_channel_status_change,
+        params: [{ channel: private_category_channel, old_status: :open, new_status: :read_only }],
+      )
       expect(messages.first.channel).to eq("/chat/channel-status")
-      expect(messages.first.data).to eq({ chat_channel_id: private_category_channel.id, status: "read_only" })
+      expect(messages.first.data).to eq(
+        { chat_channel_id: private_category_channel.id, status: "read_only" },
+      )
       expect(private_category_channel.reload.read_only?).to eq(true)
 
       expect(
@@ -142,22 +138,20 @@ describe ChatChannel do
           action: UserHistory.actions[:custom_staff],
           custom_type: "chat_channel_status_change",
           new_value: :read_only,
-          previous_value: :open
-        )
+          previous_value: :open,
+        ),
       ).to eq(true)
     end
   end
 
   describe ".public_channels" do
-    context 'a category used as chatable is destroyed' do
+    context "a category used as chatable is destroyed" do
       fab!(:category_channel_1) { Fabricate(:chat_channel, chatable: Fabricate(:category)) }
       fab!(:category_channel_2) { Fabricate(:chat_channel, chatable: Fabricate(:category)) }
 
-      before do
-        category_channel_1.chatable.destroy!
-      end
+      before { category_channel_1.chatable.destroy! }
 
-      it 'doesn’t list the channel' do
+      it "doesn’t list the channel" do
         ids = ChatChannel.public_channels.pluck(:chatable_id)
         expect(ids).to_not include(category_channel_1.chatable_id)
         expect(ids).to include(category_channel_2.chatable_id)
@@ -166,9 +160,7 @@ describe ChatChannel do
   end
 
   describe "#archived!" do
-    before do
-      private_category_channel.update!(status: :read_only)
-    end
+    before { private_category_channel.update!(status: :read_only) }
 
     it "does nothing if user is not staff" do
       private_category_channel.archived!(user1)
@@ -192,19 +184,21 @@ describe ChatChannel do
 
     it "marks the channel archived, logs a staff action, and sends an event" do
       events = []
-      messages = MessageBus.track_publish do
-        events = DiscourseEvent.track_events do
-          private_category_channel.archived!(staff)
+      messages =
+        MessageBus.track_publish do
+          events = DiscourseEvent.track_events { private_category_channel.archived!(staff) }
         end
-      end
 
-      expect(events).to include(event_name: :chat_channel_status_change, params: [{
-        channel: private_category_channel,
-        old_status: :read_only,
-        new_status: :archived
-      }])
+      expect(events).to include(
+        event_name: :chat_channel_status_change,
+        params: [
+          { channel: private_category_channel, old_status: :read_only, new_status: :archived },
+        ],
+      )
       expect(messages.first.channel).to eq("/chat/channel-status")
-      expect(messages.first.data).to eq({ chat_channel_id: private_category_channel.id, status: "archived" })
+      expect(messages.first.data).to eq(
+        { chat_channel_id: private_category_channel.id, status: "archived" },
+      )
       expect(private_category_channel.reload.archived?).to eq(true)
 
       expect(
@@ -213,38 +207,38 @@ describe ChatChannel do
           action: UserHistory.actions[:custom_staff],
           custom_type: "chat_channel_status_change",
           new_value: :archived,
-          previous_value: :read_only
-        )
+          previous_value: :read_only,
+        ),
       ).to eq(true)
     end
   end
 
-  it 'is valid if name is long enough' do
+  it "is valid if name is long enough" do
     SiteSetting.max_topic_title_length = 5
-    channel = described_class.new(name: 'a')
-    channel = described_class.new(name: 'a' * SiteSetting.max_topic_title_length)
+    channel = described_class.new(name: "a")
+    channel = described_class.new(name: "a" * SiteSetting.max_topic_title_length)
     expect(channel).to be_valid
   end
 
-  it 'is invalid if name is too long' do
-    channel = described_class.new(name: 'a' * (SiteSetting.max_topic_title_length + 1))
+  it "is invalid if name is too long" do
+    channel = described_class.new(name: "a" * (SiteSetting.max_topic_title_length + 1))
     expect(channel).to be_invalid
   end
 
-  it 'is invalid if name is empty' do
-    channel = described_class.new(name: '')
+  it "is invalid if name is empty" do
+    channel = described_class.new(name: "")
     expect(channel).to be_invalid
   end
 
-  it 'is valid if name is nil' do
+  it "is valid if name is nil" do
     channel = described_class.new(name: nil)
     expect(channel).to be_valid
   end
 
-  describe '#join' do
+  describe "#join" do
     before { group.add(user1) }
 
-    it 'creates a membership for the user and updates the count' do
+    it "creates a membership for the user and updates the count" do
       initial_count = private_category_channel.user_count
 
       membership = private_category_channel.add(user1)
@@ -255,9 +249,14 @@ describe ChatChannel do
       expect(private_category_channel.reload.user_count).to eq(initial_count + 1)
     end
 
-    it 'updates an existing membership for the user and updates the count' do
+    it "updates an existing membership for the user and updates the count" do
       initial_count = private_category_channel.user_count
-      membership = UserChatChannelMembership.create!(chat_channel: private_category_channel, user: user1, following: false)
+      membership =
+        UserChatChannelMembership.create!(
+          chat_channel: private_category_channel,
+          user: user1,
+          following: false,
+        )
 
       private_category_channel.add(user1)
 
@@ -265,9 +264,14 @@ describe ChatChannel do
       expect(private_category_channel.reload.user_count).to eq(initial_count + 1)
     end
 
-    it 'does nothing if the user is already a member' do
+    it "does nothing if the user is already a member" do
       initial_count = private_category_channel.user_count
-      membership = UserChatChannelMembership.create!(chat_channel: private_category_channel, user: user1, following: true)
+      membership =
+        UserChatChannelMembership.create!(
+          chat_channel: private_category_channel,
+          user: user1,
+          following: true,
+        )
 
       private_category_channel.add(user1)
 
@@ -275,14 +279,14 @@ describe ChatChannel do
     end
   end
 
-  describe '#remove' do
+  describe "#remove" do
     before do
       group.add(user1)
       @membership = private_category_channel.add(user1)
       private_category_channel.reload
     end
 
-    it 'updates the membership for the user and decreases the count' do
+    it "updates the membership for the user and decreases the count" do
       initial_count = private_category_channel.user_count
 
       membership = private_category_channel.remove(user1)
@@ -295,7 +299,7 @@ describe ChatChannel do
       expect { private_category_channel.remove(user2) }.to raise_error(ActiveRecord::RecordNotFound)
     end
 
-    it 'does nothing if the user is not following the channel' do
+    it "does nothing if the user is not following the channel" do
       initial_count = private_category_channel.user_count
       @membership.update!(following: false)
 

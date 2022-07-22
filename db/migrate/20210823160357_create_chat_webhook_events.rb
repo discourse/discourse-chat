@@ -8,8 +8,8 @@ class CreateChatWebhookEvents < ActiveRecord::Migration[6.1]
     end
 
     add_index :chat_webhook_events,
-      [:chat_message_id, :incoming_chat_webhook_id],
-      unique: true,
-      name: "chat_webhook_events_index"
+              %i[chat_message_id incoming_chat_webhook_id],
+              unique: true,
+              name: "chat_webhook_events_index"
   end
 end

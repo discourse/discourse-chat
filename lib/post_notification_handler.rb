@@ -24,22 +24,17 @@ class DiscourseChat::PostNotificationHandler
 
     opts = { user_id: post.user.id, display_username: post.user.username }
     quoted_users.each do |user|
-
       # PostAlerter.create_notification handles many edge cases, such as
       # muting, ignoring, double notifications etc.
-      PostAlerter.new.create_notification(
-        user,
-        Notification.types[:chat_quoted],
-        post,
-        opts
-      )
+      PostAlerter.new.create_notification(user, Notification.types[:chat_quoted], post, opts)
     end
   end
 
   private
 
   def extract_quoted_users(post)
-    usernames = post.raw.scan(/\[chat quote=\"([^;]+);.+\"\]/).uniq.map { |q| q.first.strip.downcase }
+    usernames =
+      post.raw.scan(/\[chat quote=\"([^;]+);.+\"\]/).uniq.map { |q| q.first.strip.downcase }
     User.where.not(id: post.user_id).where(username_lower: usernames)
   end
 end

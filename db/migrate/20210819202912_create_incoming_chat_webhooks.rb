@@ -12,6 +12,6 @@ class CreateIncomingChatWebhooks < ActiveRecord::Migration[6.1]
       t.timestamps
     end
 
-    add_index :incoming_chat_webhooks, [:key, :chat_channel_id]
+    add_index :incoming_chat_webhooks, %i[key chat_channel_id]
   end
 end

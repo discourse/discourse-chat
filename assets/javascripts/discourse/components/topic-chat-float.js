@@ -18,7 +18,7 @@ export default Component.extend({
   classNameBindings: [":topic-chat-float-container", "hidden"],
   chat: service(),
   router: service(),
-  chatWindowStore: service("chat-window-store"),
+  fullPageChat: service(),
   hidden: true,
   loading: false,
   expanded: true, // TODO - false when not first-load topic
@@ -251,7 +251,7 @@ export default Component.extend({
     this.set("expanded", false);
     this.set("hidden", true);
     this.chat.setActiveChannel(null);
-    this.chatWindowStore.set("fullPage", true);
+    this.fullPageChat.isPreferred = true;
 
     if (!channel) {
       return this.router.transitionTo("chat");

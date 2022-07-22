@@ -66,14 +66,13 @@ class ChatTranscriptService
     private
 
     def reactions_attr
-      reaction_data = @message_data.reduce([]) do |array, msg_data|
-        if msg_data[:reactions].any?
-          array << msg_data[:reactions].map do |react|
-            "#{react.emoji}:#{react.usernames}"
+      reaction_data =
+        @message_data.reduce([]) do |array, msg_data|
+          if msg_data[:reactions].any?
+            array << msg_data[:reactions].map { |react| "#{react.emoji}:#{react.usernames}" }
           end
+          array
         end
-        array
-      end
       return if reaction_data.empty?
       "reactions=\"#{reaction_data.join(";")}\""
     end
@@ -107,25 +106,27 @@ class ChatTranscriptService
     previous_message = nil
     rendered_markdown = []
     all_messages_same_user = messages.count(:user_id) == 1
-    open_bbcode_tag = ChatTranscriptBBCode.new(
-      channel: @channel,
-      acting_user: @acting_user,
-      multiquote: messages.length > 1,
-      chained: !all_messages_same_user,
-      no_link: @opts[:no_link],
-      include_reactions: @opts[:include_reactions]
-    )
+    open_bbcode_tag =
+      ChatTranscriptBBCode.new(
+        channel: @channel,
+        acting_user: @acting_user,
+        multiquote: messages.length > 1,
+        chained: !all_messages_same_user,
+        no_link: @opts[:no_link],
+        include_reactions: @opts[:include_reactions],
+      )
 
     messages.each.with_index do |message, idx|
       if previous_message.present? && previous_message.user_id != message.user_id
         rendered_markdown << open_bbcode_tag.render
 
-        open_bbcode_tag = ChatTranscriptBBCode.new(
-          acting_user: @acting_user,
-          chained: !all_messages_same_user,
-          no_link: @opts[:no_link],
-          include_reactions: @opts[:include_reactions]
-        )
+        open_bbcode_tag =
+          ChatTranscriptBBCode.new(
+            acting_user: @acting_user,
+            chained: !all_messages_same_user,
+            no_link: @opts[:no_link],
+            include_reactions: @opts[:include_reactions],
+          )
       end
 
       if @opts[:include_reactions]
@@ -144,11 +145,11 @@ class ChatTranscriptService
   private
 
   def messages
-    @messages ||= ChatMessage.includes(
-      :user, chat_uploads: :upload
-    ).where(
-      id: @message_ids, chat_channel_id: @channel.id
-    ).order(:created_at)
+    @messages ||=
+      ChatMessage
+        .includes(:user, chat_uploads: :upload)
+        .where(id: @message_ids, chat_channel_id: @channel.id)
+        .order(:created_at)
   end
 
   ##

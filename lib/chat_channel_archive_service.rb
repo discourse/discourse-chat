@@ -23,15 +23,16 @@ class DiscourseChat::ChatChannelArchiveService
     ChatChannelArchive.transaction do
       chat_channel.read_only!(acting_user)
 
-      archive = ChatChannelArchive.create!(
-        chat_channel: chat_channel,
-        archived_by: acting_user,
-        total_messages: chat_channel.chat_messages.count,
-        destination_topic_id: topic_params[:topic_id],
-        destination_topic_title: topic_params[:topic_title],
-        destination_category_id: topic_params[:category_id],
-        destination_tags: topic_params[:tags],
-      )
+      archive =
+        ChatChannelArchive.create!(
+          chat_channel: chat_channel,
+          archived_by: acting_user,
+          total_messages: chat_channel.chat_messages.count,
+          destination_topic_id: topic_params[:topic_id],
+          destination_topic_title: topic_params[:topic_title],
+          destination_category_id: topic_params[:category_id],
+          destination_tags: topic_params[:tags],
+        )
       Jobs.enqueue(:chat_channel_archive, chat_channel_archive_id: archive.id)
 
       archive
@@ -40,7 +41,10 @@ class DiscourseChat::ChatChannelArchiveService
 
   def self.retry_archive_process(chat_channel:)
     return if !chat_channel.chat_channel_archive&.failed?
-    Jobs.enqueue(:chat_channel_archive, chat_channel_archive_id: chat_channel.chat_channel_archive.id)
+    Jobs.enqueue(
+      :chat_channel_archive,
+      chat_channel_archive_id: chat_channel.chat_channel_archive.id,
+    )
   end
 
   attr_reader :chat_channel_archive, :chat_channel, :chat_channel_title
@@ -57,7 +61,9 @@ class DiscourseChat::ChatChannelArchiveService
     begin
       ensure_destination_topic_exists!
 
-      Rails.logger.info("Creating posts from message batches for #{chat_channel_title} archive, #{chat_channel_archive.total_messages} messages to archive (#{chat_channel_archive.total_messages / ARCHIVED_MESSAGES_PER_POST} posts).")
+      Rails.logger.info(
+        "Creating posts from message batches for #{chat_channel_title} archive, #{chat_channel_archive.total_messages} messages to archive (#{chat_channel_archive.total_messages / ARCHIVED_MESSAGES_PER_POST} posts).",
+      )
 
       # a batch should be idempotent, either the post is created and the
       # messages are deleted or we roll back the whole thing.
@@ -69,20 +75,21 @@ class DiscourseChat::ChatChannelArchiveService
       # another future improvement is to send a MessageBus message for each
       # completed batch, so the UI can receive updates and show a progress
       # bar or something similar
-      chat_channel.chat_messages.find_in_batches(
-        batch_size: ARCHIVED_MESSAGES_PER_POST
-      ) do |chat_messages|
-        create_post(
-          ChatTranscriptService.new(
-            chat_channel,
-            chat_channel_archive.archived_by,
-            messages_or_ids: chat_messages,
-            opts: { no_link: true, include_reactions: true }
-          ).generate_markdown
-        ) do
-          delete_message_batch(chat_messages.map(&:id))
+      chat_channel
+        .chat_messages
+        .find_in_batches(batch_size: ARCHIVED_MESSAGES_PER_POST) do |chat_messages|
+          create_post(
+            ChatTranscriptService.new(
+              chat_channel,
+              chat_channel_archive.archived_by,
+              messages_or_ids: chat_messages,
+              opts: {
+                no_link: true,
+                include_reactions: true,
+              },
+            ).generate_markdown,
+          ) { delete_message_batch(chat_messages.map(&:id)) }
         end
-      end
 
       kick_all_users
       complete_archive
@@ -97,23 +104,20 @@ class DiscourseChat::ChatChannelArchiveService
   def create_post(raw)
     pc = nil
     Post.transaction do
-      pc = PostCreator.new(
-        Discourse.system_user,
-        raw: raw,
-
-        # we must skip these because the posts are created in a big transaction,
-        # we do them all at the end instead
-        skip_jobs: true,
-
-        # we do not want to be sending out notifications etc. from this
-        # automatic background process
-        import_mode: true,
-
-        # don't want to be stopped by watched word or post length validations
-        skip_validations: true,
-
-        topic_id: chat_channel_archive.destination_topic_id
-      )
+      pc =
+        PostCreator.new(
+          Discourse.system_user,
+          raw: raw,
+          # we must skip these because the posts are created in a big transaction,
+          # we do them all at the end instead
+          skip_jobs: true,
+          # we do not want to be sending out notifications etc. from this
+          # automatic background process
+          import_mode: true,
+          # don't want to be stopped by watched word or post length validations
+          skip_validations: true,
+          topic_id: chat_channel_archive.destination_topic_id,
+        )
 
       pc.create
 
@@ -127,16 +131,17 @@ class DiscourseChat::ChatChannelArchiveService
     if !chat_channel_archive.destination_topic.present?
       Rails.logger.info("Creating topic for #{chat_channel_title} archive.")
       Topic.transaction do
-        topic_creator = TopicCreator.new(
-          Discourse.system_user,
-          Guardian.new(chat_channel_archive.archived_by),
-          {
-            title: chat_channel_archive.destination_topic_title,
-            category: chat_channel_archive.destination_category_id,
-            tags: chat_channel_archive.destination_tags,
-            import_mode: true
-          }
-        )
+        topic_creator =
+          TopicCreator.new(
+            Discourse.system_user,
+            Guardian.new(chat_channel_archive.archived_by),
+            {
+              title: chat_channel_archive.destination_topic_title,
+              category: chat_channel_archive.destination_category_id,
+              tags: chat_channel_archive.destination_tags,
+              import_mode: true,
+            },
+          )
 
         chat_channel_archive.update!(destination_topic: topic_creator.create)
       end
@@ -146,8 +151,8 @@ class DiscourseChat::ChatChannelArchiveService
         I18n.t(
           "chat.channel.archive.first_post_raw",
           channel_name: chat_channel_title,
-          channel_url: chat_channel.url
-        )
+          channel_url: chat_channel.url,
+        ),
       )
     else
       Rails.logger.info("Topic already exists for #{chat_channel_title} archive.")
@@ -173,15 +178,17 @@ class DiscourseChat::ChatChannelArchiveService
     ChatMessage.transaction do
       ChatMessage.where(id: message_ids).update_all(
         deleted_at: DateTime.now,
-        deleted_by_id: chat_channel_archive.archived_by.id
+        deleted_by_id: chat_channel_archive.archived_by.id,
       )
 
       chat_channel_archive.update!(
-        archived_messages: chat_channel_archive.archived_messages + message_ids.length
+        archived_messages: chat_channel_archive.archived_messages + message_ids.length,
       )
     end
 
-    Rails.logger.info("Archived #{chat_channel_archive.archived_messages} messages for #{chat_channel_title} archive.")
+    Rails.logger.info(
+      "Archived #{chat_channel_archive.archived_messages} messages for #{chat_channel_title} archive.",
+    )
   end
 
   def complete_archive
@@ -194,7 +201,7 @@ class DiscourseChat::ChatChannelArchiveService
     base_translation_params = {
       channel_name: chat_channel_title,
       topic_title: chat_channel_archive.destination_topic.title,
-      topic_url: chat_channel_archive.destination_topic.url
+      topic_url: chat_channel_archive.destination_topic.url,
     }
 
     if result == :failed
@@ -203,20 +210,25 @@ class DiscourseChat::ChatChannelArchiveService
         message: "Error when archiving chat channel #{chat_channel_title}.",
         env: {
           chat_channel_id: chat_channel.id,
-          chat_channel_name: chat_channel_title
-        }
+          chat_channel_name: chat_channel_title,
+        },
       )
-      error_translation_params = base_translation_params.merge(
-        channel_url: chat_channel.url,
-        messages_archived: chat_channel_archive.archived_messages
-      )
+      error_translation_params =
+        base_translation_params.merge(
+          channel_url: chat_channel.url,
+          messages_archived: chat_channel_archive.archived_messages,
+        )
       chat_channel_archive.update(archive_error: error.message)
       SystemMessage.create_from_system_user(
-        chat_channel_archive.archived_by, :chat_channel_archive_failed, error_translation_params
+        chat_channel_archive.archived_by,
+        :chat_channel_archive_failed,
+        error_translation_params,
       )
     else
       SystemMessage.create_from_system_user(
-        chat_channel_archive.archived_by, :chat_channel_archive_complete, base_translation_params
+        chat_channel_archive.archived_by,
+        :chat_channel_archive_complete,
+        base_translation_params,
       )
     end
 
@@ -225,13 +237,14 @@ class DiscourseChat::ChatChannelArchiveService
       archive_status: result,
       archived_messages: chat_channel_archive.archived_messages,
       archive_topic_id: chat_channel_archive.destination_topic_id,
-      total_messages: chat_channel_archive.total_messages
+      total_messages: chat_channel_archive.total_messages,
     )
   end
 
   def kick_all_users
     UserChatChannelMembership.where(chat_channel: chat_channel).update_all(
-      following: false, last_read_message_id: chat_channel.chat_messages.last&.id
+      following: false,
+      last_read_message_id: chat_channel.chat_messages.last&.id,
     )
   end
 end

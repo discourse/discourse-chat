@@ -3,14 +3,10 @@ import componentTest, {
 } from "discourse/tests/helpers/component-test";
 import { click } from "@ember/test-helpers";
 import hbs from "htmlbars-inline-precompile";
-import {
-  discourseModule,
-  exists,
-  query,
-  visible,
-} from "discourse/tests/helpers/qunit-helpers";
+import { exists, query, visible } from "discourse/tests/helpers/qunit-helpers";
+import { module } from "qunit";
 
-discourseModule("Discourse chat | Component | collapser", function (hooks) {
+module("Discourse Chat | Component | collapser", function (hooks) {
   setupRenderingTest(hooks);
 
   componentTest("renders header", {

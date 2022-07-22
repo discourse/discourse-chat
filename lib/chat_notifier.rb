@@ -37,7 +37,8 @@ class DiscourseChat::ChatNotifier
     end
 
     notify_creator_of_inaccessible_mentions(
-      inaccessible[:unreachable], inaccessible[:welcome_to_join]
+      inaccessible[:unreachable],
+      inaccessible[:welcome_to_join],
     )
 
     notify_mentioned_users(to_notify)
@@ -47,7 +48,8 @@ class DiscourseChat::ChatNotifier
   end
 
   def notify_edit
-    existing_notifications = ChatMention.includes(:user, :notification).where(chat_message: @chat_message)
+    existing_notifications =
+      ChatMention.includes(:user, :notification).where(chat_message: @chat_message)
     already_notified_user_ids = existing_notifications.map(&:user_id)
 
     to_notify = list_users_to_notify
@@ -65,7 +67,8 @@ class DiscourseChat::ChatNotifier
     return if needs_notification_ids.blank?
 
     notify_creator_of_inaccessible_mentions(
-      inaccessible[:unreachable], inaccessible[:welcome_to_join]
+      inaccessible[:unreachable],
+      inaccessible[:welcome_to_join],
     )
 
     notify_mentioned_users(to_notify, already_notified_user_ids: already_notified_user_ids)
@@ -92,11 +95,12 @@ class DiscourseChat::ChatNotifier
   end
 
   def chat_users
-    users = User.includes(:do_not_disturb_timings, :push_subscriptions, :user_chat_channel_memberships)
+    users =
+      User.includes(:do_not_disturb_timings, :push_subscriptions, :user_chat_channel_memberships)
 
     users
       .distinct
-      .joins('LEFT OUTER JOIN user_chat_channel_memberships uccm ON uccm.user_id = users.id')
+      .joins("LEFT OUTER JOIN user_chat_channel_memberships uccm ON uccm.user_id = users.id")
       .joins(:user_option)
       .real
       .not_suspended
@@ -105,8 +109,12 @@ class DiscourseChat::ChatNotifier
   end
 
   def rest_of_the_channel
-    chat_users
-      .where(user_chat_channel_memberships: { following: true, chat_channel_id: @chat_channel.id })
+    chat_users.where(
+      user_chat_channel_memberships: {
+        following: true,
+        chat_channel_id: @chat_channel.id,
+      },
+    )
   end
 
   def members_accepting_channel_wide_notifications
@@ -114,7 +122,8 @@ class DiscourseChat::ChatNotifier
   end
 
   def direct_mentions_from_cooked
-    @direct_mentions_from_cooked ||= Nokogiri::HTML5.fragment(@chat_message.cooked).css(".mention").map(&:text)
+    @direct_mentions_from_cooked ||=
+      Nokogiri::HTML5.fragment(@chat_message.cooked).css(".mention").map(&:text)
   end
 
   def normalized_mentions(mentions)
@@ -155,26 +164,31 @@ class DiscourseChat::ChatNotifier
   end
 
   def group_users_to_notify(users)
-    potential_participants, unreachable = users.partition do |user|
-      guardian = Guardian.new(user)
-      guardian.can_chat?(user) && guardian.can_see_chat_channel?(@chat_channel)
-    end
+    potential_participants, unreachable =
+      users.partition do |user|
+        guardian = Guardian.new(user)
+        guardian.can_chat?(user) && guardian.can_see_chat_channel?(@chat_channel)
+      end
 
-    participants, welcome_to_join = potential_participants.partition do |participant|
-      participant.user_chat_channel_memberships.any? { |m| m.chat_channel_id == @chat_channel.id && m.following == true }
-    end
+    participants, welcome_to_join =
+      potential_participants.partition do |participant|
+        participant.user_chat_channel_memberships.any? do |m|
+          m.chat_channel_id == @chat_channel.id && m.following == true
+        end
+      end
 
     {
       already_participating: participants || [],
       welcome_to_join: welcome_to_join || [],
-      unreachable: unreachable || []
+      unreachable: unreachable || [],
     }
   end
 
   def expand_direct_mentions(to_notify, already_covered_ids)
-    direct_mentions = chat_users
-      .where(username_lower: normalized_mentions(direct_mentions_from_cooked))
-      .where.not(id: already_covered_ids)
+    direct_mentions =
+      chat_users
+        .where(username_lower: normalized_mentions(direct_mentions_from_cooked))
+        .where.not(id: already_covered_ids)
 
     grouped = group_users_to_notify(direct_mentions)
 
@@ -185,17 +199,18 @@ class DiscourseChat::ChatNotifier
   end
 
   def group_name_mentions
-    @group_mentions_from_cooked ||= normalized_mentions(
-      Nokogiri::HTML5
-      .fragment(@chat_message.cooked)
-      .css(".mention-group")
-      .map(&:text)
-    )
+    @group_mentions_from_cooked ||=
+      normalized_mentions(
+        Nokogiri::HTML5.fragment(@chat_message.cooked).css(".mention-group").map(&:text),
+      )
   end
 
   def mentionable_groups
-    @mentionable_groups ||= Group.mentionable(@user, include_public: false)
-      .where('LOWER(name) IN (?)', group_name_mentions)
+    @mentionable_groups ||=
+      Group.mentionable(@user, include_public: false).where(
+        "LOWER(name) IN (?)",
+        group_name_mentions,
+      )
   end
 
   def expand_group_mentions(to_notify, already_covered_ids)
@@ -203,9 +218,8 @@ class DiscourseChat::ChatNotifier
 
     mentionable_groups.each { |g| to_notify[g.name.downcase] = [] }
 
-    reached_by_group = chat_users
-      .joins(:groups).where(groups: mentionable_groups)
-      .where.not(id: already_covered_ids)
+    reached_by_group =
+      chat_users.joins(:groups).where(groups: mentionable_groups).where.not(id: already_covered_ids)
 
     grouped = group_users_to_notify(reached_by_group)
 
@@ -227,23 +241,34 @@ class DiscourseChat::ChatNotifier
   def notify_creator_of_inaccessible_mentions(unreachable, welcome_to_join)
     return if unreachable.empty? && welcome_to_join.empty?
 
-    ChatPublisher.publish_inaccessible_mentions(@user.id, @chat_message, unreachable, welcome_to_join)
+    ChatPublisher.publish_inaccessible_mentions(
+      @user.id,
+      @chat_message,
+      unreachable,
+      welcome_to_join,
+    )
   end
 
   def notify_mentioned_users(to_notify, already_notified_user_ids: [])
-    Jobs.enqueue(:chat_notify_mentioned, {
-      chat_message_id: @chat_message.id,
-      to_notify_ids_map: to_notify.as_json,
-      already_notified_user_ids: already_notified_user_ids,
-      timestamp: @timestamp.iso8601(6)
-    })
+    Jobs.enqueue(
+      :chat_notify_mentioned,
+      {
+        chat_message_id: @chat_message.id,
+        to_notify_ids_map: to_notify.as_json,
+        already_notified_user_ids: already_notified_user_ids,
+        timestamp: @timestamp.iso8601(6),
+      },
+    )
   end
 
   def notify_watching_users(except: [])
-    Jobs.enqueue(:chat_notify_watching, {
-      chat_message_id: @chat_message.id,
-      except_user_ids: except,
-      timestamp: @timestamp.iso8601(6)
-    })
+    Jobs.enqueue(
+      :chat_notify_watching,
+      {
+        chat_message_id: @chat_message.id,
+        except_user_ids: except,
+        timestamp: @timestamp.iso8601(6),
+      },
+    )
   end
 end

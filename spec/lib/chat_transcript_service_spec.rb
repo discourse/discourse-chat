@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'rails_helper'
+require "rails_helper"
 
 describe ChatTranscriptService do
   let(:acting_user) { Fabricate(:user) }
@@ -13,7 +13,13 @@ describe ChatTranscriptService do
   end
 
   it "generates a simple chat transcript from one message" do
-    message = Fabricate(:chat_message, user: user1, chat_channel: channel, message: "an extremely insightful response :)")
+    message =
+      Fabricate(
+        :chat_message,
+        user: user1,
+        chat_channel: channel,
+        message: "an extremely insightful response :)",
+      )
 
     expect(service(message.id).generate_markdown).to eq(<<~MARKDOWN)
     [chat quote="martinchat;#{message.id};#{message.created_at.iso8601}" channel="The Beam Discussions" channelId="#{channel.id}"]
@@ -23,8 +29,15 @@ describe ChatTranscriptService do
   end
 
   it "generates a single chat transcript from multiple subsequent messages from the same user" do
-    message1 = Fabricate(:chat_message, user: user1, chat_channel: channel, message: "an extremely insightful response :)")
-    message2 = Fabricate(:chat_message, user: user1, chat_channel: channel, message: "if i say so myself")
+    message1 =
+      Fabricate(
+        :chat_message,
+        user: user1,
+        chat_channel: channel,
+        message: "an extremely insightful response :)",
+      )
+    message2 =
+      Fabricate(:chat_message, user: user1, chat_channel: channel, message: "if i say so myself")
     message3 = Fabricate(:chat_message, user: user1, chat_channel: channel, message: "yay!")
 
     rendered = service([message1.id, message2.id, message3.id]).generate_markdown
@@ -40,9 +53,30 @@ describe ChatTranscriptService do
   end
 
   it "generates chat messages in created_at order no matter what order the message_ids are passed in" do
-    message1 = Fabricate(:chat_message, created_at: 10.minute.ago, user: user1, chat_channel: channel, message: "an extremely insightful response :)")
-    message2 = Fabricate(:chat_message, created_at: 5.minutes.ago, user: user1, chat_channel: channel, message: "if i say so myself")
-    message3 = Fabricate(:chat_message, created_at: 1.minutes.ago, user: user1, chat_channel: channel, message: "yay!")
+    message1 =
+      Fabricate(
+        :chat_message,
+        created_at: 10.minute.ago,
+        user: user1,
+        chat_channel: channel,
+        message: "an extremely insightful response :)",
+      )
+    message2 =
+      Fabricate(
+        :chat_message,
+        created_at: 5.minutes.ago,
+        user: user1,
+        chat_channel: channel,
+        message: "if i say so myself",
+      )
+    message3 =
+      Fabricate(
+        :chat_message,
+        created_at: 1.minutes.ago,
+        user: user1,
+        chat_channel: channel,
+        message: "yay!",
+      )
 
     rendered = service([message3.id, message1.id, message2.id]).generate_markdown
     expect(rendered).to eq(<<~MARKDOWN)
@@ -57,7 +91,13 @@ describe ChatTranscriptService do
   end
 
   it "generates multiple chained chat transcripts for interleaving messages from different users" do
-    message1 = Fabricate(:chat_message, user: user1, chat_channel: channel, message: "an extremely insightful response :)")
+    message1 =
+      Fabricate(
+        :chat_message,
+        user: user1,
+        chat_channel: channel,
+        message: "an extremely insightful response :)",
+      )
     message2 = Fabricate(:chat_message, user: user2, chat_channel: channel, message: "says you!")
     message3 = Fabricate(:chat_message, user: user1, chat_channel: channel, message: "aw :(")
 
@@ -82,7 +122,14 @@ describe ChatTranscriptService do
     video = Fabricate(:upload, original_filename: "test_video.mp4", extension: "mp4")
     audio = Fabricate(:upload, original_filename: "test_audio.mp3", extension: "mp3")
     attachment = Fabricate(:upload, original_filename: "test_file.pdf", extension: "pdf")
-    image = Fabricate(:upload, width: 100, height: 200, original_filename: "test_img.jpg", extension: "jpg")
+    image =
+      Fabricate(
+        :upload,
+        width: 100,
+        height: 200,
+        original_filename: "test_img.jpg",
+        extension: "jpg",
+      )
     cu1 = ChatUpload.create(chat_message: message, created_at: 10.seconds.ago, upload: video)
     cu2 = ChatUpload.create(chat_message: message, created_at: 9.seconds.ago, upload: audio)
     cu3 = ChatUpload.create(chat_message: message, created_at: 8.seconds.ago, upload: attachment)
@@ -104,8 +151,21 @@ describe ChatTranscriptService do
 
   it "generates the correct markdown if a message has text and an upload" do
     SiteSetting.authorized_extensions = "mp4|mp3|pdf|jpg"
-    message = Fabricate(:chat_message, user: user1, chat_channel: channel, message: "this is a cool and funny picture")
-    image = Fabricate(:upload, width: 100, height: 200, original_filename: "test_img.jpg", extension: "jpg")
+    message =
+      Fabricate(
+        :chat_message,
+        user: user1,
+        chat_channel: channel,
+        message: "this is a cool and funny picture",
+      )
+    image =
+      Fabricate(
+        :upload,
+        width: 100,
+        height: 200,
+        original_filename: "test_img.jpg",
+        extension: "jpg",
+      )
     cu = ChatUpload.create(chat_message: message, created_at: 7.seconds.ago, upload: image)
     image_markdown = UploadMarkdown.new(image).to_markdown
 
@@ -119,7 +179,13 @@ describe ChatTranscriptService do
   end
 
   it "generates a transcript with the noLink option" do
-    message = Fabricate(:chat_message, user: user1, chat_channel: channel, message: "an extremely insightful response :)")
+    message =
+      Fabricate(
+        :chat_message,
+        user: user1,
+        chat_channel: channel,
+        message: "an extremely insightful response :)",
+      )
 
     expect(service(message.id, opts: { no_link: true }).generate_markdown).to eq(<<~MARKDOWN)
     [chat quote="martinchat;#{message.id};#{message.created_at.iso8601}" channel="The Beam Discussions" channelId="#{channel.id}" noLink="true"]
@@ -129,17 +195,51 @@ describe ChatTranscriptService do
   end
 
   it "generates reaction data for single and subsequent messages" do
-    message = Fabricate(:chat_message, user: user1, chat_channel: channel, message: "an extremely insightful response :)")
+    message =
+      Fabricate(
+        :chat_message,
+        user: user1,
+        chat_channel: channel,
+        message: "an extremely insightful response :)",
+      )
     message2 = Fabricate(:chat_message, user: user1, chat_channel: channel, message: "wow so tru")
-    message3 = Fabricate(:chat_message, user: user2, chat_channel: channel, message: "a new perspective")
+    message3 =
+      Fabricate(:chat_message, user: user2, chat_channel: channel, message: "a new perspective")
 
-    ChatMessageReaction.create!(chat_message: message, user: Fabricate(:user, username: "bjorn"), emoji: "heart")
-    ChatMessageReaction.create!(chat_message: message, user: Fabricate(:user, username: "sigurd"), emoji: "heart")
-    ChatMessageReaction.create!(chat_message: message, user: Fabricate(:user, username: "hvitserk"), emoji: "+1")
-    ChatMessageReaction.create!(chat_message: message2, user: Fabricate(:user, username: "ubbe"), emoji: "money_mouth_face")
-    ChatMessageReaction.create!(chat_message: message3, user: Fabricate(:user, username: "ivar"), emoji: "sob")
+    ChatMessageReaction.create!(
+      chat_message: message,
+      user: Fabricate(:user, username: "bjorn"),
+      emoji: "heart",
+    )
+    ChatMessageReaction.create!(
+      chat_message: message,
+      user: Fabricate(:user, username: "sigurd"),
+      emoji: "heart",
+    )
+    ChatMessageReaction.create!(
+      chat_message: message,
+      user: Fabricate(:user, username: "hvitserk"),
+      emoji: "+1",
+    )
+    ChatMessageReaction.create!(
+      chat_message: message2,
+      user: Fabricate(:user, username: "ubbe"),
+      emoji: "money_mouth_face",
+    )
+    ChatMessageReaction.create!(
+      chat_message: message3,
+      user: Fabricate(:user, username: "ivar"),
+      emoji: "sob",
+    )
 
-    expect(service([message.id, message2.id, message3.id], opts: { include_reactions: true }).generate_markdown).to eq(<<~MARKDOWN)
+    expect(
+      service(
+        [message.id, message2.id, message3.id],
+        opts: {
+          include_reactions: true,
+        },
+      ).generate_markdown,
+    ).to eq(<<~MARKDOWN)
     [chat quote="martinchat;#{message.id};#{message.created_at.iso8601}" channel="The Beam Discussions" channelId="#{channel.id}" multiQuote="true" chained="true" reactions="+1:hvitserk;heart:bjorn,sigurd;money_mouth_face:ubbe"]
     an extremely insightful response :)
 

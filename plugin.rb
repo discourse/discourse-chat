@@ -486,17 +486,13 @@ after_initialize do
 
   on(:reviewable_score_updated) { |reviewable| ReviewableChatMessage.on_score_updated(reviewable) }
 
-  add_model_callback(User, :after_commit) do
-    if saved_change_to_last_seen_at?
-      old_value = self.previous_changes[:last_seen_at].first
-
-      if !old_value && last_seen_at?
-        ChatChannel
-          .where(auto_join_users: true)
-          .each do |channel|
-            UserChatChannelMembership.enforce_automatic_user_membership(channel, self)
-          end
-      end
+  on(:user_seen) do |user|
+    if user.last_seen_at == user.first_seen_at
+      ChatChannel
+        .where(auto_join_users: true)
+        .each do |channel|
+          UserChatChannelMembership.enforce_automatic_user_membership(channel, user)
+        end
     end
   end
 

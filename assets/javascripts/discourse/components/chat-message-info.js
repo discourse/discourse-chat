@@ -8,6 +8,16 @@ export default class ChatMessageInfo extends Component {
   message = null;
   details = null;
 
+  didInsertElement() {
+    this._super(...arguments);
+    this.message.user?.trackStatus?.();
+  }
+
+  willDestroyElement() {
+    this._super(...arguments);
+    this.message.user?.stopTrackingStatus?.();
+  }
+
   @computed("message.user")
   get name() {
     if (!this.message?.user) {
@@ -30,6 +40,11 @@ export default class ChatMessageInfo extends Component {
       this.siteSettings.display_name_on_posts &&
       prioritizeNameInUx(this.message?.user?.name)
     );
+  }
+
+  @computed("message.user.status")
+  get showStatus() {
+    return !!this.message.user?.status;
   }
 
   @computed("message.user")

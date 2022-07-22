@@ -119,11 +119,11 @@ const ChatChannel = RestModel.extend({
 ChatChannel.reopenClass({
   create(args) {
     args = args || {};
-    this._intiUserModels(args);
+    this._initUserModels(args);
     return this._super(args);
   },
 
-  _intiUserModels(args) {
+  _initUserModels(args) {
     if (args.chatable?.users?.length) {
       for (let i = 0; i < args.chatable?.users?.length; i++) {
         const userData = args.chatable.users[i];

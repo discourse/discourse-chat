@@ -42,11 +42,10 @@
   }
 
   &__name {
-    display: inline-block;
+    align-self: flex-start;
     margin-bottom: 0.5rem;
     color: var(--primary);
     font-size: 1.15rem;
-    text-decoration: none;
     padding-right: 1.25rem;
     @include ellipsis;
 

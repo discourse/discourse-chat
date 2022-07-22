@@ -28,7 +28,7 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
         public_channels: [
           {
             id: 1,
-            title: "dev",
+            title: "dev :bug:",
             unread_count: 0,
             unread_mentions: 0,
             chatable_type: "Category",
@@ -69,21 +69,28 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
 
     assert.ok(
       exists(
-        ".sidebar-section-chat-channels .sidebar-section-link-dev .sidebar-section-link-prefix svg.prefix-icon.d-icon-hashtag"
+        ".sidebar-section-chat-channels .sidebar-section-link-dev-bug .sidebar-section-link-prefix svg.prefix-icon.d-icon-hashtag"
       ),
       "dev channel section link displays hash icon prefix"
     );
 
     assert.ok(
       exists(
-        ".sidebar-section-chat-channels .sidebar-section-link-dev .sidebar-section-link-prefix svg.prefix-badge.d-icon-lock"
+        ".sidebar-section-chat-channels .sidebar-section-link-dev-bug .sidebar-section-link-prefix svg.prefix-badge.d-icon-lock"
       ),
       "dev channel section link displays lock badge for restricted channel"
     );
 
+    assert.ok(
+      exists(
+        ".sidebar-section-chat-channels .sidebar-section-link-dev-bug .emoji"
+      ),
+      "unescapes emoji in channel title in the link"
+    );
+
     assert.strictEqual(
       query(
-        ".sidebar-section-chat-channels .sidebar-section-link-dev"
+        ".sidebar-section-chat-channels .sidebar-section-link-dev-bug"
       ).textContent.trim(),
       "dev",
       "dev channel section link displays channel title in the link"
@@ -91,14 +98,14 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
 
     assert.ok(
       query(
-        ".sidebar-section-chat-channels .sidebar-section-link-dev"
-      ).href.endsWith("/chat/channel/1/dev"),
+        ".sidebar-section-chat-channels .sidebar-section-link-dev-bug"
+      ).href.endsWith("/chat/channel/1/dev-bug"),
       "dev channel section link has the right href attribute"
     );
 
     assert.notOk(
       exists(
-        ".sidebar-section-chat-channels .sidebar-section-link-dev .sidebar-section-link-suffix"
+        ".sidebar-section-chat-channels .sidebar-section-link-dev-bug .sidebar-section-link-suffix"
       ),
       "does not display new messages indicator"
     );

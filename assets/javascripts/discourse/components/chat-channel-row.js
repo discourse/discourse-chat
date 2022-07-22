@@ -116,5 +116,5 @@ export default Component.extend({
   onLeaveChannel() {
     this.set("isUnfollowing", true);
     this.chat.unfollowChannel(this.channel);
-  }
+  },
 });

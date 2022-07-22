@@ -6,7 +6,6 @@ import hbs from "htmlbars-inline-precompile";
 import { click, triggerKeyEvent } from "@ember/test-helpers";
 import fabricators from "../helpers/fabricators";
 import { module } from "qunit";
-import { CHATABLE_TYPES } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 
 module("Discourse Chat | Component | chat-channel-row", function (hooks) {
   setupRenderingTest(hooks);

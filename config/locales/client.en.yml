@@ -192,7 +192,7 @@ en:
         description: Description
 
       channel_info:
-        back_to_all_channels: "All channel"
+        back_to_all_channels: "All channels"
         tabs:
           about: About
           members: Members

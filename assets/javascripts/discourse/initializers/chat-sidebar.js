@@ -1,3 +1,4 @@
+import { htmlSafe } from "@ember/template";
 import slugifyChannel from "discourse/plugins/discourse-chat/discourse/lib/slugify-channel";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import I18n from "I18n";
@@ -8,6 +9,7 @@ import { getOwner } from "discourse-common/lib/get-owner";
 import { DRAFT_CHANNEL_VIEW } from "discourse/plugins/discourse-chat/discourse/services/chat";
 import { avatarUrl } from "discourse/lib/utilities";
 import { dasherize } from "@ember/string";
+import { emojiUnescape } from "discourse/lib/text";
 
 export default {
   name: "chat-sidebar",
@@ -49,7 +51,7 @@ export default {
             }
 
             get name() {
-              return dasherize(this.channel.title);
+              return dasherize(slugifyChannel(this.channel.title));
             }
 
             get route() {
@@ -65,8 +67,9 @@ export default {
             }
 
             get text() {
-              return this.channel.title;
+              return htmlSafe(emojiUnescape(this.channel.title));
             }
+
             get prefixType() {
               return "icon";
             }

@@ -7,6 +7,7 @@ import showModal from "discourse/lib/show-modal";
 import { getOwner } from "discourse-common/lib/get-owner";
 import { DRAFT_CHANNEL_VIEW } from "discourse/plugins/discourse-chat/discourse/services/chat";
 import { avatarUrl } from "discourse/lib/utilities";
+import { dasherize } from "@ember/string";
 
 export default {
   name: "chat-sidebar",
@@ -48,21 +49,15 @@ export default {
             }
 
             get name() {
-              return `${this.channel.chatable_type.toLowerCase()}-${
-                this.channel.chatable_id
-              }`;
+              return dasherize(this.channel.title);
             }
 
             get route() {
               return "chat.channel";
             }
 
-            get model() {
-              return {
-                chatChannel: this.channel,
-                channelId: this.channel.id,
-                channelTitle: slugifyChannel(this.channel.title),
-              };
+            get models() {
+              return [this.channel.id, slugifyChannel(this.channel.title)];
             }
 
             get title() {
@@ -236,21 +231,15 @@ export default {
             }
 
             get name() {
-              return `${this.channel.chatable_type.toLowerCase()}-${
-                this.channel.chatable_id
-              }`;
+              return dasherize(this.channel.title);
             }
 
             get route() {
               return "chat.channel";
             }
 
-            get model() {
-              return {
-                chatChannel: this.channel,
-                channelId: this.channel.id,
-                channelTitle: slugifyChannel(this.channel.title),
-              };
+            get models() {
+              return [this.channel.id, slugifyChannel(this.channel.title)];
             }
 
             get title() {

@@ -4,8 +4,7 @@
 
 {{! TODO: move chat-message-actions to a shared DOM node using the newly available in-element }}
 {{#if (and showActions site.mobileView)}}
-  {{component
-    "chat-message-actions-mobile"
+  {{chat-message-actions-mobile
     message=message
     emojiReactions=emojiReactions
     secondaryButtons=secondaryButtons
@@ -58,8 +57,7 @@
       <div class={{chatMessageClasses}}>
         {{#if (and showActions (not site.mobileView))}}
           {{! TODO: move chat-message-actions to a shared DOM node using the newly available in-element }}
-          {{component
-            "chat-message-actions-desktop"
+          {{chat-message-actions-desktop
             message=message
             emojiReactions=emojiReactions
             secondaryButtons=secondaryButtons

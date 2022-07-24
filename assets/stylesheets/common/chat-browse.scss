@@ -2,6 +2,7 @@
   position: relative;
   height: calc(100vh - var(--header-offset));
   overflow-y: scroll;
+  overflow-y: overlay;
   @include chat-scrollbar(var(--secondary));
 
   &__title {

@@ -5,7 +5,7 @@
 }
 
 .chat-draft-channel-screen {
-  height: var(--full-page-chat-height, 100%);
+  height: calc(100vh - var(--header-offset));
   min-height: 1px;
   width: 100%;
   display: flex;

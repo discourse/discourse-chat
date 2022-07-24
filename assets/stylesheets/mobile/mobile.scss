@@ -113,3 +113,42 @@ body.has-full-page-chat {
     }
   }
 }
+
+html.has-full-page-chat {
+  height: 100vh;
+  height: calc(var(--chat-composer-vh, 1vh) * 100);
+  width: 100%;
+  overflow: hidden;
+
+  body {
+    height: 100vh;
+    height: calc(var(--chat-composer-vh, 1vh) * 100);
+    width: 100%;
+    overflow: hidden;
+
+    #main,
+    .discourse-root,
+    #main-outlet-wrapper,
+    #main-outlet,
+    .full-page-chat,
+    .chat-live-pane,
+    #main-chat-outlet {
+      height: 100%;
+      margin: 0 auto;
+      min-height: 100%;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chat-live-pane {
+      min-height: 1px;
+    }
+
+    #main-outlet-wrapper {
+      height: calc(100% - var(--header-offset, 0));
+      min-height: auto;
+      padding: 0;
+    }
+  }
+}

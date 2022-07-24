@@ -287,7 +287,7 @@ export default Component.extend({
           );
 
           // this part is especially important on safari to avoid a bug where
-          // manually scrolling, scroll to the first prepended message
+          // manually scrolling, scrolls to the first prepended message
           const focusedMessage = loadingPast
             ? newMessages.lastObject
             : newMessages.firstObject;

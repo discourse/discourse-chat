@@ -22,7 +22,7 @@
   {{on "mouseleave" (fn this.onHoverMessage null (hash desktopOnly=true))}}
   class={{concat-class
     "chat-message-container"
-    (if selecting "selecting-messages")
+    (if selectingMessages "selecting-messages")
   }}
   data-id={{or message.id message.stagedId}}
 >

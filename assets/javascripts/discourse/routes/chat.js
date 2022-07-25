@@ -25,6 +25,7 @@ export default DiscourseRoute.extend({
   activate() {
     schedule("afterRender", () => {
       document.body.classList.add("has-full-page-chat");
+      document.documentElement.classList.add("has-full-page-chat");
     });
   },
 
@@ -33,6 +34,7 @@ export default DiscourseRoute.extend({
     this.chat.setActiveChannel(null);
     schedule("afterRender", () => {
       document.body.classList.remove("has-full-page-chat");
+      document.documentElement.classList.remove("has-full-page-chat");
       scrollTop();
     });
   },

@@ -681,6 +681,24 @@ export default Component.extend(TextareaTextManipulation, {
   },
 
   @action
+  onTextareaFocusIn(target) {
+    if (!this.capabilities.isIOS) {
+      return;
+    }
+
+    // hack to prevent the whole viewport
+    // to move on focus input
+    target = document.querySelector(".chat-composer-input");
+    target.style.transform = "translateY(-99999px)";
+    target.focus();
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        target.style.transform = "";
+      });
+    });
+  },
+
+  @action
   resizeTextarea() {
     schedule("afterRender", () => {
       if (!this._textarea) {

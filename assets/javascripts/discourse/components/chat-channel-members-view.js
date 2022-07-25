@@ -32,6 +32,10 @@ export default class ChatChannelMembersView extends Component {
     this.fetchMembers();
   }
 
+  get chatProgressBarContainer() {
+    return document.querySelector("#chat-progress-bar-container");
+  }
+
   @action
   onFilterMembers(username) {
     this.set("filter", username);

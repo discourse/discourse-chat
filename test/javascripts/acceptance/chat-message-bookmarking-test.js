@@ -124,7 +124,8 @@ acceptance("Discourse Chat | bookmarking | mobile", function (needs) {
     const message = query(".chat-message-container");
 
     await tap(message);
-    await click(message.querySelector(".main-actions .bookmark-btn"));
+    await click(".main-actions .bookmark-btn");
+
     assert.ok(
       exists("#bookmark-reminder-modal"),
       "it shows the bookmark modal"
@@ -140,7 +141,7 @@ acceptance("Discourse Chat | bookmarking | mobile", function (needs) {
 
     await tap(message);
     assert.ok(
-      message.querySelector(
+      exists(
         ".main-actions .bookmark-btn .d-icon-discourse-bookmark-clock"
       ),
       "the message actions icon shows the reminder icon"
@@ -153,7 +154,7 @@ acceptance("Discourse Chat | bookmarking | mobile", function (needs) {
     const message = query(".chat-message-container");
 
     await tap(message);
-    await click(message.querySelector(".main-actions .bookmark-btn"));
+    await click(".main-actions .bookmark-btn");
     assert.ok(
       exists("#bookmark-reminder-modal"),
       "it shows the bookmark modal"
@@ -167,7 +168,7 @@ acceptance("Discourse Chat | bookmarking | mobile", function (needs) {
 
     await tap(message);
     assert.ok(
-      message.querySelector(".main-actions .bookmark-btn .d-icon-bookmark"),
+      exists(".main-actions .bookmark-btn .d-icon-bookmark"),
       "the message actions icon shows the bookmark icon"
     );
   });

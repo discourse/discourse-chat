@@ -11,7 +11,6 @@ import { cloneJSON } from "discourse-common/lib/object";
 import I18n from "I18n";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import { emojiUnescape } from "discourse/lib/text";
-import { resetUsernameDecorators } from "discourse/helpers/decorate-username-selector";
 
 acceptance("Discourse Chat - Core Sidebar", function (needs) {
   needs.user({ experimental_sidebar_enabled: true, has_chat_enabled: true });
@@ -69,9 +68,6 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
         }
       });
     });
-  });
-  needs.hooks.afterEach(function () {
-    resetUsernameDecorators();
   });
 
   test("Public channels section", async function (assert) {

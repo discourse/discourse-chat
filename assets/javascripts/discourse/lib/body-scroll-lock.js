@@ -1,3 +1,4 @@
+/* eslint-disable */
 /**
  * tua-body-scroll-lock v1.2.1
  * (c) 2021 Evinma, BuptStEve

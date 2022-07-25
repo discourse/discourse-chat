@@ -105,11 +105,21 @@ class ChatChannel < ActiveRecord::Base
   end
 
   def allowed_group_ids
-    category_channel? ? chatable.secure_group_ids : nil
+    return if !category_channel?
+
+    staff_groups = Group::AUTO_GROUPS.slice(:staff, :moderators, :admins).values
+    chatable.secure_group_ids.to_a.concat(staff_groups)
   end
 
   def public_channel_title
     chatable.name
+  end
+
+  def read_restricted?
+    return true if direct_message_channel?
+    return chatable.read_restricted? if category_channel?
+
+    true
   end
 
   def title(user)

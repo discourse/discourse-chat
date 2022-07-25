@@ -14,16 +14,43 @@ describe ChatChannel do
   end
 
   describe "#allowed_user_ids" do
-    it "is correct for each channel type" do
+    it "returns participants when the channel is a DM" do
+      expect(direct_message_channel.allowed_user_ids).to contain_exactly(user1.id, user2.id)
+    end
+
+    it "returns nil for regular channels" do
+      group.add(user1)
+
       expect(private_category_channel.allowed_user_ids).to eq(nil)
-      expect(direct_message_channel.allowed_user_ids).to match_array([user1.id, user2.id])
     end
   end
 
   describe "#allowed_group_ids" do
-    it "is correct for each channel type" do
-      expect(private_category_channel.allowed_group_ids).to eq([group.id])
+    it "returns groups with access to the associated category" do
+      staff_groups = Group::AUTO_GROUPS.slice(:staff, :moderators, :admins).values
+
+      expect(private_category_channel.allowed_group_ids).to contain_exactly(*staff_groups, group.id)
+    end
+
+    it "returns nil when for DMs" do
       expect(direct_message_channel.allowed_group_ids).to eq(nil)
+    end
+  end
+
+  describe "#read_restricted?" do
+    it "returns true for a DM" do
+      expect(direct_message_channel.read_restricted?).to eq(true)
+    end
+
+    it "returns false for channels associated to public categories" do
+      public_category = Fabricate(:category, read_restricted: false)
+      public_channel = Fabricate(:chat_channel, chatable: public_category)
+
+      expect(public_channel.read_restricted?).to eq(false)
+    end
+
+    it "returns true for channels associated to private categories" do
+      expect(private_category_channel.read_restricted?).to eq(true)
     end
   end
 

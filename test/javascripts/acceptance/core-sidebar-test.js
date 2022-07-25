@@ -9,6 +9,8 @@ import { visit } from "@ember/test-helpers";
 import { directMessageChannels } from "discourse/plugins/discourse-chat/chat-fixtures";
 import { cloneJSON } from "discourse-common/lib/object";
 import I18n from "I18n";
+import { withPluginApi } from "discourse/lib/plugin-api";
+import { emojiUnescape } from "discourse/lib/text";
 
 acceptance("Discourse Chat - Core Sidebar", function (needs) {
   needs.user({ experimental_sidebar_enabled: true, has_chat_enabled: true });
@@ -52,6 +54,18 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
           },
         ],
         direct_message_channels: directChannels,
+      });
+    });
+  });
+
+  needs.hooks.beforeEach(function () {
+    withPluginApi("1.3.0", (api) => {
+      api.addUsernameSelectorDecorator((username) => {
+        if (username === "hawk") {
+          return `<span class="on-holiday">${emojiUnescape(
+            ":desert_island:"
+          )}</span>`;
+        }
       });
     });
   });
@@ -190,6 +204,15 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
       directLinks[0].textContent.trim(),
       "hawk",
       "displays user name in a link"
+    );
+
+    assert.ok(
+      exists(
+        directLinks
+          .eq(0)
+          .find(".sidebar-section-link-content-text .on-holiday img")[0]
+      ),
+      "displays flair when user is on holiday"
     );
 
     assert.strictEqual(

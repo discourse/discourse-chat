@@ -10,6 +10,7 @@ import { DRAFT_CHANNEL_VIEW } from "discourse/plugins/discourse-chat/discourse/s
 import { avatarUrl } from "discourse/lib/utilities";
 import { dasherize } from "@ember/string";
 import { emojiUnescape } from "discourse/lib/text";
+import { decorateUsername } from "discourse/helpers/decorate-username-selector";
 
 export default {
   name: "chat-sidebar",
@@ -249,12 +250,21 @@ export default {
               return this.channel.title;
             }
 
+            get oneOnOneMessage() {
+              return this.channel.chatable.users.length === 1;
+            }
+
             get text() {
-              return this.channel.title.replaceAll("@", "");
+              const username = this.channel.title.replaceAll("@", "");
+              if (this.oneOnOneMessage) {
+                return htmlSafe(`${username} ${decorateUsername(username)}`);
+              } else {
+                return username;
+              }
             }
 
             get prefixType() {
-              if (this.channel.chatable.users.length === 1) {
+              if (this.oneOnOneMessage) {
                 return "image";
               } else {
                 return "text";

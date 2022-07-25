@@ -681,7 +681,7 @@ export default Component.extend(TextareaTextManipulation, {
   },
 
   @action
-  onTextareaFocusin(target) {
+  onTextareaFocusIn(target) {
     if (!this.capabilities.isIOS) {
       return;
     }

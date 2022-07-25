@@ -18,7 +18,6 @@ register_asset "stylesheets/common/chat-browse.scss"
 register_asset "stylesheets/common/chat-drawer.scss"
 register_asset "stylesheets/common/chat-channel-preview-card.scss"
 register_asset "stylesheets/common/chat-channel-info.scss"
-register_asset "stylesheets/mobile/chat-channel-info.scss", :mobile
 register_asset "stylesheets/common/chat-draft-channel.scss"
 register_asset "stylesheets/common/chat-tabs.scss"
 register_asset "stylesheets/common/chat-form.scss"

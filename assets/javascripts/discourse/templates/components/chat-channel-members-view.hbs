@@ -1,5 +1,7 @@
 {{#if (gt channel.membershipsCount 0)}}
   <div class="channel-members-view-wrapper">
+
+    {{d-progress-bar key="test" isLoading=isFetchingMembers}}
     <div
       class={{concat
         "channel-members-view__search-input-container"

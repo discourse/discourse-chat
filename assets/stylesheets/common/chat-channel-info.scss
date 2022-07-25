@@ -1,7 +1,7 @@
 .channel-info {
-  height: var(--full-page-chat-height);
   display: flex;
   flex-direction: column;
+  height: 100%;
 }
 
 // Info header
@@ -103,7 +103,7 @@ input.channel-members-view__search-input {
   box-sizing: border-box;
   min-height: 1px;
   overflow-y: auto;
-  height: var(--chat-pane-height, 100%);
+  height: 100%;
 }
 
 .channel-members-view__list-item {

@@ -585,10 +585,7 @@ body.has-full-page-chat {
     Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
   display: grid;
   grid-template-columns: var(--full-page-sidebar-width) 1fr;
-  grid-template-rows: var(
-    --full-page-chat-height,
-    calc(100vh - var(--header-offset))
-  );
+  grid-template-rows: calc(100vh - var(--header-offset));
 
   .channels-list {
     background: var(--primary-very-low);

@@ -1,6 +1,8 @@
-{{#in-element this.chatProgressBarContainer}}
-  {{d-progress-bar key="members-view" isLoading=isFetchingMembers}}
-{{/in-element}}
+{{#if this.chatProgressBarContainer}}
+  {{#in-element this.chatProgressBarContainer}}
+    {{d-progress-bar key="members-view" isLoading=isFetchingMembers}}
+  {{/in-element}}
+{{/if}}
 
 {{#if (gt channel.membershipsCount 0)}}
   <div class="channel-members-view-wrapper">

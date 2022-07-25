@@ -1,6 +1,8 @@
-{{#in-element this.chatProgressBarContainer}}
-  {{d-progress-bar key="browse-list" isLoading=this.isLoading}}
-{{/in-element}}
+{{#if this.chatProgressBarContainer}}
+  {{#in-element this.chatProgressBarContainer}}
+    {{d-progress-bar key="browse-list" isLoading=this.isLoading}}
+  {{/in-element}}
+{{/if}}
 
 <div class="chat-browse-view">
   <h1 class="chat-browse-view__title">{{i18n "chat.browse.title"}}</h1>

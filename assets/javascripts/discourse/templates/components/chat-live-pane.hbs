@@ -1,9 +1,11 @@
-{{#in-element this.chatProgressBarContainer}}
-  {{d-progress-bar
-    key="chat-live-pane-loader"
-    isLoading=(or this.loadingMorePast this.loadingMoreFuture)
-  }}
-{{/in-element}}
+{{#if this.chatProgressBarContainer}}
+  {{#in-element this.chatProgressBarContainer}}
+    {{d-progress-bar
+      key="chat-live-pane-loader"
+      isLoading=(or this.loadingMorePast this.loadingMoreFuture)
+    }}
+  {{/in-element}}
+{{/if}}
 
 {{#if (and fullPage includeHeader)}}
   <div class="chat-full-page-header {{if previewing "previewing"}}">

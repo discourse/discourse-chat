@@ -1,6 +1,8 @@
-{{#in-element this.chatProgressBarContainer}}
-  {{d-progress-bar key="dm-recipients-loader" isLoading=isFiltering}}
-{{/in-element}}
+{{#if this.chatProgressBarContainer}}
+  {{#in-element this.chatProgressBarContainer}}
+    {{d-progress-bar key="dm-recipients-loader" isLoading=isFiltering}}
+  {{/in-element}}
+{{/if}}
 
 {{#if (and channel.isDraft (not isLoading))}}
   <div class="direct-message-creator">

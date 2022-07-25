@@ -24,6 +24,10 @@ import { resetIdle } from "discourse/lib/desktop-notifications";
 import { defaultHomepage } from "discourse/lib/utilities";
 import { isTesting } from "discourse-common/config/environment";
 import { capitalize } from "@ember/string";
+import {
+  lock,
+  unlock,
+} from "discourse/plugins/discourse-chat/discourse/lib/body-scroll-lock";
 
 const MAX_RECENT_MSGS = 100;
 const STICKY_SCROLL_LENIENCE = 4;
@@ -100,6 +104,10 @@ export default Component.extend({
 
     this.appEvents.on("chat:cancel-message-selection", this, "cancelSelecting");
 
+    if (this.capabilities.isIOS) {
+      lock(document.querySelector(".chat-messages-scroll"));
+    }
+
     this.set("showCloseFullScreenBtn", !this.site.mobileView);
   },
 
@@ -131,6 +139,10 @@ export default Component.extend({
       this,
       "cancelSelecting"
     );
+
+    if (this.capabilities.isIOS) {
+      unlock(document.querySelector(".chat-messages-scroll"));
+    }
   },
 
   didReceiveAttrs() {

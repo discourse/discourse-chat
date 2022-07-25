@@ -141,9 +141,7 @@ acceptance("Discourse Chat | bookmarking | mobile", function (needs) {
 
     await tap(message);
     assert.ok(
-      exists(
-        ".main-actions .bookmark-btn .d-icon-discourse-bookmark-clock"
-      ),
+      exists(".main-actions .bookmark-btn .d-icon-discourse-bookmark-clock"),
       "the message actions icon shows the reminder icon"
     );
   });

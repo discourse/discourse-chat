@@ -3,13 +3,12 @@ import { isEmpty } from "@ember/utils";
 import Component from "@ember/component";
 import { action } from "@ember/object";
 import discourseDebounce from "discourse-common/lib/debounce";
-import { bind } from "discourse-common/utils/decorators";
+import discourseComputed, { bind } from "discourse-common/utils/decorators";
 import { INPUT_DELAY } from "discourse-common/config/environment";
 import { inject as service } from "@ember/service";
 import { schedule } from "@ember/runloop";
 import { gt, not } from "@ember/object/computed";
 import { createDirectMessageChannelDraft } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
-import discourseComputed from "discourse-common/utils/decorators";
 
 export default Component.extend({
   tagName: "",

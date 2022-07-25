@@ -1194,6 +1194,11 @@ export default Component.extend({
     return !userSilenced;
   },
 
+  @discourseComputed
+  chatProgressBarContainer() {
+    return document.querySelector("#chat-progress-bar-container");
+  },
+
   @discourseComputed("messages.@each.selected")
   selectedMessageIds(messages) {
     return messages.filter((m) => m.selected).map((m) => m.id);

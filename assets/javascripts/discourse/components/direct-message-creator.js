@@ -9,6 +9,7 @@ import { inject as service } from "@ember/service";
 import { schedule } from "@ember/runloop";
 import { gt, not } from "@ember/object/computed";
 import { createDirectMessageChannelDraft } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
+import discourseComputed from "discourse-common/utils/decorators";
 
 export default Component.extend({
   tagName: "",
@@ -51,6 +52,11 @@ export default Component.extend({
   },
 
   hasSelection: gt("channel.chatable.users.length", 0),
+
+  @discourseComputed
+  chatProgressBarContainer() {
+    return document.querySelector("#chat-progress-bar-container");
+  },
 
   @bind
   filterUsernames(term = null) {

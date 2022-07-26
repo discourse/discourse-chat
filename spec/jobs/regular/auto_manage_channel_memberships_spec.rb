@@ -103,6 +103,17 @@ describe Jobs::AutoManageChannelMemberships do
         end
       end
     end
+
+    context "when chatable doesn’t exist anymore" do
+      before do
+        channel.chatable.destroy!
+        channel.reload
+      end
+
+      it "does nothing" do
+        assert_batches_enqueued(channel, 0)
+      end
+    end
   end
 
   def assert_batches_enqueued(channel, expected)

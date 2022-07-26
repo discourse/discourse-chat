@@ -10,7 +10,7 @@ module Jobs
           chatable_type: "Category",
         )
 
-      return if !channel
+      return if !channel&.chatable
 
       processed =
         UserChatChannelMembership.where(

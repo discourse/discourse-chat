@@ -309,6 +309,9 @@ export default Component.extend({
 
   @action
   _handleLongPress() {
+    document.activeElement.blur();
+    document.querySelector(".chat-composer-input").blur();
+
     this.onHoverMessage(this.message);
   },
 

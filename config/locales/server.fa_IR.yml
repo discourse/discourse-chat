@@ -6,10 +6,13 @@
 
 fa_IR:
   site_settings:
+    chat_enabled: "فعال کردن افزونه discourse-chat"
     chat_allowed_groups: "کاربران این گروه‌ها می‌توانند در گفتگو شرکت کنند."
+    default_emoji_reactions: "واکنش‌های شکلک پیش‌فرض برای پیام‌های گفتگو. برای واکنش سریع تا ۵ شکلک اضافه کنید."
   chat:
     errors:
       channel_exists_for_category: "یک کانال دیگر از قبل برای این دسته‌بندی و نام وجود دارد"
+      cant_update_direct_message_channel: "ویژگی پیام مستقیم کانال مانند نام و توضیحات را نمی‌توان به‌روز کرد."
     reviewables:
       actions:
         agree:

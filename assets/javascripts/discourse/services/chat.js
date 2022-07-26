@@ -472,6 +472,7 @@ export default Service.extend({
 
     if (this.fullPageChat.isActive || this.fullPageChat.isPreferred) {
       const queryParams = messageId ? { messageId } : {};
+
       return this.router.transitionTo(
         "chat.channel",
         channel.id,
@@ -734,6 +735,7 @@ export default Service.extend({
 
   userChatChannelTrackingStateChanged() {
     this._recalculateUnreadMessages();
+    this.appEvents.trigger("chat:user-tracking-state-changed");
   },
 
   _recalculateUnreadMessages() {

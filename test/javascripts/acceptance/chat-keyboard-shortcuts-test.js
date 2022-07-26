@@ -133,7 +133,7 @@ acceptance("Discourse Chat - Keyboard shortcuts", function (needs) {
     await triggerKeyEvent(document.body, "keydown", "ArrowDown", {
       altKey: true,
     });
-    assert.equal(currentURL(), "/chat/channel/76/eviltrout");
+    assert.equal(currentURL(), "/chat/channel/76/eviltrout-markvanlan");
     await triggerKeyEvent(document.body, "keydown", "ArrowDown", {
       altKey: true,
     });
@@ -149,7 +149,7 @@ acceptance("Discourse Chat - Keyboard shortcuts", function (needs) {
     await triggerKeyEvent(document.body, "keydown", "ArrowUp", {
       altKey: true,
     });
-    assert.equal(currentURL(), "/chat/channel/76/eviltrout");
+    assert.equal(currentURL(), "/chat/channel/76/eviltrout-markvanlan");
     await triggerKeyEvent(document.body, "keydown", "ArrowUp", {
       altKey: true,
     });

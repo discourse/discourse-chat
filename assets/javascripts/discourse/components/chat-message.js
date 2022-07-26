@@ -317,13 +317,6 @@ export default Component.extend({
     return hide && !webhookEvent;
   },
 
-  @discourseComputed("selectingMessages")
-  messageContainerClasses(selecting) {
-    return `chat-message-container ${
-      selecting ? "selecting-messages" : ""
-    }`.trim();
-  },
-
   @discourseComputed(
     "message.staged",
     "message.deleted_at",

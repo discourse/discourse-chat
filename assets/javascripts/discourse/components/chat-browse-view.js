@@ -59,6 +59,10 @@ export default class ChatBrowseView extends Component {
     }
   }
 
+  get chatProgressBarContainer() {
+    return document.querySelector("#chat-progress-bar-container");
+  }
+
   @action
   onScroll() {
     if (this.isLoading) {

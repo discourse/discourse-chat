@@ -20,8 +20,18 @@ export const directMessageChannels = [
     chat_channel: {
       chatable: {
         users: [
-          { id: 1, username: "markvanlan" },
-          { id: 2, username: "hawk" },
+          {
+            id: 1,
+            username: "markvanlan",
+            avatar_template:
+              "/letter_avatar_proxy/v4/letter/t/f9ae1b/{size}.png",
+          },
+          {
+            id: 2,
+            username: "hawk",
+            avatar_template:
+              "/letter_avatar_proxy/v4/letter/t/f9ae1b/{size}.png",
+          },
         ],
       },
       chatable_id: 58,
@@ -37,15 +47,25 @@ export const directMessageChannels = [
     chat_channel: {
       chatable: {
         users: [
-          { id: 1, username: "markvanlan" },
-          { id: 3, username: "eviltrout" },
+          {
+            id: 1,
+            username: "markvanlan",
+            avatar_template:
+              "/letter_avatar_proxy/v4/letter/t/f9ae1b/{size}.png",
+          },
+          {
+            id: 3,
+            username: "eviltrout",
+            avatar_template:
+              "/letter_avatar_proxy/v4/letter/t/f9ae1b/{size}.png",
+          },
         ],
       },
       chatable_id: 59,
       chatable_type: "DirectMessageChannel",
       chatable_url: null,
       id: 76,
-      title: "@eviltrout",
+      title: "@eviltrout, @markvanlan",
       unread_count: 0,
       muted: false,
     },

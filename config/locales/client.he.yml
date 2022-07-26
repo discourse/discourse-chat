@@ -17,6 +17,10 @@ he:
           descriptions:
             chat:
               create_message: "יצירת הודעת צ׳אט בערוץ מסוים."
+    about:
+      chat_messages_count: "הודעות צ׳אט"
+      chat_channels_count: "ערוצי צ׳אט"
+      chat_users_count: "משתמשי צ׳אט"
     chat:
       dates:
         time_tiny: "h:mm"
@@ -42,6 +46,10 @@ he:
         title: "הגדרות ערוץ"
         edit: "עריכה"
         add: "הוספה"
+        close_channel: "סגירת ערוץ"
+        open_channel: "פתיחת ערוץ"
+        archive_channel: "העברת ערוץ לארכיון"
+        delete_channel: "מחיקת ערוץ"
         join_channel: "הצטרפות"
         leave_channel: "יציאה מהערוץ"
       channel_archive:
@@ -220,6 +228,12 @@ he:
       create_channel:
         auto_join_users:
           public_category_warning: "%{category} היא קטגוריה ציבורית. להוסיף כל משתמש לערוץ הזה אוטומטית?"
+          warning_groups:
+            one: להוסיף %{members_count} משתמשים מתוך %{group_1} אוטומטית?
+            two: להוסיף %{members_count} משתמשים מתוך %{group_1} ומתוך %{group_2} אוטומטית?
+            many: להוסיף %{members_count} משתמשים מתוך %{group_1} ומתוך %{group_2} אוטומטית?
+            other: להוסיף %{members_count} משתמשים מתוך %{group_1} ומתוך %{group_2} אוטומטית?
+          warning_multiple_groups: להוסיף %{members_count} משתמשים מתוך %{group_1} ועוד %{count} קבוצות אוטומטית?
         choose_category:
           label: "נא לבחור קטגוריה"
           none: "נא לבחור אחד…"

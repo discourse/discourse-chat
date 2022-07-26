@@ -303,5 +303,45 @@ describe "discourse-chat" do
         end
       end
     end
+
+    describe "when a user is granted staff status" do
+      let(:staff_group) { Group.find(Group::AUTO_GROUPS[:staff]) }
+      let!(:category) { Fabricate(:private_category, group: staff_group) }
+
+      it "auto-joins the user when granted admin" do
+        user.grant_admin!
+
+        assert_user_following_state(user, channel, following: true)
+      end
+
+      it "auto-joins the user when granted moderator" do
+        user.grant_moderation!
+
+        assert_user_following_state(user, channel, following: true)
+      end
+    end
+
+    describe "when a user receives a TL promotion" do
+      let(:tl1_group) { Group.find(Group::AUTO_GROUPS[:trust_level_1]) }
+      let!(:category) { Fabricate(:private_category, group: tl1_group) }
+
+      before do
+        user.update!(
+          trust_level: TrustLevel[0],
+          created_at: 2.days.ago,
+          manual_locked_trust_level: nil,
+        )
+        stat = user.user_stat
+        stat.topics_entered = SiteSetting.tl1_requires_topics_entered
+        stat.posts_read_count = SiteSetting.tl1_requires_read_posts
+        stat.time_read = SiteSetting.tl1_requires_time_spent_mins * 60
+      end
+
+      it "auto-joins to the channel linked to the new TL" do
+        Promotion.new(user).review
+
+        assert_user_following_state(user, channel, following: true)
+      end
+    end
   end
 end

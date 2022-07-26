@@ -485,24 +485,24 @@ after_initialize do
 
   on(:reviewable_score_updated) { |reviewable| ReviewableChatMessage.on_score_updated(reviewable) }
 
-  on(:user_seen) do |user|
-    if user.last_seen_at == user.first_seen_at
+  auto_join_user =
+    Proc.new do |user|
       ChatChannel
         .where(auto_join_users: true)
         .each do |channel|
           UserChatChannelMembership.enforce_automatic_user_membership(channel, user)
         end
     end
-  end
 
-  on(:user_confirmed_email) do |user|
-    if user.active?
-      ChatChannel
-        .where(auto_join_users: true)
-        .each do |channel|
-          UserChatChannelMembership.enforce_automatic_user_membership(channel, user)
-        end
-    end
+  on(:user_seen) { |user| auto_join_user.call(user) if user.last_seen_at == user.first_seen_at }
+
+  on(:user_confirmed_email) { |user| auto_join_user.call(user) if user.active? }
+
+  on(:staff_granted, &auto_join_user)
+
+  on(:user_promoted) do |args|
+    user = User.find_by(id: args[:user_id])
+    auto_join_user.call(user) if user
   end
 
   on(:user_added_to_group) do |user, group|

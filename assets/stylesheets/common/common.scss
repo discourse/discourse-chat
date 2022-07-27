@@ -868,3 +868,26 @@ body.has-full-page-chat {
   padding-top: 1rem;
   font-weight: 500;
 }
+
+html.has-full-page-chat {
+  height: 100%;
+  width: 100%;
+
+  body {
+    height: 100%;
+    width: 100%;
+
+    #main,
+    .discourse-root {
+      height: calc(var(--chat-vh, 1vh) * 100);
+    }
+
+    #main-outlet-wrapper,
+    #main-outlet,
+    .full-page-chat,
+    .chat-live-pane,
+    #main-chat-outlet {
+      height: calc(var(--chat-vh, 1vh) * 100 - var(--header-offset));
+    }
+  }
+}

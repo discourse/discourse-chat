@@ -125,7 +125,6 @@ html.has-full-page-chat {
     height: calc(var(--chat-vh, 1vh) * 100);
     width: 100%;
     overflow: hidden;
-    min-height: auto;
 
     #main,
     .discourse-root,
@@ -135,15 +134,11 @@ html.has-full-page-chat {
     .chat-live-pane,
     #main-chat-outlet {
       height: 100%;
-      margin: 0 auto;
       min-height: 100%;
+      margin: 0 auto;
       width: 100%;
       display: flex;
       flex-direction: column;
-    }
-
-    .chat-live-pane {
-      min-height: 1px;
     }
 
     #main-outlet-wrapper {

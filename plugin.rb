@@ -33,7 +33,6 @@ register_asset "stylesheets/common/chat-message-left-gutter.scss"
 register_asset "stylesheets/common/chat-message-info.scss"
 register_asset "stylesheets/common/chat-composer-inline-button.scss"
 register_asset "stylesheets/common/chat-replying-indicator.scss"
-register_asset "stylesheets/mobile/chat-replying-indicator.scss", :mobile
 register_asset "stylesheets/common/chat-composer.scss"
 register_asset "stylesheets/desktop/chat-composer.scss", :desktop
 register_asset "stylesheets/mobile/chat-composer.scss", :mobile

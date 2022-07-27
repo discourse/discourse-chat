@@ -211,27 +211,6 @@ export default {
               super(...arguments);
               this.channel = channel;
               this.chatService = chatService;
-
-              this.chatService.appEvents.on(
-                "chat:user-tracking-state-changed",
-                this._refreshTrackingState
-              );
-            }
-
-            @bind
-            willDestroy() {
-              this.chatService.appEvents.off(
-                "chat:user-tracking-state-changed",
-                this._refreshTrackingState
-              );
-            }
-
-            @bind
-            _refreshTrackingState() {
-              this.chatChannelTrackingState =
-                this.chatService.currentUser.chat_channel_tracking_state[
-                  this.channel.id
-                ];
             }
 
             get name() {
@@ -337,8 +316,8 @@ export default {
                 return;
               }
               this.chatService = container.lookup("service:chat");
-              this.sidebar.appEvents.on(
-                "chat:refresh-channels",
+              this.chatService.appEvents.on(
+                "chat:user-tracking-state-changed",
                 this._refreshPms
               );
               this._refreshPms();
@@ -349,8 +328,8 @@ export default {
               if (container.isDestroyed) {
                 return;
               }
-              this.sidebar.appEvents.off(
-                "chat:refresh-channels",
+              this.chatService.appEvents.off(
+                "chat:user-tracking-state-changed",
                 this._refreshPms
               );
             }

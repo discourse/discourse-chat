@@ -122,15 +122,10 @@ html.has-full-page-chat body {
   }
 
   #main-chat-outlet {
-    height: 100%;
     min-height: 0;
   }
 
   .full-page-chat {
     display: block;
-  }
-
-  .chat-live-pane {
-    height: 100%;
   }
 }

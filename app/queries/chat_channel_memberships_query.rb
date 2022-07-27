@@ -10,8 +10,8 @@ class ChatChannelMembershipsQuery
 
     if channel.category_channel? && channel.allowed_group_ids
       query =
-        query.joins(user: :group_users).where(
-          "group_users.group_id IN (?)",
+        query.where(
+          "user_id IN (SELECT user_id FROM group_users WHERE group_id IN (?))",
           channel.allowed_group_ids,
         )
     end

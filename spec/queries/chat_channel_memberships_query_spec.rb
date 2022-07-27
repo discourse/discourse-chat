@@ -53,6 +53,17 @@ describe ChatChannelMembershipsQuery do
 
             expect(memberships.pluck(:user_id)).to include(user_1.id)
           end
+
+          it "returns only one membership if user is in multiple allowed groups" do
+            another_group = Fabricate(:group)
+            another_group.add(user_1)
+            private_category.category_groups.create!(
+              group_id: another_group.id,
+              permission_type: CategoryGroup.permission_types[:full],
+            )
+
+            expect(described_class.call(channel_1).pluck(:user_id)).to contain_exactly(user_1.id)
+          end
         end
 
         context "membership doesn’t exist" do

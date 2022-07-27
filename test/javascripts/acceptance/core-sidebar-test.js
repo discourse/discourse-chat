@@ -14,11 +14,12 @@ import { emojiUnescape } from "discourse/lib/text";
 import User from "discourse/models/user";
 
 acceptance("Discourse Chat - Core Sidebar", function (needs) {
-  needs.user({ experimental_sidebar_enabled: true, has_chat_enabled: true });
+  needs.user({ has_chat_enabled: true });
 
   needs.settings({
     chat_enabled: true,
-    enable_experimental_sidebar: true,
+    enable_experimental_sidebar_hamburger: true,
+    enable_sidebar: true,
   });
 
   needs.pretender((server, helper) => {

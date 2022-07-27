@@ -448,19 +448,18 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
   private
 
   def preloaded_chat_message_query
-    query = ChatMessage
-      .includes(in_reply_to: [:user, chat_webhook_event: [:incoming_chat_webhook]])
-      .includes(:revisions)
-      .includes(:user)
-      .includes(chat_webhook_event: :incoming_chat_webhook)
-      .includes(reactions: :user)
-      .includes(:bookmarks)
-      .includes(:uploads)
-      .includes(chat_channel: :chatable)
+    query =
+      ChatMessage
+        .includes(in_reply_to: [:user, chat_webhook_event: [:incoming_chat_webhook]])
+        .includes(:revisions)
+        .includes(:user)
+        .includes(chat_webhook_event: :incoming_chat_webhook)
+        .includes(reactions: :user)
+        .includes(:bookmarks)
+        .includes(:uploads)
+        .includes(chat_channel: :chatable)
 
-    if SiteSetting.enable_user_status
-      query = query.includes(user: :user_status )
-    end
+    query = query.includes(user: :user_status) if SiteSetting.enable_user_status
 
     query
   end

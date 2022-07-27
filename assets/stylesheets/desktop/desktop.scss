@@ -64,7 +64,6 @@
 }
 
 // Full Page Styling in Core
-
 .has-full-page-chat:not(.discourse-sidebar) {
   --max-chat-width: 1200px;
 
@@ -164,7 +163,6 @@
 }
 
 // move composer inline, so it doesn't overlay chat
-
 .has-full-page-chat {
   #reply-control {
     position: static;

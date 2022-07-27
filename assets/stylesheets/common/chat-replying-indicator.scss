@@ -4,9 +4,7 @@
 
 .chat-replying-indicator {
   color: var(--primary-medium);
-  padding-bottom: unquote(
-    "max(calc(env(safe-area-inset-bottom) - 0.75em), 0.25em)"
-  );
+  padding-bottom: 0.5em;
   font-size: var(--font-down-2);
   display: inline-flex;
 

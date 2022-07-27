@@ -20,7 +20,7 @@ sv:
     chat_minimum_message_length: "Minsta antal tecken för ett chattmeddelande."
     chat_allow_uploads: "Tillåt uppladdningar i offentliga chattkanaler."
     chat_archive_destination_topic_status: "Den status som målämnet ska ha när ett kanalarkiv är slutfört. Detta gäller endast när målämnet är ett nytt ämne, inte ett befintligt."
-    default_emoji_reactions: "Standard reaktioner genom emoji för chattmeddelanden. Lägg till upp till 5 emojis för snabb reaktion."
+    default_emoji_reactions: "Standardval av emoji-reaktioner för chattmeddelanden. Lägg till upp till 5 emojis som snabbval."
     errors:
       chat_default_channel: "Standardchattkanalen måste vara en offentlig kanal."
   system_messages:
@@ -96,6 +96,8 @@ sv:
         single_user: "%{user}"
         multi_user: "%{users}"
         multi_user_truncated: "%{users} och %{leftover} andra"
+      default_titles:
+        site_feedback: "Allmänt"
     bookmarkable:
       notification_title: "meddelande i %{channel_name}"
     personal_chat: "personlig chatt"

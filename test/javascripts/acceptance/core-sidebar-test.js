@@ -5,19 +5,21 @@ import {
   queryAll,
 } from "discourse/tests/helpers/qunit-helpers";
 import { test } from "qunit";
-import { visit } from "@ember/test-helpers";
+import { settled, visit } from "@ember/test-helpers";
 import { directMessageChannels } from "discourse/plugins/discourse-chat/chat-fixtures";
 import { cloneJSON } from "discourse-common/lib/object";
 import I18n from "I18n";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import { emojiUnescape } from "discourse/lib/text";
+import User from "discourse/models/user";
 
 acceptance("Discourse Chat - Core Sidebar", function (needs) {
-  needs.user({ experimental_sidebar_enabled: true, has_chat_enabled: true });
+  needs.user({ has_chat_enabled: true });
 
   needs.settings({
     chat_enabled: true,
-    enable_experimental_sidebar: true,
+    enable_experimental_sidebar_hamburger: true,
+    enable_sidebar: true,
   });
 
   needs.pretender((server, helper) => {
@@ -187,7 +189,7 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
       "displays correct direct messages section title"
     );
 
-    const directLinks = queryAll(
+    let directLinks = queryAll(
       ".sidebar-section-chat-dms a.sidebar-section-link"
     );
 
@@ -245,6 +247,21 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
     assert.ok(
       !exists(directLinks.eq(1).find(".sidebar-section-link-suffix")[0]),
       "does not display new messages indicator"
+    );
+
+    const chatService = this.container.lookup("service:chat");
+    User.current().chat_channel_tracking_state[76].set("unread_count", 99);
+    chatService.reSortDirectMessageChannels();
+    chatService.appEvents.trigger("chat:user-tracking-state-changed");
+    await settled();
+    directLinks = queryAll(".sidebar-section-chat-dms a.sidebar-section-link");
+    assert.strictEqual(
+      directLinks
+        .eq(0)
+        .find(".sidebar-section-link-content-text")[0]
+        .textContent.trim(),
+      "eviltrout, markvanlan",
+      "reorders private messages"
     );
   });
 });

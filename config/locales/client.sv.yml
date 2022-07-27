@@ -17,6 +17,10 @@ sv:
           descriptions:
             chat:
               create_message: "Skapa ett chattmeddelande i en angiven kanal."
+    about:
+      chat_messages_count: "Chattmeddelanden"
+      chat_channels_count: "Chattkanaler"
+      chat_users_count: "Chattanvändare"
     chat:
       dates:
         time_tiny: "h:mm"
@@ -29,6 +33,7 @@ sv:
       cancel_reply: "Avbryt svar"
       chat_channels: "Kanaler"
       leave: "Lämna kanal"
+      browse_all_channels: "Bläddra bland alla kanaler"
       move_to_channel:
         title: "Flytta meddelanden till kanal"
         instructions:
@@ -39,6 +44,10 @@ sv:
         title: "Kanalinställningar"
         edit: "Redigera"
         add: "Lägg till"
+        close_channel: "Stäng kanal"
+        open_channel: "Öppna kanal"
+        archive_channel: "Arkivera kanal"
+        delete_channel: "Radera kanal"
         join_channel: "Gå med"
         leave_channel: "Lämna kanal"
       channel_archive:
@@ -68,9 +77,12 @@ sv:
       deleted: "Ett meddelande raderades. [view]"
       delete: "Radera"
       edited: "redigerad"
+      muted: "tystad"
       joined: "anslöt sig"
       empty_state:
+        direct_message_cta: "Starta en personlig chatt"
         direct_message: "Du kan också starta en personlig chatt med en eller flera användare."
+        title: "Inga kanaler hittades"
       email_frequency:
         description: "Vi skickar bara e-post till dig om vi inte har sett dig under de senaste 15 minuterna."
         never: "Aldrig"
@@ -159,8 +171,11 @@ sv:
         open: "Öppen"
       browse:
         title: Kanaler
+        filter_all: Alla
+        filter_open: Öppnad
         filter_closed: Stängd
         filter_archived: Arkiverad
+        filter_input_placeholder: Sök kanal efter namn
       chat_message_separator:
         today: Idag
         yesterday: Igår
@@ -199,10 +214,20 @@ sv:
           one: 1 medlem
           other: "%{count} medlemmar"
       create_channel:
+        auto_join_users:
+          public_category_warning: "%{category} är en offentlig kategori. Lägg automatiskt till alla användare i den här kanalen?"
+          warning_groups:
+            one: Lägg automatiskt till %{members_count} användare från %{group_1}?
+            other: Lägg automatiskt till %{members_count} användare från %{group_1} och %{group_2}?
+          warning_multiple_groups: Lägg automatiskt till %{members_count} användare från %{group_1} och %{count} andra?
         choose_category:
           label: "Välj en kategori"
           none: "Välj en..."
           default_hint: Hantera åtkomst genom att besöka <a href=%{link} target="_blank">%{category} säkerhetsinställningar</a>
+          hint_groups:
+            one: Användare i %{hint_1} kommer att ha åtkomst till denna kanal enligt <a href=%{link} target="_blank">säkerhetsinställningar</a>
+            other: Användare i %{hint_1} och %{hint_2} kommer att ha åtkomst till denna kanal enligt <a href=%{link} target="_blank">säkerhetsinställningarna</a>
+          hint_multiple_groups: Användare i %{hint_1} och %{count} andra grupper kommer att ha åtkomst till denna kanal enligt <a href=%{link} target="_blank">säkerhetsinställningarna</a>
         create: "Skapa kanal"
         description: "Beskrivning (valfritt)"
         name: "Kanalnamn"
@@ -232,6 +257,9 @@ sv:
         mention: "Endast för omnämnanden"
         always: "För all aktivitet"
       settings:
+        enable_auto_join_users: "Lägg automatiskt till alla nya och befintliga användare"
+        disable_auto_join_users: "Sluta lägga till nya användare automatiskt"
+        auto_join_users_warning: "Varje användare som inte är medlem i den här kanalen och har tillgång till kategorin %{category} kommer att gå med. Är du säker?"
         desktop_notification_level: "Skrivbordsaviseringar"
         follow: "Gå med"
         followed: "Anslöt sig"

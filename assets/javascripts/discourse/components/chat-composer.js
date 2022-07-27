@@ -97,6 +97,10 @@ export default Component.extend(TextareaTextManipulation, {
       this,
       "_openInsertLinkModal"
     );
+    document.addEventListener("visibilitychange", this._blurInput);
+    document.addEventListener("resume", this._blurInput);
+    document.addEventListener("freeze", this._blurInput);
+
     this.set("ready", true);
   },
 
@@ -149,6 +153,9 @@ export default Component.extend(TextareaTextManipulation, {
       this,
       "_openInsertLinkModal"
     );
+    document.removeEventListener("visibilitychange", this._blurInput);
+    document.removeEventListener("resume", this._blurInput);
+    document.removeEventListener("freeze", this._blurInput);
   },
 
   // It is important that this is keyDown and not keyUp, otherwise
@@ -291,6 +298,11 @@ export default Component.extend(TextareaTextManipulation, {
   _handleTextareaInput() {
     this._applyUserAutocomplete();
     this.onValueChange?.(this.value, this._uploads, this.replyToMsg);
+  },
+
+  @bind
+  _blurInput() {
+    document.activeElement?.blur();
   },
 
   @action

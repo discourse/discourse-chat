@@ -64,6 +64,7 @@
 }
 
 // Full Page Styling in Core
+
 .has-full-page-chat:not(.discourse-sidebar) {
   --max-chat-width: 1200px;
 
@@ -159,5 +160,61 @@
     .btn-container {
       opacity: 1;
     }
+  }
+}
+
+.composer-open .has-full-page-chat {
+  // move composer inline, so it doesn't overlay chat
+  #reply-control {
+    position: static;
+  }
+
+  .discourse-root {
+    height: 100vh;
+    display: grid;
+    grid-template-areas: "header" "main" "footer" "composer";
+    grid-template-rows: auto 1fr auto auto;
+    overflow: hidden;
+
+    .d-header-wrap {
+      grid-area: header;
+    }
+
+    #main-outlet-wrapper {
+      grid-area: main;
+    }
+
+    .below-footer-outlet {
+      grid-area: footer;
+    }
+
+    #reply-control {
+      grid-area: composer;
+    }
+  }
+
+  #main-outlet-wrapper {
+    min-height: 0;
+    .sidebar-wrapper {
+      height: 100%;
+    }
+  }
+
+  #main-outlet {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    height: 100%;
+  }
+
+  #main-chat-outlet {
+    height: 100%;
+    min-height: 0;
+  }
+
+  .full-page-chat {
+    display: block;
+    height: 100%;
+    min-height: 0;
   }
 }

@@ -163,8 +163,9 @@
   }
 }
 
+// move composer inline, so it doesn't overlay chat
+
 .has-full-page-chat {
-  // move composer inline, so it doesn't overlay chat
   #reply-control {
     position: static;
   }

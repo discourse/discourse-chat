@@ -6,6 +6,7 @@ import hbs from "htmlbars-inline-precompile";
 import { exists, query } from "discourse/tests/helpers/qunit-helpers";
 import I18n from "I18n";
 import { module } from "qunit";
+import User from "discourse/models/user";
 
 module("Discourse Chat | Component | chat-message-info", function (hooks) {
   setupRenderingTest(hooks);
@@ -88,6 +89,21 @@ module("Discourse Chat | Component | chat-message-info", function (hooks) {
 
     async test(assert) {
       assert.ok(exists(".chat-message-info__bookmark .d-icon-bookmark"));
+    },
+  });
+
+  componentTest("user status", {
+    template: hbs`{{chat-message-info message=message}}`,
+
+    beforeEach() {
+      const status = { description: "off to dentist", emoji: "tooth" };
+      this.set("message", { user: User.create({ status }) });
+    },
+
+    async test(assert) {
+      assert.ok(
+        exists(".chat-message-info__status .emoji[title='off to dentist']")
+      );
     },
   });
 

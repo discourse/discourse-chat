@@ -122,6 +122,7 @@ after_initialize do
   load File.expand_path("../app/models/chat_view.rb", __FILE__)
   load File.expand_path("../app/serializers/chat_webhook_event_serializer.rb", __FILE__)
   load File.expand_path("../app/serializers/chat_in_reply_to_serializer.rb", __FILE__)
+  load File.expand_path("../app/serializers/basic_user_with_status_serializer.rb", __FILE__)
   load File.expand_path("../app/serializers/chat_message_serializer.rb", __FILE__)
   load File.expand_path("../app/serializers/chat_channel_serializer.rb", __FILE__)
   load File.expand_path("../app/serializers/chat_channel_settings_serializer.rb", __FILE__)

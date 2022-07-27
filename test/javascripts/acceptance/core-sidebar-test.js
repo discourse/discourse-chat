@@ -58,6 +58,12 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
         direct_message_channels: directChannels,
       });
     });
+    server.get("/chat/1/messages.json", () =>
+      helper.response({
+        meta: { can_chat: true, user_silenced: false },
+        chat_messages: [],
+      })
+    );
   });
 
   needs.hooks.beforeEach(function () {
@@ -263,5 +269,64 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
       "eviltrout, markvanlan",
       "reorders private messages"
     );
+  });
+
+  test("Plugin sidebar is hidden", async function (assert) {
+    await visit("/chat/channel/1/dev");
+    assert.notOk(exists(".full-page-chat .channels-list"));
+  });
+});
+
+acceptance("Discourse Chat - Plugin Sidebar", function (needs) {
+  needs.user({ has_chat_enabled: true });
+
+  needs.settings({
+    chat_enabled: true,
+  });
+
+  needs.pretender((server, helper) => {
+    server.get("/chat/chat_channels.json", () => {
+      return helper.response({
+        public_channels: [
+          {
+            id: 1,
+            title: "dev :bug:",
+            unread_count: 0,
+            unread_mentions: 0,
+            chatable_type: "Category",
+            chatable: { slug: "dev", read_restricted: true },
+          },
+          {
+            id: 2,
+            title: "general",
+            unread_count: 1,
+            unread_mentions: 0,
+            chatable_type: "Category",
+            chatable: { slug: "general" },
+          },
+          {
+            id: 3,
+            title: "random",
+            unread_count: 1,
+            unread_mentions: 1,
+            chatable_type: "Category",
+            chatable: { slug: "random" },
+          },
+        ],
+        direct_message_channels: [],
+      });
+    });
+
+    server.get("/chat/1/messages.json", () =>
+      helper.response({
+        meta: { can_chat: true, user_silenced: false },
+        chat_messages: [],
+      })
+    );
+  });
+
+  test("Plugin sidebar is visible", async function (assert) {
+    await visit("/chat/channel/1/dev");
+    assert.ok(exists(".full-page-chat .channels-list"));
   });
 });

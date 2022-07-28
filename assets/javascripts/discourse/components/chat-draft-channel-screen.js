@@ -2,6 +2,7 @@ import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-
 import { inject as service } from "@ember/service";
 import Component from "@ember/component";
 import { action } from "@ember/object";
+import { cloneJSON } from "discourse-common/lib/object";
 
 export default class ChatDraftChannelScreen extends Component {
   tagName = "";
@@ -37,7 +38,7 @@ export default class ChatDraftChannelScreen extends Component {
           this.set(
             "previewedChannel",
             ChatChannel.create({
-              chatable: { users },
+              chatable: { users: cloneJSON(users) },
               isDraft: true,
             })
           );

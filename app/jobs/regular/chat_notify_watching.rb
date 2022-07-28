@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module Jobs
+  # TODO (martin) A spec for this whole class.
   class ChatNotifyWatching < ::Jobs::Base
     def execute(args = {})
       @chat_message =
@@ -13,20 +14,31 @@ module Jobs
 
       always_notification_level = UserChatChannelMembership::NOTIFICATION_LEVELS[:always]
 
-      UserChatChannelMembership
-        .includes(user: :groups)
-        .joins(user: :user_option)
-        .where(user_option: { chat_enabled: true })
-        .where.not(user_id: args[:except_user_ids])
-        .where(chat_channel_id: @chat_channel.id)
-        .where(following: true)
-        .where(
-          "desktop_notification_level = ? OR mobile_notification_level = ?",
-          always_notification_level,
-          always_notification_level,
-        )
-        .merge(User.not_suspended)
-        .each { |membership| send_notifications(membership) }
+      members =
+        UserChatChannelMembership
+          .includes(user: :groups)
+          .joins(user: :user_option)
+          .where(user_option: { chat_enabled: true })
+          .where.not(user_id: args[:except_user_ids])
+          .where(chat_channel_id: @chat_channel.id)
+          .where(following: true)
+          .where(
+            "desktop_notification_level = ? OR mobile_notification_level = ?",
+            always_notification_level,
+            always_notification_level,
+          )
+          .merge(User.not_suspended)
+
+      if @is_direct_message_channel
+        UserCommScreener
+          .new(acting_user: @creator, target_user_ids: members.map(&:user_id))
+          .allowing_actor_communication
+          .each do |user_id|
+            send_notifications(members.find { |member| member.user_id == user_id })
+          end
+      else
+        members.each { |member| send_notifications(member) }
+      end
     end
 
     def send_notifications(membership)

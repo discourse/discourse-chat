@@ -7,6 +7,7 @@
 # * Individual user mentions like @alfred
 # * Group mentions that include N users such as @support
 # * Global @here and @all mentions
+# * Users watching the channel via UserChatChannelMembership
 #
 # For various reasons a mention may not notify a user:
 #
@@ -22,6 +23,9 @@
 # we send a MessageBus message to the UI and to inform the creating user. The
 # creating user can invite any `welcome_to_join` users to the channel. Target
 # users who are ignoring or muting the creating user _do not_ fall into this bucket.
+#
+# The ignore/mute filtering is also applied via the ChatNotifyWatching job,
+# which prevents desktop / push notifications being sent.
 class DiscourseChat::ChatNotifier
   class << self
     def user_has_seen_message?(membership, chat_message_id)

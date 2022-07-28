@@ -663,14 +663,8 @@ export default Service.extend({
 
       return this.stopTrackingChannel(channel).then(() => {
         return this.getIdealFirstChannelIdAndTitle().then((channelInfo) => {
-          if (
-            channel.id !== this.router.currentRoute.attributes?.chatChannel?.id
-          ) {
-            return;
-          }
-
           if (channelInfo) {
-            this.getChannelBy("id", channelInfo.id).then((c) => {
+            return this.getChannelBy("id", channelInfo.id).then((c) => {
               return this.openChannel(c);
             });
           } else {

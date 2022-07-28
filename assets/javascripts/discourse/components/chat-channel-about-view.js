@@ -1,7 +1,5 @@
 import Component from "@ember/component";
 import { action } from "@ember/object";
-import ChatApi from "discourse/plugins/discourse-chat/discourse/lib/chat-api";
-import { popupAjaxError } from "discourse/lib/ajax-error";
 import { inject as service } from "@ember/service";
 
 export default class ChatChannelAboutView extends Component {

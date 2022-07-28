@@ -2,7 +2,6 @@ import Component from "@ember/component";
 import I18n from "I18n";
 import { inject as service } from "@ember/service";
 import { popupAjaxError } from "discourse/lib/ajax-error";
-import ChatApi from "discourse/plugins/discourse-chat/discourse/lib/chat-api";
 import { action, computed } from "@ember/object";
 
 export default class ToggleChannelMembershipButton extends Component {

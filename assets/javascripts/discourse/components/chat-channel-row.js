@@ -1,9 +1,11 @@
 import Component from "@ember/component";
+import I18n from "I18n";
 import discourseComputed from "discourse-common/utils/decorators";
 import getURL from "discourse-common/lib/get-url";
 import { action } from "@ember/object";
 import { equal } from "@ember/object/computed";
 import { inject as service } from "@ember/service";
+import { CHATABLE_TYPES } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 
 export default Component.extend({
   tagName: "",
@@ -11,8 +13,10 @@ export default Component.extend({
   chat: service(),
   channel: null,
   switchChannel: null,
-  isUnfollowing: false,
-  isDirectMessageRow: equal("channel.chatable_type", "DirectMessageChannel"),
+  isDirectMessageRow: equal(
+    "channel.chatable_type",
+    CHATABLE_TYPES.directMessageChannel
+  ),
   options: null,
 
   didInsertElement() {
@@ -112,9 +116,12 @@ export default Component.extend({
     this.handleSwitchChannel(event);
   },
 
-  @action
-  onLeaveChannel() {
-    this.set("isUnfollowing", true);
-    this.chat.unfollowChannel(this.channel);
+  @discourseComputed("channel.chatable_type")
+  leaveChatTitle() {
+    if (this.channel.isDirectMessageChannel) {
+      return I18n.t("chat.direct_messages.leave");
+    } else {
+      return I18n.t("chat.channel_settings.leave_channel");
+    }
   },
 });

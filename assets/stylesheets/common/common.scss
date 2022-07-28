@@ -413,25 +413,13 @@ $float-height: 530px;
     opacity: 0;
   }
 
-  .chat-channel-leave-btn.btn-icon {
-    margin-left: auto;
+  .toggle-channel-membership-button.-leave {
     visibility: hidden;
-
-    .d-icon {
-      pointer-events: none;
-    }
-
-    &:hover {
-      background: none;
-
-      .d-icon {
-        color: var(--primary);
-      }
-    }
+    margin-left: auto;
   }
 
   &:hover {
-    .chat-channel-leave-btn {
+    .toggle-channel-membership-button.-leave {
       visibility: visible;
 
       > * {

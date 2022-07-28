@@ -14,11 +14,11 @@ module("Discourse Chat | Component | chat-channel-row", function (hooks) {
     template: hbs`{{chat-channel-row channel=channel options=(hash leaveButton=true)}}`,
 
     beforeEach() {
-      this.set("channel", fabricators.chatChannel());
+      this.set("channel", fabricators.chatChannel({ following: true }));
     },
 
     async test(assert) {
-      assert.ok(exists(".chat-channel-leave-btn"));
+      assert.ok(exists(".toggle-channel-membership-button.-leave"));
     },
   });
 

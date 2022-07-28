@@ -27,7 +27,6 @@ en:
       cancel: "Cancel"
       cancel_reply: "Cancel reply"
       chat_channels: "Channels"
-      leave: "Leave channel"
       browse_all_channels: "Browse all channels"
       move_to_channel:
         title: "Move messages to channel"
@@ -43,8 +42,10 @@ en:
         open_channel: "Open channel"
         archive_channel: "Archive channel"
         delete_channel: "Delete channel"
-        join_channel: "Join"
+        join_channel: "Join channel"
         leave_channel: "Leave channel"
+        join: "Join"
+        leave: "Leave"
       channel_archive:
         title: "Archive Channel"
         instructions: "<p>Archiving a channel puts it into read-only mode and moves all messages from the channel into a new or existing topic. No new messages can be sent, and no existing messages can be edited or deleted.</p><p>Are you sure you want to archive the <strong>%{channelTitle}</strong> channel?</p>"

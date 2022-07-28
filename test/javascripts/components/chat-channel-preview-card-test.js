@@ -59,7 +59,7 @@ module(
       );
 
       assert.ok(
-        exists(".chat-channel-preview-card--no-description"),
+        exists(".chat-channel-preview-card.-no-description"),
         "it adds a modifier class for styling"
       );
     });
@@ -68,7 +68,7 @@ module(
       await render(hbs`{{chat-channel-preview-card channel=channel}}`);
 
       assert.ok(
-        exists(".chat-channel-preview-card__join-channel-btn"),
+        exists(".toggle-channel-membership-button.-join"),
         "it shows the join channel button"
       );
     });

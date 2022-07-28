@@ -65,6 +65,16 @@ const ChatChannel = RestModel.extend({
     return !READONLY_STATUSES.includes(this.status);
   },
 
+  updateMembership(following, membership) {
+    this.setProperties({
+      following,
+      muted: membership.muted,
+      desktop_notification_level: membership.desktop_notification_level,
+      mobile_notification_level: membership.mobile_notification_level,
+      memberships_count: membership.user_count,
+    });
+  },
+
   isDraft: false,
 
   @computed("chatable_type")
@@ -79,7 +89,7 @@ const ChatChannel = RestModel.extend({
 
   @computed("status")
   get isOpen() {
-    return this.status === CHANNEL_STATUSES.open;
+    return !this.status || this.status === CHANNEL_STATUSES.open;
   },
 
   @computed("status")

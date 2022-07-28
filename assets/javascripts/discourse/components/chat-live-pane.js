@@ -157,6 +157,10 @@ export default Component.extend({
       this.chat
         .getChannelBy("id", this.chatChannel.id)
         .then((trackedChannel) => {
+          if (this._selfDeleted) {
+            return;
+          }
+
           this.fetchMessages(this.chatChannel);
 
           if (!this.chatChannel.isDraft) {
@@ -1053,22 +1057,6 @@ export default Component.extend({
     return Promise.resolve();
   },
 
-  @action
-  joinChannel() {
-    return ChatApi.followChatChannel(this.chatChannel.id).then(() => {
-      this.setProperties({
-        id: null,
-      });
-      return this.chat.forceRefreshChannels().then(() => {
-        if (this._selfDeleted) {
-          return;
-        }
-        this.set("previewing", false);
-        this.appEvents.trigger("chat:refresh-channels");
-      });
-    });
-  },
-
   async _upsertChannelWithMessage(channel, message, uploads) {
     let promise;
 
@@ -1077,11 +1065,14 @@ export default Component.extend({
         channel.chatable.users.mapBy("username")
       );
     } else {
-      promise = ChatApi.followChatChannel(channel.id).then(() => channel);
+      promise = ChatApi.loading(channel.id).then(() => channel);
     }
 
     return promise
-      .then((c) => this.chat.startTrackingChannel(c))
+      .then((c) => {
+        c.set("following", true);
+        return this.chat.startTrackingChannel(c);
+      })
       .then((c) =>
         ajax(`/chat/${c.id}.json`, {
           type: "POST",

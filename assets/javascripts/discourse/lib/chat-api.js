@@ -43,22 +43,28 @@ export default class ChatApi {
     );
   }
 
-  static async unfollowChatChannel(channelId) {
+  static async unfollowChatChannel(channel) {
     return await this._performRequest(
-      `/chat/chat_channels/${channelId}/unfollow.json`,
+      `/chat/chat_channels/${channel.id}/unfollow.json`,
       {
         method: "POST",
       }
-    );
+    ).then((membership) => {
+      channel.updateMembership(false, membership);
+      return channel;
+    });
   }
 
-  static async followChatChannel(channelId) {
+  static async followChatChannel(channel) {
     return await this._performRequest(
-      `/chat/chat_channels/${channelId}/follow.json`,
+      `/chat/chat_channels/${channel.id}/follow.json`,
       {
         method: "POST",
       }
-    );
+    ).then((membership) => {
+      channel.updateMembership(true, membership);
+      return channel;
+    });
   }
 
   static async categoryPermissions(categoryId) {

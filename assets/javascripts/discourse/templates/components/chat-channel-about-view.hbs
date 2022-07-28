@@ -71,21 +71,9 @@
 {{/if}}
 
 <div class="chat-form__section">
-  {{#if channel.following}}
-    {{d-button
-      action=(action "onLeaveChannel")
-      label="chat.channel_settings.leave_channel"
-      class="chat-form__btn leave-channel-btn btn-flat"
-      icon="sign-out-alt"
-      disabled=isLoading
-    }}
-  {{else}}
-    {{d-button
-      action=(action "onJoinChannel")
-      label="chat.channel_settings.join_channel"
-      class="chat-form__btn join-channel-btn btn-flat"
-      icon="sign-in-alt"
-      disabled=isLoading
-    }}
-  {{/if}}
+  <ToggleChannelMembershipButton
+    @channel={{this.channel}}
+    @onToggle={{action "afterMembershipToggle"}}
+    @options={{hash joinClass="btn-primary" leaveClass="btn-flat" joinIcon="sign-in-alt" leaveIcon="sign-out-alt"}}
+  />
 </div>

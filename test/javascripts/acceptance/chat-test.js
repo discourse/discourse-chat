@@ -228,7 +228,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
         },
       });
     });
-    server.post("/chat/chat_channels/:chatChannelId/unfollow", () => {
+    server.post("/chat/chat_channels/:chatChannelId/unfollow.json", () => {
       return helper.response({ success: "OK" });
     });
     server.get("/chat/direct_messages.json", () => {
@@ -379,11 +379,9 @@ acceptance("Discourse Chat - without unread", function (needs) {
 
   test("Unfollowing a direct message channel transitions to another channel", async function (assert) {
     await visit("/chat/channel/75/@hawk");
-    await click(".chat-channel-row.chat-channel-76 .chat-channel-leave-btn");
-
-    assert.ok(/^\/chat\/channel\/75/.test(currentURL()));
-
-    await click(".chat-channel-row.chat-channel-75 .chat-channel-leave-btn");
+    await click(
+      ".chat-channel-row.chat-channel-75 .toggle-channel-membership-button.-leave"
+    );
 
     assert.ok(/^\/chat\/channel\/4/.test(currentURL()));
   });
@@ -1244,6 +1242,10 @@ acceptance(
       chatChannelPretender(server, helper, [
         { id: 9, unread_count: 2, muted: false },
       ]);
+
+      server.get("/chat/api/chat_channels/:id/memberships.json", () => {
+        return helper.response([]);
+      });
     });
     needs.hooks.beforeEach(function () {
       Object.defineProperty(this, "chatService", {
@@ -1280,7 +1282,7 @@ acceptance(
         "chat float is expanded"
       );
       await click(".topic-chat-drawer-header__title");
-      assert.equal(currentURL(), `/chat/channel/9/site/info/settings`);
+      assert.equal(currentURL(), `/chat/channel/9/site/info/members`);
     });
 
     test("chat drawer title expands the chat drawer when collapsed", async function (assert) {

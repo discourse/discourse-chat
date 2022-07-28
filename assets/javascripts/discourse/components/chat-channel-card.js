@@ -10,15 +10,7 @@ export default class ChatChannelCard extends Component {
   @service chat;
 
   @action
-  onJoinChannel() {
-    return ChatApi.followChatChannel(this.channel.id)
-      .then((membership) => {
-        this.channel.set("following", true);
-        this.channel.set("memberships_count", membership.user_count);
-        this.chat.openChannel(this.channel);
-
-        return this.chat.forceRefreshChannels();
-      })
-      .catch(popupAjaxError);
+  afterMembershipToggle() {
+    this.chat.forceRefreshChannels()
   }
 }

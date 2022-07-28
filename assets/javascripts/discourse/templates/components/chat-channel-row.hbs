@@ -1,6 +1,6 @@
 <div
   id="chat-channel-row-{{channel.id}}"
-  class="{{rowClassNames}}{{if isUnfollowing "unfollowing"}}"
+  class="{{rowClassNames}}"
   {{on "click" this.handleClick}}
   {{on "keyup" this.handleKeyUp}}
   {{on "mouseup" this.handleNewWindow}}
@@ -13,13 +13,19 @@
   {{#if this.showUserStatus}}
     {{emoji
       channel.chatable.users.firstObject.status.emoji
-      title=channel.chatable.users.firstObject.status.description}}
+      title=channel.chatable.users.firstObject.status.description
+    }}
   {{/if}}
 
-  {{#if options.leaveButton}}
-    {{chat-channel-leave-btn
-      channel=channel
-      onLeaveChannel=(action "onLeaveChannel")
-    }}
+  {{#if (and options.leaveButton channel.following (not site.mobileView))}}
+    <ToggleChannelMembershipButton
+      @channel={{channel}}
+      @options={{hash
+        leaveClass="btn-flat chat-channel-leave-btn"
+        labelType="none"
+        leaveIcon="times"
+        leaveTitle=this.leaveChatTitle
+      }}
+    />
   {{/if}}
 </div>

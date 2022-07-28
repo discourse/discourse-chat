@@ -17,6 +17,7 @@ import ChatChannel, {
 import simpleCategoryHashMentionTransform from "discourse/plugins/discourse-chat/discourse/lib/simple-category-hash-mention-transform";
 import discourseDebounce from "discourse-common/lib/debounce";
 import EmberObject from "@ember/object";
+import ChatApi from "discourse/plugins/discourse-chat/discourse/lib/chat-api";
 
 export const LIST_VIEW = "list_view";
 export const CHAT_VIEW = "chat_view";
@@ -534,10 +535,11 @@ export default Service.extend({
   },
 
   async stopTrackingChannel(channel) {
-    const existingChannel = await this.getChannelBy("id", channel.id);
-    if (existingChannel) {
-      this.forceRefreshChannels();
-    }
+    return this.getChannelBy("id", channel.id).then((existingChannel) => {
+      if (existingChannel) {
+        return this.forceRefreshChannels();
+      }
+    });
   },
 
   _subscribeToChannelEdits() {
@@ -648,32 +650,35 @@ export default Service.extend({
     });
   },
 
-  async unfollowChannel(channel) {
-    return ajax(`/chat/chat_channels/${channel.id}/unfollow`, {
-      method: "POST",
-    })
-      .then(async () => {
-        this._unsubscribeFromChatChannel(channel);
-        return this._refreshChannels().then(() => {
-          return this.getIdealFirstChannelIdAndTitle().then((channelInfo) => {
-            if (
-              channel.id !==
-              this.router.currentRoute.attributes?.chatChannel?.id
-            ) {
-              return;
-            }
+  async followChannel(channel) {
+    return ChatApi.followChatChannel(channel).then(() => {
+      this.startTrackingChannel(channel);
+      this._subscribeToSingleUpdateChannel(channel);
+    });
+  },
 
-            if (channelInfo) {
-              this.getChannelBy("id", channelInfo.id).then((c) => {
-                return this.openChannel(c);
-              });
-            } else {
-              return this.router.transitionTo("chat");
-            }
-          });
+  async unfollowChannel(channel) {
+    return ChatApi.unfollowChatChannel(channel).then(() => {
+      this._unsubscribeFromChatChannel(channel);
+
+      return this.stopTrackingChannel(channel).then(() => {
+        return this.getIdealFirstChannelIdAndTitle().then((channelInfo) => {
+          if (
+            channel.id !== this.router.currentRoute.attributes?.chatChannel?.id
+          ) {
+            return;
+          }
+
+          if (channelInfo) {
+            this.getChannelBy("id", channelInfo.id).then((c) => {
+              return this.openChannel(c);
+            });
+          } else {
+            return this.router.transitionTo("chat");
+          }
         });
-      })
-      .catch(popupAjaxError);
+      });
+    });
   },
 
   _unsubscribeFromAllChatChannels() {

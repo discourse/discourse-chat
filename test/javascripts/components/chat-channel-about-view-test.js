@@ -63,14 +63,14 @@ module(
     test("join", async function (assert) {
       await render(hbs`{{chat-channel-about-view channel=channel}}`);
 
-      assert.ok(exists(".join-channel-btn"));
+      assert.ok(exists(".toggle-channel-membership-button.-join"));
     });
 
     test("leave", async function (assert) {
       this.channel.set("following", true);
       await render(hbs`{{chat-channel-about-view channel=channel}}`);
 
-      assert.ok(exists(".leave-channel-btn"));
+      assert.ok(exists(".toggle-channel-membership-button.-leave"));
     });
   }
 );
@@ -128,14 +128,14 @@ module(
     test("join", async function (assert) {
       await render(hbs`{{chat-channel-about-view channel=channel}}`);
 
-      assert.ok(exists(".join-channel-btn"));
+      assert.ok(exists(".toggle-channel-membership-button.-join"));
     });
 
     test("leave", async function (assert) {
       this.channel.set("following", true);
       await render(hbs`{{chat-channel-about-view channel=channel}}`);
 
-      assert.ok(exists(".leave-channel-btn"));
+      assert.ok(exists(".toggle-channel-membership-button.-leave"));
     });
   }
 );

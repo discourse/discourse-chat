@@ -57,11 +57,11 @@
           {{/if}}
         </div>
       {{else if channel.isJoinable}}
-        {{d-button
-          label="chat.channel_settings.join_channel"
-          action=(action "onJoinChannel" channel)
-          class="btn-primary btn-small chat-channel-card__join-btn"
-        }}
+        <ToggleChannelMembershipButton
+          @channel={{this.channel}}
+          @onToggle={{action "afterMembershipToggle"}}
+          @options={{hash joinClass="btn-primary btn-small chat-channel-card__join-btn" labelType="short"}}
+        />
       {{/if}}
 
       {{#if (gt channel.membershipsCount 0)}}

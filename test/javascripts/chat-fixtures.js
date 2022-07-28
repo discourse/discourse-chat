@@ -41,6 +41,7 @@ export const directMessageChannels = [
       title: "@hawk",
       unread_count: 0,
       muted: false,
+      following: true,
     },
   },
   {

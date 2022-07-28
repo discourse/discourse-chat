@@ -28,26 +28,17 @@
   </div>
 
   <div class="btn-container">
-    {{#if channel.following}}
-      {{d-button
-        class="btn-danger chat-channel-unfollow"
-        action=(action "unfollow")
-        disabled=loading
-        label="chat.settings.unfollow"
-      }}
-    {{else}}
+    {{#unless channel.following}}
       {{d-button
         class="chat-channel-preview"
         action=(action "previewChannel")
         disabled=loading
         label="chat.settings.preview"
       }}
-      {{d-button
-        class="btn-primary chat-channel-follow"
-        action=(action "follow")
-        disabled=loading
-        label="chat.settings.follow"
-      }}
-    {{/if}}
+    {{/unless}}
+    <ToggleChannelMembershipButton
+      @channel={{this.channel}}
+      @options={{hash joinClass="btn-primary" leaveClass="btn-danger" labelType="short"}}
+    />
   </div>
 </div>

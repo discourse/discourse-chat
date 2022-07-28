@@ -48,6 +48,7 @@ export default Service.extend({
   fullPageChat: service(),
   _chatOpen: false,
   _fetchingChannels: null,
+  directMessagesLimit: 20,
 
   init() {
     this._super(...arguments);
@@ -145,7 +146,7 @@ export default Service.extend({
   },
 
   truncateDirectMessageChannels(channels) {
-    return channels.slice(0, 20);
+    return channels.slice(0, this.directMessagesLimit);
   },
 
   getActiveChannel() {

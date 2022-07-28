@@ -128,7 +128,19 @@ describe DiscourseChat::DirectMessageChannelCreator do
       it "raises an error with a helpful message" do
         expect {
           subject.create!(acting_user: user_1, target_users: [user_1, user_2, user_3])
-        }.to raise_error(DiscourseChat::DirectMessageChannelCreator::NotAllowed)
+        }.to raise_error(
+          DiscourseChat::DirectMessageChannelCreator::NotAllowed,
+          I18n.t("chat.errors.not_accepting_dms", username: user_2.username)
+        )
+      end
+
+      it "does not let the ignoring user create a DM either and raises an error with a helpful message" do
+        expect {
+          subject.create!(acting_user: user_2, target_users: [user_2, user_1, user_3])
+        }.to raise_error(
+          DiscourseChat::DirectMessageChannelCreator::NotAllowed,
+          I18n.t("chat.errors.actor_ignoring_target_user", username: user_1.username)
+        )
       end
     end
 
@@ -138,7 +150,19 @@ describe DiscourseChat::DirectMessageChannelCreator do
       it "raises an error with a helpful message" do
         expect {
           subject.create!(acting_user: user_1, target_users: [user_1, user_2, user_3])
-        }.to raise_error(DiscourseChat::DirectMessageChannelCreator::NotAllowed)
+        }.to raise_error(
+          DiscourseChat::DirectMessageChannelCreator::NotAllowed,
+          I18n.t("chat.errors.not_accepting_dms", username: user_2.username)
+        )
+      end
+
+      it "does not let the muting user create a DM either and raises an error with a helpful message" do
+        expect {
+          subject.create!(acting_user: user_2, target_users: [user_2, user_1, user_3])
+        }.to raise_error(
+          DiscourseChat::DirectMessageChannelCreator::NotAllowed,
+          I18n.t("chat.errors.actor_muting_target_user", username: user_1.username)
+        )
       end
     end
 
@@ -148,7 +172,19 @@ describe DiscourseChat::DirectMessageChannelCreator do
       it "raises an error with a helpful message" do
         expect {
           subject.create!(acting_user: user_1, target_users: [user_1, user_2, user_3])
-        }.to raise_error(DiscourseChat::DirectMessageChannelCreator::NotAllowed)
+        }.to raise_error(
+          DiscourseChat::DirectMessageChannelCreator::NotAllowed,
+          I18n.t("chat.errors.not_accepting_dms", username: user_2.username)
+        )
+      end
+
+      it "does not let the user who is preventing PM/DM create a DM either and raises an error with a helpful message" do
+        expect {
+          subject.create!(acting_user: user_2, target_users: [user_2, user_1, user_3])
+        }.to raise_error(
+          DiscourseChat::DirectMessageChannelCreator::NotAllowed,
+          I18n.t("chat.errors.actor_disallowed_dms")
+        )
       end
     end
 
@@ -166,6 +202,15 @@ describe DiscourseChat::DirectMessageChannelCreator do
         expect {
           subject.create!(acting_user: user_1, target_users: [user_1, user_2, user_3])
         }.to change { ChatChannel.count }.by(1)
+      end
+
+      it "does not let the user who is preventing PM/DM create a DM either and raises an error with a helpful message" do
+        expect {
+          subject.create!(acting_user: user_2, target_users: [user_2, user_1, user_3])
+        }.to raise_error(
+          DiscourseChat::DirectMessageChannelCreator::NotAllowed,
+          I18n.t("chat.errors.actor_preventing_target_user_from_dm", username: user_1.username)
+        )
       end
     end
   end

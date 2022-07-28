@@ -6,8 +6,15 @@ class DiscourseChat::DirectMessagesController < DiscourseChat::ChatBaseControlle
   def create
     guardian.ensure_can_chat!(current_user)
     users = users_from_usernames(current_user, params)
-    chat_channel = DiscourseChat::DirectMessageChannelCreator.create!(target_users: users)
-    render_serialized(chat_channel, ChatChannelSerializer, root: "chat_channel")
+
+    begin
+      chat_channel = DiscourseChat::DirectMessageChannelCreator.create!(
+        acting_user: current_user, target_users: users
+      )
+      render_serialized(chat_channel, ChatChannelSerializer, root: "chat_channel")
+    rescue DiscourseChat::DirectMessageChannelCreator::NotAllowed => err
+      render_json_error(err.message)
+    end
   end
 
   def index

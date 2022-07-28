@@ -26,7 +26,10 @@ describe DiscourseChat::ChatMailer do
       )
 
     @private_channel =
-      DiscourseChat::DirectMessageChannelCreator.create!(target_users: [@sender, @user_1])
+      DiscourseChat::DirectMessageChannelCreator.create!(
+        acting_user: @sender,
+        target_users: [@sender, @user_1],
+      )
   end
 
   def assert_summary_skipped

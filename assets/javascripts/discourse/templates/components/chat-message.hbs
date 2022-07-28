@@ -48,9 +48,17 @@
     {{#if deletedAndCollapsed}}
       <div class="chat-message-deleted">
         {{d-button
-          class="btn-flat chat-message-expand-deleted"
+          class="btn-flat chat-message-expand"
           action=(action "expand")
           label="chat.deleted"
+        }}
+      </div>
+    {{else if hiddenAndCollapsed}}
+      <div class="chat-message-hidden">
+        {{d-button
+          class="btn-flat chat-message-expand"
+          action=(action "expand")
+          label="chat.hidden"
         }}
       </div>
     {{else}}

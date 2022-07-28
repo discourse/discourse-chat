@@ -1,4 +1,31 @@
 # frozen_string_literal: true
+
+##
+# When we are attempting to notify users based on a message we have to take
+# into account the following:
+#
+# * Individual user mentions like @alfred
+# * Group mentions that include N users such as @support
+# * Global @here and @all mentions
+# * Users watching the channel via UserChatChannelMembership
+#
+# For various reasons a mention may not notify a user:
+#
+# * The target user of the mention is ignoring or muting the user who created the message
+# * The target user either cannot chat or cannot see the chat channel, in which case
+#   they are defined as `unreachable`
+# * The target user is not a member of the channel, in which case they are defined
+#   as `welcome_to_join`
+# * In the case of global @here and @all mentions users with the preference
+#   `ignore_channel_wide_mention` set to true will not be notified
+#
+# For any users that fall under the `unreachable` or `welcome_to_join` umbrellas
+# we send a MessageBus message to the UI and to inform the creating user. The
+# creating user can invite any `welcome_to_join` users to the channel. Target
+# users who are ignoring or muting the creating user _do not_ fall into this bucket.
+#
+# The ignore/mute filtering is also applied via the ChatNotifyWatching job,
+# which prevents desktop / push notifications being sent.
 class DiscourseChat::ChatNotifier
   class << self
     def user_has_seen_message?(membership, chat_message_id)
@@ -89,6 +116,8 @@ class DiscourseChat::ChatNotifier
       expand_group_mentions(to_notify, already_covered_ids)
       expand_here_mention(to_notify, already_covered_ids)
       expand_global_mention(to_notify, already_covered_ids)
+
+      filter_users_ignoring_or_muting_creator(to_notify, already_covered_ids)
 
       to_notify[:all_mentioned_user_ids] = already_covered_ids
     end
@@ -247,6 +276,36 @@ class DiscourseChat::ChatNotifier
       unreachable,
       welcome_to_join,
     )
+  end
+
+  # Filters out users from global, here, group, and direct mentions that are
+  # ignoring or muting the creator of the message, so they will not receive
+  # a notification via the ChatNotifyMentioned job and are not prompted for
+  # invitation by the creator.
+  #
+  # already_covered_ids and to_notify sometimes contain IDs and sometimes contain
+  # Users, hence the gymnastics to resolve the user_id
+  def filter_users_ignoring_or_muting_creator(to_notify, already_covered_ids)
+    user_ids_to_screen =
+      already_covered_ids
+        .map { |ac| user_id_resolver(ac) }
+        .concat(to_notify.values.flatten.map { |tn| user_id_resolver(tn) })
+        .uniq
+    screener = UserCommScreener.new(acting_user: @user, target_user_ids: user_ids_to_screen)
+    to_notify
+      .except(:unreachable)
+      .each do |key, users_or_ids|
+        to_notify[key] = users_or_ids.reject do |user_or_id|
+          screener.ignoring_or_muting_actor?(user_id_resolver(user_or_id))
+        end
+      end
+    already_covered_ids.reject! do |already_covered|
+      screener.ignoring_or_muting_actor?(user_id_resolver(already_covered))
+    end
+  end
+
+  def user_id_resolver(obj)
+    obj.is_a?(User) ? obj.id : obj
   end
 
   def notify_mentioned_users(to_notify, already_notified_user_ids: [])

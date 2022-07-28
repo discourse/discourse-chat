@@ -29,7 +29,10 @@ describe DiscourseChat::ChatMessageUpdater do
       Fabricate(:user_chat_channel_membership, chat_channel: public_chat_channel, user: user)
     end
     @direct_message_channel =
-      DiscourseChat::DirectMessageChannelCreator.create!(target_users: [user1, user2])
+      DiscourseChat::DirectMessageChannelCreator.create!(
+        acting_user: user1,
+        target_users: [user1, user2],
+      )
   end
 
   def create_chat_message(user, message, channel, upload_ids: nil)

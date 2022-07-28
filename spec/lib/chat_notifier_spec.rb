@@ -111,6 +111,26 @@ describe DiscourseChat::ChatNotifier do
 
       include_examples "channel-wide mentions"
       include_examples "ensure only channel members are notified"
+
+      describe "users ignoring or muting the user creating the message" do
+        it "does not send notifications to the user who is muting the acting user" do
+          Fabricate(:muted_user, user: user_2, muted_user: user_1)
+          msg = build_cooked_msg(mention, user_1)
+
+          to_notify = described_class.new(msg, msg.created_at).notify_new
+
+          expect(to_notify[list_key]).to be_empty
+        end
+
+        it "does not send notifications to the user who is ignoring the acting user" do
+          Fabricate(:ignored_user, user: user_2, ignored_user: user_1, expiring_at: 1.day.from_now)
+          msg = build_cooked_msg(mention, user_1)
+
+          to_notify = described_class.new(msg, msg.created_at).notify_new
+
+          expect(to_notify[:direct_mentions]).to be_empty
+        end
+      end
     end
 
     describe "here_mentions" do
@@ -146,10 +166,30 @@ describe DiscourseChat::ChatNotifier do
 
         expect(to_notify[list_key]).to be_empty
       end
+
+      describe "users ignoring or muting the user creating the message" do
+        it "does not send notifications to the user who is muting the acting user" do
+          Fabricate(:muted_user, user: user_2, muted_user: user_1)
+          msg = build_cooked_msg(mention, user_1)
+
+          to_notify = described_class.new(msg, msg.created_at).notify_new
+
+          expect(to_notify[list_key]).to be_empty
+        end
+
+        it "does not send notifications to the user who is ignoring the acting user" do
+          Fabricate(:ignored_user, user: user_2, ignored_user: user_1, expiring_at: 1.day.from_now)
+          msg = build_cooked_msg(mention, user_1)
+
+          to_notify = described_class.new(msg, msg.created_at).notify_new
+
+          expect(to_notify[:direct_mentions]).to be_empty
+        end
+      end
     end
 
     describe "direct_mentions" do
-      it "only include mentioned users" do
+      it "only include mentioned users who are already in the channel" do
         user_3 = Fabricate(:user)
         @chat_group.add(user_3)
         another_channel = Fabricate(:chat_channel)
@@ -177,6 +217,34 @@ describe DiscourseChat::ChatNotifier do
 
         expect(to_notify[:global_mentions]).to be_empty
         expect(to_notify[:direct_mentions]).to contain_exactly(user_2.id)
+      end
+
+      describe "users ignoring or muting the user creating the message" do
+        it "does not publish new mentions to these users" do
+          Fabricate(:muted_user, user: user_2, muted_user: user_1)
+          msg = build_cooked_msg("hey @#{user_2.username} stop muting me!", user_1)
+
+          ChatPublisher.expects(:publish_new_mention).never
+          to_notify = described_class.new(msg, msg.created_at).notify_new
+        end
+
+        it "does not send notifications to the user who is muting the acting user" do
+          Fabricate(:muted_user, user: user_2, muted_user: user_1)
+          msg = build_cooked_msg("hey @#{user_2.username} stop muting me!", user_1)
+
+          to_notify = described_class.new(msg, msg.created_at).notify_new
+
+          expect(to_notify[:direct_mentions]).to be_empty
+        end
+
+        it "does not send notifications to the user who is ignoring the acting user" do
+          Fabricate(:ignored_user, user: user_2, ignored_user: user_1, expiring_at: 1.day.from_now)
+          msg = build_cooked_msg("hey @#{user_2.username} stop ignoring me!", user_1)
+
+          to_notify = described_class.new(msg, msg.created_at).notify_new
+
+          expect(to_notify[:direct_mentions]).to be_empty
+        end
       end
     end
 
@@ -219,6 +287,32 @@ describe DiscourseChat::ChatNotifier do
         expect(to_notify_2[list_key]).to contain_exactly(user_2.id, user_3.id)
         expect(to_notify_2[@chat_group.name]).to be_empty
       end
+
+      describe "users ignoring or muting the user creating the message" do
+        it "does not send notifications to the user inside the group who is muting the acting user" do
+          group.add(user_3)
+          Fabricate(:user_chat_channel_membership, chat_channel: channel, user: user_3)
+          Fabricate(:muted_user, user: user_2, muted_user: user_1)
+          msg = build_cooked_msg("Hello @#{group.name}", user_1)
+
+          to_notify = described_class.new(msg, msg.created_at).notify_new
+
+          expect(to_notify[:direct_mentions]).to be_empty
+          expect(to_notify[group.name]).to contain_exactly(user_3.id)
+        end
+
+        it "does not send notifications to the user inside the group who is ignoring the acting user" do
+          group.add(user_3)
+          Fabricate(:user_chat_channel_membership, chat_channel: channel, user: user_3)
+          Fabricate(:ignored_user, user: user_2, ignored_user: user_1, expiring_at: 1.day.from_now)
+          msg = build_cooked_msg("Hello @#{group.name}", user_1)
+
+          to_notify = described_class.new(msg, msg.created_at).notify_new
+
+          expect(to_notify[:direct_mentions]).to be_empty
+          expect(to_notify[group.name]).to contain_exactly(user_3.id)
+        end
+      end
     end
 
     describe "unreachable users" do
@@ -244,7 +338,10 @@ describe DiscourseChat::ChatNotifier do
 
       context "in a personal message" do
         let(:personal_chat_channel) do
-          DiscourseChat::DirectMessageChannelCreator.create!(target_users: [user_1, user_2])
+          DiscourseChat::DirectMessageChannelCreator.create!(
+            acting_user: user_1,
+            target_users: [user_1, user_2],
+          )
         end
 
         before { @chat_group.add(user_3) }
@@ -322,6 +419,34 @@ describe DiscourseChat::ChatNotifier do
         expect(not_participating_users).to contain_exactly(user_3.id)
       end
 
+      it "cannot invite chat user without channel membership if they are ignoring the user who created the message" do
+        Fabricate(:ignored_user, user: user_3, ignored_user: user_1)
+        msg = build_cooked_msg("Hello @#{user_3.username}", user_1)
+
+        messages =
+          MessageBus.track_publish("/chat/#{channel.id}") do
+            to_notify = described_class.new(msg, msg.created_at).notify_new
+
+            expect(to_notify[:direct_mentions]).to be_empty
+          end
+
+        expect(messages).to be_empty
+      end
+
+      it "cannot invite chat user without channel membership if they are muting the user who created the message" do
+        Fabricate(:muted_user, user: user_3, muted_user: user_1)
+        msg = build_cooked_msg("Hello @#{user_3.username}", user_1)
+
+        messages =
+          MessageBus.track_publish("/chat/#{channel.id}") do
+            to_notify = described_class.new(msg, msg.created_at).notify_new
+
+            expect(to_notify[:direct_mentions]).to be_empty
+          end
+
+        expect(messages).to be_empty
+      end
+
       it "can invite chat user who no longer follows the channel" do
         Fabricate(
           :user_chat_channel_membership,
@@ -368,6 +493,46 @@ describe DiscourseChat::ChatNotifier do
         expect(not_participating_msg.data[:cannot_see]).to be_empty
         not_participating_users = not_participating_msg.data[:without_membership].map { |u| u[:id] }
         expect(not_participating_users).to contain_exactly(user_3.id)
+      end
+
+      it "cannot invite a member of a group who is ignoring the user who created the message" do
+        group =
+          Fabricate(
+            :public_group,
+            users: [user_2, user_3],
+            mentionable_level: Group::ALIAS_LEVELS[:everyone],
+          )
+        Fabricate(:ignored_user, user: user_3, ignored_user: user_1, expiring_at: 1.day.from_now)
+        msg = build_cooked_msg("Hello @#{group.name}", user_1)
+
+        messages =
+          MessageBus.track_publish("/chat/#{channel.id}") do
+            to_notify = described_class.new(msg, msg.created_at).notify_new
+
+            expect(to_notify[:direct_mentions]).to be_empty
+          end
+
+        expect(messages).to be_empty
+      end
+
+      it "cannot invite a member of a group who is muting the user who created the message" do
+        group =
+          Fabricate(
+            :public_group,
+            users: [user_2, user_3],
+            mentionable_level: Group::ALIAS_LEVELS[:everyone],
+          )
+        Fabricate(:muted_user, user: user_3, muted_user: user_1)
+        msg = build_cooked_msg("Hello @#{group.name}", user_1)
+
+        messages =
+          MessageBus.track_publish("/chat/#{channel.id}") do
+            to_notify = described_class.new(msg, msg.created_at).notify_new
+
+            expect(to_notify[:direct_mentions]).to be_empty
+          end
+
+        expect(messages).to be_empty
       end
     end
   end

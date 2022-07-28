@@ -42,7 +42,10 @@ describe DiscourseChat::ChatMessageCreator do
     end
 
     @direct_message_channel =
-      DiscourseChat::DirectMessageChannelCreator.create!(target_users: [user1, user2])
+      DiscourseChat::DirectMessageChannelCreator.create!(
+        acting_user: user1,
+        target_users: [user1, user2],
+      )
   end
 
   describe "Integration tests with jobs running immediately" do

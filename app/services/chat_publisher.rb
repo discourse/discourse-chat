@@ -13,7 +13,11 @@ module ChatPublisher
     MessageBus.publish("/chat/#{chat_channel.id}", content.as_json, permissions)
     MessageBus.publish(
       "/chat/#{chat_channel.id}/new-messages",
-      { message_id: chat_message.id, user_id: chat_message.user_id },
+      {
+        message_id: chat_message.id,
+        user_id: chat_message.user.id,
+        username: chat_message.user.username,
+      },
       permissions,
     )
   end

@@ -36,7 +36,10 @@ describe UserNotifications do
       context "DM messages" do
         before do
           @dm_channel =
-            DiscourseChat::DirectMessageChannelCreator.create!(target_users: [@sender, @user])
+            DiscourseChat::DirectMessageChannelCreator.create!(
+              acting_user: @sender,
+              target_users: [@sender, @user],
+            )
           Fabricate(:chat_message, user: @sender, chat_channel: @dm_channel)
         end
 
@@ -85,6 +88,7 @@ describe UserNotifications do
           another_dm_user = Fabricate(:user, group_ids: [@chatters_group.id])
           dm_channel_2 =
             DiscourseChat::DirectMessageChannelCreator.create!(
+              acting_user: @user,
               target_users: [another_dm_user, @user],
             )
           chat_message = Fabricate(:chat_message, user: another_dm_user, chat_channel: dm_channel_2)
@@ -100,6 +104,7 @@ describe UserNotifications do
             another_dm_user = Fabricate(:user, group_ids: [@chatters_group.id])
             dm_channel =
               DiscourseChat::DirectMessageChannelCreator.create!(
+                acting_user: @user,
                 target_users: [another_dm_user, @user],
               )
             chat_message = Fabricate(:chat_message, user: another_dm_user, chat_channel: dm_channel)
@@ -182,7 +187,10 @@ describe UserNotifications do
       context "both unread DM messages and mentions" do
         before do
           @dm_channel =
-            DiscourseChat::DirectMessageChannelCreator.create!(target_users: [@sender, @user])
+            DiscourseChat::DirectMessageChannelCreator.create!(
+              acting_user: @sender,
+              target_users: [@sender, @user],
+            )
           Fabricate(:chat_message, user: @sender, chat_channel: @dm_channel)
           Fabricate(:chat_mention, user: @user, chat_message: @chat_message)
         end
@@ -287,7 +295,10 @@ describe UserNotifications do
         it "returns an email when the user has unread private messages" do
           @user_membership.update!(last_read_message_id: @chat_message.id)
           private_channel =
-            DiscourseChat::DirectMessageChannelCreator.create!(target_users: [@sender, @user])
+            DiscourseChat::DirectMessageChannelCreator.create!(
+              acting_user: @sender,
+              target_users: [@sender, @user],
+            )
           Fabricate(:chat_message, user: @sender, chat_channel: private_channel)
 
           email = described_class.chat_summary(@user, {})

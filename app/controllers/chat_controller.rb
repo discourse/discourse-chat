@@ -117,8 +117,23 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     @user_chat_channel_membership.update(last_read_message_id: chat_message_creator.chat_message.id)
 
     if @chat_channel.direct_message_channel?
-      @chat_channel.user_chat_channel_memberships.update_all(following: true)
-      ChatPublisher.publish_new_channel(@chat_channel, @chat_channel.chatable.users)
+
+      # If any of the channel users is ignoring, muting, or preventing DMs from
+      # the current user then we shold not auto-follow the channel once again or
+      # publish the new channel.
+      user_ids_allowing_communication = UserCommScreener.new(
+        acting_user: current_user,
+        target_user_ids: @chat_channel.user_chat_channel_memberships.pluck(:user_id)
+      ).allowing_actor_communication
+
+      if user_ids_allowing_communication.any?
+        @chat_channel.user_chat_channel_memberships.where(
+          user_id: user_ids_allowing_communication
+        ).update_all(following: true)
+        ChatPublisher.publish_new_channel(
+          @chat_channel, @chat_channel.chatable.users.where(id: user_ids_allowing_communication)
+        )
+      end
     end
 
     ChatPublisher.publish_user_tracking_state(
@@ -288,6 +303,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
 
     messages = preloaded_chat_message_query.where(chat_channel: @chat_channel)
     messages = messages.with_deleted if guardian.can_moderate_chat?(@chatable)
+
     past_messages =
       messages
         .where("created_at < ?", @message.created_at)

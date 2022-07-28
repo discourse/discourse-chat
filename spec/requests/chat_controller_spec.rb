@@ -397,6 +397,23 @@ RSpec.describe DiscourseChat::ChatController do
         post "/chat/#{direct_message_channel.id}.json", params: { message: message }
         expect(response.status).to eq(200)
       end
+
+      context "if any of the direct message users is ignoring the acting user" do
+        before { IgnoredUser.create!(user: user2, ignored_user: user1, expiring_at: 1.day.from_now) }
+
+        it "does not force them to follow the channel or send a publish_new_channel message" do
+          create_memberships
+
+          expect(UserChatChannelMembership.find_by(user_id: user2.id).following).to be false
+
+          ChatPublisher.expects(:publish_new_channel).never
+
+          sign_in(user1)
+          post "/chat/#{direct_message_channel.id}.json", params: { message: message }
+
+          expect(UserChatChannelMembership.find_by(user_id: user2.id).following).to be false
+        end
+      end
     end
   end
 

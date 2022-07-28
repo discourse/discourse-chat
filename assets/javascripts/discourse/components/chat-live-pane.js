@@ -474,14 +474,28 @@ export default Component.extend({
         messageData.hideUserInfo = true;
       }
     }
-    messageData.expanded = !messageData.deleted_at;
+    this._handleMessageHidingAndExpansion(messageData);
     messageData.messageLookupId = this._generateMessageLookupId(messageData);
-    if (this.targetMessageId && this.targetMessageId === messageData.id) {
-      messageData.expanded = true;
-    }
     const prepared = ChatMessage.create(messageData);
     this.messageLookup[messageData.messageLookupId] = prepared;
     return prepared;
+  },
+
+  _handleMessageHidingAndExpansion(messageData) {
+    if (this.currentUser.ignored_users) {
+      messageData.hidden = this.currentUser.ignored_users.includes(
+        messageData.user.username
+      );
+    }
+
+    // If a message has been hidden it is because the current user is ignoring
+    // the user who sent it, so we want to unconditionally hide it, even if
+    // we are going directly to the target
+    if (this.targetMessageId && this.targetMessageId === messageData.id) {
+      messageData.expanded = !messageData.hidden;
+    } else {
+      messageData.expanded = !(messageData.hidden || messageData.deleted_at);
+    }
   },
 
   _generateMessageLookupId(message) {

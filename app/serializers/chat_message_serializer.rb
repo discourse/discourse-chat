@@ -12,8 +12,7 @@ class ChatMessageSerializer < ApplicationSerializer
              :user_flag_status,
              :edited,
              :reactions,
-             :bookmark,
-             :hidden
+             :bookmark
 
   has_one :user, serializer: BasicUserWithStatusSerializer, embed: :objects
   has_one :chat_webhook_event, serializer: ChatWebhookEventSerializer, embed: :objects
@@ -108,14 +107,5 @@ class ChatMessageSerializer < ApplicationSerializer
 
   def include_user_flag_status?
     user_flag_status.present?
-  end
-
-  def hidden
-    return false if scope.anonymous?
-    ignored_user_ids.include?(object.user_id)
-  end
-
-  def ignored_user_ids
-    @ignored_user_ids ||= scope.user.ignored_user_records.pluck(:ignored_user_id)
   end
 end

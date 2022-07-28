@@ -26,6 +26,31 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
     let directChannels = cloneJSON(directMessageChannels).mapBy("chat_channel");
     directChannels[0].chatable.users = [directChannels[0].chatable.users[0]];
     directChannels[0].unread_count = 1;
+    directChannels.push({
+      chatable: {
+        users: [
+          {
+            id: 1,
+            username: "markvanlan",
+            avatar_template:
+              "/letter_avatar_proxy/v4/letter/t/f9ae1b/{size}.png",
+          },
+          {
+            id: 2,
+            username: "sam",
+            avatar_template:
+              "/letter_avatar_proxy/v4/letter/t/f9ae1b/{size}.png",
+          },
+        ],
+      },
+      chatable_id: 59,
+      chatable_type: "DirectMessageChannel",
+      chatable_url: null,
+      id: 76,
+      title: "@sam",
+      unread_count: 0,
+      muted: false,
+    });
 
     server.get("/chat/chat_channels.json", () => {
       return helper.response({
@@ -185,6 +210,8 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
   });
 
   test("Direct messages section", async function (assert) {
+    const chatService = this.container.lookup("service:chat");
+    chatService.directMessagesLimit = 2;
     await visit("/");
 
     assert.strictEqual(
@@ -254,8 +281,6 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
       !exists(directLinks.eq(1).find(".sidebar-section-link-suffix")[0]),
       "does not display new messages indicator"
     );
-
-    const chatService = this.container.lookup("service:chat");
     User.current().chat_channel_tracking_state[76].set("unread_count", 99);
     chatService.reSortDirectMessageChannels();
     chatService.appEvents.trigger("chat:user-tracking-state-changed");
@@ -268,6 +293,12 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
         .textContent.trim(),
       "eviltrout, markvanlan",
       "reorders private messages"
+    );
+
+    assert.equal(
+      directLinks.length,
+      2,
+      "limits number of displayed direct messages"
     );
   });
 

@@ -338,14 +338,16 @@ export default {
             _refreshPms() {
               const newSectionLinks = [];
               this.chatService.getChannels().then((channels) => {
-                channels.directMessageChannels.forEach((channel) => {
-                  newSectionLinks.push(
-                    new SidebarChatDirectMessagesSectionLink({
-                      channel,
-                      chatService: this.chatService,
-                    })
-                  );
-                });
+                this.chatService
+                  .truncateDirectMessageChannels(channels.directMessageChannels)
+                  .forEach((channel) => {
+                    newSectionLinks.push(
+                      new SidebarChatDirectMessagesSectionLink({
+                        channel,
+                        chatService: this.chatService,
+                      })
+                    );
+                  });
                 this.sectionLinks = newSectionLinks;
               });
             }

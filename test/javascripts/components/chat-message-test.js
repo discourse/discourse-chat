@@ -1,18 +1,16 @@
-import { setupRenderingTest } from "discourse/tests/helpers/component-test";
 import User from "discourse/models/user";
 import { render } from "@ember/test-helpers";
 import ChatMessage from "discourse/plugins/discourse-chat/discourse/models/chat-message";
-import {
-  discourseModule,
-  exists,
-  query,
-} from "discourse/tests/helpers/qunit-helpers";
+import { exists, query } from "discourse/tests/helpers/qunit-helpers";
+import componentTest, {
+  setupRenderingTest,
+} from "discourse/tests/helpers/component-test";
 import hbs from "htmlbars-inline-precompile";
 import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import I18n from "I18n";
-import { test } from "qunit";
+import { module, test } from "qunit";
 
-discourseModule("Discourse Chat | Component | chat-message", function (hooks) {
+module("Discourse Chat | Component | chat-message", function (hooks) {
   setupRenderingTest(hooks);
 
   function generateMessageProps(messageData = {}) {

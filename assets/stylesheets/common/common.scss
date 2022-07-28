@@ -218,7 +218,6 @@ $float-height: 530px;
   white-space: normal;
 
   .chat-message-container {
-    position: relative;
     display: grid;
 
     &.selecting-messages {
@@ -322,12 +321,12 @@ $float-height: 530px;
   .chat-messages-scroll {
     padding-bottom: 0.5em;
     flex-grow: 1;
-    overflow-y: scroll;
+    overflow-y: auto;
+    overflow-y: overlay;
     scrollbar-color: var(--primary-low) transparent;
     transition: scrollbar-color 0.2s ease-in-out;
     display: flex;
     flex-direction: column-reverse;
-    position: relative;
 
     &::-webkit-scrollbar {
       width: 15px;
@@ -494,6 +493,10 @@ $float-height: 530px;
     font-size: var(--font-down-1);
     color: $primary-high;
   }
+
+  .emoji {
+    margin-left: 0.3em;
+  }
 }
 
 .chat-channel-settings-row {
@@ -586,10 +589,7 @@ body.has-full-page-chat {
     Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
   display: grid;
   grid-template-columns: var(--full-page-sidebar-width) 1fr;
-  grid-template-rows: var(
-    --full-page-chat-height,
-    calc(100vh - var(--header-offset))
-  );
+  grid-template-rows: calc(100vh - var(--header-offset));
 
   .channels-list {
     background: var(--primary-very-low);
@@ -867,4 +867,27 @@ body.has-full-page-chat {
 .chat-channel-status {
   padding-top: 1rem;
   font-weight: 500;
+}
+
+html.has-full-page-chat {
+  height: 100%;
+  width: 100%;
+
+  body {
+    height: 100%;
+    width: 100%;
+
+    #main,
+    .discourse-root {
+      height: calc(var(--chat-vh, 1vh) * 100);
+    }
+
+    #main-outlet-wrapper,
+    #main-outlet,
+    .full-page-chat,
+    .chat-live-pane,
+    #main-chat-outlet {
+      height: calc(var(--chat-vh, 1vh) * 100 - var(--header-offset));
+    }
+  }
 }

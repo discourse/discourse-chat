@@ -3,7 +3,7 @@ import { isEmpty } from "@ember/utils";
 import Component from "@ember/component";
 import { action } from "@ember/object";
 import discourseDebounce from "discourse-common/lib/debounce";
-import { bind } from "discourse-common/utils/decorators";
+import discourseComputed, { bind } from "discourse-common/utils/decorators";
 import { INPUT_DELAY } from "discourse-common/config/environment";
 import { inject as service } from "@ember/service";
 import { schedule } from "@ember/runloop";
@@ -51,6 +51,11 @@ export default Component.extend({
   },
 
   hasSelection: gt("channel.chatable.users.length", 0),
+
+  @discourseComputed
+  chatProgressBarContainer() {
+    return document.querySelector("#chat-progress-bar-container");
+  },
 
   @bind
   filterUsernames(term = null) {

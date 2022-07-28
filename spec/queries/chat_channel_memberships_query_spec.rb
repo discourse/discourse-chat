@@ -17,7 +17,7 @@ describe ChatChannelMembershipsQuery do
 
       context "no memberships exists" do
         it "returns an empty array" do
-          expect(described_class.call(channel_1.id)).to eq([])
+          expect(described_class.call(channel_1)).to eq([])
         end
       end
 
@@ -28,9 +28,72 @@ describe ChatChannelMembershipsQuery do
         end
 
         it "returns the memberships" do
-          memberships = described_class.call(channel_1.id)
+          memberships = described_class.call(channel_1)
 
           expect(memberships.pluck(:user_id)).to contain_exactly(user_1.id, user_2.id)
+        end
+      end
+    end
+
+    context "chatable is restricted" do
+      fab!(:chatters_group) { Fabricate(:group) }
+      fab!(:private_category) { Fabricate(:private_category, group: chatters_group) }
+      fab!(:channel_1) { Fabricate(:chat_channel, chatable: private_category) }
+
+      context "user is in group" do
+        before { chatters_group.add(user_1) }
+
+        context "membership exists" do
+          before do
+            UserChatChannelMembership.create(user: user_1, chat_channel: channel_1, following: true)
+          end
+
+          it "lists the user" do
+            memberships = described_class.call(channel_1)
+
+            expect(memberships.pluck(:user_id)).to include(user_1.id)
+          end
+
+          it "returns only one membership if user is in multiple allowed groups" do
+            another_group = Fabricate(:group)
+            another_group.add(user_1)
+            private_category.category_groups.create!(
+              group_id: another_group.id,
+              permission_type: CategoryGroup.permission_types[:full],
+            )
+
+            expect(described_class.call(channel_1).pluck(:user_id)).to contain_exactly(user_1.id)
+          end
+        end
+
+        context "membership doesn’t exist" do
+          it "doesn’t list the user" do
+            memberships = described_class.call(channel_1)
+
+            expect(memberships.pluck(:user_id)).to be_empty
+          end
+        end
+      end
+
+      context "user is not in group" do
+        context "membership exists" do
+          before do
+            UserChatChannelMembership.create(user: user_1, chat_channel: channel_1, following: true)
+          end
+
+          it "doesn’t list the user" do
+            memberships = described_class.call(channel_1)
+
+            expect(memberships).to be_empty
+          end
+        end
+
+        context "membership doesn’t exist" do
+          it "doesn’t list the user" do
+            memberships = described_class.call(channel_1)
+
+            expect(memberships).to be_empty
+          end
         end
       end
     end
@@ -41,7 +104,7 @@ describe ChatChannelMembershipsQuery do
 
       context "no memberships exists" do
         it "returns an empty array" do
-          expect(described_class.call(channel_1.id)).to eq([])
+          expect(described_class.call(channel_1)).to eq([])
         end
       end
 
@@ -64,7 +127,7 @@ describe ChatChannelMembershipsQuery do
         end
 
         it "returns the memberships" do
-          memberships = described_class.call(channel_1.id)
+          memberships = described_class.call(channel_1)
 
           expect(memberships.pluck(:user_id)).to contain_exactly(user_1.id, user_2.id)
         end
@@ -81,7 +144,7 @@ describe ChatChannelMembershipsQuery do
 
       describe "offset param" do
         it "offsets the results" do
-          memberships = described_class.call(channel_1.id, offset: 1)
+          memberships = described_class.call(channel_1, offset: 1)
 
           expect(memberships.length).to eq(1)
         end
@@ -89,7 +152,7 @@ describe ChatChannelMembershipsQuery do
 
       describe "limit param" do
         it "limits the results" do
-          memberships = described_class.call(channel_1.id, limit: 1)
+          memberships = described_class.call(channel_1, limit: 1)
 
           expect(memberships.length).to eq(1)
         end
@@ -105,7 +168,7 @@ describe ChatChannelMembershipsQuery do
       end
 
       it "filters the results" do
-        memberships = described_class.call(channel_1.id, username: user_1.username)
+        memberships = described_class.call(channel_1, username: user_1.username)
 
         expect(memberships.length).to eq(1)
         expect(memberships[0].user).to eq(user_1)
@@ -124,7 +187,7 @@ describe ChatChannelMembershipsQuery do
         before { SiteSetting.prioritize_username_in_ux = true }
 
         it "is using ascending order on username" do
-          memberships = described_class.call(channel_1.id)
+          memberships = described_class.call(channel_1)
 
           expect(memberships[0].user).to eq(user_1)
           expect(memberships[1].user).to eq(user_2)
@@ -135,7 +198,7 @@ describe ChatChannelMembershipsQuery do
         before { SiteSetting.prioritize_username_in_ux = false }
 
         it "is using ascending order on name" do
-          memberships = described_class.call(channel_1.id)
+          memberships = described_class.call(channel_1)
 
           expect(memberships[0].user).to eq(user_2)
           expect(memberships[1].user).to eq(user_1)
@@ -145,7 +208,7 @@ describe ChatChannelMembershipsQuery do
           before { SiteSetting.enable_names = false }
 
           it "is using ascending order on username" do
-            memberships = described_class.call(channel_1.id)
+            memberships = described_class.call(channel_1)
 
             expect(memberships[0].user).to eq(user_1)
             expect(memberships[1].user).to eq(user_2)
@@ -164,7 +227,7 @@ describe ChatChannelMembershipsQuery do
     end
 
     it "doesn’t list staged users" do
-      memberships = described_class.call(channel_1.id)
+      memberships = described_class.call(channel_1)
       expect(memberships).to be_blank
     end
   end
@@ -184,7 +247,7 @@ describe ChatChannelMembershipsQuery do
     end
 
     it "doesn’t list suspended users" do
-      memberships = described_class.call(channel_1.id)
+      memberships = described_class.call(channel_1)
       expect(memberships).to be_blank
     end
   end
@@ -202,7 +265,7 @@ describe ChatChannelMembershipsQuery do
     end
 
     it "doesn’t list inactive users" do
-      memberships = described_class.call(channel_1.id)
+      memberships = described_class.call(channel_1)
       expect(memberships).to be_blank
     end
   end

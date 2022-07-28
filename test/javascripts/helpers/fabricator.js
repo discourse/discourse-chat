@@ -1,25 +1,21 @@
-// heavily inspired from https://github.com/travelperk/fabricator
+import { cloneJSON } from "discourse-common/lib/object";
 
-function Fabricator(Model, attributes = {}) {
-  const fabricate = (opts) => Fabricate(Model, attributes, opts);
-  fabricate.extend = (opts = {}) => Fabricator({ ...attributes, ...opts });
-  return fabricate;
+// heavily inspired by https://github.com/travelperk/fabricator
+export function Fabricator(Model, attributes = {}) {
+  return (opts) => fabricate(Model, attributes, opts);
 }
 
-function Fabricate(Model, attributes, opts = {}) {
+function fabricate(Model, attributes, opts = {}) {
   if (typeof attributes === "function") {
     return attributes();
   }
 
-  const extendedModel = { ...attributes, ...opts };
+  const extendedModel = cloneJSON({ ...attributes, ...opts });
+  const props = {};
 
-  const object = Object.keys(extendedModel).reduce((o, key) => {
-    const value = extendedModel[key];
-    o[key] = typeof value === "function" ? value.apply() : value;
-    return o;
-  }, {});
+  for (const [key, value] of Object.entries(extendedModel)) {
+    props[key] = typeof value === "function" ? value() : value;
+  }
 
-  return Model.create(object);
+  return Model.create(props);
 }
-
-export { Fabricator };

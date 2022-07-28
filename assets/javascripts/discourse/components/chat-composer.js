@@ -97,6 +97,10 @@ export default Component.extend(TextareaTextManipulation, {
       this,
       "_openInsertLinkModal"
     );
+    document.addEventListener("visibilitychange", this._blurInput);
+    document.addEventListener("resume", this._blurInput);
+    document.addEventListener("freeze", this._blurInput);
+
     this.set("ready", true);
   },
 
@@ -149,6 +153,9 @@ export default Component.extend(TextareaTextManipulation, {
       this,
       "_openInsertLinkModal"
     );
+    document.removeEventListener("visibilitychange", this._blurInput);
+    document.removeEventListener("resume", this._blurInput);
+    document.removeEventListener("freeze", this._blurInput);
   },
 
   // It is important that this is keyDown and not keyUp, otherwise
@@ -291,6 +298,11 @@ export default Component.extend(TextareaTextManipulation, {
   _handleTextareaInput() {
     this._applyUserAutocomplete();
     this.onValueChange?.(this.value, this._uploads, this.replyToMsg);
+  },
+
+  @bind
+  _blurInput() {
+    document.activeElement?.blur();
   },
 
   @action
@@ -678,6 +690,24 @@ export default Component.extend(TextareaTextManipulation, {
   uploadsChanged(uploads) {
     this.set("_uploads", cloneJSON(uploads));
     this.onValueChange?.(this.value, this._uploads, this.replyToMsg);
+  },
+
+  @action
+  onTextareaFocusIn(target) {
+    if (!this.capabilities.isIOS) {
+      return;
+    }
+
+    // hack to prevent the whole viewport
+    // to move on focus input
+    target = document.querySelector(".chat-composer-input");
+    target.style.transform = "translateY(-99999px)";
+    target.focus();
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        target.style.transform = "";
+      });
+    });
   },
 
   @action

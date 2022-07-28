@@ -254,18 +254,25 @@ describe "discourse-chat" do
 
     describe "when a user is created" do
       fab!(:category) { Fabricate(:category) }
-      let(:user) { Fabricate.build(:user) }
+      let(:user) { Fabricate(:user, last_seen_at: nil, first_seen_at: nil) }
 
-      it "queues a job to auto-join the user" do
-        user.save!
+      it "queues a job to auto-join the user the first time they log in" do
+        user.update_last_seen!
 
         assert_user_following_state(user, channel, following: true)
+      end
+
+      it "does nothing if it's not the first time we see the user" do
+        user.update!(first_seen_at: 2.minute.ago)
+        user.update_last_seen!
+
+        assert_user_following_state(user, channel, following: false)
       end
 
       it "does nothing if auto-join is disabled" do
         channel.update!(auto_join_users: false)
 
-        user.save!
+        user.update_last_seen!
 
         assert_user_following_state(user, channel, following: false)
       end

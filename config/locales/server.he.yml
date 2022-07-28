@@ -98,6 +98,8 @@ he:
         single_user: "%{user}"
         multi_user: "%{users}"
         multi_user_truncated: "%{users} ו־%{leftover} נוספים"
+      default_titles:
+        site_feedback: "כללי"
     bookmarkable:
       notification_title: "הודעה ב־%{channel_name}"
     personal_chat: "צ׳אט אישי"

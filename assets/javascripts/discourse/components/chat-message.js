@@ -309,19 +309,15 @@ export default Component.extend({
 
   @action
   _handleLongPress() {
+    document.activeElement.blur();
+    document.querySelector(".chat-composer-input").blur();
+
     this.onHoverMessage(this.message);
   },
 
   @discourseComputed("message.hideUserInfo", "message.chat_webhook_event")
   hideUserInfo(hide, webhookEvent) {
     return hide && !webhookEvent;
-  },
-
-  @discourseComputed("selectingMessages")
-  messageContainerClasses(selecting) {
-    return `chat-message-container ${
-      selecting ? "selecting-messages" : ""
-    }`.trim();
   },
 
   @discourseComputed(

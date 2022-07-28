@@ -1,15 +1,11 @@
 import { setupRenderingTest } from "discourse/tests/helpers/component-test";
-import {
-  discourseModule,
-  exists,
-  query,
-} from "discourse/tests/helpers/qunit-helpers";
+import { exists, query } from "discourse/tests/helpers/qunit-helpers";
 import hbs from "htmlbars-inline-precompile";
 import { render } from "@ember/test-helpers";
-import { test } from "qunit";
+import { module, test } from "qunit";
 import fabricators from "../helpers/fabricators";
 
-discourseModule(
+module(
   "Discourse Chat | Component | chat-channel-preview-card",
   function (hooks) {
     setupRenderingTest(hooks);

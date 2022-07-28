@@ -113,3 +113,19 @@ body.has-full-page-chat {
     }
   }
 }
+
+html.has-full-page-chat body {
+  #main-outlet {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  #main-chat-outlet {
+    min-height: 0;
+  }
+
+  .full-page-chat {
+    display: block;
+  }
+}

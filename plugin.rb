@@ -18,7 +18,6 @@ register_asset "stylesheets/common/chat-browse.scss"
 register_asset "stylesheets/common/chat-drawer.scss"
 register_asset "stylesheets/common/chat-channel-preview-card.scss"
 register_asset "stylesheets/common/chat-channel-info.scss"
-register_asset "stylesheets/mobile/chat-channel-info.scss", :mobile
 register_asset "stylesheets/common/chat-draft-channel.scss"
 register_asset "stylesheets/common/chat-tabs.scss"
 register_asset "stylesheets/common/chat-form.scss"
@@ -34,7 +33,6 @@ register_asset "stylesheets/common/chat-message-left-gutter.scss"
 register_asset "stylesheets/common/chat-message-info.scss"
 register_asset "stylesheets/common/chat-composer-inline-button.scss"
 register_asset "stylesheets/common/chat-replying-indicator.scss"
-register_asset "stylesheets/mobile/chat-replying-indicator.scss", :mobile
 register_asset "stylesheets/common/chat-composer.scss"
 register_asset "stylesheets/desktop/chat-composer.scss", :desktop
 register_asset "stylesheets/mobile/chat-composer.scss", :mobile
@@ -123,12 +121,14 @@ after_initialize do
   load File.expand_path("../app/models/chat_view.rb", __FILE__)
   load File.expand_path("../app/serializers/chat_webhook_event_serializer.rb", __FILE__)
   load File.expand_path("../app/serializers/chat_in_reply_to_serializer.rb", __FILE__)
+  load File.expand_path("../app/serializers/basic_user_with_status_serializer.rb", __FILE__)
   load File.expand_path("../app/serializers/chat_message_serializer.rb", __FILE__)
   load File.expand_path("../app/serializers/chat_channel_serializer.rb", __FILE__)
   load File.expand_path("../app/serializers/chat_channel_settings_serializer.rb", __FILE__)
   load File.expand_path("../app/serializers/chat_channel_index_serializer.rb", __FILE__)
   load File.expand_path("../app/serializers/chat_channel_search_serializer.rb", __FILE__)
   load File.expand_path("../app/serializers/chat_view_serializer.rb", __FILE__)
+  load File.expand_path('../app/serializers/user_with_custom_fields_and_status_serializer.rb', __FILE__)
   load File.expand_path("../app/serializers/direct_message_channel_serializer.rb", __FILE__)
   load File.expand_path("../app/serializers/incoming_chat_webhook_serializer.rb", __FILE__)
   load File.expand_path("../app/serializers/admin_chat_index_serializer.rb", __FILE__)
@@ -167,6 +167,7 @@ after_initialize do
   load File.expand_path("../app/jobs/scheduled/delete_old_chat_messages.rb", __FILE__)
   load File.expand_path("../app/jobs/scheduled/update_user_counts_for_chat_channels.rb", __FILE__)
   load File.expand_path("../app/jobs/scheduled/email_chat_notifications.rb", __FILE__)
+  load File.expand_path("../app/jobs/scheduled/auto_join_users.rb", __FILE__)
   load File.expand_path("../app/services/chat_publisher.rb", __FILE__)
   load File.expand_path("../app/controllers/api_controller.rb", __FILE__)
   load File.expand_path("../app/controllers/api/chat_channels_controller.rb", __FILE__)
@@ -485,10 +486,14 @@ after_initialize do
 
   on(:reviewable_score_updated) { |reviewable| ReviewableChatMessage.on_score_updated(reviewable) }
 
-  on(:user_created) do |user|
-    ChatChannel
-      .where(auto_join_users: true)
-      .each { |channel| UserChatChannelMembership.enforce_automatic_user_membership(channel, user) }
+  on(:user_seen) do |user|
+    if user.last_seen_at == user.first_seen_at
+      ChatChannel
+        .where(auto_join_users: true)
+        .each do |channel|
+          UserChatChannelMembership.enforce_automatic_user_membership(channel, user)
+        end
+    end
   end
 
   on(:user_confirmed_email) do |user|

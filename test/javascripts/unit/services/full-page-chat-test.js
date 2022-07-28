@@ -1,47 +1,44 @@
-import { discourseModule } from "discourse/tests/helpers/qunit-helpers";
-import { test } from "qunit";
+import { module, test } from "qunit";
+import { getOwner } from "discourse-common/lib/get-owner";
 
-discourseModule(
-  "Discourse Chat | Unit | Service | full-page-chat",
-  function (hooks) {
-    hooks.beforeEach(function () {
-      this.fullPageChat = this.container.lookup("service:full-page-chat");
-    });
+module("Discourse Chat | Unit | Service | full-page-chat", function (hooks) {
+  hooks.beforeEach(function () {
+    this.fullPageChat = getOwner(this).lookup("service:full-page-chat");
+  });
 
-    hooks.afterEach(function () {
-      this.fullPageChat.exit();
-    });
+  hooks.afterEach(function () {
+    this.fullPageChat.exit();
+  });
 
-    test("defaults", function (assert) {
-      assert.strictEqual(this.fullPageChat.isActive, false);
-    });
+  test("defaults", function (assert) {
+    assert.strictEqual(this.fullPageChat.isActive, false);
+  });
 
-    test("enter", function (assert) {
-      this.fullPageChat.enter();
-      assert.strictEqual(this.fullPageChat.isActive, true);
-    });
+  test("enter", function (assert) {
+    this.fullPageChat.enter();
+    assert.strictEqual(this.fullPageChat.isActive, true);
+  });
 
-    test("exit", function (assert) {
-      this.fullPageChat.enter();
-      assert.strictEqual(this.fullPageChat.isActive, true);
-      this.fullPageChat.exit();
-      assert.strictEqual(this.fullPageChat.isActive, false);
-    });
+  test("exit", function (assert) {
+    this.fullPageChat.enter();
+    assert.strictEqual(this.fullPageChat.isActive, true);
+    this.fullPageChat.exit();
+    assert.strictEqual(this.fullPageChat.isActive, false);
+  });
 
-    test("isPreferred", function (assert) {
-      assert.strictEqual(this.fullPageChat.isPreferred, false);
-      this.fullPageChat.isPreferred = true;
-      assert.strictEqual(this.fullPageChat.isPreferred, true);
-    });
+  test("isPreferred", function (assert) {
+    assert.strictEqual(this.fullPageChat.isPreferred, false);
+    this.fullPageChat.isPreferred = true;
+    assert.strictEqual(this.fullPageChat.isPreferred, true);
+  });
 
-    test("previous route", function (assert) {
-      const name = "foo";
-      const params = { id: 1, slug: "bar" };
-      this.fullPageChat.enter({ name, params });
-      const routeInfo = this.fullPageChat.exit();
+  test("previous route", function (assert) {
+    const name = "foo";
+    const params = { id: 1, slug: "bar" };
+    this.fullPageChat.enter({ name, params });
+    const routeInfo = this.fullPageChat.exit();
 
-      assert.strictEqual(routeInfo.name, name);
-      assert.deepEqual(routeInfo.params, params);
-    });
-  }
-);
+    assert.strictEqual(routeInfo.name, name);
+    assert.deepEqual(routeInfo.params, params);
+  });
+});

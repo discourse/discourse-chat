@@ -2,16 +2,13 @@ import { set } from "@ember/object";
 import componentTest, {
   setupRenderingTest,
 } from "discourse/tests/helpers/component-test";
-import {
-  discourseModule,
-  exists,
-  visible,
-} from "discourse/tests/helpers/qunit-helpers";
+import { exists, visible } from "discourse/tests/helpers/qunit-helpers";
 import hbs from "htmlbars-inline-precompile";
 import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import { click } from "@ember/test-helpers";
+import { module } from "qunit";
 
-discourseModule(
+module(
   "Discourse Chat | Component | chat-composer attachments test",
   function (hooks) {
     setupRenderingTest(hooks);

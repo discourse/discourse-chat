@@ -156,7 +156,7 @@ module DiscourseChat::ChatChannelFetcher
   def self.secured_direct_message_channels(user_id, memberships, guardian)
     channels =
       ChatChannel
-        .includes(chatable: [{ direct_message_users: :user }, :users])
+        .includes(chatable: [{ direct_message_users: :user }, :users, { users: :user_status }])
         .joins(:user_chat_channel_memberships)
         .where(user_chat_channel_memberships: { user_id: user_id, following: true })
         .where(chatable_type: "DirectMessageChannel")

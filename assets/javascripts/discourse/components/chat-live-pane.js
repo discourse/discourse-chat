@@ -23,6 +23,7 @@ import { Promise } from "rsvp";
 import { resetIdle } from "discourse/lib/desktop-notifications";
 import { defaultHomepage } from "discourse/lib/utilities";
 import { isTesting } from "discourse-common/config/environment";
+import { capitalize } from "@ember/string";
 
 const MAX_RECENT_MSGS = 100;
 const STICKY_SCROLL_LENIENCE = 4;
@@ -100,6 +101,10 @@ export default Component.extend({
     this.appEvents.on("chat:cancel-message-selection", this, "cancelSelecting");
 
     this.set("showCloseFullScreenBtn", !this.site.mobileView);
+
+    document.addEventListener("scroll", this._forceBodyScroll, {
+      passive: true,
+    });
   },
 
   willDestroyElement() {
@@ -130,6 +135,8 @@ export default Component.extend({
       this,
       "cancelSelecting"
     );
+
+    document.removeEventListener("scroll", this._forceBodyScroll);
   },
 
   didReceiveAttrs() {
@@ -249,7 +256,7 @@ export default Component.extend({
     const canLoadMore = loadingPast
       ? this.details.can_load_more_past
       : this.details.can_load_more_future;
-    const loadingMoreKey = `loadingMore${direction}`;
+    const loadingMoreKey = `loadingMore${capitalize(direction)}`;
     const loadingMore = this.get(loadingMoreKey);
 
     if (!canLoadMore || loadingMore || this.loading || !this.messages.length) {
@@ -284,6 +291,13 @@ export default Component.extend({
               ? newMessages.concat(this.messages)
               : this.messages.concat(newMessages)
           );
+
+          // this part is especially important on safari to avoid a bug where
+          // manually scrolling, scrolls to the first prepended message
+          const focusedMessage = loadingPast
+            ? newMessages.lastObject
+            : newMessages.firstObject;
+          this.scrollToMessage(focusedMessage.messageLookupId);
         }
         this.setCanLoadMoreDetails(messages.resultSetMeta);
         return messages;
@@ -328,14 +342,7 @@ export default Component.extend({
         return;
       }
 
-      this._fetchMoreMessages(PAST).then((messages) => {
-        let originalScrollTop = scroller.scrollTop;
-
-        schedule("afterRender", () => {
-          scroller.scrollTo({ top: originalScrollTop });
-          this.fillPaneAttempt(messages?.resultSetMeta);
-        });
-      });
+      this._fetchMoreMessages(PAST);
     });
   },
 
@@ -1207,6 +1214,11 @@ export default Component.extend({
     return !userSilenced;
   },
 
+  @discourseComputed
+  chatProgressBarContainer() {
+    return document.querySelector("#chat-progress-bar-container");
+  },
+
   @discourseComputed("messages.@each.selected")
   selectedMessageIds(messages) {
     return messages.filter((m) => m.selected).map((m) => m.id);
@@ -1384,5 +1396,17 @@ export default Component.extend({
     } while (routeInfo);
 
     this.router.transitionTo(routeName, ...params);
+  },
+
+  @bind
+  _forceBodyScroll() {
+    // when keyboard is visible this will ensure body
+    // doesn’t scroll out of viewport
+    if (
+      this.capabilities.isIOS &&
+      document.documentElement.classList.contains("keyboard-visible")
+    ) {
+      document.documentElement.scrollTo(0, 0);
+    }
   },
 });

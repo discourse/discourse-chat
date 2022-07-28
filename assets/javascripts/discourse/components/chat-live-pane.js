@@ -80,6 +80,15 @@ export default Component.extend({
     this._super(...arguments);
 
     this.set("messages", []);
+
+    if (this.fullPage) {
+      this.appEvents.trigger(
+        "sidebar:scroll-to-element",
+        "sidebar-section-chat-channels"
+      );
+    } else {
+      this.appEvents.trigger("sidebar:scroll-to-element", "sidebar-container");
+    }
   },
 
   didInsertElement() {

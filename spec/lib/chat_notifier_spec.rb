@@ -220,7 +220,7 @@ describe DiscourseChat::ChatNotifier do
       end
 
       describe "users ignoring or muting the user creating the message" do
-        it "does not include these ignoring and muting users with the publish_new_mention publish" do
+        it "does not publish new mentions to these users" do
           Fabricate(:muted_user, user: user_2, muted_user: user_1)
           msg = build_cooked_msg("hey @#{user_2.username} stop muting me!", user_1)
 

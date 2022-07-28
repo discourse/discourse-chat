@@ -123,7 +123,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
       # publish the new channel.
       user_ids_allowing_communication = UserCommScreener.new(
         acting_user: current_user,
-        target_user_ids: @chat_channel.user_chat_channel_memberships.map(&:user_id)
+        target_user_ids: @chat_channel.user_chat_channel_memberships.pluck(:user_id)
       ).allowing_actor_communication
 
       if user_ids_allowing_communication.any?

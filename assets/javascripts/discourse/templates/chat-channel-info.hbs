@@ -1,18 +1,35 @@
 <div class="channel-info">
-  <div class="channel-info-header">
-    <h2 class="channel-info-header__title">
-      {{replace-emoji model.chatChannel.title}}
-    </h2>
-    <div class="channel-info-header__actions">
-      {{d-button
-        class="btn-flat"
-        icon="times"
-        action=(action "onBackToChannel")
-      }}
+  <div class="chat-full-page-header">
+    {{#if chatChannelInfoRouteOriginManager.isBrowse}}
+      <LinkTo @route="chat.browse" class="channel-info__back-btn">
+        {{d-icon "chevron-left"}}
+        <span>
+          {{i18n "chat.channel_info.back_to_all_channels"}}
+        </span>
+      </LinkTo>
+    {{else}}
+      <LinkTo
+        @route="chat.channel"
+        @models={{array
+          model.chatChannel.id
+          (slugify-channel model.chatChannel.title)
+        }}
+        class="channel-info__back-btn"
+      >
+        {{d-icon "chevron-left"}}
+        <span>
+          {{i18n "chat.channel_info.back_to_channel"}}
+        </span>
+      </LinkTo>
+    {{/if}}
+
+    <div class="chat-channel-header-details">
+      {{chat-channel-title channel=model.chatChannel}}
     </div>
   </div>
+
   <div class="chat-tabs chat-info-tabs">
-    <ul class="chat-tabs-list" role="tablist">
+    <ul class="chat-tabs-list nav-pills" role="tablist">
       {{#each tabs as |tab|}}
         <li
           class="chat-tabs-list__item"

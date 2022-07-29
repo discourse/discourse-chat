@@ -192,6 +192,8 @@ en:
         description: Description
 
       channel_info:
+        back_to_all_channels: "All channels"
+        back_to_channel: "Back"
         tabs:
           about: About
           members: Members

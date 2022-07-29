@@ -668,6 +668,7 @@ body.has-full-page-chat {
 .chat-full-page-header {
   .chat-channel-header-details {
     display: flex;
+    align-items: center;
 
     .chat-channel-archive-status {
       text-align: right;

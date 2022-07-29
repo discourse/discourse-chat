@@ -53,6 +53,9 @@
     display: flex;
     align-items: center;
     margin: 0;
+    &:before {
+      content: none; //there is a strange thing applied on nav-pills and this resets it
+    }
 
     @include breakpoint(mobile-large) {
       justify-content: space-between;
@@ -63,11 +66,8 @@
     display: inline;
     margin-right: 1em;
 
-    &:first-child .chat-browse-view__filter-link {
-      padding-left: 0;
-    }
-    &:last-child .chat-browse-view__filter-link {
-      padding-right: 0;
+    &:last-of-type {
+      margin-right: 0;
     }
 
     @include breakpoint(mobile-large) {
@@ -83,11 +83,6 @@
 
     @include breakpoint(tablet) {
       font-size: var(--font-up-1);
-    }
-
-    &.active {
-      color: var(--danger-medium);
-      text-decoration: underline var(--danger-medium);
     }
   }
 }

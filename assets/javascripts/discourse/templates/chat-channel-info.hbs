@@ -11,7 +11,6 @@
       }}
     </div>
   </div>
-
   <div class="chat-tabs chat-info-tabs">
     <ul class="chat-tabs-list" role="tablist">
       {{#each tabs as |tab|}}
@@ -28,7 +27,12 @@
             }}
             class="chat-tabs-list__link"
           >
-            {{i18n (concat "chat.channel_info.tabs." tab)}}
+            <span>{{i18n (concat "chat.channel_info.tabs." tab)}}</span>
+            {{#if (eq tab "members")}}
+              <span class="chat-tabs__memberships-count">
+                ({{model.chatChannel.membershipsCount}})
+              </span>
+            {{/if}}
           </LinkTo>
         </li>
       {{/each}}

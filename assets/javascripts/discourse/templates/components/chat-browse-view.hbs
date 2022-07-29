@@ -6,10 +6,9 @@
 
 <div class="chat-browse-view">
   <h1 class="chat-browse-view__title">{{i18n "chat.browse.title"}}</h1>
-
   <div class="chat-browse-view__actions">
     <nav>
-      <ul class="chat-browse-view__filters">
+      <ul class="nav-pills chat-browse-view__filters">
         {{#each this.tabs as |tab|}}
           <li class={{concat "chat-browse-view__filter -" tab}}>
             <LinkTo

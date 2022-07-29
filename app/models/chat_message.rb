@@ -221,4 +221,5 @@ end
 # Indexes
 #
 #  index_chat_messages_on_chat_channel_id_and_created_at  (chat_channel_id,created_at)
+#  index_chat_messages_on_created_at                      (created_at)
 #

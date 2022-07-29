@@ -43,21 +43,6 @@ module(
   function (hooks) {
     setupRenderingTest(hooks);
 
-    componentTest("members count", {
-      template: hbs`{{chat-channel-members-view channel=channel fetchMembersHandler=fetchMembersHandler}}`,
-
-      beforeEach() {
-        setupState(this);
-      },
-
-      async test(assert) {
-        assert.equal(
-          query(".channel-members-view__member-count").innerText,
-          I18n.t("chat.channel.memberships_count", { count: 2 })
-        );
-      },
-    });
-
     componentTest("no filter", {
       template: hbs`{{chat-channel-members-view channel=channel fetchMembersHandler=fetchMembersHandler}}`,
 

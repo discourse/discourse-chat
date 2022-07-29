@@ -8,15 +8,18 @@
 .channel-info-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   padding: 1rem;
   box-sizing: border-box;
+
+  &__actions .btn-flat {
+    margin-right: -0.65em; //correcting alignment to offset padding
+  }
 }
 
 .channel-info-header__title {
   font-size: var(--font-up-2);
   margin: 0;
-  padding-left: 1rem;
 }
 
 // About view
@@ -52,6 +55,10 @@
 }
 
 // Members list
+.chat-tabs__memberships-count {
+  margin-left: 0.25em;
+}
+
 .channel-members-view-wrapper {
   display: flex;
   flex-direction: column;
@@ -71,6 +78,7 @@
 
   .d-icon {
     padding: 0.5rem;
+    color: var(--primary-medium);
   }
 }
 
@@ -91,25 +99,21 @@ input.channel-members-view__search-input {
   align-items: center;
 }
 
-.channel-members-view__member-count {
-  color: var(--primary-medium);
-  margin-left: 0.5rem;
-  margin-bottom: 0.25rem;
-}
-
 .channel-members-view__list-container {
   display: flex;
   flex-direction: column;
+  margin-top: 1em;
   box-sizing: border-box;
   min-height: 1px;
   overflow-y: auto;
   height: 100%;
+  @include chat-scrollbar(var(--secondary));
 }
 
 .channel-members-view__list-item {
   display: flex;
   align-items: center;
-  padding: 0.5rem 0.25rem;
+  padding: 0.5rem 0;
 
   &:hover {
     background-color: var(--tertiary-very-low);

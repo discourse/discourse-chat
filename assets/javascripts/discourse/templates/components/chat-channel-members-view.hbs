@@ -12,7 +12,6 @@
         (if isSearchFocused " is-focused")
       }}
     >
-      {{d-icon "search"}}
       {{input
         class=inputSelector
         placeholder=(i18n "chat.members_view.filter_placeholder")
@@ -20,15 +19,13 @@
         focus-in=(action (mut isSearchFocused) true)
         focus-out=(action (mut isSearchFocused) false)
       }}
+      {{d-icon "search"}}
     </div>
 
     <div
       class="channel-members-view__list-container"
       {{on "scroll" (action "loadMore")}}
     >
-      <div class="channel-members-view__member-count">
-        {{i18n "chat.channel.memberships_count" count=channel.membershipsCount}}
-      </div>
 
       <div role="list" class="channel-members-view__list">
         {{#each members as |member|}}
@@ -50,7 +47,7 @@
     </div>
   </div>
 {{else}}
-  <div class="channel-members-view__no-members">
+  <div class="channel-members-view-wrapper">
     {{i18n "chat.channel.no_memberships"}}
   </div>
 {{/if}}

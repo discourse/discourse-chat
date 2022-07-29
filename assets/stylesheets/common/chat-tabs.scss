@@ -13,7 +13,7 @@
 .chat-tabs-list {
   display: flex;
   list-style: none;
-  margin: 0 0 1.5rem 0;
+  margin: 0 0 1rem 0;
   border-bottom: 1px solid var(--primary-low);
   box-sizing: border-box;
 }
@@ -21,11 +21,15 @@
 .chat-tabs-list__link,
 .chat-tabs-list__link:visited {
   color: var(--primary-medium);
-  padding: 1em;
+  padding: 1rem;
   display: flex;
+  outline-offset: -1px;
 
   &.active {
     color: var(--tertiary);
     border-bottom: 4px solid var(--tertiary);
+  }
+  &:hover {
+    color: var(--tertiary-hover);
   }
 }

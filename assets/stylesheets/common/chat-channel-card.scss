@@ -50,11 +50,6 @@
   }
 
   &__name {
-    align-self: flex-start;
-    margin-bottom: 0.5rem;
-    color: var(--primary);
-    font-size: 1.15rem;
-    padding-right: 1.25rem;
     @include ellipsis;
   }
 

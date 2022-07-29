@@ -6,6 +6,7 @@ import { reads } from "@ember/object/computed";
 export default class ChatChannelInfoIndexController extends Controller {
   @service router;
   @service chat;
+  @service chatChannelInfoRouteOriginManager;
 
   @computed("model.chatChannel.{membershipsCount,status}")
   get tabs() {
@@ -28,11 +29,6 @@ export default class ChatChannelInfoIndexController extends Controller {
   }
 
   @reads("router.currentRoute.localName") tab;
-
-  @action
-  onBackToChannel() {
-    return this.chat.openChannel(this.model.chatChannel);
-  }
 
   @action
   switchChannel(channel) {

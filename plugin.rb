@@ -18,6 +18,7 @@ register_asset "stylesheets/common/chat-browse.scss"
 register_asset "stylesheets/common/chat-drawer.scss"
 register_asset "stylesheets/common/chat-channel-preview-card.scss"
 register_asset "stylesheets/common/chat-channel-info.scss"
+register_asset "stylesheets/mobile/chat-channel-info.scss", :mobile
 register_asset "stylesheets/common/chat-draft-channel.scss"
 register_asset "stylesheets/common/chat-tabs.scss"
 register_asset "stylesheets/common/chat-form.scss"
@@ -128,7 +129,10 @@ after_initialize do
   load File.expand_path("../app/serializers/chat_channel_index_serializer.rb", __FILE__)
   load File.expand_path("../app/serializers/chat_channel_search_serializer.rb", __FILE__)
   load File.expand_path("../app/serializers/chat_view_serializer.rb", __FILE__)
-  load File.expand_path('../app/serializers/user_with_custom_fields_and_status_serializer.rb', __FILE__)
+  load File.expand_path(
+         "../app/serializers/user_with_custom_fields_and_status_serializer.rb",
+         __FILE__,
+       )
   load File.expand_path("../app/serializers/direct_message_channel_serializer.rb", __FILE__)
   load File.expand_path("../app/serializers/incoming_chat_webhook_serializer.rb", __FILE__)
   load File.expand_path("../app/serializers/admin_chat_index_serializer.rb", __FILE__)

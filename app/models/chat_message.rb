@@ -220,6 +220,6 @@ end
 #
 # Indexes
 #
+#  idx_chat_messages_by_created_at_not_deleted            (created_at) WHERE (deleted_at IS NULL)
 #  index_chat_messages_on_chat_channel_id_and_created_at  (chat_channel_id,created_at)
-#  index_chat_messages_on_created_at                      (created_at)
 #

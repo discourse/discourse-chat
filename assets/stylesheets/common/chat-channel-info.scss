@@ -1,6 +1,7 @@
 .channel-info {
   display: flex;
   flex-direction: column;
+  height: 100%;
 
   &__back-btn {
     font-size: var(--font-down-1);

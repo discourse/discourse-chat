@@ -2,6 +2,7 @@ import DiscourseRoute from "discourse/routes/discourse";
 import { defaultHomepage } from "discourse/lib/utilities";
 import { ajax } from "discourse/lib/ajax";
 import { inject as service } from "@ember/service";
+
 export default DiscourseRoute.extend({
   chat: service(),
 

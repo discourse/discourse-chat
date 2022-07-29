@@ -881,6 +881,7 @@ html.has-full-page-chat {
     }
   }
 
+  // make space for the composer so it doesn't overlay chat content
   &.composer-open {
     #main-outlet {
       max-height: calc(
@@ -889,14 +890,19 @@ html.has-full-page-chat {
     }
   }
 
+  // these need to apply to desktop too, because iPads
   &.discourse-touch {
     #main-outlet-wrapper {
+      // restrict the row height, including when virtual keyboard is open
       grid-template-rows: calc(
         var(--chat-vh, 1vh) * 100 - var(--header-offset)
       );
+      .sidebar-wrapper {
+        // prevents sidebar from overflowing behind the virtual keyboard
+        height: 100%;
+      }
     }
 
-    .sidebar-container,
     .full-page-chat,
     .chat-live-pane,
     #main-outlet {
@@ -904,27 +910,11 @@ html.has-full-page-chat {
       min-height: 0;
     }
 
-    #main-chat-outlet {
-      height: 100%;
-    }
-
-    // iPad uses the desktop layout
     #main-outlet {
+      // limits height for iPad
       max-height: calc(
         100vh - calc(var(--header-offset) + var(--composer-ipad-padding))
       );
-    }
-
-    &.composer-open {
-      #main-outlet {
-        max-height: calc(
-          100vh -
-            calc(
-              var(--header-offset) + var(--composer-height) +
-                var(--composer-ipad-padding)
-            )
-        );
-      }
     }
   }
 }

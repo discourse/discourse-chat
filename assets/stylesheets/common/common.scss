@@ -577,7 +577,6 @@ body.has-full-page-chat {
     Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
   display: grid;
   grid-template-columns: var(--full-page-sidebar-width) 1fr;
-  grid-template-rows: calc(100vh - var(--header-offset));
 
   .channels-list {
     background: var(--primary-very-low);
@@ -866,17 +865,56 @@ html.has-full-page-chat {
     height: 100%;
     width: 100%;
 
-    #main,
-    .discourse-root {
-      height: calc(var(--chat-vh, 1vh) * 100);
+    #main-outlet {
+      display: flex;
+      flex-direction: column;
+      max-height: calc(var(--chat-vh, 1vh) * 100 - var(--header-offset));
+
+      .full-page-chat {
+        height: 100%;
+        min-height: 0;
+      }
+
+      #main-chat-outlet {
+        min-height: 0;
+      }
+    }
+  }
+
+  // make space for the composer so it doesn't overlay chat content
+  &.composer-open {
+    #main-outlet {
+      max-height: calc(
+        100vh - calc(var(--header-offset) + calc(var(--composer-height)))
+      );
+    }
+  }
+
+  // these need to apply to desktop too, because iPads
+  &.discourse-touch {
+    #main-outlet-wrapper {
+      // restrict the row height, including when virtual keyboard is open
+      grid-template-rows: calc(
+        var(--chat-vh, 1vh) * 100 - var(--header-offset)
+      );
+      .sidebar-wrapper {
+        // prevents sidebar from overflowing behind the virtual keyboard
+        height: 100%;
+      }
     }
 
-    #main-outlet-wrapper,
-    #main-outlet,
     .full-page-chat,
     .chat-live-pane,
-    #main-chat-outlet {
-      height: calc(var(--chat-vh, 1vh) * 100 - var(--header-offset));
+    #main-outlet {
+      // allows containers to shrink to fit
+      min-height: 0;
+    }
+
+    #main-outlet {
+      // limits height for iPad
+      max-height: calc(
+        100vh - calc(var(--header-offset) + var(--composer-ipad-padding))
+      );
     }
   }
 }

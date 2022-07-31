@@ -174,4 +174,9 @@
       width: calc(var(--d-sidebar-width) - 3em);
     }
   }
+
+  .sidebar-section-link-prefix.active .prefix-image {
+    box-shadow: 0px 0px 0px 1px var(--success);
+    border: 1px solid var(--secondary);
+  }
 }

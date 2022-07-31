@@ -23,6 +23,8 @@ export default DiscourseRoute.extend({
   },
 
   activate() {
+    this.chat.updatePresence();
+
     schedule("afterRender", () => {
       document.body.classList.add("has-full-page-chat");
       document.documentElement.classList.add("has-full-page-chat");

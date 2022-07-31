@@ -120,10 +120,10 @@ export default Service.extend({
 
   set chatOpen(status) {
     this.set("_chatOpen", status);
-    this._updatePresence();
+    this.updatePresence();
   },
 
-  _updatePresence() {
+  updatePresence() {
     next(() => {
       if (this.fullPageChat.isActive || this.chatOpen) {
         this.presenceChannel.enter({ activeOptions: CHAT_ONLINE_OPTIONS });

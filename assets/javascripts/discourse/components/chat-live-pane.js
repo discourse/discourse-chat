@@ -80,6 +80,8 @@ export default Component.extend({
     this._super(...arguments);
 
     this.set("messages", []);
+
+    this._scrollSidebar();
   },
 
   didInsertElement() {
@@ -1398,6 +1400,31 @@ export default Component.extend({
       document.documentElement.classList.contains("keyboard-visible")
     ) {
       document.documentElement.scrollTo(0, 0);
+    }
+  },
+
+  // This is experimental and is likely to change in the near future
+  _scrollSidebar() {
+    const chatAutoScrollSidebar =
+      this.router.currentRoute.queryParams["enable_chat_auto_scroll"];
+
+    if (chatAutoScrollSidebar === "1") {
+      this.keyValueStore.setItem("enable_chat_auto_scroll", true);
+    } else if (chatAutoScrollSidebar === "0") {
+      this.keyValueStore.removeItem("enable_chat_auto_scroll", false);
+    }
+
+    if (!this.keyValueStore.getItem("enable_chat_auto_scroll")) {
+      return;
+    }
+
+    if (this.fullPage) {
+      this.appEvents.trigger(
+        "sidebar:scroll-to-element",
+        "sidebar-section-chat-channels"
+      );
+    } else {
+      this.appEvents.trigger("sidebar:scroll-to-element", "sidebar-container");
     }
   },
 });

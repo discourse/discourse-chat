@@ -5,6 +5,7 @@ import { DefaultNotificationItem } from "discourse/widgets/default-notification-
 import { h } from "virtual-dom";
 import { formatUsername } from "discourse/lib/utilities";
 import { iconNode } from "discourse-common/lib/icon-library";
+import slugifyChannel from "discourse/plugins/discourse-chat/discourse/lib/slugify-channel";
 
 const chatNotificationItem = {
   services: ["chat", "router"],
@@ -42,7 +43,8 @@ const chatNotificationItem = {
   },
 
   url(data) {
-    return `/chat/channel/${data.chat_channel_id}/chat?messageId=${data.chat_message_id}`;
+    const title = slugifyChannel(data.chat_channel_title);
+    return `/chat/channel/${data.chat_channel_id}/${title}?messageId=${data.chat_message_id}`;
   },
 };
 

@@ -6,6 +6,7 @@ import { deepMerge } from "discourse-common/lib/object";
 import { NOTIFICATION_TYPES } from "discourse/tests/fixtures/concerns/notification-types";
 import Notification from "discourse/models/notification";
 import hbs from "htmlbars-inline-precompile";
+import slugifyChannel from "discourse/plugins/discourse-chat/discourse/lib/slugify-channel";
 
 function getNotification(overrides = {}) {
   return Notification.create(
@@ -19,6 +20,7 @@ function getNotification(overrides = {}) {
           invited_by_username: "eviltrout",
           chat_channel_id: 9,
           chat_message_id: 2,
+          chat_channel_title: "Site",
         },
       },
       overrides
@@ -38,9 +40,12 @@ module(
         hbs`<MountWidget @widget="chat-invitation-notification-item" @args={{this.args}} />`
       );
 
+      const data = this.args.data;
       assert.strictEqual(
         query(".chat-invitation a").getAttribute("href"),
-        `/chat/channel/${this.args.data.chat_channel_id}/chat?messageId=${this.args.data.chat_message_id}`
+        `/chat/channel/${data.chat_channel_id}/${slugifyChannel(
+          data.chat_channel_title
+        )}?messageId=${data.chat_message_id}`
       );
     });
   }

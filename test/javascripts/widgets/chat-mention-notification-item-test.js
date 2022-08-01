@@ -6,6 +6,7 @@ import { deepMerge } from "discourse-common/lib/object";
 import { NOTIFICATION_TYPES } from "discourse/tests/fixtures/concerns/notification-types";
 import Notification from "discourse/models/notification";
 import hbs from "htmlbars-inline-precompile";
+import slugifyChannel from "discourse/plugins/discourse-chat/discourse/lib/slugify-channel";
 
 function getNotification(overrides = {}) {
   return Notification.create(
@@ -19,6 +20,7 @@ function getNotification(overrides = {}) {
           invited_by_username: "eviltrout",
           chat_channel_id: 9,
           chat_message_id: 2,
+          chat_channel_title: "Site",
         },
       },
       overrides
@@ -34,13 +36,17 @@ module(
     test("notification url", async function (assert) {
       this.set("args", getNotification());
 
+      const data = this.args.data;
+
       await render(
         hbs`<MountWidget @widget="chat-mention-notification-item" @args={{this.args}} />`
       );
 
       assert.strictEqual(
         query(".chat-invitation a").getAttribute("href"),
-        `/chat/channel/${this.args.data.chat_channel_id}/chat?messageId=${this.args.data.chat_message_id}`
+        `/chat/channel/${data.chat_channel_id}/${slugifyChannel(
+          data.chat_channel_title
+        )}?messageId=${data.chat_message_id}`
       );
 
       await render(
@@ -49,7 +55,9 @@ module(
 
       assert.strictEqual(
         query(".chat-invitation a").getAttribute("href"),
-        `/chat/channel/${this.args.data.chat_channel_id}/chat?messageId=${this.args.data.chat_message_id}`
+        `/chat/channel/${data.chat_channel_id}/${slugifyChannel(
+          data.chat_channel_title
+        )}?messageId=${data.chat_message_id}`
       );
     });
   }

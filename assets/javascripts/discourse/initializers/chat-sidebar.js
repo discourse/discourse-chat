@@ -92,13 +92,13 @@ export default {
             }
 
             get suffixValue() {
-              return this.chatChannelTrackingState.unread_count > 0
+              return this.chatChannelTrackingState?.unread_count > 0
                 ? "circle"
                 : "";
             }
 
             get suffixCSSClass() {
-              return this.chatChannelTrackingState.unread_mentions > 0
+              return this.chatChannelTrackingState?.unread_mentions > 0
                 ? "urgent"
                 : "unread";
             }
@@ -278,7 +278,7 @@ export default {
             }
 
             get suffixValue() {
-              return this.chatChannelTrackingState.unread_count > 0
+              return this.chatChannelTrackingState?.unread_count > 0
                 ? "circle"
                 : "";
             }

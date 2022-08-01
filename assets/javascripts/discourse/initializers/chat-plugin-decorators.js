@@ -50,7 +50,7 @@ export default {
   },
 
   initialize(container) {
-    const siteSettings = container.lookup("site-settings:main");
+    const siteSettings = container.lookup("service:site-settings");
     withPluginApi("0.8.42", (api) =>
       this.initializeWithPluginApi(api, siteSettings)
     );

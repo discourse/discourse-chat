@@ -50,59 +50,47 @@ module DiscourseChat::DirectMessageChannelCreator
     # We never want to prevent the actor from communicating with themself.
     target_users = target_users.reject { |user| user.id == acting_user.id }
 
-    UserCommScreener
-      .new(acting_user: acting_user, target_user_ids: target_users.map(&:id))
-      .preventing_actor_communication
-      .each do |user_id|
-        raise NotAllowed.new(
-                I18n.t(
-                  "chat.errors.not_accepting_dms",
-                  username: target_users.find { |user| user.id == user_id }.username,
-                ),
-              )
-      end
+    screener =
+      UserCommScreener.new(acting_user: acting_user, target_user_ids: target_users.map(&:id))
 
-    # TODO (martin) Add methods from here and below to UserCommScreener in core to
-    # handle these cases.
+    # People blocking the actor.
+    screener.preventing_actor_communication.each do |user_id|
+      raise NotAllowed.new(
+              I18n.t(
+                "chat.errors.not_accepting_dms",
+                username: target_users.find { |user| user.id == user_id }.username,
+              ),
+            )
+    end
 
-    if !acting_user.user_option.allow_private_messages
+    # The actor cannot start DMs with people if they are not allowing anyone
+    # to start DMs with them, that's no fair!
+    if screener.actor_disallowing_all_pms?
       raise NotAllowed.new(I18n.t("chat.errors.actor_disallowed_dms"))
     end
 
-    if acting_user.user_option.enable_allowed_pm_users
-      allowed_pm_user_ids = AllowedPmUser.where(user: acting_user).pluck(:allowed_pm_user_id)
-      (target_users.map(&:id) - allowed_pm_user_ids).each do |user_id|
+    # People the actor is blocking.
+    target_users.each do |target_user|
+      if screener.actor_disallowing_pms?(target_user.id)
         raise NotAllowed.new(
                 I18n.t(
                   "chat.errors.actor_preventing_target_user_from_dm",
-                  username: target_users.find { |user| user.id == user_id }.username,
+                  username: target_user.username,
                 ),
+              )
+      end
+
+      if screener.actor_ignoring?(target_user.id)
+        raise NotAllowed.new(
+                I18n.t("chat.errors.actor_ignoring_target_user", username: target_user.username),
+              )
+      end
+
+      if screener.actor_muting?(target_user.id)
+        raise NotAllowed.new(
+                I18n.t("chat.errors.actor_muting_target_user", username: target_user.username),
               )
       end
     end
-
-    IgnoredUser
-      .where(user: acting_user, ignored_user_id: target_users.map(&:id))
-      .pluck(:ignored_user_id)
-      .each do |user_id|
-        raise NotAllowed.new(
-                I18n.t(
-                  "chat.errors.actor_ignoring_target_user",
-                  username: target_users.find { |user| user.id == user_id }.username,
-                ),
-              )
-      end
-
-    MutedUser
-      .where(user: acting_user, muted_user_id: target_users.map(&:id))
-      .pluck(:muted_user_id)
-      .each do |user_id|
-        raise NotAllowed.new(
-                I18n.t(
-                  "chat.errors.actor_muting_target_user",
-                  username: target_users.find { |user| user.id == user_id }.username,
-                ),
-              )
-      end
   end
 end

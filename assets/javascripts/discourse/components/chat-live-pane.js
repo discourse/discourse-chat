@@ -63,6 +63,7 @@ export default Component.extend({
   _nextStagedMessageId: 0, // Iterate on every new message
   _lastSelectedMessage: null,
   targetMessageId: null,
+  hasNewMessages: null,
 
   chat: service(),
   router: service(),
@@ -75,6 +76,7 @@ export default Component.extend({
   _updateReadTimer: null,
   lastSendReadMessageId: null,
   _scrollerEl: null,
+  _visibleMessagesObserver: null,
 
   init() {
     this._super(...arguments);
@@ -107,6 +109,8 @@ export default Component.extend({
     document.addEventListener("scroll", this._forceBodyScroll, {
       passive: true,
     });
+
+    this._visibleMessagesObserver = this._setupVisibleMessagesObserver();
   },
 
   willDestroyElement() {
@@ -123,7 +127,7 @@ export default Component.extend({
       this,
       "highlightOrFetchMessage"
     );
-    this._stopLastReadRunner();
+    this._cancelPendingReadUpdate();
 
     // don't need to removeEventListener from scroller as the DOM element goes away
     cancel(this.stickyScrollTimer);
@@ -139,6 +143,8 @@ export default Component.extend({
     );
 
     document.removeEventListener("scroll", this._forceBodyScroll);
+
+    this._visibleMessagesObserver.disconnect();
   },
 
   didReceiveAttrs() {
@@ -167,7 +173,6 @@ export default Component.extend({
 
           if (!this.chatChannel.isDraft) {
             this.set("previewing", !Boolean(trackedChannel));
-            this._startLastReadRunner();
             this.loadDraftForChannel(this.chatChannel.id);
           }
         });
@@ -304,6 +309,9 @@ export default Component.extend({
             ? newMessages.lastObject
             : newMessages.firstObject;
           this.scrollToMessage(focusedMessage.messageLookupId);
+          schedule("afterRender", () => {
+            this._observeMessages(newMessages);
+          });
         }
         this.setCanLoadMoreDetails(messages.resultSetMeta);
         return messages;
@@ -385,6 +393,11 @@ export default Component.extend({
     schedule("afterRender", () => {
       if (this._selfDeleted) {
         return;
+      }
+
+      this._observeMessages(this.messages);
+      if (!isTesting()) {
+        this._updateLastReadMessage();
       }
 
       if (this.targetMessageId) {
@@ -645,8 +658,12 @@ export default Component.extend({
     if (atTop) {
       this._fetchMoreMessages(PAST);
       return;
-    } else if (Math.abs(this._scrollerEl.scrollTop) <= STICKY_SCROLL_LENIENCE) {
-      this._fetchMoreMessages(FUTURE);
+    } else {
+      this._updateLastReadMessage();
+
+      if (Math.abs(this._scrollerEl.scrollTop) <= STICKY_SCROLL_LENIENCE) {
+        this._fetchMoreMessages(FUTURE);
+      }
     }
 
     this._calculateStickScroll();
@@ -662,6 +679,10 @@ export default Component.extend({
         ? false
         : absoluteScrollTop / this._scrollerEl.offsetHeight > 0.67
     );
+
+    if (!this.showScrollToBottomBtn) {
+      this.set("hasNewMessages", false);
+    }
 
     if (shouldStick !== this.stickyScroll) {
       if (shouldStick) {
@@ -756,12 +777,16 @@ export default Component.extend({
         return;
       }
     }
-    this.messages.pushObject(
-      this._prepareSingleMessage(
-        data.chat_message,
-        this.messages[this.messages.length - 1]
-      )
+
+    const preparedMessage = this._prepareSingleMessage(
+      data.chat_message,
+      this.messages[this.messages.length - 1]
     );
+
+    this.messages.pushObject(preparedMessage);
+    schedule("afterRender", () => {
+      this._observeMessages([preparedMessage]);
+    });
 
     if (this.messages.length >= MAX_RECENT_MSGS) {
       this.removeMessage(this.messages.shiftObject());
@@ -910,7 +935,7 @@ export default Component.extend({
 
   @bind
   _updateLastReadMessage(wait = READ_INTERVAL) {
-    cancel(this._updateReadTimer);
+    this._cancelPendingReadUpdate();
 
     if (this._selfDeleted) {
       return;
@@ -923,15 +948,24 @@ export default Component.extend({
           return;
         }
 
-        let messageId;
-        if (this.messages?.length) {
-          messageId = this.messages[this.messages.length - 1]?.id;
+        let latestUnreadMsgId = this.lastSendReadMessageId;
+        if (this.messages[this.messages.length - 1]?.id > latestUnreadMsgId) {
+          const visibleMessages = document.querySelectorAll(
+            ".chat-message-container[data-visible=true]"
+          );
+          if (visibleMessages?.length > 0) {
+            latestUnreadMsgId = parseInt(
+              visibleMessages[visibleMessages.length - 1].dataset.id,
+              10
+            );
+          }
         }
-        const hasUnreadMessage =
-          messageId && messageId > this.lastSendReadMessageId;
+
+        const hasUnreadMessages =
+          latestUnreadMsgId && latestUnreadMsgId > this.lastSendReadMessageId;
 
         if (
-          !hasUnreadMessage &&
+          !hasUnreadMessages &&
           this.currentUser.chat_channel_tracking_state[this.chatChannel.id]
             ?.unread_count > 0
         ) {
@@ -941,16 +975,12 @@ export default Component.extend({
 
         // Make sure new messages have come in. Do not keep pinging server with read updates
         // if no new messages came in since last read update was sent.
-        if (this._floatOpenAndFocused() && hasUnreadMessage) {
-          this.set("lastSendReadMessageId", messageId);
-          ajax(`/chat/${this.chatChannel.id}/read/${messageId}.json`, {
+        if (this._floatOpenAndFocused() && hasUnreadMessages) {
+          this.set("lastSendReadMessageId", latestUnreadMsgId);
+          ajax(`/chat/${this.chatChannel.id}/read/${latestUnreadMsgId}.json`, {
             method: "PUT",
-          }).catch(() => {
-            this._stopLastReadRunner();
           });
         }
-
-        this._updateLastReadMessage();
       },
       wait
     );
@@ -960,15 +990,7 @@ export default Component.extend({
     return userPresent() && this.expanded && !this.floatHidden;
   },
 
-  _startLastReadRunner() {
-    if (!isTesting()) {
-      next(this, () => {
-        this._updateLastReadMessage(0);
-      });
-    }
-  },
-
-  _stopLastReadRunner() {
+  _cancelPendingReadUpdate() {
     cancel(this._updateReadTimer);
   },
 
@@ -1375,7 +1397,11 @@ export default Component.extend({
   _subscribeToUpdates(channelId) {
     this._unsubscribeToUpdates(channelId);
     this.messageBus.subscribe(`/chat/${channelId}`, (busData) => {
-      this.handleMessage(busData);
+      if (!this.details.can_load_more_future || busData.type !== "sent") {
+        this.handleMessage(busData);
+      } else {
+        this.set("hasNewMessages", true);
+      }
     });
   },
 
@@ -1426,5 +1452,31 @@ export default Component.extend({
     } else {
       this.appEvents.trigger("sidebar:scroll-to-element", "sidebar-container");
     }
+  },
+
+  _setupVisibleMessagesObserver() {
+    const options = {
+      root: document.querySelector(".chat-messages-container"),
+      rootMargin: "0px",
+      threshold: 1.0,
+    };
+
+    const callback = (entries) => {
+      entries.forEach((entry) => {
+        entry.target.dataset.visible = entry.isIntersecting;
+      });
+    };
+
+    return new IntersectionObserver(callback, options);
+  },
+
+  _observeMessages(messages) {
+    messages.forEach((message) => {
+      this._visibleMessagesObserver.observe(
+        document.querySelector(
+          `.chat-message-container[data-id="${message.id}"]`
+        )
+      );
+    });
   },
 });

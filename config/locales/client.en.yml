@@ -143,6 +143,7 @@ en:
       silence: "Silence user"
       return_to_list: "Return to channels list"
       scroll_to_bottom: "Scroll to bottom"
+      scroll_to_new_messages: "See new messages"
       sound:
         title: "Desktop chat notification sound"
       sounds:

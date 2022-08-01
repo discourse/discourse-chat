@@ -174,10 +174,6 @@ export default Component.extend({
           if (!this.chatChannel.isDraft) {
             this.set("previewing", !Boolean(trackedChannel));
             this.loadDraftForChannel(this.chatChannel.id);
-
-            if (!isTesting()) {
-              this._updateLastReadMessage(0);
-            }
           }
         });
     }
@@ -400,6 +396,9 @@ export default Component.extend({
       }
 
       this._observeMessages(this.messages);
+      if (!isTesting()) {
+        this._updateLastReadMessage();
+      }
 
       if (this.targetMessageId) {
         this.scrollToMessage(this.targetMessageId, {
@@ -778,12 +777,16 @@ export default Component.extend({
         return;
       }
     }
-    this.messages.pushObject(
-      this._prepareSingleMessage(
-        data.chat_message,
-        this.messages[this.messages.length - 1]
-      )
+
+    const preparedMessage = this._prepareSingleMessage(
+      data.chat_message,
+      this.messages[this.messages.length - 1]
     );
+
+    this.messages.pushObject(preparedMessage);
+    schedule("afterRender", () => {
+      this._observeMessages([preparedMessage]);
+    });
 
     if (this.messages.length >= MAX_RECENT_MSGS) {
       this.removeMessage(this.messages.shiftObject());
@@ -946,12 +949,9 @@ export default Component.extend({
         }
 
         let latestUnreadMsgId = this.lastSendReadMessageId;
-        if (
-          this.messages?.length &&
-          this.messages[this.messages.length - 1].id > latestUnreadMsgId
-        ) {
+        if (this.messages[this.messages.length - 1]?.id > latestUnreadMsgId) {
           const visibleMessages = document.querySelectorAll(
-            ".chat-message-container.visible"
+            ".chat-message-container[data-visible=true]"
           );
           if (visibleMessages?.length > 0) {
             latestUnreadMsgId = parseInt(
@@ -1463,11 +1463,7 @@ export default Component.extend({
 
     const callback = (entries) => {
       entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("visible");
-        } else {
-          entry.target.classList.remove("visible");
-        }
+        entry.target.dataset.visible = entry.isIntersecting;
       });
     };
 

@@ -76,7 +76,7 @@
     <a
       href
       title={{i18n "chat.scroll_to_bottom"}}
-      class="btn btn-flat chat-scroll-to-bottom {{if hasNewMessages "unread-messages"}}"
+      class={{concat-class "btn" "btn-flat" "chat-scroll-to-bottom" (if hasNewMessages "unread-messages")}}
       {{on "click" (action "restickScrolling")}}
     >
       {{#if hasNewMessages}}

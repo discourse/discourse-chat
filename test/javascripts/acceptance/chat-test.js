@@ -275,14 +275,6 @@ acceptance("Discourse Chat - without unread", function (needs) {
     assert.equal(currentURL(), `/chat/channel/9/site`);
   });
 
-  test("Clicking mention notification inside other full page channel switches the channel", async function (assert) {
-    this.container.lookup("service:chat").set("chatWindowFullPage", true);
-    await visit("/chat/channel/75/@hawk");
-    await click(".header-dropdown-toggle.current-user");
-    await click("#quick-access-notifications .chat-mention");
-    assert.equal(currentURL(), `/chat/channel/9/site`);
-  });
-
   test("Mention notifications contain the correct text and icon", async function (assert) {
     await visit("/chat/channel/75/@hawk");
     await click(".header-dropdown-toggle.current-user");

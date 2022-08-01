@@ -1,8 +1,5 @@
-import cookie from "discourse/lib/cookie";
-import getURL from "discourse-common/lib/get-url";
 import I18n from "I18n";
 import RawHtml from "discourse/widgets/raw-html";
-import { setTransientHeader } from "discourse/lib/ajax";
 import { createWidgetFrom } from "discourse/widgets/widget";
 import { DefaultNotificationItem } from "discourse/widgets/default-notification-item";
 import { h } from "virtual-dom";
@@ -35,20 +32,17 @@ const chatNotificationItem = {
     const text = this.text(notificationName, data);
     const html = new RawHtml({ html: `<div>${text}</div>` });
     const contents = [iconNode("comment"), html];
+    const href = this.url(data);
 
-    return h("a", { attributes: { title } }, contents);
+    return h(
+      "a",
+      { attributes: { title, href, "data-auto-route": true } },
+      contents
+    );
   },
 
-  click() {
-    this.attrs.set("read", true);
-    const id = this.attrs.id;
-    setTransientHeader("Discourse-Clear-Notifications", id);
-    cookie("cn", id, { path: getURL("/") });
-    this.sendWidgetEvent("linkClicked");
-    this.chat.openChannelAtMessage(
-      this.attrs.data.chat_channel_id,
-      this.attrs.data.chat_message_id
-    );
+  url(data) {
+    return `/chat/channel/${data.chat_channel_id}/chat?messageId=${data.chat_message_id}`;
   },
 };
 

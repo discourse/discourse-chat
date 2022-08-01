@@ -1458,7 +1458,7 @@ export default Component.extend({
     const options = {
       root: document.querySelector(".chat-messages-container"),
       rootMargin: "0px",
-      threshold: 1.0,
+      threshold: 0.6,
     };
 
     const callback = (entries) => {

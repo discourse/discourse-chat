@@ -11,7 +11,7 @@ export default {
 
   initialize(container) {
     withPluginApi("0.11.0", (api) => {
-      const siteSettings = container.lookup("site-settings:main");
+      const siteSettings = container.lookup("service:site-settings");
       if (siteSettings.chat_enabled) {
         api.addSaveableUserOptionField(CHAT_ENABLED_FIELD);
         api.addSaveableUserOptionField(ONLY_CHAT_PUSH_NOTIFICATIONS_FIELD);

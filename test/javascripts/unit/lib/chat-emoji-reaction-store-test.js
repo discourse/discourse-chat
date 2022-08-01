@@ -3,7 +3,7 @@ import { getOwner } from "discourse-common/lib/get-owner";
 
 module("Discourse Chat | Unit | chat-emoji-reaction-store", function (hooks) {
   hooks.beforeEach(function () {
-    this.siteSettings = getOwner(this).lookup("site-settings:main");
+    this.siteSettings = getOwner(this).lookup("service:site-settings");
     this.emojiReactionStore = getOwner(this).lookup(
       "service:chat-emoji-reaction-store"
     );

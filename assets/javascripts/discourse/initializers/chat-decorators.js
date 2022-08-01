@@ -44,7 +44,7 @@ export default {
       }
     );
 
-    const siteSettings = container.lookup("site-settings:main");
+    const siteSettings = container.lookup("service:site-settings");
     api.decorateChatMessage(
       (element) =>
         highlightSyntax(

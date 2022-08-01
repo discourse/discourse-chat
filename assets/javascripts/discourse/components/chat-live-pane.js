@@ -1398,6 +1398,7 @@ export default Component.extend({
     }
   },
 
+  // This is experimental and is likely to change in the near future
   _scrollSidebar() {
     const chatAutoScrollSidebar =
       this.router.currentRoute.queryParams["enable_chat_auto_scroll"];

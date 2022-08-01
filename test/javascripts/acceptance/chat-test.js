@@ -19,7 +19,7 @@ import {
   triggerKeyEvent,
   visit,
 } from "@ember/test-helpers";
-import { test } from "qunit";
+import { skip, test } from "qunit";
 import {
   chatChannels,
   directMessageChannels,
@@ -258,7 +258,8 @@ acceptance("Discourse Chat - without unread", function (needs) {
       "/assets/highlightjs/highlight-test-bundle.min.js";
   });
 
-  test("Clicking mention notification from outside chat opens the float", async function (assert) {
+  // TODO: needs a future change to how we handle URLS to be possible
+  skip("Clicking mention notification from outside chat opens the float", async function (assert) {
     this.chatService.set("chatWindowFullPage", false);
     await visit("/t/internationalization-localization/280");
     await click(".header-dropdown-toggle.current-user");

@@ -6,16 +6,19 @@ class ChatAllowUploadsValidator
   end
 
   def valid_value?(value)
-    return true if value == "f"
-    if value == "t" && SiteSetting.secure_media && !GlobalSetting.allow_unsecure_chat_uploads
+    if value == "t" && prevent_enabling_chat_uploads?
       return false
     end
     true
   end
 
   def error_message
-    if SiteSetting.secure_media && !GlobalSetting.allow_unsecure_chat_uploads
+    if prevent_enabling_chat_uploads?
       I18n.t("site_settings.errors.chat_upload_not_allowed_secure_media")
     end
+  end
+
+  def prevent_enabling_chat_uploads?
+    SiteSetting.secure_media && !GlobalSetting.allow_unsecure_chat_uploads
   end
 end

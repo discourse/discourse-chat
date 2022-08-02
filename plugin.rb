@@ -191,8 +191,6 @@ after_initialize do
     load File.expand_path("../lib/discourse_dev/message.rb", __FILE__)
   end
 
-  DiscourseChat::SecureMediaCompatibility.update_settings
-
   UserNotifications.append_view_path(File.expand_path("../app/views", __FILE__))
 
   register_category_custom_field_type(DiscourseChat::HAS_CHAT_ENABLED, :boolean)
@@ -444,6 +442,10 @@ after_initialize do
       Rails.logger.warn(
         "Error updating user_options fields after chat retention settings changed: #{e}",
       )
+    end
+
+    if name == :secure_media && old_value == false && new_value == true
+      DiscourseChat::SecureMediaCompatibility.update_settings
     end
   end
 

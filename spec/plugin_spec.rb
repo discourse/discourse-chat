@@ -306,6 +306,8 @@ describe "discourse-chat" do
   end
 
   describe "secure media compatibility" do
+    after { ENV["DISCOURSE_ALLOW_UNSECURE_CHAT_UPLOADS"] = nil }
+
     it "disables chat uploads if secure media changes from disabled to enabled" do
       enable_secure_media
       expect(SiteSetting.chat_allow_uploads).to eq(false)

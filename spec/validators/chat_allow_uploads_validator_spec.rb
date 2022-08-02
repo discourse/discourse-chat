@@ -14,6 +14,8 @@ describe ChatAllowUploadsValidator do
       enable_secure_media
     end
 
+    after { ENV["DISCOURSE_ALLOW_UNSECURE_CHAT_UPLOADS"] = nil }
+
     it "does not allow chat uploads to be enabled" do
       validator = described_class.new
       expect(validator.valid_value?("t")).to eq(false)

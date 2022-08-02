@@ -10,7 +10,7 @@ class DiscourseChat::SecureMediaCompatibility
   # it enabled, but this is strongly advised against.
   def self.update_settings
     if SiteSetting.secure_media && SiteSetting.chat_allow_uploads &&
-         !ENV["DISCOURSE_ALLOW_UNSECURE_CHAT_UPLOADS"]
+         !GlobalSetting.allow_unsecure_chat_uploads
       SiteSetting.chat_allow_uploads = false
       StaffActionLogger.new(Discourse.system_user).log_site_setting_change(
         "chat_allow_uploads",

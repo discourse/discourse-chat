@@ -72,6 +72,8 @@ require_relative "lib/validators/chat_default_channel_validator.rb"
 require_relative "lib/validators/chat_allow_uploads_validator.rb"
 require_relative "app/core_ext/plugin_instance.rb"
 
+GlobalSetting.add_default(:allow_unsecure_chat_uploads, false)
+
 after_initialize do
   module ::DiscourseChat
     PLUGIN_NAME = "discourse-chat"

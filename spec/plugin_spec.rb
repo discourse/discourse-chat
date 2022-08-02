@@ -306,8 +306,6 @@ describe "discourse-chat" do
   end
 
   describe "secure media compatibility" do
-    after { ENV["DISCOURSE_ALLOW_UNSECURE_CHAT_UPLOADS"] = nil }
-
     it "disables chat uploads if secure media changes from disabled to enabled" do
       enable_secure_media
       expect(SiteSetting.chat_allow_uploads).to eq(false)
@@ -319,8 +317,8 @@ describe "discourse-chat" do
       expect(last_history.context).to eq("Disabled because secure_media is enabled")
     end
 
-    it "does not disable chat uploads if the DISCOURSE_ALLOW_UNSECURE_CHAT_UPLOADS env var is set" do
-      ENV["DISCOURSE_ALLOW_UNSECURE_CHAT_UPLOADS"] = "true"
+    it "does not disable chat uploads if the allow_unsecure_chat_uploads global setting is set" do
+      global_setting :allow_unsecure_chat_uploads, true
       expect { enable_secure_media }.not_to change { UserHistory.count }
       expect(SiteSetting.chat_allow_uploads).to eq(true)
     end

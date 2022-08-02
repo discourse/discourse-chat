@@ -14,8 +14,6 @@ describe ChatAllowUploadsValidator do
       enable_secure_media
     end
 
-    after { ENV["DISCOURSE_ALLOW_UNSECURE_CHAT_UPLOADS"] = nil }
-
     it "does not allow chat uploads to be enabled" do
       validator = described_class.new
       expect(validator.valid_value?("t")).to eq(false)
@@ -24,8 +22,8 @@ describe ChatAllowUploadsValidator do
       )
     end
 
-    it "does allow chat uploads to be enabled if DISCOURSE_ALLOW_UNSECURE_CHAT_UPLOADS is set" do
-      ENV["DISCOURSE_ALLOW_UNSECURE_CHAT_UPLOADS"] = "t"
+    it "does allow chat uploads to be enabled if allow_unsecure_chat_uploads global setting is set" do
+      global_setting :allow_unsecure_chat_uploads, true
       validator = described_class.new
       expect(validator.valid_value?("t")).to eq(true)
       expect(validator.error_message).to eq(nil)

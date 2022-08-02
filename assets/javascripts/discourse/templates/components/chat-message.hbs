@@ -107,7 +107,7 @@
           {{chat-message-avatar message=@message}}
         {{/if}}
 
-        <div class="chat-message-content">
+        <div class="chat-message-content" {{track-message-visibility}}>
           {{#unless hideUserInfo}}
             {{chat-message-info message=@message details=@details}}
           {{/unless}}

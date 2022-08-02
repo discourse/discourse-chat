@@ -997,6 +997,7 @@ export default Component.extend({
     // - messaging to a new direct channel through DM creator (channel draft)
     // - message to a direct channel you were tracking (preview = false, not draft)
     // - message to a public channel you were tracking (preview = false, not draft)
+    // - message to a channel when we haven't loaded all future messages yet.
     if (!this.chatChannel.isFollowing || this.chatChannel.isDraft) {
       this.set("loading", true);
 
@@ -1028,9 +1029,10 @@ export default Component.extend({
       data.in_reply_to_id = this.replyToMsg.id;
     }
 
-    // Start ajax request but don't return here, we want to stage the message instantly.
+    // Start ajax request but don't return here, we want to stage the message instantly when all messages are loaded.
+    // Otherwise, we'll fetch latest and scroll to the one we just created.
     // Return a resolved promise below.
-    ajax(`/chat/${this.chatChannel.id}.json`, {
+    const msgCreationPromise = ajax(`/chat/${this.chatChannel.id}.json`, {
       type: "POST",
       data,
     })
@@ -1044,23 +1046,34 @@ export default Component.extend({
         this.set("sendingLoading", false);
       });
 
-    const stagedMessage = this._prepareSingleMessage(
-      // We need to add the user and created at for presentation of staged message
-      {
-        message,
-        cooked,
-        stagedId,
-        uploads: cloneJSON(uploads),
-        staged: true,
-        user: this.currentUser,
-        in_reply_to: this.replyToMsg,
-        created_at: new Date(),
-      },
-      this.messages[this.messages.length - 1]
-    );
-    this.messages.pushObject(stagedMessage);
+    if (this.details.can_load_more_future) {
+      msgCreationPromise.then(() => {
+        this.fetchMessages(this.chatChannel, {
+          fetchFromLastMessage: true,
+        }).then(() => {
+          this.scrollToMessage(this.messages[this.messages.length - 1]);
+        });
+      });
+    } else {
+      const stagedMessage = this._prepareSingleMessage(
+        // We need to add the user and created at for presentation of staged message
+        {
+          message,
+          cooked,
+          stagedId,
+          uploads: cloneJSON(uploads),
+          staged: true,
+          user: this.currentUser,
+          in_reply_to: this.replyToMsg,
+          created_at: new Date(),
+        },
+        this.messages[this.messages.length - 1]
+      );
+      this.messages.pushObject(stagedMessage);
+      this._stickScrollToBottom();
+    }
+
     this._resetAfterSend();
-    this._stickScrollToBottom();
     this.appEvents.trigger("chat-composer:reply-to-set", null);
     return Promise.resolve();
   },

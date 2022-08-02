@@ -22,12 +22,12 @@ pl_PL:
       cancel: "Anuluj"
       cancel_reply: "Anuluj odpowiedź"
       chat_channels: "Kanały"
-      leave: "Opuść kanał"
       browse_all_channels: "Przeglądaj wszystkie kanały"
       channel_settings:
         edit: "Edytuj"
-        join_channel: "Dołącz"
         leave_channel: "Opuść kanał"
+        join: "Dołącz"
+        leave: "Opuść"
       channels_list_popup:
         browse: "Przeglądaj kanały"
         create: "Utwórz kanał"
@@ -110,6 +110,8 @@ pl_PL:
         filter_archived: Zarchiwizowany
       about_view:
         description: Opis
+      channel_info:
+        back_to_channel: "Powrót"
       channel_selector:
         title: "Przejdź do kanału"
         no_channels: "Żadne kanały nie pasują do Twojego wyszukiwania"

@@ -28,14 +28,13 @@ hr:
       cancel: "Otkazati"
       cancel_reply: "Otkaži odgovor"
       chat_channels: "Kanali"
-      leave: "Napusti kanal"
       move_to_channel:
         title: "Premještanje poruka na kanal"
         confirm_move: "Premjesti poruke"
       channel_settings:
         title: "Postavke kanala"
-        join_channel: "Pridružite se"
         leave_channel: "Napusti kanal"
+        join: "Pridružite se"
       channel_archive:
         title: "Arhiviraj kanal"
         instructions: "<p>Arhiviranje kanala stavlja ga u način rada samo za čitanje i premješta sve poruke s kanala u novu ili postojeću temu. Ne mogu se slati nove poruke, niti se postojeće poruke ne mogu uređivati ili brisati.</p><p>Jeste li sigurni da želite arhivirati <strong>%{channelTitle}</strong> kanal?</p>"

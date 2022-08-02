@@ -32,7 +32,6 @@ sv:
       cancel: "Avbryt"
       cancel_reply: "Avbryt svar"
       chat_channels: "Kanaler"
-      leave: "Lämna kanal"
       browse_all_channels: "Bläddra bland alla kanaler"
       move_to_channel:
         title: "Flytta meddelanden till kanal"
@@ -48,8 +47,10 @@ sv:
         open_channel: "Öppna kanal"
         archive_channel: "Arkivera kanal"
         delete_channel: "Radera kanal"
-        join_channel: "Gå med"
+        join_channel: "Gå med i kanal"
         leave_channel: "Lämna kanal"
+        join: "Gå med"
+        leave: "Lämna"
       channel_archive:
         title: "Arkivera kanal"
         instructions: "<p>Arkivering av en kanal sätter den i skrivskyddat läge och flyttar alla meddelanden från kanalen till ett nytt eller existerande ämne. Inga nya meddelanden kan skickas och inga befintliga meddelanden kan redigeras eller raderas.</p><p>Är du säker på att du vill arkivera kanalen <strong>%{channelTitle}</strong>?</p>"
@@ -187,6 +188,7 @@ sv:
         title: Titel
         description: Beskrivning
       channel_info:
+        back_to_channel: "Tillbaka"
         tabs:
           about: Om
           members: Medlemmar

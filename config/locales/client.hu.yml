@@ -28,7 +28,6 @@ hu:
       cancel: "Mégse"
       cancel_reply: "Válasz elvetése"
       chat_channels: "Csatornák"
-      leave: "Csatorna elhagyása"
       move_to_channel:
         title: "Üzenetek áthelyezése a csatornába"
         instructions:
@@ -38,8 +37,10 @@ hu:
       channel_settings:
         title: "Csatornabeállítások"
         edit: "Szerkesztés"
-        join_channel: "Csatlakozás"
+        join_channel: "Csatlakozás a csatornához"
         leave_channel: "Csatorna elhagyása"
+        join: "Csatlakozás"
+        leave: "Elhagyás"
       channel_archive:
         title: "Csatorna archiválása"
         instructions: "<p>Egy csatorna archiválása írásvédett módba helyezi azt, és a csatorna összes üzenetét egy új vagy meglévő témába helyezi át. Új üzeneteket nem lehet küldeni, és a meglévő üzeneteket nem lehet szerkeszteni vagy törölni.</p><p>Biztos, hogy archiválja a(z) <strong>%{channelTitle}</strong> csatornát?</p>"
@@ -161,6 +162,8 @@ hu:
         yesterday: Tegnap
       about_view:
         description: Leírás
+      channel_info:
+        back_to_channel: "Vissza"
       direct_message_creator:
         title: Új üzenet
         prefix: "Címzett:"

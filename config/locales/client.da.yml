@@ -28,7 +28,6 @@ da:
       cancel: "Annuller"
       cancel_reply: "Annuller svar"
       chat_channels: "Kanaler"
-      leave: "Forlad kanal"
       channel_settings:
         title: "Kanal indstillinger"
         leave_channel: "Forlad kanal"

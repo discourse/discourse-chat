@@ -32,7 +32,6 @@ he:
       cancel: "ביטול"
       cancel_reply: "ביטול תגובה"
       chat_channels: "ערוצים"
-      leave: "יציאה מהערוץ"
       browse_all_channels: "עיון בכל הערוצים"
       move_to_channel:
         title: "העברת הודעות לערוץ"
@@ -50,8 +49,10 @@ he:
         open_channel: "פתיחת ערוץ"
         archive_channel: "העברת ערוץ לארכיון"
         delete_channel: "מחיקת ערוץ"
-        join_channel: "הצטרפות"
+        join_channel: "הצטרפות לערוץ"
         leave_channel: "יציאה מהערוץ"
+        join: "הצטרפות"
+        leave: "עזיבה"
       channel_archive:
         title: "העברת ערוץ לארכיון"
         instructions: "<p>העברת ערוץ לארכיון מעבירה אותו למצב לקריאה בלבד ומעביר את כל ההודעות מהערוץ לנושא חדש או קיים. אי אפשר לשלוח הודעות חדשות ואי אפשר לערוך או למחוק הודעות קיימות.</p><p>להעביר את הערוץ ‎<strong>%{channelTitle}</strong> לארכיון?</p>"
@@ -77,6 +78,7 @@ he:
       collapse: "צמצום מגירת צ׳אט"
       confirm_flag: "לסמן את ההודעה של %{username}?"
       deleted: "הודעה נמחקה. [צפייה]"
+      hidden: "הודעה הוסתרה. [צפייה]"
       delete: "מחיקה"
       edited: "נערך"
       muted: "מושתק"
@@ -151,6 +153,7 @@ he:
       silence: "השתקת משתמש"
       return_to_list: "חזרה לרשימת הערוצים"
       scroll_to_bottom: "גלילה לתחתית"
+      scroll_to_new_messages: "הצגת הודעות חדשות"
       sound:
         title: "צליל התראת צ׳אט שולחן עבודה"
       sounds:
@@ -197,6 +200,8 @@ he:
         title: כותרת
         description: תיאור
       channel_info:
+        back_to_all_channels: "כל הערוצים"
+        back_to_channel: "חזרה"
         tabs:
           about: על אודות
           members: חברים
@@ -408,3 +413,6 @@ he:
     topic_statuses:
       chat:
         help: "הצ׳אט מופעל בנושא הזה"
+    user:
+      allow_private_messages: "לאפשר למשתמשים אחרים לשלוח לי הודעות פרטיות והודעות ישירות בצ׳אט"
+      allow_private_messages_from_specific_users: "לאפשר רק למשתמשים מסוימים לשלוח לי הודעות פרטיות או הודעות ישירות בצ׳אט"

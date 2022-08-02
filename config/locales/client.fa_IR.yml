@@ -27,7 +27,6 @@ fa_IR:
       cancel: "لغو"
       cancel_reply: "لغو پاسخ"
       chat_channels: "کانال‌ها"
-      leave: "ترک کانال"
       browse_all_channels: "مرور همه کانال‌ها"
       move_to_channel:
         title: "انتقال پیام‌ها به کانال"
@@ -40,8 +39,10 @@ fa_IR:
         open_channel: "باز کردن کانال"
         archive_channel: "بایگانی کانال"
         delete_channel: "حذف کانال"
-        join_channel: "پیوستن"
+        join_channel: "پیوستن به کانال"
         leave_channel: "ترک کانال"
+        join: "پیوستن"
+        leave: "ترک کردن"
       channel_archive:
         title: "بایگانی کانال"
         retry: "تلاش مجدد"
@@ -61,6 +62,7 @@ fa_IR:
       close: "بستن"
       confirm_flag: "آیا برای پرچم گذاری پیام %{username} مطمئن هستید؟"
       deleted: "یک پیام حذف شد. [view]"
+      hidden: "یک پیام پنهان شده است. [view]"
       delete: "حذف"
       edited: "ویرایش شده"
       muted: "بی‌صدا شد"
@@ -107,6 +109,7 @@ fa_IR:
       select: "انتخاب کنید"
       return_to_list: "بازگشت به فهرست کانال‌ها"
       scroll_to_bottom: "حرکت به پایین"
+      scroll_to_new_messages: "مشاهده پیام‌های جدید"
       sound:
         title: "صدای آگاه‌سازی گفتگوی دسکتاپ"
       sounds:
@@ -147,6 +150,8 @@ fa_IR:
         title: عنوان
         description: توضیحات
       channel_info:
+        back_to_all_channels: "همه کانال‌ها"
+        back_to_channel: "بازگشت"
         tabs:
           about: درباره
           members: اعضا
@@ -277,3 +282,9 @@ fa_IR:
     topic_statuses:
       chat:
         help: "گفتگو برای این موضوع فعال است"
+    user:
+      allow_private_messages: "به دیگر، کاربران اجازه دهید پیام‌های شخصی و پیام‌های مستقیم در گفتگو را برای من ارسال کنند"
+      muted_users_instructions: "همه آگاه‌سازی‌ها، پیام‌های شخصی و پیام‌های مستقیم در گفتگو از این کاربران را سرکوب کنید."
+      allowed_pm_users_instructions: "فقط پیام‌های شخصی یا پیام‌های مستقیم در گفتگو را از این کاربران اجازه دهید."
+      allow_private_messages_from_specific_users: "فقط به کاربران خاصی اجازه دهید، تا پیام‌های شخصی یا پیام‌های مستقیم در گفتگو را برای من ارسال کنند"
+      ignored_users_instructions: "تمام نوشته‌ها، آگاه‌سازی‌ها، پیام‌های شخصی و پیام‌های مستقیم در گفتگو این کاربران را سرکوب کنید."

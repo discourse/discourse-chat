@@ -17,7 +17,6 @@ es:
       cancel: "Cancelar"
       cancel_reply: "Cancelar respuesta"
       chat_channels: "Canales"
-      leave: "Abandonar canal"
       click_to_join: "Haz clic aquí para ver los canales disponibles."
       close: "Cerrar"
       collapse: "Contraer contenedor del chat"

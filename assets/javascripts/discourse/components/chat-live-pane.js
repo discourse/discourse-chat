@@ -297,13 +297,6 @@ export default Component.extend({
               ? newMessages.concat(this.messages)
               : this.messages.concat(newMessages)
           );
-
-          // this part is especially important on safari to avoid a bug where
-          // manually scrolling, scrolls to the first prepended message
-          const focusedMessage = loadingPast
-            ? newMessages.lastObject
-            : newMessages.firstObject;
-          this.scrollToMessage(focusedMessage.messageLookupId);
         }
         this.setCanLoadMoreDetails(messages.resultSetMeta);
         return messages;
@@ -947,7 +940,7 @@ export default Component.extend({
         let latestUnreadMsgId = this.lastSendReadMessageId;
         if (this.messages[this.messages.length - 1]?.id > latestUnreadMsgId) {
           const visibleMessages = document.querySelectorAll(
-            ".chat-message-content[data-visible=true]"
+            ".chat-message-container[data-visible=true]"
           );
           if (visibleMessages?.length > 0) {
             latestUnreadMsgId = parseInt(

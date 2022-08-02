@@ -12,13 +12,13 @@ export default class ChatMessageVisibilityObserver extends Service {
       rootMargin: "-10px",
     };
 
-    const callback = (entries) => {
-      entries.forEach((entry) => {
-        entry.target.dataset.visible = entry.isIntersecting;
-      });
-    };
+    this.observer = new IntersectionObserver(this._observerCallback, options);
+  }
 
-    this.observer = new IntersectionObserver(callback, options);
+  _observerCallback(entries) {
+    entries.forEach((entry) => {
+      entry.target.dataset.visible = entry.isIntersecting;
+    });
   }
 
   willDestroy() {

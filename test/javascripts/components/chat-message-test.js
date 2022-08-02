@@ -1,5 +1,5 @@
 import User from "discourse/models/user";
-import { render } from "@ember/test-helpers";
+import { render, waitFor } from "@ember/test-helpers";
 import ChatMessage from "discourse/plugins/discourse-chat/discourse/models/chat-message";
 import { exists, query } from "discourse/tests/helpers/qunit-helpers";
 import { setupRenderingTest } from "discourse/tests/helpers/component-test";
@@ -114,6 +114,18 @@ module("Discourse Chat | Component | chat-message", function (hooks) {
     assert.ok(
       exists(".chat-message-hidden .chat-message-expand"),
       "has the correct hidden css class and expand button within"
+    );
+  });
+
+  test("Message marked as visible", async function (assert) {
+    this.setProperties(generateMessageProps());
+
+    await render(template);
+    await waitFor("div[data-visible=true]");
+
+    assert.ok(
+      exists(".chat-message-container[data-visible=true]"),
+      "message is marked as visible"
     );
   });
 });

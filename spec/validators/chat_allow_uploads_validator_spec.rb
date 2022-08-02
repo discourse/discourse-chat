@@ -20,7 +20,7 @@ RSpec.describe ChatAllowUploadsValidator do
       )
     end
 
-    it "does allow chat uploads to be enabled if allow_unsecure_chat_uploads global setting is set" do
+    it "allows chat uploads to be enabled if allow_unsecure_chat_uploads global setting is enabled" do
       global_setting :allow_unsecure_chat_uploads, true
       validator = described_class.new
       expect(validator.valid_value?("t")).to eq(true)

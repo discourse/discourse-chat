@@ -9,6 +9,7 @@ import slugifyChannel from "discourse/plugins/discourse-chat/discourse/lib/slugi
 
 createWidgetFrom(DefaultNotificationItem, "chat-invitation-notification-item", {
   services: ["chat", "router"],
+
   text(data) {
     const username = formatUsername(data.invited_by_username);
     return I18n.t(data.message, { username });
@@ -33,7 +34,9 @@ createWidgetFrom(DefaultNotificationItem, "chat-invitation-notification-item", {
   },
 
   url(data) {
-    const title = slugifyChannel(data.chat_channel_title);
+    const title = data.chat_channel_title
+      ? slugifyChannel(data.chat_channel_title)
+      : "-";
     return `/chat/channel/${data.chat_channel_id}/${title}?messageId=${data.chat_message_id}`;
   },
 });

@@ -9,6 +9,7 @@ import slugifyChannel from "discourse/plugins/discourse-chat/discourse/lib/slugi
 
 const chatNotificationItem = {
   services: ["chat", "router"],
+
   text(notificationName, data) {
     const username = formatUsername(data.mentioned_by_username);
     const identifier = data.identifier ? `@${data.identifier}` : null;
@@ -43,7 +44,9 @@ const chatNotificationItem = {
   },
 
   url(data) {
-    const title = slugifyChannel(data.chat_channel_title);
+    const title = data.chat_channel_title
+      ? slugifyChannel(data.chat_channel_title)
+      : "-";
     return `/chat/channel/${data.chat_channel_id}/${title}?messageId=${data.chat_message_id}`;
   },
 };

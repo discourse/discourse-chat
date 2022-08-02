@@ -4,6 +4,7 @@ import EmberObject, { action } from "@ember/object";
 import { ajax } from "discourse/lib/ajax";
 import { inject as service } from "@ember/service";
 import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
+import slugifyChannel from "discourse/plugins/discourse-chat/discourse/lib/slugify-channel";
 
 export default DiscourseRoute.extend({
   chat: service(),
@@ -39,6 +40,12 @@ export default DiscourseRoute.extend({
   afterModel(model) {
     this.appEvents.trigger("chat:navigated-to-full-page");
     this.chat.setActiveChannel(model?.chatChannel);
+
+    const queryParams = this.paramsFor(this.routeName);
+    const slug = slugifyChannel(model.chatChannel.title);
+    if (queryParams?.channelTitle !== slug) {
+      this.replaceWith("chat.channel.index", model.chatChannel.id, slug);
+    }
   },
 
   setupController(controller) {

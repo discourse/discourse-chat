@@ -58,4 +58,4 @@ jobs:
 
       - name: Syntax Tree
         if: ${{ always() }}
-        run: RUBYOPT="-W0" bundle exec stree check --print-width=100 --plugins=plugin/trailing_comma **/*.rb Gemfile **/*.rake
+        run: RUBYOPT="-W:no-experimental" bundle exec stree check --print-width=100 --plugins=plugin/trailing_comma **/*.rb Gemfile **/*.rake

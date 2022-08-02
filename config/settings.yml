@@ -74,9 +74,9 @@ plugins:
   chat_allow_uploads:
     default: true
     client: true
+    validator: "ChatAllowUploadsValidator"
   max_chat_auto_joined_users:
     min: 0
     default: 10000
     hidden: true
     client: true
-    

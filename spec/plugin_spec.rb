@@ -304,4 +304,25 @@ describe "discourse-chat" do
       end
     end
   end
+
+  describe "secure media compatibility" do
+    before { enable_secure_media }
+
+    it "disables chat uploads if secure media is enabled" do
+      DiscourseChat::SecureMediaCompatibility.update_settings
+      expect(SiteSetting.chat_allow_uploads).to eq(false)
+      last_history = UserHistory.last
+      expect(last_history.action).to eq(UserHistory.actions[:change_site_setting])
+      expect(last_history.previous_value).to eq("true")
+      expect(last_history.new_value).to eq("false")
+      expect(last_history.subject).to eq("chat_allow_uploads")
+      expect(last_history.context).to eq("Disabled because secure_media is enabled")
+    end
+
+    it "does not disable chat uploads if the DISCOURSE_ALLOW_UNSECURE_CHAT_UPLOADS env var is set" do
+      ENV["DISCOURSE_ALLOW_UNSECURE_CHAT_UPLOADS"] = "true"
+      expect { DiscourseChat::SecureMediaCompatibility.update_settings }.not_to change { UserHistory.count }
+      expect(SiteSetting.chat_allow_uploads).to eq(true)
+    end
+  end
 end

@@ -69,6 +69,7 @@ add_admin_route "chat.admin.title", "chat"
 
 # Site setting validators must be loaded before initialize
 require_relative "lib/validators/chat_default_channel_validator.rb"
+require_relative "lib/validators/chat_allow_uploads_validator.rb"
 require_relative "app/core_ext/plugin_instance.rb"
 
 after_initialize do
@@ -161,6 +162,7 @@ after_initialize do
   load File.expand_path("../lib/extensions/user_email_extension.rb", __FILE__)
   load File.expand_path("../lib/slack_compatibility.rb", __FILE__)
   load File.expand_path("../lib/post_notification_handler.rb", __FILE__)
+  load File.expand_path("../lib/secure_media_compatibility.rb", __FILE__)
   load File.expand_path("../app/jobs/regular/auto_manage_channel_memberships.rb", __FILE__)
   load File.expand_path("../app/jobs/regular/auto_join_channel_batch.rb", __FILE__)
   load File.expand_path("../app/jobs/regular/process_chat_message.rb", __FILE__)
@@ -188,6 +190,8 @@ after_initialize do
     load File.expand_path("../lib/discourse_dev/direct_channel.rb", __FILE__)
     load File.expand_path("../lib/discourse_dev/message.rb", __FILE__)
   end
+
+  DiscourseChat::SecureMediaCompatibility.update_settings
 
   UserNotifications.append_view_path(File.expand_path("../app/views", __FILE__))
 

@@ -41,6 +41,6 @@ export default class ChatVh extends Component {
 
   @bind
   setVHThrottler() {
-    throttle(this, this.setVH, 100);
+    throttle(this, this.setVH, 100, false);
   }
 }

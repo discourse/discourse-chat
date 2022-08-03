@@ -11,7 +11,10 @@ class DisableChatUploadsIfSecureMediaEnabled < ActiveRecord::Migration[7.0]
   def up
     chat_allow_uploads_value =
       DB.query_single("SELECT value FROM site_settings WHERE name = 'chat_allow_uploads'").first
-    chat_uploads_enabled = chat_allow_uploads_value == "t"
+
+    # nil means it is true, since the default value is true
+    chat_uploads_enabled = chat_allow_uploads_value == "t" || chat_allow_uploads_value.nil?
+
     secure_media_enabled =
       DB.query_single("SELECT value FROM site_settings WHERE name = 'secure_media'").first == "t"
 

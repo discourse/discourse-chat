@@ -16,8 +16,3 @@
 
 - [ ] desktop – wide screen
 - [ ] mobile – `?mobile_view=1`
-
-### Ember
-
-- [ ] ember-cli
-- [ ] legacy

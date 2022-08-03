@@ -251,4 +251,26 @@ acceptance("Discourse Chat - Keyboard shortcuts", function (needs) {
       "modal dismissed after submitting link"
     );
   });
+
+  test("toggle chat in float", async function (assert) {
+    await visit("/latest");
+    this.chatService.set("sidebarActive", false);
+    this.chatService.set("chatWindowFullPage", false);
+
+    await triggerKeyEvent(document.body, "keydown", "-");
+    await settled();
+    assert.ok(
+      query(".topic-chat-container").classList.contains("visible"),
+      "chat float is open"
+    );
+
+    const composerInput = query(".chat-composer-input");
+    await focus(composerInput);
+    await triggerKeyEvent(composerInput, "keydown", "Escape");
+    await settled();
+    assert.ok(
+      exists(".topic-chat-float-container.hidden"),
+      "chat drawer hidden"
+    );
+  });
 });

@@ -109,11 +109,12 @@ describe DiscourseChat::GuardianExtensions do
           before { SiteSetting.enable_category_group_moderation = true }
 
           it "returns true if the regular user is part of the reviewable_by_group for the category" do
+            moderator = Fabricate(:user)
             mods = Fabricate(:group)
-            mods.add(user)
+            mods.add(moderator)
             category.update!(reviewable_by_group: mods)
-            expect(staff_guardian.can_moderate_chat?(channel.chatable)).to eq(true)
-            expect(guardian.can_moderate_chat?(channel.chatable)).to eq(true)
+            expect(Guardian.new(Fabricate(:admin)).can_moderate_chat?(channel.chatable)).to eq(true)
+            expect(Guardian.new(moderator).can_moderate_chat?(channel.chatable)).to eq(true)
           end
         end
       end
@@ -126,6 +127,119 @@ describe DiscourseChat::GuardianExtensions do
         it "returns true for staff and false for regular users" do
           expect(staff_guardian.can_moderate_chat?(channel.chatable)).to eq(true)
           expect(guardian.can_moderate_chat?(channel.chatable)).to eq(false)
+        end
+      end
+    end
+
+    describe "#can_restore_chat?" do
+      fab!(:message) { Fabricate(:chat_message, chat_channel: channel, user: user) }
+      fab!(:chatable) { Fabricate(:category) }
+
+      context "channel is closed" do
+        before { channel.update!(status: :closed) }
+
+        it "disallows a owner to restore" do
+          expect(guardian.can_restore_chat?(message, chatable)).to eq(false)
+        end
+
+        it "allows a staff to restore" do
+          expect(staff_guardian.can_restore_chat?(message, chatable)).to eq(true)
+        end
+      end
+
+      context "chatable is a direct message" do
+        fab!(:chatable) { DirectMessageChannel.create! }
+
+        it "allows owner to restore" do
+          expect(guardian.can_restore_chat?(message, chatable)).to eq(true)
+        end
+
+        it "allows staff to restore" do
+          expect(staff_guardian.can_restore_chat?(message, chatable)).to eq(true)
+        end
+      end
+
+      context "user is not owner of the message" do
+        fab!(:message) { Fabricate(:chat_message, chat_channel: channel, user: Fabricate(:user)) }
+
+        context "chatable is a category" do
+          context "category is not restricted" do
+            it "allows staff to restore" do
+              expect(staff_guardian.can_restore_chat?(message, chatable)).to eq(true)
+            end
+
+            it "disallows any user to restore" do
+              expect(guardian.can_restore_chat?(message, chatable)).to eq(false)
+            end
+          end
+
+          context "category is restricted" do
+            fab!(:chatable) { Fabricate(:category, read_restricted: true) }
+
+            it "allows staff to restore" do
+              expect(staff_guardian.can_restore_chat?(message, chatable)).to eq(true)
+            end
+
+            it "disallows any user to restore" do
+              expect(guardian.can_restore_chat?(message, chatable)).to eq(false)
+            end
+
+            context "group moderation is enabled" do
+              before { SiteSetting.enable_category_group_moderation = true }
+
+              it "allows a group moderator to restore" do
+                moderator = Fabricate(:user)
+                mods = Fabricate(:group)
+                mods.add(moderator)
+                chatable.update!(reviewable_by_group: mods)
+                expect(Guardian.new(moderator).can_restore_chat?(message, chatable)).to eq(true)
+              end
+            end
+          end
+
+          context "chatable is a direct message" do
+            fab!(:chatable) { DirectMessageChannel.create! }
+
+            it "allows staff to restore" do
+              expect(staff_guardian.can_restore_chat?(message, chatable)).to eq(true)
+            end
+
+            it "disallows any user to restore" do
+              expect(guardian.can_restore_chat?(message, chatable)).to eq(false)
+            end
+          end
+        end
+      end
+
+      context "user is owner of the message" do
+        context "chatable is a category" do
+          it "allows to restore if owner can see category" do
+            expect(guardian.can_restore_chat?(message, chatable)).to eq(true)
+          end
+
+          context "category is restricted" do
+            fab!(:chatable) { Fabricate(:category, read_restricted: true) }
+
+            it "disallows to restore if owner can't see category" do
+              expect(guardian.can_restore_chat?(message, chatable)).to eq(false)
+            end
+
+            it "allows staff to restore" do
+              expect(staff_guardian.can_restore_chat?(message, chatable)).to eq(true)
+            end
+          end
+        end
+
+        context "chatable is a direct message" do
+          fab!(:chatable) { DirectMessageChannel.create! }
+
+          it "allows staff to restore" do
+            expect(staff_guardian.can_restore_chat?(message, chatable)).to eq(true)
+          end
+
+          it "allows owner to restore" do
+            expect(guardian.can_restore_chat?(message, chatable)).to eq(true)
+          end
         end
       end
     end

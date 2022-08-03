@@ -1457,8 +1457,7 @@ export default Component.extend({
   _setupVisibleMessagesObserver() {
     const options = {
       root: document.querySelector(".chat-messages-container"),
-      rootMargin: "0px",
-      threshold: 0.6,
+      rootMargin: "-30px",
     };
 
     const callback = (entries) => {

@@ -144,7 +144,7 @@ export const chatChannels = {
       chatable: chatables[8],
     },
     {
-      id: 7,
+      id: 10,
       chatable_id: 8,
       chatable_type: "Category",
       chatable_url: "/c/public-category/8",

@@ -169,7 +169,8 @@ acceptance("Discourse Chat - Keyboard shortcuts", function (needs) {
       altKey: true,
     });
     await settled();
-    assert.ok(query(".topic-chat-container").classList.contains("channel-7"));
+
+    assert.ok(query(".topic-chat-container").classList.contains("channel-10"));
 
     await triggerKeyEvent(document.body, "keydown", "ArrowUp", {
       altKey: true,

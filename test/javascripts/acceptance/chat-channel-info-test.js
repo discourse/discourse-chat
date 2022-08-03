@@ -43,7 +43,7 @@ acceptance("Discourse Chat - chat channel info", function (needs) {
   });
 
   test("Direct visit sets origin as channel", async function (assert) {
-    await visit("/chat/channel/75/site/info");
+    await visit("/chat/channel/1/my-category-title/info");
 
     assert.strictEqual(this.manager.origin, ORIGINS.channel);
   });
@@ -56,8 +56,8 @@ acceptance("Discourse Chat - chat channel info", function (needs) {
   });
 
   test("Visit from channel sets origin as channel", async function (assert) {
-    await visit("/chat/channel/75/site");
-    await visit("/chat/channel/75/site/info");
+    await visit("/chat/channel/1/my-category-title");
+    await visit("/chat/channel/1/my-category-title/info");
 
     assert.strictEqual(this.manager.origin, ORIGINS.channel);
   });

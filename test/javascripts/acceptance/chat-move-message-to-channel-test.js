@@ -99,7 +99,7 @@ acceptance(
 
       assert.strictEqual(
         currentURL(),
-        "/chat/channel/11/Coolest%20thing%20you%20have%20seen%20today",
+        "/chat/channel/11/another-category",
         "it goes to the destination channel after the move"
       );
     });

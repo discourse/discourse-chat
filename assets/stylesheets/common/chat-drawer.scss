@@ -106,6 +106,7 @@ body.composer-open .topic-chat-float-container {
 }
 
 .topic-chat-drawer-header__title {
+  @include ellipsis;
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -133,7 +134,7 @@ body.composer-open .topic-chat-float-container {
 
   .chat-channel-title {
     font-weight: 700;
-    width: calc(95% - 0.5em);
+    width: 100%;
 
     .chat-name,
     .topic-chat-name,

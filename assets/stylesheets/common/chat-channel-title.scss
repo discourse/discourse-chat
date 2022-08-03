@@ -1,7 +1,6 @@
 .chat-channel-title {
   display: flex;
   align-items: center;
-  @include ellipsis;
 
   .category-chat-private .d-icon {
     background-color: var(--secondary);
@@ -19,6 +18,7 @@
   .category-chat-name,
   .topic-chat-name,
   .tag-chat-name,
+  &__usernames,
   .dm-usernames {
     @include ellipsis;
     font-size: var(--font-0);

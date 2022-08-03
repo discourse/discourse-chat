@@ -69,7 +69,10 @@ add_admin_route "chat.admin.title", "chat"
 
 # Site setting validators must be loaded before initialize
 require_relative "lib/validators/chat_default_channel_validator.rb"
+require_relative "lib/validators/chat_allow_uploads_validator.rb"
 require_relative "app/core_ext/plugin_instance.rb"
+
+GlobalSetting.add_default(:allow_unsecure_chat_uploads, false)
 
 after_initialize do
   module ::DiscourseChat
@@ -161,6 +164,7 @@ after_initialize do
   load File.expand_path("../lib/extensions/user_email_extension.rb", __FILE__)
   load File.expand_path("../lib/slack_compatibility.rb", __FILE__)
   load File.expand_path("../lib/post_notification_handler.rb", __FILE__)
+  load File.expand_path("../lib/secure_media_compatibility.rb", __FILE__)
   load File.expand_path("../app/jobs/regular/auto_manage_channel_memberships.rb", __FILE__)
   load File.expand_path("../app/jobs/regular/auto_join_channel_batch.rb", __FILE__)
   load File.expand_path("../app/jobs/regular/process_chat_message.rb", __FILE__)
@@ -440,6 +444,10 @@ after_initialize do
       Rails.logger.warn(
         "Error updating user_options fields after chat retention settings changed: #{e}",
       )
+    end
+
+    if name == :secure_media && old_value == false && new_value == true
+      DiscourseChat::SecureMediaCompatibility.update_settings
     end
   end
 

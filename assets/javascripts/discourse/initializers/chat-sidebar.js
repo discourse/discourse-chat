@@ -15,6 +15,12 @@ import { decorateUsername } from "discourse/helpers/decorate-username-selector";
 export default {
   name: "chat-sidebar",
   initialize(container) {
+    this.chatService = container.lookup("service:chat");
+
+    if (!this.chatService.userCanChat) {
+      return;
+    }
+
     withPluginApi("1.3.0", (api) => {
       api.addSidebarSection(
         (BaseCustomSidebarSection, BaseCustomSidebarSectionLink) => {

@@ -907,6 +907,7 @@ html.has-full-page-chat {
 
   // these need to apply to desktop too, because iPads
   &.discourse-touch {
+    // iPad web
     #main-outlet-wrapper {
       // restrict the row height, including when virtual keyboard is open
       grid-template-rows: calc(
@@ -915,6 +916,17 @@ html.has-full-page-chat {
       .sidebar-wrapper {
         // prevents sidebar from overflowing behind the virtual keyboard
         height: 100%;
+      }
+    }
+
+    // iPad webview
+    .footer-nav-ipad {
+      #main-outlet-wrapper {
+        // restrict the row height, including when virtual keyboard is open
+        grid-template-rows: calc(
+          var(--chat-vh, 1vh) * 100 -
+            calc(var(--header-offset) + var(--footer-nav-height))
+        );
       }
     }
 

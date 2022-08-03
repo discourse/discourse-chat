@@ -252,21 +252,21 @@ acceptance("Discourse Chat - Keyboard shortcuts", function (needs) {
     );
   });
 
-  test("toggle chat in float", async function (assert) {
+  test("Dash key (-) opens chat float", async function (assert) {
     await visit("/latest");
     this.chatService.set("sidebarActive", false);
     this.chatService.set("chatWindowFullPage", false);
 
     await triggerKeyEvent(document.body, "keydown", "-");
     await settled();
-    assert.ok(
-      query(".topic-chat-container").classList.contains("visible"),
-      "chat float is open"
-    );
+    assert.ok(visible(".topic-chat-float-container"), "chat float is open");
+  });
 
-    const composerInput = query(".chat-composer-input");
-    await focus(composerInput);
-    await triggerKeyEvent(composerInput, "keydown", "Escape");
+  test("Escape to close chat float", async function (assert) {
+    await visit("/latest");
+    this.chatService.set("sidebarActive", false);
+    this.chatService.set("chatWindowFullPage", false);
+    await click(".header-dropdown-toggle.open-chat");
     await settled();
     assert.ok(
       exists(".topic-chat-float-container.hidden"),

@@ -56,6 +56,21 @@ export default {
       appEvents.trigger("chat:open-insert-link-modal", { event });
     };
 
+    const openChatDrawer = (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      appEvents.trigger("chat:toggle-open", event);
+    };
+
+    const closeChatDrawer = (event) => {
+      if (!isChatComposer(event.target)) {
+        return;
+      }
+      event.preventDefault();
+      event.stopPropagation();
+      appEvents.trigger("chat:toggle-close", event);
+    };
+
     withPluginApi("0.12.1", (api) => {
       api.addKeyboardShortcut(`${KEY_MODIFIER}+k`, openChannelSelector, {
         global: true,
@@ -145,6 +160,26 @@ export default {
           },
         }
       );
+      api.addKeyboardShortcut(`-`, (event) => openChatDrawer(event), {
+        global: true,
+        help: {
+          category: "chat",
+          name: "chat.keyboard_shortcuts.drawer_open",
+          definition: {
+            keys1: ["-"],
+          },
+        },
+      });
+      api.addKeyboardShortcut(`esc`, (event) => closeChatDrawer(event), {
+        global: true,
+        help: {
+          category: "chat",
+          name: "chat.keyboard_shortcuts.drawer_close",
+          definition: {
+            keys1: ["esc"],
+          },
+        },
+      });
     });
   },
 };

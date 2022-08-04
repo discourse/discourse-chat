@@ -38,6 +38,7 @@ export default Component.extend({
     this.appEvents.on("chat:navigated-to-full-page", this, "close");
     this.appEvents.on("chat:open-view", this, "openView");
     this.appEvents.on("chat:toggle-open", this, "toggleChat");
+    this.appEvents.on("chat:toggle-close", this, "close");
     this.appEvents.on(
       "chat:open-channel-for-chatable",
       this,
@@ -73,6 +74,7 @@ export default Component.extend({
       this.appEvents.off("chat:open-view", this, "openView");
       this.appEvents.off("chat:navigated-to-full-page", this, "close");
       this.appEvents.off("chat:toggle-open", this, "toggleChat");
+      this.appEvents.off("chat:toggle-close", this, "close");
       this.appEvents.off(
         "chat:open-channel-for-chatable",
         this,

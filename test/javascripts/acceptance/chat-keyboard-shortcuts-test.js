@@ -251,4 +251,28 @@ acceptance("Discourse Chat - Keyboard shortcuts", function (needs) {
       "modal dismissed after submitting link"
     );
   });
+
+  test("Dash key (-) opens chat float", async function (assert) {
+    await visit("/latest");
+    this.chatService.set("sidebarActive", false);
+    this.chatService.set("chatWindowFullPage", false);
+
+    await triggerKeyEvent(document.body, "keydown", "-");
+    await settled();
+    assert.ok(exists(".topic-chat-drawer-content"), "chat float is open");
+  });
+
+  test("Escape to close chat float", async function (assert) {
+    await visit("/latest");
+    this.chatService.set("sidebarActive", false);
+    this.chatService.set("chatWindowFullPage", false);
+
+    await click(".header-dropdown-toggle.open-chat");
+    await settled();
+
+    const composerInput = query(".chat-composer-input");
+    await focus(composerInput);
+    await triggerKeyEvent(composerInput, "keydown", "Escape");
+    assert.ok(!exists(".topic-chat-drawer-content"), "chat float is closed");
+  });
 });

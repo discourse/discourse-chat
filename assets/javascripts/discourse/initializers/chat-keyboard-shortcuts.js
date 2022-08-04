@@ -38,6 +38,16 @@ export default {
     };
 
     const isChatComposer = (el) => el.classList.contains("chat-composer-input");
+    const isInputSelection = (el) => {
+      const inputs = ["input", "textarea", "select", "button"];
+      const elementTagName = el?.tagName.toLowerCase();
+
+      if (inputs.includes(elementTagName)) {
+        return false;
+      }
+      return true;
+    };
+
     const modifyComposerSelection = (event, type) => {
       if (!isChatComposer(event.target)) {
         return;
@@ -57,6 +67,9 @@ export default {
     };
 
     const openChatDrawer = (event) => {
+      if (!isInputSelection(event.target)) {
+        return;
+      }
       event.preventDefault();
       event.stopPropagation();
       appEvents.trigger("chat:toggle-open", event);

@@ -247,8 +247,7 @@ describe DiscourseChat::ChatChannelFetcher do
             .unread_count,
         ).to eq(2)
 
-        membership = resolved_memberships.last
-        membership.update!(muted: true)
+        resolved_memberships.last.update!(muted: true)
 
         resolved_memberships = memberships
         subject.secured_public_channels(guardian, resolved_memberships, following: following)

@@ -12,7 +12,7 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     render_serialized(
       @chat_channel,
       ChatChannelSerializer,
-      membership: chat_channel.membership_for(current_user),
+      membership: @chat_channel.membership_for(current_user),
     )
   end
 

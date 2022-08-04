@@ -78,10 +78,6 @@ export default class ChatMessageReaction extends Component {
           });
 
         event.stopPropagation();
-
-        if (canVibrate) {
-          navigator.vibrate(5);
-        }
       },
     });
 

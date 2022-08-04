@@ -327,6 +327,7 @@ $float-height: 530px;
     transition: scrollbar-color 0.2s ease-in-out;
     display: flex;
     flex-direction: column-reverse;
+    -webkit-overflow-scrolling: touch;
 
     &::-webkit-scrollbar {
       width: 15px;
@@ -657,8 +658,6 @@ body.has-full-page-chat {
   .chat-live-pane {
     box-sizing: border-box;
     height: 100%;
-    border-radius: 0 var(--full-page-border-radius)
-      var(--full-page-border-radius) 0;
   }
 }
 

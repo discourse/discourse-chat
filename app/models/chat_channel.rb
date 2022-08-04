@@ -2,16 +2,6 @@
 
 class ChatChannel < ActiveRecord::Base
   include Trashable
-  attribute :muted, default: false
-  attribute :desktop_notification_level,
-            default: UserChatChannelMembership::DEFAULT_NOTIFICATION_LEVEL
-  attribute :mobile_notification_level,
-            default: UserChatChannelMembership::DEFAULT_NOTIFICATION_LEVEL
-  attribute :following, default: false
-  attribute :unread_count, default: 0
-  attribute :unread_mentions, default: 0
-  attribute :last_read_message_id, default: nil
-
   belongs_to :chatable, polymorphic: true
   belongs_to :direct_message_channel,
              -> { where(chat_channels: { chatable_type: "DirectMessageChannel" }) },
@@ -30,6 +20,10 @@ class ChatChannel < ActiveRecord::Base
             },
             presence: true,
             allow_nil: true
+
+  def membership_for(user)
+    user_chat_channel_memberships.find_by(user: user)
+  end
 
   def add(user)
     ActiveRecord::Base.transaction do

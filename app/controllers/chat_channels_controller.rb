@@ -9,7 +9,11 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
   end
 
   def show
-    render_serialized(@chat_channel, ChatChannelSerializer)
+    render_serialized(
+      @chat_channel,
+      ChatChannelSerializer,
+      membership: chat_channel.membership_for(current_user),
+    )
   end
 
   def follow
@@ -56,7 +60,11 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
       UserChatChannelMembership.enforce_automatic_channel_memberships(chat_channel)
     end
 
-    render_serialized(chat_channel, ChatChannelSerializer)
+    render_serialized(
+      chat_channel,
+      ChatChannelSerializer,
+      membership: chat_channel.membership_for(current_user),
+    )
   end
 
   def edit
@@ -73,7 +81,11 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     chat_channel.save!
 
     ChatPublisher.publish_chat_channel_edit(chat_channel, current_user)
-    render_serialized(chat_channel, ChatChannelSerializer)
+    render_serialized(
+      chat_channel,
+      ChatChannelSerializer,
+      membership: chat_channel.membership_for(current_user),
+    )
   end
 
   def search
@@ -145,6 +157,7 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
         public_channels: public_channels,
         direct_message_channels: direct_message_channels,
         users: users_without_channel,
+        memberships: memberships,
       },
       ChatChannelSearchSerializer,
       root: false,

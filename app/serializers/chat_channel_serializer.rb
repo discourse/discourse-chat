@@ -8,11 +8,7 @@ class ChatChannelSerializer < ApplicationSerializer
              :chatable_type,
              :chatable_url,
              :description,
-             :last_read_message_id,
-             :muted,
              :title,
-             :unread_count,
-             :unread_mentions,
              :last_message_sent_at,
              :status,
              :archive_failed,
@@ -20,10 +16,12 @@ class ChatChannelSerializer < ApplicationSerializer
              :archived_messages,
              :total_messages,
              :archive_topic_id,
-             :memberships_count,
-             :desktop_notification_level,
-             :mobile_notification_level,
-             :following
+             :user_membership
+
+  def initialize(object, opts)
+    super(object, opts)
+    @user_membership = opts[:membership]
+  end
 
   def include_description?
     object.description.present?
@@ -31,10 +29,6 @@ class ChatChannelSerializer < ApplicationSerializer
 
   def memberships_count
     object.user_count
-  end
-
-  def include_muted?
-    !object.direct_message_channel?
   end
 
   def chatable_url
@@ -86,6 +80,12 @@ class ChatChannelSerializer < ApplicationSerializer
 
   def include_auto_join_users?
     scope.can_edit_chat_channel?
+  end
+
+  def user_membership
+    return if !@user_membership
+    @user_membership.chat_channel = object
+    UserChatChannelMembershipSerializer.new(@user_membership, scope: scope, root: false).as_json
   end
 
   alias_method :include_archive_topic_id?, :include_archive_status?

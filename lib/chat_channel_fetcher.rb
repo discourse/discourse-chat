@@ -14,7 +14,7 @@ module DiscourseChat::ChatChannelFetcher
     }
   end
 
-  def self.all_secured_channel_ids(guardian)
+  def self.all_secured_channel_ids(guardian, following: true)
     allowed_channel_ids_sql = <<~SQL
       -- secured category chat channels
       #{
@@ -46,6 +46,8 @@ module DiscourseChat::ChatChannelFetcher
     }
     SQL
 
+    return DB.query_single(allowed_channel_ids_sql) if !following
+
     DB.query_single(<<~SQL, user_id: guardian.user.id)
       SELECT chat_channel_id
       FROM user_chat_channel_memberships
@@ -65,6 +67,7 @@ module DiscourseChat::ChatChannelFetcher
           "LEFT JOIN categories ON categories.id = chat_channels.chatable_id AND chat_channels.chatable_type = 'Category'",
         )
         .where(chatable_type: ChatChannel.public_channel_chatable_types)
+        .where(id: all_secured_channel_ids(guardian, following: options[:following]))
 
     channels = channels.where(status: options[:status]) if options[:status].present?
 
@@ -91,7 +94,35 @@ module DiscourseChat::ChatChannelFetcher
     options[:offset] = [options[:offset].to_i, 0].max
 
     channels = channels.limit(options[:limit]).offset(options[:offset])
-    channels = filter_public_channels(channels, memberships, guardian).to_a
+
+    ###
+    # TODO (martin)
+    # This rats nest needs to be purged with cleansing fire.
+    #
+    # Suffer not the xenos to live.
+    #
+    unread_counts_per_channel = unread_counts(channels, guardian.user.id)
+    mention_notifications =
+      Notification.unread.where(
+        user_id: guardian.user.id,
+        notification_type: Notification.types[:chat_mention],
+      )
+    mention_notification_data = mention_notifications.map { |m| JSON.parse(m.data) }
+    channels.each do |channel|
+      membership = memberships.find { |m| m.chat_channel_id == channel.id }
+      if membership
+        membership.unread_mentions =
+          mention_notification_data.count do |data|
+            data["chat_channel_id"] == channel.id &&
+              data["chat_message_id"] > (membership.last_read_message_id || 0)
+          end
+        membership.unread_count = unread_counts_per_channel[channel.id] if !membership.muted
+      end
+    end
+    #
+    #####
+
+    channels = channels.to_a
     preload_custom_fields_for(channels)
     channels
   end
@@ -104,33 +135,6 @@ module DiscourseChat::ChatChannelFetcher
     )
   end
 
-  def self.filter_public_channels(channels, memberships, guardian)
-    mention_notifications =
-      Notification.unread.where(
-        user_id: guardian.user.id,
-        notification_type: Notification.types[:chat_mention],
-      )
-    mention_notification_data = mention_notifications.map { |m| JSON.parse(m.data) }
-
-    unread_counts_per_channel = unread_counts(channels, guardian.user.id)
-
-    channels.filter_map do |channel|
-      next if !guardian.can_see_chat_channel?(channel)
-
-      membership = memberships.find { |m| m.chat_channel_id == channel.id }
-      if membership
-        membership.unread_mentions =
-          mention_notification_data.count do |data|
-            data["chat_channel_id"] == channel.id &&
-              data["chat_message_id"] > (membership.last_read_message_id || 0)
-          end
-        membership.unread_count = unread_counts_per_channel[channel.id] if !membership.muted
-      end
-
-      channel
-    end
-  end
-
   def self.secured_direct_message_channels(user_id, memberships, guardian)
     query = ChatChannel.includes(chatable: [{ direct_message_users: :user }, :users])
     query = query.includes(chatable: [{ users: :user_status }]) if SiteSetting.enable_user_status
@@ -140,6 +144,7 @@ module DiscourseChat::ChatChannelFetcher
         .joins(:user_chat_channel_memberships)
         .where(user_chat_channel_memberships: { user_id: user_id, following: true })
         .where(chatable_type: "DirectMessageChannel")
+        .where(id: all_secured_channel_ids(guardian))
         .order(last_message_sent_at: :desc)
         .to_a
 
@@ -150,16 +155,16 @@ module DiscourseChat::ChatChannelFetcher
 
     unread_counts_per_channel = unread_counts(channels, user_id)
 
-    channels.filter_map do |channel|
-      next if !guardian.can_see_chat_channel?(channel)
-
+    ##
+    # TODO (martin)
+    # Find a nicer way to do this.
+    channels.each do |channel|
       membership = memberships.find { |m| m.chat_channel_id == channel.id }
 
       # direct message channels cannot be muted, so we always need the unread count
       membership.unread_count = unread_counts_per_channel[channel.id]
-
-      channel
     end
+    #####
   end
 
   def self.unread_counts(channels, user_id)

@@ -17,10 +17,11 @@ class DiscourseChat::Api::ChatChannelsController < DiscourseChat::Api
       channels.map do |channel|
         ChatChannelSerializer.new(
           channel,
-          membership: memberships.find_by { |membership| membership.chat_channel_id == channel.id },
+          scope: Guardian.new(current_user),
+          membership: memberships.find { |membership| membership.chat_channel_id == channel.id },
         )
       end
-    render json: serialized_channels
+    render json: serialized_channels, root: false
   end
 
   def update

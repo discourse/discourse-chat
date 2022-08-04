@@ -16,6 +16,7 @@ class ChatChannelSerializer < ApplicationSerializer
              :archived_messages,
              :total_messages,
              :archive_topic_id,
+             :memberships_count,
              :user_membership
 
   def initialize(object, opts)

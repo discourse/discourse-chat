@@ -239,22 +239,26 @@ describe DiscourseChat::ChatChannelFetcher do
         Fabricate(:chat_message, user: user2, chat_channel: category_channel)
         Fabricate(:chat_message, user: user2, chat_channel: category_channel)
 
-        result_category_channel =
-          subject
-            .secured_public_channels(guardian, memberships, following: following)
-            .find { |chan| chan.id == category_channel.id }
+        resolved_memberships = memberships
+        subject.secured_public_channels(guardian, resolved_memberships, following: following)
 
-        expect(result_category_channel.unread_count).to eq(2)
+        expect(
+          resolved_memberships
+            .find { |membership| membership.chat_channel_id == category_channel.id }
+            .unread_count,
+        ).to eq(2)
 
-        membership = memberships.last
+        membership = resolved_memberships.last
         membership.update!(muted: true)
 
-        result_category_channel =
-          subject
-            .secured_public_channels(guardian, memberships, following: following)
-            .find { |chan| chan.id == category_channel.id }
+        resolved_memberships = memberships
+        subject.secured_public_channels(guardian, resolved_memberships, following: following)
 
-        expect(result_category_channel.unread_count).to eq(0)
+        expect(
+          resolved_memberships
+            .find { |membership| membership.chat_channel_id == category_channel.id }
+            .unread_count,
+        ).to eq(0)
       end
     end
   end

@@ -59,8 +59,6 @@ export default class ChatMessageReaction extends Component {
       return;
     }
 
-    const canVibrate = this.capabilities.canVibrate && !isTesting();
-
     const popover = setupPopover(target, {
       interactive: false,
       allowHTML: true,

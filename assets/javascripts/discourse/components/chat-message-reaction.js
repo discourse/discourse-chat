@@ -5,7 +5,6 @@ import { emojiUnescape, emojiUrlFor } from "discourse/lib/text";
 import setupPopover from "discourse/lib/d-popover";
 import I18n from "I18n";
 import { schedule } from "@ember/runloop";
-import { isTesting } from "discourse-common/config/environment";
 
 export default class ChatMessageReaction extends Component {
   reaction = null;

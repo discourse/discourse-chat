@@ -272,7 +272,7 @@ acceptance("Discourse Chat - Keyboard shortcuts", function (needs) {
 
     const composerInput = query(".chat-composer-input");
     await focus(composerInput);
-    await triggerKeyEvent(document.body, "keydown", "Escape");
+    await triggerKeyEvent(composerInput, "keydown", "Escape");
     assert.ok(!exists(".topic-chat-drawer-content"), "chat float is closed");
   });
 });

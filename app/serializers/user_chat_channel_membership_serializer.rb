@@ -13,9 +13,9 @@ class UserChatChannelMembershipSerializer < ApplicationSerializer
 
   has_one :user, serializer: BasicUserSerializer, embed: :objects
 
-  def include_user?
-    return true if scope.anonymous?
-    scope.user.id != object.user_id
+  def user
+    return if scope.anonymous? || scope.user.id == object.user_id
+    object.user
   end
 
   def user_count

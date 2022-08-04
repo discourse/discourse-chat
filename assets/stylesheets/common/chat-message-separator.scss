@@ -4,6 +4,7 @@
   display: flex;
   font-size: var(--font-down-1);
   position: relative;
+  -webkit-transform: translateZ(0px);
 
   &.new-message {
     color: var(--danger-medium);

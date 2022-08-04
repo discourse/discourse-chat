@@ -15,7 +15,22 @@ module DiscourseChat::ChatChannelFetcher
   end
 
   def self.all_secured_channel_ids(guardian, following: true)
-    allowed_channel_ids_sql = <<~SQL
+    allowed_channel_ids_sql = generate_allowed_channel_ids_sql(guardian)
+
+    return DB.query_single(allowed_channel_ids_sql) if !following
+
+    DB.query_single(<<~SQL, user_id: guardian.user.id)
+      SELECT chat_channel_id
+      FROM user_chat_channel_memberships
+      WHERE user_chat_channel_memberships.user_id = :user_id
+      AND user_chat_channel_memberships.chat_channel_id IN (
+        #{allowed_channel_ids_sql}
+      )
+    SQL
+  end
+
+  def self.generate_allowed_channel_ids_sql(guardian)
+    <<~SQL
       -- secured category chat channels
       #{
       ChatChannel
@@ -45,17 +60,6 @@ module DiscourseChat::ChatChannelFetcher
         .to_sql
     }
     SQL
-
-    return DB.query_single(allowed_channel_ids_sql) if !following
-
-    DB.query_single(<<~SQL, user_id: guardian.user.id)
-      SELECT chat_channel_id
-      FROM user_chat_channel_memberships
-      WHERE user_chat_channel_memberships.user_id = :user_id
-      AND user_chat_channel_memberships.chat_channel_id IN (
-        #{allowed_channel_ids_sql}
-      )
-    SQL
   end
 
   def self.secured_public_channels(guardian, memberships, options = { following: true })
@@ -67,7 +71,7 @@ module DiscourseChat::ChatChannelFetcher
           "LEFT JOIN categories ON categories.id = chat_channels.chatable_id AND chat_channels.chatable_type = 'Category'",
         )
         .where(chatable_type: ChatChannel.public_channel_chatable_types)
-        .where(id: all_secured_channel_ids(guardian, following: options[:following]))
+        .where("chat_channels.id IN (#{generate_allowed_channel_ids_sql(guardian)})")
 
     channels = channels.where(status: options[:status]) if options[:status].present?
 
@@ -144,7 +148,7 @@ module DiscourseChat::ChatChannelFetcher
         .joins(:user_chat_channel_memberships)
         .where(user_chat_channel_memberships: { user_id: user_id, following: true })
         .where(chatable_type: "DirectMessageChannel")
-        .where(id: all_secured_channel_ids(guardian))
+        .where("chat_channels.id IN (#{generate_allowed_channel_ids_sql(guardian)})")
         .order(last_message_sent_at: :desc)
         .to_a
 

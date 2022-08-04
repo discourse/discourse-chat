@@ -229,12 +229,11 @@ describe DiscourseChat::ChatChannelFetcher do
       end
 
       it "includes the unread count based on mute settings" do
-        membership =
-          UserChatChannelMembership.create!(
-            user: user1,
-            chat_channel: category_channel,
-            following: true,
-          )
+        UserChatChannelMembership.create!(
+          user: user1,
+          chat_channel: category_channel,
+          following: true,
+        )
 
         Fabricate(:chat_message, user: user2, chat_channel: category_channel)
         Fabricate(:chat_message, user: user2, chat_channel: category_channel)

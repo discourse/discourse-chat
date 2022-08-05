@@ -161,19 +161,17 @@ export default Component.extend({
       this.set("allPastMessagesLoaded", false);
       this.cancelEditing();
 
-      this.chat
-        .getChannelBy("id", this.chatChannel.id)
-        .then(() => {
-          if (this._selfDeleted) {
-            return;
-          }
+      this.chat.getChannelBy("id", this.chatChannel.id).then(() => {
+        if (this._selfDeleted) {
+          return;
+        }
 
-          this.fetchMessages(this.chatChannel);
+        this.fetchMessages(this.chatChannel);
 
-          if (!this.chatChannel.isDraft) {
-            this.loadDraftForChannel(this.chatChannel.id);
-          }
-        });
+        if (!this.chatChannel.isDraft) {
+          this.loadDraftForChannel(this.chatChannel.id);
+        }
+      });
     }
 
     this.currentUserTimezone = this.currentUser?.resolvedTimezone(

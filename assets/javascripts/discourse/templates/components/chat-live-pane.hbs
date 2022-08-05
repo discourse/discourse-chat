@@ -95,7 +95,7 @@
       cancelSelecting=(action "cancelSelecting")
     }}
   {{else}}
-    {{#if chatChannel.isFollowing}}
+    {{#if (or chatChannel.isDraft chatChannel.isFollowing)}}
       {{chat-composer
         draft=draft
         details=this.details

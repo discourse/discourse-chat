@@ -75,6 +75,7 @@ export const directMessageChannels = [
       current_user_membership: {
         unread_count: 0,
         muted: false,
+        following: true,
       },
     },
   },
@@ -116,6 +117,7 @@ export const chatChannels = {
       current_user_membership: {
         unread_count: 0,
         muted: false,
+        following: true,
       },
     },
 
@@ -130,6 +132,7 @@ export const chatChannels = {
       current_user_membership: {
         unread_count: 0,
         muted: false,
+        following: true,
       },
     },
     {
@@ -143,6 +146,7 @@ export const chatChannels = {
       current_user_membership: {
         unread_count: 0,
         muted: false,
+        following: true,
       },
     },
     {
@@ -156,6 +160,7 @@ export const chatChannels = {
       current_user_membership: {
         unread_count: 0,
         muted: false,
+        following: true,
       },
     },
     {
@@ -169,6 +174,7 @@ export const chatChannels = {
       current_user_membership: {
         unread_count: 0,
         muted: false,
+        following: true,
       },
     },
     {
@@ -182,6 +188,7 @@ export const chatChannels = {
       current_user_membership: {
         unread_count: 0,
         muted: false,
+        following: true,
       },
     },
   ],

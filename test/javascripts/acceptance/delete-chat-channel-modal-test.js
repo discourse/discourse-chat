@@ -17,9 +17,9 @@ acceptance("Discourse Chat - delete chat channel modal", function (needs) {
     });
 
     server.get("/chat/chat_channels/:id", (request) => {
-      return helper.response({
-        chat_channel: fabricators.chatChannel({ id: request.params.id }),
-      });
+      return helper.response(
+        fabricators.chatChannel({ id: request.params.id })
+      );
     });
 
     server.get("/chat/:id/messages.json", () => {

@@ -19,7 +19,7 @@ acceptance("Discourse Chat - chat channel info", function (needs) {
       });
     });
     server.get("/chat/chat_channels/:id.json", () => {
-      return helper.response({ chat_channel: channel });
+      return helper.response(channel);
     });
     server.get("/chat/api/chat_channels.json", () =>
       helper.response([channel])

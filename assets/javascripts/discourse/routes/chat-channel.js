@@ -16,7 +16,7 @@ export default DiscourseRoute.extend({
     ]);
 
     return EmberObject.create({
-      chatChannel: ChatChannel.create(chatChannel),
+      chatChannel,
       channels,
     });
   },
@@ -31,9 +31,7 @@ export default DiscourseRoute.extend({
 
   async getChannelFromServer(id) {
     return ajax(`/chat/chat_channels/${id}`)
-      .then((response) => {
-        return response;
-      })
+      .then((response) => ChatChannel.create(response))
       .catch(() => this.replaceWith("/404"));
   },
 

@@ -17,8 +17,10 @@ module("Discourse Chat | Component | chat-message", function (hooks) {
       chatable_type: "Category",
       id: 9,
       title: "Site",
-      unread_count: 0,
-      muted: false,
+      current_user_membership: {
+        unread_count: 0,
+        muted: false,
+      },
     });
     return {
       message: ChatMessage.create(

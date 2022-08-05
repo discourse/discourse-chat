@@ -75,7 +75,6 @@ export default Component.extend({
   _updateReadTimer: null,
   lastSendReadMessageId: null,
   _scrollerEl: null,
-  _visibleMessagesObserver: null,
 
   init() {
     this._super(...arguments);
@@ -108,8 +107,6 @@ export default Component.extend({
     document.addEventListener("scroll", this._forceBodyScroll, {
       passive: true,
     });
-
-    this._visibleMessagesObserver = this._setupVisibleMessagesObserver();
   },
 
   willDestroyElement() {
@@ -142,8 +139,6 @@ export default Component.extend({
     );
 
     document.removeEventListener("scroll", this._forceBodyScroll);
-
-    this._visibleMessagesObserver.disconnect();
   },
 
   didReceiveAttrs() {
@@ -298,10 +293,6 @@ export default Component.extend({
               ? newMessages.concat(this.messages)
               : this.messages.concat(newMessages)
           );
-
-          schedule("afterRender", () => {
-            this._observeMessages(newMessages);
-          });
         }
         this.setCanLoadMoreDetails(messages.resultSetMeta);
         return messages;
@@ -385,7 +376,6 @@ export default Component.extend({
         return;
       }
 
-      this._observeMessages(this.messages);
       if (!isTesting()) {
         this._updateLastReadMessage();
       }
@@ -782,9 +772,6 @@ export default Component.extend({
     );
 
     this.messages.pushObject(preparedMessage);
-    schedule("afterRender", () => {
-      this._observeMessages([preparedMessage]);
-    });
 
     if (this.messages.length >= MAX_RECENT_MSGS) {
       this.removeMessage(this.messages.shiftObject());
@@ -1454,30 +1441,5 @@ export default Component.extend({
     } else {
       this.appEvents.trigger("sidebar:scroll-to-element", "sidebar-container");
     }
-  },
-
-  _setupVisibleMessagesObserver() {
-    const options = {
-      root: document.querySelector(".chat-messages-container"),
-      rootMargin: "-10px",
-    };
-
-    const callback = (entries) => {
-      entries.forEach((entry) => {
-        entry.target.dataset.visible = entry.isIntersecting;
-      });
-    };
-
-    return new IntersectionObserver(callback, options);
-  },
-
-  _observeMessages(messages) {
-    messages.forEach((message) => {
-      this._visibleMessagesObserver.observe(
-        document.querySelector(
-          `.chat-message-container[data-id="${message.id}"]`
-        )
-      );
-    });
   },
 });

@@ -231,7 +231,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
       });
     });
     server.post("/chat/chat_channels/:chatChannelId/unfollow.json", () => {
-      return helper.response({ success: "OK" });
+      return helper.response({ current_user_membership: { following: false } });
     });
     server.get("/chat/direct_messages.json", () => {
       return helper.response({

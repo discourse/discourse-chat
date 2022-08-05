@@ -66,14 +66,15 @@ const ChatChannel = RestModel.extend({
     return !READONLY_STATUSES.includes(this.status);
   },
 
-  updateMembership(following, membership) {
+  updateMembership(membership) {
     this.current_user_membership.setProperties({
-      following,
+      following: membership.following,
       muted: membership.muted,
       desktop_notification_level: membership.desktop_notification_level,
       mobile_notification_level: membership.mobile_notification_level,
-      memberships_count: membership.user_count,
+      user_count: membership.user_count,
     });
+    this.set("memberships_count", membership.user_count);
   },
 
   isDraft: false,

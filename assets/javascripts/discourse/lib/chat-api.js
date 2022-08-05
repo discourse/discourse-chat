@@ -50,7 +50,7 @@ export default class ChatApi {
         method: "POST",
       }
     ).then((membership) => {
-      channel.updateMembership(false, membership);
+      channel.updateMembership(membership);
       return channel;
     });
   }
@@ -62,7 +62,7 @@ export default class ChatApi {
         method: "POST",
       }
     ).then((membership) => {
-      channel.updateMembership(true, membership);
+      channel.updateMembership(membership);
       return channel;
     });
   }

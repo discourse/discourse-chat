@@ -31,11 +31,11 @@ describe DiscourseChat::Api::ChatChannelMembershipsController do
         sign_in(user_1)
       end
 
-      it "lists followed memberships but does not include the full user if it matches the current user" do
+      it "lists followed memberships" do
         get "/chat/api/chat_channels/#{channel_1.id}/memberships.json"
 
         expect(response.parsed_body.length).to eq(2)
-        expect(response.parsed_body[0]["user"]).to be_blank
+        expect(response.parsed_body[0]["user"]["id"]).to eq(user_1.id)
         expect(response.parsed_body[1]["user"]["id"]).to eq(user_2.id)
       end
     end

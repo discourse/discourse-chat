@@ -590,6 +590,8 @@ acceptance("Discourse Chat - without unread", function (needs) {
 
     await triggerKeyEvent(composerInput, "keydown", "Enter");
 
+    assert.equal(document.activeElement, composerInput);
+
     assert.equal(composerInput.innerText.trim(), "", "composer input cleared");
 
     assert.deepEqual(

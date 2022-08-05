@@ -601,6 +601,12 @@ export default Component.extend(TextareaTextManipulation, {
 
   @action
   sendClicked() {
+    if (this.site.mobileView) {
+      // prevents android to hide the keyboard after sending a message
+      // we do a focusTextarea later but it's too late for android
+      document.querySelector(this.composerFocusSelector).focus();
+    }
+
     if (this.sendDisabled) {
       return;
     }

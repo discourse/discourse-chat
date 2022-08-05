@@ -445,8 +445,8 @@ export default Service.extend({
       const queryParams = messageId ? { messageId } : {};
       return this.router.transitionTo(
         "chat.channel",
-        response.chat_channel.id,
-        slugifyChannel(response.chat_channel.title),
+        response.id,
+        slugifyChannel(response.title),
         { queryParams }
       );
     });

@@ -32,7 +32,7 @@ export default DiscourseRoute.extend({
   async getChannelFromServer(id) {
     return ajax(`/chat/chat_channels/${id}`)
       .then((response) => {
-        return response.chat_channel;
+        return response;
       })
       .catch(() => this.replaceWith("/404"));
   },

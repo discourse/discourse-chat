@@ -196,6 +196,9 @@ RSpec.describe DiscourseChat::ChatChannelsController do
         membership_record.reload.following
       }.to(true).from(false)
       expect(response.status).to eq(200)
+      expect(response.parsed_body["memberships_count"]).to eq(1)
+      expect(response.parsed_body["current_user_membership"]["following"]).to eq(true)
+      expect(response.parsed_body["current_user_membership"]["chat_channel_id"]).to eq(chat_channel.id)
     end
   end
 
@@ -213,6 +216,9 @@ RSpec.describe DiscourseChat::ChatChannelsController do
         membership_record.reload.following
       }.to(false).from(true)
       expect(response.status).to eq(200)
+      expect(response.parsed_body["memberships_count"]).to eq(0)
+      expect(response.parsed_body["current_user_membership"]["following"]).to eq(false)
+      expect(response.parsed_body["current_user_membership"]["chat_channel_id"]).to eq(chat_channel.id)
     end
 
     it "allows to unfollow a direct_message_channel" do
@@ -490,14 +496,14 @@ RSpec.describe DiscourseChat::ChatChannelsController do
       sign_in(user)
       get "/chat/chat_channels/#{channel.id}.json"
       expect(response.status).to eq(200)
-      expect(response.parsed_body["chat_channel"]["id"]).to eq(channel.id)
+      expect(response.parsed_body["id"]).to eq(channel.id)
     end
 
     it "can find channel by name" do
       sign_in(user)
       get "/chat/chat_channels/#{UrlHelper.encode_component("My Great Channel & Stuff")}.json"
       expect(response.status).to eq(200)
-      expect(response.parsed_body["chat_channel"]["id"]).to eq(channel.id)
+      expect(response.parsed_body["id"]).to eq(channel.id)
     end
 
     it "can find channel by chatable title/name" do
@@ -506,7 +512,7 @@ RSpec.describe DiscourseChat::ChatChannelsController do
       channel.update!(chatable: Fabricate(:category, name: "Support Chat"))
       get "/chat/chat_channels/#{UrlHelper.encode_component("Support Chat")}.json"
       expect(response.status).to eq(200)
-      expect(response.parsed_body["chat_channel"]["id"]).to eq(channel.id)
+      expect(response.parsed_body["id"]).to eq(channel.id)
     end
 
     it "gives a not found error if the channel cannot be found by name or id" do

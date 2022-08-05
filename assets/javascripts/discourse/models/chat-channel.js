@@ -72,9 +72,7 @@ const ChatChannel = RestModel.extend({
       muted: membership.muted,
       desktop_notification_level: membership.desktop_notification_level,
       mobile_notification_level: membership.mobile_notification_level,
-      user_count: membership.user_count,
     });
-    this.set("memberships_count", membership.user_count);
   },
 
   isDraft: false,

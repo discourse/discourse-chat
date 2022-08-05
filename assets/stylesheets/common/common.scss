@@ -642,7 +642,7 @@ body.has-full-page-chat {
       }
     }
 
-    &-not-following {
+    .-not-following {
       .chat-channel-title {
         max-width: calc(100% - 50px);
       }

@@ -85,9 +85,6 @@ class ChatChannelSerializer < ApplicationSerializer
 
   def current_user_membership
     return if !@current_user_membership
-
-    # TODO (martin) Kind of weird...but we don't want to double-query for the channel
-    # we already have.
     @current_user_membership.chat_channel = object
     UserChatChannelMembershipSerializer.new(@current_user_membership, scope: scope, root: false).as_json
   end

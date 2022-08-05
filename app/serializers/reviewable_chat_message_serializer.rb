@@ -2,7 +2,6 @@
 
 require_dependency "reviewable_serializer"
 
-# TODO -- Look into this
 class ReviewableChatMessageSerializer < ReviewableSerializer
   has_one :chat_message, serializer: ChatMessageSerializer, root: false, embed: :objects
   has_one :chat_channel, serializer: ChatChannelSerializer, root: false, embed: :objects

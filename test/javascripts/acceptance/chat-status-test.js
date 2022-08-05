@@ -42,9 +42,7 @@ const baseChatPretenders = (server, helper) => {
       chatChannels.public_channels.find((pc) => pc.id === 4)
     );
     channel.status = "archived";
-    return helper.response({
-      chat_channel: channel,
-    });
+    return helper.response(channel);
   });
 };
 

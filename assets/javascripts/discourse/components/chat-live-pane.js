@@ -271,7 +271,7 @@ export default Component.extend({
     const loadingMore = this.get(loadingMoreKey);
 
     if (!canLoadMore || loadingMore || this.loading || !this.messages.length) {
-      return;
+      return Promise.resolve();
     }
 
     this.set(loadingMoreKey, true);
@@ -303,12 +303,6 @@ export default Component.extend({
               : this.messages.concat(newMessages)
           );
 
-          // this part is especially important on safari to avoid a bug where
-          // manually scrolling, scrolls to the first prepended message
-          const focusedMessage = loadingPast
-            ? newMessages.lastObject
-            : newMessages.firstObject;
-          this.scrollToMessage(focusedMessage.messageLookupId);
           schedule("afterRender", () => {
             this._observeMessages(newMessages);
           });
@@ -589,15 +583,9 @@ export default Component.extend({
         return;
       }
 
-      // Ensure the focused message starts at 1/6 of pane
-      // to properly display separators
-      const aboveMessageOffset = this.element.clientHeight / 6;
-
-      this._scrollerEl.scrollTop =
-        messageEl.offsetTop -
-        (opts.position === "top"
-          ? this._scrollerEl.offsetTop + aboveMessageOffset
-          : this._scrollerEl.offsetHeight);
+      messageEl.scrollIntoView({
+        block: opts.position === "top" ? "start" : "end",
+      });
 
       if (opts.highlight) {
         messageEl.classList.add("highlighted");
@@ -656,13 +644,27 @@ export default Component.extend({
           this._scrollerEl.scrollTop
       ) <= STICKY_SCROLL_LENIENCE;
     if (atTop) {
-      this._fetchMoreMessages(PAST);
+      this._fetchMoreMessages(PAST).then((newMessages) => {
+        if (!newMessages) {
+          return;
+        }
+        // prevents a white screen bug on safari
+        this.scrollToMessage(newMessages.lastObject.messageLookupId);
+      });
       return;
     } else {
       this._updateLastReadMessage();
 
       if (Math.abs(this._scrollerEl.scrollTop) <= STICKY_SCROLL_LENIENCE) {
-        this._fetchMoreMessages(FUTURE);
+        this._fetchMoreMessages(FUTURE).then((newMessages) => {
+          if (!newMessages) {
+            return;
+          }
+          // prevents a white screen bug on safari
+          this.scrollToMessage(newMessages.firstObject.messageLookupId, {
+            position: "bottom",
+          });
+        });
       }
     }
 
@@ -1340,6 +1342,18 @@ export default Component.extend({
 
   @action
   onHoverMessage(message, options = {}) {
+    discourseDebounce(
+      this,
+      this.debouncedOnHoverMessage,
+      message,
+      options,
+      true,
+      200
+    );
+  },
+
+  @bind
+  debouncedOnHoverMessage(message, options = {}) {
     if (this.site.mobileView && options.desktopOnly) {
       return;
     }
@@ -1457,7 +1471,7 @@ export default Component.extend({
   _setupVisibleMessagesObserver() {
     const options = {
       root: document.querySelector(".chat-messages-container"),
-      rootMargin: "-30px",
+      rootMargin: "-10px",
     };
 
     const callback = (entries) => {

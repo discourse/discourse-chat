@@ -138,16 +138,15 @@ module DiscourseChat::GuardianExtensions
     return false if !can_modify_channel_message?(message.chat_channel)
 
     if message.user_id == current_user.id
-      can_restore_own_chats?(chatable)
-    else
-      can_delete_other_chats?(chatable)
+      case chatable.class.name
+      when "Category"
+        return can_see_category?(chatable)
+      when "DirectMessageChannel"
+        return true
+      end
     end
-  end
 
-  def can_restore_own_chats?(chatable)
-    return false if !can_see_category?(chatable)
-
-    true
+    can_delete_other_chats?(chatable)
   end
 
   def can_restore_other_chats?(chatable)

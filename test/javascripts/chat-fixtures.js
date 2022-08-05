@@ -3,18 +3,16 @@ import { cloneJSON, deepMerge } from "discourse-common/lib/object";
 export const messageContents = ["Hello world", "What up", "heyo!"];
 
 export const siteChannel = {
-  chat_channel: {
-    chatable: null,
-    chatable_id: -1,
-    chatable_type: "Site",
-    chatable_url: "http://localhost:3000",
-    id: 9,
-    title: "Site",
-    current_user_membership: {
-      unread_count: 0,
-      muted: false,
-      following: true,
-    },
+  chatable: null,
+  chatable_id: -1,
+  chatable_type: "Site",
+  chatable_url: "http://localhost:3000",
+  id: 9,
+  title: "Site",
+  current_user_membership: {
+    unread_count: 0,
+    muted: false,
+    following: true,
   },
 };
 
@@ -105,7 +103,7 @@ const chatables = {
 
 export const chatChannels = {
   public_channels: [
-    siteChannel.chat_channel,
+    siteChannel,
     {
       id: 7,
       chatable_id: 1,

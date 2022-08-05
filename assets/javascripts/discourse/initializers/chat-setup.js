@@ -46,7 +46,7 @@ export default {
       // of whether the current user has chat enabled
       api.decorateCookedElement(
         (elem) => {
-          const currentUser = getOwner(this).lookup("current-user:main");
+          const currentUser = getOwner(this).lookup("service:current-user");
           const currentUserTimezone =
             currentUser?.resolvedTimezone(currentUser);
           const chatTranscriptElements = elem.querySelectorAll(

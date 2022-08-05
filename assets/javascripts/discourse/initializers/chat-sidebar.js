@@ -115,7 +115,8 @@ export default {
 
             @tracked sectionIndicator =
               this.chatService.publicChannels &&
-              this.chatService.publicChannels[0].current_user_membership.unread_count;
+              this.chatService.publicChannels[0].current_user_membership
+                .unread_count;
 
             constructor() {
               super(...arguments);

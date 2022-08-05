@@ -64,7 +64,7 @@ export default class ChatChannelSettingsView extends Component {
         this.channel.current_user_membership.setProperties({
           muted: membership.muted,
           desktop_notification_level: membership.desktop_notification_level,
-          mobile_notification_level: membership.mobile_notification_level
+          mobile_notification_level: membership.mobile_notification_level,
         });
         this.set(camelizedKey, true);
       })

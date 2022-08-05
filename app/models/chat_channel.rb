@@ -31,9 +31,9 @@ class ChatChannel < ActiveRecord::Base
         UserChatChannelMembership.find_or_initialize_by(user_id: user.id, chat_channel: self)
 
       if !membership.following
+        update!(user_count: (user_count || 0) + 1)
         membership.following = true
         membership.save!
-        update!(user_count: (user_count || 0) + 1)
       end
 
       membership
@@ -45,9 +45,9 @@ class ChatChannel < ActiveRecord::Base
       membership = UserChatChannelMembership.find_by!(user_id: user.id, chat_channel: self)
 
       if membership.following
-        membership.update!(following: false)
         new_user_count = [(user_count || 0) - 1, 0].max
         update!(user_count: new_user_count)
+        membership.update!(following: false)
       end
 
       membership

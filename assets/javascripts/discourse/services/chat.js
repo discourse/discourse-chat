@@ -665,18 +665,7 @@ export default Service.extend({
   async unfollowChannel(channel) {
     return ChatApi.unfollowChatChannel(channel).then(() => {
       this._unsubscribeFromChatChannel(channel);
-
-      return this.stopTrackingChannel(channel).then(() => {
-        return this.getIdealFirstChannelIdAndTitle().then((channelInfo) => {
-          if (channelInfo) {
-            return this.getChannelBy("id", channelInfo.id).then((c) => {
-              return this.openChannel(c);
-            });
-          } else {
-            return this.router.transitionTo("chat");
-          }
-        });
-      });
+      this.stopTrackingChannel(channel);
     });
   },
 

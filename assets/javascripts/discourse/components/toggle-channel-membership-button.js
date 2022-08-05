@@ -33,21 +33,21 @@ export default class ToggleChannelMembershipButton extends Component {
     );
   }
 
-  @computed("channel.following")
+  @computed("channel.current_user_membership.following")
   get label() {
     if (this.options.labelType === "none") {
       return "";
     }
 
     if (this.options.labelType === "short") {
-      if (this.channel.following) {
+      if (this.channel.isFollowing) {
         return I18n.t("chat.channel_settings.leave");
       } else {
         return I18n.t("chat.channel_settings.join");
       }
     }
 
-    if (this.channel.following) {
+    if (this.channel.isFollowing) {
       return I18n.t("chat.channel_settings.leave_channel");
     } else {
       return I18n.t("chat.channel_settings.join_channel");

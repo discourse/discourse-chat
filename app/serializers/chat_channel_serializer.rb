@@ -17,11 +17,11 @@ class ChatChannelSerializer < ApplicationSerializer
              :total_messages,
              :archive_topic_id,
              :memberships_count,
-             :user_membership
+             :current_user_membership
 
   def initialize(object, opts)
     super(object, opts)
-    @user_membership = opts[:membership]
+    @current_user_membership = opts[:membership]
   end
 
   def include_description?
@@ -83,10 +83,13 @@ class ChatChannelSerializer < ApplicationSerializer
     scope.can_edit_chat_channel?
   end
 
-  def user_membership
-    return if !@user_membership
-    @user_membership.chat_channel = object
-    UserChatChannelMembershipSerializer.new(@user_membership, scope: scope, root: false).as_json
+  def current_user_membership
+    return if !@current_user_membership
+
+    # TODO (martin) Kind of weird...but we don't want to double-query for the channel
+    # we already have.
+    @current_user_membership.chat_channel = object
+    UserChatChannelMembershipSerializer.new(@current_user_membership, scope: scope, root: false).as_json
   end
 
   alias_method :include_archive_topic_id?, :include_archive_status?

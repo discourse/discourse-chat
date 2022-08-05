@@ -16,7 +16,7 @@
       "type": "object",
       "required": ["id", "name", "slug", "color"]
     },
-    "user_membership": {
+    "current_user_membership": {
       "type": ["object", "null"],
       "properties": {
         "last_read_message_id": { "type": ["number", "null"] },

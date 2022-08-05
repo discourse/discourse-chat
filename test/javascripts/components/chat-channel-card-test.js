@@ -32,8 +32,8 @@ module("Discourse Chat | Component | chat-channel-card", function (hooks) {
   });
 
   test("Muted channel", async function (assert) {
-    this.channel.set("muted", true);
-    this.channel.set("following", true);
+    this.channel.current_user_membership.set("muted", true);
+    this.channel.current_user_membership.set("following", true);
     await render(hbs`{{chat-channel-card channel=channel}}`);
 
     assert.equal(
@@ -43,7 +43,7 @@ module("Discourse Chat | Component | chat-channel-card", function (hooks) {
   });
 
   test("Joined channel", async function (assert) {
-    this.channel.set("following", true);
+    this.channel.current_user_membership.set("following", true);
     await render(hbs`{{chat-channel-card channel=channel}}`);
 
     assert.equal(

@@ -245,10 +245,6 @@ export default Service.extend({
     }
   },
 
-  async isChannelFollowed(channel) {
-    return this.getChannelBy("id", channel.id);
-  },
-
   getChannels() {
     return new Promise((resolve) => {
       if (this.hasFetchedChannels) {
@@ -792,11 +788,11 @@ export default Service.extend({
   _updateUserTrackingState(channel) {
     this.currentUser.chat_channel_tracking_state[channel.id] =
       EmberObject.create({
-        muted: channel.muted,
-        unread_count: channel.unread_count,
-        unread_mentions: channel.unread_mentions,
         chatable_type: channel.chatable_type,
-        chat_message_id: channel.last_read_message_id,
+        muted: channel.current_user_membership.muted,
+        unread_count: channel.current_user_membership.unread_count,
+        unread_mentions: channel.current_user_membership.unread_mentions,
+        chat_message_id: channel.current_user_membership.last_read_message_id,
       });
   },
 

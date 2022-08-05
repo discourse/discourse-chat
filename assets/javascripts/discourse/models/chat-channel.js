@@ -2,6 +2,7 @@ import RestModel from "discourse/models/rest";
 import I18n from "I18n";
 import { computed } from "@ember/object";
 import User from "discourse/models/user";
+import UserChatChannelMembership from "discourse/plugins/discourse-chat/discourse/models/user-chat-channel-membership";
 
 export const CHATABLE_TYPES = {
   directMessageChannel: "DirectMessageChannel",
@@ -66,7 +67,7 @@ const ChatChannel = RestModel.extend({
   },
 
   updateMembership(following, membership) {
-    this.setProperties({
+    this.current_user_membership.setProperties({
       following,
       muted: membership.muted,
       desktop_notification_level: membership.desktop_notification_level,
@@ -124,12 +125,18 @@ const ChatChannel = RestModel.extend({
 
     return this.memberships_count;
   },
+
+  @computed("current_user_membership.following")
+  get isFollowing() {
+    return this.current_user_membership.following;
+  },
 });
 
 ChatChannel.reopenClass({
   create(args) {
     args = args || {};
     this._initUserModels(args);
+    this._initUserMembership(args);
     return this._super(args);
   },
 
@@ -140,6 +147,21 @@ ChatChannel.reopenClass({
         args.chatable.users[i] = User.create(userData);
       }
     }
+  },
+
+  _initUserMembership(args) {
+    if (args.current_user_membership instanceof UserChatChannelMembership) {
+      return;
+    }
+
+    args.current_user_membership = UserChatChannelMembership.create(
+      args.current_user_membership || {
+        following: false,
+        muted: false,
+        unread_count: 0,
+        unread_mentions: 0,
+      }
+    );
   },
 });
 

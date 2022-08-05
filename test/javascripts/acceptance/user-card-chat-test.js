@@ -54,11 +54,13 @@ acceptance("Discourse Chat - User card test", function (needs) {
           chatable_type: "DirectMessageChannel",
           chatable_url: null,
           id: 75,
-          last_read_message_id: null,
           title: "@hawk",
-          unread_count: 0,
-          unread_mentions: 0,
           last_message_sent_at: "2021-11-08T21:26:05.710Z",
+          current_user_membership: {
+            last_read_message_id: null,
+            unread_count: 0,
+            unread_mentions: 0,
+          },
         },
       });
     });

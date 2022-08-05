@@ -56,7 +56,7 @@ export default Component.extend({
     if (focused) {
       classes.push("focused");
     }
-    if (channel.muted) {
+    if (channel.current_user_membership.muted) {
       classes.push("muted");
     }
     return classes.join(" ");

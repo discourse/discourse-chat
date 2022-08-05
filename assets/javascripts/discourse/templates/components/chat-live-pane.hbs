@@ -4,7 +4,7 @@
 }}
 
 {{#if (and fullPage includeHeader)}}
-  <div class="chat-full-page-header {{if (not chatChannel.isFollowing) "chat-full-page-header-not-following"}}">
+  <div class="chat-full-page-header {{unless chatChannel.isFollowing "chat-full-page-header-not-following"}}">
     <div class="chat-channel-header-details">
       {{#if site.mobileView}}
         <div class="chat-full-page-header__left-actions">
@@ -95,9 +95,7 @@
       cancelSelecting=(action "cancelSelecting")
     }}
   {{else}}
-    {{#if (not chatChannel.isFollowing)}}
-      {{chat-channel-preview-card channel=chatChannel}}
-    {{else}}
+    {{#if chatChannel.isFollowing}}
       {{chat-composer
         draft=draft
         details=this.details
@@ -114,6 +112,8 @@
         fullPage=fullPage
         chatChannel=chatChannel
       }}
+    {{else}}
+      {{chat-channel-preview-card channel=chatChannel}}
     {{/if}}
   {{/if}}
 {{/if}}

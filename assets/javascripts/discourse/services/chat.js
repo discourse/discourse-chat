@@ -597,7 +597,7 @@ export default Service.extend({
   },
 
   _subscribeToSingleUpdateChannel(channel) {
-    if (channel.muted) {
+    if (channel.current_user_membership.muted) {
       return;
     }
 

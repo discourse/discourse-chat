@@ -100,7 +100,7 @@ RSpec.describe DiscourseChat::ChatChannelsController do
         )
         get "/chat/chat_channels.json"
         cc = response.parsed_body["public_channels"].detect { |c| c["id"] == chat_channel.id }
-        expect(cc["user_membership"]["unread_mentions"]).to eq(1)
+        expect(cc["current_user_membership"]["unread_mentions"]).to eq(1)
       end
 
       describe "direct messages" do
@@ -168,7 +168,7 @@ RSpec.describe DiscourseChat::ChatChannelsController do
           get "/chat/chat_channels.json"
           dm2_response =
             response.parsed_body["direct_message_channels"].detect { |c| c["id"] == @dm2.id }
-          expect(dm2_response["user_membership"]["unread_count"]).to eq(1)
+          expect(dm2_response["current_user_membership"]["unread_count"]).to eq(1)
         end
       end
     end

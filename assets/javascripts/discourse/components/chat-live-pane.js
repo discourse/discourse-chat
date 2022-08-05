@@ -45,7 +45,6 @@ export default Component.extend({
   onSwitchChannel: null,
 
   allPastMessagesLoaded: false,
-  previewing: false,
   sendingLoading: false,
   selectingMessages: false,
   stickyScroll: true,
@@ -162,20 +161,17 @@ export default Component.extend({
       this.set("allPastMessagesLoaded", false);
       this.cancelEditing();
 
-      this.chat
-        .getChannelBy("id", this.chatChannel.id)
-        .then((trackedChannel) => {
-          if (this._selfDeleted) {
-            return;
-          }
+      this.chat.getChannelBy("id", this.chatChannel.id).then(() => {
+        if (this._selfDeleted) {
+          return;
+        }
 
-          this.fetchMessages(this.chatChannel);
+        this.fetchMessages(this.chatChannel);
 
-          if (!this.chatChannel.isDraft) {
-            this.set("previewing", !Boolean(trackedChannel));
-            this.loadDraftForChannel(this.chatChannel.id);
-          }
-        });
+        if (!this.chatChannel.isDraft) {
+          this.loadDraftForChannel(this.chatChannel.id);
+        }
+      });
     }
 
     this.currentUserTimezone = this.currentUser?.resolvedTimezone(
@@ -747,7 +743,7 @@ export default Component.extend({
   },
 
   handleSentMessage(data) {
-    if (!this.previewing) {
+    if (this.chatChannel.isFollowing) {
       this.chatChannel.set("last_message_sent_at", new Date());
     }
 
@@ -939,7 +935,7 @@ export default Component.extend({
   _updateLastReadMessage(wait = READ_INTERVAL) {
     this._cancelPendingReadUpdate();
 
-    if (this._selfDeleted) {
+    if (this._selfDeleted || !this.chatChannel.isFollowing) {
       return;
     }
 
@@ -1014,7 +1010,7 @@ export default Component.extend({
     // - messaging to a new direct channel through DM creator (channel draft)
     // - message to a direct channel you were tracking (preview = false, not draft)
     // - message to a public channel you were tracking (preview = false, not draft)
-    if (this.previewing || this.chatChannel.isDraft) {
+    if (!this.chatChannel.isFollowing || this.chatChannel.isDraft) {
       this.set("loading", true);
 
       return this._upsertChannelWithMessage(
@@ -1025,7 +1021,6 @@ export default Component.extend({
         if (this._selfDeleted) {
           return;
         }
-        this.set("previewing", false);
         this.set("loading", false);
         this.set("sendingLoading", false);
         this._resetAfterSend();
@@ -1096,7 +1091,7 @@ export default Component.extend({
 
     return promise
       .then((c) => {
-        c.set("following", true);
+        c.current_user_membership.set("following", true);
         return this.chat.startTrackingChannel(c);
       })
       .then((c) =>
@@ -1110,14 +1105,7 @@ export default Component.extend({
           this.chat.forceRefreshChannels();
           this.onSwitchChannel(ChatChannel.create(c));
         })
-      )
-      .finally(() => {
-        if (this.isDestroyed || this.isDestroying) {
-          return;
-        }
-
-        this.set("previewing", false);
-      });
+      );
   },
 
   _onSendError(stagedId, error) {

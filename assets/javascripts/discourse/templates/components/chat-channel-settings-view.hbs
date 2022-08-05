@@ -7,7 +7,7 @@
       <div class="chat-form__control">
         {{combo-box
           content=mutedOptions
-          value=channel.muted
+          value=channel.current_user_membership.muted
           valueProperty="value"
           class="channel-settings-view__muted-selector"
           onChange=(action (fn this.saveNotificationSettings "muted"))
@@ -18,7 +18,7 @@
       </div>
     </div>
 
-    {{#unless channel.muted}}
+    {{#unless channel.current_user_membership.muted}}
       <div class="chat-form__field">
         <label class="chat-form__label">
           <span>{{i18n "chat.settings.desktop_notification_level"}}</span>
@@ -26,7 +26,7 @@
         <div class="chat-form__control">
           {{combo-box
             content=notificationLevels
-            value=channel.desktop_notification_level
+            value=channel.current_user_membership.desktop_notification_level
             valueProperty="value"
             class="channel-settings-view__desktop-notification-level-selector"
             onChange=(action
@@ -46,7 +46,7 @@
         <div class="chat-form__control">
           {{combo-box
             content=notificationLevels
-            value=channel.mobile_notification_level
+            value=channel.current_user_membership.mobile_notification_level
             valueProperty="value"
             class="channel-settings-view__mobile-notification-level-selector"
             onChange=(action

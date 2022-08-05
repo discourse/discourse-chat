@@ -15,7 +15,7 @@ const AUDIO_DEBOUNCE_TIMEOUT = 3000;
 export default {
   name: "chat-notification-sounds",
   initialize(container) {
-    const currentUser = container.lookup("current-user:main");
+    const currentUser = container.lookup("service:current-user");
     const chatService = container.lookup("service:chat");
 
     if (!chatService.userCanChat || !currentUser?.chat_sound) {

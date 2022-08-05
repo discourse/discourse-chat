@@ -10,11 +10,27 @@ module DiscourseChat::ChatChannelFetcher
         secured_public_channels(guardian, memberships, status: :open, following: true),
       direct_message_channels:
         secured_direct_message_channels(guardian.user.id, memberships, guardian),
+      memberships: memberships,
     }
   end
 
-  def self.all_secured_channel_ids(guardian)
-    allowed_channel_ids_sql = <<~SQL
+  def self.all_secured_channel_ids(guardian, following: true)
+    allowed_channel_ids_sql = generate_allowed_channel_ids_sql(guardian)
+
+    return DB.query_single(allowed_channel_ids_sql) if !following
+
+    DB.query_single(<<~SQL, user_id: guardian.user.id)
+      SELECT chat_channel_id
+      FROM user_chat_channel_memberships
+      WHERE user_chat_channel_memberships.user_id = :user_id
+      AND user_chat_channel_memberships.chat_channel_id IN (
+        #{allowed_channel_ids_sql}
+      )
+    SQL
+  end
+
+  def self.generate_allowed_channel_ids_sql(guardian)
+    <<~SQL
       -- secured category chat channels
       #{
       ChatChannel
@@ -44,15 +60,6 @@ module DiscourseChat::ChatChannelFetcher
         .to_sql
     }
     SQL
-
-    DB.query_single(<<~SQL, user_id: guardian.user.id)
-      SELECT chat_channel_id
-      FROM user_chat_channel_memberships
-      WHERE user_chat_channel_memberships.user_id = :user_id
-      AND user_chat_channel_memberships.chat_channel_id IN (
-        #{allowed_channel_ids_sql}
-      )
-    SQL
   end
 
   def self.secured_public_channels(guardian, memberships, options = { following: true })
@@ -64,6 +71,7 @@ module DiscourseChat::ChatChannelFetcher
           "LEFT JOIN categories ON categories.id = chat_channels.chatable_id AND chat_channels.chatable_type = 'Category'",
         )
         .where(chatable_type: ChatChannel.public_channel_chatable_types)
+        .where("chat_channels.id IN (#{generate_allowed_channel_ids_sql(guardian)})")
 
     channels = channels.where(status: options[:status]) if options[:status].present?
 
@@ -90,7 +98,8 @@ module DiscourseChat::ChatChannelFetcher
     options[:offset] = [options[:offset].to_i, 0].max
 
     channels = channels.limit(options[:limit]).offset(options[:offset])
-    channels = filter_public_channels(channels, memberships, guardian).to_a
+    decorate_memberships_with_tracking_data(guardian, channels, memberships)
+    channels = channels.to_a
     preload_custom_fields_for(channels)
     channels
   end
@@ -103,57 +112,6 @@ module DiscourseChat::ChatChannelFetcher
     )
   end
 
-  def self.filter_public_channels(channels, memberships, guardian)
-    mention_notifications =
-      Notification.unread.where(
-        user_id: guardian.user.id,
-        notification_type: Notification.types[:chat_mention],
-      )
-    mention_notification_data = mention_notifications.map { |m| JSON.parse(m.data) }
-
-    unread_counts_per_channel = unread_counts(channels, guardian.user.id)
-
-    channels.filter_map do |channel|
-      next if !guardian.can_see_chat_channel?(channel)
-
-      membership = memberships.find { |m| m.chat_channel_id == channel.id }
-      if membership
-        channel =
-          decorate_channel_from_membership(
-            guardian.user.id,
-            channel,
-            membership,
-            mention_notification_data,
-          )
-
-        channel.unread_count = unread_counts_per_channel[channel.id] if !channel.muted
-      end
-
-      channel
-    end
-  end
-
-  def self.decorate_channel_from_membership(
-    user_id,
-    channel,
-    membership,
-    mention_notification_data = nil
-  )
-    channel.last_read_message_id = membership.last_read_message_id
-    channel.muted = membership.muted
-    if mention_notification_data
-      channel.unread_mentions =
-        mention_notification_data.count do |data|
-          data["chat_channel_id"] == channel.id &&
-            data["chat_message_id"] > (membership.last_read_message_id || 0)
-        end
-    end
-    channel.following = membership.following
-    channel.desktop_notification_level = membership.desktop_notification_level
-    channel.mobile_notification_level = membership.mobile_notification_level
-    channel
-  end
-
   def self.secured_direct_message_channels(user_id, memberships, guardian)
     query = ChatChannel.includes(chatable: [{ direct_message_users: :user }, :users])
     query = query.includes(chatable: [{ users: :user_status }]) if SiteSetting.enable_user_status
@@ -163,6 +121,7 @@ module DiscourseChat::ChatChannelFetcher
         .joins(:user_chat_channel_memberships)
         .where(user_chat_channel_memberships: { user_id: user_id, following: true })
         .where(chatable_type: "DirectMessageChannel")
+        .where("chat_channels.id IN (#{generate_allowed_channel_ids_sql(guardian)})")
         .order(last_message_sent_at: :desc)
         .to_a
 
@@ -171,22 +130,36 @@ module DiscourseChat::ChatChannelFetcher
         UserField.all.pluck(:id).map { |fid| "#{User::USER_FIELD_PREFIX}#{fid}" }
     User.preload_custom_fields(channels.map { |c| c.chatable.users }.flatten, preload_fields)
 
-    unread_counts_per_channel = unread_counts(channels, user_id)
+    decorate_memberships_with_tracking_data(guardian, channels, memberships)
+  end
 
-    channels.filter_map do |channel|
-      next if !guardian.can_see_chat_channel?(channel)
+  def self.decorate_memberships_with_tracking_data(guardian, channels, memberships)
+    unread_counts_per_channel = unread_counts(channels, guardian.user.id)
 
-      channel =
-        decorate_channel_from_membership(
-          user_id,
-          channel,
-          memberships.find { |m| m.user_id == user_id && m.chat_channel_id == channel.id },
-        )
+    mention_notifications =
+      Notification.unread.where(
+        user_id: guardian.user.id,
+        notification_type: Notification.types[:chat_mention],
+      )
+    mention_notification_data = mention_notifications.map { |m| JSON.parse(m.data) }
 
-      # direct message channels cannot be muted, so we always need the unread count
-      channel.unread_count = unread_counts_per_channel[channel.id]
+    channels.each do |channel|
+      membership = memberships.find { |m| m.chat_channel_id == channel.id }
 
-      channel
+      if membership
+        membership.unread_mentions =
+          mention_notification_data.count do |data|
+            data["chat_channel_id"] == channel.id &&
+              data["chat_message_id"] > (membership.last_read_message_id || 0)
+          end
+
+        # direct message channels cannot be muted, so we always need the unread count
+        if channel.direct_message_channel?
+          membership.unread_count = unread_counts_per_channel[channel.id]
+        else
+          membership.unread_count = unread_counts_per_channel[channel.id] if !membership.muted
+        end
+      end
     end
   end
 

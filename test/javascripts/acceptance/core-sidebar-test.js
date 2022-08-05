@@ -25,7 +25,7 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
   needs.pretender((server, helper) => {
     let directChannels = cloneJSON(directMessageChannels).mapBy("chat_channel");
     directChannels[0].chatable.users = [directChannels[0].chatable.users[0]];
-    directChannels[0].unread_count = 1;
+    directChannels[0].current_user_membership.unread_count = 1;
     directChannels.push({
       chatable: {
         users: [
@@ -48,8 +48,11 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
       chatable_url: null,
       id: 76,
       title: "@sam",
-      unread_count: 0,
-      muted: false,
+      current_user_membership: {
+        unread_count: 0,
+        muted: false,
+        following: true,
+      },
     });
 
     server.get("/chat/chat_channels.json", () => {
@@ -58,26 +61,32 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
           {
             id: 1,
             title: "dev :bug:",
-            unread_count: 0,
-            unread_mentions: 0,
             chatable_type: "Category",
             chatable: { slug: "dev", read_restricted: true },
+            current_user_membership: {
+              unread_count: 0,
+              unread_mentions: 0,
+            },
           },
           {
             id: 2,
             title: "general",
-            unread_count: 1,
-            unread_mentions: 0,
             chatable_type: "Category",
             chatable: { slug: "general" },
+            current_user_membership: {
+              unread_count: 1,
+              unread_mentions: 0,
+            },
           },
           {
             id: 3,
             title: "random",
-            unread_count: 1,
-            unread_mentions: 1,
             chatable_type: "Category",
             chatable: { slug: "random" },
+            current_user_membership: {
+              unread_count: 1,
+              unread_mentions: 1,
+            },
           },
         ],
         direct_message_channels: directChannels,
@@ -322,26 +331,32 @@ acceptance("Discourse Chat - Plugin Sidebar", function (needs) {
           {
             id: 1,
             title: "dev :bug:",
-            unread_count: 0,
-            unread_mentions: 0,
             chatable_type: "Category",
             chatable: { slug: "dev", read_restricted: true },
+            current_user_membership: {
+              unread_count: 1,
+              unread_mentions: 1,
+            },
           },
           {
             id: 2,
             title: "general",
-            unread_count: 1,
-            unread_mentions: 0,
             chatable_type: "Category",
             chatable: { slug: "general" },
+            current_user_membership: {
+              unread_count: 1,
+              unread_mentions: 1,
+            },
           },
           {
             id: 3,
             title: "random",
-            unread_count: 1,
-            unread_mentions: 1,
             chatable_type: "Category",
             chatable: { slug: "random" },
+            current_user_membership: {
+              unread_count: 1,
+              unread_mentions: 1,
+            },
           },
         ],
         direct_message_channels: [],

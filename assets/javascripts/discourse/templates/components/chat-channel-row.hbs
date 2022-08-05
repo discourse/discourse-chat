@@ -17,7 +17,7 @@
     }}
   {{/if}}
 
-  {{#if (and options.leaveButton channel.following (not site.mobileView))}}
+  {{#if (and options.leaveButton channel.isFollowing (not site.mobileView))}}
     <ToggleChannelMembershipButton
       @channel={{channel}}
       @options={{hash

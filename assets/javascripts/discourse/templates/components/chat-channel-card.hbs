@@ -38,13 +38,13 @@
     {{/if}}
 
     <div class="chat-channel-card__cta">
-      {{#if channel.following}}
+      {{#if channel.isFollowing}}
         <div class="chat-channel-card__tags">
           <span class="chat-channel-card__tag -joined">
             {{i18n "chat.joined"}}
           </span>
 
-          {{#if channel.muted}}
+          {{#if channel.current_user_membership.muted}}
             {{#link-to
               "chat.channel.info.settings"
               channel.id

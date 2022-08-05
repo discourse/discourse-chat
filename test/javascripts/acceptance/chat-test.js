@@ -131,8 +131,8 @@ function siteChannelPretender(
   opts = { unread_count: 0, muted: false }
 ) {
   let copy = cloneJSON(siteChannel);
-  copy.chat_channel.unread_count = opts.unread_count;
-  copy.chat_channel.muted = opts.muted;
+  copy.current_user_membership.unread_count = opts.unread_count;
+  copy.current_user_membership.muted = opts.muted;
   server.get("/chat/chat_channels/9.json", () => helper.response(copy));
 }
 
@@ -142,8 +142,8 @@ function directMessageChannelPretender(
   opts = { unread_count: 0, muted: false }
 ) {
   let copy = cloneJSON(directMessageChannels[0]);
-  copy.chat_channel.unread_count = opts.unread_count;
-  copy.chat_channel.muted = opts.muted;
+  copy.chat_channel.current_user_membership.unread_count = opts.unread_count;
+  copy.chat_channel.current_user_membership.muted = opts.muted;
   server.get("/chat/chat_channels/75.json", () => helper.response(copy));
 }
 
@@ -154,14 +154,14 @@ function chatChannelPretender(server, helper, changes = []) {
     let found;
     found = copy.public_channels.find((c) => c.id === change.id);
     if (found) {
-      found.unread_count = change.unread_count;
-      found.muted = change.muted;
+      found.current_user_membership.unread_count = change.unread_count;
+      found.current_user_membership.muted = change.muted;
     }
     if (!found) {
       found = copy.direct_message_channels.find((c) => c.id === change.id);
       if (found) {
-        found.unread_count = change.unread_count;
-        found.muted = change.muted;
+        found.current_user_membership.unread_count = change.unread_count;
+        found.current_user_membership.muted = change.muted;
       }
     }
   });
@@ -220,16 +220,18 @@ acceptance("Discourse Chat - without unread", function (needs) {
           chatable_type: "DirectMessageChannel",
           chatable_url: null,
           id: 75,
-          last_read_message_id: null,
           title: "@hawk",
-          unread_count: 0,
-          unread_mentions: 0,
           last_message_sent_at: "2021-11-08T21:26:05.710Z",
+          current_user_membership: {
+            last_read_message_id: null,
+            unread_count: 0,
+            unread_mentions: 0,
+          },
         },
       });
     });
     server.post("/chat/chat_channels/:chatChannelId/unfollow.json", () => {
-      return helper.response({ success: "OK" });
+      return helper.response({ current_user_membership: { following: false } });
     });
     server.get("/chat/direct_messages.json", () => {
       return helper.response({
@@ -1394,11 +1396,13 @@ acceptance(
             chatable_type: "Category",
             chatable_url: null,
             id: 88,
-            last_read_message_id: null,
             title: "Something",
-            unread_count: 0,
-            unread_mentions: 0,
             last_message_sent_at: "2021-11-08T21:26:05.710Z",
+            current_user_membership: {
+              last_read_message_id: null,
+              unread_count: 0,
+              unread_mentions: 0,
+            },
           },
         });
       });

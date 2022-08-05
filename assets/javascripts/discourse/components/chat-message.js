@@ -45,7 +45,6 @@ export default Component.extend({
   adminTools: optionalService(),
   _hasSubscribedToAppEvents: false,
   tagName: "",
-  previewing: false,
   chat: service(),
 
   init() {
@@ -633,20 +632,14 @@ export default Component.extend({
       this.notifyPropertyChange("emojiReactions");
 
       // creating reaction will create a membership if not present
-      // so we will fully refresh if we were previewing
-      if (this.previewing || this.chatChannel.isDraft) {
+      // so we will fully refresh if we were not members of the channel
+      // already
+      if (!this.chatChannel.isFollowing || this.chatChannel.isDraft) {
         this.chat.forceRefreshChannels().then(() => {
           return this.chat
             .getChannelBy("id", this.chatChannel.id)
             .then((reactedChannel) => {
               this.onSwitchChannel(reactedChannel);
-            })
-            .finally(() => {
-              if (this.isDestroyed || this.isDestroying) {
-                return;
-              }
-
-              this.set("previewing", false);
             });
         });
       }

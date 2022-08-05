@@ -28,7 +28,7 @@ module("Discourse Chat | Component | chat-channel-leave-btn", function (hooks) {
 
     async test(assert) {
       pretender.post("/chat/chat_channels/:chatChannelId/unfollow", () => {
-        return [200, { success: "OK" }, {}];
+        return [200, { current_user_membership: { following: false } }, {}];
       });
       assert.equal(this.foo, 1);
 

@@ -6,12 +6,13 @@ class UserChatChannelMembershipSerializer < ApplicationSerializer
              :desktop_notification_level,
              :mobile_notification_level,
              :chat_channel_id,
-             :user_count,
-             :last_read_message_id
+             :last_read_message_id,
+             :unread_count,
+             :unread_mentions
 
   has_one :user, serializer: BasicUserSerializer, embed: :objects
 
-  def user_count
-    object.chat_channel.user_count
+  def user
+    object.user
   end
 end

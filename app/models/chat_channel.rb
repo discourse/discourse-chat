@@ -2,16 +2,6 @@
 
 class ChatChannel < ActiveRecord::Base
   include Trashable
-  attribute :muted, default: false
-  attribute :desktop_notification_level,
-            default: UserChatChannelMembership::DEFAULT_NOTIFICATION_LEVEL
-  attribute :mobile_notification_level,
-            default: UserChatChannelMembership::DEFAULT_NOTIFICATION_LEVEL
-  attribute :following, default: false
-  attribute :unread_count, default: 0
-  attribute :unread_mentions, default: 0
-  attribute :last_read_message_id, default: nil
-
   belongs_to :chatable, polymorphic: true
   belongs_to :direct_message_channel,
              -> { where(chat_channels: { chatable_type: "DirectMessageChannel" }) },
@@ -31,15 +21,19 @@ class ChatChannel < ActiveRecord::Base
             presence: true,
             allow_nil: true
 
+  def membership_for(user)
+    user_chat_channel_memberships.find_by(user: user)
+  end
+
   def add(user)
     ActiveRecord::Base.transaction do
       membership =
         UserChatChannelMembership.find_or_initialize_by(user_id: user.id, chat_channel: self)
 
       if !membership.following
+        update!(user_count: (user_count || 0) + 1)
         membership.following = true
         membership.save!
-        update!(user_count: (user_count || 0) + 1)
       end
 
       membership
@@ -51,9 +45,9 @@ class ChatChannel < ActiveRecord::Base
       membership = UserChatChannelMembership.find_by!(user_id: user.id, chat_channel: self)
 
       if membership.following
-        membership.update!(following: false)
         new_user_count = [(user_count || 0) - 1, 0].max
         update!(user_count: new_user_count)
+        membership.update!(following: false)
       end
 
       membership

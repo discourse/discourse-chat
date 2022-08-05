@@ -57,7 +57,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
         )
       membership.following = true
       membership.save!
-      render_serialized(chat_channel, ChatChannelSerializer)
+      render_serialized(chat_channel, ChatChannelSerializer, membership: membership)
     else
       render_json_error(chat_channel)
     end

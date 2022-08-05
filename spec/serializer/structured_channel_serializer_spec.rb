@@ -53,7 +53,6 @@ RSpec.describe StructuredChannelSerializer do
       "muted" => false,
       "unread_count" => 0,
       "unread_mentions" => 0,
-      "user_count" => 0,
     )
   end
 
@@ -74,7 +73,6 @@ RSpec.describe StructuredChannelSerializer do
       "muted" => false,
       "unread_count" => 0,
       "unread_mentions" => 0,
-      "user_count" => 0,
     )
   end
 
@@ -91,7 +89,9 @@ RSpec.describe StructuredChannelSerializer do
 
   it "does not include membership if somehow the data is missing" do
     data = fetch_data
-    data[:memberships] = data[:memberships].reject { |membership| membership.chat_channel_id == channel1.id }
+    data[:memberships] = data[:memberships].reject do |membership|
+      membership.chat_channel_id == channel1.id
+    end
     expect(
       described_class
         .new(data, scope: guardian)

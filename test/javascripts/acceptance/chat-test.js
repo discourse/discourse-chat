@@ -131,8 +131,8 @@ function siteChannelPretender(
   opts = { unread_count: 0, muted: false }
 ) {
   let copy = cloneJSON(siteChannel);
-  copy.chat_channel.current_user_membership.unread_count = opts.unread_count;
-  copy.chat_channel.current_user_membership.muted = opts.muted;
+  copy.current_user_membership.unread_count = opts.unread_count;
+  copy.current_user_membership.muted = opts.muted;
   server.get("/chat/chat_channels/9.json", () => helper.response(copy));
 }
 

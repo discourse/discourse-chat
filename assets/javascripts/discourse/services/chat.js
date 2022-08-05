@@ -666,6 +666,10 @@ export default Service.extend({
     return ChatApi.unfollowChatChannel(channel).then(() => {
       this._unsubscribeFromChatChannel(channel);
       this.stopTrackingChannel(channel);
+
+      if (channel.isDirectMessageChannel) {
+        this.router.transitionTo("chat");
+      }
     });
   },
 

@@ -132,7 +132,7 @@ $float-height: 530px;
   height: 100%;
   padding-bottom: env(safe-area-inset-bottom);
   position: relative;
-  @include chat-scrollbar;
+  @include chat-scrollbar(var(--secondary));
 
   .chat-channel-unread-indicator {
     flex-shrink: 0;

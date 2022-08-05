@@ -163,7 +163,7 @@ export default Component.extend({
 
       this.chat
         .getChannelBy("id", this.chatChannel.id)
-        .then((trackedChannel) => {
+        .then(() => {
           if (this._selfDeleted) {
             return;
           }
@@ -1092,8 +1092,8 @@ export default Component.extend({
     }
 
     return promise
-      .then((channel) => {
-        channel.current_user_membership.set("following", true);
+      .then((c) => {
+        c.current_user_membership.set("following", true);
         return this.chat.startTrackingChannel(c);
       })
       .then((c) =>

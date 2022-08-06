@@ -7,7 +7,7 @@ describe DiscourseChat::MessageMover do
   fab!(:source_channel) { Fabricate(:chat_channel) }
   fab!(:destination_channel) { Fabricate(:chat_channel) }
 
-  let!(:message1) do
+  fab!(:message1) do
     Fabricate(
       :chat_message,
       chat_channel: source_channel,
@@ -15,7 +15,7 @@ describe DiscourseChat::MessageMover do
       message: "the first to be moved",
     )
   end
-  let!(:message2) do
+  fab!(:message2) do
     Fabricate(
       :chat_message,
       chat_channel: source_channel,
@@ -23,7 +23,7 @@ describe DiscourseChat::MessageMover do
       message: "message deux @testmovechat",
     )
   end
-  let!(:message3) do
+  fab!(:message3) do
     Fabricate(
       :chat_message,
       chat_channel: source_channel,
@@ -31,9 +31,9 @@ describe DiscourseChat::MessageMover do
       message: "the third message",
     )
   end
-  let!(:message4) { Fabricate(:chat_message, chat_channel: destination_channel) }
-  let!(:message5) { Fabricate(:chat_message, chat_channel: destination_channel) }
-  let!(:message6) { Fabricate(:chat_message, chat_channel: destination_channel) }
+  fab!(:message4) { Fabricate(:chat_message, chat_channel: destination_channel) }
+  fab!(:message5) { Fabricate(:chat_message, chat_channel: destination_channel) }
+  fab!(:message6) { Fabricate(:chat_message, chat_channel: destination_channel) }
   let(:move_message_ids) { [message1.id, message2.id, message3.id] }
 
   subject do

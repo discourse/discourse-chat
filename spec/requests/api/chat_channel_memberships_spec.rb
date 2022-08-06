@@ -3,8 +3,8 @@
 require "rails_helper"
 
 describe DiscourseChat::Api::ChatChannelMembershipsController do
-  fab!(:user_1) { Fabricate(:user) }
-  fab!(:user_2) { Fabricate(:user) }
+  fab!(:user_1) { Fabricate(:user, username: "bob") }
+  fab!(:user_2) { Fabricate(:user, username: "clark") }
   fab!(:channel_1) { Fabricate(:chat_channel, chatable: Fabricate(:category)) }
 
   before do

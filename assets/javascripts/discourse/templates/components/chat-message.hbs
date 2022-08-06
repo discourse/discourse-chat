@@ -20,6 +20,7 @@
   {{on "touchend" this.handleTouchEnd passive=true}}
   {{on "mouseenter" (fn this.onHoverMessage message (hash desktopOnly=true))}}
   {{on "mouseleave" (fn this.onHoverMessage null (hash desktopOnly=true))}}
+  {{chat/track-message-visibility}}
   class={{concat-class
     "chat-message-container"
     (if selectingMessages "selecting-messages")

@@ -118,7 +118,6 @@ export const chatChannels = {
         following: true,
       },
     },
-
     {
       id: 4,
       chatable_id: 8,
@@ -196,7 +195,7 @@ export const chatChannels = {
 function addSettingsAttrs(channel) {
   channel.current_user_membership = channel.current_user_membership || {};
   channel.current_user_membership.unread_count = 0;
-  channel.current_user_membership.unrad_mentions = 0;
+  channel.current_user_membership.unread_mentions = 0;
   channel.current_user_membership.muted = false;
   channel.current_user_membership.following = true;
   channel.current_user_membership.desktop_notification_level = "mention";

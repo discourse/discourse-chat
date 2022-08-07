@@ -11,7 +11,7 @@ import {
   generateChatView,
 } from "discourse/plugins/discourse-chat/chat-fixtures";
 import { test } from "qunit";
-import { click, settled, triggerEvent, visit } from "@ember/test-helpers";
+import { click, triggerEvent, visit } from "@ember/test-helpers";
 
 acceptance("Discourse Chat - Flagging test", function (needs) {
   let defaultChatView;
@@ -73,7 +73,6 @@ acceptance("Discourse Chat - Flagging test", function (needs) {
       chat_message_id: defaultChatView.chat_messages[0].id,
       reviewable_id: 1,
     });
-    await settled();
 
     const reviewableLink = query(
       `.chat-message-container[data-id='${defaultChatView.chat_messages[0].id}'] .chat-message-info__flag a`

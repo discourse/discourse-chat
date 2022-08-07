@@ -620,7 +620,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
       messageContent
     );
 
-    publishToMessageBus("/chat/11", {
+    await publishToMessageBus("/chat/11", {
       type: "sent",
       stagedId: 1,
       chat_message: {
@@ -631,9 +631,6 @@ acceptance("Discourse Chat - without unread", function (needs) {
         cooked: messageContent + " some extra cooked stuff",
       },
     });
-
-    // Wait for DOM to rerender. Message should be un-staged
-    await settled();
 
     assert.equal(
       lastMessage.closest(".chat-message-container").dataset.id,
@@ -674,15 +671,13 @@ acceptance("Discourse Chat - without unread", function (needs) {
     await visit("/chat/channel/11/another-category");
 
     const cooked = "<h1>hello there</h1>";
-    publishToMessageBus(`/chat/11`, {
+    await publishToMessageBus(`/chat/11`, {
       type: "processed",
       chat_message: {
         cooked,
         id: 175,
       },
     });
-
-    await settled();
 
     assert.ok(
       query(
@@ -703,7 +698,7 @@ Widget.triangulate(arg: "test")
     await focus(composerInput);
     await triggerKeyEvent(composerInput, "keydown", "Enter");
 
-    publishToMessageBus("/chat/11", {
+    await publishToMessageBus("/chat/11", {
       type: "sent",
       stagedId: 1,
       chat_message: {
@@ -715,8 +710,6 @@ Widget.triangulate(arg: "test")
         },
       },
     });
-
-    await settled();
 
     const messages = queryAll(".chat-message");
     const lastMessage = messages[messages.length - 1];
@@ -781,11 +774,10 @@ Widget.triangulate(arg: "test")
       exists(".header-dropdown-toggle.open-chat .chat-channel-unread-indicator")
     );
 
-    publishToMessageBus("/chat/9/new-messages", {
+    await publishToMessageBus("/chat/9/new-messages", {
       message_id: 201,
       user_id: 2,
     });
-    await settled();
 
     assert.ok(
       exists(".header-dropdown-toggle.open-chat .chat-channel-unread-indicator")
@@ -800,11 +792,10 @@ Widget.triangulate(arg: "test")
       )
     );
 
-    publishToMessageBus("/chat/75/new-messages", {
+    await publishToMessageBus("/chat/75/new-messages", {
       message_id: 201,
       user_id: 2,
     });
-    await settled();
     assert.ok(
       exists(
         ".header-dropdown-toggle.open-chat .chat-channel-unread-indicator.urgent .number"
@@ -820,15 +811,14 @@ Widget.triangulate(arg: "test")
 
   test("Unread DM count overrides the public unread indicator", async function (assert) {
     await visit("/t/internationalization-localization/280");
-    publishToMessageBus("/chat/9/new-messages", {
+    await publishToMessageBus("/chat/9/new-messages", {
       message_id: 201,
       user_id: 2,
     });
-    publishToMessageBus("/chat/75/new-messages", {
+    await publishToMessageBus("/chat/75/new-messages", {
       message_id: 202,
       user_id: 2,
     });
-    await settled();
     assert.ok(
       exists(
         ".header-dropdown-toggle.open-chat .chat-channel-unread-indicator.urgent .number"
@@ -843,10 +833,9 @@ Widget.triangulate(arg: "test")
 
   test("Mentions in public channels show the unread urgent indicator", async function (assert) {
     await visit("/t/internationalization-localization/280");
-    publishToMessageBus("/chat/9/new-mentions", {
+    await publishToMessageBus("/chat/9/new-mentions", {
       message_id: 201,
     });
-    await settled();
     assert.ok(
       exists(
         ".header-dropdown-toggle.open-chat .chat-channel-unread-indicator.urgent .number"
@@ -952,7 +941,7 @@ Widget.triangulate(arg: "test")
     assert.equal(heartReaction.innerText.trim(), "2");
     assert.ok(heartReaction.classList.contains("reacted"));
 
-    publishToMessageBus("/chat/11", {
+    await publishToMessageBus("/chat/11", {
       action: "add",
       user: { id: 1, username: "eviltrout" },
       emoji: "heart",
@@ -966,14 +955,13 @@ Widget.triangulate(arg: "test")
     assert.notOk(heartReaction.classList.contains("reacted"));
 
     // Message from another user coming in!
-    publishToMessageBus("/chat/11", {
+    await publishToMessageBus("/chat/11", {
       action: "add",
       user: { id: 77, username: "rando" },
       emoji: "sneezing_face",
       type: "reaction",
       chat_message_id: 176,
     });
-    await settled();
     const sneezingFaceReaction = lastMessage.querySelector(
       ".chat-message-reaction.sneezing_face"
     );
@@ -994,7 +982,7 @@ Widget.triangulate(arg: "test")
 
     const messages = queryAll(".chat-message-container");
     const lastMessage = messages[messages.length - 1];
-    publishToMessageBus("/chat/11", {
+    await publishToMessageBus("/chat/11", {
       type: "sent",
       stagedId: 1,
       chat_message: {
@@ -1005,7 +993,6 @@ Widget.triangulate(arg: "test")
         cooked: "<p>hellloooo</p>",
       },
     });
-    await settled();
 
     assert.deepEqual(lastMessage.dataset.id, "202");
     await triggerEvent(lastMessage, "mouseenter");
@@ -1019,14 +1006,14 @@ Widget.triangulate(arg: "test")
     const reaction = lastMessage.querySelector(
       ".chat-message-reaction.grin.reacted"
     );
-    publishToMessageBus("/chat/11", {
+    await publishToMessageBus("/chat/11", {
       action: "add",
       user: { id: 1, username: "eviltrout" },
       emoji: "grin",
       type: "reaction",
       chat_message_id: 202,
     });
-    await settled();
+
     await click(reaction);
     assert.notOk(
       lastMessage.querySelector(".chat-message-reaction.grin.reacted")
@@ -1035,7 +1022,7 @@ Widget.triangulate(arg: "test")
 
   test("mention warning is rendered", async function (assert) {
     await visit("/chat/channel/11/another-category");
-    publishToMessageBus("/chat/11", {
+    await publishToMessageBus("/chat/11", {
       type: "mention_warning",
       cannot_see: [{ id: 75, username: "hawk" }],
       without_membership: [
@@ -1044,7 +1031,6 @@ Widget.triangulate(arg: "test")
       ],
       chat_message_id: 176,
     });
-    await settled();
 
     assert.ok(
       exists(

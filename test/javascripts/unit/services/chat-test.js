@@ -3,7 +3,6 @@ import {
   acceptance,
   publishToMessageBus,
 } from "discourse/tests/helpers/qunit-helpers";
-import { settled } from "@ember/test-helpers";
 import { test } from "qunit";
 
 acceptance("Discourse Chat | Unit | Service | chat", function (needs) {
@@ -63,12 +62,11 @@ acceptance("Discourse Chat | Unit | Service | chat", function (needs) {
     setupMockPresenceChannel(this.chatService);
     await this.chatService.forceRefreshChannels();
 
-    publishToMessageBus("/chat/1/new-messages", {
+    await publishToMessageBus("/chat/1/new-messages", {
       user_id: this.currentUser.id,
       username: this.currentUser.username,
       message_id: 124,
     });
-    await settled();
 
     assert.equal(
       this.currentUser.chat_channel_tracking_state[1].chat_message_id,
@@ -87,12 +85,11 @@ acceptance("Discourse Chat | Unit | Service | chat", function (needs) {
     setupMockPresenceChannel(this.chatService);
     await this.chatService.forceRefreshChannels();
 
-    publishToMessageBus("/chat/1/new-messages", {
+    await publishToMessageBus("/chat/1/new-messages", {
       user_id: 2327,
       username: "johnny",
       message_id: 124,
     });
-    await settled();
 
     assert.equal(
       this.currentUser.chat_channel_tracking_state[1].chat_message_id,
@@ -110,12 +107,11 @@ acceptance("Discourse Chat | Unit | Service | chat", function (needs) {
     setupMockPresenceChannel(this.chatService);
     await this.chatService.forceRefreshChannels();
 
-    publishToMessageBus("/chat/1/new-messages", {
+    await publishToMessageBus("/chat/1/new-messages", {
       user_id: 2327,
       username: "jane",
       message_id: 124,
     });
-    await settled();
 
     assert.equal(
       this.currentUser.chat_channel_tracking_state[1].chat_message_id,

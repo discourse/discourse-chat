@@ -1,4 +1,4 @@
-import { click, fillIn, settled, visit } from "@ember/test-helpers";
+import { click, fillIn, visit } from "@ember/test-helpers";
 import {
   acceptance,
   exists,
@@ -98,7 +98,7 @@ acceptance(
     test("doesn't create a gap in history by adding new messages", async function (assert) {
       await visit("/chat/channel/1/cat");
 
-      publishToMessageBus("/chat/1", {
+      await publishToMessageBus("/chat/1", {
         type: "sent",
         chat_message: {
           id: 3,
@@ -108,7 +108,6 @@ acceptance(
           },
         },
       });
-      await settled();
 
       assert.notOk(exists(`.chat-message-container[data-id='${3}']`));
     });
@@ -116,14 +115,13 @@ acceptance(
     test("It continues to handle other message types", async function (assert) {
       await visit("/chat/channel/1/cat");
 
-      publishToMessageBus("/chat/1", {
+      await publishToMessageBus("/chat/1", {
         action: "add",
         user: { id: 77, username: "notTomtom" },
         emoji: "cat",
         type: "reaction",
         chat_message_id: 1,
       });
-      await settled();
 
       assert.ok(exists(".chat-message-reaction.cat"));
     });
@@ -137,7 +135,6 @@ acceptance(
       const composerInput = query(".chat-composer-input");
       await fillIn(composerInput, "test text");
       await click(".send-btn");
-      await settled();
 
       assert.ok(exists(`.chat-message-container[data-id='${3}']`));
       assert.ok(exists(`.chat-message-container[data-id='${4}']`));

@@ -155,12 +155,9 @@ module("Discourse Chat | Component | chat-composer-uploads", function (hooks) {
       );
 
       await settled();
-
       assert.strictEqual(queryAll(".chat-composer-upload").length, 1);
 
       await click(".remove-upload");
-      await settled();
-
       assert.strictEqual(queryAll(".chat-composer-upload").length, 0);
     },
   });

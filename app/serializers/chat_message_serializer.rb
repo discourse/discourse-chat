@@ -19,6 +19,10 @@ class ChatMessageSerializer < ApplicationSerializer
   has_one :in_reply_to, serializer: ChatInReplyToSerializer, embed: :objects
   has_many :uploads, serializer: UploadSerializer, embed: :objects
 
+  def user
+    object.user || DeletedChatUser.new
+  end
+
   def reactions
     reactions_hash = {}
     object

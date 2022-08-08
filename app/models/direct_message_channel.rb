@@ -9,7 +9,10 @@ class DirectMessageChannel < ActiveRecord::Base
   end
 
   def chat_channel_title_for_user(chat_channel, acting_user)
-    users = direct_message_users.map(&:user) - [acting_user]
+    users =
+      (direct_message_users.map(&:user) - [acting_user]).map do |user|
+        user ? user : DeletedChatUser.new
+      end
 
     # direct message to self
     if users.empty?

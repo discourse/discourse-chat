@@ -28,4 +28,15 @@ describe ChatMessageSerializer do
       end
     end
   end
+
+  describe "#user" do
+    context "when user has been destroyed" do
+      it "returns a placeholder user" do
+        message_1.user.destroy!
+        message_1.reload
+
+        expect(subject.as_json[:user][:username]).to eq("deleted")
+      end
+    end
+  end
 end

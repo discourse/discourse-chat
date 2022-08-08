@@ -108,6 +108,7 @@ after_initialize do
   load File.expand_path("../app/controllers/chat_channels_controller.rb", __FILE__)
   load File.expand_path("../app/controllers/direct_messages_controller.rb", __FILE__)
   load File.expand_path("../app/controllers/incoming_chat_webhooks_controller.rb", __FILE__)
+  load File.expand_path("../app/models/deleted_chat_user.rb", __FILE__)
   load File.expand_path("../app/models/user_chat_channel_membership.rb", __FILE__)
   load File.expand_path("../app/models/chat_channel.rb", __FILE__)
   load File.expand_path("../app/models/chat_channel_archive.rb", __FILE__)

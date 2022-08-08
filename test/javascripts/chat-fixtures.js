@@ -2,20 +2,6 @@ import { deepMerge } from "discourse-common/lib/object";
 
 export const messageContents = ["Hello world", "What up", "heyo!"];
 
-export const siteChannel = {
-  chatable: null,
-  chatable_id: -1,
-  chatable_type: "Site",
-  chatable_url: "http://localhost:3000",
-  id: 9,
-  title: "Site",
-  current_user_membership: {
-    unread_count: 0,
-    muted: false,
-    following: true,
-  },
-};
-
 export const directMessageChannels = [
   {
     chat_channel: {
@@ -103,7 +89,20 @@ const chatables = {
 
 export const chatChannels = {
   public_channels: [
-    siteChannel,
+    {
+      id: 9,
+      chatable_id: 1,
+      chatable_type: "Category",
+      chatable_url: "/c/bug/1",
+      title: "Site",
+      status: "open",
+      chatable: chatables[1],
+      current_user_membership: {
+        unread_count: 0,
+        muted: false,
+        following: true,
+      },
+    },
     {
       id: 7,
       chatable_id: 1,

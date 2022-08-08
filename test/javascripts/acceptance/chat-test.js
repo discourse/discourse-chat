@@ -25,7 +25,6 @@ import {
   directMessageChannels,
   generateChatView,
   messageContents,
-  siteChannel,
 } from "discourse/plugins/discourse-chat/chat-fixtures";
 import Session from "discourse/models/session";
 import { cloneJSON } from "discourse-common/lib/object";
@@ -125,17 +124,6 @@ const baseChatPretenders = (server, helper) => {
   );
 };
 
-function siteChannelPretender(
-  server,
-  helper,
-  opts = { unread_count: 0, muted: false }
-) {
-  let copy = cloneJSON(siteChannel);
-  copy.current_user_membership.unread_count = opts.unread_count;
-  copy.current_user_membership.muted = opts.muted;
-  server.get("/chat/chat_channels/9.json", () => helper.response(copy));
-}
-
 function directMessageChannelPretender(
   server,
   helper,
@@ -193,7 +181,6 @@ acceptance("Discourse Chat - without unread", function (needs) {
   });
   needs.pretender((server, helper) => {
     baseChatPretenders(server, helper);
-    siteChannelPretender(server, helper);
     directMessageChannelPretender(server, helper);
     chatChannelPretender(server, helper);
     const hawkAsJson = {
@@ -1130,7 +1117,6 @@ acceptance(
     });
     needs.pretender((server, helper) => {
       baseChatPretenders(server, helper);
-      siteChannelPretender(server, helper);
       directMessageChannelPretender(server, helper);
       chatChannelPretender(server, helper, [
         { id: 11, unread_count: 2, muted: false },
@@ -1201,7 +1187,6 @@ acceptance(
     });
     needs.pretender((server, helper) => {
       baseChatPretenders(server, helper);
-      siteChannelPretender(server, helper, { unread_count: 2, muted: false });
       chatChannelPretender(server, helper, [
         { id: 9, unread_count: 2, muted: false },
       ]);
@@ -1235,7 +1220,6 @@ acceptance(
     });
     needs.pretender((server, helper) => {
       baseChatPretenders(server, helper);
-      siteChannelPretender(server, helper, { unread_count: 2, muted: false });
       chatChannelPretender(server, helper, [
         { id: 9, unread_count: 2, muted: false },
       ]);
@@ -1320,7 +1304,6 @@ acceptance(
     });
     needs.pretender((server, helper) => {
       baseChatPretenders(server, helper);
-      siteChannelPretender(server, helper, { unread_count: 2, muted: false });
       directMessageChannelPretender(server, helper);
       // chat channel with ID 75 is direct message channel.
       chatChannelPretender(server, helper, [
@@ -1454,7 +1437,6 @@ acceptance("Discourse Chat - chat preferences", function (needs) {
   });
   needs.pretender((server, helper) => {
     baseChatPretenders(server, helper);
-    siteChannelPretender(server, helper);
     directMessageChannelPretender(server, helper);
     chatChannelPretender(server, helper);
   });
@@ -1521,7 +1503,6 @@ acceptance("Discourse Chat - plugin API", function (needs) {
   });
   needs.pretender((server, helper) => {
     baseChatPretenders(server, helper);
-    siteChannelPretender(server, helper);
     directMessageChannelPretender(server, helper);
     chatChannelPretender(server, helper);
   });
@@ -1558,7 +1539,6 @@ acceptance("Discourse Chat - image uploads", function (needs) {
   });
   needs.pretender((server, helper) => {
     baseChatPretenders(server, helper);
-    siteChannelPretender(server, helper);
     directMessageChannelPretender(server, helper);
     chatChannelPretender(server, helper);
 

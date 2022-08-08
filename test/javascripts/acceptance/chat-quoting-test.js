@@ -56,7 +56,7 @@ acceptance("Discourse Chat | quoting out of topic", function (needs) {
   });
 
   skip("it opens the composer and appends the quote", async function (assert) {
-    await visit("/chat/channel/7/Uncategorized");
+    await visit("/chat/channel/7/Bug");
     assert.ok(exists(".chat-message-container"));
     const firstMessage = query(".chat-message-container");
     await triggerEvent(firstMessage, "mouseenter");
@@ -157,7 +157,7 @@ acceptance("Discourse Chat | quoting on mobile", async function (needs) {
   needs.mobileView();
 
   test("it opens the chatable, opens the composer, and pastes the markdown in", async function (assert) {
-    await visit("/chat/channel/7/Uncategorized");
+    await visit("/chat/channel/7/Bug");
     assert.ok(exists(".chat-message-container"));
     const firstMessage = query(".chat-message-container");
     await tap(firstMessage);
@@ -166,11 +166,7 @@ acceptance("Discourse Chat | quoting on mobile", async function (needs) {
     assert.ok(firstMessage.classList.contains("selecting-messages"));
     await click("#chat-quote-btn");
 
-    assert.equal(
-      currentURL(),
-      "/c/uncategorized/1",
-      "navigates to the chatable url"
-    );
+    assert.equal(currentURL(), "/c/bug/1", "navigates to the chatable url");
     assert.ok(
       exists("#reply-control.composer-action-createTopic"),
       "the composer opens"

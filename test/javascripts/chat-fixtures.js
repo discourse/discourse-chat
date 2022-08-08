@@ -95,6 +95,8 @@ export const chatChannels = {
       chatable_type: "Category",
       chatable_url: "/c/bug/1",
       title: "Site",
+      status: "open",
+      chatable: chatables[1],
       current_user_membership: {
         unread_count: 0,
         muted: false,

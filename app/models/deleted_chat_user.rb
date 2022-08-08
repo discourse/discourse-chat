@@ -2,7 +2,7 @@
 
 class DeletedChatUser < User
   def username
-    "deleted"
+    I18n.t("chat.deleted_chat_username")
   end
 
   def avatar_template

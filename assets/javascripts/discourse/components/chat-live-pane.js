@@ -631,11 +631,7 @@ export default Component.extend({
       ) <= STICKY_SCROLL_LENIENCE;
     if (atTop) {
       this._fetchMoreMessages(PAST).then((newMessages) => {
-        if (!newMessages) {
-          return;
-        }
-        // prevents a white screen bug on safari
-        this.scrollToMessage(newMessages.lastObject.messageLookupId);
+        this._iosScrollFix(newMessages, PAST);
       });
       return;
     } else {
@@ -643,13 +639,7 @@ export default Component.extend({
 
       if (Math.abs(this._scrollerEl.scrollTop) <= STICKY_SCROLL_LENIENCE) {
         this._fetchMoreMessages(FUTURE).then((newMessages) => {
-          if (!newMessages) {
-            return;
-          }
-          // prevents a white screen bug on safari
-          this.scrollToMessage(newMessages.firstObject.messageLookupId, {
-            position: "bottom",
-          });
+          this._iosScrollFix(newMessages, FUTURE);
         });
       }
     }
@@ -1454,5 +1444,53 @@ export default Component.extend({
     } else {
       this.appEvents.trigger("sidebar:scroll-to-element", "sidebar-container");
     }
+  },
+
+  // This fix prevents a white screen when appending/preprending new content
+  // simulating a noop scroll forces to display the new content
+  // technically it should be possible to fix it with css and using
+  // -webkit-transform: translate3d(0,0,0); on the right elements
+  // but this has proven to either not work or cause other issues so far
+  _iosScrollFix(newMessages, direction) {
+    if (!this.capabilities.isIOS) {
+      return;
+    }
+
+    if (!newMessages?.length) {
+      return;
+    }
+
+    schedule("afterRender", () => {
+      if (this._selfDeleted) {
+        return;
+      }
+
+      let siblingId;
+      if (direction === FUTURE) {
+        const firstLoadedMessageId = newMessages.firstObject.messageLookupId;
+        const firstLoadedMessage = document.querySelector(
+          `.chat-message-container[data-id="${firstLoadedMessageId}"]`
+        );
+        siblingId = firstLoadedMessage.previousElementSibling?.dataset.id;
+      } else {
+        const lastLoadedMessageId = newMessages.lastObject.messageLookupId;
+        const lastLoadedMessage = document.querySelector(
+          `.chat-message-container[data-id="${lastLoadedMessageId}"]`
+        );
+        siblingId = lastLoadedMessage.nextElementSibling?.dataset.id;
+      }
+
+      if (!siblingId) {
+        return;
+      }
+
+      // forces the update preventing the white screen
+      const scroller = document.querySelector(".chat-messages-scroll");
+      scroller.scrollTo(0, 0);
+
+      this.scrollToMessage(siblingId, {
+        position: direction === PAST ? "top" : "bottom",
+      });
+    });
   },
 });

@@ -1,11 +1,10 @@
 import User from "discourse/models/user";
 import { render, waitFor } from "@ember/test-helpers";
 import ChatMessage from "discourse/plugins/discourse-chat/discourse/models/chat-message";
-import { exists, query } from "discourse/tests/helpers/qunit-helpers";
+import { exists } from "discourse/tests/helpers/qunit-helpers";
 import { setupRenderingTest } from "discourse/tests/helpers/component-test";
 import hbs from "htmlbars-inline-precompile";
 import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
-import I18n from "I18n";
 import { module, test } from "qunit";
 
 module("Discourse Chat | Component | chat-message", function (hooks) {

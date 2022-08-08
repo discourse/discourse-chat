@@ -64,7 +64,7 @@ describe DirectMessageChannelSerializer do
             root: false,
           ).as_json
 
-        expect(serializer[:users][0][:username]).to eq("deleted")
+        expect(serializer[:users][0][:username]).to eq(I18n.t("chat.deleted_chat_username"))
       end
     end
   end

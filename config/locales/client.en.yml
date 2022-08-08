@@ -157,7 +157,6 @@ en:
         one: "%{count} file"
         other: "%{count} files"
       you_flagged: "You flagged this message"
-      user_deleted: "deleted"
       exit: "back"
       channel_status:
         read_only_header: "Channel is read only"

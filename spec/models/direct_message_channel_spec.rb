@@ -60,7 +60,7 @@ describe DirectMessageChannel do
         direct_message_channel.reload
 
         expect(direct_message_channel.chat_channel_title_for_user(chat_channel, user1)).to eq(
-          "@deleted",
+          "@#{I18n.t("chat.deleted_chat_username")}",
         )
       end
     end

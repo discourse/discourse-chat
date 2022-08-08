@@ -5,7 +5,7 @@ require "rails_helper"
 describe DeletedChatUser do
   describe "#username" do
     it "returns a default username" do
-      expect(subject.username).to eq("deleted")
+      expect(subject.username).to eq(I18n.t("chat.deleted_chat_username"))
     end
   end
 

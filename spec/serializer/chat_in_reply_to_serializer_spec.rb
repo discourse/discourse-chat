@@ -15,7 +15,7 @@ describe ChatInReplyToSerializer do
         message_1.user.destroy!
         message_1.reload
 
-        expect(subject.as_json[:user][:username]).to eq("deleted")
+        expect(subject.as_json[:user][:username]).to eq(I18n.t("chat.deleted_chat_username"))
       end
     end
   end

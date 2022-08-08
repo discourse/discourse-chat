@@ -1,4 +1,4 @@
-import { cloneJSON, deepMerge } from "discourse-common/lib/object";
+import { deepMerge } from "discourse-common/lib/object";
 
 export const messageContents = ["Hello world", "What up", "heyo!"];
 
@@ -118,7 +118,6 @@ export const chatChannels = {
         following: true,
       },
     },
-
     {
       id: 4,
       chatable_id: 8,
@@ -192,25 +191,6 @@ export const chatChannels = {
   ],
   direct_message_channels: directMessageChannels.mapBy("chat_channel"),
 };
-
-function addSettingsAttrs(channel) {
-  channel.current_user_membership = channel.current_user_membership || {};
-  channel.current_user_membership.unread_count = 0;
-  channel.current_user_membership.unrad_mentions = 0;
-  channel.current_user_membership.muted = false;
-  channel.current_user_membership.following = true;
-  channel.current_user_membership.desktop_notification_level = "mention";
-  channel.current_user_membership.mobile_notification_level = "mention";
-}
-
-export function allChannels() {
-  let channels = cloneJSON(chatChannels);
-
-  channels.public_channels.forEach((c) => {
-    addSettingsAttrs(c);
-  });
-  return channels.public_channels;
-}
 
 const message0 = {
   id: 174,

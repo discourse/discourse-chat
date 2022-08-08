@@ -372,7 +372,7 @@ export default {
             }
 
             get actions() {
-              const site = getOwner(this).lookup("site:main");
+              const site = getOwner(this).lookup("service:site");
               return [
                 {
                   id: "startDm",

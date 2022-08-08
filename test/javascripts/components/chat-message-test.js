@@ -78,20 +78,6 @@ module("Discourse Chat | Component | chat-message", function (hooks) {
       afterReactionAdded=reStickScrollIfNeeded
     }}`;
 
-  test("Message with deleted user", async function (assert) {
-    this.setProperties(generateMessageProps({ user: null }));
-    await render(template);
-    assert.equal(
-      query(".chat-message-info__username__name").innerText.trim(),
-      I18n.t("chat.user_deleted"),
-      "shows the user_deleted text for the username"
-    );
-    assert.ok(
-      exists(".chat-message .chat-emoji-avatar .emoji[title='wastebasket']"),
-      "shows the wastebasket avatar"
-    );
-  });
-
   test("Message with edits", async function (assert) {
     this.setProperties(generateMessageProps({ edited: true }));
     await render(template);

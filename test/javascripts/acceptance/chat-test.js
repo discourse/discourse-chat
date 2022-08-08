@@ -226,6 +226,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
           id: 75,
           title: "hawk",
           chatable_type: "DirectMessageChannel",
+          last_message_sent_at: "2021-07-20T08:14:16.950Z",
           chatable: {
             users: [{ username: "hawk" }],
           },

@@ -16,6 +16,7 @@ module("Discourse Chat | Component | chat-message", function (hooks) {
       chatable_type: "Category",
       id: 9,
       title: "Site",
+      last_message_sent_at: "2021-11-08T21:26:05.710Z",
       current_user_membership: {
         unread_count: 0,
         muted: false,

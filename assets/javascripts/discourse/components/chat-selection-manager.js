@@ -64,29 +64,25 @@ export default class AdminCustomizeColorsShowController extends Component {
     this.set("showChatQuoteSuccess", true);
 
     schedule("afterRender", () => {
-      if (!this.element || this.isDestroying || this.isDestroyed) {
-        return;
-      }
-
       const element = document.querySelector(".chat-selection-message");
-      element.addEventListener(
-        "animationend",
-        () => {
-          this.set("showChatQuoteSuccess", false);
-        },
-        { once: true }
-      );
+      element?.addEventListener("animationend", () => {
+        if (this.isDestroying || this.isDestroyed) {
+          return;
+        }
+
+        this.set("showChatQuoteSuccess", false);
+      });
     });
   }
 
   async _copyQuoteToClipboard(quoteGenerationPromise) {
-    if (isTesting()) {
-      // clipboard API throws errors in tests
-      return;
-    }
-
     try {
-      await clipboardCopyAsync(quoteGenerationPromise);
+      if (!isTesting()) {
+        // clipboard API throws errors in tests
+        await clipboardCopyAsync(quoteGenerationPromise);
+      }
+
+      this._showCopyQuoteSuccess();
     } catch (error) {
       popupAjaxError(error);
     }

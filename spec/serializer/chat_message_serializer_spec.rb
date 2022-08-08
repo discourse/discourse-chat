@@ -39,4 +39,22 @@ describe ChatMessageSerializer do
       end
     end
   end
+
+  describe "#deleted_at" do
+    context "when user has been destroyed" do
+      it "has a deleted at date" do
+        message_1.user.destroy!
+        message_1.reload
+
+        expect(subject.as_json[:deleted_at]).to(be_within(1.second).of(Time.zone.now))
+      end
+
+      it "is marked as deleted by system user" do
+        message_1.user.destroy!
+        message_1.reload
+
+        expect(subject.as_json[:deleted_by_id]).to eq(Discourse.system_user.id)
+      end
+    end
+  end
 end

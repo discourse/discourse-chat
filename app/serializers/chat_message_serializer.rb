@@ -79,12 +79,20 @@ class ChatMessageSerializer < ApplicationSerializer
     object.revisions.any?
   end
 
+  def deleted_at
+    object.user ? object.deleted_at : Time.zone.now
+  end
+
+  def deleted_by_id
+    object.user ? object.deleted_by_id : Discourse.system_user.id
+  end
+
   def include_deleted_at?
-    !object.deleted_at.nil?
+    object.user ? !object.deleted_at.nil? : true
   end
 
   def include_deleted_by_id?
-    !object.deleted_at.nil?
+    object.user ? !object.deleted_at.nil? : true
   end
 
   def include_in_reply_to?

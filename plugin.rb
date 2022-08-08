@@ -466,11 +466,12 @@ after_initialize do
   register_presence_channel_prefix("chat-reply") do |channel_name|
     if chat_channel_id = channel_name[%r{/chat-reply/(\d+)}, 1]
       chat_channel = ChatChannel.find(chat_channel_id)
-      config = PresenceChannel::Config.new
-      config.allowed_group_ids = chat_channel.allowed_group_ids
-      config.allowed_user_ids = chat_channel.allowed_user_ids
-      config.public = true if config.allowed_group_ids.nil? && config.allowed_user_ids.nil?
-      config
+
+      PresenceChannel::Config.new.tap do |config|
+        config.allowed_group_ids = chat_channel.allowed_group_ids
+        config.allowed_user_ids = chat_channel.allowed_user_ids
+        config.public = !chat_channel.read_restricted?
+      end
     end
   rescue ActiveRecord::RecordNotFound
     nil

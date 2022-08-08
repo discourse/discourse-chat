@@ -64,6 +64,15 @@ describe ChatChannelMembershipsQuery do
 
             expect(described_class.call(channel_1).pluck(:user_id)).to contain_exactly(user_1.id)
           end
+
+          it "returns the membership if the user still has access through a staff group" do
+            chatters_group.remove(user_1)
+            Group.find_by(id: Group::AUTO_GROUPS[:staff]).add(user_1)
+
+            memberships = described_class.call(channel_1)
+
+            expect(memberships.pluck(:user_id)).to include(user_1.id)
+          end
         end
 
         context "membership doesn’t exist" do

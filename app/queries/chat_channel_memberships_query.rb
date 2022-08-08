@@ -9,7 +9,7 @@ class ChatChannelMembershipsQuery
         .where(user: User.activated.not_suspended.not_staged)
         .where(chat_channel: channel, following: true)
 
-    if channel.category_channel? && channel.allowed_group_ids
+    if channel.category_channel? && channel.read_restricted? && channel.allowed_group_ids
       query =
         query.where(
           "user_id IN (SELECT user_id FROM group_users WHERE group_id IN (?))",

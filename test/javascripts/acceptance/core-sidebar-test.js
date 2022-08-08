@@ -236,9 +236,8 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
     );
 
     assert.strictEqual(
-      directLinks
-        .eq(0)
-        .find(".sidebar-section-link-prefix img")[0]
+      directLinks[0]
+        .querySelector(".sidebar-section-link-prefix img")
         .classList.contains("prefix-image"),
       true,
       "displays avatar in prefix when two participants"
@@ -251,54 +250,49 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
     );
 
     assert.ok(
-      exists(
-        directLinks
-          .eq(0)
-          .find(".sidebar-section-link-content-text .on-holiday img")[0]
+      directLinks[0].querySelector(
+        ".sidebar-section-link-content-text .on-holiday img"
       ),
       "displays flair when user is on holiday"
     );
 
     assert.strictEqual(
-      directLinks
-        .eq(0)
-        .find(".sidebar-section-link-suffix")[0]
+      directLinks[0]
+        .querySelector(".sidebar-section-link-suffix")
         .classList.contains("urgent"),
       true,
       "displays new messages indicator"
     );
 
     assert.strictEqual(
-      directLinks
-        .eq(1)
-        .find("span.sidebar-section-link-prefix")[0]
+      directLinks[1]
+        .querySelector("span.sidebar-section-link-prefix")
         .classList.contains("text"),
       true,
       "displays text in prefix when more than two participants"
     );
 
     assert.strictEqual(
-      directLinks
-        .eq(1)
-        .find(".sidebar-section-link-content-text")[0]
+      directLinks[1]
+        .querySelector(".sidebar-section-link-content-text")
         .textContent.trim(),
       "eviltrout, markvanlan",
       "displays all participants name in a link"
     );
 
     assert.ok(
-      !exists(directLinks.eq(1).find(".sidebar-section-link-suffix")[0]),
+      !directLinks[1].querySelector(".sidebar-section-link-suffix"),
       "does not display new messages indicator"
     );
     User.current().chat_channel_tracking_state[76].set("unread_count", 99);
     chatService.reSortDirectMessageChannels();
     chatService.appEvents.trigger("chat:user-tracking-state-changed");
     await settled();
+
     directLinks = queryAll(".sidebar-section-chat-dms a.sidebar-section-link");
     assert.strictEqual(
-      directLinks
-        .eq(0)
-        .find(".sidebar-section-link-content-text")[0]
+      directLinks[0]
+        .querySelector(".sidebar-section-link-content-text")
         .textContent.trim(),
       "eviltrout, markvanlan",
       "reorders private messages"

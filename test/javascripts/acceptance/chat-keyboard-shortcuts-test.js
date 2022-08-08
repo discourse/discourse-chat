@@ -141,7 +141,7 @@ acceptance("Discourse Chat - Keyboard shortcuts", function (needs) {
     await triggerKeyEvent(document.body, "keydown", "ArrowDown", {
       altKey: true,
     });
-    assert.equal(currentURL(), "/chat/channel/4/public-category");
+    assert.equal(currentURL(), "/chat/channel/7/bug");
     await triggerKeyEvent(document.body, "keydown", "ArrowUp", {
       altKey: true,
     });

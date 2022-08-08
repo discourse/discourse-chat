@@ -82,10 +82,10 @@ export const directMessageChannels = [
 const chatables = {
   1: {
     id: 1,
-    name: "Uncategorized",
+    name: "Bug",
     color: "0088CC",
     text_color: "FFFFFF",
-    slug: "uncategorized",
+    slug: "bug",
   },
   8: {
     id: 8,
@@ -108,8 +108,8 @@ export const chatChannels = {
       id: 7,
       chatable_id: 1,
       chatable_type: "Category",
-      chatable_url: "/c/uncategorized/1",
-      title: "Uncategorized",
+      chatable_url: "/c/bug/1",
+      title: "Bug",
       status: "open",
       chatable: chatables[1],
       current_user_membership: {

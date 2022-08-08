@@ -53,11 +53,11 @@ export default class AdminCustomizeColorsShowController extends Component {
       });
     };
 
-    if (!this.site.isMobileDevice) {
-      return this._copyQuoteToClipboard(quoteGenerationPromise);
+    if (this.site.isMobileDevice) {
+      await this._copyQuoteToComposer(quoteGenerationPromise);
+    } else {
+      await this._copyQuoteToClipboard(quoteGenerationPromise);
     }
-
-    return this._copyQuoteToComposer(quoteGenerationPromise);
   }
 
   _showCopyQuoteSuccess() {
@@ -79,33 +79,29 @@ export default class AdminCustomizeColorsShowController extends Component {
     });
   }
 
-  _goToChatableUrl() {
-    if (this.chatChannel.chatable_url) {
-      return this.router.transitionTo(this.chatChannel.chatable_url);
-    }
-  }
-
-  _copyQuoteToClipboard(quoteGenerationPromise) {
-    if (!isTesting()) {
-      return clipboardCopyAsync(quoteGenerationPromise)
-        .then(() => {
-          this._showCopyQuoteSuccess();
-        })
-        .catch(popupAjaxError);
-    } else {
+  async _copyQuoteToClipboard(quoteGenerationPromise) {
+    if (isTesting()) {
       // clipboard API throws errors in tests
       return;
+    }
+
+    try {
+      await clipboardCopyAsync(quoteGenerationPromise);
+    } catch (error) {
+      popupAjaxError(error);
     }
   }
 
   async _copyQuoteToComposer(quoteGenerationPromise) {
-    let quoteMarkdownBlob, quoteMarkdown;
+    let quoteMarkdown;
+
     try {
-      quoteMarkdownBlob = await quoteGenerationPromise();
+      const quoteMarkdownBlob = await quoteGenerationPromise();
       quoteMarkdown = await quoteMarkdownBlob.text();
     } catch (error) {
       popupAjaxError(error);
     }
+
     const container = getOwner(this);
     const composer = container.lookup("controller:composer");
     const openOpts = {};
@@ -117,18 +113,20 @@ export default class AdminCustomizeColorsShowController extends Component {
     if (this.site.isMobileDevice) {
       // go to the relevant chatable (e.g. category) and open the
       // composer to insert text
-      return this._goToChatableUrl().then(() => {
-        composer.focusComposer({
-          fallbackToNewTopic: true,
-          insertText: quoteMarkdown,
-          openOpts,
-        });
+      if (this.chatChannel.chatable_url) {
+        this.router.transitionTo(this.chatChannel.chatable_url);
+      }
+
+      await composer.focusComposer({
+        fallbackToNewTopic: true,
+        insertText: quoteMarkdown,
+        openOpts,
       });
     } else {
       // open the composer and insert text, reply to the current
       // topic if there is one, use the active draft if there is one
       const topic = container.lookup("controller:topic");
-      composer.focusComposer({
+      await composer.focusComposer({
         fallbackToNewTopic: true,
         topic: topic?.model,
         insertText: quoteMarkdown,

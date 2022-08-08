@@ -31,6 +31,7 @@ en:
         Archiving the chat channel **\#%{channel_name}** has failed. %{messages_archived} messages have been archived. Partially archived messages were copied into the topic [%{topic_title}](%{topic_url}). Visit the channel at %{channel_url} to retry.
 
   chat:
+    deleted_chat_username: deleted
     errors:
       channel_exists_for_category: "A channel already exists for this category and name"
       channel_new_message_disallowed: "The channel is %{status}, no new messages can be sent"

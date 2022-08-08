@@ -89,11 +89,7 @@
                 emoji=message.in_reply_to.chat_webhook_event.emoji
               }}
             {{else}}
-              {{#if message.in_reply_to.user}}
-                {{chat-user-avatar user=message.in_reply_to.user}}
-              {{else}}
-                {{chat-emoji-avatar emoji=":wastebasket:"}}
-              {{/if}}
+              {{chat-user-avatar user=message.in_reply_to.user}}
             {{/if}}
 
             <span class="chat-reply__excerpt">

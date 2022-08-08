@@ -53,14 +53,16 @@ describe DirectMessageChannel do
       )
     end
 
-    it "returns the channel id if the user is deleted" do
-      direct_message_channel = Fabricate(:direct_message_channel, users: [user1, user2])
-      user2.destroy!
-      direct_message_channel.reload
+    context "when user is deleted" do
+      it "returns a placeholder username" do
+        direct_message_channel = Fabricate(:direct_message_channel, users: [user1, user2])
+        user2.destroy!
+        direct_message_channel.reload
 
-      expect(
-        direct_message_channel.chat_channel_title_for_user(chat_channel, user1),
-      ).to eq chat_channel.id
+        expect(direct_message_channel.chat_channel_title_for_user(chat_channel, user1)).to eq(
+          "@#{I18n.t("chat.deleted_chat_username")}",
+        )
+      end
     end
   end
 end

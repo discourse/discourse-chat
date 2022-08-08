@@ -1,4 +1,3 @@
-import I18n from "I18n";
 import { computed } from "@ember/object";
 import Component from "@ember/component";
 import { prioritizeNameInUx } from "discourse/lib/settings";

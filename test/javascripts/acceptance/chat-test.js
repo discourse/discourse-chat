@@ -1964,6 +1964,36 @@ acceptance("Discourse Chat - Composer", function (needs) {
   });
 });
 
+acceptance("Discourse Chat - Drawer", function (needs) {
+  needs.user({ has_chat_enabled: true });
+  needs.settings({ chat_enabled: true });
+  needs.pretender((server, helper) => {
+    baseChatPretenders(server, helper);
+    chatChannelPretender(server, helper);
+  });
+
+  needs.hooks.beforeEach(function () {
+    Object.defineProperty(this, "chatService", {
+      get: () => this.container.lookup("service:chat"),
+    });
+  });
+
+  test("Position after closing reduced composer", async function (assert) {
+    this.chatService.set("chatWindowFullPage", false);
+
+    await visit("/t/internationalization-localization/280");
+    await click(".btn.create");
+    await click(".toggle-preview");
+    await click(".header-dropdown-toggle.open-chat");
+    await click(".save-or-cancel .cancel");
+    const float = document.querySelector(".topic-chat-float-container");
+    const key = "--composer-right";
+    const value = getComputedStyle(float).getPropertyValue(key);
+
+    assert.strictEqual(value, "0px");
+  });
+});
+
 function createFile(name, type = "image/png") {
   // the blob content doesn't matter at all, just want it to be random-ish
   const file = new Blob([(Math.random() + 1).toString(36).substring(2)], {

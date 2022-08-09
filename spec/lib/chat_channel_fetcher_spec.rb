@@ -195,11 +195,12 @@ describe DiscourseChat::ChatChannelFetcher do
     end
 
     it "ensures limit has a max value" do
-      25.times { Fabricate(:chat_channel) }
+      over_limit = DiscourseChat::ChatChannelFetcher::MAX_PUBLIC_CHANNEL_RESULTS + 1
+      over_limit.times { Fabricate(:chat_channel) }
 
-      expect(subject.secured_public_channels(guardian, memberships, limit: 25).length).to eq(
-        DiscourseChat::ChatChannelFetcher::MAX_RESULTS,
-      )
+      expect(
+        subject.secured_public_channels(guardian, memberships, limit: over_limit).length,
+      ).to eq(DiscourseChat::ChatChannelFetcher::MAX_PUBLIC_CHANNEL_RESULTS)
     end
 
     it "does not show the user category channels they cannot access" do

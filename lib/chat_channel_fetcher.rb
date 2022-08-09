@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module DiscourseChat::ChatChannelFetcher
-  MAX_RESULTS = 20
+  MAX_PUBLIC_CHANNEL_RESULTS = 50
 
   def self.structured(guardian)
     memberships = UserChatChannelMembership.where(user_id: guardian.user.id)
@@ -94,7 +94,10 @@ module DiscourseChat::ChatChannelFetcher
         )
     end
 
-    options[:limit] = (options[:limit] || MAX_RESULTS).to_i.clamp(1, MAX_RESULTS)
+    options[:limit] = (options[:limit] || MAX_PUBLIC_CHANNEL_RESULTS).to_i.clamp(
+      1,
+      MAX_PUBLIC_CHANNEL_RESULTS,
+    )
     options[:offset] = [options[:offset].to_i, 0].max
 
     channels = channels.limit(options[:limit]).offset(options[:offset])

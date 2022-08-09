@@ -6,6 +6,7 @@
 
 da:
   chat:
+    deleted_chat_username: slettet
     reviewables:
       actions:
         agree_and_suspend:

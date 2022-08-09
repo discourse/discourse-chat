@@ -23,6 +23,7 @@ he:
     default_emoji_reactions: "רגשות אמוג׳י כברירת מחדל להודעות צ׳אט. ניתן להוסיף עד 5 אמוג׳ים לתגובה מהירה."
     errors:
       chat_default_channel: "ערוץ הצ׳אט כברירת המחדל חייב להיות ערוץ ציבורי."
+      chat_upload_not_allowed_secure_media: "אסור להעלות לצ׳אט כשהגדרת האתר למדיה מאובטחת מופעלת."
   system_messages:
     chat_channel_archive_complete:
       title: "העברת ערוץ הצ׳אט לארכיון הושלמה"
@@ -35,6 +36,7 @@ he:
       text_body_template: |
         העברת ערוץ הצ׳אט **‎\#%{channel_name}** לארכיון נכשלה. %{messages_archived} הודעות הועברו לארכיון. הודעות שהועברו לארכיון באופן חלקי הועתקו לנושא [%{topic_title}](%{topic_url}). יש לבקר בכתובת הערוץ %{channel_url} כדי לנסות שוב.
   chat:
+    deleted_chat_username: נמחק
     errors:
       channel_exists_for_category: "כבר קיים ערוץ לקטגוריה ולשם האלו"
       channel_new_message_disallowed: "הערוץ %{status}, לא ניתן לשלוח הודעות חדשות"

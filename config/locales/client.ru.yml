@@ -169,7 +169,6 @@ ru:
         many: "%{count} файлов"
         other: "%{count} файлов"
       you_flagged: "Вы пожаловались на это сообщение"
-      user_deleted: "удалён"
       exit: "Назад"
       channel_status:
         read_only_header: "Канал только для чтения"
@@ -272,7 +271,7 @@ ru:
         code_text: "Код"
       quote:
         original_channel: 'Первоначально отправлено в <a href="%{channelLink}">%{channel}</a>'
-        copy_success: "Цитата из чата скопирована в буфер обмена."
+        copy_success: "Цитата из чата скопирована в буфер обмена"
       notification_levels:
         never: "Никогда"
         mention: "Только для упоминаний"
@@ -410,6 +409,8 @@ ru:
           composer_bold: "%{shortcut} Жирный (только в редакторе)"
           composer_italic: "%{shortcut} Курсив (только в редакторе)"
           composer_code: "%{shortcut} Код (только в редакторе)"
+          drawer_open: "%{shortcut} Открыть панель чата"
+          drawer_close: "%{shortcut} Закрыть панель чата"
     topic_statuses:
       chat:
         help: "Чат включён для этой темы"

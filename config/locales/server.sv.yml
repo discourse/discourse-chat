@@ -23,6 +23,7 @@ sv:
     default_emoji_reactions: "Standardval av emoji-reaktioner för chattmeddelanden. Lägg till upp till 5 emojis som snabbval."
     errors:
       chat_default_channel: "Standardchattkanalen måste vara en offentlig kanal."
+      chat_upload_not_allowed_secure_media: "Chattuppladdningar är inte tillåtna när inställningen för säker mediawebbplats är aktiverad."
   system_messages:
     chat_channel_archive_complete:
       title: "Arkivering av chattkanalen är färdigt"
@@ -35,6 +36,7 @@ sv:
       text_body_template: |
         Arkivering av chatt kanalen **\#%{channel_name}** misslyckades. %{messages_archived} meddelanden har arkiverats. Delvis arkiverade meddelanden kopierades till ämnet [%{topic_title}](%{topic_url}). Besök kanalen på %{channel_url} för att försöka igen.
   chat:
+    deleted_chat_username: raderad
     errors:
       channel_exists_for_category: "En kanal finns redan för denna kategori och namn"
       channel_new_message_disallowed: "Kanalen är %{status}, inga nya meddelanden kan skickas"
@@ -50,6 +52,11 @@ sv:
       message_move_invalid_channel: "Käll- och destinationskanalen måste vara offentliga kanaler."
       message_move_no_messages_found: "Inga meddelanden hittades med de angivna meddelande-ID:n."
       cant_update_direct_message_channel: "Egenskaper för direktmeddelandekanal såsom namn och beskrivning kan inte uppdateras."
+      not_accepting_dms: "Tyvärr, %{username} accepterar inte meddelanden för tillfället."
+      actor_ignoring_target_user: "Du ignorerar %{username}, så du kan inte skicka meddelanden till dem."
+      actor_muting_target_user: "Du har tystat %{username}, så du kan inte skicka meddelanden till dem."
+      actor_disallowed_dms: "Du har valt att hindra användare från att skicka dig privata och direkta meddelanden, så du kan inte skapa nya direkta meddelanden."
+      actor_preventing_target_user_from_dm: "Du har valt att hindra %{username} från att skicka privata och direkta meddelanden, så du kan inte skapa nya direktmeddelanden till dem."
     reviewables:
       actions:
         agree:

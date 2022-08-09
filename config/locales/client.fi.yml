@@ -101,8 +101,6 @@ fi:
         you_others_and_more: "Sinä, %{usernames} ja %{more} muuta reagoivat emojilla :%{emoji}:"
       composer:
         toggle_toolbar: "Vaihda työkalupalkki"
-      quote:
-        copy_success: "Chat-lainaus kopioitiin leikepöydälle."
       notification_levels:
         never: "Ei koskaan"
         mention: "Vain maininnoissa"

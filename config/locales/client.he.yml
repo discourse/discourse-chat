@@ -169,7 +169,6 @@ he:
         many: "%{count} קבצים"
         other: "%{count} קבצים"
       you_flagged: "סימנת את ההודעה הזאת"
-      user_deleted: "נמחק"
       exit: "חזרה"
       channel_status:
         read_only_header: "הערוץ הוא לקריאה בלבד"
@@ -272,7 +271,7 @@ he:
         code_text: "טקסט קוד"
       quote:
         original_channel: 'נשלח במקור ב־<a href="%{channelLink}">%{channel}</a>'
-        copy_success: "ציטוט מהצ׳אט הועתק ללוח הגזירים."
+        copy_success: "ציטוט מהצ׳אט הועתק ללוח הגזירים"
       notification_levels:
         never: "לעולם לא"
         mention: "רק אזכורים"
@@ -415,4 +414,7 @@ he:
         help: "הצ׳אט מופעל בנושא הזה"
     user:
       allow_private_messages: "לאפשר למשתמשים אחרים לשלוח לי הודעות פרטיות והודעות ישירות בצ׳אט"
+      muted_users_instructions: "לדחות את כל ההתראות על הודעות אישיות והודעות ישירות בצ׳אט מהמשמתמשים האלה."
+      allowed_pm_users_instructions: "לאפשר רק הודעות אישיות או הודעות ישירות בצ׳אט מהמשמתמשים האלה."
       allow_private_messages_from_specific_users: "לאפשר רק למשתמשים מסוימים לשלוח לי הודעות פרטיות או הודעות ישירות בצ׳אט"
+      ignored_users_instructions: "לדחות את כל הפוסטים, ההודעות, ההתראות, ההודעות אישיות וההודעות הישירות בצ׳אט מהמשמתמשים האלה."

@@ -26,6 +26,7 @@ acceptance("Discourse Chat | Unit | Service | chat", function (needs) {
             id: 1,
             title: "something",
             chatable_type: "Category",
+            last_message_sent_at: "2021-11-08T21:26:05.710Z",
             current_user_membership: {
               unread_count: 2,
               last_read_message_id: 123,

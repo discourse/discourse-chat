@@ -31,6 +31,7 @@ export const directMessageChannels = [
         muted: false,
         following: true,
       },
+      last_message_sent_at: "2021-07-20T08:14:16.950Z",
     },
   },
   {
@@ -61,6 +62,7 @@ export const directMessageChannels = [
         muted: false,
         following: true,
       },
+      last_message_sent_at: "2021-07-05T12:04:00.850Z",
     },
   },
 ];
@@ -97,6 +99,7 @@ export const chatChannels = {
       title: "Site",
       status: "open",
       chatable: chatables[1],
+      last_message_sent_at: "2021-07-24T08:14:16.950Z",
       current_user_membership: {
         unread_count: 0,
         muted: false,
@@ -111,6 +114,7 @@ export const chatChannels = {
       title: "Bug",
       status: "open",
       chatable: chatables[1],
+      last_message_sent_at: "2021-07-15T08:14:16.950Z",
       current_user_membership: {
         unread_count: 0,
         muted: false,
@@ -125,6 +129,7 @@ export const chatChannels = {
       title: "Public category",
       status: "open",
       chatable: chatables[8],
+      last_message_sent_at: "2021-07-14T08:14:16.950Z",
       current_user_membership: {
         unread_count: 0,
         muted: false,
@@ -139,6 +144,7 @@ export const chatChannels = {
       title: "Public category (read-only)",
       status: "read_only",
       chatable: chatables[8],
+      last_message_sent_at: "2021-07-10T08:14:16.950Z",
       current_user_membership: {
         unread_count: 0,
         muted: false,
@@ -153,6 +159,7 @@ export const chatChannels = {
       title: "Public category (closed)",
       status: "closed",
       chatable: chatables[8],
+      last_message_sent_at: "2021-07-21T08:14:16.950Z",
       current_user_membership: {
         unread_count: 0,
         muted: false,
@@ -167,6 +174,7 @@ export const chatChannels = {
       title: "Public category (archived)",
       status: "archived",
       chatable: chatables[8],
+      last_message_sent_at: "2021-07-25T08:14:16.950Z",
       current_user_membership: {
         unread_count: 0,
         muted: false,
@@ -181,6 +189,7 @@ export const chatChannels = {
       title: "Another Category",
       status: "open",
       chatable: chatables[12],
+      last_message_sent_at: "2021-07-02T08:14:16.950Z",
       current_user_membership: {
         unread_count: 0,
         muted: false,

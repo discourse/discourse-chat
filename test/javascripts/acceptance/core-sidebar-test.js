@@ -48,6 +48,7 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
       chatable_url: null,
       id: 76,
       title: "@sam",
+      last_message_sent_at: "2021-06-01T11:15:00.000Z",
       current_user_membership: {
         unread_count: 0,
         muted: false,
@@ -63,6 +64,7 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
             title: "dev :bug:",
             chatable_type: "Category",
             chatable: { slug: "dev", read_restricted: true },
+            last_message_sent_at: "2021-11-08T21:26:05.710Z",
             current_user_membership: {
               unread_count: 0,
               unread_mentions: 0,
@@ -73,6 +75,7 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
             title: "general",
             chatable_type: "Category",
             chatable: { slug: "general" },
+            last_message_sent_at: "2021-11-08T21:26:05.710Z",
             current_user_membership: {
               unread_count: 1,
               unread_mentions: 0,
@@ -83,6 +86,7 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
             title: "random",
             chatable_type: "Category",
             chatable: { slug: "random" },
+            last_message_sent_at: "2021-11-08T21:26:05.710Z",
             current_user_membership: {
               unread_count: 1,
               unread_mentions: 1,
@@ -327,6 +331,7 @@ acceptance("Discourse Chat - Plugin Sidebar", function (needs) {
             title: "dev :bug:",
             chatable_type: "Category",
             chatable: { slug: "dev", read_restricted: true },
+            last_message_sent_at: "2021-11-08T21:26:05.710Z",
             current_user_membership: {
               unread_count: 1,
               unread_mentions: 1,
@@ -337,6 +342,7 @@ acceptance("Discourse Chat - Plugin Sidebar", function (needs) {
             title: "general",
             chatable_type: "Category",
             chatable: { slug: "general" },
+            last_message_sent_at: "2021-11-08T21:26:05.710Z",
             current_user_membership: {
               unread_count: 1,
               unread_mentions: 1,
@@ -347,6 +353,7 @@ acceptance("Discourse Chat - Plugin Sidebar", function (needs) {
             title: "random",
             chatable_type: "Category",
             chatable: { slug: "random" },
+            last_message_sent_at: "2021-11-08T21:26:05.710Z",
             current_user_membership: {
               unread_count: 1,
               unread_mentions: 1,

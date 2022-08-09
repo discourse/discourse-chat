@@ -185,7 +185,7 @@ export default Component.extend({
     );
     this.element.style.setProperty(
       "--composer-right",
-      composer.offsetLeft + "px"
+      (composer.classList.contains("closed") ? 0 : composer.offsetLeft) + "px"
     );
   },
 

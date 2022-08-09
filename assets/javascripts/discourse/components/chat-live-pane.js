@@ -1038,7 +1038,7 @@ export default Component.extend({
       });
 
     if (this.details.can_load_more_future) {
-      msgCreationPromise.then(this._fetchAndScrollToLatest);
+      msgCreationPromise.then(() => this._fetchAndScrollToLatest());
     } else {
       const stagedMessage = this._prepareSingleMessage(
         // We need to add the user and created at for presentation of staged message
@@ -1350,10 +1350,7 @@ export default Component.extend({
   restickScrolling(event) {
     event.preventDefault();
 
-    return this._fetchAndScrollToLatest().then(() => {
-      this.set("stickyScroll", true);
-      this._stickScrollToBottom();
-    });
+    return this._fetchAndScrollToLatest();
   },
 
   focusComposer() {
@@ -1491,7 +1488,8 @@ export default Component.extend({
     return this.fetchMessages(this.chatChannel, {
       fetchFromLastMessage: true,
     }).then(() => {
-      this.scrollToMessage(this.messages[this.messages.length - 1].id);
+      this.set("stickyScroll", true);
+      this._stickScrollToBottom();
     });
   },
 });

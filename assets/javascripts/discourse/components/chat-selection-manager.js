@@ -9,6 +9,7 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 import { schedule } from "@ember/runloop";
 import { inject as service } from "@ember/service";
 import getURL from "discourse-common/lib/get-url";
+import { bind } from "discourse-common/utils/decorators";
 
 export default class AdminCustomizeColorsShowController extends Component {
   tagName = "";
@@ -30,6 +31,21 @@ export default class AdminCustomizeColorsShowController extends Component {
     return !this.chatChannel.isDirectMessageChannel && this.canModerate;
   }
 
+  @bind
+  async generateQuote() {
+    const response = await ajax(
+      getURL(`/chat/${this.chatChannel.id}/quote.json`),
+      {
+        data: { message_ids: this.selectedMessageIds },
+        type: "POST",
+      }
+    );
+
+    return new Blob([response.markdown], {
+      type: "text/plain",
+    });
+  }
+
   @action
   openMoveMessageModal() {
     showModal("chat-message-move-to-channel-modal").setProperties({
@@ -40,63 +56,10 @@ export default class AdminCustomizeColorsShowController extends Component {
 
   @action
   async quoteMessages() {
-    const quoteGenerationPromise = async () => {
-      const response = await ajax(
-        getURL(`/chat/${this.chatChannel.id}/quote.json`),
-        {
-          data: { message_ids: this.selectedMessageIds },
-          type: "POST",
-        }
-      );
-      return new Blob([response.markdown], {
-        type: "text/plain",
-      });
-    };
-
-    if (this.site.isMobileDevice) {
-      await this._copyQuoteToComposer(quoteGenerationPromise);
-    } else {
-      await this._copyQuoteToClipboard(quoteGenerationPromise);
-    }
-  }
-
-  _showCopyQuoteSuccess() {
-    this.set("showChatQuoteSuccess", true);
-
-    schedule("afterRender", () => {
-      if (!this.element || this.isDestroying || this.isDestroyed) {
-        return;
-      }
-
-      const element = document.querySelector(".chat-selection-message");
-      element.addEventListener(
-        "animationend",
-        () => {
-          this.set("showChatQuoteSuccess", false);
-        },
-        { once: true }
-      );
-    });
-  }
-
-  async _copyQuoteToClipboard(quoteGenerationPromise) {
-    if (isTesting()) {
-      // clipboard API throws errors in tests
-      return;
-    }
-
-    try {
-      await clipboardCopyAsync(quoteGenerationPromise);
-    } catch (error) {
-      popupAjaxError(error);
-    }
-  }
-
-  async _copyQuoteToComposer(quoteGenerationPromise) {
     let quoteMarkdown;
 
     try {
-      const quoteMarkdownBlob = await quoteGenerationPromise();
+      const quoteMarkdownBlob = await this.generateQuote();
       quoteMarkdown = await quoteMarkdownBlob.text();
     } catch (error) {
       popupAjaxError(error);
@@ -110,7 +73,7 @@ export default class AdminCustomizeColorsShowController extends Component {
       openOpts.categoryId = this.chatChannel.chatable_id;
     }
 
-    if (this.site.isMobileDevice) {
+    if (this.site.mobileView) {
       // go to the relevant chatable (e.g. category) and open the
       // composer to insert text
       if (this.chatChannel.chatable_url) {
@@ -132,6 +95,31 @@ export default class AdminCustomizeColorsShowController extends Component {
         insertText: quoteMarkdown,
         openOpts,
       });
+    }
+  }
+
+  @action
+  async copyMessages() {
+    try {
+      if (!isTesting()) {
+        // clipboard API throws errors in tests
+        await clipboardCopyAsync(this.generateQuote);
+      }
+
+      this.set("showChatQuoteSuccess", true);
+
+      schedule("afterRender", () => {
+        const element = document.querySelector(".chat-selection-message");
+        element?.addEventListener("animationend", () => {
+          if (this.isDestroying || this.isDestroyed) {
+            return;
+          }
+
+          this.set("showChatQuoteSuccess", false);
+        });
+      });
+    } catch (error) {
+      popupAjaxError(error);
     }
   }
 }

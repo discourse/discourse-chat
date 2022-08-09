@@ -219,8 +219,9 @@ export default Component.extend({
         channelId: channel.id,
         pageSize: PAGE_SIZE,
       };
+      const fetchingFromLastRead = !options.fetchFromLastMessage;
 
-      if (!options.fetchFromLastMessage) {
+      if (fetchingFromLastRead) {
         findArgs["targetMessageId"] =
           this.targetMessageId || this._getLastReadId();
       }
@@ -231,7 +232,7 @@ export default Component.extend({
           if (this._selfDeleted || this.chatChannel.id !== channel.id) {
             return;
           }
-          this.setMessageProps(messages);
+          this.setMessageProps(messages, fetchingFromLastRead);
         })
         .catch((err) => {
           throw err;
@@ -355,7 +356,7 @@ export default Component.extend({
     }
   },
 
-  setMessageProps(messages) {
+  setMessageProps(messages, fetchingFromLastRead) {
     this._unloadedReplyIds = [];
     this.setProperties({
       messages: this._prepareMessages(messages),
@@ -387,7 +388,7 @@ export default Component.extend({
           autoExpand: true,
         });
         this.set("targetMessageId", null);
-      } else {
+      } else if (fetchingFromLastRead) {
         this._markLastReadMessage();
       }
 
@@ -1037,13 +1038,7 @@ export default Component.extend({
       });
 
     if (this.details.can_load_more_future) {
-      msgCreationPromise.then(() => {
-        this.fetchMessages(this.chatChannel, {
-          fetchFromLastMessage: true,
-        }).then(() => {
-          this.scrollToMessage(this.messages[this.messages.length - 1]);
-        });
-      });
+      msgCreationPromise.then(this._fetchAndScrollToLatest);
     } else {
       const stagedMessage = this._prepareSingleMessage(
         // We need to add the user and created at for presentation of staged message
@@ -1355,9 +1350,7 @@ export default Component.extend({
   restickScrolling(event) {
     event.preventDefault();
 
-    return this.fetchMessages(this.chatChannel, {
-      fetchFromLastMessage: true,
-    }).then(() => {
+    return this._fetchAndScrollToLatest().then(() => {
       this.set("stickyScroll", true);
       this._stickScrollToBottom();
     });
@@ -1491,6 +1484,14 @@ export default Component.extend({
       this.scrollToMessage(siblingId, {
         position: direction === PAST ? "top" : "bottom",
       });
+    });
+  },
+
+  _fetchAndScrollToLatest() {
+    return this.fetchMessages(this.chatChannel, {
+      fetchFromLastMessage: true,
+    }).then(() => {
+      this.scrollToMessage(this.messages[this.messages.length - 1].id);
     });
   },
 });

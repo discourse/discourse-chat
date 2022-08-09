@@ -328,6 +328,7 @@ en:
       selection:
         cancel: "Cancel"
         quote_selection: "Quote in Topic"
+        copy: "Copy"
         move_selection_to_channel: "Move to Channel"
         error: "There was an error moving the chat messages"
         title: "Move Chat to Topic"

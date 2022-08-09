@@ -38,7 +38,7 @@ function setupPretenders(server, helper) {
   });
 }
 
-acceptance("Discourse Chat | quoting out of topic", function (needs) {
+acceptance("Discourse Chat | Copying messages", function (needs) {
   needs.user({
     admin: false,
     moderator: false,
@@ -67,27 +67,27 @@ acceptance("Discourse Chat | quoting out of topic", function (needs) {
     await dropdown.selectRowByValue("selectMessage");
     assert.ok(firstMessage.classList.contains("selecting-messages"));
 
-    const quoteBtn = query(".chat-live-pane #chat-quote-btn");
+    const copyButton = query(".chat-live-pane #chat-copy-btn");
     assert.equal(
-      quoteBtn.disabled,
+      copyButton.disabled,
       false,
       "button is enabled as a message is selected"
     );
 
     await click(firstMessage.querySelector("input[type='checkbox']"));
     assert.equal(
-      quoteBtn.disabled,
+      copyButton.disabled,
       true,
       "button is disabled when no messages are selected"
     );
 
     await click(firstMessage.querySelector("input[type='checkbox']"));
-    await click("#chat-quote-btn");
+    await click("#chat-copy-btn");
     assert.ok(exists(".chat-selection-message"), "shows the message");
   });
 });
 
-acceptance("Discourse Chat | quoting when topic open", async function (needs) {
+acceptance("Discourse Chat | Quoting in composer", async function (needs) {
   needs.user({
     admin: false,
     moderator: false,
@@ -132,7 +132,7 @@ acceptance("Discourse Chat | quoting when topic open", async function (needs) {
   });
 });
 
-acceptance("Discourse Chat | quoting on mobile", async function (needs) {
+acceptance("Discourse Chat | Quoting on mobile", async function (needs) {
   needs.user({
     admin: false,
     moderator: false,
@@ -149,6 +149,7 @@ acceptance("Discourse Chat | quoting on mobile", async function (needs) {
   needs.pretender((server, helper) => {
     setupPretenders(server, helper);
   });
+
   needs.mobileView();
 
   test("it opens the chatable, opens the composer, and pastes the markdown in", async function (assert) {

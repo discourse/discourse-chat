@@ -141,7 +141,6 @@ hu:
         one: "%{count} fájl"
         other: "%{count} fájl"
       you_flagged: "Ön jelentette ezt az üzenetet"
-      user_deleted: "törölve"
       exit: "vissza"
       channel_status:
         read_only_header: "A csatorna írásvédett"
@@ -199,7 +198,7 @@ hu:
         bold_text: "erős szöveg"
         code_text: "kódszöveg"
       quote:
-        copy_success: "Csevegési idézet a vágólapra másolva."
+        copy_success: "Csevegési idézet a vágólapra másolva"
       notification_levels:
         never: "Soha"
         mention: "Csak megemlítésnél"

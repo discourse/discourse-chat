@@ -97,8 +97,6 @@ ja:
         you_others_and_more: "あなた、%{usernames} と他 %{more} 人が :%{emoji}: でリアクションしました"
       composer:
         toggle_toolbar: "ツールバーの切り替え"
-      quote:
-        copy_success: "チャットの引用をクリップボードにコピーしました。"
       notification_levels:
         never: "なし"
         mention: "メンションのみ"

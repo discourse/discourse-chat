@@ -5,7 +5,14 @@ import {
   queryAll,
 } from "discourse/tests/helpers/qunit-helpers";
 import { test } from "qunit";
-import { settled, visit } from "@ember/test-helpers";
+import {
+  click,
+  currentURL,
+  fillIn,
+  settled,
+  triggerKeyEvent,
+  visit,
+} from "@ember/test-helpers";
 import { directMessageChannels } from "discourse/plugins/discourse-chat/chat-fixtures";
 import { cloneJSON } from "discourse-common/lib/object";
 import I18n from "I18n";
@@ -96,12 +103,48 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
         direct_message_channels: directChannels,
       });
     });
+
     server.get("/chat/1/messages.json", () =>
       helper.response({
         meta: { can_chat: true, user_silenced: false },
         chat_messages: [],
       })
     );
+
+    server.get("/u/search/users", () => {
+      return helper.response({
+        users: [
+          {
+            username: "hawk",
+            id: 2,
+            name: "hawk",
+            avatar_template:
+              "/letter_avatar_proxy/v4/letter/t/41988e/{size}.png",
+          },
+        ],
+      });
+    });
+
+    server.get("/chat/75/messages.json", () =>
+      helper.response({
+        meta: { can_chat: true, user_silenced: false },
+        chat_messages: [],
+      })
+    );
+
+    server.get("/chat/direct_messages.json", () => {
+      return helper.response({
+        chat_channel: {
+          id: 75,
+          title: "hawk",
+          chatable_type: "DirectMessageChannel",
+          last_message_sent_at: "2021-07-20T08:14:16.950Z",
+          chatable: {
+            users: [{ username: "hawk" }],
+          },
+        },
+      });
+    });
   });
 
   needs.hooks.beforeEach(function () {
@@ -312,6 +355,17 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
   test("Plugin sidebar is hidden", async function (assert) {
     await visit("/chat/channel/1/dev");
     assert.notOk(exists(".full-page-chat .channels-list"));
+  });
+
+  test("Open a new direct conversation", async function (assert) {
+    await visit("/");
+
+    await click(".sidebar-section-chat-dms .sidebar-section-header-button");
+    assert.ok(exists(".direct-message-creator"));
+
+    await fillIn(".filter-usernames", "hawk");
+    await triggerKeyEvent(".filter-usernames", "keydown", "Enter");
+    assert.strictEqual(currentURL(), "/chat/draft-channel");
   });
 });
 

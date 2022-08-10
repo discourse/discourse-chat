@@ -48,54 +48,52 @@ export default {
           }
         );
 
-        ["chat_mention", "chat_group_mention"].forEach((notificationType) => {
-          api.registerNotificationTypeRenderer(
-            notificationType,
-            (NotificationItemBase) => {
-              return class extends NotificationItemBase {
-                get linkHref() {
-                  const title = this.notification.data.chat_channel_title
-                    ? slugifyChannel(this.notification.data.chat_channel_title)
-                    : "-";
+        api.registerNotificationTypeRenderer(
+          "chat_mention",
+          (NotificationItemBase) => {
+            return class extends NotificationItemBase {
+              get linkHref() {
+                const title = this.notification.data.chat_channel_title
+                  ? slugifyChannel(this.notification.data.chat_channel_title)
+                  : "-";
 
-                  return `/chat/channel/${this.notification.data.chat_channel_id}/${title}?messageId=${this.notification.data.chat_message_id}`;
-                }
+                return `/chat/channel/${this.notification.data.chat_channel_id}/${title}?messageId=${this.notification.data.chat_message_id}`;
+              }
 
-                get linkTitle() {
-                  return I18n.t("notifications.titles.chat_mention");
-                }
+              get linkTitle() {
+                return I18n.t("notifications.titles.chat_mention");
+              }
 
-                get icon() {
-                  return "comment";
-                }
+              get icon() {
+                return "comment";
+              }
 
-                get label() {
-                  return formatUsername(
-                    this.notification.data.mentioned_by_username
-                  );
-                }
+              get label() {
+                return formatUsername(
+                  this.notification.data.mentioned_by_username
+                );
+              }
 
-                get description() {
-                  const identifier = this.notification.data.identifier
-                    ? `@${this.notification.data.identifier}`
-                    : null;
+              get description() {
+                const identifier = this.notification.data.identifier
+                  ? `@${this.notification.data.identifier}`
+                  : null;
 
-                  const i18nPrefix = this.notification.data
-                    .is_direct_message_channel
-                    ? "notifications.popup.direct_message_chat_mention"
-                    : "notifications.popup.chat_mention";
+                const i18nPrefix = this.notification.data
+                  .is_direct_message_channel
+                  ? "notifications.popup.direct_message_chat_mention"
+                  : "notifications.popup.chat_mention";
 
-                  const i18nSuffix = identifier ? "other" : "direct";
+                const i18nSuffix = identifier ? "other" : "direct";
 
-                  return I18n.t(`${i18nPrefix}.${i18nSuffix}`, {
-                    identifier,
-                    channel: this.notification.data.chat_channel_title,
-                  });
-                }
-              };
-            }
-          );
-        });
+                return I18n.t(`${i18nPrefix}.${i18nSuffix}`, {
+                  identifier,
+                  channel: this.notification.data.chat_channel_title,
+                });
+              }
+            };
+          }
+        );
       }
 
       if (api.registerUserMenuTab) {

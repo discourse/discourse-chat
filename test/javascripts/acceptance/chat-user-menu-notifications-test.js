@@ -17,6 +17,24 @@ import {
 } from "../helpers/chat-pretenders";
 
 acceptance(
+  "Discourse Chat - experiment user menu notifications - user cannot chat",
+  function (needs) {
+    needs.user({ has_chat_enabled: false });
+    needs.settings({ chat_enabled: false });
+
+    test("chat notifications tab is not displayed in user menu", async function (assert) {
+      await visit("/");
+      await click(".header-dropdown-toggle.current-user");
+
+      assert.notOk(
+        exists("#user-menu-button-chat-notifications"),
+        "button for chat notifications tab is not displayed"
+      );
+    });
+  }
+);
+
+acceptance(
   "Discourse Chat - experimental user menu notifications ",
   function (needs) {
     needs.user({ redesigned_user_menu_enabled: true, has_chat_enabled: true });

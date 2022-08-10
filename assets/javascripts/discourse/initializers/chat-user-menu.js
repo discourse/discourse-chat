@@ -2,6 +2,7 @@ import I18n from "I18n";
 
 import { withPluginApi } from "discourse/lib/plugin-api";
 import { formatUsername } from "discourse/lib/utilities";
+import slugifyChannel from "discourse/plugins/discourse-chat/discourse/lib/slugify-channel";
 
 export default {
   name: "chat-user-menu",
@@ -19,7 +20,15 @@ export default {
           (NotificationItemBase) => {
             return class extends NotificationItemBase {
               get linkHref() {
-                return null;
+                const title = this.notification.data.chat_channel_title
+                  ? slugifyChannel(this.notification.data.chat_channel_title)
+                  : "-";
+
+                return `/chat/channel/${this.notification.data.chat_channel_id}/${title}?messageId=${this.notification.data.chat_message_id}`;
+              }
+
+              get linkTitle() {
+                return I18n.t("notifications.titles.chat_invitation");
               }
 
               get icon() {
@@ -35,13 +44,6 @@ export default {
               get description() {
                 return I18n.t("notifications.chat_invitation");
               }
-
-              onClick() {
-                this.chat.openChannelAtMessage(
-                  this.notification.data.chat_channel_id,
-                  this.notification.data.chat_message_id
-                );
-              }
             };
           }
         );
@@ -52,7 +54,15 @@ export default {
             (NotificationItemBase) => {
               return class extends NotificationItemBase {
                 get linkHref() {
-                  return null;
+                  const title = this.notification.data.chat_channel_title
+                    ? slugifyChannel(this.notification.data.chat_channel_title)
+                    : "-";
+
+                  return `/chat/channel/${this.notification.data.chat_channel_id}/${title}?messageId=${this.notification.data.chat_message_id}`;
+                }
+
+                get linkTitle() {
+                  return I18n.t("notifications.titles.chat_mention");
                 }
 
                 get icon() {
@@ -81,13 +91,6 @@ export default {
                     identifier,
                     channel: this.notification.data.chat_channel_title,
                   });
-                }
-
-                onClick() {
-                  this.chat.openChannelAtMessage(
-                    this.notification.data.chat_channel_id,
-                    this.notification.data.chat_message_id
-                  );
                 }
               };
             }

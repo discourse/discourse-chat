@@ -266,7 +266,16 @@ acceptance("Discourse Chat - without unread", function (needs) {
     assert.equal(currentURL(), `/chat/channel/9/site`);
   });
 
-  test("Mention notifications contain the correct text and icon", async function (assert) {
+  /* TODO: Flaky test
+   * hidepassed=1&qunit_skip_core=1&seed=74372275167260026865845710869664786943
+   *
+   * ```
+   * stack: >
+   * TypeError: Cannot read properties of undefined (reading 'innerText')
+   * at Object.eval (acceptance/chat-test:238:37)
+   * ```
+   */
+  skip("Mention notifications contain the correct text and icon", async function (assert) {
     await visit("/chat/channel/75/@hawk");
     await click(".header-dropdown-toggle.current-user");
     const notifications = queryAll("#quick-access-notifications .chat-mention");

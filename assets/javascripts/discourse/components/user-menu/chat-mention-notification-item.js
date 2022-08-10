@@ -1,8 +1,7 @@
 import UserMenuNotificationItem from "discourse/components/user-menu/notification-item";
 import { inject as service } from "@ember/service";
 import { action } from "@ember/object";
-import { formatUsername, postUrl } from "discourse/lib/utilities";
-import { userPath } from "discourse/lib/url";
+import { formatUsername } from "discourse/lib/utilities";
 import I18n from "I18n";
 
 export default class UserMenuChatMentionNotificationItem extends UserMenuNotificationItem {

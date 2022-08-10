@@ -189,9 +189,13 @@ export default Component.extend({
   },
 
   @bind
-  onScrollHandler() {
+  onScrollHandler(event) {
     cancel(this.stickyScrollTimer);
-    this.stickyScrollTimer = discourseDebounce(this, this.onScroll, 100);
+    this.stickyScrollTimer = discourseDebounce(
+      this,
+      () => this.onScroll(event),
+      100
+    );
   },
 
   @bind
@@ -618,7 +622,7 @@ export default Component.extend({
     }
   },
 
-  onScroll() {
+  onScroll(event) {
     if (this._selfDeleted) {
       return;
     }
@@ -634,7 +638,6 @@ export default Component.extend({
       this._fetchMoreMessages(PAST).then((newMessages) => {
         this._iosScrollFix(newMessages, PAST);
       });
-      return;
     } else {
       this._updateLastReadMessage();
 
@@ -645,19 +648,23 @@ export default Component.extend({
       }
     }
 
-    this._calculateStickScroll();
+    this._calculateStickScroll(event.forceShowScrollToBottom);
   },
 
-  _calculateStickScroll() {
+  _calculateStickScroll(forceShowScrollToBottom) {
     const absoluteScrollTop = Math.abs(this._scrollerEl.scrollTop);
     const shouldStick = absoluteScrollTop < STICKY_SCROLL_LENIENCE;
 
-    this.set(
-      "showScrollToBottomBtn",
-      shouldStick
-        ? false
-        : absoluteScrollTop / this._scrollerEl.offsetHeight > 0.67
-    );
+    if (forceShowScrollToBottom) {
+      this.set("showScrollToBottomBtn", forceShowScrollToBottom);
+    } else {
+      this.set(
+        "showScrollToBottomBtn",
+        shouldStick
+          ? false
+          : absoluteScrollTop / this._scrollerEl.offsetHeight > 0.67
+      );
+    }
 
     if (!this.showScrollToBottomBtn) {
       this.set("hasNewMessages", false);
@@ -1488,6 +1495,10 @@ export default Component.extend({
     return this.fetchMessages(this.chatChannel, {
       fetchFromLastMessage: true,
     }).then(() => {
+      if (this._selfDeleted) {
+        return;
+      }
+
       this.set("stickyScroll", true);
       this._stickScrollToBottom();
     });

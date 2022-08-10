@@ -4,6 +4,12 @@ export default {
   name: "chat-user-menu",
   initialize(container) {
     withPluginApi("1.3.0", (api) => {
+      const chatService = container.lookup("service:chat");
+
+      if (!chatService.userCanChat) {
+        return;
+      }
+
       if (api.registerUserMenuComponentForNotificationType) {
         api.registerUserMenuComponentForNotificationType(
           "chat_mention",
@@ -22,8 +28,6 @@ export default {
       }
 
       if (api.registerUserMenuTab) {
-        const chatService = container.lookup("service:chat");
-
         api.registerUserMenuTab((UserMenuTab) => {
           return class extends UserMenuTab {
             get id() {
@@ -43,10 +47,6 @@ export default {
                 this.getUnreadCountForType("chat_mention") +
                 this.getUnreadCountForType("chat_invitation")
               );
-            }
-
-            get shouldDisplay() {
-              return chatService.userCanChat;
             }
           };
         });

@@ -18,7 +18,7 @@ export default {
 
         api.registerUserMenuComponentForNotificationType(
           "chat_group_mention",
-          "user-menu/chat-group-mention-notification-item"
+          "user-menu/chat-mention-notification-item"
         );
 
         api.registerUserMenuComponentForNotificationType(

@@ -26,9 +26,11 @@ export default class UserMenuChatMentionNotificationItem extends UserMenuNotific
     const identifier = this.notification.data.identifier
       ? `@${this.notification.data.identifier}`
       : null;
+
     const i18nPrefix = this.notification.data.is_direct_message_channel
       ? "notifications.popup.direct_message_chat_mention"
       : "notifications.popup.chat_mention";
+
     const i18nSuffix = identifier ? "other" : "direct";
 
     return I18n.t(`${i18nPrefix}.${i18nSuffix}`, {

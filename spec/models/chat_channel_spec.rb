@@ -35,6 +35,13 @@ describe ChatChannel do
     it "returns nil when for DMs" do
       expect(direct_message_channel.allowed_group_ids).to eq(nil)
     end
+
+    it "returns nil for public channels" do
+      public_category = Fabricate(:category, read_restricted: false)
+      public_channel = Fabricate(:chat_channel, chatable: public_category)
+
+      expect(public_channel.allowed_group_ids).to eq(nil)
+    end
   end
 
   describe "#read_restricted?" do

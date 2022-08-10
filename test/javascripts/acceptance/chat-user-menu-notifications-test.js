@@ -31,6 +31,7 @@ acceptance(
       updateCurrentUser({
         grouped_unread_high_priority_notifications: {
           29: 3, // chat mention notification type
+          31: 1, // chat invitation notification type
         },
       });
 
@@ -50,7 +51,7 @@ acceptance(
       assert.strictEqual(
         query("#user-menu-button-chat-notifications .badge-notification")
           .textContent,
-        "3",
+        "4",
         "displays the right badge count for chat notifications tab button"
       );
     });
@@ -153,6 +154,40 @@ acceptance(
 
       assert.ok(
         chatAllMentionNotificationLink.href.endsWith(
+          "/chat/channel/9/site?messageId=174"
+        ),
+        "has the right href attribute for notification link"
+      );
+    });
+
+    test("chat invite notification link", async function (assert) {
+      await visit("/");
+      await click(".header-dropdown-toggle.current-user");
+
+      const chatInviteNotificationLink = queryAll(".chat-invitation a")[0];
+
+      assert.strictEqual(
+        chatInviteNotificationLink.textContent
+          .trim()
+          .replace(/\n/g, "")
+          .replace(/\s+/, " "),
+        "hawk invited you to join a chat channel",
+        "displays the right text for notification"
+      );
+
+      assert.ok(
+        exists(chatInviteNotificationLink.querySelector(".d-icon-link")),
+        "displays the right icon for the notification"
+      );
+
+      assert.strictEqual(
+        chatInviteNotificationLink.title,
+        I18n.t("notifications.titles.chat_invitation"),
+        "has the right title attribute for notification link"
+      );
+
+      assert.ok(
+        chatInviteNotificationLink.href.endsWith(
           "/chat/channel/9/site?messageId=174"
         ),
         "has the right href attribute for notification link"

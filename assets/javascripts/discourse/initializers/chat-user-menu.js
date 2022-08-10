@@ -1,30 +1,98 @@
+import I18n from "I18n";
+
 import { withPluginApi } from "discourse/lib/plugin-api";
+import { formatUsername } from "discourse/lib/utilities";
 
 export default {
   name: "chat-user-menu",
   initialize(container) {
     withPluginApi("1.3.0", (api) => {
-      const chatService = container.lookup("service:chat");
+      const chat = container.lookup("service:chat");
 
-      if (!chatService.userCanChat) {
+      if (!chat.userCanChat) {
         return;
       }
 
-      if (api.registerUserMenuComponentForNotificationType) {
-        api.registerUserMenuComponentForNotificationType(
-          "chat_mention",
-          "user-menu/chat-mention-notification-item"
-        );
-
-        api.registerUserMenuComponentForNotificationType(
-          "chat_group_mention",
-          "user-menu/chat-mention-notification-item"
-        );
-
-        api.registerUserMenuComponentForNotificationType(
+      if (api.registerNotificationTypeRenderer) {
+        api.registerNotificationTypeRenderer(
           "chat_invitation",
-          "user-menu/chat-invitation-notification-item"
+          (NotificationItemBase) => {
+            return class extends NotificationItemBase {
+              get linkHref() {
+                return null;
+              }
+
+              get icon() {
+                return "link";
+              }
+
+              get label() {
+                return formatUsername(
+                  this.notification.data.invited_by_username
+                );
+              }
+
+              get description() {
+                return I18n.t("notifications.chat_invitation");
+              }
+
+              onClick() {
+                this.chat.openChannelAtMessage(
+                  this.notification.data.chat_channel_id,
+                  this.notification.data.chat_message_id
+                );
+              }
+            };
+          }
         );
+
+        ["chat_mention", "chat_group_mention"].forEach((notificationType) => {
+          api.registerNotificationTypeRenderer(
+            notificationType,
+            (NotificationItemBase) => {
+              return class extends NotificationItemBase {
+                get linkHref() {
+                  return null;
+                }
+
+                get icon() {
+                  return "comment";
+                }
+
+                get label() {
+                  return formatUsername(
+                    this.notification.data.mentioned_by_username
+                  );
+                }
+
+                get description() {
+                  const identifier = this.notification.data.identifier
+                    ? `@${this.notification.data.identifier}`
+                    : null;
+
+                  const i18nPrefix = this.notification.data
+                    .is_direct_message_channel
+                    ? "notifications.popup.direct_message_chat_mention"
+                    : "notifications.popup.chat_mention";
+
+                  const i18nSuffix = identifier ? "other" : "direct";
+
+                  return I18n.t(`${i18nPrefix}.${i18nSuffix}`, {
+                    identifier,
+                    channel: this.notification.data.chat_channel_title,
+                  });
+                }
+
+                onClick() {
+                  this.chat.openChannelAtMessage(
+                    this.notification.data.chat_channel_id,
+                    this.notification.data.chat_message_id
+                  );
+                }
+              };
+            }
+          );
+        });
       }
 
       if (api.registerUserMenuTab) {

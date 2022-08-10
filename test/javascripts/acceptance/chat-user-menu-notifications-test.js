@@ -108,6 +108,43 @@ acceptance(
       );
     });
 
+    test("personal chat mention notification link", async function (assert) {
+      await visit("/");
+      await click(".header-dropdown-toggle.current-user");
+
+      const personalChatMentionNotificationLink =
+        queryAll(".chat-mention a")[3];
+
+      assert.strictEqual(
+        personalChatMentionNotificationLink.textContent
+          .trim()
+          .replace(/\n/g, "")
+          .replace(/\s+/, " "),
+        "hawk mentioned you in personal chat",
+        "displays the right text for notification"
+      );
+
+      assert.ok(
+        exists(
+          personalChatMentionNotificationLink.querySelector(".d-icon-comment")
+        ),
+        "displays the right icon for the notification"
+      );
+
+      assert.strictEqual(
+        personalChatMentionNotificationLink.title,
+        I18n.t("notifications.titles.chat_mention"),
+        "has the right title attribute for notification link"
+      );
+
+      assert.ok(
+        personalChatMentionNotificationLink.href.endsWith(
+          "/chat/channel/9/site?messageId=174"
+        ),
+        "has the right href attribute for notification link"
+      );
+    });
+
     test("chat group mention notification link", async function (assert) {
       await visit("/");
       await click(".header-dropdown-toggle.current-user");

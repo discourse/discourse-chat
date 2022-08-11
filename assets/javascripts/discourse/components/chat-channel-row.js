@@ -64,10 +64,15 @@ export default Component.extend({
 
   @discourseComputed(
     "isDirectMessageRow",
+    "channel.chatable.users.[]",
     "channel.chatable.users.@each.status"
   )
   showUserStatus(isDirectMessageRow) {
-    return !!(isDirectMessageRow && this.channel.chatable.users[0].status);
+    return !!(
+      isDirectMessageRow &&
+      this.channel.chatable.users.length === 1 &&
+      this.channel.chatable.users[0].status
+    );
   },
 
   @action

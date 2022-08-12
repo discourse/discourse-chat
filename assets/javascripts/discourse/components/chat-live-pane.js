@@ -300,6 +300,14 @@ export default Component.extend({
           );
         }
         this.setCanLoadMoreDetails(messages.resultSetMeta);
+
+        if (!loadingPast && newMessages.length) {
+          // Adding newer messages also causes a scroll-down,
+          // firing another event, fetching messages again, and so on.
+          // Scroll to the first new one to prevent this.
+          this.scrollToMessage(newMessages.firstObject.messageLookupId);
+        }
+
         return messages;
       })
       .catch((err) => {

@@ -48,9 +48,9 @@ export default {
       return true;
     };
     const isDrawerExpanded = () => {
-      return (
-        document.querySelector(".topic-chat-container.expanded")?.length === 1
-      );
+      return document.querySelector(".topic-chat-float-container:not(.hidden)")
+        ? true
+        : false;
     };
 
     const modifyComposerSelection = (event, type) => {

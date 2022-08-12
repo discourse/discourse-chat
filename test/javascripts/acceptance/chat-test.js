@@ -1887,7 +1887,7 @@ acceptance("Discourse Chat - Drawer", function (needs) {
     const key = "--composer-right";
     const value = getComputedStyle(float).getPropertyValue(key);
 
-    assert.strictEqual(value, "0px");
+    assert.strictEqual(value, "15px");
   });
 });
 

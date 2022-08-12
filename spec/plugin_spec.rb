@@ -209,7 +209,7 @@ describe "discourse-chat" do
               <div class="chat-transcript-datetime">
                 <a href="#{chat_url}?messageId=#{chat_message.id}" title="#{chat_message.created_at}">#{chat_message.created_at}</a>
               </div>
-              <a class="chat-transcript-channel" href="/chat/chat_channels/#{chat_channel.id}">
+              <a class="chat-transcript-channel" href="/chat/channel/#{chat_channel.id}/-">
                 <span class="category-chat-badge" style="color: ##{chat_channel.chatable.color}">
                   <svg class="fa d-icon d-icon-hashtag svg-icon svg-string" xmlns="http://www.w3.org/2000/svg"><use href="#hashtag"></use></svg>
                 </span>

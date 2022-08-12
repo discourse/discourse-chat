@@ -825,7 +825,7 @@ export default Component.extend({
 
     const { protocol, host } = window.location;
     let url = getURL(
-      `/chat/channel/${this.details.chat_channel_id}/chat?messageId=${this.message.id}`
+      `/chat/channel/${this.details.chat_channel_id}/-?messageId=${this.message.id}`
     );
     url = url.indexOf("/") === 0 ? protocol + "//" + host + url : url;
     clipboardCopy(url);

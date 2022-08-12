@@ -183,9 +183,14 @@ export default Component.extend({
       "--composer-height",
       composer.offsetHeight + "px"
     );
+
+    const composerIsClosed = composer.classList.contains("closed");
+    const minRightMargin = 15;
     this.element.style.setProperty(
       "--composer-right",
-      (composer.classList.contains("closed") ? 0 : composer.offsetLeft) + "px"
+      (composerIsClosed
+        ? minRightMargin
+        : Math.max(minRightMargin, composer.offsetLeft)) + "px"
     );
   },
 

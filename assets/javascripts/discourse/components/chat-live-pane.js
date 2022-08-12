@@ -189,9 +189,13 @@ export default Component.extend({
   },
 
   @bind
-  onScrollHandler() {
+  onScrollHandler(event) {
     cancel(this.stickyScrollTimer);
-    this.stickyScrollTimer = discourseDebounce(this, this.onScroll, 100);
+    this.stickyScrollTimer = discourseDebounce(
+      this,
+      () => this.onScroll(event),
+      100
+    );
   },
 
   @bind
@@ -219,8 +223,9 @@ export default Component.extend({
         channelId: channel.id,
         pageSize: PAGE_SIZE,
       };
+      const fetchingFromLastRead = !options.fetchFromLastMessage;
 
-      if (!options.fetchFromLastMessage) {
+      if (fetchingFromLastRead) {
         findArgs["targetMessageId"] =
           this.targetMessageId || this._getLastReadId();
       }
@@ -231,7 +236,7 @@ export default Component.extend({
           if (this._selfDeleted || this.chatChannel.id !== channel.id) {
             return;
           }
-          this.setMessageProps(messages);
+          this.setMessageProps(messages, fetchingFromLastRead);
         })
         .catch((err) => {
           throw err;
@@ -355,7 +360,7 @@ export default Component.extend({
     }
   },
 
-  setMessageProps(messages) {
+  setMessageProps(messages, fetchingFromLastRead) {
     this._unloadedReplyIds = [];
     this.setProperties({
       messages: this._prepareMessages(messages),
@@ -387,7 +392,7 @@ export default Component.extend({
           autoExpand: true,
         });
         this.set("targetMessageId", null);
-      } else {
+      } else if (fetchingFromLastRead) {
         this._markLastReadMessage();
       }
 
@@ -617,7 +622,7 @@ export default Component.extend({
     }
   },
 
-  onScroll() {
+  onScroll(event) {
     if (this._selfDeleted) {
       return;
     }
@@ -633,7 +638,6 @@ export default Component.extend({
       this._fetchMoreMessages(PAST).then((newMessages) => {
         this._iosScrollFix(newMessages, PAST);
       });
-      return;
     } else {
       this._updateLastReadMessage();
 
@@ -644,19 +648,23 @@ export default Component.extend({
       }
     }
 
-    this._calculateStickScroll();
+    this._calculateStickScroll(event.forceShowScrollToBottom);
   },
 
-  _calculateStickScroll() {
+  _calculateStickScroll(forceShowScrollToBottom) {
     const absoluteScrollTop = Math.abs(this._scrollerEl.scrollTop);
     const shouldStick = absoluteScrollTop < STICKY_SCROLL_LENIENCE;
 
-    this.set(
-      "showScrollToBottomBtn",
-      shouldStick
-        ? false
-        : absoluteScrollTop / this._scrollerEl.offsetHeight > 0.67
-    );
+    if (forceShowScrollToBottom) {
+      this.set("showScrollToBottomBtn", forceShowScrollToBottom);
+    } else {
+      this.set(
+        "showScrollToBottomBtn",
+        shouldStick
+          ? false
+          : absoluteScrollTop / this._scrollerEl.offsetHeight > 0.67
+      );
+    }
 
     if (!this.showScrollToBottomBtn) {
       this.set("hasNewMessages", false);
@@ -1037,13 +1045,7 @@ export default Component.extend({
       });
 
     if (this.details.can_load_more_future) {
-      msgCreationPromise.then(() => {
-        this.fetchMessages(this.chatChannel, {
-          fetchFromLastMessage: true,
-        }).then(() => {
-          this.scrollToMessage(this.messages[this.messages.length - 1]);
-        });
-      });
+      msgCreationPromise.then(() => this._fetchAndScrollToLatest());
     } else {
       const stagedMessage = this._prepareSingleMessage(
         // We need to add the user and created at for presentation of staged message
@@ -1355,12 +1357,7 @@ export default Component.extend({
   restickScrolling(event) {
     event.preventDefault();
 
-    return this.fetchMessages(this.chatChannel, {
-      fetchFromLastMessage: true,
-    }).then(() => {
-      this.set("stickyScroll", true);
-      this._stickScrollToBottom();
-    });
+    return this._fetchAndScrollToLatest();
   },
 
   focusComposer() {
@@ -1491,6 +1488,19 @@ export default Component.extend({
       this.scrollToMessage(siblingId, {
         position: direction === PAST ? "top" : "bottom",
       });
+    });
+  },
+
+  _fetchAndScrollToLatest() {
+    return this.fetchMessages(this.chatChannel, {
+      fetchFromLastMessage: true,
+    }).then(() => {
+      if (this._selfDeleted) {
+        return;
+      }
+
+      this.set("stickyScroll", true);
+      this._stickScrollToBottom();
     });
   },
 });

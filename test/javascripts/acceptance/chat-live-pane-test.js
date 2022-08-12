@@ -1,4 +1,4 @@
-import { click, fillIn, settled, visit } from "@ember/test-helpers";
+import { click, fillIn, triggerEvent, visit } from "@ember/test-helpers";
 import {
   acceptance,
   exists,
@@ -44,18 +44,25 @@ acceptance(
     });
 
     needs.pretender((server, helper) => {
+      const firstPageMessages = [];
+
+      for (let i = 0; i < 50; i++) {
+        firstPageMessages.push(buildMessage(i + 1));
+      }
+
       server.get("/chat/:chatChannelId/messages.json", () => {
         if (loadAllMessages) {
+          const updatedPage = [...firstPageMessages];
+          updatedPage.shift();
+          updatedPage.shift();
+          updatedPage.push(buildMessage(51));
+          updatedPage.push(buildMessage(52));
+
           return helper.response({
             meta: {
               can_load_more_future: false,
             },
-            chat_messages: [
-              buildMessage(1),
-              buildMessage(2),
-              buildMessage(3),
-              buildMessage(4),
-            ],
+            chat_messages: updatedPage,
           });
         } else {
           return helper.response({
@@ -64,7 +71,7 @@ acceptance(
               user_silenced: false,
               can_load_more_future: true,
             },
-            chat_messages: [buildMessage(1), buildMessage(2)],
+            chat_messages: firstPageMessages,
           });
         }
       });
@@ -98,32 +105,30 @@ acceptance(
     test("doesn't create a gap in history by adding new messages", async function (assert) {
       await visit("/chat/channel/1/cat");
 
-      publishToMessageBus("/chat/1", {
+      await publishToMessageBus("/chat/1", {
         type: "sent",
         chat_message: {
-          id: 3,
+          id: 51,
           cooked: "<p>hello!</p>",
           user: {
             id: 2,
           },
         },
       });
-      await settled();
 
-      assert.notOk(exists(`.chat-message-container[data-id='${3}']`));
+      assert.notOk(exists(`.chat-message-container[data-id='${51}']`));
     });
 
     test("It continues to handle other message types", async function (assert) {
       await visit("/chat/channel/1/cat");
 
-      publishToMessageBus("/chat/1", {
+      await publishToMessageBus("/chat/1", {
         action: "add",
         user: { id: 77, username: "notTomtom" },
         emoji: "cat",
         type: "reaction",
         chat_message_id: 1,
       });
-      await settled();
 
       assert.ok(exists(".chat-message-reaction.cat"));
     });
@@ -131,16 +136,37 @@ acceptance(
     test("Sending a new message when there are still unloaded ones will fetch them", async function (assert) {
       await visit("/chat/channel/1/cat");
 
-      assert.notOk(exists(`.chat-message-container[data-id='${3}']`));
+      assert.notOk(exists(`.chat-message-container[data-id='${51}']`));
 
       loadAllMessages = true;
       const composerInput = query(".chat-composer-input");
       await fillIn(composerInput, "test text");
       await click(".send-btn");
-      await settled();
 
-      assert.ok(exists(`.chat-message-container[data-id='${3}']`));
-      assert.ok(exists(`.chat-message-container[data-id='${4}']`));
+      assert.ok(exists(`.chat-message-container[data-id='${51}']`));
+      assert.ok(exists(`.chat-message-container[data-id='${52}']`));
+    });
+
+    test("Clicking the arrow button jumps to the bottom of the channel", async function (assert) {
+      await visit("/chat/channel/1/cat");
+
+      assert.notOk(exists(`.chat-message-container[data-id='${51}']`));
+      const scrollerEl = document.querySelector("#ember-testing-container");
+      const initialPosition = scrollerEl.scrollTop;
+      await triggerEvent(".chat-messages-scroll", "scroll", {
+        forceShowScrollToBottom: true,
+      });
+
+      loadAllMessages = true;
+      await click(".chat-scroll-to-bottom");
+
+      assert.ok(exists(`.chat-message-container[data-id='${51}']`));
+      assert.ok(exists(`.chat-message-container[data-id='${52}']`));
+
+      assert.ok(
+        scrollerEl.scrollTop > initialPosition,
+        "Scrolled to the bottom"
+      );
     });
   }
 );

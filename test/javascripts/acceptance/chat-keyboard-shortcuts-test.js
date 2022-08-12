@@ -262,17 +262,39 @@ acceptance("Discourse Chat - Keyboard shortcuts", function (needs) {
     assert.ok(exists(".topic-chat-drawer-content"), "chat float is open");
   });
 
-  test("Escape to close chat float", async function (assert) {
+  test("Pressing Escape when drawer is opened", async function (assert) {
     await visit("/latest");
     this.chatService.set("sidebarActive", false);
     this.chatService.set("chatWindowFullPage", false);
-
     await click(".header-dropdown-toggle.open-chat");
     await settled();
-
     const composerInput = query(".chat-composer-input");
     await focus(composerInput);
     await triggerKeyEvent(composerInput, "keydown", "Escape");
-    assert.ok(!exists(".topic-chat-drawer-content"), "chat float is closed");
+
+    assert.ok(
+      exists(".topic-chat-float-container.hidden"),
+      "it closes the drawer"
+    );
+  });
+
+  test("Pressing Escape when full page is opened", async function (assert) {
+    this.chatService.set("sidebarActive", false);
+    this.chatService.set("chatWindowFullPage", true);
+    await visit("/chat/channel/75/@hawk");
+    const composerInput = query(".chat-composer-input");
+    await focus(composerInput);
+    await triggerKeyEvent(composerInput, "keydown", "Escape");
+
+    assert.equal(
+      currentURL(),
+      "/chat/channel/75/hawk",
+      "it doesn’t close full page chat"
+    );
+
+    assert.ok(
+      exists(".chat-message-container[data-id='177']"),
+      "it doesn’t remove channel content"
+    );
   });
 });

@@ -1,4 +1,4 @@
-import { test } from "qunit";
+import { skip, test } from "qunit";
 import {
   click,
   currentURL,
@@ -105,7 +105,7 @@ acceptance("Discourse Chat | Quoting in composer", async function (needs) {
     setupPretenders(server, helper);
   });
 
-  test("it opens the composer for the topic and pastes in the quote", async function (assert) {
+  skip("it opens the composer for the topic and pastes in the quote", async function (assert) {
     await visit("/t/internationalization-localization/280");
 
     await click(".header-dropdown-toggle.open-chat");
@@ -152,7 +152,7 @@ acceptance("Discourse Chat | Quoting on mobile", async function (needs) {
 
   needs.mobileView();
 
-  test("it opens the chatable, opens the composer, and pastes the markdown in", async function (assert) {
+  skip("it opens the chatable, opens the composer, and pastes the markdown in", async function (assert) {
     await visit("/chat/channel/7/Bug");
     assert.ok(exists(".chat-message-container"));
 

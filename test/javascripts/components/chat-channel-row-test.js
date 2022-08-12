@@ -127,4 +127,28 @@ module("Discourse Chat | Component | chat-channel-row", function (hooks) {
       assert.ok(exists(".emoji[title='Off to dentist']"));
     },
   });
+
+  componentTest(
+    "doesn't show user status on a direct message channel with multiple users",
+    {
+      template: hbs`{{chat-channel-row channel=channel}}`,
+
+      beforeEach() {
+        const status = { description: "Off to dentist", emoji: "tooth" };
+        const channel = fabricators.directMessageChatChannel();
+        channel.chatable.users[0].status = status;
+        channel.chatable.users.push({
+          id: 2,
+          username: "bill",
+          name: null,
+          avatar_template: "/letter_avatar_proxy/v3/letter/t/31188e/{size}.png",
+        });
+        this.set("channel", channel);
+      },
+
+      async test(assert) {
+        assert.notOk(exists(".emoji[title='Off to dentist']"));
+      },
+    }
+  );
 });

@@ -271,6 +271,7 @@ acceptance("Discourse Chat - Keyboard shortcuts", function (needs) {
     const composerInput = query(".chat-composer-input");
     await focus(composerInput);
     await triggerKeyEvent(composerInput, "keydown", "Escape");
+    await settled();
 
     assert.ok(
       exists(".topic-chat-float-container.hidden"),

@@ -47,8 +47,11 @@ export default {
       }
       return true;
     };
-    const isDrawerExpanded = () =>
-      document.querySelector(".topic-chat-container.expanded").length === 1;
+    const isDrawerExpanded = () => {
+      return (
+        document.querySelector(".topic-chat-container.expanded")?.length === 1
+      );
+    };
 
     const modifyComposerSelection = (event, type) => {
       if (!isChatComposer(event.target)) {

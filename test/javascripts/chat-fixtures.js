@@ -1,19 +1,6 @@
-import { cloneJSON, deepMerge } from "discourse-common/lib/object";
+import { deepMerge } from "discourse-common/lib/object";
 
 export const messageContents = ["Hello world", "What up", "heyo!"];
-
-export const siteChannel = {
-  chat_channel: {
-    chatable: null,
-    chatable_id: -1,
-    chatable_type: "Site",
-    chatable_url: "http://localhost:3000",
-    id: 9,
-    title: "Site",
-    unread_count: 0,
-    muted: false,
-  },
-};
 
 export const directMessageChannels = [
   {
@@ -39,9 +26,12 @@ export const directMessageChannels = [
       chatable_url: null,
       id: 75,
       title: "@hawk",
-      unread_count: 0,
-      muted: false,
-      following: true,
+      current_user_membership: {
+        unread_count: 0,
+        muted: false,
+        following: true,
+      },
+      last_message_sent_at: "2021-07-20T08:14:16.950Z",
     },
   },
   {
@@ -67,8 +57,12 @@ export const directMessageChannels = [
       chatable_url: null,
       id: 76,
       title: "@eviltrout, @markvanlan",
-      unread_count: 0,
-      muted: false,
+      current_user_membership: {
+        unread_count: 0,
+        muted: false,
+        following: true,
+      },
+      last_message_sent_at: "2021-07-05T12:04:00.850Z",
     },
   },
 ];
@@ -76,10 +70,10 @@ export const directMessageChannels = [
 const chatables = {
   1: {
     id: 1,
-    name: "Uncategorized",
+    name: "Bug",
     color: "0088CC",
     text_color: "FFFFFF",
-    slug: "uncategorized",
+    slug: "bug",
   },
   8: {
     id: 8,
@@ -97,29 +91,50 @@ const chatables = {
 
 export const chatChannels = {
   public_channels: [
-    siteChannel.chat_channel,
+    {
+      id: 9,
+      chatable_id: 1,
+      chatable_type: "Category",
+      chatable_url: "/c/bug/1",
+      title: "Site",
+      status: "open",
+      chatable: chatables[1],
+      last_message_sent_at: "2021-07-24T08:14:16.950Z",
+      current_user_membership: {
+        unread_count: 0,
+        muted: false,
+        following: true,
+      },
+    },
     {
       id: 7,
       chatable_id: 1,
       chatable_type: "Category",
-      chatable_url: "/c/uncategorized/1",
-      title: "Uncategorized",
-      unread_count: 0,
-      muted: false,
+      chatable_url: "/c/bug/1",
+      title: "Bug",
       status: "open",
       chatable: chatables[1],
+      last_message_sent_at: "2021-07-15T08:14:16.950Z",
+      current_user_membership: {
+        unread_count: 0,
+        muted: false,
+        following: true,
+      },
     },
-
     {
       id: 4,
       chatable_id: 8,
       chatable_type: "Category",
       chatable_url: "/c/public-category/8",
       title: "Public category",
-      unread_count: 0,
-      muted: false,
       status: "open",
       chatable: chatables[8],
+      last_message_sent_at: "2021-07-14T08:14:16.950Z",
+      current_user_membership: {
+        unread_count: 0,
+        muted: false,
+        following: true,
+      },
     },
     {
       id: 5,
@@ -127,10 +142,14 @@ export const chatChannels = {
       chatable_type: "Category",
       chatable_url: "/c/public-category/8",
       title: "Public category (read-only)",
-      unread_count: 0,
-      muted: false,
       status: "read_only",
       chatable: chatables[8],
+      last_message_sent_at: "2021-07-10T08:14:16.950Z",
+      current_user_membership: {
+        unread_count: 0,
+        muted: false,
+        following: true,
+      },
     },
     {
       id: 6,
@@ -138,10 +157,14 @@ export const chatChannels = {
       chatable_type: "Category",
       chatable_url: "/c/public-category/8",
       title: "Public category (closed)",
-      unread_count: 0,
-      muted: false,
       status: "closed",
       chatable: chatables[8],
+      last_message_sent_at: "2021-07-21T08:14:16.950Z",
+      current_user_membership: {
+        unread_count: 0,
+        muted: false,
+        following: true,
+      },
     },
     {
       id: 10,
@@ -149,10 +172,14 @@ export const chatChannels = {
       chatable_type: "Category",
       chatable_url: "/c/public-category/8",
       title: "Public category (archived)",
-      unread_count: 0,
-      muted: false,
       status: "archived",
       chatable: chatables[8],
+      last_message_sent_at: "2021-07-25T08:14:16.950Z",
+      current_user_membership: {
+        unread_count: 0,
+        muted: false,
+        following: true,
+      },
     },
     {
       id: 11,
@@ -160,29 +187,18 @@ export const chatChannels = {
       chatable_type: "Category",
       chatable_url: "/c/another-category/12",
       title: "Another Category",
-      unread_count: 0,
-      muted: false,
       status: "open",
       chatable: chatables[12],
+      last_message_sent_at: "2021-07-02T08:14:16.950Z",
+      current_user_membership: {
+        unread_count: 0,
+        muted: false,
+        following: true,
+      },
     },
   ],
   direct_message_channels: directMessageChannels.mapBy("chat_channel"),
 };
-
-function addSettingsAttrs(channel) {
-  channel.following = true;
-  channel.desktop_notification_level = "mention";
-  channel.mobile_notification_level = "mention";
-}
-
-export function allChannels() {
-  let channels = cloneJSON(chatChannels);
-
-  channels.public_channels.forEach((c) => {
-    addSettingsAttrs(c);
-  });
-  return channels.public_channels;
-}
 
 const message0 = {
   id: 174,

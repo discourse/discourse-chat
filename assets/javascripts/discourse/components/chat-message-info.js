@@ -1,4 +1,3 @@
-import I18n from "I18n";
 import { computed } from "@ember/object";
 import Component from "@ember/component";
 import { prioritizeNameInUx } from "discourse/lib/settings";
@@ -20,10 +19,6 @@ export default class ChatMessageInfo extends Component {
 
   @computed("message.user")
   get name() {
-    if (!this.message?.user) {
-      return I18n.t("chat.user_deleted");
-    }
-
     return this.prioritizeName
       ? this.message.user.name
       : this.message.user.username;

@@ -19,6 +19,10 @@ class ChatMessageSerializer < ApplicationSerializer
   has_one :in_reply_to, serializer: ChatInReplyToSerializer, embed: :objects
   has_many :uploads, serializer: UploadSerializer, embed: :objects
 
+  def user
+    object.user || DeletedChatUser.new
+  end
+
   def reactions
     reactions_hash = {}
     object
@@ -75,12 +79,20 @@ class ChatMessageSerializer < ApplicationSerializer
     object.revisions.any?
   end
 
+  def deleted_at
+    object.user ? object.deleted_at : Time.zone.now
+  end
+
+  def deleted_by_id
+    object.user ? object.deleted_by_id : Discourse.system_user.id
+  end
+
   def include_deleted_at?
-    !object.deleted_at.nil?
+    object.user ? !object.deleted_at.nil? : true
   end
 
   def include_deleted_by_id?
-    !object.deleted_at.nil?
+    object.user ? !object.deleted_at.nil? : true
   end
 
   def include_in_reply_to?

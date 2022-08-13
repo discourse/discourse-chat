@@ -12,7 +12,7 @@ acceptance("Discourse Chat | Unit | Service | chat", function (needs) {
       get: () => this.container.lookup("service:chat"),
     });
     Object.defineProperty(this, "currentUser", {
-      get: () => this.container.lookup("current-user:main"),
+      get: () => this.container.lookup("service:current-user"),
     });
   });
 
@@ -25,11 +25,14 @@ acceptance("Discourse Chat | Unit | Service | chat", function (needs) {
           {
             id: 1,
             title: "something",
-            unread_count: 2,
-            last_read_message_id: 123,
-            unread_mentions: 0,
-            muted: false,
             chatable_type: "Category",
+            last_message_sent_at: "2021-11-08T21:26:05.710Z",
+            current_user_membership: {
+              unread_count: 2,
+              last_read_message_id: 123,
+              unread_mentions: 0,
+              muted: false,
+            },
           },
         ],
         direct_message_channels: [],

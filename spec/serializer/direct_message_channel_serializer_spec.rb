@@ -48,5 +48,24 @@ describe DirectMessageChannelSerializer do
 
       expect(serializer.users).to eq([me])
     end
+
+    context "when a user is destroyed" do
+      it "returns a placeholder user" do
+        me = Fabricate(:user)
+        you = Fabricate(:user)
+        direct_message_channel = Fabricate(:direct_message_channel, users: [me, you])
+
+        you.destroy!
+
+        serializer =
+          DirectMessageChannelSerializer.new(
+            direct_message_channel.reload,
+            scope: Guardian.new(me),
+            root: false,
+          ).as_json
+
+        expect(serializer[:users][0][:username]).to eq(I18n.t("chat.deleted_chat_username"))
+      end
+    end
   end
 end

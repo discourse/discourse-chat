@@ -59,7 +59,7 @@ acceptance("Discourse Chat - Create channel modal", function (needs) {
     );
 
     server.get("/chat/chat_channels/:chatChannelId", () =>
-      helper.response({ chat_channel: { id: 1, title: "something" } })
+      helper.response({ id: 1, title: "something" })
     );
 
     server.get(

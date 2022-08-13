@@ -67,7 +67,6 @@ da:
       uploaded_files:
         one: "%{count} fil"
         other: "%{count} filer"
-      user_deleted: "slettet"
       exit: "tilbage"
       channel_status:
         read_only_header: "Kanalen er skrivebeskyttet"
@@ -107,7 +106,7 @@ da:
       composer:
         code_text: "kode tekst"
       quote:
-        copy_success: "Chat-citat kopieret til udklipsholderen."
+        copy_success: "Chat-citat kopieret til udklipsholderen"
       settings:
         enable_auto_join_users: "Tilføj automatisk alle nye og eksisterende brugere"
         disable_auto_join_users: "Stop automatisk tilføjelse af nye brugere"

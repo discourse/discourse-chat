@@ -8,10 +8,17 @@ class DiscourseChat::DirectMessagesController < DiscourseChat::ChatBaseControlle
     users = users_from_usernames(current_user, params)
 
     begin
-      chat_channel = DiscourseChat::DirectMessageChannelCreator.create!(
-        acting_user: current_user, target_users: users
+      chat_channel =
+        DiscourseChat::DirectMessageChannelCreator.create!(
+          acting_user: current_user,
+          target_users: users,
+        )
+      render_serialized(
+        chat_channel,
+        ChatChannelSerializer,
+        root: "chat_channel",
+        membership: chat_channel.membership_for(current_user),
       )
-      render_serialized(chat_channel, ChatChannelSerializer, root: "chat_channel")
     rescue DiscourseChat::DirectMessageChannelCreator::NotAllowed => err
       render_json_error(err.message)
     end
@@ -28,7 +35,12 @@ class DiscourseChat::DirectMessagesController < DiscourseChat::ChatBaseControlle
           chatable_id: direct_message_channel.id,
           chatable_type: "DirectMessageChannel",
         )
-      render_serialized(chat_channel, ChatChannelSerializer, root: "chat_channel")
+      render_serialized(
+        chat_channel,
+        ChatChannelSerializer,
+        root: "chat_channel",
+        membership: chat_channel.membership_for(current_user),
+      )
     else
       render body: nil, status: 404
     end

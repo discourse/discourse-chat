@@ -49,7 +49,10 @@ module("Discourse Chat | Component | chat-message-info", function (hooks) {
     template: hbs`{{chat-message-info message=message}}`,
 
     beforeEach() {
-      this.set("message", { created_at: moment() });
+      this.set("message", {
+        user: { username: "discobot" },
+        created_at: moment(),
+      });
     },
 
     async test(assert) {
@@ -62,6 +65,7 @@ module("Discourse Chat | Component | chat-message-info", function (hooks) {
 
     beforeEach() {
       this.set("message", {
+        user: { username: "discobot" },
         bookmark: Bookmark.create({
           reminder_at: moment(),
           name: "some name",
@@ -81,6 +85,7 @@ module("Discourse Chat | Component | chat-message-info", function (hooks) {
 
     beforeEach() {
       this.set("message", {
+        user: { username: "discobot" },
         bookmark: Bookmark.create({
           name: "some name",
         }),
@@ -103,20 +108,6 @@ module("Discourse Chat | Component | chat-message-info", function (hooks) {
     async test(assert) {
       assert.ok(
         exists(".chat-message-info__status .emoji[title='off to dentist']")
-      );
-    },
-  });
-
-  componentTest("no user", {
-    template: hbs`{{chat-message-info message=message}}`,
-
-    beforeEach() {
-      this.set("message", {});
-    },
-    async test(assert) {
-      assert.equal(
-        query(".chat-message-info__username").innerText.trim(),
-        I18n.t("chat.user_deleted")
       );
     },
   });

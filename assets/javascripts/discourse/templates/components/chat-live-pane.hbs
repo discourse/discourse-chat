@@ -4,7 +4,7 @@
 }}
 
 {{#if (and fullPage includeHeader)}}
-  <div class="chat-full-page-header {{if previewing "previewing"}}">
+  <div class="chat-full-page-header {{unless chatChannel.isFollowing "-not-following"}}">
     <div class="chat-channel-header-details">
       {{#if site.mobileView}}
         <div class="chat-full-page-header__left-actions">
@@ -58,7 +58,6 @@
         afterReactionAdded=(action "reStickScrollIfNeeded")
         isHovered=(eq message.id hoveredMessageId)
         onHoverMessage=(action "onHoverMessage")
-        previewing=previewing
         onSwitchChannel=onSwitchChannel
       }}
     {{/each}}
@@ -96,9 +95,7 @@
       cancelSelecting=(action "cancelSelecting")
     }}
   {{else}}
-    {{#if previewing}}
-      {{chat-channel-preview-card channel=chatChannel}}
-    {{else}}
+    {{#if (or chatChannel.isDraft chatChannel.isFollowing)}}
       {{chat-composer
         draft=draft
         details=this.details
@@ -115,6 +112,8 @@
         fullPage=fullPage
         chatChannel=chatChannel
       }}
+    {{else}}
+      {{chat-channel-preview-card channel=chatChannel}}
     {{/if}}
   {{/if}}
 {{/if}}

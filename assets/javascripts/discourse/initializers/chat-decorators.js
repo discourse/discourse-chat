@@ -50,7 +50,7 @@ export default {
         highlightSyntax(
           element,
           siteSettings,
-          container.lookup("session:main")
+          container.lookup("service:session")
         ),
       { id: "highlightSyntax" }
     );

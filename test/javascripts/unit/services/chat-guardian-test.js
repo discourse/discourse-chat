@@ -12,7 +12,7 @@ acceptance("Discourse Chat | Unit | Service | chat-guardian", function (needs) {
       get: () => this.container.lookup("service:site-settings"),
     });
     Object.defineProperty(this, "currentUser", {
-      get: () => this.container.lookup("current-user:main"),
+      get: () => this.container.lookup("service:current-user"),
     });
   });
 

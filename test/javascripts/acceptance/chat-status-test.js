@@ -30,7 +30,7 @@ const baseChatPretenders = (server, helper) => {
   server.get("/chat/chat_channels.json", () => {
     let copy = cloneJSON(chatChannels);
     let modifiedChannel = copy.public_channels.find((pc) => pc.id === 4);
-    modifiedChannel.unread_count = 2;
+    modifiedChannel.current_user_membership.unread_count = 2;
     return helper.response(copy);
   });
 
@@ -42,9 +42,7 @@ const baseChatPretenders = (server, helper) => {
       chatChannels.public_channels.find((pc) => pc.id === 4)
     );
     channel.status = "archived";
-    return helper.response({
-      chat_channel: channel,
-    });
+    return helper.response(channel);
   });
 };
 

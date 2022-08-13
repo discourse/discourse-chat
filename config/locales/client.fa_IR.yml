@@ -123,7 +123,6 @@ fa_IR:
         one: "%{count} پرونده"
         other: "%{count} پرونده"
       you_flagged: "شما این پیام را پرچم گذاری کردید"
-      user_deleted: "حذف شده"
       exit: "بازگشت"
       channel_status:
         read_only: "فقط خواندنی"
@@ -198,6 +197,8 @@ fa_IR:
         type: "پیام گفتگو"
       reactions:
         only_you: "شما با :%{emoji}: واکنش نشان دادید"
+      quote:
+        copy_success: "نقل قول گفتگو در کلیپ‌بورد کپی شد"
       notification_levels:
         never: "هرگز"
         mention: "فقط برای اشاره کردن"
@@ -236,6 +237,7 @@ fa_IR:
       selection:
         cancel: "انصراف"
         quote_selection: "نقل قول در موضوع"
+        copy: "کپی"
         move_selection_to_channel: "انتقال به کانال"
         error: "در انتقال پیام‌های گفتگو خطایی رخ داده"
         title: "انتقال گفتگو به موضوع"
@@ -279,6 +281,8 @@ fa_IR:
         title: "گفتگو"
         keyboard_shortcuts:
           switch_channel_arrows: "%{shortcut} تغییر کانال"
+          drawer_open: "%{shortcut} باز کردن کِشوی گفتگو"
+          drawer_close: "%{shortcut} بستن کِشوی گفتگو"
     topic_statuses:
       chat:
         help: "گفتگو برای این موضوع فعال است"

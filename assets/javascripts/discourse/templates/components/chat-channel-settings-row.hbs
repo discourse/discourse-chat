@@ -10,7 +10,7 @@
     </div>
 
     <div class="chat-channel-data">
-      {{#if channel.following}}
+      {{#if channel.isFollowing}}
         {{d-icon "check"}}
         <p class="channel-joined">
           {{i18n "chat.settings.followed"}}
@@ -28,7 +28,7 @@
   </div>
 
   <div class="btn-container">
-    {{#unless channel.following}}
+    {{#unless channel.isFollowing}}
       {{d-button
         class="chat-channel-preview"
         action=(action "previewChannel")

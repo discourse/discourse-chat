@@ -67,7 +67,7 @@ module(
     });
 
     test("leave", async function (assert) {
-      this.channel.set("following", true);
+      this.channel.current_user_membership.set("following", true);
       await render(hbs`{{chat-channel-about-view channel=channel}}`);
 
       assert.ok(exists(".toggle-channel-membership-button.-leave"));
@@ -132,7 +132,7 @@ module(
     });
 
     test("leave", async function (assert) {
-      this.channel.set("following", true);
+      this.channel.current_user_membership.set("following", true);
       await render(hbs`{{chat-channel-about-view channel=channel}}`);
 
       assert.ok(exists(".toggle-channel-membership-button.-leave"));

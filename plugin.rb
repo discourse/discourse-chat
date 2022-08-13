@@ -108,6 +108,7 @@ after_initialize do
   load File.expand_path("../app/controllers/chat_channels_controller.rb", __FILE__)
   load File.expand_path("../app/controllers/direct_messages_controller.rb", __FILE__)
   load File.expand_path("../app/controllers/incoming_chat_webhooks_controller.rb", __FILE__)
+  load File.expand_path("../app/models/deleted_chat_user.rb", __FILE__)
   load File.expand_path("../app/models/user_chat_channel_membership.rb", __FILE__)
   load File.expand_path("../app/models/chat_channel.rb", __FILE__)
   load File.expand_path("../app/models/chat_channel_archive.rb", __FILE__)
@@ -123,12 +124,13 @@ after_initialize do
   load File.expand_path("../app/models/incoming_chat_webhook.rb", __FILE__)
   load File.expand_path("../app/models/reviewable_chat_message.rb", __FILE__)
   load File.expand_path("../app/models/chat_view.rb", __FILE__)
+  load File.expand_path("../app/serializers/structured_channel_serializer.rb", __FILE__)
   load File.expand_path("../app/serializers/chat_webhook_event_serializer.rb", __FILE__)
   load File.expand_path("../app/serializers/chat_in_reply_to_serializer.rb", __FILE__)
   load File.expand_path("../app/serializers/basic_user_with_status_serializer.rb", __FILE__)
+  load File.expand_path("../app/serializers/user_chat_channel_membership_serializer.rb", __FILE__)
   load File.expand_path("../app/serializers/chat_message_serializer.rb", __FILE__)
   load File.expand_path("../app/serializers/chat_channel_serializer.rb", __FILE__)
-  load File.expand_path("../app/serializers/chat_channel_settings_serializer.rb", __FILE__)
   load File.expand_path("../app/serializers/chat_channel_index_serializer.rb", __FILE__)
   load File.expand_path("../app/serializers/chat_channel_search_serializer.rb", __FILE__)
   load File.expand_path("../app/serializers/chat_view_serializer.rb", __FILE__)
@@ -139,7 +141,6 @@ after_initialize do
   load File.expand_path("../app/serializers/direct_message_channel_serializer.rb", __FILE__)
   load File.expand_path("../app/serializers/incoming_chat_webhook_serializer.rb", __FILE__)
   load File.expand_path("../app/serializers/admin_chat_index_serializer.rb", __FILE__)
-  load File.expand_path("../app/serializers/user_chat_channel_membership_serializer.rb", __FILE__)
   load File.expand_path("../app/serializers/user_chat_message_bookmark_serializer.rb", __FILE__)
   load File.expand_path("../app/serializers/reviewable_chat_message_serializer.rb", __FILE__)
   load File.expand_path("../lib/chat_channel_fetcher.rb", __FILE__)
@@ -466,11 +467,12 @@ after_initialize do
   register_presence_channel_prefix("chat-reply") do |channel_name|
     if chat_channel_id = channel_name[%r{/chat-reply/(\d+)}, 1]
       chat_channel = ChatChannel.find(chat_channel_id)
-      config = PresenceChannel::Config.new
-      config.allowed_group_ids = chat_channel.allowed_group_ids
-      config.allowed_user_ids = chat_channel.allowed_user_ids
-      config.public = true if config.allowed_group_ids.nil? && config.allowed_user_ids.nil?
-      config
+
+      PresenceChannel::Config.new.tap do |config|
+        config.allowed_group_ids = chat_channel.allowed_group_ids
+        config.allowed_user_ids = chat_channel.allowed_user_ids
+        config.public = !chat_channel.read_restricted?
+      end
     end
   rescue ActiveRecord::RecordNotFound
     nil

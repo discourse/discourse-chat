@@ -45,7 +45,6 @@ export default Component.extend({
   onSwitchChannel: null,
 
   allPastMessagesLoaded: false,
-  previewing: false,
   sendingLoading: false,
   selectingMessages: false,
   stickyScroll: true,
@@ -76,7 +75,6 @@ export default Component.extend({
   _updateReadTimer: null,
   lastSendReadMessageId: null,
   _scrollerEl: null,
-  _visibleMessagesObserver: null,
 
   init() {
     this._super(...arguments);
@@ -109,8 +107,6 @@ export default Component.extend({
     document.addEventListener("scroll", this._forceBodyScroll, {
       passive: true,
     });
-
-    this._visibleMessagesObserver = this._setupVisibleMessagesObserver();
   },
 
   willDestroyElement() {
@@ -143,8 +139,6 @@ export default Component.extend({
     );
 
     document.removeEventListener("scroll", this._forceBodyScroll);
-
-    this._visibleMessagesObserver.disconnect();
   },
 
   didReceiveAttrs() {
@@ -162,20 +156,17 @@ export default Component.extend({
       this.set("allPastMessagesLoaded", false);
       this.cancelEditing();
 
-      this.chat
-        .getChannelBy("id", this.chatChannel.id)
-        .then((trackedChannel) => {
-          if (this._selfDeleted) {
-            return;
-          }
+      this.chat.getChannelBy("id", this.chatChannel.id).then(() => {
+        if (this._selfDeleted) {
+          return;
+        }
 
-          this.fetchMessages(this.chatChannel);
+        this.fetchMessages(this.chatChannel);
 
-          if (!this.chatChannel.isDraft) {
-            this.set("previewing", !Boolean(trackedChannel));
-            this.loadDraftForChannel(this.chatChannel.id);
-          }
-        });
+        if (!this.chatChannel.isDraft) {
+          this.loadDraftForChannel(this.chatChannel.id);
+        }
+      });
     }
 
     this.currentUserTimezone = this.currentUser?.resolvedTimezone(
@@ -198,9 +189,13 @@ export default Component.extend({
   },
 
   @bind
-  onScrollHandler() {
+  onScrollHandler(event) {
     cancel(this.stickyScrollTimer);
-    this.stickyScrollTimer = discourseDebounce(this, this.onScroll, 100);
+    this.stickyScrollTimer = discourseDebounce(
+      this,
+      () => this.onScroll(event),
+      100
+    );
   },
 
   @bind
@@ -228,8 +223,9 @@ export default Component.extend({
         channelId: channel.id,
         pageSize: PAGE_SIZE,
       };
+      const fetchingFromLastRead = !options.fetchFromLastMessage;
 
-      if (!options.fetchFromLastMessage) {
+      if (fetchingFromLastRead) {
         findArgs["targetMessageId"] =
           this.targetMessageId || this._getLastReadId();
       }
@@ -240,7 +236,7 @@ export default Component.extend({
           if (this._selfDeleted || this.chatChannel.id !== channel.id) {
             return;
           }
-          this.setMessageProps(messages);
+          this.setMessageProps(messages, fetchingFromLastRead);
         })
         .catch((err) => {
           throw err;
@@ -302,12 +298,16 @@ export default Component.extend({
               ? newMessages.concat(this.messages)
               : this.messages.concat(newMessages)
           );
-
-          schedule("afterRender", () => {
-            this._observeMessages(newMessages);
-          });
         }
         this.setCanLoadMoreDetails(messages.resultSetMeta);
+
+        if (!loadingPast && newMessages.length) {
+          // Adding newer messages also causes a scroll-down,
+          // firing another event, fetching messages again, and so on.
+          // Scroll to the first new one to prevent this.
+          this.scrollToMessage(newMessages.firstObject.messageLookupId);
+        }
+
         return messages;
       })
       .catch((err) => {
@@ -368,7 +368,7 @@ export default Component.extend({
     }
   },
 
-  setMessageProps(messages) {
+  setMessageProps(messages, fetchingFromLastRead) {
     this._unloadedReplyIds = [];
     this.setProperties({
       messages: this._prepareMessages(messages),
@@ -389,7 +389,6 @@ export default Component.extend({
         return;
       }
 
-      this._observeMessages(this.messages);
       if (!isTesting()) {
         this._updateLastReadMessage();
       }
@@ -401,7 +400,7 @@ export default Component.extend({
           autoExpand: true,
         });
         this.set("targetMessageId", null);
-      } else {
+      } else if (fetchingFromLastRead) {
         this._markLastReadMessage();
       }
 
@@ -631,7 +630,7 @@ export default Component.extend({
     }
   },
 
-  onScroll() {
+  onScroll(event) {
     if (this._selfDeleted) {
       return;
     }
@@ -645,42 +644,35 @@ export default Component.extend({
       ) <= STICKY_SCROLL_LENIENCE;
     if (atTop) {
       this._fetchMoreMessages(PAST).then((newMessages) => {
-        if (!newMessages) {
-          return;
-        }
-        // prevents a white screen bug on safari
-        this.scrollToMessage(newMessages.lastObject.messageLookupId);
+        this._iosScrollFix(newMessages, PAST);
       });
-      return;
     } else {
       this._updateLastReadMessage();
 
       if (Math.abs(this._scrollerEl.scrollTop) <= STICKY_SCROLL_LENIENCE) {
         this._fetchMoreMessages(FUTURE).then((newMessages) => {
-          if (!newMessages) {
-            return;
-          }
-          // prevents a white screen bug on safari
-          this.scrollToMessage(newMessages.firstObject.messageLookupId, {
-            position: "bottom",
-          });
+          this._iosScrollFix(newMessages, FUTURE);
         });
       }
     }
 
-    this._calculateStickScroll();
+    this._calculateStickScroll(event.forceShowScrollToBottom);
   },
 
-  _calculateStickScroll() {
+  _calculateStickScroll(forceShowScrollToBottom) {
     const absoluteScrollTop = Math.abs(this._scrollerEl.scrollTop);
     const shouldStick = absoluteScrollTop < STICKY_SCROLL_LENIENCE;
 
-    this.set(
-      "showScrollToBottomBtn",
-      shouldStick
-        ? false
-        : absoluteScrollTop / this._scrollerEl.offsetHeight > 0.67
-    );
+    if (forceShowScrollToBottom) {
+      this.set("showScrollToBottomBtn", forceShowScrollToBottom);
+    } else {
+      this.set(
+        "showScrollToBottomBtn",
+        shouldStick
+          ? false
+          : absoluteScrollTop / this._scrollerEl.offsetHeight > 0.67
+      );
+    }
 
     if (!this.showScrollToBottomBtn) {
       this.set("hasNewMessages", false);
@@ -747,7 +739,7 @@ export default Component.extend({
   },
 
   handleSentMessage(data) {
-    if (!this.previewing) {
+    if (this.chatChannel.isFollowing) {
       this.chatChannel.set("last_message_sent_at", new Date());
     }
 
@@ -786,9 +778,6 @@ export default Component.extend({
     );
 
     this.messages.pushObject(preparedMessage);
-    schedule("afterRender", () => {
-      this._observeMessages([preparedMessage]);
-    });
 
     if (this.messages.length >= MAX_RECENT_MSGS) {
       this.removeMessage(this.messages.shiftObject());
@@ -939,7 +928,7 @@ export default Component.extend({
   _updateLastReadMessage(wait = READ_INTERVAL) {
     this._cancelPendingReadUpdate();
 
-    if (this._selfDeleted) {
+    if (this._selfDeleted || !this.chatChannel.isFollowing) {
       return;
     }
 
@@ -1014,7 +1003,8 @@ export default Component.extend({
     // - messaging to a new direct channel through DM creator (channel draft)
     // - message to a direct channel you were tracking (preview = false, not draft)
     // - message to a public channel you were tracking (preview = false, not draft)
-    if (this.previewing || this.chatChannel.isDraft) {
+    // - message to a channel when we haven't loaded all future messages yet.
+    if (!this.chatChannel.isFollowing || this.chatChannel.isDraft) {
       this.set("loading", true);
 
       return this._upsertChannelWithMessage(
@@ -1025,7 +1015,6 @@ export default Component.extend({
         if (this._selfDeleted) {
           return;
         }
-        this.set("previewing", false);
         this.set("loading", false);
         this.set("sendingLoading", false);
         this._resetAfterSend();
@@ -1046,9 +1035,10 @@ export default Component.extend({
       data.in_reply_to_id = this.replyToMsg.id;
     }
 
-    // Start ajax request but don't return here, we want to stage the message instantly.
+    // Start ajax request but don't return here, we want to stage the message instantly when all messages are loaded.
+    // Otherwise, we'll fetch latest and scroll to the one we just created.
     // Return a resolved promise below.
-    ajax(`/chat/${this.chatChannel.id}.json`, {
+    const msgCreationPromise = ajax(`/chat/${this.chatChannel.id}.json`, {
       type: "POST",
       data,
     })
@@ -1062,23 +1052,28 @@ export default Component.extend({
         this.set("sendingLoading", false);
       });
 
-    const stagedMessage = this._prepareSingleMessage(
-      // We need to add the user and created at for presentation of staged message
-      {
-        message,
-        cooked,
-        stagedId,
-        uploads: cloneJSON(uploads),
-        staged: true,
-        user: this.currentUser,
-        in_reply_to: this.replyToMsg,
-        created_at: new Date(),
-      },
-      this.messages[this.messages.length - 1]
-    );
-    this.messages.pushObject(stagedMessage);
+    if (this.details.can_load_more_future) {
+      msgCreationPromise.then(() => this._fetchAndScrollToLatest());
+    } else {
+      const stagedMessage = this._prepareSingleMessage(
+        // We need to add the user and created at for presentation of staged message
+        {
+          message,
+          cooked,
+          stagedId,
+          uploads: cloneJSON(uploads),
+          staged: true,
+          user: this.currentUser,
+          in_reply_to: this.replyToMsg,
+          created_at: new Date(),
+        },
+        this.messages[this.messages.length - 1]
+      );
+      this.messages.pushObject(stagedMessage);
+      this._stickScrollToBottom();
+    }
+
     this._resetAfterSend();
-    this._stickScrollToBottom();
     this.appEvents.trigger("chat-composer:reply-to-set", null);
     return Promise.resolve();
   },
@@ -1096,7 +1091,7 @@ export default Component.extend({
 
     return promise
       .then((c) => {
-        c.set("following", true);
+        c.current_user_membership.set("following", true);
         return this.chat.startTrackingChannel(c);
       })
       .then((c) =>
@@ -1110,14 +1105,7 @@ export default Component.extend({
           this.chat.forceRefreshChannels();
           this.onSwitchChannel(ChatChannel.create(c));
         })
-      )
-      .finally(() => {
-        if (this.isDestroyed || this.isDestroying) {
-          return;
-        }
-
-        this.set("previewing", false);
-      });
+      );
   },
 
   _onSendError(stagedId, error) {
@@ -1377,12 +1365,7 @@ export default Component.extend({
   restickScrolling(event) {
     event.preventDefault();
 
-    return this.fetchMessages(this.chatChannel, {
-      fetchFromLastMessage: true,
-    }).then(() => {
-      this.set("stickyScroll", true);
-      this._stickScrollToBottom();
-    });
+    return this._fetchAndScrollToLatest();
   },
 
   focusComposer() {
@@ -1468,28 +1451,64 @@ export default Component.extend({
     }
   },
 
-  _setupVisibleMessagesObserver() {
-    const options = {
-      root: document.querySelector(".chat-messages-container"),
-      rootMargin: "-10px",
-    };
+  // This fix prevents a white screen when appending/preprending new content
+  // simulating a noop scroll forces to display the new content
+  // technically it should be possible to fix it with css and using
+  // -webkit-transform: translate3d(0,0,0); on the right elements
+  // but this has proven to either not work or cause other issues so far
+  _iosScrollFix(newMessages, direction) {
+    if (!this.capabilities.isIOS) {
+      return;
+    }
 
-    const callback = (entries) => {
-      entries.forEach((entry) => {
-        entry.target.dataset.visible = entry.isIntersecting;
+    if (!newMessages?.length) {
+      return;
+    }
+
+    schedule("afterRender", () => {
+      if (this._selfDeleted) {
+        return;
+      }
+
+      let siblingId;
+      if (direction === FUTURE) {
+        const firstLoadedMessageId = newMessages.firstObject.messageLookupId;
+        const firstLoadedMessage = document.querySelector(
+          `.chat-message-container[data-id="${firstLoadedMessageId}"]`
+        );
+        siblingId = firstLoadedMessage.previousElementSibling?.dataset.id;
+      } else {
+        const lastLoadedMessageId = newMessages.lastObject.messageLookupId;
+        const lastLoadedMessage = document.querySelector(
+          `.chat-message-container[data-id="${lastLoadedMessageId}"]`
+        );
+        siblingId = lastLoadedMessage.nextElementSibling?.dataset.id;
+      }
+
+      if (!siblingId) {
+        return;
+      }
+
+      // forces the update preventing the white screen
+      const scroller = document.querySelector(".chat-messages-scroll");
+      scroller.scrollTo(0, 0);
+
+      this.scrollToMessage(siblingId, {
+        position: direction === PAST ? "top" : "bottom",
       });
-    };
-
-    return new IntersectionObserver(callback, options);
+    });
   },
 
-  _observeMessages(messages) {
-    messages.forEach((message) => {
-      this._visibleMessagesObserver.observe(
-        document.querySelector(
-          `.chat-message-container[data-id="${message.id}"]`
-        )
-      );
+  _fetchAndScrollToLatest() {
+    return this.fetchMessages(this.chatChannel, {
+      fetchFromLastMessage: true,
+    }).then(() => {
+      if (this._selfDeleted) {
+        return;
+      }
+
+      this.set("stickyScroll", true);
+      this._stickScrollToBottom();
     });
   },
 });

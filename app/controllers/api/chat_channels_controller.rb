@@ -9,14 +9,19 @@ class DiscourseChat::Api::ChatChannelsController < DiscourseChat::Api
       params.permit(:filter, :limit, :offset),
     ).symbolize_keys!
 
+    memberships = UserChatChannelMembership.where(user: current_user)
     channels =
-      DiscourseChat::ChatChannelFetcher.secured_public_channels(
-        guardian,
-        UserChatChannelMembership.where(user: current_user),
-        options,
-      )
+      DiscourseChat::ChatChannelFetcher.secured_public_channels(guardian, memberships, options)
 
-    render_serialized(channels, ChatChannelSerializer)
+    serialized_channels =
+      channels.map do |channel|
+        ChatChannelSerializer.new(
+          channel,
+          scope: Guardian.new(current_user),
+          membership: memberships.find { |membership| membership.chat_channel_id == channel.id },
+        )
+      end
+    render json: serialized_channels, root: false
   end
 
   def update
@@ -45,7 +50,12 @@ class DiscourseChat::Api::ChatChannelsController < DiscourseChat::Api
       UserChatChannelMembership.enforce_automatic_channel_memberships(chat_channel)
     end
 
-    render_serialized(chat_channel, ChatChannelSerializer, root: false)
+    render_serialized(
+      chat_channel,
+      ChatChannelSerializer,
+      root: false,
+      membership: chat_channel.membership_for(current_user),
+    )
   end
 
   private

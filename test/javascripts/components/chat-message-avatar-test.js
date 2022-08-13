@@ -31,16 +31,4 @@ module("Discourse Chat | Component | chat-message-avatar", function (hooks) {
       assert.ok(exists('.chat-user-avatar [data-user-card="discobot"]'));
     },
   });
-
-  componentTest("nothing", {
-    template: hbs`{{chat-message-avatar message=message}}`,
-
-    beforeEach() {
-      this.set("message", {});
-    },
-
-    async test(assert) {
-      assert.equal(query(".chat-emoji-avatar .emoji").title, "wastebasket");
-    },
-  });
 });

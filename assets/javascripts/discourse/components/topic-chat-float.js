@@ -38,6 +38,7 @@ export default Component.extend({
     this.appEvents.on("chat:navigated-to-full-page", this, "close");
     this.appEvents.on("chat:open-view", this, "openView");
     this.appEvents.on("chat:toggle-open", this, "toggleChat");
+    this.appEvents.on("chat:toggle-close", this, "close");
     this.appEvents.on(
       "chat:open-channel-for-chatable",
       this,
@@ -73,6 +74,7 @@ export default Component.extend({
       this.appEvents.off("chat:open-view", this, "openView");
       this.appEvents.off("chat:navigated-to-full-page", this, "close");
       this.appEvents.off("chat:toggle-open", this, "toggleChat");
+      this.appEvents.off("chat:toggle-close", this, "close");
       this.appEvents.off(
         "chat:open-channel-for-chatable",
         this,
@@ -181,9 +183,14 @@ export default Component.extend({
       "--composer-height",
       composer.offsetHeight + "px"
     );
+
+    const composerIsClosed = composer.classList.contains("closed");
+    const minRightMargin = 15;
     this.element.style.setProperty(
       "--composer-right",
-      composer.offsetLeft + "px"
+      (composerIsClosed
+        ? minRightMargin
+        : Math.max(minRightMargin, composer.offsetLeft)) + "px"
     );
   },
 

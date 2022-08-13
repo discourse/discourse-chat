@@ -38,6 +38,21 @@ export default {
     };
 
     const isChatComposer = (el) => el.classList.contains("chat-composer-input");
+    const isInputSelection = (el) => {
+      const inputs = ["input", "textarea", "select", "button"];
+      const elementTagName = el?.tagName.toLowerCase();
+
+      if (inputs.includes(elementTagName)) {
+        return false;
+      }
+      return true;
+    };
+    const isDrawerExpanded = () => {
+      return document.querySelector(".topic-chat-float-container:not(.hidden)")
+        ? true
+        : false;
+    };
+
     const modifyComposerSelection = (event, type) => {
       if (!isChatComposer(event.target)) {
         return;
@@ -54,6 +69,29 @@ export default {
       event.preventDefault();
       event.stopPropagation();
       appEvents.trigger("chat:open-insert-link-modal", { event });
+    };
+
+    const openChatDrawer = (event) => {
+      if (!isInputSelection(event.target)) {
+        return;
+      }
+      event.preventDefault();
+      event.stopPropagation();
+      appEvents.trigger("chat:toggle-open", event);
+    };
+
+    const closeChatDrawer = (event) => {
+      if (!isDrawerExpanded()) {
+        return;
+      }
+
+      if (!isChatComposer(event.target)) {
+        return;
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
+      appEvents.trigger("chat:toggle-close", event);
     };
 
     withPluginApi("0.12.1", (api) => {
@@ -145,6 +183,26 @@ export default {
           },
         }
       );
+      api.addKeyboardShortcut(`-`, (event) => openChatDrawer(event), {
+        global: true,
+        help: {
+          category: "chat",
+          name: "chat.keyboard_shortcuts.drawer_open",
+          definition: {
+            keys1: ["-"],
+          },
+        },
+      });
+      api.addKeyboardShortcut("esc", (event) => closeChatDrawer(event), {
+        global: true,
+        help: {
+          category: "chat",
+          name: "chat.keyboard_shortcuts.drawer_close",
+          definition: {
+            keys1: ["esc"],
+          },
+        },
+      });
     });
   },
 };

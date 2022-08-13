@@ -5,7 +5,14 @@ import {
   queryAll,
 } from "discourse/tests/helpers/qunit-helpers";
 import { test } from "qunit";
-import { settled, visit } from "@ember/test-helpers";
+import {
+  click,
+  currentURL,
+  fillIn,
+  settled,
+  triggerKeyEvent,
+  visit,
+} from "@ember/test-helpers";
 import { directMessageChannels } from "discourse/plugins/discourse-chat/chat-fixtures";
 import { cloneJSON } from "discourse-common/lib/object";
 import I18n from "I18n";
@@ -25,7 +32,7 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
   needs.pretender((server, helper) => {
     let directChannels = cloneJSON(directMessageChannels).mapBy("chat_channel");
     directChannels[0].chatable.users = [directChannels[0].chatable.users[0]];
-    directChannels[0].unread_count = 1;
+    directChannels[0].current_user_membership.unread_count = 1;
     directChannels.push({
       chatable: {
         users: [
@@ -48,8 +55,12 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
       chatable_url: null,
       id: 76,
       title: "@sam",
-      unread_count: 0,
-      muted: false,
+      last_message_sent_at: "2021-06-01T11:15:00.000Z",
+      current_user_membership: {
+        unread_count: 0,
+        muted: false,
+        following: true,
+      },
     });
 
     server.get("/chat/chat_channels.json", () => {
@@ -58,37 +69,82 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
           {
             id: 1,
             title: "dev :bug:",
-            unread_count: 0,
-            unread_mentions: 0,
             chatable_type: "Category",
             chatable: { slug: "dev", read_restricted: true },
+            last_message_sent_at: "2021-11-08T21:26:05.710Z",
+            current_user_membership: {
+              unread_count: 0,
+              unread_mentions: 0,
+            },
           },
           {
             id: 2,
             title: "general",
-            unread_count: 1,
-            unread_mentions: 0,
             chatable_type: "Category",
             chatable: { slug: "general" },
+            last_message_sent_at: "2021-11-08T21:26:05.710Z",
+            current_user_membership: {
+              unread_count: 1,
+              unread_mentions: 0,
+            },
           },
           {
             id: 3,
             title: "random",
-            unread_count: 1,
-            unread_mentions: 1,
             chatable_type: "Category",
             chatable: { slug: "random" },
+            last_message_sent_at: "2021-11-08T21:26:05.710Z",
+            current_user_membership: {
+              unread_count: 1,
+              unread_mentions: 1,
+            },
           },
         ],
         direct_message_channels: directChannels,
       });
     });
+
     server.get("/chat/1/messages.json", () =>
       helper.response({
         meta: { can_chat: true, user_silenced: false },
         chat_messages: [],
       })
     );
+
+    server.get("/u/search/users", () => {
+      return helper.response({
+        users: [
+          {
+            username: "hawk",
+            id: 2,
+            name: "hawk",
+            avatar_template:
+              "/letter_avatar_proxy/v4/letter/t/41988e/{size}.png",
+          },
+        ],
+      });
+    });
+
+    server.get("/chat/75/messages.json", () =>
+      helper.response({
+        meta: { can_chat: true, user_silenced: false },
+        chat_messages: [],
+      })
+    );
+
+    server.get("/chat/direct_messages.json", () => {
+      return helper.response({
+        chat_channel: {
+          id: 75,
+          title: "hawk",
+          chatable_type: "DirectMessageChannel",
+          last_message_sent_at: "2021-07-20T08:14:16.950Z",
+          chatable: {
+            users: [{ username: "hawk" }],
+          },
+        },
+      });
+    });
   });
 
   needs.hooks.beforeEach(function () {
@@ -227,9 +283,8 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
     );
 
     assert.strictEqual(
-      directLinks
-        .eq(0)
-        .find(".sidebar-section-link-prefix img")[0]
+      directLinks[0]
+        .querySelector(".sidebar-section-link-prefix img")
         .classList.contains("prefix-image"),
       true,
       "displays avatar in prefix when two participants"
@@ -242,54 +297,49 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
     );
 
     assert.ok(
-      exists(
-        directLinks
-          .eq(0)
-          .find(".sidebar-section-link-content-text .on-holiday img")[0]
+      directLinks[0].querySelector(
+        ".sidebar-section-link-content-text .on-holiday img"
       ),
       "displays flair when user is on holiday"
     );
 
     assert.strictEqual(
-      directLinks
-        .eq(0)
-        .find(".sidebar-section-link-suffix")[0]
+      directLinks[0]
+        .querySelector(".sidebar-section-link-suffix")
         .classList.contains("urgent"),
       true,
       "displays new messages indicator"
     );
 
     assert.strictEqual(
-      directLinks
-        .eq(1)
-        .find("span.sidebar-section-link-prefix")[0]
+      directLinks[1]
+        .querySelector("span.sidebar-section-link-prefix")
         .classList.contains("text"),
       true,
       "displays text in prefix when more than two participants"
     );
 
     assert.strictEqual(
-      directLinks
-        .eq(1)
-        .find(".sidebar-section-link-content-text")[0]
+      directLinks[1]
+        .querySelector(".sidebar-section-link-content-text")
         .textContent.trim(),
       "eviltrout, markvanlan",
       "displays all participants name in a link"
     );
 
     assert.ok(
-      !exists(directLinks.eq(1).find(".sidebar-section-link-suffix")[0]),
+      !directLinks[1].querySelector(".sidebar-section-link-suffix"),
       "does not display new messages indicator"
     );
     User.current().chat_channel_tracking_state[76].set("unread_count", 99);
     chatService.reSortDirectMessageChannels();
     chatService.appEvents.trigger("chat:user-tracking-state-changed");
     await settled();
+
     directLinks = queryAll(".sidebar-section-chat-dms a.sidebar-section-link");
     assert.strictEqual(
-      directLinks
-        .eq(0)
-        .find(".sidebar-section-link-content-text")[0]
+      directLinks[0]
+        .querySelector(".sidebar-section-link-content-text")
         .textContent.trim(),
       "eviltrout, markvanlan",
       "reorders private messages"
@@ -305,6 +355,17 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
   test("Plugin sidebar is hidden", async function (assert) {
     await visit("/chat/channel/1/dev");
     assert.notOk(exists(".full-page-chat .channels-list"));
+  });
+
+  test("Open a new direct conversation", async function (assert) {
+    await visit("/");
+
+    await click(".sidebar-section-chat-dms .sidebar-section-header-button");
+    assert.ok(exists(".direct-message-creator"));
+
+    await fillIn(".filter-usernames", "hawk");
+    await triggerKeyEvent(".filter-usernames", "keydown", "Enter");
+    assert.strictEqual(currentURL(), "/chat/draft-channel");
   });
 });
 
@@ -322,26 +383,35 @@ acceptance("Discourse Chat - Plugin Sidebar", function (needs) {
           {
             id: 1,
             title: "dev :bug:",
-            unread_count: 0,
-            unread_mentions: 0,
             chatable_type: "Category",
             chatable: { slug: "dev", read_restricted: true },
+            last_message_sent_at: "2021-11-08T21:26:05.710Z",
+            current_user_membership: {
+              unread_count: 1,
+              unread_mentions: 1,
+            },
           },
           {
             id: 2,
             title: "general",
-            unread_count: 1,
-            unread_mentions: 0,
             chatable_type: "Category",
             chatable: { slug: "general" },
+            last_message_sent_at: "2021-11-08T21:26:05.710Z",
+            current_user_membership: {
+              unread_count: 1,
+              unread_mentions: 1,
+            },
           },
           {
             id: 3,
             title: "random",
-            unread_count: 1,
-            unread_mentions: 1,
             chatable_type: "Category",
             chatable: { slug: "random" },
+            last_message_sent_at: "2021-11-08T21:26:05.710Z",
+            current_user_membership: {
+              unread_count: 1,
+              unread_mentions: 1,
+            },
           },
         ],
         direct_message_channels: [],

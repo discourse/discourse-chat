@@ -195,11 +195,12 @@ describe DiscourseChat::ChatChannelFetcher do
     end
 
     it "ensures limit has a max value" do
-      25.times { Fabricate(:chat_channel) }
+      over_limit = DiscourseChat::ChatChannelFetcher::MAX_PUBLIC_CHANNEL_RESULTS + 1
+      over_limit.times { Fabricate(:chat_channel) }
 
-      expect(subject.secured_public_channels(guardian, memberships, limit: 25).length).to eq(
-        DiscourseChat::ChatChannelFetcher::MAX_RESULTS,
-      )
+      expect(
+        subject.secured_public_channels(guardian, memberships, limit: over_limit).length,
+      ).to eq(DiscourseChat::ChatChannelFetcher::MAX_PUBLIC_CHANNEL_RESULTS)
     end
 
     it "does not show the user category channels they cannot access" do
@@ -229,32 +230,34 @@ describe DiscourseChat::ChatChannelFetcher do
       end
 
       it "includes the unread count based on mute settings" do
-        membership =
-          UserChatChannelMembership.create!(
-            user: user1,
-            chat_channel: category_channel,
-            following: true,
-          )
+        UserChatChannelMembership.create!(
+          user: user1,
+          chat_channel: category_channel,
+          following: true,
+        )
 
         Fabricate(:chat_message, user: user2, chat_channel: category_channel)
         Fabricate(:chat_message, user: user2, chat_channel: category_channel)
 
-        result_category_channel =
-          subject
-            .secured_public_channels(guardian, memberships, following: following)
-            .find { |chan| chan.id == category_channel.id }
+        resolved_memberships = memberships
+        subject.secured_public_channels(guardian, resolved_memberships, following: following)
 
-        expect(result_category_channel.unread_count).to eq(2)
+        expect(
+          resolved_memberships
+            .find { |membership| membership.chat_channel_id == category_channel.id }
+            .unread_count,
+        ).to eq(2)
 
-        membership = memberships.last
-        membership.update!(muted: true)
+        resolved_memberships.last.update!(muted: true)
 
-        result_category_channel =
-          subject
-            .secured_public_channels(guardian, memberships, following: following)
-            .find { |chan| chan.id == category_channel.id }
+        resolved_memberships = memberships
+        subject.secured_public_channels(guardian, resolved_memberships, following: following)
 
-        expect(result_category_channel.unread_count).to eq(0)
+        expect(
+          resolved_memberships
+            .find { |membership| membership.chat_channel_id == category_channel.id }
+            .unread_count,
+        ).to eq(0)
       end
     end
   end

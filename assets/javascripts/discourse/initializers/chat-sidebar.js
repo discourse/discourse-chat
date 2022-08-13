@@ -5,12 +5,12 @@ import I18n from "I18n";
 import { bind } from "discourse-common/utils/decorators";
 import { tracked } from "@glimmer/tracking";
 import showModal from "discourse/lib/show-modal";
-import { getOwner } from "discourse-common/lib/get-owner";
 import { DRAFT_CHANNEL_VIEW } from "discourse/plugins/discourse-chat/discourse/services/chat";
 import { avatarUrl } from "discourse/lib/utilities";
 import { dasherize } from "@ember/string";
 import { emojiUnescape } from "discourse/lib/text";
 import { decorateUsername } from "discourse/helpers/decorate-username-selector";
+import { inject as service } from "@ember/service";
 
 export default {
   name: "chat-sidebar",
@@ -115,7 +115,8 @@ export default {
 
             @tracked sectionIndicator =
               this.chatService.publicChannels &&
-              this.chatService.publicChannels[0].unread_count;
+              this.chatService.publicChannels[0].current_user_membership
+                .unread_count;
 
             constructor() {
               super(...arguments);
@@ -313,6 +314,7 @@ export default {
           };
 
           const SidebarChatDirectMessagesSection = class extends BaseCustomSidebarSection {
+            @service site;
             @tracked sectionLinks = [];
 
             constructor() {
@@ -371,14 +373,13 @@ export default {
             }
 
             get actions() {
-              const site = getOwner(this).lookup("site:main");
               return [
                 {
                   id: "startDm",
                   title: I18n.t("chat.direct_messages.new"),
                   action: () => {
                     if (
-                      site.mobileView ||
+                      this.site.mobileView ||
                       this.chatService.router.currentRouteName.startsWith("")
                     ) {
                       this.chatService.router.transitionTo(

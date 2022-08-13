@@ -1,3 +1,3 @@
-import GlimmerComponent from "discourse/components/glimmer";
+import Component from "@glimmer/component";
 
-export default class DcFilterInput extends GlimmerComponent {}
+export default class DcFilterInput extends Component {}

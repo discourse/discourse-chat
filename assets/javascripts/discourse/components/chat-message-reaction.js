@@ -5,7 +5,6 @@ import { emojiUnescape, emojiUrlFor } from "discourse/lib/text";
 import setupPopover from "discourse/lib/d-popover";
 import I18n from "I18n";
 import { schedule } from "@ember/runloop";
-import { isTesting } from "discourse-common/config/environment";
 
 export default class ChatMessageReaction extends Component {
   reaction = null;
@@ -59,8 +58,6 @@ export default class ChatMessageReaction extends Component {
       return;
     }
 
-    const canVibrate = this.capabilities.canVibrate && !isTesting();
-
     const popover = setupPopover(target, {
       interactive: false,
       allowHTML: true,
@@ -78,10 +75,6 @@ export default class ChatMessageReaction extends Component {
           });
 
         event.stopPropagation();
-
-        if (canVibrate) {
-          navigator.vibrate(5);
-        }
       },
     });
 

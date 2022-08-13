@@ -23,6 +23,7 @@ ru:
     default_emoji_reactions: "Стандартные эмодзи чата. Можно добавить до 5 смайликов."
     errors:
       chat_default_channel: "Канал чата по умолчанию должен быть общедоступным."
+      chat_upload_not_allowed_secure_media: "Загрузка в чат запрещена, если включено ограничение доступа к мультимедийному контенту."
   system_messages:
     chat_channel_archive_complete:
       title: "Архивация канала завершена"
@@ -35,6 +36,7 @@ ru:
       text_body_template: |
         Не удалось заархивировать канал **\#%{channel_name}**. Сообщения %{messages_archived} были заархивированы. Частично заархивированные сообщения были скопированы в тему [%{topic_title}](%{topic_url}). Посетите канал %{channel_url} и повторите попытку.
   chat:
+    deleted_chat_username: удалён
     errors:
       channel_exists_for_category: "Канал для этого раздела уже существует"
       channel_new_message_disallowed: "Канал %{status}, в него не могут быть отправлены новые сообщения"

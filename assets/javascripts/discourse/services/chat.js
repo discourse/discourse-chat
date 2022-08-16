@@ -29,10 +29,15 @@ const CHAT_ONLINE_OPTIONS = {
 };
 
 export default Service.extend({
-  activeChannel: null,
-  allChannels: null,
   appEvents: service(),
   chatNotificationManager: service(),
+  fullPageChat: service(),
+  presence: service(),
+  router: service(),
+  site: service(),
+
+  activeChannel: null,
+  allChannels: null,
   cook: null,
   directMessageChannels: null,
   hasFetchedChannels: false,
@@ -40,13 +45,10 @@ export default Service.extend({
   idToTitleMap: null,
   lastUserTrackingMessageId: null,
   messageId: null,
-  presence: service(),
   presenceChannel: null,
   publicChannels: null,
-  router: service(),
   sidebarActive: false,
   unreadUrgentCount: null,
-  fullPageChat: service(),
   _chatOpen: false,
   _fetchingChannels: null,
   directMessagesLimit: 20,

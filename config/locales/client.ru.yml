@@ -325,6 +325,7 @@ ru:
       selection:
         cancel: "Отменить"
         quote_selection: "Цитировать в теме"
+        copy: "Копировать"
         move_selection_to_channel: "Переместить в канал"
         error: "При перемещении сообщений чата произошла ошибка"
         title: "Переместить чат в тему"
@@ -364,14 +365,20 @@ ru:
         dm: "История личного чата хранится %{days} дней."
       topic_button_title: "Чат"
     notifications:
+      chat_invitation: "пригласил вас присоединиться к каналу чата"
+      chat_invitation_html: "<span>Пользователь %{username}</span> <span> пригласил вас присоединиться к каналу</span>"
       chat_quoted: "<span>%{username}</span> %{description}"
       popup:
         chat_mention:
-          direct: '<span>Пользователь %{username}</span> <span>упомянул вас на канале "%{channel}"</span>'
-          other: '<span>Пользователь %{username}</span> <span>упомянул %{identifier} на канале "%{channel}"</span>'
+          direct: 'упомянул вас в "%{channel}"'
+          direct_html: '<span>Пользователь %{username}</span> <span>упомянул вас на канале "%{channel}"</span>'
+          other: 'упомянул %{identifier} в "%{channel}"'
+          other_html: '<span>Пользователь %{username}</span> <span>упомянул %{identifier} на канале "%{channel}"</span>'
         direct_message_chat_mention:
-          direct: "<span>Пользователь %{username}</span> <span>упомянул вас в личном чате</span>"
-          other: "<span>Пользователь %{username}</span> <span>упомянул @%{identifier} в личном чате</span>"
+          direct: "упомянул вас в личном чате"
+          direct_html: "<span>Пользователь %{username}</span> <span>упомянул вас в личном чате</span>"
+          other: "упомянул %{identifier} в личном чате"
+          other_html: "<span>Пользователь %{username}</span> <span>упомянул @%{identifier} в личном чате</span>"
         chat_message: "Новое сообщение в чате"
         chat_quoted: "Пользователь %{username} процитировал ваше сообщение в чате"
       titles:

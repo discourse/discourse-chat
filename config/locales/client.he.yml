@@ -325,6 +325,7 @@ he:
       selection:
         cancel: "ביטול"
         quote_selection: "ציטוט בנושא"
+        copy: "העתקה"
         move_selection_to_channel: "העברה לערוץ"
         error: "אירעה שגיאה בהעברת הודעות הצ׳אט"
         title: "העברת צ׳אט לנושא"
@@ -364,14 +365,15 @@ he:
         dm: "היסטוריית הצ׳אט האישית נשמרת למשך %{days} ימים."
       topic_button_title: "צ׳אט"
     notifications:
+      chat_invitation_html: "<span>הוזמנת להצטרף לערוץ צ׳אט על ידי</span> <span>%{username}</span>"
       chat_quoted: "<span>%{username}</span> %{description}"
       popup:
         chat_mention:
-          direct: '<span>אוזכרת בערוץ „%{channel}” על ידי</span> <span>%{username}</span>'
-          other: '<span>נוסף אזכור של %{identifier} בערוץ „%{channel}” על ידי</span> <span>%{username}</span>'
+          direct_html: '<span>אוזכרת בערוץ „%{channel}” על ידי</span> <span>%{username}</span>'
+          other_html: '<span>נוסף אזכור של %{identifier} בערוץ „%{channel}” על ידי</span> <span>%{username}</span>'
         direct_message_chat_mention:
-          direct: "<span>אוזכרת בצ׳אט אישי על ידי</span> <span>%{username}</span>"
-          other: "<span>נוסף אזכור של ‎%{identifier} בצ׳אט אישי על ידי</span> <span>%{username}</span>"
+          direct_html: "<span>אוזכרת בצ׳אט אישי על ידי</span> <span>%{username}</span>"
+          other_html: "<span>נוסף אזכור של ‎%{identifier} בצ׳אט אישי על ידי</span> <span>%{username}</span>"
         chat_message: "הודעת צ׳אט חדשה"
         chat_quoted: "הודעת הצ׳אט שלך צוטטה על ידי %{username}"
       titles:
@@ -409,6 +411,8 @@ he:
           composer_bold: "%{shortcut} מודגש (עורך בלבד)"
           composer_italic: "%{shortcut} נטוי (עורך בלבד)"
           composer_code: "%{shortcut} קוד (עורך בלבד)"
+          drawer_open: "%{shortcut} פתיחת מגירת הצ׳אט"
+          drawer_close: "%{shortcut} סגירת מגירת הצ׳אט"
     topic_statuses:
       chat:
         help: "הצ׳אט מופעל בנושא הזה"

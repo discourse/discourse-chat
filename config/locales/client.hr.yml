@@ -93,3 +93,5 @@ hr:
         composer: "Skladatelj chata"
       browse:
         title: Kanali
+    notifications:
+      chat_invitation_html: "<span>%{username}</span> <span>vas je pozvao da se pridružite chat kanalu</span>"

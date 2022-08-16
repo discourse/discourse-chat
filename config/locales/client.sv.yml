@@ -341,14 +341,20 @@ sv:
         dm: "Personlig chatthistorik behålls i %{days} dagar."
       topic_button_title: "Chatt"
     notifications:
+      chat_invitation: "bjöd in dig att gå med i en chattkanal"
+      chat_invitation_html: "<span>%{username}</span> <span>bjöd in dig att gå med i en chattkanal</span>"
       chat_quoted: "<span>%{username}</span> %{description}"
       popup:
         chat_mention:
-          direct: '<span>%{username}</span> <span>nämnde dig i "%{channel}"</span>'
-          other: '<span>%{username}</span> <span>nämnde %{identifier} i "%{channel}"</span>'
+          direct: 'nämnde dig i "%{channel}"'
+          direct_html: '<span>%{username}</span> <span>nämnde dig i "%{channel}"</span>'
+          other: 'nämnde %{identifier} i "%{channel}"'
+          other_html: '<span>%{username}</span> <span>nämnde %{identifier} i "%{channel}"</span>'
         direct_message_chat_mention:
-          direct: "<span>%{username}</span> <span>nämnde dig i en personlig chatt</span>"
-          other: "<span>%{username}</span> <span>nämnde %{identifier} i personlig chatt</span>"
+          direct: "nämnde dig i personlig chatt"
+          direct_html: "<span>%{username}</span> <span>nämnde dig i en personlig chatt</span>"
+          other: "nämnde %{identifier} i personlig chatt"
+          other_html: "<span>%{username}</span> <span>nämnde %{identifier} i personlig chatt</span>"
         chat_message: "Nytt chattmeddelande"
         chat_quoted: "%{username} citerade ditt chattmeddelande"
       titles:

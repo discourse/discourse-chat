@@ -468,7 +468,11 @@ export default Service.extend({
 
     this.setActiveChannel(channel);
 
-    if (this.fullPageChat.isActive || this.fullPageChat.isPreferred) {
+    if (
+      this.fullPageChat.isActive ||
+      this.site.mobileView ||
+      this.fullPageChat.isPreferred
+    ) {
       const queryParams = messageId ? { messageId } : {};
 
       return this.router.transitionTo(

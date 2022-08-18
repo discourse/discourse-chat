@@ -10,6 +10,20 @@ describe ChatChannelSerializer do
   let(:guardian) { Guardian.new(guardian_user) }
   subject { described_class.new(chat_channel, scope: guardian, root: nil) }
 
+  describe "title" do
+    it "escapes HTML" do
+      chat_channel.name = "Best <b>channel</b> ever!"
+      expect(subject.as_json[:title]).to eq("Best &lt;b&gt;channel&lt;/b&gt; ever!")
+    end
+  end
+
+  describe "description" do
+    it "escapes HTML" do
+      chat_channel.description = "Best <b>channel</b> ever!"
+      expect(subject.as_json[:description]).to eq("Best &lt;b&gt;channel&lt;/b&gt; ever!")
+    end
+  end
+
   describe "archive status" do
     context "when user is not staff" do
       let(:guardian_user) { user }

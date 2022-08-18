@@ -28,6 +28,10 @@ class ChatChannelSerializer < ApplicationSerializer
     object.description.present?
   end
 
+  def description
+     ERB::Util.html_escape(object.description)
+  end
+
   def memberships_count
     object.user_count
   end
@@ -37,7 +41,7 @@ class ChatChannelSerializer < ApplicationSerializer
   end
 
   def title
-    object.name || object.title(scope.user)
+    ERB::Util.html_escape(object.name || object.title(scope.user))
   end
 
   def chatable

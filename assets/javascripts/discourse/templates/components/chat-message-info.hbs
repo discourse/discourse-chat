@@ -18,9 +18,7 @@
       <span class="chat-message-info__username__name">{{this.name}}</span>
       {{#if this.showStatus}}
         <div class="chat-message-info__status">
-          {{emoji
-            @message.user.status.emoji
-            title=@message.user.status.description}}
+          <UserStatusMessage @status={{@message.user.status}} />
         </div>
       {{/if}}
     </span>

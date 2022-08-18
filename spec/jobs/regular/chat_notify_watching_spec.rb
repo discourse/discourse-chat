@@ -43,7 +43,7 @@ RSpec.describe Jobs::ChatNotifyWatching do
       )
     end
 
-    it "sends a notification via MessageBus" do
+    it "sends a desktop notification" do
       messages = notification_messages_for(user2)
 
       expect(messages.first.data).to include(
@@ -64,7 +64,7 @@ RSpec.describe Jobs::ChatNotifyWatching do
         )
       end
 
-      it "sends a notification via PostAlerter" do
+      it "sends a mobile notification" do
         PostAlerter.expects(:push_notification).with(
           user2,
           has_entries(
@@ -84,7 +84,7 @@ RSpec.describe Jobs::ChatNotifyWatching do
     context "when the target user cannot chat" do
       before { SiteSetting.chat_allowed_groups = group.id }
 
-      it "does not send a notification via MessageBus" do
+      it "does not send a desktop notification" do
         expect(notification_messages_for(user2).count).to be_zero
       end
     end
@@ -92,7 +92,7 @@ RSpec.describe Jobs::ChatNotifyWatching do
     context "when the target user cannot see the chat channel" do
       before { channel.update!(chatable: Fabricate(:private_category, group: group)) }
 
-      it "does not send a notification via MessageBus" do
+      it "does not send a desktop notification" do
         expect(notification_messages_for(user2).count).to be_zero
       end
     end
@@ -100,7 +100,7 @@ RSpec.describe Jobs::ChatNotifyWatching do
     context "when the target user has seen the message already" do
       before { membership2.update!(last_read_message_id: message.id) }
 
-      it "does not send a notification via MessageBus" do
+      it "does not send a desktop notification" do
         expect(notification_messages_for(user2).count).to be_zero
       end
     end
@@ -108,7 +108,7 @@ RSpec.describe Jobs::ChatNotifyWatching do
     context "when the target user is online via presence channel" do
       before { PresenceChannel.any_instance.expects(:user_ids).returns([user2.id]) }
 
-      it "does not send a notification via MessageBus" do
+      it "does not send a desktop notification" do
         expect(notification_messages_for(user2).count).to be_zero
       end
     end
@@ -116,7 +116,7 @@ RSpec.describe Jobs::ChatNotifyWatching do
     context "when the target user is suspended" do
       before { user2.update!(suspended_till: 1.year.from_now) }
 
-      it "does not send a notification via MessageBus" do
+      it "does not send a desktop notification" do
         expect(notification_messages_for(user2).count).to be_zero
       end
     end
@@ -124,7 +124,7 @@ RSpec.describe Jobs::ChatNotifyWatching do
     context "when the target user is inside the except_user_ids array" do
       let(:except_user_ids) { [user2.id] }
 
-      it "does not send a notification via MessageBus" do
+      it "does not send a desktop notification" do
         expect(notification_messages_for(user2).count).to be_zero
       end
     end
@@ -149,7 +149,7 @@ RSpec.describe Jobs::ChatNotifyWatching do
       )
     end
 
-    it "sends a notification via MessageBus" do
+    it "sends a desktop notification" do
       messages = notification_messages_for(user2)
 
       expect(messages.first.data).to include(
@@ -170,7 +170,7 @@ RSpec.describe Jobs::ChatNotifyWatching do
         )
       end
 
-      it "sends a notification via PostAlerter" do
+      it "sends a mobile notification" do
         PostAlerter.expects(:push_notification).with(
           user2,
           has_entries(
@@ -190,7 +190,7 @@ RSpec.describe Jobs::ChatNotifyWatching do
     context "when the target user cannot chat" do
       before { SiteSetting.chat_allowed_groups = group.id }
 
-      it "does not send a notification via MessageBus" do
+      it "does not send a desktop notification" do
         expect(notification_messages_for(user2).count).to be_zero
       end
     end
@@ -198,7 +198,7 @@ RSpec.describe Jobs::ChatNotifyWatching do
     context "when the target user cannot see the chat channel" do
       before { channel.update!(chatable: Fabricate(:private_category, group: group)) }
 
-      it "does not send a notification via MessageBus" do
+      it "does not send a desktop notification" do
         expect(notification_messages_for(user2).count).to be_zero
       end
     end
@@ -206,7 +206,7 @@ RSpec.describe Jobs::ChatNotifyWatching do
     context "when the target user has seen the message already" do
       before { membership2.update!(last_read_message_id: message.id) }
 
-      it "does not send a notification via MessageBus" do
+      it "does not send a desktop notification" do
         expect(notification_messages_for(user2).count).to be_zero
       end
     end
@@ -214,7 +214,7 @@ RSpec.describe Jobs::ChatNotifyWatching do
     context "when the target user is online via presence channel" do
       before { PresenceChannel.any_instance.expects(:user_ids).returns([user2.id]) }
 
-      it "does not send a notification via MessageBus" do
+      it "does not send a desktop notification" do
         expect(notification_messages_for(user2).count).to be_zero
       end
     end
@@ -222,7 +222,7 @@ RSpec.describe Jobs::ChatNotifyWatching do
     context "when the target user is suspended" do
       before { user2.update!(suspended_till: 1.year.from_now) }
 
-      it "does not send a notification via MessageBus" do
+      it "does not send a desktop notification" do
         expect(notification_messages_for(user2).count).to be_zero
       end
     end
@@ -230,7 +230,7 @@ RSpec.describe Jobs::ChatNotifyWatching do
     context "when the target user is inside the except_user_ids array" do
       let(:except_user_ids) { [user2.id] }
 
-      it "does not send a notification via MessageBus" do
+      it "does not send a desktop notification" do
         expect(notification_messages_for(user2).count).to be_zero
       end
     end
@@ -240,7 +240,7 @@ RSpec.describe Jobs::ChatNotifyWatching do
         UserCommScreener.any_instance.expects(:allowing_actor_communication).returns([])
       end
 
-      it "does not send a notification via MessageBus" do
+      it "does not send a desktop notification" do
         expect(notification_messages_for(user2).count).to be_zero
       end
     end

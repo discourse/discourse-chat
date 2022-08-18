@@ -124,7 +124,7 @@ module("Discourse Chat | Component | chat-channel-row", function (hooks) {
     },
 
     async test(assert) {
-      assert.ok(exists(".emoji[title='Off to dentist']"));
+      assert.ok(exists(".user-status-message"));
     },
   });
 
@@ -147,7 +147,7 @@ module("Discourse Chat | Component | chat-channel-row", function (hooks) {
       },
 
       async test(assert) {
-        assert.notOk(exists(".emoji[title='Off to dentist']"));
+        assert.notOk(exists(".user-status-message"));
       },
     }
   );

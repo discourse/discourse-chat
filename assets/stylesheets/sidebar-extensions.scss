@@ -135,43 +135,21 @@
   }
 }
 
-.has-sidebar-page.chat-enabled {
-  .sidebar-container .channels-list {
-    padding-bottom: 0;
-    .chat-channel-divider {
-      padding-right: 0;
-    }
-  }
-  .sidebar-section-chat-channels {
-    .select-kit-header:hover svg.d-icon {
-      color: var(--primary-medium);
-    }
-    a.sidebar-section-link {
-      width: calc(var(--d-sidebar-width) - 20px);
-    }
-  }
+.chat-enabled {
   .sidebar-section-link-suffix.icon {
-    align-items: center;
-    display: flex;
-    margin-left: 0.5em;
-    svg {
-      width: 0.75em;
-      height: 0.75em;
-    }
     &.urgent svg {
       color: $success;
     }
+
     &.unread svg {
       color: var(--tertiary-med-or-tertiary);
     }
   }
+
   .sidebar-section-chat-dms {
     .sidebar-section-link-prefix.text {
       margin-right: 0.75em;
       width: 1em;
-    }
-    a.sidebar-section-link {
-      width: calc(var(--d-sidebar-width) - 3em);
     }
   }
 
@@ -182,7 +160,6 @@
 
     &.active .prefix-image {
       box-shadow: 0px 0px 0px 1px var(--success);
-      border-color: var(--secondary);
     }
   }
 }

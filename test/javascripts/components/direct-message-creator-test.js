@@ -145,4 +145,23 @@ module("Discourse Chat | Component | direct-message-creator", function (hooks) {
       assert.ok(exists("li.user[data-username='hawk']"));
     },
   });
+
+  componentTest("shows user status", {
+    template: hbs`{{direct-message-creator channel=channel chat=chat}}`,
+
+    beforeEach() {
+      const userWithStatus = {
+        username: "hawk",
+        status: { emoji: "tooth", description: "off to dentist" },
+      };
+      const chat = mockChat(this, { users: [userWithStatus] });
+      this.set("chat", chat);
+      this.set("channel", createDirectMessageChannelDraft());
+    },
+
+    async test(assert) {
+      await fillIn(".filter-usernames", "hawk");
+      assert.ok(exists(".user-status-message"));
+    },
+  });
 });

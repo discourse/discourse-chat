@@ -302,6 +302,31 @@ describe DiscourseChat::ChatChannelFetcher do
         subject.secured_direct_message_channels(user1.id, memberships, guardian).map(&:id),
       ).not_to include(direct_message_channel1.id)
     end
+
+    it "includes the unread count based on mute settings for the user's channel membership" do
+      membership = Fabricate(
+        :user_chat_channel_membership_for_dm,
+        chat_channel: direct_message_channel1,
+        user: user1,
+        following: true,
+      )
+      DirectMessageUser.create!(direct_message_channel: dm_channel1, user: user1)
+      DirectMessageUser.create!(direct_message_channel: dm_channel1, user: user2)
+
+      Fabricate(:chat_message, user: user2, chat_channel: direct_message_channel1)
+      Fabricate(:chat_message, user: user2, chat_channel: direct_message_channel1)
+      resolved_memberships = memberships
+
+      subject.secured_direct_message_channels(user1.id, resolved_memberships, guardian)
+      target_membership = resolved_memberships.find { |mem| mem.chat_channel_id == direct_message_channel1.id }
+      expect(target_membership.unread_count).to eq(2)
+
+      resolved_memberships = memberships
+      target_membership = resolved_memberships.find { |mem| mem.chat_channel_id == direct_message_channel1.id }
+      target_membership.update!(muted: true)
+      subject.secured_direct_message_channels(user1.id, resolved_memberships, guardian)
+      expect(target_membership.unread_count).to eq(0)
+    end
   end
 
   describe ".find_with_access_check" do

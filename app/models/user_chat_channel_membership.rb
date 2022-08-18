@@ -16,8 +16,6 @@ class UserChatChannelMembership < ActiveRecord::Base
 
   enum join_mode: { manual: 0, automatic: 1 }
 
-  validate :changes_for_direct_message_channels
-
   class << self
     def enforce_automatic_channel_memberships(channel)
       Jobs.enqueue(:auto_manage_channel_memberships, chat_channel_id: channel.id)
@@ -30,18 +28,6 @@ class UserChatChannelMembership < ActiveRecord::Base
         starts_at: user.id,
         ends_at: user.id,
       )
-    end
-  end
-
-  private
-
-  def changes_for_direct_message_channels
-    needs_validation =
-      VALIDATED_ATTRS.any? { |attr| changed_attribute_names_to_save.include?(attr.to_s) }
-    if needs_validation && chat_channel.direct_message_channel?
-      errors.add(:muted) if muted
-      errors.add(:desktop_notification_level) if desktop_notification_level.to_sym != :always
-      errors.add(:mobile_notification_level) if mobile_notification_level.to_sym != :always
     end
   end
 end

@@ -58,7 +58,7 @@ module(
       },
     });
 
-    componentTest("saving desktop notifications", {
+    componentTest("saving mobile notifications", {
       template: hbs`{{chat-channel-settings-view channel=channel}}`,
 
       beforeEach() {
@@ -121,8 +121,8 @@ module(
   function (hooks) {
     setupRenderingTest(hooks);
 
-    componentTest("notification settings", {
-      template: hbs`{{chat-channel-settings-view channel=channel chat=chat}}`,
+    componentTest("saving desktop notifications", {
+      template: hbs`{{chat-channel-settings-view channel=channel}}`,
 
       beforeEach() {
         this.set(
@@ -134,13 +134,89 @@ module(
       },
 
       async test(assert) {
-        assert.notOk(
-          exists(".channel-settings-view__desktop-notification-level-selector")
+        pretender.put(
+          `/chat/api/chat_channels/${this.channel.id}/notifications_settings.json`,
+          () => {
+            return [
+              200,
+              { "Content-Type": "application/json" },
+              membershipFixture(this.channel.id),
+            ];
+          }
         );
-        assert.notOk(
-          exists(".channel-settings-view__mobile-notification-level-selector")
+
+        const sk = selectKit(
+          ".channel-settings-view__desktop-notification-level-selector"
         );
-        assert.notOk(exists(".channel-settings-view__muted-selector"));
+        await sk.expand();
+        await sk.selectRowByValue("mention");
+
+        assert.equal(sk.header().value(), "mention");
+      },
+    });
+
+    componentTest("saving mobile notifications", {
+      template: hbs`{{chat-channel-settings-view channel=channel}}`,
+
+      beforeEach() {
+        this.set(
+          "channel",
+          fabricators.chatChannel({
+            chatable_type: CHATABLE_TYPES.directMessageChannel,
+          })
+        );
+      },
+      async test(assert) {
+        pretender.put(
+          `/chat/api/chat_channels/${this.channel.id}/notifications_settings.json`,
+          () => {
+            return [
+              200,
+              { "Content-Type": "application/json" },
+              membershipFixture(this.channel.id),
+            ];
+          }
+        );
+
+        const sk = selectKit(
+          ".channel-settings-view__mobile-notification-level-selector"
+        );
+        await sk.expand();
+        await sk.selectRowByValue("mention");
+
+        assert.equal(sk.header().value(), "mention");
+      },
+    });
+
+    componentTest("muted", {
+      template: hbs`{{chat-channel-settings-view channel=channel}}`,
+
+      beforeEach() {
+        this.set(
+          "channel",
+          fabricators.chatChannel({
+            chatable_type: CHATABLE_TYPES.directMessageChannel,
+          })
+        );
+      },
+
+      async test(assert) {
+        pretender.put(
+          `/chat/api/chat_channels/${this.channel.id}/notifications_settings.json`,
+          () => {
+            return [
+              200,
+              { "Content-Type": "application/json" },
+              membershipFixture(this.channel.id, { muted: true }),
+            ];
+          }
+        );
+
+        const sk = selectKit(".channel-settings-view__muted-selector");
+        await sk.expand();
+        await sk.selectRowByName("Off");
+
+        assert.equal(sk.header().value(), "false");
       },
     });
   }

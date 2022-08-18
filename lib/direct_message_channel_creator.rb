@@ -23,27 +23,40 @@ module DiscourseChat::DirectMessageChannelCreator
 
   private
 
-  # TODO (martin) Do this in a single query instead of using AR in a loop
   def self.update_memberships(target_users, chat_channel_id)
-    target_users.each do |user|
-      membership =
-        UserChatChannelMembership.find_or_initialize_by(
-          user_id: user.id,
-          chat_channel_id: chat_channel_id,
-        )
+    sql_params = {
+      user_ids: target_users.map(&:id),
+      chat_channel_id: chat_channel_id,
+      always_notification_level: UserChatChannelMembership::NOTIFICATION_LEVELS[:always],
+    }
 
-      if membership.new_record?
-        membership.last_read_message_id = nil
-        membership.desktop_notification_level =
-          UserChatChannelMembership::NOTIFICATION_LEVELS[:always]
-        membership.mobile_notification_level =
-          UserChatChannelMembership::NOTIFICATION_LEVELS[:always]
-        membership.muted = false
-      end
+    DB.exec(<<~SQL, sql_params)
+      UPDATE user_chat_channel_memberships
+      SET following = true
+      WHERE user_id IN (:user_ids) AND chat_channel_id = :chat_channel_id;
 
-      membership.following = true
-      membership.save!
-    end
+      INSERT INTO user_chat_channel_memberships(
+        user_id,
+        chat_channel_id,
+        muted,
+        following,
+        desktop_notification_level,
+        mobile_notification_level,
+        created_at,
+        updated_at
+      )
+      VALUES(
+        unnest(array[:user_ids]),
+        :chat_channel_id,
+        false,
+        true,
+        :always_notification_level,
+        :always_notification_level,
+        NOW(),
+        NOW()
+      )
+      ON CONFLICT (user_id, chat_channel_id) DO NOTHING;
+    SQL
   end
 
   def self.ensure_actor_can_communicate!(acting_user, target_users)

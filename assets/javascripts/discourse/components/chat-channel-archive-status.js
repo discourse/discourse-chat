@@ -1,4 +1,5 @@
 import Component from "@ember/component";
+import { htmlSafe } from "@ember/template";
 import I18n from "I18n";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { ajax } from "discourse/lib/ajax";
@@ -17,11 +18,13 @@ export default Component.extend({
     "channel.archive_failed"
   )
   channelArchiveFailedMessage() {
-    return I18n.t("chat.channel_status.archive_failed", {
-      completed: this.channel.archived_messages,
-      total: this.channel.total_messages,
-      topic_url: this._getTopicUrl(),
-    });
+    return htmlSafe(
+      I18n.t("chat.channel_status.archive_failed", {
+        completed: this.channel.archived_messages,
+        total: this.channel.total_messages,
+        topic_url: this._getTopicUrl(),
+      })
+    );
   },
 
   @discourseComputed(
@@ -31,9 +34,11 @@ export default Component.extend({
     "channel.archive_completed"
   )
   channelArchiveCompletedMessage() {
-    return I18n.t("chat.channel_status.archive_completed", {
-      topic_url: this._getTopicUrl(),
-    });
+    return htmlSafe(
+      I18n.t("chat.channel_status.archive_completed", {
+        topic_url: this._getTopicUrl(),
+      })
+    );
   },
 
   @action

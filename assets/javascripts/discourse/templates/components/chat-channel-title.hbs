@@ -36,7 +36,7 @@
     <div class="chat-channel-title is-category">
       <span
         class="chat-channel-title__category-badge"
-        style={{html-safe (concat "color: #" channel.chatable.color)}}
+        style={{this.channelColorStyle}}
       >
         {{d-icon "hashtag"}}
         {{#if channel.chatable.read_restricted}}

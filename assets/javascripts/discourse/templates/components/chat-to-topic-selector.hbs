@@ -34,7 +34,7 @@
   </div>
 
   {{#if newTopic}}
-    <p>{{html-safe newTopicInstruction}}</p>
+    <p>{{newTopicInstruction}}</p>
 
     <form>
       <label for="split-topic-name">
@@ -64,14 +64,14 @@
   {{/if}}
 
   {{#if existingTopic}}
-    <p>{{html-safe existingTopicInstruction}}</p>
+    <p>{{existingTopicInstruction}}</p>
     <form>
       {{choose-topic selectedTopicId=selectedTopicId}}
     </form>
   {{/if}}
 
   {{#if (and allowNewMessage newMessage)}}
-    <p>{{html-safe newMessageInstruction}}</p>
+    <p>{{newMessageInstruction}}</p>
 
     <form>
       <label for="split-message-title">

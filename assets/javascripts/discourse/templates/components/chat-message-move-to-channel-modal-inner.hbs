@@ -3,15 +3,7 @@
     id="chat-message-move-to-channel-modal-inner"
     class="chat-message-move-to-channel-modal-inner"
   >
-    <p>
-      {{html-safe
-        (i18n
-          "chat.move_to_channel.instructions"
-          channelTitle=sourceChannel.title
-          count=selectedMessageCount
-        )
-      }}
-    </p>
+    <p>{{this.instructionsText}}</p>
   </div>
 
   {{chat-channel-chooser
@@ -32,9 +24,5 @@
     id="chat-confirm-move-messages-to-channel"
   }}
 
-  {{d-button
-    label="cancel"
-    class="btn-flat"
-    action=(route-action "closeModal")
-  }}
+  {{d-button label="cancel" class="btn-flat" action=this.closeModal}}
 </div>

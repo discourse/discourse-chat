@@ -1,8 +1,8 @@
 import bootbox from "bootbox";
+import { escapeExpression } from "discourse/lib/utilities";
 import Controller from "@ember/controller";
 import ChatApi from "discourse/plugins/discourse-chat/discourse/lib/chat-api";
 import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
-import escape from "discourse-common/lib/escape";
 import I18n from "I18n";
 import ModalFunctionality from "discourse/mixins/modal-functionality";
 import { ajax } from "discourse/lib/ajax";
@@ -10,13 +10,13 @@ import { action, computed } from "@ember/object";
 import { gt, notEmpty } from "@ember/object/computed";
 import { inject as service } from "@ember/service";
 import { isBlank } from "@ember/utils";
+import { htmlSafe } from "@ember/template";
 
-const DEFAULT_HINT = I18n.t(
-  "chat.create_channel.choose_category.default_hint",
-  {
+const DEFAULT_HINT = htmlSafe(
+  I18n.t("chat.create_channel.choose_category.default_hint", {
     link: "/categories",
     category: "category",
-  }
+  })
 );
 
 export default class CreateChannelController extends Controller.extend(
@@ -98,8 +98,8 @@ export default class CreateChannelController extends Controller.extend(
         "autoJoinWarning",
         I18n.t(`chat.create_channel.auto_join_users.${warningTranslationKey}`, {
           members_count: catPermissions.members_count,
-          group_1: allowedGroups[0],
-          group_2: allowedGroups[1],
+          group_1: escapeExpression(allowedGroups[0]),
+          group_2: escapeExpression(allowedGroups[1]),
           count: allowedGroups.length,
         })
       );
@@ -107,7 +107,7 @@ export default class CreateChannelController extends Controller.extend(
       this.set(
         "autoJoinWarning",
         I18n.t(`chat.create_channel.auto_join_users.public_category_warning`, {
-          category: escape(category.name),
+          category: escapeExpression(category.name),
         })
       );
     }
@@ -120,18 +120,19 @@ export default class CreateChannelController extends Controller.extend(
       return ChatApi.categoryPermissions(category.id).then((catPermissions) => {
         this._updateAutoJoinConfirmWarning(category, catPermissions);
         const allowedGroups = catPermissions.allowed_groups;
-
         const translationKey =
           allowedGroups.length < 3 ? "hint_groups" : "hint_multiple_groups";
 
         this.set(
           "categoryPermissionsHint",
-          I18n.t(`chat.create_channel.choose_category.${translationKey}`, {
-            link: `/c/${escape(fullSlug)}/edit/security`,
-            hint_1: allowedGroups[0],
-            hint_2: allowedGroups[1],
-            count: allowedGroups.length,
-          })
+          htmlSafe(
+            I18n.t(`chat.create_channel.choose_category.${translationKey}`, {
+              link: `/c/${escapeExpression(fullSlug)}/edit/security`,
+              hint_1: escapeExpression(allowedGroups[0]),
+              hint_2: escapeExpression(allowedGroups[1]),
+              count: allowedGroups.length,
+            })
+          )
         );
       });
     } else {

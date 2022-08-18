@@ -6,7 +6,7 @@ import { bind } from "discourse-common/utils/decorators";
 import { tracked } from "@glimmer/tracking";
 import showModal from "discourse/lib/show-modal";
 import { DRAFT_CHANNEL_VIEW } from "discourse/plugins/discourse-chat/discourse/services/chat";
-import { avatarUrl } from "discourse/lib/utilities";
+import { avatarUrl, escapeExpression } from "discourse/lib/utilities";
 import { dasherize } from "@ember/string";
 import { emojiUnescape } from "discourse/lib/text";
 import { decorateUsername } from "discourse/helpers/decorate-username-selector";
@@ -66,7 +66,7 @@ export default {
               }
 
               get name() {
-                return dasherize(slugifyChannel(this.channel.title));
+                return dasherize(slugifyChannel(this.title));
               }
 
               get route() {
@@ -74,15 +74,15 @@ export default {
               }
 
               get models() {
-                return [this.channel.id, slugifyChannel(this.channel.title)];
+                return [this.channel.id, slugifyChannel(this.title)];
               }
 
               get title() {
-                return this.channel.title;
+                return escapeExpression(this.channel.title);
               }
 
               get text() {
-                return htmlSafe(emojiUnescape(this.channel.title));
+                return htmlSafe(emojiUnescape(this.title));
               }
 
               get prefixType() {
@@ -229,7 +229,7 @@ export default {
             }
 
             get name() {
-              return dasherize(this.channel.title);
+              return dasherize(this.title);
             }
 
             get route() {
@@ -237,11 +237,11 @@ export default {
             }
 
             get models() {
-              return [this.channel.id, slugifyChannel(this.channel.title)];
+              return [this.channel.id, slugifyChannel(this.title)];
             }
 
             get title() {
-              return this.channel.title;
+              return escapeExpression(this.channel.title);
             }
 
             get oneOnOneMessage() {
@@ -249,9 +249,13 @@ export default {
             }
 
             get text() {
-              const username = this.channel.title.replaceAll("@", "");
+              const username = this.title.replaceAll("@", "");
               if (this.oneOnOneMessage) {
-                return htmlSafe(`${username} ${decorateUsername(username)}`);
+                return htmlSafe(
+                  `${escapeExpression(username)} ${decorateUsername(
+                    escapeExpression(username)
+                  )}`
+                );
               } else {
                 return username;
               }

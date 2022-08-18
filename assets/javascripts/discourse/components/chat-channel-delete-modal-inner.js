@@ -7,6 +7,8 @@ import { ajax } from "discourse/lib/ajax";
 import { inject as service } from "@ember/service";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import discourseLater from "discourse-common/lib/later";
+import { htmlSafe } from "@ember/template";
+import { escapeExpression } from "discourse/lib/utilities";
 
 export default Component.extend({
   chat: service(),
@@ -25,8 +27,8 @@ export default Component.extend({
 
     if (
       isEmpty(channelNameConfirmation) ||
-      channelNameConfirmation.toLowerCase() !==
-        this.chatChannel.title.toLowerCase()
+      escapeExpression(channelNameConfirmation).toLowerCase() !==
+        this.escapedTitle.toLowerCase()
     ) {
       return true;
     }
@@ -54,5 +56,19 @@ export default Component.extend({
       })
       .catch(popupAjaxError)
       .finally(() => this.set("deleting", false));
+  },
+
+  @discourseComputed()
+  instructionsText() {
+    return htmlSafe(
+      I18n.t("chat.channel_delete.instructions", {
+        name: this.escapedTitle,
+      })
+    );
+  },
+
+  @discourseComputed()
+  escapedTitle() {
+    return escapeExpression(this.chatChannel.title);
   },
 });

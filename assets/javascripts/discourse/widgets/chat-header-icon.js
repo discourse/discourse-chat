@@ -65,7 +65,11 @@ export default createWidget("header-chat-link", {
       return;
     }
 
-    if (this.chat.sidebarActive || this.fullPageChat.isPreferred) {
+    if (
+      this.chat.sidebarActive ||
+      this.site.mobileView ||
+      this.fullPageChat.isPreferred
+    ) {
       this.fullPageChat.isPreferred = true;
       return this.router.transitionTo("chat");
     } else {

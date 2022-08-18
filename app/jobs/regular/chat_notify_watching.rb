@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 module Jobs
-  # TODO (martin) A spec for this whole class.
   class ChatNotifyWatching < ::Jobs::Base
     def execute(args = {})
       @chat_message =

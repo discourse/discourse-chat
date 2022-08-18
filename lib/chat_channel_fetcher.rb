@@ -156,12 +156,7 @@ module DiscourseChat::ChatChannelFetcher
               data["chat_message_id"] > (membership.last_read_message_id || 0)
           end
 
-        # direct message channels cannot be muted, so we always need the unread count
-        if channel.direct_message_channel?
-          membership.unread_count = unread_counts_per_channel[channel.id]
-        else
-          membership.unread_count = unread_counts_per_channel[channel.id] if !membership.muted
-        end
+        membership.unread_count = unread_counts_per_channel[channel.id] if !membership.muted
       end
     end
   end

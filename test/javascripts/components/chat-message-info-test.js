@@ -106,9 +106,7 @@ module("Discourse Chat | Component | chat-message-info", function (hooks) {
     },
 
     async test(assert) {
-      assert.ok(
-        exists(".chat-message-info__status .emoji[title='off to dentist']")
-      );
+      assert.ok(exists(".chat-message-info__status .user-status-message"));
     },
   });
 

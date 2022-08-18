@@ -232,9 +232,7 @@ export default Component.extend({
           }
           this.setMessageProps(messages, fetchingFromLastRead);
         })
-        .catch((err) => {
-          throw err;
-        })
+        .catch(this._handle429Errors)
         .finally(() => {
           if (this._selfDeleted || this.chatChannel.id !== channel.id) {
             return;
@@ -304,9 +302,7 @@ export default Component.extend({
 
         return messages;
       })
-      .catch((err) => {
-        throw err;
-      })
+      .catch(this._handle429Errors)
       .finally(() => {
         if (this._selfDeleted) {
           return;
@@ -1487,5 +1483,13 @@ export default Component.extend({
       this.set("stickyScroll", true);
       this._stickScrollToBottom();
     });
+  },
+
+  _handle429Errors(error) {
+    if (error?.jqXHR.status === 429) {
+      popupAjaxError(error);
+    } else {
+      throw error;
+    }
   },
 });

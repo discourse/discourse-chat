@@ -11,7 +11,7 @@ describe DiscourseChat::DirectMessageChannelCreator do
     fab!(:dm_chat_channel) do
       Fabricate(
         :chat_channel,
-        chatable: Fabricate(:direct_message_channel, users: [user_1, user_2]),
+        chatable: Fabricate(:direct_message_channel, users: [user_1, user_2, user_3]),
       )
     end
     fab!(:own_chat_channel) do
@@ -21,15 +21,34 @@ describe DiscourseChat::DirectMessageChannelCreator do
     it "doesn't create a new chat channel" do
       existing_channel = nil
       expect {
-        existing_channel = subject.create!(acting_user: user_1, target_users: [user_1, user_2])
+        existing_channel = subject.create!(acting_user: user_1, target_users: [user_1, user_2, user_3])
       }.to change { ChatChannel.count }.by(0)
       expect(existing_channel).to eq(dm_chat_channel)
     end
 
-    it "creates UserChatChannelMembership records and sets their notification levels" do
-      expect { subject.create!(acting_user: user_1, target_users: [user_1, user_2]) }.to change {
+    it "creates UserChatChannelMembership records and sets their notification levels, and updates existing membership to following" do
+      Fabricate(
+        :user_chat_channel_membership,
+        user: user_2,
+        chat_channel: dm_chat_channel,
+        following: false,
+        muted: true,
+        desktop_notification_level: UserChatChannelMembership::NOTIFICATION_LEVELS[:never],
+        mobile_notification_level: UserChatChannelMembership::NOTIFICATION_LEVELS[:never],
+      )
+      Fabricate(
+        :user_chat_channel_membership,
+        user: user_3,
+        chat_channel: dm_chat_channel,
+        following: false,
+        muted: true,
+        desktop_notification_level: UserChatChannelMembership::NOTIFICATION_LEVELS[:never],
+        mobile_notification_level: UserChatChannelMembership::NOTIFICATION_LEVELS[:never],
+      )
+
+      expect { subject.create!(acting_user: user_1, target_users: [user_1, user_2, user_3]) }.to change {
         UserChatChannelMembership.count
-      }.by(2)
+      }.by(1)
 
       user_1_membership =
         UserChatChannelMembership.find_by(user_id: user_1.id, chat_channel_id: dm_chat_channel)
@@ -38,18 +57,34 @@ describe DiscourseChat::DirectMessageChannelCreator do
       expect(user_1_membership.mobile_notification_level).to eq("always")
       expect(user_1_membership.muted).to eq(false)
       expect(user_1_membership.following).to eq(true)
+
+      user_2_membership =
+        UserChatChannelMembership.find_by(user_id: user_2.id, chat_channel_id: dm_chat_channel)
+      expect(user_2_membership.last_read_message_id).to eq(nil)
+      expect(user_2_membership.desktop_notification_level).to eq("never")
+      expect(user_2_membership.mobile_notification_level).to eq("never")
+      expect(user_2_membership.muted).to eq(true)
+      expect(user_2_membership.following).to eq(true)
+
+      user_3_membership =
+        UserChatChannelMembership.find_by(user_id: user_3.id, chat_channel_id: dm_chat_channel)
+      expect(user_3_membership.last_read_message_id).to eq(nil)
+      expect(user_3_membership.desktop_notification_level).to eq("never")
+      expect(user_3_membership.mobile_notification_level).to eq("never")
+      expect(user_3_membership.muted).to eq(true)
+      expect(user_3_membership.following).to eq(true)
     end
 
     it "publishes the new DM channel message bus message for each user" do
       messages =
         MessageBus
-          .track_publish { subject.create!(acting_user: user_1, target_users: [user_1, user_2]) }
+          .track_publish { subject.create!(acting_user: user_1, target_users: [user_1, user_2, user_3]) }
           .filter { |m| m.channel == "/chat/new-channel" }
 
-      expect(messages.count).to eq(2)
+      expect(messages.count).to eq(3)
       expect(messages.first[:data]).to be_kind_of(Hash)
       expect(messages.map { |m| m.dig(:data, :chat_channel, :id) }).to eq(
-        [dm_chat_channel.id, dm_chat_channel.id],
+        [dm_chat_channel.id, dm_chat_channel.id, dm_chat_channel.id],
       )
     end
 
@@ -130,7 +165,7 @@ describe DiscourseChat::DirectMessageChannelCreator do
           subject.create!(acting_user: user_1, target_users: [user_1, user_2, user_3])
         }.to raise_error(
           DiscourseChat::DirectMessageChannelCreator::NotAllowed,
-          I18n.t("chat.errors.not_accepting_dms", username: user_2.username)
+          I18n.t("chat.errors.not_accepting_dms", username: user_2.username),
         )
       end
 
@@ -139,7 +174,7 @@ describe DiscourseChat::DirectMessageChannelCreator do
           subject.create!(acting_user: user_2, target_users: [user_2, user_1, user_3])
         }.to raise_error(
           DiscourseChat::DirectMessageChannelCreator::NotAllowed,
-          I18n.t("chat.errors.actor_ignoring_target_user", username: user_1.username)
+          I18n.t("chat.errors.actor_ignoring_target_user", username: user_1.username),
         )
       end
     end
@@ -152,7 +187,7 @@ describe DiscourseChat::DirectMessageChannelCreator do
           subject.create!(acting_user: user_1, target_users: [user_1, user_2, user_3])
         }.to raise_error(
           DiscourseChat::DirectMessageChannelCreator::NotAllowed,
-          I18n.t("chat.errors.not_accepting_dms", username: user_2.username)
+          I18n.t("chat.errors.not_accepting_dms", username: user_2.username),
         )
       end
 
@@ -161,7 +196,7 @@ describe DiscourseChat::DirectMessageChannelCreator do
           subject.create!(acting_user: user_2, target_users: [user_2, user_1, user_3])
         }.to raise_error(
           DiscourseChat::DirectMessageChannelCreator::NotAllowed,
-          I18n.t("chat.errors.actor_muting_target_user", username: user_1.username)
+          I18n.t("chat.errors.actor_muting_target_user", username: user_1.username),
         )
       end
     end
@@ -174,7 +209,7 @@ describe DiscourseChat::DirectMessageChannelCreator do
           subject.create!(acting_user: user_1, target_users: [user_1, user_2, user_3])
         }.to raise_error(
           DiscourseChat::DirectMessageChannelCreator::NotAllowed,
-          I18n.t("chat.errors.not_accepting_dms", username: user_2.username)
+          I18n.t("chat.errors.not_accepting_dms", username: user_2.username),
         )
       end
 
@@ -183,7 +218,7 @@ describe DiscourseChat::DirectMessageChannelCreator do
           subject.create!(acting_user: user_2, target_users: [user_2, user_1, user_3])
         }.to raise_error(
           DiscourseChat::DirectMessageChannelCreator::NotAllowed,
-          I18n.t("chat.errors.actor_disallowed_dms")
+          I18n.t("chat.errors.actor_disallowed_dms"),
         )
       end
     end
@@ -209,7 +244,7 @@ describe DiscourseChat::DirectMessageChannelCreator do
           subject.create!(acting_user: user_2, target_users: [user_2, user_1, user_3])
         }.to raise_error(
           DiscourseChat::DirectMessageChannelCreator::NotAllowed,
-          I18n.t("chat.errors.actor_preventing_target_user_from_dm", username: user_1.username)
+          I18n.t("chat.errors.actor_preventing_target_user_from_dm", username: user_1.username),
         )
       end
     end

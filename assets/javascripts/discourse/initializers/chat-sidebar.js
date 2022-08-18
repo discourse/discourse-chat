@@ -6,10 +6,11 @@ import { bind } from "discourse-common/utils/decorators";
 import { tracked } from "@glimmer/tracking";
 import showModal from "discourse/lib/show-modal";
 import { DRAFT_CHANNEL_VIEW } from "discourse/plugins/discourse-chat/discourse/services/chat";
-import { avatarUrl } from "discourse/lib/utilities";
+import { avatarUrl, escapeExpression } from "discourse/lib/utilities";
 import { dasherize } from "@ember/string";
 import { emojiUnescape } from "discourse/lib/text";
 import { decorateUsername } from "discourse/helpers/decorate-username-selector";
+import { until } from "discourse/lib/formatter";
 import { inject as service } from "@ember/service";
 
 export default {
@@ -251,7 +252,11 @@ export default {
             get text() {
               const username = this.channel.title.replaceAll("@", "");
               if (this.oneOnOneMessage) {
-                return htmlSafe(`${username} ${decorateUsername(username)}`);
+                const status = this.channel.chatable.users[0].status;
+                const statusHtml = status ? this._userStatusHtml(status) : "";
+                return htmlSafe(
+                  `${username}${statusHtml} ${decorateUsername(username)}`
+                );
               } else {
                 return username;
               }
@@ -318,6 +323,29 @@ export default {
 
             get hoverTitle() {
               return I18n.t("chat.direct_messages.leave");
+            }
+
+            _userStatusHtml(status) {
+              const emoji = escapeExpression(`:${status.emoji}:`);
+              const title = this._userStatusTitle(status);
+              return `<span class="user-status">${emojiUnescape(emoji, {
+                title,
+              })}</span>`;
+            }
+
+            _userStatusTitle(status) {
+              let title = `${status.description}`;
+
+              if (status.ends_at) {
+                const untilFormatted = until(
+                  status.ends_at,
+                  this.chatService.currentUser.timezone,
+                  this.chatService.currentUser.locale
+                );
+                title += ` ${untilFormatted}`;
+              }
+
+              return title;
             }
           };
 

@@ -227,6 +227,17 @@ export default {
               super(...arguments);
               this.channel = channel;
               this.chatService = chatService;
+
+              if (this.oneOnOneMessage) {
+                this.channel.chatable.users[0].trackStatus();
+              }
+            }
+
+            @bind
+            willDestroy() {
+              if (this.oneOnOneMessage) {
+                this.channel.chatable.users[0].stopTrackingStatus();
+              }
             }
 
             get name() {
@@ -252,7 +263,7 @@ export default {
             get text() {
               const username = this.channel.title.replaceAll("@", "");
               if (this.oneOnOneMessage) {
-                const status = this.channel.chatable.users[0].status;
+                const status = this.channel.chatable.users[0].get("status");
                 const statusHtml = status ? this._userStatusHtml(status) : "";
                 return htmlSafe(
                   `${username}${statusHtml} ${decorateUsername(username)}`

@@ -1,6 +1,6 @@
 import RESTAdapter from "discourse/adapters/rest";
 
-export default RESTAdapter.extend({
+export default class ChatMessage extends RESTAdapter {
   pathFor(store, type, findArgs) {
     if (findArgs.targetMessageId) {
       return `/chat/lookup/${findArgs.targetMessageId}.json`;
@@ -14,9 +14,9 @@ export default RESTAdapter.extend({
       path += `&direction=${findArgs.direction}`;
     }
     return path;
-  },
+  }
 
   apiNameFor() {
     return "chat-message";
-  },
-});
+  }
+}

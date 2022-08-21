@@ -8,6 +8,8 @@ export default class ChatChannelInfoIndexController extends Controller {
   @service chat;
   @service chatChannelInfoRouteOriginManager;
 
+  @reads("router.currentRoute.localName") tab;
+
   @computed("model.chatChannel.{membershipsCount,status}")
   get tabs() {
     const tabs = [];
@@ -27,8 +29,6 @@ export default class ChatChannelInfoIndexController extends Controller {
 
     return tabs;
   }
-
-  @reads("router.currentRoute.localName") tab;
 
   @action
   switchChannel(channel) {

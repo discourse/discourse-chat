@@ -19,18 +19,15 @@ const EMAIL_FREQUENCY_OPTIONS = [
   { name: I18n.t(`chat.email_frequency.when_away`), value: "when_away" },
 ];
 
-export default Controller.extend({
-  init() {
-    this._super(...arguments);
-    this.set("emailFrequencyOptions", EMAIL_FREQUENCY_OPTIONS);
-  },
+export default class PreferencesChatController extends Controller {
+  emailFrequencyOptions = EMAIL_FREQUENCY_OPTIONS;
 
   @discourseComputed
   chatSounds() {
     return Object.keys(CHAT_SOUNDS).map((value) => {
       return { name: I18n.t(`chat.sounds.${value}`), value };
     });
-  },
+  }
 
   @action
   onChangeChatSound(sound) {
@@ -39,7 +36,7 @@ export default Controller.extend({
       audio.play();
     }
     this.model.set("user_option.chat_sound", sound);
-  },
+  }
 
   @action
   save() {
@@ -53,5 +50,5 @@ export default Controller.extend({
         }
       })
       .catch(popupAjaxError);
-  },
-});
+  }
+}

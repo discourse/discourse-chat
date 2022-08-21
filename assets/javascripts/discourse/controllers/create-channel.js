@@ -2,12 +2,11 @@ import bootbox from "bootbox";
 import Controller from "@ember/controller";
 import ChatApi from "discourse/plugins/discourse-chat/discourse/lib/chat-api";
 import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
-import discourseComputed from "discourse-common/utils/decorators";
 import escape from "discourse-common/lib/escape";
 import I18n from "I18n";
 import ModalFunctionality from "discourse/mixins/modal-functionality";
 import { ajax } from "discourse/lib/ajax";
-import { action } from "@ember/object";
+import { action, computed } from "@ember/object";
 import { gt, notEmpty } from "@ember/object/computed";
 import { inject as service } from "@ember/service";
 import { isBlank } from "@ember/utils";
@@ -20,56 +19,30 @@ const DEFAULT_HINT = I18n.t(
   }
 );
 
-export default Controller.extend(ModalFunctionality, {
-  chat: service(),
-  category: null,
-  categoryId: null,
-  name: "",
-  description: "",
-  categorySelected: notEmpty("category"),
-  categoryPermissionsHint: null,
-  autoJoinAvailable: gt("siteSettings.max_chat_auto_joined_users", 0),
-  autoJoinUsers: null,
-  autoJoinWarning: "",
+export default class CreateChannelController extends Controller.extend(
+  ModalFunctionality
+) {
+  @service chat;
+
+  category = null;
+  categoryId = null;
+  name = "";
+  description = "";
+  categoryPermissionsHint = null;
+  autoJoinUsers = null;
+  autoJoinWarning = "";
+
+  @notEmpty("category") categorySelected;
+  @gt("siteSettings.max_chat_auto_joined_users", 0) autoJoinAvailable;
+
+  @computed("categorySelected", "name")
+  get createDisabled() {
+    return !this.categorySelected || isBlank(this.name);
+  }
 
   onShow() {
     this.set("categoryPermissionsHint", DEFAULT_HINT);
-  },
-
-  @discourseComputed("categorySelected", "name")
-  createDisabled(categorySelected, name) {
-    return !this.categorySelected || isBlank(name);
-  },
-
-  @action
-  onCategoryChange(categoryId) {
-    let category = categoryId
-      ? this.site.categories.findBy("id", categoryId)
-      : null;
-    this._updatePermissionsHint(category);
-    this.setProperties({
-      categoryId,
-      category,
-      name: category?.name || "",
-    });
-  },
-
-  @action
-  create() {
-    if (this.createDisabled) {
-      return;
-    }
-
-    if (this.autoJoinUsers) {
-      bootbox.confirm(this.autoJoinWarning, (confirmed) => {
-        if (confirmed) {
-          this._createChannel();
-        }
-      });
-    } else {
-      this._createChannel();
-    }
-  },
+  }
 
   onClose() {
     this.setProperties({
@@ -80,7 +53,7 @@ export default Controller.extend(ModalFunctionality, {
       categoryPermissionsHint: DEFAULT_HINT,
       autoJoinWarning: "",
     });
-  },
+  }
 
   _createChannel() {
     const data = {
@@ -102,7 +75,7 @@ export default Controller.extend(ModalFunctionality, {
       .catch((e) => {
         this.flash(e.jqXHR.responseJSON.errors[0], "error");
       });
-  },
+  }
 
   _buildCategorySlug(category) {
     const parent = category.parentCategory;
@@ -112,7 +85,7 @@ export default Controller.extend(ModalFunctionality, {
     } else {
       return category.slug;
     }
-  },
+  }
 
   _updateAutoJoinConfirmWarning(category, catPermissions) {
     const allowedGroups = catPermissions.allowed_groups;
@@ -138,7 +111,7 @@ export default Controller.extend(ModalFunctionality, {
         })
       );
     }
-  },
+  }
 
   _updatePermissionsHint(category) {
     if (category) {
@@ -165,5 +138,35 @@ export default Controller.extend(ModalFunctionality, {
       this.set("categoryPermissionsHint", DEFAULT_HINT);
       this.set("autoJoinWarning", "");
     }
-  },
-});
+  }
+
+  @action
+  onCategoryChange(categoryId) {
+    let category = categoryId
+      ? this.site.categories.findBy("id", categoryId)
+      : null;
+    this._updatePermissionsHint(category);
+    this.setProperties({
+      categoryId,
+      category,
+      name: category?.name || "",
+    });
+  }
+
+  @action
+  create() {
+    if (this.createDisabled) {
+      return;
+    }
+
+    if (this.autoJoinUsers) {
+      bootbox.confirm(this.autoJoinWarning, (confirmed) => {
+        if (confirmed) {
+          this._createChannel();
+        }
+      });
+    } else {
+      this._createChannel();
+    }
+  }
+}

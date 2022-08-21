@@ -4,22 +4,24 @@ import discourseComputed from "discourse-common/utils/decorators";
 import ModalFunctionality from "discourse/mixins/modal-functionality";
 import ChatApi from "discourse/plugins/discourse-chat/discourse/lib/chat-api";
 
-export default Controller.extend(ModalFunctionality, {
+export default class ChatChannelEditDescriptionController extends Controller.extend(
+  ModalFunctionality
+) {
+  editedDescription = "";
+
   @discourseComputed("model.description", "editedDescription")
   isSaveDisabled(description, editedDescription) {
     return description === editedDescription || editedDescription?.length > 280;
-  },
-
-  editedDescription: "",
+  }
 
   onShow() {
     this.set("editedDescription", this.model.description || "");
-  },
+  }
 
   onClose() {
     this.set("editedDescription", "");
     this.clearFlash();
-  },
+  }
 
   @action
   onSaveChatChannelDescription() {
@@ -35,11 +37,11 @@ export default Controller.extend(ModalFunctionality, {
           this.flash(event.jqXHR.responseJSON.errors.join("\n"), "error");
         }
       });
-  },
+  }
 
   @action
   onChangeChatChannelDescription(description) {
     this.clearFlash();
     this.set("editedDescription", description);
-  },
-});
+  }
+}

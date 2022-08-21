@@ -164,16 +164,14 @@ describe ChatMessageBookmarkable do
       guardian = Guardian.new(user)
       expect {
         subject.validate_before_create(guardian, bookmark1.bookmarkable)
-      }.not_to raise_error(Discourse::InvalidAccess)
+      }.not_to raise_error
     end
 
     it "raises InvalidAccess if the chat message is deleted" do
       expect { subject.validate_before_create(guardian, bookmark1.bookmarkable) }.not_to raise_error
       bookmark1.bookmarkable.trash!
       bookmark1.reload
-      expect { subject.validate_before_create(guardian, bookmark1.bookmarkable) }.to raise_error(
-        Discourse::InvalidAccess,
-      )
+      expect { subject.validate_before_create(guardian, bookmark1.bookmarkable) }.to raise_error(Discourse::InvalidAccess)
     end
   end
 

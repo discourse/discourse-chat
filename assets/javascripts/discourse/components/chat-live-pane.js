@@ -189,11 +189,7 @@ export default Component.extend({
   @bind
   onScrollHandler(event) {
     cancel(this.stickyScrollTimer);
-    this.stickyScrollTimer = discourseDebounce(
-      this,
-      () => this.onScroll(event),
-      100
-    );
+    this.stickyScrollTimer = discourseDebounce(this, this.onScroll, event, 100);
   },
 
   @bind
@@ -211,7 +207,7 @@ export default Component.extend({
     this.set("loading", true);
 
     return this.chat.loadCookFunction(this.site.categories).then((cook) => {
-      if (this.isDestroying || this.isDestroyed) {
+      if (this._selfDeleted) {
         return;
       }
 
@@ -321,6 +317,10 @@ export default Component.extend({
   },
 
   fillPaneAttempt(meta) {
+    if (this._selfDeleted) {
+      return;
+    }
+
     // safeguard
     if (this.messages.length > 200) {
       return;
@@ -1340,6 +1340,10 @@ export default Component.extend({
 
   @bind
   debouncedOnHoverMessage(message, options = {}) {
+    if (this._selfDeleted) {
+      return;
+    }
+
     if (this.site.mobileView && options.desktopOnly) {
       return;
     }
@@ -1424,7 +1428,7 @@ export default Component.extend({
     }
   },
 
-  // This fix prevents a white screen when appending/preprending new content
+  // This fix prevents a white screen when appending/prepending new content
   // simulating a noop scroll forces to display the new content
   // technically it should be possible to fix it with css and using
   // -webkit-transform: translate3d(0,0,0); on the right elements

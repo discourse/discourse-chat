@@ -28,33 +28,35 @@ const CHAT_ONLINE_OPTIONS = {
   browserHiddenTime: 300000, // Or the browser has been in the background for 5 minutes
 };
 
-export default Service.extend({
-  appEvents: service(),
-  chatNotificationManager: service(),
-  fullPageChat: service(),
-  presence: service(),
-  router: service(),
-  site: service(),
+export default class Chat extends Service {
+  @service appEvents;
+  @service chatNotificationManager;
+  @service fullPageChat;
+  @service presence;
+  @service router;
+  @service site;
 
-  activeChannel: null,
-  allChannels: null,
-  cook: null,
-  directMessageChannels: null,
-  hasFetchedChannels: false,
-  hasUnreadMessages: false,
-  idToTitleMap: null,
-  lastUserTrackingMessageId: null,
-  messageId: null,
-  presenceChannel: null,
-  publicChannels: null,
-  sidebarActive: false,
-  unreadUrgentCount: null,
-  _chatOpen: false,
-  _fetchingChannels: null,
-  directMessagesLimit: 20,
+  activeChannel = null;
+  allChannels = null;
+  cook = null;
+  directMessageChannels = null;
+  hasFetchedChannels = false;
+  hasUnreadMessages = false;
+  idToTitleMap = null;
+  lastUserTrackingMessageId = null;
+  messageId = null;
+  presenceChannel = null;
+  publicChannels = null;
+  sidebarActive = false;
+  unreadUrgentCount = null;
+  directMessagesLimit = 20;
+  _chatOpen = false;
+  _fetchingChannels = null;
+
+  @and("currentUser.has_chat_enabled", "siteSettings.chat_enabled") userCanChat;
 
   init() {
-    this._super(...arguments);
+    super.init(...arguments);
 
     if (this.userCanChat) {
       this.set("allChannels", []);
@@ -71,12 +73,10 @@ export default Service.extend({
         });
       }
     }
-  },
-
-  userCanChat: and("currentUser.has_chat_enabled", "siteSettings.chat_enabled"),
+  }
 
   willDestroy() {
-    this._super(...arguments);
+    super.willDestroy(...arguments);
 
     if (this.userCanChat) {
       this.set("allChannels", null);
@@ -86,11 +86,11 @@ export default Service.extend({
       this._unsubscribeFromChannelStatusChange();
       this._unsubscribeFromAllChatChannels();
     }
-  },
+  }
 
   setActiveChannel(channel) {
     this.set("activeChannel", channel);
-  },
+  }
 
   loadCookFunction(categories) {
     if (this.cook) {
@@ -114,16 +114,16 @@ export default Service.extend({
         );
       });
     });
-  },
+  }
 
   get chatOpen() {
     return this._chatOpen;
-  },
+  }
 
   set chatOpen(status) {
     this.set("_chatOpen", status);
     this.updatePresence();
-  },
+  }
 
   updatePresence() {
     next(() => {
@@ -133,24 +133,24 @@ export default Service.extend({
         this.presenceChannel.leave();
       }
     });
-  },
+  }
 
   getDocumentTitleCount() {
     return this.chatNotificationManager.shouldCountChatInDocTitle()
       ? this.unreadUrgentCount
       : 0;
-  },
+  }
 
   _channelObject() {
     return {
       publicChannels: this.publicChannels,
       directMessageChannels: this.directMessageChannels,
     };
-  },
+  }
 
   truncateDirectMessageChannels(channels) {
     return channels.slice(0, this.directMessagesLimit);
-  },
+  }
 
   getActiveChannel() {
     let channelId;
@@ -163,7 +163,7 @@ export default Service.extend({
     return channelId
       ? this.allChannels.findBy("id", parseInt(channelId, 10))
       : null;
-  },
+  }
 
   async getChannelsWithFilter(filter, opts = { excludeActiveChannel: true }) {
     let sortedChannels = this.allChannels.sort((a, b) => {
@@ -203,7 +203,7 @@ export default Service.extend({
         return channel.title.toLowerCase().includes(lowerCasedFilter);
       }
     });
-  },
+  }
 
   switchChannelUpOrDown(direction) {
     const { activeChannel } = this;
@@ -245,7 +245,7 @@ export default Service.extend({
     if (nextChannel.id !== activeChannel.id) {
       return this.openChannel(nextChannel);
     }
-  },
+  }
 
   getChannels() {
     return new Promise((resolve) => {
@@ -261,13 +261,13 @@ export default Service.extend({
         .then(() => resolve(this._channelObject()))
         .finally(() => (this._fetchingChannels = null));
     });
-  },
+  }
 
   forceRefreshChannels() {
     this.set("hasFetchedChannels", false);
     this._unsubscribeFromAllChatChannels();
     return this.getChannels();
-  },
+  }
 
   refreshTrackingState() {
     return ajax("/chat/chat_channels.json")
@@ -284,7 +284,7 @@ export default Service.extend({
       .finally(() => {
         this.userChatChannelTrackingStateChanged();
       });
-  },
+  }
 
   _refreshChannels() {
     return new Promise((resolve) => {
@@ -325,14 +325,14 @@ export default Service.extend({
         resolve(this._channelObject());
       });
     });
-  },
+  }
 
   reSortDirectMessageChannels() {
     this.set(
       "directMessageChannels",
       this.sortDirectMessageChannels(this.directMessageChannels)
     );
-  },
+  }
 
   async getChannelBy(key, value) {
     return this.getChannels().then(() => {
@@ -341,12 +341,12 @@ export default Service.extend({
       }
       return (this.allChannels || []).findBy(key, value);
     });
-  },
+  }
 
   searchPossibleDirectMessageUsers(options) {
     // TODO: implement a chat specific user search function
     return userSearch(options);
-  },
+  }
 
   getIdealFirstChannelId() {
     // When user opens chat we need to give them the 'best' channel when they enter.
@@ -402,11 +402,11 @@ export default Service.extend({
         dmChannel
       );
     });
-  },
+  }
 
   sortPublicChannels(channels) {
     return channels.sort((a, b) => a.title.localeCompare(b.title));
-  },
+  }
 
   sortDirectMessageChannels(channels) {
     return channels.sort((a, b) => {
@@ -423,7 +423,7 @@ export default Service.extend({
         return unreadCountA > unreadCountB ? -1 : 1;
       }
     });
-  },
+  }
 
   getIdealFirstChannelIdAndTitle() {
     return this.getIdealFirstChannelId().then((channelId) => {
@@ -435,7 +435,7 @@ export default Service.extend({
         title: this.idToTitleMap[channelId],
       };
     });
-  },
+  }
 
   async openChannelAtMessage(channelId, messageId = null) {
     let channel = await this.getChannelBy("id", channelId);
@@ -452,11 +452,11 @@ export default Service.extend({
         { queryParams }
       );
     });
-  },
+  }
 
   async openChannel(channel) {
     return this._openFoundChannelAtMessage(channel);
-  },
+  }
 
   async _openFoundChannelAtMessage(channel, messageId = null) {
     if (
@@ -487,7 +487,7 @@ export default Service.extend({
       this._fireOpenFloatAppEvent(channel, messageId);
       return Promise.resolve();
     }
-  },
+  }
 
   _fireOpenFloatAppEvent(channel, messageId = null) {
     messageId
@@ -497,11 +497,11 @@ export default Service.extend({
           messageId
         )
       : this.appEvents.trigger("chat:open-channel", channel);
-  },
+  }
 
   _fireOpenMessageAppEvent(messageId) {
     this.appEvents.trigger("chat-live-pane:highlight-message", messageId);
-  },
+  }
 
   async startTrackingChannel(channel) {
     let existingChannel = await this.getChannelBy("id", channel.id);
@@ -534,7 +534,7 @@ export default Service.extend({
     }
     this.appEvents.trigger("chat:refresh-channels");
     return newChannel;
-  },
+  }
 
   async stopTrackingChannel(channel) {
     return this.getChannelBy("id", channel.id).then((existingChannel) => {
@@ -542,7 +542,7 @@ export default Service.extend({
         return this.forceRefreshChannels();
       }
     });
-  },
+  }
 
   _subscribeToChannelEdits() {
     this.messageBus.subscribe("/chat/channel-edits", (busData) => {
@@ -555,7 +555,7 @@ export default Service.extend({
         }
       });
     });
-  },
+  }
 
   _subscribeToChannelStatusChange() {
     this.messageBus.subscribe("/chat/channel-status", (busData) => {
@@ -582,25 +582,25 @@ export default Service.extend({
         this.appEvents.trigger("chat:refresh-channel", channel.id);
       });
     });
-  },
+  }
 
   _unsubscribeFromChannelStatusChange() {
     this.messageBus.unsubscribe("/chat/channel-status");
-  },
+  }
 
   _unsubscribeFromChannelEdits() {
     this.messageBus.unsubscribe("/chat/channel-edits");
-  },
+  }
 
   _subscribeToNewChannelUpdates() {
     this.messageBus.subscribe("/chat/new-channel", (busData) => {
       this.startTrackingChannel(ChatChannel.create(busData.chat_channel));
     });
-  },
+  }
 
   _unsubscribeFromNewDmChannelUpdates() {
     this.messageBus.unsubscribe("/chat/new-channel");
-  },
+  }
 
   _subscribeToSingleUpdateChannel(channel) {
     if (channel.current_user_membership.muted) {
@@ -641,7 +641,7 @@ export default Service.extend({
         this.reSortDirectMessageChannels();
       }
     });
-  },
+  }
 
   _subscribeToMentionChannel(channel) {
     this.messageBus.subscribe(`/chat/${channel.id}/new-mentions`, () => {
@@ -655,14 +655,14 @@ export default Service.extend({
         this.userChatChannelTrackingStateChanged();
       }
     });
-  },
+  }
 
   async followChannel(channel) {
     return ChatApi.followChatChannel(channel).then(() => {
       this.startTrackingChannel(channel);
       this._subscribeToSingleUpdateChannel(channel);
     });
-  },
+  }
 
   async unfollowChannel(channel) {
     return ChatApi.unfollowChatChannel(channel).then(() => {
@@ -673,20 +673,20 @@ export default Service.extend({
         this.router.transitionTo("chat");
       }
     });
-  },
+  }
 
   _unsubscribeFromAllChatChannels() {
     (this.allChannels || []).forEach((channel) => {
       this._unsubscribeFromChatChannel(channel);
     });
-  },
+  }
 
   _unsubscribeFromChatChannel(channel) {
     this.messageBus.unsubscribe(`/chat/${channel.id}/new-messages`);
     if (!channel.isDirectMessageChannel) {
       this.messageBus.unsubscribe(`/chat/${channel.id}/new-mentions`);
     }
-  },
+  }
 
   _subscribeToUserTrackingChannel() {
     this.messageBus.subscribe(
@@ -716,13 +716,13 @@ export default Service.extend({
         }
       }
     );
-  },
+  }
 
   _unsubscribeFromUserTrackingChannel() {
     this.messageBus.unsubscribe(
       `/chat/user-tracking-state/${this.currentUser.id}`
     );
-  },
+  }
 
   resetTrackingStateForChannel(channelId) {
     const trackingState =
@@ -731,12 +731,12 @@ export default Service.extend({
       trackingState.set("unread_count", 0);
       this.userChatChannelTrackingStateChanged();
     }
-  },
+  }
 
   userChatChannelTrackingStateChanged() {
     this._recalculateUnreadMessages();
     this.appEvents.trigger("chat:user-tracking-state-changed");
-  },
+  }
 
   _recalculateUnreadMessages() {
     let unreadPublicCount = 0;
@@ -774,7 +774,7 @@ export default Service.extend({
       this.appEvents.trigger("chat:rerender-header");
       this.appEvents.trigger("notifications:changed");
     }
-  },
+  }
 
   processChannel(channel) {
     channel = ChatChannel.create(channel);
@@ -782,7 +782,7 @@ export default Service.extend({
     this._updateUserTrackingState(channel);
     this.allChannels.push(channel);
     return channel;
-  },
+  }
 
   _updateUserTrackingState(channel) {
     this.currentUser.chat_channel_tracking_state[channel.id] =
@@ -793,7 +793,7 @@ export default Service.extend({
         unread_mentions: channel.current_user_membership.unread_mentions,
         chat_message_id: channel.current_user_membership.last_read_message_id,
       });
-  },
+  }
 
   upsertDmChannelForUser(channel, user) {
     const usernames = (channel.chatable.users || [])
@@ -802,7 +802,7 @@ export default Service.extend({
       .uniq();
 
     return this.upsertDmChannelForUsernames(usernames);
-  },
+  }
 
   // @param {array} usernames - The usernames to create or fetch the direct message
   // channel for. The current user will automatically be included in the channel
@@ -818,7 +818,7 @@ export default Service.extend({
         return chatChannel;
       })
       .catch(popupAjaxError);
-  },
+  }
 
   // @param {array} usernames - The usernames to fetch the direct message
   // channel for. The current user will automatically be included as a
@@ -827,7 +827,7 @@ export default Service.extend({
     return ajax("/chat/direct_messages.json", {
       data: { usernames: usernames.uniq().join(",") },
     });
-  },
+  }
 
   _saveDraft(channelId, draft) {
     const data = { chat_channel_id: channelId };
@@ -836,7 +836,7 @@ export default Service.extend({
     }
 
     ajax("/chat/drafts", { type: "POST", data });
-  },
+  }
 
   setDraftForChannel(channel, draft) {
     if (
@@ -850,7 +850,7 @@ export default Service.extend({
     }
 
     discourseDebounce(this, this._saveDraft, channel.id, draft, 2000);
-  },
+  }
 
   getDraftForChannel(channelId) {
     return (
@@ -860,11 +860,11 @@ export default Service.extend({
         replyToMsg: null,
       }
     );
-  },
+  }
 
   addToolbarButton() {
     deprecated(
       "Use the new chat API `api.registerChatComposerButton` instead of `chat.addToolbarButton`"
     );
-  },
-});
+  }
+}

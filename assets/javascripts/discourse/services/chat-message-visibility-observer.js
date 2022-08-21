@@ -1,28 +1,19 @@
 import Service from "@ember/service";
 
 export default class ChatMessageVisibilityObserver extends Service {
-  constructor() {
-    super(...arguments);
-    this._setup();
-  }
+  observer = new IntersectionObserver(this._observerCallback, {
+    root: document,
+    rootMargin: "-10px",
+  });
 
-  _setup() {
-    const options = {
-      root: document,
-      rootMargin: "-10px",
-    };
-
-    this.observer = new IntersectionObserver(this._observerCallback, options);
+  willDestroy() {
+    this.observer.disconnect();
   }
 
   _observerCallback(entries) {
     entries.forEach((entry) => {
       entry.target.dataset.visible = entry.isIntersecting;
     });
-  }
-
-  willDestroy() {
-    this.observer.disconnect();
   }
 
   observe(element) {

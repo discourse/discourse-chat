@@ -9,25 +9,25 @@ const EMOJI_SELECTED_DIVERSITY = "emojiSelectedDiversity";
 const TRACKED_EMOJIS = 15;
 const STORE_NAMESPACE = "discourse_chat_emoji_reaction_";
 
-export default Service.extend({
-  init() {
-    this._super(...arguments);
+export default class ChatEmojiReactionStore extends Service {
+  store = new KeyValueStore(STORE_NAMESPACE);
 
-    this.store = new KeyValueStore(STORE_NAMESPACE);
+  constructor() {
+    super(...arguments);
 
     if (!this.store.getObject(EMOJI_USAGE)) {
       this.favorites = [];
     }
-  },
+  }
 
   get diversity() {
     return this.store.getObject(EMOJI_SELECTED_DIVERSITY) || 1;
-  },
+  }
 
   set diversity(value) {
     this.store.setObject({ key: EMOJI_SELECTED_DIVERSITY, value: value || 1 });
     this.notifyPropertyChange("diversity");
-  },
+  }
 
   get favorites() {
     if (this.store.getObject(EMOJI_USAGE).length < 1) {
@@ -41,12 +41,12 @@ export default Service.extend({
       }
     }
     return this.store.getObject(EMOJI_USAGE) || [];
-  },
+  }
 
   set favorites(value) {
     this.store.setObject({ key: EMOJI_USAGE, value: value || [] });
     this.notifyPropertyChange("favorites");
-  },
+  }
 
   track(code) {
     const normalizedCode = code.replace(/(^:)|(:$)/g, "");
@@ -54,11 +54,11 @@ export default Service.extend({
     recent.unshift(normalizedCode);
     recent.length = Math.min(recent.length, TRACKED_EMOJIS);
     this.favorites = recent;
-  },
+  }
 
   reset() {
     const store = new KeyValueStore(STORE_NAMESPACE);
     store.setObject({ key: EMOJI_USAGE, value: [] });
     store.setObject({ key: EMOJI_SELECTED_DIVERSITY, value: 1 });
-  },
-});
+  }
+}

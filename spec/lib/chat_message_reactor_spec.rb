@@ -81,7 +81,7 @@ describe DiscourseChat::ChatMessageReactor do
           react_action: :add,
           emoji: ":#{Emoji.all.first.name}:",
         )
-      }.to_not raise_error(Discourse::InvalidAccess)
+      }.to_not raise_error
     end
   end
 

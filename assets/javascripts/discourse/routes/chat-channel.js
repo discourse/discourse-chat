@@ -6,8 +6,8 @@ import { inject as service } from "@ember/service";
 import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import slugifyChannel from "discourse/plugins/discourse-chat/discourse/lib/slugify-channel";
 
-export default DiscourseRoute.extend({
-  chat: service(),
+export default class ChatChannelRoute extends DiscourseRoute {
+  @service chat;
 
   async model(params) {
     let [chatChannel, channels] = await Promise.all([
@@ -19,7 +19,7 @@ export default DiscourseRoute.extend({
       chatChannel,
       channels,
     });
-  },
+  }
 
   async getChannel(id) {
     let channel = await this.chat.getChannelBy("id", id);
@@ -27,13 +27,13 @@ export default DiscourseRoute.extend({
       channel = await this.getChannelFromServer(id);
     }
     return channel;
-  },
+  }
 
   async getChannelFromServer(id) {
     return ajax(`/chat/chat_channels/${id}`)
       .then((response) => ChatChannel.create(response))
       .catch(() => this.replaceWith("/404"));
-  },
+  }
 
   afterModel(model) {
     this.appEvents.trigger("chat:navigated-to-full-page");
@@ -44,20 +44,20 @@ export default DiscourseRoute.extend({
     if (queryParams?.channelTitle !== slug) {
       this.replaceWith("chat.channel.index", model.chatChannel.id, slug);
     }
-  },
+  }
 
   setupController(controller) {
-    this._super(...arguments);
+    super.setupController(...arguments);
 
     if (controller.messageId) {
       this.chat.set("messageId", controller.messageId);
       this.controller.set("messageId", null);
     }
-  },
+  }
 
   @action
   refreshModel(forceRefetchChannel = false) {
     this.forceRefetchChannel = forceRefetchChannel;
     this.refresh();
-  },
-});
+  }
+}

@@ -5,14 +5,14 @@ import { inject as service } from "@ember/service";
 import { scrollTop } from "discourse/mixins/scroll-top";
 import { schedule } from "@ember/runloop";
 
-export default DiscourseRoute.extend({
-  chat: service(),
-  router: service(),
-  fullPageChat: service(),
+export default class ChatRoute extends DiscourseRoute {
+  @service chat;
+  @service router;
+  @service fullPageChat;
 
   titleToken() {
     return I18n.t("chat.title_capitalized");
-  },
+  }
 
   beforeModel(transition) {
     if (!this.chat.userCanChat) {
@@ -20,7 +20,7 @@ export default DiscourseRoute.extend({
     }
 
     this.fullPageChat.enter(transition?.from);
-  },
+  }
 
   activate() {
     this.chat.updatePresence();
@@ -29,7 +29,7 @@ export default DiscourseRoute.extend({
       document.body.classList.add("has-full-page-chat");
       document.documentElement.classList.add("has-full-page-chat");
     });
-  },
+  }
 
   deactivate() {
     this.fullPageChat.exit();
@@ -39,5 +39,5 @@ export default DiscourseRoute.extend({
       document.documentElement.classList.remove("has-full-page-chat");
       scrollTop();
     });
-  },
-});
+  }
+}

@@ -3,7 +3,7 @@ import EmberObject from "@ember/object";
 import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import { ajax } from "discourse/lib/ajax";
 
-export default DiscourseRoute.extend({
+export default class AdminPluginsChatRoute extends DiscourseRoute {
   model() {
     if (!this.currentUser?.admin) {
       return { model: null };
@@ -20,5 +20,5 @@ export default DiscourseRoute.extend({
 
       return model;
     });
-  },
-});
+  }
+}

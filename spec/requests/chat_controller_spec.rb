@@ -1304,10 +1304,10 @@ RSpec.describe DiscourseChat::ChatController do
 
   describe "#move_messages_to_channel" do
     fab!(:message_to_move1) do
-      Fabricate(:chat_message, chat_channel: chat_channel, message: "some cool message")
+      Fabricate(:chat_message, chat_channel: chat_channel, message: "some cool message", created_at: 2.minutes.ago)
     end
     fab!(:message_to_move2) do
-      Fabricate(:chat_message, chat_channel: chat_channel, message: "and another thing")
+      Fabricate(:chat_message, chat_channel: chat_channel, message: "and another thing", created_at: 1.minute.ago)
     end
     fab!(:destination_channel) { Fabricate(:chat_channel) }
     let(:message_ids) { [message_to_move1.id, message_to_move2.id] }

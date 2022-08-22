@@ -52,7 +52,6 @@ export default Component.extend({
     );
     this.appEvents.on("chat:refresh-channels", this, "refreshChannels");
     this.appEvents.on("composer:closed", this, "_checkSize");
-    this.appEvents.on("composer:will-close", this, "_setSizeWillClose");
     this.appEvents.on("composer:opened", this, "_checkSize");
     this.appEvents.on("composer:resized", this, "_checkSize");
     this.appEvents.on("composer:div-resizing", this, "_dynamicCheckSize");
@@ -88,7 +87,6 @@ export default Component.extend({
       );
       this.appEvents.off("chat:refresh-channels", this, "refreshChannels");
       this.appEvents.off("composer:closed", this, "_checkSize");
-      this.appEvents.off("composer:will-close", this, "_setSizeWillClose");
       this.appEvents.off("composer:opened", this, "_checkSize");
       this.appEvents.off("composer:resized", this, "_checkSize");
       this.appEvents.off("composer:div-resizing", this, "_dynamicCheckSize");
@@ -178,12 +176,6 @@ export default Component.extend({
     }
 
     const composer = document.getElementById("reply-control");
-
-    this.element.style.setProperty(
-      "--composer-height",
-      composer.offsetHeight + "px"
-    );
-
     const composerIsClosed = composer.classList.contains("closed");
     const minRightMargin = 15;
     this.element.style.setProperty(
@@ -192,14 +184,6 @@ export default Component.extend({
         ? minRightMargin
         : Math.max(minRightMargin, composer.offsetLeft)) + "px"
     );
-  },
-
-  _setSizeWillClose() {
-    if (!this.element || this.isDestroying || this.isDestroyed) {
-      return;
-    }
-    // if overridden by themes, will get fixed up in the composer:closed event
-    this.element.style.setProperty("--composer-height", "40px");
   },
 
   @discourseComputed(

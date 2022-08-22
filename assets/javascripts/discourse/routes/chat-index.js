@@ -1,8 +1,8 @@
 import DiscourseRoute from "discourse/routes/discourse";
 import { inject as service } from "@ember/service";
 
-export default DiscourseRoute.extend({
-  chat: service(),
+export default class ChatIndexRoute extends DiscourseRoute {
+  @service chat;
 
   beforeModel() {
     if (this.site.mobileView) {
@@ -21,7 +21,7 @@ export default DiscourseRoute.extend({
         return this.transitionTo("chat.browse");
       }
     });
-  },
+  }
 
   model() {
     if (this.site.mobileView) {
@@ -34,5 +34,5 @@ export default DiscourseRoute.extend({
         }
       });
     }
-  },
-});
+  }
+}

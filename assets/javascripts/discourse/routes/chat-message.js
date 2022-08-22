@@ -3,8 +3,8 @@ import { ajax } from "discourse/lib/ajax";
 import { defaultHomepage } from "discourse/lib/utilities";
 import { inject as service } from "@ember/service";
 
-export default DiscourseRoute.extend({
-  chat: service(),
+export default class ChatMessageRoute extends DiscourseRoute {
+  @service chat;
 
   async model(params) {
     return ajax(`/chat/message/${params.messageId}.json`)
@@ -19,11 +19,11 @@ export default DiscourseRoute.extend({
         );
       })
       .catch(() => this.replaceWith("/404"));
-  },
+  }
 
   beforeModel() {
     if (!this.chat.userCanChat) {
       return this.transitionTo(`discovery.${defaultHomepage()}`);
     }
-  },
-});
+  }
+}

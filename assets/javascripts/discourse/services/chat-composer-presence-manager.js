@@ -12,6 +12,10 @@ const KEEP_ALIVE_DURATION_SECONDS = 10;
 export default class ChatComposerPresenceManager extends Service {
   @service presence;
 
+  willDestroy() {
+    this.leave();
+  }
+
   notifyState(chatChannelId, replying) {
     if (!replying) {
       this.leave();
@@ -48,9 +52,5 @@ export default class ChatComposerPresenceManager extends Service {
     let channelName = `${CHAT_PRESENCE_CHANNEL_PREFIX}/${chatChannelId}`;
     this._presentChannel = this.presence.getChannel(channelName);
     this._presentChannel.enter();
-  }
-
-  willDestroy() {
-    this.leave();
   }
 }

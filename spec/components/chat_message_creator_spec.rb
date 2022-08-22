@@ -8,6 +8,7 @@ describe DiscourseChat::ChatMessageCreator do
   fab!(:user1) { Fabricate(:user, group_ids: [Group::AUTO_GROUPS[:everyone]]) }
   fab!(:user2) { Fabricate(:user) }
   fab!(:user3) { Fabricate(:user) }
+  fab!(:user4) { Fabricate(:user) }
   fab!(:admin_group) do
     Fabricate(
       :public_group,
@@ -231,15 +232,11 @@ describe DiscourseChat::ChatMessageCreator do
     end
 
     it "publishes inaccessible mentions when user isn't aren't a part of the channel" do
-      user3
-        .user_chat_channel_memberships
-        .where(chat_channel: public_chat_channel)
-        .update(following: false)
       ChatPublisher.expects(:publish_inaccessible_mentions).once
       DiscourseChat::ChatMessageCreator.create(
         chat_channel: public_chat_channel,
         user: admin1,
-        content: "hello @#{user3.username}",
+        content: "hello @#{user4.username}",
       )
     end
 

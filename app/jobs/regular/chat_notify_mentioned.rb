@@ -16,18 +16,19 @@ module Jobs
       @chat_channel = @chat_message.chat_channel
       @already_notified_user_ids = args[:already_notified_user_ids] || []
       user_ids_to_notify = args[:to_notify_ids_map] || {}
-
       user_ids_to_notify.each { |mention_type, ids| process_mentions(ids, mention_type.to_sym) }
     end
 
     private
 
     def get_memberships(user_ids)
-      UserChatChannelMembership.includes(:user).where(
-        user_id: (user_ids - @already_notified_user_ids),
-        chat_channel_id: @chat_message.chat_channel_id,
-        following: true,
-      )
+      query =
+        UserChatChannelMembership.includes(:user).where(
+          user_id: (user_ids - @already_notified_user_ids),
+          chat_channel_id: @chat_message.chat_channel_id,
+        )
+      query = query.where(following: true) if @chat_channel.public_channel?
+      query
     end
 
     def build_data_for(membership, identifier_type:)

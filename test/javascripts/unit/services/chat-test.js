@@ -5,6 +5,7 @@ import {
 } from "discourse/tests/helpers/qunit-helpers";
 import { settled } from "@ember/test-helpers";
 import { test } from "qunit";
+import fabricators from "../../helpers/fabricators";
 
 acceptance("Discourse Chat | Unit | Service | chat", function (needs) {
   needs.hooks.beforeEach(function () {
@@ -57,6 +58,18 @@ acceptance("Discourse Chat | Unit | Service | chat", function (needs) {
     assert.equal(
       this.currentUser.chat_channel_tracking_state[1].unread_count,
       2
+    );
+  });
+
+  test("attempts to track a non followed channel", async function (assert) {
+    this.currentUser.set("chat_channel_tracking_state", {});
+    const channel = fabricators.chatChannel();
+    await this.chatService.startTrackingChannel(channel);
+
+    assert.false(channel.current_user_membership.following);
+    assert.notOk(
+      this.currentUser.chat_channel_tracking_state[channel.id],
+      "it doesn’t track it"
     );
   });
 

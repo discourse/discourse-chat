@@ -14,13 +14,17 @@ module DiscourseChat::UserNotificationsExtension
         .joins(
           "INNER JOIN user_chat_channel_memberships uccm ON uccm.chat_channel_id = chat_channels.id",
         )
-        .where(uccm: { following: true, user_id: user.id })
-        .where(<<~SQL)
-          (cm.user_id = #{user.id} OR chat_channels.chatable_type = 'DirectMessageChannel') AND
+        .where(<<~SQL, user_id: user.id)
+          uccm.user_id = :user_id AND
           (uccm.last_read_message_id IS NULL OR chat_messages.id > uccm.last_read_message_id) AND
-          (uccm.last_unread_mention_when_emailed_id IS NULL OR chat_messages.id > uccm.last_unread_mention_when_emailed_id)
+          (uccm.last_unread_mention_when_emailed_id IS NULL OR chat_messages.id > uccm.last_unread_mention_when_emailed_id) AND
+          (
+            (cm.user_id = :user_id AND uccm.following IS true AND chat_channels.chatable_type = 'Category') OR
+            (chat_channels.chatable_type = 'DirectMessageChannel')
+          )
         SQL
         .to_a
+
     return if @messages.empty?
     @grouped_messages = @messages.group_by { |message| message.chat_channel }
     @grouped_messages =

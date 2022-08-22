@@ -43,14 +43,16 @@ class DiscourseChat::ChatMailer
       .joins("INNER JOIN chat_channels cc ON cc.id = uccm.chat_channel_id")
       .joins("INNER JOIN chat_messages c_msg ON c_msg.chat_channel_id = uccm.chat_channel_id")
       .joins("LEFT OUTER JOIN chat_mentions c_mentions ON c_mentions.chat_message_id = c_msg.id")
-      .where(uccm: { following: true })
       .where("c_msg.deleted_at IS NULL AND c_msg.user_id <> users.id")
       .where("c_msg.created_at > ?", 1.week.ago)
       .where(<<~SQL)
-          (c_mentions.user_id = uccm.user_id OR cc.chatable_type = 'DirectMessageChannel') AND
-          (uccm.last_read_message_id IS NULL OR c_msg.id > uccm.last_read_message_id) AND
-          (uccm.last_unread_mention_when_emailed_id IS NULL OR c_msg.id > uccm.last_unread_mention_when_emailed_id)
-        SQL
+        (uccm.last_read_message_id IS NULL OR c_msg.id > uccm.last_read_message_id) AND
+        (uccm.last_unread_mention_when_emailed_id IS NULL OR c_msg.id > uccm.last_unread_mention_when_emailed_id) AND
+        (
+          (uccm.user_id = c_mentions.user_id AND uccm.following IS true AND cc.chatable_type = 'Category') OR
+          (cc.chatable_type = 'DirectMessageChannel')
+        )
+      SQL
       .group("users.id, uccm.user_id")
   end
 end

@@ -504,6 +504,10 @@ export default class Chat extends Service {
   }
 
   async startTrackingChannel(channel) {
+    if (!channel.current_user_membership.following) {
+      return;
+    }
+
     let existingChannel = await this.getChannelBy("id", channel.id);
     if (existingChannel) {
       return existingChannel; // User is already tracking this channel. return!

@@ -21,12 +21,13 @@ describe DiscourseChat::DirectMessageChannelCreator do
     it "doesn't create a new chat channel" do
       existing_channel = nil
       expect {
-        existing_channel = subject.create!(acting_user: user_1, target_users: [user_1, user_2, user_3])
+        existing_channel =
+          subject.create!(acting_user: user_1, target_users: [user_1, user_2, user_3])
       }.to change { ChatChannel.count }.by(0)
       expect(existing_channel).to eq(dm_chat_channel)
     end
 
-    it "creates UserChatChannelMembership records and sets their notification levels, and updates existing membership to following" do
+    it "creates UserChatChannelMembership records and sets their notification levels, and only updates creator membership to following" do
       Fabricate(
         :user_chat_channel_membership,
         user: user_2,
@@ -46,9 +47,9 @@ describe DiscourseChat::DirectMessageChannelCreator do
         mobile_notification_level: UserChatChannelMembership::NOTIFICATION_LEVELS[:never],
       )
 
-      expect { subject.create!(acting_user: user_1, target_users: [user_1, user_2, user_3]) }.to change {
-        UserChatChannelMembership.count
-      }.by(1)
+      expect {
+        subject.create!(acting_user: user_1, target_users: [user_1, user_2, user_3])
+      }.to change { UserChatChannelMembership.count }.by(1)
 
       user_1_membership =
         UserChatChannelMembership.find_by(user_id: user_1.id, chat_channel_id: dm_chat_channel)
@@ -64,7 +65,7 @@ describe DiscourseChat::DirectMessageChannelCreator do
       expect(user_2_membership.desktop_notification_level).to eq("never")
       expect(user_2_membership.mobile_notification_level).to eq("never")
       expect(user_2_membership.muted).to eq(true)
-      expect(user_2_membership.following).to eq(true)
+      expect(user_2_membership.following).to eq(false)
 
       user_3_membership =
         UserChatChannelMembership.find_by(user_id: user_3.id, chat_channel_id: dm_chat_channel)
@@ -72,13 +73,15 @@ describe DiscourseChat::DirectMessageChannelCreator do
       expect(user_3_membership.desktop_notification_level).to eq("never")
       expect(user_3_membership.mobile_notification_level).to eq("never")
       expect(user_3_membership.muted).to eq(true)
-      expect(user_3_membership.following).to eq(true)
+      expect(user_3_membership.following).to eq(false)
     end
 
     it "publishes the new DM channel message bus message for each user" do
       messages =
         MessageBus
-          .track_publish { subject.create!(acting_user: user_1, target_users: [user_1, user_2, user_3]) }
+          .track_publish do
+            subject.create!(acting_user: user_1, target_users: [user_1, user_2, user_3])
+          end
           .filter { |m| m.channel == "/chat/new-channel" }
 
       expect(messages.count).to eq(3)

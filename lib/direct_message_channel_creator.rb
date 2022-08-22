@@ -15,7 +15,7 @@ module DiscourseChat::DirectMessageChannelCreator
       chat_channel = ChatChannel.create!(chatable: direct_messages_channel)
     end
 
-    update_memberships(target_users, chat_channel.id)
+    update_memberships(acting_user, target_users, chat_channel.id)
     ChatPublisher.publish_new_channel(chat_channel, target_users)
 
     chat_channel
@@ -23,18 +23,15 @@ module DiscourseChat::DirectMessageChannelCreator
 
   private
 
-  def self.update_memberships(target_users, chat_channel_id)
+  def self.update_memberships(acting_user, target_users, chat_channel_id)
     sql_params = {
+      acting_user_id: acting_user.id,
       user_ids: target_users.map(&:id),
       chat_channel_id: chat_channel_id,
       always_notification_level: UserChatChannelMembership::NOTIFICATION_LEVELS[:always],
     }
 
     DB.exec(<<~SQL, sql_params)
-      UPDATE user_chat_channel_memberships
-      SET following = true
-      WHERE user_id IN (:user_ids) AND chat_channel_id = :chat_channel_id;
-
       INSERT INTO user_chat_channel_memberships(
         user_id,
         chat_channel_id,
@@ -49,13 +46,17 @@ module DiscourseChat::DirectMessageChannelCreator
         unnest(array[:user_ids]),
         :chat_channel_id,
         false,
-        true,
+        false,
         :always_notification_level,
         :always_notification_level,
         NOW(),
         NOW()
       )
       ON CONFLICT (user_id, chat_channel_id) DO NOTHING;
+
+      UPDATE user_chat_channel_memberships
+      SET following = true
+      WHERE user_id = :acting_user_id AND chat_channel_id = :chat_channel_id;
     SQL
   end
 

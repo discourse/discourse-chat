@@ -1267,26 +1267,32 @@ acceptance(
       baseChatPretenders(server, helper);
       chatChannelPretender(server, helper);
 
+      const channel = {
+        chatable: {},
+        chatable_id: 88,
+        chatable_type: "Category",
+        chatable_url: null,
+        id: 88,
+        title: "Something",
+        last_message_sent_at: "2021-11-08T21:26:05.710Z",
+        current_user_membership: {
+          last_read_message_id: null,
+          unread_count: 0,
+          unread_mentions: 0,
+        },
+      };
+
       server.get("/chat/api/chat_channels.json", () => {
         return helper.response([fabricators.chatChannel()]);
       });
 
+      server.get("/chat/chat_channels/:id.json", () => {
+        return helper.response(channel);
+      });
+
       server.put("/chat/chat_channels", () => {
         return helper.response({
-          chat_channel: {
-            chatable: {},
-            chatable_id: 88,
-            chatable_type: "Category",
-            chatable_url: null,
-            id: 88,
-            title: "Something",
-            last_message_sent_at: "2021-11-08T21:26:05.710Z",
-            current_user_membership: {
-              last_read_message_id: null,
-              unread_count: 0,
-              unread_mentions: 0,
-            },
-          },
+          chat_channel: channel,
         });
       });
     });

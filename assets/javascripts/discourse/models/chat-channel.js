@@ -57,60 +57,43 @@ const READONLY_STATUSES = [
   CHANNEL_STATUSES.archived,
 ];
 
-const ChatChannel = RestModel.extend({
-  canModifyMessages(user) {
-    if (user.staff) {
-      return !STAFF_READONLY_STATUSES.includes(this.status);
-    }
-
-    return !READONLY_STATUSES.includes(this.status);
-  },
-
-  updateMembership(membership) {
-    this.current_user_membership.setProperties({
-      following: membership.following,
-      muted: membership.muted,
-      desktop_notification_level: membership.desktop_notification_level,
-      mobile_notification_level: membership.mobile_notification_level,
-    });
-  },
-
-  isDraft: false,
+export default class ChatChannel extends RestModel {
+  isDraft = false;
 
   @computed("chatable_type")
   get isDirectMessageChannel() {
     return this.chatable_type === CHATABLE_TYPES.directMessageChannel;
-  },
+  }
 
   @computed("chatable_type")
   get isCategoryChannel() {
     return this.chatable_type === CHATABLE_TYPES.categoryChannel;
-  },
+  }
 
   @computed("status")
   get isOpen() {
     return !this.status || this.status === CHANNEL_STATUSES.open;
-  },
+  }
 
   @computed("status")
   get isReadOnly() {
     return this.status === CHANNEL_STATUSES.readOnly;
-  },
+  }
 
   @computed("status")
   get isClosed() {
     return this.status === CHANNEL_STATUSES.closed;
-  },
+  }
 
   @computed("status")
   get isArchived() {
     return this.status === CHANNEL_STATUSES.archived;
-  },
+  }
 
   @computed("isArchived", "isOpen")
   get isJoinable() {
     return this.isOpen && !this.isArchived;
-  },
+  }
 
   @computed(
     "isDirectMessageChannel",
@@ -123,13 +106,30 @@ const ChatChannel = RestModel.extend({
     }
 
     return this.memberships_count;
-  },
+  }
 
   @computed("current_user_membership.following")
   get isFollowing() {
     return this.current_user_membership.following;
-  },
-});
+  }
+
+  canModifyMessages(user) {
+    if (user.staff) {
+      return !STAFF_READONLY_STATUSES.includes(this.status);
+    }
+
+    return !READONLY_STATUSES.includes(this.status);
+  }
+
+  updateMembership(membership) {
+    this.current_user_membership.setProperties({
+      following: membership.following,
+      muted: membership.muted,
+      desktop_notification_level: membership.desktop_notification_level,
+      mobile_notification_level: membership.mobile_notification_level,
+    });
+  }
+}
 
 ChatChannel.reopenClass({
   create(args) {
@@ -173,5 +173,3 @@ export function createDirectMessageChannelDraft() {
     },
   });
 }
-
-export default ChatChannel;

@@ -4,25 +4,27 @@ import discourseComputed from "discourse-common/utils/decorators";
 import ModalFunctionality from "discourse/mixins/modal-functionality";
 import ChatApi from "discourse/plugins/discourse-chat/discourse/lib/chat-api";
 
-export default Controller.extend(ModalFunctionality, {
+export default class ChatChannelEditTitleController extends Controller.extend(
+  ModalFunctionality
+) {
+  editedTitle = "";
+
   @discourseComputed("model.title", "editedTitle")
   isSaveDisabled(title, editedTitle) {
     return (
       title === editedTitle ||
       editedTitle?.length > this.siteSettings.max_topic_title_length
     );
-  },
-
-  editedTitle: "",
+  }
 
   onShow() {
     this.set("editedTitle", this.model.title || "");
-  },
+  }
 
   onClose() {
     this.set("editedTitle", "");
     this.clearFlash();
-  },
+  }
 
   @action
   onSaveChatChannelTitle() {
@@ -38,11 +40,11 @@ export default Controller.extend(ModalFunctionality, {
           this.flash(event.jqXHR.responseJSON.errors.join("\n"), "error");
         }
       });
-  },
+  }
 
   @action
   onChangeChatChannelTitle(title) {
     this.clearFlash();
     this.set("editedTitle", title);
-  },
-});
+  }
+}

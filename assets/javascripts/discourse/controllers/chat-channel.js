@@ -3,9 +3,9 @@ import { action } from "@ember/object";
 import { inject as service } from "@ember/service";
 
 export default class ChatChannelController extends Controller {
-  queryParams = ["messageId"];
-
   @service chat;
+
+  queryParams = ["messageId"];
 
   @action
   switchChannel(channel) {

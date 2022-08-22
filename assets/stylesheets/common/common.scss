@@ -880,7 +880,10 @@ html.has-full-page-chat {
     #main-outlet {
       display: flex;
       flex-direction: column;
-      max-height: calc(var(--chat-vh, 1vh) * 100 - var(--header-offset));
+      max-height: calc(
+        var(--chat-vh, 1vh) * 100 - var(--header-offset, 0px) -
+          var(--composer-height, 0px)
+      );
 
       .full-page-chat {
         height: 100%;
@@ -890,15 +893,6 @@ html.has-full-page-chat {
       #main-chat-outlet {
         min-height: 0;
       }
-    }
-  }
-
-  // make space for the composer so it doesn't overlay chat content
-  &.composer-open {
-    #main-outlet {
-      max-height: calc(
-        100vh - calc(var(--header-offset) + calc(var(--composer-height)))
-      );
     }
   }
 

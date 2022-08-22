@@ -37,6 +37,18 @@ export default class ChannelsList extends Component {
     }`;
   }
 
+  @computed(
+    "publicChannelsEmpty",
+    "currentUser.{staff,has_joinable_public_channels}"
+  )
+  get displayPublicChannels() {
+    return (
+      !this.publicChannelsEmpty ||
+      this.currentUser?.staff ||
+      this.currentUser?.has_joinable_public_channels
+    );
+  }
+
   @computed("inSidebar")
   get directMessageChannelClasses() {
     return `channels-list-container direct-message-channels ${

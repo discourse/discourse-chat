@@ -323,4 +323,49 @@ describe "discourse-chat" do
       expect(SiteSetting.chat_allow_uploads).to eq(true)
     end
   end
+
+  describe "current_user_serializer#has_joinable_public_channels" do
+    before do
+      SiteSetting.chat_enabled = true
+      SiteSetting.chat_allowed_groups = Group::AUTO_GROUPS[:everyone]
+    end
+
+    fab!(:user) { Fabricate(:user) }
+    let(:serializer) { CurrentUserSerializer.new(user, scope: Guardian.new(user)) }
+
+    context "when no channels exist" do
+      it "returns false" do
+        expect(serializer.has_joinable_public_channels).to eq(false)
+      end
+    end
+
+    context "when no joinable channel exist" do
+      fab!(:channel) { Fabricate(:chat_channel) }
+
+      before do
+        Fabricate(:user_chat_channel_membership, user: user, chat_channel: channel, following: true)
+      end
+
+      it "returns false" do
+        expect(serializer.has_joinable_public_channels).to eq(false)
+      end
+    end
+
+    context "when no public channel exist" do
+      fab!(:private_category) { Fabricate(:private_category, group: Fabricate(:group)) }
+      fab!(:private_channel) { Fabricate(:chat_channel, chatable: private_category) }
+
+      it "returns false" do
+        expect(serializer.has_joinable_public_channels).to eq(false)
+      end
+    end
+
+    context "when a joinable channel exists" do
+      fab!(:channel) { Fabricate(:chat_channel) }
+
+      it "returns true" do
+        expect(serializer.has_joinable_public_channels).to eq(true)
+      end
+    end
+  end
 end

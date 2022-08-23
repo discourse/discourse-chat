@@ -81,7 +81,9 @@ export default {
 
       const currentUser = api.getCurrentUser();
       if (currentUser?.chat_channels) {
-        this.chatService.setupWithCurrentUser(currentUser);
+        this.chatService.setupWithPreloadedChannels(currentUser.chat_channels);
+      } else {
+        this.chatService.getChannels();
       }
 
       const chatNotificationManager = container.lookup(

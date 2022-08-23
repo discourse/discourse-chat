@@ -75,9 +75,9 @@ export default class Chat extends Service {
     }
   }
 
-  setupWithCurrentUser(user) {
+  setupWithPreloadedChannels(channels) {
     this.currentUser.set("chat_channel_tracking_state", {});
-    this._processChannels(user.chat_channels || {});
+    this._processChannels(channels || {});
     this.userChatChannelTrackingStateChanged();
     this.appEvents.trigger("chat:refresh-channels");
   }

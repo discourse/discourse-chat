@@ -395,6 +395,22 @@ after_initialize do
 
   add_to_serializer(:current_user, :needs_dm_retention_reminder) { true }
 
+  add_to_serializer(:current_user, :has_joinable_public_channels) do
+    memberships = UserChatChannelMembership.where(user_id: self.scope.user.id)
+    DiscourseChat::ChatChannelFetcher.secured_public_channels(
+      self.scope,
+      memberships,
+      following: false,
+      limit: 1,
+      status: :open,
+    ).present?
+  end
+
+  add_to_serializer(:current_user, :chat_channels) do
+    structured = DiscourseChat::ChatChannelFetcher.structured(self.scope)
+    ChatChannelIndexSerializer.new(structured, scope: self.scope, root: false).as_json
+  end
+
   add_to_serializer(:current_user, :include_needs_channel_retention_reminder?) do
     include_has_chat_enabled? && object.staff? &&
       !object.user_option.dismissed_channel_retention_reminder &&

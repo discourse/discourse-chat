@@ -182,6 +182,21 @@ describe DiscourseChat::ChatChannelFetcher do
       ).to match_array([category_channel.id])
     end
 
+    it "can filter by following" do
+      expect(
+        subject.secured_public_channels(guardian, memberships, following: true).map(&:id),
+      ).to be_blank
+    end
+
+    it "can filter by not following" do
+      category_channel.user_chat_channel_memberships.create!(user: user1, following: false)
+      another_channel = Fabricate(:chat_channel)
+
+      expect(
+        subject.secured_public_channels(guardian, memberships, following: false).map(&:id),
+      ).to match_array([category_channel.id, another_channel.id])
+    end
+
     it "ensures offset is >= 0" do
       expect(
         subject.secured_public_channels(guardian, memberships, offset: -235).map(&:id),
@@ -304,12 +319,13 @@ describe DiscourseChat::ChatChannelFetcher do
     end
 
     it "includes the unread count based on mute settings for the user's channel membership" do
-      membership = Fabricate(
-        :user_chat_channel_membership_for_dm,
-        chat_channel: direct_message_channel1,
-        user: user1,
-        following: true,
-      )
+      membership =
+        Fabricate(
+          :user_chat_channel_membership_for_dm,
+          chat_channel: direct_message_channel1,
+          user: user1,
+          following: true,
+        )
       DirectMessageUser.create!(direct_message_channel: dm_channel1, user: user1)
       DirectMessageUser.create!(direct_message_channel: dm_channel1, user: user2)
 
@@ -318,11 +334,13 @@ describe DiscourseChat::ChatChannelFetcher do
       resolved_memberships = memberships
 
       subject.secured_direct_message_channels(user1.id, resolved_memberships, guardian)
-      target_membership = resolved_memberships.find { |mem| mem.chat_channel_id == direct_message_channel1.id }
+      target_membership =
+        resolved_memberships.find { |mem| mem.chat_channel_id == direct_message_channel1.id }
       expect(target_membership.unread_count).to eq(2)
 
       resolved_memberships = memberships
-      target_membership = resolved_memberships.find { |mem| mem.chat_channel_id == direct_message_channel1.id }
+      target_membership =
+        resolved_memberships.find { |mem| mem.chat_channel_id == direct_message_channel1.id }
       target_membership.update!(muted: true)
       subject.secured_direct_message_channels(user1.id, resolved_memberships, guardian)
       expect(target_membership.unread_count).to eq(0)

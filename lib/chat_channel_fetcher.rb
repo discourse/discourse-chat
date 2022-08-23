@@ -76,22 +76,29 @@ module DiscourseChat::ChatChannelFetcher
     channels = channels.where(status: options[:status]) if options[:status].present?
 
     if options[:filter].present?
+      sql = "chat_channels.name ILIKE :filter OR categories.name ILIKE :filter"
       channels =
-        channels.where(<<~SQL, filter: "%#{options[:filter].downcase}%").order(
-          chat_channels.name ILIKE :filter OR categories.name ILIKE :filter
-        SQL
+        channels.where(sql, filter: "%#{options[:filter].downcase}%").order(
           "chat_channels.name ASC, categories.name ASC",
         )
     end
 
-    if options[:following].present?
-      channels =
-        channels.joins(:user_chat_channel_memberships).where(
-          user_chat_channel_memberships: {
-            user_id: guardian.user.id,
-            following: true,
-          },
-        )
+    if options.key?(:following)
+      if options[:following]
+        channels =
+          channels.joins(:user_chat_channel_memberships).where(
+            user_chat_channel_memberships: {
+              user_id: guardian.user.id,
+              following: true,
+            },
+          )
+      else
+        channels =
+          channels.where(
+            "chat_channels.id NOT IN (SELECT chat_channel_id FROM user_chat_channel_memberships uccm WHERE uccm.chat_channel_id = chat_channels.id AND following IS TRUE AND user_id = ?)",
+            guardian.user.id,
+          )
+      end
     end
 
     options[:limit] = (options[:limit] || MAX_PUBLIC_CHANNEL_RESULTS).to_i.clamp(

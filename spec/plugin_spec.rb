@@ -392,7 +392,7 @@ describe "discourse-chat" do
     end
 
     fab!(:user) { Fabricate(:user) }
-    let(:serializer) { CurrentUserSerializer.new(user, scope: Guardian.new(user)).as_json }
+    let(:serializer) { CurrentUserSerializer.new(user, scope: Guardian.new(user)) }
 
     context "when no channels exist" do
       it "returns false" do

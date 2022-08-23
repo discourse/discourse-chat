@@ -3,7 +3,6 @@ import {
   exists,
   query,
   queryAll,
-  updateCurrentUser,
 } from "discourse/tests/helpers/qunit-helpers";
 import { test } from "qunit";
 import {

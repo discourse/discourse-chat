@@ -3,6 +3,7 @@ import {
   exists,
   query,
   queryAll,
+  updateCurrentUser,
 } from "discourse/tests/helpers/qunit-helpers";
 import { test } from "qunit";
 import {
@@ -431,3 +432,69 @@ acceptance("Discourse Chat - Plugin Sidebar", function (needs) {
     assert.ok(exists(".full-page-chat .channels-list"));
   });
 });
+
+acceptance(
+  "Discourse Chat - Core Sidebar - no joinable public channels, staff",
+  function (needs) {
+    needs.user({ has_chat_enabled: true, has_joinable_public_channels: false });
+
+    needs.settings({
+      chat_enabled: true,
+      enable_experimental_sidebar_hamburger: true,
+      enable_sidebar: true,
+    });
+
+    needs.pretender((server, helper) => {
+      server.get("/chat/chat_channels.json", () => {
+        return helper.response({
+          public_channels: [],
+          direct_message_channels: [],
+        });
+      });
+    });
+
+    test("Chat channels section visibility", async function (assert) {
+      await visit("/");
+
+      assert.ok(
+        exists(".sidebar-section-chat-channels"),
+        "it shows the section for staff"
+      );
+    });
+  }
+);
+acceptance(
+  "Discourse Chat - Core Sidebar - no joinable public channels, regular user",
+  function (needs) {
+    needs.user({
+      has_chat_enabled: true,
+      has_joinable_public_channels: false,
+      moderator: false,
+      admin: false,
+    });
+
+    needs.settings({
+      chat_enabled: true,
+      enable_experimental_sidebar_hamburger: true,
+      enable_sidebar: true,
+    });
+
+    needs.pretender((server, helper) => {
+      server.get("/chat/chat_channels.json", () => {
+        return helper.response({
+          public_channels: [],
+          direct_message_channels: [],
+        });
+      });
+    });
+
+    test("Chat channels section visibility", async function (assert) {
+      await visit("/");
+
+      assert.notOk(
+        exists(".sidebar-section-chat-channels"),
+        "it doesn’t show the section for regular user"
+      );
+    });
+  }
+);

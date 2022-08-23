@@ -79,7 +79,10 @@ export default {
 
       document.body.classList.add("chat-enabled");
 
-      this.chatService.getChannels();
+      const currentUser = api.getCurrentUser();
+      if (currentUser?.chat_channels) {
+        this.chatService.setupWithCurrentUser(currentUser);
+      }
 
       const chatNotificationManager = container.lookup(
         "service:chat-notification-manager"

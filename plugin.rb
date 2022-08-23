@@ -406,6 +406,11 @@ after_initialize do
     ).present?
   end
 
+  add_to_serializer(:current_user, :chat_channels) do
+    structured = DiscourseChat::ChatChannelFetcher.structured(self.scope)
+    ChatChannelIndexSerializer.new(structured, scope: self.scope, root: false).as_json
+  end
+
   add_to_serializer(:current_user, :include_needs_channel_retention_reminder?) do
     include_has_chat_enabled? && object.staff? &&
       !object.user_option.dismissed_channel_retention_reminder &&

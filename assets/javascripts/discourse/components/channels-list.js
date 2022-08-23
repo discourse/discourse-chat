@@ -42,11 +42,14 @@ export default class ChannelsList extends Component {
     "currentUser.{staff,has_joinable_public_channels}"
   )
   get displayPublicChannels() {
-    return (
-      !this.publicChannelsEmpty ||
-      this.currentUser?.staff ||
-      this.currentUser?.has_joinable_public_channels
-    );
+    if (this.publicChannelsEmpty) {
+      return (
+        this.currentUser?.staff ||
+        this.currentUser?.has_joinable_public_channels
+      );
+    }
+
+    return true;
   }
 
   @computed("inSidebar")

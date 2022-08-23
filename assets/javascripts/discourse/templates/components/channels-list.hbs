@@ -4,38 +4,38 @@
   class="channels-list"
   {{on "scroll" (action "storeScrollPosition")}}
 >
-  <div class="chat-channel-divider">
-    {{#if inSidebar}}
-      <span
-        class="title-caret"
-        id="public-channels-caret"
-        role="button"
-        title="toggle nav list"
-        {{action "toggleChannelSection" "public-channels"}}
-        data-toggleable="public-channels"
-      >
-        {{d-icon "angle-up"}}
-      </span>
-    {{/if}}
-    <span class="channel-title">{{i18n "chat.chat_channels"}}</span>
-
-    {{#if currentUser.staff}}
-      {{dropdown-select-box
-        options=(hash icon="cog" placementStrategy="absolute")
-        content=channelsActions
-        onChange=(action "handleChannelAction")
-        class="edit-channels-dropdown"
-      }}
-    {{else}}
-      {{d-button
-        action=(action "browseChannels")
-        icon="pencil-alt"
-        class="btn-flat edit-channel-membership-btn title-action"
-      }}
-    {{/if}}
-  </div>
-
   {{#if displayPublicChannels}}
+    <div class="chat-channel-divider public-channels-section">
+      {{#if inSidebar}}
+        <span
+          class="title-caret"
+          id="public-channels-caret"
+          role="button"
+          title="toggle nav list"
+          {{action "toggleChannelSection" "public-channels"}}
+          data-toggleable="public-channels"
+        >
+          {{d-icon "angle-up"}}
+        </span>
+      {{/if}}
+      <span class="channel-title">{{i18n "chat.chat_channels"}}</span>
+
+      {{#if currentUser.staff}}
+        {{dropdown-select-box
+          options=(hash icon="cog" placementStrategy="absolute")
+          content=channelsActions
+          onChange=(action "handleChannelAction")
+          class="edit-channels-dropdown"
+        }}
+      {{else}}
+        {{d-button
+          action=(action "browseChannels")
+          icon="pencil-alt"
+          class="btn-flat edit-channel-membership-btn title-action"
+        }}
+      {{/if}}
+    </div>
+
     <div id="public-channels" class={{publicChannelClasses}}>
       {{#if publicChannelsEmpty}}
         <div class="public-channel-empty-message">
@@ -62,7 +62,7 @@
     args=(hash inSidebar=inSidebar)
   }}
 
-  <div class="chat-channel-divider">
+  <div class="chat-channel-divider direct-message-channels-section">
     {{#if inSidebar}}
       <span
         class="title-caret"

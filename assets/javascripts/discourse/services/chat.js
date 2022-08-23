@@ -75,6 +75,13 @@ export default class Chat extends Service {
     }
   }
 
+  setupWithCurrentUser(user) {
+    this.currentUser.set("chat_channel_tracking_state", {});
+    this._processChannels(user.chat_channels || {});
+    this.userChatChannelTrackingStateChanged();
+    this.appEvents.trigger("chat:refresh-channels");
+  }
+
   willDestroy() {
     super.willDestroy(...arguments);
 
@@ -294,37 +301,41 @@ export default class Chat extends Service {
       });
       this.currentUser.set("chat_channel_tracking_state", {});
       ajax("/chat/chat_channels.json").then((channels) => {
-        this.setProperties({
-          publicChannels: A(
-            this.sortPublicChannels(
-              (channels.public_channels || []).map((channel) =>
-                this.processChannel(channel)
-              )
-            )
-          ),
-          // We don't need to sort direct message channels, as the channel list
-          // uses a computed property to keep them ordered by `last_message_sent_at`.
-          directMessageChannels: A(
-            this.sortDirectMessageChannels(
-              (channels.direct_message_channels || []).map((channel) =>
-                this.processChannel(channel)
-              )
-            )
-          ),
-          hasFetchedChannels: true,
-          loading: false,
-        });
-        const idToTitleMap = {};
-        this.allChannels.forEach((c) => {
-          idToTitleMap[c.id] = c.title;
-        });
-        this.set("idToTitleMap", idToTitleMap);
-        this.presenceChannel.subscribe(channels.global_presence_channel_state);
+        this._processChannels(channels);
         this.userChatChannelTrackingStateChanged();
         this.appEvents.trigger("chat:refresh-channels");
         resolve(this._channelObject());
       });
     });
+  }
+
+  _processChannels(channels) {
+    this.setProperties({
+      publicChannels: A(
+        this.sortPublicChannels(
+          (channels.public_channels || []).map((channel) =>
+            this.processChannel(channel)
+          )
+        )
+      ),
+      // We don't need to sort direct message channels, as the channel list
+      // uses a computed property to keep them ordered by `last_message_sent_at`.
+      directMessageChannels: A(
+        this.sortDirectMessageChannels(
+          (channels.direct_message_channels || []).map((channel) =>
+            this.processChannel(channel)
+          )
+        )
+      ),
+      hasFetchedChannels: true,
+      loading: false,
+    });
+    const idToTitleMap = {};
+    this.allChannels.forEach((c) => {
+      idToTitleMap[c.id] = c.title;
+    });
+    this.set("idToTitleMap", idToTitleMap);
+    this.presenceChannel.subscribe(channels.global_presence_channel_state);
   }
 
   reSortDirectMessageChannels() {

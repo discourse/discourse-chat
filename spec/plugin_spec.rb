@@ -324,6 +324,67 @@ describe "discourse-chat" do
     end
   end
 
+  describe "current_user_serializer#chat_channels" do
+    before do
+      SiteSetting.chat_enabled = true
+      SiteSetting.chat_allowed_groups = Group::AUTO_GROUPS[:everyone]
+    end
+
+    fab!(:user) { Fabricate(:user) }
+
+    let(:serializer) { CurrentUserSerializer.new(user, scope: Guardian.new(user)) }
+
+    it "returns the global presence channel state" do
+      expect(serializer.chat_channels[:global_presence_channel_state]).to be_present
+    end
+
+    context "when no channels exist" do
+      it "returns an empty array" do
+        expect(serializer.chat_channels[:direct_message_channels]).to eq([])
+        expect(serializer.chat_channels[:public_channels]).to eq([])
+      end
+    end
+
+    context "when followed public channels exist" do
+      fab!(:user_2) { Fabricate(:user) }
+      fab!(:channel) do
+        Fabricate(
+          :chat_channel,
+          chatable: Fabricate(:direct_message_channel, users: [user, user_2]),
+        )
+      end
+
+      before do
+        Fabricate(:user_chat_channel_membership, user: user, chat_channel: channel, following: true)
+        Fabricate(
+          :chat_channel,
+          chatable: Fabricate(:direct_message_channel, users: [user, user_2]),
+        )
+      end
+
+      it "returns them" do
+        expect(serializer.chat_channels[:public_channels]).to eq([])
+        expect(serializer.chat_channels[:direct_message_channels].count).to eq(1)
+        expect(serializer.chat_channels[:direct_message_channels][0].id).to eq(channel.id)
+      end
+    end
+
+    context "when followed direct message channels exist" do
+      fab!(:channel) { Fabricate(:chat_channel) }
+
+      before do
+        Fabricate(:user_chat_channel_membership, user: user, chat_channel: channel, following: true)
+        Fabricate(:chat_channel)
+      end
+
+      it "returns them" do
+        expect(serializer.chat_channels[:direct_message_channels]).to eq([])
+        expect(serializer.chat_channels[:public_channels].count).to eq(1)
+        expect(serializer.chat_channels[:public_channels][0].id).to eq(channel.id)
+      end
+    end
+  end
+
   describe "current_user_serializer#has_joinable_public_channels" do
     before do
       SiteSetting.chat_enabled = true
@@ -331,7 +392,7 @@ describe "discourse-chat" do
     end
 
     fab!(:user) { Fabricate(:user) }
-    let(:serializer) { CurrentUserSerializer.new(user, scope: Guardian.new(user)) }
+    let(:serializer) { CurrentUserSerializer.new(user, scope: Guardian.new(user)).as_json }
 
     context "when no channels exist" do
       it "returns false" do

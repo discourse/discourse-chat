@@ -38,6 +38,12 @@ acceptance("Discourse Chat - Keyboard shortcuts", function (needs) {
   });
 
   needs.pretender((server, helper) => {
+    // allows to create a staged message
+    server.post("/chat/:id.json", () =>
+      helper.response({
+        errors: [""],
+      })
+    );
     server.get("/chat/chat_channels.json", () => helper.response(chatChannels));
     server.get("/chat/:chatChannelId/messages.json", () =>
       helper.response(generateChatView(loggedInUser()))
@@ -217,6 +223,22 @@ acceptance("Discourse Chat - Keyboard shortcuts", function (needs) {
       composerInput.value,
       "`test text`",
       "selection should get the code markdown"
+    );
+  });
+
+  test("editing last non staged message", async function (assert) {
+    const stagedMessageText = "This is a test";
+    await visit("/latest");
+
+    this.chatService.set("sidebarActive", false);
+    await click(".header-dropdown-toggle.open-chat");
+    await fillIn(".chat-composer-input", stagedMessageText);
+    await click(".chat-composer-inline-button");
+    await triggerKeyEvent(".chat-composer-input", "keydown", "ArrowUp");
+
+    assert.notEqual(
+      query(".chat-composer-input").value.trim(),
+      stagedMessageText
     );
   });
 

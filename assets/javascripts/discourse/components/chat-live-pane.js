@@ -1161,7 +1161,11 @@ export default Component.extend({
       messageIndex--
     ) {
       let message = this.messages[messageIndex];
-      if (message.user.id === this.currentUser.id && !message.error) {
+      if (
+        !message.staged &&
+        message.user.id === this.currentUser.id &&
+        !message.error
+      ) {
         lastUserMessage = message;
         break;
       }

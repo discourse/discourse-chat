@@ -188,7 +188,7 @@ export default Component.extend(TextareaTextManipulation, {
     }
 
     if (
-      event.code === "ArrowUp" &&
+      event.key === "ArrowUp" &&
       this._messageIsEmpty() &&
       !this.editingMessage
     ) {

@@ -318,8 +318,6 @@ export default class Chat extends Service {
           )
         )
       ),
-      // We don't need to sort direct message channels, as the channel list
-      // uses a computed property to keep them ordered by `last_message_sent_at`.
       directMessageChannels: A(
         this.sortDirectMessageChannels(
           (channels.direct_message_channels || []).map((channel) =>
@@ -544,7 +542,10 @@ export default class Chat extends Service {
         chatable_type: channel.chatable_type,
       });
     this.userChatChannelTrackingStateChanged();
-    if (!channel.isDirectMessageChannel) {
+    if (channel.isDirectMessageChannel) {
+      this.reSortDirectMessageChannels();
+    }
+    if (channel.isPublicChannel) {
       this.set("publicChannels", this.sortPublicChannels(this.publicChannels));
     }
     this.appEvents.trigger("chat:refresh-channels");

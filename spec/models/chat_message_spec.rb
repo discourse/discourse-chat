@@ -344,6 +344,17 @@ describe ChatMessage do
         )
       end
     end
+
+    context "unicode usernames are enabled" do
+      before { SiteSetting.unicode_usernames = true }
+
+      it "cooks unicode mentions" do
+        user = Fabricate(:unicode_user)
+        cooked = ChatMessage.cook("<h1>@#{user.username}</h1>")
+
+        expect(cooked).to eq("<p>&lt;h1&gt;@#{user.username}&lt;/h1&gt;</p>")
+      end
+    end
   end
 
   describe ".to_markdown" do

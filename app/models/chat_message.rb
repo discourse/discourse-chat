@@ -139,6 +139,7 @@ class ChatMessage < ActiveRecord::Base
     inlineEmoji
     html-img
     mentions
+    unicodeUsernames
     onebox
     quotes
     spoiler-alert

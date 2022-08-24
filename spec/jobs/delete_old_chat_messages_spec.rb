@@ -99,8 +99,8 @@ describe Jobs::DeleteOldChatMessages do
       described_class.new.execute
       expect(public_days_old_0.deleted_at).to be_nil
       expect(public_days_old_10.deleted_at).to be_nil
-      expect { public_days_old_20.reload }.to raise_exception(ActiveRecord::RecordNotFound)
-      expect { public_days_old_30.reload }.to raise_exception(ActiveRecord::RecordNotFound)
+      expect { public_days_old_20 }.to raise_exception(ActiveRecord::RecordNotFound)
+      expect { public_days_old_30 }.to raise_exception(ActiveRecord::RecordNotFound)
     end
 
     it "deletes trashed messages correctly" do
@@ -138,8 +138,8 @@ describe Jobs::DeleteOldChatMessages do
       described_class.new.execute
       expect(dm_days_old_0.deleted_at).to be_nil
       expect(dm_days_old_10.deleted_at).to be_nil
-      expect { dm_days_old_20.reload }.to raise_exception(ActiveRecord::RecordNotFound)
-      expect { dm_days_old_30.reload }.to raise_exception(ActiveRecord::RecordNotFound)
+      expect { dm_days_old_20 }.to raise_exception(ActiveRecord::RecordNotFound)
+      expect { dm_days_old_30 }.to raise_exception(ActiveRecord::RecordNotFound)
     end
 
     it "deletes trashed messages correctly" do

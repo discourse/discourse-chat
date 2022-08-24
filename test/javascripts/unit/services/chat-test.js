@@ -6,6 +6,9 @@ import {
 import { settled } from "@ember/test-helpers";
 import { test } from "qunit";
 import fabricators from "../../helpers/fabricators";
+import { directMessageChannels } from "discourse/plugins/discourse-chat/chat-fixtures";
+import { cloneJSON } from "discourse-common/lib/object";
+import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 
 acceptance("Discourse Chat | Unit | Service | chat", function (needs) {
   needs.hooks.beforeEach(function () {
@@ -49,6 +52,24 @@ acceptance("Discourse Chat | Unit | Service | chat", function (needs) {
       })
     );
   }
+
+  test("#startTrackingChannel - sorts dm channels", async function (assert) {
+    setupMockPresenceChannel(this.chatService);
+    const fixtures = cloneJSON(directMessageChannels).mapBy("chat_channel");
+    const channel1 = ChatChannel.create(fixtures[0]);
+    const channel2 = ChatChannel.create(fixtures[1]);
+    await this.chatService.startTrackingChannel(channel1);
+    this.currentUser.set(
+      `chat_channel_tracking_state.${channel1.id}.unread_count`,
+      0
+    );
+    await this.chatService.startTrackingChannel(channel2);
+
+    assert.strictEqual(
+      this.chatService.directMessageChannels.firstObject.title,
+      channel2.title
+    );
+  });
 
   test("#refreshTrackingState", async function (assert) {
     this.currentUser.set("chat_channel_tracking_state", {});

@@ -14,6 +14,7 @@ module Jobs
 
       ChatMessage
         .in_public_channel
+        .with_deleted
         .created_before(SiteSetting.chat_channel_retention_days.days.ago)
         .in_batches(of: 200)
         .each do |relation|
@@ -27,6 +28,7 @@ module Jobs
 
       ChatMessage
         .in_dm_channel
+        .with_deleted
         .created_before(SiteSetting.chat_dm_retention_days.days.ago)
         .in_batches(of: 200)
         .each do |relation|

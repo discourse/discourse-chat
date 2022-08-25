@@ -933,6 +933,10 @@ export default Component.extend({
           return;
         }
 
+        if (!userPresent()) {
+          return;
+        }
+
         let latestUnreadMsgId = this.lastSendReadMessageId;
         if (this.messages[this.messages.length - 1]?.id > latestUnreadMsgId) {
           const visibleMessages = document.querySelectorAll(
@@ -960,7 +964,7 @@ export default Component.extend({
 
         // Make sure new messages have come in. Do not keep pinging server with read updates
         // if no new messages came in since last read update was sent.
-        if (this._floatOpenAndFocused() && hasUnreadMessages) {
+        if (hasUnreadMessages) {
           this.set("lastSendReadMessageId", latestUnreadMsgId);
           ajax(`/chat/${this.chatChannel.id}/read/${latestUnreadMsgId}.json`, {
             method: "PUT",
@@ -969,10 +973,6 @@ export default Component.extend({
       },
       wait
     );
-  },
-
-  _floatOpenAndFocused() {
-    return userPresent() && this.expanded && !this.floatHidden;
   },
 
   _cancelPendingReadUpdate() {

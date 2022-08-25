@@ -44,6 +44,7 @@ register_asset "stylesheets/common/chat-transcript.scss"
 register_asset "stylesheets/common/chat-composer-dropdown.scss"
 register_asset "stylesheets/common/chat-retention-reminder.scss"
 register_asset "stylesheets/common/chat-composer-uploads.scss"
+register_asset "stylesheets/desktop/chat-composer-uploads.scss", :desktop
 register_asset "stylesheets/common/chat-composer-upload.scss"
 register_asset "stylesheets/common/chat-selection-manager.scss"
 register_asset "stylesheets/mobile/chat-selection-manager.scss", :mobile

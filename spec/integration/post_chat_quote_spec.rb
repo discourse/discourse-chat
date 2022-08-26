@@ -34,7 +34,7 @@ describe "chat bbcode quoting in posts" do
     expect(post.cooked.chomp).to eq(<<~COOKED.chomp)
       <div class="discourse-chat-transcript" data-message-id="2321" data-username="martin" data-datetime="2022-01-25T05:40:39Z" data-channel-name="Cool Cats Club" data-channel-id="1234">
       <div class="chat-transcript-meta">
-      Originally sent in <a href="/chat/chat_channels/1234">Cool Cats Club</a>
+      Originally sent in <a href="/chat/channel/1234/-">Cool Cats Club</a>
       </div>
       <div class="chat-transcript-user">
       <div class="chat-transcript-user-avatar"></div>
@@ -65,7 +65,7 @@ describe "chat bbcode quoting in posts" do
       <div class="chat-transcript-datetime">
       <a href="/chat/message/2321" title="2022-01-25T05:40:39Z"></a>
       </div>
-      <a class="chat-transcript-channel" href="/chat/chat_channels/1234">
+      <a class="chat-transcript-channel" href="/chat/channel/1234/-">
       #Cool Cats Club</a>
       </div>
       <div class="chat-transcript-messages">
@@ -89,7 +89,7 @@ describe "chat bbcode quoting in posts" do
       <div class="chat-transcript-datetime">
       <a href="/chat/message/2321" title="2022-01-25T05:40:39Z"></a>
       </div>
-      <a class="chat-transcript-channel" href="/chat/chat_channels/1234">
+      <a class="chat-transcript-channel" href="/chat/channel/1234/-">
       #Cool Cats Club</a>
       </div>
       <div class="chat-transcript-messages">
@@ -107,7 +107,7 @@ describe "chat bbcode quoting in posts" do
     expect(post.cooked.chomp).to eq(<<~COOKED.chomp)
       <div class="discourse-chat-transcript" data-message-id="2321" data-username="martin" data-datetime="2022-01-25T05:40:39Z" data-channel-name="Cool Cats Club" data-channel-id="1234">
       <div class="chat-transcript-meta">
-      Originally sent in <a href="/chat/chat_channels/1234">Cool Cats Club</a>
+      Originally sent in <a href="/chat/channel/1234/-">Cool Cats Club</a>
       </div>
       <div class="chat-transcript-user">
       <div class="chat-transcript-user-avatar"></div>
@@ -139,7 +139,7 @@ describe "chat bbcode quoting in posts" do
       <div class="chat-transcript-datetime">
       <a href="/chat/message/2321" title="2022-01-25T05:40:39Z"></a>
       </div>
-      <a class="chat-transcript-channel" href="/chat/chat_channels/1234">
+      <a class="chat-transcript-channel" href="/chat/channel/1234/-">
       #Cool Cats Club</a>
       </div>
       <div class="chat-transcript-messages">

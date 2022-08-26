@@ -69,7 +69,7 @@ function generateTranscriptHTML(messageContent, opts) {
   if (opts.channel && opts.multiQuote) {
     let originallySent = I18n.t("chat.quote.original_channel", {
       channel: opts.channel,
-      channelLink: `/chat/chat_channels/${opts.channelId}`,
+      channelLink: `/chat/channel/${opts.channelId}/-`,
     });
     if (opts.linkTabIndex) {
       originallySent = originallySent.replace(">", tabIndexHTML + ">");
@@ -96,7 +96,7 @@ ${innerDatetimeEl}</div>`);
 
   if (opts.channel && !opts.multiQuote) {
     transcript.push(
-      `<a class=\"chat-transcript-channel\" href="/chat/chat_channels/${opts.channelId}"${tabIndexHTML}>
+      `<a class=\"chat-transcript-channel\" href="/chat/channel/${opts.channelId}/-"${tabIndexHTML}>
 #${opts.channel}</a></div>`
     );
   } else {

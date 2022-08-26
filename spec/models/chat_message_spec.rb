@@ -128,7 +128,7 @@ describe ChatMessage do
       expect(cooked).to eq(<<~COOKED.chomp)
         <div class="discourse-chat-transcript chat-transcript-chained" data-message-id="#{msg1.id}" data-username="chatbbcodeuser" data-datetime="#{msg1.created_at.iso8601}" data-channel-name="testchannel" data-channel-id="#{chat_channel.id}">
         <div class="chat-transcript-meta">
-        Originally sent in <a href="/chat/chat_channels/#{chat_channel.id}">testchannel</a>
+        Originally sent in <a href="/chat/channel/#{chat_channel.id}/-">testchannel</a>
         </div>
         <div class="chat-transcript-user">
         <div class="chat-transcript-user-avatar">

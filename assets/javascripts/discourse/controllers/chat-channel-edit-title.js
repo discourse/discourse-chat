@@ -1,6 +1,5 @@
 import Controller from "@ember/controller";
-import { action } from "@ember/object";
-import discourseComputed from "discourse-common/utils/decorators";
+import { action, computed } from "@ember/object";
 import ModalFunctionality from "discourse/mixins/modal-functionality";
 import ChatApi from "discourse/plugins/discourse-chat/discourse/lib/chat-api";
 
@@ -9,11 +8,11 @@ export default class ChatChannelEditTitleController extends Controller.extend(
 ) {
   editedTitle = "";
 
-  @discourseComputed("model.title", "editedTitle")
-  isSaveDisabled(title, editedTitle) {
+  @computed("model.title", "editedTitle")
+  get isSaveDisabled() {
     return (
-      title === editedTitle ||
-      editedTitle?.length > this.siteSettings.max_topic_title_length
+      this.model.title === this.editedTitle ||
+      this.editedTitle?.length > this.siteSettings.max_topic_title_length
     );
   }
 

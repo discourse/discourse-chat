@@ -1,6 +1,5 @@
 import Controller from "@ember/controller";
-import { action } from "@ember/object";
-import discourseComputed from "discourse-common/utils/decorators";
+import { action, computed } from "@ember/object";
 import ModalFunctionality from "discourse/mixins/modal-functionality";
 import ChatApi from "discourse/plugins/discourse-chat/discourse/lib/chat-api";
 
@@ -9,9 +8,12 @@ export default class ChatChannelEditDescriptionController extends Controller.ext
 ) {
   editedDescription = "";
 
-  @discourseComputed("model.description", "editedDescription")
-  isSaveDisabled(description, editedDescription) {
-    return description === editedDescription || editedDescription?.length > 280;
+  @computed("model.description", "editedDescription")
+  get isSaveDisabled() {
+    return (
+      this.model.description === this.editedDescription ||
+      this.editedDescription?.length > 280
+    );
   }
 
   onShow() {

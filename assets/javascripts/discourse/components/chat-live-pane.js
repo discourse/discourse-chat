@@ -12,7 +12,6 @@ import discourseComputed, {
 import discourseDebounce from "discourse-common/lib/debounce";
 import EmberObject, { action } from "@ember/object";
 import I18n from "I18n";
-import userPresent from "discourse/lib/user-presence";
 import { A } from "@ember/array";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
@@ -22,12 +21,14 @@ import { inject as service } from "@ember/service";
 import { Promise } from "rsvp";
 import { resetIdle } from "discourse/lib/desktop-notifications";
 import { defaultHomepage } from "discourse/lib/utilities";
-import { isTesting } from "discourse-common/config/environment";
 import { capitalize } from "@ember/string";
+import {
+  onPresenceChange,
+  removeOnPresenceChange,
+} from "discourse/lib/user-presence";
 
 const MAX_RECENT_MSGS = 100;
 const STICKY_SCROLL_LENIENCE = 4;
-const READ_INTERVAL = 1000;
 const PAGE_SIZE = 50;
 
 const PAST = "past";
@@ -71,9 +72,6 @@ export default Component.extend({
 
   getCachedChannelDetails: null,
   clearCachedChannelDetails: null,
-
-  _updateReadTimer: null,
-  lastSendReadMessageId: null,
   _scrollerEl: null,
 
   init() {
@@ -105,6 +103,10 @@ export default Component.extend({
     document.addEventListener("scroll", this._forceBodyScroll, {
       passive: true,
     });
+
+    onPresenceChange({
+      callback: this.onPresenceChangeCallback,
+    });
   },
 
   willDestroyElement() {
@@ -121,7 +123,6 @@ export default Component.extend({
       this,
       "highlightOrFetchMessage"
     );
-    this._cancelPendingReadUpdate();
 
     // don't need to removeEventListener from scroller as the DOM element goes away
     cancel(this.stickyScrollTimer);
@@ -137,6 +138,8 @@ export default Component.extend({
     );
 
     document.removeEventListener("scroll", this._forceBodyScroll);
+
+    removeOnPresenceChange(this.onPresenceChangeCallback);
   },
 
   didReceiveAttrs() {
@@ -201,6 +204,13 @@ export default Component.extend({
       this.details,
       250
     );
+  },
+
+  @bind
+  onPresenceChangeCallback(present) {
+    if (present) {
+      this.chat.updateLastReadMessage();
+    }
   },
 
   fetchMessages(channel, options = {}) {
@@ -393,10 +403,6 @@ export default Component.extend({
     schedule("afterRender", () => {
       if (this._selfDeleted) {
         return;
-      }
-
-      if (!isTesting()) {
-        this._updateLastReadMessage();
       }
 
       if (this.targetMessageId) {
@@ -650,12 +656,8 @@ export default Component.extend({
       ) <= STICKY_SCROLL_LENIENCE;
     if (atTop) {
       this._fetchMoreMessagesThrottled(PAST);
-    } else {
-      this._updateLastReadMessage();
-
-      if (Math.abs(this._scrollerEl.scrollTop) <= STICKY_SCROLL_LENIENCE) {
-        this._fetchMoreMessagesThrottled(FUTURE);
-      }
+    } else if (Math.abs(this._scrollerEl.scrollTop) <= STICKY_SCROLL_LENIENCE) {
+      this._fetchMoreMessagesThrottled(FUTURE);
     }
 
     this._calculateStickScroll(event.forceShowScrollToBottom);
@@ -926,67 +928,6 @@ export default Component.extend({
 
   get _selfDeleted() {
     return !this.element || this.isDestroying || this.isDestroyed;
-  },
-
-  @bind
-  _updateLastReadMessage(wait = READ_INTERVAL) {
-    this._cancelPendingReadUpdate();
-
-    if (this._selfDeleted || !this.chatChannel.isFollowing) {
-      return;
-    }
-
-    this._updateReadTimer = discourseLater(
-      this,
-      () => {
-        if (this._selfDeleted) {
-          return;
-        }
-
-        if (!userPresent()) {
-          return;
-        }
-
-        let latestUnreadMsgId = this.lastSendReadMessageId;
-        if (this.messages[this.messages.length - 1]?.id > latestUnreadMsgId) {
-          const visibleMessages = document.querySelectorAll(
-            ".chat-message-container[data-visible=true]"
-          );
-          if (visibleMessages?.length > 0) {
-            latestUnreadMsgId = parseInt(
-              visibleMessages[visibleMessages.length - 1].dataset.id,
-              10
-            );
-          }
-        }
-
-        const hasUnreadMessages =
-          latestUnreadMsgId && latestUnreadMsgId > this.lastSendReadMessageId;
-
-        if (
-          !hasUnreadMessages &&
-          this.currentUser.chat_channel_tracking_state[this.chatChannel.id]
-            ?.unread_count > 0
-        ) {
-          // Weird state here where the chat_channel_tracking_state is wrong. Need to reset it.
-          this.chat.resetTrackingStateForChannel(this.chatChannel.id);
-        }
-
-        // Make sure new messages have come in. Do not keep pinging server with read updates
-        // if no new messages came in since last read update was sent.
-        if (hasUnreadMessages) {
-          this.set("lastSendReadMessageId", latestUnreadMsgId);
-          ajax(`/chat/${this.chatChannel.id}/read/${latestUnreadMsgId}.json`, {
-            method: "PUT",
-          });
-        }
-      },
-      wait
-    );
-  },
-
-  _cancelPendingReadUpdate() {
-    cancel(this._updateReadTimer);
   },
 
   @action

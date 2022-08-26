@@ -9,6 +9,7 @@ import fabricators from "../../helpers/fabricators";
 import { directMessageChannels } from "discourse/plugins/discourse-chat/chat-fixtures";
 import { cloneJSON } from "discourse-common/lib/object";
 import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
+import sinon from "sinon";
 
 acceptance("Discourse Chat | Unit | Service | chat", function (needs) {
   needs.hooks.beforeEach(function () {
@@ -41,6 +42,10 @@ acceptance("Discourse Chat | Unit | Service | chat", function (needs) {
         ],
         direct_message_channels: [],
       });
+    });
+
+    server.put("/chat/:chatChannelId/read/:messageId.json", () => {
+      return helper.response({ success: "OK" });
     });
   });
 
@@ -185,5 +190,52 @@ acceptance("Discourse Chat | Unit | Service | chat", function (needs) {
       3,
       "does increment unread count"
     );
+  });
+
+  test("#updateLastReadMessage - updates and tracks the last read message", async function (assert) {
+    this.currentUser.set("chat_channel_tracking_state", {});
+    sinon.stub(document, "querySelectorAll").callsFake(function () {
+      return [{ dataset: { id: 2 } }];
+    });
+    const activeChannel = fabricators.chatChannel({
+      current_user_membership: { last_read_message_id: 1, following: true },
+    });
+    this.chatService.setActiveChannel(activeChannel);
+
+    this.chatService.updateLastReadMessage();
+    await settled();
+
+    assert.equal(activeChannel.lastSendReadMessageId, 2);
+  });
+
+  test("#updateLastReadMessage - does nothing if the user doesn't follow the channel", async function (assert) {
+    this.currentUser.set("chat_channel_tracking_state", {});
+    this.chatService.setActiveChannel(
+      fabricators.chatChannel({ current_user_membership: { following: false } })
+    );
+    sinon.stub(document, "querySelectorAll").callsFake(function () {
+      return [{ dataset: { id: 1 } }];
+    });
+
+    this.chatService.updateLastReadMessage();
+    await settled();
+
+    assert.equal(this.chatService.activeChannel.lastSendReadMessageId, null);
+  });
+
+  test("#updateLastReadMessage - does nothing if the user already read the message", async function (assert) {
+    this.currentUser.set("chat_channel_tracking_state", {});
+    sinon.stub(document, "querySelectorAll").callsFake(function () {
+      return [{ dataset: { id: 1 } }];
+    });
+    const activeChannel = fabricators.chatChannel({
+      current_user_membership: { last_read_message_id: 2, following: true },
+    });
+    this.chatService.setActiveChannel(activeChannel);
+
+    this.chatService.updateLastReadMessage();
+    await settled();
+
+    assert.equal(activeChannel.lastSendReadMessageId, 2);
   });
 });

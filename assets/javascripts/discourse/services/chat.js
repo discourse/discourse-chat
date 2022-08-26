@@ -19,6 +19,7 @@ import discourseDebounce from "discourse-common/lib/debounce";
 import EmberObject from "@ember/object";
 import ChatApi from "discourse/plugins/discourse-chat/discourse/lib/chat-api";
 import discourseLater from "discourse-common/lib/later";
+import userPresent from "discourse/lib/user-presence";
 
 export const LIST_VIEW = "list_view";
 export const CHAT_VIEW = "chat_view";
@@ -28,6 +29,8 @@ const CHAT_ONLINE_OPTIONS = {
   userUnseenTime: 300000, // 5 minutes seconds with no interaction
   browserHiddenTime: 300000, // Or the browser has been in the background for 5 minutes
 };
+
+const READ_INTERVAL = 1000;
 
 export default class Chat extends Service {
   @service appEvents;
@@ -906,6 +909,45 @@ export default class Chat extends Service {
         replyToMsg: null,
       }
     );
+  }
+
+  updateLastReadMessage() {
+    discourseDebounce(this, this._queuedReadMessageUpdate, READ_INTERVAL);
+  }
+
+  _queuedReadMessageUpdate() {
+    const visibleMessages = document.querySelectorAll(
+      ".chat-message-container[data-visible=true]"
+    );
+    const channel = this.activeChannel;
+
+    if (
+      !channel?.isFollowing ||
+      visibleMessages?.length === 0 ||
+      !userPresent()
+    ) {
+      return;
+    }
+
+    const latestUnreadMsgId = parseInt(
+      visibleMessages[visibleMessages.length - 1].dataset.id,
+      10
+    );
+
+    const hasUnreadMessages = latestUnreadMsgId > channel.lastSendReadMessageId;
+
+    if (
+      !hasUnreadMessages &&
+      this.currentUser.chat_channel_tracking_state[this.activeChannel.id]
+        ?.unread_count > 0
+    ) {
+      // Weird state here where the chat_channel_tracking_state is wrong. Need to reset it.
+      this.resetTrackingStateForChannel(this.activeChannel.id);
+    }
+
+    if (hasUnreadMessages) {
+      channel.updateLastReadMessage(latestUnreadMsgId);
+    }
   }
 
   addToolbarButton() {

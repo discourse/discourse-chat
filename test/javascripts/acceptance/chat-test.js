@@ -146,63 +146,6 @@ acceptance("Discourse Chat - without unread", function (needs) {
     assert.ok(query(".topic-chat-container").classList.contains("channel-9"));
   });
 
-  test("Clicking mention notification inside other full page channel switches the channel", async function (assert) {
-    this.container.lookup("service:chat").set("chatWindowFullPage", true);
-    await visit("/chat/channel/75/@hawk");
-    await click(".header-dropdown-toggle.current-user");
-    await click("#quick-access-notifications .chat-mention");
-    assert.equal(currentURL(), `/chat/channel/9/site`);
-  });
-
-  /* TODO: Flaky test
-   * hidepassed=1&qunit_skip_core=1&seed=74372275167260026865845710869664786943
-   *
-   * ```
-   * stack: >
-   * TypeError: Cannot read properties of undefined (reading 'innerText')
-   * at Object.eval (acceptance/chat-test:238:37)
-   * ```
-   */
-  skip("Mention notifications contain the correct text and icon", async function (assert) {
-    await visit("/chat/channel/75/@hawk");
-    await click(".header-dropdown-toggle.current-user");
-    const notifications = queryAll("#quick-access-notifications .chat-mention");
-
-    const domParser = new DOMParser();
-    // First is a direct mention from @hawk in #Site
-    let mentionHtml = domParser.parseFromString(
-      I18n.t("notifications.popup.chat_mention.direct_html", {
-        username: "hawk",
-        identifier: null,
-        channel: "Site",
-      }),
-      "text/html"
-    );
-    assert.equal(notifications[0].innerText, mentionHtml.body.innerText);
-
-    // Second is a group mention from @hawk in #Site
-    mentionHtml = domParser.parseFromString(
-      I18n.t("notifications.popup.chat_mention.other_html", {
-        username: "hawk",
-        identifier: "@engineers",
-        channel: "Site",
-      }),
-      "text/html"
-    );
-    assert.equal(notifications[1].innerText, mentionHtml.body.innerText);
-
-    // Third is an `@all` mention from @hawk in #Site
-    mentionHtml = domParser.parseFromString(
-      I18n.t("notifications.popup.chat_mention.other_html", {
-        username: "hawk",
-        identifier: "@all",
-        channel: "Site",
-      }),
-      "text/html"
-    );
-    assert.equal(notifications[2].innerText, mentionHtml.body.innerText);
-  });
-
   test("notifications for current user and here/all are highlighted", async function (assert) {
     updateCurrentUser({ username: "osama" });
     await visit("/chat/channel/11/another-category");

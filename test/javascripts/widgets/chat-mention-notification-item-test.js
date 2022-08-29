@@ -7,6 +7,7 @@ import { NOTIFICATION_TYPES } from "discourse/tests/fixtures/concerns/notificati
 import Notification from "discourse/models/notification";
 import hbs from "htmlbars-inline-precompile";
 import slugifyChannel from "discourse/plugins/discourse-chat/discourse/lib/slugify-channel";
+import I18n from "I18n";
 
 function getNotification(overrides = {}) {
   return Notification.create(
@@ -16,8 +17,8 @@ function getNotification(overrides = {}) {
         notification_type: NOTIFICATION_TYPES.chat_invitation,
         read: false,
         data: {
-          message: "chat.invitation_notification",
-          invited_by_username: "eviltrout",
+          message: "chat.mention_notification",
+          mentioned_by_username: "eviltrout",
           chat_channel_id: 9,
           chat_message_id: 2,
           chat_channel_title: "Site",
@@ -33,13 +34,20 @@ module(
   function (hooks) {
     setupRenderingTest(hooks);
 
-    test("notification url", async function (assert) {
+    test("generated link", async function (assert) {
       this.set("args", getNotification());
-
       const data = this.args.data;
-
       await render(
         hbs`<MountWidget @widget="chat-mention-notification-item" @args={{this.args}} />`
+      );
+
+      assert.strictEqual(
+        query(".chat-invitation a div").innerHTML.trim(),
+        I18n.t("notifications.popup.chat_mention.direct_html", {
+          username: "eviltrout",
+          identifier: null,
+          channel: "Site",
+        })
       );
 
       assert.strictEqual(
@@ -48,9 +56,76 @@ module(
           data.chat_channel_title
         )}?messageId=${data.chat_message_id}`
       );
+    });
+  }
+);
 
+module(
+  "Discourse Chat | Widget | chat-group-mention-notification-item",
+  function (hooks) {
+    setupRenderingTest(hooks);
+
+    test("generated link", async function (assert) {
+      this.set(
+        "args",
+        getNotification({
+          data: {
+            mentioned_by_username: "eviltrout",
+            identifier: "moderators",
+          },
+        })
+      );
+      const data = this.args.data;
       await render(
         hbs`<MountWidget @widget="chat-group-mention-notification-item" @args={{this.args}} />`
+      );
+
+      assert.strictEqual(
+        query(".chat-invitation a div").innerHTML.trim(),
+        I18n.t("notifications.popup.chat_mention.other_html", {
+          username: "eviltrout",
+          identifier: "@moderators",
+          channel: "Site",
+        })
+      );
+
+      assert.strictEqual(
+        query(".chat-invitation a").getAttribute("href"),
+        `/chat/channel/${data.chat_channel_id}/${slugifyChannel(
+          data.chat_channel_title
+        )}?messageId=${data.chat_message_id}`
+      );
+    });
+  }
+);
+
+module(
+  "Discourse Chat | Widget | chat-group-mention-notification-item (@all)",
+  function (hooks) {
+    setupRenderingTest(hooks);
+
+    test("generated link", async function (assert) {
+      this.set(
+        "args",
+        getNotification({
+          data: {
+            mentioned_by_username: "eviltrout",
+            identifier: "all",
+          },
+        })
+      );
+      const data = this.args.data;
+      await render(
+        hbs`<MountWidget @widget="chat-group-mention-notification-item" @args={{this.args}} />`
+      );
+
+      assert.strictEqual(
+        query(".chat-invitation a div").innerHTML.trim(),
+        I18n.t("notifications.popup.chat_mention.other_html", {
+          username: "eviltrout",
+          identifier: "@all",
+          channel: "Site",
+        })
       );
 
       assert.strictEqual(

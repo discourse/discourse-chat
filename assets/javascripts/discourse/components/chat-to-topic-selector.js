@@ -1,4 +1,5 @@
 import Component from "@ember/component";
+import { htmlSafe } from "@ember/template";
 import discourseComputed from "discourse-common/utils/decorators";
 import { alias, equal } from "@ember/object/computed";
 
@@ -28,16 +29,16 @@ export default Component.extend({
 
   @discourseComputed()
   newTopicInstruction() {
-    return this.instructionLabels[NEW_TOPIC_SELECTION];
+    return htmlSafe(this.instructionLabels[NEW_TOPIC_SELECTION]);
   },
 
   @discourseComputed()
   existingTopicInstruction() {
-    return this.instructionLabels[EXISTING_TOPIC_SELECTION];
+    return htmlSafe(this.instructionLabels[EXISTING_TOPIC_SELECTION]);
   },
 
   @discourseComputed()
   newMessageInstruction() {
-    return this.instructionLabels[NEW_MESSAGE_SELECTION];
+    return htmlSafe(this.instructionLabels[NEW_MESSAGE_SELECTION]);
   },
 });

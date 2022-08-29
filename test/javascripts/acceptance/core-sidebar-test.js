@@ -62,6 +62,34 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
         following: true,
       },
     });
+    directChannels.push({
+      chatable: {
+        users: [
+          {
+            id: 1,
+            username: "<script>markvanlan</script>",
+            avatar_template:
+              "/letter_avatar_proxy/v4/letter/t/f9ae1b/{size}.png",
+          },
+          {
+            id: 2,
+            username: "<script>sam</script>",
+            avatar_template:
+              "/letter_avatar_proxy/v4/letter/t/f9ae1b/{size}.png",
+          },
+        ],
+      },
+      chatable_type: "DirectMessageChannel",
+      chatable_url: null,
+      id: 77,
+      title: "@<script>sam</script>",
+      last_message_sent_at: "2021-06-01T11:15:00.000Z",
+      current_user_membership: {
+        unread_count: 0,
+        muted: false,
+        following: true,
+      },
+    });
 
     server.get("/chat/chat_channels.json", () => {
       return helper.response({
@@ -91,6 +119,17 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
           {
             id: 3,
             title: "random",
+            chatable_type: "Category",
+            chatable: { slug: "random" },
+            last_message_sent_at: "2021-11-08T21:26:05.710Z",
+            current_user_membership: {
+              unread_count: 1,
+              unread_mentions: 1,
+            },
+          },
+          {
+            id: 4,
+            title: "<script>evil</script>",
             chatable_type: "Category",
             chatable: { slug: "random" },
             last_message_sent_at: "2021-11-08T21:26:05.710Z",
@@ -366,6 +405,46 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
     await fillIn(".filter-usernames", "hawk");
     await triggerKeyEvent(".filter-usernames", "keydown", "Enter");
     assert.strictEqual(currentURL(), "/chat/draft-channel");
+  });
+
+  test("Escapes public channel titles", async function (assert) {
+    await visit("/");
+    const evilChannel = query(
+      ".sidebar-section-chat-channels .sidebar-section-link-wrapper .sidebar-section-link"
+    );
+
+    assert.strictEqual(evilChannel.title, "&lt;script&gt;evil&lt;/script&gt;");
+    assert.ok(
+      evilChannel.className.includes(
+        "sidebar-section-link-ltscriptgtevilltscriptgt"
+      )
+    );
+    assert.strictEqual(
+      evilChannel
+        .querySelector(".sidebar-section-link-content-text")
+        .innerHTML.trim(),
+      "&lt;script&gt;evil&lt;/script&gt;"
+    );
+  });
+
+  test("Escapes dm channel titles", async function (assert) {
+    await visit("/");
+    const evilChannel = queryAll(
+      ".sidebar-section-chat-dms .sidebar-section-link-wrapper .sidebar-section-link"
+    )[3];
+
+    assert.strictEqual(evilChannel.title, "@&lt;script&gt;sam&lt;/script&gt;");
+    assert.ok(
+      evilChannel.className.includes(
+        "sidebar-section-link-@&lt;script&gt;sam&lt;/script&gt;"
+      )
+    );
+    assert.strictEqual(
+      evilChannel
+        .querySelector(".sidebar-section-link-content-text")
+        .innerHTML.trim(),
+      "&amp;lt;script&amp;gt;sam&amp;lt;/script&amp;gt;"
+    );
   });
 });
 

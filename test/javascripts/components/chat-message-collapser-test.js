@@ -1,10 +1,14 @@
 import componentTest, {
   setupRenderingTest,
 } from "discourse/tests/helpers/component-test";
-import { click } from "@ember/test-helpers";
+import { click, render } from "@ember/test-helpers";
 import hbs from "htmlbars-inline-precompile";
-import { query, visible } from "discourse/tests/helpers/qunit-helpers";
-import { module } from "qunit";
+import {
+  query,
+  queryAll,
+  visible,
+} from "discourse/tests/helpers/qunit-helpers";
+import { module, test } from "qunit";
 
 const youtubeCooked =
   "<p>written text</p>" +
@@ -45,10 +49,39 @@ const galleryCooked =
   "</div>" +
   "<p>more written text</p>";
 
+const evilString = "<script>someeviltitle</script>";
+const evilStringEscaped = "&lt;script&gt;someeviltitle&lt;/script&gt;";
+
+module("Discourse Chat | Component | chat message collapser", function (hooks) {
+  setupRenderingTest(hooks);
+
+  test("escapes uploads header", async function (assert) {
+    this.set("uploads", [{ original_filename: evilString }]);
+    await render(hbs`{{chat-message-collapser uploads=uploads}}`);
+
+    assert.ok(
+      query(".chat-message-collapser-link-small").innerHTML.includes(
+        evilStringEscaped
+      )
+    );
+  });
+});
+
 module(
   "Discourse Chat | Component | chat message collapser youtube",
   function (hooks) {
     setupRenderingTest(hooks);
+
+    test("escapes youtube header", async function (assert) {
+      this.set("cooked", youtubeCooked.replace("ytId1", evilString));
+      await render(hbs`{{chat-message-collapser cooked=cooked}}`);
+
+      assert.ok(
+        query(".chat-message-collapser-link").href.includes(
+          "%3Cscript%3Esomeeviltitle%3C/script%3E"
+        )
+      );
+    });
 
     componentTest("shows youtube link in header", {
       template: hbs`{{chat-message-collapser cooked=cooked}}`,
@@ -76,6 +109,7 @@ module(
       template: hbs`{{chat-message-collapser cooked=cooked}}`,
 
       beforeEach() {
+        youtubeCooked.youtubeid;
         this.set("cooked", youtubeCooked);
       },
 
@@ -417,6 +451,27 @@ module(
   function (hooks) {
     setupRenderingTest(hooks);
 
+    test("escapes link", async function (assert) {
+      this.set(
+        "cooked",
+        imageCooked
+          .replace("shows alt", evilString)
+          .replace("/images/d-logo-sketch-small.png", evilString)
+      );
+      await render(hbs`{{chat-message-collapser cooked=cooked}}`);
+
+      assert.ok(
+        queryAll(".chat-message-collapser-link-small")[0].innerHTML.includes(
+          evilStringEscaped
+        )
+      );
+      assert.ok(
+        queryAll(".chat-message-collapser-link-small")[1].innerHTML.includes(
+          "%3Cscript%3Esomeeviltitle%3C/script%3E"
+        )
+      );
+    });
+
     componentTest("shows alt or links (if no alt) for linked image", {
       template: hbs`{{chat-message-collapser cooked=cooked}}`,
 
@@ -534,6 +589,26 @@ module(
   "Discourse Chat | Component | chat message collapser galleries",
   function (hooks) {
     setupRenderingTest(hooks);
+
+    test("escapes title/link", async function (assert) {
+      this.set(
+        "cooked",
+        galleryCooked
+          .replace("https://imgur.com/gallery/yyVx5lJ", evilString)
+          .replace("Le tomtom album", evilString)
+      );
+      await render(hbs`{{chat-message-collapser cooked=cooked}}`);
+
+      assert.ok(
+        query(".chat-message-collapser-link-small").href.includes(
+          "%3Cscript%3Esomeeviltitle%3C/script%3E"
+        )
+      );
+      assert.strictEqual(
+        query(".chat-message-collapser-link-small").innerHTML.trim(),
+        "someeviltitle"
+      );
+    });
 
     componentTest("removes album title overlay", {
       template: hbs`{{chat-message-collapser cooked=cooked}}`,

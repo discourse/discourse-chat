@@ -1,4 +1,5 @@
 import Component from "@ember/component";
+import { htmlSafe } from "@ember/template";
 import { CHANNEL_STATUSES } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import I18n from "I18n";
 import { action, computed } from "@ember/object";
@@ -25,9 +26,9 @@ export default class ChatChannelToggleView extends Component {
   @computed("channel.isClosed")
   get instructions() {
     if (this.channel.isClosed) {
-      return I18n.t("chat.channel_open.instructions");
+      return htmlSafe(I18n.t("chat.channel_open.instructions"));
     } else {
-      return I18n.t("chat.channel_close.instructions");
+      return htmlSafe(I18n.t("chat.channel_close.instructions"));
     }
   }
 

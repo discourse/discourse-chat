@@ -1,7 +1,7 @@
 import Component from "@ember/component";
 import { computed } from "@ember/object";
 import { htmlSafe } from "@ember/template";
-import escape from "discourse-common/lib/escape";
+import { escapeExpression } from "discourse/lib/utilities";
 import domFromString from "discourse-common/lib/dom-from-string";
 import I18n from "I18n";
 
@@ -24,7 +24,11 @@ export default class ChatMessageCollapser extends Component {
     } else {
       name = I18n.t("chat.uploaded_files", { count: this.uploads.length });
     }
-    return `<span class="chat-message-collapser-link-small">${name}</span>`;
+    return htmlSafe(
+      `<span class="chat-message-collapser-link-small">${escapeExpression(
+        name
+      )}</span>`
+    );
   }
 
   @computed("cooked")
@@ -54,8 +58,8 @@ export default class ChatMessageCollapser extends Component {
     return elements.reduce((acc, e) => {
       if (youtubePredicate(e)) {
         const id = e.dataset.youtubeId;
-        const link = `https://www.youtube.com/watch?v=${escape(id)}`;
-        const title = e.dataset.youtubeTitle;
+        const link = `https://www.youtube.com/watch?v=${escapeExpression(id)}`;
+        const title = escapeExpression(e.dataset.youtubeTitle);
         const header = htmlSafe(
           `<a target="_blank" class="chat-message-collapser-link" rel="noopener noreferrer" href="${link}">${title}</a>`
         );
@@ -74,9 +78,11 @@ export default class ChatMessageCollapser extends Component {
   imageOneboxCooked(elements) {
     return elements.reduce((acc, e) => {
       if (imageOneboxPredicate(e)) {
-        const link = animatedImagePredicate(e)
+        let link = animatedImagePredicate(e)
           ? e.firstChild.src
           : e.firstElementChild.href;
+
+        link = escapeExpression(link);
         const header = htmlSafe(
           `<a target="_blank" class="chat-message-collapser-link-small" rel="noopener noreferrer" href="${link}">${link}</a>`
         );
@@ -91,8 +97,8 @@ export default class ChatMessageCollapser extends Component {
   imageCooked(elements) {
     return elements.reduce((acc, e) => {
       if (imagePredicate(e)) {
-        const link = e.firstElementChild.src;
-        const alt = e.firstElementChild.alt;
+        const link = escapeExpression(e.firstElementChild.src);
+        const alt = escapeExpression(e.firstElementChild.alt);
         const header = htmlSafe(
           `<a target="_blank" class="chat-message-collapser-link-small" rel="noopener noreferrer" href="${link}">${
             alt || link
@@ -109,8 +115,10 @@ export default class ChatMessageCollapser extends Component {
   galleryCooked(elements) {
     return elements.reduce((acc, e) => {
       if (galleryPredicate(e)) {
-        const link = e.firstElementChild.href;
-        const title = e.firstElementChild.firstElementChild.textContent;
+        const link = escapeExpression(e.firstElementChild.href);
+        const title = escapeExpression(
+          e.firstElementChild.firstElementChild.textContent
+        );
         e.firstElementChild.removeChild(e.firstElementChild.firstElementChild);
         const header = htmlSafe(
           `<a target="_blank" class="chat-message-collapser-link-small" rel="noopener noreferrer" href="${link}">${title}</a>`

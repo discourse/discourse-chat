@@ -3,13 +3,7 @@
     id="chat-channel-archive-modal-inner"
     class="chat-channel-archive-modal-inner"
   >
-    <p>
-      {{html-safe
-        (i18n
-          "chat.channel_archive.instructions" channelTitle=chatChannel.title
-        )
-      }}
-    </p>
+    <p class="chat-channel-archive-modal-instructions">{{this.instructionsText}}</p>
 
     {{chat-to-topic-selector
       selection=selection

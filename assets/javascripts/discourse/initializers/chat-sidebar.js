@@ -67,7 +67,7 @@ export default {
               }
 
               get name() {
-                return dasherize(slugifyChannel(this.channel.title));
+                return dasherize(slugifyChannel(this.title));
               }
 
               get route() {
@@ -75,15 +75,15 @@ export default {
               }
 
               get models() {
-                return [this.channel.id, slugifyChannel(this.channel.title)];
+                return [this.channel.id, slugifyChannel(this.title)];
               }
 
               get title() {
-                return this.channel.title;
+                return escapeExpression(this.channel.title);
               }
 
               get text() {
-                return htmlSafe(emojiUnescape(this.channel.title));
+                return htmlSafe(emojiUnescape(this.title));
               }
 
               get prefixType() {
@@ -241,7 +241,7 @@ export default {
             }
 
             get name() {
-              return dasherize(this.channel.title);
+              return dasherize(this.title);
             }
 
             get route() {
@@ -249,11 +249,11 @@ export default {
             }
 
             get models() {
-              return [this.channel.id, slugifyChannel(this.channel.title)];
+              return [this.channel.id, slugifyChannel(this.title)];
             }
 
             get title() {
-              return this.channel.title;
+              return escapeExpression(this.channel.title);
             }
 
             get oneOnOneMessage() {
@@ -261,12 +261,14 @@ export default {
             }
 
             get text() {
-              const username = this.channel.title.replaceAll("@", "");
+              const username = this.title.replaceAll("@", "");
               if (this.oneOnOneMessage) {
                 const status = this.channel.chatable.users[0].get("status");
                 const statusHtml = status ? this._userStatusHtml(status) : "";
                 return htmlSafe(
-                  `${username}${statusHtml} ${decorateUsername(username)}`
+                  `${escapeExpression(username)}${statusHtml} ${decorateUsername(
+                    escapeExpression(username)
+                  )}`
                 );
               } else {
                 return username;
@@ -345,7 +347,7 @@ export default {
             }
 
             _userStatusTitle(status) {
-              let title = `${status.description}`;
+              let title = `${escapeExpression(status.description)}`;
 
               if (status.ends_at) {
                 const untilFormatted = until(

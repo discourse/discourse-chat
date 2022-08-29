@@ -5,6 +5,7 @@ import { click } from "@ember/test-helpers";
 import hbs from "htmlbars-inline-precompile";
 import { exists, query, visible } from "discourse/tests/helpers/qunit-helpers";
 import { module } from "qunit";
+import { htmlSafe } from "@ember/template";
 
 module("Discourse Chat | Component | collapser", function (hooks) {
   setupRenderingTest(hooks);
@@ -13,7 +14,7 @@ module("Discourse Chat | Component | collapser", function (hooks) {
     template: hbs`{{collapser header=header}}`,
 
     beforeEach() {
-      this.set("header", "<div class='cat'>tomtom</div>");
+      this.set("header", htmlSafe("<div class='cat'>tomtom</div>"));
     },
 
     async test(assert) {

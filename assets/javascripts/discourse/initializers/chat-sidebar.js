@@ -266,7 +266,9 @@ export default {
                 const status = this.channel.chatable.users[0].get("status");
                 const statusHtml = status ? this._userStatusHtml(status) : "";
                 return htmlSafe(
-                  `${escapeExpression(username)}${statusHtml} ${decorateUsername(
+                  `${escapeExpression(
+                    username
+                  )}${statusHtml} ${decorateUsername(
                     escapeExpression(username)
                   )}`
                 );

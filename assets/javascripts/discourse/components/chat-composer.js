@@ -16,7 +16,7 @@ import { findRawTemplate } from "discourse-common/lib/raw-templates";
 import { emojiSearch, isSkinTonableEmoji } from "pretty-text/emoji";
 import { emojiUrlFor } from "discourse/lib/text";
 import { inject as service } from "@ember/service";
-import { or, readOnly } from "@ember/object/computed";
+import { or, readOnly, reads } from "@ember/object/computed";
 import { search as searchCategoryTag } from "discourse/lib/category-tag-search";
 import { SKIP } from "discourse/lib/autocomplete";
 import { Promise } from "rsvp";
@@ -48,6 +48,7 @@ export default Component.extend(TextareaTextManipulation, {
     "siteSettings.chat_allow_uploads",
     "chatChannel.isDirectMessageChannel"
   ),
+  isNetworkUnreliable: reads("chat.isNetworkUnreliable"),
 
   @discourseComputed(...chatComposerButtonsDependentKeys())
   inlineButtons() {

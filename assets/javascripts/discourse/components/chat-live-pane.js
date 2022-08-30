@@ -743,8 +743,10 @@ export default Component.extend({
       const stagedMessage = this.messageLookup[`staged-${data.stagedId}`];
       if (stagedMessage) {
         stagedMessage.setProperties({
+          error: null,
           staged: false,
           id: data.chat_message.id,
+          staged_id: null,
           excerpt: data.chat_message.excerpt,
         });
 
@@ -1032,12 +1034,13 @@ export default Component.extend({
     // Start ajax request but don't return here, we want to stage the message instantly when all messages are loaded.
     // Otherwise, we'll fetch latest and scroll to the one we just created.
     // Return a resolved promise below.
-    const msgCreationPromise = ajax(`/chat/${this.chatChannel.id}.json`, {
-      type: "POST",
-      data,
-    })
+    const msgCreationPromise = ChatApi.sendMessage(this.chatChannel.id, data)
       .catch((error) => {
         this._onSendError(data.staged_id, error);
+      })
+      .then((r) => {
+        console.log(r);
+        return r;
       })
       .finally(() => {
         if (this._selfDeleted) {
@@ -1105,9 +1108,37 @@ export default Component.extend({
   _onSendError(stagedId, error) {
     const stagedMessage = this.messageLookup[`staged-${stagedId}`];
     if (stagedMessage) {
-      stagedMessage.set("error", error.jqXHR.responseJSON.errors[0]);
-      this._resetAfterSend();
+      if (error.jqXHR?.responseJSON?.errors?.length) {
+        stagedMessage.set("error", error.jqXHR.responseJSON.errors[0]);
+      } else {
+        stagedMessage.set("error", "network_error");
+      }
     }
+
+    this._resetAfterSend();
+  },
+
+  @action
+  didResendStagedMessage(stagedMessage) {
+    this.set("sendingLoading", true);
+
+    const data = {
+      cooked: stagedMessage.cooked,
+      message: stagedMessage.message,
+      upload_ids: stagedMessage.upload_ids,
+      staged_id: stagedMessage.stagedId,
+    };
+
+    ChatApi.sendMessage(this.chatChannel.id, data)
+      .catch((error) => {
+        this._onSendError(data.staged_id, error);
+      })
+      .finally(() => {
+        if (this._selfDeleted) {
+          return;
+        }
+        this.set("sendingLoading", false);
+      });
   },
 
   @action
@@ -1328,6 +1359,10 @@ export default Component.extend({
 
   @action
   onHoverMessage(message, options = {}) {
+    if (message?.staged) {
+      return;
+    }
+
     discourseDebounce(
       this,
       this.debouncedOnHoverMessage,

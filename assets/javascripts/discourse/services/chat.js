@@ -52,6 +52,7 @@ export default class Chat extends Service {
   directMessagesLimit = 20;
   _chatOpen = false;
   _fetchingChannels = null;
+  isNetworkUnreliable = false;
 
   @and("currentUser.has_chat_enabled", "siteSettings.chat_enabled") userCanChat;
 
@@ -851,7 +852,15 @@ export default class Chat extends Service {
       data.data = JSON.stringify(draft);
     }
 
-    ajax("/chat/drafts", { type: "POST", data });
+    ajax("/chat/drafts", { type: "POST", data, ignoreUnsent: false })
+      .then(() => {
+        this.set("isNetworkUnreliable", false);
+      })
+      .catch((error) => {
+        if (!error.jqXHR?.responseJSON?.errors?.length) {
+          this.set("isNetworkUnreliable", true);
+        }
+      });
   }
 
   setDraftForChannel(channel, draft) {

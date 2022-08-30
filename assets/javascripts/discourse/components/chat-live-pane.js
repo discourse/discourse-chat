@@ -1038,10 +1038,6 @@ export default Component.extend({
       .catch((error) => {
         this._onSendError(data.staged_id, error);
       })
-      .then((r) => {
-        console.log(r);
-        return r;
-      })
       .finally(() => {
         if (this._selfDeleted) {
           return;

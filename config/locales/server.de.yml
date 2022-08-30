@@ -41,6 +41,7 @@ de:
           title: "Ablehnen"
         ignore:
           title: "Ignorieren"
+    personal_chat: "persönlicher Chat"
   discourse_automation:
     scriptables:
       send_chat_message:
@@ -48,3 +49,6 @@ de:
   reviewable_score_types:
     needs_review:
       title: "Überprüfung erforderlich"
+  unsubscribe:
+    chat_summary:
+      never: Niemals

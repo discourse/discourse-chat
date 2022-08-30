@@ -17,6 +17,15 @@ fi:
       cancel: "Peruuta"
       cancel_reply: "Peruuta vastaus"
       chat_channels: "Kanavat"
+      channel_settings:
+        edit: "Muokkaa"
+        join_channel: "Liity kanavalle"
+        leave_channel: "Poistu kanavalta"
+        join: "Liity"
+        leave: "Poistu"
+      channels_list_popup:
+        browse: "Selaa kanavia"
+        create: "Luo kanava"
       click_to_join: "Näytä saatavilla olevat kanavat napsauttamalla tätä."
       close: "Sulje"
       collapse: "Tiivistä chat-laatikko"
@@ -24,12 +33,17 @@ fi:
       deleted: "Viesti poistettiin. [näytä]"
       delete: "Poista"
       edited: "muokattu"
+      empty_state:
+        direct_message: "Voit myös aloittaa henkilökohtaisen chatin yhden tai useamman käyttäjän kanssa."
+      email_frequency:
+        never: "Ei koskaan"
       enable: "Ota chat käyttöön"
       flag: "Liputa"
       flagged: "Tämä viesti on liputettu käsiteltäväksi"
       invalid_access: "Sinulla ei ole tämän chat-kanavan katseluoikeutta"
       in_reply_to: "Vastauksena:"
       heading: "Chat"
+      join: "Liity"
       new_messages: "uusia viestejä"
       mention_warning:
         cannot_see:
@@ -76,6 +90,12 @@ fi:
         other: "%{count} tiedostoa"
       you_flagged: "Liputit tämän viestin"
       exit: "takaisin"
+      browse:
+        title: Kanavat
+      about_view:
+        description: Kuvaus
+      channel_info:
+        back_to_channel: "Takaisin"
       channel_selector:
         title: "Siirry kanavalle"
         no_channels: "Hakuasi vastaavia kanavia ei ole"
@@ -83,6 +103,7 @@ fi:
         choose_category:
           label: "Valitse alue"
           none: "valitse yksi..."
+          default_hint: Hallinnoi käyttöoikeutta <a href=%{link} target="_blank">alueen %{category} turvallisuusasetuksissa</a>
         create: "Luo kanava"
         description: "Kuvaus (valinnainen)"
         name: "Kanavan nimi"
@@ -101,6 +122,8 @@ fi:
         you_others_and_more: "Sinä, %{usernames} ja %{more} muuta reagoivat emojilla :%{emoji}:"
       composer:
         toggle_toolbar: "Vaihda työkalupalkki"
+      quote:
+        copy_success: "Chat-lainaus kopioitiin leikepöydälle"
       notification_levels:
         never: "Ei koskaan"
         mention: "Vain maininnoissa"
@@ -175,6 +198,7 @@ fi:
       retention_reminders:
         public: "Kanavan historia säilytetään %{days} päivän ajan."
         dm: "Henkilökohtainen keskusteluhistoria säilytetään %{days} päivän ajan."
+      topic_button_title: "Chat"
     notifications:
       popup:
         chat_message: "Uusi chat-viesti"
@@ -202,3 +226,6 @@ fi:
         reviewable_chat_message:
           title: "Liputettu chat-viesti"
           flagged_by: "Liputtanut"
+    keyboard_shortcuts_help:
+      chat:
+        title: "Chat"

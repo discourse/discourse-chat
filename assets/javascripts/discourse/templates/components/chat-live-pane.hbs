@@ -4,7 +4,10 @@
 }}
 
 {{#if (and fullPage includeHeader)}}
-  <div class="chat-full-page-header {{unless chatChannel.isFollowing "-not-following"}}">
+  <div
+    class="chat-full-page-header
+      {{unless chatChannel.isFollowing "-not-following"}}"
+  >
     <div class="chat-channel-header-details">
       {{#if site.mobileView}}
         <div class="chat-full-page-header__left-actions">
@@ -59,6 +62,7 @@
         isHovered=(eq message.id hoveredMessageId)
         onHoverMessage=(action "onHoverMessage")
         onSwitchChannel=onSwitchChannel
+        resendStagedMessage=this.resendStagedMessage
       }}
     {{/each}}
   </div>
@@ -75,7 +79,12 @@
     <a
       href
       title={{i18n "chat.scroll_to_bottom"}}
-      class={{concat-class "btn" "btn-flat" "chat-scroll-to-bottom" (if hasNewMessages "unread-messages")}}
+      class={{concat-class
+        "btn"
+        "btn-flat"
+        "chat-scroll-to-bottom"
+        (if hasNewMessages "unread-messages")
+      }}
       {{on "click" (action "restickScrolling")}}
     >
       {{#if hasNewMessages}}

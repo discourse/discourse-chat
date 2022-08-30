@@ -46,6 +46,15 @@
     rows=1
   }}
 
+  {{#if this.isNetworkUnreliable}}
+    <span
+      class="chat-composer__unreliable-network"
+      title={{i18n "chat.unreliable_network"}}
+    >
+      {{d-icon "exclamation-triangle"}}
+    </span>
+  {{/if}}
+
   {{flat-button
     action=(action "sendClicked")
     icon="paper-plane"

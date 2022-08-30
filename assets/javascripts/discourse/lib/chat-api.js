@@ -18,6 +18,14 @@ export default class ChatApi {
     ).catch(popupAjaxError);
   }
 
+  static async sendMessage(channelId, data = {}) {
+    return ajax(`/chat/${channelId}.json`, {
+      ignoreUnsent: false,
+      method: "POST",
+      data,
+    });
+  }
+
   static async chatChannels(data = {}) {
     if (data?.status === "all") {
       delete data.status;

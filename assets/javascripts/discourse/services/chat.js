@@ -7,7 +7,7 @@ import Site from "discourse/models/site";
 import { ajax } from "discourse/lib/ajax";
 import { A } from "@ember/array";
 import { generateCookFunction } from "discourse/lib/text";
-import { next } from "@ember/runloop";
+import { cancel, next } from "@ember/runloop";
 import { and } from "@ember/object/computed";
 import { Promise } from "rsvp";
 import ChatChannel, {
@@ -18,6 +18,7 @@ import simpleCategoryHashMentionTransform from "discourse/plugins/discourse-chat
 import discourseDebounce from "discourse-common/lib/debounce";
 import EmberObject from "@ember/object";
 import ChatApi from "discourse/plugins/discourse-chat/discourse/lib/chat-api";
+import discourseLater from "discourse-common/lib/later";
 
 export const LIST_VIEW = "list_view";
 export const CHAT_VIEW = "chat_view";
@@ -74,6 +75,26 @@ export default class Chat extends Service {
         });
       }
     }
+  }
+
+  markNetworkAsUnreliable() {
+    cancel(this._networkCheckHandler);
+
+    this.set("isNetworkUnreliable", true);
+
+    this._networkCheckHandler = discourseLater(() => {
+      if (this.isDestroyed || this.isDestroying) {
+        return;
+      }
+
+      this.markNetworkAsReliable();
+    }, 30000);
+  }
+
+  markNetworkAsReliable() {
+    cancel(this._networkCheckHandler);
+
+    this.set("isNetworkUnreliable", false);
   }
 
   setupWithPreloadedChannels(channels) {
@@ -854,11 +875,11 @@ export default class Chat extends Service {
 
     ajax("/chat/drafts", { type: "POST", data, ignoreUnsent: false })
       .then(() => {
-        this.set("isNetworkUnreliable", false);
+        this.markNetworkAsReliable();
       })
       .catch((error) => {
         if (!error.jqXHR?.responseJSON?.errors?.length) {
-          this.set("isNetworkUnreliable", true);
+          this.markNetworkAsUnreliable();
         }
       });
   }

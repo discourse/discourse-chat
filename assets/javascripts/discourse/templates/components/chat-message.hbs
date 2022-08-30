@@ -154,7 +154,7 @@
               {{#if (eq message.error "network_error")}}
                 <DButton
                   class="btn-primary btn-small retry-staged-message-btn"
-                  @action={{fn this.didResendStagedMessage message}}
+                  @action={{fn this.resendStagedMessage message}}
                   @label="chat.retry_staged_message"
                 />
               {{else}}

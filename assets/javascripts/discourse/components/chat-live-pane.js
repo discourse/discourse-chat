@@ -1107,6 +1107,7 @@ export default Component.extend({
       if (error.jqXHR?.responseJSON?.errors?.length) {
         stagedMessage.set("error", error.jqXHR.responseJSON.errors[0]);
       } else {
+        this.chat.markNetworkAsUnreliable();
         stagedMessage.set("error", "network_error");
       }
     }
@@ -1115,8 +1116,10 @@ export default Component.extend({
   },
 
   @action
-  didResendStagedMessage(stagedMessage) {
+  resendStagedMessage(stagedMessage) {
     this.set("sendingLoading", true);
+
+    stagedMessage.set("error", null);
 
     const data = {
       cooked: stagedMessage.cooked,
@@ -1128,6 +1131,9 @@ export default Component.extend({
     ChatApi.sendMessage(this.chatChannel.id, data)
       .catch((error) => {
         this._onSendError(data.staged_id, error);
+      })
+      .then(() => {
+        this.chat.markNetworkAsReliable();
       })
       .finally(() => {
         if (this._selfDeleted) {

@@ -53,6 +53,29 @@ acceptance("Discourse Chat | Unit | Service | chat", function (needs) {
     );
   }
 
+  test("#markNetworkAsReliable", async function (assert) {
+    setupMockPresenceChannel(this.chatService);
+
+    this.chatService.markNetworkAsReliable();
+
+    assert.strictEqual(this.chatService.isNetworkUnreliable, false);
+  });
+
+  test("#markNetworkAsUnreliable", async function (assert) {
+    setupMockPresenceChannel(this.chatService);
+    this.chatService.markNetworkAsUnreliable();
+
+    assert.strictEqual(this.chatService.isNetworkUnreliable, true);
+
+    await settled();
+
+    assert.strictEqual(
+      this.chatService.isNetworkUnreliable,
+      false,
+      "it resets state after a delay"
+    );
+  });
+
   test("#startTrackingChannel - sorts dm channels", async function (assert) {
     setupMockPresenceChannel(this.chatService);
     const fixtures = cloneJSON(directMessageChannels).mapBy("chat_channel");

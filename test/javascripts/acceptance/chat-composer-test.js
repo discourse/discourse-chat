@@ -23,7 +23,7 @@ acceptance("Discourse Chat - Composer - unreliable network", function (needs) {
       sendAttempt += 1;
       return sendAttempt === 1
         ? helper.response(500, {})
-        : helper.response({ sucess: true });
+        : helper.response({ success: true });
     });
   });
 

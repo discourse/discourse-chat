@@ -4,7 +4,7 @@ import {
   publishToMessageBus,
   query,
 } from "discourse/tests/helpers/qunit-helpers";
-import { click, fillIn, visit } from "@ember/test-helpers";
+import { click, fillIn, settled, visit } from "@ember/test-helpers";
 import { test } from "qunit";
 import { chatChannelPretender } from "../helpers/chat-pretenders";
 
@@ -78,6 +78,7 @@ acceptance("Discourse Chat - Composer - unreliable network", function (needs) {
     this.chatService.set("chatWindowFullPage", false);
     await visit("/chat/channel/11/-");
     await fillIn(".chat-composer-input", "network-error-message");
+    await settled();
 
     assert.ok(
       exists(".chat-composer__unreliable-network"),

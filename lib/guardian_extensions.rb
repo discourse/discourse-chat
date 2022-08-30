@@ -160,4 +160,8 @@ module DiscourseChat::GuardianExtensions
   def can_react?
     can_create_chat_message?
   end
+
+  def can_delete_category?(category)
+    super && !category.chat_channel
+  end
 end

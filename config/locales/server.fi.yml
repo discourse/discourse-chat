@@ -41,6 +41,7 @@ fi:
           title: "Hylkää"
         ignore:
           title: "Ohita"
+    personal_chat: "henkilökohtainen chat"
   discourse_automation:
     scriptables:
       send_chat_message:
@@ -48,3 +49,6 @@ fi:
   reviewable_score_types:
     needs_review:
       title: "Vaatii käsittelyä"
+  unsubscribe:
+    chat_summary:
+      never: Ei koskaan

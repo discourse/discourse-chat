@@ -41,6 +41,7 @@ ar:
           title: "عدم الموافقة"
         ignore:
           title: "تجاهل"
+    personal_chat: "الدردشة الشخصية"
   discourse_automation:
     scriptables:
       send_chat_message:
@@ -48,3 +49,6 @@ ar:
   reviewable_score_types:
     needs_review:
       title: "بحاجة إلى المراجعة"
+  unsubscribe:
+    chat_summary:
+      never: أبدًا

@@ -41,6 +41,7 @@ es:
           title: "No estoy de acuerdo"
         ignore:
           title: "Ignorar"
+    personal_chat: "chat personal"
   discourse_automation:
     scriptables:
       send_chat_message:
@@ -48,3 +49,6 @@ es:
   reviewable_score_types:
     needs_review:
       title: "Necesita revisión"
+  unsubscribe:
+    chat_summary:
+      never: Nunca

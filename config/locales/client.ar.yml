@@ -17,6 +17,15 @@ ar:
       cancel: "إلغاء"
       cancel_reply: "إلغاء الرد"
       chat_channels: "القنوات"
+      channel_settings:
+        edit: "تعديل"
+        join_channel: "الانضمام إلى القناة"
+        leave_channel: "مغادرة القناة"
+        join: "الانضمام"
+        leave: "مغادرة"
+      channels_list_popup:
+        browse: "استعراض القنوات"
+        create: "إنشاء قناة"
       click_to_join: "انقر هنا لعرض القنوات المتاحة"
       close: "إغلاق"
       collapse: "طي ساحب الدردشة"
@@ -24,12 +33,17 @@ ar:
       deleted: "تم حذف رسالة. [view]"
       delete: "حذف"
       edited: "تم التعديل"
+      empty_state:
+        direct_message: "يمكنك أيضًا بدء دردشة شخصية مع أحد المستخدمين أو أكثر."
+      email_frequency:
+        never: "أبدًا"
       enable: "تفعيل الدردشة"
       flag: "الإبلاغ"
       flagged: "لقد تم الإبلاغ عن الرسالة للمراجعة"
       invalid_access: "ليس لديك إذن الوصول لعرض قناة الدردشة هذه"
       in_reply_to: "ردًا على"
       heading: "الدردشة"
+      join: "الانضمام"
       new_messages: "رسائل جديدة"
       mention_warning:
         cannot_see:
@@ -92,6 +106,12 @@ ar:
         other: "%{count} ملف"
       you_flagged: "لقد أبلغت عن هذه الرسالة"
       exit: "عودة"
+      browse:
+        title: القنوات
+      about_view:
+        description: الوصف
+      channel_info:
+        back_to_channel: "العودة"
       channel_selector:
         title: "الانتقال إلى القناة"
         no_channels: "لا توجد قنوات تطابق بحثك"
@@ -99,6 +119,7 @@ ar:
         choose_category:
           label: "اختيار فئة"
           none: "اختر واحدة..."
+          default_hint: إدارة الوصول من خلال زيارة <a href=%{link} target="_blank">%{category} إعدادات الأمان</a>
         create: "إنشاء قناة"
         description: "الوصف (اختياري)"
         name: "اسم القناة"
@@ -207,6 +228,7 @@ ar:
       retention_reminders:
         public: "يتم الاحتفاظ بسجل القناة لمدة %{days} من الأيام."
         dm: "يتم الاحتفاظ بسجل الدردشة الشخصية لمدة %{days} من الأيام."
+      topic_button_title: "الدردشة"
     notifications:
       popup:
         chat_message: "رسالة دردشة جديدة"
@@ -234,3 +256,6 @@ ar:
         reviewable_chat_message:
           title: "رسالة دردشة تم الإبلاغ عنها"
           flagged_by: "تم الإبلاغ بواسطة"
+    keyboard_shortcuts_help:
+      chat:
+        title: "الدردشة"

@@ -41,6 +41,7 @@ pt_BR:
           title: "Discordar"
         ignore:
           title: "Ignorar"
+    personal_chat: "chat pessoal"
   discourse_automation:
     scriptables:
       send_chat_message:
@@ -48,3 +49,6 @@ pt_BR:
   reviewable_score_types:
     needs_review:
       title: "Precisa de revisão"
+  unsubscribe:
+    chat_summary:
+      never: Nunca

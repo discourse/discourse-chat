@@ -41,6 +41,7 @@ it:
           title: "Rifiuta"
         ignore:
           title: "Ignora"
+    personal_chat: "chat personale"
   discourse_automation:
     scriptables:
       send_chat_message:
@@ -48,3 +49,6 @@ it:
   reviewable_score_types:
     needs_review:
       title: "Necessita di revisione"
+  unsubscribe:
+    chat_summary:
+      never: Mai

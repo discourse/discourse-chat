@@ -1,8 +1,7 @@
 import { withPluginApi } from "discourse/lib/plugin-api";
-import discourseComputed from "discourse-common/utils/decorators";
 import I18n from "I18n";
 import User from "discourse/models/user";
-import { bind } from "discourse-common/utils/decorators";
+import discourseComputed, { bind } from "discourse-common/utils/decorators";
 import { getOwner } from "discourse-common/lib/get-owner";
 import { MENTION_KEYWORDS } from "discourse/plugins/discourse-chat/discourse/components/chat-message";
 import { clearChatComposerButtons } from "discourse/plugins/discourse-chat/discourse/lib/chat-composer-buttons";
@@ -150,9 +149,13 @@ export default {
 
       // TODO (martin) Better way to do this??
       container.owner.unregister("service:current-user");
-      container.owner.register("service:current-user", User.create(currentUser), {
-        instantiate: false,
-      });
+      container.owner.register(
+        "service:current-user",
+        User.create(currentUser),
+        {
+          instantiate: false,
+        }
+      );
     });
   },
 

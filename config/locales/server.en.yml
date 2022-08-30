@@ -170,3 +170,7 @@ en:
       select_title: "Set chat summary emails frequency to:"
       never: Never
       when_away: Only when away
+
+  category:
+    cannot_delete:
+      has_chat_channels: "Can't delete this category because it has chat channels."

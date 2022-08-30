@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-describe DiscourseChat::GuardianExtensions do
+RSpec.describe DiscourseChat::GuardianExtensions do
   fab!(:user) { Fabricate(:user) }
   fab!(:staff) { Fabricate(:user, admin: true) }
   fab!(:guardian) { Guardian.new(user) }
@@ -240,6 +240,29 @@ describe DiscourseChat::GuardianExtensions do
           it "allows owner to restore" do
             expect(guardian.can_restore_chat?(message, chatable)).to eq(true)
           end
+        end
+      end
+    end
+
+    describe "#can_delete_category?" do
+      alias_matcher :be_able_to_delete_category, :be_can_delete_category
+
+      let(:category) { channel.chatable }
+
+      context "when category has no channel" do
+        before do
+          category.chat_channel.destroy
+          category.reload
+        end
+
+        it "allows to delete the category" do
+          expect(staff_guardian).to be_able_to_delete_category(category)
+        end
+      end
+
+      context "when category has a channel" do
+        it "does not allow to delete the category" do
+          expect(staff_guardian).not_to be_able_to_delete_category(category)
         end
       end
     end

@@ -164,6 +164,7 @@ after_initialize do
   load File.expand_path("../lib/extensions/user_option_extension.rb", __FILE__)
   load File.expand_path("../lib/extensions/user_notifications_extension.rb", __FILE__)
   load File.expand_path("../lib/extensions/user_email_extension.rb", __FILE__)
+  load File.expand_path("../lib/extensions/category_extension.rb", __FILE__)
   load File.expand_path("../lib/slack_compatibility.rb", __FILE__)
   load File.expand_path("../lib/post_notification_handler.rb", __FILE__)
   load File.expand_path("../lib/secure_media_compatibility.rb", __FILE__)
@@ -216,16 +217,16 @@ after_initialize do
       limited_pretty_text_markdown_rules: ChatMessage::MARKDOWN_IT_RULES,
     }
 
-    Guardian.class_eval { include DiscourseChat::GuardianExtensions }
-    UserNotifications.class_eval { prepend DiscourseChat::UserNotificationsExtension }
-    UserOption.class_eval { prepend DiscourseChat::UserOptionExtension }
-    Category.class_eval { has_one :chat_channel, as: :chatable }
+    Guardian.prepend DiscourseChat::GuardianExtensions
+    UserNotifications.prepend DiscourseChat::UserNotificationsExtension
+    UserOption.prepend DiscourseChat::UserOptionExtension
+    Category.prepend DiscourseChat::CategoryExtension
     User.class_eval do
       has_many :user_chat_channel_memberships, dependent: :destroy
       has_many :chat_message_reactions, dependent: :destroy
       has_many :chat_mentions
     end
-    Jobs::UserEmail.class_eval { prepend DiscourseChat::UserEmailExtension }
+    Jobs::UserEmail.prepend DiscourseChat::UserEmailExtension
 
     Bookmark.register_bookmarkable(ChatMessageBookmarkable)
   end

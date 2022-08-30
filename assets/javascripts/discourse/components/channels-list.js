@@ -19,6 +19,28 @@ export default class ChannelsList extends Component {
   @reads("chat.directMessageChannels.[]") directMessageChannels;
   @empty("publicChannels") publicChannelsEmpty;
 
+  @computed("canCreateDirectMessageChannel")
+  get createDirectMessageChannelLabel() {
+    if (!this.canCreateDirectMessageChannel) {
+      return "chat.direct_messages.cannot_create";
+    }
+
+    return "chat.direct_messages.new";
+  }
+
+  @computed("canCreateDirectMessageChannel", "directMessageChannels")
+  get showDirectMessageChannels() {
+    return (
+      this.canCreateDirectMessageChannel ||
+      this.directMessageChannels?.length > 0
+    );
+  }
+
+  @computed("currentUser.allowDirectMessages")
+  get canCreateDirectMessageChannel() {
+    return this.currentUser?.allowDirectMessages;
+  }
+
   @computed("directMessageChannels.@each.last_message_sent_at")
   get sortedDirectMessageChannels() {
     if (!this.directMessageChannels?.length) {

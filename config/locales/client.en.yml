@@ -300,6 +300,7 @@ en:
         new: "New personal chat"
         create: "Go"
         leave: "Leave this personal chat"
+        cannot_create: "Sorry, you cannot send direct messages."
 
       incoming_webhooks:
         back: "Back"

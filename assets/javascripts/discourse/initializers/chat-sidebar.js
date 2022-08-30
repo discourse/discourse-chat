@@ -24,11 +24,21 @@ export default {
 
     withPluginApi("1.3.0", (api) => {
       const currentUser = api.getCurrentUser();
+
+      // TODO (martin) When sidebar has a displaySection option, we should
+      // move this logic there so the section can show up if the user does
+      // get new public or DM channels where they didn't before.
       const hasPublicChannels =
         currentUser?.chat_channels?.public_channels?.length;
       const shouldDisplayPublicChannelsSection = hasPublicChannels
         ? true
         : currentUser?.staff || currentUser?.has_joinable_public_channels;
+
+      const hasDirectMessageChannels =
+        currentUser?.chat_channels?.direct_message_channels?.length;
+      const shouldDisplayDirectMessageChannelsSection = hasDirectMessageChannels
+        ? true
+        : currentUser?.staff || currentUser?.allowDirectMessages;
 
       shouldDisplayPublicChannelsSection &&
         api.addSidebarSection(
@@ -215,250 +225,257 @@ export default {
           }
         );
 
-      api.addSidebarSection(
-        (BaseCustomSidebarSection, BaseCustomSidebarSectionLink) => {
-          const SidebarChatDirectMessagesSectionLink = class extends BaseCustomSidebarSectionLink {
-            @tracked chatChannelTrackingState =
-              this.chatService.currentUser.chat_channel_tracking_state[
-                this.channel.id
-              ];
+      shouldDisplayDirectMessageChannelsSection &&
+        api.addSidebarSection(
+          (BaseCustomSidebarSection, BaseCustomSidebarSectionLink) => {
+            const SidebarChatDirectMessagesSectionLink = class extends BaseCustomSidebarSectionLink {
+              @tracked chatChannelTrackingState =
+                this.chatService.currentUser.chat_channel_tracking_state[
+                  this.channel.id
+                ];
 
-            constructor({ channel, chatService }) {
-              super(...arguments);
-              this.channel = channel;
-              this.chatService = chatService;
+              constructor({ channel, chatService }) {
+                super(...arguments);
+                this.channel = channel;
+                this.chatService = chatService;
 
-              if (this.oneOnOneMessage) {
-                this.channel.chatable.users[0].trackStatus();
+                if (this.oneOnOneMessage) {
+                  this.channel.chatable.users[0].trackStatus();
+                }
               }
-            }
 
-            @bind
-            willDestroy() {
-              if (this.oneOnOneMessage) {
-                this.channel.chatable.users[0].stopTrackingStatus();
+              @bind
+              willDestroy() {
+                if (this.oneOnOneMessage) {
+                  this.channel.chatable.users[0].stopTrackingStatus();
+                }
               }
-            }
 
-            get name() {
-              return dasherize(this.title);
-            }
+              get name() {
+                return dasherize(this.title);
+              }
 
-            get route() {
-              return "chat.channel";
-            }
+              get route() {
+                return "chat.channel";
+              }
 
-            get models() {
-              return [this.channel.id, slugifyChannel(this.title)];
-            }
+              get models() {
+                return [this.channel.id, slugifyChannel(this.title)];
+              }
 
-            get title() {
-              return escapeExpression(this.channel.title);
-            }
+              get title() {
+                return escapeExpression(this.channel.title);
+              }
 
-            get oneOnOneMessage() {
-              return this.channel.chatable.users.length === 1;
-            }
+              get oneOnOneMessage() {
+                return this.channel.chatable.users.length === 1;
+              }
 
-            get text() {
-              const username = this.title.replaceAll("@", "");
-              if (this.oneOnOneMessage) {
-                const status = this.channel.chatable.users[0].get("status");
-                const statusHtml = status ? this._userStatusHtml(status) : "";
-                return htmlSafe(
-                  `${escapeExpression(
-                    username
-                  )}${statusHtml} ${decorateUsername(
-                    escapeExpression(username)
-                  )}`
+              get text() {
+                const username = this.title.replaceAll("@", "");
+                if (this.oneOnOneMessage) {
+                  const status = this.channel.chatable.users[0].get("status");
+                  const statusHtml = status ? this._userStatusHtml(status) : "";
+                  return htmlSafe(
+                    `${escapeExpression(
+                      username
+                    )}${statusHtml} ${decorateUsername(
+                      escapeExpression(username)
+                    )}`
+                  );
+                } else {
+                  return username;
+                }
+              }
+
+              get prefixType() {
+                if (this.oneOnOneMessage) {
+                  return "image";
+                } else {
+                  return "text";
+                }
+              }
+
+              get prefixValue() {
+                if (this.channel.chatable.users.length === 1) {
+                  return avatarUrl(
+                    this.channel.chatable.users[0].avatar_template,
+                    "tiny"
+                  );
+                } else {
+                  return this.channel.chatable.users.length;
+                }
+              }
+
+              get prefixCSSClass() {
+                const activeUsers = this.chatService.presenceChannel.users;
+                const user = this.channel.chatable.users[0];
+                if (
+                  !!activeUsers?.findBy("id", user?.id) ||
+                  !!activeUsers?.findBy("username", user?.username)
+                ) {
+                  return "active";
+                }
+                return "";
+              }
+
+              get suffixType() {
+                return "icon";
+              }
+
+              get suffixValue() {
+                return this.chatChannelTrackingState?.unread_count > 0
+                  ? "circle"
+                  : "";
+              }
+
+              get suffixCSSClass() {
+                return "urgent";
+              }
+
+              get hoverType() {
+                return "icon";
+              }
+
+              get hoverValue() {
+                return "times";
+              }
+
+              get hoverAction() {
+                return () => {
+                  this.chatService.unfollowChannel(this.channel);
+                };
+              }
+
+              get hoverTitle() {
+                return I18n.t("chat.direct_messages.leave");
+              }
+
+              _userStatusHtml(status) {
+                const emoji = escapeExpression(`:${status.emoji}:`);
+                const title = this._userStatusTitle(status);
+                return `<span class="user-status">${emojiUnescape(emoji, {
+                  title,
+                })}</span>`;
+              }
+
+              _userStatusTitle(status) {
+                let title = `${escapeExpression(status.description)}`;
+
+                if (status.ends_at) {
+                  const untilFormatted = until(
+                    status.ends_at,
+                    this.chatService.currentUser.timezone,
+                    this.chatService.currentUser.locale
+                  );
+                  title += ` ${untilFormatted}`;
+                }
+
+                return title;
+              }
+            };
+
+            const SidebarChatDirectMessagesSection = class extends BaseCustomSidebarSection {
+              @service site;
+              @tracked sectionLinks = [];
+
+              constructor() {
+                super(...arguments);
+
+                if (container.isDestroyed) {
+                  return;
+                }
+                this.chatService = container.lookup("service:chat");
+                this.chatService.appEvents.on(
+                  "chat:user-tracking-state-changed",
+                  this._refreshDirectMessageChannels
                 );
-              } else {
-                return username;
+                this._refreshDirectMessageChannels();
               }
-            }
 
-            get prefixType() {
-              if (this.oneOnOneMessage) {
-                return "image";
-              } else {
-                return "text";
-              }
-            }
-
-            get prefixValue() {
-              if (this.channel.chatable.users.length === 1) {
-                return avatarUrl(
-                  this.channel.chatable.users[0].avatar_template,
-                  "tiny"
+              @bind
+              willDestroy() {
+                if (container.isDestroyed) {
+                  return;
+                }
+                this.chatService.appEvents.off(
+                  "chat:user-tracking-state-changed",
+                  this._refreshDirectMessageChannels
                 );
-              } else {
-                return this.channel.chatable.users.length;
-              }
-            }
-
-            get prefixCSSClass() {
-              const activeUsers = this.chatService.presenceChannel.users;
-              const user = this.channel.chatable.users[0];
-              if (
-                !!activeUsers?.findBy("id", user?.id) ||
-                !!activeUsers?.findBy("username", user?.username)
-              ) {
-                return "active";
-              }
-              return "";
-            }
-
-            get suffixType() {
-              return "icon";
-            }
-
-            get suffixValue() {
-              return this.chatChannelTrackingState?.unread_count > 0
-                ? "circle"
-                : "";
-            }
-
-            get suffixCSSClass() {
-              return "urgent";
-            }
-
-            get hoverType() {
-              return "icon";
-            }
-
-            get hoverValue() {
-              return "times";
-            }
-
-            get hoverAction() {
-              return () => {
-                this.chatService.unfollowChannel(this.channel);
-              };
-            }
-
-            get hoverTitle() {
-              return I18n.t("chat.direct_messages.leave");
-            }
-
-            _userStatusHtml(status) {
-              const emoji = escapeExpression(`:${status.emoji}:`);
-              const title = this._userStatusTitle(status);
-              return `<span class="user-status">${emojiUnescape(emoji, {
-                title,
-              })}</span>`;
-            }
-
-            _userStatusTitle(status) {
-              let title = `${escapeExpression(status.description)}`;
-
-              if (status.ends_at) {
-                const untilFormatted = until(
-                  status.ends_at,
-                  this.chatService.currentUser.timezone,
-                  this.chatService.currentUser.locale
-                );
-                title += ` ${untilFormatted}`;
               }
 
-              return title;
-            }
-          };
-
-          const SidebarChatDirectMessagesSection = class extends BaseCustomSidebarSection {
-            @service site;
-            @tracked sectionLinks = [];
-
-            constructor() {
-              super(...arguments);
-
-              if (container.isDestroyed) {
-                return;
-              }
-              this.chatService = container.lookup("service:chat");
-              this.chatService.appEvents.on(
-                "chat:user-tracking-state-changed",
-                this._refreshPms
-              );
-              this._refreshPms();
-            }
-
-            @bind
-            willDestroy() {
-              if (container.isDestroyed) {
-                return;
-              }
-              this.chatService.appEvents.off(
-                "chat:user-tracking-state-changed",
-                this._refreshPms
-              );
-            }
-
-            @bind
-            _refreshPms() {
-              const newSectionLinks = [];
-              this.chatService.getChannels().then((channels) => {
-                this.chatService
-                  .truncateDirectMessageChannels(channels.directMessageChannels)
-                  .forEach((channel) => {
-                    newSectionLinks.push(
-                      new SidebarChatDirectMessagesSectionLink({
-                        channel,
-                        chatService: this.chatService,
-                      })
-                    );
-                  });
-                this.sectionLinks = newSectionLinks;
-              });
-            }
-
-            get name() {
-              return "chat-dms";
-            }
-
-            get title() {
-              return I18n.t("chat.direct_messages.title");
-            }
-
-            get text() {
-              return I18n.t("chat.direct_messages.title");
-            }
-
-            get actions() {
-              return [
-                {
-                  id: "startDm",
-                  title: I18n.t("chat.direct_messages.new"),
-                  action: () => {
-                    if (
-                      this.site.mobileView ||
-                      this.chatService.router.currentRouteName.startsWith("")
-                    ) {
-                      this.chatService.router.transitionTo(
-                        "chat.draft-channel"
+              @bind
+              _refreshDirectMessageChannels() {
+                const newSectionLinks = [];
+                this.chatService.getChannels().then((channels) => {
+                  this.chatService
+                    .truncateDirectMessageChannels(
+                      channels.directMessageChannels
+                    )
+                    .forEach((channel) => {
+                      newSectionLinks.push(
+                        new SidebarChatDirectMessagesSectionLink({
+                          channel,
+                          chatService: this.chatService,
+                        })
                       );
-                    } else {
-                      this.appEvents.trigger(
-                        "chat:open-view",
-                        DRAFT_CHANNEL_VIEW
-                      );
-                    }
+                    });
+                  this.sectionLinks = newSectionLinks;
+                });
+              }
+
+              get name() {
+                return "chat-dms";
+              }
+
+              get title() {
+                return I18n.t("chat.direct_messages.title");
+              }
+
+              get text() {
+                return I18n.t("chat.direct_messages.title");
+              }
+
+              get actions() {
+                if (!this.currentUser?.allowDirectMessages) {
+                  return [];
+                }
+
+                return [
+                  {
+                    id: "startDm",
+                    title: I18n.t("chat.direct_messages.new"),
+                    action: () => {
+                      if (
+                        this.site.mobileView ||
+                        this.chatService.router.currentRouteName.startsWith("")
+                      ) {
+                        this.chatService.router.transitionTo(
+                          "chat.draft-channel"
+                        );
+                      } else {
+                        this.appEvents.trigger(
+                          "chat:open-view",
+                          DRAFT_CHANNEL_VIEW
+                        );
+                      }
+                    },
                   },
-                },
-              ];
-            }
+                ];
+              }
 
-            get actionsIcon() {
-              return "plus";
-            }
+              get actionsIcon() {
+                return "plus";
+              }
 
-            get links() {
-              return this.sectionLinks;
-            }
-          };
+              get links() {
+                return this.sectionLinks;
+              }
+            };
 
-          return SidebarChatDirectMessagesSection;
-        }
-      );
+            return SidebarChatDirectMessagesSection;
+          }
+        );
     });
   },
 };

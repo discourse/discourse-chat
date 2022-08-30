@@ -66,9 +66,16 @@ class DiscourseChat::ChatMessageCreator
   def validate_channel_status!
     return if @guardian.can_create_channel_message?(@chat_channel)
 
-    raise StandardError.new(
-            I18n.t("chat.errors.channel_new_message_disallowed", status: @chat_channel.status_name),
-          )
+    if !@guardian.can_create_direct_message?
+      raise StandardError.new(I18n.t("chat.errors.user_cannot_send_direct_messages"))
+    else
+      raise StandardError.new(
+              I18n.t(
+                "chat.errors.channel_new_message_disallowed",
+                status: @chat_channel.status_name,
+              ),
+            )
+    end
   end
 
   def validate_message!(has_uploads:)

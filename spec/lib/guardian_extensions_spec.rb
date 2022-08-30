@@ -8,6 +8,8 @@ describe DiscourseChat::GuardianExtensions do
   fab!(:guardian) { Guardian.new(user) }
   fab!(:staff_guardian) { Guardian.new(staff) }
   fab!(:chat_group) { Fabricate(:group) }
+  fab!(:channel) { Fabricate(:chat_channel) }
+  fab!(:dm_channel) { Fabricate(:direct_message_chat_channel) }
 
   before { SiteSetting.chat_allowed_groups = chat_group.id }
 
@@ -17,8 +19,6 @@ describe DiscourseChat::GuardianExtensions do
   end
 
   describe "chat channel" do
-    fab!(:channel) { Fabricate(:chat_channel) }
-
     it "only staff can create channels" do
       expect(guardian.can_create_chat_channel?).to eq(false)
       expect(staff_guardian.can_create_chat_channel?).to eq(true)
@@ -240,6 +240,65 @@ describe DiscourseChat::GuardianExtensions do
           it "allows owner to restore" do
             expect(guardian.can_restore_chat?(message, chatable)).to eq(true)
           end
+        end
+      end
+    end
+  end
+
+  describe "#can_create_channel_message?" do
+    context "when user is staff" do
+      it "returns true if the channel is open" do
+        channel.update!(status: :open)
+        expect(staff_guardian.can_create_channel_message?(channel)).to eq(true)
+      end
+
+      it "returns true if the channel is closed" do
+        channel.update!(status: :closed)
+        expect(staff_guardian.can_create_channel_message?(channel)).to eq(true)
+      end
+
+      it "returns false if the channel is archived" do
+        channel.update!(status: :archived)
+        expect(staff_guardian.can_create_channel_message?(channel)).to eq(false)
+      end
+
+      context "for direct message channels" do
+        it "returns true if enable_personal_messages is false since staff can always send DMs" do
+          channel.update!(status: :open)
+          SiteSetting.enable_personal_messages = false
+          expect(staff_guardian.can_create_channel_message?(channel)).to eq(true)
+        end
+      end
+    end
+
+    context "when user is not staff" do
+      it "returns true if the channel is open" do
+        channel.update!(status: :open)
+        expect(guardian.can_create_channel_message?(channel)).to eq(true)
+      end
+
+      it "returns false if the channel is closed" do
+        channel.update!(status: :closed)
+        expect(guardian.can_create_channel_message?(channel)).to eq(false)
+      end
+
+      it "returns false if the channel is archived" do
+        channel.update!(status: :archived)
+        expect(guardian.can_create_channel_message?(channel)).to eq(false)
+      end
+
+      context "for direct message channels" do
+        it "returns false if enable_personal_messages is false" do
+          channel.update!(status: :open)
+          SiteSetting.enable_personal_messages = false
+          expect(guardian.can_create_channel_message?(dm_channel)).to eq(false)
+        end
+
+        it "returns false if the user is not the correct trust level for sending personal messages" do
+          user.update!(trust_level: 1)
+          channel.update!(status: :open)
+          SiteSetting.min_trust_to_send_messages = 4
+          expect(guardian.can_create_channel_message?(dm_channel)).to eq(false)
         end
       end
     end

@@ -1,7 +1,7 @@
 $radius: 10px;
 
 .chat-skeleton {
-  height: 100vh;
+  height: auto;
 
   &__header {
     display: flex;
@@ -104,8 +104,8 @@ $radius: 10px;
       width: 60%;
     }
 
-    &.-small {
-      width: 75%;
+    &.-large {
+      width: 85%;
     }
   }
 

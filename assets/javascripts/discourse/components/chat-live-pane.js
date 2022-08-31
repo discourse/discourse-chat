@@ -94,7 +94,7 @@ export default Component.extend({
 
     this._scrollerEl = this.element.querySelector(".chat-messages-scroll");
     this._scrollerEl.addEventListener("scroll", this.onScrollHandler, {
-      passive: true,
+      passive: false,
     });
     window.addEventListener("resize", this.onResizeHandler);
 
@@ -251,15 +251,20 @@ export default Component.extend({
   },
 
   @bind
-  _fetchMoreMessages(direction, scrollFix = false) {
+  _fetchMoreMessages(direction) {
     const loadingPast = direction === PAST;
     const canLoadMore = loadingPast
-      ? this.details.can_load_more_past
-      : this.details.can_load_more_future;
+      ? this.details?.can_load_more_past
+      : this.details?.can_load_more_future;
     const loadingMoreKey = `loadingMore${capitalize(direction)}`;
     const loadingMore = this.get(loadingMoreKey);
 
-    if (!canLoadMore || loadingMore || this.loading || !this.messages.length) {
+    if (
+      (this.details && !canLoadMore) ||
+      loadingMore ||
+      this.loading ||
+      !this.messages.length
+    ) {
       return Promise.resolve();
     }
 
@@ -301,9 +306,7 @@ export default Component.extend({
           this.scrollToMessage(newMessages.firstObject.messageLookupId);
         }
 
-        if (scrollFix) {
-          this._iosScrollFix(messages, direction);
-        }
+        this._iosScrollFix(messages, direction);
 
         return messages;
       })
@@ -353,8 +356,8 @@ export default Component.extend({
     });
   },
 
-  _fetchMoreMessagesThrottled(direction, scrollFix = false) {
-    throttle(this, "_fetchMoreMessages", direction, scrollFix, 500, true);
+  _fetchMoreMessagesThrottled(direction) {
+    throttle(this, "_fetchMoreMessages", direction, 500);
   },
 
   setCanLoadMoreDetails(meta) {
@@ -646,12 +649,12 @@ export default Component.extend({
           this._scrollerEl.scrollTop
       ) <= STICKY_SCROLL_LENIENCE;
     if (atTop) {
-      this._fetchMoreMessagesThrottled(PAST, true);
+      this._fetchMoreMessagesThrottled(PAST);
     } else {
       this._updateLastReadMessage();
 
       if (Math.abs(this._scrollerEl.scrollTop) <= STICKY_SCROLL_LENIENCE) {
-        this._fetchMoreMessagesThrottled(FUTURE, true);
+        this._fetchMoreMessagesThrottled(FUTURE);
       }
     }
 

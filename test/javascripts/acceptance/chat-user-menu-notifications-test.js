@@ -47,7 +47,7 @@ acceptance(
 
     test("chat notifications tab", async function (assert) {
       updateCurrentUser({
-        grouped_unread_high_priority_notifications: {
+        grouped_unread_notifications: {
           29: 3, // chat_mention notification type
           31: 1, // chat_invitation notification type
         },

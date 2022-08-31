@@ -55,8 +55,6 @@ register_asset "stylesheets/sidebar-extensions.scss"
 register_asset "stylesheets/desktop/sidebar-extensions.scss", :desktop
 register_asset "stylesheets/common/chat-message-separator.scss"
 register_asset "stylesheets/common/chat-onebox.scss"
-register_asset "stylesheets/common/chat-skeleton.scss"
-register_asset "stylesheets/colors.scss", :color_definitions
 
 register_svg_icon "comments"
 register_svg_icon "comment-slash"

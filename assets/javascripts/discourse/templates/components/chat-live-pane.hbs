@@ -1,3 +1,8 @@
+{{d-progress-bar
+  key="chat-live-pane-loader"
+  isLoading=(or this.loadingMorePast this.loadingMoreFuture this.loading)
+}}
+
 {{#if (and fullPage includeHeader)}}
   <div
     class="chat-full-page-header
@@ -39,10 +44,6 @@
 
 <div class="chat-messages-scroll chat-messages-container">
   <div class="chat-messages-container">
-    {{#if (or this.loading this.loadingMorePast)}}
-      {{chat-skeleton tagName=""}}
-    {{/if}}
-
     {{#each this.messages as |message|}}
       {{chat-message
         message=message
@@ -64,10 +65,6 @@
         resendStagedMessage=this.resendStagedMessage
       }}
     {{/each}}
-
-    {{#if this.loadingMoreFuture}}
-      {{chat-skeleton tagName=""}}
-    {{/if}}
   </div>
 
   {{#if allPastMessagesLoaded}}

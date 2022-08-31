@@ -537,3 +537,40 @@
     pointer-events: none;
   }
 }
+
+.retry-staged-message-btn {
+  padding: 0.5em 0;
+  background: none;
+
+  &:hover,
+  &:focus,
+  &:active {
+    background: none !important;
+  }
+
+  &:focus .retry-staged-message-btn__action {
+    text-decoration: underline;
+  }
+
+  .d-icon,
+  &__title,
+  &:hover .d-icon {
+    color: var(--danger) !important;
+    font-size: var(--font-down-1);
+  }
+
+  .d-icon {
+    margin-right: 0.25em !important;
+  }
+
+  &__action {
+    color: var(--tertiary);
+    font-size: var(--font-down-1);
+    margin-left: 0.25em;
+
+    &:hover {
+      color: var(--tertiary-high);
+      text-decoration: underline;
+    }
+  }
+}

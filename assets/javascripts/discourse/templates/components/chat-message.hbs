@@ -153,10 +153,17 @@
             <div class="chat-send-error">
               {{#if (eq message.error "network_error")}}
                 <DButton
-                  class="btn-primary btn-small retry-staged-message-btn"
+                  class="retry-staged-message-btn"
                   @action={{fn this.resendStagedMessage message}}
-                  @label="chat.retry_staged_message"
-                />
+                >
+                  {{d-icon "exclamation-circle"}}
+                  <span class="retry-staged-message-btn__title">
+                    {{i18n "chat.retry_staged_message.title"}}
+                  </span>
+                  <span class="retry-staged-message-btn__action">
+                    {{i18n "chat.retry_staged_message.action"}}
+                  </span>
+                </DButton>
               {{else}}
                 {{message.error}}
               {{/if}}

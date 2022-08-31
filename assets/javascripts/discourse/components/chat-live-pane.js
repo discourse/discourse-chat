@@ -15,7 +15,7 @@ import I18n from "I18n";
 import { A } from "@ember/array";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
-import { cancel, next, schedule, throttle } from "@ember/runloop";
+import { cancel, next, schedule } from "@ember/runloop";
 import discourseLater from "discourse-common/lib/later";
 import { inject as service } from "@ember/service";
 import { Promise } from "rsvp";
@@ -260,8 +260,7 @@ export default Component.extend({
     this.set("draft", this.chat.getDraftForChannel(channelId));
   },
 
-  @bind
-  _fetchMoreMessages(direction, scrollFix = false) {
+  _fetchMoreMessages(direction) {
     const loadingPast = direction === PAST;
     const canLoadMore = loadingPast
       ? this.details.can_load_more_past
@@ -311,10 +310,6 @@ export default Component.extend({
           this.scrollToMessage(newMessages.firstObject.messageLookupId);
         }
 
-        if (scrollFix) {
-          this._iosScrollFix(messages, direction);
-        }
-
         return messages;
       })
       .catch(this._handle429Errors)
@@ -359,12 +354,8 @@ export default Component.extend({
         return;
       }
 
-      this._fetchMoreMessagesThrottled(PAST);
+      this._fetchMoreMessages(PAST);
     });
-  },
-
-  _fetchMoreMessagesThrottled(direction, scrollFix = false) {
-    throttle(this, "_fetchMoreMessages", direction, scrollFix, 500, true);
   },
 
   setCanLoadMoreDetails(meta) {
@@ -652,9 +643,13 @@ export default Component.extend({
           this._scrollerEl.scrollTop
       ) <= STICKY_SCROLL_LENIENCE;
     if (atTop) {
-      this._fetchMoreMessagesThrottled(PAST);
+      this._fetchMoreMessages(PAST).then((newMessages) => {
+        this._iosScrollFix(newMessages, PAST);
+      });
     } else if (Math.abs(this._scrollerEl.scrollTop) <= STICKY_SCROLL_LENIENCE) {
-      this._fetchMoreMessagesThrottled(FUTURE);
+      this._fetchMoreMessages(FUTURE).then((newMessages) => {
+        this._iosScrollFix(newMessages, FUTURE);
+      });
     }
 
     this._calculateStickScroll(event.forceShowScrollToBottom);
@@ -1473,7 +1468,7 @@ export default Component.extend({
   },
 
   _handle429Errors(error) {
-    if (error?.jqXHR?.status === 429) {
+    if (error?.jqXHR.status === 429) {
       popupAjaxError(error);
     } else {
       throw error;

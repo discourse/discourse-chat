@@ -3,6 +3,7 @@ import I18n from "I18n";
 import { computed } from "@ember/object";
 import User from "discourse/models/user";
 import UserChatChannelMembership from "discourse/plugins/discourse-chat/discourse/models/user-chat-channel-membership";
+import { ajax } from "discourse/lib/ajax";
 
 export const CHATABLE_TYPES = {
   directMessageChannel: "DirectMessageChannel",
@@ -59,6 +60,7 @@ const READONLY_STATUSES = [
 
 export default class ChatChannel extends RestModel {
   isDraft = false;
+  lastSendReadMessageId = null;
 
   @computed("chatable_type")
   get isDirectMessageChannel() {
@@ -129,6 +131,18 @@ export default class ChatChannel extends RestModel {
       mobile_notification_level: membership.mobile_notification_level,
     });
   }
+
+  updateLastReadMessage(messageId) {
+    if (!this.isFollowing || !messageId) {
+      return;
+    }
+
+    return ajax(`/chat/${this.id}/read/${messageId}.json`, {
+      method: "PUT",
+    }).then(() => {
+      this.set("lastSendReadMessageId", messageId);
+    });
+  }
 }
 
 ChatChannel.reopenClass({
@@ -136,6 +150,10 @@ ChatChannel.reopenClass({
     args = args || {};
     this._initUserModels(args);
     this._initUserMembership(args);
+
+    args.lastSendReadMessageId =
+      args.current_user_membership?.last_read_message_id;
+
     return this._super(args);
   },
 

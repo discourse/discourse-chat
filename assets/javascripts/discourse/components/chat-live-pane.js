@@ -92,7 +92,7 @@ export default Component.extend({
 
     this._scrollerEl = this.element.querySelector(".chat-messages-scroll");
     this._scrollerEl.addEventListener("scroll", this.onScrollHandler, {
-      passive: false,
+      passive: true,
     });
     window.addEventListener("resize", this.onResizeHandler);
 
@@ -261,20 +261,15 @@ export default Component.extend({
   },
 
   @bind
-  _fetchMoreMessages(direction) {
+  _fetchMoreMessages(direction, scrollFix = false) {
     const loadingPast = direction === PAST;
     const canLoadMore = loadingPast
-      ? this.details?.can_load_more_past
-      : this.details?.can_load_more_future;
+      ? this.details.can_load_more_past
+      : this.details.can_load_more_future;
     const loadingMoreKey = `loadingMore${capitalize(direction)}`;
     const loadingMore = this.get(loadingMoreKey);
 
-    if (
-      (this.details && !canLoadMore) ||
-      loadingMore ||
-      this.loading ||
-      !this.messages.length
-    ) {
+    if (!canLoadMore || loadingMore || this.loading || !this.messages.length) {
       return Promise.resolve();
     }
 
@@ -316,7 +311,9 @@ export default Component.extend({
           this.scrollToMessage(newMessages.firstObject.messageLookupId);
         }
 
-        this._iosScrollFix(messages, direction);
+        if (scrollFix) {
+          this._iosScrollFix(messages, direction);
+        }
 
         return messages;
       })
@@ -366,8 +363,8 @@ export default Component.extend({
     });
   },
 
-  _fetchMoreMessagesThrottled(direction) {
-    throttle(this, "_fetchMoreMessages", direction, 500);
+  _fetchMoreMessagesThrottled(direction, scrollFix = false) {
+    throttle(this, "_fetchMoreMessages", direction, scrollFix, 500, true);
   },
 
   setCanLoadMoreDetails(meta) {

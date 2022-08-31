@@ -1532,7 +1532,7 @@ export default Component.extend({
   },
 
   _handle429Errors(error) {
-    if (error?.jqXHR.status === 429) {
+    if (error?.jqXHR?.status === 429) {
       popupAjaxError(error);
     } else {
       throw error;

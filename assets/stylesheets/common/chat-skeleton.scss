@@ -93,13 +93,20 @@ $bg-color-even: #f8f8f8;
     }
 
     &.-line1 {
-      width: 75%;
       margin-top: 0.5rem;
       margin-bottom: 0.5em;
     }
 
-    &.-line2 {
+    &.-small {
+      width: 35%;
+    }
+
+    &.-medium {
       width: 60%;
+    }
+
+    &.-small {
+      width: 75%;
     }
   }
 

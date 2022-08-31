@@ -22,7 +22,7 @@ module("Discourse Chat | Component | chat-live-pane", function (hooks) {
     this.set("channel", fabricators.chatChannel());
   });
 
-  test("chatable name", async function (assert) {
+  test("Shows skeleton when loading", async function (assert) {
     pretender.get(`/chat/chat_channels.json`, () => [200, {}, [this.channel]]);
     pretender.get(`/chat/:id/messages.json`, () => [
       200,

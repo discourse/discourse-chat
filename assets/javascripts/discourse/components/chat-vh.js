@@ -1,6 +1,7 @@
 import { bind } from "discourse-common/utils/decorators";
 import Component from "@ember/component";
 import { throttle } from "@ember/runloop";
+import isZoomed from "discourse/plugins/discourse-chat/discourse/lib/zoom-check";
 
 const CSS_VAR = "--chat-vh";
 
@@ -34,7 +35,7 @@ export default class ChatVh extends Component {
       return;
     }
 
-    if (document.documentElement.clientWidth / window.innerWidth !== 1) {
+    if (isZoomed()) {
       return;
     }
 

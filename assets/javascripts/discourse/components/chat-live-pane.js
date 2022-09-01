@@ -26,6 +26,7 @@ import {
   onPresenceChange,
   removeOnPresenceChange,
 } from "discourse/lib/user-presence";
+import isZoomed from "discourse/plugins/discourse-chat/discourse/lib/zoom-check";
 
 const MAX_RECENT_MSGS = 100;
 const STICKY_SCROLL_LENIENCE = 50;
@@ -1411,7 +1412,7 @@ export default Component.extend({
     if (
       this.capabilities.isIOS &&
       document.documentElement.classList.contains("keyboard-visible") &&
-      document.documentElement.clientWidth / window.innerWidth === 1 // not zoomed
+      !isZoomed()
     ) {
       document.documentElement.scrollTo(0, 0);
     }

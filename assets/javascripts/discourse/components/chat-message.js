@@ -281,6 +281,11 @@ export default Component.extend({
 
   @action
   handleTouchStart() {
+    // if zoomed don't track long press
+    if (document.documentElement.clientWidth / window.innerWidth !== 1) {
+      return;
+    }
+
     if (!this.isHovered) {
       // when testing this must be triggered immediately because there
       // is no concept of "long press" there, the Ember `tap` test helper
@@ -308,6 +313,11 @@ export default Component.extend({
 
   @action
   _handleLongPress() {
+    // if zoomed don't handle long press
+    if (document.documentElement.clientWidth / window.innerWidth !== 1) {
+      return;
+    }
+
     document.activeElement.blur();
     document.querySelector(".chat-composer-input").blur();
 

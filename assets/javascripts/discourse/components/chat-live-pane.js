@@ -15,7 +15,7 @@ import I18n from "I18n";
 import { A } from "@ember/array";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
-import { cancel, next, schedule } from "@ember/runloop";
+import { cancel, next, schedule, throttle } from "@ember/runloop";
 import discourseLater from "discourse-common/lib/later";
 import { inject as service } from "@ember/service";
 import { Promise } from "rsvp";
@@ -28,7 +28,7 @@ import {
 } from "discourse/lib/user-presence";
 
 const MAX_RECENT_MSGS = 100;
-const STICKY_SCROLL_LENIENCE = 4;
+const STICKY_SCROLL_LENIENCE = 50;
 const PAGE_SIZE = 50;
 
 const PAST = "past";
@@ -95,6 +95,9 @@ export default Component.extend({
       passive: true,
     });
     window.addEventListener("resize", this.onResizeHandler);
+    window.addEventListener("mousewheel", this.onScrollHandler, {
+      passive: true,
+    });
 
     this.appEvents.on("chat:cancel-message-selection", this, "cancelSelecting");
 
@@ -117,6 +120,7 @@ export default Component.extend({
       ?.removeEventListener("scroll", this.onScrollHandler);
 
     window.removeEventListener("resize", this.onResizeHandler);
+    window.removeEventListener("mousewheel", this.onScrollHandler);
 
     this.appEvents.off(
       "chat-live-pane:highlight-message",
@@ -191,8 +195,7 @@ export default Component.extend({
 
   @bind
   onScrollHandler(event) {
-    cancel(this.stickyScrollTimer);
-    this.stickyScrollTimer = discourseDebounce(this, this.onScroll, event, 100);
+    throttle(this, this.onScroll, event, 100, true);
   },
 
   @bind
@@ -260,15 +263,21 @@ export default Component.extend({
     this.set("draft", this.chat.getDraftForChannel(channelId));
   },
 
+  @bind
   _fetchMoreMessages(direction) {
     const loadingPast = direction === PAST;
     const canLoadMore = loadingPast
-      ? this.details.can_load_more_past
-      : this.details.can_load_more_future;
+      ? this.details?.can_load_more_past
+      : this.details?.can_load_more_future;
     const loadingMoreKey = `loadingMore${capitalize(direction)}`;
     const loadingMore = this.get(loadingMoreKey);
 
-    if (!canLoadMore || loadingMore || this.loading || !this.messages.length) {
+    if (
+      (this.details && !canLoadMore) ||
+      loadingMore ||
+      this.loading ||
+      !this.messages.length
+    ) {
       return Promise.resolve();
     }
 
@@ -354,8 +363,12 @@ export default Component.extend({
         return;
       }
 
-      this._fetchMoreMessages(PAST);
+      this._fetchMoreMessagesThrottled(PAST);
     });
+  },
+
+  _fetchMoreMessagesThrottled(direction) {
+    throttle(this, "_fetchMoreMessages", direction, 500);
   },
 
   setCanLoadMoreDetails(meta) {
@@ -642,14 +655,11 @@ export default Component.extend({
           this._scrollerEl.clientHeight +
           this._scrollerEl.scrollTop
       ) <= STICKY_SCROLL_LENIENCE;
+
     if (atTop) {
-      this._fetchMoreMessages(PAST).then((newMessages) => {
-        this._iosScrollFix(newMessages, PAST);
-      });
+      this._fetchMoreMessagesThrottled(PAST);
     } else if (Math.abs(this._scrollerEl.scrollTop) <= STICKY_SCROLL_LENIENCE) {
-      this._fetchMoreMessages(FUTURE).then((newMessages) => {
-        this._iosScrollFix(newMessages, FUTURE);
-      });
+      this._fetchMoreMessagesThrottled(FUTURE);
     }
 
     this._calculateStickScroll(event.forceShowScrollToBottom);
@@ -1400,58 +1410,11 @@ export default Component.extend({
     // doesn’t scroll out of viewport
     if (
       this.capabilities.isIOS &&
-      document.documentElement.classList.contains("keyboard-visible")
+      document.documentElement.classList.contains("keyboard-visible") &&
+      document.documentElement.clientWidth / window.innerWidth === 1 // not zoomed
     ) {
       document.documentElement.scrollTo(0, 0);
     }
-  },
-
-  // This fix prevents a white screen when appending/prepending new content
-  // simulating a noop scroll forces to display the new content
-  // technically it should be possible to fix it with css and using
-  // -webkit-transform: translate3d(0,0,0); on the right elements
-  // but this has proven to either not work or cause other issues so far
-  _iosScrollFix(newMessages, direction) {
-    if (!this.capabilities.isIOS) {
-      return;
-    }
-
-    if (!newMessages?.length) {
-      return;
-    }
-
-    schedule("afterRender", () => {
-      if (this._selfDeleted) {
-        return;
-      }
-
-      let siblingId;
-      if (direction === FUTURE) {
-        const firstLoadedMessageId = newMessages.firstObject.messageLookupId;
-        const firstLoadedMessage = document.querySelector(
-          `.chat-message-container[data-id="${firstLoadedMessageId}"]`
-        );
-        siblingId = firstLoadedMessage.previousElementSibling?.dataset.id;
-      } else {
-        const lastLoadedMessageId = newMessages.lastObject.messageLookupId;
-        const lastLoadedMessage = document.querySelector(
-          `.chat-message-container[data-id="${lastLoadedMessageId}"]`
-        );
-        siblingId = lastLoadedMessage.nextElementSibling?.dataset.id;
-      }
-
-      if (!siblingId) {
-        return;
-      }
-
-      // forces the update preventing the white screen
-      const scroller = document.querySelector(".chat-messages-scroll");
-      scroller.scrollTo(0, 0);
-
-      this.scrollToMessage(siblingId, {
-        position: direction === PAST ? "top" : "bottom",
-      });
-    });
   },
 
   _fetchAndScrollToLatest() {
@@ -1468,7 +1431,7 @@ export default Component.extend({
   },
 
   _handle429Errors(error) {
-    if (error?.jqXHR.status === 429) {
+    if (error?.jqXHR?.status === 429) {
       popupAjaxError(error);
     } else {
       throw error;

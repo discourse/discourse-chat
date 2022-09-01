@@ -18,6 +18,7 @@ import { clipboardCopy } from "discourse/lib/utilities";
 import { inject as service } from "@ember/service";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import discourseLater from "discourse-common/lib/later";
+import isZoomed from "discourse/plugins/discourse-chat/discourse/lib/zoom-check";
 
 let _chatMessageDecorators = [];
 
@@ -282,7 +283,7 @@ export default Component.extend({
   @action
   handleTouchStart() {
     // if zoomed don't track long press
-    if (document.documentElement.clientWidth / window.innerWidth !== 1) {
+    if (isZoomed()) {
       return;
     }
 
@@ -313,8 +314,8 @@ export default Component.extend({
 
   @action
   _handleLongPress() {
-    // if zoomed don't handle long press
-    if (document.documentElement.clientWidth / window.innerWidth !== 1) {
+    if (isZoomed()) {
+      // if zoomed don't handle long press
       return;
     }
 

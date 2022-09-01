@@ -95,6 +95,9 @@ export default Component.extend({
       passive: true,
     });
     window.addEventListener("resize", this.onResizeHandler);
+    window.addEventListener("mousewheel", this.onScrollHandler, {
+      passive: true,
+    });
 
     this.appEvents.on("chat:cancel-message-selection", this, "cancelSelecting");
 
@@ -117,6 +120,7 @@ export default Component.extend({
       ?.removeEventListener("scroll", this.onScrollHandler);
 
     window.removeEventListener("resize", this.onResizeHandler);
+    window.removeEventListener("mousewheel", this.onScrollHandler);
 
     this.appEvents.off(
       "chat-live-pane:highlight-message",
@@ -191,7 +195,7 @@ export default Component.extend({
 
   @bind
   onScrollHandler(event) {
-    discourseDebounce(this, this.onScroll, event, 100);
+    throttle(this, this.onScroll, event, 100, true);
   },
 
   @bind
@@ -651,6 +655,7 @@ export default Component.extend({
           this._scrollerEl.clientHeight +
           this._scrollerEl.scrollTop
       ) <= STICKY_SCROLL_LENIENCE;
+
     if (atTop) {
       this._fetchMoreMessagesThrottled(PAST);
     } else if (Math.abs(this._scrollerEl.scrollTop) <= STICKY_SCROLL_LENIENCE) {

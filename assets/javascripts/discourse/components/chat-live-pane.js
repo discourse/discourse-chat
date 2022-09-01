@@ -15,7 +15,7 @@ import I18n from "I18n";
 import { A } from "@ember/array";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
-import { cancel, next, schedule } from "@ember/runloop";
+import { cancel, next, schedule, throttle } from "@ember/runloop";
 import discourseLater from "discourse-common/lib/later";
 import { inject as service } from "@ember/service";
 import { Promise } from "rsvp";
@@ -92,7 +92,7 @@ export default Component.extend({
 
     this._scrollerEl = this.element.querySelector(".chat-messages-scroll");
     this._scrollerEl.addEventListener("scroll", this.onScrollHandler, {
-      passive: true,
+      passive: false,
     });
     window.addEventListener("resize", this.onResizeHandler);
 
@@ -260,15 +260,21 @@ export default Component.extend({
     this.set("draft", this.chat.getDraftForChannel(channelId));
   },
 
+  @bind
   _fetchMoreMessages(direction) {
     const loadingPast = direction === PAST;
     const canLoadMore = loadingPast
-      ? this.details.can_load_more_past
-      : this.details.can_load_more_future;
+      ? this.details?.can_load_more_past
+      : this.details?.can_load_more_future;
     const loadingMoreKey = `loadingMore${capitalize(direction)}`;
     const loadingMore = this.get(loadingMoreKey);
 
-    if (!canLoadMore || loadingMore || this.loading || !this.messages.length) {
+    if (
+      (this.details && !canLoadMore) ||
+      loadingMore ||
+      this.loading ||
+      !this.messages.length
+    ) {
       return Promise.resolve();
     }
 
@@ -309,6 +315,8 @@ export default Component.extend({
           // Scroll to the first new one to prevent this.
           this.scrollToMessage(newMessages.firstObject.messageLookupId);
         }
+
+        this._iosScrollFix(messages, direction);
 
         return messages;
       })
@@ -354,8 +362,12 @@ export default Component.extend({
         return;
       }
 
-      this._fetchMoreMessages(PAST);
+      this._fetchMoreMessagesThrottled(PAST);
     });
+  },
+
+  _fetchMoreMessagesThrottled(direction) {
+    throttle(this, "_fetchMoreMessages", direction, 500);
   },
 
   setCanLoadMoreDetails(meta) {
@@ -643,13 +655,9 @@ export default Component.extend({
           this._scrollerEl.scrollTop
       ) <= STICKY_SCROLL_LENIENCE;
     if (atTop) {
-      this._fetchMoreMessages(PAST).then((newMessages) => {
-        this._iosScrollFix(newMessages, PAST);
-      });
+      this._fetchMoreMessagesThrottled(PAST);
     } else if (Math.abs(this._scrollerEl.scrollTop) <= STICKY_SCROLL_LENIENCE) {
-      this._fetchMoreMessages(FUTURE).then((newMessages) => {
-        this._iosScrollFix(newMessages, FUTURE);
-      });
+      this._fetchMoreMessagesThrottled(FUTURE);
     }
 
     this._calculateStickScroll(event.forceShowScrollToBottom);
@@ -1468,7 +1476,7 @@ export default Component.extend({
   },
 
   _handle429Errors(error) {
-    if (error?.jqXHR.status === 429) {
+    if (error?.jqXHR?.status === 429) {
       popupAjaxError(error);
     } else {
       throw error;

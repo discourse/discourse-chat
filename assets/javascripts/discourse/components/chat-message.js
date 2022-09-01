@@ -290,6 +290,11 @@ export default Component.extend({
         this._handleLongPress();
       }
 
+      // if zoomed don't track long press
+      if (document.documentElement.clientWidth / window.innerWidth !== 1) {
+        return;
+      }
+
       this._isPressingHandler = discourseLater(this._handleLongPress, 500);
     }
   },
@@ -308,6 +313,13 @@ export default Component.extend({
 
   @action
   _handleLongPress() {
+    if (!isTesting()) {
+      // if zoomed don't handle long press
+      if (document.documentElement.clientWidth / window.innerWidth !== 1) {
+        return;
+      }
+    }
+
     document.activeElement.blur();
     document.querySelector(".chat-composer-input").blur();
 

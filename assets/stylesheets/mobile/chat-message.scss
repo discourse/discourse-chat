@@ -12,7 +12,8 @@
   @include unselectable;
 }
 
-.chat-message {
+.chat-message,
+.chat-message-container {
   -webkit-transform: translate3d(0, 0, 0);
 }
 

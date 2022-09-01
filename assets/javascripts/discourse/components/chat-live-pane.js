@@ -684,14 +684,6 @@ export default Component.extend({
     if (!this.showScrollToBottomBtn) {
       this.set("hasNewMessages", false);
     }
-
-    if (shouldStick !== this.stickyScroll) {
-      if (shouldStick) {
-        this._stickScrollToBottom();
-      } else {
-        this.set("stickyScroll", false);
-      }
-    }
   },
 
   @observes("floatHidden")

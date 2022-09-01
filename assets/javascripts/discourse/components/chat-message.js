@@ -124,6 +124,11 @@ export default Component.extend({
     );
   },
 
+  @computed
+  get chatMessageActionsMobileAnchor() {
+    return document.querySelector(".chat-message-actions-mobile-anchor");
+  },
+
   _subscribeToAppEvents() {
     if (!this.message.id || this._hasSubscribedToAppEvents) {
       return;

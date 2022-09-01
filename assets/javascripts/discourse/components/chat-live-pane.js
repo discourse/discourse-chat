@@ -28,7 +28,7 @@ import {
 } from "discourse/lib/user-presence";
 
 const MAX_RECENT_MSGS = 100;
-const STICKY_SCROLL_LENIENCE = 4;
+const STICKY_SCROLL_LENIENCE = 50;
 const PAGE_SIZE = 50;
 
 const PAST = "past";
@@ -92,7 +92,7 @@ export default Component.extend({
 
     this._scrollerEl = this.element.querySelector(".chat-messages-scroll");
     this._scrollerEl.addEventListener("scroll", this.onScrollHandler, {
-      passive: false,
+      passive: true,
     });
     window.addEventListener("resize", this.onResizeHandler);
 
@@ -191,8 +191,7 @@ export default Component.extend({
 
   @bind
   onScrollHandler(event) {
-    cancel(this.stickyScrollTimer);
-    this.stickyScrollTimer = discourseDebounce(this, this.onScroll, event, 100);
+    discourseDebounce(this, this.onScroll, event, 100);
   },
 
   @bind
@@ -315,8 +314,6 @@ export default Component.extend({
           // Scroll to the first new one to prevent this.
           this.scrollToMessage(newMessages.firstObject.messageLookupId);
         }
-
-        this._iosScrollFix(messages, direction);
 
         return messages;
       })
@@ -1412,54 +1409,6 @@ export default Component.extend({
     ) {
       document.documentElement.scrollTo(0, 0);
     }
-  },
-
-  // This fix prevents a white screen when appending/prepending new content
-  // simulating a noop scroll forces to display the new content
-  // technically it should be possible to fix it with css and using
-  // -webkit-transform: translate3d(0,0,0); on the right elements
-  // but this has proven to either not work or cause other issues so far
-  _iosScrollFix(newMessages, direction) {
-    if (!this.capabilities.isIOS) {
-      return;
-    }
-
-    if (!newMessages?.length) {
-      return;
-    }
-
-    schedule("afterRender", () => {
-      if (this._selfDeleted) {
-        return;
-      }
-
-      let siblingId;
-      if (direction === FUTURE) {
-        const firstLoadedMessageId = newMessages.firstObject.messageLookupId;
-        const firstLoadedMessage = document.querySelector(
-          `.chat-message-container[data-id="${firstLoadedMessageId}"]`
-        );
-        siblingId = firstLoadedMessage.previousElementSibling?.dataset.id;
-      } else {
-        const lastLoadedMessageId = newMessages.lastObject.messageLookupId;
-        const lastLoadedMessage = document.querySelector(
-          `.chat-message-container[data-id="${lastLoadedMessageId}"]`
-        );
-        siblingId = lastLoadedMessage.nextElementSibling?.dataset.id;
-      }
-
-      if (!siblingId) {
-        return;
-      }
-
-      // forces the update preventing the white screen
-      const scroller = document.querySelector(".chat-messages-scroll");
-      scroller.scrollTo(0, 0);
-
-      this.scrollToMessage(siblingId, {
-        position: direction === PAST ? "top" : "bottom",
-      });
-    });
   },
 
   _fetchAndScrollToLatest() {

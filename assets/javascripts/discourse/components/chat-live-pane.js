@@ -1410,7 +1410,8 @@ export default Component.extend({
     // doesn’t scroll out of viewport
     if (
       this.capabilities.isIOS &&
-      document.documentElement.classList.contains("keyboard-visible")
+      document.documentElement.classList.contains("keyboard-visible") &&
+      document.documentElement.clientWidth / window.innerWidth === 1 // not zoomed
     ) {
       document.documentElement.scrollTo(0, 0);
     }

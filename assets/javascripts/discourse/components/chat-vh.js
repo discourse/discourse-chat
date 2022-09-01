@@ -34,6 +34,10 @@ export default class ChatVh extends Component {
       return;
     }
 
+    if (document.documentElement.clientWidth / window.innerWidth !== 1) {
+      return;
+    }
+
     const vhInPixels =
       (window.visualViewport?.height || window.innerHeight) * 0.01;
     document.documentElement.style.setProperty(CSS_VAR, `${vhInPixels}px`);

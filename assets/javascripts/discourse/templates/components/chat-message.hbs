@@ -2,16 +2,17 @@
 
 {{chat-message-separator message=message}}
 
-{{! TODO: move chat-message-actions to a shared DOM node using the newly available in-element }}
-{{#if (and showActions site.mobileView)}}
-  {{chat-message-actions-mobile
-    message=message
-    emojiReactions=emojiReactions
-    secondaryButtons=secondaryButtons
-    messageActions=messageActions
-    messageCapabilities=messageCapabilities
-    onHoverMessage=onHoverMessage
-  }}
+{{#if (and showActions site.mobileView this.chatMessageActionsMobileAnchor)}}
+  {{#in-element this.chatMessageActionsMobileAnchor}}
+    {{chat-message-actions-mobile
+      message=message
+      emojiReactions=emojiReactions
+      secondaryButtons=secondaryButtons
+      messageActions=messageActions
+      messageCapabilities=messageCapabilities
+      onHoverMessage=onHoverMessage
+    }}
+  {{/in-element}}
 {{/if}}
 
 <div

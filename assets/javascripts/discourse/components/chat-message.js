@@ -515,10 +515,7 @@ export default Component.extend({
       return;
     }
 
-    const btn = this.messageContainer.querySelector(
-      ".chat-msgactions-hover .react-btn"
-    );
-    this._startReaction(btn, this.SHOW_LEFT);
+    this._startReaction();
   },
 
   @action
@@ -527,13 +524,10 @@ export default Component.extend({
       return;
     }
 
-    const btn = this.messageContainer.querySelector(
-      ".chat-message-reaction-list .chat-message-react-btn"
-    );
-    this._startReaction(btn, this.SHOW_RIGHT);
+    this._startReaction();
   },
 
-  _startReaction(btn, position) {
+  _startReaction() {
     if (this.emojiPickerIsActive) {
       this.set("emojiPickerIsActive", false);
       document.activeElement?.blur();

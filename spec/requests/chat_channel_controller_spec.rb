@@ -525,6 +525,34 @@ RSpec.describe DiscourseChat::ChatChannelsController do
         expect(response.status).to eq(200)
         expect(response.parsed_body["direct_message_channels"][0]["id"]).to eq(dm_chat_channel.id)
       end
+
+      it "returns followed channels" do
+        Fabricate(
+          :user_chat_channel_membership,
+          user: user,
+          chat_channel: chat_channel,
+          following: true,
+        )
+
+        get "/chat/chat_channels/search.json", params: { filter: chat_channel.name }
+
+        expect(response.status).to eq(200)
+        expect(response.parsed_body["public_channels"][0]["id"]).to eq(chat_channel.id)
+      end
+
+      it "returns not followed channels" do
+        Fabricate(
+          :user_chat_channel_membership,
+          user: user,
+          chat_channel: channel,
+          following: false,
+        )
+
+        get "/chat/chat_channels/search.json", params: { filter: chat_channel.name }
+
+        expect(response.status).to eq(200)
+        expect(response.parsed_body["public_channels"][0]["id"]).to eq(chat_channel.id)
+      end
     end
   end
 

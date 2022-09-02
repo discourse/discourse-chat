@@ -107,7 +107,6 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
       DiscourseChat::ChatChannelFetcher.secured_public_channels(
         guardian,
         memberships,
-        following: false,
         filter: filter,
         status: :open,
       )

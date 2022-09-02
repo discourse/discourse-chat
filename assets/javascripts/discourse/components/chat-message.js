@@ -47,6 +47,8 @@ export default Component.extend({
   _hasSubscribedToAppEvents: false,
   tagName: "",
   chat: service(),
+  chatMessageActionsMobileAnchor: null,
+  chatMessageEmojiPickerAnchor: null,
 
   init() {
     this._super(...arguments);
@@ -59,6 +61,19 @@ export default Component.extend({
     if (this.message.bookmark) {
       this.set("message.bookmark", Bookmark.create(this.message.bookmark));
     }
+  },
+
+  didInsertElement() {
+    this._super(...arguments);
+
+    this.set(
+      "chatMessageActionsMobileAnchor",
+      document.querySelector(".chat-message-actions-mobile-anchor")
+    );
+    this.set(
+      "chatMessageEmojiPickerAnchor",
+      document.querySelector(".chat-message-emoji-picker-anchor")
+    );
   },
 
   willDestroyElement() {
@@ -122,11 +137,6 @@ export default Component.extend({
     return (
       id && document.querySelector(`.chat-message-container[data-id='${id}']`)
     );
-  },
-
-  @computed
-  get chatMessageActionsMobileAnchor() {
-    return document.querySelector(".chat-message-actions-mobile-anchor");
   },
 
   _subscribeToAppEvents() {

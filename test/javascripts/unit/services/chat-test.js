@@ -10,6 +10,7 @@ import { directMessageChannels } from "discourse/plugins/discourse-chat/chat-fix
 import { cloneJSON } from "discourse-common/lib/object";
 import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import sinon from "sinon";
+import pretender from "discourse/tests/helpers/create-pretender";
 
 acceptance("Discourse Chat | Unit | Service | chat", function (needs) {
   needs.hooks.beforeEach(function () {
@@ -239,3 +240,27 @@ acceptance("Discourse Chat | Unit | Service | chat", function (needs) {
     assert.equal(activeChannel.lastSendReadMessageId, 2);
   });
 });
+
+acceptance(
+  "Discourse Chat | Unit | Service | chat - no current user",
+  function (needs) {
+    needs.hooks.beforeEach(function () {
+      Object.defineProperty(this, "chatService", {
+        get: () => this.container.lookup("service:chat"),
+      });
+    });
+
+    test("#refreshTrackingState", async function (assert) {
+      pretender.get(`/chat/chat_channels.json`, () => {
+        assert.step("unexpected");
+        return [200, { "Content-Type": "application/json" }, {}];
+      });
+
+      assert.step("start");
+      await this.chatService.refreshTrackingState();
+      assert.step("end");
+
+      assert.verifySteps(["start", "end"], "it does no requests");
+    });
+  }
+);

@@ -119,7 +119,12 @@ export default {
             }
 
             get notificationTypes() {
-              return ["chat_mention", "chat_invitation"];
+              return [
+                "chat_invitation",
+                "chat_mention",
+                "chat_message",
+                "chat_quoted",
+              ];
             }
           };
         });

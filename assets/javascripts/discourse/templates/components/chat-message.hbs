@@ -15,12 +15,24 @@
   {{/in-element}}
 {{/if}}
 
+{{emoji-picker
+  emojiStore=emojiReactionStore
+  isActive=(or
+    (and site.desktopView isHovered emojiPickerIsActive)
+    (and site.mobileView emojiPickerIsActive)
+  )
+  isEditorFocused=true
+  usePopper=true
+  emojiSelected=(action "selectReaction")
+  onEmojiPickerClose=(action (mut emojiPickerIsActive) false)
+}}
+
 <div
   {{on "touchmove" this.handleTouchMove passive=true}}
   {{on "touchstart" this.handleTouchStart passive=true}}
   {{on "touchend" this.handleTouchEnd passive=true}}
   {{on "mouseenter" (fn this.onHoverMessage message (hash desktopOnly=true))}}
-  {{on "mouseleave" (fn this.onHoverMessage null (hash desktopOnly=true))}}
+  {{on "mouseleave" this.didLeaveChatMessage}}
   {{chat/track-message-visibility}}
   class={{concat-class
     "chat-message-container"
@@ -28,14 +40,9 @@
   }}
   data-id={{or message.id message.stagedId}}
 >
-  {{emoji-picker
-    emojiStore=emojiReactionStore
-    isActive=emojiPickerIsActive
-    isEditorFocused=true
-    usePopper=false
-    emojiSelected=(action "selectReaction")
-    onEmojiPickerClose=(action (mut emojiPickerIsActive) false)
-  }}
+  {{#if (and site.desktopView isHovered)}}
+    <div class="emoji-picker-anchor"></div>
+  {{/if}}
 
   {{#if show}}
     {{#if selectingMessages}}
@@ -66,6 +73,7 @@
     {{else}}
       <div class={{chatMessageClasses}}>
         {{#if (and showActions (not site.mobileView))}}
+
           {{! TODO: move chat-message-actions to a shared DOM node using the newly available in-element }}
           {{chat-message-actions-desktop
             message=message

@@ -13,7 +13,7 @@ import discourseComputed, {
 import EmberObject, { action, computed } from "@ember/object";
 import { and, not } from "@ember/object/computed";
 import { ajax } from "discourse/lib/ajax";
-import { cancel, once, schedule } from "@ember/runloop";
+import { cancel, once } from "@ember/runloop";
 import { clipboardCopy } from "discourse/lib/utilities";
 import { inject as service } from "@ember/service";
 import { popupAjaxError } from "discourse/lib/ajax-error";
@@ -47,6 +47,8 @@ export default Component.extend({
   _hasSubscribedToAppEvents: false,
   tagName: "",
   chat: service(),
+  chatMessageActionsMobileAnchor: null,
+  chatMessageEmojiPickerAnchor: null,
 
   init() {
     this._super(...arguments);
@@ -59,6 +61,15 @@ export default Component.extend({
     if (this.message.bookmark) {
       this.set("message.bookmark", Bookmark.create(this.message.bookmark));
     }
+  },
+
+  didInsertElement() {
+    this._super(...arguments);
+
+    this.set(
+      "chatMessageActionsMobileAnchor",
+      document.querySelector(".chat-message-actions-mobile-anchor")
+    );
   },
 
   willDestroyElement() {
@@ -122,11 +133,6 @@ export default Component.extend({
     return (
       id && document.querySelector(`.chat-message-container[data-id='${id}']`)
     );
-  },
-
-  @computed
-  get chatMessageActionsMobileAnchor() {
-    return document.querySelector(".chat-message-actions-mobile-anchor");
   },
 
   _subscribeToAppEvents() {
@@ -509,10 +515,7 @@ export default Component.extend({
       return;
     }
 
-    const btn = this.messageContainer.querySelector(
-      ".chat-msgactions-hover .react-btn"
-    );
-    this._startReaction(btn, this.SHOW_LEFT);
+    this._startReaction();
   },
 
   @action
@@ -521,13 +524,10 @@ export default Component.extend({
       return;
     }
 
-    const btn = this.messageContainer.querySelector(
-      ".chat-message-reaction-list .chat-message-react-btn"
-    );
-    this._startReaction(btn, this.SHOW_RIGHT);
+    this._startReaction();
   },
 
-  _startReaction(btn, position) {
+  _startReaction() {
     if (this.emojiPickerIsActive) {
       this.set("emojiPickerIsActive", false);
       document.activeElement?.blur();
@@ -537,64 +537,16 @@ export default Component.extend({
         "chat-message:reaction-picker-opened",
         this.message.id
       );
-
-      schedule("afterRender", () => {
-        if (this.isDestroying || this.isDestroyed) {
-          return;
-        }
-
-        this._repositionEmojiPicker(btn, position);
-      });
     }
-  },
-
-  _repositionEmojiPicker(btn, position) {
-    if (!this.messageContainer) {
-      return;
-    }
-
-    const emojiPicker = this.messageContainer.querySelector(".emoji-picker");
-    if (!emojiPicker || !btn) {
-      return;
-    }
-    const reactBtnBounds = btn.getBoundingClientRect();
-    const reactBtnPositions = {
-      bottom: window.innerHeight - reactBtnBounds.bottom,
-      left: reactBtnBounds.left + window.pageXOffset,
-    };
-
-    // Calculate left pixel value
-    let leftValue = 0;
-
-    if (!this.site.mobileView) {
-      const xAdjustment =
-        position === this.SHOW_RIGHT && this.fullPage
-          ? btn.offsetWidth + 10
-          : (emojiPicker.offsetWidth + 10) * -1;
-      leftValue = reactBtnPositions.left + xAdjustment;
-      if (
-        leftValue < 0 ||
-        leftValue + emojiPicker.getBoundingClientRect().width >
-          window.innerWidth
-      ) {
-        leftValue = 0;
-      }
-    }
-
-    // Calculate bottom pixel value
-    let bottomValue = reactBtnPositions.bottom - emojiPicker.offsetHeight + 50;
-    const messageContainer = document.querySelector(".chat-messages-scroll");
-    const bottomOfMessageContainer =
-      window.innerHeight - messageContainer.getBoundingClientRect().bottom;
-    if (bottomValue < bottomOfMessageContainer) {
-      bottomValue = bottomOfMessageContainer;
-    }
-
-    emojiPicker.style.bottom = `${bottomValue}px`;
-    emojiPicker.style.left = `${leftValue}px`;
   },
 
   @action
+  didLeaveChatMessage(event) {
+    if (parseInt(event.target.dataset?.id, 10) !== this.message.id) {
+      this.onHoverMessage(null, { desktopOnly: true });
+    }
+  },
+
   deselectReaction(emoji) {
     if (!this.canInteractWithChat) {
       return;

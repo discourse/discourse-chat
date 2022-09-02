@@ -12,8 +12,6 @@
   @include unselectable;
 }
 
-.chat-messages-scroll .chat-messages-container,
-.chat-message,
 .chat-message-container {
   -webkit-transform: translate3d(0, 0, 0);
 }

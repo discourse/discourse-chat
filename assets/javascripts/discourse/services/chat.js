@@ -302,10 +302,13 @@ export default class Chat extends Service {
   }
 
   refreshTrackingState() {
+    if (!this.currentUser) {
+      return;
+    }
+
     return ajax("/chat/chat_channels.json")
       .then((response) => {
         this.currentUser.set("chat_channel_tracking_state", {});
-
         (response.direct_message_channels || []).forEach((channel) => {
           this._updateUserTrackingState(channel);
         });

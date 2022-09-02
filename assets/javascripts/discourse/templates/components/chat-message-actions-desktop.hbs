@@ -9,6 +9,7 @@
     {{/each}}
 
     {{#if messageCapabilities.canReact}}
+      <div class="emoji-picker-anchor"></div>
       {{d-button
         class="btn-flat react-btn"
         action=messageActions.startReactionForMsgActions

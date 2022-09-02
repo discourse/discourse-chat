@@ -69,10 +69,6 @@
     {{else}}
       <div class={{chatMessageClasses}}>
         {{#if (and showActions (not site.mobileView))}}
-          {{#if (and site.desktopView isHovered)}}
-            <div class="emoji-picker-anchor"></div>
-          {{/if}}
-
           {{! TODO: move chat-message-actions to a shared DOM node using the newly available in-element }}
           {{chat-message-actions-desktop
             message=message

@@ -544,7 +544,7 @@ RSpec.describe DiscourseChat::ChatChannelsController do
         Fabricate(
           :user_chat_channel_membership,
           user: user,
-          chat_channel: channel,
+          chat_channel: chat_channel,
           following: false,
         )
 

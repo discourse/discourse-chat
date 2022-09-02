@@ -13,7 +13,7 @@ import discourseComputed, {
 import EmberObject, { action, computed } from "@ember/object";
 import { and, not } from "@ember/object/computed";
 import { ajax } from "discourse/lib/ajax";
-import { cancel, once, schedule } from "@ember/runloop";
+import { cancel, once } from "@ember/runloop";
 import { clipboardCopy } from "discourse/lib/utilities";
 import { inject as service } from "@ember/service";
 import { popupAjaxError } from "discourse/lib/ajax-error";
@@ -69,10 +69,6 @@ export default Component.extend({
     this.set(
       "chatMessageActionsMobileAnchor",
       document.querySelector(".chat-message-actions-mobile-anchor")
-    );
-    this.set(
-      "chatMessageEmojiPickerAnchor",
-      document.querySelector(".chat-message-emoji-picker-anchor")
     );
   },
 
@@ -547,64 +543,16 @@ export default Component.extend({
         "chat-message:reaction-picker-opened",
         this.message.id
       );
-
-      schedule("afterRender", () => {
-        if (this.isDestroying || this.isDestroyed) {
-          return;
-        }
-
-        this._repositionEmojiPicker(btn, position);
-      });
     }
-  },
-
-  _repositionEmojiPicker(btn, position) {
-    if (!this.messageContainer) {
-      return;
-    }
-
-    const emojiPicker = this.messageContainer.querySelector(".emoji-picker");
-    if (!emojiPicker || !btn) {
-      return;
-    }
-    const reactBtnBounds = btn.getBoundingClientRect();
-    const reactBtnPositions = {
-      bottom: window.innerHeight - reactBtnBounds.bottom,
-      left: reactBtnBounds.left + window.pageXOffset,
-    };
-
-    // Calculate left pixel value
-    let leftValue = 0;
-
-    if (!this.site.mobileView) {
-      const xAdjustment =
-        position === this.SHOW_RIGHT && this.fullPage
-          ? btn.offsetWidth + 10
-          : (emojiPicker.offsetWidth + 10) * -1;
-      leftValue = reactBtnPositions.left + xAdjustment;
-      if (
-        leftValue < 0 ||
-        leftValue + emojiPicker.getBoundingClientRect().width >
-          window.innerWidth
-      ) {
-        leftValue = 0;
-      }
-    }
-
-    // Calculate bottom pixel value
-    let bottomValue = reactBtnPositions.bottom - emojiPicker.offsetHeight + 50;
-    const messageContainer = document.querySelector(".chat-messages-scroll");
-    const bottomOfMessageContainer =
-      window.innerHeight - messageContainer.getBoundingClientRect().bottom;
-    if (bottomValue < bottomOfMessageContainer) {
-      bottomValue = bottomOfMessageContainer;
-    }
-
-    emojiPicker.style.bottom = `${bottomValue}px`;
-    emojiPicker.style.left = `${leftValue}px`;
   },
 
   @action
+  didLeaveChatMessage(event) {
+    if (parseInt(event.target.dataset?.id, 10) !== this.message.id) {
+      this.onHoverMessage(null, { desktopOnly: true });
+    }
+  },
+
   deselectReaction(emoji) {
     if (!this.canInteractWithChat) {
       return;

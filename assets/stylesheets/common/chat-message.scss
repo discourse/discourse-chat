@@ -14,6 +14,10 @@
   }
 }
 
+.emoji-picker-anchor {
+  position: absolute;
+}
+
 @mixin chat-reaction {
   align-items: center;
   display: inline-flex;

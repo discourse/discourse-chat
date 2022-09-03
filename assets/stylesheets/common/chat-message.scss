@@ -14,11 +14,6 @@
   }
 }
 
-.emoji-picker-anchor {
-  position: absolute;
-  height: 34px;
-}
-
 @mixin chat-reaction {
   align-items: center;
   display: inline-flex;
@@ -272,6 +267,11 @@
   border-radius: 0.25em;
   background-color: var(--secondary);
   display: flex;
+
+  .emoji-picker-anchor {
+    position: absolute;
+    height: 34px;
+  }
 
   .link-to-message-btn {
     .d-icon {

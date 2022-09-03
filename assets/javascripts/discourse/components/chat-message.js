@@ -540,13 +540,6 @@ export default Component.extend({
     }
   },
 
-  @action
-  didLeaveChatMessage(event) {
-    if (parseInt(event.target.dataset?.id, 10) !== this.message.id) {
-      this.onHoverMessage(null, { desktopOnly: true });
-    }
-  },
-
   deselectReaction(emoji) {
     if (!this.canInteractWithChat) {
       return;

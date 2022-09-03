@@ -18,10 +18,7 @@
 {{emoji-picker
   emojiStore=emojiReactionStore
   placement="top"
-  isActive=(or
-    (and site.desktopView isHovered emojiPickerIsActive)
-    (and site.mobileView emojiPickerIsActive)
-  )
+  isActive=emojiPickerIsActive
   isEditorFocused=true
   usePopper=true
   emojiSelected=(action "selectReaction")
@@ -33,7 +30,7 @@
   {{on "touchstart" this.handleTouchStart passive=true}}
   {{on "touchend" this.handleTouchEnd passive=true}}
   {{on "mouseenter" (fn this.onHoverMessage message (hash desktopOnly=true))}}
-  {{on "mouseleave" this.didLeaveChatMessage}}
+  {{on "mouseleave" (fn this.onHoverMessage null (hash desktopOnly=true))}}
   {{chat/track-message-visibility}}
   class={{concat-class
     "chat-message-container"

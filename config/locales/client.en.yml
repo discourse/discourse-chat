@@ -232,7 +232,7 @@ en:
 
       create_channel:
         auto_join_users:
-          public_category_warning: "%{category} is a public category. Automatically add every user to this channel?"
+          public_category_warning: "%{category} is a public category. Automatically add all recently active users to this channel?"
           warning_groups:
             one: Automatically add %{members_count} users from %{group_1}?
             other: Automatically add %{members_count} users from %{group_1} and %{group_2}?
@@ -280,8 +280,8 @@ en:
         always: "For all activity"
 
       settings:
-        enable_auto_join_users: "Automatically add all new and existing users"
-        disable_auto_join_users: "Stop automatically adding new users"
+        enable_auto_join_users: "Automatically add all recently active users"
+        disable_auto_join_users: "Stop automatically adding users"
         auto_join_users_warning: "Every user who isn't a member of this channel and has access to the %{category} category will join. Are you sure?"
         desktop_notification_level: "Desktop notifications"
         follow: "Join"

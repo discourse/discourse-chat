@@ -11,8 +11,13 @@ module DiscourseDev
 
     def data
       if Faker::Boolean.boolean(true_ratio: 0.5)
-        admin_username = DiscourseDev::Config.new.config[:admin][:username]
-        admin_user = ::User.find_by(username: admin_username)
+        admin_username =
+          begin
+            DiscourseDev::Config.new.config[:admin][:username]
+          rescue StandardError
+            nil
+          end
+        admin_user = ::User.find_by(username: admin_username) if admin_username
       end
 
       [User.new.create!, admin_user || User.new.create!]

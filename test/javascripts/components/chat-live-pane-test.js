@@ -4,7 +4,7 @@ import hbs from "htmlbars-inline-precompile";
 import { module, test } from "qunit";
 import fabricators from "../helpers/fabricators";
 import { render } from "@ember/test-helpers";
-import pretender from "discourse/tests/helpers/create-pretender";
+import pretender, { response } from "discourse/tests/helpers/create-pretender";
 import MockPresenceChannel from "../helpers/mock-presence-channel";
 
 function mockChat(context) {
@@ -14,6 +14,7 @@ function mockChat(context) {
   mock.presenceChannel = MockPresenceChannel.create();
   return mock;
 }
+
 module("Discourse Chat | Component | chat-live-pane", function (hooks) {
   setupRenderingTest(hooks);
 
@@ -23,12 +24,11 @@ module("Discourse Chat | Component | chat-live-pane", function (hooks) {
   });
 
   test("Shows skeleton when loading", async function (assert) {
-    pretender.get(`/chat/chat_channels.json`, () => [200, {}, [this.channel]]);
-    pretender.get(`/chat/:id/messages.json`, () => [
-      200,
-      {},
-      { chat_messages: [], meta: { can_delete_self: true } },
-    ]);
+    pretender.get(`/chat/chat_channels.json`, () => response(this.channel));
+    pretender.get(`/chat/:id/messages.json`, () =>
+      response({ chat_messages: [], meta: { can_delete_self: true } })
+    );
+
     await render(
       hbs`{{chat-live-pane loadingMorePast=true chat=chat chatChannel=channel}}`
     );

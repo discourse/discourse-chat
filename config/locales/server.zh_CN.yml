@@ -157,3 +157,6 @@ zh_CN:
       select_title: "将聊天摘要电子邮件频率设置为："
       never: 永不
       when_away: 仅在离开时
+  category:
+    cannot_delete:
+      has_chat_channels: "无法删除此类别，因为它有关联的聊天频道。"

@@ -133,6 +133,10 @@ zh_CN:
       edit: "编辑"
       copy_link: "复制链接"
       rebake_message: "重建 HTML"
+      retry_staged_message:
+        title: "网络错误"
+        action: "重新发送？"
+      unreliable_network: "网络不稳定，发送消息和保存草稿可能无法正常工作"
       bookmark_message: "书签"
       bookmark_message_edit: "编辑书签"
       restore: "恢复已删除的消息"
@@ -213,7 +217,6 @@ zh_CN:
           other: "%{count} 个成员"
       create_channel:
         auto_join_users:
-          public_category_warning: "%{category} 是公共类别。是否自动将所有用户添加到此频道？"
           warning_groups:
             other: 自动添加 %{members_count} 位来自 %{group_1} 和 %{group_2} 的用户？
           warning_multiple_groups: 自动添加 %{members_count} 位来自 %{group_1} 和其他 %{count} 位用户？
@@ -253,8 +256,6 @@ zh_CN:
         mention: "仅限提及"
         always: "所有活动"
       settings:
-        enable_auto_join_users: "自动添加所有新用户和现有用户"
-        disable_auto_join_users: "停止自动添加新用户"
         auto_join_users_warning: "每个不是该频道成员且有权访问 %{category} 类别的用户都将加入。你确定吗？"
         desktop_notification_level: "桌面通知"
         follow: "加入"

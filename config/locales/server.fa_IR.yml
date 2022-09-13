@@ -93,3 +93,6 @@ fa_IR:
   unsubscribe:
     chat_summary:
       never: هرگز
+  category:
+    cannot_delete:
+      has_chat_channels: "نمی‌توان این دسته‌بندی را حذف کرد، چون دارای کانال‌های گفتگو است"

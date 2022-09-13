@@ -219,7 +219,6 @@ sv:
           other: "%{count} medlemmar"
       create_channel:
         auto_join_users:
-          public_category_warning: "%{category} är en offentlig kategori. Lägg automatiskt till alla användare i den här kanalen?"
           warning_groups:
             one: Lägg automatiskt till %{members_count} användare från %{group_1}?
             other: Lägg automatiskt till %{members_count} användare från %{group_1} och %{group_2}?
@@ -261,8 +260,6 @@ sv:
         mention: "Endast för omnämnanden"
         always: "För all aktivitet"
       settings:
-        enable_auto_join_users: "Lägg automatiskt till alla nya och befintliga användare"
-        disable_auto_join_users: "Sluta lägga till nya användare automatiskt"
         auto_join_users_warning: "Varje användare som inte är medlem i den här kanalen och har tillgång till kategorin %{category} kommer att gå med. Är du säker?"
         desktop_notification_level: "Skrivbordsaviseringar"
         follow: "Gå med"

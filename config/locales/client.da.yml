@@ -107,9 +107,6 @@ da:
         code_text: "kode tekst"
       quote:
         copy_success: "Chat-citat kopieret til udklipsholderen"
-      settings:
-        enable_auto_join_users: "Tilføj automatisk alle nye og eksisterende brugere"
-        disable_auto_join_users: "Stop automatisk tilføjelse af nye brugere"
       incoming_webhooks:
         system: "system"
         url: "URL"

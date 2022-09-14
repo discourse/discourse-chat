@@ -19,7 +19,7 @@
   align-items: center;
   background-color: var(--secondary);
   border: 1px solid var(--primary-low-mid);
-  border-radius: 6px;
+  border-radius: 5px;
   padding: 0.25rem;
   margin-top: 0.5rem;
 
@@ -31,7 +31,9 @@
   .send-btn {
     padding: 0.4rem 0.5rem;
     border: 1px solid transparent;
-    border-radius: 6px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
 
     .d-icon {
       color: var(--tertiary);
@@ -58,7 +60,6 @@
 
   .chat-composer-input {
     overflow-x: hidden;
-    margin: 0;
     width: 100%;
     appearance: none;
     outline: none;

@@ -662,25 +662,26 @@ body.has-full-page-chat {
 
 .chat-full-page-header__left-actions {
   display: flex;
-  align-items: flex-start;
+  align-items: stretch;
 }
 
 .chat-full-page-header__title {
   display: flex;
-  align-items: flex-start;
-  width: 100%;
-  flex-direction: column;
+  align-items: stretch;
 }
 
 .chat-full-page-header__right-actions {
+  align-items: stretch;
   display: flex;
-  align-items: flex-start;
+  flex-grow: 1;
+  font-size: var(--font-up-1);
+  justify-content: flex-end;
 }
 
 .chat-full-page-header {
   .chat-channel-header-details {
     display: flex;
-    align-items: center;
+    align-items: stretch;
 
     .chat-channel-archive-status {
       text-align: right;

@@ -1,6 +1,7 @@
 .chat-reply {
   display: contents;
   align-items: center;
+  box-sizing: border-box;
   font-size: var(--font-down-1);
   padding-left: 0.5em;
   height: 100%;

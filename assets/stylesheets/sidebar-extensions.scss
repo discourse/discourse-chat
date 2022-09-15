@@ -138,7 +138,7 @@
 .chat-enabled {
   .sidebar-section-link-suffix.icon {
     &.urgent svg {
-      color: $success;
+      color: var(--success);
     }
 
     &.unread svg {

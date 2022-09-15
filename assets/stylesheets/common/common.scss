@@ -70,17 +70,14 @@ $float-height: 530px;
 }
 
 .chat-channel-unread-indicator {
+  @include unselectable;
+
   width: 14px;
   height: 14px;
   border-radius: 100%;
   box-sizing: content-box;
   border: 2px solid var(--secondary);
   -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
   background: var(--tertiary-med-or-tertiary);
   font-size: var(--font-down-2);
 
@@ -494,7 +491,7 @@ $float-height: 530px;
     display: inline-block;
     margin-left: 5px;
     font-size: var(--font-down-1);
-    color: $primary-high;
+    color: var(--primary-high);
   }
 
   .emoji {

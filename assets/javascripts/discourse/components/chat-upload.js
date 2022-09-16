@@ -1,23 +1,43 @@
-import Component from "@ember/component";
-import discourseComputed from "discourse-common/utils/decorators";
+import Component from "@glimmer/component";
+
+import { inject as service } from "@ember/service";
 import { IMAGES_EXTENSIONS_REGEX } from "discourse/lib/uploads";
+import { action } from "@ember/object";
+import { tracked } from "@glimmer/tracking";
+import { htmlSafe } from "@ember/template";
 
-export default Component.extend({
-  IMAGE_TYPE: "image",
+export default class extends Component {
+  @service siteSettings;
 
-  @discourseComputed("upload.extension")
-  type(extension) {
-    if (IMAGES_EXTENSIONS_REGEX.test(extension)) {
+  @tracked loaded = false;
+
+  IMAGE_TYPE = "image";
+
+  get type() {
+    if (IMAGES_EXTENSIONS_REGEX.test(this.args.upload.extension)) {
       return this.IMAGE_TYPE;
     }
-  },
+  }
 
-  @discourseComputed("upload.width", "upload.height")
-  size(width, height) {
+  get size() {
+    const width = this.args.upload.width;
+    const height = this.args.upload.height;
+
     const ratio = Math.min(
       this.siteSettings.max_image_width / width,
       this.siteSettings.max_image_height / height
     );
     return { width: width * ratio, height: height * ratio };
-  },
-});
+  }
+
+  get imageStyle() {
+    if (this.args.upload.dominant_color && !this.loaded) {
+      return htmlSafe(`background-color: #${this.args.upload.dominant_color};`);
+    }
+  }
+
+  @action
+  imageLoaded() {
+    this.loaded = true;
+  }
+}

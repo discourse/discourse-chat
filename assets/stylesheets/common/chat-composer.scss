@@ -18,7 +18,7 @@
   background-color: var(--secondary);
   border: 1px solid var(--primary-low-mid);
   border-radius: 5px;
-  padding: 0.25rem;
+  padding: 0.15rem 0.25rem;
   margin-top: 0.5rem;
 
   &.is-disabled {
@@ -76,7 +76,6 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      padding-right: 1.25em;
     }
 
     &::-webkit-scrollbar-thumb {

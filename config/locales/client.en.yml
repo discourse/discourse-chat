@@ -326,6 +326,7 @@ en:
         system: "system"
         title: "Incoming webhooks"
         url: "URL"
+        url_instructions: "This URL contains a secret value - keep it safe."
         username: "Username"
         username_instructions: "Username of bot that posts to channel. Defaults to 'system' when left blank."
 

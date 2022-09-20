@@ -1,17 +1,20 @@
-{{#if (eq type IMAGE_TYPE)}}
+{{#if (eq this.type this.IMAGE_TYPE)}}
   <img
     class="chat-img-upload"
-    data-orig-src={{upload.short_url}}
-    height={{size.height}}
-    width={{size.width}}
-    src={{upload.url}}
+    data-orig-src={{@upload.short_url}}
+    height={{this.size.height}}
+    width={{this.size.width}}
+    src={{@upload.url}}
+    style={{this.imageStyle}}
+    loading="lazy"
+    {{on "load" this.imageLoaded}}
   >
 {{else}}
   <a
     class="chat-other-upload"
-    data-orig-href={{upload.short_url}}
-    href={{upload.url}}
+    data-orig-href={{@upload.short_url}}
+    href={{@upload.url}}
   >
-    {{upload.original_filename}}
+    {{@upload.original_filename}}
   </a>
 {{/if}}

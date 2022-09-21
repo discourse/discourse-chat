@@ -242,10 +242,6 @@ class DiscourseChat::ChatChannelArchiveService
   end
 
   def kick_all_users
-    # TODO (martin) Move to MembershipManager
-    UserChatChannelMembership.where(chat_channel: chat_channel).update_all(
-      following: false,
-      last_read_message_id: chat_channel.chat_messages.last&.id,
-    )
+    DiscourseChat::ChatChannelMembershipManager.unfollow_all_for_channel(chat_channel)
   end
 end

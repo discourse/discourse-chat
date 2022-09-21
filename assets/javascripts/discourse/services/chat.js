@@ -68,6 +68,7 @@ export default class Chat extends Service {
       this._subscribeToNewChannelUpdates();
       this._subscribeToUserTrackingChannel();
       this._subscribeToChannelEdits();
+      this._subscribeToChannelMetadata();
       this._subscribeToChannelStatusChange();
       this.presenceChannel = this.presence.getChannel("/chat/online");
       this.draftStore = {};
@@ -115,6 +116,7 @@ export default class Chat extends Service {
       this._unsubscribeFromNewDmChannelUpdates();
       this._unsubscribeFromUserTrackingChannel();
       this._unsubscribeFromChannelEdits();
+      this._unsubscribeFromChannelMetadata();
       this._unsubscribeFromChannelStatusChange();
       this._unsubscribeFromAllChatChannels();
     }
@@ -588,6 +590,19 @@ export default class Chat extends Service {
     });
   }
 
+  _subscribeToChannelMetadata() {
+    this.messageBus.subscribe("/chat/channel-metadata", (busData) => {
+      this.getChannelBy("id", busData.chat_channel_id).then((channel) => {
+        if (channel) {
+          channel.setProperties({
+            memberships_count: busData.memberships_count,
+          });
+          this.appEvents.trigger("chat:refresh-channel-members");
+        }
+      });
+    });
+  }
+
   _subscribeToChannelEdits() {
     this.messageBus.subscribe("/chat/channel-edits", (busData) => {
       this.getChannelBy("id", busData.chat_channel_id).then((channel) => {
@@ -634,6 +649,10 @@ export default class Chat extends Service {
 
   _unsubscribeFromChannelEdits() {
     this.messageBus.unsubscribe("/chat/channel-edits");
+  }
+
+  _unsubscribeFromChannelMetadata() {
+    this.messageBus.unsubscribe("/chat/channel-metadata");
   }
 
   _subscribeToNewChannelUpdates() {

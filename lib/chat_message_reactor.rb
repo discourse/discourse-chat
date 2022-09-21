@@ -44,17 +44,10 @@ class DiscourseChat::ChatMessageReactor
   end
 
   def enforce_channel_membership!
-    existing_membership =
-      DiscourseChat::ChatChannelMembershipManager.find_for_user(
-        chat_channel: @chat_channel,
-        user: @user,
-        initialize: true,
-      )
-
-    unless existing_membership&.following
-      existing_membership.following = true
-      existing_membership.save!
-    end
+    DiscourseChat::ChatChannelMembershipManager.follow_channel(
+      chat_channel: @chat_channel,
+      user: @user,
+    )
   end
 
   def validate_channel_status!

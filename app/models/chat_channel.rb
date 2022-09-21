@@ -22,13 +22,14 @@ class ChatChannel < ActiveRecord::Base
             presence: true,
             allow_nil: true
 
-  scope :public_channels, -> do
-    where(chatable_type: public_channel_chatable_types)
-      .where("categories.id IS NOT NULL")
-      .joins(
-        "LEFT JOIN categories ON categories.id = chat_channels.chatable_id AND chat_channels.chatable_type = 'Category'",
-      )
-  end
+  scope :public_channels,
+        -> {
+          where(chatable_type: public_channel_chatable_types).where(
+            "categories.id IS NOT NULL",
+          ).joins(
+            "LEFT JOIN categories ON categories.id = chat_channels.chatable_id AND chat_channels.chatable_type = 'Category'",
+          )
+        }
 
   class << self
     def public_channel_chatable_types
@@ -41,9 +42,7 @@ class ChatChannel < ActiveRecord::Base
   end
 
   statuses.keys.each do |status|
-    define_method("#{status}!") do |acting_user|
-      change_status(acting_user, status.to_sym)
-    end
+    define_method("#{status}!") { |acting_user| change_status(acting_user, status.to_sym) }
   end
 
   def membership_for(user)
@@ -51,38 +50,11 @@ class ChatChannel < ActiveRecord::Base
   end
 
   def add(user)
-    ActiveRecord::Base.transaction do
-      membership =
-        DiscourseChat::ChatChannelMembershipManager.find_for_user(
-          user: user,
-          channel: self,
-          initialize: true,
-        )
-
-      if !membership.following
-        update!(user_count: (user_count || 0) + 1)
-        membership.following = true
-        membership.save!
-      end
-
-      membership
-    end
+    DiscourseChat::ChatChannelMembershipManager.follow_channel(user: user, channel: self)
   end
 
   def remove(user)
-    ActiveRecord::Base.transaction do
-      membership =
-        DiscourseChat::ChatChannelMembershipManager.find_for_user(user: user, channel: self)
-      return if !membership
-
-      if membership.following
-        new_user_count = [(user_count || 0) - 1, 0].max
-        update!(user_count: new_user_count)
-        membership.update!(following: false)
-      end
-
-      membership
-    end
+    DiscourseChat::ChatChannelMembershipManager.unfollow_channel(user: user, channel: self)
   end
 
   def status_name

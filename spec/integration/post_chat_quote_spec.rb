@@ -124,7 +124,7 @@ describe "chat bbcode quoting in posts" do
     COOKED
   end
 
-  xit "renders with the reactions attribute" do
+  it "renders with the reactions attribute" do
     reactions_attr = "+1:martin;heart:martin,eviltrout"
     post.update!(
       raw:

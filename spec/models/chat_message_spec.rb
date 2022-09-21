@@ -219,7 +219,7 @@ describe ChatMessage do
       )
     end
 
-    xit "supports emoji plugin" do
+    it "supports emoji plugin" do
       cooked = ChatMessage.cook(":grin:")
 
       expect(cooked).to eq(
@@ -321,14 +321,14 @@ describe ChatMessage do
       HTML
     end
 
-    xit "supports inline emoji" do
+    it "supports inline emoji" do
       cooked = ChatMessage.cook(":D")
       expect(cooked).to eq(<<~HTML.chomp)
       <p><img src="/images/emoji/twitter/smiley.png?v=12" title=":smiley:" class="emoji only-emoji" alt=":smiley:" loading=\"lazy\" width=\"20\" height=\"20\"></p>
       HTML
     end
 
-    xit "supports emoji shortcuts" do
+    it "supports emoji shortcuts" do
       cooked = ChatMessage.cook("this is a replace test :P :|")
       expect(cooked).to eq(<<~HTML.chomp)
         <p>this is a replace test <img src="/images/emoji/twitter/stuck_out_tongue.png?v=12" title=":stuck_out_tongue:" alt=":stuck_out_tongue:" loading=\"lazy\" width=\"20\" height=\"20\" class="emoji" tabindex="0"> <img src="/images/emoji/twitter/expressionless.png?v=12" title=":expressionless:" alt=":expressionless:" loading=\"lazy\" width=\"20\" height=\"20\" class="emoji" tabindex="0"></p>

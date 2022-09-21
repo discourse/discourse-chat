@@ -219,13 +219,13 @@ describe ChatMessage do
       )
     end
 
-    # it "supports emoji plugin" do
-    #   cooked = ChatMessage.cook(":grin:")
+    xit "supports emoji plugin" do
+      cooked = ChatMessage.cook(":grin:")
 
-    #   expect(cooked).to eq(
-    #     "<p><img src=\"/images/emoji/twitter/grin.png?v=12\" title=\":grin:\" class=\"emoji only-emoji\" alt=\":grin:\" loading=\"lazy\" width=\"20\" height=\"20\"></p>",
-    #   )
-    # end
+      expect(cooked).to eq(
+        "<p><img src=\"/images/emoji/twitter/grin.png?v=12\" title=\":grin:\" class=\"emoji only-emoji\" alt=\":grin:\" loading=\"lazy\" width=\"20\" height=\"20\"></p>",
+      )
+    end
 
     it "supports mentions plugin" do
       cooked = ChatMessage.cook("@mention")

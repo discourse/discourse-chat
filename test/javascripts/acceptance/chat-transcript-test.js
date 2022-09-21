@@ -267,7 +267,7 @@ acceptance("Discourse Chat | discourse-chat-transcript", function (needs) {
     );
   });
 
-  test("renders with the reactions attribute", function (assert) {
+  test.skip("renders with the reactions attribute", function (assert) {
     const reactionsAttr = "+1:martin;heart:martin,eviltrout";
     assert.cookedChatTranscript(
       `[chat quote="martin;2321;2022-01-25T05:40:39Z" channel="Cool Cats Club" channelId="1234" reactions="${reactionsAttr}"]\nThis is a chat message.\n[/chat]`,

@@ -159,6 +159,7 @@ after_initialize do
   load File.expand_path("../lib/chat_transcript_service.rb", __FILE__)
   load File.expand_path("../lib/duplicate_message_validator.rb", __FILE__)
   load File.expand_path("../lib/message_mover.rb", __FILE__)
+  load File.expand_path("../lib/chat_channel_membership_manager.rb", __FILE__)
   load File.expand_path("../lib/chat_message_bookmarkable.rb", __FILE__)
   load File.expand_path("../lib/chat_channel_archive_service.rb", __FILE__)
   load File.expand_path("../lib/direct_message_channel_creator.rb", __FILE__)
@@ -400,10 +401,9 @@ after_initialize do
   add_to_serializer(:current_user, :needs_dm_retention_reminder) { true }
 
   add_to_serializer(:current_user, :has_joinable_public_channels) do
-    memberships = UserChatChannelMembership.where(user_id: self.scope.user.id)
     DiscourseChat::ChatChannelFetcher.secured_public_channels(
       self.scope,
-      memberships,
+      DiscourseChat::ChatChannelMembershipManager.all_for_user(self.scope.user),
       following: false,
       limit: 1,
       status: :open,

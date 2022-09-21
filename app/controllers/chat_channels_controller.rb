@@ -13,7 +13,7 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
       @chat_channel,
       ChatChannelSerializer,
       membership: @chat_channel.membership_for(current_user),
-      root: false
+      root: false,
     )
   end
 
@@ -24,7 +24,7 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
       @chat_channel,
       ChatChannelSerializer,
       membership: @chat_channel.membership_for(current_user),
-      root: false
+      root: false,
     )
   end
 
@@ -35,7 +35,7 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
       @chat_channel,
       ChatChannelSerializer,
       membership: @chat_channel.membership_for(current_user),
-      root: false
+      root: false,
     )
   end
 
@@ -68,7 +68,9 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     chat_channel.user_chat_channel_memberships.create!(user: current_user, following: true)
 
     if chat_channel.auto_join_users
-      UserChatChannelMembership.enforce_automatic_channel_memberships(chat_channel)
+      DiscourseChat::ChatChannelMembershipManager.enforce_automatic_channel_memberships(
+        chat_channel,
+      )
     end
 
     render_serialized(
@@ -102,7 +104,7 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
   def search
     params.require(:filter)
     filter = params[:filter]&.downcase
-    memberships = UserChatChannelMembership.where(user: current_user)
+    memberships = DiscourseChat::ChatChannelMembershipManager.all_for_user(current_user)
     public_channels =
       DiscourseChat::ChatChannelFetcher.secured_public_channels(
         guardian,

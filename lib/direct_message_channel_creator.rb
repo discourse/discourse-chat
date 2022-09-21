@@ -24,6 +24,7 @@ module DiscourseChat::DirectMessageChannelCreator
   private
 
   def self.update_memberships(acting_user, target_users, chat_channel_id)
+    # TODO (martin) Move this to MembershipManager
     sql_params = {
       acting_user_id: acting_user.id,
       user_ids: target_users.map(&:id),

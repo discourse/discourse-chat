@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# TODO (martin) Move to MembershipManager
 class ChatChannelMembershipsQuery
   def self.call(channel, limit: 50, offset: 0, username: nil)
     query =

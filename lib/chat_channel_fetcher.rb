@@ -4,7 +4,7 @@ module DiscourseChat::ChatChannelFetcher
   MAX_PUBLIC_CHANNEL_RESULTS = 50
 
   def self.structured(guardian)
-    memberships = UserChatChannelMembership.where(user_id: guardian.user.id)
+    memberships = UserChatChannelMembership.all_for_user(guardian.user)
     {
       public_channels:
         secured_public_channels(guardian, memberships, status: :open, following: true),

@@ -53,7 +53,11 @@ class ChatChannel < ActiveRecord::Base
   def add(user)
     ActiveRecord::Base.transaction do
       membership =
-        UserChatChannelMembership.find_or_initialize_by(user_id: user.id, chat_channel: self)
+        DiscourseChat::ChatChannelMembershipManager.find_for_user(
+          user: user,
+          channel: self,
+          initialize: true,
+        )
 
       if !membership.following
         update!(user_count: (user_count || 0) + 1)
@@ -67,7 +71,9 @@ class ChatChannel < ActiveRecord::Base
 
   def remove(user)
     ActiveRecord::Base.transaction do
-      membership = UserChatChannelMembership.find_by!(user_id: user.id, chat_channel: self)
+      membership =
+        DiscourseChat::ChatChannelMembershipManager.find_for_user(user: user, channel: self)
+      return if !membership
 
       if membership.following
         new_user_count = [(user_count || 0) - 1, 0].max
@@ -197,6 +203,7 @@ end
 #  user_count              :integer          default(0), not null
 #  last_message_sent_at    :datetime         not null
 #  auto_join_users         :boolean          default(FALSE), not null
+#  user_count_stale        :boolean          default(FALSE), not null
 #
 # Indexes
 #

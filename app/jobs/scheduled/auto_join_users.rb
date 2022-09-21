@@ -7,7 +7,11 @@ module Jobs
     def execute(_args)
       ChatChannel
         .where(auto_join_users: true)
-        .each { |channel| UserChatChannelMembership.enforce_automatic_channel_memberships(channel) }
+        .each do |channel|
+          DiscourseChat::ChatChannelMembershipManager.enforce_automatic_channel_memberships(
+            channel: channel,
+          )
+        end
     end
   end
 end

@@ -101,7 +101,7 @@ RSpec.describe DiscourseChat::ChatController do
 
       get "/chat/#{chat_channel.id}/messages.json", params: { page_size: page_size }
       expect(response.parsed_body["chat_messages"].last["user_flag_status"]).to eq(
-        reviewable_score.status,
+        reviewable_score.status_for_database,
       )
       expect(response.parsed_body["chat_messages"].second_to_last["user_flag_status"]).to be_nil
     end

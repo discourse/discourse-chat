@@ -4,7 +4,7 @@ require "rails_helper"
 
 describe DiscourseChat::ChatNotifier do
   describe "#notify_new" do
-    fab!(:channel) { Fabricate(:chat_channel) }
+    fab!(:channel) { Fabricate(:category_channel) }
     fab!(:user_1) { Fabricate(:user) }
     fab!(:user_2) { Fabricate(:user) }
 
@@ -62,7 +62,7 @@ describe DiscourseChat::ChatNotifier do
       it "will never include someone outside the channel" do
         user3 = Fabricate(:user)
         @chat_group.add(user3)
-        another_channel = Fabricate(:chat_channel)
+        another_channel = Fabricate(:category_channel)
         Fabricate(:user_chat_channel_membership, chat_channel: another_channel, user: user3)
         msg = build_cooked_msg(mention, user_1)
 
@@ -192,7 +192,7 @@ describe DiscourseChat::ChatNotifier do
       it "only include mentioned users who are already in the channel" do
         user_3 = Fabricate(:user)
         @chat_group.add(user_3)
-        another_channel = Fabricate(:chat_channel)
+        another_channel = Fabricate(:category_channel)
         Fabricate(:user_chat_channel_membership, chat_channel: another_channel, user: user_3)
         msg = build_cooked_msg("Is @#{user_3.username} here? And @#{user_2.username}", user_1)
 
@@ -257,7 +257,7 @@ describe DiscourseChat::ChatNotifier do
           mentionable_level: Group::ALIAS_LEVELS[:everyone],
         )
       end
-      fab!(:other_channel) { Fabricate(:chat_channel) }
+      fab!(:other_channel) { Fabricate(:category_channel) }
 
       before { @chat_group.add(user_3) }
 

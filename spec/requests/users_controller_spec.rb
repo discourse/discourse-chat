@@ -2,7 +2,7 @@
 
 describe UsersController do
   describe "#perform_account_activation" do
-    let!(:channel) { Fabricate(:chat_channel, auto_join_users: true) }
+    let!(:channel) { Fabricate(:category_channel, auto_join_users: true) }
 
     before do
       Jobs.run_immediately!

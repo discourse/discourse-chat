@@ -3,13 +3,18 @@
 require "rails_helper"
 
 RSpec.describe Category do
-  it { is_expected.to have_one(:chat_channel) }
+  it_behaves_like "a chatable model" do
+    fab!(:chatable) { Fabricate(:category) }
+    let(:channel_class) { CategoryChannel }
+  end
+
+  it { is_expected.to have_one(:category_channel) }
 
   describe "#cannot_delete_reason" do
     subject(:reason) { category.cannot_delete_reason }
 
     context "when a chat channel is present" do
-      let(:channel) { Fabricate(:chat_channel) }
+      let(:channel) { Fabricate(:category_channel) }
       let(:category) { channel.chatable }
 
       it "returns a message" do

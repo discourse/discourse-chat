@@ -17,8 +17,8 @@ describe DiscourseChat::Api::ChatChannelsController do
     end
 
     describe "params" do
-      fab!(:opened_channel) { Fabricate(:chat_channel, name: "foo") }
-      fab!(:closed_channel) { Fabricate(:chat_channel, name: "bar", status: :closed) }
+      fab!(:opened_channel) { Fabricate(:category_channel, name: "foo") }
+      fab!(:closed_channel) { Fabricate(:category_channel, name: "bar", status: :closed) }
 
       before { sign_in(Fabricate(:user)) }
 
@@ -167,7 +167,7 @@ describe DiscourseChat::Api::ChatChannelsController do
     include_examples "channel access example", :put
 
     context "when user can’t edit channel" do
-      fab!(:chat_channel) { Fabricate(:chat_channel) }
+      fab!(:chat_channel) { Fabricate(:category_channel) }
 
       before { sign_in(Fabricate(:user)) }
 
@@ -179,7 +179,7 @@ describe DiscourseChat::Api::ChatChannelsController do
     end
 
     context "when user provided invalid params" do
-      fab!(:chat_channel) { Fabricate(:chat_channel, user_count: 10) }
+      fab!(:chat_channel) { Fabricate(:category_channel, user_count: 10) }
 
       before { sign_in(Fabricate(:admin)) }
 
@@ -193,7 +193,7 @@ describe DiscourseChat::Api::ChatChannelsController do
     context "when user provided an empty name" do
       fab!(:user) { Fabricate(:admin) }
       fab!(:chat_channel) do
-        Fabricate(:chat_channel, name: "something", description: "something else")
+        Fabricate(:category_channel, name: "something", description: "something else")
       end
 
       before { sign_in(user) }
@@ -214,7 +214,7 @@ describe DiscourseChat::Api::ChatChannelsController do
     context "when user provides an empty description" do
       fab!(:user) { Fabricate(:admin) }
       fab!(:chat_channel) do
-        Fabricate(:chat_channel, name: "something else", description: "something")
+        Fabricate(:category_channel, name: "something else", description: "something")
       end
 
       before { sign_in(user) }
@@ -235,7 +235,7 @@ describe DiscourseChat::Api::ChatChannelsController do
     context "when channel is a direct message channel" do
       fab!(:user) { Fabricate(:admin) }
       fab!(:chatable) { Fabricate(:direct_message_channel) }
-      fab!(:chat_channel) { Fabricate(:chat_channel, chatable: chatable) }
+      fab!(:chat_channel) { Fabricate(:dm_channel, chatable: chatable) }
 
       before { sign_in(user) }
 
@@ -248,7 +248,7 @@ describe DiscourseChat::Api::ChatChannelsController do
 
     context "when user provides valid params" do
       fab!(:user) { Fabricate(:admin) }
-      fab!(:chat_channel) { Fabricate(:chat_channel) }
+      fab!(:chat_channel) { Fabricate(:category_channel) }
 
       before { sign_in(user) }
 

@@ -39,7 +39,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     elsif chat_channel
       return render_json_error I18n.t("chat.already_enabled")
     else
-      chat_channel = ChatChannel.new(chatable: @chatable)
+      chat_channel = @chatable.chat_channel
       guardian.ensure_can_see_chat_channel!(chat_channel)
     end
 

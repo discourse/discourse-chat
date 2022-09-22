@@ -3,7 +3,7 @@
 require "rails_helper"
 
 describe Jobs::ChatChannelArchive do
-  fab!(:chat_channel) { Fabricate(:chat_channel) }
+  fab!(:chat_channel) { Fabricate(:category_channel) }
   fab!(:user) { Fabricate(:user, admin: true) }
   fab!(:category) { Fabricate(:category) }
   fab!(:chat_archive) do

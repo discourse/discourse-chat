@@ -10,7 +10,7 @@ RSpec.describe DiscourseChat::Api::ChatChannelNotificationsSettingsController do
     include_examples "channel access example", :put, "/notifications_settings.json"
 
     context "when category channel has invalid params" do
-      fab!(:chat_channel) { Fabricate(:chat_channel) }
+      fab!(:chat_channel) { Fabricate(:category_channel) }
       fab!(:user) { Fabricate(:user) }
       fab!(:membership) do
         Fabricate(:user_chat_channel_membership, user: user, chat_channel: chat_channel)
@@ -32,7 +32,7 @@ RSpec.describe DiscourseChat::Api::ChatChannelNotificationsSettingsController do
     end
 
     context "when category channel has valid params" do
-      fab!(:chat_channel) { Fabricate(:chat_channel) }
+      fab!(:chat_channel) { Fabricate(:category_channel) }
       fab!(:user) { Fabricate(:user) }
       fab!(:membership) do
         Fabricate(
@@ -65,7 +65,7 @@ RSpec.describe DiscourseChat::Api::ChatChannelNotificationsSettingsController do
     end
 
     context "when membership doesn’t exist" do
-      fab!(:chat_channel) { Fabricate(:chat_channel) }
+      fab!(:chat_channel) { Fabricate(:category_channel) }
       fab!(:user) { Fabricate(:user) }
 
       before { sign_in(user) }
@@ -80,7 +80,7 @@ RSpec.describe DiscourseChat::Api::ChatChannelNotificationsSettingsController do
     context "when direct message channel has invalid params" do
       fab!(:user) { Fabricate(:user) }
       fab!(:chatable) { Fabricate(:direct_message_channel, users: [user, Fabricate(:user)]) }
-      fab!(:chat_channel) { Fabricate(:chat_channel, chatable: chatable) }
+      fab!(:chat_channel) { Fabricate(:dm_channel, chatable: chatable) }
       fab!(:membership) do
         Fabricate(:user_chat_channel_membership, user: user, chat_channel: chat_channel)
       end
@@ -103,7 +103,7 @@ RSpec.describe DiscourseChat::Api::ChatChannelNotificationsSettingsController do
     context "when direct message channel has valid params" do
       fab!(:user) { Fabricate(:user) }
       fab!(:chatable) { Fabricate(:direct_message_channel, users: [user, Fabricate(:user)]) }
-      fab!(:chat_channel) { Fabricate(:chat_channel, chatable: chatable) }
+      fab!(:chat_channel) { Fabricate(:dm_channel, chatable: chatable) }
       fab!(:membership) do
         Fabricate(
           :user_chat_channel_membership,

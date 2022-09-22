@@ -48,8 +48,7 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     auto_join_users = ActiveRecord::Type::Boolean.new.deserialize(params[:auto_join_users]) || false
 
     chat_channel =
-      ChatChannel.create!(
-        chatable: chatable,
+      chatable.create_chat_channel!(
         name: params[:name],
         description: params[:description],
         user_count: 1,

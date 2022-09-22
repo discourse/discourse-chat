@@ -13,7 +13,7 @@ describe ChatChannelMembershipsQuery do
 
   context "when chatable exists" do
     context "when chatable is public" do
-      fab!(:channel_1) { Fabricate(:chat_channel) }
+      fab!(:channel_1) { Fabricate(:category_channel) }
 
       context "when no memberships exists" do
         it "returns an empty array" do
@@ -38,7 +38,7 @@ describe ChatChannelMembershipsQuery do
     context "when chatable is restricted" do
       fab!(:chatters_group) { Fabricate(:group) }
       fab!(:private_category) { Fabricate(:private_category, group: chatters_group) }
-      fab!(:channel_1) { Fabricate(:chat_channel, chatable: private_category) }
+      fab!(:channel_1) { Fabricate(:category_channel, chatable: private_category) }
 
       context "when user is in group" do
         before { chatters_group.add(user_1) }
@@ -109,7 +109,7 @@ describe ChatChannelMembershipsQuery do
 
     context "when chatable is direct channel" do
       fab!(:chatable_1) { Fabricate(:direct_message_channel, users: [user_1, user_2]) }
-      fab!(:channel_1) { Fabricate(:chat_channel, chatable: chatable_1) }
+      fab!(:channel_1) { Fabricate(:dm_channel, chatable: chatable_1) }
 
       context "when no memberships exists" do
         it "returns an empty array" do
@@ -144,7 +144,7 @@ describe ChatChannelMembershipsQuery do
     end
 
     describe "pagination" do
-      fab!(:channel_1) { Fabricate(:chat_channel) }
+      fab!(:channel_1) { Fabricate(:category_channel) }
 
       before do
         UserChatChannelMembership.create(user: user_1, chat_channel: channel_1, following: true)
@@ -169,7 +169,7 @@ describe ChatChannelMembershipsQuery do
     end
 
     describe "username param" do
-      fab!(:channel_1) { Fabricate(:chat_channel) }
+      fab!(:channel_1) { Fabricate(:category_channel) }
 
       before do
         UserChatChannelMembership.create(user: user_1, chat_channel: channel_1, following: true)
@@ -185,7 +185,7 @@ describe ChatChannelMembershipsQuery do
     end
 
     describe "memberships order" do
-      fab!(:channel_1) { Fabricate(:chat_channel) }
+      fab!(:channel_1) { Fabricate(:category_channel) }
 
       before do
         UserChatChannelMembership.create(user: user_1, chat_channel: channel_1, following: true)
@@ -228,7 +228,7 @@ describe ChatChannelMembershipsQuery do
   end
 
   context "when user is staged" do
-    fab!(:channel_1) { Fabricate(:chat_channel) }
+    fab!(:channel_1) { Fabricate(:category_channel) }
     fab!(:staged_user) { Fabricate(:staged) }
 
     before do
@@ -242,7 +242,7 @@ describe ChatChannelMembershipsQuery do
   end
 
   context "when user is suspended" do
-    fab!(:channel_1) { Fabricate(:chat_channel) }
+    fab!(:channel_1) { Fabricate(:category_channel) }
     fab!(:suspended_user) do
       Fabricate(:user, suspended_at: Time.now, suspended_till: 5.days.from_now)
     end
@@ -262,7 +262,7 @@ describe ChatChannelMembershipsQuery do
   end
 
   context "when user is inactive" do
-    fab!(:channel_1) { Fabricate(:chat_channel) }
+    fab!(:channel_1) { Fabricate(:category_channel) }
     fab!(:inactive_user) { Fabricate(:inactive_user) }
 
     before do

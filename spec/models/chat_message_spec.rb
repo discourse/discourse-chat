@@ -4,6 +4,7 @@ require "rails_helper"
 
 describe ChatMessage do
   fab!(:message) { Fabricate(:chat_message, message: "hey friend, what's up?!") }
+
   describe ".cook" do
     it "does not support HTML tags" do
       cooked = ChatMessage.cook("<h1>test</h1>")
@@ -94,7 +95,7 @@ describe ChatMessage do
     end
 
     it "supports chat quote bbcode" do
-      chat_channel = Fabricate(:chat_channel, name: "testchannel")
+      chat_channel = Fabricate(:category_channel, name: "testchannel")
       user = Fabricate(:user, username: "chatbbcodeuser")
       user2 = Fabricate(:user, username: "otherbbcodeuser")
       avatar_src =

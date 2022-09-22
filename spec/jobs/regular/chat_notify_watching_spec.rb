@@ -23,7 +23,7 @@ RSpec.describe Jobs::ChatNotifyWatching do
   end
 
   context "for a category channel" do
-    fab!(:channel) { Fabricate(:chat_channel) }
+    fab!(:channel) { Fabricate(:category_channel) }
     fab!(:membership1) do
       Fabricate(:user_chat_channel_membership, user: user1, chat_channel: channel)
     end
@@ -236,7 +236,7 @@ RSpec.describe Jobs::ChatNotifyWatching do
     end
 
     context "when the target user cannot see the chat channel" do
-      before { channel.update!(chatable: Fabricate(:private_category, group: group)) }
+      before { membership2.destroy! }
 
       it "does not send a desktop notification" do
         expect(notification_messages_for(user2).count).to be_zero

@@ -5,7 +5,7 @@ require "rails_helper"
 describe Jobs::ChatNotifyMentioned do
   fab!(:user_1) { Fabricate(:user) }
   fab!(:user_2) { Fabricate(:user) }
-  fab!(:public_channel) { Fabricate(:chat_channel) }
+  fab!(:public_channel) { Fabricate(:category_channel) }
 
   before do
     Group.refresh_automatic_groups!

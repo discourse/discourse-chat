@@ -8,7 +8,7 @@ describe DiscourseChat::PostNotificationHandler do
   let(:notified_users) { [] }
   let(:subject) { DiscourseChat::PostNotificationHandler.new(post, notified_users) }
 
-  fab!(:channel) { Fabricate(:chat_channel) }
+  fab!(:channel) { Fabricate(:category_channel) }
   fab!(:message1) do
     Fabricate(:chat_message, chat_channel: channel, message: "hey this is the first message :)")
   end

@@ -4,8 +4,8 @@ require "rails_helper"
 
 describe DiscourseChat::MessageMover do
   fab!(:acting_user) { Fabricate(:admin, username: "testmovechat") }
-  fab!(:source_channel) { Fabricate(:chat_channel) }
-  fab!(:destination_channel) { Fabricate(:chat_channel) }
+  fab!(:source_channel) { Fabricate(:category_channel) }
+  fab!(:destination_channel) { Fabricate(:category_channel) }
 
   fab!(:message1) do
     Fabricate(
@@ -53,7 +53,7 @@ describe DiscourseChat::MessageMover do
       expect {
         described_class.new(
           acting_user: acting_user,
-          source_channel: Fabricate(:chat_channel, chatable: Fabricate(:direct_message_channel)),
+          source_channel: Fabricate(:dm_channel),
           message_ids: move_message_ids,
         ).move_to_channel(destination_channel)
       }.to raise_error(DiscourseChat::MessageMover::InvalidChannel)
@@ -62,7 +62,7 @@ describe DiscourseChat::MessageMover do
           acting_user: acting_user,
           source_channel: source_channel,
           message_ids: move_message_ids,
-        ).move_to_channel(Fabricate(:chat_channel, chatable: Fabricate(:direct_message_channel)))
+        ).move_to_channel(Fabricate(:dm_channel))
       }.to raise_error(DiscourseChat::MessageMover::InvalidChannel)
     end
 

@@ -5,11 +5,11 @@ require "rails_helper"
 RSpec.describe DiscourseChat::GuardianExtensions do
   fab!(:user) { Fabricate(:user) }
   fab!(:staff) { Fabricate(:user, admin: true) }
-  fab!(:guardian) { Guardian.new(user) }
-  fab!(:staff_guardian) { Guardian.new(staff) }
   fab!(:chat_group) { Fabricate(:group) }
-  fab!(:channel) { Fabricate(:chat_channel) }
+  fab!(:channel) { Fabricate(:category_channel) }
   fab!(:dm_channel) { Fabricate(:direct_message_chat_channel) }
+  let(:guardian) { Guardian.new(user) }
+  let(:staff_guardian) { Guardian.new(staff) }
 
   before do
     SiteSetting.chat_allowed_groups = chat_group.id
@@ -64,7 +64,7 @@ RSpec.describe DiscourseChat::GuardianExtensions do
     describe "#can_see_chat_channel?" do
       context "for direct message channels" do
         fab!(:chatable) { Fabricate(:direct_message_channel) }
-        fab!(:channel) { Fabricate(:chat_channel, chatable: chatable) }
+        fab!(:channel) { Fabricate(:dm_channel, chatable: chatable) }
 
         it "returns false if the user is not part of the direct message" do
           expect(guardian.can_see_chat_channel?(channel)).to eq(false)
@@ -95,23 +95,40 @@ RSpec.describe DiscourseChat::GuardianExtensions do
     end
 
     describe "#can_flag_in_chat_channel?" do
-      it "can only flag if the channel is not a direct message channel" do
-        expect(guardian.can_see_chat_channel?(channel)).to eq(true)
-        channel.update(chatable: DirectMessageChannel.create!)
-        expect(guardian.can_flag_in_chat_channel?(channel)).to eq(false)
+      alias_matcher :be_able_to_flag_in_chat_channel, :be_can_flag_in_chat_channel
+
+      context "when channel is a direct message channel" do
+        let(:channel) { Fabricate(:dm_channel) }
+
+        it "returns false" do
+          expect(guardian).not_to be_able_to_flag_in_chat_channel(channel)
+        end
       end
 
-      it "returns false if the user can't see the channel" do
-        private_group = Fabricate(:group)
-        private_category = Fabricate(:private_category, group: private_group)
-        private_channel = Fabricate(:chat_channel, chatable: private_category)
+      context "when channel is a category channel" do
+        it "returns true" do
+          expect(guardian).to be_able_to_flag_in_chat_channel(channel)
+        end
+      end
 
-        expect(guardian.can_flag_in_chat_channel?(private_channel)).to eq(false)
+      context "with a private channel" do
+        let(:private_group) { Fabricate(:group) }
+        let(:private_category) { Fabricate(:private_category, group: private_group) }
+        let(:private_channel) { Fabricate(:category_channel, chatable: private_category) }
 
-        private_group.add(user)
+        context "when the user can't see the channel" do
+          it "returns false" do
+            expect(guardian).not_to be_able_to_flag_in_chat_channel(private_channel)
+          end
+        end
 
-        # The guardian caches the secure_groups_id. Use a fresh object to reflect changes
-        expect(Guardian.new(user).can_flag_in_chat_channel?(private_channel)).to eq(true)
+        context "when the user can see the channel" do
+          before { private_group.add(user) }
+
+          it "returns true" do
+            expect(guardian).to be_able_to_flag_in_chat_channel(private_channel)
+          end
+        end
       end
     end
 
@@ -272,7 +289,7 @@ RSpec.describe DiscourseChat::GuardianExtensions do
 
       context "when category has no channel" do
         before do
-          category.chat_channel.destroy
+          category.category_channel.destroy
           category.reload
         end
 

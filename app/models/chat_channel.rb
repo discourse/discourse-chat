@@ -45,6 +45,16 @@ class ChatChannel < ActiveRecord::Base
     define_method("#{status}!") { |acting_user| change_status(acting_user, status.to_sym) }
   end
 
+  %i[
+    category_channel?
+    direct_message_channel?
+    public_channel?
+    chatable_has_custom_fields?
+    read_restricted?
+  ].each { |name| define_method(name) { false } }
+
+  %i[allowed_user_ids allowed_group_ids chatable_url].each { |name| define_method(name) { nil } }
+
   def membership_for(user)
     user_chat_channel_memberships.find_by(user: user)
   end
@@ -65,65 +75,8 @@ class ChatChannel < ActiveRecord::Base
     "#{Discourse.base_url}/chat/channel/#{self.id}/-"
   end
 
-  def chatable_url
-    return nil if direct_message_channel?
-
-    chatable.url
-  end
-
-  def category_channel?
-    chatable_type == "Category"
-  end
-
-  def direct_message_channel?
-    chatable_type == "DirectMessageChannel"
-  end
-
-  def public_channel?
-    ChatChannel.public_channel_chatable_types.include?(chatable_type)
-  end
-
-  def chatable_has_custom_fields?
-    category_channel?
-  end
-
-  def allowed_user_ids
-    direct_message_channel? ? chatable.user_ids : nil
-  end
-
-  def allowed_group_ids
-    return if !category_channel?
-    return if category_channel? && !read_restricted?
-
-    staff_groups = Group::AUTO_GROUPS.slice(:staff, :moderators, :admins).values
-    chatable.secure_group_ids.to_a.concat(staff_groups)
-  end
-
   def public_channel_title
     chatable.name
-  end
-
-  def read_restricted?
-    return true if direct_message_channel?
-    return chatable.read_restricted? if category_channel?
-
-    true
-  end
-
-  def title(user)
-    return chatable.chat_channel_title_for_user(self, user) if direct_message_channel?
-    return name if name.present?
-
-    title_from_chatable
-  end
-
-  def title_from_chatable
-    case chatable_type
-    when "Category"
-      chatable.name
-    when "DirectMessageChannel"
-      chatable.chat_channel_title_for_user(self, user)
-    end
   end
 
   private

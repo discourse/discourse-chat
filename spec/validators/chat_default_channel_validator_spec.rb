@@ -3,7 +3,7 @@
 require "rails_helper"
 
 describe ChatDefaultChannelValidator do
-  fab!(:channel) { Fabricate(:chat_channel) }
+  fab!(:channel) { Fabricate(:category_channel) }
 
   it "provides an error message" do
     validator = described_class.new

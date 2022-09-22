@@ -128,7 +128,7 @@ describe DiscourseChat do
   end
 
   describe "chat oneboxes" do
-    fab!(:chat_channel) { Fabricate(:chat_channel, chatable: Fabricate(:category)) }
+    fab!(:chat_channel) { Fabricate(:category_channel) }
     fab!(:user) { Fabricate(:user, active: true) }
     fab!(:user_2) { Fabricate(:user, active: false) }
     fab!(:user_3) { Fabricate(:user, staged: true) }
@@ -226,7 +226,7 @@ describe DiscourseChat do
   describe "auto-joining users to a channel" do
     fab!(:chatters_group) { Fabricate(:group) }
     fab!(:user) { Fabricate(:user, last_seen_at: 15.minutes.ago) }
-    let!(:channel) { Fabricate(:chat_channel, auto_join_users: true, chatable: category) }
+    let!(:channel) { Fabricate(:category_channel, auto_join_users: true, chatable: category) }
 
     before { Jobs.run_immediately! }
 

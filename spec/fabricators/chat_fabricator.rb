@@ -8,7 +8,13 @@ Fabricator(:chat_channel) do
   status { :open }
 end
 
-Fabricator(:direct_message_chat_channel, from: :chat_channel) do
+Fabricator(:category_channel, from: :chat_channel, class_name: :category_channel) {}
+
+Fabricator(:dm_channel, from: :chat_channel, class_name: :d_m_channel) do
+  chatable { Fabricate(:direct_message_channel) }
+end
+
+Fabricator(:direct_message_chat_channel, from: :chat_channel, class_name: :d_m_channel) do
   transient :users
   chatable do |attrs|
     Fabricate(:direct_message_channel, users: attrs[:users] || [Fabricate(:user), Fabricate(:user)])

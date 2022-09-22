@@ -3,11 +3,11 @@
 describe DiscourseChat::ChatChannelFetcher do
   fab!(:category) { Fabricate(:category, name: "support") }
   fab!(:private_category) { Fabricate(:private_category, group: Fabricate(:group)) }
-  fab!(:category_channel) { Fabricate(:chat_channel, chatable: category) }
+  fab!(:category_channel) { Fabricate(:category_channel, chatable: category) }
   fab!(:dm_channel1) { Fabricate(:direct_message_channel) }
   fab!(:dm_channel2) { Fabricate(:direct_message_channel) }
-  fab!(:direct_message_channel1) { Fabricate(:chat_channel, chatable: dm_channel1) }
-  fab!(:direct_message_channel2) { Fabricate(:chat_channel, chatable: dm_channel2) }
+  fab!(:direct_message_channel1) { Fabricate(:dm_channel, chatable: dm_channel1) }
+  fab!(:direct_message_channel2) { Fabricate(:dm_channel, chatable: dm_channel2) }
   fab!(:user1) { Fabricate(:user) }
   fab!(:user2) { Fabricate(:user) }
 
@@ -190,7 +190,7 @@ describe DiscourseChat::ChatChannelFetcher do
 
     it "can filter by not following" do
       category_channel.user_chat_channel_memberships.create!(user: user1, following: false)
-      another_channel = Fabricate(:chat_channel)
+      another_channel = Fabricate(:category_channel)
 
       expect(
         subject.secured_public_channels(guardian, memberships, following: false).map(&:id),
@@ -211,7 +211,7 @@ describe DiscourseChat::ChatChannelFetcher do
 
     it "ensures limit has a max value" do
       over_limit = DiscourseChat::ChatChannelFetcher::MAX_PUBLIC_CHANNEL_RESULTS + 1
-      over_limit.times { Fabricate(:chat_channel) }
+      over_limit.times { Fabricate(:category_channel) }
 
       expect(
         subject.secured_public_channels(guardian, memberships, limit: over_limit).length,

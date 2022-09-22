@@ -3,7 +3,7 @@
 require "rails_helper"
 
 describe ChatPublisher do
-  fab!(:channel) { Fabricate(:chat_channel) }
+  fab!(:channel) { Fabricate(:category_channel) }
   fab!(:message) { Fabricate(:chat_message, chat_channel: channel) }
 
   describe ".publish_refresh!" do

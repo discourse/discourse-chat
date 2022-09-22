@@ -7,10 +7,10 @@ RSpec.describe DiscourseChat::ChatController do
   fab!(:other_user) { Fabricate(:user) }
   fab!(:admin) { Fabricate(:admin) }
   fab!(:category) { Fabricate(:category) }
-  fab!(:chat_channel) { Fabricate(:chat_channel, chatable: category) }
+  fab!(:chat_channel) { Fabricate(:category_channel, chatable: category) }
   fab!(:dm_chat_channel) do
     Fabricate(
-      :chat_channel,
+      :dm_channel,
       chatable: Fabricate(:direct_message_channel, users: [user, other_user, admin]),
     )
   end
@@ -232,7 +232,7 @@ RSpec.describe DiscourseChat::ChatController do
       end
 
       it "signals there are no more messages" do
-        new_channel = Fabricate(:chat_channel)
+        new_channel = Fabricate(:category_channel)
         Fabricate(:chat_message, chat_channel: new_channel, user: other_user, message: "message")
         chat_messages_qty = 1
 
@@ -245,19 +245,18 @@ RSpec.describe DiscourseChat::ChatController do
 
   describe "#enable_chat" do
     context "with category as chatable" do
-      it "ensures created channel can be seen" do
-        category = Fabricate(:category)
-        channel = Fabricate(:chat_channel, chatable: category)
+      let!(:category) { Fabricate(:category) }
+      let(:channel) { Fabricate(:category_channel, chatable: category) }
 
+      it "ensures created channel can be seen" do
         Guardian.any_instance.expects(:can_see_chat_channel?).with(channel)
 
         sign_in(admin)
         post "/chat/enable.json", params: { chatable_type: "category", chatable_id: category.id }
       end
 
+      # TODO: rewrite specs to ensure no exception is raised
       it "ensures existing channel can be seen" do
-        category = Fabricate(:category)
-
         Guardian.any_instance.expects(:can_see_chat_channel?)
 
         sign_in(admin)
@@ -270,7 +269,7 @@ RSpec.describe DiscourseChat::ChatController do
     context "with category as chatable" do
       it "ensures category can be seen" do
         category = Fabricate(:category)
-        channel = Fabricate(:chat_channel, chatable: category)
+        channel = Fabricate(:category_channel, chatable: category)
         message = Fabricate(:chat_message, chat_channel: channel)
 
         Guardian.any_instance.expects(:can_see_chat_channel?).with(channel)
@@ -285,7 +284,7 @@ RSpec.describe DiscourseChat::ChatController do
     let(:message) { "This is a message" }
 
     describe "for category" do
-      fab!(:chat_channel) { Fabricate(:chat_channel, chatable: category) }
+      fab!(:chat_channel) { Fabricate(:category_channel, chatable: category) }
 
       it "errors when the user is silenced" do
         UserSilencer.new(user).silence
@@ -352,7 +351,7 @@ RSpec.describe DiscourseChat::ChatController do
       fab!(:user1) { Fabricate(:user) }
       fab!(:user2) { Fabricate(:user) }
       fab!(:chatable) { Fabricate(:direct_message_channel, users: [user1, user2]) }
-      fab!(:direct_message_channel) { Fabricate(:chat_channel, chatable: chatable) }
+      fab!(:direct_message_channel) { Fabricate(:dm_channel, chatable: chatable) }
 
       def create_memberships
         UserChatChannelMembership.create!(
@@ -617,7 +616,7 @@ RSpec.describe DiscourseChat::ChatController do
     end
 
     describe "for category" do
-      fab!(:chat_channel) { Fabricate(:chat_channel, chatable: category) }
+      fab!(:chat_channel) { Fabricate(:category_channel, chatable: category) }
 
       it_behaves_like "chat_message_deletion" do
         let(:other_user) { second_user }
@@ -702,7 +701,7 @@ RSpec.describe DiscourseChat::ChatController do
     end
 
     describe "for category" do
-      fab!(:chat_channel) { Fabricate(:chat_channel, chatable: category) }
+      fab!(:chat_channel) { Fabricate(:category_channel, chatable: category) }
 
       it_behaves_like "chat_message_restoration" do
         let(:other_user) { second_user }
@@ -821,14 +820,14 @@ RSpec.describe DiscourseChat::ChatController do
   end
 
   describe "react" do
-    fab!(:chat_channel) { Fabricate(:chat_channel) }
+    fab!(:chat_channel) { Fabricate(:category_channel) }
     fab!(:chat_message) { Fabricate(:chat_message, chat_channel: chat_channel, user: user) }
     fab!(:user_membership) do
       Fabricate(:user_chat_channel_membership, chat_channel: chat_channel, user: user)
     end
 
     fab!(:private_chat_channel) do
-      Fabricate(:chat_channel, chatable: Fabricate(:private_category, group: Fabricate(:group)))
+      Fabricate(:category_channel, chatable: Fabricate(:private_category, group: Fabricate(:group)))
     end
     fab!(:private_chat_message) do
       Fabricate(:chat_message, chat_channel: private_chat_channel, user: admin)
@@ -837,7 +836,7 @@ RSpec.describe DiscourseChat::ChatController do
       Fabricate(:user_chat_channel_membership, chat_channel: private_chat_channel, user: user)
     end
 
-    fab!(:chat_channel_no_memberships) { Fabricate(:chat_channel) }
+    fab!(:chat_channel_no_memberships) { Fabricate(:category_channel) }
     fab!(:chat_message_no_memberships) do
       Fabricate(:chat_message, chat_channel: chat_channel_no_memberships, user: user)
     end
@@ -987,7 +986,7 @@ RSpec.describe DiscourseChat::ChatController do
   end
 
   describe "invite_users" do
-    fab!(:chat_channel) { Fabricate(:chat_channel) }
+    fab!(:chat_channel) { Fabricate(:category_channel) }
     fab!(:chat_message) { Fabricate(:chat_message, chat_channel: chat_channel, user: admin) }
     fab!(:user2) { Fabricate(:user) }
 
@@ -1088,7 +1087,7 @@ RSpec.describe DiscourseChat::ChatController do
   end
 
   describe "#quote_messages" do
-    fab!(:channel) { Fabricate(:chat_channel, chatable: category, name: "Cool Chat") }
+    fab!(:channel) { Fabricate(:category_channel, chatable: category, name: "Cool Chat") }
     let(:user2) { Fabricate(:user) }
     let(:message1) do
       Fabricate(
@@ -1243,7 +1242,8 @@ RSpec.describe DiscourseChat::ChatController do
   end
 
   describe "#set_draft" do
-    fab!(:chat_channel) { Fabricate(:chat_channel) }
+    fab!(:chat_channel) { Fabricate(:category_channel) }
+    let(:dm_channel) { Fabricate(:dm_channel) }
 
     before { sign_in(user) }
 
@@ -1272,21 +1272,19 @@ RSpec.describe DiscourseChat::ChatController do
     end
 
     it "cannot create chat drafts for a direct message channel the user cannot access" do
-      chat_channel.update!(chatable: Fabricate(:direct_message_channel))
-
-      post "/chat/drafts.json", params: { chat_channel_id: chat_channel.id, data: "{}" }
+      post "/chat/drafts.json", params: { chat_channel_id: dm_channel.id, data: "{}" }
       expect(response.status).to eq(403)
 
-      DirectMessageUser.create(user: user, direct_message_channel: chat_channel.chatable)
+      DirectMessageUser.create(user: user, direct_message_channel: dm_channel.chatable)
       expect {
-        post "/chat/drafts.json", params: { chat_channel_id: chat_channel.id, data: "{}" }
+        post "/chat/drafts.json", params: { chat_channel_id: dm_channel.id, data: "{}" }
       }.to change { ChatDraft.count }.by(1)
     end
   end
 
   describe "#message_link" do
     it "ensures message's channel can be seen" do
-      channel = Fabricate(:chat_channel, chatable: Fabricate(:category))
+      channel = Fabricate(:category_channel, chatable: Fabricate(:category))
       message = Fabricate(:chat_message, chat_channel: channel)
 
       Guardian.any_instance.expects(:can_see_chat_channel?).with(channel)
@@ -1298,8 +1296,8 @@ RSpec.describe DiscourseChat::ChatController do
 
   describe "#lookup_message" do
     let!(:message) { Fabricate(:chat_message, chat_channel: channel) }
-    let!(:channel) { Fabricate(:chat_channel, chatable: chatable) }
-    let!(:chatable) { Fabricate(:direct_message_channel) }
+    let(:channel) { Fabricate(:dm_channel) }
+    let(:chatable) { channel.chatable }
     fab!(:user) { Fabricate(:user) }
 
     before { sign_in(user) }
@@ -1320,7 +1318,7 @@ RSpec.describe DiscourseChat::ChatController do
     end
 
     context "when the chat channel is for a category" do
-      let!(:chatable) { Fabricate(:category) }
+      let(:channel) { Fabricate(:category_channel) }
 
       it "ensures the user can access that category" do
         get "/chat/lookup/#{message.id}.json", { params: { chat_channel_id: channel.id } }
@@ -1341,7 +1339,7 @@ RSpec.describe DiscourseChat::ChatController do
     end
 
     context "when the chat channel is for a direct message channel" do
-      let!(:chatable) { Fabricate(:direct_message_channel) }
+      let(:channel) { Fabricate(:dm_channel) }
 
       it "ensures the user can access that direct message channel" do
         get "/chat/lookup/#{message.id}.json", { params: { chat_channel_id: channel.id } }
@@ -1372,8 +1370,14 @@ RSpec.describe DiscourseChat::ChatController do
         created_at: 1.minute.ago,
       )
     end
-    fab!(:destination_channel) { Fabricate(:chat_channel) }
+    fab!(:destination_channel) { Fabricate(:category_channel) }
     let(:message_ids) { [message_to_move1.id, message_to_move2.id] }
+    let(:invalid_destination_channel) do
+      Fabricate(
+        :dm_channel,
+        chatable: Fabricate(:direct_message_channel, users: [admin, Fabricate(:user)]),
+      )
+    end
 
     context "when the user is not admin" do
       it "returns an access denied error" do
@@ -1425,12 +1429,9 @@ RSpec.describe DiscourseChat::ChatController do
       end
 
       it "shows an error message when the destination channel is invalid" do
-        destination_channel.update!(
-          chatable: Fabricate(:direct_message_channel, users: [admin, Fabricate(:user)]),
-        )
         put "/chat/#{chat_channel.id}/move_messages_to_channel.json",
             params: {
-              destination_channel_id: destination_channel.id,
+              destination_channel_id: invalid_destination_channel.id,
               message_ids: message_ids,
             }
         expect(response.status).to eq(422)

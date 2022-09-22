@@ -177,6 +177,6 @@ module DiscourseChat::GuardianExtensions
   end
 
   def can_delete_category?(category)
-    super && !category.chat_channel
+    super && !category.category_channel
   end
 end

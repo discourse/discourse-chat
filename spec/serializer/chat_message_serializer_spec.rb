@@ -3,7 +3,7 @@
 require "rails_helper"
 
 describe ChatMessageSerializer do
-  fab!(:chat_channel) { Fabricate(:chat_channel) }
+  fab!(:chat_channel) { Fabricate(:category_channel) }
   fab!(:message_poster) { Fabricate(:user) }
   fab!(:message_1) { Fabricate(:chat_message, user: message_poster, chat_channel: chat_channel) }
   fab!(:guardian_user) { Fabricate(:user) }

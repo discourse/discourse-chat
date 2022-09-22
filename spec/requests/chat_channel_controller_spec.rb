@@ -7,9 +7,9 @@ RSpec.describe DiscourseChat::ChatChannelsController do
   fab!(:other_user) { Fabricate(:user, username: "janemay", name: "Jane May") }
   fab!(:admin) { Fabricate(:admin, username: "andyjones", name: "Andy Jones") }
   fab!(:category) { Fabricate(:category) }
-  fab!(:chat_channel) { Fabricate(:chat_channel, chatable: category) }
+  fab!(:chat_channel) { Fabricate(:category_channel, chatable: category) }
   fab!(:dm_chat_channel) do
-    Fabricate(:chat_channel, chatable: Fabricate(:direct_message_channel, users: [user, admin]))
+    Fabricate(:dm_channel, chatable: Fabricate(:direct_message_channel, users: [user, admin]))
   end
 
   before do
@@ -23,7 +23,7 @@ RSpec.describe DiscourseChat::ChatChannelsController do
     fab!(:user_with_private_access) { Fabricate(:user, group_ids: [private_group.id]) }
 
     fab!(:private_category) { Fabricate(:private_category, group: private_group) }
-    fab!(:private_category_cc) { Fabricate(:chat_channel, chatable: private_category) }
+    fab!(:private_category_cc) { Fabricate(:category_channel, chatable: private_category) }
 
     describe "with memberships for all channels" do
       before do
@@ -516,7 +516,7 @@ RSpec.describe DiscourseChat::ChatChannelsController do
         GroupUser.create(user: user, group: group)
         dm_chat_channel_2 =
           Fabricate(
-            :chat_channel,
+            :dm_channel,
             chatable: Fabricate(:direct_message_channel, users: [user, other_user]),
           )
 
@@ -572,7 +572,7 @@ RSpec.describe DiscourseChat::ChatChannelsController do
 
   describe "#show" do
     fab!(:channel) do
-      Fabricate(:chat_channel, chatable: category, name: "My Great Channel & Stuff")
+      Fabricate(:category_channel, chatable: category, name: "My Great Channel & Stuff")
     end
 
     it "can find channel by id" do
@@ -609,7 +609,7 @@ RSpec.describe DiscourseChat::ChatChannelsController do
   end
 
   describe "#archive" do
-    fab!(:channel) { Fabricate(:chat_channel, chatable: category, name: "The English Channel") }
+    fab!(:channel) { Fabricate(:category_channel, chatable: category, name: "The English Channel") }
     let(:new_topic_params) do
       { type: "newTopic", title: "This is a test archive topic", category_id: category.id }
     end
@@ -688,7 +688,12 @@ RSpec.describe DiscourseChat::ChatChannelsController do
 
   describe "#retry_archive" do
     fab!(:channel) do
-      Fabricate(:chat_channel, chatable: category, name: "The English Channel", status: :read_only)
+      Fabricate(
+        :category_channel,
+        chatable: category,
+        name: "The English Channel",
+        status: :read_only,
+      )
     end
     fab!(:archive) do
       ChatChannelArchive.create!(
@@ -740,7 +745,7 @@ RSpec.describe DiscourseChat::ChatChannelsController do
 
   describe "#change_status" do
     fab!(:channel) do
-      Fabricate(:chat_channel, chatable: category, name: "Channel Orange", status: :open)
+      Fabricate(:category_channel, chatable: category, name: "Channel Orange", status: :open)
     end
 
     it "returns error if user is not staff" do
@@ -781,7 +786,7 @@ RSpec.describe DiscourseChat::ChatChannelsController do
 
   describe "#delete" do
     fab!(:channel) do
-      Fabricate(:chat_channel, chatable: category, name: "Ambrose Channel", status: :open)
+      Fabricate(:category_channel, chatable: category, name: "Ambrose Channel", status: :open)
     end
 
     it "returns error if user is not staff" do

@@ -6,7 +6,7 @@ describe DiscourseChat::ChatChannelArchiveService do
   class FakeArchiveError < StandardError
   end
 
-  fab!(:channel) { Fabricate(:chat_channel) }
+  fab!(:channel) { Fabricate(:category_channel) }
   fab!(:user) { Fabricate(:user, admin: true) }
   fab!(:category) { Fabricate(:category) }
   let(:topic_params) { { topic_title: "This will be a new topic", category_id: category.id } }

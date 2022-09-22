@@ -17,7 +17,7 @@ describe DiscourseChat::ChatMessageUpdater do
     )
   end
   fab!(:user_without_memberships) { Fabricate(:user) }
-  fab!(:public_chat_channel) { Fabricate(:chat_channel, chatable: Fabricate(:topic)) }
+  fab!(:public_chat_channel) { Fabricate(:category_channel) }
 
   before do
     SiteSetting.chat_enabled = true

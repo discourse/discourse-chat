@@ -7,6 +7,11 @@ describe DirectMessageChannel do
   fab!(:user2) { Fabricate(:user, username: "chatdmuser") }
   fab!(:chat_channel) { Fabricate(:chat_channel) }
 
+  it_behaves_like "a chatable model" do
+    fab!(:chatable) { Fabricate(:direct_message_channel) }
+    let(:channel_class) { DMChannel }
+  end
+
   describe "#chat_channel_title_for_user" do
     it "returns a nicely formatted name if it's more than one user" do
       user3 = Fabricate.build(:user, username: "chatdmregent")

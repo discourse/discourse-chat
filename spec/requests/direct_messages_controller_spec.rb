@@ -19,7 +19,7 @@ RSpec.describe DiscourseChat::DirectMessagesController do
     user_ids.each do |user_id|
       direct_messages_channel.direct_message_users.create!(user_id: user_id)
     end
-    ChatChannel.create!(chatable: direct_messages_channel)
+    DMChannel.create!(chatable: direct_messages_channel)
   end
 
   describe "#index" do
@@ -44,7 +44,7 @@ RSpec.describe DiscourseChat::DirectMessagesController do
         direct_messages_channel = DirectMessageChannel.create!
         direct_messages_channel.direct_message_users.create!(user_id: user.id)
         direct_messages_channel.direct_message_users.create!(user_id: user1.id)
-        ChatChannel.create!(chatable: direct_messages_channel)
+        DMChannel.create!(chatable: direct_messages_channel)
       end
 
       it "returns the channel" do

@@ -1,63 +1,51 @@
 # frozen_string_literal: true
 
-require "rails_helper"
-
-describe ChatChannel do
+RSpec.shared_examples "a chat channel model" do
   fab!(:user1) { Fabricate(:user) }
   fab!(:user2) { Fabricate(:user) }
   fab!(:staff) { Fabricate(:user, admin: true) }
   fab!(:group) { Fabricate(:group) }
   fab!(:private_category) { Fabricate(:private_category, group: group) }
-  fab!(:private_category_channel) { Fabricate(:chat_channel, chatable: private_category) }
+  fab!(:private_category_channel) { Fabricate(:category_channel, chatable: private_category) }
   fab!(:direct_message_channel) do
-    Fabricate(:chat_channel, chatable: Fabricate(:direct_message_channel, users: [user1, user2]))
+    Fabricate(:dm_channel, chatable: Fabricate(:direct_message_channel, users: [user1, user2]))
   end
 
-  describe "#allowed_user_ids" do
-    it "returns participants when the channel is a DM" do
-      expect(direct_message_channel.allowed_user_ids).to contain_exactly(user1.id, user2.id)
-    end
-
-    it "returns nil for regular channels" do
-      group.add(user1)
-
-      expect(private_category_channel.allowed_user_ids).to eq(nil)
-    end
+  it { is_expected.to belong_to(:chatable) }
+  it { is_expected.to belong_to(:direct_message_channel).with_foreign_key(:chatable_id) }
+  it { is_expected.to have_many(:chat_messages) }
+  it { is_expected.to have_many(:user_chat_channel_memberships) }
+  it { is_expected.to have_one(:chat_channel_archive) }
+  it do
+    is_expected.to define_enum_for(:status).with_values(
+      open: 0,
+      read_only: 1,
+      closed: 2,
+      archived: 3,
+    ).without_scopes
   end
 
-  describe "#allowed_group_ids" do
-    it "returns groups with access to the associated category" do
-      staff_groups = Group::AUTO_GROUPS.slice(:staff, :moderators, :admins).values
-
-      expect(private_category_channel.allowed_group_ids).to contain_exactly(*staff_groups, group.id)
-    end
-
-    it "returns nil when for DMs" do
-      expect(direct_message_channel.allowed_group_ids).to eq(nil)
-    end
-
-    it "returns nil for public channels" do
-      public_category = Fabricate(:category, read_restricted: false)
-      public_channel = Fabricate(:chat_channel, chatable: public_category)
-
-      expect(public_channel.allowed_group_ids).to eq(nil)
+  describe "Validations" do
+    it { is_expected.to validate_presence_of(:name).allow_nil }
+    it do
+      is_expected.to validate_length_of(:name).is_at_most(
+        SiteSetting.max_topic_title_length,
+      ).allow_nil
     end
   end
 
-  describe "#read_restricted?" do
-    it "returns true for a DM" do
-      expect(direct_message_channel.read_restricted?).to eq(true)
-    end
+  describe ".public_channels" do
+    context "when a category used as chatable is destroyed" do
+      fab!(:category_channel_1) { Fabricate(:chat_channel, chatable: Fabricate(:category)) }
+      fab!(:category_channel_2) { Fabricate(:chat_channel, chatable: Fabricate(:category)) }
 
-    it "returns false for channels associated to public categories" do
-      public_category = Fabricate(:category, read_restricted: false)
-      public_channel = Fabricate(:chat_channel, chatable: public_category)
+      before { category_channel_1.chatable.destroy! }
 
-      expect(public_channel.read_restricted?).to eq(false)
-    end
-
-    it "returns true for channels associated to private categories" do
-      expect(private_category_channel.read_restricted?).to eq(true)
+      it "doesn’t list the channel" do
+        ids = ChatChannel.public_channels.pluck(:chatable_id)
+        expect(ids).to_not include(category_channel_1.chatable_id)
+        expect(ids).to include(category_channel_2.chatable_id)
+      end
     end
   end
 
@@ -180,21 +168,6 @@ describe ChatChannel do
     end
   end
 
-  describe ".public_channels" do
-    context "when a category used as chatable is destroyed" do
-      fab!(:category_channel_1) { Fabricate(:chat_channel, chatable: Fabricate(:category)) }
-      fab!(:category_channel_2) { Fabricate(:chat_channel, chatable: Fabricate(:category)) }
-
-      before { category_channel_1.chatable.destroy! }
-
-      it "doesn’t list the channel" do
-        ids = ChatChannel.public_channels.pluck(:chatable_id)
-        expect(ids).to_not include(category_channel_1.chatable_id)
-        expect(ids).to include(category_channel_2.chatable_id)
-      end
-    end
-  end
-
   describe "#archived!" do
     before { private_category_channel.update!(status: :read_only) }
 
@@ -247,28 +220,6 @@ describe ChatChannel do
         ),
       ).to eq(true)
     end
-  end
-
-  it "is valid if name is long enough" do
-    SiteSetting.max_topic_title_length = 5
-    channel = described_class.new(name: "a")
-    channel = described_class.new(name: "a" * SiteSetting.max_topic_title_length)
-    expect(channel).to be_valid
-  end
-
-  it "is invalid if name is too long" do
-    channel = described_class.new(name: "a" * (SiteSetting.max_topic_title_length + 1))
-    expect(channel).to be_invalid
-  end
-
-  it "is invalid if name is empty" do
-    channel = described_class.new(name: "")
-    expect(channel).to be_invalid
-  end
-
-  it "is valid if name is nil" do
-    channel = described_class.new(name: nil)
-    expect(channel).to be_valid
   end
 
   describe "#add" do

@@ -24,10 +24,10 @@ describe DiscourseChat::ChatMessageCreator do
     )
   end
   fab!(:user_without_memberships) { Fabricate(:user) }
-  fab!(:public_chat_channel) { Fabricate(:chat_channel, chatable: Fabricate(:topic)) }
+  fab!(:public_chat_channel) { Fabricate(:category_channel) }
   fab!(:dm_chat_channel) do
     Fabricate(
-      :chat_channel,
+      :dm_channel,
       chatable: Fabricate(:direct_message_channel, users: [user1, user2, user3]),
     )
   end

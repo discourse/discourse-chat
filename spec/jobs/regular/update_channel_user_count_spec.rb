@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Jobs::UpdateChannelUserCount do
-  fab!(:channel) { Fabricate(:chat_channel, user_count: 0, user_count_stale: true) }
+  fab!(:channel) { Fabricate(:category_channel, user_count: 0, user_count_stale: true) }
   fab!(:user1) { Fabricate(:user) }
   fab!(:user2) { Fabricate(:user) }
   fab!(:user3) { Fabricate(:user) }

@@ -6,7 +6,7 @@ describe DiscourseChat::ChatMailer do
   fab!(:chatters_group) { Fabricate(:group) }
   fab!(:sender) { Fabricate(:user, group_ids: [chatters_group.id]) }
   fab!(:user_1) { Fabricate(:user, group_ids: [chatters_group.id], last_seen_at: 15.minutes.ago) }
-  fab!(:chat_channel) { Fabricate(:chat_channel) }
+  fab!(:chat_channel) { Fabricate(:category_channel) }
   fab!(:chat_message) { Fabricate(:chat_message, user: sender, chat_channel: chat_channel) }
   fab!(:user_1_chat_channel_membership) do
     Fabricate(
@@ -118,7 +118,7 @@ describe DiscourseChat::ChatMailer do
 
     it "skips users with unread messages from a different channel" do
       user_1_chat_channel_membership.update!(last_read_message_id: chat_message.id)
-      second_channel = Fabricate(:chat_channel)
+      second_channel = Fabricate(:category_channel)
       Fabricate(
         :user_chat_channel_membership,
         user: user_1,
@@ -221,7 +221,7 @@ describe DiscourseChat::ChatMailer do
       end
 
       it "only updates the last_message_read_when_emailed_id on the channel with unread mentions" do
-        another_channel = Fabricate(:chat_channel)
+        another_channel = Fabricate(:category_channel)
         another_channel_message =
           Fabricate(:chat_message, chat_channel: another_channel, user: sender)
         Fabricate(:chat_mention, user: user_1, chat_message: another_channel_message)

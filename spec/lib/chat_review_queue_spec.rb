@@ -5,7 +5,7 @@ require "rails_helper"
 describe DiscourseChat::ChatReviewQueue do
   fab!(:message_poster) { Fabricate(:user) }
   fab!(:flagger) { Fabricate(:user) }
-  fab!(:chat_channel) { Fabricate(:chat_channel) }
+  fab!(:chat_channel) { Fabricate(:category_channel) }
   fab!(:message) { Fabricate(:chat_message, user: message_poster, chat_channel: chat_channel) }
 
   fab!(:admin) { Fabricate(:admin) }

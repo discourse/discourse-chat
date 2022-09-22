@@ -3,8 +3,8 @@
 require "rails_helper"
 
 describe Jobs::UpdateUserCountsForChatChannels do
-  fab!(:chat_channel_1) { Fabricate(:chat_channel, user_count: 0) }
-  fab!(:chat_channel_2) { Fabricate(:chat_channel, user_count: 0) }
+  fab!(:chat_channel_1) { Fabricate(:category_channel, user_count: 0) }
+  fab!(:chat_channel_2) { Fabricate(:category_channel, user_count: 0) }
   fab!(:user_1) { Fabricate(:user) }
   fab!(:user_2) { Fabricate(:user) }
   fab!(:user_3) { Fabricate(:user) }

@@ -2,8 +2,8 @@
 
 RSpec.describe DiscourseChat::ChatChannelMembershipManager do
   fab!(:user) { Fabricate(:user) }
-  fab!(:channel1) { Fabricate(:chat_channel) }
-  fab!(:channel2) { Fabricate(:chat_channel) }
+  fab!(:channel1) { Fabricate(:category_channel) }
+  fab!(:channel2) { Fabricate(:category_channel) }
 
   describe ".find_for_user" do
     let!(:membership) do

@@ -3,7 +3,7 @@
 require "rails_helper"
 
 RSpec.describe DiscourseChat::IncomingChatWebhooksController do
-  fab!(:chat_channel) { Fabricate(:chat_channel) }
+  fab!(:chat_channel) { Fabricate(:category_channel) }
   fab!(:webhook) { Fabricate(:incoming_chat_webhook, chat_channel: chat_channel) }
 
   before { SiteSetting.chat_debug_webhook_payloads = true }

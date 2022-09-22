@@ -13,7 +13,7 @@ module DiscourseChat::DirectMessageChannelCreator
     else
       ensure_actor_can_communicate!(acting_user, target_users)
       direct_messages_channel = DirectMessageChannel.create!(user_ids: target_users.map(&:id))
-      chat_channel = ChatChannel.create!(chatable: direct_messages_channel)
+      chat_channel = direct_messages_channel.create_chat_channel!
     end
 
     update_memberships(acting_user, target_users, chat_channel.id)

@@ -128,7 +128,7 @@ describe UserNotifications do
     end
 
     context "with public channel" do
-      fab!(:channel) { Fabricate(:chat_channel) }
+      fab!(:channel) { Fabricate(:category_channel) }
       fab!(:chat_message) { Fabricate(:chat_message, user: sender, chat_channel: channel) }
       fab!(:user_membership) do
         Fabricate(
@@ -165,7 +165,7 @@ describe UserNotifications do
           end
 
           it "includes both channel titles when there are exactly two with unread mentions" do
-            another_chat_channel = Fabricate(:chat_channel, name: "Test channel")
+            another_chat_channel = Fabricate(:category_channel, name: "Test channel")
             another_chat_message =
               Fabricate(:chat_message, user: sender, chat_channel: another_chat_channel)
             Fabricate(
@@ -189,7 +189,7 @@ describe UserNotifications do
 
           it "displays a count when there are more than two channels with unread mentions" do
             2.times do |n|
-              another_chat_channel = Fabricate(:chat_channel, name: "Test channel #{n}")
+              another_chat_channel = Fabricate(:category_channel, name: "Test channel #{n}")
               another_chat_message =
                 Fabricate(:chat_message, user: sender, chat_channel: another_chat_channel)
               Fabricate(

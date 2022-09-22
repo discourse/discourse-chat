@@ -4,7 +4,7 @@ require "rails_helper"
 
 describe DiscourseChat::ChatMessageReactor do
   fab!(:reacting_user) { Fabricate(:user) }
-  fab!(:channel) { Fabricate(:chat_channel) }
+  fab!(:channel) { Fabricate(:category_channel) }
   fab!(:reactor) { described_class.new(reacting_user, channel) }
   fab!(:message_1) { Fabricate(:chat_message, chat_channel: channel, user: reacting_user) }
   let(:subject) { described_class.new(reacting_user, channel) }

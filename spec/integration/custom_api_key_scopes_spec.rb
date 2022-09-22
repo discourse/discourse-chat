@@ -9,8 +9,8 @@ describe "API keys scoped to chat#create_message" do
   end
 
   fab!(:admin) { Fabricate(:admin) }
-  fab!(:chat_channel) { Fabricate(:chat_channel) }
-  fab!(:chat_channel_2) { Fabricate(:chat_channel) }
+  fab!(:chat_channel) { Fabricate(:category_channel) }
+  fab!(:chat_channel_2) { Fabricate(:category_channel) }
 
   let(:chat_api_key) do
     key = ApiKey.create!

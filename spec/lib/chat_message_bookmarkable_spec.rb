@@ -6,9 +6,9 @@ describe ChatMessageBookmarkable do
   fab!(:user) { Fabricate(:user) }
   fab!(:guardian) { Guardian.new(user) }
   fab!(:other_category) { Fabricate(:private_category, group: Fabricate(:group)) }
-  fab!(:category_channel) { Fabricate(:chat_channel, chatable: other_category) }
+  fab!(:category_channel) { Fabricate(:category_channel, chatable: other_category) }
   fab!(:private_category) { Fabricate(:private_category, group: Fabricate(:group)) }
-  fab!(:channel) { Fabricate(:chat_channel, chatable: Fabricate(:category)) }
+  fab!(:channel) { Fabricate(:category_channel) }
 
   before do
     Bookmark.register_bookmarkable(ChatMessageBookmarkable)

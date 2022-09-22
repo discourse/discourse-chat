@@ -124,7 +124,7 @@ describe "chat bbcode quoting in posts" do
     COOKED
   end
 
-  xit "renders with the reactions attribute" do
+  it "renders with the reactions attribute" do
     reactions_attr = "+1:martin;heart:martin,eviltrout"
     post.update!(
       raw:
@@ -146,9 +146,9 @@ describe "chat bbcode quoting in posts" do
       <p>This is a chat message.</p>
       <div class="chat-transcript-reactions">
       <div class="chat-transcript-reaction">
-      <img width="20" height="20" src="/images/emoji/twitter/+1.png?v=12" title="+1" loading="lazy" alt="+1" class="emoji" tabindex="0"> 1</div>
+      <img width="20" height="20" src="/images/emoji/twitter/+1.png?v=12" title="+1" loading="lazy" alt="+1" class="emoji"> 1</div>
       <div class="chat-transcript-reaction">
-      <img width="20" height="20" src="/images/emoji/twitter/heart.png?v=12" title="heart" loading="lazy" alt="heart" class="emoji" tabindex="0"> 2</div>
+      <img width="20" height="20" src="/images/emoji/twitter/heart.png?v=12" title="heart" loading="lazy" alt="heart" class="emoji"> 2</div>
       </div>
       </div>
       </div>

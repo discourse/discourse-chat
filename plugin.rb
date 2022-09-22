@@ -168,6 +168,7 @@ after_initialize do
   load File.expand_path("../lib/extensions/user_notifications_extension.rb", __FILE__)
   load File.expand_path("../lib/extensions/user_email_extension.rb", __FILE__)
   load File.expand_path("../lib/extensions/category_extension.rb", __FILE__)
+  load File.expand_path("../lib/extensions/user_extension.rb", __FILE__)
   load File.expand_path("../lib/slack_compatibility.rb", __FILE__)
   load File.expand_path("../lib/post_notification_handler.rb", __FILE__)
   load File.expand_path("../lib/secure_media_compatibility.rb", __FILE__)
@@ -225,11 +226,7 @@ after_initialize do
     UserNotifications.prepend DiscourseChat::UserNotificationsExtension
     UserOption.prepend DiscourseChat::UserOptionExtension
     Category.prepend DiscourseChat::CategoryExtension
-    User.class_eval do
-      has_many :user_chat_channel_memberships, dependent: :destroy
-      has_many :chat_message_reactions, dependent: :destroy
-      has_many :chat_mentions
-    end
+    User.prepend DiscourseChat::UserExtension
     Jobs::UserEmail.prepend DiscourseChat::UserEmailExtension
 
     Bookmark.register_bookmarkable(ChatMessageBookmarkable)

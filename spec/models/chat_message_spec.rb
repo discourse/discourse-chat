@@ -331,7 +331,7 @@ describe ChatMessage do
     it "supports emoji shortcuts" do
       cooked = ChatMessage.cook("this is a replace test :P :|")
       expect(cooked).to eq(<<~HTML.chomp)
-        <p>this is a replace test <img src="/images/emoji/twitter/stuck_out_tongue.png?v=12" title=":stuck_out_tongue:" alt=":stuck_out_tongue:" loading=\"lazy\" width=\"20\" height=\"20\" class="emoji" tabindex="0"> <img src="/images/emoji/twitter/expressionless.png?v=12" title=":expressionless:" alt=":expressionless:" loading=\"lazy\" width=\"20\" height=\"20\" class="emoji" tabindex="0"></p>
+        <p>this is a replace test <img src="/images/emoji/twitter/stuck_out_tongue.png?v=12" title=":stuck_out_tongue:" class="emoji" alt=":stuck_out_tongue:" loading=\"lazy\" width=\"20\" height=\"20\"> <img src="/images/emoji/twitter/expressionless.png?v=12" title=":expressionless:" class="emoji" alt=":expressionless:" loading=\"lazy\" width=\"20\" height=\"20\"></p>
       HTML
     end
 

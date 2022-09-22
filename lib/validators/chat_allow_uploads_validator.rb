@@ -6,9 +6,7 @@ class ChatAllowUploadsValidator
   end
 
   def valid_value?(value)
-    if value == "t" && prevent_enabling_chat_uploads?
-      return false
-    end
+    return false if value == "t" && prevent_enabling_chat_uploads?
     true
   end
 

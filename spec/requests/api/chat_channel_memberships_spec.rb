@@ -23,11 +23,7 @@ describe DiscourseChat::Api::ChatChannelMembershipsController do
           chat_channel: channel_1,
           following: false,
         )
-        UserChatChannelMembership.create(
-          user: user_2,
-          chat_channel: channel_1,
-          following: true,
-        )
+        UserChatChannelMembership.create(user: user_2, chat_channel: channel_1, following: true)
         sign_in(user_1)
       end
 

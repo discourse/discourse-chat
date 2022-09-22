@@ -127,7 +127,9 @@ RSpec.describe DiscourseChat::DirectMessagesController do
             post "/chat/direct_messages/create.json", params: { usernames: [usernames] }
           }.not_to change { DirectMessageChannel.count }
           expect(response.status).to eq(422)
-          expect(response.parsed_body["errors"]).to eq([I18n.t("chat.errors.not_accepting_dms", username: user1.username)])
+          expect(response.parsed_body["errors"]).to eq(
+            [I18n.t("chat.errors.not_accepting_dms", username: user1.username)],
+          )
         end
       end
 
@@ -140,25 +142,19 @@ RSpec.describe DiscourseChat::DirectMessagesController do
       end
 
       describe "user muting the actor" do
-        before do
-          Fabricate(:muted_user, user: user1, muted_user: user)
-        end
+        before { Fabricate(:muted_user, user: user1, muted_user: user) }
 
         include_examples "creating dms with communication error"
       end
 
       describe "user preventing all DMs" do
-        before do
-          user1.user_option.update(allow_private_messages: false)
-        end
+        before { user1.user_option.update(allow_private_messages: false) }
 
         include_examples "creating dms with communication error"
       end
 
       describe "user only allowing DMs from certain users" do
-        before do
-          user1.user_option.update(enable_allowed_pm_users: true)
-        end
+        before { user1.user_option.update(enable_allowed_pm_users: true) }
 
         include_examples "creating dms with communication error"
       end

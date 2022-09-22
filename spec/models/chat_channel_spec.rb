@@ -158,7 +158,9 @@ describe ChatChannel do
 
       expect(events).to include(
         event_name: :chat_channel_status_change,
-        params: [{ channel: private_category_channel, old_status: "open", new_status: "read_only" }],
+        params: [
+          { channel: private_category_channel, old_status: "open", new_status: "read_only" },
+        ],
       )
       expect(messages.first.channel).to eq("/chat/channel-status")
       expect(messages.first.data).to eq(

@@ -86,7 +86,11 @@ class ChatChannelSerializer < ApplicationSerializer
   def current_user_membership
     return if !@current_user_membership
     @current_user_membership.chat_channel = object
-    UserChatChannelMembershipSerializer.new(@current_user_membership, scope: scope, root: false).as_json
+    UserChatChannelMembershipSerializer.new(
+      @current_user_membership,
+      scope: scope,
+      root: false,
+    ).as_json
   end
 
   alias_method :include_archive_topic_id?, :include_archive_status?

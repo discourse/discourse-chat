@@ -178,7 +178,7 @@ describe Jobs::ChatNotifyMentioned do
       message = create_chat_message
       UserChatChannelMembership.find_by(chat_channel: public_channel, user: user_2).update!(
         desktop_notification_level: UserChatChannelMembership::NOTIFICATION_LEVELS[:always],
-        muted: true
+        muted: true,
       )
 
       desktop_notification =
@@ -191,7 +191,7 @@ describe Jobs::ChatNotifyMentioned do
       message = create_chat_message
       UserChatChannelMembership.find_by(chat_channel: public_channel, user: user_2).update!(
         mobile_notification_level: UserChatChannelMembership::NOTIFICATION_LEVELS[:always],
-        muted: true
+        muted: true,
       )
 
       PostAlerter.expects(:push_notification).never

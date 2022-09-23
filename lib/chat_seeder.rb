@@ -28,7 +28,9 @@ class ChatSeeder
     chat_channel = ChatChannel.create!(chatable: category, auto_join_users: true, name: name)
     category.custom_fields[DiscourseChat::HAS_CHAT_ENABLED] = true
     category.save!
-    DiscourseChat::ChatChannelMembershipManager.enforce_automatic_channel_memberships(channel: chat_channel)
+    DiscourseChat::ChatChannelMembershipManager.enforce_automatic_channel_memberships(
+      channel: chat_channel,
+    )
     chat_channel
   end
 end

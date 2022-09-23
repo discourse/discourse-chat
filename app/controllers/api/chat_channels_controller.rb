@@ -74,6 +74,7 @@ class DiscourseChat::Api::ChatChannelsController < DiscourseChat::Api
         user: current_user,
         channel_id: params.require(:chat_channel_id),
       )
+    raise Discourse::NotFound if membership.blank?
     guardian.ensure_can_see_chat_channel!(membership.chat_channel)
     membership
   end

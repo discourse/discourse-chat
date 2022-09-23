@@ -919,8 +919,7 @@ html.has-full-page-chat {
       #main-outlet-wrapper {
         // restrict the row height, including when virtual keyboard is open
         grid-template-rows: calc(
-          var(--chat-vh, 1vh) * 100 -
-            calc(var(--header-offset) + var(--footer-nav-height))
+          var(--chat-vh, 1vh) * 100 - calc(var(--header-offset))
         );
       }
     }

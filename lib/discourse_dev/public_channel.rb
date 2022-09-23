@@ -38,7 +38,7 @@ module DiscourseDev
 
             DiscourseChat::ChatChannelMembershipManager.follow_channel(
               user: admin_user || User.new.create!,
-              chat_channel: channel,
+              channel: channel,
             )
           end
       end

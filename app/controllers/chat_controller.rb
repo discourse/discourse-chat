@@ -82,7 +82,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     @user_chat_channel_membership =
       DiscourseChat::ChatChannelMembershipManager.find_for_user(
         user: current_user,
-        chat_channel: @chat_channel,
+        channel: @chat_channel,
         following: true,
       )
     raise Discourse::InvalidAccess unless @user_chat_channel_membership
@@ -158,7 +158,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     membership =
       DiscourseChat::ChatChannelMembershipManager.find_for_user(
         user: current_user,
-        chat_channel: @chat_channel,
+        channel: @chat_channel,
         following: true,
       )
     raise Discourse::NotFound if membership.nil?

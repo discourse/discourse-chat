@@ -97,17 +97,8 @@ export default class ChatChannel extends RestModel {
     return this.isOpen && !this.isArchived;
   }
 
-  @computed(
-    "isDirectMessageChannel",
-    "memberships_count",
-    "chatable.users.length"
-  )
+  @computed("memberships_count")
   get membershipsCount() {
-    // TODO (martin) can we just use user_count/memberships_count here too??
-    if (this.isDirectMessageChannel) {
-      return (this.chatable.users?.length || 0) + 1;
-    }
-
     return this.memberships_count;
   }
 

@@ -11,7 +11,6 @@
     "chatable_id": { "type": "number" },
     "last_message_sent_at": { "type": "string" },
     "status": { "type": "string" },
-    "memberships_count": { "type": "number" },
     "chatable": {
       "type": "object",
       "required": ["id", "name", "slug", "color"]

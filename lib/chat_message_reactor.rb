@@ -45,7 +45,7 @@ class DiscourseChat::ChatMessageReactor
 
   def enforce_channel_membership!
     DiscourseChat::ChatChannelMembershipManager.follow_channel(
-      chat_channel: @chat_channel,
+      channel: @chat_channel,
       user: @user,
     )
   end

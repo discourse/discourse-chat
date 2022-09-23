@@ -59,7 +59,6 @@ export default class ChatApi {
       }
     ).then((updatedChannel) => {
       channel.updateMembership(updatedChannel.current_user_membership);
-      channel.set("memberships_count", updatedChannel.memberships_count);
       return channel;
     });
   }
@@ -72,7 +71,6 @@ export default class ChatApi {
       }
     ).then((updatedChannel) => {
       channel.updateMembership(updatedChannel.current_user_membership);
-      channel.set("memberships_count", updatedChannel.memberships_count);
       return channel;
     });
   }

@@ -59,6 +59,10 @@ export default class ChatApi {
       }
     ).then((updatedChannel) => {
       channel.updateMembership(updatedChannel.current_user_membership);
+
+      // doesn't matter if this is inaccurate, it will be eventually consistent
+      // via the channel-metadata MessageBus channel
+      channel.set("memberships_count", channel.memberships_count - 1);
       return channel;
     });
   }
@@ -71,6 +75,10 @@ export default class ChatApi {
       }
     ).then((updatedChannel) => {
       channel.updateMembership(updatedChannel.current_user_membership);
+
+      // doesn't matter if this is inaccurate, it will be eventually consistent
+      // via the channel-metadata MessageBus channel
+      channel.set("memberships_count", channel.memberships_count + 1);
       return channel;
     });
   }

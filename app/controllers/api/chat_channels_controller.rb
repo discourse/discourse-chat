@@ -48,7 +48,7 @@ class DiscourseChat::Api::ChatChannelsController < DiscourseChat::Api
 
     if chat_channel.category_channel? && chat_channel.auto_join_users
       DiscourseChat::ChatChannelMembershipManager.enforce_automatic_channel_memberships(
-        channel_id: chat_channel.id,
+        channel: chat_channel,
       )
     end
 

@@ -23,7 +23,7 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     render_serialized(
       @chat_channel,
       ChatChannelSerializer,
-      membership: @chat_channel.membership_for(current_user),
+      membership: membership,
       root: false,
     )
   end
@@ -34,7 +34,7 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     render_serialized(
       @chat_channel,
       ChatChannelSerializer,
-      membership: @chat_channel.membership_for(current_user),
+      membership: membership,
       root: false,
     )
   end
@@ -69,7 +69,7 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
 
     if chat_channel.auto_join_users
       DiscourseChat::ChatChannelMembershipManager.enforce_automatic_channel_memberships(
-        chat_channel,
+        channel: chat_channel,
       )
     end
 

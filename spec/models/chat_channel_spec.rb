@@ -179,7 +179,7 @@ describe ChatChannel do
   end
 
   describe ".public_channels" do
-    context "a category used as chatable is destroyed" do
+    context "when a category used as chatable is destroyed" do
       fab!(:category_channel_1) { Fabricate(:chat_channel, chatable: Fabricate(:category)) }
       fab!(:category_channel_2) { Fabricate(:chat_channel, chatable: Fabricate(:category)) }
 

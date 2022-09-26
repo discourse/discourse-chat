@@ -92,7 +92,7 @@ describe DiscourseChat::ChatMessageUpdater do
         chat_message: chat_message,
         new_content: message + " editedddd",
       )
-    }.to change { ChatMention.count }.by(0)
+    }.not_to change { ChatMention.count }
   end
 
   it "doesn't create mentions for users without access" do
@@ -104,7 +104,7 @@ describe DiscourseChat::ChatMessageUpdater do
         chat_message: chat_message,
         new_content: message + " @#{user_without_memberships.username}",
       )
-    }.to change { ChatMention.count }.by(0)
+    }.not_to change { ChatMention.count }
   end
 
   it "destroys mention notifications that should be removed" do
@@ -115,7 +115,7 @@ describe DiscourseChat::ChatMessageUpdater do
         chat_message: chat_message,
         new_content: "ping @#{user3.username}",
       )
-    }.to change { user2.chat_mentions.count }.by(-1).and change { user3.chat_mentions.count }.by(0)
+    }.to change { user2.chat_mentions.count }.by(-1).and not_change { user3.chat_mentions.count }
   end
 
   it "creates new, leaves existing, and removes old mentions all at once" do
@@ -138,7 +138,7 @@ describe DiscourseChat::ChatMessageUpdater do
         chat_message: chat_message,
         new_content: "ping @#{admin1.username}",
       )
-    }.to change { ChatMention.count }.by(0)
+    }.not_to change { ChatMention.count }
   end
 
   describe "group mentions" do
@@ -162,9 +162,7 @@ describe DiscourseChat::ChatMessageUpdater do
           chat_message: chat_message,
           new_content: "ping @#{admin_group.name} @#{admin2.username}",
         )
-      }.to change { admin1.chat_mentions.count }.by(1).and change { admin2.chat_mentions.count }.by(
-              0,
-            )
+      }.to change { admin1.chat_mentions.count }.by(1).and not_change { admin2.chat_mentions.count }
     end
 
     it "deletes old mentions when group mention is removed" do
@@ -209,7 +207,7 @@ describe DiscourseChat::ChatMessageUpdater do
           new_content: "I guess this is different",
           upload_ids: [upload2.id, upload1.id],
         )
-      }.to change { ChatUpload.count }.by(0)
+      }.not_to change { ChatUpload.count }
     end
 
     it "removes uploads that should be removed" do
@@ -277,7 +275,7 @@ describe DiscourseChat::ChatMessageUpdater do
           new_content: "I guess this is different",
           upload_ids: [0],
         )
-      }.to change { ChatUpload.where(chat_message: chat_message).count }.by(0)
+      }.not_to change { ChatUpload.where(chat_message: chat_message).count }
     end
 
     it "doesn't add uploads if `chat_allow_uploads` is false" do
@@ -289,7 +287,7 @@ describe DiscourseChat::ChatMessageUpdater do
           new_content: "I guess this is different",
           upload_ids: [upload1.id, upload2.id],
         )
-      }.to change { ChatUpload.where(chat_message: chat_message).count }.by(0)
+      }.not_to change { ChatUpload.where(chat_message: chat_message).count }
     end
 
     it "doesn't remove existing uploads if `chat_allow_uploads` is false" do
@@ -307,7 +305,7 @@ describe DiscourseChat::ChatMessageUpdater do
           new_content: "I guess this is different",
           upload_ids: [],
         )
-      }.to change { ChatUpload.where(chat_message: chat_message).count }.by(0)
+      }.not_to change { ChatUpload.where(chat_message: chat_message).count }
     end
 
     it "updates if upload is present even if length is less than `chat_minimum_message_length`" do

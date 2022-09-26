@@ -345,7 +345,7 @@ describe ChatMessage do
       end
     end
 
-    context "unicode usernames are enabled" do
+    context "when unicode usernames are enabled" do
       before { SiteSetting.unicode_usernames = true }
 
       it "cooks unicode mentions" do
@@ -470,7 +470,7 @@ describe ChatMessage do
       expect { chat_upload_1.reload }.to raise_error(ActiveRecord::RecordNotFound)
     end
 
-    context "bookmarks" do
+    describe "bookmarks" do
       before { Bookmark.register_bookmarkable(ChatMessageBookmarkable) }
 
       it "destroys bookmarks" do

@@ -46,12 +46,12 @@ describe DiscourseChat::ChatChannelFetcher do
   end
 
   describe ".unread_counts" do
-    context "user is member of the channel" do
+    context "when user is member of the channel" do
       before do
         Fabricate(:user_chat_channel_membership, chat_channel: category_channel, user: user1)
       end
 
-      context "has unread messages" do
+      context "with unread messages" do
         before do
           Fabricate(:chat_message, chat_channel: category_channel, message: "hi", user: user2)
           Fabricate(:chat_message, chat_channel: category_channel, message: "bonjour", user: user2)
@@ -63,14 +63,14 @@ describe DiscourseChat::ChatChannelFetcher do
         end
       end
 
-      context "has no unread messages" do
+      context "with no unread messages" do
         it "returns the correct count" do
           unread_counts = subject.unread_counts([category_channel], user1)
           expect(unread_counts[category_channel.id]).to eq(0)
         end
       end
 
-      context "last unread message has been deleted" do
+      context "when last unread message has been deleted" do
         fab!(:last_unread) do
           Fabricate(:chat_message, chat_channel: category_channel, message: "hi", user: user2)
         end
@@ -84,8 +84,8 @@ describe DiscourseChat::ChatChannelFetcher do
       end
     end
 
-    context "user is not member of the channel" do
-      context "the channel has new messages" do
+    context "when user is not member of the channel" do
+      context "when the channel has new messages" do
         before do
           Fabricate(:chat_message, chat_channel: category_channel, message: "hi", user: user2)
         end

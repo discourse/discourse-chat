@@ -17,7 +17,7 @@ describe "Plugin API for discourse_chat" do
     plugin
   end
 
-  context "discourse_chat.enable_markdown_feature" do
+  describe "discourse_chat.enable_markdown_feature" do
     it "stores the markdown feature" do
       plugin_instance.discourse_chat.enable_markdown_feature(:foo)
 

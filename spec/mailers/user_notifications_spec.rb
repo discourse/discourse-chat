@@ -13,7 +13,7 @@ describe UserNotifications do
   end
 
   describe ".chat_summary" do
-    context "private channel" do
+    context "with private channel" do
       fab!(:channel) do
         DiscourseChat::DirectMessageChannelCreator.create!(
           acting_user: sender,
@@ -21,7 +21,7 @@ describe UserNotifications do
         )
       end
 
-      context "email subject" do
+      describe "email subject" do
         it "includes the sender username in the subject" do
           expected_subject =
             I18n.t(
@@ -116,7 +116,7 @@ describe UserNotifications do
       end
     end
 
-    context "public channel" do
+    context "with public channel" do
       fab!(:channel) { Fabricate(:chat_channel) }
       fab!(:chat_message) { Fabricate(:chat_message, user: sender, chat_channel: channel) }
       fab!(:user_membership) do
@@ -135,7 +135,7 @@ describe UserNotifications do
       end
 
       describe "email subject" do
-        context "regular mentions" do
+        context "with regular mentions" do
           before { Fabricate(:chat_mention, user: user, chat_message: chat_message) }
 
           it "includes the sender username in the subject" do
@@ -202,7 +202,7 @@ describe UserNotifications do
           end
         end
 
-        context "both unread DM messages and mentions" do
+        context "with both unread DM messages and mentions" do
           before do
             channel =
               DiscourseChat::DirectMessageChannelCreator.create!(

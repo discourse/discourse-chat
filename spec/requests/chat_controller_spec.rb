@@ -244,7 +244,7 @@ RSpec.describe DiscourseChat::ChatController do
   end
 
   describe "#enable_chat" do
-    context "category as chatable" do
+    context "with category as chatable" do
       it "ensures created channel can be seen" do
         category = Fabricate(:category)
         channel = Fabricate(:chat_channel, chatable: category)
@@ -267,7 +267,7 @@ RSpec.describe DiscourseChat::ChatController do
   end
 
   describe "#disable_chat" do
-    context "category as chatable" do
+    context "with category as chatable" do
       it "ensures category can be seen" do
         category = Fabricate(:category)
         channel = Fabricate(:chat_channel, chatable: category)
@@ -420,7 +420,7 @@ RSpec.describe DiscourseChat::ChatController do
   describe "#rebake" do
     fab!(:chat_message) { Fabricate(:chat_message, chat_channel: chat_channel, user: user) }
 
-    context "staff" do
+    context "as staff" do
       it "rebakes the post" do
         sign_in(Fabricate(:admin))
 
@@ -453,7 +453,7 @@ RSpec.describe DiscourseChat::ChatController do
         expect(response.status).to eq(403)
       end
 
-      context "cooked has changed" do
+      context "when cooked has changed" do
         it "marks the message as dirty" do
           sign_in(Fabricate(:admin))
           chat_message.update!(message: "new content")
@@ -473,14 +473,14 @@ RSpec.describe DiscourseChat::ChatController do
       end
     end
 
-    context "not staff" do
+    context "when not staff" do
       it "forbids non staff to rebake" do
         sign_in(Fabricate(:user))
         put "/chat/#{chat_channel.id}/#{chat_message.id}/rebake.json"
         expect(response.status).to eq(403)
       end
 
-      context "TL3 user" do
+      context "as TL3 user" do
         it "forbids less then TL4 user tries to rebake" do
           sign_in(Fabricate(:user, trust_level: TrustLevel[3]))
           put "/chat/#{chat_channel.id}/#{chat_message.id}/rebake.json"
@@ -488,7 +488,7 @@ RSpec.describe DiscourseChat::ChatController do
         end
       end
 
-      context "TL4 user" do
+      context "as TL4 user" do
         it "allows TL4 users to rebake" do
           sign_in(Fabricate(:user, trust_level: TrustLevel[4]))
           put "/chat/#{chat_channel.id}/#{chat_message.id}/rebake.json"
@@ -737,7 +737,7 @@ RSpec.describe DiscourseChat::ChatController do
         Fabricate(:user_chat_channel_membership, chat_channel: chat_channel, user: user)
       end
 
-      context "message_id param doesn't link to a message of the channel" do
+      context "when message_id param doesn't link to a message of the channel" do
         it "raises a not found" do
           put "/chat/#{chat_channel.id}/read/-999.json"
 
@@ -745,7 +745,7 @@ RSpec.describe DiscourseChat::ChatController do
         end
       end
 
-      context "message_id param is inferior to existing last read" do
+      context "when message_id param is inferior to existing last read" do
         before { membership.update!(last_read_message_id: message_2.id) }
 
         it "raises an invalid request" do
@@ -756,7 +756,7 @@ RSpec.describe DiscourseChat::ChatController do
         end
       end
 
-      context "message_id refers to deleted message" do
+      context "when message_id refers to deleted message" do
         before { message_1.trash!(Discourse.system_user) }
 
         it "works" do
@@ -767,9 +767,9 @@ RSpec.describe DiscourseChat::ChatController do
       end
 
       it "updates timing records" do
-        expect { put "/chat/#{chat_channel.id}/read/#{message_1.id}.json" }.to change {
+        expect { put "/chat/#{chat_channel.id}/read/#{message_1.id}.json" }.not_to change {
           UserChatChannelMembership.count
-        }.by(0)
+        }
 
         membership.reload
         expect(membership.chat_channel_id).to eq(chat_channel.id)
@@ -998,9 +998,9 @@ RSpec.describe DiscourseChat::ChatController do
       SiteSetting.chat_allowed_groups = Group::AUTO_GROUPS[:admin]
       expect {
         put "/chat/#{chat_channel.id}/invite.json", params: { user_ids: [user.id] }
-      }.to change {
+      }.not_to change {
         user.notifications.where(notification_type: Notification.types[:chat_invitation]).count
-      }.by(0)
+      }
     end
 
     it "creates an invitation notification for users who can chat" do

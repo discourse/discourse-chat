@@ -135,7 +135,7 @@ RSpec.describe DiscourseChat::GuardianExtensions do
       fab!(:message) { Fabricate(:chat_message, chat_channel: channel, user: user) }
       fab!(:chatable) { Fabricate(:category) }
 
-      context "channel is closed" do
+      context "when channel is closed" do
         before { channel.update!(status: :closed) }
 
         it "disallows a owner to restore" do
@@ -147,7 +147,7 @@ RSpec.describe DiscourseChat::GuardianExtensions do
         end
       end
 
-      context "chatable is a direct message" do
+      context "when chatable is a direct message" do
         fab!(:chatable) { DirectMessageChannel.create! }
 
         it "allows owner to restore" do
@@ -159,11 +159,11 @@ RSpec.describe DiscourseChat::GuardianExtensions do
         end
       end
 
-      context "user is not owner of the message" do
+      context "when user is not owner of the message" do
         fab!(:message) { Fabricate(:chat_message, chat_channel: channel, user: Fabricate(:user)) }
 
-        context "chatable is a category" do
-          context "category is not restricted" do
+        context "when chatable is a category" do
+          context "when category is not restricted" do
             it "allows staff to restore" do
               expect(staff_guardian.can_restore_chat?(message, chatable)).to eq(true)
             end
@@ -173,7 +173,7 @@ RSpec.describe DiscourseChat::GuardianExtensions do
             end
           end
 
-          context "category is restricted" do
+          context "when category is restricted" do
             fab!(:chatable) { Fabricate(:category, read_restricted: true) }
 
             it "allows staff to restore" do
@@ -184,7 +184,7 @@ RSpec.describe DiscourseChat::GuardianExtensions do
               expect(guardian.can_restore_chat?(message, chatable)).to eq(false)
             end
 
-            context "group moderation is enabled" do
+            context "when group moderation is enabled" do
               before { SiteSetting.enable_category_group_moderation = true }
 
               it "allows a group moderator to restore" do
@@ -197,7 +197,7 @@ RSpec.describe DiscourseChat::GuardianExtensions do
             end
           end
 
-          context "chatable is a direct message" do
+          context "when chatable is a direct message" do
             fab!(:chatable) { DirectMessageChannel.create! }
 
             it "allows staff to restore" do
@@ -211,13 +211,13 @@ RSpec.describe DiscourseChat::GuardianExtensions do
         end
       end
 
-      context "user is owner of the message" do
-        context "chatable is a category" do
+      context "when user is owner of the message" do
+        context "when chatable is a category" do
           it "allows to restore if owner can see category" do
             expect(guardian.can_restore_chat?(message, chatable)).to eq(true)
           end
 
-          context "category is restricted" do
+          context "when category is restricted" do
             fab!(:chatable) { Fabricate(:category, read_restricted: true) }
 
             it "disallows to restore if owner can't see category" do
@@ -230,7 +230,7 @@ RSpec.describe DiscourseChat::GuardianExtensions do
           end
         end
 
-        context "chatable is a direct message" do
+        context "when chatable is a direct message" do
           fab!(:chatable) { DirectMessageChannel.create! }
 
           it "allows staff to restore" do

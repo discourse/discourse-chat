@@ -3,7 +3,7 @@
 describe Jobs::EmailChatNotifications do
   before { Jobs.run_immediately! }
 
-  context "chat is enabled" do
+  context "when chat is enabled" do
     before { SiteSetting.chat_enabled = true }
 
     it "starts the mailer" do
@@ -13,7 +13,7 @@ describe Jobs::EmailChatNotifications do
     end
   end
 
-  context "chat is not enabled" do
+  context "when chat is not enabled" do
     it "does nothing" do
       DiscourseChat::ChatMailer.expects(:send_unread_mentions_summary).never
 

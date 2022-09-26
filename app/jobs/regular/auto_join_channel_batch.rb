@@ -30,11 +30,12 @@ module Jobs
 
       new_member_ids = DB.query_single(create_memberships_query(category), query_args)
 
-      DB.exec(<<~SQL, channel_id: channel.id, joined: new_member_ids.size)
-        UPDATE chat_channels
-        SET user_count = user_count + :joined
-        WHERE id = :channel_id
-      SQL
+      # Only do this if we are running auto-join for a single user, if we
+      # are doing it for many then we should do it after all batches are
+      # complete for the channel in Jobs::AutoManageChannelMemberships
+      if args[:starts_at] == args[:ends_at]
+        DiscourseChat::ChatChannelMembershipManager.recalculate_user_count!(channel.id)
+      end
 
       ChatPublisher.publish_new_channel(channel.reload, User.where(id: new_member_ids))
     end

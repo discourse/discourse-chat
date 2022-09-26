@@ -158,7 +158,9 @@ describe ChatChannel do
 
       expect(events).to include(
         event_name: :chat_channel_status_change,
-        params: [{ channel: private_category_channel, old_status: "open", new_status: "read_only" }],
+        params: [
+          { channel: private_category_channel, old_status: "open", new_status: "read_only" },
+        ],
       )
       expect(messages.first.channel).to eq("/chat/channel-status")
       expect(messages.first.data).to eq(
@@ -179,7 +181,7 @@ describe ChatChannel do
   end
 
   describe ".public_channels" do
-    context "a category used as chatable is destroyed" do
+    context "when a category used as chatable is destroyed" do
       fab!(:category_channel_1) { Fabricate(:chat_channel, chatable: Fabricate(:category)) }
       fab!(:category_channel_2) { Fabricate(:chat_channel, chatable: Fabricate(:category)) }
 

@@ -15,7 +15,7 @@ describe ChatMessageSerializer do
       Fabricate(:chat_message_reaction, chat_message: message_1, emoji: custom_emoji.name)
     end
 
-    context "an emoji used in a reaction has been destroyed" do
+    context "when an emoji used in a reaction has been destroyed" do
       it "doesn’t return the reaction" do
         Emoji.clear_cache
 

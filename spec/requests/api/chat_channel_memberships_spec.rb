@@ -15,7 +15,7 @@ describe DiscourseChat::Api::ChatChannelMembershipsController do
   describe "#index" do
     include_examples "channel access example", :get, "/memberships.json"
 
-    context "memberships exist" do
+    context "when memberships exist" do
       before do
         UserChatChannelMembership.create(user: user_1, chat_channel: channel_1, following: true)
         UserChatChannelMembership.create(
@@ -23,11 +23,7 @@ describe DiscourseChat::Api::ChatChannelMembershipsController do
           chat_channel: channel_1,
           following: false,
         )
-        UserChatChannelMembership.create(
-          user: user_2,
-          chat_channel: channel_1,
-          following: true,
-        )
+        UserChatChannelMembership.create(user: user_2, chat_channel: channel_1, following: true)
         sign_in(user_1)
       end
 

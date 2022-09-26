@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-describe "discourse-chat" do
+describe DiscourseChat do
   before do
     SiteSetting.clean_up_uploads = true
     SiteSetting.clean_orphan_uploads_grace_period_hours = 1
@@ -146,7 +146,7 @@ describe "discourse-chat" do
 
     let(:chat_url) { "#{Discourse.base_url}/chat/channel/#{chat_channel.id}" }
 
-    context "inline" do
+    context "when inline" do
       it "renders channel" do
         results = InlineOneboxer.new([chat_url], skip_cache: true).process
         expect(results).to be_present
@@ -165,7 +165,7 @@ describe "discourse-chat" do
       end
     end
 
-    context "regular" do
+    context "when regular" do
       it "renders channel, excluding inactive, staged, and suspended users" do
         user.user_chat_channel_memberships.create!(chat_channel: chat_channel, following: true)
         user_2.user_chat_channel_memberships.create!(chat_channel: chat_channel, following: true)

@@ -7,7 +7,7 @@ describe DiscourseChat::DirectMessageChannelCreator do
   fab!(:user_2) { Fabricate(:user) }
   fab!(:user_3) { Fabricate(:user) }
 
-  context "existing direct message channel" do
+  context "with an existing direct message channel" do
     fab!(:dm_chat_channel) do
       Fabricate(
         :chat_channel,
@@ -23,7 +23,7 @@ describe DiscourseChat::DirectMessageChannelCreator do
       expect {
         existing_channel =
           subject.create!(acting_user: user_1, target_users: [user_1, user_2, user_3])
-      }.to change { ChatChannel.count }.by(0)
+      }.not_to change { ChatChannel.count }
       expect(existing_channel).to eq(dm_chat_channel)
     end
 
@@ -95,7 +95,7 @@ describe DiscourseChat::DirectMessageChannelCreator do
       existing_channel = nil
       expect {
         existing_channel = subject.create!(acting_user: user_1, target_users: [user_1])
-      }.to change { ChatChannel.count }.by(0).and change { UserChatChannelMembership.count }.by(1)
+      }.to not_change { ChatChannel.count }.and change { UserChatChannelMembership.count }.by(1)
       expect(existing_channel).to eq(own_chat_channel)
     end
 
@@ -103,12 +103,12 @@ describe DiscourseChat::DirectMessageChannelCreator do
       existing_channel = nil
       expect {
         existing_channel = subject.create!(acting_user: user_1, target_users: [user_1, user_1])
-      }.to change { ChatChannel.count }.by(0).and change { UserChatChannelMembership.count }.by(1)
+      }.to not_change { ChatChannel.count }.and change { UserChatChannelMembership.count }.by(1)
       expect(existing_channel).to eq(own_chat_channel)
     end
   end
 
-  context "non existing direct message channel" do
+  context "with non existing direct message channel" do
     it "creates a new chat channel" do
       expect { subject.create!(acting_user: user_1, target_users: [user_1, user_2]) }.to change {
         ChatChannel.count

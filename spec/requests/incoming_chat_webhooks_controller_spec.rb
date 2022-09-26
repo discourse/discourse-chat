@@ -38,7 +38,7 @@ RSpec.describe DiscourseChat::IncomingChatWebhooksController do
 
       expect {
         post "/chat/hooks/#{webhook.key}.json", params: { text: "hey #{watched_word.word}" }
-      }.to change { ChatMessage.where(chat_channel: chat_channel).count }.by(0)
+      }.not_to change { ChatMessage.where(chat_channel: chat_channel).count }
       expect(response.status).to eq(422)
       expect(response.parsed_body["errors"]).to include(
         "Sorry, you can't post the word '#{watched_word.word}'; it's not allowed.",
@@ -49,7 +49,7 @@ RSpec.describe DiscourseChat::IncomingChatWebhooksController do
       chat_channel.update!(status: :read_only)
       expect {
         post "/chat/hooks/#{webhook.key}.json", params: { text: "hey this is a message" }
-      }.to change { ChatMessage.where(chat_channel: chat_channel).count }.by(0)
+      }.not_to change { ChatMessage.where(chat_channel: chat_channel).count }
       expect(response.status).to eq(422)
       expect(response.parsed_body["errors"]).to include(
         I18n.t("chat.errors.channel_new_message_disallowed", status: chat_channel.status_name),

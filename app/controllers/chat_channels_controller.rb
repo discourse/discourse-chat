@@ -20,23 +20,13 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
   def follow
     membership = @chat_channel.add(current_user)
 
-    render_serialized(
-      @chat_channel,
-      ChatChannelSerializer,
-      membership: membership,
-      root: false,
-    )
+    render_serialized(@chat_channel, ChatChannelSerializer, membership: membership, root: false)
   end
 
   def unfollow
     membership = @chat_channel.remove(current_user)
 
-    render_serialized(
-      @chat_channel,
-      ChatChannelSerializer,
-      membership: membership,
-      root: false,
-    )
+    render_serialized(@chat_channel, ChatChannelSerializer, membership: membership, root: false)
   end
 
   def create

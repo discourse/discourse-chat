@@ -523,7 +523,10 @@ after_initialize do
       ChatChannel
         .where(auto_join_users: true)
         .each do |channel|
-          DiscourseChat::ChatChannelMembershipManager.enforce_automatic_user_membership(channel, user)
+          DiscourseChat::ChatChannelMembershipManager.enforce_automatic_user_membership(
+            channel,
+            user,
+          )
         end
     end
   end
@@ -533,7 +536,10 @@ after_initialize do
       ChatChannel
         .where(auto_join_users: true)
         .each do |channel|
-          DiscourseChat::ChatChannelMembershipManager.enforce_automatic_user_membership(channel, user)
+          DiscourseChat::ChatChannelMembershipManager.enforce_automatic_user_membership(
+            channel,
+            user,
+          )
         end
     end
   end
@@ -560,7 +566,9 @@ after_initialize do
     category_channel = ChatChannel.find_by(auto_join_users: true, chatable: category)
 
     if category_channel
-      DiscourseChat::ChatChannelMembershipManager.enforce_automatic_channel_memberships(channel: category_channel)
+      DiscourseChat::ChatChannelMembershipManager.enforce_automatic_channel_memberships(
+        channel: category_channel,
+      )
     end
   end
 

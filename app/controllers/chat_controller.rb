@@ -50,7 +50,8 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     end
 
     if success
-      membership = DiscourseChat::ChatChannelMembershipManager.follow_channel(user: user, channel: channel)
+      membership =
+        DiscourseChat::ChatChannelMembershipManager.follow_channel(user: user, channel: channel)
       render_serialized(chat_channel, ChatChannelSerializer, membership: membership)
     else
       render_json_error(chat_channel)

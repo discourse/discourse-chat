@@ -6,9 +6,15 @@ RSpec.describe Jobs::UpdateChannelUserCount do
   fab!(:user2) { Fabricate(:user) }
   fab!(:user3) { Fabricate(:user) }
   fab!(:user4) { Fabricate(:user) }
-  fab!(:membership1) { Fabricate(:user_chat_channel_membership, chat_channel: channel, user: user1) }
-  fab!(:membership2) { Fabricate(:user_chat_channel_membership, chat_channel: channel, user: user2) }
-  fab!(:membership3) { Fabricate(:user_chat_channel_membership, chat_channel: channel, user: user3) }
+  fab!(:membership1) do
+    Fabricate(:user_chat_channel_membership, chat_channel: channel, user: user1)
+  end
+  fab!(:membership2) do
+    Fabricate(:user_chat_channel_membership, chat_channel: channel, user: user2)
+  end
+  fab!(:membership3) do
+    Fabricate(:user_chat_channel_membership, chat_channel: channel, user: user3)
+  end
 
   it "does nothing if the channel does not exist" do
     channel.destroy

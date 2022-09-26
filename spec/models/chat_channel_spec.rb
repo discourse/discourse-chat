@@ -284,7 +284,12 @@ describe ChatChannel do
       expect(membership.user).to eq(user1)
       expect(membership.chat_channel).to eq(private_category_channel)
       expect(private_category_channel.user_count_stale).to eq(true)
-      expect_job_enqueued(job: :update_channel_user_count, args: { chat_channel_id: private_category_channel.id })
+      expect_job_enqueued(
+        job: :update_channel_user_count,
+        args: {
+          chat_channel_id: private_category_channel.id,
+        },
+      )
     end
 
     it "updates an existing membership for the user and enqueues a job to update the count" do
@@ -300,7 +305,12 @@ describe ChatChannel do
 
       expect(membership.reload.following).to eq(true)
       expect(private_category_channel.user_count_stale).to eq(true)
-      expect_job_enqueued(job: :update_channel_user_count, args: { chat_channel_id: private_category_channel.id })
+      expect_job_enqueued(
+        job: :update_channel_user_count,
+        args: {
+          chat_channel_id: private_category_channel.id,
+        },
+      )
     end
 
     it "does nothing if the user is already a member" do
@@ -312,16 +322,22 @@ describe ChatChannel do
         )
 
       expect(private_category_channel.user_count_stale).to eq(false)
-      expect_not_enqueued_with(job: :update_channel_user_count, args: { chat_channel_id: private_category_channel.id }) do
-        private_category_channel.add(user1)
-      end
+      expect_not_enqueued_with(
+        job: :update_channel_user_count,
+        args: {
+          chat_channel_id: private_category_channel.id,
+        },
+      ) { private_category_channel.add(user1) }
     end
 
     it "does not recalculate user count if it's already been marked as stale" do
       private_category_channel.update!(user_count_stale: true)
-      expect_not_enqueued_with(job: :update_channel_user_count, args: { chat_channel_id: private_category_channel.id }) do
-        private_category_channel.add(user1)
-      end
+      expect_not_enqueued_with(
+        job: :update_channel_user_count,
+        args: {
+          chat_channel_id: private_category_channel.id,
+        },
+      ) { private_category_channel.add(user1) }
     end
   end
 
@@ -339,7 +355,12 @@ describe ChatChannel do
 
       expect(@membership.reload.following).to eq(false)
       expect(private_category_channel.user_count_stale).to eq(true)
-      expect_job_enqueued(job: :update_channel_user_count, args: { chat_channel_id: private_category_channel.id })
+      expect_job_enqueued(
+        job: :update_channel_user_count,
+        args: {
+          chat_channel_id: private_category_channel.id,
+        },
+      )
     end
 
     it "returns nil if the user doesn't have a membership" do
@@ -353,14 +374,22 @@ describe ChatChannel do
       private_category_channel.reload
 
       expect(private_category_channel.user_count_stale).to eq(false)
-      expect_job_enqueued(job: :update_channel_user_count, args: { chat_channel_id: private_category_channel.id })
+      expect_job_enqueued(
+        job: :update_channel_user_count,
+        args: {
+          chat_channel_id: private_category_channel.id,
+        },
+      )
     end
 
     it "does not recalculate user count if it's already been marked as stale" do
       private_category_channel.update!(user_count_stale: true)
-      expect_not_enqueued_with(job: :update_channel_user_count, args: { chat_channel_id: private_category_channel.id }) do
-        private_category_channel.remove(user1)
-      end
+      expect_not_enqueued_with(
+        job: :update_channel_user_count,
+        args: {
+          chat_channel_id: private_category_channel.id,
+        },
+      ) { private_category_channel.remove(user1) }
     end
   end
 end

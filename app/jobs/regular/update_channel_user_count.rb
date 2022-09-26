@@ -3,7 +3,7 @@
 module Jobs
   class UpdateChannelUserCount < Jobs::Base
     def execute(args = {})
-      channel = ChatChannel.find(args[:chat_channel_id])
+      channel = ChatChannel.find_by(id: args[:chat_channel_id])
       return if channel.blank?
       return if !channel.user_count_stale
 

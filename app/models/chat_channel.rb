@@ -22,13 +22,14 @@ class ChatChannel < ActiveRecord::Base
             presence: true,
             allow_nil: true
 
-  scope :public_channels, -> do
-    where(chatable_type: public_channel_chatable_types)
-      .where("categories.id IS NOT NULL")
-      .joins(
-        "LEFT JOIN categories ON categories.id = chat_channels.chatable_id AND chat_channels.chatable_type = 'Category'",
-      )
-  end
+  scope :public_channels,
+        -> {
+          where(chatable_type: public_channel_chatable_types).where(
+            "categories.id IS NOT NULL",
+          ).joins(
+            "LEFT JOIN categories ON categories.id = chat_channels.chatable_id AND chat_channels.chatable_type = 'Category'",
+          )
+        }
 
   class << self
     def public_channel_chatable_types
@@ -41,9 +42,7 @@ class ChatChannel < ActiveRecord::Base
   end
 
   statuses.keys.each do |status|
-    define_method("#{status}!") do |acting_user|
-      change_status(acting_user, status.to_sym)
-    end
+    define_method("#{status}!") { |acting_user| change_status(acting_user, status.to_sym) }
   end
 
   def membership_for(user)

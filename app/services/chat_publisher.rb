@@ -143,7 +143,7 @@ module ChatPublisher
           chat_channel,
           scope: Guardian.new(user), # We need a guardian here for direct messages
           root: :chat_channel,
-          membership: chat_channel.membership_for(user)
+          membership: chat_channel.membership_for(user),
         ).as_json
       MessageBus.publish("/chat/new-channel", serialized_channel, user_ids: [user.id])
     end

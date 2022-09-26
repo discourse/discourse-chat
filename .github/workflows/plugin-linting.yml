@@ -57,5 +57,13 @@ jobs:
         run: bundle exec rubocop .
 
       - name: Syntax Tree
-        if: ${{ always() }}
-        run: RUBYOPT="-W:no-experimental" bundle exec stree check --print-width=100 --plugins=plugin/trailing_comma **/*.rb Gemfile **/*.rake
+        if: ${{ !cancelled() }}
+        env:
+          RUBYOPT: "-W:no-experimental" # Silence 'Pattern matching is experimental' warning
+        shell: script -qefc "/bin/bash {0}" /dev/null # fake tty to work around https://github.com/ruby-syntax-tree/syntax_tree/issues/159
+        run: |
+          if test -f .streerc; then
+            bundle exec stree check Gemfile $(git ls-files '*.rb') $(git ls-files '*.rake')
+          else
+            echo "Stree config not detected for this repository. Skipping."
+          fi

@@ -13,7 +13,7 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
       @chat_channel,
       ChatChannelSerializer,
       membership: @chat_channel.membership_for(current_user),
-      root: false
+      root: false,
     )
   end
 
@@ -24,7 +24,7 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
       @chat_channel,
       ChatChannelSerializer,
       membership: @chat_channel.membership_for(current_user),
-      root: false
+      root: false,
     )
   end
 
@@ -35,7 +35,7 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
       @chat_channel,
       ChatChannelSerializer,
       membership: @chat_channel.membership_for(current_user),
-      root: false
+      root: false,
     )
   end
 

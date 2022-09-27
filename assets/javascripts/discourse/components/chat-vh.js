@@ -1,9 +1,9 @@
 import { bind } from "discourse-common/utils/decorators";
 import Component from "@ember/component";
-import { throttle } from "@ember/runloop";
 import isZoomed from "discourse/plugins/discourse-chat/discourse/lib/zoom-check";
 
 const CSS_VAR = "--chat-vh";
+let pendingUpdate = false;
 
 export default class ChatVh extends Component {
   tagName = "";
@@ -11,26 +11,45 @@ export default class ChatVh extends Component {
   didInsertElement() {
     this._super(...arguments);
 
-    this.setVH();
+    this.setVHFromVisualViewPort();
 
     (window?.visualViewport || window).addEventListener(
       "resize",
-      this.setVHThrottler,
-      false
+      this.setVHFromVisualViewPort
     );
+
+    if ("virtualKeyboard" in navigator) {
+      navigator.virtualKeyboard.addEventListener(
+        "geometrychange",
+        this.setVHFromKeyboard
+      );
+    }
   }
 
   willDestroyElement() {
     this._super(...arguments);
 
-    (window?.visualViewport || window).removeEventListener(
-      "resize",
-      this.setVHThrottler
-    );
+    if ("virtualKeyboard" in navigator) {
+      navigator.virtualKeyboard.removeEventListener(
+        "geometrychange",
+        this.setVHFromKeyboard
+      );
+    } else {
+      (window?.visualViewport || window).removeEventListener(
+        "resize",
+        this.setVHFromVisualViewPort
+      );
+    }
+
+    pendingUpdate = false;
   }
 
   @bind
-  setVH() {
+  setVHFromKeyboard(event) {
+    if (pendingUpdate) {
+      return;
+    }
+
     if (this.isDestroying || this.isDestroyed) {
       return;
     }
@@ -39,13 +58,40 @@ export default class ChatVh extends Component {
       return;
     }
 
-    const vhInPixels =
-      (window.visualViewport?.height || window.innerHeight) * 0.01;
-    document.documentElement.style.setProperty(CSS_VAR, `${vhInPixels}px`);
+    pendingUpdate = true;
+
+    requestAnimationFrame(() => {
+      const { height } = event.target.boundingRect;
+      const vhInPixels =
+        ((window.visualViewport?.height || window.innerHeight) - height) * 0.01;
+      document.documentElement.style.setProperty(CSS_VAR, `${vhInPixels}px`);
+
+      pendingUpdate = false;
+    });
   }
 
   @bind
-  setVHThrottler() {
-    throttle(this, this.setVH, 100, false);
+  setVHFromVisualViewPort() {
+    if (pendingUpdate) {
+      return;
+    }
+
+    if (this.isDestroying || this.isDestroyed) {
+      return;
+    }
+
+    if (isZoomed()) {
+      return;
+    }
+
+    pendingUpdate = true;
+
+    requestAnimationFrame(() => {
+      const vhInPixels =
+        (window.visualViewport?.height || window.innerHeight) * 0.01;
+      document.documentElement.style.setProperty(CSS_VAR, `${vhInPixels}px`);
+
+      pendingUpdate = false;
+    });
   }
 }

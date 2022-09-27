@@ -50,12 +50,13 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     end
 
     if success
-      membership =
-        DiscourseChat::ChatChannelMembershipManager.follow_channel(user: user, channel: channel)
+      membership = DiscourseChat::ChatChannelMembershipManager.new(channel).follow(user)
       render_serialized(chat_channel, ChatChannelSerializer, membership: membership)
     else
       render_json_error(chat_channel)
     end
+
+    DiscourseChat::ChatChannelMembershipManager.new(channel).follow(user)
   end
 
   def disable_chat
@@ -81,9 +82,8 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     DiscourseChat::ChatMessageRateLimiter.run!(current_user)
 
     @user_chat_channel_membership =
-      DiscourseChat::ChatChannelMembershipManager.find_for_user(
-        user: current_user,
-        channel: @chat_channel,
+      DiscourseChat::ChatChannelMembershipManager.new(@chat_channel).find_for_user(
+        current_user,
         following: true,
       )
     raise Discourse::InvalidAccess unless @user_chat_channel_membership
@@ -157,9 +157,8 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
 
   def update_user_last_read
     membership =
-      DiscourseChat::ChatChannelMembershipManager.find_for_user(
-        user: current_user,
-        channel: @chat_channel,
+      DiscourseChat::ChatChannelMembershipManager.new(@chat_channel).find_for_user(
+        current_user,
         following: true,
       )
     raise Discourse::NotFound if membership.nil?

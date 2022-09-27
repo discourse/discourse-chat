@@ -58,9 +58,9 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     chat_channel.user_chat_channel_memberships.create!(user: current_user, following: true)
 
     if chat_channel.auto_join_users
-      DiscourseChat::ChatChannelMembershipManager.enforce_automatic_channel_memberships(
+      DiscourseChat::ChatChannelMembershipManager.new(
         chat_channel,
-      )
+      ).enforce_automatic_channel_memberships
     end
 
     render_serialized(

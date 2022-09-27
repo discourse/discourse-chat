@@ -242,6 +242,6 @@ class DiscourseChat::ChatChannelArchiveService
   end
 
   def kick_all_users
-    DiscourseChat::ChatChannelMembershipManager.unfollow_all_for_channel(chat_channel)
+    DiscourseChat::ChatChannelMembershipManager.new(chat_channel).unfollow_all_users
   end
 end

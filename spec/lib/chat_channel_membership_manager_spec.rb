@@ -11,11 +11,11 @@ RSpec.describe DiscourseChat::ChatChannelMembershipManager do
     end
 
     it "returns nil if it cannot find a membership for the user and channel" do
-      expect(described_class.find_for_user(user: user, channel: channel2)).to be_blank
+      expect(described_class.new(channel2).find_for_user(user)).to be_blank
     end
 
     it "returns the membership for the channel and user" do
-      membership = described_class.find_for_user(user: user, channel: channel1)
+      membership = described_class.new(channel1).find_for_user(user)
       expect(membership.chat_channel_id).to eq(channel1.id)
       expect(membership.user_id).to eq(user.id)
       expect(membership.following).to eq(true)
@@ -23,25 +23,23 @@ RSpec.describe DiscourseChat::ChatChannelMembershipManager do
 
     it "scopes by following and returns nil if it does not match the scope" do
       membership.update!(following: false)
-      expect(
-        described_class.find_for_user(user: user, channel: channel1, following: true),
-      ).to be_blank
+      expect(described_class.new(channel1).find_for_user(user, following: true)).to be_blank
     end
   end
 
-  describe ".follow_channel" do
+  describe ".follow" do
     it "creates a membership if one does not exist for the user and channel already" do
       membership = nil
-      expect {
-        membership = described_class.follow_channel(user: user, channel: channel1)
-      }.to change { UserChatChannelMembership.count }.by(1)
+      expect { membership = described_class.new(channel1).follow(user) }.to change {
+        UserChatChannelMembership.count
+      }.by(1)
       expect(membership.following).to eq(true)
       expect(membership.chat_channel).to eq(channel1)
       expect(membership.user).to eq(user)
     end
 
     it "enqueues user_count recalculation and marks user_count_stale as true" do
-      described_class.follow_channel(user: user, channel: channel1)
+      described_class.new(channel1).follow(user)
       expect(channel1.reload.user_count_stale).to eq(true)
       expect_job_enqueued(job: :update_channel_user_count, args: { chat_channel_id: channel1.id })
     end
@@ -54,16 +52,16 @@ RSpec.describe DiscourseChat::ChatChannelMembershipManager do
           chat_channel: channel1,
           following: false,
         )
-      expect {
-        membership = described_class.follow_channel(user: user, channel: channel1)
-      }.not_to change { UserChatChannelMembership.count }
+      expect { membership = described_class.new(channel1).follow(user) }.not_to change {
+        UserChatChannelMembership.count
+      }
       expect(membership.reload.following).to eq(true)
     end
   end
 
-  describe ".unfollow_channel" do
+  describe ".unfollow" do
     it "does nothing if the user is not following the channel" do
-      expect(described_class.unfollow_channel(user: user, channel: channel2)).to be_blank
+      expect(described_class.new(channel2).unfollow(user)).to be_blank
     end
 
     it "updates following for the membership to false and recalculates the user count" do
@@ -74,7 +72,7 @@ RSpec.describe DiscourseChat::ChatChannelMembershipManager do
           chat_channel: channel1,
           following: true,
         )
-      described_class.unfollow_channel(user: user, channel: channel1)
+      described_class.new(channel1).unfollow(user)
       membership.reload
       expect(membership.following).to eq(false)
       expect(channel1.reload.user_count_stale).to eq(true)
@@ -94,7 +92,7 @@ RSpec.describe DiscourseChat::ChatChannelMembershipManager do
         args: {
           chat_channel_id: channel1.id,
         },
-      ) { described_class.unfollow_channel(user: user, channel: channel1) }
+      ) { described_class.new(channel1).unfollow(user) }
       expect(channel1.reload.user_count_stale).to eq(false)
     end
   end

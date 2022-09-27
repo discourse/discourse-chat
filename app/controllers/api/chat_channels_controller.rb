@@ -47,9 +47,9 @@ class DiscourseChat::Api::ChatChannelsController < DiscourseChat::Api
     ChatPublisher.publish_chat_channel_edit(chat_channel, current_user)
 
     if chat_channel.category_channel? && chat_channel.auto_join_users
-      DiscourseChat::ChatChannelMembershipManager.enforce_automatic_channel_memberships(
+      DiscourseChat::ChatChannelMembershipManager.new(
         chat_channel,
-      )
+      ).enforce_automatic_channel_memberships
     end
 
     render_serialized(
@@ -69,13 +69,10 @@ class DiscourseChat::Api::ChatChannelsController < DiscourseChat::Api
   end
 
   def find_membership
+    chat_channel = find_chat_channel
     membership =
-      DiscourseChat::ChatChannelMembershipManager.find_for_user(
-        user: current_user,
-        channel_id: params.require(:chat_channel_id),
-      )
+      DiscourseChat::ChatChannelMembershipManager.new(chat_channel).find_for_user(current_user)
     raise Discourse::NotFound if membership.blank?
-    guardian.ensure_can_see_chat_channel!(membership.chat_channel)
     membership
   end
 

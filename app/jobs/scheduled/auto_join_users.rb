@@ -8,7 +8,9 @@ module Jobs
       ChatChannel
         .where(auto_join_users: true)
         .each do |channel|
-          DiscourseChat::ChatChannelMembershipManager.enforce_automatic_channel_memberships(channel)
+          DiscourseChat::ChatChannelMembershipManager.new(
+            channel,
+          ).enforce_automatic_channel_memberships
         end
     end
   end

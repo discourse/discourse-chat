@@ -6,49 +6,26 @@ RSpec.describe DiscourseChat::ChatChannelMembershipManager do
   fab!(:channel2) { Fabricate(:chat_channel) }
 
   describe ".find_for_user" do
-    context "when initialize is true" do
-      it "returns a new membership record for the user, channel, and following params" do
-        membership =
-          described_class.find_for_user(
-            user: user,
-            channel: channel1,
-            following: true,
-            initialize: true,
-          )
-        expect(membership.new_record?).to eq(true)
-        expect(membership.chat_channel_id).to eq(channel1.id)
-        expect(membership.user_id).to eq(user.id)
-        expect(membership.following).to eq(true)
-      end
+    let!(:membership) do
+      Fabricate(:user_chat_channel_membership, user: user, chat_channel: channel1, following: true)
     end
 
-    context "when initialize is false" do
-      let!(:membership) do
-        Fabricate(
-          :user_chat_channel_membership,
-          user: user,
-          chat_channel: channel1,
-          following: true,
-        )
-      end
+    it "returns nil if it cannot find a membership for the user and channel" do
+      expect(described_class.find_for_user(user: user, channel: channel2)).to be_blank
+    end
 
-      it "returns nil if it cannot find a membership for the user and channel" do
-        expect(described_class.find_for_user(user: user, channel: channel2)).to be_blank
-      end
+    it "returns the membership for the channel and user" do
+      membership = described_class.find_for_user(user: user, channel: channel1)
+      expect(membership.chat_channel_id).to eq(channel1.id)
+      expect(membership.user_id).to eq(user.id)
+      expect(membership.following).to eq(true)
+    end
 
-      it "returns the membership for the channel and user" do
-        membership = described_class.find_for_user(user: user, channel: channel1)
-        expect(membership.chat_channel_id).to eq(channel1.id)
-        expect(membership.user_id).to eq(user.id)
-        expect(membership.following).to eq(true)
-      end
-
-      it "scopes by following and returns nil if it does not match the scope" do
-        membership.update!(following: false)
-        expect(
-          described_class.find_for_user(user: user, channel: channel1, following: true),
-        ).to be_blank
-      end
+    it "scopes by following and returns nil if it does not match the scope" do
+      membership.update!(following: false)
+      expect(
+        described_class.find_for_user(user: user, channel: channel1, following: true),
+      ).to be_blank
     end
   end
 

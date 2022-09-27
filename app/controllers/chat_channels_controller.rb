@@ -59,7 +59,7 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
 
     if chat_channel.auto_join_users
       DiscourseChat::ChatChannelMembershipManager.enforce_automatic_channel_memberships(
-        channel: chat_channel,
+        chat_channel,
       )
     end
 

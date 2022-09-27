@@ -8,7 +8,7 @@ module Jobs
       return if !channel.user_count_stale
 
       channel.update!(
-        user_count: ChatChannelMembershipsQuery.call(channel, count_only: true),
+        user_count: ChatChannelMembershipsQuery.count(channel),
         user_count_stale: false,
       )
 

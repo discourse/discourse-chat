@@ -16,7 +16,7 @@ module Jobs
 
     def set_user_count(chat_channel)
       current_count = chat_channel.user_count || 0
-      new_count = ChatChannelMembershipsQuery.call(chat_channel, count_only: true)
+      new_count = ChatChannelMembershipsQuery.count(chat_channel)
       return if current_count == new_count
 
       chat_channel.update(user_count: new_count, user_count_stale: false)

@@ -567,7 +567,7 @@ after_initialize do
 
     if category_channel
       DiscourseChat::ChatChannelMembershipManager.enforce_automatic_channel_memberships(
-        channel: category_channel,
+        category_channel,
       )
     end
   end

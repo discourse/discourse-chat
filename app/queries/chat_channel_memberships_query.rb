@@ -40,4 +40,8 @@ class ChatChannelMembershipsQuery
 
     query.offset(offset).limit(limit)
   end
+
+  def self.count(channel)
+    call(channel, count_only: true)
+  end
 end

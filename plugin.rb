@@ -159,6 +159,7 @@ after_initialize do
   load File.expand_path("../lib/chat_transcript_service.rb", __FILE__)
   load File.expand_path("../lib/duplicate_message_validator.rb", __FILE__)
   load File.expand_path("../lib/message_mover.rb", __FILE__)
+  load File.expand_path("../lib/chat_channel_membership_manager.rb", __FILE__)
   load File.expand_path("../lib/chat_message_bookmarkable.rb", __FILE__)
   load File.expand_path("../lib/chat_channel_archive_service.rb", __FILE__)
   load File.expand_path("../lib/direct_message_channel_creator.rb", __FILE__)
@@ -178,6 +179,7 @@ after_initialize do
   load File.expand_path("../app/jobs/regular/chat_channel_delete.rb", __FILE__)
   load File.expand_path("../app/jobs/regular/chat_notify_mentioned.rb", __FILE__)
   load File.expand_path("../app/jobs/regular/chat_notify_watching.rb", __FILE__)
+  load File.expand_path("../app/jobs/regular/update_channel_user_count.rb", __FILE__)
   load File.expand_path("../app/jobs/scheduled/delete_old_chat_messages.rb", __FILE__)
   load File.expand_path("../app/jobs/scheduled/update_user_counts_for_chat_channels.rb", __FILE__)
   load File.expand_path("../app/jobs/scheduled/email_chat_notifications.rb", __FILE__)
@@ -397,10 +399,9 @@ after_initialize do
   add_to_serializer(:current_user, :needs_dm_retention_reminder) { true }
 
   add_to_serializer(:current_user, :has_joinable_public_channels) do
-    memberships = UserChatChannelMembership.where(user_id: self.scope.user.id)
     DiscourseChat::ChatChannelFetcher.secured_public_channels(
       self.scope,
-      memberships,
+      DiscourseChat::ChatChannelMembershipManager.all_for_user(self.scope.user),
       following: false,
       limit: 1,
       status: :open,
@@ -522,7 +523,9 @@ after_initialize do
       ChatChannel
         .where(auto_join_users: true)
         .each do |channel|
-          UserChatChannelMembership.enforce_automatic_user_membership(channel, user)
+          DiscourseChat::ChatChannelMembershipManager.new(
+            channel,
+          ).enforce_automatic_user_membership(user)
         end
     end
   end
@@ -532,7 +535,9 @@ after_initialize do
       ChatChannel
         .where(auto_join_users: true)
         .each do |channel|
-          UserChatChannelMembership.enforce_automatic_user_membership(channel, user)
+          DiscourseChat::ChatChannelMembershipManager.new(
+            channel,
+          ).enforce_automatic_user_membership(user)
         end
     end
   end
@@ -548,7 +553,9 @@ after_initialize do
         .where(category_groups: { group_id: group.id })
 
     channels_to_add.each do |channel|
-      UserChatChannelMembership.enforce_automatic_user_membership(channel, user)
+      DiscourseChat::ChatChannelMembershipManager.new(channel).enforce_automatic_user_membership(
+        user,
+      )
     end
   end
 
@@ -559,7 +566,9 @@ after_initialize do
     category_channel = ChatChannel.find_by(auto_join_users: true, chatable: category)
 
     if category_channel
-      UserChatChannelMembership.enforce_automatic_channel_memberships(category_channel)
+      DiscourseChat::ChatChannelMembershipManager.new(
+        category_channel,
+      ).enforce_automatic_channel_memberships
     end
   end
 

@@ -233,7 +233,6 @@ RSpec.describe DiscourseChat::ChatChannelsController do
         membership_record.reload.following
       }.to(true).from(false)
       expect(response.status).to eq(200)
-      expect(response.parsed_body["memberships_count"]).to eq(1)
       expect(response.parsed_body["current_user_membership"]["following"]).to eq(true)
       expect(response.parsed_body["current_user_membership"]["chat_channel_id"]).to eq(
         chat_channel.id,
@@ -255,7 +254,6 @@ RSpec.describe DiscourseChat::ChatChannelsController do
         membership_record.reload.following
       }.to(false).from(true)
       expect(response.status).to eq(200)
-      expect(response.parsed_body["memberships_count"]).to eq(0)
       expect(response.parsed_body["current_user_membership"]["following"]).to eq(false)
       expect(response.parsed_body["current_user_membership"]["chat_channel_id"]).to eq(
         chat_channel.id,

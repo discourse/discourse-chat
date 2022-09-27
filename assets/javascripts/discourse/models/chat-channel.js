@@ -97,16 +97,8 @@ export default class ChatChannel extends RestModel {
     return this.isOpen && !this.isArchived;
   }
 
-  @computed(
-    "isDirectMessageChannel",
-    "memberships_count",
-    "chatable.users.length"
-  )
+  @computed("memberships_count")
   get membershipsCount() {
-    if (this.isDirectMessageChannel) {
-      return (this.chatable.users?.length || 0) + 1;
-    }
-
     return this.memberships_count;
   }
 

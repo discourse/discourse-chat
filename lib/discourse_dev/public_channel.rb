@@ -36,10 +36,8 @@ module DiscourseDev
               admin_user = ::User.find_by(username: admin_username) if admin_username
             end
 
-            ::UserChatChannelMembership.find_or_create_by!(
-              user: admin_user || User.new.create!,
-              chat_channel: channel,
-              following: true,
+            DiscourseChat::ChatChannelMembershipManager.new(channel).follow(
+              admin_user || User.new.create!,
             )
           end
       end

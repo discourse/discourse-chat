@@ -195,6 +195,14 @@ module ChatPublisher
     )
   end
 
+  def self.publish_chat_channel_metadata(chat_channel)
+    MessageBus.publish(
+      "/chat/channel-metadata",
+      { chat_channel_id: chat_channel.id, memberships_count: chat_channel.user_count },
+      permissions(chat_channel),
+    )
+  end
+
   def self.publish_archive_status(
     chat_channel,
     archive_status:,

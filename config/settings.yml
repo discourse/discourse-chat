@@ -80,3 +80,8 @@ plugins:
     default: 10000
     hidden: true
     client: true
+  chat_message_flag_allowed_groups:
+    default: "11" # auto group trust_level_1
+    type: group_list
+    client: true
+    allow_any: false

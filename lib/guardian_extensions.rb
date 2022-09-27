@@ -95,7 +95,7 @@ module DiscourseChat::GuardianExtensions
   def can_flag_chat_messages?
     return false if @user.silenced?
 
-    @user.has_trust_level?(TrustLevel[SiteSetting.min_trust_to_flag_posts])
+    @user.in_any_groups?(SiteSetting.chat_message_flag_allowed_groups_map)
   end
 
   def can_flag_in_chat_channel?(chat_channel)
@@ -104,10 +104,23 @@ module DiscourseChat::GuardianExtensions
   end
 
   def can_flag_chat_message?(chat_message)
+    return false if !authenticated? || !chat_message || chat_message.trashed? || !chat_message.user
     return false if chat_message.user.staff? && !SiteSetting.allow_flagging_staff
     return false if chat_message.user_id == @user.id
 
     can_flag_chat_messages? && can_flag_in_chat_channel?(chat_message.chat_channel)
+  end
+
+  def can_flag_message_as?(chat_message, flag_type_id, opts)
+    return false if !is_staff? && (opts[:take_action] || opts[:queue_for_review])
+
+    if flag_type_id == ReviewableScore.types[:notify_user]
+      is_warning = ActiveRecord::Type::Boolean.new.deserialize(opts[:is_warning])
+
+      return false if is_warning && !is_staff?
+    end
+
+    true
   end
 
   def can_delete_chat?(message, chatable)

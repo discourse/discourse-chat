@@ -33,10 +33,19 @@ RSpec.describe DiscourseChat::ChatController do
     SiteSetting.chat_allowed_groups = Group::AUTO_GROUPS[:everyone]
   end
 
+  def flag_message(message, flagger, flag_type: ReviewableScore.types[:off_topic])
+    DiscourseChat::ChatReviewQueue.new.flag_message(message, Guardian.new(flagger), flag_type)[
+      :reviewable
+    ]
+  end
+
   describe "#messages" do
     let(:page_size) { 30 }
 
-    before { sign_in(user) }
+    before do
+      sign_in(user)
+      Group.refresh_automatic_groups!
+    end
 
     it "errors for user when they are not allowed to chat" do
       SiteSetting.chat_allowed_groups = Group::AUTO_GROUPS[:staff]
@@ -96,38 +105,29 @@ RSpec.describe DiscourseChat::ChatController do
 
     it "serializes `user_flag_status` for user who has a pending flag" do
       chat_message = chat_channel.chat_messages.last
-      chat_message.add_flag(user)
-      reviewable_score = chat_message.add_flag(user)
+      reviewable = flag_message(chat_message, user)
+      score = reviewable.reviewable_scores.last
 
       get "/chat/#{chat_channel.id}/messages.json", params: { page_size: page_size }
       expect(response.parsed_body["chat_messages"].last["user_flag_status"]).to eq(
-        reviewable_score.status_for_database,
+        score.status_for_database,
       )
-      expect(response.parsed_body["chat_messages"].second_to_last["user_flag_status"]).to be_nil
     end
 
     it "doesn't serialize `reviewable_ids` for non-staff" do
-      chat_channel.chat_messages.last.add_flag(admin)
-      chat_channel.chat_messages.second_to_last.add_flag(admin)
+      reviewable = flag_message(chat_channel.chat_messages.last, admin)
 
       get "/chat/#{chat_channel.id}/messages.json", params: { page_size: page_size }
+
       expect(response.parsed_body["chat_messages"].last["reviewable_id"]).to be_nil
-      expect(response.parsed_body["chat_messages"].second_to_last["reviewable_id"]).to be_nil
     end
 
     it "serializes `reviewable_ids` correctly for staff" do
       sign_in(admin)
-      last_message = chat_channel.chat_messages.last
-      second_to_last_message = chat_channel.chat_messages.second_to_last
-
-      last_reviewable = last_message.add_flag(admin)
-      second_to_last_reviewable = second_to_last_message.add_flag(admin)
+      reviewable = flag_message(chat_channel.chat_messages.last, admin)
 
       get "/chat/#{chat_channel.id}/messages.json", params: { page_size: page_size }
-      expect(response.parsed_body["chat_messages"].last["reviewable_id"]).to eq(last_reviewable.id)
-      expect(response.parsed_body["chat_messages"].second_to_last["reviewable_id"]).to eq(
-        second_to_last_reviewable.id,
-      )
+      expect(response.parsed_body["chat_messages"].last["reviewable_id"]).to eq(reviewable.id)
     end
 
     it "correctly marks reactions as 'reacted' for the current_user" do
@@ -1162,11 +1162,18 @@ RSpec.describe DiscourseChat::ChatController do
 
     fab!(:admin_dm_message) { Fabricate(:chat_message, user: admin, chat_channel: dm_chat_channel) }
 
-    before { sign_in(user) }
+    before do
+      sign_in(user)
+      Group.refresh_automatic_groups!
+    end
 
     it "creates reviewable" do
       expect {
-        put "/chat/flag.json", params: { chat_message_id: admin_chat_message.id }
+        put "/chat/flag.json",
+            params: {
+              chat_message_id: admin_chat_message.id,
+              flag_type_id: ReviewableScore.types[:off_topic],
+            }
       }.to change { ReviewableChatMessage.where(target: admin_chat_message).count }.by(1)
       expect(response.status).to eq(200)
     end
@@ -1174,29 +1181,50 @@ RSpec.describe DiscourseChat::ChatController do
     it "errors for silenced users" do
       UserSilencer.new(user).silence
 
-      put "/chat/flag.json", params: { chat_message_id: admin_chat_message.id }
+      put "/chat/flag.json",
+          params: {
+            chat_message_id: admin_chat_message.id,
+            flag_type_id: ReviewableScore.types[:off_topic],
+          }
       expect(response.status).to eq(403)
     end
 
     it "doesn't allow flagging your own message" do
-      put "/chat/flag.json", params: { chat_message_id: user_chat_message.id }
+      put "/chat/flag.json",
+          params: {
+            chat_message_id: user_chat_message.id,
+            flag_type_id: ReviewableScore.types[:off_topic],
+          }
       expect(response.status).to eq(403)
     end
 
     it "doesn't allow flagging messages in a read_only channel" do
       user_chat_message.chat_channel.update(status: :read_only)
-      put "/chat/flag.json", params: { chat_message_id: admin_chat_message.id }
+      put "/chat/flag.json",
+          params: {
+            chat_message_id: admin_chat_message.id,
+            flag_type_id: ReviewableScore.types[:off_topic],
+          }
+
       expect(response.status).to eq(403)
     end
 
     it "doesn't allow flagging staff if SiteSetting.allow_flagging_staff is false" do
       SiteSetting.allow_flagging_staff = false
-      put "/chat/flag.json", params: { chat_message_id: admin_chat_message.id }
+      put "/chat/flag.json",
+          params: {
+            chat_message_id: admin_chat_message.id,
+            flag_type_id: ReviewableScore.types[:off_topic],
+          }
       expect(response.status).to eq(403)
     end
 
     it "doesn't allow flagging direct messages" do
-      put "/chat/flag.json", params: { chat_message_id: admin_dm_message.id }
+      put "/chat/flag.json",
+          params: {
+            chat_message_id: admin_dm_message.id,
+            flag_type_id: ReviewableScore.types[:off_topic],
+          }
       expect(response.status).to eq(403)
     end
   end

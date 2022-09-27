@@ -15,6 +15,7 @@ en:
     chat_allow_uploads: "Allow uploads in public chat channels."
     chat_archive_destination_topic_status: "The status that the destination topic should be once a channel archive is completed. This only applies when the destination topic is a new topic, not an existing one."
     default_emoji_reactions: "Default emoji reactions for chat messages. Add up to 5 emojis for quick reaction."
+    min_trust_to_flag_chat_messages: "The minimum trust level required to flag chat messages."
     errors:
       chat_default_channel: "The default chat channel must be a public channel."
       chat_upload_not_allowed_secure_media: "Chat uploads are not allowed when secure media site setting is enabled."
@@ -138,7 +139,16 @@ en:
   reviewable_score_types:
     needs_review:
       title: "Needs Review"
-
+    notify_user:
+      chat_pm_title: 'Your chat message in "%{channel_name}"'
+      chat_pm_body: "%{link}\n\n%{message}"
+    notify_moderators:
+      chat_pm_title: 'A chat message in "%{channel_name}" requires staff attention'
+      chat_pm_body: "%{link}\n\n%{message}"
+  
+  reviewables:
+    reasons:
+      chat_message_queued_by_staff: "A staff member thinks this chat message needs review."
   user_notifications:
     chat_summary:
       deleted_user: "Deleted user"

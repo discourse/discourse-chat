@@ -28,7 +28,7 @@ GEM
     rubocop-rspec (2.13.2)
       rubocop (~> 1.33)
     ruby-progressbar (1.11.0)
-    syntax_tree (3.6.0)
+    syntax_tree (3.6.1)
       prettier_print
     unicode-display_width (2.3.0)
 

@@ -17,8 +17,11 @@ class DisableChatUploadsIfSecureMediaEnabled < ActiveRecord::Migration[7.0]
 
     secure_media_enabled =
       DB.query_single("SELECT value FROM site_settings WHERE name = 'secure_media'").first == "t"
+    secure_uploads_enabled =
+      DB.query_single("SELECT value FROM site_settings WHERE name = 'secure_uploads'").first == "t"
 
-    if secure_media_enabled && chat_uploads_enabled && !GlobalSetting.allow_unsecure_chat_uploads
+    if (secure_media_enabled || secure_uploads_enabled) && chat_uploads_enabled &&
+         !GlobalSetting.allow_unsecure_chat_uploads
       if chat_allow_uploads_value.nil?
         DB.exec(
           "

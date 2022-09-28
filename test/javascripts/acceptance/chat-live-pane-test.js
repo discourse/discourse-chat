@@ -217,9 +217,8 @@ acceptance(
     test("Handles 429 errors by displaying an alert", async function (assert) {
       await visit("/chat/channel/1/cat");
 
-      assert.ok(exists(`.bootbox`), "We displayed a 429 error");
-
-      await click(".bootbox span.d-button-label");
+      assert.ok(exists(".dialog-content"), "We displayed a 429 error");
+      await click(".dialog-footer .btn-primary");
     });
   }
 );

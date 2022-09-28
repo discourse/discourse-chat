@@ -5,7 +5,7 @@ import {
   publishToMessageBus,
   query,
 } from "discourse/tests/helpers/qunit-helpers";
-import { skip, test } from "qunit";
+import { test } from "qunit";
 
 function buildMessage(messageId) {
   return {
@@ -214,7 +214,7 @@ acceptance(
       });
     });
 
-    skip("Handles 429 errors by displaying an alert", async function (assert) {
+    test("Handles 429 errors by displaying an alert", async function (assert) {
       await visit("/chat/channel/1/cat");
 
       assert.ok(exists(`.bootbox`), "We displayed a 429 error");

@@ -307,19 +307,19 @@ describe DiscourseChat do
 
   describe "secure media compatibility" do
     it "disables chat uploads if secure media changes from disabled to enabled" do
-      enable_secure_media
+      enable_secure_uploads
       expect(SiteSetting.chat_allow_uploads).to eq(false)
       last_history = UserHistory.last
       expect(last_history.action).to eq(UserHistory.actions[:change_site_setting])
       expect(last_history.previous_value).to eq("true")
       expect(last_history.new_value).to eq("false")
       expect(last_history.subject).to eq("chat_allow_uploads")
-      expect(last_history.context).to eq("Disabled because secure_media is enabled")
+      expect(last_history.context).to eq("Disabled because secure_uploads is enabled")
     end
 
     it "does not disable chat uploads if the allow_unsecure_chat_uploads global setting is set" do
       global_setting :allow_unsecure_chat_uploads, true
-      expect { enable_secure_media }.not_to change { UserHistory.count }
+      expect { enable_secure_uploads }.not_to change { UserHistory.count }
       expect(SiteSetting.chat_allow_uploads).to eq(true)
     end
   end

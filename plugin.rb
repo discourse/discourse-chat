@@ -171,7 +171,7 @@ after_initialize do
   load File.expand_path("../lib/extensions/user_extension.rb", __FILE__)
   load File.expand_path("../lib/slack_compatibility.rb", __FILE__)
   load File.expand_path("../lib/post_notification_handler.rb", __FILE__)
-  load File.expand_path("../lib/secure_media_compatibility.rb", __FILE__)
+  load File.expand_path("../lib/secure_uploads_compatibility.rb", __FILE__)
   load File.expand_path("../app/jobs/regular/auto_manage_channel_memberships.rb", __FILE__)
   load File.expand_path("../app/jobs/regular/auto_join_channel_batch.rb", __FILE__)
   load File.expand_path("../app/jobs/regular/process_chat_message.rb", __FILE__)
@@ -465,8 +465,8 @@ after_initialize do
       )
     end
 
-    if name == :secure_media && old_value == false && new_value == true
-      DiscourseChat::SecureMediaCompatibility.update_settings
+    if name == :secure_uploads && old_value == false && new_value == true
+      DiscourseChat::SecureUploadsCompatibility.update_settings
     end
   end
 

@@ -24,7 +24,7 @@ module DiscourseChat::GuardianExtensions
   end
 
   def can_create_direct_message?
-    is_staff? || @user.in_any_groups?(SiteSetting.group_setting_map(:direct_message_enabled_groups))
+    is_staff? || @user.in_any_groups?(SiteSetting.direct_message_enabled_groups_map)
   end
 
   def hidden_tag_names

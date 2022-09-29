@@ -338,6 +338,7 @@ describe DiscourseChat::ChatNotifier do
 
       context "when in a personal message" do
         let(:personal_chat_channel) do
+          Group.refresh_automatic_groups!
           DiscourseChat::DirectMessageChannelCreator.create!(
             acting_user: user_1,
             target_users: [user_1, user_2],

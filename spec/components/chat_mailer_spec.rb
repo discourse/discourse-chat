@@ -17,6 +17,7 @@ describe DiscourseChat::ChatMailer do
     )
   end
   fab!(:private_chat_channel) do
+    Group.refresh_automatic_groups!
     DiscourseChat::DirectMessageChannelCreator.create!(
       acting_user: sender,
       target_users: [sender, user_1],

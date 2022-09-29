@@ -28,6 +28,7 @@ describe DiscourseChat::ChatMessageUpdater do
     [admin1, admin2, user1, user2, user3, user4].each do |user|
       Fabricate(:user_chat_channel_membership, chat_channel: public_chat_channel, user: user)
     end
+    Group.refresh_automatic_groups!
     @direct_message_channel =
       DiscourseChat::DirectMessageChannelCreator.create!(
         acting_user: user1,

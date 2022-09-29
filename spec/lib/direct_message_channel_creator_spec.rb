@@ -130,7 +130,7 @@ describe DiscourseChat::DirectMessageChannelCreator do
           expect {
             existing_channel =
               subject.create!(acting_user: user_1, target_users: [user_1, user_2, user_3])
-          }.to change { ChatChannel.count }.by(0)
+          }.not_to change { ChatChannel.count }
           expect(existing_channel).to eq(dm_chat_channel)
         end
       end

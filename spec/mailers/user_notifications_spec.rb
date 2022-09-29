@@ -12,9 +12,16 @@ describe UserNotifications do
     SiteSetting.chat_allowed_groups = chatters_group.id
   end
 
+  def refresh_auto_groups
+    Group.refresh_automatic_groups!
+    user.reload
+    sender.reload
+  end
+
   describe ".chat_summary" do
     context "with private channel" do
       fab!(:channel) do
+        refresh_auto_groups
         DiscourseChat::DirectMessageChannelCreator.create!(
           acting_user: sender,
           target_users: [sender, user],
@@ -65,6 +72,8 @@ describe UserNotifications do
 
         it "includes both channel titles when there are exactly two with unread messages" do
           another_dm_user = Fabricate(:user, group_ids: [chatters_group.id])
+          refresh_auto_groups
+          another_dm_user.reload
           another_channel =
             DiscourseChat::DirectMessageChannelCreator.create!(
               acting_user: user,
@@ -83,6 +92,8 @@ describe UserNotifications do
 
           3.times do
             sender = Fabricate(:user, group_ids: [chatters_group.id])
+            refresh_auto_groups
+            sender.reload
             channel =
               DiscourseChat::DirectMessageChannelCreator.create!(
                 acting_user: sender,
@@ -204,6 +215,7 @@ describe UserNotifications do
 
         context "with both unread DM messages and mentions" do
           before do
+            refresh_auto_groups
             channel =
               DiscourseChat::DirectMessageChannelCreator.create!(
                 acting_user: sender,
@@ -312,6 +324,7 @@ describe UserNotifications do
 
           it "returns an email when the user has unread private messages" do
             user_membership.update!(last_read_message_id: chat_message.id)
+            refresh_auto_groups
             channel =
               DiscourseChat::DirectMessageChannelCreator.create!(
                 acting_user: sender,

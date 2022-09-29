@@ -91,8 +91,19 @@ hu:
         one: "@%{acting_username} áthelyezett egy üzenetet a(z) [%{channel_name}](%{first_moved_message_url}) csatornába."
         other: "@%{acting_username} áthelyezett %{count} üzenetet a(z) [%{channel_name}](%{first_moved_message_url}) csatornába."
       dm_title:
+        single_user: "%{user}"
+        multi_user: "%{users}"
         multi_user_truncated: "%{users} és még %{leftover} fő"
+      default_titles:
+        site_feedback: "Általános"
     personal_chat: "személyes csevegés"
+    onebox:
+      x_members:
+        one: "%{count} tag"
+        other: "%{count} tag"
+      and_x_others:
+        one: "és még %{count} fő"
+        other: "és még %{count} fő"
   discourse_push_notifications:
     popup:
       chat_mention:
@@ -117,6 +128,12 @@ hu:
         one: "Új csevegőüzenete érkezett"
         other: "Új csevegőüzenetei érkeztek"
       from: "%{site_name}"
+      subject:
+        direct_message:
+          one: "[%{email_prefix}] Új üzenet a következőtől: %{message_title}"
+          other: "[%{email_prefix}] Új üzenetek a következőktől: %{message_title} és %{others}"
+        other_direct_message: "a következőtől: %{message_title}"
+        others: "és még %{count} fő"
       view_messages:
         one: "Üzenet megtekintése"
         other: "%{count} üzenet megtekintése"
@@ -126,5 +143,9 @@ hu:
       your_chat_settings: "csevegési e-mail gyakoriságának beállítása"
   unsubscribe:
     chat_summary:
+      select_title: "A csevegési összefoglaló e-mailek gyakoriságának beállítása:"
       never: Soha
       when_away: Csak ha távol van
+  category:
+    cannot_delete:
+      has_chat_channels: "Ezt a kategóriát nem lehet törölni, mert csevegőcsatornái vannak."

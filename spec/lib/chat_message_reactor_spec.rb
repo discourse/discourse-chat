@@ -52,7 +52,7 @@ describe DiscourseChat::ChatMessageReactor do
     }.to raise_error(Discourse::InvalidParameters)
   end
 
-  context "max reactions has been reached" do
+  context "when max reactions has been reached" do
     before do
       emojis = Emoji.all.slice(0, DiscourseChat::ChatMessageReactor::MAX_REACTIONS_LIMIT)
       emojis.each do |emoji|
@@ -96,7 +96,7 @@ describe DiscourseChat::ChatMessageReactor do
 
     expect {
       reactor.react!(message_id: message_1.id, react_action: :add, emoji: ":heart:")
-    }.to change(UserChatChannelMembership, :count).by(0)
+    }.not_to change(UserChatChannelMembership, :count)
   end
 
   it "can add a reaction" do
@@ -110,7 +110,7 @@ describe DiscourseChat::ChatMessageReactor do
 
     expect {
       reactor.react!(message_id: message_1.id, react_action: :add, emoji: ":heart:")
-    }.to change(ChatMessageReaction, :count).by(0)
+    }.not_to change(ChatMessageReaction, :count)
   end
 
   it "can remove an existing reaction" do
@@ -124,7 +124,7 @@ describe DiscourseChat::ChatMessageReactor do
   it "does nothing when removing if no reaction found" do
     expect {
       reactor.react!(message_id: message_1.id, react_action: :remove, emoji: ":heart:")
-    }.to change(ChatMessageReaction, :count).by(0)
+    }.not_to change(ChatMessageReaction, :count)
   end
 
   it "publishes the reaction" do

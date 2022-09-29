@@ -90,7 +90,7 @@ describe Jobs::DeleteOldChatMessages do
     SiteSetting.chat_channel_retention_days = 0
     SiteSetting.chat_dm_retention_days = 0
 
-    expect { described_class.new.execute }.to change { ChatMessage.count }.by(0)
+    expect { described_class.new.execute }.not_to change { ChatMessage.count }
   end
 
   describe "public channels" do
@@ -112,7 +112,7 @@ describe Jobs::DeleteOldChatMessages do
 
     it "does nothing when no messages fall in the time range" do
       SiteSetting.chat_channel_retention_days = 800
-      expect { described_class.new.execute }.to change { ChatMessage.in_public_channel.count }.by(0)
+      expect { described_class.new.execute }.not_to change { ChatMessage.in_public_channel.count }
     end
 
     it "resets last_read_message_id from memberships" do
@@ -151,7 +151,7 @@ describe Jobs::DeleteOldChatMessages do
 
     it "does nothing when no messages fall in the time range" do
       SiteSetting.chat_dm_retention_days = 800
-      expect { described_class.new.execute }.to change { ChatMessage.in_dm_channel.count }.by(0)
+      expect { described_class.new.execute }.not_to change { ChatMessage.in_dm_channel.count }
     end
 
     it "resets last_read_message_id from memberships" do

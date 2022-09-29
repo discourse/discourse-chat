@@ -741,7 +741,7 @@ Widget.triangulate(arg: "test")
     await triggerEvent(message, "mouseenter");
     assert.notOk(message.querySelector(".chat-message-reaction-list"));
     await click(message.querySelector(".chat-msgactions .react-btn"));
-    await click(message.querySelector(".emoji-picker .section-group .emoji"));
+    await click(".emoji-picker.opened .section-group .emoji");
 
     assert.ok(message.querySelector(".chat-message-reaction-list"));
     const reaction = message.querySelector(
@@ -822,7 +822,7 @@ Widget.triangulate(arg: "test")
 
     const messages = queryAll(".chat-message-container");
     const lastMessage = messages[messages.length - 1];
-    publishToMessageBus("/chat/11", {
+    await publishToMessageBus("/chat/11", {
       type: "sent",
       stagedId: 1,
       chat_message: {
@@ -833,21 +833,16 @@ Widget.triangulate(arg: "test")
         cooked: "<p>hellloooo</p>",
       },
     });
-    await settled();
 
     assert.deepEqual(lastMessage.dataset.id, "202");
     await triggerEvent(lastMessage, "mouseenter");
     await click(lastMessage.querySelector(".chat-msgactions .react-btn"));
-    await click(
-      lastMessage.querySelector(
-        ".emoji-picker .section-group .emoji[alt='grin']"
-      )
-    );
+    await click(".emoji-picker.opened .section-group .emoji[alt='grin']");
 
     const reaction = lastMessage.querySelector(
       ".chat-message-reaction.grin.reacted"
     );
-    publishToMessageBus("/chat/11", {
+    await publishToMessageBus("/chat/11", {
       action: "add",
       user: { id: 1, username: "eviltrout" },
       emoji: "grin",

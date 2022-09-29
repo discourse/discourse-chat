@@ -101,7 +101,7 @@ describe DiscourseChat::ChatMessageCreator do
             "this is a @#{user1.username} message with @system @mentions @#{user2.username} and @#{user3.username}",
         )
         # Only 2 mentions are created because user mentioned themselves, system, and an invalid username.
-      }.to change { ChatMention.count }.by(2).and change { user1.chat_mentions.count }.by(0)
+      }.to change { ChatMention.count }.by(2).and not_change { user1.chat_mentions.count }
     end
 
     it "mentions are case insensitive" do
@@ -183,7 +183,7 @@ describe DiscourseChat::ChatMessageCreator do
           user: user1,
           content: "hello @#{user_without_memberships.username}",
         )
-      }.to change { ChatMention.count }.by(0)
+      }.not_to change { ChatMention.count }
     end
 
     it "doesn't create mention notifications for users who cannot chat" do
@@ -195,7 +195,7 @@ describe DiscourseChat::ChatMessageCreator do
           user: user1,
           content: "hi @#{user2.username} @#{user3.username}",
         )
-      }.to change { ChatMention.count }.by(0)
+      }.not_to change { ChatMention.count }
     end
 
     it "doesn't create mention notifications for users with chat disabled" do
@@ -206,7 +206,7 @@ describe DiscourseChat::ChatMessageCreator do
           user: user1,
           content: "hi @#{user2.username}",
         )
-      }.to change { ChatMention.count }.by(0)
+      }.not_to change { ChatMention.count }
     end
 
     it "creates only mention notifications for users with access in private chat" do
@@ -217,7 +217,7 @@ describe DiscourseChat::ChatMessageCreator do
           content: "hello there @#{user2.username} and @#{user3.username}",
         )
         # Only user2 should be notified
-      }.to change { user2.chat_mentions.count }.by(1).and change { user3.chat_mentions.count }.by(0)
+      }.to change { user2.chat_mentions.count }.by(1).and not_change { user3.chat_mentions.count }
     end
 
     it "creates a mention notifications for group users that are participating in private chat" do
@@ -228,7 +228,7 @@ describe DiscourseChat::ChatMessageCreator do
           content: "hello there @#{user_group.name}",
         )
         # Only user2 should be notified
-      }.to change { user2.chat_mentions.count }.by(1).and change { user3.chat_mentions.count }.by(0)
+      }.to change { user2.chat_mentions.count }.by(1).and not_change { user3.chat_mentions.count }
     end
 
     it "publishes inaccessible mentions when user isn't aren't a part of the channel" do
@@ -267,7 +267,7 @@ describe DiscourseChat::ChatMessageCreator do
           user: user1,
           content: "hello @#{user2.username}",
         )
-      }.to change { user2.chat_mentions.count }.by(0)
+      }.not_to change { user2.chat_mentions.count }
     end
 
     it "does not create @all mentions for users when ignore_channel_wide_mention is enabled" do
@@ -365,7 +365,7 @@ describe DiscourseChat::ChatMessageCreator do
             user: user1,
             content: "hello @#{admin_group.name}",
           )
-        }.to change { ChatMention.count }.by(0)
+        }.not_to change { ChatMention.count }
       end
     end
 
@@ -434,7 +434,7 @@ describe DiscourseChat::ChatMessageCreator do
             content: "Beep boop",
             upload_ids: [private_upload.id],
           )
-        }.to change { ChatUpload.where(upload_id: private_upload.id).count }.by(0)
+        }.not_to change { ChatUpload.where(upload_id: private_upload.id).count }
       end
 
       it "doesn't attach uploads when `chat_allow_uploads` is false" do
@@ -446,7 +446,7 @@ describe DiscourseChat::ChatMessageCreator do
             content: "Beep boop",
             upload_ids: [upload1.id],
           )
-        }.to change { ChatUpload.where(upload_id: upload1.id).count }.by(0)
+        }.not_to change { ChatUpload.where(upload_id: upload1.id).count }
       end
     end
   end

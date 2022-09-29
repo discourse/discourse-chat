@@ -102,6 +102,10 @@ fa_IR:
       reply: "پاسخ"
       edit: "ویرایش"
       copy_link: "کپی پیوند"
+      retry_staged_message:
+        title: "خطای شبکه"
+        action: "دوباره بفرستم؟"
+      unreliable_network: "شبکه پایدار نیست، ارسال پیام‌ها و ذخیره پیش‌نویس ممکن است کار نکند"
       bookmark_message: "نشانک"
       bookmark_message_edit: "ویرایش نشانک"
       restore: "بازگرداندن پیام حذف شده"
@@ -177,7 +181,6 @@ fa_IR:
           other: "%{count} عضو"
       create_channel:
         auto_join_users:
-          public_category_warning: "%{category} یک دسته‌بندی عمومی است. هر کاربر به صورت خودکار به این کانال اضافه شود؟"
           warning_groups:
             one: به طور خودکار %{members_count} کاربر از گروه %{group_1} اضافه شود؟
             other: به طور خودکار %{members_count} کاربر از گروه %{group_1} و %{group_2} اضافه شود؟
@@ -292,3 +295,9 @@ fa_IR:
       allowed_pm_users_instructions: "فقط پیام‌های شخصی یا پیام‌های مستقیم در گفتگو را از این کاربران اجازه دهید."
       allow_private_messages_from_specific_users: "فقط به کاربران خاصی اجازه دهید، تا پیام‌های شخصی یا پیام‌های مستقیم در گفتگو را برای من ارسال کنند"
       ignored_users_instructions: "تمام نوشته‌ها، آگاه‌سازی‌ها، پیام‌های شخصی و پیام‌های مستقیم در گفتگو این کاربران را سرکوب کنید."
+    user_menu:
+      tabs:
+        chat_notifications: "آگاه‌سازی‌های گفتگو"
+        chat_notifications_with_unread:
+          one: "آگاه‌سازی‌های گفتگو - %{count} آگاه‌سازی خوانده نشده"
+          other: "آگاه‌سازی‌های گفتگو - %{count} آگاه‌سازی خوانده نشده"

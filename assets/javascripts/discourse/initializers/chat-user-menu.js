@@ -117,6 +117,15 @@ export default {
                 this.getUnreadCountForType("chat_invitation")
               );
             }
+
+            get notificationTypes() {
+              return [
+                "chat_invitation",
+                "chat_mention",
+                "chat_message",
+                "chat_quoted",
+              ];
+            }
           };
         });
       }

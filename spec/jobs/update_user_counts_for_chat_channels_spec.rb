@@ -10,7 +10,7 @@ describe Jobs::UpdateUserCountsForChatChannels do
   fab!(:user_3) { Fabricate(:user) }
   fab!(:user_4) { Fabricate(:user) }
 
-  it "sets the user_count correctly for each chat channel" do
+  def create_memberships
     user_1.user_chat_channel_memberships.create!(chat_channel: chat_channel_1, following: true)
     user_1.user_chat_channel_memberships.create!(chat_channel: chat_channel_2, following: true)
 
@@ -19,6 +19,10 @@ describe Jobs::UpdateUserCountsForChatChannels do
 
     user_3.user_chat_channel_memberships.create!(chat_channel: chat_channel_1, following: false)
     user_3.user_chat_channel_memberships.create!(chat_channel: chat_channel_2, following: true)
+  end
+
+  it "sets the user_count correctly for each chat channel" do
+    create_memberships
 
     Jobs::UpdateUserCountsForChatChannels.new.execute
 
@@ -39,5 +43,17 @@ describe Jobs::UpdateUserCountsForChatChannels do
 
     expect(chat_channel_1.reload.user_count).to eq(1)
     expect(chat_channel_2.reload.user_count).to eq(0)
+  end
+
+  it "does not count archived, or read_only channels" do
+    create_memberships
+
+    chat_channel_1.update!(status: :archived)
+    Jobs::UpdateUserCountsForChatChannels.new.execute
+    expect(chat_channel_1.reload.user_count).to eq(0)
+
+    chat_channel_1.update!(status: :read_only)
+    Jobs::UpdateUserCountsForChatChannels.new.execute
+    expect(chat_channel_1.reload.user_count).to eq(0)
   end
 end

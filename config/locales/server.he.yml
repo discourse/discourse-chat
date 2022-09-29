@@ -181,3 +181,6 @@ he:
       select_title: "הגדרת תדירות הודעות סיכום בדוא״ל ל־:"
       never: לעולם לא
       when_away: רק כשלא במערכת
+  category:
+    cannot_delete:
+      has_chat_channels: "לא ניתן למחוק את הקטגוריה הזו כי יש לה ערוצי צ׳אט."

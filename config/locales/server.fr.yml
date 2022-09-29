@@ -41,6 +41,7 @@ fr:
           title: "Refuser"
         ignore:
           title: "Ignorer"
+    personal_chat: "discussion privée"
   discourse_automation:
     scriptables:
       send_chat_message:
@@ -48,3 +49,6 @@ fr:
   reviewable_score_types:
     needs_review:
       title: "Nécessite un examen"
+  unsubscribe:
+    chat_summary:
+      never: Jamais

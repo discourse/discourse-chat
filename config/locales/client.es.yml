@@ -17,6 +17,15 @@ es:
       cancel: "Cancelar"
       cancel_reply: "Cancelar respuesta"
       chat_channels: "Canales"
+      channel_settings:
+        edit: "Editar"
+        join_channel: "Unirse al canal"
+        leave_channel: "Abandonar canal"
+        join: "Unirse"
+        leave: "Abandonar"
+      channels_list_popup:
+        browse: "Examinar canales"
+        create: "Crear un canal"
       click_to_join: "Haz clic aquí para ver los canales disponibles."
       close: "Cerrar"
       collapse: "Contraer contenedor del chat"
@@ -24,12 +33,17 @@ es:
       deleted: "Se eliminó un mensaje. [view]"
       delete: "Eliminar"
       edited: "editado"
+      empty_state:
+        direct_message: "También puedes iniciar un chat personal con uno o más usuarios."
+      email_frequency:
+        never: "Nunca"
       enable: "Habilitar chat"
       flag: "Denunciar"
       flagged: "Este mensaje ha sido denunciado y se someterá a revisión"
       invalid_access: "No tienes acceso para ver este canal de chat"
       in_reply_to: "En respuesta a"
       heading: "Chat"
+      join: "Unirse"
       new_messages: "nuevos mensajes"
       mention_warning:
         cannot_see:
@@ -76,6 +90,12 @@ es:
         other: "%{count} archivos"
       you_flagged: "Has denunciado este mensaje"
       exit: "atrás"
+      browse:
+        title: Canales
+      about_view:
+        description: Descripción
+      channel_info:
+        back_to_channel: "Atrás"
       channel_selector:
         title: "Ir al canal"
         no_channels: "Ningún canal coincide con tu búsqueda"
@@ -83,6 +103,7 @@ es:
         choose_category:
           label: "Elige una categoría"
           none: "selecciona una..."
+          default_hint: Administra el acceso visitando la <a href=%{link} target="_blank">%{category} configuración de seguridad</a>
         create: "Crear canal"
         description: "Descripción (opcional)"
         name: "Nombre del canal"
@@ -175,6 +196,7 @@ es:
       retention_reminders:
         public: "El historial del canal se conserva durante %{days} días."
         dm: "El historial de chat personal se conserva durante %{days} días."
+      topic_button_title: "Chat"
     notifications:
       popup:
         chat_message: "Nuevo mensaje de chat"
@@ -202,3 +224,6 @@ es:
         reviewable_chat_message:
           title: "Mensaje de chat denunciado"
           flagged_by: "Denunciado por"
+    keyboard_shortcuts_help:
+      chat:
+        title: "Chat"

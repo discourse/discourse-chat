@@ -59,9 +59,6 @@ acceptance("Discourse Chat | bookmarking | desktop", function (needs) {
       ),
       "the message should be bookmarked and show the icon on the message info"
     );
-    await triggerEvent(message, "mouseleave");
-
-    await triggerEvent(message, "mouseenter");
     assert.ok(
       message.querySelector(
         ".chat-msgactions .bookmark-btn .d-icon-discourse-bookmark-clock"
@@ -87,9 +84,6 @@ acceptance("Discourse Chat | bookmarking | desktop", function (needs) {
       message.querySelector(".chat-message-info__bookmark .d-icon-bookmark"),
       "the message should be bookmarked and show the icon on the message info"
     );
-    await triggerEvent(message, "mouseleave");
-
-    await triggerEvent(message, "mouseenter");
     assert.ok(
       message.querySelector(".chat-msgactions .bookmark-btn .d-icon-bookmark"),
       "the message actions icon shows the bookmark icon"

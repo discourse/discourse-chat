@@ -92,6 +92,9 @@
     <div class="control-group">
       <label class="control-label">{{i18n "chat.incoming_webhooks.url"}}</label>
       <label>{{selectedWebhook.url}}</label>
+      <div class="control-instructions">
+        {{i18n "chat.incoming_webhooks.url_instructions"}}
+      </div>
     </div>
 
     {{d-button
@@ -163,7 +166,6 @@
 
             <div>{{chat-channel-title channel=webhook.chat_channel}}</div>
             <div>{{webhook.description}}</div>
-            <div>{{webhook.url}}</div>
           </div>
 
           <div class="incoming-chat-webhooks--row--controls">

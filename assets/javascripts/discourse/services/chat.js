@@ -7,7 +7,7 @@ import Site from "discourse/models/site";
 import { ajax } from "discourse/lib/ajax";
 import { A } from "@ember/array";
 import { generateCookFunction } from "discourse/lib/text";
-import { next } from "@ember/runloop";
+import { cancel, next } from "@ember/runloop";
 import { and } from "@ember/object/computed";
 import { Promise } from "rsvp";
 import ChatChannel, {
@@ -18,6 +18,8 @@ import simpleCategoryHashMentionTransform from "discourse/plugins/discourse-chat
 import discourseDebounce from "discourse-common/lib/debounce";
 import EmberObject from "@ember/object";
 import ChatApi from "discourse/plugins/discourse-chat/discourse/lib/chat-api";
+import discourseLater from "discourse-common/lib/later";
+import userPresent from "discourse/lib/user-presence";
 
 export const LIST_VIEW = "list_view";
 export const CHAT_VIEW = "chat_view";
@@ -27,6 +29,8 @@ const CHAT_ONLINE_OPTIONS = {
   userUnseenTime: 300000, // 5 minutes seconds with no interaction
   browserHiddenTime: 300000, // Or the browser has been in the background for 5 minutes
 };
+
+const READ_INTERVAL = 1000;
 
 export default class Chat extends Service {
   @service appEvents;
@@ -52,6 +56,7 @@ export default class Chat extends Service {
   directMessagesLimit = 20;
   _chatOpen = false;
   _fetchingChannels = null;
+  isNetworkUnreliable = false;
 
   @and("currentUser.has_chat_enabled", "siteSettings.chat_enabled") userCanChat;
 
@@ -63,6 +68,7 @@ export default class Chat extends Service {
       this._subscribeToNewChannelUpdates();
       this._subscribeToUserTrackingChannel();
       this._subscribeToChannelEdits();
+      this._subscribeToChannelMetadata();
       this._subscribeToChannelStatusChange();
       this.presenceChannel = this.presence.getChannel("/chat/online");
       this.draftStore = {};
@@ -73,6 +79,26 @@ export default class Chat extends Service {
         });
       }
     }
+  }
+
+  markNetworkAsUnreliable() {
+    cancel(this._networkCheckHandler);
+
+    this.set("isNetworkUnreliable", true);
+
+    this._networkCheckHandler = discourseLater(() => {
+      if (this.isDestroyed || this.isDestroying) {
+        return;
+      }
+
+      this.markNetworkAsReliable();
+    }, 30000);
+  }
+
+  markNetworkAsReliable() {
+    cancel(this._networkCheckHandler);
+
+    this.set("isNetworkUnreliable", false);
   }
 
   setupWithPreloadedChannels(channels) {
@@ -90,6 +116,7 @@ export default class Chat extends Service {
       this._unsubscribeFromNewDmChannelUpdates();
       this._unsubscribeFromUserTrackingChannel();
       this._unsubscribeFromChannelEdits();
+      this._unsubscribeFromChannelMetadata();
       this._unsubscribeFromChannelStatusChange();
       this._unsubscribeFromAllChatChannels();
     }
@@ -277,10 +304,13 @@ export default class Chat extends Service {
   }
 
   refreshTrackingState() {
+    if (!this.currentUser) {
+      return;
+    }
+
     return ajax("/chat/chat_channels.json")
       .then((response) => {
         this.currentUser.set("chat_channel_tracking_state", {});
-
         (response.direct_message_channels || []).forEach((channel) => {
           this._updateUserTrackingState(channel);
         });
@@ -560,6 +590,19 @@ export default class Chat extends Service {
     });
   }
 
+  _subscribeToChannelMetadata() {
+    this.messageBus.subscribe("/chat/channel-metadata", (busData) => {
+      this.getChannelBy("id", busData.chat_channel_id).then((channel) => {
+        if (channel) {
+          channel.setProperties({
+            memberships_count: busData.memberships_count,
+          });
+          this.appEvents.trigger("chat:refresh-channel-members");
+        }
+      });
+    });
+  }
+
   _subscribeToChannelEdits() {
     this.messageBus.subscribe("/chat/channel-edits", (busData) => {
       this.getChannelBy("id", busData.chat_channel_id).then((channel) => {
@@ -606,6 +649,10 @@ export default class Chat extends Service {
 
   _unsubscribeFromChannelEdits() {
     this.messageBus.unsubscribe("/chat/channel-edits");
+  }
+
+  _unsubscribeFromChannelMetadata() {
+    this.messageBus.unsubscribe("/chat/channel-metadata");
   }
 
   _subscribeToNewChannelUpdates() {
@@ -851,7 +898,15 @@ export default class Chat extends Service {
       data.data = JSON.stringify(draft);
     }
 
-    ajax("/chat/drafts", { type: "POST", data });
+    ajax("/chat/drafts", { type: "POST", data, ignoreUnsent: false })
+      .then(() => {
+        this.markNetworkAsReliable();
+      })
+      .catch((error) => {
+        if (!error.jqXHR?.responseJSON?.errors?.length) {
+          this.markNetworkAsUnreliable();
+        }
+      });
   }
 
   setDraftForChannel(channel, draft) {
@@ -876,6 +931,45 @@ export default class Chat extends Service {
         replyToMsg: null,
       }
     );
+  }
+
+  updateLastReadMessage() {
+    discourseDebounce(this, this._queuedReadMessageUpdate, READ_INTERVAL);
+  }
+
+  _queuedReadMessageUpdate() {
+    const visibleMessages = document.querySelectorAll(
+      ".chat-message-container[data-visible=true]"
+    );
+    const channel = this.activeChannel;
+
+    if (
+      !channel?.isFollowing ||
+      visibleMessages?.length === 0 ||
+      !userPresent()
+    ) {
+      return;
+    }
+
+    const latestUnreadMsgId = parseInt(
+      visibleMessages[visibleMessages.length - 1].dataset.id,
+      10
+    );
+
+    const hasUnreadMessages = latestUnreadMsgId > channel.lastSendReadMessageId;
+
+    if (
+      !hasUnreadMessages &&
+      this.currentUser.chat_channel_tracking_state[this.activeChannel.id]
+        ?.unread_count > 0
+    ) {
+      // Weird state here where the chat_channel_tracking_state is wrong. Need to reset it.
+      this.resetTrackingStateForChannel(this.activeChannel.id);
+    }
+
+    if (hasUnreadMessages) {
+      channel.updateLastReadMessage(latestUnreadMsgId);
+    }
   }
 
   addToolbarButton() {

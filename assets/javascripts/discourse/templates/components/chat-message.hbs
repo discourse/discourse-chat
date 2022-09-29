@@ -2,17 +2,28 @@
 
 {{chat-message-separator message=message}}
 
-{{! TODO: move chat-message-actions to a shared DOM node using the newly available in-element }}
-{{#if (and showActions site.mobileView)}}
-  {{chat-message-actions-mobile
-    message=message
-    emojiReactions=emojiReactions
-    secondaryButtons=secondaryButtons
-    messageActions=messageActions
-    messageCapabilities=messageCapabilities
-    onHoverMessage=onHoverMessage
-  }}
+{{#if (and showActions site.mobileView this.chatMessageActionsMobileAnchor)}}
+  {{#in-element this.chatMessageActionsMobileAnchor}}
+    {{chat-message-actions-mobile
+      message=message
+      emojiReactions=emojiReactions
+      secondaryButtons=secondaryButtons
+      messageActions=messageActions
+      messageCapabilities=messageCapabilities
+      onHoverMessage=onHoverMessage
+    }}
+  {{/in-element}}
 {{/if}}
+
+{{emoji-picker
+  emojiStore=emojiReactionStore
+  placement="bottom"
+  isActive=emojiPickerIsActive
+  isEditorFocused=true
+  usePopper=true
+  emojiSelected=(action "selectReaction")
+  onEmojiPickerClose=(action (mut emojiPickerIsActive) false)
+}}
 
 <div
   {{on "touchmove" this.handleTouchMove passive=true}}
@@ -27,15 +38,6 @@
   }}
   data-id={{or message.id message.stagedId}}
 >
-  {{emoji-picker
-    emojiStore=emojiReactionStore
-    isActive=emojiPickerIsActive
-    isEditorFocused=true
-    usePopper=false
-    emojiSelected=(action "selectReaction")
-    onEmojiPickerClose=(action (mut emojiPickerIsActive) false)
-  }}
-
   {{#if show}}
     {{#if selectingMessages}}
       {{input
@@ -151,7 +153,22 @@
 
           {{#if message.error}}
             <div class="chat-send-error">
-              {{message.error}}
+              {{#if (eq message.error "network_error")}}
+                <DButton
+                  class="retry-staged-message-btn"
+                  @action={{fn this.resendStagedMessage message}}
+                >
+                  {{d-icon "exclamation-circle"}}
+                  <span class="retry-staged-message-btn__title">
+                    {{i18n "chat.retry_staged_message.title"}}
+                  </span>
+                  <span class="retry-staged-message-btn__action">
+                    {{i18n "chat.retry_staged_message.action"}}
+                  </span>
+                </DButton>
+              {{else}}
+                {{message.error}}
+              {{/if}}
             </div>
           {{/if}}
 

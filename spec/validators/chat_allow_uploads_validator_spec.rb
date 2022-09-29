@@ -9,14 +9,14 @@ RSpec.describe ChatAllowUploadsValidator do
   context "when secure media is enabled" do
     before do
       SiteSetting.chat_allow_uploads = false
-      enable_secure_media
+      enable_secure_uploads
     end
 
     it "does not allow chat uploads to be enabled" do
       validator = described_class.new
       expect(validator.valid_value?("t")).to eq(false)
       expect(validator.error_message).to eq(
-        I18n.t("site_settings.errors.chat_upload_not_allowed_secure_media"),
+        I18n.t("site_settings.errors.chat_upload_not_allowed_secure_uploads"),
       )
     end
 

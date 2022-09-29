@@ -54,6 +54,6 @@ describe ChatSeeder do
   it "does nothing when 'SiteSetting.needs_chat_seeded' is false" do
     SiteSetting.needs_chat_seeded = false
 
-    expect { ChatSeeder.new.execute }.to change { ChatChannel.count }.by(0)
+    expect { ChatSeeder.new.execute }.not_to change { ChatChannel.count }
   end
 end

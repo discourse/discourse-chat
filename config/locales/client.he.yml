@@ -145,6 +145,10 @@ he:
       edit: "עריכה"
       copy_link: "העתקת קישור"
       rebake_message: "בניית HTML מחדש"
+      retry_staged_message:
+        title: "שגיאת רשת"
+        action: "לשלוח שוב?"
+      unreliable_network: "הרשת אינה אמינה, ייתכן ששליחת הודעות ושמירת טיוטה לא תפעלנה"
       bookmark_message: "סימון"
       bookmark_message_edit: "עריכת סימנייה"
       restore: "שחזור הודעה שנמחקה"
@@ -231,7 +235,7 @@ he:
           other: "%{count} חברים"
       create_channel:
         auto_join_users:
-          public_category_warning: "%{category} היא קטגוריה ציבורית. להוסיף כל משתמש לערוץ הזה אוטומטית?"
+          public_category_warning: "%{category} היא קטגוריה ציבורית. להוסיף את כל המשתמשים שהיו פעילים לאחרונה לערוץ הזה?"
           warning_groups:
             one: להוסיף %{members_count} משתמשים מתוך %{group_1} אוטומטית?
             two: להוסיף %{members_count} משתמשים מתוך %{group_1} ומתוך %{group_2} אוטומטית?
@@ -277,8 +281,8 @@ he:
         mention: "רק אזכורים"
         always: "לכל פעילות"
       settings:
-        enable_auto_join_users: "להוסיף אוטומטית את כל המשתמשים החדשים והקיימים"
-        disable_auto_join_users: "להפסיק להוסיף משתמשים חדשים אוטומטית"
+        enable_auto_join_users: "להוסיף אוטומטית את כל המשתמשים שהיו פעילים לאחרונה"
+        disable_auto_join_users: "להפסיק להוסיף משתמשים אוטומטית"
         auto_join_users_warning: "כל משתמש שאינו חבר בערוץ הזה ויש לו גישה לקטגוריה %{category} יצטרף. זה בסדר?"
         desktop_notification_level: "התראות שולחן עבודה"
         follow: "הצטרפות"
@@ -320,6 +324,7 @@ he:
         system: "מערכת"
         title: "התליות נכנסות"
         url: "כתובת"
+        url_instructions: "כתובת זו מכילה ערך סודי - כדאי לשמור עליה בצורה מאובטחת."
         username: "שם משתמש"
         username_instructions: "שם משתמש הבוט שמפרסם לערוץ. ברירת המחדל היא ‚מערכת’ כשזה נשאר ריק."
       selection:

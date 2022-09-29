@@ -17,6 +17,15 @@ it:
       cancel: "Annulla"
       cancel_reply: "Annulla risposta"
       chat_channels: "Canali"
+      channel_settings:
+        edit: "Modifica"
+        join_channel: "Partecipa al canale"
+        leave_channel: "Lascia il canale"
+        join: "Partecipa"
+        leave: "Esci"
+      channels_list_popup:
+        browse: "Sfoglia i canali"
+        create: "Crea un canale"
       click_to_join: "Fai clic qui per visualizzare i canali disponibili."
       close: "Chiudi"
       collapse: "Comprimi il cassetto della chat"
@@ -24,12 +33,17 @@ it:
       deleted: "Un messaggio è stato eliminato. [visualizza]"
       delete: "Elimina"
       edited: "modificato"
+      empty_state:
+        direct_message: "Puoi anche avviare una chat personale con uno o più utenti."
+      email_frequency:
+        never: "Mai"
       enable: "Abilita chat"
       flag: "Segnala"
       flagged: "Questo messaggio è stato segnalato per la revisione"
       invalid_access: "Non hai accesso alla visualizzazione di questo canale chat"
       in_reply_to: "In risposta a"
       heading: "Chat"
+      join: "Partecipa"
       new_messages: "nuovi messaggi"
       mention_warning:
         cannot_see:
@@ -76,6 +90,12 @@ it:
         other: "%{count} file"
       you_flagged: "Hai segnalato questo messaggio"
       exit: "indietro"
+      browse:
+        title: Canali
+      about_view:
+        description: Descrizione
+      channel_info:
+        back_to_channel: "Indietro"
       channel_selector:
         title: "Vai al canale"
         no_channels: "Nessun canale corrisponde alla tua ricerca"
@@ -83,6 +103,7 @@ it:
         choose_category:
           label: "Scegli una categoria"
           none: "selezionane una..."
+          default_hint: Gestisci l'accesso visitando le <a href=%{link} target="_blank">impostazioni di sicurezza di %{category}</a>
         create: "Crea canale"
         description: "Descrizione (facoltativa)"
         name: "Nome del canale"
@@ -175,6 +196,7 @@ it:
       retention_reminders:
         public: "La cronologia del canale è conservata per %{days} giorni."
         dm: "La cronologia della chat personale è conservata per %{days} giorni."
+      topic_button_title: "Chat"
     notifications:
       popup:
         chat_message: "Nuovo messaggio di chat"
@@ -202,3 +224,6 @@ it:
         reviewable_chat_message:
           title: "Messaggio di chat segnalato"
           flagged_by: "Segnalato da"
+    keyboard_shortcuts_help:
+      chat:
+        title: "Chat"

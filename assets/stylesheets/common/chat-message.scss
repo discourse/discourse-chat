@@ -268,6 +268,11 @@
   background-color: var(--secondary);
   display: flex;
 
+  .emoji-picker-anchor {
+    position: absolute;
+    height: 34px;
+  }
+
   .link-to-message-btn {
     .d-icon {
       transition: all 0.25s ease-in-out;
@@ -519,10 +524,7 @@
   }
 
   h3 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+    @include line-clamp(2);
     font-weight: 500;
     font-size: var(--font-down-1);
   }
@@ -535,5 +537,42 @@
 .chat-message-reaction {
   > * {
     pointer-events: none;
+  }
+}
+
+.retry-staged-message-btn {
+  padding: 0.5em 0;
+  background: none;
+
+  &:hover,
+  &:focus,
+  &:active {
+    background: none !important;
+  }
+
+  &:focus .retry-staged-message-btn__action {
+    text-decoration: underline;
+  }
+
+  .d-icon,
+  &__title,
+  &:hover .d-icon {
+    color: var(--danger) !important;
+    font-size: var(--font-down-1);
+  }
+
+  .d-icon {
+    margin-right: 0.25em !important;
+  }
+
+  &__action {
+    color: var(--tertiary);
+    font-size: var(--font-down-1);
+    margin-left: 0.25em;
+
+    &:hover {
+      color: var(--tertiary-high);
+      text-decoration: underline;
+    }
   }
 }

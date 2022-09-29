@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-describe DiscourseChat::GuardianExtensions do
+RSpec.describe DiscourseChat::GuardianExtensions do
   fab!(:user) { Fabricate(:user) }
   fab!(:staff) { Fabricate(:user, admin: true) }
   fab!(:guardian) { Guardian.new(user) }
@@ -135,7 +135,7 @@ describe DiscourseChat::GuardianExtensions do
       fab!(:message) { Fabricate(:chat_message, chat_channel: channel, user: user) }
       fab!(:chatable) { Fabricate(:category) }
 
-      context "channel is closed" do
+      context "when channel is closed" do
         before { channel.update!(status: :closed) }
 
         it "disallows a owner to restore" do
@@ -147,7 +147,7 @@ describe DiscourseChat::GuardianExtensions do
         end
       end
 
-      context "chatable is a direct message" do
+      context "when chatable is a direct message" do
         fab!(:chatable) { DirectMessageChannel.create! }
 
         it "allows owner to restore" do
@@ -159,11 +159,11 @@ describe DiscourseChat::GuardianExtensions do
         end
       end
 
-      context "user is not owner of the message" do
+      context "when user is not owner of the message" do
         fab!(:message) { Fabricate(:chat_message, chat_channel: channel, user: Fabricate(:user)) }
 
-        context "chatable is a category" do
-          context "category is not restricted" do
+        context "when chatable is a category" do
+          context "when category is not restricted" do
             it "allows staff to restore" do
               expect(staff_guardian.can_restore_chat?(message, chatable)).to eq(true)
             end
@@ -173,7 +173,7 @@ describe DiscourseChat::GuardianExtensions do
             end
           end
 
-          context "category is restricted" do
+          context "when category is restricted" do
             fab!(:chatable) { Fabricate(:category, read_restricted: true) }
 
             it "allows staff to restore" do
@@ -184,7 +184,7 @@ describe DiscourseChat::GuardianExtensions do
               expect(guardian.can_restore_chat?(message, chatable)).to eq(false)
             end
 
-            context "group moderation is enabled" do
+            context "when group moderation is enabled" do
               before { SiteSetting.enable_category_group_moderation = true }
 
               it "allows a group moderator to restore" do
@@ -197,7 +197,7 @@ describe DiscourseChat::GuardianExtensions do
             end
           end
 
-          context "chatable is a direct message" do
+          context "when chatable is a direct message" do
             fab!(:chatable) { DirectMessageChannel.create! }
 
             it "allows staff to restore" do
@@ -211,13 +211,13 @@ describe DiscourseChat::GuardianExtensions do
         end
       end
 
-      context "user is owner of the message" do
-        context "chatable is a category" do
+      context "when user is owner of the message" do
+        context "when chatable is a category" do
           it "allows to restore if owner can see category" do
             expect(guardian.can_restore_chat?(message, chatable)).to eq(true)
           end
 
-          context "category is restricted" do
+          context "when category is restricted" do
             fab!(:chatable) { Fabricate(:category, read_restricted: true) }
 
             it "disallows to restore if owner can't see category" do
@@ -230,7 +230,7 @@ describe DiscourseChat::GuardianExtensions do
           end
         end
 
-        context "chatable is a direct message" do
+        context "when chatable is a direct message" do
           fab!(:chatable) { DirectMessageChannel.create! }
 
           it "allows staff to restore" do
@@ -240,6 +240,29 @@ describe DiscourseChat::GuardianExtensions do
           it "allows owner to restore" do
             expect(guardian.can_restore_chat?(message, chatable)).to eq(true)
           end
+        end
+      end
+    end
+
+    describe "#can_delete_category?" do
+      alias_matcher :be_able_to_delete_category, :be_can_delete_category
+
+      let(:category) { channel.chatable }
+
+      context "when category has no channel" do
+        before do
+          category.chat_channel.destroy
+          category.reload
+        end
+
+        it "allows to delete the category" do
+          expect(staff_guardian).to be_able_to_delete_category(category)
+        end
+      end
+
+      context "when category has a channel" do
+        it "does not allow to delete the category" do
+          expect(staff_guardian).not_to be_able_to_delete_category(category)
         end
       end
     end

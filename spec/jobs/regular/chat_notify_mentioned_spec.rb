@@ -173,6 +173,35 @@ describe Jobs::ChatNotifyMentioned do
         to_notify_ids_map: to_notify_ids_map,
       )
     end
+
+    it "skips desktop notifications based on user muting preferences" do
+      message = create_chat_message
+      UserChatChannelMembership.find_by(chat_channel: public_channel, user: user_2).update!(
+        desktop_notification_level: UserChatChannelMembership::NOTIFICATION_LEVELS[:always],
+        muted: true,
+      )
+
+      desktop_notification =
+        track_desktop_notification(message: message, to_notify_ids_map: to_notify_ids_map)
+
+      expect(desktop_notification).to be_nil
+    end
+
+    it "skips push notifications based on user muting preferences" do
+      message = create_chat_message
+      UserChatChannelMembership.find_by(chat_channel: public_channel, user: user_2).update!(
+        mobile_notification_level: UserChatChannelMembership::NOTIFICATION_LEVELS[:always],
+        muted: true,
+      )
+
+      PostAlerter.expects(:push_notification).never
+
+      subject.execute(
+        chat_message_id: message.id,
+        timestamp: message.created_at,
+        to_notify_ids_map: to_notify_ids_map,
+      )
+    end
   end
 
   shared_examples "creates different notifications with basic data" do
@@ -278,7 +307,7 @@ describe Jobs::ChatNotifyMentioned do
         expect(desktop_notification.data[:translated_title]).to eq(payload_translated_title)
       end
 
-      context "on private channels" do
+      context "with private channels" do
         it "users a different translated title" do
           message = create_chat_message(channel: @personal_chat_channel)
 
@@ -330,7 +359,7 @@ describe Jobs::ChatNotifyMentioned do
         expect(desktop_notification.data[:translated_title]).to eq(payload_translated_title)
       end
 
-      context "on private channels" do
+      context "with private channels" do
         it "users a different translated title" do
           message = create_chat_message(channel: @personal_chat_channel)
 
@@ -382,7 +411,7 @@ describe Jobs::ChatNotifyMentioned do
         expect(desktop_notification.data[:translated_title]).to eq(payload_translated_title)
       end
 
-      context "on private channels" do
+      context "with private channels" do
         it "users a different translated title" do
           message = create_chat_message(channel: @personal_chat_channel)
 
@@ -435,7 +464,7 @@ describe Jobs::ChatNotifyMentioned do
         expect(desktop_notification.data[:translated_title]).to eq(payload_translated_title)
       end
 
-      context "on private channels" do
+      context "with private channels" do
         it "users a different translated title" do
           message = create_chat_message(channel: @personal_chat_channel)
 

@@ -1,13 +1,15 @@
 # frozen_string_literal: true
 
 class ChatChannelMembershipsQuery
-  def self.call(channel, limit: 50, offset: 0, username: nil)
+  def self.call(channel, limit: 50, offset: 0, username: nil, count_only: false)
     query =
       UserChatChannelMembership
         .joins(:user)
         .includes(:user)
         .where(user: User.activated.not_suspended.not_staged)
         .where(chat_channel: channel, following: true)
+
+    return query.count if count_only
 
     if channel.category_channel? && channel.read_restricted? && channel.allowed_group_ids
       query =
@@ -37,5 +39,9 @@ class ChatChannelMembershipsQuery
     end
 
     query.offset(offset).limit(limit)
+  end
+
+  def self.count(channel)
+    call(channel, count_only: true)
   end
 end

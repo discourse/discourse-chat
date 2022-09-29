@@ -1,35 +1,18 @@
 # frozen_string_literal: true
 
 class UserChatChannelMembership < ActiveRecord::Base
+  NOTIFICATION_LEVELS = { never: 0, mention: 1, always: 2 }
+
   belongs_to :user
   belongs_to :chat_channel
   belongs_to :last_read_message, class_name: "ChatMessage", optional: true
 
-  DEFAULT_NOTIFICATION_LEVEL = :mention
-  NOTIFICATION_LEVELS = { never: 0, mention: 1, always: 2 }
-  VALIDATED_ATTRS = %i[following muted desktop_notification_level mobile_notification_level]
-  enum desktop_notification_level: NOTIFICATION_LEVELS, _prefix: :desktop_notifications
-  enum mobile_notification_level: NOTIFICATION_LEVELS, _prefix: :mobile_notifications
+  enum :desktop_notification_level, NOTIFICATION_LEVELS, prefix: :desktop_notifications
+  enum :mobile_notification_level, NOTIFICATION_LEVELS, prefix: :mobile_notifications
+  enum :join_mode, { manual: 0, automatic: 1 }
 
   attribute :unread_count, default: 0
   attribute :unread_mentions, default: 0
-
-  enum join_mode: { manual: 0, automatic: 1 }
-
-  class << self
-    def enforce_automatic_channel_memberships(channel)
-      Jobs.enqueue(:auto_manage_channel_memberships, chat_channel_id: channel.id)
-    end
-
-    def enforce_automatic_user_membership(channel, user)
-      Jobs.enqueue(
-        :auto_join_channel_batch,
-        chat_channel_id: channel.id,
-        starts_at: user.id,
-        ends_at: user.id,
-      )
-    end
-  end
 end
 
 # == Schema Information

@@ -56,6 +56,16 @@ RSpec.describe Jobs::ChatNotifyWatching do
       )
     end
 
+    context "when the channel is muted via membership preferences" do
+      before { membership2.update!(muted: true) }
+
+      it "does not send a desktop or mobile notification" do
+        PostAlerter.expects(:push_notification).never
+        messages = notification_messages_for(user2)
+        expect(messages).to be_empty
+      end
+    end
+
     context "when mobile_notification_level is always and desktop_notification_level is none" do
       before do
         membership2.update!(
@@ -78,6 +88,16 @@ RSpec.describe Jobs::ChatNotifyWatching do
         )
         messages = notification_messages_for(user2)
         expect(messages.length).to be_zero
+      end
+
+      context "when the channel is muted via membership preferences" do
+        before { membership2.update!(muted: true) }
+
+        it "does not send a desktop or mobile notification" do
+          PostAlerter.expects(:push_notification).never
+          messages = notification_messages_for(user2)
+          expect(messages).to be_empty
+        end
       end
     end
 
@@ -162,6 +182,16 @@ RSpec.describe Jobs::ChatNotifyWatching do
       )
     end
 
+    context "when the channel is muted via membership preferences" do
+      before { membership2.update!(muted: true) }
+
+      it "does not send a desktop or mobile notification" do
+        PostAlerter.expects(:push_notification).never
+        messages = notification_messages_for(user2)
+        expect(messages).to be_empty
+      end
+    end
+
     context "when mobile_notification_level is always and desktop_notification_level is none" do
       before do
         membership2.update!(
@@ -184,6 +214,16 @@ RSpec.describe Jobs::ChatNotifyWatching do
         )
         messages = notification_messages_for(user2)
         expect(messages.length).to be_zero
+      end
+
+      context "when the channel is muted via membership preferences" do
+        before { membership2.update!(muted: true) }
+
+        it "does not send a desktop or mobile notification" do
+          PostAlerter.expects(:push_notification).never
+          messages = notification_messages_for(user2)
+          expect(messages).to be_empty
+        end
       end
     end
 
@@ -236,9 +276,7 @@ RSpec.describe Jobs::ChatNotifyWatching do
     end
 
     context "when the target user is preventing communication from the message creator" do
-      before do
-        UserCommScreener.any_instance.expects(:allowing_actor_communication).returns([])
-      end
+      before { UserCommScreener.any_instance.expects(:allowing_actor_communication).returns([]) }
 
       it "does not send a desktop notification" do
         expect(notification_messages_for(user2).count).to be_zero

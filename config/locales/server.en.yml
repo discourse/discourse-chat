@@ -18,8 +18,8 @@ en:
     direct_message_enabled_groups: "Allow users within these groups to create direct messages and reply to direct messages. Trust level groups include all trust levels above that number, for example choosing trust_level_1 also allows trust_level_2, 3, 4 users to send DMs. Note that staff can always send direct messages no matter what."
     errors:
       chat_default_channel: "The default chat channel must be a public channel."
-      chat_upload_not_allowed_secure_media: "Chat uploads are not allowed when secure media site setting is enabled."
       direct_message_enabled_groups_invalid: "You must specify at least one group for this setting. If you do not want anyone except staff to send DMs, choose the staff group."
+      chat_upload_not_allowed_secure_uploads: "Chat uploads are not allowed when secure uploads site setting is enabled."
   system_messages:
     chat_channel_archive_complete:
       title: "Chat Channel Archive Complete"
@@ -173,3 +173,7 @@ en:
       select_title: "Set chat summary emails frequency to:"
       never: Never
       when_away: Only when away
+
+  category:
+    cannot_delete:
+      has_chat_channels: "Can't delete this category because it has chat channels."

@@ -135,6 +135,10 @@ en:
       edit: "Edit"
       copy_link: "Copy link"
       rebake_message: "Rebuild HTML"
+      retry_staged_message:
+        title: "Network error"
+        action: "Send again?"
+      unreliable_network: "Network is unreliable, sending messages and saving draft might not work"
       bookmark_message: "Bookmark"
       bookmark_message_edit: "Edit Bookmark"
       restore: "Restore deleted message"
@@ -228,7 +232,7 @@ en:
 
       create_channel:
         auto_join_users:
-          public_category_warning: "%{category} is a public category. Automatically add every user to this channel?"
+          public_category_warning: "%{category} is a public category. Automatically add all recently active users to this channel?"
           warning_groups:
             one: Automatically add %{members_count} users from %{group_1}?
             other: Automatically add %{members_count} users from %{group_1} and %{group_2}?
@@ -276,8 +280,8 @@ en:
         always: "For all activity"
 
       settings:
-        enable_auto_join_users: "Automatically add all new and existing users"
-        disable_auto_join_users: "Stop automatically adding new users"
+        enable_auto_join_users: "Automatically add all recently active users"
+        disable_auto_join_users: "Stop automatically adding users"
         auto_join_users_warning: "Every user who isn't a member of this channel and has access to the %{category} category will join. Are you sure?"
         desktop_notification_level: "Desktop notifications"
         follow: "Join"
@@ -323,6 +327,7 @@ en:
         system: "system"
         title: "Incoming webhooks"
         url: "URL"
+        url_instructions: "This URL contains a secret value - keep it safe."
         username: "Username"
         username_instructions: "Username of bot that posts to channel. Defaults to 'system' when left blank."
 
@@ -429,3 +434,9 @@ en:
       allowed_pm_users_instructions: "Only allow personal messages or chat direct messages from these users."
       allow_private_messages_from_specific_users: "Only allow specific users to send me personal messages or chat direct messages"
       ignored_users_instructions: "Suppress all posts, messages, notifications, personal messages, and chat direct messages from these users."
+    user_menu:
+      tabs:
+        chat_notifications: "Chat notifications"
+        chat_notifications_with_unread:
+          one: "Chat notifications - %{count} unread notification"
+          other: "Chat notifications - %{count} unread notifications"

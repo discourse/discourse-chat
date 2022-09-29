@@ -233,7 +233,6 @@ RSpec.describe DiscourseChat::ChatChannelsController do
         membership_record.reload.following
       }.to(true).from(false)
       expect(response.status).to eq(200)
-      expect(response.parsed_body["memberships_count"]).to eq(1)
       expect(response.parsed_body["current_user_membership"]["following"]).to eq(true)
       expect(response.parsed_body["current_user_membership"]["chat_channel_id"]).to eq(
         chat_channel.id,
@@ -255,7 +254,6 @@ RSpec.describe DiscourseChat::ChatChannelsController do
         membership_record.reload.following
       }.to(false).from(true)
       expect(response.status).to eq(200)
-      expect(response.parsed_body["memberships_count"]).to eq(0)
       expect(response.parsed_body["current_user_membership"]["following"]).to eq(false)
       expect(response.parsed_body["current_user_membership"]["chat_channel_id"]).to eq(
         chat_channel.id,
@@ -524,6 +522,34 @@ RSpec.describe DiscourseChat::ChatChannelsController do
         get "/chat/chat_channels/search.json", params: { filter: "andyjones" }
         expect(response.status).to eq(200)
         expect(response.parsed_body["direct_message_channels"][0]["id"]).to eq(dm_chat_channel.id)
+      end
+
+      it "returns followed channels" do
+        Fabricate(
+          :user_chat_channel_membership,
+          user: user,
+          chat_channel: chat_channel,
+          following: true,
+        )
+
+        get "/chat/chat_channels/search.json", params: { filter: chat_channel.name }
+
+        expect(response.status).to eq(200)
+        expect(response.parsed_body["public_channels"][0]["id"]).to eq(chat_channel.id)
+      end
+
+      it "returns not followed channels" do
+        Fabricate(
+          :user_chat_channel_membership,
+          user: user,
+          chat_channel: chat_channel,
+          following: false,
+        )
+
+        get "/chat/chat_channels/search.json", params: { filter: chat_channel.name }
+
+        expect(response.status).to eq(200)
+        expect(response.parsed_body["public_channels"][0]["id"]).to eq(chat_channel.id)
       end
     end
   end

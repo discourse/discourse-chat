@@ -69,7 +69,7 @@ describe "API keys scoped to chat#create_message" do
            params: {
              message: "asdfasdf asdfasdf",
            }
-    }.to change { ChatMessage.where(chat_channel: chat_channel).count }.by(0)
+    }.not_to change { ChatMessage.where(chat_channel: chat_channel).count }
     expect(response.status).to eq(403)
   end
 

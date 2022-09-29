@@ -12,22 +12,24 @@ import discourseComputed, {
 import discourseDebounce from "discourse-common/lib/debounce";
 import EmberObject, { action } from "@ember/object";
 import I18n from "I18n";
-import userPresent from "discourse/lib/user-presence";
 import { A } from "@ember/array";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
-import { cancel, next, schedule } from "@ember/runloop";
+import { cancel, next, schedule, throttle } from "@ember/runloop";
 import discourseLater from "discourse-common/lib/later";
 import { inject as service } from "@ember/service";
 import { Promise } from "rsvp";
 import { resetIdle } from "discourse/lib/desktop-notifications";
 import { defaultHomepage } from "discourse/lib/utilities";
-import { isTesting } from "discourse-common/config/environment";
 import { capitalize } from "@ember/string";
+import {
+  onPresenceChange,
+  removeOnPresenceChange,
+} from "discourse/lib/user-presence";
+import isZoomed from "discourse/plugins/discourse-chat/discourse/lib/zoom-check";
 
 const MAX_RECENT_MSGS = 100;
-const STICKY_SCROLL_LENIENCE = 4;
-const READ_INTERVAL = 1000;
+const STICKY_SCROLL_LENIENCE = 50;
 const PAGE_SIZE = 50;
 
 const PAST = "past";
@@ -71,9 +73,6 @@ export default Component.extend({
 
   getCachedChannelDetails: null,
   clearCachedChannelDetails: null,
-
-  _updateReadTimer: null,
-  lastSendReadMessageId: null,
   _scrollerEl: null,
 
   init() {
@@ -97,6 +96,9 @@ export default Component.extend({
       passive: true,
     });
     window.addEventListener("resize", this.onResizeHandler);
+    window.addEventListener("mousewheel", this.onScrollHandler, {
+      passive: true,
+    });
 
     this.appEvents.on("chat:cancel-message-selection", this, "cancelSelecting");
 
@@ -104,6 +106,10 @@ export default Component.extend({
 
     document.addEventListener("scroll", this._forceBodyScroll, {
       passive: true,
+    });
+
+    onPresenceChange({
+      callback: this.onPresenceChangeCallback,
     });
   },
 
@@ -115,13 +121,13 @@ export default Component.extend({
       ?.removeEventListener("scroll", this.onScrollHandler);
 
     window.removeEventListener("resize", this.onResizeHandler);
+    window.removeEventListener("mousewheel", this.onScrollHandler);
 
     this.appEvents.off(
       "chat-live-pane:highlight-message",
       this,
       "highlightOrFetchMessage"
     );
-    this._cancelPendingReadUpdate();
 
     // don't need to removeEventListener from scroller as the DOM element goes away
     cancel(this.stickyScrollTimer);
@@ -137,6 +143,8 @@ export default Component.extend({
     );
 
     document.removeEventListener("scroll", this._forceBodyScroll);
+
+    removeOnPresenceChange(this.onPresenceChangeCallback);
   },
 
   didReceiveAttrs() {
@@ -188,8 +196,7 @@ export default Component.extend({
 
   @bind
   onScrollHandler(event) {
-    cancel(this.stickyScrollTimer);
-    this.stickyScrollTimer = discourseDebounce(this, this.onScroll, event, 100);
+    throttle(this, this.onScroll, event, 100, true);
   },
 
   @bind
@@ -201,6 +208,13 @@ export default Component.extend({
       this.details,
       250
     );
+  },
+
+  @bind
+  onPresenceChangeCallback(present) {
+    if (present) {
+      this.chat.updateLastReadMessage();
+    }
   },
 
   fetchMessages(channel, options = {}) {
@@ -250,15 +264,21 @@ export default Component.extend({
     this.set("draft", this.chat.getDraftForChannel(channelId));
   },
 
+  @bind
   _fetchMoreMessages(direction) {
     const loadingPast = direction === PAST;
     const canLoadMore = loadingPast
-      ? this.details.can_load_more_past
-      : this.details.can_load_more_future;
+      ? this.details?.can_load_more_past
+      : this.details?.can_load_more_future;
     const loadingMoreKey = `loadingMore${capitalize(direction)}`;
     const loadingMore = this.get(loadingMoreKey);
 
-    if (!canLoadMore || loadingMore || this.loading || !this.messages.length) {
+    if (
+      (this.details && !canLoadMore) ||
+      loadingMore ||
+      this.loading ||
+      !this.messages.length
+    ) {
       return Promise.resolve();
     }
 
@@ -344,8 +364,12 @@ export default Component.extend({
         return;
       }
 
-      this._fetchMoreMessages(PAST);
+      this._fetchMoreMessagesThrottled(PAST);
     });
+  },
+
+  _fetchMoreMessagesThrottled(direction) {
+    throttle(this, "_fetchMoreMessages", direction, 500);
   },
 
   setCanLoadMoreDetails(meta) {
@@ -381,10 +405,6 @@ export default Component.extend({
     schedule("afterRender", () => {
       if (this._selfDeleted) {
         return;
-      }
-
-      if (!isTesting()) {
-        this._updateLastReadMessage();
       }
 
       if (this.targetMessageId) {
@@ -636,18 +656,11 @@ export default Component.extend({
           this._scrollerEl.clientHeight +
           this._scrollerEl.scrollTop
       ) <= STICKY_SCROLL_LENIENCE;
-    if (atTop) {
-      this._fetchMoreMessages(PAST).then((newMessages) => {
-        this._iosScrollFix(newMessages, PAST);
-      });
-    } else {
-      this._updateLastReadMessage();
 
-      if (Math.abs(this._scrollerEl.scrollTop) <= STICKY_SCROLL_LENIENCE) {
-        this._fetchMoreMessages(FUTURE).then((newMessages) => {
-          this._iosScrollFix(newMessages, FUTURE);
-        });
-      }
+    if (atTop) {
+      this._fetchMoreMessagesThrottled(PAST);
+    } else if (Math.abs(this._scrollerEl.scrollTop) <= STICKY_SCROLL_LENIENCE) {
+      this._fetchMoreMessagesThrottled(FUTURE);
     }
 
     this._calculateStickScroll(event.forceShowScrollToBottom);
@@ -743,8 +756,10 @@ export default Component.extend({
       const stagedMessage = this.messageLookup[`staged-${data.stagedId}`];
       if (stagedMessage) {
         stagedMessage.setProperties({
+          error: null,
           staged: false,
           id: data.chat_message.id,
+          staged_id: null,
           excerpt: data.chat_message.excerpt,
         });
 
@@ -918,67 +933,6 @@ export default Component.extend({
     return !this.element || this.isDestroying || this.isDestroyed;
   },
 
-  @bind
-  _updateLastReadMessage(wait = READ_INTERVAL) {
-    this._cancelPendingReadUpdate();
-
-    if (this._selfDeleted || !this.chatChannel.isFollowing) {
-      return;
-    }
-
-    this._updateReadTimer = discourseLater(
-      this,
-      () => {
-        if (this._selfDeleted) {
-          return;
-        }
-
-        if (!userPresent()) {
-          return;
-        }
-
-        let latestUnreadMsgId = this.lastSendReadMessageId;
-        if (this.messages[this.messages.length - 1]?.id > latestUnreadMsgId) {
-          const visibleMessages = document.querySelectorAll(
-            ".chat-message-container[data-visible=true]"
-          );
-          if (visibleMessages?.length > 0) {
-            latestUnreadMsgId = parseInt(
-              visibleMessages[visibleMessages.length - 1].dataset.id,
-              10
-            );
-          }
-        }
-
-        const hasUnreadMessages =
-          latestUnreadMsgId && latestUnreadMsgId > this.lastSendReadMessageId;
-
-        if (
-          !hasUnreadMessages &&
-          this.currentUser.chat_channel_tracking_state[this.chatChannel.id]
-            ?.unread_count > 0
-        ) {
-          // Weird state here where the chat_channel_tracking_state is wrong. Need to reset it.
-          this.chat.resetTrackingStateForChannel(this.chatChannel.id);
-        }
-
-        // Make sure new messages have come in. Do not keep pinging server with read updates
-        // if no new messages came in since last read update was sent.
-        if (hasUnreadMessages) {
-          this.set("lastSendReadMessageId", latestUnreadMsgId);
-          ajax(`/chat/${this.chatChannel.id}/read/${latestUnreadMsgId}.json`, {
-            method: "PUT",
-          });
-        }
-      },
-      wait
-    );
-  },
-
-  _cancelPendingReadUpdate() {
-    cancel(this._updateReadTimer);
-  },
-
   @action
   sendMessage(message, uploads = []) {
     resetIdle();
@@ -1032,10 +986,7 @@ export default Component.extend({
     // Start ajax request but don't return here, we want to stage the message instantly when all messages are loaded.
     // Otherwise, we'll fetch latest and scroll to the one we just created.
     // Return a resolved promise below.
-    const msgCreationPromise = ajax(`/chat/${this.chatChannel.id}.json`, {
-      type: "POST",
-      data,
-    })
+    const msgCreationPromise = ChatApi.sendMessage(this.chatChannel.id, data)
       .catch((error) => {
         this._onSendError(data.staged_id, error);
       })
@@ -1105,9 +1056,43 @@ export default Component.extend({
   _onSendError(stagedId, error) {
     const stagedMessage = this.messageLookup[`staged-${stagedId}`];
     if (stagedMessage) {
-      stagedMessage.set("error", error.jqXHR.responseJSON.errors[0]);
-      this._resetAfterSend();
+      if (error.jqXHR?.responseJSON?.errors?.length) {
+        stagedMessage.set("error", error.jqXHR.responseJSON.errors[0]);
+      } else {
+        this.chat.markNetworkAsUnreliable();
+        stagedMessage.set("error", "network_error");
+      }
     }
+
+    this._resetAfterSend();
+  },
+
+  @action
+  resendStagedMessage(stagedMessage) {
+    this.set("sendingLoading", true);
+
+    stagedMessage.set("error", null);
+
+    const data = {
+      cooked: stagedMessage.cooked,
+      message: stagedMessage.message,
+      upload_ids: stagedMessage.upload_ids,
+      staged_id: stagedMessage.stagedId,
+    };
+
+    ChatApi.sendMessage(this.chatChannel.id, data)
+      .catch((error) => {
+        this._onSendError(data.staged_id, error);
+      })
+      .then(() => {
+        this.chat.markNetworkAsReliable();
+      })
+      .finally(() => {
+        if (this._selfDeleted) {
+          return;
+        }
+        this.set("sendingLoading", false);
+      });
   },
 
   @action
@@ -1328,6 +1313,10 @@ export default Component.extend({
 
   @action
   onHoverMessage(message, options = {}) {
+    if (message?.staged) {
+      return;
+    }
+
     discourseDebounce(
       this,
       this.debouncedOnHoverMessage,
@@ -1422,58 +1411,11 @@ export default Component.extend({
     // doesn’t scroll out of viewport
     if (
       this.capabilities.isIOS &&
-      document.documentElement.classList.contains("keyboard-visible")
+      document.documentElement.classList.contains("keyboard-visible") &&
+      !isZoomed()
     ) {
       document.documentElement.scrollTo(0, 0);
     }
-  },
-
-  // This fix prevents a white screen when appending/prepending new content
-  // simulating a noop scroll forces to display the new content
-  // technically it should be possible to fix it with css and using
-  // -webkit-transform: translate3d(0,0,0); on the right elements
-  // but this has proven to either not work or cause other issues so far
-  _iosScrollFix(newMessages, direction) {
-    if (!this.capabilities.isIOS) {
-      return;
-    }
-
-    if (!newMessages?.length) {
-      return;
-    }
-
-    schedule("afterRender", () => {
-      if (this._selfDeleted) {
-        return;
-      }
-
-      let siblingId;
-      if (direction === FUTURE) {
-        const firstLoadedMessageId = newMessages.firstObject.messageLookupId;
-        const firstLoadedMessage = document.querySelector(
-          `.chat-message-container[data-id="${firstLoadedMessageId}"]`
-        );
-        siblingId = firstLoadedMessage.previousElementSibling?.dataset.id;
-      } else {
-        const lastLoadedMessageId = newMessages.lastObject.messageLookupId;
-        const lastLoadedMessage = document.querySelector(
-          `.chat-message-container[data-id="${lastLoadedMessageId}"]`
-        );
-        siblingId = lastLoadedMessage.nextElementSibling?.dataset.id;
-      }
-
-      if (!siblingId) {
-        return;
-      }
-
-      // forces the update preventing the white screen
-      const scroller = document.querySelector(".chat-messages-scroll");
-      scroller.scrollTo(0, 0);
-
-      this.scrollToMessage(siblingId, {
-        position: direction === PAST ? "top" : "bottom",
-      });
-    });
   },
 
   _fetchAndScrollToLatest() {
@@ -1490,7 +1432,7 @@ export default Component.extend({
   },
 
   _handle429Errors(error) {
-    if (error?.jqXHR.status === 429) {
+    if (error?.jqXHR?.status === 429) {
       popupAjaxError(error);
     } else {
       throw error;

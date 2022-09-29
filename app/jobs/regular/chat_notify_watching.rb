@@ -68,11 +68,13 @@ module Jobs
         excerpt: @chat_message.push_notification_excerpt,
       }
 
-      if membership.desktop_notifications_always?
+      if membership.desktop_notifications_always? && !membership.muted?
         MessageBus.publish("/chat/notification-alert/#{user.id}", payload, user_ids: [user.id])
       end
 
-      PostAlerter.push_notification(user, payload) if membership.mobile_notifications_always?
+      if membership.mobile_notifications_always? && !membership.muted?
+        PostAlerter.push_notification(user, payload)
+      end
     end
 
     def online_user_ids

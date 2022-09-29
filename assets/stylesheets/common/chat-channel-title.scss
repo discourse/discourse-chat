@@ -42,8 +42,8 @@
 
   .chat-unread-count {
     display: inline-block;
-    color: var(--secondary, $secondary);
-    background-color: var(--tertiary-med-or-tertiary, $danger);
+    color: var(--secondary);
+    background-color: var(--tertiary-med-or-tertiary);
     font-size: var(--font-down-2);
     border-radius: 100%;
     min-width: 1.4em;
@@ -73,6 +73,7 @@
 
 .chat-channel-title__category-badge {
   color: var(--primary-medium);
+  display: flex;
   font-size: var(--font-up-1);
   position: relative;
 

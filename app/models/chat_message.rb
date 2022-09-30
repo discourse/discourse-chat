@@ -77,13 +77,6 @@ class ChatMessage < ActiveRecord::Base
     Emoji.gsub_emoji_to_unicode(message).truncate(400)
   end
 
-  def add_flag(user)
-    reviewable = ReviewableChatMessage.needs_review!(created_by: user, target: self)
-    reviewable.update(target_created_by: self.user)
-    reviewable.add_score(user, ReviewableScore.types[:needs_review], force_review: true)
-    reviewable
-  end
-
   def reviewable_score_for(user)
     ReviewableScore.joins(:reviewable).where(reviewable: { target: self }).where(user: user)
   end

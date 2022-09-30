@@ -213,6 +213,7 @@ const message0 = {
     name: null,
     avatar_template: "/letter_avatar_proxy/v4/letter/m/48db29/{size}.png",
   },
+  available_flags: ["spam"],
 };
 
 const message1 = {
@@ -246,6 +247,7 @@ const message1 = {
       width: null,
     },
   ],
+  available_flags: ["spam"],
 };
 
 const message2 = {
@@ -296,6 +298,7 @@ const message2 = {
       users: [],
     },
   },
+  available_flags: ["spam"],
 };
 
 const message3 = {
@@ -313,6 +316,7 @@ const message3 = {
     name: null,
     avatar_template: "/letter_avatar_proxy/v4/letter/m/48db29/{size}.png",
   },
+  available_flags: ["spam"],
 };
 
 export function generateChatView(loggedInUser, metaOverrides = {}) {

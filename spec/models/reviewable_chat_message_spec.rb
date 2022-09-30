@@ -55,30 +55,4 @@ RSpec.describe ReviewableChatMessage, type: :model do
     expect(reviewable).to be_ignored
     expect(chat_message.reload.deleted_at).not_to be_present
   end
-
-  describe ".on_score_updated" do
-    it "silences the user for the correct time when the threshold is met" do
-      SiteSetting.chat_auto_silence_from_flags_duration = 3
-      reviewable.update!(score: ReviewableChatMessage.score_to_silence_user + 1)
-      expect { ReviewableChatMessage.on_score_updated(reviewable) }.to change {
-        user.reload.silenced?
-      }.to be true
-    end
-
-    it "does nothing if the new score is less than the score to auto-silence" do
-      SiteSetting.chat_auto_silence_from_flags_duration = 3
-      reviewable.update!(score: ReviewableChatMessage.score_to_silence_user - 1)
-      expect { ReviewableChatMessage.on_score_updated(reviewable) }.not_to change {
-        user.reload.silenced?
-      }
-    end
-
-    it "does nothing if the silence duration is set to 0" do
-      SiteSetting.chat_auto_silence_from_flags_duration = 0
-      reviewable.update!(score: ReviewableChatMessage.score_to_silence_user + 1)
-      expect { ReviewableChatMessage.on_score_updated(reviewable) }.not_to change {
-        user.reload.silenced?
-      }
-    end
-  end
 end

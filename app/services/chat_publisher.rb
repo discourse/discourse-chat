@@ -100,13 +100,13 @@ module ChatPublisher
     MessageBus.publish("/chat/#{chat_channel.id}", content.as_json, permissions(chat_channel))
   end
 
-  def self.publish_flag!(chat_message, user, reviewable)
+  def self.publish_flag!(chat_message, user, reviewable, score)
     # Publish to user who created flag
     MessageBus.publish(
       "/chat/#{chat_message.chat_channel_id}",
       {
         type: "self_flagged",
-        user_flag_status: ReviewableScore.statuses[:pending],
+        user_flag_status: score.status_for_database,
         chat_message_id: chat_message.id,
       }.as_json,
       user_ids: [user.id],

@@ -5,7 +5,7 @@ export default class ChatDraftChannelRoute extends DiscourseRoute {
   @service chat;
 
   beforeModel() {
-    if (!this.currentUser?.allowDirectMessages) {
+    if (!this.chat.userCanDirectMessage) {
       this.transitionTo("chat");
     }
   }

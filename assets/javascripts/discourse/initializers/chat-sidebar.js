@@ -38,7 +38,7 @@ export default {
         currentUser?.chat_channels?.direct_message_channels?.length;
       const shouldDisplayDirectMessageChannelsSection = hasDirectMessageChannels
         ? true
-        : currentUser?.staff || currentUser?.allowDirectMessages;
+        : this.chatService.userCanDirectMessage;
 
       shouldDisplayPublicChannelsSection &&
         api.addSidebarSection(
@@ -437,7 +437,7 @@ export default {
               }
 
               get actions() {
-                if (!this.currentUser?.allowDirectMessages) {
+                if (!this.chatService.userCanDirectMessage) {
                   return [];
                 }
 

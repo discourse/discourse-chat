@@ -130,32 +130,6 @@ export default {
           }
         });
       });
-
-      api.modifyClass("model:user", {
-        pluginId: "discourse-chat",
-
-        @discourseComputed("staff", "groups.[]")
-        allowDirectMessages() {
-          return (
-            this.staff ||
-            this.isInAnyGroups(
-              (this.siteSettings.direct_message_enabled_groups || "11") // trust level 1 auto group
-                .split("|")
-                .map((groupId) => parseInt(groupId, 10))
-            )
-          );
-        },
-      });
-
-      // TODO (martin) Better way to do this??
-      container.owner.unregister("service:current-user");
-      container.owner.register(
-        "service:current-user",
-        User.create(currentUser),
-        {
-          instantiate: false,
-        }
-      );
     });
   },
 

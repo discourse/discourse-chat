@@ -36,9 +36,8 @@ export default class ChannelsList extends Component {
     );
   }
 
-  @computed("currentUser.allowDirectMessages")
   get canCreateDirectMessageChannel() {
-    return this.currentUser?.allowDirectMessages;
+    return this.chat.userCanDirectMessage;
   }
 
   @computed("directMessageChannels.@each.last_message_sent_at")

@@ -139,7 +139,7 @@ export default {
           return (
             this.staff ||
             this.isInAnyGroups(
-              this.siteSettings.direct_message_enabled_groups
+              (this.siteSettings.direct_message_enabled_groups || "11") // trust level 1 auto group
                 .split("|")
                 .map((groupId) => parseInt(groupId, 10))
             )

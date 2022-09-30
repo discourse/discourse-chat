@@ -1511,6 +1511,45 @@ acceptance("Discourse Chat - image uploads", function (needs) {
   });
 });
 
+acceptance(
+  "Discourse Chat - image uploads - uploads not allowed",
+  function (needs) {
+    needs.user({
+      admin: false,
+      moderator: false,
+      username: "eviltrout",
+      id: 1,
+      can_chat: true,
+      has_chat_enabled: true,
+    });
+    needs.settings({
+      chat_enabled: true,
+      chat_allow_uploads: false,
+    });
+    needs.pretender((server, helper) => {
+      baseChatPretenders(server, helper);
+      directMessageChannelPretender(server, helper);
+      chatChannelPretender(server, helper);
+    });
+
+    test("uploads are not allowed in public channels", async function (assert) {
+      await visit("/chat/channel/4/public-category");
+      assert.notOk(
+        visible(".chat-composer-dropdown__trigger-btn"),
+        "composer dropdown should not be visible because uploads are not enabled and no other buttons are rendered"
+      );
+    });
+
+    test("uploads are not allowed in direct message channels", async function (assert) {
+      await visit("/chat/channel/75/@hawk");
+      assert.notOk(
+        visible(".chat-composer-dropdown__trigger-btn"),
+        "composer dropdown should not be visible because uploads are not enabled and no other buttons are rendered"
+      );
+    });
+  }
+);
+
 acceptance("Discourse Chat - Insert Date", function (needs) {
   needs.user({
     username: "eviltrout",

@@ -27,6 +27,56 @@ describe DiscourseChat::ChatReviewQueue do
       }.to raise_error(Discourse::InvalidAccess)
     end
 
+    it "raises an error if the user already flagged the post" do
+      subject.flag_message(message, guardian, ReviewableScore.types[:spam])
+
+      second_flag_result =
+        subject.flag_message(message, guardian, ReviewableScore.types[:off_topic])
+
+      expect(second_flag_result[:success]).to eq(false)
+      expect(second_flag_result[:errors]).to contain_exactly(I18n.t("reviewables.already_handled"))
+    end
+
+    it "raises an error if a different user uses the same flag but we recently handled it" do
+      subject.flag_message(message, guardian, ReviewableScore.types[:spam])
+
+      reviewable = ReviewableChatMessage.last
+      reviewable.perform(admin, :ignore)
+
+      second_flag_result =
+        subject.flag_message(message, admin_guardian, ReviewableScore.types[:spam])
+
+      expect(second_flag_result[:success]).to eq(false)
+      expect(second_flag_result[:errors]).to contain_exactly(I18n.t("reviewables.already_handled"))
+    end
+
+    it "allow users to re-flag using the same flag type after the cooldown period" do
+      subject.flag_message(message, guardian, ReviewableScore.types[:spam])
+
+      reviewable = ReviewableChatMessage.last
+      reviewable.perform(admin, :ignore)
+      reviewable.update!(updated_at: (SiteSetting.cooldown_hours_until_reflag.to_i + 1).hours.ago)
+
+      second_flag_result = subject.flag_message(message, guardian, ReviewableScore.types[:spam])
+
+      expect(second_flag_result[:success]).to eq(true)
+    end
+
+    it "allow users to reflag ignoring the cooldown period if the message was edited" do
+      subject.flag_message(message, guardian, ReviewableScore.types[:spam])
+
+      reviewable = ReviewableChatMessage.last
+      reviewable.perform(admin, :ignore)
+      DiscourseChat::ChatMessageUpdater.update(
+        chat_message: message,
+        new_content: "I'm editing this message. Please flag it.",
+      )
+
+      second_flag_result = subject.flag_message(message, guardian, ReviewableScore.types[:spam])
+
+      expect(second_flag_result[:success]).to eq(true)
+    end
+
     it "creates a new reviewable with an associated score" do
       subject.flag_message(message, guardian, ReviewableScore.types[:spam])
 
@@ -221,7 +271,7 @@ describe DiscourseChat::ChatReviewQueue do
         subject.flag_message(
           message,
           admin_guardian,
-          ReviewableScore.types[:off_topic],
+          ReviewableScore.types[:spam],
           take_action: true,
         )
 

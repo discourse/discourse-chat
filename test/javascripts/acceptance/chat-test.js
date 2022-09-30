@@ -1478,7 +1478,8 @@ acceptance("Discourse Chat - image uploads", function (needs) {
     const done = assert.async();
     await fillIn(".d-editor-input", "The image:\n");
 
-    appEvents.on("composer:all-uploads-complete", () => {
+    appEvents.on("composer:all-uploads-complete", async () => {
+      await settled();
       assert.strictEqual(
         query(".d-editor-input").value,
         "The image:\n![avatar.PNG|690x320](upload://yoj8pf9DdIeHRRULyw7i57GAYdz.jpeg)\n",

@@ -12,6 +12,8 @@ describe DiscourseChat::ChatReviewQueue do
   let(:guardian) { Guardian.new(flagger) }
   let(:admin_guardian) { Guardian.new(admin) }
 
+  subject(:queue) { described_class.new }
+
   before do
     chat_channel.add(message_poster)
     chat_channel.add(flagger)
@@ -22,100 +24,115 @@ describe DiscourseChat::ChatReviewQueue do
     it "raises an error when the user is not allowed to flag" do
       UserSilencer.new(flagger).silence
 
-      expect {
-        subject.flag_message(message, guardian, ReviewableScore.types[:spam])
-      }.to raise_error(Discourse::InvalidAccess)
-    end
-
-    it "raises an error if the user already flagged the post" do
-      subject.flag_message(message, guardian, ReviewableScore.types[:spam])
-
-      second_flag_result =
-        subject.flag_message(message, guardian, ReviewableScore.types[:off_topic])
-
-      expect(second_flag_result[:success]).to eq(false)
-      expect(second_flag_result[:errors]).to contain_exactly(I18n.t("reviewables.already_handled"))
-    end
-
-    it "raises an error if a different user uses the same flag but we recently handled it" do
-      subject.flag_message(message, guardian, ReviewableScore.types[:spam])
-
-      reviewable = ReviewableChatMessage.last
-      reviewable.perform(admin, :ignore)
-
-      second_flag_result =
-        subject.flag_message(message, admin_guardian, ReviewableScore.types[:spam])
-
-      expect(second_flag_result[:success]).to eq(false)
-      expect(second_flag_result[:errors]).to contain_exactly(I18n.t("reviewables.already_handled"))
-    end
-
-    it "allow users to re-flag using the same flag type after the cooldown period" do
-      subject.flag_message(message, guardian, ReviewableScore.types[:spam])
-
-      reviewable = ReviewableChatMessage.last
-      reviewable.perform(admin, :ignore)
-      reviewable.update!(updated_at: (SiteSetting.cooldown_hours_until_reflag.to_i + 1).hours.ago)
-
-      second_flag_result = subject.flag_message(message, guardian, ReviewableScore.types[:spam])
-
-      expect(second_flag_result[:success]).to eq(true)
-    end
-
-    it "allow users to reflag ignoring the cooldown period if the message was edited" do
-      subject.flag_message(message, guardian, ReviewableScore.types[:spam])
-
-      reviewable = ReviewableChatMessage.last
-      reviewable.perform(admin, :ignore)
-      DiscourseChat::ChatMessageUpdater.update(
-        chat_message: message,
-        new_content: "I'm editing this message. Please flag it.",
+      expect { queue.flag_message(message, guardian, ReviewableScore.types[:spam]) }.to raise_error(
+        Discourse::InvalidAccess,
       )
-
-      second_flag_result = subject.flag_message(message, guardian, ReviewableScore.types[:spam])
-
-      expect(second_flag_result[:success]).to eq(true)
     end
 
-    it "creates a new reviewable with an associated score" do
-      subject.flag_message(message, guardian, ReviewableScore.types[:spam])
+    context "when the user already flagged the post" do
+      let(:second_flag_result) do
+        queue.flag_message(message, guardian, ReviewableScore.types[:off_topic])
+      end
 
-      new_reviewable = ReviewableChatMessage.find_by(target: message)
+      before { queue.flag_message(message, guardian, ReviewableScore.types[:spam]) }
 
-      expect(new_reviewable).to be_present
-      expect(new_reviewable.target_created_by).to eq(message_poster)
-      expect(new_reviewable.created_by).to eq(flagger)
-      expect(new_reviewable.pending?).to eq(true)
+      it "returns an error" do
+        expect(second_flag_result).to include success: false,
+                errors: [I18n.t("chat.reviewables.message_already_handled")]
+      end
 
-      scores = new_reviewable.reviewable_scores
-      expect(scores.size).to eq(1)
-      expect(scores.first.reviewable_score_type).to eq(ReviewableScore.types[:spam])
-      expect(scores.first.pending?).to eq(true)
+      it "returns an error when trying to use notify_moderators and the previous flag is still pending" do
+        notify_moderators_result =
+          queue.flag_message(
+            message,
+            guardian,
+            ReviewableScore.types[:notify_moderators],
+            message: "Look at this please, moderators",
+          )
+
+        expect(notify_moderators_result).to include success: false,
+                errors: [I18n.t("chat.reviewables.message_already_handled")]
+      end
     end
 
-    it "appends a new score if the reviewable already exists" do
-      subject.flag_message(message, guardian, ReviewableScore.types[:spam])
+    context "when a different user already flagged the post" do
+      let(:second_flag_result) { queue.flag_message(message, admin_guardian, second_flag_type) }
 
-      second_flagger = Fabricate(:user)
-      chat_channel.add(second_flagger)
-      guardian_2 = Guardian.new(second_flagger)
-      Group.find(Group::AUTO_GROUPS[:trust_level_1]).add(second_flagger)
+      before { queue.flag_message(message, guardian, ReviewableScore.types[:spam]) }
 
-      subject.flag_message(message, guardian_2, ReviewableScore.types[:off_topic])
+      it "appends a new score to the existing reviewable" do
+        second_flag_result =
+          queue.flag_message(message, admin_guardian, ReviewableScore.types[:off_topic])
+        expect(second_flag_result).to include success: true
 
-      reviewable = ReviewableChatMessage.find_by(target: message)
-      scores = reviewable.reviewable_scores
+        reviewable = ReviewableChatMessage.find_by(target: message)
+        scores = reviewable.reviewable_scores
 
-      expect(scores.size).to eq(2)
-      expect(scores.map(&:reviewable_score_type)).to contain_exactly(
-        *ReviewableScore.types.slice(:off_topic, :spam).values,
-      )
+        expect(scores.size).to eq(2)
+        expect(scores.map(&:reviewable_score_type)).to contain_exactly(
+          *ReviewableScore.types.slice(:off_topic, :spam).values,
+        )
+      end
+
+      it "returns an error when someone already used the same flag type" do
+        second_flag_result =
+          queue.flag_message(message, admin_guardian, ReviewableScore.types[:spam])
+
+        expect(second_flag_result).to include success: false,
+                errors: [I18n.t("chat.reviewables.message_already_handled")]
+      end
+    end
+
+    context "when a flags exists but staff already handled it" do
+      let(:second_flag_result) do
+        queue.flag_message(message, guardian, ReviewableScore.types[:off_topic])
+      end
+
+      before do
+        queue.flag_message(message, guardian, ReviewableScore.types[:spam])
+
+        reviewable = ReviewableChatMessage.last
+        reviewable.perform(admin, :ignore)
+      end
+
+      it "raises an error when we are inside the cooldown window" do
+        expect(second_flag_result).to include success: false,
+                errors: [I18n.t("chat.reviewables.message_already_handled")]
+      end
+
+      it "allows the user to re-flag after the cooldown period" do
+        reviewable = ReviewableChatMessage.last
+        reviewable.update!(updated_at: (SiteSetting.cooldown_hours_until_reflag.to_i + 1).hours.ago)
+
+        expect(second_flag_result).to include success: true
+      end
+
+      it "ignores the cooldown window when the message is edited" do
+        DiscourseChat::ChatMessageUpdater.update(
+          chat_message: message,
+          new_content: "I'm editing this message. Please flag it.",
+        )
+
+        expect(second_flag_result).to include success: true
+      end
+
+      it "ignores the cooldown window when using the notify_moderators flag type" do
+        notify_moderators_result =
+          queue.flag_message(
+            message,
+            guardian,
+            ReviewableScore.types[:notify_moderators],
+            message: "Look at this please, moderators",
+          )
+
+        expect(notify_moderators_result).to include success: true
+      end
     end
 
     it "publishes a message to the flagger" do
       messages =
         MessageBus
-          .track_publish { subject.flag_message(message, guardian, ReviewableScore.types[:spam]) }
+          .track_publish { queue.flag_message(message, guardian, ReviewableScore.types[:spam]) }
           .map(&:data)
 
       self_flag_msg = messages.detect { |m| m["type"] == "self_flagged" }
@@ -127,7 +144,7 @@ describe DiscourseChat::ChatReviewQueue do
     it "publishes a message to tell staff there is a new reviewable" do
       messages =
         MessageBus
-          .track_publish { subject.flag_message(message, guardian, ReviewableScore.types[:spam]) }
+          .track_publish { queue.flag_message(message, guardian, ReviewableScore.types[:spam]) }
           .map(&:data)
 
       flag_msg = messages.detect { |m| m["type"] == "flag" }
@@ -141,7 +158,7 @@ describe DiscourseChat::ChatReviewQueue do
 
     context "when creating a notify_user flag" do
       it "creates a companion PM" do
-        subject.flag_message(
+        queue.flag_message(
           message,
           guardian,
           ReviewableScore.types[:notify_user],
@@ -159,7 +176,7 @@ describe DiscourseChat::ChatReviewQueue do
       end
 
       it "doesn't create a PM if there is no message" do
-        subject.flag_message(message, guardian, ReviewableScore.types[:notify_user])
+        queue.flag_message(message, guardian, ReviewableScore.types[:notify_user])
 
         pm_topic =
           Topic.includes(:posts).find_by(user: guardian.user, archetype: Archetype.private_message)
@@ -168,7 +185,7 @@ describe DiscourseChat::ChatReviewQueue do
       end
 
       it "allow staff to tag PM as a warning" do
-        subject.flag_message(
+        queue.flag_message(
           message,
           admin_guardian,
           ReviewableScore.types[:notify_user],
@@ -181,7 +198,7 @@ describe DiscourseChat::ChatReviewQueue do
 
       it "only allows staff members to send warnings" do
         expect do
-          subject.flag_message(
+          queue.flag_message(
             message,
             guardian,
             ReviewableScore.types[:notify_user],
@@ -194,7 +211,7 @@ describe DiscourseChat::ChatReviewQueue do
 
     context "when creating a notify_moderators flag" do
       it "creates a companion PM and gives moderators access to it" do
-        subject.flag_message(
+        queue.flag_message(
           message,
           guardian,
           ReviewableScore.types[:notify_moderators],
@@ -214,7 +231,7 @@ describe DiscourseChat::ChatReviewQueue do
       end
 
       it "ignores the is_warning flag when notifying moderators" do
-        subject.flag_message(
+        queue.flag_message(
           message,
           guardian,
           ReviewableScore.types[:notify_moderators],
@@ -228,7 +245,7 @@ describe DiscourseChat::ChatReviewQueue do
 
     context "when immediately taking action" do
       it "agrees with the flag and deletes the chat message" do
-        subject.flag_message(
+        queue.flag_message(
           message,
           admin_guardian,
           ReviewableScore.types[:off_topic],
@@ -245,7 +262,7 @@ describe DiscourseChat::ChatReviewQueue do
         messages =
           MessageBus
             .track_publish do
-              subject.flag_message(
+              queue.flag_message(
                 message,
                 admin_guardian,
                 ReviewableScore.types[:off_topic],
@@ -260,7 +277,7 @@ describe DiscourseChat::ChatReviewQueue do
       end
 
       it "agrees with other flags on the same message" do
-        subject.flag_message(message, guardian, ReviewableScore.types[:off_topic])
+        queue.flag_message(message, guardian, ReviewableScore.types[:off_topic])
 
         reviewable = ReviewableChatMessage.includes(:reviewable_scores).find_by(target: message)
         scores = reviewable.reviewable_scores
@@ -268,12 +285,7 @@ describe DiscourseChat::ChatReviewQueue do
         expect(scores.size).to eq(1)
         expect(scores.all?(&:pending?)).to eq(true)
 
-        subject.flag_message(
-          message,
-          admin_guardian,
-          ReviewableScore.types[:spam],
-          take_action: true,
-        )
+        queue.flag_message(message, admin_guardian, ReviewableScore.types[:spam], take_action: true)
 
         scores = reviewable.reload.reviewable_scores
 
@@ -283,7 +295,7 @@ describe DiscourseChat::ChatReviewQueue do
 
       it "raises an exception if the user is not a staff member" do
         expect do
-          subject.flag_message(
+          queue.flag_message(
             message,
             guardian,
             ReviewableScore.types[:off_topic],
@@ -295,7 +307,7 @@ describe DiscourseChat::ChatReviewQueue do
 
     context "when queueing for review" do
       it "sets a reason on the score" do
-        subject.flag_message(
+        queue.flag_message(
           message,
           admin_guardian,
           ReviewableScore.types[:off_topic],
@@ -310,7 +322,7 @@ describe DiscourseChat::ChatReviewQueue do
 
       it "only allows staff members to queue for review" do
         expect do
-          subject.flag_message(
+          queue.flag_message(
             message,
             guardian,
             ReviewableScore.types[:off_topic],
@@ -325,7 +337,7 @@ describe DiscourseChat::ChatReviewQueue do
         SiteSetting.chat_auto_silence_from_flags_duration = 1
         flagger.update!(trust_level: TrustLevel[4]) # Increase Score due to TL Bonus.
 
-        subject.flag_message(message, guardian, ReviewableScore.types[:off_topic])
+        queue.flag_message(message, guardian, ReviewableScore.types[:off_topic])
 
         expect(message_poster.reload.silenced?).to eq(true)
       end
@@ -333,7 +345,7 @@ describe DiscourseChat::ChatReviewQueue do
       it "does nothing if the new score is less than the auto-silence threshold" do
         SiteSetting.chat_auto_silence_from_flags_duration = 50
 
-        subject.flag_message(message, guardian, ReviewableScore.types[:off_topic])
+        queue.flag_message(message, guardian, ReviewableScore.types[:off_topic])
 
         expect(message_poster.reload.silenced?).to eq(false)
       end
@@ -342,7 +354,7 @@ describe DiscourseChat::ChatReviewQueue do
         SiteSetting.chat_auto_silence_from_flags_duration = 0
         flagger.update!(trust_level: TrustLevel[4]) # Increase Score due to TL Bonus.
 
-        subject.flag_message(message, guardian, ReviewableScore.types[:off_topic])
+        queue.flag_message(message, guardian, ReviewableScore.types[:off_topic])
 
         expect(message_poster.reload.silenced?).to eq(false)
       end

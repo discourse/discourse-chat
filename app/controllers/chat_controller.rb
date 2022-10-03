@@ -437,10 +437,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
       )
 
     chat_message =
-      ChatMessage.includes(:chat_channel, :revisions).find_by(
-        id: permitted_params[:chat_message_id],
-      )
-    raise Discourse::InvalidParameters.new(:chat_message_id) if !chat_message
+      ChatMessage.includes(:chat_channel, :revisions).find(permitted_params[:chat_message_id])
 
     flag_type_id = permitted_params[:flag_type_id].to_i
 

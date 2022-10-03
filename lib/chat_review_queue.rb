@@ -18,7 +18,7 @@ class DiscourseChat::ChatReviewQueue
     existing_reviewable = Reviewable.includes(:reviewable_scores).find_by(target: chat_message)
 
     if !can_flag_again?(existing_reviewable, chat_message, guardian.user, flag_type_id)
-      result[:errors] << I18n.t("reviewables.already_handled")
+      result[:errors] << I18n.t("chat.reviewables.message_already_handled")
       return result
     end
 
@@ -128,25 +128,26 @@ class DiscourseChat::ChatReviewQueue
   def can_flag_again?(reviewable, message, flagger, flag_type_id)
     return true if reviewable.blank?
 
-    flagger_has_no_pending_flags =
-      reviewable.reviewable_scores.none? { |rs| rs.user == flagger && rs.pending? }
+    flagger_has_pending_flags =
+      reviewable.reviewable_scores.any? { |rs| rs.user == flagger && rs.pending? }
 
-    if flagger_has_no_pending_flags && flag_type_id == PostActionType.types[:notify_moderators]
+    if !flagger_has_pending_flags && flag_type_id == ReviewableScore.types[:notify_moderators]
       return true
     end
 
-    flag_not_used =
-      reviewable.reviewable_scores.none? do |rs|
+    flag_used =
+      reviewable.reviewable_scores.any? do |rs|
         rs.reviewable_score_type == flag_type_id && rs.pending?
       end
-    not_handled_recently =
-      reviewable.pending? ||
-        reviewable.updated_at < SiteSetting.cooldown_hours_until_reflag.to_i.hours.ago
+    handled_recently =
+      !(
+        reviewable.pending? ||
+          reviewable.updated_at < SiteSetting.cooldown_hours_until_reflag.to_i.hours.ago
+      )
 
     latest_revision = message.revisions.last
     edited_since_last_review = latest_revision && latest_revision.updated_at > reviewable.updated_at
 
-    flag_not_used && flagger_has_no_pending_flags &&
-      (not_handled_recently || edited_since_last_review)
+    !flag_used && !flagger_has_pending_flags && (!handled_recently || edited_since_last_review)
   end
 end

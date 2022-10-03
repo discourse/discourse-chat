@@ -1227,6 +1227,27 @@ RSpec.describe DiscourseChat::ChatController do
           }
       expect(response.status).to eq(403)
     end
+
+    it "returns a 429 when the user attempts to flag more than 4 messages  in 1 minute" do
+      RateLimiter.enable
+
+      [message_1, message_2, message_3, message_4].each do |message|
+        put "/chat/flag.json",
+            params: {
+              chat_message_id: message.id,
+              flag_type_id: ReviewableScore.types[:off_topic],
+            }
+        expect(response.status).to eq(200)
+      end
+
+      put "/chat/flag.json",
+          params: {
+            chat_message_id: message_5.id,
+            flag_type_id: ReviewableScore.types[:off_topic],
+          }
+
+      expect(response.status).to eq(429)
+    end
   end
 
   describe "#set_draft" do

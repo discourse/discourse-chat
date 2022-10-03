@@ -561,7 +561,7 @@ RSpec.describe DiscourseChat::ChatController do
       sign_in(other_user)
       UserSilencer.new(other_user).silence
 
-      delete "/chat/#{chat_channel.id}/#{other_user_message.id}.json"
+      delete "/chat/#{other_user_message.chat_channel.id}/#{other_user_message.id}.json"
       expect(response.status).to eq(403)
     end
 

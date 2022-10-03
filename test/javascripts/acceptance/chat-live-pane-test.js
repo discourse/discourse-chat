@@ -222,3 +222,40 @@ acceptance(
     });
   }
 );
+
+acceptance(
+  "Discourse Chat - Chat live pane - handling 404 errors",
+  function (needs) {
+    needs.user({
+      username: "eviltrout",
+      id: 1,
+      has_chat_enabled: true,
+    });
+
+    needs.settings({ chat_enabled: true });
+
+    needs.pretender((server, helper) => {
+      server.get("/chat/:chatChannelId/messages.json", () => {
+        return helper.response(404);
+      });
+
+      server.get("/chat/chat_channels.json", () =>
+        helper.response({
+          public_channels: [],
+          direct_message_channels: [],
+        })
+      );
+
+      server.get("/chat/chat_channels/:chatChannelId", () =>
+        helper.response({ id: 1, title: "something" })
+      );
+    });
+
+    test("Handles 404 errors by displaying an alert", async function (assert) {
+      await visit("/chat/channel/1/cat");
+
+      assert.ok(exists(".dialog-content"), "it displays a 404 error");
+      await click(".dialog-footer .btn-primary");
+    });
+  }
+);

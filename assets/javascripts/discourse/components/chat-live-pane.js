@@ -134,7 +134,7 @@ export default Component.extend({
 
     cancel(this.resizeHandler);
 
-    this._cleanRegisteredChatChannelId();
+    this._resetChannelState();
     this._unloadedReplyIds = null;
     this.appEvents.off(
       "chat:cancel-message-selection",
@@ -150,34 +150,27 @@ export default Component.extend({
   didReceiveAttrs() {
     this._super(...arguments);
 
-    this.set("targetMessageId", this.chat.messageId);
-
-    if (
-      this.chatChannel &&
-      this.chatChannel.id &&
-      this.registeredChatChannelId !== this.chatChannel.id
-    ) {
-      this._cleanRegisteredChatChannelId();
-      this.messageLookup = {};
-      this.set("allPastMessagesLoaded", false);
-      this.cancelEditing();
-
-      this.chat.getChannelBy("id", this.chatChannel.id).then(() => {
-        if (this._selfDeleted) {
-          return;
-        }
-
-        this.fetchMessages(this.chatChannel);
-
-        if (!this.chatChannel.isDraft) {
-          this.loadDraftForChannel(this.chatChannel.id);
-        }
-      });
-    }
-
     this.currentUserTimezone = this.currentUser?.resolvedTimezone(
       this.currentUser
     );
+
+    this.set("targetMessageId", this.chat.messageId);
+
+    if (
+      this.chatChannel?.id &&
+      this.registeredChatChannelId !== this.chatChannel.id
+    ) {
+      this._resetChannelState();
+      this.cancelEditing();
+
+      if (!this.chatChannel.isDraft) {
+        this.loadDraftForChannel(this.chatChannel.id);
+      }
+    }
+
+    if (this.chatChannel?.id) {
+      this.fetchMessages(this.chatChannel);
+    }
   },
 
   @discourseComputed("chatChannel.isDirectMessageChannel")
@@ -254,6 +247,10 @@ export default Component.extend({
 
           this.chat.set("messageId", null);
           this.set("loading", false);
+
+          if (this.targetMessageId) {
+            this.highlightOrFetchMessage(this.targetMessageId);
+          }
 
           this.focusComposer();
         });
@@ -525,7 +522,7 @@ export default Component.extend({
   },
 
   _getLastReadId() {
-    return this.currentUser.chat_channel_tracking_state[this.chatChannel.id]
+    return this.currentUser?.chat_channel_tracking_state?.[this.chatChannel.id]
       ?.chat_message_id;
   },
 
@@ -1118,12 +1115,12 @@ export default Component.extend({
       });
   },
 
-  _cleanRegisteredChatChannelId() {
-    if (this.registeredChatChannelId) {
-      this._unsubscribeToUpdates(this.registeredChatChannelId);
-      this.messages.clear();
-      this.set("registeredChatChannelId", null);
-    }
+  _resetChannelState() {
+    this._unsubscribeToUpdates(this.registeredChatChannelId);
+    this.messages.clear();
+    this.messageLookup = {};
+    this.set("allPastMessagesLoaded", false);
+    this.set("registeredChatChannelId", null);
   },
 
   _resetAfterSend() {

@@ -15,6 +15,13 @@ class DiscourseChat::ChatReviewQueue
     guardian.ensure_can_flag_chat_message!(chat_message)
     guardian.ensure_can_flag_message_as!(chat_message, flag_type_id, opts)
 
+    existing_reviewable = Reviewable.includes(:reviewable_scores).find_by(target: chat_message)
+
+    if !can_flag_again?(existing_reviewable, chat_message, guardian.user, flag_type_id)
+      result[:errors] << I18n.t("chat.reviewables.message_already_handled")
+      return result
+    end
+
     if opts[:message].present? &&
          ReviewableScore.types.slice(:notify_user, :notify_moderators).values.include?(flag_type_id)
       creator = companion_pm_creator(chat_message, guardian.user, flag_type_id, opts)
@@ -116,5 +123,31 @@ class DiscourseChat::ChatReviewQueue
     end
 
     PostCreator.new(flagger, create_args)
+  end
+
+  def can_flag_again?(reviewable, message, flagger, flag_type_id)
+    return true if reviewable.blank?
+
+    flagger_has_pending_flags =
+      reviewable.reviewable_scores.any? { |rs| rs.user == flagger && rs.pending? }
+
+    if !flagger_has_pending_flags && flag_type_id == ReviewableScore.types[:notify_moderators]
+      return true
+    end
+
+    flag_used =
+      reviewable.reviewable_scores.any? do |rs|
+        rs.reviewable_score_type == flag_type_id && rs.pending?
+      end
+    handled_recently =
+      !(
+        reviewable.pending? ||
+          reviewable.updated_at < SiteSetting.cooldown_hours_until_reflag.to_i.hours.ago
+      )
+
+    latest_revision = message.revisions.last
+    edited_since_last_review = latest_revision && latest_revision.updated_at > reviewable.updated_at
+
+    !flag_used && !flagger_has_pending_flags && (!handled_recently || edited_since_last_review)
   end
 end

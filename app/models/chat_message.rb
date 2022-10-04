@@ -77,10 +77,6 @@ class ChatMessage < ActiveRecord::Base
     Emoji.gsub_emoji_to_unicode(message).truncate(400)
   end
 
-  def reviewable_score_for(user)
-    ReviewableScore.joins(:reviewable).where(reviewable: { target: self }).where(user: user)
-  end
-
   def to_markdown
     markdown = []
 

@@ -9,7 +9,10 @@ RSpec.describe DiscourseChat::GuardianExtensions do
   fab!(:staff_guardian) { Guardian.new(staff) }
   fab!(:chat_group) { Fabricate(:group) }
 
-  before { SiteSetting.chat_allowed_groups = chat_group.id }
+  before do
+    SiteSetting.chat_allowed_groups = chat_group.id
+    chat_group.add(user)
+  end
 
   it "cannot chat if the user is not in the DiscourseChat.allowed_group_ids" do
     SiteSetting.chat_allowed_groups = ""
@@ -91,6 +94,19 @@ RSpec.describe DiscourseChat::GuardianExtensions do
         expect(guardian.can_see_chat_channel?(channel)).to eq(true)
         channel.update(chatable: DirectMessageChannel.create!)
         expect(guardian.can_flag_in_chat_channel?(channel)).to eq(false)
+      end
+
+      it "returns false if the user can't see the channel" do
+        private_group = Fabricate(:group)
+        private_category = Fabricate(:private_category, group: private_group)
+        private_channel = Fabricate(:chat_channel, chatable: private_category)
+
+        expect(guardian.can_flag_in_chat_channel?(private_channel)).to eq(false)
+
+        private_group.add(user)
+
+        # The guardian caches the secure_groups_id. Use a fresh object to reflect changes
+        expect(Guardian.new(user).can_flag_in_chat_channel?(private_channel)).to eq(true)
       end
     end
 

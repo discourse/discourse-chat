@@ -41,7 +41,7 @@ zh_CN:
       channel_settings:
         title: "频道设置"
         edit: "编辑"
-        add: "添加新频道"
+        add: "编辑"
         close_channel: "关闭频道"
         open_channel: "启用频道"
         archive_channel: "归档频道"

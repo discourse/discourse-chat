@@ -246,7 +246,7 @@ export default Component.extend({
           }
           this.setMessageProps(messages, fetchingFromLastRead);
         })
-        .catch(this._handle429Errors)
+        .catch(this._handleErrors)
         .finally(() => {
           if (this._selfDeleted || this.chatChannel.id !== channel.id) {
             return;
@@ -322,7 +322,7 @@ export default Component.extend({
 
         return messages;
       })
-      .catch(this._handle429Errors)
+      .catch(this._handleErrors)
       .finally(() => {
         if (this._selfDeleted) {
           return;
@@ -1431,11 +1431,14 @@ export default Component.extend({
     });
   },
 
-  _handle429Errors(error) {
-    if (error?.jqXHR?.status === 429) {
-      popupAjaxError(error);
-    } else {
-      throw error;
+  _handleErrors(error) {
+    switch (error?.jqXHR?.status) {
+      case 429:
+      case 404:
+        popupAjaxError(error);
+        break;
+      default:
+        throw error;
     }
   },
 });

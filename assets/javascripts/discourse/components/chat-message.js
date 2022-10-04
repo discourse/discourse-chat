@@ -19,6 +19,8 @@ import { inject as service } from "@ember/service";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import discourseLater from "discourse-common/lib/later";
 import isZoomed from "discourse/plugins/discourse-chat/discourse/lib/zoom-check";
+import showModal from "discourse/lib/show-modal";
+import ChatMessageFlag from "discourse/plugins/discourse-chat/discourse/lib/chat-message-flag";
 
 let _chatMessageDecorators = [];
 
@@ -661,6 +663,27 @@ export default Component.extend({
     });
   },
 
+  // TODO(roman): For backwards-compatibility.
+  //   Remove after the 3.0 release.
+  _legacyFlag() {
+    bootbox.confirm(
+      I18n.t("chat.confirm_flag", {
+        username: this.message.user?.username,
+      }),
+      (confirmed) => {
+        if (confirmed) {
+          ajax("/chat/flag", {
+            method: "PUT",
+            data: {
+              chat_message_id: this.message.id,
+              flag_type_id: 7, // notify_moderators
+            },
+          }).catch(popupAjaxError);
+        }
+      }
+    );
+  },
+
   @action
   reply() {
     this.setReplyTo(this.message.id);
@@ -678,21 +701,19 @@ export default Component.extend({
 
   @action
   flag() {
-    bootbox.confirm(
-      I18n.t("chat.confirm_flag", {
-        username: this.message.user?.username,
-      }),
-      (confirmed) => {
-        if (confirmed) {
-          ajax("/chat/flag", {
-            method: "PUT",
-            data: {
-              chat_message_id: this.message.id,
-            },
-          }).catch(popupAjaxError);
-        }
-      }
-    );
+    const targetFlagSupported =
+      requirejs.entries["discourse/lib/flag-targets/flag"];
+
+    if (targetFlagSupported) {
+      const model = EmberObject.create(this.message);
+      model.set("username", model.get("user.username"));
+      model.set("user_id", model.get("user.id"));
+      let controller = showModal("flag", { model });
+
+      controller.setProperties({ flagTarget: new ChatMessageFlag() });
+    } else {
+      this._legacyFlag();
+    }
   },
 
   @action

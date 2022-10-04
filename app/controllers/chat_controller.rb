@@ -429,20 +429,36 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
   end
 
   def flag
-    params.require([:chat_message_id])
-    chat_message = ChatMessage.includes(:chat_channel).find_by(id: params[:chat_message_id])
+    permitted_params =
+      params.permit(
+        %i[chat_message_id flag_type_id message is_warning take_action queue_for_review],
+      )
 
-    raise Discourse::InvalidParameters unless chat_message
-    set_channel_and_chatable_with_access_check(chat_channel_id: chat_message.chat_channel_id)
-    guardian.ensure_can_flag_chat_message!(chat_message)
+    chat_message =
+      ChatMessage.includes(:chat_channel).find_by(id: permitted_params[:chat_message_id])
+    raise Discourse::InvalidParameters.new(:chat_message_id) if !chat_message
 
-    if chat_message.reviewable_score_for(current_user).exists?
-      return render json: success_json # Already flagged
+    flag_type_id = permitted_params[:flag_type_id].to_i
+
+    if !ReviewableScore.types.values.include?(flag_type_id)
+      raise Discourse::InvalidParameters.new(:flag_type_id)
     end
 
-    reviewable = chat_message.add_flag(current_user)
-    ChatPublisher.publish_flag!(chat_message, current_user, reviewable)
-    render json: success_json
+    set_channel_and_chatable_with_access_check(chat_channel_id: chat_message.chat_channel_id)
+
+    result =
+      DiscourseChat::ChatReviewQueue.new.flag_message(
+        chat_message,
+        guardian,
+        flag_type_id,
+        permitted_params,
+      )
+
+    if result[:success]
+      render json: success_json
+    else
+      render_json_error(result[:errors])
+    end
   end
 
   def set_draft

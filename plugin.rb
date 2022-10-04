@@ -163,6 +163,7 @@ after_initialize do
   load File.expand_path("../lib/chat_channel_membership_manager.rb", __FILE__)
   load File.expand_path("../lib/chat_message_bookmarkable.rb", __FILE__)
   load File.expand_path("../lib/chat_channel_archive_service.rb", __FILE__)
+  load File.expand_path("../lib/chat_review_queue.rb", __FILE__)
   load File.expand_path("../lib/direct_message_channel_creator.rb", __FILE__)
   load File.expand_path("../lib/guardian_extensions.rb", __FILE__)
   load File.expand_path("../lib/extensions/user_option_extension.rb", __FILE__)
@@ -516,8 +517,6 @@ after_initialize do
       true
     end
   end
-
-  on(:reviewable_score_updated) { |reviewable| ReviewableChatMessage.on_score_updated(reviewable) }
 
   on(:user_seen) do |user|
     if user.last_seen_at == user.first_seen_at

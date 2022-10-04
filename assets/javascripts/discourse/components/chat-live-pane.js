@@ -161,7 +161,7 @@ export default Component.extend({
       this.registeredChatChannelId !== this.chatChannel.id
     ) {
       this._resetChannelState();
-      this._cancelEditing();
+      this.cancelEditing();
 
       if (!this.chatChannel.isDraft) {
         this.loadDraftForChannel(this.chatChannel.id);
@@ -1160,7 +1160,7 @@ export default Component.extend({
   @action
   setReplyTo(messageId) {
     if (messageId) {
-      this._cancelEditing();
+      this.cancelEditing();
       this.set("replyToMsg", this.messageLookup[messageId]);
       this.appEvents.trigger("chat-composer:reply-to-set", this.replyToMsg);
       this._focusComposer();
@@ -1264,7 +1264,7 @@ export default Component.extend({
   },
 
   @action
-  _cancelEditing() {
+  cancelEditing() {
     this.set("editingMessage", null);
   },
 

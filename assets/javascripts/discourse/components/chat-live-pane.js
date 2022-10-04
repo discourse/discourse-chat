@@ -1436,7 +1436,7 @@ export default Component.extend({
       case 429:
       case 404:
         popupAjaxError(error);
-        return;
+        break;
       default:
         throw error;
     }

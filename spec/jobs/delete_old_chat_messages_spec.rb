@@ -130,6 +130,24 @@ describe Jobs::DeleteOldChatMessages do
 
       expect(membership.reload.last_read_message_id).to be_nil
     end
+
+    it "deletes flags associated to deleted chat messages" do
+      SiteSetting.chat_channel_retention_days = 10
+      guardian = Guardian.new(Discourse.system_user)
+      DiscourseChat::ChatReviewQueue.new.flag_message(
+        public_days_old_20,
+        guardian,
+        ReviewableScore.types[:off_topic],
+      )
+
+      reviewable = ReviewableChatMessage.last
+      expect(reviewable).to be_present
+
+      described_class.new.execute
+
+      expect { public_days_old_20.reload }.to raise_exception(ActiveRecord::RecordNotFound)
+      expect { reviewable.reload }.to raise_exception(ActiveRecord::RecordNotFound)
+    end
   end
 
   describe "dm channels" do

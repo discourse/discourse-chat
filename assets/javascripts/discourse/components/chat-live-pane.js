@@ -168,7 +168,9 @@ export default Component.extend({
       }
     }
 
-    this.fetchMessages(this.chatChannel);
+    if (this.chatChannel?.id) {
+      this.fetchMessages(this.chatChannel);
+    }
   },
 
   @discourseComputed("chatChannel.isDirectMessageChannel")

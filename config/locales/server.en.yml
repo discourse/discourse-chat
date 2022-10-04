@@ -15,7 +15,7 @@ en:
     chat_allow_uploads: "Allow uploads in public chat channels and direct message channels."
     chat_archive_destination_topic_status: "The status that the destination topic should be once a channel archive is completed. This only applies when the destination topic is a new topic, not an existing one."
     default_emoji_reactions: "Default emoji reactions for chat messages. Add up to 5 emojis for quick reaction."
-    min_trust_to_flag_chat_messages: "The minimum trust level required to flag chat messages."
+    chat_message_flag_allowed_groups: "Users in these groups are allowed to flag chat messages."
     errors:
       chat_default_channel: "The default chat channel must be a public channel."
       chat_upload_not_allowed_secure_uploads: "Chat uploads are not allowed when secure uploads site setting is enabled."

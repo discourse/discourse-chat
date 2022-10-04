@@ -24,6 +24,10 @@ class ChatMessageSerializer < ApplicationSerializer
     object.user || DeletedChatUser.new
   end
 
+  def excerpt
+    WordWatcher.censor(object.excerpt)
+  end
+
   def reactions
     reactions_hash = {}
     object

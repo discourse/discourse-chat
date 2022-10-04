@@ -19,4 +19,14 @@ describe ChatInReplyToSerializer do
       end
     end
   end
+
+  describe "#excerpt" do
+    it "censors words" do
+      watched_word = Fabricate(:watched_word, action: WatchedWord.actions[:censor])
+      message = Fabricate(:chat_message, message: "ok #{watched_word.word}")
+      serializer = described_class.new(message, scope: guardian, root: nil)
+
+      expect(serializer.as_json[:excerpt]).to eq("ok ■■■■■")
+    end
+  end
 end

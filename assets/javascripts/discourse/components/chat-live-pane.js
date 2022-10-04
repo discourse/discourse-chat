@@ -522,7 +522,7 @@ export default Component.extend({
   },
 
   _getLastReadId() {
-    return this.currentUser.chat_channel_tracking_state[this.chatChannel.id]
+    return this.currentUser?.chat_channel_tracking_state?.[this.chatChannel.id]
       ?.chat_message_id;
   },
 

@@ -1432,12 +1432,12 @@ export default Component.extend({
   },
 
   _handleErrors(error) {
-    if (error?.jqXHR?.status === 429) {
-      popupAjaxError(error);
-    } else if (error?.jqXHR?.status === 404) {
-      popupAjaxError(error);
-    } else {
-      throw error;
+    switch (error?.jqXHR?.status) {
+      case 429:
+      case 404:
+        popupAjaxError(error);
+      default:
+        throw error;
     }
   },
 });

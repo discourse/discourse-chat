@@ -123,17 +123,9 @@ describe ChatMessageSerializer do
       expect(serialized[:available_flags]).to be_empty
     end
 
-    it "doesn't include notify_user if PMs are disabled" do
-      SiteSetting.enable_personal_messages = false
-
-      serialized = described_class.new(message_1, scope: guardian, root: nil).as_json
-
-      expect(serialized[:available_flags]).not_to include(:notify_user)
-    end
-
-    it "doesn't include notify_user if flagged TL is not high enough" do
-      guardian.user.update!(trust_level: TrustLevel[2])
-      SiteSetting.min_trust_to_send_messages = TrustLevel[3]
+    it "doesn't include notify_user if they are not in a PM allowed group" do
+      SiteSetting.personal_message_enabled_groups = Group::AUTO_GROUPS[:trust_level_4]
+      Group.refresh_automatic_groups!
 
       serialized = described_class.new(message_1, scope: guardian, root: nil).as_json
 

@@ -5,7 +5,18 @@
 {{/if}}
 
 <div class="chat-browse-view">
-  <h1 class="chat-browse-view__title">{{i18n "chat.browse.title"}}</h1>
+  <div class="chat-browse-view__header">
+    <h1 class="chat-browse-view__title">{{i18n "chat.browse.title"}}</h1>
+    {{#if currentUser.staff}}
+      {{d-button
+        action=(action "createChannel")
+        icon="plus"
+        class="edit-channel-membership-btn title-action"
+        label=(if site.desktopView "chat.create_channel.title")
+      }}
+    {{/if}}
+  </div>
+
   <div class="chat-browse-view__actions">
     <nav>
       <ul class="nav-pills chat-browse-view__filters">

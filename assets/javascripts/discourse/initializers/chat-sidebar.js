@@ -181,7 +181,7 @@ export default {
               }
 
               get actions() {
-                const actions = [
+                return [
                   {
                     id: "browseChannels",
                     title: I18n.t("chat.channels_list_popup.browse"),
@@ -190,20 +190,10 @@ export default {
                     },
                   },
                 ];
-                if (this.sidebar.currentUser.staff) {
-                  actions.push({
-                    id: "openCreateChannelModal",
-                    title: I18n.t("chat.channels_list_popup.create"),
-                    action: () => {
-                      showModal("create-channel");
-                    },
-                  });
-                }
-                return actions;
               }
 
               get actionsIcon() {
-                return "cog";
+                return "pencil-alt";
               }
 
               get links() {

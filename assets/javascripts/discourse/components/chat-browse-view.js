@@ -6,6 +6,7 @@ import { inject as service } from "@ember/service";
 import ChatApi from "discourse/plugins/discourse-chat/discourse/lib/chat-api";
 import discourseDebounce from "discourse-common/lib/debounce";
 import { bind } from "discourse-common/utils/decorators";
+import showModal from "discourse/lib/show-modal";
 
 const TABS = ["all", "open", "closed", "archived"];
 const PER_PAGE = 20;
@@ -80,6 +81,11 @@ export default class ChatBrowseView extends Component {
       event.target.value,
       INPUT_DELAY
     );
+  }
+
+  @action
+  createChannel() {
+    showModal("create-channel");
   }
 
   @bind

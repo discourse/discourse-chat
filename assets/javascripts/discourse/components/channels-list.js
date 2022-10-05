@@ -65,31 +65,6 @@ export default class ChannelsList extends Component {
     return false;
   }
 
-  @computed
-  get channelsActions() {
-    return [
-      { id: "browseChannels", name: I18n.t("chat.channels_list_popup.browse") },
-      {
-        id: "openCreateChannelModal",
-        name: I18n.t("chat.channels_list_popup.create"),
-      },
-    ];
-  }
-
-  @action
-  handleChannelAction(id) {
-    if (!this.channelsActions.map((a) => a.id).includes(id)) {
-      throw new Error(`The action ${id} is not allowed`);
-    }
-    this[id]();
-  }
-
-  @action
-  openCreateChannelModal() {
-    showModal("create-channel");
-    return false;
-  }
-
   @action
   startCreatingDmChannel() {
     if (

@@ -19,7 +19,6 @@ import I18n from "I18n";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import { emojiUnescape } from "discourse/lib/text";
 import User from "discourse/models/user";
-import fabricators from "../helpers/fabricators";
 
 acceptance("Discourse Chat - Core Sidebar", function (needs) {
   needs.user({ has_chat_enabled: true });
@@ -632,11 +631,13 @@ acceptance(
     });
 
     needs.pretender((server, helper) => {
-      const dmChannel = fabricators.directMessageChatChannel();
+      let directChannels = cloneJSON(directMessageChannels).mapBy(
+        "chat_channel"
+      );
       server.get("/chat/chat_channels.json", () => {
         return helper.response({
           public_channels: [],
-          direct_message_channels: [dmChannel],
+          direct_message_channels: directChannels,
         });
       });
     });
@@ -644,7 +645,7 @@ acceptance(
     test("Direct message channels section visibility", async function (assert) {
       await visit("/");
 
-      assert.notOk(
+      assert.ok(
         exists(".sidebar-section-chat-dms"),
         "it does show the section for a regular user"
       );

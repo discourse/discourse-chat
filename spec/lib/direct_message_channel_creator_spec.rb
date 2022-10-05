@@ -125,7 +125,7 @@ describe DiscourseChat::DirectMessageChannelCreator do
       context "when user is staff" do
         before { user_1.update!(admin: true) }
 
-        it "doesn't create an error and doesn't create a new chat channel" do
+        it "doesn't create an error and returns the existing channel" do
           existing_channel = nil
           expect {
             existing_channel =

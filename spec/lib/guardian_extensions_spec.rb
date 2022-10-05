@@ -286,10 +286,9 @@ RSpec.describe DiscourseChat::GuardianExtensions do
       end
 
       context "for direct message channels" do
-        it "returns true if enable_personal_messages is false since staff can always send DMs" do
-          channel.update!(status: :open)
-          SiteSetting.enable_personal_messages = false
-          expect(staff_guardian.can_create_channel_message?(channel)).to eq(true)
+        it "returns true if the channel is open" do
+          dm_channel.update!(status: :open)
+          expect(staff_guardian.can_create_channel_message?(dm_channel)).to eq(true)
         end
       end
     end
@@ -311,16 +310,11 @@ RSpec.describe DiscourseChat::GuardianExtensions do
       end
 
       context "for direct message channels" do
-        it "returns false if enable_personal_messages is false" do
-          channel.update!(status: :open)
-          SiteSetting.enable_personal_messages = false
-          expect(guardian.can_create_channel_message?(dm_channel)).to eq(false)
-        end
+        before { Group.refresh_automatic_groups! }
 
-        it "returns false if the user is not the correct trust level for sending personal messages" do
-          user.update!(trust_level: 1)
-          channel.update!(status: :open)
-          SiteSetting.min_trust_to_send_messages = 4
+        it "returns false if the user is not in direct_message_enabled_groups" do
+          SiteSetting.direct_message_enabled_groups = Group::AUTO_GROUPS[:trust_level_4]
+          dm_channel.update!(status: :open)
           expect(guardian.can_create_channel_message?(dm_channel)).to eq(false)
         end
       end

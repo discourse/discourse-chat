@@ -16,7 +16,7 @@ describe "chat bbcode quoting in posts" do
       <div class="chat-transcript-username">
       martin</div>
       <div class="chat-transcript-datetime">
-      <a title="2022-01-25T05:40:39Z"></a>
+      <span title="2022-01-25T05:40:39Z"></span>
       </div>
       </div>
       <div class="chat-transcript-messages">
@@ -198,7 +198,7 @@ This is an inline onebox https://en.wikipedia.org/wiki/Hyperlink.
 <div class="chat-transcript-username">
 martin</div>
 <div class="chat-transcript-datetime">
-<a title="2022-01-25T05:40:39Z"></a>
+<span title="2022-01-25T05:40:39Z"></span>
 </div>
 </div>
 <div class="chat-transcript-messages">

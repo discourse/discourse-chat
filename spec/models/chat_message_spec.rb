@@ -152,7 +152,7 @@ describe ChatMessage do
         <div class="chat-transcript-username">
         otherbbcodeuser</div>
         <div class="chat-transcript-datetime">
-        <a title="#{msg2.created_at.iso8601}"></a>
+        <span title="#{msg2.created_at.iso8601}"></span>
         </div>
         </div>
         <div class="chat-transcript-messages">

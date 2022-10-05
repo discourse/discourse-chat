@@ -1,5 +1,5 @@
 import selectKit from "discourse/tests/helpers/select-kit-helper";
-import { visit } from "@ember/test-helpers";
+import { click, visit } from "@ember/test-helpers";
 import { acceptance, query } from "discourse/tests/helpers/qunit-helpers";
 import { test } from "qunit";
 
@@ -62,6 +62,8 @@ acceptance("Discourse Chat - Create channel modal", function (needs) {
       helper.response({ id: 1, title: "something" })
     );
 
+    server.get("/chat/api/chat_channels.json", () => helper.response([]));
+
     server.get(
       "/chat/api/category-chatables/:categoryId/permissions.json",
       (request) => {
@@ -83,11 +85,8 @@ acceptance("Discourse Chat - Create channel modal", function (needs) {
   });
 
   test("links to categories and selected category's security settings", async function (assert) {
-    await visit("/chat/channel/1/cat");
-
-    const dropdown = selectKit(".edit-channels-dropdown");
-    await dropdown.expand();
-    await dropdown.selectRowByValue("openCreateChannelModal");
+    await visit("/chat/browse");
+    await click(".new-channel-btn");
 
     assert.strictEqual(
       query(".create-channel-hint a").innerText,
@@ -109,11 +108,8 @@ acceptance("Discourse Chat - Create channel modal", function (needs) {
   });
 
   test("links to selected category's security settings works with nested subcategories", async function (assert) {
-    await visit("/chat/channel/1/cat");
-
-    const dropdown = selectKit(".edit-channels-dropdown");
-    await dropdown.expand();
-    await dropdown.selectRowByValue("openCreateChannelModal");
+    await visit("/chat/browse");
+    await click(".new-channel-btn");
 
     assert.strictEqual(
       query(".create-channel-hint a").innerText,
@@ -137,11 +133,8 @@ acceptance("Discourse Chat - Create channel modal", function (needs) {
   });
 
   test("includes group names in the hint", async (assert) => {
-    await visit("/chat/channel/1/cat");
-
-    const dropdown = selectKit(".edit-channels-dropdown");
-    await dropdown.expand();
-    await dropdown.selectRowByValue("openCreateChannelModal");
+    await visit("/chat/browse");
+    await click(".new-channel-btn");
 
     assert.strictEqual(
       query(".create-channel-hint a").innerText,
@@ -160,10 +153,8 @@ acceptance("Discourse Chat - Create channel modal", function (needs) {
   });
 
   test("escapes group name/category slug in the hint", async (assert) => {
-    await visit("/chat/channel/1/cat");
-    const dropdown = selectKit(".edit-channels-dropdown");
-    await dropdown.expand();
-    await dropdown.selectRowByValue("openCreateChannelModal");
+    await visit("/chat/browse");
+    await click(".new-channel-btn");
 
     assert.strictEqual(
       query(".create-channel-hint a").innerText,

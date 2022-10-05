@@ -188,7 +188,6 @@ export default {
               ];
             }
 
-
             get actionsIcon() {
               return "pencil-alt";
             }

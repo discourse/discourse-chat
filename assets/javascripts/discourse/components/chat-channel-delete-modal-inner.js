@@ -8,7 +8,6 @@ import { inject as service } from "@ember/service";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import discourseLater from "discourse-common/lib/later";
 import { htmlSafe } from "@ember/template";
-import { escapeExpression } from "discourse/lib/utilities";
 
 export default Component.extend({
   chat: service(),
@@ -27,8 +26,8 @@ export default Component.extend({
 
     if (
       isEmpty(channelNameConfirmation) ||
-      escapeExpression(channelNameConfirmation).toLowerCase() !==
-        this.escapedTitle.toLowerCase()
+      channelNameConfirmation.toLowerCase() !==
+        this.chatChannel.title.toLowerCase()
     ) {
       return true;
     }
@@ -62,13 +61,8 @@ export default Component.extend({
   instructionsText() {
     return htmlSafe(
       I18n.t("chat.channel_delete.instructions", {
-        name: this.escapedTitle,
+        name: this.chatChannel.escapedTitle,
       })
     );
-  },
-
-  @discourseComputed()
-  escapedTitle() {
-    return escapeExpression(this.chatChannel.title);
   },
 });

@@ -17,6 +17,22 @@ module("Discourse Chat | Component | chat-channel-card", function (hooks) {
     );
   });
 
+  test("escapes channel title", async function (assert) {
+    this.channel.set("title", "<div class='xss'>evil</div>");
+
+    await render(hbs`{{chat-channel-card channel=channel}}`);
+
+    assert.notOk(exists(".xss"));
+  });
+
+  test("escapes channel description", async function (assert) {
+    this.channel.set("description", "<div class='xss'>evil</div>");
+
+    await render(hbs`{{chat-channel-card channel=channel}}`);
+
+    assert.notOk(exists(".xss"));
+  });
+
   test("Closed channel", async function (assert) {
     this.channel.set("status", "closed");
     await render(hbs`{{chat-channel-card channel=channel}}`);

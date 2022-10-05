@@ -66,7 +66,7 @@ en:
         process_started: "The process to delete the channel has started. This modal will close shortly, you will no longer see the deleted channel anywhere."
       channels_list_popup:
         browse: "Browse channels"
-        create: "Create a channel"
+        create: "New channel"
 
       click_to_join: "Click here to view available channels."
       close: "Close"
@@ -248,7 +248,7 @@ en:
         create: "Create channel"
         description: "Description (optional)"
         name: "Channel name"
-        title: "Create a channel"
+        title: "New channel"
         type: "Type"
         types:
           category: "Category"
@@ -375,7 +375,7 @@ en:
         spam: "This message is an advertisement, or vandalism. It is not useful or relevant to the current channel."
         notify_user: "I want to talk to this person directly and personally about their message."
         notify_moderators: "This message requires staff attention for another reason not listed above."
-      
+
       flagging:
         action: "Flag message"
 

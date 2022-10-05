@@ -14,7 +14,6 @@ import {
 } from "discourse/plugins/discourse-chat/discourse/components/chat-to-topic-selector";
 import { CHANNEL_STATUSES } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import { htmlSafe } from "@ember/template";
-import { escapeExpression } from "discourse/lib/utilities";
 
 export default Component.extend({
   chat: service(),
@@ -108,7 +107,7 @@ export default Component.extend({
   instructionsText() {
     return htmlSafe(
       I18n.t("chat.channel_archive.instructions", {
-        channelTitle: escapeExpression(this.chatChannel.title),
+        channelTitle: this.chatChannel.escapedTitle,
       })
     );
   },

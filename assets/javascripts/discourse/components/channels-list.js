@@ -1,11 +1,9 @@
 import { bind } from "discourse-common/utils/decorators";
 import Component from "@ember/component";
-import showModal from "discourse/lib/show-modal";
 import { action, computed } from "@ember/object";
 import { schedule } from "@ember/runloop";
 import { inject as service } from "@ember/service";
 import { empty, reads } from "@ember/object/computed";
-import I18n from "I18n";
 import { DRAFT_CHANNEL_VIEW } from "discourse/plugins/discourse-chat/discourse/services/chat";
 
 export default class ChannelsList extends Component {
@@ -83,31 +81,6 @@ export default class ChannelsList extends Component {
   @action
   browseChannels() {
     this.router.transitionTo("chat.browse");
-    return false;
-  }
-
-  @computed
-  get channelsActions() {
-    return [
-      { id: "browseChannels", name: I18n.t("chat.channels_list_popup.browse") },
-      {
-        id: "openCreateChannelModal",
-        name: I18n.t("chat.channels_list_popup.create"),
-      },
-    ];
-  }
-
-  @action
-  handleChannelAction(id) {
-    if (!this.channelsActions.map((a) => a.id).includes(id)) {
-      throw new Error(`The action ${id} is not allowed`);
-    }
-    this[id]();
-  }
-
-  @action
-  openCreateChannelModal() {
-    showModal("create-channel");
     return false;
   }
 

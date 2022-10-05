@@ -4,7 +4,6 @@ import { withPluginApi } from "discourse/lib/plugin-api";
 import I18n from "I18n";
 import { bind } from "discourse-common/utils/decorators";
 import { tracked } from "@glimmer/tracking";
-import showModal from "discourse/lib/show-modal";
 import { DRAFT_CHANNEL_VIEW } from "discourse/plugins/discourse-chat/discourse/services/chat";
 import { avatarUrl, escapeExpression } from "discourse/lib/utilities";
 import { dasherize } from "@ember/string";
@@ -70,10 +69,6 @@ export default {
               return [this.channel.id, slugifyChannel(this.title)];
             }
 
-            get title() {
-              return escapeExpression(this.channel.title);
-            }
-
             get text() {
               return htmlSafe(emojiUnescape(this.title));
             }
@@ -88,6 +83,10 @@ export default {
 
             get prefixColor() {
               return this.channel.chatable.color;
+            }
+
+            get title() {
+              return this.channel.escapedTitle;
             }
 
             get prefixBadge() {
@@ -178,7 +177,7 @@ export default {
             }
 
             get actions() {
-              const actions = [
+              return [
                 {
                   id: "browseChannels",
                   title: I18n.t("chat.channels_list_popup.browse"),
@@ -187,20 +186,11 @@ export default {
                   },
                 },
               ];
-              if (this.sidebar.currentUser.staff) {
-                actions.push({
-                  id: "openCreateChannelModal",
-                  title: I18n.t("chat.channels_list_popup.create"),
-                  action: () => {
-                    showModal("create-channel");
-                  },
-                });
-              }
-              return actions;
             }
 
+
             get actionsIcon() {
-              return "cog";
+              return "pencil-alt";
             }
 
             get links() {
@@ -257,7 +247,7 @@ export default {
             }
 
             get title() {
-              return escapeExpression(this.channel.title);
+              return this.channel.escapedTitle;
             }
 
             get oneOnOneMessage() {

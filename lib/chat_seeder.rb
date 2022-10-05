@@ -6,7 +6,7 @@ class ChatSeeder
 
     begin
       create_category_channel_from(SiteSetting.staff_category_id)
-      create_category_channel_from(SiteSetting.meta_category_id)
+      create_category_channel_from(SiteSetting.general_category_id)
     rescue => error
       Rails.logger.warn("Error seeding chat category - #{error.inspect}")
     ensure
@@ -19,8 +19,8 @@ class ChatSeeder
     return if category.nil?
 
     name =
-      if category_id == SiteSetting.meta_category_id
-        I18n.t("chat.channel.default_titles.site_feedback")
+      if category_id == SiteSetting.general_category_id
+        I18n.t("chat.channel.default_titles.general")
       else
         nil
       end

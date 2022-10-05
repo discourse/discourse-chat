@@ -1,11 +1,9 @@
 import { bind } from "discourse-common/utils/decorators";
 import Component from "@ember/component";
-import showModal from "discourse/lib/show-modal";
 import { action, computed } from "@ember/object";
 import { schedule } from "@ember/runloop";
 import { inject as service } from "@ember/service";
 import { empty, reads } from "@ember/object/computed";
-import I18n from "I18n";
 import { DRAFT_CHANNEL_VIEW } from "discourse/plugins/discourse-chat/discourse/services/chat";
 
 export default class ChannelsList extends Component {

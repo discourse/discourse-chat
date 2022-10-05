@@ -429,14 +429,15 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
   end
 
   def flag
+    RateLimiter.new(current_user, "flag_chat_message", 4, 1.minutes).performed!
+
     permitted_params =
       params.permit(
         %i[chat_message_id flag_type_id message is_warning take_action queue_for_review],
       )
 
     chat_message =
-      ChatMessage.includes(:chat_channel).find_by(id: permitted_params[:chat_message_id])
-    raise Discourse::InvalidParameters.new(:chat_message_id) if !chat_message
+      ChatMessage.includes(:chat_channel, :revisions).find(permitted_params[:chat_message_id])
 
     flag_type_id = permitted_params[:flag_type_id].to_i
 
@@ -498,9 +499,9 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
   end
 
   def find_chat_message
-    @message =
-      ChatMessage.unscoped.includes(chat_channel: :chatable).find_by(id: params[:message_id])
-
+    @message = preloaded_chat_message_query.with_deleted
+    @message = @message.where(chat_channel_id: params[:chat_channel_id]) if params[:chat_channel_id]
+    @message = @message.find_by(id: params[:message_id])
     raise Discourse::NotFound unless @message
   end
 end

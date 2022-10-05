@@ -562,7 +562,7 @@ RSpec.describe DiscourseChat::ChatController do
       sign_in(other_user)
       UserSilencer.new(other_user).silence
 
-      delete "/chat/#{chat_channel.id}/#{other_user_message.id}.json"
+      delete "/chat/#{other_user_message.chat_channel.id}/#{other_user_message.id}.json"
       expect(response.status).to eq(403)
     end
 
@@ -1228,6 +1228,27 @@ RSpec.describe DiscourseChat::ChatController do
           }
       expect(response.status).to eq(403)
     end
+
+    it "returns a 429 when the user attempts to flag more than 4 messages  in 1 minute" do
+      RateLimiter.enable
+
+      [message_1, message_2, message_3, message_4].each do |message|
+        put "/chat/flag.json",
+            params: {
+              chat_message_id: message.id,
+              flag_type_id: ReviewableScore.types[:off_topic],
+            }
+        expect(response.status).to eq(200)
+      end
+
+      put "/chat/flag.json",
+          params: {
+            chat_message_id: message_5.id,
+            flag_type_id: ReviewableScore.types[:off_topic],
+          }
+
+      expect(response.status).to eq(429)
+    end
   end
 
   describe "#set_draft" do
@@ -1294,25 +1315,35 @@ RSpec.describe DiscourseChat::ChatController do
 
     it "ensures message's channel can be seen" do
       Guardian.any_instance.expects(:can_see_chat_channel?).with(channel)
-      get "/chat/lookup/#{message.id}.json"
+      get "/chat/lookup/#{message.id}.json", { params: { chat_channel_id: channel.id } }
+    end
+
+    context "when the message doesn’t belong to the channel" do
+      let!(:message) { Fabricate(:chat_message) }
+
+      it "returns a 404" do
+        get "/chat/lookup/#{message.id}.json", { params: { chat_channel_id: channel.id } }
+
+        expect(response.status).to eq(404)
+      end
     end
 
     context "when the chat channel is for a category" do
       let!(:chatable) { Fabricate(:category) }
 
       it "ensures the user can access that category" do
-        get "/chat/lookup/#{message.id}.json"
+        get "/chat/lookup/#{message.id}.json", { params: { chat_channel_id: channel.id } }
         expect(response.status).to eq(200)
         expect(response.parsed_body["chat_messages"][0]["id"]).to eq(message.id)
 
         group = Fabricate(:group)
         chatable.update!(read_restricted: true)
         Fabricate(:category_group, group: group, category: chatable)
-        get "/chat/lookup/#{message.id}.json"
+        get "/chat/lookup/#{message.id}.json", { params: { chat_channel_id: channel.id } }
         expect(response.status).to eq(403)
 
         GroupUser.create!(user: user, group: group)
-        get "/chat/lookup/#{message.id}.json"
+        get "/chat/lookup/#{message.id}.json", { params: { chat_channel_id: channel.id } }
         expect(response.status).to eq(200)
         expect(response.parsed_body["chat_messages"][0]["id"]).to eq(message.id)
       end
@@ -1322,11 +1353,11 @@ RSpec.describe DiscourseChat::ChatController do
       let!(:chatable) { Fabricate(:direct_message_channel) }
 
       it "ensures the user can access that direct message channel" do
-        get "/chat/lookup/#{message.id}.json"
+        get "/chat/lookup/#{message.id}.json", { params: { chat_channel_id: channel.id } }
         expect(response.status).to eq(403)
 
         DirectMessageUser.create!(user: user, direct_message_channel: chatable)
-        get "/chat/lookup/#{message.id}.json"
+        get "/chat/lookup/#{message.id}.json", { params: { chat_channel_id: channel.id } }
         expect(response.status).to eq(200)
         expect(response.parsed_body["chat_messages"][0]["id"]).to eq(message.id)
       end

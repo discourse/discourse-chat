@@ -20,20 +20,11 @@
       {{/if}}
       <span class="channel-title">{{i18n "chat.chat_channels"}}</span>
 
-      {{#if currentUser.staff}}
-        {{dropdown-select-box
-          options=(hash icon="cog" placementStrategy="absolute")
-          content=channelsActions
-          onChange=(action "handleChannelAction")
-          class="edit-channels-dropdown"
-        }}
-      {{else}}
-        {{d-button
-          action=(action "browseChannels")
-          icon="pencil-alt"
-          class="btn-flat edit-channel-membership-btn title-action"
-        }}
-      {{/if}}
+      {{d-button
+        action=(action "browseChannels")
+        icon="pencil-alt"
+        class="btn-flat edit-channel-membership-btn title-action"
+      }}
     </div>
 
     <div id="public-channels" class={{publicChannelClasses}}>

@@ -1238,17 +1238,10 @@ acceptance(
     test("Create channel modal", async function (assert) {
       this.container.lookup("service:chat").set("chatWindowFullPage", true);
 
-      await visit("/chat/channel/11/another-category");
-      const dropdown = selectKit(".edit-channels-dropdown");
-      await dropdown.expand();
-      await dropdown.selectRowByValue("browseChannels");
-      assert.strictEqual(currentURL(), "/chat/browse/open");
+      await visit("/chat/browse");
+      await click(".new-channel-btn");
 
-      await visit("/chat/channel/11/another-category");
-      await dropdown.expand();
-      await dropdown.selectRowByValue("openCreateChannelModal");
-      assert.ok(exists(".create-channel-modal"));
-      assert.ok(query(".create-channel-modal .btn.create").disabled);
+      assert.strictEqual(currentURL(), "/chat/browse/open");
 
       let categories = selectKit(".create-channel-modal .category-chooser");
       await categories.expand();

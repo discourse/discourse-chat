@@ -4,7 +4,6 @@ import { withPluginApi } from "discourse/lib/plugin-api";
 import I18n from "I18n";
 import { bind } from "discourse-common/utils/decorators";
 import { tracked } from "@glimmer/tracking";
-import showModal from "discourse/lib/show-modal";
 import { DRAFT_CHANNEL_VIEW } from "discourse/plugins/discourse-chat/discourse/services/chat";
 import { avatarUrl, escapeExpression } from "discourse/lib/utilities";
 import { dasherize } from "@ember/string";
@@ -181,7 +180,7 @@ export default {
               }
 
               get actions() {
-                const actions = [
+                return [
                   {
                     id: "browseChannels",
                     title: I18n.t("chat.channels_list_popup.browse"),
@@ -190,20 +189,10 @@ export default {
                     },
                   },
                 ];
-                if (this.sidebar.currentUser.staff) {
-                  actions.push({
-                    id: "openCreateChannelModal",
-                    title: I18n.t("chat.channels_list_popup.create"),
-                    action: () => {
-                      showModal("create-channel");
-                    },
-                  });
-                }
-                return actions;
               }
 
               get actionsIcon() {
-                return "cog";
+                return "pencil-alt";
               }
 
               get links() {

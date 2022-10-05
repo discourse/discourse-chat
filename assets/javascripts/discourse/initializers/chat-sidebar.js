@@ -78,7 +78,7 @@ export default {
               }
 
               get title() {
-                return escapeExpression(this.channel.title);
+                return this.channel.escapedTitle;
               }
 
               get text() {
@@ -242,7 +242,7 @@ export default {
             }
 
             get title() {
-              return escapeExpression(this.channel.title);
+              return this.channel.escapedTitle;
             }
 
             get oneOnOneMessage() {

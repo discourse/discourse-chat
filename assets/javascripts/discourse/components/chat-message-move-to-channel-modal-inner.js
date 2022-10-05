@@ -7,7 +7,6 @@ import { ajax } from "discourse/lib/ajax";
 import { inject as service } from "@ember/service";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { htmlSafe } from "@ember/template";
-import { escapeExpression } from "discourse/lib/utilities";
 
 export default class MoveToChannelModalInner extends Component {
   @service chat;
@@ -58,7 +57,7 @@ export default class MoveToChannelModalInner extends Component {
   get instructionsText() {
     return htmlSafe(
       I18n.t("chat.move_to_channel.instructions", {
-        channelTitle: escapeExpression(this.sourceChannel.title),
+        channelTitle: this.sourceChannel.escapedTitle,
         count: this.selectedMessageCount,
       })
     );

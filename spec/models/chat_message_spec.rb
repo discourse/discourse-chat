@@ -137,7 +137,7 @@ describe ChatMessage do
         <div class="chat-transcript-username">
         chatbbcodeuser</div>
         <div class="chat-transcript-datetime">
-        <a href="/chat/message/#{msg1.id}" title="#{msg1.created_at.iso8601}"></a>
+        <a href="/chat/channel/#{chat_channel.id}/-?messageId=#{msg1.id}" title="#{msg1.created_at.iso8601}"></a>
         </div>
         </div>
         <div class="chat-transcript-messages">
@@ -152,7 +152,7 @@ describe ChatMessage do
         <div class="chat-transcript-username">
         otherbbcodeuser</div>
         <div class="chat-transcript-datetime">
-        <a href="/chat/message/#{msg2.id}" title="#{msg2.created_at.iso8601}"></a>
+        <span title="#{msg2.created_at.iso8601}"></span>
         </div>
         </div>
         <div class="chat-transcript-messages">

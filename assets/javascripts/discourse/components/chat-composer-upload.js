@@ -11,9 +11,9 @@ export default Component.extend({
   upload: null,
   onCancel: null,
 
-  @discourseComputed("upload.original_filename")
-  type(filename) {
-    if (isImage(filename)) {
+  @discourseComputed("upload.{original_filename,fileName}")
+  type(upload) {
+    if (isImage(upload.original_filename || upload.fileName)) {
       return this.IMAGE_TYPE;
     }
   },

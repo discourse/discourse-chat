@@ -18,7 +18,8 @@ class ChatSeeder
     category = Category.find_by(id: category_id)
     return if category.nil?
 
-    chat_channel = ChatChannel.create!(chatable: category, auto_join_users: true, name: category.name)
+    chat_channel =
+      ChatChannel.create!(chatable: category, auto_join_users: true, name: category.name)
     category.custom_fields[DiscourseChat::HAS_CHAT_ENABLED] = true
     category.save!
 

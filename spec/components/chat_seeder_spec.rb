@@ -6,8 +6,12 @@ describe ChatSeeder do
   fab!(:staff_category) { Fabricate(:private_category, name: "Staff", group: Group[:staff]) }
   fab!(:general_category) { Fabricate(:category, name: "General") }
 
-  fab!(:staff_user1) { Fabricate(:user, last_seen_at: 1.minute.ago, groups: [Group[:staff], Group[:everyone]]) }
-  fab!(:staff_user2) { Fabricate(:user, last_seen_at: 1.minute.ago, groups: [Group[:staff], Group[:everyone]]) }
+  fab!(:staff_user1) do
+    Fabricate(:user, last_seen_at: 1.minute.ago, groups: [Group[:staff], Group[:everyone]])
+  end
+  fab!(:staff_user2) do
+    Fabricate(:user, last_seen_at: 1.minute.ago, groups: [Group[:staff], Group[:everyone]])
+  end
 
   fab!(:regular_user) { Fabricate(:user, last_seen_at: 1.minute.ago, groups: [Group[:everyone]]) }
 

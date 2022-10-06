@@ -7,14 +7,11 @@ describe Jobs::ChatNotifyMentioned do
   fab!(:user_2) { Fabricate(:user) }
   fab!(:public_channel) { Fabricate(:chat_channel) }
 
-  let!(:personal_chat_channel) do
-    DiscourseChat::DirectMessageChannelCreator.create!(
-      acting_user: user_1,
-      target_users: [user_1, user_2],
-    )
-  end
-
   before do
+    Group.refresh_automatic_groups!
+    user_1.reload
+    user_2.reload
+
     @chat_group = Fabricate(:group, users: [user_1, user_2])
     @personal_chat_channel =
       DiscourseChat::DirectMessageChannelCreator.create!(

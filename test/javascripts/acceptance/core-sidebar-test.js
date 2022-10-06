@@ -541,6 +541,7 @@ acceptance(
     });
   }
 );
+
 acceptance(
   "Discourse Chat - Core Sidebar - no joinable public channels, regular user",
   function (needs) {
@@ -572,6 +573,81 @@ acceptance(
       assert.notOk(
         exists(".sidebar-section-chat-channels"),
         "it doesn’t show the section for regular user"
+      );
+    });
+  }
+);
+
+acceptance(
+  "Discourse Chat - Core Sidebar - regular user with no direct message channels who cannot send direct messages",
+  function (needs) {
+    needs.user({
+      has_chat_enabled: true,
+      moderator: false,
+      admin: false,
+    });
+
+    needs.settings({
+      chat_enabled: true,
+      enable_experimental_sidebar_hamburger: true,
+      enable_sidebar: true,
+      direct_message_enabled_groups: "13", // trust_level_3 auto group ID;
+    });
+
+    needs.pretender((server, helper) => {
+      server.get("/chat/chat_channels.json", () => {
+        return helper.response({
+          public_channels: [],
+          direct_message_channels: [],
+        });
+      });
+    });
+
+    test("Direct message channels section visibility", async function (assert) {
+      await visit("/");
+
+      assert.notOk(
+        exists(".sidebar-section-chat-dms"),
+        "it doesn’t show the section for regular user"
+      );
+    });
+  }
+);
+
+acceptance(
+  "Discourse Chat - Core Sidebar - regular user with existing direct message channels who cannot send direct messages",
+  function (needs) {
+    needs.user({
+      has_chat_enabled: true,
+      moderator: false,
+      admin: false,
+    });
+
+    needs.settings({
+      chat_enabled: true,
+      enable_experimental_sidebar_hamburger: true,
+      enable_sidebar: true,
+      direct_message_enabled_groups: "13", // trust_level_3 auto group ID;
+    });
+
+    needs.pretender((server, helper) => {
+      let directChannels = cloneJSON(directMessageChannels).mapBy(
+        "chat_channel"
+      );
+      server.get("/chat/chat_channels.json", () => {
+        return helper.response({
+          public_channels: [],
+          direct_message_channels: directChannels,
+        });
+      });
+    });
+
+    test("Direct message channels section visibility", async function (assert) {
+      await visit("/");
+
+      assert.ok(
+        exists(".sidebar-section-chat-dms"),
+        "it does show the section for a regular user"
       );
     });
   }

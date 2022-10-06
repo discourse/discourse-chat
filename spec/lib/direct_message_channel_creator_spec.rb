@@ -7,6 +7,8 @@ describe DiscourseChat::DirectMessageChannelCreator do
   fab!(:user_2) { Fabricate(:user) }
   fab!(:user_3) { Fabricate(:user) }
 
+  before { Group.refresh_automatic_groups! }
+
   context "with an existing direct message channel" do
     fab!(:dm_chat_channel) do
       Fabricate(
@@ -105,6 +107,33 @@ describe DiscourseChat::DirectMessageChannelCreator do
         existing_channel = subject.create!(acting_user: user_1, target_users: [user_1, user_1])
       }.to not_change { ChatChannel.count }.and change { UserChatChannelMembership.count }.by(1)
       expect(existing_channel).to eq(own_chat_channel)
+    end
+
+    context "when the user is not a member of direct_message_enabled_groups" do
+      before { SiteSetting.direct_message_enabled_groups = Group::AUTO_GROUPS[:trust_level_4] }
+
+      it "raises an error and does not change membership or channel counts" do
+        channel_count = ChatChannel.count
+        membership_count = UserChatChannelMembership.count
+        expect {
+          existing_channel = subject.create!(acting_user: user_1, target_users: [user_1, user_1])
+        }.to raise_error(Discourse::InvalidAccess)
+        expect(ChatChannel.count).to eq(channel_count)
+        expect(UserChatChannelMembership.count).to eq(membership_count)
+      end
+
+      context "when user is staff" do
+        before { user_1.update!(admin: true) }
+
+        it "doesn't create an error and returns the existing channel" do
+          existing_channel = nil
+          expect {
+            existing_channel =
+              subject.create!(acting_user: user_1, target_users: [user_1, user_2, user_3])
+          }.not_to change { ChatChannel.count }
+          expect(existing_channel).to eq(dm_chat_channel)
+        end
+      end
     end
   end
 

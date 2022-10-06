@@ -15,9 +15,11 @@ en:
     chat_allow_uploads: "Allow uploads in public chat channels and direct message channels."
     chat_archive_destination_topic_status: "The status that the destination topic should be once a channel archive is completed. This only applies when the destination topic is a new topic, not an existing one."
     default_emoji_reactions: "Default emoji reactions for chat messages. Add up to 5 emojis for quick reaction."
+    direct_message_enabled_groups: "Allow users within these groups to create direct messages and reply to direct messages. Trust level groups include all trust levels above that number, for example choosing trust_level_1 also allows trust_level_2, 3, 4 users to send direct messages. Note that staff can always send direct messages no matter what."
     chat_message_flag_allowed_groups: "Users in these groups are allowed to flag chat messages."
     errors:
       chat_default_channel: "The default chat channel must be a public channel."
+      direct_message_enabled_groups_invalid: "You must specify at least one group for this setting. If you do not want anyone except staff to send direct messages, choose the staff group."
       chat_upload_not_allowed_secure_uploads: "Chat uploads are not allowed when secure uploads site setting is enabled."
   system_messages:
     chat_channel_archive_complete:
@@ -53,6 +55,7 @@ en:
       actor_muting_target_user: "You are muting %{username}, so you cannot send messages to them."
       actor_disallowed_dms: "You have chosen to prevent users from sending you private and direct messages, so you cannot create new direct messages."
       actor_preventing_target_user_from_dm: "You have chosen to prevent %{username} from sending you private and direct messages, so you cannot create new direct messages to them."
+      user_cannot_send_direct_messages: "Sorry, you cannot send direct messages."
     reviewables:
       message_already_handled: "Thanks, but we've already reviewed this message and determined it does not need to be flagged again."
       actions:

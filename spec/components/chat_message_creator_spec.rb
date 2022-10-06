@@ -42,6 +42,7 @@ describe DiscourseChat::ChatMessageCreator do
       Fabricate(:user_chat_channel_membership, chat_channel: public_chat_channel, user: user)
     end
 
+    Group.refresh_automatic_groups!
     @direct_message_channel =
       DiscourseChat::DirectMessageChannelCreator.create!(
         acting_user: user1,

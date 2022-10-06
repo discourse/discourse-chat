@@ -73,6 +73,7 @@ add_admin_route "chat.admin.title", "chat"
 # Site setting validators must be loaded before initialize
 require_relative "lib/validators/chat_default_channel_validator.rb"
 require_relative "lib/validators/chat_allow_uploads_validator.rb"
+require_relative "lib/validators/direct_message_enabled_groups_validator.rb"
 require_relative "app/core_ext/plugin_instance.rb"
 
 GlobalSetting.add_default(:allow_unsecure_chat_uploads, false)

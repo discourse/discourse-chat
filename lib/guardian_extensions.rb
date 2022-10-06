@@ -23,6 +23,10 @@ module DiscourseChat::GuardianExtensions
     !SpamRule::AutoSilence.prevent_posting?(@user)
   end
 
+  def can_create_direct_message?
+    is_staff? || @user.in_any_groups?(SiteSetting.direct_message_enabled_groups_map)
+  end
+
   def hidden_tag_names
     @hidden_tag_names ||= DiscourseTagging.hidden_tag_names(self)
   end
@@ -46,8 +50,12 @@ module DiscourseChat::GuardianExtensions
   end
 
   def can_create_channel_message?(chat_channel)
-    return chat_channel.open? || chat_channel.closed? if is_staff?
-    chat_channel.open?
+    valid_statuses = is_staff? ? %w[open closed] : ["open"]
+    if chat_channel.direct_message_channel?
+      can_create_direct_message? && valid_statuses.include?(chat_channel.status)
+    else
+      valid_statuses.include?(chat_channel.status)
+    end
   end
 
   # This is intentionally identical to can_create_channel_message, we

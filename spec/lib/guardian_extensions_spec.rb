@@ -8,6 +8,8 @@ RSpec.describe DiscourseChat::GuardianExtensions do
   fab!(:guardian) { Guardian.new(user) }
   fab!(:staff_guardian) { Guardian.new(staff) }
   fab!(:chat_group) { Fabricate(:group) }
+  fab!(:channel) { Fabricate(:chat_channel) }
+  fab!(:dm_channel) { Fabricate(:direct_message_chat_channel) }
 
   before do
     SiteSetting.chat_allowed_groups = chat_group.id
@@ -20,8 +22,6 @@ RSpec.describe DiscourseChat::GuardianExtensions do
   end
 
   describe "chat channel" do
-    fab!(:channel) { Fabricate(:chat_channel) }
-
     it "only staff can create channels" do
       expect(guardian.can_create_chat_channel?).to eq(false)
       expect(staff_guardian.can_create_chat_channel?).to eq(true)
@@ -279,6 +279,59 @@ RSpec.describe DiscourseChat::GuardianExtensions do
       context "when category has a channel" do
         it "does not allow to delete the category" do
           expect(staff_guardian).not_to be_able_to_delete_category(category)
+        end
+      end
+    end
+  end
+
+  describe "#can_create_channel_message?" do
+    context "when user is staff" do
+      it "returns true if the channel is open" do
+        channel.update!(status: :open)
+        expect(staff_guardian.can_create_channel_message?(channel)).to eq(true)
+      end
+
+      it "returns true if the channel is closed" do
+        channel.update!(status: :closed)
+        expect(staff_guardian.can_create_channel_message?(channel)).to eq(true)
+      end
+
+      it "returns false if the channel is archived" do
+        channel.update!(status: :archived)
+        expect(staff_guardian.can_create_channel_message?(channel)).to eq(false)
+      end
+
+      context "for direct message channels" do
+        it "returns true if the channel is open" do
+          dm_channel.update!(status: :open)
+          expect(staff_guardian.can_create_channel_message?(dm_channel)).to eq(true)
+        end
+      end
+    end
+
+    context "when user is not staff" do
+      it "returns true if the channel is open" do
+        channel.update!(status: :open)
+        expect(guardian.can_create_channel_message?(channel)).to eq(true)
+      end
+
+      it "returns false if the channel is closed" do
+        channel.update!(status: :closed)
+        expect(guardian.can_create_channel_message?(channel)).to eq(false)
+      end
+
+      it "returns false if the channel is archived" do
+        channel.update!(status: :archived)
+        expect(guardian.can_create_channel_message?(channel)).to eq(false)
+      end
+
+      context "for direct message channels" do
+        before { Group.refresh_automatic_groups! }
+
+        it "returns false if the user is not in direct_message_enabled_groups" do
+          SiteSetting.direct_message_enabled_groups = Group::AUTO_GROUPS[:trust_level_4]
+          dm_channel.update!(status: :open)
+          expect(guardian.can_create_channel_message?(dm_channel)).to eq(false)
         end
       end
     end

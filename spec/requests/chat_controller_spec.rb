@@ -369,6 +369,7 @@ RSpec.describe DiscourseChat::ChatController do
           desktop_notification_level: UserChatChannelMembership::NOTIFICATION_LEVELS[:always],
           mobile_notification_level: UserChatChannelMembership::NOTIFICATION_LEVELS[:always],
         )
+        Group.refresh_automatic_groups!
       end
 
       it "forces users to follow the channel" do

@@ -70,6 +70,8 @@ RSpec.describe DiscourseChat::DirectMessagesController do
   end
 
   describe "#create" do
+    before { Group.refresh_automatic_groups! }
+
     shared_examples "creating dms" do
       it "creates a new dm channel with username(s) provided" do
         expect {

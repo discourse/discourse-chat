@@ -109,6 +109,7 @@ RSpec.describe DiscourseChat::ChatChannelsController do
         fab!(:user3) { Fabricate(:user) }
 
         before do
+          Group.refresh_automatic_groups!
           @dm1 =
             DiscourseChat::DirectMessageChannelCreator.create!(
               acting_user: user1,

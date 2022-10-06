@@ -16,7 +16,7 @@ import ChatChannel, {
 } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import simpleCategoryHashMentionTransform from "discourse/plugins/discourse-chat/discourse/lib/simple-category-hash-mention-transform";
 import discourseDebounce from "discourse-common/lib/debounce";
-import EmberObject from "@ember/object";
+import EmberObject, { computed } from "@ember/object";
 import ChatApi from "discourse/plugins/discourse-chat/discourse/lib/chat-api";
 import discourseLater from "discourse-common/lib/later";
 import userPresent from "discourse/lib/user-presence";
@@ -59,6 +59,22 @@ export default class Chat extends Service {
   isNetworkUnreliable = false;
 
   @and("currentUser.has_chat_enabled", "siteSettings.chat_enabled") userCanChat;
+
+  @computed("currentUser.staff", "currentUser.groups.[]")
+  get userCanDirectMessage() {
+    if (!this.currentUser) {
+      return false;
+    }
+
+    return (
+      this.currentUser.staff ||
+      this.currentUser.isInAnyGroups(
+        (this.siteSettings.direct_message_enabled_groups || "11") // trust level 1 auto group
+          .split("|")
+          .map((groupId) => parseInt(groupId, 10))
+      )
+    );
+  }
 
   init() {
     super.init(...arguments);

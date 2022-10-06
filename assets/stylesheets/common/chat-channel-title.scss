@@ -1,12 +1,7 @@
 .chat-channel-title {
   display: flex;
   align-items: center;
-  max-width: 96%;
-
-  &:hover {
-    max-width: unset;
-    overflow: hidden;
-  }
+  max-width: 80%;
 
   .category-chat-private .d-icon {
     background-color: var(--secondary);

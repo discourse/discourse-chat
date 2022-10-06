@@ -23,6 +23,22 @@ const IMAGE_FIXTURE = {
   dominant_color: "788370", // rgb(120, 131, 112)
 };
 
+const VIDEO_FIXTURE = {
+  id: 290,
+  url: null, // Nulled out to avoid actually setting the img src - avoids an HTTP request
+  original_filename: "video.mp4",
+  filesize: 172214,
+  width: 1024,
+  height: 768,
+  thumbnail_width: 666,
+  thumbnail_height: 500,
+  extension: "mp4",
+  short_url: "upload://mnCnqY5tunCFw2qMgtPnu1mu1C9.mp4",
+  short_path: "/uploads/short-url/mnCnqY5tunCFw2qMgtPnu1mu1C9.mp4",
+  retain_hours: null,
+  human_filesize: "168 KB",
+};
+
 const TXT_FIXTURE = {
   id: 290,
   url: "https://example.com/file.txt",
@@ -63,6 +79,25 @@ module("Discourse Chat | Component | chat-upload", function (hooks) {
         image.style.backgroundColor,
         "",
         "removes the background color once the image has loaded"
+      );
+    },
+  });
+
+  componentTest("with a video", {
+    template: hbs`{{chat-upload upload=upload}}`,
+
+    beforeEach() {
+      this.set("upload", VIDEO_FIXTURE);
+    },
+
+    async test(assert) {
+      assert.true(exists("video.chat-video-upload"), "displays as an video");
+      const video = query("video.chat-video-upload");
+      assert.ok(video.hasAttribute("controls"), "has video controls");
+      assert.strictEqual(
+        video.getAttribute("preload"),
+        "metadata",
+        "video has correct preload settings"
       );
     },
   });

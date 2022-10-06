@@ -56,7 +56,7 @@ describe ChatSeeder do
   end
 
   it "applies a name to the staff category channel" do
-    expected_name = staff_category.namegt
+    expected_name = staff_category.name
 
     ChatSeeder.new.execute
 

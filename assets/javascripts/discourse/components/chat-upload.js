@@ -1,7 +1,7 @@
 import Component from "@glimmer/component";
 
 import { inject as service } from "@ember/service";
-import { IMAGES_EXTENSIONS_REGEX } from "discourse/lib/uploads";
+import { isImage, isVideo } from "discourse/lib/uploads";
 import { action } from "@ember/object";
 import { tracked } from "@glimmer/tracking";
 import { htmlSafe } from "@ember/template";
@@ -12,11 +12,19 @@ export default class extends Component {
   @tracked loaded = false;
 
   IMAGE_TYPE = "image";
+  VIDEO_TYPE = "video";
+  ATTACHMENT_TYPE = "video";
 
   get type() {
-    if (IMAGES_EXTENSIONS_REGEX.test(this.args.upload.extension)) {
+    if (isImage(this.args.upload.original_filename)) {
       return this.IMAGE_TYPE;
     }
+
+    if (isVideo(this.args.upload.original_filename)) {
+      return this.VIDEO_TYPE;
+    }
+
+    return this.ATTACHMENT_TYPE;
   }
 
   get size() {

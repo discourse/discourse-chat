@@ -1,3 +1,5 @@
+$max_video_height: 150px;
+
 .chat-message-collapser {
   .chat-message-collapser-header {
     display: flex;
@@ -10,9 +12,15 @@
 
   .chat-img-upload,
   .chat-other-upload,
+  .chat-video-upload,
   .chat-message-collapser-header + div p img {
     margin-top: 0.25em;
     margin-bottom: 0.5em;
+  }
+
+  .chat-video-upload {
+    height: $max_video_height;
+    width: calc(#{$max_video_height} / 9 * 16);
   }
 
   .chat-message-collapser-link-small {

@@ -13,7 +13,7 @@ export default class extends Component {
 
   IMAGE_TYPE = "image";
   VIDEO_TYPE = "video";
-  ATTACHMENT_TYPE = "video";
+  ATTACHMENT_TYPE = "attachment";
 
   get type() {
     if (isImage(this.args.upload.original_filename)) {

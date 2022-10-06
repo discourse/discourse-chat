@@ -3,9 +3,9 @@
   align-items: center;
   max-width: 96%;
 
-  &:hover {
-    max-width: unset;
+  .chat-channel-row:hover & {
     overflow: hidden;
+    max-width: unset;
   }
 
   .category-chat-private .d-icon {

@@ -1,5 +1,4 @@
 import Controller from "@ember/controller";
-import bootbox from "bootbox";
 import EmberObject, { action, computed } from "@ember/object";
 import I18n from "I18n";
 import { and } from "@ember/object/computed";

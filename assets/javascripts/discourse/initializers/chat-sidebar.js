@@ -419,6 +419,10 @@ export default {
             }
 
             get actions() {
+              if (!this.userCanDirectMessage) {
+                return [];
+              }
+
               return [
                 {
                   id: "startDm",

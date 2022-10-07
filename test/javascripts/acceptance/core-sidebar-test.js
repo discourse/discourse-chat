@@ -649,6 +649,11 @@ acceptance(
         exists(".sidebar-section-chat-dms"),
         "it does show the section for a regular user"
       );
+
+      assert.notOk(
+        exists(".sidebar-section-chat-dms .sidebar-section-header-button"),
+        "user cannot see the create DM channel button"
+      );
     });
   }
 );

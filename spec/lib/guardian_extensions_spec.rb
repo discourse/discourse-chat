@@ -328,10 +328,10 @@ RSpec.describe DiscourseChat::GuardianExtensions do
       context "for direct message channels" do
         before { Group.refresh_automatic_groups! }
 
-        it "returns false if the user is not in direct_message_enabled_groups" do
+        it "it still allows the user to message even if they are not in direct_message_enabled_groups because they are not creating the channel" do
           SiteSetting.direct_message_enabled_groups = Group::AUTO_GROUPS[:trust_level_4]
           dm_channel.update!(status: :open)
-          expect(guardian.can_create_channel_message?(dm_channel)).to eq(false)
+          expect(guardian.can_create_channel_message?(dm_channel)).to eq(true)
         end
       end
     end

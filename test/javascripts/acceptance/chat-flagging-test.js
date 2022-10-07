@@ -60,9 +60,10 @@ acceptance("Discourse Chat - Flagging test", function (needs) {
     assert.ok(content.find((row) => row.id === "flag"));
 
     await moreButtons.selectRowByValue("flag");
-    assert.ok(exists(".bootbox.in"));
 
-    await click(".bootbox.in .btn-primary");
+    await click(".controls.spam input");
+    await click(".modal-footer button");
+
     await publishToMessageBus("/chat/75", {
       type: "self_flagged",
       chat_message_id: defaultChatView.chat_messages[0].id,

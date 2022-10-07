@@ -145,6 +145,10 @@ he:
       edit: "עריכה"
       copy_link: "העתקת קישור"
       rebake_message: "בניית HTML מחדש"
+      retry_staged_message:
+        title: "שגיאת רשת"
+        action: "לשלוח שוב?"
+      unreliable_network: "הרשת אינה אמינה, ייתכן ששליחת הודעות ושמירת טיוטה לא תפעלנה"
       bookmark_message: "סימון"
       bookmark_message_edit: "עריכת סימנייה"
       restore: "שחזור הודעה שנמחקה"
@@ -169,7 +173,6 @@ he:
         many: "%{count} קבצים"
         other: "%{count} קבצים"
       you_flagged: "סימנת את ההודעה הזאת"
-      user_deleted: "נמחק"
       exit: "חזרה"
       channel_status:
         read_only_header: "הערוץ הוא לקריאה בלבד"
@@ -232,7 +235,7 @@ he:
           other: "%{count} חברים"
       create_channel:
         auto_join_users:
-          public_category_warning: "%{category} היא קטגוריה ציבורית. להוסיף כל משתמש לערוץ הזה אוטומטית?"
+          public_category_warning: "%{category} היא קטגוריה ציבורית. להוסיף את כל המשתמשים שהיו פעילים לאחרונה לערוץ הזה?"
           warning_groups:
             one: להוסיף %{members_count} משתמשים מתוך %{group_1} אוטומטית?
             two: להוסיף %{members_count} משתמשים מתוך %{group_1} ומתוך %{group_2} אוטומטית?
@@ -272,14 +275,14 @@ he:
         code_text: "טקסט קוד"
       quote:
         original_channel: 'נשלח במקור ב־<a href="%{channelLink}">%{channel}</a>'
-        copy_success: "ציטוט מהצ׳אט הועתק ללוח הגזירים."
+        copy_success: "ציטוט מהצ׳אט הועתק ללוח הגזירים"
       notification_levels:
         never: "לעולם לא"
         mention: "רק אזכורים"
         always: "לכל פעילות"
       settings:
-        enable_auto_join_users: "להוסיף אוטומטית את כל המשתמשים החדשים והקיימים"
-        disable_auto_join_users: "להפסיק להוסיף משתמשים חדשים אוטומטית"
+        enable_auto_join_users: "להוסיף אוטומטית את כל המשתמשים שהיו פעילים לאחרונה"
+        disable_auto_join_users: "להפסיק להוסיף משתמשים אוטומטית"
         auto_join_users_warning: "כל משתמש שאינו חבר בערוץ הזה ויש לו גישה לקטגוריה %{category} יצטרף. זה בסדר?"
         desktop_notification_level: "התראות שולחן עבודה"
         follow: "הצטרפות"
@@ -321,11 +324,13 @@ he:
         system: "מערכת"
         title: "התליות נכנסות"
         url: "כתובת"
+        url_instructions: "כתובת זו מכילה ערך סודי - כדאי לשמור עליה בצורה מאובטחת."
         username: "שם משתמש"
         username_instructions: "שם משתמש הבוט שמפרסם לערוץ. ברירת המחדל היא ‚מערכת’ כשזה נשאר ריק."
       selection:
         cancel: "ביטול"
         quote_selection: "ציטוט בנושא"
+        copy: "העתקה"
         move_selection_to_channel: "העברה לערוץ"
         error: "אירעה שגיאה בהעברת הודעות הצ׳אט"
         title: "העברת צ׳אט לנושא"
@@ -364,15 +369,24 @@ he:
         public: "היסטוריית הערוץ נשמרת למשך %{days} ימים."
         dm: "היסטוריית הצ׳אט האישית נשמרת למשך %{days} ימים."
       topic_button_title: "צ׳אט"
+      flags:
+        off_topic: "הודעה זו לא תואמת לדיון הנוכחי כפי שהוגדר בכותרת הערוץ וכנראה שצריך להעביר אותה."
+        inappropriate: "הודעה זו מכילה תוכן שאדם מן השורה עשוי להחשיב כפוגעני, נצלני או מפר את <a href=\"/guidelines\">הכללים המנחים את הקהילה שלנו</a>."
+        spam: "הודעה זו היא פרסומת או השחתה. היא אינה שימושית או רלוונטית לערוץ הנוכחי."
+        notify_user: "אשמח לדבר עם אותו גורם ישירות ובאופן אישי על ההודעה שנשלחה על ידי הגורם."
+        notify_moderators: "הודעה זו דורשת את התערבות הסגל מסיבות אחרות שאינן מופיעות לעיל."
+      flagging:
+        action: "סימון הודעה בדגל"
     notifications:
+      chat_invitation_html: "<span>הוזמנת להצטרף לערוץ צ׳אט על ידי</span> <span>%{username}</span>"
       chat_quoted: "<span>%{username}</span> %{description}"
       popup:
         chat_mention:
-          direct: '<span>אוזכרת בערוץ „%{channel}” על ידי</span> <span>%{username}</span>'
-          other: '<span>נוסף אזכור של %{identifier} בערוץ „%{channel}” על ידי</span> <span>%{username}</span>'
+          direct_html: '<span>אוזכרת בערוץ „%{channel}” על ידי</span> <span>%{username}</span>'
+          other_html: '<span>נוסף אזכור של %{identifier} בערוץ „%{channel}” על ידי</span> <span>%{username}</span>'
         direct_message_chat_mention:
-          direct: "<span>אוזכרת בצ׳אט אישי על ידי</span> <span>%{username}</span>"
-          other: "<span>נוסף אזכור של ‎%{identifier} בצ׳אט אישי על ידי</span> <span>%{username}</span>"
+          direct_html: "<span>אוזכרת בצ׳אט אישי על ידי</span> <span>%{username}</span>"
+          other_html: "<span>נוסף אזכור של ‎%{identifier} בצ׳אט אישי על ידי</span> <span>%{username}</span>"
         chat_message: "הודעת צ׳אט חדשה"
         chat_quoted: "הודעת הצ׳אט שלך צוטטה על ידי %{username}"
       titles:
@@ -410,9 +424,22 @@ he:
           composer_bold: "%{shortcut} מודגש (עורך בלבד)"
           composer_italic: "%{shortcut} נטוי (עורך בלבד)"
           composer_code: "%{shortcut} קוד (עורך בלבד)"
+          drawer_open: "%{shortcut} פתיחת מגירת הצ׳אט"
+          drawer_close: "%{shortcut} סגירת מגירת הצ׳אט"
     topic_statuses:
       chat:
         help: "הצ׳אט מופעל בנושא הזה"
     user:
       allow_private_messages: "לאפשר למשתמשים אחרים לשלוח לי הודעות פרטיות והודעות ישירות בצ׳אט"
+      muted_users_instructions: "לדחות את כל ההתראות על הודעות אישיות והודעות ישירות בצ׳אט מהמשמתמשים האלה."
+      allowed_pm_users_instructions: "לאפשר רק הודעות אישיות או הודעות ישירות בצ׳אט מהמשמתמשים האלה."
       allow_private_messages_from_specific_users: "לאפשר רק למשתמשים מסוימים לשלוח לי הודעות פרטיות או הודעות ישירות בצ׳אט"
+      ignored_users_instructions: "לדחות את כל הפוסטים, ההודעות, ההתראות, ההודעות אישיות וההודעות הישירות בצ׳אט מהמשמתמשים האלה."
+    user_menu:
+      tabs:
+        chat_notifications: "התראות צ׳אט"
+        chat_notifications_with_unread:
+          one: "התראות צ׳אט - התראה %{count} שלא נקראה"
+          two: "התראות צ׳אט - %{count} התראות שלא נקראו"
+          many: "התראות צ׳אט - %{count} התראות שלא נקראו"
+          other: "התראות צ׳אט - %{count} התראות שלא נקראו"

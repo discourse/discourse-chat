@@ -1,10 +1,10 @@
 import selectKit from "discourse/tests/helpers/select-kit-helper";
-import { visit } from "@ember/test-helpers";
+import { click, visit } from "@ember/test-helpers";
 import { acceptance, query } from "discourse/tests/helpers/qunit-helpers";
 import { test } from "qunit";
 
 acceptance("Discourse Chat - Create channel modal", function (needs) {
-  const maliciousText = "<script></script>";
+  const maliciousText = '"<script></script>';
 
   needs.user({
     username: "tomtom",
@@ -62,23 +62,31 @@ acceptance("Discourse Chat - Create channel modal", function (needs) {
       helper.response({ id: 1, title: "something" })
     );
 
+    server.get("/chat/api/chat_channels.json", () => helper.response([]));
+
     server.get(
       "/chat/api/category-chatables/:categoryId/permissions.json",
-      () =>
-        helper.response({
-          allowed_groups: ["@awesomeGroup"],
-          members_count: 2,
-          private: true,
-        })
+      (request) => {
+        if (request.params.categoryId === "2") {
+          return helper.response({
+            allowed_groups: ["@<script>evilgroup</script>"],
+            members_count: 2,
+            private: true,
+          });
+        } else {
+          return helper.response({
+            allowed_groups: ["@awesomeGroup"],
+            members_count: 2,
+            private: true,
+          });
+        }
+      }
     );
   });
 
   test("links to categories and selected category's security settings", async function (assert) {
-    await visit("/chat/channel/1/cat");
-
-    const dropdown = selectKit(".edit-channels-dropdown");
-    await dropdown.expand();
-    await dropdown.selectRowByValue("openCreateChannelModal");
+    await visit("/chat/browse");
+    await click(".new-channel-btn");
 
     assert.strictEqual(
       query(".create-channel-hint a").innerText,
@@ -100,11 +108,8 @@ acceptance("Discourse Chat - Create channel modal", function (needs) {
   });
 
   test("links to selected category's security settings works with nested subcategories", async function (assert) {
-    await visit("/chat/channel/1/cat");
-
-    const dropdown = selectKit(".edit-channels-dropdown");
-    await dropdown.expand();
-    await dropdown.selectRowByValue("openCreateChannelModal");
+    await visit("/chat/browse");
+    await click(".new-channel-btn");
 
     assert.strictEqual(
       query(".create-channel-hint a").innerText,
@@ -127,34 +132,9 @@ acceptance("Discourse Chat - Create channel modal", function (needs) {
     );
   });
 
-  test("links to categories are escaped", async (assert) => {
-    await visit("/chat/channel/1/cat");
-
-    const dropdown = selectKit(".edit-channels-dropdown");
-    await dropdown.expand();
-    await dropdown.selectRowByValue("openCreateChannelModal");
-
-    let categories = selectKit(".create-channel-modal .category-chooser");
-    await categories.expand();
-    await categories.selectRowByName(maliciousText);
-
-    assert.strictEqual(
-      query(".create-channel-hint a").innerText,
-      "security settings"
-    );
-    assert.ok(
-      query(".create-channel-hint a").href.includes(
-        "c/%3Cscript%3E%3C/script%3E/edit/security"
-      )
-    );
-  });
-
   test("includes group names in the hint", async (assert) => {
-    await visit("/chat/channel/1/cat");
-
-    const dropdown = selectKit(".edit-channels-dropdown");
-    await dropdown.expand();
-    await dropdown.selectRowByValue("openCreateChannelModal");
+    await visit("/chat/browse");
+    await click(".new-channel-btn");
 
     assert.strictEqual(
       query(".create-channel-hint a").innerText,
@@ -167,8 +147,33 @@ acceptance("Discourse Chat - Create channel modal", function (needs) {
     await categories.selectRowByName("Kittens");
 
     assert.strictEqual(
-      query(".create-channel-hint").innerText,
-      "Users in @awesomeGroup will have access to this channel per the security settings"
+      query(".create-channel-hint").innerHTML.trim(),
+      'Users in @awesomeGroup will have access to this channel per the <a href="/c/cats/kittens/edit/security" target="_blank">security settings</a>'
+    );
+  });
+
+  test("escapes group name/category slug in the hint", async (assert) => {
+    await visit("/chat/browse");
+    await click(".new-channel-btn");
+
+    assert.strictEqual(
+      query(".create-channel-hint a").innerText,
+      "category security settings"
+    );
+    assert.ok(query(".create-channel-hint a").href.includes("/categories"));
+
+    const categories = selectKit(".create-channel-modal .category-chooser");
+    await categories.expand();
+    await categories.selectRowByValue(2);
+
+    assert.strictEqual(
+      query(".create-channel-hint").innerHTML.trim(),
+      'Users in @&lt;script&gt;evilgroup&lt;/script&gt; will have access to this channel per the <a href="/c/&quot;<script></script>/edit/security" target="_blank">security settings</a>'
+    );
+    assert.ok(
+      query(".create-channel-hint a").href.includes(
+        "c/%22%3Cscript%3E%3C/script%3E/edit/security"
+      )
     );
   });
 });

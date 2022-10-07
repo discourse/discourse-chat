@@ -51,3 +51,6 @@ pl_PL:
   unsubscribe:
     chat_summary:
       never: Nigdy
+  category:
+    cannot_delete:
+      has_chat_channels: "Nie można usunąć tej kategorii, ponieważ zawiera ona kanały czatu."

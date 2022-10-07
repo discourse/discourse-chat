@@ -5,6 +5,7 @@ module DiscourseChat::DirectMessageChannelCreator
   end
 
   def self.create!(acting_user:, target_users:)
+    Guardian.new(acting_user).ensure_can_create_direct_message!
     target_users.uniq!
     direct_messages_channel = DirectMessageChannel.for_user_ids(target_users.map(&:id))
     if direct_messages_channel
@@ -15,7 +16,7 @@ module DiscourseChat::DirectMessageChannelCreator
       chat_channel = ChatChannel.create!(chatable: direct_messages_channel)
     end
 
-    update_memberships(target_users, chat_channel.id)
+    update_memberships(acting_user, target_users, chat_channel.id)
     ChatPublisher.publish_new_channel(chat_channel, target_users)
 
     chat_channel
@@ -23,27 +24,41 @@ module DiscourseChat::DirectMessageChannelCreator
 
   private
 
-  # TODO (martin) Do this in a single query instead of using AR in a loop
-  def self.update_memberships(target_users, chat_channel_id)
-    target_users.each do |user|
-      membership =
-        UserChatChannelMembership.find_or_initialize_by(
-          user_id: user.id,
-          chat_channel_id: chat_channel_id,
-        )
+  def self.update_memberships(acting_user, target_users, chat_channel_id)
+    sql_params = {
+      acting_user_id: acting_user.id,
+      user_ids: target_users.map(&:id),
+      chat_channel_id: chat_channel_id,
+      always_notification_level: UserChatChannelMembership::NOTIFICATION_LEVELS[:always],
+    }
 
-      if membership.new_record?
-        membership.last_read_message_id = nil
-        membership.desktop_notification_level =
-          UserChatChannelMembership::NOTIFICATION_LEVELS[:always]
-        membership.mobile_notification_level =
-          UserChatChannelMembership::NOTIFICATION_LEVELS[:always]
-        membership.muted = false
-      end
+    DB.exec(<<~SQL, sql_params)
+      INSERT INTO user_chat_channel_memberships(
+        user_id,
+        chat_channel_id,
+        muted,
+        following,
+        desktop_notification_level,
+        mobile_notification_level,
+        created_at,
+        updated_at
+      )
+      VALUES(
+        unnest(array[:user_ids]),
+        :chat_channel_id,
+        false,
+        false,
+        :always_notification_level,
+        :always_notification_level,
+        NOW(),
+        NOW()
+      )
+      ON CONFLICT (user_id, chat_channel_id) DO NOTHING;
 
-      membership.following = true
-      membership.save!
-    end
+      UPDATE user_chat_channel_memberships
+      SET following = true
+      WHERE user_id = :acting_user_id AND chat_channel_id = :chat_channel_id;
+    SQL
   end
 
   def self.ensure_actor_can_communicate!(acting_user, target_users)

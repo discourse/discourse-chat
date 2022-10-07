@@ -30,6 +30,7 @@ export default {
     title: "My category title",
     name: "My category name",
     chatable: categoryChatableFabricator(),
+    last_message_sent_at: "2021-11-08T21:26:05.710Z",
   }),
 
   chatChannelMessage: Fabricator(EmberObject, {
@@ -44,5 +45,6 @@ export default {
     chatable_type: CHATABLE_TYPES.directMessageChannel,
     status: "open",
     chatable: directChannelChatableFabricator(),
+    last_message_sent_at: "2021-11-08T21:26:05.710Z",
   }),
 };

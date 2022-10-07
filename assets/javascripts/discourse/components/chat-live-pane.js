@@ -12,22 +12,24 @@ import discourseComputed, {
 import discourseDebounce from "discourse-common/lib/debounce";
 import EmberObject, { action } from "@ember/object";
 import I18n from "I18n";
-import userPresent from "discourse/lib/user-presence";
 import { A } from "@ember/array";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
-import { cancel, next, schedule } from "@ember/runloop";
+import { cancel, next, schedule, throttle } from "@ember/runloop";
 import discourseLater from "discourse-common/lib/later";
 import { inject as service } from "@ember/service";
 import { Promise } from "rsvp";
 import { resetIdle } from "discourse/lib/desktop-notifications";
 import { defaultHomepage } from "discourse/lib/utilities";
-import { isTesting } from "discourse-common/config/environment";
 import { capitalize } from "@ember/string";
+import {
+  onPresenceChange,
+  removeOnPresenceChange,
+} from "discourse/lib/user-presence";
+import isZoomed from "discourse/plugins/discourse-chat/discourse/lib/zoom-check";
 
 const MAX_RECENT_MSGS = 100;
-const STICKY_SCROLL_LENIENCE = 4;
-const READ_INTERVAL = 1000;
+const STICKY_SCROLL_LENIENCE = 50;
 const PAGE_SIZE = 50;
 
 const PAST = "past";
@@ -71,17 +73,12 @@ export default Component.extend({
 
   getCachedChannelDetails: null,
   clearCachedChannelDetails: null,
-
-  _updateReadTimer: null,
-  lastSendReadMessageId: null,
   _scrollerEl: null,
 
   init() {
     this._super(...arguments);
 
     this.set("messages", []);
-
-    this._scrollSidebar();
   },
 
   didInsertElement() {
@@ -99,6 +96,9 @@ export default Component.extend({
       passive: true,
     });
     window.addEventListener("resize", this.onResizeHandler);
+    window.addEventListener("mousewheel", this.onScrollHandler, {
+      passive: true,
+    });
 
     this.appEvents.on("chat:cancel-message-selection", this, "cancelSelecting");
 
@@ -106,6 +106,10 @@ export default Component.extend({
 
     document.addEventListener("scroll", this._forceBodyScroll, {
       passive: true,
+    });
+
+    onPresenceChange({
+      callback: this.onPresenceChangeCallback,
     });
   },
 
@@ -117,20 +121,20 @@ export default Component.extend({
       ?.removeEventListener("scroll", this.onScrollHandler);
 
     window.removeEventListener("resize", this.onResizeHandler);
+    window.removeEventListener("mousewheel", this.onScrollHandler);
 
     this.appEvents.off(
       "chat-live-pane:highlight-message",
       this,
       "highlightOrFetchMessage"
     );
-    this._cancelPendingReadUpdate();
 
     // don't need to removeEventListener from scroller as the DOM element goes away
     cancel(this.stickyScrollTimer);
 
     cancel(this.resizeHandler);
 
-    this._cleanRegisteredChatChannelId();
+    this._resetChannelState();
     this._unloadedReplyIds = null;
     this.appEvents.off(
       "chat:cancel-message-selection",
@@ -139,39 +143,34 @@ export default Component.extend({
     );
 
     document.removeEventListener("scroll", this._forceBodyScroll);
+
+    removeOnPresenceChange(this.onPresenceChangeCallback);
   },
 
   didReceiveAttrs() {
     this._super(...arguments);
 
-    this.set("targetMessageId", this.chat.messageId);
-
-    if (
-      this.chatChannel &&
-      this.chatChannel.id &&
-      this.registeredChatChannelId !== this.chatChannel.id
-    ) {
-      this._cleanRegisteredChatChannelId();
-      this.messageLookup = {};
-      this.set("allPastMessagesLoaded", false);
-      this.cancelEditing();
-
-      this.chat.getChannelBy("id", this.chatChannel.id).then(() => {
-        if (this._selfDeleted) {
-          return;
-        }
-
-        this.fetchMessages(this.chatChannel);
-
-        if (!this.chatChannel.isDraft) {
-          this.loadDraftForChannel(this.chatChannel.id);
-        }
-      });
-    }
-
     this.currentUserTimezone = this.currentUser?.resolvedTimezone(
       this.currentUser
     );
+
+    this.set("targetMessageId", this.chat.messageId);
+
+    if (
+      this.chatChannel?.id &&
+      this.registeredChatChannelId !== this.chatChannel.id
+    ) {
+      this._resetChannelState();
+      this.cancelEditing();
+
+      if (!this.chatChannel.isDraft) {
+        this.loadDraftForChannel(this.chatChannel.id);
+      }
+    }
+
+    if (this.chatChannel?.id) {
+      this.fetchMessages(this.chatChannel);
+    }
   },
 
   @discourseComputed("chatChannel.isDirectMessageChannel")
@@ -189,9 +188,8 @@ export default Component.extend({
   },
 
   @bind
-  onScrollHandler() {
-    cancel(this.stickyScrollTimer);
-    this.stickyScrollTimer = discourseDebounce(this, this.onScroll, 100);
+  onScrollHandler(event) {
+    throttle(this, this.onScroll, event, 100, true);
   },
 
   @bind
@@ -205,11 +203,18 @@ export default Component.extend({
     );
   },
 
+  @bind
+  onPresenceChangeCallback(present) {
+    if (present) {
+      this.chat.updateLastReadMessage();
+    }
+  },
+
   fetchMessages(channel, options = {}) {
     this.set("loading", true);
 
     return this.chat.loadCookFunction(this.site.categories).then((cook) => {
-      if (this.isDestroying || this.isDestroyed) {
+      if (this._selfDeleted) {
         return;
       }
 
@@ -219,8 +224,9 @@ export default Component.extend({
         channelId: channel.id,
         pageSize: PAGE_SIZE,
       };
+      const fetchingFromLastRead = !options.fetchFromLastMessage;
 
-      if (!options.fetchFromLastMessage) {
+      if (fetchingFromLastRead) {
         findArgs["targetMessageId"] =
           this.targetMessageId || this._getLastReadId();
       }
@@ -231,11 +237,9 @@ export default Component.extend({
           if (this._selfDeleted || this.chatChannel.id !== channel.id) {
             return;
           }
-          this.setMessageProps(messages);
+          this.setMessageProps(messages, fetchingFromLastRead);
         })
-        .catch((err) => {
-          throw err;
-        })
+        .catch(this._handleErrors)
         .finally(() => {
           if (this._selfDeleted || this.chatChannel.id !== channel.id) {
             return;
@@ -243,6 +247,10 @@ export default Component.extend({
 
           this.chat.set("messageId", null);
           this.set("loading", false);
+
+          if (this.targetMessageId) {
+            this.highlightOrFetchMessage(this.targetMessageId);
+          }
 
           this.focusComposer();
         });
@@ -253,15 +261,21 @@ export default Component.extend({
     this.set("draft", this.chat.getDraftForChannel(channelId));
   },
 
+  @bind
   _fetchMoreMessages(direction) {
     const loadingPast = direction === PAST;
     const canLoadMore = loadingPast
-      ? this.details.can_load_more_past
-      : this.details.can_load_more_future;
+      ? this.details?.can_load_more_past
+      : this.details?.can_load_more_future;
     const loadingMoreKey = `loadingMore${capitalize(direction)}`;
     const loadingMore = this.get(loadingMoreKey);
 
-    if (!canLoadMore || loadingMore || this.loading || !this.messages.length) {
+    if (
+      (this.details && !canLoadMore) ||
+      loadingMore ||
+      this.loading ||
+      !this.messages.length
+    ) {
       return Promise.resolve();
     }
 
@@ -295,11 +309,17 @@ export default Component.extend({
           );
         }
         this.setCanLoadMoreDetails(messages.resultSetMeta);
+
+        if (!loadingPast && newMessages.length) {
+          // Adding newer messages also causes a scroll-down,
+          // firing another event, fetching messages again, and so on.
+          // Scroll to the first new one to prevent this.
+          this.scrollToMessage(newMessages.firstObject.messageLookupId);
+        }
+
         return messages;
       })
-      .catch((err) => {
-        throw err;
-      })
+      .catch(this._handleErrors)
       .finally(() => {
         if (this._selfDeleted) {
           return;
@@ -310,6 +330,10 @@ export default Component.extend({
   },
 
   fillPaneAttempt(meta) {
+    if (this._selfDeleted) {
+      return;
+    }
+
     // safeguard
     if (this.messages.length > 200) {
       return;
@@ -337,8 +361,12 @@ export default Component.extend({
         return;
       }
 
-      this._fetchMoreMessages(PAST);
+      this._fetchMoreMessagesThrottled(PAST);
     });
+  },
+
+  _fetchMoreMessagesThrottled(direction) {
+    throttle(this, "_fetchMoreMessages", direction, 500);
   },
 
   setCanLoadMoreDetails(meta) {
@@ -355,7 +383,7 @@ export default Component.extend({
     }
   },
 
-  setMessageProps(messages) {
+  setMessageProps(messages, fetchingFromLastRead) {
     this._unloadedReplyIds = [];
     this.setProperties({
       messages: this._prepareMessages(messages),
@@ -376,10 +404,6 @@ export default Component.extend({
         return;
       }
 
-      if (!isTesting()) {
-        this._updateLastReadMessage();
-      }
-
       if (this.targetMessageId) {
         this.scrollToMessage(this.targetMessageId, {
           highlight: true,
@@ -387,7 +411,7 @@ export default Component.extend({
           autoExpand: true,
         });
         this.set("targetMessageId", null);
-      } else {
+      } else if (fetchingFromLastRead) {
         this._markLastReadMessage();
       }
 
@@ -498,7 +522,7 @@ export default Component.extend({
   },
 
   _getLastReadId() {
-    return this.currentUser.chat_channel_tracking_state[this.chatChannel.id]
+    return this.currentUser?.chat_channel_tracking_state?.[this.chatChannel.id]
       ?.chat_message_id;
   },
 
@@ -617,7 +641,7 @@ export default Component.extend({
     }
   },
 
-  onScroll() {
+  onScroll(event) {
     if (this._selfDeleted) {
       return;
     }
@@ -629,44 +653,30 @@ export default Component.extend({
           this._scrollerEl.clientHeight +
           this._scrollerEl.scrollTop
       ) <= STICKY_SCROLL_LENIENCE;
-    if (atTop) {
-      this._fetchMoreMessages(PAST).then((newMessages) => {
-        if (!newMessages) {
-          return;
-        }
-        // prevents a white screen bug on safari
-        this.scrollToMessage(newMessages.lastObject.messageLookupId);
-      });
-      return;
-    } else {
-      this._updateLastReadMessage();
 
-      if (Math.abs(this._scrollerEl.scrollTop) <= STICKY_SCROLL_LENIENCE) {
-        this._fetchMoreMessages(FUTURE).then((newMessages) => {
-          if (!newMessages) {
-            return;
-          }
-          // prevents a white screen bug on safari
-          this.scrollToMessage(newMessages.firstObject.messageLookupId, {
-            position: "bottom",
-          });
-        });
-      }
+    if (atTop) {
+      this._fetchMoreMessagesThrottled(PAST);
+    } else if (Math.abs(this._scrollerEl.scrollTop) <= STICKY_SCROLL_LENIENCE) {
+      this._fetchMoreMessagesThrottled(FUTURE);
     }
 
-    this._calculateStickScroll();
+    this._calculateStickScroll(event.forceShowScrollToBottom);
   },
 
-  _calculateStickScroll() {
+  _calculateStickScroll(forceShowScrollToBottom) {
     const absoluteScrollTop = Math.abs(this._scrollerEl.scrollTop);
     const shouldStick = absoluteScrollTop < STICKY_SCROLL_LENIENCE;
 
-    this.set(
-      "showScrollToBottomBtn",
-      shouldStick
-        ? false
-        : absoluteScrollTop / this._scrollerEl.offsetHeight > 0.67
-    );
+    if (forceShowScrollToBottom) {
+      this.set("showScrollToBottomBtn", forceShowScrollToBottom);
+    } else {
+      this.set(
+        "showScrollToBottomBtn",
+        shouldStick
+          ? false
+          : absoluteScrollTop / this._scrollerEl.offsetHeight > 0.67
+      );
+    }
 
     if (!this.showScrollToBottomBtn) {
       this.set("hasNewMessages", false);
@@ -743,8 +753,10 @@ export default Component.extend({
       const stagedMessage = this.messageLookup[`staged-${data.stagedId}`];
       if (stagedMessage) {
         stagedMessage.setProperties({
+          error: null,
           staged: false,
           id: data.chat_message.id,
+          staged_id: null,
           excerpt: data.chat_message.excerpt,
         });
 
@@ -918,67 +930,6 @@ export default Component.extend({
     return !this.element || this.isDestroying || this.isDestroyed;
   },
 
-  @bind
-  _updateLastReadMessage(wait = READ_INTERVAL) {
-    this._cancelPendingReadUpdate();
-
-    if (this._selfDeleted || !this.chatChannel.isFollowing) {
-      return;
-    }
-
-    this._updateReadTimer = discourseLater(
-      this,
-      () => {
-        if (this._selfDeleted) {
-          return;
-        }
-
-        let latestUnreadMsgId = this.lastSendReadMessageId;
-        if (this.messages[this.messages.length - 1]?.id > latestUnreadMsgId) {
-          const visibleMessages = document.querySelectorAll(
-            ".chat-message-container[data-visible=true]"
-          );
-          if (visibleMessages?.length > 0) {
-            latestUnreadMsgId = parseInt(
-              visibleMessages[visibleMessages.length - 1].dataset.id,
-              10
-            );
-          }
-        }
-
-        const hasUnreadMessages =
-          latestUnreadMsgId && latestUnreadMsgId > this.lastSendReadMessageId;
-
-        if (
-          !hasUnreadMessages &&
-          this.currentUser.chat_channel_tracking_state[this.chatChannel.id]
-            ?.unread_count > 0
-        ) {
-          // Weird state here where the chat_channel_tracking_state is wrong. Need to reset it.
-          this.chat.resetTrackingStateForChannel(this.chatChannel.id);
-        }
-
-        // Make sure new messages have come in. Do not keep pinging server with read updates
-        // if no new messages came in since last read update was sent.
-        if (this._floatOpenAndFocused() && hasUnreadMessages) {
-          this.set("lastSendReadMessageId", latestUnreadMsgId);
-          ajax(`/chat/${this.chatChannel.id}/read/${latestUnreadMsgId}.json`, {
-            method: "PUT",
-          });
-        }
-      },
-      wait
-    );
-  },
-
-  _floatOpenAndFocused() {
-    return userPresent() && this.expanded && !this.floatHidden;
-  },
-
-  _cancelPendingReadUpdate() {
-    cancel(this._updateReadTimer);
-  },
-
   @action
   sendMessage(message, uploads = []) {
     resetIdle();
@@ -1032,10 +983,7 @@ export default Component.extend({
     // Start ajax request but don't return here, we want to stage the message instantly when all messages are loaded.
     // Otherwise, we'll fetch latest and scroll to the one we just created.
     // Return a resolved promise below.
-    const msgCreationPromise = ajax(`/chat/${this.chatChannel.id}.json`, {
-      type: "POST",
-      data,
-    })
+    const msgCreationPromise = ChatApi.sendMessage(this.chatChannel.id, data)
       .catch((error) => {
         this._onSendError(data.staged_id, error);
       })
@@ -1047,13 +995,7 @@ export default Component.extend({
       });
 
     if (this.details.can_load_more_future) {
-      msgCreationPromise.then(() => {
-        this.fetchMessages(this.chatChannel, {
-          fetchFromLastMessage: true,
-        }).then(() => {
-          this.scrollToMessage(this.messages[this.messages.length - 1]);
-        });
-      });
+      msgCreationPromise.then(() => this._fetchAndScrollToLatest());
     } else {
       const stagedMessage = this._prepareSingleMessage(
         // We need to add the user and created at for presentation of staged message
@@ -1111,9 +1053,43 @@ export default Component.extend({
   _onSendError(stagedId, error) {
     const stagedMessage = this.messageLookup[`staged-${stagedId}`];
     if (stagedMessage) {
-      stagedMessage.set("error", error.jqXHR.responseJSON.errors[0]);
-      this._resetAfterSend();
+      if (error.jqXHR?.responseJSON?.errors?.length) {
+        stagedMessage.set("error", error.jqXHR.responseJSON.errors[0]);
+      } else {
+        this.chat.markNetworkAsUnreliable();
+        stagedMessage.set("error", "network_error");
+      }
     }
+
+    this._resetAfterSend();
+  },
+
+  @action
+  resendStagedMessage(stagedMessage) {
+    this.set("sendingLoading", true);
+
+    stagedMessage.set("error", null);
+
+    const data = {
+      cooked: stagedMessage.cooked,
+      message: stagedMessage.message,
+      upload_ids: stagedMessage.upload_ids,
+      staged_id: stagedMessage.stagedId,
+    };
+
+    ChatApi.sendMessage(this.chatChannel.id, data)
+      .catch((error) => {
+        this._onSendError(data.staged_id, error);
+      })
+      .then(() => {
+        this.chat.markNetworkAsReliable();
+      })
+      .finally(() => {
+        if (this._selfDeleted) {
+          return;
+        }
+        this.set("sendingLoading", false);
+      });
   },
 
   @action
@@ -1139,12 +1115,12 @@ export default Component.extend({
       });
   },
 
-  _cleanRegisteredChatChannelId() {
-    if (this.registeredChatChannelId) {
-      this._unsubscribeToUpdates(this.registeredChatChannelId);
-      this.messages.clear();
-      this.set("registeredChatChannelId", null);
-    }
+  _resetChannelState() {
+    this._unsubscribeToUpdates(this.registeredChatChannelId);
+    this.messages.clear();
+    this.messageLookup = {};
+    this.set("allPastMessagesLoaded", false);
+    this.set("registeredChatChannelId", null);
   },
 
   _resetAfterSend() {
@@ -1167,7 +1143,11 @@ export default Component.extend({
       messageIndex--
     ) {
       let message = this.messages[messageIndex];
-      if (message.user.id === this.currentUser.id && !message.error) {
+      if (
+        !message.staged &&
+        message.user.id === this.currentUser.id &&
+        !message.error
+      ) {
         lastUserMessage = message;
         break;
       }
@@ -1330,6 +1310,10 @@ export default Component.extend({
 
   @action
   onHoverMessage(message, options = {}) {
+    if (message?.staged) {
+      return;
+    }
+
     discourseDebounce(
       this,
       this.debouncedOnHoverMessage,
@@ -1342,6 +1326,10 @@ export default Component.extend({
 
   @bind
   debouncedOnHoverMessage(message, options = {}) {
+    if (this._selfDeleted) {
+      return;
+    }
+
     if (this.site.mobileView && options.desktopOnly) {
       return;
     }
@@ -1365,12 +1353,7 @@ export default Component.extend({
   restickScrolling(event) {
     event.preventDefault();
 
-    return this.fetchMessages(this.chatChannel, {
-      fetchFromLastMessage: true,
-    }).then(() => {
-      this.set("stickyScroll", true);
-      this._stickScrollToBottom();
-    });
+    return this._fetchAndScrollToLatest();
   },
 
   focusComposer() {
@@ -1425,34 +1408,34 @@ export default Component.extend({
     // doesn’t scroll out of viewport
     if (
       this.capabilities.isIOS &&
-      document.documentElement.classList.contains("keyboard-visible")
+      document.documentElement.classList.contains("keyboard-visible") &&
+      !isZoomed()
     ) {
       document.documentElement.scrollTo(0, 0);
     }
   },
 
-  // This is experimental and is likely to change in the near future
-  _scrollSidebar() {
-    const chatAutoScrollSidebar =
-      this.router.currentRoute.queryParams["enable_chat_auto_scroll"];
+  _fetchAndScrollToLatest() {
+    return this.fetchMessages(this.chatChannel, {
+      fetchFromLastMessage: true,
+    }).then(() => {
+      if (this._selfDeleted) {
+        return;
+      }
 
-    if (chatAutoScrollSidebar === "1") {
-      this.keyValueStore.setItem("enable_chat_auto_scroll", true);
-    } else if (chatAutoScrollSidebar === "0") {
-      this.keyValueStore.removeItem("enable_chat_auto_scroll", false);
-    }
+      this.set("stickyScroll", true);
+      this._stickScrollToBottom();
+    });
+  },
 
-    if (!this.keyValueStore.getItem("enable_chat_auto_scroll")) {
-      return;
-    }
-
-    if (this.fullPage) {
-      this.appEvents.trigger(
-        "sidebar:scroll-to-element",
-        "sidebar-section-chat-channels"
-      );
-    } else {
-      this.appEvents.trigger("sidebar:scroll-to-element", "sidebar-container");
+  _handleErrors(error) {
+    switch (error?.jqXHR?.status) {
+      case 429:
+      case 404:
+        popupAjaxError(error);
+        break;
+      default:
+        throw error;
     }
   },
 });

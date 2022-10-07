@@ -6,7 +6,7 @@ class ChatSeeder
 
     begin
       create_category_channel_from(SiteSetting.staff_category_id)
-      create_category_channel_from(SiteSetting.meta_category_id)
+      create_category_channel_from(SiteSetting.general_category_id)
     rescue => error
       Rails.logger.warn("Error seeding chat category - #{error.inspect}")
     ensure
@@ -18,17 +18,14 @@ class ChatSeeder
     category = Category.find_by(id: category_id)
     return if category.nil?
 
-    name =
-      if category_id == SiteSetting.meta_category_id
-        I18n.t("chat.channel.default_titles.site_feedback")
-      else
-        nil
-      end
-
-    chat_channel = ChatChannel.create!(chatable: category, auto_join_users: true, name: name)
+    chat_channel =
+      ChatChannel.create!(chatable: category, auto_join_users: true, name: category.name)
     category.custom_fields[DiscourseChat::HAS_CHAT_ENABLED] = true
     category.save!
-    UserChatChannelMembership.enforce_automatic_channel_memberships(chat_channel)
+
+    DiscourseChat::ChatChannelMembershipManager.new(
+      chat_channel,
+    ).enforce_automatic_channel_memberships
     chat_channel
   end
 end

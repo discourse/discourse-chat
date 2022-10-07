@@ -18,6 +18,14 @@ export default class ChatApi {
     ).catch(popupAjaxError);
   }
 
+  static async sendMessage(channelId, data = {}) {
+    return ajax(`/chat/${channelId}.json`, {
+      ignoreUnsent: false,
+      method: "POST",
+      data,
+    });
+  }
+
   static async chatChannels(data = {}) {
     if (data?.status === "all") {
       delete data.status;
@@ -51,7 +59,10 @@ export default class ChatApi {
       }
     ).then((updatedChannel) => {
       channel.updateMembership(updatedChannel.current_user_membership);
-      channel.set("memberships_count", updatedChannel.memberships_count);
+
+      // doesn't matter if this is inaccurate, it will be eventually consistent
+      // via the channel-metadata MessageBus channel
+      channel.set("memberships_count", channel.memberships_count - 1);
       return channel;
     });
   }
@@ -64,7 +75,10 @@ export default class ChatApi {
       }
     ).then((updatedChannel) => {
       channel.updateMembership(updatedChannel.current_user_membership);
-      channel.set("memberships_count", updatedChannel.memberships_count);
+
+      // doesn't matter if this is inaccurate, it will be eventually consistent
+      // via the channel-metadata MessageBus channel
+      channel.set("memberships_count", channel.memberships_count + 1);
       return channel;
     });
   }

@@ -9,7 +9,7 @@ describe DiscourseChat::Api::ChatChannelsController do
   end
 
   describe "#index" do
-    context "anonymous user" do
+    context "as anonymous user" do
       it "returns a 403" do
         get "/chat/api/chat_channels.json"
         expect(response.status).to eq(403)
@@ -166,7 +166,7 @@ describe DiscourseChat::Api::ChatChannelsController do
   describe "#update" do
     include_examples "channel access example", :put
 
-    context "user can’t edit channel" do
+    context "when user can’t edit channel" do
       fab!(:chat_channel) { Fabricate(:chat_channel) }
 
       before { sign_in(Fabricate(:user)) }
@@ -178,7 +178,7 @@ describe DiscourseChat::Api::ChatChannelsController do
       end
     end
 
-    context "user provided invalid params" do
+    context "when user provided invalid params" do
       fab!(:chat_channel) { Fabricate(:chat_channel, user_count: 10) }
 
       before { sign_in(Fabricate(:admin)) }
@@ -190,7 +190,7 @@ describe DiscourseChat::Api::ChatChannelsController do
       end
     end
 
-    context "user provided an empty name" do
+    context "when user provided an empty name" do
       fab!(:user) { Fabricate(:admin) }
       fab!(:chat_channel) do
         Fabricate(:chat_channel, name: "something", description: "something else")
@@ -211,7 +211,7 @@ describe DiscourseChat::Api::ChatChannelsController do
       end
     end
 
-    context "user provided an empty description" do
+    context "when user provides an empty description" do
       fab!(:user) { Fabricate(:admin) }
       fab!(:chat_channel) do
         Fabricate(:chat_channel, name: "something else", description: "something")
@@ -232,7 +232,7 @@ describe DiscourseChat::Api::ChatChannelsController do
       end
     end
 
-    context "channel is a direct message channel" do
+    context "when channel is a direct message channel" do
       fab!(:user) { Fabricate(:admin) }
       fab!(:chatable) { Fabricate(:direct_message_channel) }
       fab!(:chat_channel) { Fabricate(:chat_channel, chatable: chatable) }
@@ -246,7 +246,7 @@ describe DiscourseChat::Api::ChatChannelsController do
       end
     end
 
-    context "user provided valid params" do
+    context "when user provides valid params" do
       fab!(:user) { Fabricate(:admin) }
       fab!(:chat_channel) { Fabricate(:chat_channel) }
 

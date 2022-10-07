@@ -5,13 +5,23 @@ class StructuredChannelSerializer < ApplicationSerializer
 
   def public_channels
     object[:public_channels].map do |channel|
-      ChatChannelSerializer.new(channel, root: nil, scope: scope, membership: channel_membership(channel.id))
+      ChatChannelSerializer.new(
+        channel,
+        root: nil,
+        scope: scope,
+        membership: channel_membership(channel.id),
+      )
     end
   end
 
   def direct_message_channels
     object[:direct_message_channels].map do |channel|
-      ChatChannelSerializer.new(channel, root: nil, scope: scope, membership: channel_membership(channel.id))
+      ChatChannelSerializer.new(
+        channel,
+        root: nil,
+        scope: scope,
+        membership: channel_membership(channel.id),
+      )
     end
   end
 

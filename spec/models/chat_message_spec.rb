@@ -128,7 +128,7 @@ describe ChatMessage do
       expect(cooked).to eq(<<~COOKED.chomp)
         <div class="discourse-chat-transcript chat-transcript-chained" data-message-id="#{msg1.id}" data-username="chatbbcodeuser" data-datetime="#{msg1.created_at.iso8601}" data-channel-name="testchannel" data-channel-id="#{chat_channel.id}">
         <div class="chat-transcript-meta">
-        Originally sent in <a href="/chat/chat_channels/#{chat_channel.id}">testchannel</a>
+        Originally sent in <a href="/chat/channel/#{chat_channel.id}/-">testchannel</a>
         </div>
         <div class="chat-transcript-user">
         <div class="chat-transcript-user-avatar">
@@ -137,7 +137,7 @@ describe ChatMessage do
         <div class="chat-transcript-username">
         chatbbcodeuser</div>
         <div class="chat-transcript-datetime">
-        <a href="/chat/message/#{msg1.id}" title="#{msg1.created_at.iso8601}"></a>
+        <a href="/chat/channel/#{chat_channel.id}/-?messageId=#{msg1.id}" title="#{msg1.created_at.iso8601}"></a>
         </div>
         </div>
         <div class="chat-transcript-messages">
@@ -152,7 +152,7 @@ describe ChatMessage do
         <div class="chat-transcript-username">
         otherbbcodeuser</div>
         <div class="chat-transcript-datetime">
-        <a href="/chat/message/#{msg2.id}" title="#{msg2.created_at.iso8601}"></a>
+        <span title="#{msg2.created_at.iso8601}"></span>
         </div>
         </div>
         <div class="chat-transcript-messages">
@@ -344,6 +344,17 @@ describe ChatMessage do
         )
       end
     end
+
+    context "when unicode usernames are enabled" do
+      before { SiteSetting.unicode_usernames = true }
+
+      it "cooks unicode mentions" do
+        user = Fabricate(:unicode_user)
+        cooked = ChatMessage.cook("<h1>@#{user.username}</h1>")
+
+        expect(cooked).to eq("<p>&lt;h1&gt;@#{user.username}&lt;/h1&gt;</p>")
+      end
+    end
   end
 
   describe ".to_markdown" do
@@ -459,7 +470,7 @@ describe ChatMessage do
       expect { chat_upload_1.reload }.to raise_error(ActiveRecord::RecordNotFound)
     end
 
-    context "bookmarks" do
+    describe "bookmarks" do
       before { Bookmark.register_bookmarkable(ChatMessageBookmarkable) }
 
       it "destroys bookmarks" do

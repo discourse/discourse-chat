@@ -8,13 +8,14 @@ import {
 } from "discourse/lib/desktop-notifications";
 import { bind, observes } from "discourse-common/utils/decorators";
 
-export default Service.extend({
-  presence: service(),
-  chat: service(),
-  _inChat: false,
-  _subscribedToCore: true,
-  _subscribedToChat: false,
-  _countChatInDocTitle: true,
+export default class ChatNotificationManager extends Service {
+  @service presence;
+  @service chat;
+
+  _inChat = false;
+  _subscribedToCore = true;
+  _subscribedToChat = false;
+  _countChatInDocTitle = true;
 
   start() {
     if (!this._shouldRun()) {
@@ -35,10 +36,11 @@ export default Service.extend({
     withPluginApi("0.12.1", (api) => {
       api.onPageChange(this._pageChanged);
     });
-  },
+  }
 
   willDestroy() {
-    this._super(...arguments);
+    super.willDestroy(...arguments);
+
     if (!this._shouldRun()) {
       return;
     }
@@ -47,11 +49,11 @@ export default Service.extend({
     this._chatPresenceChannel.leave();
     this._corePresenceChannel.unsubscribe();
     this._corePresenceChannel.leave();
-  },
+  }
 
   shouldCountChatInDocTitle() {
     return this._countChatInDocTitle;
-  },
+  }
 
   @bind
   _pageChanged(path) {
@@ -63,20 +65,20 @@ export default Service.extend({
       this._chatPresenceChannel.leave();
       this._corePresenceChannel.enter({ onlyWhileActive: false });
     }
-  },
+  }
 
   @observes("_chatPresenceChannel.count", "_corePresenceChannel.count")
   _channelCountsChanged() {
     discourseDebounce(this, this._subscribeToCorrectNotifications, 2000);
-  },
+  }
 
   _coreAlertChannel() {
     return alertChannel(this.currentUser);
-  },
+  }
 
   _chatAlertChannel() {
     return `/chat${alertChannel(this.currentUser)}`;
-  },
+  }
 
   _subscribeToCorrectNotifications() {
     const oneTabForEachOpen =
@@ -89,12 +91,12 @@ export default Service.extend({
     } else {
       this._subscribeToBoth();
     }
-  },
+  }
 
   _subscribeToBoth() {
     this._subscribeToChat();
     this._subscribeToCore();
-  },
+  }
 
   _subscribeToChat(opts = { only: false }) {
     this.set("_countChatInDocTitle", true);
@@ -109,7 +111,7 @@ export default Service.extend({
       this.messageBus.unsubscribe(this._coreAlertChannel());
       this.set("_subscribedToCore", false);
     }
-  },
+  }
 
   _subscribeToCore(opts = { only: false }) {
     if (opts.only) {
@@ -125,9 +127,9 @@ export default Service.extend({
       this.messageBus.unsubscribe(this._chatAlertChannel());
       this.set("_subscribedToChat", false);
     }
-  },
+  }
 
   _shouldRun() {
     return this.chat.userCanChat && !isTesting();
-  },
-});
+  }
+}

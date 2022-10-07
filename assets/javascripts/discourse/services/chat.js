@@ -7,7 +7,7 @@ import Site from "discourse/models/site";
 import { ajax } from "discourse/lib/ajax";
 import { A } from "@ember/array";
 import { generateCookFunction } from "discourse/lib/text";
-import { next } from "@ember/runloop";
+import { cancel, next } from "@ember/runloop";
 import { and } from "@ember/object/computed";
 import { Promise } from "rsvp";
 import ChatChannel, {
@@ -16,8 +16,10 @@ import ChatChannel, {
 } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import simpleCategoryHashMentionTransform from "discourse/plugins/discourse-chat/discourse/lib/simple-category-hash-mention-transform";
 import discourseDebounce from "discourse-common/lib/debounce";
-import EmberObject from "@ember/object";
+import EmberObject, { computed } from "@ember/object";
 import ChatApi from "discourse/plugins/discourse-chat/discourse/lib/chat-api";
+import discourseLater from "discourse-common/lib/later";
+import userPresent from "discourse/lib/user-presence";
 
 export const LIST_VIEW = "list_view";
 export const CHAT_VIEW = "chat_view";
@@ -28,37 +30,61 @@ const CHAT_ONLINE_OPTIONS = {
   browserHiddenTime: 300000, // Or the browser has been in the background for 5 minutes
 };
 
-export default Service.extend({
-  activeChannel: null,
-  allChannels: null,
-  appEvents: service(),
-  chatNotificationManager: service(),
-  cook: null,
-  directMessageChannels: null,
-  hasFetchedChannels: false,
-  hasUnreadMessages: false,
-  idToTitleMap: null,
-  lastUserTrackingMessageId: null,
-  messageId: null,
-  presence: service(),
-  presenceChannel: null,
-  publicChannels: null,
-  router: service(),
-  sidebarActive: false,
-  unreadUrgentCount: null,
-  fullPageChat: service(),
-  _chatOpen: false,
-  _fetchingChannels: null,
-  directMessagesLimit: 20,
+const READ_INTERVAL = 1000;
+
+export default class Chat extends Service {
+  @service appEvents;
+  @service chatNotificationManager;
+  @service fullPageChat;
+  @service presence;
+  @service router;
+  @service site;
+
+  activeChannel = null;
+  allChannels = null;
+  cook = null;
+  directMessageChannels = null;
+  hasFetchedChannels = false;
+  hasUnreadMessages = false;
+  idToTitleMap = null;
+  lastUserTrackingMessageId = null;
+  messageId = null;
+  presenceChannel = null;
+  publicChannels = null;
+  sidebarActive = false;
+  unreadUrgentCount = null;
+  directMessagesLimit = 20;
+  _chatOpen = false;
+  _fetchingChannels = null;
+  isNetworkUnreliable = false;
+
+  @and("currentUser.has_chat_enabled", "siteSettings.chat_enabled") userCanChat;
+
+  @computed("currentUser.staff", "currentUser.groups.[]")
+  get userCanDirectMessage() {
+    if (!this.currentUser) {
+      return false;
+    }
+
+    return (
+      this.currentUser.staff ||
+      this.currentUser.isInAnyGroups(
+        (this.siteSettings.direct_message_enabled_groups || "11") // trust level 1 auto group
+          .split("|")
+          .map((groupId) => parseInt(groupId, 10))
+      )
+    );
+  }
 
   init() {
-    this._super(...arguments);
+    super.init(...arguments);
 
     if (this.userCanChat) {
       this.set("allChannels", []);
       this._subscribeToNewChannelUpdates();
       this._subscribeToUserTrackingChannel();
       this._subscribeToChannelEdits();
+      this._subscribeToChannelMetadata();
       this._subscribeToChannelStatusChange();
       this.presenceChannel = this.presence.getChannel("/chat/online");
       this.draftStore = {};
@@ -69,26 +95,52 @@ export default Service.extend({
         });
       }
     }
-  },
+  }
 
-  userCanChat: and("currentUser.has_chat_enabled", "siteSettings.chat_enabled"),
+  markNetworkAsUnreliable() {
+    cancel(this._networkCheckHandler);
+
+    this.set("isNetworkUnreliable", true);
+
+    this._networkCheckHandler = discourseLater(() => {
+      if (this.isDestroyed || this.isDestroying) {
+        return;
+      }
+
+      this.markNetworkAsReliable();
+    }, 30000);
+  }
+
+  markNetworkAsReliable() {
+    cancel(this._networkCheckHandler);
+
+    this.set("isNetworkUnreliable", false);
+  }
+
+  setupWithPreloadedChannels(channels) {
+    this.currentUser.set("chat_channel_tracking_state", {});
+    this._processChannels(channels || {});
+    this.userChatChannelTrackingStateChanged();
+    this.appEvents.trigger("chat:refresh-channels");
+  }
 
   willDestroy() {
-    this._super(...arguments);
+    super.willDestroy(...arguments);
 
     if (this.userCanChat) {
       this.set("allChannels", null);
       this._unsubscribeFromNewDmChannelUpdates();
       this._unsubscribeFromUserTrackingChannel();
       this._unsubscribeFromChannelEdits();
+      this._unsubscribeFromChannelMetadata();
       this._unsubscribeFromChannelStatusChange();
       this._unsubscribeFromAllChatChannels();
     }
-  },
+  }
 
   setActiveChannel(channel) {
     this.set("activeChannel", channel);
-  },
+  }
 
   loadCookFunction(categories) {
     if (this.cook) {
@@ -112,16 +164,16 @@ export default Service.extend({
         );
       });
     });
-  },
+  }
 
   get chatOpen() {
     return this._chatOpen;
-  },
+  }
 
   set chatOpen(status) {
     this.set("_chatOpen", status);
     this.updatePresence();
-  },
+  }
 
   updatePresence() {
     next(() => {
@@ -131,24 +183,24 @@ export default Service.extend({
         this.presenceChannel.leave();
       }
     });
-  },
+  }
 
   getDocumentTitleCount() {
     return this.chatNotificationManager.shouldCountChatInDocTitle()
       ? this.unreadUrgentCount
       : 0;
-  },
+  }
 
   _channelObject() {
     return {
       publicChannels: this.publicChannels,
       directMessageChannels: this.directMessageChannels,
     };
-  },
+  }
 
   truncateDirectMessageChannels(channels) {
     return channels.slice(0, this.directMessagesLimit);
-  },
+  }
 
   getActiveChannel() {
     let channelId;
@@ -161,7 +213,7 @@ export default Service.extend({
     return channelId
       ? this.allChannels.findBy("id", parseInt(channelId, 10))
       : null;
-  },
+  }
 
   async getChannelsWithFilter(filter, opts = { excludeActiveChannel: true }) {
     let sortedChannels = this.allChannels.sort((a, b) => {
@@ -201,7 +253,7 @@ export default Service.extend({
         return channel.title.toLowerCase().includes(lowerCasedFilter);
       }
     });
-  },
+  }
 
   switchChannelUpOrDown(direction) {
     const { activeChannel } = this;
@@ -243,7 +295,7 @@ export default Service.extend({
     if (nextChannel.id !== activeChannel.id) {
       return this.openChannel(nextChannel);
     }
-  },
+  }
 
   getChannels() {
     return new Promise((resolve) => {
@@ -259,19 +311,22 @@ export default Service.extend({
         .then(() => resolve(this._channelObject()))
         .finally(() => (this._fetchingChannels = null));
     });
-  },
+  }
 
   forceRefreshChannels() {
     this.set("hasFetchedChannels", false);
     this._unsubscribeFromAllChatChannels();
     return this.getChannels();
-  },
+  }
 
   refreshTrackingState() {
+    if (!this.currentUser) {
+      return;
+    }
+
     return ajax("/chat/chat_channels.json")
       .then((response) => {
         this.currentUser.set("chat_channel_tracking_state", {});
-
         (response.direct_message_channels || []).forEach((channel) => {
           this._updateUserTrackingState(channel);
         });
@@ -282,7 +337,7 @@ export default Service.extend({
       .finally(() => {
         this.userChatChannelTrackingStateChanged();
       });
-  },
+  }
 
   _refreshChannels() {
     return new Promise((resolve) => {
@@ -292,45 +347,47 @@ export default Service.extend({
       });
       this.currentUser.set("chat_channel_tracking_state", {});
       ajax("/chat/chat_channels.json").then((channels) => {
-        this.setProperties({
-          publicChannels: A(
-            this.sortPublicChannels(
-              (channels.public_channels || []).map((channel) =>
-                this.processChannel(channel)
-              )
-            )
-          ),
-          // We don't need to sort direct message channels, as the channel list
-          // uses a computed property to keep them ordered by `last_message_sent_at`.
-          directMessageChannels: A(
-            this.sortDirectMessageChannels(
-              (channels.direct_message_channels || []).map((channel) =>
-                this.processChannel(channel)
-              )
-            )
-          ),
-          hasFetchedChannels: true,
-          loading: false,
-        });
-        const idToTitleMap = {};
-        this.allChannels.forEach((c) => {
-          idToTitleMap[c.id] = c.title;
-        });
-        this.set("idToTitleMap", idToTitleMap);
-        this.presenceChannel.subscribe(channels.global_presence_channel_state);
+        this._processChannels(channels);
         this.userChatChannelTrackingStateChanged();
         this.appEvents.trigger("chat:refresh-channels");
         resolve(this._channelObject());
       });
     });
-  },
+  }
+
+  _processChannels(channels) {
+    this.setProperties({
+      publicChannels: A(
+        this.sortPublicChannels(
+          (channels.public_channels || []).map((channel) =>
+            this.processChannel(channel)
+          )
+        )
+      ),
+      directMessageChannels: A(
+        this.sortDirectMessageChannels(
+          (channels.direct_message_channels || []).map((channel) =>
+            this.processChannel(channel)
+          )
+        )
+      ),
+      hasFetchedChannels: true,
+      loading: false,
+    });
+    const idToTitleMap = {};
+    this.allChannels.forEach((c) => {
+      idToTitleMap[c.id] = c.title;
+    });
+    this.set("idToTitleMap", idToTitleMap);
+    this.presenceChannel.subscribe(channels.global_presence_channel_state);
+  }
 
   reSortDirectMessageChannels() {
     this.set(
       "directMessageChannels",
       this.sortDirectMessageChannels(this.directMessageChannels)
     );
-  },
+  }
 
   async getChannelBy(key, value) {
     return this.getChannels().then(() => {
@@ -339,12 +396,12 @@ export default Service.extend({
       }
       return (this.allChannels || []).findBy(key, value);
     });
-  },
+  }
 
   searchPossibleDirectMessageUsers(options) {
     // TODO: implement a chat specific user search function
     return userSearch(options);
-  },
+  }
 
   getIdealFirstChannelId() {
     // When user opens chat we need to give them the 'best' channel when they enter.
@@ -400,11 +457,11 @@ export default Service.extend({
         dmChannel
       );
     });
-  },
+  }
 
   sortPublicChannels(channels) {
     return channels.sort((a, b) => a.title.localeCompare(b.title));
-  },
+  }
 
   sortDirectMessageChannels(channels) {
     return channels.sort((a, b) => {
@@ -421,7 +478,7 @@ export default Service.extend({
         return unreadCountA > unreadCountB ? -1 : 1;
       }
     });
-  },
+  }
 
   getIdealFirstChannelIdAndTitle() {
     return this.getIdealFirstChannelId().then((channelId) => {
@@ -433,7 +490,7 @@ export default Service.extend({
         title: this.idToTitleMap[channelId],
       };
     });
-  },
+  }
 
   async openChannelAtMessage(channelId, messageId = null) {
     let channel = await this.getChannelBy("id", channelId);
@@ -450,11 +507,11 @@ export default Service.extend({
         { queryParams }
       );
     });
-  },
+  }
 
   async openChannel(channel) {
     return this._openFoundChannelAtMessage(channel);
-  },
+  }
 
   async _openFoundChannelAtMessage(channel, messageId = null) {
     if (
@@ -468,7 +525,11 @@ export default Service.extend({
 
     this.setActiveChannel(channel);
 
-    if (this.fullPageChat.isActive || this.fullPageChat.isPreferred) {
+    if (
+      this.fullPageChat.isActive ||
+      this.site.mobileView ||
+      this.fullPageChat.isPreferred
+    ) {
       const queryParams = messageId ? { messageId } : {};
 
       return this.router.transitionTo(
@@ -481,7 +542,7 @@ export default Service.extend({
       this._fireOpenFloatAppEvent(channel, messageId);
       return Promise.resolve();
     }
-  },
+  }
 
   _fireOpenFloatAppEvent(channel, messageId = null) {
     messageId
@@ -491,13 +552,17 @@ export default Service.extend({
           messageId
         )
       : this.appEvents.trigger("chat:open-channel", channel);
-  },
+  }
 
   _fireOpenMessageAppEvent(messageId) {
     this.appEvents.trigger("chat-live-pane:highlight-message", messageId);
-  },
+  }
 
   async startTrackingChannel(channel) {
+    if (!channel.current_user_membership.following) {
+      return;
+    }
+
     let existingChannel = await this.getChannelBy("id", channel.id);
     if (existingChannel) {
       return existingChannel; // User is already tracking this channel. return!
@@ -523,12 +588,15 @@ export default Service.extend({
         chatable_type: channel.chatable_type,
       });
     this.userChatChannelTrackingStateChanged();
-    if (!channel.isDirectMessageChannel) {
+    if (channel.isDirectMessageChannel) {
+      this.reSortDirectMessageChannels();
+    }
+    if (channel.isPublicChannel) {
       this.set("publicChannels", this.sortPublicChannels(this.publicChannels));
     }
     this.appEvents.trigger("chat:refresh-channels");
     return newChannel;
-  },
+  }
 
   async stopTrackingChannel(channel) {
     return this.getChannelBy("id", channel.id).then((existingChannel) => {
@@ -536,7 +604,20 @@ export default Service.extend({
         return this.forceRefreshChannels();
       }
     });
-  },
+  }
+
+  _subscribeToChannelMetadata() {
+    this.messageBus.subscribe("/chat/channel-metadata", (busData) => {
+      this.getChannelBy("id", busData.chat_channel_id).then((channel) => {
+        if (channel) {
+          channel.setProperties({
+            memberships_count: busData.memberships_count,
+          });
+          this.appEvents.trigger("chat:refresh-channel-members");
+        }
+      });
+    });
+  }
 
   _subscribeToChannelEdits() {
     this.messageBus.subscribe("/chat/channel-edits", (busData) => {
@@ -549,7 +630,7 @@ export default Service.extend({
         }
       });
     });
-  },
+  }
 
   _subscribeToChannelStatusChange() {
     this.messageBus.subscribe("/chat/channel-status", (busData) => {
@@ -576,25 +657,29 @@ export default Service.extend({
         this.appEvents.trigger("chat:refresh-channel", channel.id);
       });
     });
-  },
+  }
 
   _unsubscribeFromChannelStatusChange() {
     this.messageBus.unsubscribe("/chat/channel-status");
-  },
+  }
 
   _unsubscribeFromChannelEdits() {
     this.messageBus.unsubscribe("/chat/channel-edits");
-  },
+  }
+
+  _unsubscribeFromChannelMetadata() {
+    this.messageBus.unsubscribe("/chat/channel-metadata");
+  }
 
   _subscribeToNewChannelUpdates() {
     this.messageBus.subscribe("/chat/new-channel", (busData) => {
       this.startTrackingChannel(ChatChannel.create(busData.chat_channel));
     });
-  },
+  }
 
   _unsubscribeFromNewDmChannelUpdates() {
     this.messageBus.unsubscribe("/chat/new-channel");
-  },
+  }
 
   _subscribeToSingleUpdateChannel(channel) {
     if (channel.current_user_membership.muted) {
@@ -635,7 +720,7 @@ export default Service.extend({
         this.reSortDirectMessageChannels();
       }
     });
-  },
+  }
 
   _subscribeToMentionChannel(channel) {
     this.messageBus.subscribe(`/chat/${channel.id}/new-mentions`, () => {
@@ -649,14 +734,14 @@ export default Service.extend({
         this.userChatChannelTrackingStateChanged();
       }
     });
-  },
+  }
 
   async followChannel(channel) {
     return ChatApi.followChatChannel(channel).then(() => {
       this.startTrackingChannel(channel);
       this._subscribeToSingleUpdateChannel(channel);
     });
-  },
+  }
 
   async unfollowChannel(channel) {
     return ChatApi.unfollowChatChannel(channel).then(() => {
@@ -667,20 +752,20 @@ export default Service.extend({
         this.router.transitionTo("chat");
       }
     });
-  },
+  }
 
   _unsubscribeFromAllChatChannels() {
     (this.allChannels || []).forEach((channel) => {
       this._unsubscribeFromChatChannel(channel);
     });
-  },
+  }
 
   _unsubscribeFromChatChannel(channel) {
     this.messageBus.unsubscribe(`/chat/${channel.id}/new-messages`);
     if (!channel.isDirectMessageChannel) {
       this.messageBus.unsubscribe(`/chat/${channel.id}/new-mentions`);
     }
-  },
+  }
 
   _subscribeToUserTrackingChannel() {
     this.messageBus.subscribe(
@@ -710,13 +795,13 @@ export default Service.extend({
         }
       }
     );
-  },
+  }
 
   _unsubscribeFromUserTrackingChannel() {
     this.messageBus.unsubscribe(
       `/chat/user-tracking-state/${this.currentUser.id}`
     );
-  },
+  }
 
   resetTrackingStateForChannel(channelId) {
     const trackingState =
@@ -725,12 +810,12 @@ export default Service.extend({
       trackingState.set("unread_count", 0);
       this.userChatChannelTrackingStateChanged();
     }
-  },
+  }
 
   userChatChannelTrackingStateChanged() {
     this._recalculateUnreadMessages();
     this.appEvents.trigger("chat:user-tracking-state-changed");
-  },
+  }
 
   _recalculateUnreadMessages() {
     let unreadPublicCount = 0;
@@ -768,7 +853,7 @@ export default Service.extend({
       this.appEvents.trigger("chat:rerender-header");
       this.appEvents.trigger("notifications:changed");
     }
-  },
+  }
 
   processChannel(channel) {
     channel = ChatChannel.create(channel);
@@ -776,7 +861,7 @@ export default Service.extend({
     this._updateUserTrackingState(channel);
     this.allChannels.push(channel);
     return channel;
-  },
+  }
 
   _updateUserTrackingState(channel) {
     this.currentUser.chat_channel_tracking_state[channel.id] =
@@ -787,7 +872,7 @@ export default Service.extend({
         unread_mentions: channel.current_user_membership.unread_mentions,
         chat_message_id: channel.current_user_membership.last_read_message_id,
       });
-  },
+  }
 
   upsertDmChannelForUser(channel, user) {
     const usernames = (channel.chatable.users || [])
@@ -796,7 +881,7 @@ export default Service.extend({
       .uniq();
 
     return this.upsertDmChannelForUsernames(usernames);
-  },
+  }
 
   // @param {array} usernames - The usernames to create or fetch the direct message
   // channel for. The current user will automatically be included in the channel
@@ -812,7 +897,7 @@ export default Service.extend({
         return chatChannel;
       })
       .catch(popupAjaxError);
-  },
+  }
 
   // @param {array} usernames - The usernames to fetch the direct message
   // channel for. The current user will automatically be included as a
@@ -821,7 +906,7 @@ export default Service.extend({
     return ajax("/chat/direct_messages.json", {
       data: { usernames: usernames.uniq().join(",") },
     });
-  },
+  }
 
   _saveDraft(channelId, draft) {
     const data = { chat_channel_id: channelId };
@@ -829,8 +914,16 @@ export default Service.extend({
       data.data = JSON.stringify(draft);
     }
 
-    ajax("/chat/drafts", { type: "POST", data });
-  },
+    ajax("/chat/drafts", { type: "POST", data, ignoreUnsent: false })
+      .then(() => {
+        this.markNetworkAsReliable();
+      })
+      .catch((error) => {
+        if (!error.jqXHR?.responseJSON?.errors?.length) {
+          this.markNetworkAsUnreliable();
+        }
+      });
+  }
 
   setDraftForChannel(channel, draft) {
     if (
@@ -844,7 +937,7 @@ export default Service.extend({
     }
 
     discourseDebounce(this, this._saveDraft, channel.id, draft, 2000);
-  },
+  }
 
   getDraftForChannel(channelId) {
     return (
@@ -854,11 +947,50 @@ export default Service.extend({
         replyToMsg: null,
       }
     );
-  },
+  }
+
+  updateLastReadMessage() {
+    discourseDebounce(this, this._queuedReadMessageUpdate, READ_INTERVAL);
+  }
+
+  _queuedReadMessageUpdate() {
+    const visibleMessages = document.querySelectorAll(
+      ".chat-message-container[data-visible=true]"
+    );
+    const channel = this.activeChannel;
+
+    if (
+      !channel?.isFollowing ||
+      visibleMessages?.length === 0 ||
+      !userPresent()
+    ) {
+      return;
+    }
+
+    const latestUnreadMsgId = parseInt(
+      visibleMessages[visibleMessages.length - 1].dataset.id,
+      10
+    );
+
+    const hasUnreadMessages = latestUnreadMsgId > channel.lastSendReadMessageId;
+
+    if (
+      !hasUnreadMessages &&
+      this.currentUser.chat_channel_tracking_state[this.activeChannel.id]
+        ?.unread_count > 0
+    ) {
+      // Weird state here where the chat_channel_tracking_state is wrong. Need to reset it.
+      this.resetTrackingStateForChannel(this.activeChannel.id);
+    }
+
+    if (hasUnreadMessages) {
+      channel.updateLastReadMessage(latestUnreadMsgId);
+    }
+  }
 
   addToolbarButton() {
     deprecated(
       "Use the new chat API `api.registerChatComposerButton` instead of `chat.addToolbarButton`"
     );
-  },
-});
+  }
+}

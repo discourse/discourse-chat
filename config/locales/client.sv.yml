@@ -76,6 +76,7 @@ sv:
       collapse: "Komprimera chattruta"
       confirm_flag: "Är du säker på att du vill flagga %{username}:s meddelande?"
       deleted: "Ett meddelande raderades. [view]"
+      hidden: "Ett meddelande doldes. [view]"
       delete: "Radera"
       edited: "redigerad"
       muted: "tystad"
@@ -144,6 +145,7 @@ sv:
       silence: "Tysta användare"
       return_to_list: "Återgå till listan över kanaler"
       scroll_to_bottom: "Scrolla till botten"
+      scroll_to_new_messages: "Se nya meddelanden"
       sound:
         title: "Meddelandeljud för chatt via dator"
       sounds:
@@ -157,7 +159,6 @@ sv:
         one: "%{count} fil"
         other: "%{count} filer"
       you_flagged: "Du flaggade detta meddelande"
-      user_deleted: "borttagen"
       exit: "tillbaka"
       channel_status:
         read_only_header: "Kanalen är skrivskyddad"
@@ -188,6 +189,7 @@ sv:
         title: Titel
         description: Beskrivning
       channel_info:
+        back_to_all_channels: "Alla kanaler"
         back_to_channel: "Tillbaka"
         tabs:
           about: Om
@@ -217,7 +219,6 @@ sv:
           other: "%{count} medlemmar"
       create_channel:
         auto_join_users:
-          public_category_warning: "%{category} är en offentlig kategori. Lägg automatiskt till alla användare i den här kanalen?"
           warning_groups:
             one: Lägg automatiskt till %{members_count} användare från %{group_1}?
             other: Lägg automatiskt till %{members_count} användare från %{group_1} och %{group_2}?
@@ -253,14 +254,12 @@ sv:
         code_text: "kod text"
       quote:
         original_channel: 'Ursprungligen skickad i <a href="%{channelLink}">%{channel}</a>'
-        copy_success: "Chatt citat kopierades till urklipp."
+        copy_success: "Chattcitat kopierat till urklipp"
       notification_levels:
         never: "Aldrig"
         mention: "Endast för omnämnanden"
         always: "För all aktivitet"
       settings:
-        enable_auto_join_users: "Lägg automatiskt till alla nya och befintliga användare"
-        disable_auto_join_users: "Sluta lägga till nya användare automatiskt"
         auto_join_users_warning: "Varje användare som inte är medlem i den här kanalen och har tillgång till kategorin %{category} kommer att gå med. Är du säker?"
         desktop_notification_level: "Skrivbordsaviseringar"
         follow: "Gå med"
@@ -307,6 +306,7 @@ sv:
       selection:
         cancel: "Avbryt"
         quote_selection: "Citat i ämne"
+        copy: "Kopiera"
         move_selection_to_channel: "Flytta till kanal"
         error: "Det uppstod ett fel när chattmeddelanden skulle flyttas"
         title: "Flytta chatt till ämne"
@@ -338,14 +338,20 @@ sv:
         dm: "Personlig chatthistorik behålls i %{days} dagar."
       topic_button_title: "Chatt"
     notifications:
+      chat_invitation: "bjöd in dig att gå med i en chattkanal"
+      chat_invitation_html: "<span>%{username}</span> <span>bjöd in dig att gå med i en chattkanal</span>"
       chat_quoted: "<span>%{username}</span> %{description}"
       popup:
         chat_mention:
-          direct: '<span>%{username}</span> <span>nämnde dig i "%{channel}"</span>'
-          other: '<span>%{username}</span> <span>nämnde %{identifier} i "%{channel}"</span>'
+          direct: 'nämnde dig i "%{channel}"'
+          direct_html: '<span>%{username}</span> <span>nämnde dig i "%{channel}"</span>'
+          other: 'nämnde %{identifier} i "%{channel}"'
+          other_html: '<span>%{username}</span> <span>nämnde %{identifier} i "%{channel}"</span>'
         direct_message_chat_mention:
-          direct: "<span>%{username}</span> <span>nämnde dig i en personlig chatt</span>"
-          other: "<span>%{username}</span> <span>nämnde %{identifier} i personlig chatt</span>"
+          direct: "nämnde dig i personlig chatt"
+          direct_html: "<span>%{username}</span> <span>nämnde dig i en personlig chatt</span>"
+          other: "nämnde %{identifier} i personlig chatt"
+          other_html: "<span>%{username}</span> <span>nämnde %{identifier} i personlig chatt</span>"
         chat_message: "Nytt chattmeddelande"
         chat_quoted: "%{username} citerade ditt chattmeddelande"
       titles:
@@ -383,6 +389,14 @@ sv:
           composer_bold: "%{shortcut} Fet (endast kompositör)"
           composer_italic: "%{shortcut} Kursiv (endast kompositör)"
           composer_code: "%{shortcut} Kod (endast kompositör)"
+          drawer_open: "%{shortcut} Öppna chattmenyn"
+          drawer_close: "%{shortcut} Stäng chattmenyn"
     topic_statuses:
       chat:
         help: "Chatt är aktiverat för detta ämne"
+    user:
+      allow_private_messages: "Tillåt andra användare att skicka mig personliga meddelanden och chattmeddelanden"
+      muted_users_instructions: "Neka alla meddelanden, personliga meddelanden och direkta chattmeddelanden från dessa användare."
+      allowed_pm_users_instructions: "Tillåt endast personliga meddelanden eller chattmeddelanden från dessa användare."
+      allow_private_messages_from_specific_users: "Tillåt endast specifika användare att skicka personliga meddelanden eller chattmeddelanden"
+      ignored_users_instructions: "Neka alla inlägg, meddelanden, notifikationer, personliga meddelanden eller direkta chattmeddelanden från dessa användare."

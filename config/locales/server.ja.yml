@@ -41,6 +41,7 @@ ja:
           title: "同意しない"
         ignore:
           title: "無視"
+    personal_chat: "パーソナルチャット"
   discourse_automation:
     scriptables:
       send_chat_message:
@@ -48,3 +49,6 @@ ja:
   reviewable_score_types:
     needs_review:
       title: "要レビュー"
+  unsubscribe:
+    chat_summary:
+      never: なし

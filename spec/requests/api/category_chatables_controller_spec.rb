@@ -7,7 +7,7 @@ describe DiscourseChat::Api::CategoryChatablesController do
     fab!(:group) { Fabricate(:group) }
     fab!(:private_category) { Fabricate(:private_category, group: group) }
 
-    context "signed in as an admin" do
+    context "when signed in as an admin" do
       fab!(:admin) { Fabricate(:admin) }
 
       before { sign_in(admin) }
@@ -71,7 +71,7 @@ describe DiscourseChat::Api::CategoryChatablesController do
       end
     end
 
-    context "signed in as a regular user" do
+    context "when signed in as a regular user" do
       fab!(:user) { Fabricate(:user) }
 
       before { sign_in(user) }

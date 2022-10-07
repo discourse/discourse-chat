@@ -23,6 +23,10 @@ module DiscourseChat::GuardianExtensions
     !SpamRule::AutoSilence.prevent_posting?(@user)
   end
 
+  def can_create_direct_message?
+    is_staff? || @user.in_any_groups?(SiteSetting.direct_message_enabled_groups_map)
+  end
+
   def hidden_tag_names
     @hidden_tag_names ||= DiscourseTagging.hidden_tag_names(self)
   end
@@ -46,8 +50,8 @@ module DiscourseChat::GuardianExtensions
   end
 
   def can_create_channel_message?(chat_channel)
-    return chat_channel.open? || chat_channel.closed? if is_staff?
-    chat_channel.open?
+    valid_statuses = is_staff? ? %w[open closed] : ["open"]
+    valid_statuses.include?(chat_channel.status)
   end
 
   # This is intentionally identical to can_create_channel_message, we
@@ -95,19 +99,32 @@ module DiscourseChat::GuardianExtensions
   def can_flag_chat_messages?
     return false if @user.silenced?
 
-    @user.has_trust_level?(TrustLevel[SiteSetting.min_trust_to_flag_posts])
+    @user.in_any_groups?(SiteSetting.chat_message_flag_allowed_groups_map)
   end
 
   def can_flag_in_chat_channel?(chat_channel)
     return false if !can_modify_channel_message?(chat_channel)
-    !chat_channel.direct_message_channel?
+    !chat_channel.direct_message_channel? && can_see_chat_channel?(chat_channel)
   end
 
   def can_flag_chat_message?(chat_message)
+    return false if !authenticated? || !chat_message || chat_message.trashed? || !chat_message.user
     return false if chat_message.user.staff? && !SiteSetting.allow_flagging_staff
     return false if chat_message.user_id == @user.id
 
     can_flag_chat_messages? && can_flag_in_chat_channel?(chat_message.chat_channel)
+  end
+
+  def can_flag_message_as?(chat_message, flag_type_id, opts)
+    return false if !is_staff? && (opts[:take_action] || opts[:queue_for_review])
+
+    if flag_type_id == ReviewableScore.types[:notify_user]
+      is_warning = ActiveRecord::Type::Boolean.new.deserialize(opts[:is_warning])
+
+      return false if is_warning && !is_staff?
+    end
+
+    true
   end
 
   def can_delete_chat?(message, chatable)
@@ -159,5 +176,9 @@ module DiscourseChat::GuardianExtensions
 
   def can_react?
     can_create_chat_message?
+  end
+
+  def can_delete_category?(category)
+    super && !category.chat_channel
   end
 end

@@ -1,90 +1,90 @@
-{{#unless channel.isDirectMessageChannel}}
-  <div class="chat-form__section">
+<div class="chat-form__section">
+  <div class="chat-form__field">
+    <label class="chat-form__label">
+      <span>{{i18n "chat.settings.mute"}}</span>
+    </label>
+    <div class="chat-form__control">
+      {{combo-box
+        content=mutedOptions
+        value=channel.current_user_membership.muted
+        valueProperty="value"
+        class="channel-settings-view__muted-selector"
+        onChange=(action (fn this.saveNotificationSettings "muted"))
+      }}
+      {{#if savedMuted}}
+        <span class="channel-settings-view__saved">✓ Saved</span>
+      {{/if}}
+    </div>
+  </div>
+
+  {{#unless channel.current_user_membership.muted}}
     <div class="chat-form__field">
       <label class="chat-form__label">
-        <span>{{i18n "chat.settings.mute"}}</span>
+        <span>{{i18n "chat.settings.desktop_notification_level"}}</span>
       </label>
       <div class="chat-form__control">
         {{combo-box
-          content=mutedOptions
-          value=channel.current_user_membership.muted
+          content=notificationLevels
+          value=channel.current_user_membership.desktop_notification_level
           valueProperty="value"
-          class="channel-settings-view__muted-selector"
-          onChange=(action (fn this.saveNotificationSettings "muted"))
+          class="channel-settings-view__desktop-notification-level-selector"
+          onChange=(action
+            (fn this.saveNotificationSettings "desktop_notification_level")
+          )
         }}
-        {{#if savedMuted}}
+        {{#if savedDesktopNotificationLevel}}
           <span class="channel-settings-view__saved">✓ Saved</span>
         {{/if}}
       </div>
     </div>
 
-    {{#unless channel.current_user_membership.muted}}
-      <div class="chat-form__field">
-        <label class="chat-form__label">
-          <span>{{i18n "chat.settings.desktop_notification_level"}}</span>
-        </label>
-        <div class="chat-form__control">
-          {{combo-box
-            content=notificationLevels
-            value=channel.current_user_membership.desktop_notification_level
-            valueProperty="value"
-            class="channel-settings-view__desktop-notification-level-selector"
-            onChange=(action
-              (fn this.saveNotificationSettings "desktop_notification_level")
-            )
-          }}
-          {{#if savedDesktopNotificationLevel}}
-            <span class="channel-settings-view__saved">✓ Saved</span>
-          {{/if}}
-        </div>
+    <div class="chat-form__field">
+      <label class="chat-form__label">
+        <span>{{i18n "chat.settings.mobile_notification_level"}}</span>
+      </label>
+      <div class="chat-form__control">
+        {{combo-box
+          content=notificationLevels
+          value=channel.current_user_membership.mobile_notification_level
+          valueProperty="value"
+          class="channel-settings-view__mobile-notification-level-selector"
+          onChange=(action
+            (fn this.saveNotificationSettings "mobile_notification_level")
+          )
+        }}
+        {{#if savedMobileNotificationLevel}}
+          <span class="channel-settings-view__saved">✓ Saved</span>
+        {{/if}}
       </div>
+    </div>
+  {{/unless}}
+</div>
 
+{{#if (chat-guardian "can-edit-chat-channel")}}
+  {{#if autoJoinAvailable}}
+    <div class="chat-form__section">
       <div class="chat-form__field">
-        <label class="chat-form__label">
-          <span>{{i18n "chat.settings.mobile_notification_level"}}</span>
-        </label>
-        <div class="chat-form__control">
-          {{combo-box
-            content=notificationLevels
-            value=channel.current_user_membership.mobile_notification_level
-            valueProperty="value"
-            class="channel-settings-view__mobile-notification-level-selector"
-            onChange=(action
-              (fn this.saveNotificationSettings "mobile_notification_level")
-            )
+        {{#if channel.auto_join_users}}
+          {{d-button
+            action=(action "onDisableAutoJoinUsers")
+            label="chat.settings.disable_auto_join_users"
+            class="archive-btn chat-form__btn btn-flat"
+            icon="minus-circle"
           }}
-          {{#if savedMobileNotificationLevel}}
-            <span class="channel-settings-view__saved">✓ Saved</span>
-          {{/if}}
-        </div>
+        {{else}}
+          {{d-button
+            action=(action "onEnableAutoJoinUsers")
+            label="chat.settings.enable_auto_join_users"
+            class="archive-btn chat-form__btn btn-flat"
+            icon="user-plus"
+          }}
+        {{/if}}
       </div>
-    {{/unless}}
-  </div>
-
-  {{#if (chat-guardian "can-edit-chat-channel")}}
-    {{#if autoJoinAvailable}}
-      <div class="chat-form__section">
-        <div class="chat-form__field">
-          {{#if channel.auto_join_users}}
-            {{d-button
-              action=(action "onDisableAutoJoinUsers")
-              label="chat.settings.disable_auto_join_users"
-              class="archive-btn chat-form__btn btn-flat"
-              icon="minus-circle"
-            }}
-          {{else}}
-            {{d-button
-              action=(action "onEnableAutoJoinUsers")
-              label="chat.settings.enable_auto_join_users"
-              class="archive-btn chat-form__btn btn-flat"
-              icon="user-plus"
-            }}
-          {{/if}}
-        </div>
-      </div>
-    {{/if}}
+    </div>
   {{/if}}
+{{/if}}
 
+{{#unless channel.isDirectMessageChannel}}
   <div class="chat-form__section">
     {{#if (chat-guardian "can-edit-chat-channel")}}
       {{#if (chat-guardian "can-archive-channel" channel)}}

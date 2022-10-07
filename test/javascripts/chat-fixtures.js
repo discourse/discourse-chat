@@ -1,20 +1,6 @@
-import { cloneJSON, deepMerge } from "discourse-common/lib/object";
+import { deepMerge } from "discourse-common/lib/object";
 
 export const messageContents = ["Hello world", "What up", "heyo!"];
-
-export const siteChannel = {
-  chatable: null,
-  chatable_id: -1,
-  chatable_type: "Site",
-  chatable_url: "http://localhost:3000",
-  id: 9,
-  title: "Site",
-  current_user_membership: {
-    unread_count: 0,
-    muted: false,
-    following: true,
-  },
-};
 
 export const directMessageChannels = [
   {
@@ -45,6 +31,7 @@ export const directMessageChannels = [
         muted: false,
         following: true,
       },
+      last_message_sent_at: "2021-07-20T08:14:16.950Z",
     },
   },
   {
@@ -75,6 +62,7 @@ export const directMessageChannels = [
         muted: false,
         following: true,
       },
+      last_message_sent_at: "2021-07-05T12:04:00.850Z",
     },
   },
 ];
@@ -103,7 +91,21 @@ const chatables = {
 
 export const chatChannels = {
   public_channels: [
-    siteChannel,
+    {
+      id: 9,
+      chatable_id: 1,
+      chatable_type: "Category",
+      chatable_url: "/c/bug/1",
+      title: "Site",
+      status: "open",
+      chatable: chatables[1],
+      last_message_sent_at: "2021-07-24T08:14:16.950Z",
+      current_user_membership: {
+        unread_count: 0,
+        muted: false,
+        following: true,
+      },
+    },
     {
       id: 7,
       chatable_id: 1,
@@ -112,13 +114,13 @@ export const chatChannels = {
       title: "Bug",
       status: "open",
       chatable: chatables[1],
+      last_message_sent_at: "2021-07-15T08:14:16.950Z",
       current_user_membership: {
         unread_count: 0,
         muted: false,
         following: true,
       },
     },
-
     {
       id: 4,
       chatable_id: 8,
@@ -127,6 +129,7 @@ export const chatChannels = {
       title: "Public category",
       status: "open",
       chatable: chatables[8],
+      last_message_sent_at: "2021-07-14T08:14:16.950Z",
       current_user_membership: {
         unread_count: 0,
         muted: false,
@@ -141,6 +144,7 @@ export const chatChannels = {
       title: "Public category (read-only)",
       status: "read_only",
       chatable: chatables[8],
+      last_message_sent_at: "2021-07-10T08:14:16.950Z",
       current_user_membership: {
         unread_count: 0,
         muted: false,
@@ -155,6 +159,7 @@ export const chatChannels = {
       title: "Public category (closed)",
       status: "closed",
       chatable: chatables[8],
+      last_message_sent_at: "2021-07-21T08:14:16.950Z",
       current_user_membership: {
         unread_count: 0,
         muted: false,
@@ -169,6 +174,7 @@ export const chatChannels = {
       title: "Public category (archived)",
       status: "archived",
       chatable: chatables[8],
+      last_message_sent_at: "2021-07-25T08:14:16.950Z",
       current_user_membership: {
         unread_count: 0,
         muted: false,
@@ -183,6 +189,7 @@ export const chatChannels = {
       title: "Another Category",
       status: "open",
       chatable: chatables[12],
+      last_message_sent_at: "2021-07-02T08:14:16.950Z",
       current_user_membership: {
         unread_count: 0,
         muted: false,
@@ -192,25 +199,6 @@ export const chatChannels = {
   ],
   direct_message_channels: directMessageChannels.mapBy("chat_channel"),
 };
-
-function addSettingsAttrs(channel) {
-  channel.current_user_membership = channel.current_user_membership || {};
-  channel.current_user_membership.unread_count = 0;
-  channel.current_user_membership.unrad_mentions = 0;
-  channel.current_user_membership.muted = false;
-  channel.current_user_membership.following = true;
-  channel.current_user_membership.desktop_notification_level = "mention";
-  channel.current_user_membership.mobile_notification_level = "mention";
-}
-
-export function allChannels() {
-  let channels = cloneJSON(chatChannels);
-
-  channels.public_channels.forEach((c) => {
-    addSettingsAttrs(c);
-  });
-  return channels.public_channels;
-}
 
 const message0 = {
   id: 174,
@@ -225,6 +213,7 @@ const message0 = {
     name: null,
     avatar_template: "/letter_avatar_proxy/v4/letter/m/48db29/{size}.png",
   },
+  available_flags: ["spam"],
 };
 
 const message1 = {
@@ -258,6 +247,7 @@ const message1 = {
       width: null,
     },
   ],
+  available_flags: ["spam"],
 };
 
 const message2 = {
@@ -308,6 +298,7 @@ const message2 = {
       users: [],
     },
   },
+  available_flags: ["spam"],
 };
 
 const message3 = {
@@ -325,6 +316,7 @@ const message3 = {
     name: null,
     avatar_template: "/letter_avatar_proxy/v4/letter/m/48db29/{size}.png",
   },
+  available_flags: ["spam"],
 };
 
 export function generateChatView(loggedInUser, metaOverrides = {}) {

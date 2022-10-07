@@ -70,17 +70,14 @@ $float-height: 530px;
 }
 
 .chat-channel-unread-indicator {
+  @include unselectable;
+
   width: 14px;
   height: 14px;
   border-radius: 100%;
   box-sizing: content-box;
   border: 2px solid var(--secondary);
   -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
   background: var(--tertiary-med-or-tertiary);
   font-size: var(--font-down-2);
 
@@ -319,14 +316,14 @@ $float-height: 530px;
   min-height: 1px;
 
   .chat-messages-scroll {
-    padding-bottom: 0.5em;
     flex-grow: 1;
-    overflow-y: auto;
+    overflow-y: scroll;
     overflow-y: overlay;
     scrollbar-color: var(--primary-low) transparent;
     transition: scrollbar-color 0.2s ease-in-out;
     display: flex;
     flex-direction: column-reverse;
+    z-index: 1;
 
     &::-webkit-scrollbar {
       width: 15px;
@@ -494,7 +491,7 @@ $float-height: 530px;
     display: inline-block;
     margin-left: 5px;
     font-size: var(--font-down-1);
-    color: $primary-high;
+    color: var(--primary-high);
   }
 
   .emoji {
@@ -662,25 +659,26 @@ body.has-full-page-chat {
 
 .chat-full-page-header__left-actions {
   display: flex;
-  align-items: flex-start;
+  align-items: stretch;
 }
 
 .chat-full-page-header__title {
   display: flex;
-  align-items: flex-start;
-  width: 100%;
-  flex-direction: column;
+  align-items: stretch;
 }
 
 .chat-full-page-header__right-actions {
+  align-items: stretch;
   display: flex;
-  align-items: flex-start;
+  flex-grow: 1;
+  font-size: var(--font-up-1);
+  justify-content: flex-end;
 }
 
 .chat-full-page-header {
   .chat-channel-header-details {
     display: flex;
-    align-items: center;
+    align-items: stretch;
 
     .chat-channel-archive-status {
       text-align: right;
@@ -874,6 +872,10 @@ html.has-full-page-chat {
   height: 100%;
   width: 100%;
 
+  &.keyboard-visible body #main-outlet .full-page-chat {
+    padding-bottom: 0.2rem;
+  }
+
   body {
     height: 100%;
     width: 100%;
@@ -881,25 +883,20 @@ html.has-full-page-chat {
     #main-outlet {
       display: flex;
       flex-direction: column;
-      max-height: calc(var(--chat-vh, 1vh) * 100 - var(--header-offset));
+      max-height: calc(
+        var(--chat-vh, 1vh) * 100 - var(--header-offset, 0px) -
+          var(--composer-height, 0px)
+      );
 
       .full-page-chat {
         height: 100%;
         min-height: 0;
+        padding-bottom: env(safe-area-inset-bottom);
       }
 
       #main-chat-outlet {
         min-height: 0;
       }
-    }
-  }
-
-  // make space for the composer so it doesn't overlay chat content
-  &.composer-open {
-    #main-outlet {
-      max-height: calc(
-        100vh - calc(var(--header-offset) + calc(var(--composer-height)))
-      );
     }
   }
 
@@ -922,8 +919,7 @@ html.has-full-page-chat {
       #main-outlet-wrapper {
         // restrict the row height, including when virtual keyboard is open
         grid-template-rows: calc(
-          var(--chat-vh, 1vh) * 100 -
-            calc(var(--header-offset) + var(--footer-nav-height))
+          var(--chat-vh, 1vh) * 100 - calc(var(--header-offset))
         );
       }
     }

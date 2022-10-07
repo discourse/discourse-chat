@@ -38,6 +38,12 @@ acceptance("Discourse Chat - Keyboard shortcuts", function (needs) {
   });
 
   needs.pretender((server, helper) => {
+    // allows to create a staged message
+    server.post("/chat/:id.json", () =>
+      helper.response({
+        errors: [""],
+      })
+    );
     server.get("/chat/chat_channels.json", () => helper.response(chatChannels));
     server.get("/chat/:chatChannelId/messages.json", () =>
       helper.response(generateChatView(loggedInUser()))
@@ -218,6 +224,22 @@ acceptance("Discourse Chat - Keyboard shortcuts", function (needs) {
     );
   });
 
+  test("editing last non staged message", async function (assert) {
+    const stagedMessageText = "This is a test";
+    await visit("/latest");
+
+    this.chatService.set("sidebarActive", false);
+    await click(".header-dropdown-toggle.open-chat");
+    await fillIn(".chat-composer-input", stagedMessageText);
+    await click(".chat-composer-inline-button");
+    await triggerKeyEvent(".chat-composer-input", "keydown", "ArrowUp");
+
+    assert.notEqual(
+      query(".chat-composer-input").value.trim(),
+      stagedMessageText
+    );
+  });
+
   test("insert link shortcut", async function (assert) {
     await visit("/latest");
 
@@ -260,17 +282,40 @@ acceptance("Discourse Chat - Keyboard shortcuts", function (needs) {
     assert.ok(exists(".topic-chat-drawer-content"), "chat float is open");
   });
 
-  test("Escape to close chat float", async function (assert) {
+  test("Pressing Escape when drawer is opened", async function (assert) {
     await visit("/latest");
     this.chatService.set("sidebarActive", false);
     this.chatService.set("chatWindowFullPage", false);
-
     await click(".header-dropdown-toggle.open-chat");
     await settled();
-
     const composerInput = query(".chat-composer-input");
     await focus(composerInput);
     await triggerKeyEvent(composerInput, "keydown", "Escape");
-    assert.ok(!exists(".topic-chat-drawer-content"), "chat float is closed");
+    await settled();
+
+    assert.ok(
+      exists(".topic-chat-float-container.hidden"),
+      "it closes the drawer"
+    );
+  });
+
+  test("Pressing Escape when full page is opened", async function (assert) {
+    this.chatService.set("sidebarActive", false);
+    this.chatService.set("chatWindowFullPage", true);
+    await visit("/chat/channel/75/@hawk");
+    const composerInput = query(".chat-composer-input");
+    await focus(composerInput);
+    await triggerKeyEvent(composerInput, "keydown", "Escape");
+
+    assert.equal(
+      currentURL(),
+      "/chat/channel/75/hawk",
+      "it doesn’t close full page chat"
+    );
+
+    assert.ok(
+      exists(".chat-message-container[data-id='177']"),
+      "it doesn’t remove channel content"
+    );
   });
 });

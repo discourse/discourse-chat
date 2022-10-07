@@ -1,7 +1,7 @@
 import RestModel from "discourse/models/rest";
 import User from "discourse/models/user";
 
-const ChatMessage = RestModel.extend({});
+export default class ChatMessage extends RestModel {}
 
 ChatMessage.reopenClass({
   create(args) {
@@ -16,5 +16,3 @@ ChatMessage.reopenClass({
     }
   },
 });
-
-export default ChatMessage;

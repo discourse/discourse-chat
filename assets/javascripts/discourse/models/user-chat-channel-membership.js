@@ -1,5 +1,3 @@
 import RestModel from "discourse/models/rest";
 
-const UserChatChannelMembership = RestModel.extend({});
-
-export default UserChatChannelMembership;
+export default class UserChatChannelMembership extends RestModel {}

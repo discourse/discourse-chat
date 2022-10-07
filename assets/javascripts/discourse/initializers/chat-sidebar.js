@@ -4,12 +4,12 @@ import { withPluginApi } from "discourse/lib/plugin-api";
 import I18n from "I18n";
 import { bind } from "discourse-common/utils/decorators";
 import { tracked } from "@glimmer/tracking";
-import showModal from "discourse/lib/show-modal";
 import { DRAFT_CHANNEL_VIEW } from "discourse/plugins/discourse-chat/discourse/services/chat";
-import { avatarUrl } from "discourse/lib/utilities";
+import { avatarUrl, escapeExpression } from "discourse/lib/utilities";
 import { dasherize } from "@ember/string";
 import { emojiUnescape } from "discourse/lib/text";
 import { decorateUsername } from "discourse/helpers/decorate-username-selector";
+import { until } from "discourse/lib/formatter";
 import { inject as service } from "@ember/service";
 
 export default {
@@ -58,7 +58,7 @@ export default {
             }
 
             get name() {
-              return dasherize(slugifyChannel(this.channel.title));
+              return dasherize(slugifyChannel(this.title));
             }
 
             get route() {
@@ -66,15 +66,11 @@ export default {
             }
 
             get models() {
-              return [this.channel.id, slugifyChannel(this.channel.title)];
-            }
-
-            get title() {
-              return this.channel.title;
+              return [this.channel.id, slugifyChannel(this.title)];
             }
 
             get text() {
-              return htmlSafe(emojiUnescape(this.channel.title));
+              return htmlSafe(emojiUnescape(this.title));
             }
 
             get prefixType() {
@@ -87,6 +83,10 @@ export default {
 
             get prefixColor() {
               return this.channel.chatable.color;
+            }
+
+            get title() {
+              return this.channel.escapedTitle;
             }
 
             get prefixBadge() {
@@ -117,6 +117,11 @@ export default {
               this.chatService.publicChannels &&
               this.chatService.publicChannels[0].current_user_membership
                 .unread_count;
+
+            @tracked currentUserCanJoinPublicChannels =
+              this.sidebar.currentUser &&
+              (this.sidebar.currentUser.staff ||
+                this.sidebar.currentUser.has_joinable_public_channels);
 
             constructor() {
               super(...arguments);
@@ -172,7 +177,7 @@ export default {
             }
 
             get actions() {
-              const actions = [
+              return [
                 {
                   id: "browseChannels",
                   title: I18n.t("chat.channels_list_popup.browse"),
@@ -181,24 +186,21 @@ export default {
                   },
                 },
               ];
-              if (this.sidebar.currentUser.staff) {
-                actions.push({
-                  id: "openCreateChannelModal",
-                  title: I18n.t("chat.channels_list_popup.create"),
-                  action: () => {
-                    showModal("create-channel");
-                  },
-                });
-              }
-              return actions;
             }
 
             get actionsIcon() {
-              return "cog";
+              return "pencil-alt";
             }
 
             get links() {
               return this.sectionLinks;
+            }
+
+            get displaySection() {
+              return (
+                this.sectionLinks.length > 0 ||
+                this.currentUserCanJoinPublicChannels
+              );
             }
           };
 
@@ -218,10 +220,21 @@ export default {
               super(...arguments);
               this.channel = channel;
               this.chatService = chatService;
+
+              if (this.oneOnOneMessage) {
+                this.channel.chatable.users[0].trackStatus();
+              }
+            }
+
+            @bind
+            willDestroy() {
+              if (this.oneOnOneMessage) {
+                this.channel.chatable.users[0].stopTrackingStatus();
+              }
             }
 
             get name() {
-              return dasherize(this.channel.title);
+              return dasherize(this.title);
             }
 
             get route() {
@@ -229,11 +242,11 @@ export default {
             }
 
             get models() {
-              return [this.channel.id, slugifyChannel(this.channel.title)];
+              return [this.channel.id, slugifyChannel(this.title)];
             }
 
             get title() {
-              return this.channel.title;
+              return this.channel.escapedTitle;
             }
 
             get oneOnOneMessage() {
@@ -241,9 +254,17 @@ export default {
             }
 
             get text() {
-              const username = this.channel.title.replaceAll("@", "");
+              const username = this.title.replaceAll("@", "");
               if (this.oneOnOneMessage) {
-                return htmlSafe(`${username} ${decorateUsername(username)}`);
+                const status = this.channel.chatable.users[0].get("status");
+                const statusHtml = status ? this._userStatusHtml(status) : "";
+                return htmlSafe(
+                  `${escapeExpression(
+                    username
+                  )}${statusHtml} ${decorateUsername(
+                    escapeExpression(username)
+                  )}`
+                );
               } else {
                 return username;
               }
@@ -311,11 +332,36 @@ export default {
             get hoverTitle() {
               return I18n.t("chat.direct_messages.leave");
             }
+
+            _userStatusHtml(status) {
+              const emoji = escapeExpression(`:${status.emoji}:`);
+              const title = this._userStatusTitle(status);
+              return `<span class="user-status">${emojiUnescape(emoji, {
+                title,
+              })}</span>`;
+            }
+
+            _userStatusTitle(status) {
+              let title = `${escapeExpression(status.description)}`;
+
+              if (status.ends_at) {
+                const untilFormatted = until(
+                  status.ends_at,
+                  this.chatService.currentUser.timezone,
+                  this.chatService.currentUser.locale
+                );
+                title += ` ${untilFormatted}`;
+              }
+
+              return title;
+            }
           };
 
           const SidebarChatDirectMessagesSection = class extends BaseCustomSidebarSection {
             @service site;
             @tracked sectionLinks = [];
+            @tracked userCanDirectMessage =
+              this.chatService.userCanDirectMessage;
 
             constructor() {
               super(...arguments);
@@ -326,9 +372,9 @@ export default {
               this.chatService = container.lookup("service:chat");
               this.chatService.appEvents.on(
                 "chat:user-tracking-state-changed",
-                this._refreshPms
+                this._refreshDirectMessageChannels
               );
-              this._refreshPms();
+              this._refreshDirectMessageChannels();
             }
 
             @bind
@@ -338,12 +384,12 @@ export default {
               }
               this.chatService.appEvents.off(
                 "chat:user-tracking-state-changed",
-                this._refreshPms
+                this._refreshDirectMessageChannels
               );
             }
 
             @bind
-            _refreshPms() {
+            _refreshDirectMessageChannels() {
               const newSectionLinks = [];
               this.chatService.getChannels().then((channels) => {
                 this.chatService
@@ -373,6 +419,10 @@ export default {
             }
 
             get actions() {
+              if (!this.userCanDirectMessage) {
+                return [];
+              }
+
               return [
                 {
                   id: "startDm",
@@ -402,6 +452,10 @@ export default {
 
             get links() {
               return this.sectionLinks;
+            }
+
+            get displaySection() {
+              return this.sectionLinks.length > 0 || this.userCanDirectMessage;
             }
           };
 

@@ -4,13 +4,19 @@
   overflow-y: scroll;
   @include chat-scrollbar(var(--secondary));
 
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
   &__title {
     box-sizing: border-box;
     margin: 1rem;
   }
 
   &__content_wrapper {
-    margin: 2rem 1rem 1rem 1rem;
+    margin: 2rem 0 1rem 1rem;
     box-sizing: border-box;
 
     @include breakpoint(tablet) {
@@ -33,7 +39,7 @@
     display: flex;
     justify-content: space-between;
     align-items: end;
-    margin: 0 1rem;
+    margin: 0 0 0 1rem;
 
     @include breakpoint(tablet) {
       flex-direction: column;

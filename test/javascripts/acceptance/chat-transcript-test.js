@@ -69,7 +69,7 @@ function generateTranscriptHTML(messageContent, opts) {
   if (opts.channel && opts.multiQuote) {
     let originallySent = I18n.t("chat.quote.original_channel", {
       channel: opts.channel,
-      channelLink: `/chat/chat_channels/${opts.channelId}`,
+      channelLink: `/chat/channel/${opts.channelId}/-`,
     });
     if (opts.linkTabIndex) {
       originallySent = originallySent.replace(">", tabIndexHTML + ">");
@@ -84,9 +84,10 @@ ${originallySent}</div>`);
         .format(I18n.t("dates.long_no_year"))
     : "";
 
-  const innerDatetimeEl = opts.noLink
-    ? `<span title=\"${opts.datetime}\">${dateTimeText}</span>`
-    : `<a href=\"/chat/message/${opts.messageId}\" title=\"${opts.datetime}\"${tabIndexHTML}>${dateTimeText}</a>`;
+  const innerDatetimeEl =
+    opts.noLink || !opts.channelId
+      ? `<span title=\"${opts.datetime}\">${dateTimeText}</span>`
+      : `<a href=\"/chat/channel/${opts.channelId}/-?messageId=${opts.messageId}\" title=\"${opts.datetime}\"${tabIndexHTML}>${dateTimeText}</a>`;
   transcript.push(`<div class=\"chat-transcript-user\">
 <div class=\"chat-transcript-user-avatar\"></div>
 <div class=\"chat-transcript-username\">
@@ -96,7 +97,7 @@ ${innerDatetimeEl}</div>`);
 
   if (opts.channel && !opts.multiQuote) {
     transcript.push(
-      `<a class=\"chat-transcript-channel\" href="/chat/chat_channels/${opts.channelId}"${tabIndexHTML}>
+      `<a class=\"chat-transcript-channel\" href="/chat/channel/${opts.channelId}/-"${tabIndexHTML}>
 #${opts.channel}</a></div>`
     );
   } else {
@@ -488,7 +489,7 @@ acceptance(
       await visit("/t/-/280");
 
       assert.strictEqual(
-        query(".chat-transcript-datetime a").text.trim(),
+        query(".chat-transcript-datetime span").innerText.trim(),
         moment
           .tz("2022-01-25T05:40:39Z", "Australia/Brisbane")
           .format(I18n.t("dates.long_no_year")),

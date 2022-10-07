@@ -18,11 +18,12 @@ he:
     chat_default_channel_id: "ערוץ הצ׳אט שייפתח כברירת מחדל כאשר למשתמש אין הודעות או אזכורים שלא נקראו בערוצים אחרים."
     chat_duplicate_message_sensitivity: "הסבירות שהודעה כפולה מאותו שולח תיחסם תוך זמן קצר. מספר עשרוני בין 0 ל־1.0, כאשר 1.0 הוא ההגדרה הגבוהה ביותר (חוסם הודעות בתדירות גבוהה יותר בפרק זמן קצר יותר). ‚0’ כדי לאפשר הודעות כפולות."
     chat_minimum_message_length: "מספר התווים המזערי להודעת צ׳אט."
-    chat_allow_uploads: "לאפשר העלאות בערוצי צ׳אט ציבוריים."
+    chat_allow_uploads: "לאפשר העלאות בערוצי צ׳אט ציבוריים ובערוצי הודעות ישירות."
     chat_archive_destination_topic_status: "המצב בו נושא היעד צריך להיות לאחר שהעברת ערוץ לארכיון הושלמה. חל רק כאשר נושא היעד הוא נושא חדש ולא קיים."
     default_emoji_reactions: "רגשות אמוג׳י כברירת מחדל להודעות צ׳אט. ניתן להוסיף עד 5 אמוג׳ים לתגובה מהירה."
     errors:
       chat_default_channel: "ערוץ הצ׳אט כברירת המחדל חייב להיות ערוץ ציבורי."
+      chat_upload_not_allowed_secure_uploads: "אסור להעלות לצ׳אט כשהגדרת האתר להעלאות מאובטחות מופעלת."
   system_messages:
     chat_channel_archive_complete:
       title: "העברת ערוץ הצ׳אט לארכיון הושלמה"
@@ -35,6 +36,7 @@ he:
       text_body_template: |
         העברת ערוץ הצ׳אט **‎\#%{channel_name}** לארכיון נכשלה. %{messages_archived} הודעות הועברו לארכיון. הודעות שהועברו לארכיון באופן חלקי הועתקו לנושא [%{topic_title}](%{topic_url}). יש לבקר בכתובת הערוץ %{channel_url} כדי לנסות שוב.
   chat:
+    deleted_chat_username: נמחק
     errors:
       channel_exists_for_category: "כבר קיים ערוץ לקטגוריה ולשם האלו"
       channel_new_message_disallowed: "הערוץ %{status}, לא ניתן לשלוח הודעות חדשות"
@@ -139,6 +141,15 @@ he:
   reviewable_score_types:
     needs_review:
       title: "נדרשת סקירה"
+    notify_user:
+      chat_pm_title: 'הודעת הצ׳אט שלך תחת „%{channel_name}”'
+      chat_pm_body: "%{link}\n\n%{message}"
+    notify_moderators:
+      chat_pm_title: 'הודעת צ׳אט בערוץ „%{channel_name}” דורשת את תשומת לב הסגל'
+      chat_pm_body: "%{link}\n\n%{message}"
+  reviewables:
+    reasons:
+      chat_message_queued_by_staff: "חבר סגל חושב שהודעת צ׳אט זו דורשת בדיקה."
   user_notifications:
     chat_summary:
       deleted_user: "משתמש שנמחק"
@@ -179,3 +190,6 @@ he:
       select_title: "הגדרת תדירות הודעות סיכום בדוא״ל ל־:"
       never: לעולם לא
       when_away: רק כשלא במערכת
+  category:
+    cannot_delete:
+      has_chat_channels: "לא ניתן למחוק את הקטגוריה הזו כי יש לה ערוצי צ׳אט."

@@ -4,6 +4,12 @@ import {
   publishToMessageBus,
 } from "discourse/tests/helpers/qunit-helpers";
 import { test } from "qunit";
+import fabricators from "../../helpers/fabricators";
+import { directMessageChannels } from "discourse/plugins/discourse-chat/chat-fixtures";
+import { cloneJSON } from "discourse-common/lib/object";
+import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
+import sinon from "sinon";
+import pretender from "discourse/tests/helpers/create-pretender";
 
 acceptance("Discourse Chat | Unit | Service | chat", function (needs) {
   needs.hooks.beforeEach(function () {
@@ -25,6 +31,7 @@ acceptance("Discourse Chat | Unit | Service | chat", function (needs) {
             id: 1,
             title: "something",
             chatable_type: "Category",
+            last_message_sent_at: "2021-11-08T21:26:05.710Z",
             current_user_membership: {
               unread_count: 2,
               last_read_message_id: 123,
@@ -35,6 +42,10 @@ acceptance("Discourse Chat | Unit | Service | chat", function (needs) {
         ],
         direct_message_channels: [],
       });
+    });
+
+    server.put("/chat/:chatChannelId/read/:messageId.json", () => {
+      return helper.response({ success: "OK" });
     });
   });
 
@@ -47,6 +58,47 @@ acceptance("Discourse Chat | Unit | Service | chat", function (needs) {
     );
   }
 
+  test("#markNetworkAsReliable", async function (assert) {
+    setupMockPresenceChannel(this.chatService);
+
+    this.chatService.markNetworkAsReliable();
+
+    assert.strictEqual(this.chatService.isNetworkUnreliable, false);
+  });
+
+  test("#markNetworkAsUnreliable", async function (assert) {
+    setupMockPresenceChannel(this.chatService);
+    this.chatService.markNetworkAsUnreliable();
+
+    assert.strictEqual(this.chatService.isNetworkUnreliable, true);
+
+    await settled();
+
+    assert.strictEqual(
+      this.chatService.isNetworkUnreliable,
+      false,
+      "it resets state after a delay"
+    );
+  });
+
+  test("#startTrackingChannel - sorts dm channels", async function (assert) {
+    setupMockPresenceChannel(this.chatService);
+    const fixtures = cloneJSON(directMessageChannels).mapBy("chat_channel");
+    const channel1 = ChatChannel.create(fixtures[0]);
+    const channel2 = ChatChannel.create(fixtures[1]);
+    await this.chatService.startTrackingChannel(channel1);
+    this.currentUser.set(
+      `chat_channel_tracking_state.${channel1.id}.unread_count`,
+      0
+    );
+    await this.chatService.startTrackingChannel(channel2);
+
+    assert.strictEqual(
+      this.chatService.directMessageChannels.firstObject.title,
+      channel2.title
+    );
+  });
+
   test("#refreshTrackingState", async function (assert) {
     this.currentUser.set("chat_channel_tracking_state", {});
 
@@ -55,6 +107,18 @@ acceptance("Discourse Chat | Unit | Service | chat", function (needs) {
     assert.equal(
       this.currentUser.chat_channel_tracking_state[1].unread_count,
       2
+    );
+  });
+
+  test("attempts to track a non followed channel", async function (assert) {
+    this.currentUser.set("chat_channel_tracking_state", {});
+    const channel = fabricators.chatChannel();
+    await this.chatService.startTrackingChannel(channel);
+
+    assert.false(channel.current_user_membership.following);
+    assert.notOk(
+      this.currentUser.chat_channel_tracking_state[channel.id],
+      "it doesn’t track it"
     );
   });
 
@@ -124,4 +188,75 @@ acceptance("Discourse Chat | Unit | Service | chat", function (needs) {
       "does increment unread count"
     );
   });
+
+  test("#updateLastReadMessage - updates and tracks the last read message", async function (assert) {
+    this.currentUser.set("chat_channel_tracking_state", {});
+    sinon.stub(document, "querySelectorAll").callsFake(function () {
+      return [{ dataset: { id: 2 } }];
+    });
+    const activeChannel = fabricators.chatChannel({
+      current_user_membership: { last_read_message_id: 1, following: true },
+    });
+    this.chatService.setActiveChannel(activeChannel);
+
+    this.chatService.updateLastReadMessage();
+    await settled();
+
+    assert.equal(activeChannel.lastSendReadMessageId, 2);
+  });
+
+  test("#updateLastReadMessage - does nothing if the user doesn't follow the channel", async function (assert) {
+    this.currentUser.set("chat_channel_tracking_state", {});
+    this.chatService.setActiveChannel(
+      fabricators.chatChannel({ current_user_membership: { following: false } })
+    );
+    sinon.stub(document, "querySelectorAll").callsFake(function () {
+      return [{ dataset: { id: 1 } }];
+    });
+
+    this.chatService.updateLastReadMessage();
+    await settled();
+
+    assert.equal(this.chatService.activeChannel.lastSendReadMessageId, null);
+  });
+
+  test("#updateLastReadMessage - does nothing if the user already read the message", async function (assert) {
+    this.currentUser.set("chat_channel_tracking_state", {});
+    sinon.stub(document, "querySelectorAll").callsFake(function () {
+      return [{ dataset: { id: 1 } }];
+    });
+    const activeChannel = fabricators.chatChannel({
+      current_user_membership: { last_read_message_id: 2, following: true },
+    });
+    this.chatService.setActiveChannel(activeChannel);
+
+    this.chatService.updateLastReadMessage();
+    await settled();
+
+    assert.equal(activeChannel.lastSendReadMessageId, 2);
+  });
 });
+
+acceptance(
+  "Discourse Chat | Unit | Service | chat - no current user",
+  function (needs) {
+    needs.hooks.beforeEach(function () {
+      Object.defineProperty(this, "chatService", {
+        get: () => this.container.lookup("service:chat"),
+      });
+    });
+
+    test("#refreshTrackingState", async function (assert) {
+      pretender.get(`/chat/chat_channels.json`, () => {
+        assert.step("unexpected");
+        return [200, { "Content-Type": "application/json" }, {}];
+      });
+
+      assert.step("start");
+      await this.chatService.refreshTrackingState();
+      assert.step("end");
+
+      assert.verifySteps(["start", "end"], "it does no requests");
+    });
+  }
+);

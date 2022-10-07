@@ -202,7 +202,9 @@ class DiscourseChat::ChatNotifier
     participants, welcome_to_join =
       potential_participants.partition do |participant|
         participant.user_chat_channel_memberships.any? do |m|
-          m.chat_channel_id == @chat_channel.id && m.following == true
+          predicate = m.chat_channel_id == @chat_channel.id
+          predicate = predicate && m.following == true if @chat_channel.public_channel?
+          predicate
         end
       end
 

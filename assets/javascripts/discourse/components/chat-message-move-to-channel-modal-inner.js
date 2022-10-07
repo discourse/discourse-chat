@@ -1,10 +1,12 @@
 import Component from "@ember/component";
+import I18n from "I18n";
 import { reads } from "@ember/object/computed";
 import { isBlank } from "@ember/utils";
 import { action, computed } from "@ember/object";
 import { ajax } from "discourse/lib/ajax";
 import { inject as service } from "@ember/service";
 import { popupAjaxError } from "discourse/lib/ajax-error";
+import { htmlSafe } from "@ember/template";
 
 export default class MoveToChannelModalInner extends Component {
   @service chat;
@@ -49,5 +51,15 @@ export default class MoveToChannelModalInner extends Component {
         );
       })
       .catch(popupAjaxError);
+  }
+
+  @computed()
+  get instructionsText() {
+    return htmlSafe(
+      I18n.t("chat.move_to_channel.instructions", {
+        channelTitle: this.sourceChannel.escapedTitle,
+        count: this.selectedMessageCount,
+      })
+    );
   }
 }

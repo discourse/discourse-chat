@@ -2,14 +2,19 @@
 
 require "rails_helper"
 
-describe DiscourseChat::GuardianExtensions do
+RSpec.describe DiscourseChat::GuardianExtensions do
   fab!(:user) { Fabricate(:user) }
   fab!(:staff) { Fabricate(:user, admin: true) }
   fab!(:guardian) { Guardian.new(user) }
   fab!(:staff_guardian) { Guardian.new(staff) }
   fab!(:chat_group) { Fabricate(:group) }
+  fab!(:channel) { Fabricate(:chat_channel) }
+  fab!(:dm_channel) { Fabricate(:direct_message_chat_channel) }
 
-  before { SiteSetting.chat_allowed_groups = chat_group.id }
+  before do
+    SiteSetting.chat_allowed_groups = chat_group.id
+    chat_group.add(user)
+  end
 
   it "cannot chat if the user is not in the DiscourseChat.allowed_group_ids" do
     SiteSetting.chat_allowed_groups = ""
@@ -17,8 +22,6 @@ describe DiscourseChat::GuardianExtensions do
   end
 
   describe "chat channel" do
-    fab!(:channel) { Fabricate(:chat_channel) }
-
     it "only staff can create channels" do
       expect(guardian.can_create_chat_channel?).to eq(false)
       expect(staff_guardian.can_create_chat_channel?).to eq(true)
@@ -92,6 +95,19 @@ describe DiscourseChat::GuardianExtensions do
         channel.update(chatable: DirectMessageChannel.create!)
         expect(guardian.can_flag_in_chat_channel?(channel)).to eq(false)
       end
+
+      it "returns false if the user can't see the channel" do
+        private_group = Fabricate(:group)
+        private_category = Fabricate(:private_category, group: private_group)
+        private_channel = Fabricate(:chat_channel, chatable: private_category)
+
+        expect(guardian.can_flag_in_chat_channel?(private_channel)).to eq(false)
+
+        private_group.add(user)
+
+        # The guardian caches the secure_groups_id. Use a fresh object to reflect changes
+        expect(Guardian.new(user).can_flag_in_chat_channel?(private_channel)).to eq(true)
+      end
     end
 
     describe "#can_moderate_chat?" do
@@ -135,7 +151,7 @@ describe DiscourseChat::GuardianExtensions do
       fab!(:message) { Fabricate(:chat_message, chat_channel: channel, user: user) }
       fab!(:chatable) { Fabricate(:category) }
 
-      context "channel is closed" do
+      context "when channel is closed" do
         before { channel.update!(status: :closed) }
 
         it "disallows a owner to restore" do
@@ -147,7 +163,7 @@ describe DiscourseChat::GuardianExtensions do
         end
       end
 
-      context "chatable is a direct message" do
+      context "when chatable is a direct message" do
         fab!(:chatable) { DirectMessageChannel.create! }
 
         it "allows owner to restore" do
@@ -159,11 +175,11 @@ describe DiscourseChat::GuardianExtensions do
         end
       end
 
-      context "user is not owner of the message" do
+      context "when user is not owner of the message" do
         fab!(:message) { Fabricate(:chat_message, chat_channel: channel, user: Fabricate(:user)) }
 
-        context "chatable is a category" do
-          context "category is not restricted" do
+        context "when chatable is a category" do
+          context "when category is not restricted" do
             it "allows staff to restore" do
               expect(staff_guardian.can_restore_chat?(message, chatable)).to eq(true)
             end
@@ -173,7 +189,7 @@ describe DiscourseChat::GuardianExtensions do
             end
           end
 
-          context "category is restricted" do
+          context "when category is restricted" do
             fab!(:chatable) { Fabricate(:category, read_restricted: true) }
 
             it "allows staff to restore" do
@@ -184,7 +200,7 @@ describe DiscourseChat::GuardianExtensions do
               expect(guardian.can_restore_chat?(message, chatable)).to eq(false)
             end
 
-            context "group moderation is enabled" do
+            context "when group moderation is enabled" do
               before { SiteSetting.enable_category_group_moderation = true }
 
               it "allows a group moderator to restore" do
@@ -197,7 +213,7 @@ describe DiscourseChat::GuardianExtensions do
             end
           end
 
-          context "chatable is a direct message" do
+          context "when chatable is a direct message" do
             fab!(:chatable) { DirectMessageChannel.create! }
 
             it "allows staff to restore" do
@@ -211,13 +227,13 @@ describe DiscourseChat::GuardianExtensions do
         end
       end
 
-      context "user is owner of the message" do
-        context "chatable is a category" do
+      context "when user is owner of the message" do
+        context "when chatable is a category" do
           it "allows to restore if owner can see category" do
             expect(guardian.can_restore_chat?(message, chatable)).to eq(true)
           end
 
-          context "category is restricted" do
+          context "when category is restricted" do
             fab!(:chatable) { Fabricate(:category, read_restricted: true) }
 
             it "disallows to restore if owner can't see category" do
@@ -230,7 +246,7 @@ describe DiscourseChat::GuardianExtensions do
           end
         end
 
-        context "chatable is a direct message" do
+        context "when chatable is a direct message" do
           fab!(:chatable) { DirectMessageChannel.create! }
 
           it "allows staff to restore" do
@@ -240,6 +256,82 @@ describe DiscourseChat::GuardianExtensions do
           it "allows owner to restore" do
             expect(guardian.can_restore_chat?(message, chatable)).to eq(true)
           end
+        end
+      end
+    end
+
+    describe "#can_delete_category?" do
+      alias_matcher :be_able_to_delete_category, :be_can_delete_category
+
+      let(:category) { channel.chatable }
+
+      context "when category has no channel" do
+        before do
+          category.chat_channel.destroy
+          category.reload
+        end
+
+        it "allows to delete the category" do
+          expect(staff_guardian).to be_able_to_delete_category(category)
+        end
+      end
+
+      context "when category has a channel" do
+        it "does not allow to delete the category" do
+          expect(staff_guardian).not_to be_able_to_delete_category(category)
+        end
+      end
+    end
+  end
+
+  describe "#can_create_channel_message?" do
+    context "when user is staff" do
+      it "returns true if the channel is open" do
+        channel.update!(status: :open)
+        expect(staff_guardian.can_create_channel_message?(channel)).to eq(true)
+      end
+
+      it "returns true if the channel is closed" do
+        channel.update!(status: :closed)
+        expect(staff_guardian.can_create_channel_message?(channel)).to eq(true)
+      end
+
+      it "returns false if the channel is archived" do
+        channel.update!(status: :archived)
+        expect(staff_guardian.can_create_channel_message?(channel)).to eq(false)
+      end
+
+      context "for direct message channels" do
+        it "returns true if the channel is open" do
+          dm_channel.update!(status: :open)
+          expect(staff_guardian.can_create_channel_message?(dm_channel)).to eq(true)
+        end
+      end
+    end
+
+    context "when user is not staff" do
+      it "returns true if the channel is open" do
+        channel.update!(status: :open)
+        expect(guardian.can_create_channel_message?(channel)).to eq(true)
+      end
+
+      it "returns false if the channel is closed" do
+        channel.update!(status: :closed)
+        expect(guardian.can_create_channel_message?(channel)).to eq(false)
+      end
+
+      it "returns false if the channel is archived" do
+        channel.update!(status: :archived)
+        expect(guardian.can_create_channel_message?(channel)).to eq(false)
+      end
+
+      context "for direct message channels" do
+        before { Group.refresh_automatic_groups! }
+
+        it "it still allows the user to message even if they are not in direct_message_enabled_groups because they are not creating the channel" do
+          SiteSetting.direct_message_enabled_groups = Group::AUTO_GROUPS[:trust_level_4]
+          dm_channel.update!(status: :open)
+          expect(guardian.can_create_channel_message?(dm_channel)).to eq(true)
         end
       end
     end

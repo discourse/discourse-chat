@@ -3,6 +3,8 @@ import I18n from "I18n";
 import { computed } from "@ember/object";
 import User from "discourse/models/user";
 import UserChatChannelMembership from "discourse/plugins/discourse-chat/discourse/models/user-chat-channel-membership";
+import { ajax } from "discourse/lib/ajax";
+import { escapeExpression } from "discourse/lib/utilities";
 
 export const CHATABLE_TYPES = {
   directMessageChannel: "DirectMessageChannel",
@@ -57,14 +59,72 @@ const READONLY_STATUSES = [
   CHANNEL_STATUSES.archived,
 ];
 
-const ChatChannel = RestModel.extend({
+export default class ChatChannel extends RestModel {
+  isDraft = false;
+  lastSendReadMessageId = null;
+
+  @computed("title")
+  get escapedTitle() {
+    return escapeExpression(this.title);
+  }
+
+  @computed("description")
+  get escapedDescription() {
+    return escapeExpression(this.description);
+  }
+
+  @computed("chatable_type")
+  get isDirectMessageChannel() {
+    return this.chatable_type === CHATABLE_TYPES.directMessageChannel;
+  }
+
+  @computed("chatable_type")
+  get isCategoryChannel() {
+    return this.chatable_type === CHATABLE_TYPES.categoryChannel;
+  }
+
+  @computed("status")
+  get isOpen() {
+    return !this.status || this.status === CHANNEL_STATUSES.open;
+  }
+
+  @computed("status")
+  get isReadOnly() {
+    return this.status === CHANNEL_STATUSES.readOnly;
+  }
+
+  @computed("status")
+  get isClosed() {
+    return this.status === CHANNEL_STATUSES.closed;
+  }
+
+  @computed("status")
+  get isArchived() {
+    return this.status === CHANNEL_STATUSES.archived;
+  }
+
+  @computed("isArchived", "isOpen")
+  get isJoinable() {
+    return this.isOpen && !this.isArchived;
+  }
+
+  @computed("memberships_count")
+  get membershipsCount() {
+    return this.memberships_count;
+  }
+
+  @computed("current_user_membership.following")
+  get isFollowing() {
+    return this.current_user_membership.following;
+  }
+
   canModifyMessages(user) {
     if (user.staff) {
       return !STAFF_READONLY_STATUSES.includes(this.status);
     }
 
     return !READONLY_STATUSES.includes(this.status);
-  },
+  }
 
   updateMembership(membership) {
     this.current_user_membership.setProperties({
@@ -73,69 +133,30 @@ const ChatChannel = RestModel.extend({
       desktop_notification_level: membership.desktop_notification_level,
       mobile_notification_level: membership.mobile_notification_level,
     });
-  },
+  }
 
-  isDraft: false,
-
-  @computed("chatable_type")
-  get isDirectMessageChannel() {
-    return this.chatable_type === CHATABLE_TYPES.directMessageChannel;
-  },
-
-  @computed("chatable_type")
-  get isCategoryChannel() {
-    return this.chatable_type === CHATABLE_TYPES.categoryChannel;
-  },
-
-  @computed("status")
-  get isOpen() {
-    return !this.status || this.status === CHANNEL_STATUSES.open;
-  },
-
-  @computed("status")
-  get isReadOnly() {
-    return this.status === CHANNEL_STATUSES.readOnly;
-  },
-
-  @computed("status")
-  get isClosed() {
-    return this.status === CHANNEL_STATUSES.closed;
-  },
-
-  @computed("status")
-  get isArchived() {
-    return this.status === CHANNEL_STATUSES.archived;
-  },
-
-  @computed("isArchived", "isOpen")
-  get isJoinable() {
-    return this.isOpen && !this.isArchived;
-  },
-
-  @computed(
-    "isDirectMessageChannel",
-    "memberships_count",
-    "chatable.users.length"
-  )
-  get membershipsCount() {
-    if (this.isDirectMessageChannel) {
-      return (this.chatable.users?.length || 0) + 1;
+  updateLastReadMessage(messageId) {
+    if (!this.isFollowing || !messageId) {
+      return;
     }
 
-    return this.memberships_count;
-  },
-
-  @computed("current_user_membership.following")
-  get isFollowing() {
-    return this.current_user_membership.following;
-  },
-});
+    return ajax(`/chat/${this.id}/read/${messageId}.json`, {
+      method: "PUT",
+    }).then(() => {
+      this.set("lastSendReadMessageId", messageId);
+    });
+  }
+}
 
 ChatChannel.reopenClass({
   create(args) {
     args = args || {};
     this._initUserModels(args);
     this._initUserMembership(args);
+
+    args.lastSendReadMessageId =
+      args.current_user_membership?.last_read_message_id;
+
     return this._super(args);
   },
 
@@ -173,5 +194,3 @@ export function createDirectMessageChannelDraft() {
     },
   });
 }
-
-export default ChatChannel;

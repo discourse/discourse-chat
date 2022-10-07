@@ -336,8 +336,9 @@ describe DiscourseChat::ChatNotifier do
         expect(unreachable_users).to contain_exactly(user_3.id)
       end
 
-      context "in a personal message" do
+      context "when in a personal message" do
         let(:personal_chat_channel) do
+          Group.refresh_automatic_groups!
           DiscourseChat::DirectMessageChannelCreator.create!(
             acting_user: user_1,
             target_users: [user_1, user_2],

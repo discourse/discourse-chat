@@ -22,10 +22,7 @@ import {
 import { skip, test } from "qunit";
 import {
   chatChannels,
-  directMessageChannels,
-  generateChatView,
   messageContents,
-  siteChannel,
 } from "discourse/plugins/discourse-chat/chat-fixtures";
 import Session from "discourse/models/session";
 import { cloneJSON } from "discourse-common/lib/object";
@@ -41,132 +38,11 @@ import * as ajaxModule from "discourse/lib/ajax";
 import I18n from "I18n";
 import { CHANNEL_STATUSES } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import fabricators from "../helpers/fabricators";
-
-const baseChatPretenders = (server, helper) => {
-  server.get("/chat/:chatChannelId/messages.json", () =>
-    helper.response(generateChatView(loggedInUser()))
-  );
-  server.post("/chat/:chatChannelId.json", () => {
-    return helper.response({ success: "OK" });
-  });
-  server.get("/notifications", () => {
-    return helper.response({
-      notifications: [
-        {
-          id: 42,
-          user_id: 1,
-          notification_type: 29,
-          read: false,
-          high_priority: true,
-          created_at: "2021-01-01 12:00:00 UTC",
-          fancy_title: "First notification",
-          post_number: null,
-          topic_id: null,
-          slug: null,
-          data: {
-            chat_message_id: 174,
-            chat_channel_id: 9,
-            chat_channel_title: "Site",
-            mentioned_by_username: "hawk",
-          },
-        },
-        {
-          id: 43,
-          user_id: 1,
-          notification_type: 29,
-          read: false,
-          high_priority: true,
-          created_at: "2021-01-01 12:00:00 UTC",
-          fancy_title: "Second notification",
-          post_number: null,
-          topic_id: null,
-          slug: null,
-          data: {
-            identifier: "engineers",
-            is_group: true,
-            chat_message_id: 174,
-            chat_channel_id: 9,
-            chat_channel_title: "Site",
-            mentioned_by_username: "hawk",
-          },
-        },
-        {
-          id: 44,
-          user_id: 1,
-          notification_type: 29,
-          read: false,
-          high_priority: true,
-          created_at: "2021-01-01 12:00:00 UTC",
-          fancy_title: "Third notification",
-          post_number: null,
-          topic_id: null,
-          slug: null,
-          data: {
-            identifier: "all",
-            chat_message_id: 174,
-            chat_channel_id: 9,
-            chat_channel_title: "Site",
-            mentioned_by_username: "hawk",
-          },
-        },
-      ],
-      seen_notification_id: null,
-    });
-  });
-  server.get("/chat/lookup/:messageId.json", () =>
-    helper.response(generateChatView(loggedInUser()))
-  );
-  server.post("/uploads/lookup-urls", () => {
-    return helper.response([]);
-  });
-
-  server.get("/chat/api/category-chatables/:categoryId/permissions.json", () =>
-    helper.response({ allowed_groups: ["@everyone"], private: false })
-  );
-};
-
-function siteChannelPretender(
-  server,
-  helper,
-  opts = { unread_count: 0, muted: false }
-) {
-  let copy = cloneJSON(siteChannel);
-  copy.current_user_membership.unread_count = opts.unread_count;
-  copy.current_user_membership.muted = opts.muted;
-  server.get("/chat/chat_channels/9.json", () => helper.response(copy));
-}
-
-function directMessageChannelPretender(
-  server,
-  helper,
-  opts = { unread_count: 0, muted: false }
-) {
-  let copy = cloneJSON(directMessageChannels[0]);
-  copy.chat_channel.current_user_membership.unread_count = opts.unread_count;
-  copy.chat_channel.current_user_membership.muted = opts.muted;
-  server.get("/chat/chat_channels/75.json", () => helper.response(copy));
-}
-
-function chatChannelPretender(server, helper, changes = []) {
-  // changes is [{ id: X, unread_count: Y, muted: true}]
-  let copy = cloneJSON(chatChannels);
-  changes.forEach((change) => {
-    let found;
-    found = copy.public_channels.find((c) => c.id === change.id);
-    if (found) {
-      found.current_user_membership.unread_count = change.unread_count;
-      found.current_user_membership.muted = change.muted;
-    }
-    if (!found) {
-      found = copy.direct_message_channels.find((c) => c.id === change.id);
-      if (found) {
-        found.current_user_membership.unread_count = change.unread_count;
-        found.current_user_membership.muted = change.muted;
-      }
-    }
-  });
-  server.get("/chat/chat_channels.json", () => helper.response(copy));
-}
+import {
+  baseChatPretenders,
+  chatChannelPretender,
+  directMessageChannelPretender,
+} from "../helpers/chat-pretenders";
 
 acceptance("Discourse Chat - anonymouse 🐭 user", function (needs) {
   needs.settings({
@@ -193,7 +69,6 @@ acceptance("Discourse Chat - without unread", function (needs) {
   });
   needs.pretender((server, helper) => {
     baseChatPretenders(server, helper);
-    siteChannelPretender(server, helper);
     directMessageChannelPretender(server, helper);
     chatChannelPretender(server, helper);
     const hawkAsJson = {
@@ -239,6 +114,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
           id: 75,
           title: "hawk",
           chatable_type: "DirectMessageChannel",
+          last_message_sent_at: "2021-07-20T08:14:16.950Z",
           chatable: {
             users: [{ username: "hawk" }],
           },
@@ -268,54 +144,6 @@ acceptance("Discourse Chat - without unread", function (needs) {
     await click("#quick-access-notifications .chat-mention");
     assert.ok(visible(".topic-chat-float-container"), "chat float is open");
     assert.ok(query(".topic-chat-container").classList.contains("channel-9"));
-  });
-
-  test("Clicking mention notification inside other full page channel switches the channel", async function (assert) {
-    this.container.lookup("service:chat").set("chatWindowFullPage", true);
-    await visit("/chat/channel/75/@hawk");
-    await click(".header-dropdown-toggle.current-user");
-    await click("#quick-access-notifications .chat-mention");
-    assert.equal(currentURL(), `/chat/channel/9/site`);
-  });
-
-  test("Mention notifications contain the correct text and icon", async function (assert) {
-    await visit("/chat/channel/75/@hawk");
-    await click(".header-dropdown-toggle.current-user");
-    const notifications = queryAll("#quick-access-notifications .chat-mention");
-
-    const domParser = new DOMParser();
-    // First is a direct mention from @hawk in #Site
-    let mentionHtml = domParser.parseFromString(
-      I18n.t("notifications.popup.chat_mention.direct", {
-        username: "hawk",
-        identifier: null,
-        channel: "Site",
-      }),
-      "text/html"
-    );
-    assert.equal(notifications[0].innerText, mentionHtml.body.innerText);
-
-    // Second is a group mention from @hawk in #Site
-    mentionHtml = domParser.parseFromString(
-      I18n.t("notifications.popup.chat_mention.other", {
-        username: "hawk",
-        identifier: "@engineers",
-        channel: "Site",
-      }),
-      "text/html"
-    );
-    assert.equal(notifications[1].innerText, mentionHtml.body.innerText);
-
-    // Third is an `@all` mention from @hawk in #Site
-    mentionHtml = domParser.parseFromString(
-      I18n.t("notifications.popup.chat_mention.other", {
-        username: "hawk",
-        identifier: "@all",
-        channel: "Site",
-      }),
-      "text/html"
-    );
-    assert.equal(notifications[2].innerText, mentionHtml.body.innerText);
   });
 
   test("notifications for current user and here/all are highlighted", async function (assert) {
@@ -902,7 +730,7 @@ Widget.triangulate(arg: "test")
     await triggerEvent(message, "mouseenter");
     assert.notOk(message.querySelector(".chat-message-reaction-list"));
     await click(message.querySelector(".chat-msgactions .react-btn"));
-    await click(message.querySelector(".emoji-picker .section-group .emoji"));
+    await click(".emoji-picker.opened .section-group .emoji");
 
     assert.ok(message.querySelector(".chat-message-reaction-list"));
     const reaction = message.querySelector(
@@ -997,11 +825,7 @@ Widget.triangulate(arg: "test")
     assert.deepEqual(lastMessage.dataset.id, "202");
     await triggerEvent(lastMessage, "mouseenter");
     await click(lastMessage.querySelector(".chat-msgactions .react-btn"));
-    await click(
-      lastMessage.querySelector(
-        ".emoji-picker .section-group .emoji[alt='grin']"
-      )
-    );
+    await click(".emoji-picker.opened .section-group .emoji[alt='grin']");
 
     const reaction = lastMessage.querySelector(
       ".chat-message-reaction.grin.reacted"
@@ -1116,7 +940,6 @@ acceptance(
     });
     needs.pretender((server, helper) => {
       baseChatPretenders(server, helper);
-      siteChannelPretender(server, helper);
       directMessageChannelPretender(server, helper);
       chatChannelPretender(server, helper, [
         { id: 11, unread_count: 2, muted: false },
@@ -1187,7 +1010,6 @@ acceptance(
     });
     needs.pretender((server, helper) => {
       baseChatPretenders(server, helper);
-      siteChannelPretender(server, helper, { unread_count: 2, muted: false });
       chatChannelPretender(server, helper, [
         { id: 9, unread_count: 2, muted: false },
       ]);
@@ -1221,7 +1043,6 @@ acceptance(
     });
     needs.pretender((server, helper) => {
       baseChatPretenders(server, helper);
-      siteChannelPretender(server, helper, { unread_count: 2, muted: false });
       chatChannelPretender(server, helper, [
         { id: 9, unread_count: 2, muted: false },
       ]);
@@ -1306,7 +1127,6 @@ acceptance(
     });
     needs.pretender((server, helper) => {
       baseChatPretenders(server, helper);
-      siteChannelPretender(server, helper, { unread_count: 2, muted: false });
       directMessageChannelPretender(server, helper);
       // chat channel with ID 75 is direct message channel.
       chatChannelPretender(server, helper, [
@@ -1372,26 +1192,32 @@ acceptance(
       baseChatPretenders(server, helper);
       chatChannelPretender(server, helper);
 
+      const channel = {
+        chatable: {},
+        chatable_id: 88,
+        chatable_type: "Category",
+        chatable_url: null,
+        id: 88,
+        title: "Something",
+        last_message_sent_at: "2021-11-08T21:26:05.710Z",
+        current_user_membership: {
+          last_read_message_id: null,
+          unread_count: 0,
+          unread_mentions: 0,
+        },
+      };
+
       server.get("/chat/api/chat_channels.json", () => {
         return helper.response([fabricators.chatChannel()]);
       });
 
+      server.get("/chat/chat_channels/:id.json", () => {
+        return helper.response(channel);
+      });
+
       server.put("/chat/chat_channels", () => {
         return helper.response({
-          chat_channel: {
-            chatable: {},
-            chatable_id: 88,
-            chatable_type: "Category",
-            chatable_url: null,
-            id: 88,
-            title: "Something",
-            last_message_sent_at: "2021-11-08T21:26:05.710Z",
-            current_user_membership: {
-              last_read_message_id: null,
-              unread_count: 0,
-              unread_mentions: 0,
-            },
-          },
+          chat_channel: channel,
         });
       });
     });
@@ -1399,17 +1225,10 @@ acceptance(
     test("Create channel modal", async function (assert) {
       this.container.lookup("service:chat").set("chatWindowFullPage", true);
 
-      await visit("/chat/channel/11/another-category");
-      const dropdown = selectKit(".edit-channels-dropdown");
-      await dropdown.expand();
-      await dropdown.selectRowByValue("browseChannels");
-      assert.strictEqual(currentURL(), "/chat/browse/open");
+      await visit("/chat/browse");
+      await click(".new-channel-btn");
 
-      await visit("/chat/channel/11/another-category");
-      await dropdown.expand();
-      await dropdown.selectRowByValue("openCreateChannelModal");
-      assert.ok(exists(".create-channel-modal"));
-      assert.ok(query(".create-channel-modal .btn.create").disabled);
+      assert.strictEqual(currentURL(), "/chat/browse/open");
 
       let categories = selectKit(".create-channel-modal .category-chooser");
       await categories.expand();
@@ -1440,7 +1259,6 @@ acceptance("Discourse Chat - chat preferences", function (needs) {
   });
   needs.pretender((server, helper) => {
     baseChatPretenders(server, helper);
-    siteChannelPretender(server, helper);
     directMessageChannelPretender(server, helper);
     chatChannelPretender(server, helper);
   });
@@ -1507,7 +1325,6 @@ acceptance("Discourse Chat - plugin API", function (needs) {
   });
   needs.pretender((server, helper) => {
     baseChatPretenders(server, helper);
-    siteChannelPretender(server, helper);
     directMessageChannelPretender(server, helper);
     chatChannelPretender(server, helper);
   });
@@ -1544,7 +1361,6 @@ acceptance("Discourse Chat - image uploads", function (needs) {
   });
   needs.pretender((server, helper) => {
     baseChatPretenders(server, helper);
-    siteChannelPretender(server, helper);
     directMessageChannelPretender(server, helper);
     chatChannelPretender(server, helper);
 
@@ -1642,7 +1458,8 @@ acceptance("Discourse Chat - image uploads", function (needs) {
     const done = assert.async();
     await fillIn(".d-editor-input", "The image:\n");
 
-    appEvents.on("composer:all-uploads-complete", () => {
+    appEvents.on("composer:all-uploads-complete", async () => {
+      await settled();
       assert.strictEqual(
         query(".d-editor-input").value,
         "The image:\n![avatar.PNG|690x320](upload://yoj8pf9DdIeHRRULyw7i57GAYdz.jpeg)\n",
@@ -1673,6 +1490,45 @@ acceptance("Discourse Chat - image uploads", function (needs) {
     appEvents.trigger("composer:add-files", image);
   });
 });
+
+acceptance(
+  "Discourse Chat - image uploads - uploads not allowed",
+  function (needs) {
+    needs.user({
+      admin: false,
+      moderator: false,
+      username: "eviltrout",
+      id: 1,
+      can_chat: true,
+      has_chat_enabled: true,
+    });
+    needs.settings({
+      chat_enabled: true,
+      chat_allow_uploads: false,
+    });
+    needs.pretender((server, helper) => {
+      baseChatPretenders(server, helper);
+      directMessageChannelPretender(server, helper);
+      chatChannelPretender(server, helper);
+    });
+
+    test("uploads are not allowed in public channels", async function (assert) {
+      await visit("/chat/channel/4/public-category");
+      assert.notOk(
+        visible(".chat-composer-dropdown__trigger-btn"),
+        "composer dropdown should not be visible because uploads are not enabled and no other buttons are rendered"
+      );
+    });
+
+    test("uploads are not allowed in direct message channels", async function (assert) {
+      await visit("/chat/channel/75/@hawk");
+      assert.notOk(
+        visible(".chat-composer-dropdown__trigger-btn"),
+        "composer dropdown should not be visible because uploads are not enabled and no other buttons are rendered"
+      );
+    });
+  }
+);
 
 acceptance("Discourse Chat - Insert Date", function (needs) {
   needs.user({
@@ -1966,6 +1822,36 @@ acceptance("Discourse Chat - Composer", function (needs) {
     await settled();
 
     assert.equal(document.querySelector(".chat-composer-input").value, "Foo");
+  });
+});
+
+acceptance("Discourse Chat - Drawer", function (needs) {
+  needs.user({ has_chat_enabled: true });
+  needs.settings({ chat_enabled: true });
+  needs.pretender((server, helper) => {
+    baseChatPretenders(server, helper);
+    chatChannelPretender(server, helper);
+  });
+
+  needs.hooks.beforeEach(function () {
+    Object.defineProperty(this, "chatService", {
+      get: () => this.container.lookup("service:chat"),
+    });
+  });
+
+  test("Position after closing reduced composer", async function (assert) {
+    this.chatService.set("chatWindowFullPage", false);
+
+    await visit("/t/internationalization-localization/280");
+    await click(".btn.create");
+    await click(".toggle-preview");
+    await click(".header-dropdown-toggle.open-chat");
+    await click(".save-or-cancel .cancel");
+    const float = document.querySelector(".topic-chat-float-container");
+    const key = "--composer-right";
+    const value = getComputedStyle(float).getPropertyValue(key);
+
+    assert.strictEqual(value, "15px");
   });
 });
 

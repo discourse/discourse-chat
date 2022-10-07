@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
-require "rails_helper"
-
-describe DiscourseChat::Api::ChatChannelNotificationsSettingsController do
+RSpec.describe DiscourseChat::Api::ChatChannelNotificationsSettingsController do
   before do
     SiteSetting.chat_enabled = true
     SiteSetting.chat_allowed_groups = Group::AUTO_GROUPS[:everyone]
@@ -11,7 +9,7 @@ describe DiscourseChat::Api::ChatChannelNotificationsSettingsController do
   describe "#update" do
     include_examples "channel access example", :put, "/notifications_settings.json"
 
-    context "invalid params" do
+    context "when category channel has invalid params" do
       fab!(:chat_channel) { Fabricate(:chat_channel) }
       fab!(:user) { Fabricate(:user) }
       fab!(:membership) do
@@ -33,7 +31,7 @@ describe DiscourseChat::Api::ChatChannelNotificationsSettingsController do
       end
     end
 
-    context "valid params" do
+    context "when category channel has valid params" do
       fab!(:chat_channel) { Fabricate(:chat_channel) }
       fab!(:user) { Fabricate(:user) }
       fab!(:membership) do
@@ -66,7 +64,7 @@ describe DiscourseChat::Api::ChatChannelNotificationsSettingsController do
       end
     end
 
-    context "membership doesn’t exist" do
+    context "when membership doesn’t exist" do
       fab!(:chat_channel) { Fabricate(:chat_channel) }
       fab!(:user) { Fabricate(:user) }
 
@@ -79,37 +77,60 @@ describe DiscourseChat::Api::ChatChannelNotificationsSettingsController do
       end
     end
 
-    context "invalid params" do
-      fab!(:chatable) { Fabricate(:direct_message_channel) }
+    context "when direct message channel has invalid params" do
+      fab!(:user) { Fabricate(:user) }
+      fab!(:chatable) { Fabricate(:direct_message_channel, users: [user, Fabricate(:user)]) }
+      fab!(:chat_channel) { Fabricate(:chat_channel, chatable: chatable) }
+      fab!(:membership) do
+        Fabricate(:user_chat_channel_membership, user: user, chat_channel: chat_channel)
+      end
+
+      before { sign_in(user) }
+
+      it "doesn’t use invalid params" do
+        UserChatChannelMembership.any_instance.expects(:update!).with("muted" => "true").once
+
+        put "/chat/api/chat_channels/#{chat_channel.id}/notifications_settings.json",
+            params: {
+              muted: true,
+              foo: 1,
+            }
+
+        expect(response.status).to eq(200)
+      end
+    end
+
+    context "when direct message channel has valid params" do
+      fab!(:user) { Fabricate(:user) }
+      fab!(:chatable) { Fabricate(:direct_message_channel, users: [user, Fabricate(:user)]) }
       fab!(:chat_channel) { Fabricate(:chat_channel, chatable: chatable) }
       fab!(:membership) do
         Fabricate(
           :user_chat_channel_membership,
-          user: chatable.users[0],
-          chat_channel: chat_channel,
-          following: true,
           muted: false,
-          desktop_notification_level: UserChatChannelMembership::NOTIFICATION_LEVELS[:always],
-          mobile_notification_level: UserChatChannelMembership::NOTIFICATION_LEVELS[:always],
+          user: user,
+          chat_channel: chat_channel,
         )
       end
 
-      before { sign_in(chatable.users[0]) }
+      before { sign_in(user) }
 
-      it "raises a 422" do
+      it "updates the notifications settings" do
         put "/chat/api/chat_channels/#{chat_channel.id}/notifications_settings.json",
             params: {
               muted: true,
+              desktop_notification_level: "always",
+              mobile_notification_level: "never",
             }
 
-        expect(response.status).to eq(422)
-        expect(response.parsed_body["errors"][0]).to eq(
-          I18n.t(
-            "activerecord.errors.format",
-            attribute: "Muted",
-            message: I18n.t("activerecord.errors.messages.invalid"),
-          ),
-        )
+        expect(response.status).to eq(200)
+        expect(response.parsed_body).to match_response_schema("user_chat_channel_membership")
+
+        membership.reload
+
+        expect(membership.muted).to eq(true)
+        expect(membership.desktop_notification_level).to eq("always")
+        expect(membership.mobile_notification_level).to eq("never")
       end
     end
   end

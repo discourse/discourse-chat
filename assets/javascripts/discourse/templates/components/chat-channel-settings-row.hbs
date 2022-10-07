@@ -20,7 +20,7 @@
       {{#if (and channel.description categoryChannel)}}
         <div class="chat-channel-description">
           •
-          {{html-safe channel.description}}
+          {{channel.description}}
         </div>
       {{/if}}
       {{chat-channel-status channel=channel format="short"}}

@@ -17,6 +17,15 @@ de:
       cancel: "Abbrechen"
       cancel_reply: "Antwort verwerfen"
       chat_channels: "Kanäle"
+      channel_settings:
+        edit: "Bearbeiten"
+        join_channel: "Kanal beitreten"
+        leave_channel: "Kanal verlassen"
+        join: "Beitreten"
+        leave: "Verlassen"
+      channels_list_popup:
+        browse: "Kanäle durchsuchen"
+        create: "Kanal erstellen"
       click_to_join: "Klicke hier, um die verfügbaren Kanäle zu sehen."
       close: "Schließen"
       collapse: "Chat-Bereich ausblenden"
@@ -24,12 +33,17 @@ de:
       deleted: "Eine Nachricht wurde gelöscht. [Anzeigen]"
       delete: "Löschen"
       edited: "bearbeitet"
+      empty_state:
+        direct_message: "Du kannst auch einen persönlichen Chat mit einem oder mehreren Benutzern beginnen."
+      email_frequency:
+        never: "Niemals"
       enable: "Chat aktivieren"
       flag: "Melden"
       flagged: "Diese Nachricht wurde zur Überprüfung markiert"
       invalid_access: "Du bist nicht befugt, diesen Chat-Kanal anzuzeigen"
       in_reply_to: "Als Antwort auf"
       heading: "Chat"
+      join: "Beitreten"
       new_messages: "neue Nachrichten"
       mention_warning:
         cannot_see:
@@ -76,6 +90,12 @@ de:
         other: "%{count} Dateien"
       you_flagged: "Du hast diese Nachricht markiert"
       exit: "zurück"
+      browse:
+        title: Kanäle
+      about_view:
+        description: Beschreibung
+      channel_info:
+        back_to_channel: "Zurück"
       channel_selector:
         title: "Zum Kanal springen"
         no_channels: "Keine Kanäle entsprechen deiner Suche"
@@ -83,6 +103,7 @@ de:
         choose_category:
           label: "Kategorie auswählen"
           none: "eine auswählen …"
+          default_hint: Verwalte den Zugang, indem du die <a href=%{link} target="_blank">Sicherheitseinstellungen für %{category}</a> besuchst
         create: "Kanal erstellen"
         description: "Beschreibung (optional)"
         name: "Kanalname"
@@ -175,6 +196,7 @@ de:
       retention_reminders:
         public: "Der Kanalverlauf wird für %{days} Tage gespeichert."
         dm: "Der persönliche Chatverlauf wird für %{days} Tage gespeichert."
+      topic_button_title: "Chat"
     notifications:
       popup:
         chat_message: "Neue Chat-Nachricht"
@@ -202,3 +224,6 @@ de:
         reviewable_chat_message:
           title: "Chat-Nachricht markiert"
           flagged_by: "Markiert von"
+    keyboard_shortcuts_help:
+      chat:
+        title: "Chat"

@@ -8,8 +8,12 @@ fa_IR:
   site_settings:
     chat_enabled: "فعال کردن افزونه discourse-chat"
     chat_allowed_groups: "کاربران این گروه‌ها می‌توانند در گفتگو شرکت کنند."
+    chat_allow_uploads: "بارگذاری در کانال‌های گفتگو عمومی و کانال‌های پیام مستقیم مجاز است."
     default_emoji_reactions: "واکنش‌های شکلک پیش‌فرض برای پیام‌های گفتگو. برای واکنش سریع تا ۵ شکلک اضافه کنید."
+    errors:
+      chat_upload_not_allowed_secure_uploads: "وقتی که در تنظیمات سایت آپلودهای ایمن فعال باشد، آپلود گفتگو مجاز نیست."
   chat:
+    deleted_chat_username: حذف شده
     errors:
       channel_exists_for_category: "یک کانال دیگر از قبل برای این دسته‌بندی و نام وجود دارد"
       cant_update_direct_message_channel: "ویژگی پیام مستقیم کانال مانند نام و توضیحات را نمی‌توان به‌روز کرد."
@@ -65,6 +69,10 @@ fa_IR:
   reviewable_score_types:
     needs_review:
       title: "نیاز به بررسی دارد"
+    notify_user:
+      chat_pm_body: "%{link}\n\n%{message}"
+    notify_moderators:
+      chat_pm_body: "%{link}\n\n%{message}"
   user_notifications:
     chat_summary:
       deleted_user: "کاربر حذف شده"
@@ -90,3 +98,6 @@ fa_IR:
   unsubscribe:
     chat_summary:
       never: هرگز
+  category:
+    cannot_delete:
+      has_chat_channels: "نمی‌توان این دسته‌بندی را حذف کرد، چون دارای کانال‌های گفتگو است"

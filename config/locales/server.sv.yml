@@ -18,7 +18,6 @@ sv:
     chat_default_channel_id: "Chattkanalen som öppnas som standard när en användare inte har olästa meddelanden eller omnämnanden i andra kanaler."
     chat_duplicate_message_sensitivity: "Sannolikheten att ett duplicerat meddelande från samma avsändare blockeras inom en kort tidsperiod. Decimaltal mellan 0 och 1,0, där 1,0 är den högsta inställningen (blockerar meddelanden oftare på kortare tid). Ställ in `0` för att tillåta dubbletter av meddelanden."
     chat_minimum_message_length: "Minsta antal tecken för ett chattmeddelande."
-    chat_allow_uploads: "Tillåt uppladdningar i offentliga chattkanaler."
     chat_archive_destination_topic_status: "Den status som målämnet ska ha när ett kanalarkiv är slutfört. Detta gäller endast när målämnet är ett nytt ämne, inte ett befintligt."
     default_emoji_reactions: "Standardval av emoji-reaktioner för chattmeddelanden. Lägg till upp till 5 emojis som snabbval."
     errors:
@@ -35,6 +34,7 @@ sv:
       text_body_template: |
         Arkivering av chatt kanalen **\#%{channel_name}** misslyckades. %{messages_archived} meddelanden har arkiverats. Delvis arkiverade meddelanden kopierades till ämnet [%{topic_title}](%{topic_url}). Besök kanalen på %{channel_url} för att försöka igen.
   chat:
+    deleted_chat_username: raderad
     errors:
       channel_exists_for_category: "En kanal finns redan för denna kategori och namn"
       channel_new_message_disallowed: "Kanalen är %{status}, inga nya meddelanden kan skickas"
@@ -50,6 +50,11 @@ sv:
       message_move_invalid_channel: "Käll- och destinationskanalen måste vara offentliga kanaler."
       message_move_no_messages_found: "Inga meddelanden hittades med de angivna meddelande-ID:n."
       cant_update_direct_message_channel: "Egenskaper för direktmeddelandekanal såsom namn och beskrivning kan inte uppdateras."
+      not_accepting_dms: "Tyvärr, %{username} accepterar inte meddelanden för tillfället."
+      actor_ignoring_target_user: "Du ignorerar %{username}, så du kan inte skicka meddelanden till dem."
+      actor_muting_target_user: "Du har tystat %{username}, så du kan inte skicka meddelanden till dem."
+      actor_disallowed_dms: "Du har valt att hindra användare från att skicka dig privata och direkta meddelanden, så du kan inte skapa nya direkta meddelanden."
+      actor_preventing_target_user_from_dm: "Du har valt att hindra %{username} från att skicka privata och direkta meddelanden, så du kan inte skapa nya direktmeddelanden till dem."
     reviewables:
       actions:
         agree:

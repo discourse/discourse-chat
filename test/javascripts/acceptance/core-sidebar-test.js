@@ -5,7 +5,14 @@ import {
   queryAll,
 } from "discourse/tests/helpers/qunit-helpers";
 import { test } from "qunit";
-import { settled, visit } from "@ember/test-helpers";
+import {
+  click,
+  currentURL,
+  fillIn,
+  settled,
+  triggerKeyEvent,
+  visit,
+} from "@ember/test-helpers";
 import { directMessageChannels } from "discourse/plugins/discourse-chat/chat-fixtures";
 import { cloneJSON } from "discourse-common/lib/object";
 import I18n from "I18n";
@@ -48,6 +55,35 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
       chatable_url: null,
       id: 76,
       title: "@sam",
+      last_message_sent_at: "2021-06-01T11:15:00.000Z",
+      current_user_membership: {
+        unread_count: 0,
+        muted: false,
+        following: true,
+      },
+    });
+    directChannels.push({
+      chatable: {
+        users: [
+          {
+            id: 1,
+            username: "<script>markvanlan</script>",
+            avatar_template:
+              "/letter_avatar_proxy/v4/letter/t/f9ae1b/{size}.png",
+          },
+          {
+            id: 2,
+            username: "<script>sam</script>",
+            avatar_template:
+              "/letter_avatar_proxy/v4/letter/t/f9ae1b/{size}.png",
+          },
+        ],
+      },
+      chatable_type: "DirectMessageChannel",
+      chatable_url: null,
+      id: 77,
+      title: "@<script>sam</script>",
+      last_message_sent_at: "2021-06-01T11:15:00.000Z",
       current_user_membership: {
         unread_count: 0,
         muted: false,
@@ -63,6 +99,7 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
             title: "dev :bug:",
             chatable_type: "Category",
             chatable: { slug: "dev", read_restricted: true },
+            last_message_sent_at: "2021-11-08T21:26:05.710Z",
             current_user_membership: {
               unread_count: 0,
               unread_mentions: 0,
@@ -73,6 +110,7 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
             title: "general",
             chatable_type: "Category",
             chatable: { slug: "general" },
+            last_message_sent_at: "2021-11-08T21:26:05.710Z",
             current_user_membership: {
               unread_count: 1,
               unread_mentions: 0,
@@ -83,6 +121,18 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
             title: "random",
             chatable_type: "Category",
             chatable: { slug: "random" },
+            last_message_sent_at: "2021-11-08T21:26:05.710Z",
+            current_user_membership: {
+              unread_count: 1,
+              unread_mentions: 1,
+            },
+          },
+          {
+            id: 4,
+            title: "<script>evil</script>",
+            chatable_type: "Category",
+            chatable: { slug: "random" },
+            last_message_sent_at: "2021-11-08T21:26:05.710Z",
             current_user_membership: {
               unread_count: 1,
               unread_mentions: 1,
@@ -92,12 +142,48 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
         direct_message_channels: directChannels,
       });
     });
+
     server.get("/chat/1/messages.json", () =>
       helper.response({
         meta: { can_chat: true, user_silenced: false },
         chat_messages: [],
       })
     );
+
+    server.get("/u/search/users", () => {
+      return helper.response({
+        users: [
+          {
+            username: "hawk",
+            id: 2,
+            name: "hawk",
+            avatar_template:
+              "/letter_avatar_proxy/v4/letter/t/41988e/{size}.png",
+          },
+        ],
+      });
+    });
+
+    server.get("/chat/75/messages.json", () =>
+      helper.response({
+        meta: { can_chat: true, user_silenced: false },
+        chat_messages: [],
+      })
+    );
+
+    server.get("/chat/direct_messages.json", () => {
+      return helper.response({
+        chat_channel: {
+          id: 75,
+          title: "hawk",
+          chatable_type: "DirectMessageChannel",
+          last_message_sent_at: "2021-07-20T08:14:16.950Z",
+          chatable: {
+            users: [{ username: "hawk" }],
+          },
+        },
+      });
+    });
   });
 
   needs.hooks.beforeEach(function () {
@@ -236,9 +322,8 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
     );
 
     assert.strictEqual(
-      directLinks
-        .eq(0)
-        .find(".sidebar-section-link-prefix img")[0]
+      directLinks[0]
+        .querySelector(".sidebar-section-link-prefix img")
         .classList.contains("prefix-image"),
       true,
       "displays avatar in prefix when two participants"
@@ -251,54 +336,49 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
     );
 
     assert.ok(
-      exists(
-        directLinks
-          .eq(0)
-          .find(".sidebar-section-link-content-text .on-holiday img")[0]
+      directLinks[0].querySelector(
+        ".sidebar-section-link-content-text .on-holiday img"
       ),
       "displays flair when user is on holiday"
     );
 
     assert.strictEqual(
-      directLinks
-        .eq(0)
-        .find(".sidebar-section-link-suffix")[0]
+      directLinks[0]
+        .querySelector(".sidebar-section-link-suffix")
         .classList.contains("urgent"),
       true,
       "displays new messages indicator"
     );
 
     assert.strictEqual(
-      directLinks
-        .eq(1)
-        .find("span.sidebar-section-link-prefix")[0]
+      directLinks[1]
+        .querySelector("span.sidebar-section-link-prefix")
         .classList.contains("text"),
       true,
       "displays text in prefix when more than two participants"
     );
 
     assert.strictEqual(
-      directLinks
-        .eq(1)
-        .find(".sidebar-section-link-content-text")[0]
+      directLinks[1]
+        .querySelector(".sidebar-section-link-content-text")
         .textContent.trim(),
       "eviltrout, markvanlan",
       "displays all participants name in a link"
     );
 
     assert.ok(
-      !exists(directLinks.eq(1).find(".sidebar-section-link-suffix")[0]),
+      !directLinks[1].querySelector(".sidebar-section-link-suffix"),
       "does not display new messages indicator"
     );
     User.current().chat_channel_tracking_state[76].set("unread_count", 99);
     chatService.reSortDirectMessageChannels();
     chatService.appEvents.trigger("chat:user-tracking-state-changed");
     await settled();
+
     directLinks = queryAll(".sidebar-section-chat-dms a.sidebar-section-link");
     assert.strictEqual(
-      directLinks
-        .eq(0)
-        .find(".sidebar-section-link-content-text")[0]
+      directLinks[0]
+        .querySelector(".sidebar-section-link-content-text")
         .textContent.trim(),
       "eviltrout, markvanlan",
       "reorders private messages"
@@ -314,6 +394,57 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
   test("Plugin sidebar is hidden", async function (assert) {
     await visit("/chat/channel/1/dev");
     assert.notOk(exists(".full-page-chat .channels-list"));
+  });
+
+  test("Open a new direct conversation", async function (assert) {
+    await visit("/");
+
+    await click(".sidebar-section-chat-dms .sidebar-section-header-button");
+    assert.ok(exists(".direct-message-creator"));
+
+    await fillIn(".filter-usernames", "hawk");
+    await triggerKeyEvent(".filter-usernames", "keydown", "Enter");
+    assert.strictEqual(currentURL(), "/chat/draft-channel");
+  });
+
+  test("Escapes public channel titles", async function (assert) {
+    await visit("/");
+    const evilChannel = query(
+      ".sidebar-section-chat-channels .sidebar-section-link-wrapper .sidebar-section-link"
+    );
+
+    assert.strictEqual(evilChannel.title, "&lt;script&gt;evil&lt;/script&gt;");
+    assert.ok(
+      evilChannel.className.includes(
+        "sidebar-section-link-ltscriptgtevilltscriptgt"
+      )
+    );
+    assert.strictEqual(
+      evilChannel
+        .querySelector(".sidebar-section-link-content-text")
+        .innerHTML.trim(),
+      "&lt;script&gt;evil&lt;/script&gt;"
+    );
+  });
+
+  test("Escapes dm channel titles", async function (assert) {
+    await visit("/");
+    const evilChannel = queryAll(
+      ".sidebar-section-chat-dms .sidebar-section-link-wrapper .sidebar-section-link"
+    )[3];
+
+    assert.strictEqual(evilChannel.title, "@&lt;script&gt;sam&lt;/script&gt;");
+    assert.ok(
+      evilChannel.className.includes(
+        "sidebar-section-link-@&lt;script&gt;sam&lt;/script&gt;"
+      )
+    );
+    assert.strictEqual(
+      evilChannel
+        .querySelector(".sidebar-section-link-content-text")
+        .innerHTML.trim(),
+      "&amp;lt;script&amp;gt;sam&amp;lt;/script&amp;gt;"
+    );
   });
 });
 
@@ -333,6 +464,7 @@ acceptance("Discourse Chat - Plugin Sidebar", function (needs) {
             title: "dev :bug:",
             chatable_type: "Category",
             chatable: { slug: "dev", read_restricted: true },
+            last_message_sent_at: "2021-11-08T21:26:05.710Z",
             current_user_membership: {
               unread_count: 1,
               unread_mentions: 1,
@@ -343,6 +475,7 @@ acceptance("Discourse Chat - Plugin Sidebar", function (needs) {
             title: "general",
             chatable_type: "Category",
             chatable: { slug: "general" },
+            last_message_sent_at: "2021-11-08T21:26:05.710Z",
             current_user_membership: {
               unread_count: 1,
               unread_mentions: 1,
@@ -353,6 +486,7 @@ acceptance("Discourse Chat - Plugin Sidebar", function (needs) {
             title: "random",
             chatable_type: "Category",
             chatable: { slug: "random" },
+            last_message_sent_at: "2021-11-08T21:26:05.710Z",
             current_user_membership: {
               unread_count: 1,
               unread_mentions: 1,
@@ -376,3 +510,150 @@ acceptance("Discourse Chat - Plugin Sidebar", function (needs) {
     assert.ok(exists(".full-page-chat .channels-list"));
   });
 });
+
+acceptance(
+  "Discourse Chat - Core Sidebar - no joinable public channels, staff",
+  function (needs) {
+    needs.user({ has_chat_enabled: true, has_joinable_public_channels: false });
+
+    needs.settings({
+      chat_enabled: true,
+      enable_experimental_sidebar_hamburger: true,
+      enable_sidebar: true,
+    });
+
+    needs.pretender((server, helper) => {
+      server.get("/chat/chat_channels.json", () => {
+        return helper.response({
+          public_channels: [],
+          direct_message_channels: [],
+        });
+      });
+    });
+
+    test("Chat channels section visibility", async function (assert) {
+      await visit("/");
+
+      assert.ok(
+        exists(".sidebar-section-chat-channels"),
+        "it shows the section for staff"
+      );
+    });
+  }
+);
+
+acceptance(
+  "Discourse Chat - Core Sidebar - no joinable public channels, regular user",
+  function (needs) {
+    needs.user({
+      has_chat_enabled: true,
+      has_joinable_public_channels: false,
+      moderator: false,
+      admin: false,
+    });
+
+    needs.settings({
+      chat_enabled: true,
+      enable_experimental_sidebar_hamburger: true,
+      enable_sidebar: true,
+    });
+
+    needs.pretender((server, helper) => {
+      server.get("/chat/chat_channels.json", () => {
+        return helper.response({
+          public_channels: [],
+          direct_message_channels: [],
+        });
+      });
+    });
+
+    test("Chat channels section visibility", async function (assert) {
+      await visit("/");
+
+      assert.notOk(
+        exists(".sidebar-section-chat-channels"),
+        "it doesn’t show the section for regular user"
+      );
+    });
+  }
+);
+
+acceptance(
+  "Discourse Chat - Core Sidebar - regular user with no direct message channels who cannot send direct messages",
+  function (needs) {
+    needs.user({
+      has_chat_enabled: true,
+      moderator: false,
+      admin: false,
+    });
+
+    needs.settings({
+      chat_enabled: true,
+      enable_experimental_sidebar_hamburger: true,
+      enable_sidebar: true,
+      direct_message_enabled_groups: "13", // trust_level_3 auto group ID;
+    });
+
+    needs.pretender((server, helper) => {
+      server.get("/chat/chat_channels.json", () => {
+        return helper.response({
+          public_channels: [],
+          direct_message_channels: [],
+        });
+      });
+    });
+
+    test("Direct message channels section visibility", async function (assert) {
+      await visit("/");
+
+      assert.notOk(
+        exists(".sidebar-section-chat-dms"),
+        "it doesn’t show the section for regular user"
+      );
+    });
+  }
+);
+
+acceptance(
+  "Discourse Chat - Core Sidebar - regular user with existing direct message channels who cannot send direct messages",
+  function (needs) {
+    needs.user({
+      has_chat_enabled: true,
+      moderator: false,
+      admin: false,
+    });
+
+    needs.settings({
+      chat_enabled: true,
+      enable_experimental_sidebar_hamburger: true,
+      enable_sidebar: true,
+      direct_message_enabled_groups: "13", // trust_level_3 auto group ID;
+    });
+
+    needs.pretender((server, helper) => {
+      let directChannels = cloneJSON(directMessageChannels).mapBy(
+        "chat_channel"
+      );
+      server.get("/chat/chat_channels.json", () => {
+        return helper.response({
+          public_channels: [],
+          direct_message_channels: directChannels,
+        });
+      });
+    });
+
+    test("Direct message channels section visibility", async function (assert) {
+      await visit("/");
+
+      assert.ok(
+        exists(".sidebar-section-chat-dms"),
+        "it does show the section for a regular user"
+      );
+
+      assert.notOk(
+        exists(".sidebar-section-chat-dms .sidebar-section-header-button"),
+        "user cannot see the create DM channel button"
+      );
+    });
+  }
+);

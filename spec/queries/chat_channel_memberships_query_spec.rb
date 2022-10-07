@@ -11,17 +11,17 @@ describe ChatChannelMembershipsQuery do
     SiteSetting.chat_allowed_groups = Group::AUTO_GROUPS[:everyone]
   end
 
-  context "chatable exists" do
-    context "chatable is public" do
+  context "when chatable exists" do
+    context "when chatable is public" do
       fab!(:channel_1) { Fabricate(:chat_channel) }
 
-      context "no memberships exists" do
+      context "when no memberships exists" do
         it "returns an empty array" do
           expect(described_class.call(channel_1)).to eq([])
         end
       end
 
-      context "memberships exist" do
+      context "when memberships exist" do
         before do
           UserChatChannelMembership.create(user: user_1, chat_channel: channel_1, following: true)
           UserChatChannelMembership.create(user: user_2, chat_channel: channel_1, following: true)
@@ -35,15 +35,15 @@ describe ChatChannelMembershipsQuery do
       end
     end
 
-    context "chatable is restricted" do
+    context "when chatable is restricted" do
       fab!(:chatters_group) { Fabricate(:group) }
       fab!(:private_category) { Fabricate(:private_category, group: chatters_group) }
       fab!(:channel_1) { Fabricate(:chat_channel, chatable: private_category) }
 
-      context "user is in group" do
+      context "when user is in group" do
         before { chatters_group.add(user_1) }
 
-        context "membership exists" do
+        context "when membership exists" do
           before do
             UserChatChannelMembership.create(user: user_1, chat_channel: channel_1, following: true)
           end
@@ -64,9 +64,18 @@ describe ChatChannelMembershipsQuery do
 
             expect(described_class.call(channel_1).pluck(:user_id)).to contain_exactly(user_1.id)
           end
+
+          it "returns the membership if the user still has access through a staff group" do
+            chatters_group.remove(user_1)
+            Group.find_by(id: Group::AUTO_GROUPS[:staff]).add(user_1)
+
+            memberships = described_class.call(channel_1)
+
+            expect(memberships.pluck(:user_id)).to include(user_1.id)
+          end
         end
 
-        context "membership doesn’t exist" do
+        context "when membership doesn’t exist" do
           it "doesn’t list the user" do
             memberships = described_class.call(channel_1)
 
@@ -75,8 +84,8 @@ describe ChatChannelMembershipsQuery do
         end
       end
 
-      context "user is not in group" do
-        context "membership exists" do
+      context "when user is not in group" do
+        context "when membership exists" do
           before do
             UserChatChannelMembership.create(user: user_1, chat_channel: channel_1, following: true)
           end
@@ -88,7 +97,7 @@ describe ChatChannelMembershipsQuery do
           end
         end
 
-        context "membership doesn’t exist" do
+        context "when membership doesn’t exist" do
           it "doesn’t list the user" do
             memberships = described_class.call(channel_1)
 
@@ -98,17 +107,17 @@ describe ChatChannelMembershipsQuery do
       end
     end
 
-    context "chatable is direct channel" do
+    context "when chatable is direct channel" do
       fab!(:chatable_1) { Fabricate(:direct_message_channel, users: [user_1, user_2]) }
       fab!(:channel_1) { Fabricate(:chat_channel, chatable: chatable_1) }
 
-      context "no memberships exists" do
+      context "when no memberships exists" do
         it "returns an empty array" do
           expect(described_class.call(channel_1)).to eq([])
         end
       end
 
-      context "memberships exist" do
+      context "when memberships exist" do
         before do
           UserChatChannelMembership.create!(
             user: user_1,
@@ -134,7 +143,7 @@ describe ChatChannelMembershipsQuery do
       end
     end
 
-    context "pagination" do
+    describe "pagination" do
       fab!(:channel_1) { Fabricate(:chat_channel) }
 
       before do
@@ -183,7 +192,7 @@ describe ChatChannelMembershipsQuery do
         UserChatChannelMembership.create(user: user_2, chat_channel: channel_1, following: true)
       end
 
-      context "prioritizes username in ux" do
+      context "when prioritizes username in ux is enabled" do
         before { SiteSetting.prioritize_username_in_ux = true }
 
         it "is using ascending order on username" do
@@ -194,7 +203,7 @@ describe ChatChannelMembershipsQuery do
         end
       end
 
-      context "doesn’t prioritize username in ux" do
+      context "when prioritize username in ux is disabled" do
         before { SiteSetting.prioritize_username_in_ux = false }
 
         it "is using ascending order on name" do
@@ -204,7 +213,7 @@ describe ChatChannelMembershipsQuery do
           expect(memberships[1].user).to eq(user_1)
         end
 
-        context "enable names is disabled" do
+        context "when enable names is disabled" do
           before { SiteSetting.enable_names = false }
 
           it "is using ascending order on username" do
@@ -218,7 +227,7 @@ describe ChatChannelMembershipsQuery do
     end
   end
 
-  context "user is staged" do
+  context "when user is staged" do
     fab!(:channel_1) { Fabricate(:chat_channel) }
     fab!(:staged_user) { Fabricate(:staged) }
 
@@ -232,7 +241,7 @@ describe ChatChannelMembershipsQuery do
     end
   end
 
-  context "user is suspended" do
+  context "when user is suspended" do
     fab!(:channel_1) { Fabricate(:chat_channel) }
     fab!(:suspended_user) do
       Fabricate(:user, suspended_at: Time.now, suspended_till: 5.days.from_now)
@@ -252,7 +261,7 @@ describe ChatChannelMembershipsQuery do
     end
   end
 
-  context "user is inactive" do
+  context "when user is inactive" do
     fab!(:channel_1) { Fabricate(:chat_channel) }
     fab!(:inactive_user) { Fabricate(:inactive_user) }
 

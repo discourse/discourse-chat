@@ -13,6 +13,7 @@ import {
   NEW_TOPIC_SELECTION,
 } from "discourse/plugins/discourse-chat/discourse/components/chat-to-topic-selector";
 import { CHANNEL_STATUSES } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
+import { htmlSafe } from "@ember/template";
 
 export default Component.extend({
   chat: service(),
@@ -100,5 +101,14 @@ export default Component.extend({
       "chat.selection.existing_topic.instructions_channel_archive"
     );
     return labels;
+  },
+
+  @discourseComputed()
+  instructionsText() {
+    return htmlSafe(
+      I18n.t("chat.channel_archive.instructions", {
+        channelTitle: this.chatChannel.escapedTitle,
+      })
+    );
   },
 });

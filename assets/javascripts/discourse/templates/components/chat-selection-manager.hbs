@@ -10,6 +10,18 @@
       action=(action "quoteMessages")
     }}
 
+    {{#if this.site.desktopView}}
+      {{d-button
+        id="chat-copy-btn"
+        class="btn-secondary"
+        icon="copy"
+        label="chat.selection.copy"
+        title="chat.selection.copy"
+        disabled=(not anyMessagesSelected)
+        action=(action "copyMessages")
+      }}
+    {{/if}}
+
     {{#if showMoveMessageButton}}
       {{d-button
         id="chat-move-to-channel-btn"
@@ -32,7 +44,7 @@
   </div>
 
   {{#if showChatQuoteSuccess}}
-    <div class="chat-selection-message alert alert-success">
+    <div class="chat-selection-message">
       {{i18n "chat.quote.copy_success"}}
     </div>
   {{/if}}

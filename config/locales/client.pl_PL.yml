@@ -11,6 +11,11 @@ pl_PL:
         staff_actions:
           actions:
             chat_channel_status_change: "Zmieniono status kanału czatu"
+            chat_channel_delete: "Kanał czatu usunięty"
+    about:
+      chat_messages_count: "Wiadomości czatu"
+      chat_channels_count: "Kanały czatu"
+      chat_users_count: "Użytkownicy czatu"
     chat:
       dates:
         time_tiny: "h:mm"
@@ -23,11 +28,26 @@ pl_PL:
       cancel_reply: "Anuluj odpowiedź"
       chat_channels: "Kanały"
       browse_all_channels: "Przeglądaj wszystkie kanały"
+      move_to_channel:
+        confirm_move: "Przenieś wiadomości"
       channel_settings:
+        title: "Ustawienia kanału"
         edit: "Edytuj"
+        add: "Dodaj"
+        close_channel: "Zamknij kanał"
+        open_channel: "Otwórz kanał"
+        delete_channel: "Usuń kanał"
+        join_channel: "Dołącz do kanału"
         leave_channel: "Opuść kanał"
         join: "Dołącz"
         leave: "Opuść"
+      channel_open:
+        title: "Otwórz kanał"
+      channel_close:
+        title: "Zamknij kanał"
+      channel_delete:
+        title: "Usuń kanał"
+        confirm_channel_name: "Wpisz nazwę kanału"
       channels_list_popup:
         browse: "Przeglądaj kanały"
         create: "Utwórz kanał"
@@ -38,6 +58,7 @@ pl_PL:
       deleted: "Wiadomość została usunięta. [view]"
       delete: "Usuń"
       edited: "edytowano"
+      joined: "dołączył"
       empty_state:
         direct_message: "Możesz także rozpocząć osobisty czat z jednym lub kilkoma użytkownikami."
       email_frequency:
@@ -76,11 +97,14 @@ pl_PL:
       edit: "Edytuj"
       copy_link: "Skopiuj link"
       rebake_message: "Przebuduj HTML"
+      retry_staged_message:
+        action: "Wyślij ponownie?"
       restore: "Przywróć usuniętą wiadomość"
       save: "Zapisz"
       select: "Wybierz"
       silence: "Wycisz użytkownika"
       scroll_to_bottom: "Przewiń na dół"
+      scroll_to_new_messages: "Zobacz nowe wiadomości"
       sound:
         title: "Dźwięk powiadomienia czatu na pulpicie"
       sounds:
@@ -98,7 +122,9 @@ pl_PL:
       you_flagged: "Oflagowałeś tę wiadomość"
       exit: "powrót"
       channel_status:
+        read_only_header: "Kanał jest tylko do odczytu"
         read_only: "Tylko do odczytu"
+        archived_header: "Kanał został zarchiwizowany"
         archived: "Zarchiwizowany"
         closed_header: "Kanał jest zamknięty"
         closed: "Zamknięty"
@@ -108,13 +134,38 @@ pl_PL:
         title: Kanały
         filter_closed: Zamknięty
         filter_archived: Zarchiwizowany
+      chat_message_separator:
+        today: Dzisiaj
+        yesterday: Wczoraj
       about_view:
+        title: Tytuł
         description: Opis
       channel_info:
+        back_to_all_channels: "Wszystkie kanały"
         back_to_channel: "Powrót"
+        tabs:
+          members: Członkowie
+          settings: Ustawienia
+      channel_edit_title_modal:
+        title: Edytuj tytuł
+        input_placeholder: Dodaj tytuł
+      channel_edit_description_modal:
+        title: Edytuj opis
+        input_placeholder: Dodaj opis
+      direct_message_creator:
+        title: Nowa wiadomość
+        prefix: "Do:"
+        no_results: Brak wyników
       channel_selector:
         title: "Przejdź do kanału"
         no_channels: "Żadne kanały nie pasują do Twojego wyszukiwania"
+      channel:
+        no_memberships_found: Nie znaleziono członków
+        memberships_count:
+          one: 1 członek
+          few: "%{count} członków"
+          many: "%{count} członków"
+          other: "%{count} członków"
       create_channel:
         choose_category:
           label: "Wybierz kategorię"
@@ -142,7 +193,7 @@ pl_PL:
         bold_text: "pogrubiony tekst"
         code_text: "kod"
       quote:
-        copy_success: "Cytat z czatu skopiowany do schowka."
+        copy_success: "Cytat z czatu skopiowany do schowka"
       notification_levels:
         never: "Nigdy"
         mention: "Tylko dla wzmianek"
@@ -188,6 +239,8 @@ pl_PL:
         username_instructions: "Nazwa użytkownika bota, który publikuje na kanale. Domyślnie \"system\" gdy pozostanie puste."
       selection:
         cancel: "Anuluj"
+        copy: "Kopiuj"
+        move_selection_to_channel: "Przejdź do kanału"
         error: "Wystąpił błąd podczas przenoszenia wiadomości czatu"
         title: "Przenieś czat do tematu"
         new_topic:
@@ -211,6 +264,8 @@ pl_PL:
     notifications:
       chat_quoted: "<span>%{username}</span> %{description}"
       popup:
+        chat_mention:
+          direct: 'wspomniał o Tobie w "%{channel}"'
         chat_message: "Nowa wiadomość na czacie"
         chat_quoted: "%{username} zacytował Twoją wiadomość na czacie"
     discourse_automation:

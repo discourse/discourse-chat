@@ -109,6 +109,7 @@ RSpec.describe DiscourseChat::ChatChannelsController do
         fab!(:user3) { Fabricate(:user) }
 
         before do
+          Group.refresh_automatic_groups!
           @dm1 =
             DiscourseChat::DirectMessageChannelCreator.create!(
               acting_user: user1,
@@ -131,7 +132,7 @@ RSpec.describe DiscourseChat::ChatChannelsController do
             )
         end
 
-        it "returns correct DMs for user1" do
+        it "returns correct DMs for creator" do
           sign_in(user1)
 
           get "/chat/chat_channels.json"
@@ -140,26 +141,32 @@ RSpec.describe DiscourseChat::ChatChannelsController do
           ).to match_array([@dm1.id, @dm2.id, @dm3.id])
         end
 
-        it "returns correct DMs for user2" do
+        it "returns correct DMs when not following" do
           sign_in(user2)
 
           get "/chat/chat_channels.json"
           expect(
             response.parsed_body["direct_message_channels"].map { |c| c["id"] },
-          ).to match_array([@dm1.id, @dm3.id, @dm4.id])
+          ).to match_array([])
         end
 
-        it "returns correct DMs for user3" do
+        it "returns correct DMs when following" do
+          user3
+            .user_chat_channel_memberships
+            .where(chat_channel_id: @dm3.id)
+            .update!(following: true)
+
           sign_in(user3)
 
           get "/chat/chat_channels.json"
-          expect(
-            response.parsed_body["direct_message_channels"].map { |c| c["id"] },
-          ).to match_array([@dm2.id, @dm3.id, @dm4.id])
+          dm3_response = response.parsed_body
+          expect(dm3_response["direct_message_channels"].map { |c| c["id"] }).to match_array(
+            [@dm3.id],
+          )
         end
 
-        it "correctly set unread_count for DMs" do
-          sign_in(user3)
+        it "correctly set unread_count for DMs for creator" do
+          sign_in(user1)
           DiscourseChat::ChatMessageCreator.create(
             chat_channel: @dm2,
             user: user1,
@@ -168,7 +175,38 @@ RSpec.describe DiscourseChat::ChatChannelsController do
           get "/chat/chat_channels.json"
           dm2_response =
             response.parsed_body["direct_message_channels"].detect { |c| c["id"] == @dm2.id }
-          expect(dm2_response["current_user_membership"]["unread_count"]).to eq(1)
+          expect(dm2_response["current_user_membership"]["unread_count"]).to eq(0)
+        end
+
+        it "correctly set membership for DMs when user is not following" do
+          sign_in(user2)
+          DiscourseChat::ChatMessageCreator.create(
+            chat_channel: @dm2,
+            user: user1,
+            content: "What's going on?!",
+          )
+          get "/chat/chat_channels.json"
+          dm2_channel =
+            response.parsed_body["direct_message_channels"].detect { |c| c["id"] == @dm2.id }
+          expect(dm2_channel).to be_nil
+        end
+
+        it "correctly set unread_count for DMs when user is following" do
+          user3
+            .user_chat_channel_memberships
+            .where(chat_channel_id: @dm2.id)
+            .update!(following: true)
+
+          sign_in(user3)
+          DiscourseChat::ChatMessageCreator.create(
+            chat_channel: @dm2,
+            user: user1,
+            content: "What's going on?!",
+          )
+          get "/chat/chat_channels.json"
+          dm3_response =
+            response.parsed_body["direct_message_channels"].detect { |c| c["id"] == @dm2.id }
+          expect(dm3_response["current_user_membership"]["unread_count"]).to eq(1)
         end
       end
     end
@@ -196,9 +234,10 @@ RSpec.describe DiscourseChat::ChatChannelsController do
         membership_record.reload.following
       }.to(true).from(false)
       expect(response.status).to eq(200)
-      expect(response.parsed_body["memberships_count"]).to eq(1)
       expect(response.parsed_body["current_user_membership"]["following"]).to eq(true)
-      expect(response.parsed_body["current_user_membership"]["chat_channel_id"]).to eq(chat_channel.id)
+      expect(response.parsed_body["current_user_membership"]["chat_channel_id"]).to eq(
+        chat_channel.id,
+      )
     end
   end
 
@@ -216,9 +255,10 @@ RSpec.describe DiscourseChat::ChatChannelsController do
         membership_record.reload.following
       }.to(false).from(true)
       expect(response.status).to eq(200)
-      expect(response.parsed_body["memberships_count"]).to eq(0)
       expect(response.parsed_body["current_user_membership"]["following"]).to eq(false)
-      expect(response.parsed_body["current_user_membership"]["chat_channel_id"]).to eq(chat_channel.id)
+      expect(response.parsed_body["current_user_membership"]["chat_channel_id"]).to eq(
+        chat_channel.id,
+      )
     end
 
     it "allows to unfollow a direct_message_channel" do
@@ -483,6 +523,34 @@ RSpec.describe DiscourseChat::ChatChannelsController do
         get "/chat/chat_channels/search.json", params: { filter: "andyjones" }
         expect(response.status).to eq(200)
         expect(response.parsed_body["direct_message_channels"][0]["id"]).to eq(dm_chat_channel.id)
+      end
+
+      it "returns followed channels" do
+        Fabricate(
+          :user_chat_channel_membership,
+          user: user,
+          chat_channel: chat_channel,
+          following: true,
+        )
+
+        get "/chat/chat_channels/search.json", params: { filter: chat_channel.name }
+
+        expect(response.status).to eq(200)
+        expect(response.parsed_body["public_channels"][0]["id"]).to eq(chat_channel.id)
+      end
+
+      it "returns not followed channels" do
+        Fabricate(
+          :user_chat_channel_membership,
+          user: user,
+          chat_channel: chat_channel,
+          following: false,
+        )
+
+        get "/chat/chat_channels/search.json", params: { filter: chat_channel.name }
+
+        expect(response.status).to eq(200)
+        expect(response.parsed_body["public_channels"][0]["id"]).to eq(chat_channel.id)
       end
     end
   end

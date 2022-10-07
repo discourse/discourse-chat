@@ -1,8 +1,6 @@
 .chat-composer-container {
   display: flex;
   flex-direction: column;
-  margin-bottom: 1px;
-  margin-top: auto;
 
   #chat-full-page-uploader,
   #chat-widget-uploader {
@@ -19,8 +17,9 @@
   align-items: center;
   background-color: var(--secondary);
   border: 1px solid var(--primary-low-mid);
-  border-radius: 6px;
-  padding: 0.25rem;
+  border-radius: 5px;
+  padding: 0.15rem 0.25rem;
+  margin-top: 0.5rem;
 
   &.is-disabled {
     background-color: var(--primary-low);
@@ -30,7 +29,9 @@
   .send-btn {
     padding: 0.4rem 0.5rem;
     border: 1px solid transparent;
-    border-radius: 6px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
 
     .d-icon {
       color: var(--tertiary);
@@ -57,7 +58,6 @@
 
   .chat-composer-input {
     overflow-x: hidden;
-    margin: 0;
     width: 100%;
     appearance: none;
     outline: none;
@@ -76,7 +76,6 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      padding-right: 1.25em;
     }
 
     &::-webkit-scrollbar-thumb {
@@ -93,6 +92,11 @@
     &::-webkit-scrollbar {
       width: 12px;
     }
+  }
+
+  &__unreliable-network {
+    color: var(--danger);
+    padding: 0 0.5em;
   }
 }
 

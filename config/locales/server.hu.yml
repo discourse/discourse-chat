@@ -17,7 +17,6 @@ hu:
     chat_default_channel_id: "Az a csevegőcsatorna, amely alapértelmezés szerint megnyílik, ha a felhasználónak nincsenek olvasatlan üzenetei vagy említései más csatornákon."
     chat_duplicate_message_sensitivity: "Annak a valószínűsége, hogy az azonos feladó által küldött ismételt üzenet rövid időn belül blokkolásra kerül. Tizedes szám 0 és 1.0 között, ahol az 1.0 a legmagasabb érték (az üzeneteket gyakrabban blokkolja rövidebb idő alatt). Az ismételt üzenetek engedélyezéséhez állítsa „0”-ra az értéket."
     chat_minimum_message_length: "A csevegőüzenetek minimális karakterszáma."
-    chat_allow_uploads: "A feltöltések engedélyezése a nyilvános csevegőcsatornákon."
     chat_archive_destination_topic_status: "Az az állapot, amelyet a céltéma a csatornaarchiválás befejezése után fog kapni. Ez csak akkor érvényes, ha a céltéma egy új téma, nem pedig egy meglévő."
     errors:
       chat_default_channel: "Az alapértelmezett csevegőcsatornának nyilvános csatornának kell lennie."
@@ -33,6 +32,7 @@ hu:
       text_body_template: |
         A(z) **\#%{channel_name}** csevegőcsatorna archiválása nem sikerült. %{messages_archived} üzenet archiválásra került. A részben archivált üzeneteket a(z) [%{topic_title}](%{topic_url}) témába lettek másolva. Keresse fel a(z) %{channel_url} csatornát az újbóli próbálkozáshoz.
   chat:
+    deleted_chat_username: törölve
     errors:
       channel_exists_for_category: "Már létezik csatorna ehhez a kategóriával, és ezzel a névvel"
       channel_new_message_disallowed: "A csatorna „%{status}”, új üzenet nem küldhető"
@@ -90,8 +90,19 @@ hu:
         one: "@%{acting_username} áthelyezett egy üzenetet a(z) [%{channel_name}](%{first_moved_message_url}) csatornába."
         other: "@%{acting_username} áthelyezett %{count} üzenetet a(z) [%{channel_name}](%{first_moved_message_url}) csatornába."
       dm_title:
+        single_user: "%{user}"
+        multi_user: "%{users}"
         multi_user_truncated: "%{users} és még %{leftover} fő"
+      default_titles:
+        site_feedback: "Általános"
     personal_chat: "személyes csevegés"
+    onebox:
+      x_members:
+        one: "%{count} tag"
+        other: "%{count} tag"
+      and_x_others:
+        one: "és még %{count} fő"
+        other: "és még %{count} fő"
   discourse_push_notifications:
     popup:
       chat_mention:
@@ -116,6 +127,12 @@ hu:
         one: "Új csevegőüzenete érkezett"
         other: "Új csevegőüzenetei érkeztek"
       from: "%{site_name}"
+      subject:
+        direct_message:
+          one: "[%{email_prefix}] Új üzenet a következőtől: %{message_title}"
+          other: "[%{email_prefix}] Új üzenetek a következőktől: %{message_title} és %{others}"
+        other_direct_message: "a következőtől: %{message_title}"
+        others: "és még %{count} fő"
       view_messages:
         one: "Üzenet megtekintése"
         other: "%{count} üzenet megtekintése"
@@ -125,5 +142,9 @@ hu:
       your_chat_settings: "csevegési e-mail gyakoriságának beállítása"
   unsubscribe:
     chat_summary:
+      select_title: "A csevegési összefoglaló e-mailek gyakoriságának beállítása:"
       never: Soha
       when_away: Csak ha távol van
+  category:
+    cannot_delete:
+      has_chat_channels: "Ezt a kategóriát nem lehet törölni, mert csevegőcsatornái vannak."

@@ -1,7 +1,7 @@
 {{#if (and channel.archive_failed currentUser.admin)}}
   <div class="alert alert-warn chat-channel-retry-archive">
     <div class="chat-channel-archive-failed-message">
-      {{html-safe channelArchiveFailedMessage}}
+      {{channelArchiveFailedMessage}}
     </div>
 
     <div class="chat-channel-archive-failed-retry">
@@ -13,6 +13,6 @@
   </div>
 {{else if (and channel.archive_completed currentUser.admin)}}
   <div class="chat-channel-archive-status">
-    {{html-safe channelArchiveCompletedMessage}}
+    {{channelArchiveCompletedMessage}}
   </div>
 {{/if}}

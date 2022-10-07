@@ -13,11 +13,14 @@ import discourseComputed, {
 import EmberObject, { action, computed } from "@ember/object";
 import { and, not } from "@ember/object/computed";
 import { ajax } from "discourse/lib/ajax";
-import { cancel, once, schedule } from "@ember/runloop";
+import { cancel, once } from "@ember/runloop";
 import { clipboardCopy } from "discourse/lib/utilities";
 import { inject as service } from "@ember/service";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import discourseLater from "discourse-common/lib/later";
+import isZoomed from "discourse/plugins/discourse-chat/discourse/lib/zoom-check";
+import showModal from "discourse/lib/show-modal";
+import ChatMessageFlag from "discourse/plugins/discourse-chat/discourse/lib/chat-message-flag";
 
 let _chatMessageDecorators = [];
 
@@ -46,6 +49,8 @@ export default Component.extend({
   _hasSubscribedToAppEvents: false,
   tagName: "",
   chat: service(),
+  chatMessageActionsMobileAnchor: null,
+  chatMessageEmojiPickerAnchor: null,
 
   init() {
     this._super(...arguments);
@@ -58,6 +63,15 @@ export default Component.extend({
     if (this.message.bookmark) {
       this.set("message.bookmark", Bookmark.create(this.message.bookmark));
     }
+  },
+
+  didInsertElement() {
+    this._super(...arguments);
+
+    this.set(
+      "chatMessageActionsMobileAnchor",
+      document.querySelector(".chat-message-actions-mobile-anchor")
+    );
   },
 
   willDestroyElement() {
@@ -281,6 +295,11 @@ export default Component.extend({
 
   @action
   handleTouchStart() {
+    // if zoomed don't track long press
+    if (isZoomed()) {
+      return;
+    }
+
     if (!this.isHovered) {
       // when testing this must be triggered immediately because there
       // is no concept of "long press" there, the Ember `tap` test helper
@@ -308,6 +327,11 @@ export default Component.extend({
 
   @action
   _handleLongPress() {
+    if (isZoomed()) {
+      // if zoomed don't handle long press
+      return;
+    }
+
     document.activeElement.blur();
     document.querySelector(".chat-composer-input").blur();
 
@@ -493,10 +517,7 @@ export default Component.extend({
       return;
     }
 
-    const btn = this.messageContainer.querySelector(
-      ".chat-msgactions-hover .react-btn"
-    );
-    this._startReaction(btn, this.SHOW_LEFT);
+    this._startReaction();
   },
 
   @action
@@ -505,13 +526,10 @@ export default Component.extend({
       return;
     }
 
-    const btn = this.messageContainer.querySelector(
-      ".chat-message-reaction-list .chat-message-react-btn"
-    );
-    this._startReaction(btn, this.SHOW_RIGHT);
+    this._startReaction();
   },
 
-  _startReaction(btn, position) {
+  _startReaction() {
     if (this.emojiPickerIsActive) {
       this.set("emojiPickerIsActive", false);
       document.activeElement?.blur();
@@ -521,64 +539,9 @@ export default Component.extend({
         "chat-message:reaction-picker-opened",
         this.message.id
       );
-
-      schedule("afterRender", () => {
-        if (this.isDestroying || this.isDestroyed) {
-          return;
-        }
-
-        this._repositionEmojiPicker(btn, position);
-      });
     }
   },
 
-  _repositionEmojiPicker(btn, position) {
-    if (!this.messageContainer) {
-      return;
-    }
-
-    const emojiPicker = this.messageContainer.querySelector(".emoji-picker");
-    if (!emojiPicker || !btn) {
-      return;
-    }
-    const reactBtnBounds = btn.getBoundingClientRect();
-    const reactBtnPositions = {
-      bottom: window.innerHeight - reactBtnBounds.bottom,
-      left: reactBtnBounds.left + window.pageXOffset,
-    };
-
-    // Calculate left pixel value
-    let leftValue = 0;
-
-    if (!this.site.mobileView) {
-      const xAdjustment =
-        position === this.SHOW_RIGHT && this.fullPage
-          ? btn.offsetWidth + 10
-          : (emojiPicker.offsetWidth + 10) * -1;
-      leftValue = reactBtnPositions.left + xAdjustment;
-      if (
-        leftValue < 0 ||
-        leftValue + emojiPicker.getBoundingClientRect().width >
-          window.innerWidth
-      ) {
-        leftValue = 0;
-      }
-    }
-
-    // Calculate bottom pixel value
-    let bottomValue = reactBtnPositions.bottom - emojiPicker.offsetHeight + 50;
-    const messageContainer = document.querySelector(".chat-messages-scroll");
-    const bottomOfMessageContainer =
-      window.innerHeight - messageContainer.getBoundingClientRect().bottom;
-    if (bottomValue < bottomOfMessageContainer) {
-      bottomValue = bottomOfMessageContainer;
-    }
-
-    emojiPicker.style.bottom = `${bottomValue}px`;
-    emojiPicker.style.left = `${leftValue}px`;
-  },
-
-  @action
   deselectReaction(emoji) {
     if (!this.canInteractWithChat) {
       return;
@@ -700,6 +663,27 @@ export default Component.extend({
     });
   },
 
+  // TODO(roman): For backwards-compatibility.
+  //   Remove after the 3.0 release.
+  _legacyFlag() {
+    bootbox.confirm(
+      I18n.t("chat.confirm_flag", {
+        username: this.message.user?.username,
+      }),
+      (confirmed) => {
+        if (confirmed) {
+          ajax("/chat/flag", {
+            method: "PUT",
+            data: {
+              chat_message_id: this.message.id,
+              flag_type_id: 7, // notify_moderators
+            },
+          }).catch(popupAjaxError);
+        }
+      }
+    );
+  },
+
   @action
   reply() {
     this.setReplyTo(this.message.id);
@@ -717,21 +701,19 @@ export default Component.extend({
 
   @action
   flag() {
-    bootbox.confirm(
-      I18n.t("chat.confirm_flag", {
-        username: this.message.user?.username,
-      }),
-      (confirmed) => {
-        if (confirmed) {
-          ajax("/chat/flag", {
-            method: "PUT",
-            data: {
-              chat_message_id: this.message.id,
-            },
-          }).catch(popupAjaxError);
-        }
-      }
-    );
+    const targetFlagSupported =
+      requirejs.entries["discourse/lib/flag-targets/flag"];
+
+    if (targetFlagSupported) {
+      const model = EmberObject.create(this.message);
+      model.set("username", model.get("user.username"));
+      model.set("user_id", model.get("user.id"));
+      let controller = showModal("flag", { model });
+
+      controller.setProperties({ flagTarget: new ChatMessageFlag() });
+    } else {
+      this._legacyFlag();
+    }
   },
 
   @action
@@ -825,7 +807,7 @@ export default Component.extend({
 
     const { protocol, host } = window.location;
     let url = getURL(
-      `/chat/channel/${this.details.chat_channel_id}/chat?messageId=${this.message.id}`
+      `/chat/channel/${this.details.chat_channel_id}/-?messageId=${this.message.id}`
     );
     url = url.indexOf("/") === 0 ? protocol + "//" + host + url : url;
     clipboardCopy(url);

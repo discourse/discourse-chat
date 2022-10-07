@@ -2,7 +2,7 @@ import DiscourseRoute from "discourse/routes/discourse";
 import { inject as service } from "@ember/service";
 
 export default class ChatBrowseIndexRoute extends DiscourseRoute {
-  @service() chat;
+  @service chat;
 
   activate() {
     this.chat.setActiveChannel(null);

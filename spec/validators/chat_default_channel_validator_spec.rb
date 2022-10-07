@@ -3,23 +3,26 @@
 require "rails_helper"
 
 describe ChatDefaultChannelValidator do
-  fab!(:public_channel) { Fabricate(:chat_channel) }
+  fab!(:channel) { Fabricate(:chat_channel) }
+
+  it "provides an error message" do
+    validator = described_class.new
+    expect(validator.error_message).to eq(I18n.t("site_settings.errors.chat_default_channel"))
+  end
 
   it "returns true if public channel id" do
     validator = described_class.new
-    expect(validator.valid_value?(public_channel.id)).to eq(true)
-    expect(validator.error_message).to eq(I18n.t("site_settings.errors.chat_default_channel"))
+    expect(validator.valid_value?(channel.id)).to eq(true)
   end
 
-  it "returns true if 0" do
+  it "returns true if empty string" do
     validator = described_class.new
     expect(validator.valid_value?("")).to eq(true)
-    expect(validator.error_message).to eq(I18n.t("site_settings.errors.chat_default_channel"))
   end
 
-  it "returns false if not a public channel and not 0" do
+  it "returns false if not a public channel" do
     validator = described_class.new
-    expect(validator.valid_value?(420)).to eq(false)
-    expect(validator.error_message).to eq(I18n.t("site_settings.errors.chat_default_channel"))
+    channel.destroy!
+    expect(validator.valid_value?(channel.id)).to eq(false)
   end
 end

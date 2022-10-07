@@ -17,6 +17,15 @@ ja:
       cancel: "キャンセル"
       cancel_reply: "返信をキャンセルする"
       chat_channels: "チャンネル"
+      channel_settings:
+        edit: "編集"
+        join_channel: "チャンネルに参加する"
+        leave_channel: "チャンネルから退出する"
+        join: "参加"
+        leave: "退出"
+      channels_list_popup:
+        browse: "チャンネルを閲覧する"
+        create: "チャンネルを作成する"
       click_to_join: "利用可能なチャンネルを表示するにはここをクリックします。"
       close: "閉じる"
       collapse: "チャットドロワーを折りたたむ"
@@ -24,12 +33,17 @@ ja:
       deleted: "メッセージは削除されました。[view]"
       delete: "削除"
       edited: "編集済み"
+      empty_state:
+        direct_message: "1 人または複数のユーザーとパーソナルチャットを開始することもできます。"
+      email_frequency:
+        never: "なし"
       enable: "チャットを有効にする"
       flag: "通報する"
       flagged: "このメッセージはレビュー目的で通報されました"
       invalid_access: "このチャットチャンネルを表示するためのアクセス権がありません"
       in_reply_to: "返信先"
       heading: "チャット"
+      join: "参加"
       new_messages: "新しいメッセージ"
       mention_warning:
         cannot_see:
@@ -72,6 +86,12 @@ ja:
         other: "%{count} 個のファイル"
       you_flagged: "このメッセージを通報しました"
       exit: "戻る"
+      browse:
+        title: チャンネル
+      about_view:
+        description: 説明
+      channel_info:
+        back_to_channel: "戻る"
       channel_selector:
         title: "チャンネルにジャンプ"
         no_channels: "検索に一致するチャンネルはありません"
@@ -79,6 +99,7 @@ ja:
         choose_category:
           label: "カテゴリを選択する"
           none: "1 つ選択してください..."
+          default_hint: <a href=%{link} target="_blank">%{category} のセキュリティ設定</a>に移動し、アクセス権を管理します
         create: "チャンネルを作成"
         description: "説明（オプション）"
         name: "チャンネル名"
@@ -97,8 +118,6 @@ ja:
         you_others_and_more: "あなた、%{usernames} と他 %{more} 人が :%{emoji}: でリアクションしました"
       composer:
         toggle_toolbar: "ツールバーの切り替え"
-      quote:
-        copy_success: "チャットの引用をクリップボードにコピーしました。"
       notification_levels:
         never: "なし"
         mention: "メンションのみ"
@@ -169,6 +188,7 @@ ja:
       retention_reminders:
         public: "チャンネル履歴は %{days} 日間保持されます。"
         dm: "パーソナルチャット履歴は %{days} 日間保持されます。"
+      topic_button_title: "チャット"
     notifications:
       popup:
         chat_message: "新しいチャットメッセージ"
@@ -196,3 +216,6 @@ ja:
         reviewable_chat_message:
           title: "通報されたチャットメッセージ"
           flagged_by: "通報者"
+    keyboard_shortcuts_help:
+      chat:
+        title: "チャット"

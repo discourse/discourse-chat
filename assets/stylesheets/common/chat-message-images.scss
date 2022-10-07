@@ -1,11 +1,6 @@
 $max_image_height: 150px;
 
 .chat-message {
-  aside.onebox {
-    max-width: -moz-fit-content;
-    max-width: fit-content;
-  }
-
   // append selectors to set images to a
   // max height of $max_image_height
   .chat-message-collapser .onebox img:not(.ytp-thumbnail-image),
@@ -18,6 +13,7 @@ $max_image_height: 150px;
     max-height: $max_image_height;
     max-width: 100%;
     width: unset;
+    overflow: hidden;
   }
 
   .chat-message-collapser

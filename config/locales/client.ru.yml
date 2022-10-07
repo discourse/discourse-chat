@@ -10,8 +10,8 @@ ru:
       logs:
         staff_actions:
           actions:
-            chat_channel_status_change: "Статус канала изменен"
-            chat_channel_delete: "Канал чата удалён"
+            chat_channel_status_change: "Изменение статуса канала чата"
+            chat_channel_delete: "Удаление канала чата"
       api:
         scopes:
           descriptions:
@@ -25,8 +25,8 @@ ru:
       dates:
         time_tiny: "ч:мм"
       all_loaded: "Отобразить все сообщения"
-      already_enabled: "Чат по этой теме уже включён . Пожалуйста, обновите страницу."
-      disabled_for_topic: "Чат по этой теме отключён."
+      already_enabled: "Чат в этой теме уже включён . Пожалуйста, обновите страницу."
+      disabled_for_topic: "Чат в этой теме отключён."
       bot: "Бот"
       create: "Создать"
       cancel: "Отменить"
@@ -145,6 +145,10 @@ ru:
       edit: "Изменить"
       copy_link: "Копировать ссылку"
       rebake_message: "Перестроить HTML"
+      retry_staged_message:
+        title: "Ошибка сети"
+        action: "Отправить ещё раз?"
+      unreliable_network: "Сеть ненадёжна, отправка сообщений и сохранение черновиков могут не работать"
       bookmark_message: "Закладка"
       bookmark_message_edit: "Редактировать закладку"
       restore: "Восстановить удаленное сообщение"
@@ -169,13 +173,12 @@ ru:
         many: "%{count} файлов"
         other: "%{count} файлов"
       you_flagged: "Вы пожаловались на это сообщение"
-      user_deleted: "удалён"
       exit: "Назад"
       channel_status:
         read_only_header: "Канал только для чтения"
         read_only: "Только для чтения"
         archived_header: "Канал заархивирован"
-        archived: "Архивирован"
+        archived: "Архивные"
         archive_failed: "Во время архивации поизошла ошибка. %{completed}/%{total} сообщений были заархивированы в <a target=\"_blank\" href=\"%{topic_url}\">целевой теме</a>. Нажмите 'Повторить', чтобы попытаться завершить архивирование."
         archive_completed: "См. <a target=\"_blank\" href=\"%{topic_url}\">архивную тему</a>."
         closed_header: "Канал закрыт"
@@ -232,7 +235,7 @@ ru:
           other: "%{count} участников"
       create_channel:
         auto_join_users:
-          public_category_warning: "Раздел %{category} является общедоступным. Автоматически добавлять всех пользователей на этот канал?"
+          public_category_warning: "Раздел %{category} является общедоступным. Автоматически добавлять в этот канал всех активных пользователей?"
           warning_groups:
             one: Автоматически добавить %{members_count} пользователей из группы %{group_1}?
             few: Автоматически добавить %{members_count} пользователей из группы %{group_1} и группы %{group_2}?
@@ -272,14 +275,14 @@ ru:
         code_text: "Код"
       quote:
         original_channel: 'Первоначально отправлено в <a href="%{channelLink}">%{channel}</a>'
-        copy_success: "Цитата из чата скопирована в буфер обмена."
+        copy_success: "Цитата из чата скопирована в буфер обмена"
       notification_levels:
         never: "Никогда"
         mention: "Только для упоминаний"
         always: "Для всех действий"
       settings:
-        enable_auto_join_users: "Автоматически добавлять всех новых и существующих пользователей"
-        disable_auto_join_users: "Остановить автоматическое добавление новых пользователей"
+        enable_auto_join_users: "Автоматически добавлять всех активных пользователей"
+        disable_auto_join_users: "Остановить автоматическое добавление пользователей"
         auto_join_users_warning: "Любой пользователь, не являющийся участником этого канала, но имеющий доступ к разделу %{category} , будет автоматически подключён. Продолжить?"
         desktop_notification_level: "Уведомления на рабочем столе"
         follow: "Подписаться"
@@ -321,11 +324,13 @@ ru:
         system: "Системный"
         title: "Входящие вебхуки"
         url: "URL"
+        url_instructions: "Этот URL содержит секретное значение — берегите его."
         username: "Имя пользователя"
         username_instructions: "Имя бота, отправляющего сообщения на канал. Если оставить поле пустым, по умолчанию используется 'Системный'."
       selection:
         cancel: "Отменить"
         quote_selection: "Цитировать в теме"
+        copy: "Копировать"
         move_selection_to_channel: "Переместить в канал"
         error: "При перемещении сообщений чата произошла ошибка"
         title: "Переместить чат в тему"
@@ -364,15 +369,29 @@ ru:
         public: "История канала хранится %{days} дней."
         dm: "История личного чата хранится %{days} дней."
       topic_button_title: "Чат"
+      flags:
+        off_topic: "Это сообщение не имеет отношения к текущему обсуждению, как указано в названии канала, и, вероятно, его следует переместить в другое место."
+        inappropriate: "Это сообщение содержит контент, который разумный человек счел бы недопустимым, оскорбительным или нарушающим <a href=\"/guidelines\">основные принципы нашего сообщества</a>."
+        spam: "Это сообщение является рекламой. Оно не несёт полезной нагрузки или не имеет отношения к текущему каналу."
+        notify_user: "Я хочу поговорить с этим человеком напрямую и обсудить его сообщение."
+        notify_moderators: "Это сообщение требует внимания модератора по причине, не указанной выше."
+      flagging:
+        action: "Пожаловаться на сообщение"
     notifications:
+      chat_invitation: "пригласил вас присоединиться к каналу чата"
+      chat_invitation_html: "<span>Пользователь %{username}</span> <span> пригласил вас присоединиться к каналу</span>"
       chat_quoted: "<span>%{username}</span> %{description}"
       popup:
         chat_mention:
-          direct: '<span>Пользователь %{username}</span> <span>упомянул вас на канале "%{channel}"</span>'
-          other: '<span>Пользователь %{username}</span> <span>упомянул %{identifier} на канале "%{channel}"</span>'
+          direct: 'упомянул вас в "%{channel}"'
+          direct_html: '<span>Пользователь %{username}</span> <span>упомянул вас на канале "%{channel}"</span>'
+          other: 'упомянул %{identifier} в "%{channel}"'
+          other_html: '<span>Пользователь %{username}</span> <span>упомянул %{identifier} на канале "%{channel}"</span>'
         direct_message_chat_mention:
-          direct: "<span>Пользователь %{username}</span> <span>упомянул вас в личном чате</span>"
-          other: "<span>Пользователь %{username}</span> <span>упомянул @%{identifier} в личном чате</span>"
+          direct: "упомянул вас в личном чате"
+          direct_html: "<span>Пользователь %{username}</span> <span>упомянул вас в личном чате</span>"
+          other: "упомянул %{identifier} в личном чате"
+          other_html: "<span>Пользователь %{username}</span> <span>упомянул @%{identifier} в личном чате</span>"
         chat_message: "Новое сообщение в чате"
         chat_quoted: "Пользователь %{username} процитировал ваше сообщение в чате"
       titles:
@@ -410,6 +429,8 @@ ru:
           composer_bold: "%{shortcut} Жирный (только в редакторе)"
           composer_italic: "%{shortcut} Курсив (только в редакторе)"
           composer_code: "%{shortcut} Код (только в редакторе)"
+          drawer_open: "%{shortcut} Открыть панель чата"
+          drawer_close: "%{shortcut} Закрыть панель чата"
     topic_statuses:
       chat:
         help: "Чат включён для этой темы"
@@ -419,3 +440,11 @@ ru:
       allowed_pm_users_instructions: "Разрешить только личные сообщения или прямые сообщения в чате от этих пользователей."
       allow_private_messages_from_specific_users: "Разрешить только определённым пользователям отправлять мне личные сообщения или прямые сообщения в чате"
       ignored_users_instructions: "Не показывать сообщения, личные сообщения, уведомления, прямые и личные сообщения чата от этих пользователей."
+    user_menu:
+      tabs:
+        chat_notifications: "Уведомления чата"
+        chat_notifications_with_unread:
+          one: "Уведомления чата - %{count} непрочитанное уведомление"
+          few: "Уведомления чата - %{count} непрочитанных уведомления"
+          many: "Уведомления чата - %{count} непрочитанных уведомлений"
+          other: "Уведомления чата - %{count} непрочитанных уведомлений"

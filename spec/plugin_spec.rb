@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-describe "discourse-chat" do
+describe DiscourseChat do
   before do
     SiteSetting.clean_up_uploads = true
     SiteSetting.clean_orphan_uploads_grace_period_hours = 1
@@ -146,7 +146,7 @@ describe "discourse-chat" do
 
     let(:chat_url) { "#{Discourse.base_url}/chat/channel/#{chat_channel.id}" }
 
-    context "inline" do
+    context "when inline" do
       it "renders channel" do
         results = InlineOneboxer.new([chat_url], skip_cache: true).process
         expect(results).to be_present
@@ -165,7 +165,7 @@ describe "discourse-chat" do
       end
     end
 
-    context "regular" do
+    context "when regular" do
       it "renders channel, excluding inactive, staged, and suspended users" do
         user.user_chat_channel_memberships.create!(chat_channel: chat_channel, following: true)
         user_2.user_chat_channel_memberships.create!(chat_channel: chat_channel, following: true)
@@ -209,7 +209,7 @@ describe "discourse-chat" do
               <div class="chat-transcript-datetime">
                 <a href="#{chat_url}?messageId=#{chat_message.id}" title="#{chat_message.created_at}">#{chat_message.created_at}</a>
               </div>
-              <a class="chat-transcript-channel" href="/chat/chat_channels/#{chat_channel.id}">
+              <a class="chat-transcript-channel" href="/chat/channel/#{chat_channel.id}/-">
                 <span class="category-chat-badge" style="color: ##{chat_channel.chatable.color}">
                   <svg class="fa d-icon d-icon-hashtag svg-icon svg-string" xmlns="http://www.w3.org/2000/svg"><use href="#hashtag"></use></svg>
                 </span>
@@ -307,20 +307,126 @@ describe "discourse-chat" do
 
   describe "secure media compatibility" do
     it "disables chat uploads if secure media changes from disabled to enabled" do
-      enable_secure_media
+      enable_secure_uploads
       expect(SiteSetting.chat_allow_uploads).to eq(false)
       last_history = UserHistory.last
       expect(last_history.action).to eq(UserHistory.actions[:change_site_setting])
       expect(last_history.previous_value).to eq("true")
       expect(last_history.new_value).to eq("false")
       expect(last_history.subject).to eq("chat_allow_uploads")
-      expect(last_history.context).to eq("Disabled because secure_media is enabled")
+      expect(last_history.context).to eq("Disabled because secure_uploads is enabled")
     end
 
     it "does not disable chat uploads if the allow_unsecure_chat_uploads global setting is set" do
       global_setting :allow_unsecure_chat_uploads, true
-      expect { enable_secure_media }.not_to change { UserHistory.count }
+      expect { enable_secure_uploads }.not_to change { UserHistory.count }
       expect(SiteSetting.chat_allow_uploads).to eq(true)
+    end
+  end
+
+  describe "current_user_serializer#chat_channels" do
+    before do
+      SiteSetting.chat_enabled = true
+      SiteSetting.chat_allowed_groups = Group::AUTO_GROUPS[:everyone]
+    end
+
+    fab!(:user) { Fabricate(:user) }
+
+    let(:serializer) { CurrentUserSerializer.new(user, scope: Guardian.new(user)) }
+
+    it "returns the global presence channel state" do
+      expect(serializer.chat_channels[:global_presence_channel_state]).to be_present
+    end
+
+    context "when no channels exist" do
+      it "returns an empty array" do
+        expect(serializer.chat_channels[:direct_message_channels]).to eq([])
+        expect(serializer.chat_channels[:public_channels]).to eq([])
+      end
+    end
+
+    context "when followed public channels exist" do
+      fab!(:user_2) { Fabricate(:user) }
+      fab!(:channel) do
+        Fabricate(
+          :chat_channel,
+          chatable: Fabricate(:direct_message_channel, users: [user, user_2]),
+        )
+      end
+
+      before do
+        Fabricate(:user_chat_channel_membership, user: user, chat_channel: channel, following: true)
+        Fabricate(
+          :chat_channel,
+          chatable: Fabricate(:direct_message_channel, users: [user, user_2]),
+        )
+      end
+
+      it "returns them" do
+        expect(serializer.chat_channels[:public_channels]).to eq([])
+        expect(serializer.chat_channels[:direct_message_channels].count).to eq(1)
+        expect(serializer.chat_channels[:direct_message_channels][0].id).to eq(channel.id)
+      end
+    end
+
+    context "when followed direct message channels exist" do
+      fab!(:channel) { Fabricate(:chat_channel) }
+
+      before do
+        Fabricate(:user_chat_channel_membership, user: user, chat_channel: channel, following: true)
+        Fabricate(:chat_channel)
+      end
+
+      it "returns them" do
+        expect(serializer.chat_channels[:direct_message_channels]).to eq([])
+        expect(serializer.chat_channels[:public_channels].count).to eq(1)
+        expect(serializer.chat_channels[:public_channels][0].id).to eq(channel.id)
+      end
+    end
+  end
+
+  describe "current_user_serializer#has_joinable_public_channels" do
+    before do
+      SiteSetting.chat_enabled = true
+      SiteSetting.chat_allowed_groups = Group::AUTO_GROUPS[:everyone]
+    end
+
+    fab!(:user) { Fabricate(:user) }
+    let(:serializer) { CurrentUserSerializer.new(user, scope: Guardian.new(user)) }
+
+    context "when no channels exist" do
+      it "returns false" do
+        expect(serializer.has_joinable_public_channels).to eq(false)
+      end
+    end
+
+    context "when no joinable channel exist" do
+      fab!(:channel) { Fabricate(:chat_channel) }
+
+      before do
+        Fabricate(:user_chat_channel_membership, user: user, chat_channel: channel, following: true)
+      end
+
+      it "returns false" do
+        expect(serializer.has_joinable_public_channels).to eq(false)
+      end
+    end
+
+    context "when no public channel exist" do
+      fab!(:private_category) { Fabricate(:private_category, group: Fabricate(:group)) }
+      fab!(:private_channel) { Fabricate(:chat_channel, chatable: private_category) }
+
+      it "returns false" do
+        expect(serializer.has_joinable_public_channels).to eq(false)
+      end
+    end
+
+    context "when a joinable channel exists" do
+      fab!(:channel) { Fabricate(:chat_channel) }
+
+      it "returns true" do
+        expect(serializer.has_joinable_public_channels).to eq(true)
+      end
     end
   end
 end

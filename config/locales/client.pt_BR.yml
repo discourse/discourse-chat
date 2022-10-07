@@ -17,6 +17,22 @@ pt_BR:
       cancel: "Cancelar"
       cancel_reply: "Cancelar resposta"
       chat_channels: "Canais"
+      browse_all_channels: "Navegar por todos os canais"
+      channel_settings:
+        title: "Definições do canal"
+        edit: "Editar"
+        add: "Adicionar"
+        close_channel: "Fechar canal"
+        open_channel: "Abrir canal"
+        archive_channel: "Arquivar canal"
+        delete_channel: "Excluir canal"
+        join_channel: "Entrar no canal"
+        leave_channel: "Sair do canal"
+        join: "Participar"
+        leave: "Sair"
+      channels_list_popup:
+        browse: "Navegar por canais"
+        create: "Criar um canal"
       click_to_join: "Clique aqui para visualizar os canais disponíveis."
       close: "Fechar"
       collapse: "Recolher gaveta de chat"
@@ -24,12 +40,17 @@ pt_BR:
       deleted: "Uma mensagem foi excluída. [view]"
       delete: "Excluir"
       edited: "editou"
+      empty_state:
+        direct_message: "Você também pode iniciar um chat pessoal com um(as) ou mais usuários(as)."
+      email_frequency:
+        never: "Nunca"
       enable: "Ativar chat"
       flag: "Sinalizar"
       flagged: "Esta mensagem foi sinalizada para revisão"
       invalid_access: "Você não tem acesso para ver este canal de chat"
       in_reply_to: "Em resposta a"
       heading: "Chat"
+      join: "Participar"
       new_messages: "novas mensagens"
       mention_warning:
         cannot_see:
@@ -52,6 +73,7 @@ pt_BR:
       open_message: "Abrir mensagem no chat"
       placeholder_self: "Anotar algo"
       placeholder_others: "Conversar com %{messageRecipient}"
+      placeholder_start_conversation: Iniciar uma conversa com %{usernames}
       remove_upload: "Remover arquivo"
       react: "Reagir com emoji"
       reply: "Responder"
@@ -76,13 +98,53 @@ pt_BR:
         other: "%{count} arquivos"
       you_flagged: "Você sinalizou esta mensagem"
       exit: "voltar"
+      channel_status:
+        archived_header: "O canal está arquivado"
+        archived: "Arquivado"
+        closed_header: "Canal fechado"
+        closed: "Fechado"
+      browse:
+        title: Canais
+        filter_all: Todos
+        filter_open: Abertos
+        filter_closed: Fechados
+        filter_archived: Arquivados
+        filter_input_placeholder: Pesquisar canal por nome
+      chat_message_separator:
+        today: Hoje
+        yesterday: Ontem
+      members_view:
+        filter_placeholder: Encontrar membros
+      about_view:
+        associated_topic: Tópico vinculado
+        associated_category: Categoria vinculada
+        title: Título
+        description: Descrição
+      channel_info:
+        back_to_all_channels: "Todos os canais"
+        back_to_channel: "Voltar"
+        tabs:
+          about: Sobre
+          members: Membros
+          settings: Definições
+      channel_edit_title_modal:
+        title: Editar título
+        input_placeholder: Adicione um título
+        description: Dê um breve título descritivo ao seu canal
+      direct_message_creator:
+        prefix: "Para:"
+        no_results: Nenhum resultado
       channel_selector:
         title: "Pular para o canal"
         no_channels: "Nenhum canal corresponde à sua pesquisa"
+      channel:
+        no_memberships: Este canal não tem membros
+        no_memberships_found: Nenhum membro encontrado
       create_channel:
         choose_category:
           label: "Escolha uma categoria"
           none: "selecionar um..."
+          default_hint: Gerencie o acesso ao acessar as <a href=%{link} target="_blank">%{category} configurações de segurança</a>
         create: "Criar canal"
         description: "Descrição (opcional)"
         name: "Nome do canal"
@@ -106,6 +168,8 @@ pt_BR:
         mention: "Apenas para menções"
         always: "Para todas as atividades"
       settings:
+        enable_auto_join_users: "Adicionar automaticamente todos os usuários ativos recentemente"
+        disable_auto_join_users: "Parar de adicionar usuários automaticamente"
         desktop_notification_level: "Notificações do desktop"
         follow: "Participar"
         mobile_notification_level: "Notificações por push em dispositivos móveis"
@@ -175,8 +239,11 @@ pt_BR:
       retention_reminders:
         public: "Histórico do canal é mantido por %{days} dias."
         dm: "Histórico de conversas pessoais é mantido por %{days} dias."
+      topic_button_title: "Chat"
     notifications:
       popup:
+        chat_mention:
+          direct: 'mencionou você em "%{channel}"'
         chat_message: "Nova mensagem de chat"
       titles:
         chat_mention: "Menção no chat"
@@ -202,3 +269,6 @@ pt_BR:
         reviewable_chat_message:
           title: "Mensagem de chat sinalizada"
           flagged_by: "Sinalizada por"
+    keyboard_shortcuts_help:
+      chat:
+        title: "Chat"

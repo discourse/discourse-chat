@@ -12,6 +12,10 @@
   @include unselectable;
 }
 
+.chat-message-container {
+  transform: translateZ(0);
+}
+
 .chat-msgactions-backdrop {
   position: fixed;
   bottom: 0;

@@ -47,6 +47,11 @@ export default {
       }
       return true;
     };
+    const isDrawerExpanded = () => {
+      return document.querySelector(".topic-chat-float-container:not(.hidden)")
+        ? true
+        : false;
+    };
 
     const modifyComposerSelection = (event, type) => {
       if (!isChatComposer(event.target)) {
@@ -76,9 +81,14 @@ export default {
     };
 
     const closeChatDrawer = (event) => {
+      if (!isDrawerExpanded()) {
+        return;
+      }
+
       if (!isChatComposer(event.target)) {
         return;
       }
+
       event.preventDefault();
       event.stopPropagation();
       appEvents.trigger("chat:toggle-close", event);
@@ -183,7 +193,7 @@ export default {
           },
         },
       });
-      api.addKeyboardShortcut(`esc`, (event) => closeChatDrawer(event), {
+      api.addKeyboardShortcut("esc", (event) => closeChatDrawer(event), {
         global: true,
         help: {
           category: "chat",

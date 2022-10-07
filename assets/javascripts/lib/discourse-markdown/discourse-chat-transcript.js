@@ -21,7 +21,7 @@ const chatTranscriptRule = {
     const channelName = tagInfo.attrs.channel;
     const channelId = tagInfo.attrs.channelId;
     const channelLink = channelId
-      ? options.getURL(`/chat/chat_channels/${channelId}`)
+      ? options.getURL(`/chat/channel/${channelId}/-`)
       : null;
 
     if (!username || !messageIdStart || !messageTimeStart) {
@@ -110,7 +110,9 @@ const chatTranscriptRule = {
 
     // for some cases, like archiving, we don't want the link to the
     // chat message because it will just result in a 404
-    if (noLink) {
+    // also handles the case where the quote doesn’t contain
+    // enough data to build a valid channel/message link
+    if (noLink || !channelLink) {
       let spanToken = state.push("span_open", "span", 1);
       spanToken.attrs = [["title", messageTimeStart]];
 
@@ -120,7 +122,7 @@ const chatTranscriptRule = {
     } else {
       let linkToken = state.push("link_open", "a", 1);
       linkToken.attrs = [
-        ["href", options.getURL(`/chat/message/${messageIdStart}`)],
+        ["href", `${channelLink}?messageId=${messageIdStart}`],
         ["title", messageTimeStart],
       ];
 

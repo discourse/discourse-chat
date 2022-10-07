@@ -1,28 +1,28 @@
-import Service from "@ember/service";
+import Service, { inject as service } from "@ember/service";
+import { isTesting } from "discourse-common/config/environment";
+import { bind } from "discourse-common/utils/decorators";
 
 export default class ChatMessageVisibilityObserver extends Service {
-  constructor() {
-    super(...arguments);
-    this._setup();
-  }
+  @service chat;
 
-  _setup() {
-    const options = {
-      root: document,
-      rootMargin: "-10px",
-    };
-
-    this.observer = new IntersectionObserver(this._observerCallback, options);
-  }
-
-  _observerCallback(entries) {
-    entries.forEach((entry) => {
-      entry.target.dataset.visible = entry.isIntersecting;
-    });
-  }
+  observer = new IntersectionObserver(this._observerCallback, {
+    root: document,
+    rootMargin: "-10px",
+  });
 
   willDestroy() {
     this.observer.disconnect();
+  }
+
+  @bind
+  _observerCallback(entries) {
+    entries.forEach((entry) => {
+      entry.target.dataset.visible = entry.isIntersecting;
+
+      if (entry.isIntersecting && !isTesting()) {
+        this.chat.updateLastReadMessage();
+      }
+    });
   }
 
   observe(element) {

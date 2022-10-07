@@ -63,7 +63,7 @@
                 {{on "keyup" (action "handleUserKeyUp" user)}}
               >
                 {{chat-user-avatar user=user avatarSize="medium"}}
-                {{user-info user=user includeLink=false includeAvatar=false}}
+                {{user-info user=user includeLink=false includeAvatar=false showStatus=true}}
               </li>
             {{/each}}
           </ul>

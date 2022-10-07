@@ -1,9 +1,10 @@
-.chat-message:not(.user-info-hidden) {
-  padding: 0.75em 1em 0.1em;
+.chat-message {
+  // 1px to account for .is-online box-shadow
+  padding: 0.1em 1px;
 }
 
-.chat-message.user-info-hidden {
-  padding: 0.1em 1em;
+.chat-message:not(.user-info-hidden) {
+  padding-top: 0.75em;
 }
 
 body.has-full-page-chat {
@@ -52,7 +53,7 @@ body.has-full-page-chat {
 
   .chat-full-page-header {
     background-color: var(--secondary);
-    padding: 0.5em 0.5em 0.5em 0em;
+    padding: 0.5em 0;
   }
 }
 
@@ -115,4 +116,8 @@ html.has-full-page-chat body {
     // restricts the height of the page
     grid-template-rows: calc(var(--chat-vh, 1vh) * 100 - var(--header-offset));
   }
+}
+
+.chat-message-separator {
+  margin-left: 0;
 }

@@ -12,12 +12,21 @@ class ChatMessageSerializer < ApplicationSerializer
              :user_flag_status,
              :edited,
              :reactions,
-             :bookmark
+             :bookmark,
+             :available_flags
 
   has_one :user, serializer: BasicUserWithStatusSerializer, embed: :objects
   has_one :chat_webhook_event, serializer: ChatWebhookEventSerializer, embed: :objects
   has_one :in_reply_to, serializer: ChatInReplyToSerializer, embed: :objects
   has_many :uploads, serializer: UploadSerializer, embed: :objects
+
+  def user
+    object.user || DeletedChatUser.new
+  end
+
+  def excerpt
+    WordWatcher.censor(object.excerpt)
+  end
 
   def reactions
     reactions_hash = {}
@@ -75,12 +84,20 @@ class ChatMessageSerializer < ApplicationSerializer
     object.revisions.any?
   end
 
+  def deleted_at
+    object.user ? object.deleted_at : Time.zone.now
+  end
+
+  def deleted_by_id
+    object.user ? object.deleted_by_id : Discourse.system_user.id
+  end
+
   def include_deleted_at?
-    !object.deleted_at.nil?
+    object.user ? !object.deleted_at.nil? : true
   end
 
   def include_deleted_by_id?
-    !object.deleted_at.nil?
+    object.user ? !object.deleted_at.nil? : true
   end
 
   def include_in_reply_to?
@@ -107,5 +124,22 @@ class ChatMessageSerializer < ApplicationSerializer
 
   def include_user_flag_status?
     user_flag_status.present?
+  end
+
+  def available_flags
+    return [] if !scope.can_flag_chat_message?(object)
+    return [] if reviewable_id.present?
+
+    PostActionType.flag_types.map do |sym, id|
+      if sym == :notify_user &&
+           (
+             scope.current_user == user || user.bot? ||
+               !scope.current_user.in_any_groups?(SiteSetting.personal_message_enabled_groups_map)
+           )
+        next
+      end
+
+      sym
+    end
   end
 end

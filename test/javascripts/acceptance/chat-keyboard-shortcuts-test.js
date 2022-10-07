@@ -101,7 +101,7 @@ acceptance("Discourse Chat - Keyboard shortcuts", function (needs) {
     // fillIn is needed for `this.filter` but triggerKeyEvent is needed to fire the JS event.
     await fillIn("#chat-channel-selector-input", "s");
     await triggerKeyEvent("#chat-channel-selector-input", "keyup", "R");
-    await settled();
+
     // Only 4 channels match this filter now!
     assert.equal(
       queryAll("#chat-channel-selector-modal-inner .chat-channel-selection-row")
@@ -166,22 +166,20 @@ acceptance("Discourse Chat - Keyboard shortcuts", function (needs) {
     await visit("/latest");
     this.chatService.set("sidebarActive", false);
     this.chatService.set("chatWindowFullPage", false);
+
     await click(".header-dropdown-toggle.open-chat");
-    await settled();
     assert.ok(visible(".topic-chat-float-container"), "chat float is open");
     assert.ok(query(".topic-chat-container").classList.contains("channel-4"));
 
     await triggerKeyEvent(document.body, "keydown", "ArrowDown", {
       altKey: true,
     });
-    await settled();
 
     assert.ok(query(".topic-chat-container").classList.contains("channel-10"));
 
     await triggerKeyEvent(document.body, "keydown", "ArrowUp", {
       altKey: true,
     });
-    await settled();
     assert.ok(query(".topic-chat-container").classList.contains("channel-4"));
   });
 
@@ -189,14 +187,14 @@ acceptance("Discourse Chat - Keyboard shortcuts", function (needs) {
     await visit("/latest");
     this.chatService.set("sidebarActive", false);
     await click(".header-dropdown-toggle.open-chat");
-    await settled();
+
     const composerInput = query(".chat-composer-input");
     await fillIn(composerInput, "test text");
     await focus(composerInput);
     composerInput.selectionStart = 0;
     composerInput.selectionEnd = 9;
     await triggerKeyEvent(composerInput, "keydown", "B", MODIFIER_OPTIONS);
-    await settled();
+
     assert.strictEqual(
       composerInput.value,
       "**test text**",
@@ -207,7 +205,7 @@ acceptance("Discourse Chat - Keyboard shortcuts", function (needs) {
     composerInput.selectionStart = 0;
     composerInput.selectionEnd = 9;
     await triggerKeyEvent(composerInput, "keydown", "I", MODIFIER_OPTIONS);
-    await settled();
+
     assert.strictEqual(
       composerInput.value,
       "_test text_",
@@ -218,7 +216,7 @@ acceptance("Discourse Chat - Keyboard shortcuts", function (needs) {
     composerInput.selectionStart = 0;
     composerInput.selectionEnd = 9;
     await triggerKeyEvent(composerInput, "keydown", "E", MODIFIER_OPTIONS);
-    await settled();
+
     assert.strictEqual(
       composerInput.value,
       "`test text`",
@@ -280,7 +278,6 @@ acceptance("Discourse Chat - Keyboard shortcuts", function (needs) {
     this.chatService.set("chatWindowFullPage", false);
 
     await triggerKeyEvent(document.body, "keydown", "-");
-    await settled();
     assert.ok(exists(".topic-chat-drawer-content"), "chat float is open");
   });
 
@@ -289,11 +286,10 @@ acceptance("Discourse Chat - Keyboard shortcuts", function (needs) {
     this.chatService.set("sidebarActive", false);
     this.chatService.set("chatWindowFullPage", false);
     await click(".header-dropdown-toggle.open-chat");
-    await settled();
+
     const composerInput = query(".chat-composer-input");
     await focus(composerInput);
     await triggerKeyEvent(composerInput, "keydown", "Escape");
-    await settled();
 
     assert.ok(
       exists(".topic-chat-float-container.hidden"),

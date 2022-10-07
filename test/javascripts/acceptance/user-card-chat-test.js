@@ -87,10 +87,12 @@ acceptance("Discourse Chat - User card test", function (needs) {
     await visit("/latest");
     this.appEvents.trigger("chat:toggle-open");
     await settled();
+
     await click(".topic-chat-drawer-header__return-to-channels-btn");
     await click(".chat-channel-row.chat-channel-9");
     await click("[data-user-card='hawk']");
     assert.ok(exists(".user-card-chat-btn"));
+
     await click(".user-card-chat-btn");
     assert.ok(visible(".topic-chat-float-container"), "chat float is open");
     assert.ok(query(".topic-chat-container").classList.contains("channel-75"));

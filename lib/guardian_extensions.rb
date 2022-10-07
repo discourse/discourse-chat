@@ -51,11 +51,7 @@ module DiscourseChat::GuardianExtensions
 
   def can_create_channel_message?(chat_channel)
     valid_statuses = is_staff? ? %w[open closed] : ["open"]
-    if chat_channel.direct_message_channel?
-      can_create_direct_message? && valid_statuses.include?(chat_channel.status)
-    else
-      valid_statuses.include?(chat_channel.status)
-    end
+    valid_statuses.include?(chat_channel.status)
   end
 
   # This is intentionally identical to can_create_channel_message, we

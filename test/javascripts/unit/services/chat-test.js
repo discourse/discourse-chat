@@ -10,6 +10,7 @@ import { cloneJSON } from "discourse-common/lib/object";
 import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import sinon from "sinon";
 import pretender from "discourse/tests/helpers/create-pretender";
+import { settled } from "@ember/test-helpers";
 
 acceptance("Discourse Chat | Unit | Service | chat", function (needs) {
   needs.hooks.beforeEach(function () {

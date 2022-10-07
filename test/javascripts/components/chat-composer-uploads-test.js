@@ -56,6 +56,7 @@ module("Discourse Chat | Component | chat-composer-uploads", function (hooks) {
         this.appEvents = this.container.lookup("service:appEvents");
         this.appEvents.trigger("chat-composer:load-uploads", [fakeUpload]);
         await settled();
+
         assert.strictEqual(queryAll(".chat-composer-upload").length, 1);
         assert.strictEqual(exists(".chat-composer-upload"), true);
       },
@@ -139,8 +140,6 @@ module("Discourse Chat | Component | chat-composer-uploads", function (hooks) {
         "upload-mixin:chat-composer-uploader:add-files",
         image
       );
-
-      await settled();
 
       this.appEvents.on(
         `upload-mixin:chat-composer-uploader:upload-cancelled`,

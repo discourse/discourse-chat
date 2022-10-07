@@ -75,9 +75,9 @@ RSpec.describe DiscourseChat::ChatController do
       expect(response.parsed_body["meta"]["can_flag"]).to be true
     end
 
-    it "returns `can_flag=false` for DM channels" do
+    it "returns `can_flag=true` for DM channels" do
       get "/chat/#{dm_chat_channel.id}/messages.json", params: { page_size: page_size }
-      expect(response.parsed_body["meta"]["can_flag"]).to be false
+      expect(response.parsed_body["meta"]["can_flag"]).to be true
     end
 
     it "returns `can_moderate=true` based on whether the user can moderate the chatable" do
@@ -1215,15 +1215,6 @@ RSpec.describe DiscourseChat::ChatController do
       put "/chat/flag.json",
           params: {
             chat_message_id: admin_chat_message.id,
-            flag_type_id: ReviewableScore.types[:off_topic],
-          }
-      expect(response.status).to eq(403)
-    end
-
-    it "doesn't allow flagging direct messages" do
-      put "/chat/flag.json",
-          params: {
-            chat_message_id: admin_dm_message.id,
             flag_type_id: ReviewableScore.types[:off_topic],
           }
       expect(response.status).to eq(403)

@@ -19,8 +19,16 @@
     }}
 
     <div class="post-body">
-      {{html-safe reviewable.chat_message.cooked}}
+      {{html-safe (or reviewable.payload.message_cooked reviewable.chat_message.cooked)}}
     </div>
+
+    {{#if this.reviewable.payload.transcript_topic_id}}
+      <div class="transcript">
+        <LinkTo @route="topic" @models={{array "-" this.reviewable.payload.transcript_topic_id}} class="btn btn-small">
+          {{i18n "review.transcript.view"}}
+        </LinkTo>
+      </div>
+    {{/if}}
 
     {{yield}}
   </div>

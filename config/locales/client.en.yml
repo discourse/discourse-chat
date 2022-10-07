@@ -323,6 +323,7 @@ en:
         post_to: "Post to"
         reset_emoji: "Reset Emoji"
         save: "Save"
+        edit: "Edit"
         select_emoji: "Choose Emoji"
         system: "system"
         title: "Incoming webhooks"

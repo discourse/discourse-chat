@@ -173,11 +173,11 @@
               {{d-button
                 class="btn"
                 icon="pencil-alt"
-                title="chat.incoming_webhooks.edit"
+                label="chat.incoming_webhooks.edit"
                 action=(action (mut selectedWebhookId) webhook.id)
               }}
               {{d-button
-                class="btn"
+                class="btn btn-danger"
                 icon="trash-alt"
                 title="chat.incoming_webhooks.delete"
                 action=(action "destroyWebhook" webhook)

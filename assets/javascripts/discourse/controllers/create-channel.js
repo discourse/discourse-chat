@@ -1,4 +1,3 @@
-import bootbox from "bootbox";
 import { escapeExpression } from "discourse/lib/utilities";
 import Controller from "@ember/controller";
 import ChatApi from "discourse/plugins/discourse-chat/discourse/lib/chat-api";
@@ -23,6 +22,7 @@ export default class CreateChannelController extends Controller.extend(
   ModalFunctionality
 ) {
   @service chat;
+  @service dialog;
 
   category = null;
   categoryId = null;
@@ -161,10 +161,9 @@ export default class CreateChannelController extends Controller.extend(
     }
 
     if (this.autoJoinUsers) {
-      bootbox.confirm(this.autoJoinWarning, (confirmed) => {
-        if (confirmed) {
-          this._createChannel();
-        }
+      this.dialog.yesNoConfirm({
+        message: this.autoJoinWarning,
+        didConfirm: () => this._createChannel(),
       });
     } else {
       this._createChannel();

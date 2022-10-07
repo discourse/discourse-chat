@@ -40,6 +40,7 @@ module(
       );
 
       this.channel.set("description", null);
+      await settled();
 
       assert.equal(
         query(".channel-info-about-view__description__helper-text").innerText,
@@ -115,6 +116,7 @@ module(
       );
 
       this.channel.set("description", null);
+      await settled();
 
       assert.notOk(exists(".channel-info-about-view__description"));
     });

@@ -445,6 +445,11 @@ en:
       allow_private_messages_from_specific_users: "Only allow specific users to send me personal messages or chat direct messages"
       ignored_users_instructions: "Suppress all posts, messages, notifications, personal messages, and chat direct messages from these users."
     user_menu:
+      no_chat_notifications_title: "You don’t have any chat notifications yet"
+      no_chat_notifications_body: >
+        You will be notified in this panel when someone direct messages you or <b>@mentions</b> you in chat. Notifications will also be sent to your email when you haven’t logged in for a while.
+        <br><br>
+        Click the title at the top of any chat channel to configure what notifications you receive in that channel. For more, see your <a href='%{preferencesUrl}'>notification preferences</a>.
       tabs:
         chat_notifications: "Chat notifications"
         chat_notifications_with_unread:

@@ -13,10 +13,7 @@ module DiscourseChat::GuardianExtensions
   def can_chat?(user)
     return false unless user
 
-    allowed_group_ids = DiscourseChat.allowed_group_ids
-    return true if allowed_group_ids.include?(Group::AUTO_GROUPS[:everyone])
-
-    (allowed_group_ids & user.group_ids).any?
+    user.staff? || user.in_any_groups?(DiscourseChat.allowed_group_ids)
   end
 
   def can_create_chat_message?

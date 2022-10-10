@@ -105,7 +105,11 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
 
     users = User.joins(:user_option).where.not(id: current_user.id)
     if !DiscourseChat.allowed_group_ids.include?(Group::AUTO_GROUPS[:everyone])
-      users = users.joins(:groups).where(groups: { id: DiscourseChat.allowed_group_ids })
+      users =
+        users
+          .joins(:groups)
+          .where(groups: { id: DiscourseChat.allowed_group_ids })
+          .or(users.joins(:groups).where("users.admin = true OR users.moderator = true"))
     end
 
     users = users.where(user_option: { chat_enabled: true })

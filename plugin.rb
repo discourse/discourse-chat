@@ -89,7 +89,7 @@ after_initialize do
     end
 
     def self.allowed_group_ids
-      SiteSetting.chat_allowed_groups.to_s.split("|").map(&:to_i)
+      SiteSetting.chat_allowed_groups_map
     end
 
     def self.onebox_template

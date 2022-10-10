@@ -109,7 +109,7 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
         users
           .joins(:groups)
           .where(groups: { id: DiscourseChat.allowed_group_ids })
-          .or(users.joins(:groups).staff
+          .or(users.joins(:groups).staff)
     end
 
     users = users.where(user_option: { chat_enabled: true })

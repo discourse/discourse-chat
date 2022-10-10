@@ -21,6 +21,11 @@ RSpec.describe DiscourseChat::GuardianExtensions do
     expect(guardian.can_chat?(user)).to eq(false)
   end
 
+  it "staff can always chat regardless of chat_allowed_grups" do
+    SiteSetting.chat_allowed_groups = ""
+    expect(guardian.can_chat?(staff)).to eq(true)
+  end
+
   describe "chat channel" do
     it "only staff can create channels" do
       expect(guardian.can_create_chat_channel?).to eq(false)

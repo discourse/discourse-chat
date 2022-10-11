@@ -4,4 +4,8 @@ export default class UserMenuChatNotificationsList extends UserMenuNotifications
   get dismissTypes() {
     return this.filterByTypes;
   }
+
+  get emptyStateComponent() {
+    return "user-menu/chat-notifications-list-empty-state";
+  }
 }

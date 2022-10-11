@@ -7,7 +7,6 @@
 sv:
   site_settings:
     chat_enabled: "Aktivera tillägget discourse-chatt."
-    chat_allowed_groups: "Användare i dessa grupper kan chatta."
     chat_channel_retention_days: "Chattmeddelanden i ordinarie kanaler kommer att behållas i så här många dagar. Sätt till '0' för att behålla meddelanden för alltid."
     chat_dm_retention_days: "Chattmeddelanden i personliga chattkanaler kommer att behållas i så här många dagar. Sätt till '0' för att behålla meddelanden för alltid."
     chat_auto_silence_duration: "Antal minuter som användare kommer att tystas när de överskrider antalsgränsen för skapande av chattmeddelanden. Ställ in på '0' för att inaktivera automatisk tystning."
@@ -101,8 +100,6 @@ sv:
         single_user: "%{user}"
         multi_user: "%{users}"
         multi_user_truncated: "%{users} och %{leftover} andra"
-      default_titles:
-        site_feedback: "Allmänt"
     bookmarkable:
       notification_title: "meddelande i %{channel_name}"
     personal_chat: "personlig chatt"

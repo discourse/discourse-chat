@@ -25,7 +25,6 @@ de:
         leave: "Verlassen"
       channels_list_popup:
         browse: "Kanäle durchsuchen"
-        create: "Kanal erstellen"
       click_to_join: "Klicke hier, um die verfügbaren Kanäle zu sehen."
       close: "Schließen"
       collapse: "Chat-Bereich ausblenden"
@@ -107,7 +106,6 @@ de:
         create: "Kanal erstellen"
         description: "Beschreibung (optional)"
         name: "Kanalname"
-        title: "Kanal erstellen"
         type: "Typ"
         types:
           category: "Kategorie"

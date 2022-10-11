@@ -25,7 +25,6 @@ fr:
         leave: "Quitter"
       channels_list_popup:
         browse: "Parcourir les canaux"
-        create: "Créer un canal"
       click_to_join: "Cliquez ici pour voir les canaux disponibles."
       close: "Fermer"
       collapse: "Réduire le tiroir de chat"
@@ -107,7 +106,6 @@ fr:
         create: "Créer un canal"
         description: "Description (facultative)"
         name: "Nom du canal"
-        title: "Créer un canal"
         type: "Type"
         types:
           category: "Catégorie"

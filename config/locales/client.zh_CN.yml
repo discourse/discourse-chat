@@ -69,7 +69,6 @@ zh_CN:
         process_started: "删除该频道的过程已经开始。这个对话框将很快关闭，你将无法看到被删除的频道。"
       channels_list_popup:
         browse: "浏览频道"
-        create: "创建频道"
       click_to_join: "点击此处查看可用频道。"
       close: "关闭"
       collapse: "折叠聊天抽屉"
@@ -230,7 +229,6 @@ zh_CN:
         create: "创建频道"
         description: "描述（可选）"
         name: "频道名称"
-        title: "创建频道"
         type: "类型"
         types:
           category: "类别"

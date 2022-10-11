@@ -25,7 +25,6 @@ es:
         leave: "Abandonar"
       channels_list_popup:
         browse: "Examinar canales"
-        create: "Crear un canal"
       click_to_join: "Haz clic aquí para ver los canales disponibles."
       close: "Cerrar"
       collapse: "Contraer contenedor del chat"
@@ -107,7 +106,6 @@ es:
         create: "Crear canal"
         description: "Descripción (opcional)"
         name: "Nombre del canal"
-        title: "Crear un canal"
         type: "Tipo"
         types:
           category: "Categoría"

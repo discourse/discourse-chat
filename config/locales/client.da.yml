@@ -43,7 +43,6 @@ da:
         confirm_channel_name: "Indtast kanalnavn"
       channels_list_popup:
         browse: "Gennemse kanaler"
-        create: "Opret en kanal"
       click_to_join: "Klik her for at se tilgængelige kanaler."
       close: "Luk"
       delete: "Slet"
@@ -90,7 +89,6 @@ da:
         create: "Opret kanal"
         description: "Beskrivelse (valgfrit)"
         name: "Kanal navn"
-        title: "Opret en kanal"
         type: "Type"
         types:
           category: "Kategori"

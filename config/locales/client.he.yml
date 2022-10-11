@@ -72,7 +72,7 @@ he:
         process_started: "תהליך מחיקת הערוץ החל. חלונית צצה זו תיסגר בקרוב, הערוץ שנמחק לא יופיעו עוד בשום מקום."
       channels_list_popup:
         browse: "עיון בערוצים"
-        create: "יצירת ערוץ"
+        create: "ערוץ חדש"
       click_to_join: "לחיצה כאן תציג את הערוצים הזמינים."
       close: "סגירה"
       collapse: "צמצום מגירת צ׳אט"
@@ -255,7 +255,7 @@ he:
         create: "יצירת ערוץ"
         description: "תיאור (רשות)"
         name: "שם הערוץ"
-        title: "יצירת ערוץ"
+        title: "ערוץ חדש"
         type: "סוג"
         types:
           category: "קטגוריה"
@@ -303,6 +303,7 @@ he:
         new: "צ׳אט אישי חדש"
         create: "קדימה"
         leave: "יציאה מהצ׳אט האישי הזה"
+        cannot_create: "מחילה, אין לך אפשרות לשלוח הודעות ישירות."
       incoming_webhooks:
         back: "חזרה"
         channel_placeholder: "בחירת ערוץ"
@@ -378,14 +379,19 @@ he:
       flagging:
         action: "סימון הודעה בדגל"
     notifications:
+      chat_invitation: "נשלחה אליך הזמנה להצטרף לערוץ צ׳אט"
       chat_invitation_html: "<span>הוזמנת להצטרף לערוץ צ׳אט על ידי</span> <span>%{username}</span>"
       chat_quoted: "<span>%{username}</span> %{description}"
       popup:
         chat_mention:
+          direct: 'אוזכרת בערוץ „%{channel}”'
           direct_html: '<span>אוזכרת בערוץ „%{channel}” על ידי</span> <span>%{username}</span>'
+          other: 'נוסף אזכור של %{identifier} בערוץ „%{channel}”'
           other_html: '<span>נוסף אזכור של %{identifier} בערוץ „%{channel}” על ידי</span> <span>%{username}</span>'
         direct_message_chat_mention:
+          direct: "אוזכרת בצ׳אט אישי"
           direct_html: "<span>אוזכרת בצ׳אט אישי על ידי</span> <span>%{username}</span>"
+          other: "נוסף אזכור של %{identifier} בצ׳אט אישי"
           other_html: "<span>נוסף אזכור של ‎%{identifier} בצ׳אט אישי על ידי</span> <span>%{username}</span>"
         chat_message: "הודעת צ׳אט חדשה"
         chat_quoted: "הודעת הצ׳אט שלך צוטטה על ידי %{username}"

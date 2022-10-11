@@ -6,7 +6,6 @@
 
 pt_BR:
   site_settings:
-    chat_allowed_groups: "Usuários(as) nestes grupos podem conversar."
     chat_default_channel_id: "O canal de chat que será aberto por padrão quando um usuário não tiver mensagens não lidas ou menções em outros canais."
   chat:
     errors:
@@ -55,8 +54,6 @@ pt_BR:
         archived: "Arquivado"
         closed: "Fechado"
         open: "Aberto"
-      default_titles:
-        site_feedback: "Geral"
     bookmarkable:
       notification_title: "mensagem em %{channel_name}"
     personal_chat: "chat pessoal"

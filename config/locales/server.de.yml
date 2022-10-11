@@ -5,8 +5,6 @@
 # https://translate.discourse.org/
 
 de:
-  site_settings:
-    chat_allowed_groups: "Benutzer in diesen Gruppen können chatten."
   chat:
     errors:
       channel_exists_for_category: "Für diese Kategorie und diesen Namen existiert bereits ein Kanal"

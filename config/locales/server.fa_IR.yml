@@ -7,9 +7,10 @@
 fa_IR:
   site_settings:
     chat_enabled: "فعال کردن افزونه discourse-chat"
-    chat_allowed_groups: "کاربران این گروه‌ها می‌توانند در گفتگو شرکت کنند."
+    chat_allowed_groups: "کاربران در این گروه‌ها می‌توانند گفتگو کنند. توجه داشته باشید که کارکنان همیشه می‌توانند به گفتگو دسترسی داشته باشند."
     chat_allow_uploads: "بارگذاری در کانال‌های گفتگو عمومی و کانال‌های پیام مستقیم مجاز است."
     default_emoji_reactions: "واکنش‌های شکلک پیش‌فرض برای پیام‌های گفتگو. برای واکنش سریع تا ۵ شکلک اضافه کنید."
+    chat_message_flag_allowed_groups: "کاربران در این گروه‌ها مجاز به گزارش دادن، پیام‌های گفتگو هستند."
     errors:
       chat_upload_not_allowed_secure_uploads: "وقتی که در تنظیمات سایت آپلودهای ایمن فعال باشد، آپلود گفتگو مجاز نیست."
   chat:
@@ -23,6 +24,7 @@ fa_IR:
       actor_disallowed_dms: "شما انتخاب کرده‌اید که از ارسال پیام‌های خصوصی و پیام‌های مستقیم در گفتگو توسط کاربران دیگر به شما جلوگیری کنیم، بنابراین نمی‌توانید پیام‌های مستقیم جدید در گفتگو ارسال کنید."
       actor_preventing_target_user_from_dm: "شما انتخاب کرده‌اید که %{username}، از ارسال پیام‌های خصوصی و پیام‌های مستقیم در گفتگو برای شما جلوگیری کنیم، بنابراین نمی‌توانید پیام مستقیم جدیدی در گفتگو برای او ارسال کنید."
     reviewables:
+      message_already_handled: "با تشکر از شما، اما ما در حال حاضر این پیام را بررسی کرده‌ایم و تشخیص داده‌ایم که نیازی به گزارش دوباره ندارد."
       actions:
         agree:
           title: "موافقم..."
@@ -48,8 +50,6 @@ fa_IR:
         single_user: "%{user}"
         multi_user: "%{users}"
         multi_user_truncated: "%{users} و %{leftover} نفر دیگر"
-      default_titles:
-        site_feedback: "عمومی"
     bookmarkable:
       notification_title: "پیام در %{channel_name}"
     personal_chat: "گفتگوی شخصی"

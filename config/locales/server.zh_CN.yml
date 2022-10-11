@@ -7,7 +7,6 @@
 zh_CN:
   site_settings:
     chat_enabled: "启用discourse-chat插件。"
-    chat_allowed_groups: "这些群组中的用户可以聊天。"
     chat_channel_retention_days: "常规频道中的聊天消息将保留此天数。设置为 0 将永久保留消息。"
     chat_dm_retention_days: "个人聊天频道中的聊天消息将保留此天数。设置为 0 将永久保留消息。"
     chat_auto_silence_duration: "用户超过聊天消息创建速率限制时将被静音的分钟数。设置为“0”以禁用自动静音。"
@@ -100,8 +99,6 @@ zh_CN:
         single_user: "%{user}"
         multi_user: "%{users}"
         multi_user_truncated: "%{users} 和 其他%{leftover} 人"
-      default_titles:
-        site_feedback: "通用"
     bookmarkable:
       notification_title: "%{channel_name}频道中的信息"
     personal_chat: "个人聊天"

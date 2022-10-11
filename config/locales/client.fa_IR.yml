@@ -57,7 +57,7 @@ fa_IR:
         confirm_channel_name: "نام کانال را وارد کنید"
       channels_list_popup:
         browse: "مرور کانال‌ها"
-        create: "ایجاد کانال"
+        create: "کانال جدید"
       click_to_join: "برای مشاهده کانال‌های موجود، اینجا را کلیک کنید."
       close: "بستن"
       confirm_flag: "آیا برای پرچم گذاری پیام %{username} مطمئن هستید؟"
@@ -191,7 +191,7 @@ fa_IR:
         create: "ایجاد کانال"
         description: "توضیحات «اختیاری»"
         name: "نام کانال"
-        title: "ایجاد کانال"
+        title: "کانال جدید"
         type: "نوع"
         types:
           category: "دسته‌بندی"
@@ -222,6 +222,7 @@ fa_IR:
         title: "گفتگوی شخصی"
         new: "گفتگوی شخصی جدید"
         create: "برو"
+        cannot_create: "با عرض پوزش، شما نمی‌توانید پیام مستقیم ارسال کنید."
       incoming_webhooks:
         back: "بازگشت"
         channel_placeholder: "یک کانال را انتخاب کنید"

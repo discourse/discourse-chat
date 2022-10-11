@@ -25,7 +25,6 @@ ja:
         leave: "退出"
       channels_list_popup:
         browse: "チャンネルを閲覧する"
-        create: "チャンネルを作成する"
       click_to_join: "利用可能なチャンネルを表示するにはここをクリックします。"
       close: "閉じる"
       collapse: "チャットドロワーを折りたたむ"
@@ -103,7 +102,6 @@ ja:
         create: "チャンネルを作成"
         description: "説明（オプション）"
         name: "チャンネル名"
-        title: "チャンネルを作成する"
         type: "タイプ"
         types:
           category: "カテゴリ"

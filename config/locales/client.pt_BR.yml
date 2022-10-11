@@ -32,7 +32,6 @@ pt_BR:
         leave: "Sair"
       channels_list_popup:
         browse: "Navegar por canais"
-        create: "Criar um canal"
       click_to_join: "Clique aqui para visualizar os canais disponíveis."
       close: "Fechar"
       collapse: "Recolher gaveta de chat"
@@ -148,7 +147,6 @@ pt_BR:
         create: "Criar canal"
         description: "Descrição (opcional)"
         name: "Nome do canal"
-        title: "Criar um canal"
         type: "Tipo"
         types:
           category: "Categoria"

@@ -25,7 +25,6 @@ it:
         leave: "Esci"
       channels_list_popup:
         browse: "Sfoglia i canali"
-        create: "Crea un canale"
       click_to_join: "Fai clic qui per visualizzare i canali disponibili."
       close: "Chiudi"
       collapse: "Comprimi il cassetto della chat"
@@ -107,7 +106,6 @@ it:
         create: "Crea canale"
         description: "Descrizione (facoltativa)"
         name: "Nome del canale"
-        title: "Crea un canale"
         type: "Tipo"
         types:
           category: "Categoria"

@@ -25,7 +25,6 @@ ar:
         leave: "مغادرة"
       channels_list_popup:
         browse: "استعراض القنوات"
-        create: "إنشاء قناة"
       click_to_join: "انقر هنا لعرض القنوات المتاحة"
       close: "إغلاق"
       collapse: "طي ساحب الدردشة"
@@ -123,7 +122,6 @@ ar:
         create: "إنشاء قناة"
         description: "الوصف (اختياري)"
         name: "اسم القناة"
-        title: "إنشاء قناة"
         type: "النوع"
         types:
           category: "الفئة"

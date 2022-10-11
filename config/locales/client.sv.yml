@@ -70,7 +70,6 @@ sv:
         process_started: "Processen för att radera kanalen har påbörjats. Denna modal kommer att stängas inom kort och du kommer inte längre att se den raderade kanalen någonstans."
       channels_list_popup:
         browse: "Bläddra bland kanaler"
-        create: "Skapa en kanal"
       click_to_join: "Klicka här för att se tillgängliga kanaler."
       close: "Stäng"
       collapse: "Komprimera chattruta"
@@ -234,7 +233,6 @@ sv:
         create: "Skapa kanal"
         description: "Beskrivning (valfritt)"
         name: "Kanalnamn"
-        title: "Skapa en kanal"
         type: "Typ"
         types:
           category: "Kategori"

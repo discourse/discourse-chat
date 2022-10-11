@@ -17,7 +17,10 @@ module("Discourse Chat | Unit | chat-emoji-reaction-store", function (hooks) {
   });
 
   test("defaults", function (assert) {
-    assert.deepEqual(this.emojiReactionStore.favorites, []);
+    assert.deepEqual(
+      this.emojiReactionStore.favorites,
+      (this.siteSettings.default_emoji_reactions || "").split("|")
+    );
     assert.strictEqual(this.emojiReactionStore.diversity, 1);
   });
 
@@ -46,9 +49,19 @@ module("Discourse Chat | Unit | chat-emoji-reaction-store", function (hooks) {
 
   test("track", function (assert) {
     this.emojiReactionStore.track("woman:t4");
-    assert.deepEqual(this.emojiReactionStore.favorites, ["woman:t4"]);
+    assert.deepEqual(
+      this.emojiReactionStore.favorites,
+      ["woman:t4"].concat(
+        (this.siteSettings.default_emoji_reactions || "").split("|")
+      )
+    );
 
     this.emojiReactionStore.track("otter");
-    assert.deepEqual(this.emojiReactionStore.favorites, ["otter", "woman:t4"]);
+    assert.deepEqual(
+      this.emojiReactionStore.favorites,
+      ["otter", "woman:t4"].concat(
+        (this.siteSettings.default_emoji_reactions || "").split("|")
+      )
+    );
   });
 });

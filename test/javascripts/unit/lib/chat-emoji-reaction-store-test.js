@@ -16,10 +16,13 @@ module("Discourse Chat | Unit | chat-emoji-reaction-store", function (hooks) {
     this.emojiReactionStore.reset();
   });
 
+  // TODO (martin) Remove site setting workarounds after core PR#1290
   test("defaults", function (assert) {
     assert.deepEqual(
       this.emojiReactionStore.favorites,
-      (this.siteSettings.default_emoji_reactions || "").split("|")
+      (this.siteSettings.default_emoji_reactions || "")
+        .split("|")
+        .filter((val) => val)
     );
     assert.strictEqual(this.emojiReactionStore.diversity, 1);
   });
@@ -49,19 +52,23 @@ module("Discourse Chat | Unit | chat-emoji-reaction-store", function (hooks) {
 
   test("track", function (assert) {
     this.emojiReactionStore.track("woman:t4");
-    assert.deepEqual(
-      this.emojiReactionStore.favorites,
-      ["woman:t4"].concat(
-        (this.siteSettings.default_emoji_reactions || "").split("|")
-      )
-    );
+    let expected = ["woman:t4"];
+
+    if (this.siteSettings.default_emoji_reactions) {
+      expected = expected.concat(
+        this.siteSettings.default_emoji_reactions.split("|")
+      );
+    }
+    assert.deepEqual(this.emojiReactionStore.favorites, expected);
 
     this.emojiReactionStore.track("otter");
-    assert.deepEqual(
-      this.emojiReactionStore.favorites,
-      ["otter", "woman:t4"].concat(
-        (this.siteSettings.default_emoji_reactions || "").split("|")
-      )
-    );
+
+    expected = ["otter", "woman:t4"];
+    if (this.siteSettings.default_emoji_reactions) {
+      expected = expected.concat(
+        this.siteSettings.default_emoji_reactions.split("|")
+      );
+    }
+    assert.deepEqual(this.emojiReactionStore.favorites, expected);
   });
 });

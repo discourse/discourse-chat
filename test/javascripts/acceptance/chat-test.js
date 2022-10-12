@@ -894,6 +894,22 @@ Widget.triangulate(arg: "test")
     );
   });
 
+  test("Double clicking message starts editing it", async function (assert) {
+    await visit("/chat/channel/11/another-category");
+
+    let composer = query(".chat-composer-input");
+
+    await triggerEvent('.chat-message-container[data-id="176"]', "dblclick");
+    assert.equal(
+      composer.value,
+      "",
+      "it doesn’t work for message you can’t edit"
+    );
+
+    await triggerEvent('.chat-message-container[data-id="174"]', "dblclick");
+    assert.equal(composer.value, "Hello world", "it edits the message");
+  });
+
   test("pressing keys focuses composer in full page chat", async function (assert) {
     await visit("/chat/channel/11/another-category");
 

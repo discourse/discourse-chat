@@ -507,7 +507,7 @@ export default Component.extend({
   },
 
   @action
-  handleDoubleClick(event) {
+  handleDoubleClick() {
     if (!this.showEditButton) {
       return;
     }

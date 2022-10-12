@@ -318,7 +318,6 @@ $float-height: 530px;
   .chat-messages-scroll {
     flex-grow: 1;
     overflow-y: scroll;
-    overflow-y: overlay;
     scrollbar-color: var(--primary-low) transparent;
     transition: scrollbar-color 0.2s ease-in-out;
     display: flex;

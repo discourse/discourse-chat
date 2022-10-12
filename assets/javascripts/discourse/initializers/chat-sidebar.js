@@ -108,6 +108,12 @@ export default {
                 ? "urgent"
                 : "unread";
             }
+
+            get contentCSSClass() {
+              return this.channel.current_user_membership.muted
+                ? "--muted"
+                : "";
+            }
           };
 
           const SidebarChatChannelsSection = class extends BaseCustomSidebarSection {
@@ -299,6 +305,12 @@ export default {
                 return "active";
               }
               return "";
+            }
+
+            get contentCSSClass() {
+              return this.channel.current_user_membership.muted
+                ? "--muted"
+                : "";
             }
 
             get suffixType() {

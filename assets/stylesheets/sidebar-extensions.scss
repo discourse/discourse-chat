@@ -160,5 +160,8 @@
     .user-status {
       margin-left: 0.3em;
     }
+    &.--muted {
+      opacity: 0.65;
+    }
   }
 }

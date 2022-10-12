@@ -445,7 +445,9 @@ acceptance("Discourse Chat - without unread", function (needs) {
     );
     assert.equal(
       lastMessage.querySelector(".chat-message-text").innerText.trim(),
-      messageContent
+      this.siteSettings.enable_markdown_typographer
+        ? "Here’s a message"
+        : messageContent
     );
 
     await publishToMessageBus("/chat/11", {
@@ -1505,6 +1507,7 @@ acceptance(
     needs.settings({
       chat_enabled: true,
       chat_allow_uploads: false,
+      discourse_local_dates_enabled: false,
     });
     needs.pretender((server, helper) => {
       baseChatPretenders(server, helper);

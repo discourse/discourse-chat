@@ -507,15 +507,6 @@ export default Component.extend({
   },
 
   @action
-  handleDoubleClick() {
-    if (!this.showEditButton) {
-      return;
-    }
-
-    this.edit();
-  },
-
-  @action
   dismissMentionWarning() {
     this.message.set("mentionWarning", null);
   },

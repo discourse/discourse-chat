@@ -1,4 +1,3 @@
-import bootbox from "bootbox";
 import Component from "@ember/component";
 import { action, computed } from "@ember/object";
 import { inject as service } from "@ember/service";
@@ -24,6 +23,7 @@ export default class ChatChannelSettingsView extends Component {
   channel = null;
   @service chat;
   @service router;
+  @service dialog;
   notificationLevels = NOTIFICATION_LEVELS;
   mutedOptions = MUTED_OPTIONS;
   isSavingNotificationSetting = false;
@@ -124,15 +124,11 @@ export default class ChatChannelSettingsView extends Component {
 
   @action
   onEnableAutoJoinUsers() {
-    bootbox.confirm(
-      I18n.t("chat.settings.auto_join_users_warning", {
+    this.dialog.confirm({
+      message: I18n.t("chat.settings.auto_join_users_warning", {
         category: this.channel.chatable.name,
       }),
-      (confirmed) => {
-        if (confirmed) {
-          this._updateAutoJoinUsers(true);
-        }
-      }
-    );
+      didConfirm: () => this._updateAutoJoinUsers(true),
+    });
   }
 }

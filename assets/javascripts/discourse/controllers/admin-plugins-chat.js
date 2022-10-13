@@ -1,12 +1,13 @@
 import Controller from "@ember/controller";
-import bootbox from "bootbox";
 import EmberObject, { action, computed } from "@ember/object";
 import I18n from "I18n";
 import { and } from "@ember/object/computed";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
+import { inject as service } from "@ember/service";
 
 export default class AdminPluginsChatController extends Controller {
+  @service dialog;
   queryParams = { selectedWebhookId: "id" };
 
   loading = false;
@@ -78,13 +79,9 @@ export default class AdminPluginsChatController extends Controller {
 
   @action
   destroyWebhook(webhook) {
-    bootbox.confirm(
-      I18n.t("chat.incoming_webhooks.confirm_destroy"),
-      (confirm) => {
-        if (!confirm) {
-          return;
-        }
-
+    this.dialog.deleteConfirm({
+      message: I18n.t("chat.incoming_webhooks.confirm_destroy"),
+      didConfirm: () => {
         this.set("loading", true);
         return ajax(`/admin/plugins/chat/hooks/${webhook.id}`, {
           type: "DELETE",
@@ -94,8 +91,8 @@ export default class AdminPluginsChatController extends Controller {
             this.set("loading", false);
           })
           .catch(popupAjaxError);
-      }
-    );
+      },
+    });
   }
 
   @action

@@ -1,4 +1,3 @@
-import bootbox from "bootbox";
 import Bookmark from "discourse/models/bookmark";
 import { openBookmarkModal } from "discourse/controllers/bookmark";
 import { isTesting } from "discourse-common/config/environment";
@@ -49,6 +48,7 @@ export default Component.extend({
   _hasSubscribedToAppEvents: false,
   tagName: "",
   chat: service(),
+  dialog: service(),
   chatMessageActionsMobileAnchor: null,
   chatMessageEmojiPickerAnchor: null,
 
@@ -675,22 +675,20 @@ export default Component.extend({
   // TODO(roman): For backwards-compatibility.
   //   Remove after the 3.0 release.
   _legacyFlag() {
-    bootbox.confirm(
-      I18n.t("chat.confirm_flag", {
+    this.dialog.yesNoConfirm({
+      message: I18n.t("chat.confirm_flag", {
         username: this.message.user?.username,
       }),
-      (confirmed) => {
-        if (confirmed) {
-          ajax("/chat/flag", {
-            method: "PUT",
-            data: {
-              chat_message_id: this.message.id,
-              flag_type_id: 7, // notify_moderators
-            },
-          }).catch(popupAjaxError);
-        }
-      }
-    );
+      didConfirm: () => {
+        return ajax("/chat/flag", {
+          method: "PUT",
+          data: {
+            chat_message_id: this.message.id,
+            flag_type_id: 7, // notify_moderators
+          },
+        }).catch(popupAjaxError);
+      },
+    });
   },
 
   @action

@@ -111,7 +111,7 @@ export default {
 
             get contentCSSClass() {
               return this.channel.current_user_membership.muted
-                ? "--muted"
+                ? "sidebar-section-link-content-muted"
                 : "";
             }
           };
@@ -240,7 +240,7 @@ export default {
             }
 
             get name() {
-              return dasherize(this.title);
+              return slugifyChannel(this.title);
             }
 
             get route() {
@@ -309,7 +309,7 @@ export default {
 
             get contentCSSClass() {
               return this.channel.current_user_membership.muted
-                ? "--muted"
+                ? "sidebar-section-link-content-muted"
                 : "";
             }
 

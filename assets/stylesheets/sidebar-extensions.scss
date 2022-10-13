@@ -160,8 +160,9 @@
     .user-status {
       margin-left: 0.3em;
     }
-    &.--muted {
-      opacity: 0.65;
-    }
+  }
+
+  .sidebar-section-link-content-muted {
+    opacity: 0.65;
   }
 }

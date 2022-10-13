@@ -58,7 +58,7 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
       last_message_sent_at: "2021-06-01T11:15:00.000Z",
       current_user_membership: {
         unread_count: 0,
-        muted: false,
+        muted: true,
         following: true,
       },
     });
@@ -123,6 +123,7 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
             chatable: { slug: "random" },
             last_message_sent_at: "2021-11-08T21:26:05.710Z",
             current_user_membership: {
+              muted: true,
               unread_count: 1,
               unread_mentions: 1,
             },
@@ -304,6 +305,28 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
     );
   });
 
+  test("sidebar section link when direct message channel is muted by user", async function (assert) {
+    await visit("/");
+
+    assert.ok(
+      exists(
+        ".sidebar-section-chat-dms .sidebar-section-link-sam .sidebar-section-link-content-muted"
+      ),
+      "muted direct chat channel has right CSS class configured"
+    );
+  });
+
+  test("sidebar section link when public channel is muted by user", async function (assert) {
+    await visit("/");
+
+    assert.ok(
+      exists(
+        ".sidebar-section-chat-channels .sidebar-section-link-random .sidebar-section-link-content-muted"
+      ),
+      "muted random chat channel has right CSS class configured"
+    );
+  });
+
   test("Direct messages section", async function (assert) {
     const chatService = this.container.lookup("service:chat");
     chatService.directMessagesLimit = 2;
@@ -409,16 +432,19 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
 
   test("Escapes public channel titles", async function (assert) {
     await visit("/");
+
     const evilChannel = query(
       ".sidebar-section-chat-channels .sidebar-section-link-wrapper .sidebar-section-link"
     );
 
     assert.strictEqual(evilChannel.title, "&lt;script&gt;evil&lt;/script&gt;");
+
     assert.ok(
       evilChannel.className.includes(
         "sidebar-section-link-ltscriptgtevilltscriptgt"
       )
     );
+
     assert.strictEqual(
       evilChannel
         .querySelector(".sidebar-section-link-content-text")
@@ -429,16 +455,19 @@ acceptance("Discourse Chat - Core Sidebar", function (needs) {
 
   test("Escapes dm channel titles", async function (assert) {
     await visit("/");
+
     const evilChannel = queryAll(
       ".sidebar-section-chat-dms .sidebar-section-link-wrapper .sidebar-section-link"
     )[3];
 
     assert.strictEqual(evilChannel.title, "@&lt;script&gt;sam&lt;/script&gt;");
+
     assert.ok(
       evilChannel.className.includes(
-        "sidebar-section-link-@&lt;script&gt;sam&lt;/script&gt;"
+        "sidebar-section-link-ltscriptgtsamltscriptgt"
       )
     );
+
     assert.strictEqual(
       evilChannel
         .querySelector(".sidebar-section-link-content-text")

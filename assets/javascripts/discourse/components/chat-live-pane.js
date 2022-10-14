@@ -1121,6 +1121,7 @@ export default Component.extend({
     this.messageLookup = {};
     this.set("allPastMessagesLoaded", false);
     this.set("registeredChatChannelId", null);
+    this.set("selectingMessages", false);
   },
 
   _resetAfterSend() {

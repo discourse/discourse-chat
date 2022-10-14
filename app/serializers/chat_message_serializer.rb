@@ -128,9 +128,14 @@ class ChatMessageSerializer < ApplicationSerializer
 
   def available_flags
     return [] if !scope.can_flag_chat_message?(object)
-    return [] if reviewable_id.present?
+    return [] if reviewable_id.present? && user_flag_status == ReviewableScore.statuses[:pending]
 
     PostActionType.flag_types.map do |sym, id|
+      if @options[:chat_channel].direct_message_channel? &&
+           %i[notify_moderators notify_user].include?(sym)
+        next
+      end
+
       if sym == :notify_user &&
            (
              scope.current_user == user || user.bot? ||

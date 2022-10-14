@@ -420,6 +420,8 @@ en:
               label: Sender
               description: Defaults to system
     review:
+      transcript:
+        view: "View previous messages transcript"
       types:
         reviewable_chat_message:
           title: "Flagged Chat Message"

@@ -4,8 +4,10 @@ require "rails_helper"
 
 describe ChatMessageSerializer do
   fab!(:chat_channel) { Fabricate(:chat_channel) }
-  fab!(:message_1) { Fabricate(:chat_message, user: Fabricate(:user), chat_channel: chat_channel) }
-  let(:guardian) { Guardian.new(Fabricate(:user)) }
+  fab!(:message_poster) { Fabricate(:user) }
+  fab!(:message_1) { Fabricate(:chat_message, user: message_poster, chat_channel: chat_channel) }
+  fab!(:guardian_user) { Fabricate(:user) }
+  let(:guardian) { Guardian.new(guardian_user) }
 
   subject { described_class.new(message_1, scope: guardian, root: nil) }
 
@@ -69,77 +71,133 @@ describe ChatMessageSerializer do
   end
 
   describe "#available_flags" do
-    it "returns an empty list if the user already flagged the message" do
-      reviewable = Fabricate(:reviewable_chat_message, target: message_1)
+    before { Group.refresh_automatic_groups! }
 
-      serialized =
-        described_class.new(
-          message_1,
-          scope: guardian,
-          root: nil,
-          reviewable_ids: {
-            message_1.id => reviewable.id,
-          },
-        ).as_json
+    context "when flagging on a regular channel" do
+      let(:options) { { scope: guardian, root: nil, chat_channel: message_1.chat_channel } }
 
-      expect(serialized[:available_flags]).to be_empty
+      it "returns an empty list if the user already flagged the message" do
+        reviewable = Fabricate(:reviewable_chat_message, target: message_1)
+
+        serialized =
+          described_class.new(
+            message_1,
+            options.merge(
+              reviewable_ids: {
+                message_1.id => reviewable.id,
+              },
+              user_flag_statuses: {
+                message_1.id => ReviewableScore.statuses[:pending],
+              },
+            ),
+          ).as_json
+
+        expect(serialized[:available_flags]).to be_empty
+      end
+
+      it "return available flags if staff already reviewed the previous flag" do
+        reviewable = Fabricate(:reviewable_chat_message, target: message_1)
+
+        serialized =
+          described_class.new(
+            message_1,
+            options.merge(
+              reviewable_ids: {
+                message_1.id => reviewable.id,
+              },
+              user_flag_statuses: {
+                message_1.id => ReviewableScore.statuses[:ignored],
+              },
+            ),
+          ).as_json
+
+        expect(serialized[:available_flags]).to be_present
+      end
+
+      it "doesn't include notify_user for self-flags" do
+        guardian_1 = Guardian.new(message_1.user)
+
+        serialized =
+          described_class.new(message_1, options.merge(scope: Guardian.new(message_poster))).as_json
+
+        expect(serialized[:available_flags]).not_to include(:notify_user)
+      end
+
+      it "doesn't include the notify_user flag for bot messages" do
+        message_1.update!(user: Discourse.system_user)
+
+        serialized = described_class.new(message_1, options).as_json
+
+        expect(serialized[:available_flags]).not_to include(:notify_user)
+      end
+
+      it "returns an empty list for anons" do
+        serialized = described_class.new(message_1, options.merge(scope: Guardian.new)).as_json
+
+        expect(serialized[:available_flags]).to be_empty
+      end
+
+      it "returns an empty list for silenced users" do
+        guardian.user.update!(silenced_till: 1.month.from_now)
+
+        serialized = described_class.new(message_1, options).as_json
+
+        expect(serialized[:available_flags]).to be_empty
+      end
+
+      it "returns an empty list if the message was deleted" do
+        message_1.trash!
+
+        serialized = described_class.new(message_1, options).as_json
+
+        expect(serialized[:available_flags]).to be_empty
+      end
+
+      it "doesn't include notify_user if they are not in a PM allowed group" do
+        SiteSetting.personal_message_enabled_groups = Group::AUTO_GROUPS[:trust_level_4]
+        Group.refresh_automatic_groups!
+
+        serialized = described_class.new(message_1, options).as_json
+
+        expect(serialized[:available_flags]).not_to include(:notify_user)
+      end
+
+      it "returns an empty list if the user needs a higher TL to flag" do
+        guardian.user.update!(trust_level: TrustLevel[2])
+        SiteSetting.chat_message_flag_allowed_groups = Group::AUTO_GROUPS[:trust_level_3]
+        Group.refresh_automatic_groups!
+
+        serialized = described_class.new(message_1, options).as_json
+
+        expect(serialized[:available_flags]).to be_empty
+      end
     end
 
-    it "doesn't include notify_user for self-flags" do
-      guardian_1 = Guardian.new(message_1.user)
+    context "when flagging DMs" do
+      fab!(:dm_channel) do
+        Fabricate(:direct_message_chat_channel, users: [guardian_user, message_poster])
+      end
+      fab!(:dm_message) { Fabricate(:chat_message, user: message_poster, chat_channel: dm_channel) }
 
-      serialized = described_class.new(message_1, scope: guardian_1, root: nil).as_json
+      let(:options) { { scope: guardian, root: nil, chat_channel: dm_channel } }
 
-      expect(serialized[:available_flags]).not_to include(:notify_user)
-    end
+      it "doesn't include the notify_user flag type" do
+        serialized = described_class.new(dm_message, options).as_json
 
-    it "doesn't include the notify_user flag for bot messages" do
-      message_1.update!(user: Discourse.system_user)
+        expect(serialized[:available_flags]).not_to include(:notify_user)
+      end
 
-      serialized = described_class.new(message_1, scope: guardian, root: nil).as_json
+      it "doesn't include the notify_moderators flag type" do
+        serialized = described_class.new(dm_message, options).as_json
 
-      expect(serialized[:available_flags]).not_to include(:notify_user)
-    end
+        expect(serialized[:available_flags]).not_to include(:notify_moderators)
+      end
 
-    it "returns an empty list for anons" do
-      serialized = described_class.new(message_1, scope: Guardian.new, root: nil).as_json
+      it "includes other flags" do
+        serialized = described_class.new(dm_message, options).as_json
 
-      expect(serialized[:available_flags]).to be_empty
-    end
-
-    it "returns an empty list for silenced users" do
-      guardian.user.update!(silenced_till: 1.month.from_now)
-
-      serialized = described_class.new(message_1, scope: guardian, root: nil).as_json
-
-      expect(serialized[:available_flags]).to be_empty
-    end
-
-    it "returns an empty list if the message was deleted" do
-      message_1.trash!
-
-      serialized = described_class.new(message_1, scope: guardian, root: nil).as_json
-
-      expect(serialized[:available_flags]).to be_empty
-    end
-
-    it "doesn't include notify_user if they are not in a PM allowed group" do
-      SiteSetting.personal_message_enabled_groups = Group::AUTO_GROUPS[:trust_level_4]
-      Group.refresh_automatic_groups!
-
-      serialized = described_class.new(message_1, scope: guardian, root: nil).as_json
-
-      expect(serialized[:available_flags]).not_to include(:notify_user)
-    end
-
-    it "returns an empty list if the user needs a higher TL to flag" do
-      guardian.user.update!(trust_level: TrustLevel[2])
-      SiteSetting.chat_message_flag_allowed_groups = Group::AUTO_GROUPS[:trust_level_3]
-      Group.refresh_automatic_groups!
-
-      serialized = described_class.new(message_1, scope: guardian, root: nil).as_json
-
-      expect(serialized[:available_flags]).to be_empty
+        expect(serialized[:available_flags]).to include(:spam)
+      end
     end
   end
 end

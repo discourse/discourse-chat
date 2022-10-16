@@ -54,9 +54,7 @@ describe Jobs::AutoJoinChannelBatch do
     end
 
     it "does nothing if the channel chatable is not a category" do
-      same_id = 99
-      another_category = Fabricate(:category, id: same_id)
-      dm_channel = Fabricate(:direct_message_channel, id: same_id)
+      dm_channel = Fabricate(:direct_message_channel)
       channel.update!(chatable: dm_channel)
 
       subject.execute(chat_channel_id: channel.id, starts_at: user.id, ends_at: user.id)

@@ -87,13 +87,13 @@ export default class ChatEmojiPicker extends Component {
   @action
   didPressEscape(event) {
     if (event.key === "Escape") {
-      this.chatComposerEmojiPickerManager.close();
+      this.chatEmojiPickerManager.close();
     }
   }
 
   @action
   didNavigateFitzpatrickScale(event) {
-    if (event.type !== "keydown") {
+    if (event.type !== "keyup") {
       return;
     }
 
@@ -128,7 +128,7 @@ export default class ChatEmojiPicker extends Component {
 
   @action
   didToggleFitzpatrickScale(event) {
-    if (event.type === "keydown") {
+    if (event.type === "keyup") {
       if (event.key === "Escape") {
         event.preventDefault();
         this.isExpandedFitzpatrickScale = false;
@@ -145,9 +145,10 @@ export default class ChatEmojiPicker extends Component {
 
   @action
   didRequestFitzpatrickScale(scale, event) {
-    if (event.type === "keydown") {
+    if (event.type === "keyup") {
       if (event.key === "Escape") {
         event.preventDefault();
+        event.stopPropagation();
         this.isExpandedFitzpatrickScale = false;
         this._focusCurrentFitzpatrickScale();
         return;
@@ -209,7 +210,7 @@ export default class ChatEmojiPicker extends Component {
 
   @action
   didNavigateSection(event) {
-    if (event.type !== "keydown") {
+    if (event.type !== "keyup") {
       return;
     }
 
@@ -267,7 +268,7 @@ export default class ChatEmojiPicker extends Component {
 
     if (
       event.type === "click" ||
-      (event.type === "keydown" && event.key === "Enter")
+      (event.type === "keyup" && event.key === "Enter")
     ) {
       event.preventDefault();
       event.stopImmediatePropagation();

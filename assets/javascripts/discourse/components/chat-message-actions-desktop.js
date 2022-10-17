@@ -3,6 +3,8 @@ import { action } from "@ember/object";
 import { createPopper } from "@popperjs/core";
 import { schedule } from "@ember/runloop";
 
+const MSG_ACTIONS_PADDING = 2;
+
 export default Component.extend({
   tagName: "",
 
@@ -30,9 +32,9 @@ export default Component.extend({
               options: {
                 offset: ({ popper, placement }) => {
                   return [
-                    2,
+                    MSG_ACTIONS_PADDING,
                     -(placement.includes("left") || placement.includes("right")
-                      ? popper.width + 2
+                      ? popper.width + MSG_ACTIONS_PADDING
                       : popper.height),
                   ];
                 },

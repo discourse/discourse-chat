@@ -255,7 +255,6 @@ acceptance("Discourse Chat - without unread", function (needs) {
 
   test("Message controls are present and correct for permissions", async function (assert) {
     await visit("/chat/channel/11/another-category");
-    const messages = queryAll(".chat-message");
     await triggerEvent(".chat-message-container[data-id='174']", "mouseenter");
 
     // User created this message

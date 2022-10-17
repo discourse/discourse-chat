@@ -42,6 +42,11 @@ export default {
         });
       }
 
+      if (this.siteSettings.enable_experimental_hashtag_autocomplete) {
+        api.registerHashtagSearchParam("category", "chat-composer", 100);
+        api.registerHashtagSearchParam("tag", "chat-composer", 50);
+      }
+
       // we want to decorate the chat quote dates regardless
       // of whether the current user has chat enabled
       api.decorateCookedElement(

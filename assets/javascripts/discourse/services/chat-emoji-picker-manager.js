@@ -11,6 +11,8 @@ import { Promise } from "rsvp";
 import { computed } from "@ember/object";
 
 const TRANSITION_TIME = 125; // CSS transition time
+const DEFAULT_VISIBLE_SECTIONS = ["favorites", "smileys_&_emotion"];
+const DEFAULT_LAST_SECTION = "favorites";
 
 export default class ChatEmojiPickerManager extends Service {
   @tracked opened = false;
@@ -18,8 +20,8 @@ export default class ChatEmojiPickerManager extends Service {
   @tracked loading = false;
   @tracked context = null;
   @tracked emojis = null;
-  @tracked visibleSections = ["favorites", "smileys_&_emotion"];
-  @tracked lastVisibleSection = "favorites";
+  @tracked visibleSections = DEFAULT_VISIBLE_SECTIONS;
+  @tracked lastVisibleSection = DEFAULT_LAST_SECTION;
   @tracked element = null;
   @tracked callback;
 
@@ -32,8 +34,8 @@ export default class ChatEmojiPickerManager extends Service {
   closeExisting() {
     this.callback = null;
     this.opened = false;
-    this.visibleSections = ["favorites", "smileys_&_emotion"];
-    this.lastVisibleSection = "favorites";
+    this.visibleSections = DEFAULT_VISIBLE_SECTIONS;
+    this.lastVisibleSection = DEFAULT_LAST_SECTION;
   }
 
   @bind
@@ -46,8 +48,8 @@ export default class ChatEmojiPickerManager extends Service {
         return;
       }
 
-      this.visibleSections = ["favorites", "smileys_&_emotion"];
-      this.lastVisibleSection = "favorites";
+      this.visibleSections = DEFAULT_VISIBLE_SECTIONS;
+      this.lastVisibleSection = DEFAULT_LAST_SECTION;
       this.closing = false;
       this.opened = false;
     }, TRANSITION_TIME);

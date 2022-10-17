@@ -56,6 +56,10 @@
     text-transform: capitalize;
   }
 
+  &__no-reults {
+    padding: 1em;
+  }
+
   &__sections-nav {
     top: 0;
     position: sticky;

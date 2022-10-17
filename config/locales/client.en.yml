@@ -393,6 +393,7 @@ en:
         flags: "Flags"
         symbols: "Symbols"
         search_placeholder: "Search by emoji name and alias..."
+        no_results: "No results"
 
     notifications:
       chat_invitation: "invited you to join a chat channel"

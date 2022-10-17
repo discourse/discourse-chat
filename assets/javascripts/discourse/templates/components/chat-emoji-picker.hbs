@@ -65,37 +65,39 @@
   </div>
 
   {{#if chatEmojiPickerManager.sections.length}}
-    <div class="chat-emoji-picker__sections-nav">
-      <div
-        class="chat-emoji-picker__sections-nav__indicator"
-        style={{this.navIndicatorStyle}}
-      ></div>
+    {{#unless (gte filteredEmojis.length 0)}}
+      <div class="chat-emoji-picker__sections-nav">
+        <div
+          class="chat-emoji-picker__sections-nav__indicator"
+          style={{this.navIndicatorStyle}}
+        ></div>
 
-      {{#each-in groups as |section emojis|}}
-        <DButton
-          class={{concat-class
-            "btn-flat"
-            "chat-emoji-picker__section-btn"
-            (if (eq chatEmojiPickerManager.lastVisibleSection section) "active")
-          }}
-          tabindex="-1"
-          style={{this.navBtnStyle}}
-          @action={{fn this.didRequestSection section}}
-          data-section={{section}}
-        >
-          {{#if (eq section "favorites")}}
-            {{replace-emoji ":star:"}}
-          {{else}}
-            <img
-              width="18"
-              height="18"
-              class="emoji"
-              src={{emojis.firstObject.url}}
-            >
-          {{/if}}
-        </DButton>
-      {{/each-in}}
-    </div>
+        {{#each-in groups as |section emojis|}}
+          <DButton
+            class={{concat-class
+              "btn-flat"
+              "chat-emoji-picker__section-btn"
+              (if (eq chatEmojiPickerManager.lastVisibleSection section) "active")
+            }}
+            tabindex="-1"
+            style={{this.navBtnStyle}}
+            @action={{fn this.didRequestSection section}}
+            data-section={{section}}
+          >
+            {{#if (eq section "favorites")}}
+              {{replace-emoji ":star:"}}
+            {{else}}
+              <img
+                width="18"
+                height="18"
+                class="emoji"
+                src={{emojis.firstObject.url}}
+              >
+            {{/if}}
+          </DButton>
+        {{/each-in}}
+      </div>
+    {{/unless}}
 
     <div
       class="chat-emoji-picker__scrollable-content"
@@ -107,28 +109,34 @@
         {{on "keyup" this.didSelectEmoji}}
         role="button"
       >
-        {{#each filteredEmojis as |emoji|}}
-          <img
-            width="32"
-            height="32"
-            class="emoji"
-            src={{tonable-emoji-url
-              emoji
-              this.chatEmojiReactionStore.diversity
-            }}
-            tabindex="0"
-            data-emoji={{emoji.name}}
-            data-tonable={{if emoji.tonable "true"}}
-            alt={{emoji.name}}
-            loading="lazy"
-          >
-        {{/each}}
+        {{#if (gte filteredEmojis.length 0)}}
+          {{#each filteredEmojis as |emoji|}}
+            <img
+              width="32"
+              height="32"
+              class="emoji"
+              src={{tonable-emoji-url
+                emoji
+                this.chatEmojiReactionStore.diversity
+              }}
+              tabindex="0"
+              data-emoji={{emoji.name}}
+              data-tonable={{if emoji.tonable "true"}}
+              alt={{emoji.name}}
+              loading="lazy"
+            >
+          {{else}}
+            <p class="chat-emoji-picker__no-reults">
+              {{i18n "chat.emoji_picker.no_results"}}
+            </p>
+          {{/each}}
+        {{/if}}
 
         {{#each-in groups as |section emojis|}}
           <div
             class={{concat-class
               "chat-emoji-picker__section"
-              (if filteredEmojis.length "hidden")
+              (if (gte filteredEmojis.length 0) "hidden")
             }}
             data-section={{section}}
             role="region"

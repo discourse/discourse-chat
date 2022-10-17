@@ -65,7 +65,7 @@
   </div>
 
   {{#if chatEmojiPickerManager.sections.length}}
-    {{#unless (gte filteredEmojis.length 0)}}
+    {{#if (not (gte filteredEmojis.length 0))}}
       <div class="chat-emoji-picker__sections-nav">
         <div
           class="chat-emoji-picker__sections-nav__indicator"
@@ -97,7 +97,7 @@
           </DButton>
         {{/each-in}}
       </div>
-    {{/unless}}
+    {{/if}}
 
     <div
       class="chat-emoji-picker__scrollable-content"

@@ -4,12 +4,12 @@
     type="button"
     {{on "click" (action "handleClick")}}
     tabindex="0"
-    class={{concat
+    class={{concat-class
       this.class
-      " chat-message-reaction "
+      "chat-message-reaction"
       this.reaction.emoji
-      (if this.reaction.reacted " reacted")
-      (if this.reaction.count " show")
+      (if this.reaction.reacted "reacted")
+      (if this.reaction.count "show")
     }}
     title={{this.emojiString}}
   >
@@ -20,7 +20,7 @@
       height="20"
       alt={{this.emojiString}}
       src={{this.emojiUrl}}
-    >
+    />
 
     {{#if this.reaction.count}}
       <span class="count">{{this.reaction.count}}</span>

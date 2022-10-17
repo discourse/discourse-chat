@@ -68,6 +68,7 @@ export default Component.extend({
 
   chat: service(),
   router: service(),
+  chatEmojiPickerManager: service(),
   chatComposerPresenceManager: service(),
   fullPageChat: service(),
 
@@ -1309,28 +1310,43 @@ export default Component.extend({
   },
 
   @action
-  onHoverMessage(message, options = {}) {
+  onHoverMessage(message, options = {}, event) {
+    if (this.site.mobileView && options.desktopOnly) {
+      return;
+    }
+
     if (message?.staged) {
       return;
     }
 
-    discourseDebounce(
+    if (event) {
+      if (
+        event.type === "mouseleave" &&
+        event.toElement?.closest(".chat-message-actions-desktop-anchor")
+      ) {
+        return;
+      }
+
+      if (
+        event.type === "mouseenter" &&
+        event.fromElement?.closest(".chat-message-actions-desktop-anchor")
+      ) {
+        this.set("hoveredMessageId", message?.id);
+        return;
+      }
+    }
+
+    this._onHoverMessageDebouncedHandler = discourseDebounce(
       this,
       this.debouncedOnHoverMessage,
       message,
-      options,
-      true,
-      200
+      250
     );
   },
 
   @bind
-  debouncedOnHoverMessage(message, options = {}) {
+  debouncedOnHoverMessage(message) {
     if (this._selfDeleted) {
-      return;
-    }
-
-    if (this.site.mobileView && options.desktopOnly) {
       return;
     }
 

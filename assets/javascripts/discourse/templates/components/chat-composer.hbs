@@ -14,24 +14,32 @@
   }}
 {{/if}}
 
-{{emoji-picker
-  isActive=emojiPickerIsActive
-  isEditorFocused=isEditorFocused
-  emojiSelected=(action "onEmojiSelected")
-  onEmojiPickerClose=(action (mut emojiPickerIsActive) false)
-}}
+<div class="chat-composer-emoji-picker-anchor"></div>
 
 <div
   role="region"
   aria-label={{i18n "chat.aria_roles.composer"}}
-  class="chat-composer {{if disableComposer "is-disabled"}}"
+  class="chat-composer {{if disableComposer 'is-disabled'}}"
 >
-  {{#unless disableComposer}}
-    {{chat-composer-dropdown
-      buttons=dropdownButtons
-      isDisabled=disableComposer
+  {{#if
+    (and
+      chatEmojiPickerManager.opened
+      (eq chatEmojiPickerManager.context "chat-composer")
+    )
+  }}
+    {{d-button
+      icon="times"
+      action=chatEmojiPickerManager.close
+      class="chat-composer__close-emoji-picker-btn btn-flat"
     }}
-  {{/unless}}
+  {{else}}
+    {{#unless disableComposer}}
+      {{chat-composer-dropdown
+        buttons=dropdownButtons
+        isDisabled=disableComposer
+      }}
+    {{/unless}}
+  {{/if}}
 
   {{d-textarea
     value=(readonly value)

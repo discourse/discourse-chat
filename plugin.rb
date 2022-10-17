@@ -11,6 +11,7 @@ enabled_site_setting :chat_enabled
 
 register_asset "stylesheets/mixins/chat-scrollbar.scss"
 register_asset "stylesheets/common/core-extensions.scss"
+register_asset "stylesheets/common/chat-emoji-picker.scss"
 register_asset "stylesheets/common/chat-channel-card.scss"
 register_asset "stylesheets/common/dc-filter-input.scss"
 register_asset "stylesheets/common/common.scss"
@@ -110,6 +111,7 @@ after_initialize do
   load File.expand_path("../app/controllers/chat_base_controller.rb", __FILE__)
   load File.expand_path("../app/controllers/chat_controller.rb", __FILE__)
   load File.expand_path("../app/controllers/chat_channels_controller.rb", __FILE__)
+  load File.expand_path("../app/controllers/emojis_controller.rb", __FILE__)
   load File.expand_path("../app/controllers/direct_messages_controller.rb", __FILE__)
   load File.expand_path("../app/controllers/incoming_chat_webhooks_controller.rb", __FILE__)
   load File.expand_path("../app/models/deleted_chat_user.rb", __FILE__)
@@ -645,6 +647,7 @@ after_initialize do
     post "/drafts" => "chat#set_draft"
     post "/:chat_channel_id" => "chat#create_message"
     put "/flag" => "chat#flag"
+    get "/emojis" => "emojis#index"
   end
 
   Discourse::Application.routes.append do

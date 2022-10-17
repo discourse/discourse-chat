@@ -51,6 +51,16 @@
   }
 }
 
+.chat-msgactions {
+  .chat-message-reaction {
+    @include chat-reaction;
+
+    &:not(.show) {
+      display: none;
+    }
+  }
+}
+
 .chat-message {
   align-items: flex-start;
   padding: 0.25em 0.5em 0.25em 0.75em;
@@ -248,12 +258,9 @@
 
 .chat-msgactions-hover {
   @include unselectable;
-
   position: absolute;
-  opacity: 0;
   padding-right: 1rem;
   padding-top: 0.25rem;
-  pointer-events: none;
   right: 0;
   top: -1.5em;
   z-index: 2;
@@ -434,15 +441,6 @@
   .not-mobile-device & .chat-message:hover,
   .chat-message.chat-message-selected {
     background: var(--primary-very-low);
-  }
-
-  .not-mobile-device & .chat-message:hover,
-  .chat-message.chat-message-selected,
-  .chat-message:focus-within {
-    .chat-msgactions-hover {
-      opacity: 1;
-      pointer-events: initial;
-    }
   }
 
   .chat-message.chat-message-bookmarked {

@@ -141,7 +141,7 @@ module("Discourse Chat | Component | chat-emoji-picker", function (hooks) {
       selection = emoji;
     };
     await render(hbs`<ChatEmojiPicker />`);
-    await click('img.emoji[title="grinning"]');
+    await click('img.emoji[alt="grinning"]');
 
     assert.strictEqual(selection, "grinning");
   });

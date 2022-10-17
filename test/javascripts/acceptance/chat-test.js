@@ -82,6 +82,9 @@ acceptance("Discourse Chat - without unread", function (needs) {
         users: [hawkAsJson],
       });
     });
+    server.get("/chat/emojis.json", () =>
+      helper.response({ favorites: [{ name: "grinning" }] })
+    );
 
     server.put("/chat/:chat_channel_id/react/:messageId.json", helper.response);
 
@@ -214,7 +217,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     await triggerEvent(".chat-message-container[data-id='174']", "mouseenter");
 
     const currentUserDropdown = selectKit(
-      ".chat-message-container[data-id='174'] .more-buttons"
+      ".chat-msgactions-hover[data-id='174'] .more-buttons"
     );
     await currentUserDropdown.expand();
 
@@ -240,7 +243,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     );
 
     const notCurrentUserDropdown = selectKit(
-      ".chat-message-container[data-id='175'] .more-buttons"
+      ".chat-msgactions-hover[data-id='175'] .more-buttons"
     );
     await triggerEvent(".chat-message-container[data-id='175']", "mouseenter");
     await notCurrentUserDropdown.expand();
@@ -252,17 +255,16 @@ acceptance("Discourse Chat - without unread", function (needs) {
 
   test("Message controls are present and correct for permissions", async function (assert) {
     await visit("/chat/channel/11/another-category");
-    const messages = queryAll(".chat-message");
     await triggerEvent(".chat-message-container[data-id='174']", "mouseenter");
 
     // User created this message
     assert.ok(
-      messages[0].querySelector(".reply-btn"),
+      ".chat-msgactions-hover[data-id='174'] .reply-btn",
       "it shows the reply button"
     );
 
     const currentUserDropdown = selectKit(
-      ".chat-message-container[data-id='174'] .more-buttons"
+      ".chat-msgactions-hover[data-id='174'] .more-buttons"
     );
     await currentUserDropdown.expand();
 
@@ -299,11 +301,11 @@ acceptance("Discourse Chat - without unread", function (needs) {
     // User _didn't_ create this message
     await triggerEvent(".chat-message-container[data-id='175']", "mouseenter");
     assert.ok(
-      messages[1].querySelector(".reply-btn"),
+      ".chat-msgactions-hover[data-id='175'] .reply-btn",
       "it shows the reply button"
     );
     const notCurrentUserDropdown = selectKit(
-      ".chat-message-container[data-id='175'] .more-buttons"
+      ".chat-msgactions-hover[data-id='175'] .more-buttons"
     );
     await notCurrentUserDropdown.expand();
 
@@ -374,7 +376,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     await click(".topic-chat-drawer-header__return-to-channels-btn");
     await click(".chat-channel-row.chat-channel-9");
     await triggerEvent(".chat-message-container[data-id='174']", "mouseenter");
-    await click(".chat-message-container[data-id='174'] .reply-btn");
+    await click(".chat-msgactions-hover[data-id='174'] .reply-btn");
     // Reply-to line is present
     assert.ok(exists(".chat-composer-message-details .chat-reply"));
     await click(".topic-chat-drawer-header__return-to-channels-btn");
@@ -384,7 +386,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     // Now click on reply btn and cancel it on channel 7
 
     await triggerEvent(".chat-message-container[data-id='174']", "mouseenter");
-    await click(".chat-message-container[data-id='174'] .reply-btn");
+    await click(".chat-msgactions-hover[data-id='174'] .reply-btn");
     await click(".cancel-message-action");
 
     // Go back to channel 9 and check that reply-to is present
@@ -684,7 +686,9 @@ Widget.triangulate(arg: "test")
 
     const firstMessage = query(".chat-message-container");
     await triggerEvent(firstMessage, "mouseenter");
-    const dropdown = selectKit(".chat-message-container .more-buttons");
+    const dropdown = selectKit(
+      `.chat-msgactions-hover[data-id="${firstMessage.dataset.id}"] .more-buttons`
+    );
     await dropdown.expand();
     await dropdown.selectRowByValue("selectMessage");
 
@@ -731,15 +735,15 @@ Widget.triangulate(arg: "test")
     const message = query(".chat-message-container");
     await triggerEvent(message, "mouseenter");
     assert.notOk(message.querySelector(".chat-message-reaction-list"));
-    await click(message.querySelector(".chat-msgactions .react-btn"));
-    await click(".emoji-picker.opened .section-group .emoji");
+    await click(".chat-msgactions .react-btn");
+    await click(`.chat-emoji-picker .emoji[alt="grinning"]`);
 
     assert.ok(message.querySelector(".chat-message-reaction-list"));
     const reaction = message.querySelector(
       ".chat-message-reaction-list .chat-message-reaction.reacted"
     );
     assert.ok(reaction);
-    assert.equal(reaction.innerText.trim(), 1);
+    assert.equal(reaction.querySelector(".count").innerText.trim(), 1);
   });
 
   test("Reacting works with existing reactions", async function (assert) {
@@ -826,23 +830,26 @@ Widget.triangulate(arg: "test")
 
     assert.deepEqual(lastMessage.dataset.id, "202");
     await triggerEvent(lastMessage, "mouseenter");
-    await click(lastMessage.querySelector(".chat-msgactions .react-btn"));
-    await click(".emoji-picker.opened .section-group .emoji[alt='grin']");
+    await click(
+      `.chat-msgactions-hover[data-id="${lastMessage.dataset.id}"] .react-btn`
+    );
+    await click(`.emoji[alt="grinning"]`);
 
     const reaction = lastMessage.querySelector(
-      ".chat-message-reaction.grin.reacted"
+      ".chat-message-reaction.grinning.reacted"
     );
+
     await publishToMessageBus("/chat/11", {
       action: "add",
       user: { id: 1, username: "eviltrout" },
-      emoji: "grin",
+      emoji: "grinning",
       type: "reaction",
       chat_message_id: 202,
     });
-
     await click(reaction);
+
     assert.notOk(
-      lastMessage.querySelector(".chat-message-reaction.grin.reacted")
+      lastMessage.querySelector(".chat-message-reaction.grinning.reacted")
     );
   });
 
@@ -928,7 +935,7 @@ Widget.triangulate(arg: "test")
   test("changing channel resets message selection", async function (assert) {
     await visit("/chat/channel/11/another-category");
     await triggerEvent(".chat-message-container", "mouseenter");
-    const dropdown = selectKit(".chat-message-container .more-buttons");
+    const dropdown = selectKit(".chat-msgactions .more-buttons");
     await dropdown.expand();
     await dropdown.selectRowByValue("selectMessage");
     await click("#chat-copy-btn");
@@ -1529,16 +1536,20 @@ acceptance(
 
     test("uploads are not allowed in public channels", async function (assert) {
       await visit("/chat/channel/4/public-category");
+      await click(".chat-composer-dropdown__trigger-btn");
+
       assert.notOk(
-        visible(".chat-composer-dropdown__trigger-btn"),
+        exists(".chat-composer-dropdown__item.chat-upload-btn"),
         "composer dropdown should not be visible because uploads are not enabled and no other buttons are rendered"
       );
     });
 
     test("uploads are not allowed in direct message channels", async function (assert) {
       await visit("/chat/channel/75/@hawk");
+      await click(".chat-composer-dropdown__trigger-btn");
+
       assert.notOk(
-        visible(".chat-composer-dropdown__trigger-btn"),
+        exists(".chat-composer-dropdown__item.chat-upload-btn"),
         "composer dropdown should not be visible because uploads are not enabled and no other buttons are rendered"
       );
     });
@@ -1618,7 +1629,7 @@ acceptance(
     test("read only channels do not show the reply, react, delete, edit, restore, or rebuild options for messages", async function (assert) {
       await visit("/chat/channel/5/public-category");
       await triggerEvent(".chat-message-container", "mouseenter");
-      const dropdown = selectKit(".chat-message-container .more-buttons");
+      const dropdown = selectKit(".chat-msgactions .more-buttons");
       await dropdown.expand();
       assert.notOk(exists(".select-kit-row[data-value='edit']"));
       assert.notOk(exists(".select-kit-row[data-value='deleteMessage']"));
@@ -1671,7 +1682,7 @@ acceptance(
       await visit("/chat/channel/4/public-category");
 
       await triggerEvent(".chat-message-container", "mouseenter");
-      const dropdown = selectKit(".chat-message-container .more-buttons");
+      const dropdown = selectKit(".chat-msgactions .more-buttons");
       await dropdown.expand();
 
       assert.notOk(exists(".select-kit-row[data-value='edit']"));
@@ -1716,7 +1727,7 @@ acceptance(
     test("closed channels show the reply, react, delete, edit, restore, or rebuild options for messages", async function (assert) {
       await visit("/chat/channel/4/public-category");
       await triggerEvent(".chat-message-container", "mouseenter");
-      const dropdown = selectKit(".chat-message-container .more-buttons");
+      const dropdown = selectKit(".chat-msgactions .more-buttons");
       await dropdown.expand();
       assert.ok(
         exists(".select-kit-row[data-value='edit']"),

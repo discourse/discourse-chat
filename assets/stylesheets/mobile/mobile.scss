@@ -41,19 +41,20 @@ body.has-full-page-chat {
 
   .chat-live-pane {
     border-radius: 0;
+    padding: 0;
   }
 
   .chat-drawer {
     width: 100%;
   }
 
-  .chat-live-pane {
-    padding: 0;
-  }
-
   .chat-full-page-header {
     background-color: var(--secondary);
-    padding: 0.5em 0;
+    padding: 0.5em 10px;
+  }
+
+  .chat-messages-scroll {
+    padding: 0 10px;
   }
 }
 

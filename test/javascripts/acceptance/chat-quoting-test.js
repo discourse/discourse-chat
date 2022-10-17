@@ -61,7 +61,9 @@ acceptance("Discourse Chat | Copying messages", function (needs) {
 
     const firstMessage = query(".chat-message-container");
     await triggerEvent(firstMessage, "mouseenter");
-    const dropdown = selectKit(".chat-message-container .more-buttons");
+    const dropdown = selectKit(
+      `.chat-msgactions-hover[data-id="${firstMessage.dataset.id}"] .more-buttons`
+    );
     await dropdown.expand();
     await dropdown.selectRowByValue("selectMessage");
     assert.ok(firstMessage.classList.contains("selecting-messages"));

@@ -38,6 +38,20 @@
 {{chat-retention-reminder chatChannel=chatChannel}}
 
 <div class="chat-message-actions-mobile-anchor"></div>
+<div class="chat-message-actions-desktop-anchor"></div>
+<div
+  class={{concat-class
+    "chat-message-emoji-picker-anchor"
+    (if
+      (and
+        chatEmojiPickerManager.opened
+        (eq chatEmojiPickerManager.context "chat-message")
+      )
+      "-opened"
+    )
+  }}
+>
+</div>
 
 <div class="chat-messages-scroll chat-messages-container">
   <div class="chat-messages-container">

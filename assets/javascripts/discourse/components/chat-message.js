@@ -41,15 +41,16 @@ export default Component.extend({
   canInteractWithChat: false,
   isHovered: false,
   onHoverMessage: null,
-  emojiPickerIsActive: false,
   mentionWarning: null,
   emojiReactionStore: service("chat-emoji-reaction-store"),
+  chatEmojiPickerManager: service("chat-emoji-picker-manager"),
   adminTools: optionalService(),
   _hasSubscribedToAppEvents: false,
   tagName: "",
   chat: service(),
   dialog: service(),
   chatMessageActionsMobileAnchor: null,
+  chatMessageActionsDesktopAnchor: null,
   chatMessageEmojiPickerAnchor: null,
 
   init() {
@@ -72,6 +73,10 @@ export default Component.extend({
       "chatMessageActionsMobileAnchor",
       document.querySelector(".chat-message-actions-mobile-anchor")
     );
+    this.set(
+      "chatMessageActionsDesktopAnchor",
+      document.querySelector(".chat-message-actions-desktop-anchor")
+    );
   },
 
   willDestroyElement() {
@@ -86,11 +91,6 @@ export default Component.extend({
 
     this.appEvents.off("chat:refresh-message", this, "_refreshedMessage");
 
-    this.appEvents.off(
-      "chat-message:reaction-picker-opened",
-      this,
-      "_reactionPickerOpened"
-    );
     this.appEvents.off(
       `chat-message-${this.message.id}:reaction`,
       this,
@@ -145,11 +145,6 @@ export default Component.extend({
     this.appEvents.on("chat:refresh-message", this, "_refreshedMessage");
 
     this.appEvents.on(
-      "chat-message:reaction-picker-opened",
-      this,
-      "_reactionPickerOpened"
-    );
-    this.appEvents.on(
       `chat-message-${this.message.id}:reaction`,
       this,
       "_handleReactionMessage"
@@ -163,14 +158,6 @@ export default Component.extend({
       this,
       "_subscribeToAppEvents"
     );
-  },
-
-  _reactionPickerOpened(messageId) {
-    if (this.message.id === messageId || !this.emojiPickerIsActive) {
-      return;
-    }
-
-    this.set("emojiPickerIsActive", false);
   },
 
   @discourseComputed("canInteractWithChat", "message.staged", "isHovered")
@@ -513,33 +500,20 @@ export default Component.extend({
 
   @action
   startReactionForMsgActions() {
-    if (!this.messageContainer) {
-      return;
-    }
-
-    this._startReaction();
+    this.chatEmojiPickerManager.startFromMessageActions(
+      this.message,
+      this.site.desktopView,
+      this.selectReaction
+    );
   },
 
   @action
   startReactionForReactionList() {
-    if (!this.messageContainer) {
-      return;
-    }
-
-    this._startReaction();
-  },
-
-  _startReaction() {
-    if (this.emojiPickerIsActive) {
-      this.set("emojiPickerIsActive", false);
-      document.activeElement?.blur();
-    } else {
-      this.set("emojiPickerIsActive", true);
-      this.appEvents.trigger(
-        "chat-message:reaction-picker-opened",
-        this.message.id
-      );
-    }
+    this.chatEmojiPickerManager.startFromMessageReactionList(
+      this.message,
+      this.site.desktopView,
+      this.selectReaction
+    );
   },
 
   deselectReaction(emoji) {
@@ -547,7 +521,6 @@ export default Component.extend({
       return;
     }
 
-    this.set("emojiPickerIsActive", false);
     this.react(emoji, this.REMOVE_REACTION);
     this.notifyPropertyChange("emojiReactions");
   },
@@ -558,7 +531,6 @@ export default Component.extend({
       return;
     }
 
-    this.set("emojiPickerIsActive", false);
     this.react(emoji, this.ADD_REACTION);
     this.notifyPropertyChange("emojiReactions");
   },

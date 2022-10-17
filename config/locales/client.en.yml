@@ -89,6 +89,7 @@ en:
         when_away: "Only when away"
       enable: "Enable chat"
       flag: "Flag"
+      emoji: "Insert emoji"
       flagged: "This message has been flagged for review"
       invalid_access: "You don't have access to view this chat channel"
       invitation_notification: "<span>%{username}</span> <span>invited you to join a chat channel</span>"
@@ -379,6 +380,20 @@ en:
 
       flagging:
         action: "Flag message"
+
+      emoji_picker:
+        favorites: "Frequently used"
+        smileys_&_emotion: "Smileys and emotion"
+        objects: "Objects"
+        people_&_body: "People and body"
+        travel_&_places: "Travel and places"
+        animals_&_nature: "Animals and nature"
+        food_&_drink: "Food and frink"
+        activities: "Activities"
+        flags: "Flags"
+        symbols: "Symbols"
+        search_placeholder: "Search by emoji name and alias..."
+        no_results: "No results"
 
     notifications:
       chat_invitation: "invited you to join a chat channel"

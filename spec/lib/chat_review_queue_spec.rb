@@ -29,6 +29,14 @@ describe DiscourseChat::ChatReviewQueue do
       )
     end
 
+    it "stores the message cooked content inside the reviewable" do
+      queue.flag_message(message, guardian, ReviewableScore.types[:off_topic])
+
+      reviewable = ReviewableChatMessage.last
+
+      expect(reviewable.payload["message_cooked"]).to eq(message.cooked)
+    end
+
     context "when the user already flagged the post" do
       let(:second_flag_result) do
         queue.flag_message(message, guardian, ReviewableScore.types[:off_topic])
@@ -357,6 +365,75 @@ describe DiscourseChat::ChatReviewQueue do
         queue.flag_message(message, guardian, ReviewableScore.types[:off_topic])
 
         expect(message_poster.reload.silenced?).to eq(false)
+      end
+    end
+
+    context "when flagging a DM" do
+      fab!(:dm_channel) do
+        Fabricate(:direct_message_chat_channel, users: [message_poster, flagger])
+      end
+
+      12.times do |i|
+        fab!("dm_message_#{i + 1}") do
+          Fabricate(
+            :chat_message,
+            user: message_poster,
+            chat_channel: dm_channel,
+            message: "This is my message number #{i + 1}. Hello chat!",
+          )
+        end
+      end
+
+      it "raises an exception when using the notify_moderators flag type" do
+        expect {
+          queue.flag_message(dm_message_1, guardian, ReviewableScore.types[:notify_moderators])
+        }.to raise_error(Discourse::InvalidParameters)
+      end
+
+      it "raises an exception when using the notify_user flag type" do
+        expect {
+          queue.flag_message(dm_message_1, guardian, ReviewableScore.types[:notify_user])
+        }.to raise_error(Discourse::InvalidParameters)
+      end
+
+      it "includes a transcript of the previous 10 message for the rest of the flags" do
+        queue.flag_message(dm_message_12, guardian, ReviewableScore.types[:off_topic])
+
+        reviewable = ReviewableChatMessage.last
+        expect(reviewable.target).to eq(dm_message_12)
+        transcript_post = Post.find_by(topic_id: reviewable.payload["transcript_topic_id"])
+
+        expect(transcript_post.cooked).to include(dm_message_2.message)
+        expect(transcript_post.cooked).to include(dm_message_5.message)
+        expect(transcript_post.cooked).not_to include(dm_message_1.message)
+      end
+
+      it "doesn't include a transcript if there a no previous messages" do
+        queue.flag_message(dm_message_1, guardian, ReviewableScore.types[:off_topic])
+
+        reviewable = ReviewableChatMessage.last
+
+        expect(reviewable.payload["transcript_topic_id"]).to be_nil
+      end
+
+      it "the transcript is only available to moderators and the system user" do
+        moderator = Fabricate(:moderator)
+        admin = Fabricate(:admin)
+        leader = Fabricate(:leader)
+        tl4 = Fabricate(:trust_level_4)
+
+        queue.flag_message(dm_message_12, guardian, ReviewableScore.types[:off_topic])
+
+        reviewable = ReviewableChatMessage.last
+        transcript_topic = Topic.find(reviewable.payload["transcript_topic_id"])
+
+        expect(guardian.can_see_topic?(transcript_topic)).to eq(false)
+        expect(Guardian.new(leader).can_see_topic?(transcript_topic)).to eq(false)
+        expect(Guardian.new(tl4).can_see_topic?(transcript_topic)).to eq(false)
+        expect(Guardian.new(dm_message_12.user).can_see_topic?(transcript_topic)).to eq(false)
+        expect(Guardian.new(moderator).can_see_topic?(transcript_topic)).to eq(true)
+        expect(Guardian.new(admin).can_see_topic?(transcript_topic)).to eq(true)
+        expect(Guardian.new(Discourse.system_user).can_see_topic?(transcript_topic)).to eq(true)
       end
     end
   end

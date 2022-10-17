@@ -9,6 +9,7 @@ class ChatViewSerializer < ApplicationSerializer
       each_serializer: ChatMessageSerializer,
       reviewable_ids: object.reviewable_ids,
       user_flag_statuses: object.user_flag_statuses,
+      chat_channel: object.chat_channel,
       scope: scope,
     )
   end

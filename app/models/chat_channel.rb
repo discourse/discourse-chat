@@ -176,10 +176,12 @@ end
 #  last_message_sent_at    :datetime         not null
 #  auto_join_users         :boolean          default(FALSE), not null
 #  user_count_stale        :boolean          default(FALSE), not null
+#  slug                    :string
 #
 # Indexes
 #
 #  index_chat_channels_on_chatable_id                    (chatable_id)
 #  index_chat_channels_on_chatable_id_and_chatable_type  (chatable_id,chatable_type)
+#  index_chat_channels_on_slug                           (slug)
 #  index_chat_channels_on_status                         (status)
 #

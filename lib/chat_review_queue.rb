@@ -12,6 +12,12 @@ class DiscourseChat::ChatReviewQueue
   def flag_message(chat_message, guardian, flag_type_id, opts = {})
     result = { success: false, errors: [] }
 
+    is_notify_type =
+      ReviewableScore.types.slice(:notify_user, :notify_moderators).values.include?(flag_type_id)
+    is_dm = chat_message.chat_channel.direct_message_channel?
+
+    raise Discourse::InvalidParameters.new(:flag_type) if is_dm && is_notify_type
+
     guardian.ensure_can_flag_chat_message!(chat_message)
     guardian.ensure_can_flag_message_as!(chat_message, flag_type_id, opts)
 
@@ -22,8 +28,9 @@ class DiscourseChat::ChatReviewQueue
       return result
     end
 
-    if opts[:message].present? &&
-         ReviewableScore.types.slice(:notify_user, :notify_moderators).values.include?(flag_type_id)
+    payload = { message_cooked: chat_message.cooked }
+
+    if opts[:message].present? && !is_dm && is_notify_type
       creator = companion_pm_creator(chat_message, guardian.user, flag_type_id, opts)
       post = creator.create
 
@@ -31,6 +38,9 @@ class DiscourseChat::ChatReviewQueue
         creator.errors.full_messages.each { |msg| result[:errors] << msg }
         return result
       end
+    elsif is_dm
+      transcript = find_or_create_transcript(chat_message, guardian.user, existing_reviewable)
+      payload[:transcript_topic_id] = transcript.topic_id if transcript
     end
 
     queued_for_review = !!ActiveRecord::Type::Boolean.new.deserialize(opts[:queue_for_review])
@@ -41,6 +51,7 @@ class DiscourseChat::ChatReviewQueue
         target: chat_message,
         reviewable_by_moderator: true,
         potential_spam: flag_type_id == ReviewableScore.types[:spam],
+        payload: payload,
       )
     reviewable.update(target_created_by: chat_message.user)
     score =
@@ -123,6 +134,50 @@ class DiscourseChat::ChatReviewQueue
     end
 
     PostCreator.new(flagger, create_args)
+  end
+
+  def find_or_create_transcript(chat_message, flagger, existing_reviewable)
+    previous_message_ids =
+      ChatMessage
+        .where(chat_channel: chat_message.chat_channel)
+        .where("id < ?", chat_message.id)
+        .order("created_at DESC")
+        .limit(10)
+        .pluck(:id)
+        .reverse
+
+    return if previous_message_ids.empty?
+
+    service =
+      ChatTranscriptService.new(
+        chat_message.chat_channel,
+        Discourse.system_user,
+        messages_or_ids: previous_message_ids,
+      )
+
+    title =
+      I18n.t(
+        "chat.reviewables.direct_messages.transcript_title",
+        channel_name: chat_message.chat_channel.title(flagger),
+        locale: SiteSetting.default_locale,
+      )
+
+    body =
+      I18n.t(
+        "chat.reviewables.direct_messages.transcript_body",
+        transcript: service.generate_markdown,
+        locale: SiteSetting.default_locale,
+      )
+
+    create_args = {
+      archetype: Archetype.private_message,
+      title: title.truncate(SiteSetting.max_topic_title_length, separator: /\s/),
+      raw: body,
+      subtype: TopicSubtype.notify_moderators,
+      target_group_names: [Group[:moderators].name],
+    }
+
+    PostCreator.new(Discourse.system_user, create_args).create
   end
 
   def can_flag_again?(reviewable, message, flagger, flag_type_id)

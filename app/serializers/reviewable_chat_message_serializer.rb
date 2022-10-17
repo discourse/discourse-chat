@@ -6,6 +6,8 @@ class ReviewableChatMessageSerializer < ReviewableSerializer
   has_one :chat_message, serializer: ChatMessageSerializer, root: false, embed: :objects
   has_one :chat_channel, serializer: ChatChannelSerializer, root: false, embed: :objects
 
+  payload_attributes :transcript_topic_id, :message_cooked
+
   def chat_channel
     object.chat_message.chat_channel
   end

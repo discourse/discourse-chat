@@ -101,7 +101,8 @@ module DiscourseChat::GuardianExtensions
 
   def can_flag_in_chat_channel?(chat_channel)
     return false if !can_modify_channel_message?(chat_channel)
-    !chat_channel.direct_message_channel? && can_see_chat_channel?(chat_channel)
+
+    can_see_chat_channel?(chat_channel)
   end
 
   def can_flag_chat_message?(chat_message)

@@ -931,6 +931,18 @@ Widget.triangulate(arg: "test")
       "enter is a special case and should not focus"
     );
   });
+
+  test("changing channel resets message selection", async function (assert) {
+    await visit("/chat/channel/11/another-category");
+    await triggerEvent(".chat-message-container", "mouseenter");
+    const dropdown = selectKit(".chat-message-container .more-buttons");
+    await dropdown.expand();
+    await dropdown.selectRowByValue("selectMessage");
+    await click("#chat-copy-btn");
+    await click("#chat-channel-row-9");
+
+    assert.notOk(exists("#chat-copy-btn"));
+  });
 });
 
 acceptance(

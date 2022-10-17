@@ -119,7 +119,7 @@
             tabindex="0"
             data-emoji={{emoji.name}}
             data-tonable={{if emoji.tonable "true"}}
-            title={{emoji.name}}
+            alt={{emoji.name}}
             loading="lazy"
           >
         {{/each}}
@@ -158,7 +158,7 @@
                   tabindex="0"
                   data-emoji={{emoji.name}}
                   data-tonable={{if emoji.tonable "true"}}
-                  title={{emoji.name}}
+                  alt={{emoji.name}}
                   loading="lazy"
                   {{on "focus" this.didFocusFirstEmoji}}
                 >
@@ -181,7 +181,7 @@
                       tabindex="-1"
                       data-emoji={{emoji.name}}
                       data-tonable={{if emoji.tonable "true"}}
-                      title={{emoji.name}}
+                      alt={{emoji.name}}
                       loading="lazy"
                     >
                   {{/if}}

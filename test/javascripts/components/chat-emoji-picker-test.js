@@ -123,21 +123,21 @@ module("Discourse Chat | Component | chat-emoji-picker", function (hooks) {
       "it filters the emojis list"
     );
     assert.ok(
-      exists('.chat-emoji-picker__sections > img[title="grinning"]'),
+      exists('.chat-emoji-picker__sections > img[alt="grinning"]'),
       "it filters the correct emoji"
     );
 
     await fillIn(".dc-filter-input", "smiley_cat");
 
     assert.ok(
-      exists('.chat-emoji-picker__sections > img[title="grinning"]'),
+      exists('.chat-emoji-picker__sections > img[alt="grinning"]'),
       "it filters the correct emoji using search alias"
     );
   });
 
   test("When selecting an emoji", async function (assert) {
     let selection;
-    this.chatEmojiPickerManager.didSelectCallback = (emoji) => {
+    this.chatEmojiPickerManager.didSelectEmoji = (emoji) => {
       selection = emoji;
     };
     await render(hbs`<ChatEmojiPicker />`);

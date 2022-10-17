@@ -482,6 +482,7 @@ acceptance("Discourse Chat - Plugin Sidebar", function (needs) {
 
   needs.settings({
     chat_enabled: true,
+    enable_sidebar: false,
   });
 
   needs.pretender((server, helper) => {

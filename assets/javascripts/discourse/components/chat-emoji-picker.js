@@ -271,7 +271,7 @@ export default class ChatEmojiPicker extends Component {
       (event.type === "keyup" && event.key === "Enter")
     ) {
       event.preventDefault();
-      event.stopImmediatePropagation();
+      event.stopPropagation();
       const originalTarget = event.target;
       let emoji = event.target.dataset.emoji;
       const tonable = event.target.dataset.tonable;
@@ -297,6 +297,10 @@ export default class ChatEmojiPicker extends Component {
 
   @action
   didRequestSection(section) {
+    const scrollableContent = document.querySelector(
+      ".chat-emoji-picker__scrollable-content"
+    );
+
     this.filteredEmojis = null;
 
     // we disable scroll listener during requesting section
@@ -304,6 +308,13 @@ export default class ChatEmojiPicker extends Component {
     this.emojiPickerScrollObserver.enabled = false;
     this.chatEmojiPickerManager.addVisibleSections([section]);
     this.chatEmojiPickerManager.lastVisibleSection = section;
+
+    // iOS hack to avoid blank div when requesting section during momentum
+    if (scrollableContent && this.capabilities.isIOS) {
+      document.querySelector(
+        ".chat-emoji-picker__scrollable-content"
+      ).style.overflow = "hidden";
+    }
 
     schedule("afterRender", () => {
       document
@@ -315,8 +326,15 @@ export default class ChatEmojiPicker extends Component {
         });
 
       later(() => {
+        // iOS hack to avoid blank div when requesting section during momentum
+        if (scrollableContent && this.capabilities.isIOS) {
+          document.querySelector(
+            ".chat-emoji-picker__scrollable-content"
+          ).style.overflow = "scroll";
+        }
+
         this.emojiPickerScrollObserver.enabled = true;
-      }, 50);
+      }, 200);
     });
   }
 

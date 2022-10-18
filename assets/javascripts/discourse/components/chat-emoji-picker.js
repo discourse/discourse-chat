@@ -194,7 +194,7 @@ export default class ChatEmojiPicker extends Component {
     this.filteredEmojis = this.flatEmojis.filter(
       (emoji) =>
         emoji.name.includes(filter) ||
-        emoji.search_aliases.any((alias) => alias.includes(filter))
+        emoji.search_aliases?.any((alias) => alias.includes(filter))
     );
 
     schedule("afterRender", () => {

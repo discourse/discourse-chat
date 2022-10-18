@@ -629,6 +629,11 @@ export default Component.extend({
     this.set("stickyScroll", true);
 
     if (this._scrollerEl) {
+      // iOS hack to avoid blank div when sticking scroll to bottom during momentum
+      if (this.capabilities.isIOS) {
+        this._scrollerEl.style.overflow = "hidden";
+      }
+
       // Trigger a tiny scrollTop change so Safari scrollbar is placed at bottom.
       // Setting to just 0 doesn't work (it's at 0 by default, so there is no change)
       // Very hacky, but no way to get around this Safari bug
@@ -637,6 +642,11 @@ export default Component.extend({
       window.requestAnimationFrame(() => {
         if (this._scrollerEl) {
           this._scrollerEl.scrollTop = 0;
+
+          // iOS hack to avoid blank div when sticking scroll to bottom during momentum
+          if (this.capabilities.isIOS) {
+            this._scrollerEl.style.overflow = "scroll";
+          }
         }
       });
     }

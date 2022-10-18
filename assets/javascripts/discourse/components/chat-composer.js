@@ -33,8 +33,10 @@ export default Component.extend(TextareaTextManipulation, {
   lastChatChannelId: null,
   chat: service(),
   classNames: ["chat-composer-container"],
+  classNameBindings: ["emojiPickerVisible:with-emoji-picker"],
   userSilenced: readOnly("details.user_silenced"),
   emojiStore: service("emoji-store"),
+  chatEmojiPickerManager: service("chat-emoji-picker-manager"),
   editingMessage: null,
   fullPage: false,
   onValueChange: null,
@@ -54,6 +56,11 @@ export default Component.extend(TextareaTextManipulation, {
   @discourseComputed(...chatComposerButtonsDependentKeys())
   dropdownButtons() {
     return chatComposerButtons(this, "dropdown");
+  },
+
+  @discourseComputed("chatEmojiPickerManager.{opened,context}")
+  emojiPickerVisible(picker) {
+    return picker.opened && picker.context === "chat-composer";
   },
 
   @discourseComputed("fullPage")
@@ -305,6 +312,11 @@ export default Component.extend(TextareaTextManipulation, {
   @action
   uploadClicked() {
     this.element.querySelector(`#${this.fileUploadElementId}`).click();
+  },
+
+  @bind
+  didSelectEmoji(emoji) {
+    this.addText(this.getSelected(), `:${emoji}:`);
   },
 
   @action

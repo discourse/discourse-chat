@@ -5,6 +5,7 @@
   font-size: var(--font-down-1);
   position: relative;
   transform: translateZ(0);
+  position: relative;
 
   &.new-message {
     color: var(--danger-medium);

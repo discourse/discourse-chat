@@ -56,6 +56,30 @@
     }
   }
 
+  &__close-emoji-picker-btn {
+    margin-left: 0.2rem;
+    padding: 5px !important;
+    border-radius: 100%;
+    background: var(--primary-med-or-secondary-high);
+    border: 1px solid transparent;
+    display: flex;
+
+    .d-icon {
+      color: var(--secondary-very-high);
+    }
+
+    &:focus {
+      border-color: var(--tertiary);
+    }
+
+    .discourse-no-touch &:hover {
+      background: var(--primary-high);
+      .d-icon {
+        color: var(--primary-low);
+      }
+    }
+  }
+
   .chat-composer-input {
     overflow-x: hidden;
     width: 100%;

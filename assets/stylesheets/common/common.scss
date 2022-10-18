@@ -310,7 +310,6 @@ $float-height: 530px;
 
 .chat-live-pane {
   display: flex;
-  position: relative;
   flex-direction: column;
   width: 100%;
   min-height: 1px;
@@ -623,7 +622,10 @@ body.has-full-page-chat {
   }
 
   .chat-full-page-header {
+    border-top: 1px solid var(--primary-low);
     border-bottom: 1px solid var(--primary-low);
+    background: var(--secondary);
+    z-index: 3;
 
     .chat-channel-title {
       .category-chat-name,
@@ -899,6 +901,12 @@ html.has-full-page-chat {
     }
   }
 
+  &.mobile-view {
+    #main-outlet-wrapper {
+      padding: 0;
+    }
+  }
+
   // these need to apply to desktop too, because iPads
   &.discourse-touch {
     // iPad web
@@ -937,4 +945,8 @@ html.has-full-page-chat {
       );
     }
   }
+}
+
+[data-popper-reference-hidden] {
+  visibility: hidden;
 }

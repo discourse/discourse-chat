@@ -190,6 +190,11 @@ export default class ChatEmojiPicker extends Component {
     );
   }
 
+  @action
+  focusFilter(target) {
+    target.focus();
+  }
+
   debouncedDidInputFilter(filter) {
     this.filteredEmojis = this.flatEmojis.filter(
       (emoji) =>

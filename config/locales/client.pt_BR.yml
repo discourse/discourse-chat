@@ -203,6 +203,7 @@ pt_BR:
         post_to: "Postar para"
         reset_emoji: "Redefinir emoji"
         save: "Salvar"
+        edit: "Editar"
         select_emoji: "Escolher emoji"
         system: "sistema"
         title: "Webhooks recebidos"
@@ -238,6 +239,8 @@ pt_BR:
         public: "Histórico do canal é mantido por %{days} dias."
         dm: "Histórico de conversas pessoais é mantido por %{days} dias."
       topic_button_title: "Chat"
+      emoji_picker:
+        no_results: "Nenhum resultado"
     notifications:
       popup:
         chat_mention:

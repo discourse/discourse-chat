@@ -295,6 +295,7 @@ sv:
         post_to: "Posta till"
         reset_emoji: "Återställ emoji"
         save: "Spara"
+        edit: "Redigera"
         select_emoji: "Välj emoji"
         system: "system"
         title: "Inkommande webhooks"
@@ -335,6 +336,8 @@ sv:
         public: "Kanalhistoriken behålls i %{days} dagar."
         dm: "Personlig chatthistorik behålls i %{days} dagar."
       topic_button_title: "Chatt"
+      emoji_picker:
+        no_results: "Inga resultat"
     notifications:
       chat_invitation: "bjöd in dig att gå med i en chattkanal"
       chat_invitation_html: "<span>%{username}</span> <span>bjöd in dig att gå med i en chattkanal</span>"

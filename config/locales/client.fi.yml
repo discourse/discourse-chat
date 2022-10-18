@@ -162,6 +162,7 @@ fi:
         post_to: "Lähetä kohteeseen"
         reset_emoji: "Nollaa emoji"
         save: "Tallenna"
+        edit: "Muokkaa"
         select_emoji: "Valitse emoji"
         system: "järjestelmä"
         title: "Saapuvat webhookit"

@@ -40,6 +40,9 @@ fa_IR:
           title: "مخالفم"
         ignore:
           title: "نادیده گرفتن"
+      direct_messages:
+        transcript_title: "رونوشت پیام‌های قبلی در %{channel_name}"
+        transcript_body: "برای ارائه متن بیشتر به شما، رونوشتی از پیام‌های قبلی را در این گفتگو (حداکثر ده مورد) قرار دادیم:\n\n%{transcript}"
     channel:
       statuses:
         read_only: "فقط خواندنی"

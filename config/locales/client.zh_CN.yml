@@ -291,6 +291,7 @@ zh_CN:
         post_to: "发布到"
         reset_emoji: "重置表情符号"
         save: "保存"
+        edit: "编辑"
         select_emoji: "选择表情符号"
         system: "系统"
         title: "传入网络钩子"
@@ -327,6 +328,8 @@ zh_CN:
         public: "频道历史记录保留 %{days} 天。"
         dm: "个人聊天记录保留 %{days} 天。"
       topic_button_title: "聊天"
+      emoji_picker:
+        no_results: "没有结果"
     notifications:
       chat_invitation: "邀请您加入聊天频道"
       chat_invitation_html: "<span>%{username}</span> <span>邀请您加入聊天频道</span>"

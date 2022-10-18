@@ -94,6 +94,7 @@ he:
         when_away: "רק כשלא במערכת"
       enable: "הפעלת צ׳אט"
       flag: "סימון בדגל"
+      emoji: "הוספת אמוג׳י"
       flagged: "הודעה זו סומנה לסקירה"
       invalid_access: "אין לך גישה לצפות בערוץ הצ׳אט הזה"
       invitation_notification: "<span>הוזמנת להצטרף לערוץ צ׳אט על ידי</span> <span>%{username}</span>"
@@ -321,6 +322,7 @@ he:
         post_to: "פרסום אל"
         reset_emoji: "איפוס אמוג׳י"
         save: "שמירה"
+        edit: "עריכה"
         select_emoji: "בחירת אמוג׳י"
         system: "מערכת"
         title: "התליות נכנסות"
@@ -378,6 +380,19 @@ he:
         notify_moderators: "הודעה זו דורשת את התערבות הסגל מסיבות אחרות שאינן מופיעות לעיל."
       flagging:
         action: "סימון הודעה בדגל"
+      emoji_picker:
+        favorites: "נפוצים"
+        smileys_&_emotion: "חייכנים ורגשות"
+        objects: "חפצים"
+        people_&_body: "אנשים וגוף"
+        travel_&_places: "טיולים ומקומות"
+        animals_&_nature: "חיות וטבע"
+        food_&_drink: "מזון ושתייה"
+        activities: "פעילויות"
+        flags: "דגלים"
+        symbols: "סמלים"
+        search_placeholder: "חיפוש לפי שם וכינוי של האמוג׳י…"
+        no_results: "אין תוצאות"
     notifications:
       chat_invitation: "נשלחה אליך הזמנה להצטרף לערוץ צ׳אט"
       chat_invitation_html: "<span>הוזמנת להצטרף לערוץ צ׳אט על ידי</span> <span>%{username}</span>"
@@ -416,6 +431,8 @@ he:
               label: מוען
               description: ברירת המחדל כמו המערכת
     review:
+      transcript:
+        view: "הצגת תמלול הודעות קודמות"
       types:
         reviewable_chat_message:
           title: "הודעת צ׳אט מסומנת"
@@ -442,6 +459,9 @@ he:
       allow_private_messages_from_specific_users: "לאפשר רק למשתמשים מסוימים לשלוח לי הודעות פרטיות או הודעות ישירות בצ׳אט"
       ignored_users_instructions: "לדחות את כל הפוסטים, ההודעות, ההתראות, ההודעות אישיות וההודעות הישירות בצ׳אט מהמשמתמשים האלה."
     user_menu:
+      no_chat_notifications_title: "עדיין אין לך התראות צ׳אט"
+      no_chat_notifications_body: >
+        תישלח אליך התראה בלוח הזה כאשר תישלח אליך הודעה ישירה או שיהיה <b>@אזכור</b> שלך בצ׳אט. תישלחנה התראות לדוא״ל שלך אם לא נכנסת מזה זמן רב. <br><br> לחיצה על הכותרת בראש כל ערוץ צ׳אט שהוא תעביר אותך להגדרת ההתראות שתישלחנה אליך באותו הערוץ. למידע נוסף, כדאי לבקר ב<a href='%{preferencesUrl}'>העדפות ההתראות</a> שלך.
       tabs:
         chat_notifications: "התראות צ׳אט"
         chat_notifications_with_unread:

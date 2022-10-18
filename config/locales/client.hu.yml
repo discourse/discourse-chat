@@ -296,6 +296,7 @@ hu:
         post_to: "Közzététel ide:"
         reset_emoji: "Emodzsi visszaállítása"
         save: "Mentés"
+        edit: "Szerkesztés"
         select_emoji: "Válasszon emodzsit"
         system: "rendszer"
         title: "Bejövő webhookok"
@@ -336,6 +337,8 @@ hu:
         public: "A csatorna előzményei %{days} napig maradnak meg."
         dm: "A személyes csevegési előzményei %{days} napig maradnak meg."
       topic_button_title: "Csevegés"
+      emoji_picker:
+        no_results: "Nincs találat"
     notifications:
       chat_invitation: "meghívta Önt, hogy csatlakozzon egy csevegőcsatornához"
       chat_invitation_html: "<span>%{username}</span> <span>meghvta Önt, hogy csatlakozzon egy csevegőcsatornához</span>"

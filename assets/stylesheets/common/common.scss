@@ -310,7 +310,6 @@ $float-height: 530px;
 
 .chat-live-pane {
   display: flex;
-  position: relative;
   flex-direction: column;
   width: 100%;
   min-height: 1px;
@@ -318,7 +317,6 @@ $float-height: 530px;
   .chat-messages-scroll {
     flex-grow: 1;
     overflow-y: scroll;
-    overflow-y: overlay;
     scrollbar-color: var(--primary-low) transparent;
     transition: scrollbar-color 0.2s ease-in-out;
     display: flex;
@@ -624,7 +622,10 @@ body.has-full-page-chat {
   }
 
   .chat-full-page-header {
+    border-top: 1px solid var(--primary-low);
     border-bottom: 1px solid var(--primary-low);
+    background: var(--secondary);
+    z-index: 3;
 
     .chat-channel-title {
       .category-chat-name,
@@ -900,6 +901,12 @@ html.has-full-page-chat {
     }
   }
 
+  &.mobile-view {
+    #main-outlet-wrapper {
+      padding: 0;
+    }
+  }
+
   // these need to apply to desktop too, because iPads
   &.discourse-touch {
     // iPad web
@@ -919,8 +926,7 @@ html.has-full-page-chat {
       #main-outlet-wrapper {
         // restrict the row height, including when virtual keyboard is open
         grid-template-rows: calc(
-          var(--chat-vh, 1vh) * 100 -
-            calc(var(--header-offset) + var(--footer-nav-height))
+          var(--chat-vh, 1vh) * 100 - calc(var(--header-offset))
         );
       }
     }
@@ -939,4 +945,8 @@ html.has-full-page-chat {
       );
     }
   }
+}
+
+[data-popper-reference-hidden] {
+  visibility: hidden;
 }

@@ -4,7 +4,6 @@ import { withPluginApi } from "discourse/lib/plugin-api";
 import I18n from "I18n";
 import { bind } from "discourse-common/utils/decorators";
 import { tracked } from "@glimmer/tracking";
-import showModal from "discourse/lib/show-modal";
 import { DRAFT_CHANNEL_VIEW } from "discourse/plugins/discourse-chat/discourse/services/chat";
 import { avatarUrl, escapeExpression } from "discourse/lib/utilities";
 import { dasherize } from "@ember/string";
@@ -23,197 +22,197 @@ export default {
     }
 
     withPluginApi("1.3.0", (api) => {
-      const currentUser = api.getCurrentUser();
-      const hasPublicChannels =
-        currentUser?.chat_channels?.public_channels?.length;
-      const shouldDisplayPublicChannelsSection = hasPublicChannels
-        ? true
-        : currentUser?.staff || currentUser?.has_joinable_public_channels;
+      api.addSidebarSection(
+        (BaseCustomSidebarSection, BaseCustomSidebarSectionLink) => {
+          const SidebarChatChannelsSectionLink = class extends BaseCustomSidebarSectionLink {
+            @tracked chatChannelTrackingState =
+              this.chatService.currentUser.chat_channel_tracking_state[
+                this.channel.id
+              ];
 
-      shouldDisplayPublicChannelsSection &&
-        api.addSidebarSection(
-          (BaseCustomSidebarSection, BaseCustomSidebarSectionLink) => {
-            const SidebarChatChannelsSectionLink = class extends BaseCustomSidebarSectionLink {
-              @tracked chatChannelTrackingState =
+            constructor({ channel, chatService }) {
+              super(...arguments);
+              this.channel = channel;
+              this.chatService = chatService;
+
+              this.chatService.appEvents.on(
+                "chat:user-tracking-state-changed",
+                this._refreshTrackingState
+              );
+            }
+
+            @bind
+            willDestroy() {
+              this.chatService.appEvents.off(
+                "chat:user-tracking-state-changed",
+                this._refreshTrackingState
+              );
+            }
+
+            @bind
+            _refreshTrackingState() {
+              this.chatChannelTrackingState =
                 this.chatService.currentUser.chat_channel_tracking_state[
                   this.channel.id
                 ];
+            }
 
-              constructor({ channel, chatService }) {
-                super(...arguments);
-                this.channel = channel;
-                this.chatService = chatService;
+            get name() {
+              return dasherize(slugifyChannel(this.title));
+            }
 
-                this.chatService.appEvents.on(
-                  "chat:user-tracking-state-changed",
-                  this._refreshTrackingState
-                );
+            get route() {
+              return "chat.channel";
+            }
+
+            get models() {
+              return [this.channel.id, slugifyChannel(this.title)];
+            }
+
+            get text() {
+              return htmlSafe(emojiUnescape(this.title));
+            }
+
+            get prefixType() {
+              return "icon";
+            }
+
+            get prefixValue() {
+              return "hashtag";
+            }
+
+            get prefixColor() {
+              return this.channel.chatable.color;
+            }
+
+            get title() {
+              return this.channel.escapedTitle;
+            }
+
+            get prefixBadge() {
+              return this.channel.chatable.read_restricted ? "lock" : "";
+            }
+
+            get suffixType() {
+              return "icon";
+            }
+
+            get suffixValue() {
+              return this.chatChannelTrackingState?.unread_count > 0
+                ? "circle"
+                : "";
+            }
+
+            get suffixCSSClass() {
+              return this.chatChannelTrackingState?.unread_mentions > 0
+                ? "urgent"
+                : "unread";
+            }
+
+            get contentCSSClass() {
+              return this.channel.current_user_membership.muted
+                ? "sidebar-section-link-content-muted"
+                : "";
+            }
+          };
+
+          const SidebarChatChannelsSection = class extends BaseCustomSidebarSection {
+            @tracked sectionLinks = [];
+
+            @tracked sectionIndicator =
+              this.chatService.publicChannels &&
+              this.chatService.publicChannels[0].current_user_membership
+                .unread_count;
+
+            @tracked currentUserCanJoinPublicChannels =
+              this.sidebar.currentUser &&
+              (this.sidebar.currentUser.staff ||
+                this.sidebar.currentUser.has_joinable_public_channels);
+
+            constructor() {
+              super(...arguments);
+
+              if (container.isDestroyed) {
+                return;
               }
+              this.chatService = container.lookup("service:chat");
+              this.chatService.appEvents.on(
+                "chat:refresh-channels",
+                this._refreshChannels
+              );
+              this._refreshChannels();
+            }
 
-              @bind
-              willDestroy() {
-                this.chatService.appEvents.off(
-                  "chat:user-tracking-state-changed",
-                  this._refreshTrackingState
-                );
+            @bind
+            willDestroy() {
+              if (!this.chatService) {
+                return;
               }
+              this.chatService.appEvents.off(
+                "chat:refresh-channels",
+                this._refreshChannels
+              );
+            }
 
-              @bind
-              _refreshTrackingState() {
-                this.chatChannelTrackingState =
-                  this.chatService.currentUser.chat_channel_tracking_state[
-                    this.channel.id
-                  ];
-              }
-
-              get name() {
-                return dasherize(slugifyChannel(this.title));
-              }
-
-              get route() {
-                return "chat.channel";
-              }
-
-              get models() {
-                return [this.channel.id, slugifyChannel(this.title)];
-              }
-
-              get title() {
-                return escapeExpression(this.channel.title);
-              }
-
-              get text() {
-                return htmlSafe(emojiUnescape(this.title));
-              }
-
-              get prefixType() {
-                return "icon";
-              }
-
-              get prefixValue() {
-                return "hashtag";
-              }
-
-              get prefixColor() {
-                return this.channel.chatable.color;
-              }
-
-              get prefixBadge() {
-                return this.channel.chatable.read_restricted ? "lock" : "";
-              }
-
-              get suffixType() {
-                return "icon";
-              }
-
-              get suffixValue() {
-                return this.chatChannelTrackingState?.unread_count > 0
-                  ? "circle"
-                  : "";
-              }
-
-              get suffixCSSClass() {
-                return this.chatChannelTrackingState?.unread_mentions > 0
-                  ? "urgent"
-                  : "unread";
-              }
-            };
-
-            const SidebarChatChannelsSection = class extends BaseCustomSidebarSection {
-              @tracked sectionLinks = [];
-
-              @tracked sectionIndicator =
-                this.chatService.publicChannels &&
-                this.chatService.publicChannels[0].current_user_membership
-                  .unread_count;
-
-              constructor() {
-                super(...arguments);
-
-                if (container.isDestroyed) {
-                  return;
-                }
-                this.chatService = container.lookup("service:chat");
-                this.chatService.appEvents.on(
-                  "chat:refresh-channels",
-                  this._refreshChannels
-                );
-                this._refreshChannels();
-              }
-
-              @bind
-              willDestroy() {
-                if (!this.chatService) {
-                  return;
-                }
-                this.chatService.appEvents.off(
-                  "chat:refresh-channels",
-                  this._refreshChannels
-                );
-              }
-
-              @bind
-              _refreshChannels() {
-                const newSectionLinks = [];
-                this.chatService.getChannels().then((channels) => {
-                  channels.publicChannels.forEach((channel) => {
-                    newSectionLinks.push(
-                      new SidebarChatChannelsSectionLink({
-                        channel,
-                        chatService: this.chatService,
-                      })
-                    );
-                  });
-                  this.sectionLinks = newSectionLinks;
+            @bind
+            _refreshChannels() {
+              const newSectionLinks = [];
+              this.chatService.getChannels().then((channels) => {
+                channels.publicChannels.forEach((channel) => {
+                  newSectionLinks.push(
+                    new SidebarChatChannelsSectionLink({
+                      channel,
+                      chatService: this.chatService,
+                    })
+                  );
                 });
-              }
+                this.sectionLinks = newSectionLinks;
+              });
+            }
 
-              get name() {
-                return "chat-channels";
-              }
+            get name() {
+              return "chat-channels";
+            }
 
-              get title() {
-                return I18n.t("chat.chat_channels");
-              }
+            get title() {
+              return I18n.t("chat.chat_channels");
+            }
 
-              get text() {
-                return I18n.t("chat.chat_channels");
-              }
+            get text() {
+              return I18n.t("chat.chat_channels");
+            }
 
-              get actions() {
-                const actions = [
-                  {
-                    id: "browseChannels",
-                    title: I18n.t("chat.channels_list_popup.browse"),
-                    action: () => {
-                      this.chatService.router.transitionTo("chat.browse");
-                    },
+            get actions() {
+              return [
+                {
+                  id: "browseChannels",
+                  title: I18n.t("chat.channels_list_popup.browse"),
+                  action: () => {
+                    this.chatService.router.transitionTo("chat.browse");
                   },
-                ];
-                if (this.sidebar.currentUser.staff) {
-                  actions.push({
-                    id: "openCreateChannelModal",
-                    title: I18n.t("chat.channels_list_popup.create"),
-                    action: () => {
-                      showModal("create-channel");
-                    },
-                  });
-                }
-                return actions;
-              }
+                },
+              ];
+            }
 
-              get actionsIcon() {
-                return "cog";
-              }
+            get actionsIcon() {
+              return "pencil-alt";
+            }
 
-              get links() {
-                return this.sectionLinks;
-              }
-            };
+            get links() {
+              return this.sectionLinks;
+            }
 
-            return SidebarChatChannelsSection;
-          }
-        );
+            get displaySection() {
+              return (
+                this.sectionLinks.length > 0 ||
+                this.currentUserCanJoinPublicChannels
+              );
+            }
+          };
+
+          return SidebarChatChannelsSection;
+        }
+      );
 
       api.addSidebarSection(
         (BaseCustomSidebarSection, BaseCustomSidebarSectionLink) => {
@@ -241,7 +240,7 @@ export default {
             }
 
             get name() {
-              return dasherize(this.title);
+              return slugifyChannel(this.title);
             }
 
             get route() {
@@ -253,7 +252,7 @@ export default {
             }
 
             get title() {
-              return escapeExpression(this.channel.title);
+              return this.channel.escapedTitle;
             }
 
             get oneOnOneMessage() {
@@ -306,6 +305,12 @@ export default {
                 return "active";
               }
               return "";
+            }
+
+            get contentCSSClass() {
+              return this.channel.current_user_membership.muted
+                ? "sidebar-section-link-content-muted"
+                : "";
             }
 
             get suffixType() {
@@ -367,6 +372,8 @@ export default {
           const SidebarChatDirectMessagesSection = class extends BaseCustomSidebarSection {
             @service site;
             @tracked sectionLinks = [];
+            @tracked userCanDirectMessage =
+              this.chatService.userCanDirectMessage;
 
             constructor() {
               super(...arguments);
@@ -377,9 +384,9 @@ export default {
               this.chatService = container.lookup("service:chat");
               this.chatService.appEvents.on(
                 "chat:user-tracking-state-changed",
-                this._refreshPms
+                this._refreshDirectMessageChannels
               );
-              this._refreshPms();
+              this._refreshDirectMessageChannels();
             }
 
             @bind
@@ -389,12 +396,12 @@ export default {
               }
               this.chatService.appEvents.off(
                 "chat:user-tracking-state-changed",
-                this._refreshPms
+                this._refreshDirectMessageChannels
               );
             }
 
             @bind
-            _refreshPms() {
+            _refreshDirectMessageChannels() {
               const newSectionLinks = [];
               this.chatService.getChannels().then((channels) => {
                 this.chatService
@@ -424,6 +431,10 @@ export default {
             }
 
             get actions() {
+              if (!this.userCanDirectMessage) {
+                return [];
+              }
+
               return [
                 {
                   id: "startDm",
@@ -453,6 +464,10 @@ export default {
 
             get links() {
               return this.sectionLinks;
+            }
+
+            get displaySection() {
+              return this.sectionLinks.length > 0 || this.userCanDirectMessage;
             }
           };
 

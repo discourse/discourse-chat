@@ -48,6 +48,7 @@ acceptance("Discourse Chat - Composer - unreliable network", function (needs) {
       "it adds a retry button"
     );
 
+    await fillIn(".chat-composer-input", "network-error-message");
     await click(".send-btn");
     await publishToMessageBus(`/chat/11`, {
       type: "sent",

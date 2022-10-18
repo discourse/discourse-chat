@@ -4,6 +4,7 @@ import { computed } from "@ember/object";
 import User from "discourse/models/user";
 import UserChatChannelMembership from "discourse/plugins/discourse-chat/discourse/models/user-chat-channel-membership";
 import { ajax } from "discourse/lib/ajax";
+import { escapeExpression } from "discourse/lib/utilities";
 
 export const CHATABLE_TYPES = {
   directMessageChannel: "DirectMessageChannel",
@@ -62,6 +63,16 @@ export default class ChatChannel extends RestModel {
   isDraft = false;
   lastSendReadMessageId = null;
 
+  @computed("title")
+  get escapedTitle() {
+    return escapeExpression(this.title);
+  }
+
+  @computed("description")
+  get escapedDescription() {
+    return escapeExpression(this.description);
+  }
+
   @computed("chatable_type")
   get isDirectMessageChannel() {
     return this.chatable_type === CHATABLE_TYPES.directMessageChannel;
@@ -97,16 +108,8 @@ export default class ChatChannel extends RestModel {
     return this.isOpen && !this.isArchived;
   }
 
-  @computed(
-    "isDirectMessageChannel",
-    "memberships_count",
-    "chatable.users.length"
-  )
+  @computed("memberships_count")
   get membershipsCount() {
-    if (this.isDirectMessageChannel) {
-      return (this.chatable.users?.length || 0) + 1;
-    }
-
     return this.memberships_count;
   }
 

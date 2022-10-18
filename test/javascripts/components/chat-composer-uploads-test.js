@@ -3,13 +3,14 @@ import componentTest, {
 } from "discourse/tests/helpers/component-test";
 import pretender from "discourse/tests/helpers/create-pretender";
 import {
+  count,
   createFile,
   exists,
-  queryAll,
 } from "discourse/tests/helpers/qunit-helpers";
 import hbs from "htmlbars-inline-precompile";
-import { click, settled } from "@ember/test-helpers";
+import { click, settled, waitFor } from "@ember/test-helpers";
 import { module } from "qunit";
+import { run } from "@ember/runloop";
 
 const fakeUpload = {
   type: ".png",
@@ -56,7 +57,8 @@ module("Discourse Chat | Component | chat-composer-uploads", function (hooks) {
         this.appEvents = this.container.lookup("service:appEvents");
         this.appEvents.trigger("chat-composer:load-uploads", [fakeUpload]);
         await settled();
-        assert.strictEqual(queryAll(".chat-composer-upload").length, 1);
+
+        assert.strictEqual(count(".chat-composer-upload"), 1);
         assert.strictEqual(exists(".chat-composer-upload"), true);
       },
     }
@@ -74,16 +76,8 @@ module("Discourse Chat | Component | chat-composer-uploads", function (hooks) {
     },
 
     async test(assert) {
-      const image = createFile("avatar.png");
       const done = assert.async();
       this.appEvents = this.container.lookup("service:appEvents");
-      this.appEvents.trigger(
-        "upload-mixin:chat-composer-uploader:add-files",
-        image
-      );
-
-      await settled();
-
       this.appEvents.on(
         "upload-mixin:chat-composer-uploader:upload-success",
         (fileName, upload) => {
@@ -93,9 +87,13 @@ module("Discourse Chat | Component | chat-composer-uploads", function (hooks) {
         }
       );
 
-      await settled();
+      this.appEvents.trigger(
+        "upload-mixin:chat-composer-uploader:add-files",
+        createFile("avatar.png")
+      );
 
-      assert.strictEqual(queryAll(".chat-composer-upload").length, 1);
+      await waitFor(".chat-composer-upload");
+      assert.strictEqual(count(".chat-composer-upload"), 1);
     },
   });
 
@@ -111,11 +109,13 @@ module("Discourse Chat | Component | chat-composer-uploads", function (hooks) {
 
     async test(assert) {
       this.appEvents = this.container.lookup("service:appEvents");
-      this.appEvents.trigger("chat-composer:load-uploads", [fakeUpload]);
-      await settled();
-      assert.strictEqual(queryAll(".chat-composer-upload").length, 1);
+      run(() =>
+        this.appEvents.trigger("chat-composer:load-uploads", [fakeUpload])
+      );
+      assert.strictEqual(count(".chat-composer-upload"), 1);
+
       await click(".remove-upload");
-      assert.strictEqual(queryAll(".chat-composer-upload").length, 0);
+      assert.strictEqual(count(".chat-composer-upload"), 0);
     },
   });
 
@@ -135,12 +135,6 @@ module("Discourse Chat | Component | chat-composer-uploads", function (hooks) {
       const image = createFile("avatar.png");
       const done = assert.async();
       this.appEvents = this.container.lookup("service:appEvents");
-      this.appEvents.trigger(
-        "upload-mixin:chat-composer-uploader:add-files",
-        image
-      );
-
-      await settled();
 
       this.appEvents.on(
         `upload-mixin:chat-composer-uploader:upload-cancelled`,
@@ -154,14 +148,16 @@ module("Discourse Chat | Component | chat-composer-uploads", function (hooks) {
         }
       );
 
-      await settled();
+      this.appEvents.trigger(
+        "upload-mixin:chat-composer-uploader:add-files",
+        image
+      );
 
-      assert.strictEqual(queryAll(".chat-composer-upload").length, 1);
+      await waitFor(".chat-composer-upload");
+      assert.strictEqual(count(".chat-composer-upload"), 1);
 
       await click(".remove-upload");
-      await settled();
-
-      assert.strictEqual(queryAll(".chat-composer-upload").length, 0);
+      assert.strictEqual(count(".chat-composer-upload"), 0);
     },
   });
 });

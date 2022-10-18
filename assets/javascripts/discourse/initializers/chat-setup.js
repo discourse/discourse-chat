@@ -13,6 +13,7 @@ export default {
   initialize(container) {
     this.chatService = container.lookup("service:chat");
     this.siteSettings = container.lookup("service:site-settings");
+
     this.appEvents = container.lookup("service:appEvents");
     this.appEvents.on("discourse:focus-changed", this, "_handleFocusChanged");
 
@@ -41,6 +42,20 @@ export default {
           },
         });
       }
+
+      api.registerChatComposerButton({
+        label: "chat.emoji",
+        id: "emoji",
+        class: "chat-emoji-btn",
+        icon: "discourse-emojis",
+        position: "dropdown",
+        action() {
+          const chatEmojiPickerManager = container.lookup(
+            "service:chat-emoji-picker-manager"
+          );
+          chatEmojiPickerManager.startFromComposer(this.didSelectEmoji);
+        },
+      });
 
       // we want to decorate the chat quote dates regardless
       // of whether the current user has chat enabled

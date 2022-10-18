@@ -50,17 +50,13 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     end
 
     if success
-      membership =
-        UserChatChannelMembership.find_or_initialize_by(
-          chat_channel: chat_channel,
-          user: current_user,
-        )
-      membership.following = true
-      membership.save!
+      membership = DiscourseChat::ChatChannelMembershipManager.new(channel).follow(user)
       render_serialized(chat_channel, ChatChannelSerializer, membership: membership)
     else
       render_json_error(chat_channel)
     end
+
+    DiscourseChat::ChatChannelMembershipManager.new(channel).follow(user)
   end
 
   def disable_chat
@@ -86,9 +82,8 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     DiscourseChat::ChatMessageRateLimiter.run!(current_user)
 
     @user_chat_channel_membership =
-      UserChatChannelMembership.find_by(
-        chat_channel: @chat_channel,
-        user: current_user,
+      DiscourseChat::ChatChannelMembershipManager.new(@chat_channel).find_for_user(
+        current_user,
         following: true,
       )
     raise Discourse::InvalidAccess unless @user_chat_channel_membership
@@ -117,21 +112,23 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     @user_chat_channel_membership.update(last_read_message_id: chat_message_creator.chat_message.id)
 
     if @chat_channel.direct_message_channel?
-
       # If any of the channel users is ignoring, muting, or preventing DMs from
       # the current user then we shold not auto-follow the channel once again or
       # publish the new channel.
-      user_ids_allowing_communication = UserCommScreener.new(
-        acting_user: current_user,
-        target_user_ids: @chat_channel.user_chat_channel_memberships.pluck(:user_id)
-      ).allowing_actor_communication
+      user_ids_allowing_communication =
+        UserCommScreener.new(
+          acting_user: current_user,
+          target_user_ids: @chat_channel.user_chat_channel_memberships.pluck(:user_id),
+        ).allowing_actor_communication
 
       if user_ids_allowing_communication.any?
-        @chat_channel.user_chat_channel_memberships.where(
-          user_id: user_ids_allowing_communication
-        ).update_all(following: true)
+        @chat_channel
+          .user_chat_channel_memberships
+          .where(user_id: user_ids_allowing_communication)
+          .update_all(following: true)
         ChatPublisher.publish_new_channel(
-          @chat_channel, @chat_channel.chatable.users.where(id: user_ids_allowing_communication)
+          @chat_channel,
+          @chat_channel.chatable.users.where(id: user_ids_allowing_communication),
         )
       end
     end
@@ -160,9 +157,8 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
 
   def update_user_last_read
     membership =
-      UserChatChannelMembership.find_by(
-        user: current_user,
-        chat_channel: @chat_channel,
+      DiscourseChat::ChatChannelMembershipManager.new(@chat_channel).find_for_user(
+        current_user,
         following: true,
       )
     raise Discourse::NotFound if membership.nil?
@@ -433,20 +429,37 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
   end
 
   def flag
-    params.require([:chat_message_id])
-    chat_message = ChatMessage.includes(:chat_channel).find_by(id: params[:chat_message_id])
+    RateLimiter.new(current_user, "flag_chat_message", 4, 1.minutes).performed!
 
-    raise Discourse::InvalidParameters unless chat_message
-    set_channel_and_chatable_with_access_check(chat_channel_id: chat_message.chat_channel_id)
-    guardian.ensure_can_flag_chat_message!(chat_message)
+    permitted_params =
+      params.permit(
+        %i[chat_message_id flag_type_id message is_warning take_action queue_for_review],
+      )
 
-    if chat_message.reviewable_score_for(current_user).exists?
-      return render json: success_json # Already flagged
+    chat_message =
+      ChatMessage.includes(:chat_channel, :revisions).find(permitted_params[:chat_message_id])
+
+    flag_type_id = permitted_params[:flag_type_id].to_i
+
+    if !ReviewableScore.types.values.include?(flag_type_id)
+      raise Discourse::InvalidParameters.new(:flag_type_id)
     end
 
-    reviewable = chat_message.add_flag(current_user)
-    ChatPublisher.publish_flag!(chat_message, current_user, reviewable)
-    render json: success_json
+    set_channel_and_chatable_with_access_check(chat_channel_id: chat_message.chat_channel_id)
+
+    result =
+      DiscourseChat::ChatReviewQueue.new.flag_message(
+        chat_message,
+        guardian,
+        flag_type_id,
+        permitted_params,
+      )
+
+    if result[:success]
+      render json: success_json
+    else
+      render_json_error(result[:errors])
+    end
   end
 
   def set_draft
@@ -486,9 +499,9 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
   end
 
   def find_chat_message
-    @message =
-      ChatMessage.unscoped.includes(chat_channel: :chatable).find_by(id: params[:message_id])
-
+    @message = preloaded_chat_message_query.with_deleted
+    @message = @message.where(chat_channel_id: params[:chat_channel_id]) if params[:chat_channel_id]
+    @message = @message.find_by(id: params[:message_id])
     raise Discourse::NotFound unless @message
   end
 end

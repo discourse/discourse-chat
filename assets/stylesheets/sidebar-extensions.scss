@@ -146,13 +146,6 @@
     }
   }
 
-  .sidebar-section-chat-dms {
-    .sidebar-section-link-prefix.text {
-      margin-right: 0.75em;
-      width: 1em;
-    }
-  }
-
   .sidebar-section-link-prefix {
     .prefix-image {
       border: 1px solid transparent;
@@ -167,5 +160,9 @@
     .user-status {
       margin-left: 0.3em;
     }
+  }
+
+  .sidebar-section-link-content-muted {
+    opacity: 0.65;
   }
 }

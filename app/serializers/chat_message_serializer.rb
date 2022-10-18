@@ -12,7 +12,8 @@ class ChatMessageSerializer < ApplicationSerializer
              :user_flag_status,
              :edited,
              :reactions,
-             :bookmark
+             :bookmark,
+             :available_flags
 
   has_one :user, serializer: BasicUserWithStatusSerializer, embed: :objects
   has_one :chat_webhook_event, serializer: ChatWebhookEventSerializer, embed: :objects
@@ -21,6 +22,10 @@ class ChatMessageSerializer < ApplicationSerializer
 
   def user
     object.user || DeletedChatUser.new
+  end
+
+  def excerpt
+    WordWatcher.censor(object.excerpt)
   end
 
   def reactions
@@ -119,5 +124,27 @@ class ChatMessageSerializer < ApplicationSerializer
 
   def include_user_flag_status?
     user_flag_status.present?
+  end
+
+  def available_flags
+    return [] if !scope.can_flag_chat_message?(object)
+    return [] if reviewable_id.present? && user_flag_status == ReviewableScore.statuses[:pending]
+
+    PostActionType.flag_types.map do |sym, id|
+      if @options[:chat_channel].direct_message_channel? &&
+           %i[notify_moderators notify_user].include?(sym)
+        next
+      end
+
+      if sym == :notify_user &&
+           (
+             scope.current_user == user || user.bot? ||
+               !scope.current_user.in_any_groups?(SiteSetting.personal_message_enabled_groups_map)
+           )
+        next
+      end
+
+      sym
+    end
   end
 end

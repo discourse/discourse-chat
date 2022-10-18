@@ -3,7 +3,7 @@
 RSpec.shared_examples "channel access example" do |verb, endpoint|
   endpoint ||= ".json"
 
-  context "channel is not found" do
+  context "when channel is not found" do
     before { sign_in(Fabricate(:admin)) }
 
     it "returns a 404" do
@@ -12,7 +12,7 @@ RSpec.shared_examples "channel access example" do |verb, endpoint|
     end
   end
 
-  context "anonymous user" do
+  context "with anonymous user" do
     fab!(:chat_channel) { Fabricate(:chat_channel) }
 
     it "returns a 403" do
@@ -21,7 +21,7 @@ RSpec.shared_examples "channel access example" do |verb, endpoint|
     end
   end
 
-  context "channel can’t be seen by current user" do
+  context "when channel can’t be seen by current user" do
     fab!(:chatable) { Fabricate(:private_category, group: Fabricate(:group)) }
     fab!(:chat_channel) { Fabricate(:chat_channel, chatable: chatable) }
     fab!(:user) { Fabricate(:user) }

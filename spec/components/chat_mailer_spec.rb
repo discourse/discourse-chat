@@ -17,6 +17,7 @@ describe DiscourseChat::ChatMailer do
     )
   end
   fab!(:private_chat_channel) do
+    Group.refresh_automatic_groups!
     DiscourseChat::DirectMessageChannelCreator.create!(
       acting_user: sender,
       target_users: [sender, user_1],
@@ -213,10 +214,10 @@ describe DiscourseChat::ChatMailer do
         another_channel_message = Fabricate(:chat_message, chat_channel: chat_channel, user: sender)
         Fabricate(:chat_mention, user: user_1, chat_message: another_channel_message)
 
-        expect { described_class.send_unread_mentions_summary }.to change(
+        expect { described_class.send_unread_mentions_summary }.not_to change(
           Jobs::UserEmail.jobs,
           :size,
-        ).by(0)
+        )
       end
 
       it "only updates the last_message_read_when_emailed_id on the channel with unread mentions" do

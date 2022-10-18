@@ -11,7 +11,7 @@ import {
   generateChatView,
 } from "discourse/plugins/discourse-chat/chat-fixtures";
 import { test } from "qunit";
-import { click, settled, triggerEvent, visit } from "@ember/test-helpers";
+import { click, triggerEvent, visit } from "@ember/test-helpers";
 
 acceptance("Discourse Chat - Flagging test", function (needs) {
   let defaultChatView;
@@ -53,16 +53,17 @@ acceptance("Discourse Chat - Flagging test", function (needs) {
     assert.notOk(exists(".chat-live-pane .chat-message .chat-message-flagged"));
     await triggerEvent(".chat-message-container", "mouseenter");
 
-    let moreButtons = selectKit(".chat-live-pane .chat-message .more-buttons");
+    let moreButtons = selectKit(".chat-msgactions-hover .more-buttons");
     await moreButtons.expand();
 
     const content = moreButtons.displayedContent();
     assert.ok(content.find((row) => row.id === "flag"));
 
     await moreButtons.selectRowByValue("flag");
-    assert.ok(exists(".bootbox.in"));
 
-    await click(".bootbox.in .btn-primary");
+    await click(".controls.spam input");
+    await click(".modal-footer button");
+
     await publishToMessageBus("/chat/75", {
       type: "self_flagged",
       chat_message_id: defaultChatView.chat_messages[0].id,
@@ -73,7 +74,6 @@ acceptance("Discourse Chat - Flagging test", function (needs) {
       chat_message_id: defaultChatView.chat_messages[0].id,
       reviewable_id: 1,
     });
-    await settled();
 
     const reviewableLink = query(
       `.chat-message-container[data-id='${defaultChatView.chat_messages[0].id}'] .chat-message-info__flag a`
@@ -85,7 +85,7 @@ acceptance("Discourse Chat - Flagging test", function (needs) {
     await visit("/chat/channel/9/@hawk");
     await triggerEvent(".chat-message-container", "mouseenter");
 
-    let moreButtons = selectKit(".chat-live-pane .chat-message .more-buttons");
+    let moreButtons = selectKit(".chat-msgactions .more-buttons");
     await moreButtons.expand();
 
     const content = moreButtons.displayedContent();

@@ -232,7 +232,7 @@ module(
 
       beforeEach() {
         this.set("cooked", imageTextCooked);
-        this.set("uploads", [{ extension: "png" }]);
+        this.set("uploads", [{ original_filename: "tomtom.png" }]);
       },
 
       async test(assert) {

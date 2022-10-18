@@ -17,9 +17,7 @@ describe Jobs::AutoManageChannelMemberships do
     end
 
     it "does nothing when the chatable is not a category" do
-      same_id = 99
-      another_category = Fabricate(:category, id: same_id)
-      dm_channel = Fabricate(:direct_message_channel, id: same_id)
+      dm_channel = Fabricate(:direct_message_channel)
       channel.update!(chatable: dm_channel)
 
       assert_batches_enqueued(channel, 0)

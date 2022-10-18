@@ -16,7 +16,7 @@ import ChatChannel, {
 } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import simpleCategoryHashMentionTransform from "discourse/plugins/discourse-chat/discourse/lib/simple-category-hash-mention-transform";
 import discourseDebounce from "discourse-common/lib/debounce";
-import EmberObject from "@ember/object";
+import EmberObject, { computed } from "@ember/object";
 import ChatApi from "discourse/plugins/discourse-chat/discourse/lib/chat-api";
 import discourseLater from "discourse-common/lib/later";
 import userPresent from "discourse/lib/user-presence";
@@ -60,6 +60,22 @@ export default class Chat extends Service {
 
   @and("currentUser.has_chat_enabled", "siteSettings.chat_enabled") userCanChat;
 
+  @computed("currentUser.staff", "currentUser.groups.[]")
+  get userCanDirectMessage() {
+    if (!this.currentUser) {
+      return false;
+    }
+
+    return (
+      this.currentUser.staff ||
+      this.currentUser.isInAnyGroups(
+        (this.siteSettings.direct_message_enabled_groups || "11") // trust level 1 auto group
+          .split("|")
+          .map((groupId) => parseInt(groupId, 10))
+      )
+    );
+  }
+
   init() {
     super.init(...arguments);
 
@@ -68,6 +84,7 @@ export default class Chat extends Service {
       this._subscribeToNewChannelUpdates();
       this._subscribeToUserTrackingChannel();
       this._subscribeToChannelEdits();
+      this._subscribeToChannelMetadata();
       this._subscribeToChannelStatusChange();
       this.presenceChannel = this.presence.getChannel("/chat/online");
       this.draftStore = {};
@@ -115,6 +132,7 @@ export default class Chat extends Service {
       this._unsubscribeFromNewDmChannelUpdates();
       this._unsubscribeFromUserTrackingChannel();
       this._unsubscribeFromChannelEdits();
+      this._unsubscribeFromChannelMetadata();
       this._unsubscribeFromChannelStatusChange();
       this._unsubscribeFromAllChatChannels();
     }
@@ -588,6 +606,19 @@ export default class Chat extends Service {
     });
   }
 
+  _subscribeToChannelMetadata() {
+    this.messageBus.subscribe("/chat/channel-metadata", (busData) => {
+      this.getChannelBy("id", busData.chat_channel_id).then((channel) => {
+        if (channel) {
+          channel.setProperties({
+            memberships_count: busData.memberships_count,
+          });
+          this.appEvents.trigger("chat:refresh-channel-members");
+        }
+      });
+    });
+  }
+
   _subscribeToChannelEdits() {
     this.messageBus.subscribe("/chat/channel-edits", (busData) => {
       this.getChannelBy("id", busData.chat_channel_id).then((channel) => {
@@ -634,6 +665,10 @@ export default class Chat extends Service {
 
   _unsubscribeFromChannelEdits() {
     this.messageBus.unsubscribe("/chat/channel-edits");
+  }
+
+  _unsubscribeFromChannelMetadata() {
+    this.messageBus.unsubscribe("/chat/channel-metadata");
   }
 
   _subscribeToNewChannelUpdates() {

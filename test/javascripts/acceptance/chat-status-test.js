@@ -1,4 +1,4 @@
-import { settled, visit } from "@ember/test-helpers";
+import { visit } from "@ember/test-helpers";
 import { cloneJSON } from "discourse-common/lib/object";
 import {
   chatChannels,
@@ -74,11 +74,10 @@ acceptance(
         "unread indicator shows for channel"
       );
 
-      publishToMessageBus("/chat/channel-status", {
+      await publishToMessageBus("/chat/channel-status", {
         chat_channel_id: 4,
         status: "archived",
       });
-      await settled();
       assert.notOk(
         exists("#chat-channel-row-4 .chat-channel-unread-indicator"),
         "unread indicator should not show after archive status change"
@@ -93,12 +92,10 @@ acceptance(
         "channel status does not show if the channel is open"
       );
 
-      publishToMessageBus("/chat/channel-status", {
+      await publishToMessageBus("/chat/channel-status", {
         chat_channel_id: 4,
         status: "archived",
       });
-      await settled();
-
       assert.strictEqual(
         query(".chat-channel-status").innerText.trim(),
         I18n.t("chat.channel_status.archived_header"),

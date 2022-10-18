@@ -33,10 +33,19 @@ RSpec.describe DiscourseChat::ChatController do
     SiteSetting.chat_allowed_groups = Group::AUTO_GROUPS[:everyone]
   end
 
+  def flag_message(message, flagger, flag_type: ReviewableScore.types[:off_topic])
+    DiscourseChat::ChatReviewQueue.new.flag_message(message, Guardian.new(flagger), flag_type)[
+      :reviewable
+    ]
+  end
+
   describe "#messages" do
     let(:page_size) { 30 }
 
-    before { sign_in(user) }
+    before do
+      sign_in(user)
+      Group.refresh_automatic_groups!
+    end
 
     it "errors for user when they are not allowed to chat" do
       SiteSetting.chat_allowed_groups = Group::AUTO_GROUPS[:staff]
@@ -66,9 +75,9 @@ RSpec.describe DiscourseChat::ChatController do
       expect(response.parsed_body["meta"]["can_flag"]).to be true
     end
 
-    it "returns `can_flag=false` for DM channels" do
+    it "returns `can_flag=true` for DM channels" do
       get "/chat/#{dm_chat_channel.id}/messages.json", params: { page_size: page_size }
-      expect(response.parsed_body["meta"]["can_flag"]).to be false
+      expect(response.parsed_body["meta"]["can_flag"]).to be true
     end
 
     it "returns `can_moderate=true` based on whether the user can moderate the chatable" do
@@ -96,38 +105,29 @@ RSpec.describe DiscourseChat::ChatController do
 
     it "serializes `user_flag_status` for user who has a pending flag" do
       chat_message = chat_channel.chat_messages.last
-      chat_message.add_flag(user)
-      reviewable_score = chat_message.add_flag(user)
+      reviewable = flag_message(chat_message, user)
+      score = reviewable.reviewable_scores.last
 
       get "/chat/#{chat_channel.id}/messages.json", params: { page_size: page_size }
       expect(response.parsed_body["chat_messages"].last["user_flag_status"]).to eq(
-        reviewable_score.status_for_database,
+        score.status_for_database,
       )
-      expect(response.parsed_body["chat_messages"].second_to_last["user_flag_status"]).to be_nil
     end
 
     it "doesn't serialize `reviewable_ids` for non-staff" do
-      chat_channel.chat_messages.last.add_flag(admin)
-      chat_channel.chat_messages.second_to_last.add_flag(admin)
+      reviewable = flag_message(chat_channel.chat_messages.last, admin)
 
       get "/chat/#{chat_channel.id}/messages.json", params: { page_size: page_size }
+
       expect(response.parsed_body["chat_messages"].last["reviewable_id"]).to be_nil
-      expect(response.parsed_body["chat_messages"].second_to_last["reviewable_id"]).to be_nil
     end
 
     it "serializes `reviewable_ids` correctly for staff" do
       sign_in(admin)
-      last_message = chat_channel.chat_messages.last
-      second_to_last_message = chat_channel.chat_messages.second_to_last
-
-      last_reviewable = last_message.add_flag(admin)
-      second_to_last_reviewable = second_to_last_message.add_flag(admin)
+      reviewable = flag_message(chat_channel.chat_messages.last, admin)
 
       get "/chat/#{chat_channel.id}/messages.json", params: { page_size: page_size }
-      expect(response.parsed_body["chat_messages"].last["reviewable_id"]).to eq(last_reviewable.id)
-      expect(response.parsed_body["chat_messages"].second_to_last["reviewable_id"]).to eq(
-        second_to_last_reviewable.id,
-      )
+      expect(response.parsed_body["chat_messages"].last["reviewable_id"]).to eq(reviewable.id)
     end
 
     it "correctly marks reactions as 'reacted' for the current_user" do
@@ -244,7 +244,7 @@ RSpec.describe DiscourseChat::ChatController do
   end
 
   describe "#enable_chat" do
-    context "category as chatable" do
+    context "with category as chatable" do
       it "ensures created channel can be seen" do
         category = Fabricate(:category)
         channel = Fabricate(:chat_channel, chatable: category)
@@ -267,7 +267,7 @@ RSpec.describe DiscourseChat::ChatController do
   end
 
   describe "#disable_chat" do
-    context "category as chatable" do
+    context "with category as chatable" do
       it "ensures category can be seen" do
         category = Fabricate(:category)
         channel = Fabricate(:chat_channel, chatable: category)
@@ -369,6 +369,7 @@ RSpec.describe DiscourseChat::ChatController do
           desktop_notification_level: UserChatChannelMembership::NOTIFICATION_LEVELS[:always],
           mobile_notification_level: UserChatChannelMembership::NOTIFICATION_LEVELS[:always],
         )
+        Group.refresh_automatic_groups!
       end
 
       it "forces users to follow the channel" do
@@ -399,7 +400,9 @@ RSpec.describe DiscourseChat::ChatController do
       end
 
       context "if any of the direct message users is ignoring the acting user" do
-        before { IgnoredUser.create!(user: user2, ignored_user: user1, expiring_at: 1.day.from_now) }
+        before do
+          IgnoredUser.create!(user: user2, ignored_user: user1, expiring_at: 1.day.from_now)
+        end
 
         it "does not force them to follow the channel or send a publish_new_channel message" do
           create_memberships
@@ -420,7 +423,7 @@ RSpec.describe DiscourseChat::ChatController do
   describe "#rebake" do
     fab!(:chat_message) { Fabricate(:chat_message, chat_channel: chat_channel, user: user) }
 
-    context "staff" do
+    context "as staff" do
       it "rebakes the post" do
         sign_in(Fabricate(:admin))
 
@@ -453,7 +456,7 @@ RSpec.describe DiscourseChat::ChatController do
         expect(response.status).to eq(403)
       end
 
-      context "cooked has changed" do
+      context "when cooked has changed" do
         it "marks the message as dirty" do
           sign_in(Fabricate(:admin))
           chat_message.update!(message: "new content")
@@ -473,14 +476,14 @@ RSpec.describe DiscourseChat::ChatController do
       end
     end
 
-    context "not staff" do
+    context "when not staff" do
       it "forbids non staff to rebake" do
         sign_in(Fabricate(:user))
         put "/chat/#{chat_channel.id}/#{chat_message.id}/rebake.json"
         expect(response.status).to eq(403)
       end
 
-      context "TL3 user" do
+      context "as TL3 user" do
         it "forbids less then TL4 user tries to rebake" do
           sign_in(Fabricate(:user, trust_level: TrustLevel[3]))
           put "/chat/#{chat_channel.id}/#{chat_message.id}/rebake.json"
@@ -488,7 +491,7 @@ RSpec.describe DiscourseChat::ChatController do
         end
       end
 
-      context "TL4 user" do
+      context "as TL4 user" do
         it "allows TL4 users to rebake" do
           sign_in(Fabricate(:user, trust_level: TrustLevel[4]))
           put "/chat/#{chat_channel.id}/#{chat_message.id}/rebake.json"
@@ -559,7 +562,7 @@ RSpec.describe DiscourseChat::ChatController do
       sign_in(other_user)
       UserSilencer.new(other_user).silence
 
-      delete "/chat/#{chat_channel.id}/#{other_user_message.id}.json"
+      delete "/chat/#{other_user_message.chat_channel.id}/#{other_user_message.id}.json"
       expect(response.status).to eq(403)
     end
 
@@ -737,7 +740,7 @@ RSpec.describe DiscourseChat::ChatController do
         Fabricate(:user_chat_channel_membership, chat_channel: chat_channel, user: user)
       end
 
-      context "message_id param doesn't link to a message of the channel" do
+      context "when message_id param doesn't link to a message of the channel" do
         it "raises a not found" do
           put "/chat/#{chat_channel.id}/read/-999.json"
 
@@ -745,7 +748,7 @@ RSpec.describe DiscourseChat::ChatController do
         end
       end
 
-      context "message_id param is inferior to existing last read" do
+      context "when message_id param is inferior to existing last read" do
         before { membership.update!(last_read_message_id: message_2.id) }
 
         it "raises an invalid request" do
@@ -756,7 +759,7 @@ RSpec.describe DiscourseChat::ChatController do
         end
       end
 
-      context "message_id refers to deleted message" do
+      context "when message_id refers to deleted message" do
         before { message_1.trash!(Discourse.system_user) }
 
         it "works" do
@@ -767,9 +770,9 @@ RSpec.describe DiscourseChat::ChatController do
       end
 
       it "updates timing records" do
-        expect { put "/chat/#{chat_channel.id}/read/#{message_1.id}.json" }.to change {
+        expect { put "/chat/#{chat_channel.id}/read/#{message_1.id}.json" }.not_to change {
           UserChatChannelMembership.count
-        }.by(0)
+        }
 
         membership.reload
         expect(membership.chat_channel_id).to eq(chat_channel.id)
@@ -998,9 +1001,9 @@ RSpec.describe DiscourseChat::ChatController do
       SiteSetting.chat_allowed_groups = Group::AUTO_GROUPS[:admin]
       expect {
         put "/chat/#{chat_channel.id}/invite.json", params: { user_ids: [user.id] }
-      }.to change {
+      }.not_to change {
         user.notifications.where(notification_type: Notification.types[:chat_invitation]).count
-      }.by(0)
+      }
     end
 
     it "creates an invitation notification for users who can chat" do
@@ -1160,11 +1163,18 @@ RSpec.describe DiscourseChat::ChatController do
 
     fab!(:admin_dm_message) { Fabricate(:chat_message, user: admin, chat_channel: dm_chat_channel) }
 
-    before { sign_in(user) }
+    before do
+      sign_in(user)
+      Group.refresh_automatic_groups!
+    end
 
     it "creates reviewable" do
       expect {
-        put "/chat/flag.json", params: { chat_message_id: admin_chat_message.id }
+        put "/chat/flag.json",
+            params: {
+              chat_message_id: admin_chat_message.id,
+              flag_type_id: ReviewableScore.types[:off_topic],
+            }
       }.to change { ReviewableChatMessage.where(target: admin_chat_message).count }.by(1)
       expect(response.status).to eq(200)
     end
@@ -1172,30 +1182,63 @@ RSpec.describe DiscourseChat::ChatController do
     it "errors for silenced users" do
       UserSilencer.new(user).silence
 
-      put "/chat/flag.json", params: { chat_message_id: admin_chat_message.id }
+      put "/chat/flag.json",
+          params: {
+            chat_message_id: admin_chat_message.id,
+            flag_type_id: ReviewableScore.types[:off_topic],
+          }
       expect(response.status).to eq(403)
     end
 
     it "doesn't allow flagging your own message" do
-      put "/chat/flag.json", params: { chat_message_id: user_chat_message.id }
+      put "/chat/flag.json",
+          params: {
+            chat_message_id: user_chat_message.id,
+            flag_type_id: ReviewableScore.types[:off_topic],
+          }
       expect(response.status).to eq(403)
     end
 
     it "doesn't allow flagging messages in a read_only channel" do
       user_chat_message.chat_channel.update(status: :read_only)
-      put "/chat/flag.json", params: { chat_message_id: admin_chat_message.id }
+      put "/chat/flag.json",
+          params: {
+            chat_message_id: admin_chat_message.id,
+            flag_type_id: ReviewableScore.types[:off_topic],
+          }
+
       expect(response.status).to eq(403)
     end
 
     it "doesn't allow flagging staff if SiteSetting.allow_flagging_staff is false" do
       SiteSetting.allow_flagging_staff = false
-      put "/chat/flag.json", params: { chat_message_id: admin_chat_message.id }
+      put "/chat/flag.json",
+          params: {
+            chat_message_id: admin_chat_message.id,
+            flag_type_id: ReviewableScore.types[:off_topic],
+          }
       expect(response.status).to eq(403)
     end
 
-    it "doesn't allow flagging direct messages" do
-      put "/chat/flag.json", params: { chat_message_id: admin_dm_message.id }
-      expect(response.status).to eq(403)
+    it "returns a 429 when the user attempts to flag more than 4 messages  in 1 minute" do
+      RateLimiter.enable
+
+      [message_1, message_2, message_3, message_4].each do |message|
+        put "/chat/flag.json",
+            params: {
+              chat_message_id: message.id,
+              flag_type_id: ReviewableScore.types[:off_topic],
+            }
+        expect(response.status).to eq(200)
+      end
+
+      put "/chat/flag.json",
+          params: {
+            chat_message_id: message_5.id,
+            flag_type_id: ReviewableScore.types[:off_topic],
+          }
+
+      expect(response.status).to eq(429)
     end
   end
 
@@ -1263,25 +1306,35 @@ RSpec.describe DiscourseChat::ChatController do
 
     it "ensures message's channel can be seen" do
       Guardian.any_instance.expects(:can_see_chat_channel?).with(channel)
-      get "/chat/lookup/#{message.id}.json"
+      get "/chat/lookup/#{message.id}.json", { params: { chat_channel_id: channel.id } }
+    end
+
+    context "when the message doesn’t belong to the channel" do
+      let!(:message) { Fabricate(:chat_message) }
+
+      it "returns a 404" do
+        get "/chat/lookup/#{message.id}.json", { params: { chat_channel_id: channel.id } }
+
+        expect(response.status).to eq(404)
+      end
     end
 
     context "when the chat channel is for a category" do
       let!(:chatable) { Fabricate(:category) }
 
       it "ensures the user can access that category" do
-        get "/chat/lookup/#{message.id}.json"
+        get "/chat/lookup/#{message.id}.json", { params: { chat_channel_id: channel.id } }
         expect(response.status).to eq(200)
         expect(response.parsed_body["chat_messages"][0]["id"]).to eq(message.id)
 
         group = Fabricate(:group)
         chatable.update!(read_restricted: true)
         Fabricate(:category_group, group: group, category: chatable)
-        get "/chat/lookup/#{message.id}.json"
+        get "/chat/lookup/#{message.id}.json", { params: { chat_channel_id: channel.id } }
         expect(response.status).to eq(403)
 
         GroupUser.create!(user: user, group: group)
-        get "/chat/lookup/#{message.id}.json"
+        get "/chat/lookup/#{message.id}.json", { params: { chat_channel_id: channel.id } }
         expect(response.status).to eq(200)
         expect(response.parsed_body["chat_messages"][0]["id"]).to eq(message.id)
       end
@@ -1291,11 +1344,11 @@ RSpec.describe DiscourseChat::ChatController do
       let!(:chatable) { Fabricate(:direct_message_channel) }
 
       it "ensures the user can access that direct message channel" do
-        get "/chat/lookup/#{message.id}.json"
+        get "/chat/lookup/#{message.id}.json", { params: { chat_channel_id: channel.id } }
         expect(response.status).to eq(403)
 
         DirectMessageUser.create!(user: user, direct_message_channel: chatable)
-        get "/chat/lookup/#{message.id}.json"
+        get "/chat/lookup/#{message.id}.json", { params: { chat_channel_id: channel.id } }
         expect(response.status).to eq(200)
         expect(response.parsed_body["chat_messages"][0]["id"]).to eq(message.id)
       end
@@ -1304,10 +1357,20 @@ RSpec.describe DiscourseChat::ChatController do
 
   describe "#move_messages_to_channel" do
     fab!(:message_to_move1) do
-      Fabricate(:chat_message, chat_channel: chat_channel, message: "some cool message", created_at: 2.minutes.ago)
+      Fabricate(
+        :chat_message,
+        chat_channel: chat_channel,
+        message: "some cool message",
+        created_at: 2.minutes.ago,
+      )
     end
     fab!(:message_to_move2) do
-      Fabricate(:chat_message, chat_channel: chat_channel, message: "and another thing", created_at: 1.minute.ago)
+      Fabricate(
+        :chat_message,
+        chat_channel: chat_channel,
+        message: "and another thing",
+        created_at: 1.minute.ago,
+      )
     end
     fab!(:destination_channel) { Fabricate(:chat_channel) }
     let(:message_ids) { [message_to_move1.id, message_to_move2.id] }

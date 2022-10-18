@@ -100,13 +100,13 @@ module ChatPublisher
     MessageBus.publish("/chat/#{chat_channel.id}", content.as_json, permissions(chat_channel))
   end
 
-  def self.publish_flag!(chat_message, user, reviewable)
+  def self.publish_flag!(chat_message, user, reviewable, score)
     # Publish to user who created flag
     MessageBus.publish(
       "/chat/#{chat_message.chat_channel_id}",
       {
         type: "self_flagged",
-        user_flag_status: ReviewableScore.statuses[:pending],
+        user_flag_status: score.status_for_database,
         chat_message_id: chat_message.id,
       }.as_json,
       user_ids: [user.id],
@@ -143,7 +143,7 @@ module ChatPublisher
           chat_channel,
           scope: Guardian.new(user), # We need a guardian here for direct messages
           root: :chat_channel,
-          membership: chat_channel.membership_for(user)
+          membership: chat_channel.membership_for(user),
         ).as_json
       MessageBus.publish("/chat/new-channel", serialized_channel, user_ids: [user.id])
     end
@@ -191,6 +191,14 @@ module ChatPublisher
     MessageBus.publish(
       "/chat/channel-status",
       { chat_channel_id: chat_channel.id, status: chat_channel.status },
+      permissions(chat_channel),
+    )
+  end
+
+  def self.publish_chat_channel_metadata(chat_channel)
+    MessageBus.publish(
+      "/chat/channel-metadata",
+      { chat_channel_id: chat_channel.id, memberships_count: chat_channel.user_count },
       permissions(chat_channel),
     )
   end

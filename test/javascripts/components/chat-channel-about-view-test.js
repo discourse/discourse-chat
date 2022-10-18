@@ -90,6 +90,14 @@ module(
       this.siteSettings.chat_enabled = true;
     });
 
+    test("escapes channel title", async function (assert) {
+      this.channel.set("title", "<div class='xss'>evil</div>");
+
+      await render(hbs`{{chat-channel-about-view channel=channel}}`);
+
+      assert.notOk(exists(".xss"));
+    });
+
     test("chatable name", async function (assert) {
       await render(hbs`{{chat-channel-about-view channel=channel}}`);
 

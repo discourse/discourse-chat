@@ -8,4 +8,8 @@ class DeletedChatUser < User
   def avatar_template
     "/plugins/discourse-chat/images/deleted-chat-user-avatar.png"
   end
+
+  def bot?
+    false
+  end
 end

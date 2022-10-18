@@ -13,21 +13,6 @@ class UserChatChannelMembership < ActiveRecord::Base
 
   attribute :unread_count, default: 0
   attribute :unread_mentions, default: 0
-
-  class << self
-    def enforce_automatic_channel_memberships(channel)
-      Jobs.enqueue(:auto_manage_channel_memberships, chat_channel_id: channel.id)
-    end
-
-    def enforce_automatic_user_membership(channel, user)
-      Jobs.enqueue(
-        :auto_join_channel_batch,
-        chat_channel_id: channel.id,
-        starts_at: user.id,
-        ends_at: user.id,
-      )
-    end
-  end
 end
 
 # == Schema Information

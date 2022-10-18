@@ -70,7 +70,6 @@ hu:
         process_started: "A csatorna törlése megkezdődött. Ez a kérdésablak hamarosan bezárul, és már nem fogja látni a törölt csatornát."
       channels_list_popup:
         browse: "Csatornák böngészése"
-        create: "Csatorna létrehozása"
       click_to_join: "Kattintson ide az elérhető csatornák megtekintéséhez."
       close: "Bezárás"
       collapse: "Csevegőfiók összecsukása"
@@ -235,7 +234,6 @@ hu:
         create: "Csatorna létrehozása"
         description: "Leírás (nem kötelező)"
         name: "Csatorna neve"
-        title: "Csatorna létrehozása"
         type: "Típus"
         types:
           category: "Kategória"

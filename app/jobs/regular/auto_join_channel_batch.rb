@@ -4,7 +4,10 @@ module Jobs
   class AutoJoinChannelBatch < ::Jobs::Base
     def execute(args)
       return "starts_at or ends_at missing" if args[:starts_at].blank? || args[:ends_at].blank?
-      return "End is higher than start" if args[:ends_at] < args[:starts_at]
+      start_user_id = args[:starts_at].to_i
+      end_user_id = args[:ends_at].to_i
+
+      return "End is higher than start" if end_user_id < start_user_id
 
       channel =
         ChatChannel.find_by(
@@ -20,8 +23,8 @@ module Jobs
 
       query_args = {
         chat_channel_id: channel.id,
-        start: args[:starts_at],
-        end: args[:ends_at],
+        start: start_user_id,
+        end: end_user_id,
         suspended_until: Time.zone.now,
         last_seen_at: 3.months.ago,
         channel_category: channel.chatable_id,
@@ -30,11 +33,12 @@ module Jobs
 
       new_member_ids = DB.query_single(create_memberships_query(category), query_args)
 
-      DB.exec(<<~SQL, channel_id: channel.id, joined: new_member_ids.size)
-        UPDATE chat_channels
-        SET user_count = user_count + :joined
-        WHERE id = :channel_id
-      SQL
+      # Only do this if we are running auto-join for a single user, if we
+      # are doing it for many then we should do it after all batches are
+      # complete for the channel in Jobs::AutoManageChannelMemberships
+      if start_user_id == end_user_id
+        DiscourseChat::ChatChannelMembershipManager.new(channel).recalculate_user_count
+      end
 
       ChatPublisher.publish_new_channel(channel.reload, User.where(id: new_member_ids))
     end

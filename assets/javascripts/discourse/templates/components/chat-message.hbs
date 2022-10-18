@@ -15,15 +15,17 @@
   {{/in-element}}
 {{/if}}
 
-{{emoji-picker
-  emojiStore=emojiReactionStore
-  placement="bottom"
-  isActive=emojiPickerIsActive
-  isEditorFocused=true
-  usePopper=true
-  emojiSelected=(action "selectReaction")
-  onEmojiPickerClose=(action (mut emojiPickerIsActive) false)
-}}
+{{#if (and showActions site.desktopView this.chatMessageActionsDesktopAnchor)}}
+  {{#in-element this.chatMessageActionsDesktopAnchor}}
+    {{chat-message-actions-desktop
+      message=message
+      emojiReactions=emojiReactions
+      secondaryButtons=secondaryButtons
+      messageActions=messageActions
+      messageCapabilities=messageCapabilities
+    }}
+  {{/in-element}}
+{{/if}}
 
 <div
   {{on "touchmove" this.handleTouchMove passive=true}}
@@ -66,18 +68,6 @@
       </div>
     {{else}}
       <div class={{chatMessageClasses}}>
-        {{#if (and showActions (not site.mobileView))}}
-          {{! TODO: move chat-message-actions to a shared DOM node using the newly available in-element }}
-          {{chat-message-actions-desktop
-            message=message
-            emojiReactions=emojiReactions
-            secondaryButtons=secondaryButtons
-            messageActions=messageActions
-            messageCapabilities=messageCapabilities
-            onHoverMessage=onHoverMessage
-          }}
-        {{/if}}
-
         {{#if message.in_reply_to}}
           <div
             role="button"

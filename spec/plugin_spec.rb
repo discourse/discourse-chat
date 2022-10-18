@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-describe "discourse-chat" do
+describe DiscourseChat do
   before do
     SiteSetting.clean_up_uploads = true
     SiteSetting.clean_orphan_uploads_grace_period_hours = 1
@@ -146,7 +146,7 @@ describe "discourse-chat" do
 
     let(:chat_url) { "#{Discourse.base_url}/chat/channel/#{chat_channel.id}" }
 
-    context "inline" do
+    context "when inline" do
       it "renders channel" do
         results = InlineOneboxer.new([chat_url], skip_cache: true).process
         expect(results).to be_present
@@ -165,7 +165,7 @@ describe "discourse-chat" do
       end
     end
 
-    context "regular" do
+    context "when regular" do
       it "renders channel, excluding inactive, staged, and suspended users" do
         user.user_chat_channel_memberships.create!(chat_channel: chat_channel, following: true)
         user_2.user_chat_channel_memberships.create!(chat_channel: chat_channel, following: true)
@@ -307,19 +307,19 @@ describe "discourse-chat" do
 
   describe "secure media compatibility" do
     it "disables chat uploads if secure media changes from disabled to enabled" do
-      enable_secure_media
+      enable_secure_uploads
       expect(SiteSetting.chat_allow_uploads).to eq(false)
       last_history = UserHistory.last
       expect(last_history.action).to eq(UserHistory.actions[:change_site_setting])
       expect(last_history.previous_value).to eq("true")
       expect(last_history.new_value).to eq("false")
       expect(last_history.subject).to eq("chat_allow_uploads")
-      expect(last_history.context).to eq("Disabled because secure_media is enabled")
+      expect(last_history.context).to eq("Disabled because secure_uploads is enabled")
     end
 
     it "does not disable chat uploads if the allow_unsecure_chat_uploads global setting is set" do
       global_setting :allow_unsecure_chat_uploads, true
-      expect { enable_secure_media }.not_to change { UserHistory.count }
+      expect { enable_secure_uploads }.not_to change { UserHistory.count }
       expect(SiteSetting.chat_allow_uploads).to eq(true)
     end
   end

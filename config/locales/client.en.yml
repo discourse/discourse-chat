@@ -66,7 +66,7 @@ en:
         process_started: "The process to delete the channel has started. This modal will close shortly, you will no longer see the deleted channel anywhere."
       channels_list_popup:
         browse: "Browse channels"
-        create: "Create a channel"
+        create: "New channel"
 
       click_to_join: "Click here to view available channels."
       close: "Close"
@@ -89,6 +89,7 @@ en:
         when_away: "Only when away"
       enable: "Enable chat"
       flag: "Flag"
+      emoji: "Insert emoji"
       flagged: "This message has been flagged for review"
       invalid_access: "You don't have access to view this chat channel"
       invitation_notification: "<span>%{username}</span> <span>invited you to join a chat channel</span>"
@@ -248,7 +249,7 @@ en:
         create: "Create channel"
         description: "Description (optional)"
         name: "Channel name"
-        title: "Create a channel"
+        title: "New channel"
         type: "Type"
         types:
           category: "Category"
@@ -304,6 +305,7 @@ en:
         new: "New personal chat"
         create: "Go"
         leave: "Leave this personal chat"
+        cannot_create: "Sorry, you cannot send direct messages."
 
       incoming_webhooks:
         back: "Back"
@@ -322,6 +324,7 @@ en:
         post_to: "Post to"
         reset_emoji: "Reset Emoji"
         save: "Save"
+        edit: "Edit"
         select_emoji: "Choose Emoji"
         system: "system"
         title: "Incoming webhooks"
@@ -368,6 +371,30 @@ en:
 
       topic_button_title: "Chat"
 
+      flags:
+        off_topic: "This message is not relevant to the current discussion as defined by the channel title, and should probably be moved elsewhere."
+        inappropriate: "This message contains content that a reasonable person would consider offensive, abusive, or a violation of <a href=\"/guidelines\">our community guidelines</a>."
+        spam: "This message is an advertisement, or vandalism. It is not useful or relevant to the current channel."
+        notify_user: "I want to talk to this person directly and personally about their message."
+        notify_moderators: "This message requires staff attention for another reason not listed above."
+
+      flagging:
+        action: "Flag message"
+
+      emoji_picker:
+        favorites: "Frequently used"
+        smileys_&_emotion: "Smileys and emotion"
+        objects: "Objects"
+        people_&_body: "People and body"
+        travel_&_places: "Travel and places"
+        animals_&_nature: "Animals and nature"
+        food_&_drink: "Food and frink"
+        activities: "Activities"
+        flags: "Flags"
+        symbols: "Symbols"
+        search_placeholder: "Search by emoji name and alias..."
+        no_results: "No results"
+
     notifications:
       chat_invitation: "invited you to join a chat channel"
       chat_invitation_html: "<span>%{username}</span> <span>invited you to join a chat channel</span>"
@@ -408,6 +435,8 @@ en:
               label: Sender
               description: Defaults to system
     review:
+      transcript:
+        view: "View previous messages transcript"
       types:
         reviewable_chat_message:
           title: "Flagged Chat Message"
@@ -434,6 +463,11 @@ en:
       allow_private_messages_from_specific_users: "Only allow specific users to send me personal messages or chat direct messages"
       ignored_users_instructions: "Suppress all posts, messages, notifications, personal messages, and chat direct messages from these users."
     user_menu:
+      no_chat_notifications_title: "You don’t have any chat notifications yet"
+      no_chat_notifications_body: >
+        You will be notified in this panel when someone direct messages you or <b>@mentions</b> you in chat. Notifications will also be sent to your email when you haven’t logged in for a while.
+        <br><br>
+        Click the title at the top of any chat channel to configure what notifications you receive in that channel. For more, see your <a href='%{preferencesUrl}'>notification preferences</a>.
       tabs:
         chat_notifications: "Chat notifications"
         chat_notifications_with_unread:

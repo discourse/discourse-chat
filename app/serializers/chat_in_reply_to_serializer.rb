@@ -6,6 +6,10 @@ class ChatInReplyToSerializer < ApplicationSerializer
 
   attributes :id, :cooked, :excerpt
 
+  def excerpt
+    WordWatcher.censor(object.excerpt)
+  end
+
   def user
     object.user || DeletedChatUser.new
   end

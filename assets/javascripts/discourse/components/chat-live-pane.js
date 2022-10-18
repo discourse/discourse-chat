@@ -68,6 +68,7 @@ export default Component.extend({
 
   chat: service(),
   router: service(),
+  chatEmojiPickerManager: service(),
   chatComposerPresenceManager: service(),
   fullPageChat: service(),
 
@@ -134,7 +135,7 @@ export default Component.extend({
 
     cancel(this.resizeHandler);
 
-    this._cleanRegisteredChatChannelId();
+    this._resetChannelState();
     this._unloadedReplyIds = null;
     this.appEvents.off(
       "chat:cancel-message-selection",
@@ -150,34 +151,27 @@ export default Component.extend({
   didReceiveAttrs() {
     this._super(...arguments);
 
-    this.set("targetMessageId", this.chat.messageId);
-
-    if (
-      this.chatChannel &&
-      this.chatChannel.id &&
-      this.registeredChatChannelId !== this.chatChannel.id
-    ) {
-      this._cleanRegisteredChatChannelId();
-      this.messageLookup = {};
-      this.set("allPastMessagesLoaded", false);
-      this.cancelEditing();
-
-      this.chat.getChannelBy("id", this.chatChannel.id).then(() => {
-        if (this._selfDeleted) {
-          return;
-        }
-
-        this.fetchMessages(this.chatChannel);
-
-        if (!this.chatChannel.isDraft) {
-          this.loadDraftForChannel(this.chatChannel.id);
-        }
-      });
-    }
-
     this.currentUserTimezone = this.currentUser?.resolvedTimezone(
       this.currentUser
     );
+
+    this.set("targetMessageId", this.chat.messageId);
+
+    if (
+      this.chatChannel?.id &&
+      this.registeredChatChannelId !== this.chatChannel.id
+    ) {
+      this._resetChannelState();
+      this.cancelEditing();
+
+      if (!this.chatChannel.isDraft) {
+        this.loadDraftForChannel(this.chatChannel.id);
+      }
+    }
+
+    if (this.chatChannel?.id) {
+      this.fetchMessages(this.chatChannel);
+    }
   },
 
   @discourseComputed("chatChannel.isDirectMessageChannel")
@@ -246,7 +240,7 @@ export default Component.extend({
           }
           this.setMessageProps(messages, fetchingFromLastRead);
         })
-        .catch(this._handle429Errors)
+        .catch(this._handleErrors)
         .finally(() => {
           if (this._selfDeleted || this.chatChannel.id !== channel.id) {
             return;
@@ -254,6 +248,16 @@ export default Component.extend({
 
           this.chat.set("messageId", null);
           this.set("loading", false);
+
+          if (this.targetMessageId) {
+            this.highlightOrFetchMessage(this.targetMessageId);
+          }
+
+          if (this._scrollerEl && this.capabilities.isIOS) {
+            // iOS hack to avoid blank div when sticking scroll to bottom during momentum
+            this._scrollerEl.style.overflow = "hidden";
+            this._scrollerEl.style.overflow = "scroll";
+          }
 
           this.focusComposer();
         });
@@ -322,7 +326,7 @@ export default Component.extend({
 
         return messages;
       })
-      .catch(this._handle429Errors)
+      .catch(this._handleErrors)
       .finally(() => {
         if (this._selfDeleted) {
           return;
@@ -525,7 +529,7 @@ export default Component.extend({
   },
 
   _getLastReadId() {
-    return this.currentUser.chat_channel_tracking_state[this.chatChannel.id]
+    return this.currentUser?.chat_channel_tracking_state?.[this.chatChannel.id]
       ?.chat_message_id;
   },
 
@@ -631,6 +635,11 @@ export default Component.extend({
     this.set("stickyScroll", true);
 
     if (this._scrollerEl) {
+      // iOS hack to avoid blank div when sticking scroll to bottom during momentum
+      if (this.capabilities.isIOS) {
+        this._scrollerEl.style.overflow = "hidden";
+      }
+
       // Trigger a tiny scrollTop change so Safari scrollbar is placed at bottom.
       // Setting to just 0 doesn't work (it's at 0 by default, so there is no change)
       // Very hacky, but no way to get around this Safari bug
@@ -639,6 +648,11 @@ export default Component.extend({
       window.requestAnimationFrame(() => {
         if (this._scrollerEl) {
           this._scrollerEl.scrollTop = 0;
+
+          // iOS hack to avoid blank div when sticking scroll to bottom during momentum
+          if (this.capabilities.isIOS) {
+            this._scrollerEl.style.overflow = "scroll";
+          }
         }
       });
     }
@@ -1118,12 +1132,13 @@ export default Component.extend({
       });
   },
 
-  _cleanRegisteredChatChannelId() {
-    if (this.registeredChatChannelId) {
-      this._unsubscribeToUpdates(this.registeredChatChannelId);
-      this.messages.clear();
-      this.set("registeredChatChannelId", null);
-    }
+  _resetChannelState() {
+    this._unsubscribeToUpdates(this.registeredChatChannelId);
+    this.messages.clear();
+    this.messageLookup = {};
+    this.set("allPastMessagesLoaded", false);
+    this.set("registeredChatChannelId", null);
+    this.set("selectingMessages", false);
   },
 
   _resetAfterSend() {
@@ -1312,28 +1327,47 @@ export default Component.extend({
   },
 
   @action
-  onHoverMessage(message, options = {}) {
+  onHoverMessage(message, options = {}, event) {
+    if (this.site.mobileView && options.desktopOnly) {
+      return;
+    }
+
     if (message?.staged) {
       return;
     }
 
-    discourseDebounce(
+    if (event) {
+      if (
+        event.type === "mouseleave" &&
+        (event.toElement || event.relatedTarget)?.closest(
+          ".chat-message-actions-desktop-anchor"
+        )
+      ) {
+        return;
+      }
+
+      if (
+        event.type === "mouseenter" &&
+        (event.fromElement || event.relatedTarget)?.closest(
+          ".chat-message-actions-desktop-anchor"
+        )
+      ) {
+        this.set("hoveredMessageId", message?.id);
+        return;
+      }
+    }
+
+    this._onHoverMessageDebouncedHandler = discourseDebounce(
       this,
       this.debouncedOnHoverMessage,
       message,
-      options,
-      true,
-      200
+      250
     );
   },
 
   @bind
-  debouncedOnHoverMessage(message, options = {}) {
+  debouncedOnHoverMessage(message) {
     if (this._selfDeleted) {
-      return;
-    }
-
-    if (this.site.mobileView && options.desktopOnly) {
       return;
     }
 
@@ -1431,11 +1465,14 @@ export default Component.extend({
     });
   },
 
-  _handle429Errors(error) {
-    if (error?.jqXHR?.status === 429) {
-      popupAjaxError(error);
-    } else {
-      throw error;
+  _handleErrors(error) {
+    switch (error?.jqXHR?.status) {
+      case 429:
+      case 404:
+        popupAjaxError(error);
+        break;
+      default:
+        throw error;
     }
   },
 });

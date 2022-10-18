@@ -13,30 +13,20 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
       @chat_channel,
       ChatChannelSerializer,
       membership: @chat_channel.membership_for(current_user),
-      root: false
+      root: false,
     )
   end
 
   def follow
     membership = @chat_channel.add(current_user)
 
-    render_serialized(
-      @chat_channel,
-      ChatChannelSerializer,
-      membership: @chat_channel.membership_for(current_user),
-      root: false
-    )
+    render_serialized(@chat_channel, ChatChannelSerializer, membership: membership, root: false)
   end
 
   def unfollow
     membership = @chat_channel.remove(current_user)
 
-    render_serialized(
-      @chat_channel,
-      ChatChannelSerializer,
-      membership: @chat_channel.membership_for(current_user),
-      root: false
-    )
+    render_serialized(@chat_channel, ChatChannelSerializer, membership: membership, root: false)
   end
 
   def create
@@ -68,7 +58,9 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     chat_channel.user_chat_channel_memberships.create!(user: current_user, following: true)
 
     if chat_channel.auto_join_users
-      UserChatChannelMembership.enforce_automatic_channel_memberships(chat_channel)
+      DiscourseChat::ChatChannelMembershipManager.new(
+        chat_channel,
+      ).enforce_automatic_channel_memberships
     end
 
     render_serialized(
@@ -102,7 +94,7 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
   def search
     params.require(:filter)
     filter = params[:filter]&.downcase
-    memberships = UserChatChannelMembership.where(user: current_user)
+    memberships = DiscourseChat::ChatChannelMembershipManager.all_for_user(current_user)
     public_channels =
       DiscourseChat::ChatChannelFetcher.secured_public_channels(
         guardian,
@@ -113,7 +105,11 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
 
     users = User.joins(:user_option).where.not(id: current_user.id)
     if !DiscourseChat.allowed_group_ids.include?(Group::AUTO_GROUPS[:everyone])
-      users = users.joins(:groups).where(groups: { id: DiscourseChat.allowed_group_ids })
+      users =
+        users
+          .joins(:groups)
+          .where(groups: { id: DiscourseChat.allowed_group_ids })
+          .or(users.joins(:groups).staff)
     end
 
     users = users.where(user_option: { chat_enabled: true })

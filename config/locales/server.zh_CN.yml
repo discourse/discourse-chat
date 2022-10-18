@@ -7,7 +7,6 @@
 zh_CN:
   site_settings:
     chat_enabled: "启用discourse-chat插件。"
-    chat_allowed_groups: "这些群组中的用户可以聊天。"
     chat_channel_retention_days: "常规频道中的聊天消息将保留此天数。设置为 0 将永久保留消息。"
     chat_dm_retention_days: "个人聊天频道中的聊天消息将保留此天数。设置为 0 将永久保留消息。"
     chat_auto_silence_duration: "用户超过聊天消息创建速率限制时将被静音的分钟数。设置为“0”以禁用自动静音。"
@@ -18,12 +17,10 @@ zh_CN:
     chat_default_channel_id: "当用户在其他频道没有未读消息或提及时，将默认打开的聊天频道。"
     chat_duplicate_message_sensitivity: "同一发件人的重复信息在短时间内被阻止的可能性。十进制数字，介于0和1.0之间，1.0为最高设置（在较短的时间内更频繁地阻止信息）。设置为 \"0 \"表示允许重复的信息。"
     chat_minimum_message_length: "聊天消息允许的最少字符数。"
-    chat_allow_uploads: "允许在公共聊天频道中上传文件。"
     chat_archive_destination_topic_status: "频道归档完成后目标主题应处于的状态。这仅适用于目标主题是新主题而不是现有主题的情况。"
     default_emoji_reactions: "聊天信息的默认表情符号反应。最多可添加5个表情符号进行快速反应。"
     errors:
       chat_default_channel: "默认聊天频道必须是公共频道。"
-      chat_upload_not_allowed_secure_media: "当启用安全媒体站点设置时，不允许在聊天中上传文件。"
   system_messages:
     chat_channel_archive_complete:
       title: "聊天频道归档完成"
@@ -102,8 +99,6 @@ zh_CN:
         single_user: "%{user}"
         multi_user: "%{users}"
         multi_user_truncated: "%{users} 和 其他%{leftover} 人"
-      default_titles:
-        site_feedback: "通用"
     bookmarkable:
       notification_title: "%{channel_name}频道中的信息"
     personal_chat: "个人聊天"

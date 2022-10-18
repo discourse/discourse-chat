@@ -9,7 +9,7 @@ RSpec.describe DiscourseChat::Api::ChatChannelNotificationsSettingsController do
   describe "#update" do
     include_examples "channel access example", :put, "/notifications_settings.json"
 
-    context "category channel invalid params" do
+    context "when category channel has invalid params" do
       fab!(:chat_channel) { Fabricate(:chat_channel) }
       fab!(:user) { Fabricate(:user) }
       fab!(:membership) do
@@ -31,7 +31,7 @@ RSpec.describe DiscourseChat::Api::ChatChannelNotificationsSettingsController do
       end
     end
 
-    context "category channel valid params" do
+    context "when category channel has valid params" do
       fab!(:chat_channel) { Fabricate(:chat_channel) }
       fab!(:user) { Fabricate(:user) }
       fab!(:membership) do
@@ -64,7 +64,7 @@ RSpec.describe DiscourseChat::Api::ChatChannelNotificationsSettingsController do
       end
     end
 
-    context "membership doesn’t exist" do
+    context "when membership doesn’t exist" do
       fab!(:chat_channel) { Fabricate(:chat_channel) }
       fab!(:user) { Fabricate(:user) }
 
@@ -77,7 +77,7 @@ RSpec.describe DiscourseChat::Api::ChatChannelNotificationsSettingsController do
       end
     end
 
-    context "direct message channel invalid params" do
+    context "when direct message channel has invalid params" do
       fab!(:user) { Fabricate(:user) }
       fab!(:chatable) { Fabricate(:direct_message_channel, users: [user, Fabricate(:user)]) }
       fab!(:chat_channel) { Fabricate(:chat_channel, chatable: chatable) }
@@ -100,7 +100,7 @@ RSpec.describe DiscourseChat::Api::ChatChannelNotificationsSettingsController do
       end
     end
 
-    context "direct message channel valid params" do
+    context "when direct message channel has valid params" do
       fab!(:user) { Fabricate(:user) }
       fab!(:chatable) { Fabricate(:direct_message_channel, users: [user, Fabricate(:user)]) }
       fab!(:chat_channel) { Fabricate(:chat_channel, chatable: chatable) }

@@ -16,7 +16,7 @@ describe "chat bbcode quoting in posts" do
       <div class="chat-transcript-username">
       martin</div>
       <div class="chat-transcript-datetime">
-      <a href="/chat/message/2321" title="2022-01-25T05:40:39Z"></a>
+      <span title="2022-01-25T05:40:39Z"></span>
       </div>
       </div>
       <div class="chat-transcript-messages">
@@ -41,7 +41,7 @@ describe "chat bbcode quoting in posts" do
       <div class="chat-transcript-username">
       martin</div>
       <div class="chat-transcript-datetime">
-      <a href="/chat/message/2321" title="2022-01-25T05:40:39Z"></a>
+      <a href="/chat/channel/1234/-?messageId=2321" title="2022-01-25T05:40:39Z"></a>
       </div>
       </div>
       <div class="chat-transcript-messages">
@@ -63,7 +63,7 @@ describe "chat bbcode quoting in posts" do
       <div class="chat-transcript-username">
       martin</div>
       <div class="chat-transcript-datetime">
-      <a href="/chat/message/2321" title="2022-01-25T05:40:39Z"></a>
+      <a href="/chat/channel/1234/-?messageId=2321" title="2022-01-25T05:40:39Z"></a>
       </div>
       <a class="chat-transcript-channel" href="/chat/channel/1234/-">
       #Cool Cats Club</a>
@@ -87,7 +87,7 @@ describe "chat bbcode quoting in posts" do
       <div class="chat-transcript-username">
       martin</div>
       <div class="chat-transcript-datetime">
-      <a href="/chat/message/2321" title="2022-01-25T05:40:39Z"></a>
+      <a href="/chat/channel/1234/-?messageId=2321" title="2022-01-25T05:40:39Z"></a>
       </div>
       <a class="chat-transcript-channel" href="/chat/channel/1234/-">
       #Cool Cats Club</a>
@@ -137,7 +137,7 @@ describe "chat bbcode quoting in posts" do
       <div class="chat-transcript-username">
       martin</div>
       <div class="chat-transcript-datetime">
-      <a href="/chat/message/2321" title="2022-01-25T05:40:39Z"></a>
+      <a href="/chat/channel/1234/-?messageId=2321" title="2022-01-25T05:40:39Z"></a>
       </div>
       <a class="chat-transcript-channel" href="/chat/channel/1234/-">
       #Cool Cats Club</a>
@@ -146,9 +146,9 @@ describe "chat bbcode quoting in posts" do
       <p>This is a chat message.</p>
       <div class="chat-transcript-reactions">
       <div class="chat-transcript-reaction">
-      <img width="20" height="20" src="/images/emoji/twitter/+1.png?v=12" title="+1" loading="lazy" alt="+1" class="emoji" tabindex="0"> 1</div>
+      <img width="20" height="20" src="/images/emoji/twitter/+1.png?v=12" title="+1" loading="lazy" alt="+1" class="emoji"> 1</div>
       <div class="chat-transcript-reaction">
-      <img width="20" height="20" src="/images/emoji/twitter/heart.png?v=12" title="heart" loading="lazy" alt="heart" class="emoji" tabindex="0"> 2</div>
+      <img width="20" height="20" src="/images/emoji/twitter/heart.png?v=12" title="heart" loading="lazy" alt="heart" class="emoji"> 2</div>
       </div>
       </div>
       </div>
@@ -198,7 +198,7 @@ This is an inline onebox https://en.wikipedia.org/wiki/Hyperlink.
 <div class="chat-transcript-username">
 martin</div>
 <div class="chat-transcript-datetime">
-<a href="/chat/message/2321" title="2022-01-25T05:40:39Z"></a>
+<span title="2022-01-25T05:40:39Z"></span>
 </div>
 </div>
 <div class="chat-transcript-messages">

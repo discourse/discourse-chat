@@ -20,20 +20,11 @@
       {{/if}}
       <span class="channel-title">{{i18n "chat.chat_channels"}}</span>
 
-      {{#if currentUser.staff}}
-        {{dropdown-select-box
-          options=(hash icon="cog" placementStrategy="absolute")
-          content=channelsActions
-          onChange=(action "handleChannelAction")
-          class="edit-channels-dropdown"
-        }}
-      {{else}}
-        {{d-button
-          action=(action "browseChannels")
-          icon="pencil-alt"
-          class="btn-flat edit-channel-membership-btn title-action"
-        }}
-      {{/if}}
+      {{d-button
+        action=(action "browseChannels")
+        icon="pencil-alt"
+        class="btn-flat edit-channel-membership-btn title-action"
+      }}
     </div>
 
     <div id="public-channels" class={{publicChannelClasses}}>
@@ -62,27 +53,31 @@
     args=(hash inSidebar=inSidebar)
   }}
 
-  <div class="chat-channel-divider direct-message-channels-section">
-    {{#if inSidebar}}
-      <span
-        class="title-caret"
-        id="direct-message-channels-caret"
-        role="button"
-        title="toggle nav list"
-        {{action "toggleChannelSection" "direct-message-channels"}}
-        data-toggleable="direct-message-channels"
-      >
-        {{d-icon "angle-up"}}
-      </span>
-    {{/if}}
-    <span class="channel-title">{{i18n "chat.direct_messages.title"}}</span>
-    {{d-button
-      class="btn-flat new-dm keep-mobile-sidebar-open"
-      icon="plus"
-      action=(action "startCreatingDmChannel")
-      title="chat.direct_messages.new"
-    }}
-  </div>
+  {{#if showDirectMessageChannels}}
+    <div class="chat-channel-divider direct-message-channels-section">
+      {{#if inSidebar}}
+        <span
+          class="title-caret"
+          id="direct-message-channels-caret"
+          role="button"
+          title="toggle nav list"
+          {{action "toggleChannelSection" "direct-message-channels"}}
+          data-toggleable="direct-message-channels"
+        >
+          {{d-icon "angle-up"}}
+        </span>
+      {{/if}}
+      <span class="channel-title">{{i18n "chat.direct_messages.title"}}</span>
+
+      {{d-button
+        class="btn-flat new-dm keep-mobile-sidebar-open"
+        icon="plus"
+        action=(action "startCreatingDmChannel")
+        title=createDirectMessageChannelLabel
+        disabled=(not canCreateDirectMessageChannel)
+      }}
+    </div>
+  {{/if}}
 
   <div id="direct-message-channels" class={{directMessageChannelClasses}}>
     {{#each sortedDirectMessageChannels as |channel|}}

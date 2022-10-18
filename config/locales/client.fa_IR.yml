@@ -57,7 +57,7 @@ fa_IR:
         confirm_channel_name: "نام کانال را وارد کنید"
       channels_list_popup:
         browse: "مرور کانال‌ها"
-        create: "ایجاد کانال"
+        create: "کانال جدید"
       click_to_join: "برای مشاهده کانال‌های موجود، اینجا را کلیک کنید."
       close: "بستن"
       confirm_flag: "آیا برای پرچم گذاری پیام %{username} مطمئن هستید؟"
@@ -191,7 +191,7 @@ fa_IR:
         create: "ایجاد کانال"
         description: "توضیحات «اختیاری»"
         name: "نام کانال"
-        title: "ایجاد کانال"
+        title: "کانال جدید"
         type: "نوع"
         types:
           category: "دسته‌بندی"
@@ -222,6 +222,7 @@ fa_IR:
         title: "گفتگوی شخصی"
         new: "گفتگوی شخصی جدید"
         create: "برو"
+        cannot_create: "با عرض پوزش، شما نمی‌توانید پیام مستقیم ارسال کنید."
       incoming_webhooks:
         back: "بازگشت"
         channel_placeholder: "یک کانال را انتخاب کنید"
@@ -295,3 +296,9 @@ fa_IR:
       allowed_pm_users_instructions: "فقط پیام‌های شخصی یا پیام‌های مستقیم در گفتگو را از این کاربران اجازه دهید."
       allow_private_messages_from_specific_users: "فقط به کاربران خاصی اجازه دهید، تا پیام‌های شخصی یا پیام‌های مستقیم در گفتگو را برای من ارسال کنند"
       ignored_users_instructions: "تمام نوشته‌ها، آگاه‌سازی‌ها، پیام‌های شخصی و پیام‌های مستقیم در گفتگو این کاربران را سرکوب کنید."
+    user_menu:
+      tabs:
+        chat_notifications: "آگاه‌سازی‌های گفتگو"
+        chat_notifications_with_unread:
+          one: "آگاه‌سازی‌های گفتگو - %{count} آگاه‌سازی خوانده نشده"
+          other: "آگاه‌سازی‌های گفتگو - %{count} آگاه‌سازی خوانده نشده"

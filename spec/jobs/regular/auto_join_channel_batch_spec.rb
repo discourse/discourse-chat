@@ -54,9 +54,7 @@ describe Jobs::AutoJoinChannelBatch do
     end
 
     it "does nothing if the channel chatable is not a category" do
-      same_id = 99
-      another_category = Fabricate(:category, id: same_id)
-      dm_channel = Fabricate(:direct_message_channel, id: same_id)
+      dm_channel = Fabricate(:direct_message_channel)
       channel.update!(chatable: dm_channel)
 
       subject.execute(chat_channel_id: channel.id, starts_at: user.id, ends_at: user.id)
@@ -64,12 +62,23 @@ describe Jobs::AutoJoinChannelBatch do
       assert_user_skipped(channel, user)
     end
 
-    it "updates the channel user_count" do
-      initial_count = channel.user_count
-
+    it "enqueues the user count update job and marks the channel user count as stale" do
       subject.execute(chat_channel_id: channel.id, starts_at: user.id, ends_at: user.id)
+      expect_job_enqueued(job: :update_channel_user_count, args: { chat_channel_id: channel.id })
 
-      expect(channel.reload.user_count).to eq(initial_count + 1)
+      expect(channel.reload.user_count_stale).to eq(true)
+    end
+
+    it "does not enqueue the user count update job or mark the channel user count as stale when there is more than use user" do
+      user_2 = Fabricate(:user)
+      expect_not_enqueued_with(
+        job: :update_channel_user_count,
+        args: {
+          chat_channel_id: channel.id,
+        },
+      ) { subject.execute(chat_channel_id: channel.id, starts_at: user.id, ends_at: user_2.id) }
+
+      expect(channel.reload.user_count_stale).to eq(false)
     end
 
     it "ignores users without chat_enabled" do
@@ -130,7 +139,6 @@ describe Jobs::AutoJoinChannelBatch do
 
       expect(messages.size).to eq(1)
       expect(messages.first.data.dig(:chat_channel, :id)).to eq(channel.id)
-      expect(messages.first.data.dig(:chat_channel, :memberships_count)).to eq(1)
     end
 
     describe "context when the channel's category is read restricted" do

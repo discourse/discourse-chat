@@ -5,6 +5,7 @@ module DiscourseChat::DirectMessageChannelCreator
   end
 
   def self.create!(acting_user:, target_users:)
+    Guardian.new(acting_user).ensure_can_create_direct_message!
     target_users.uniq!
     direct_messages_channel = DirectMessageChannel.for_user_ids(target_users.map(&:id))
     if direct_messages_channel

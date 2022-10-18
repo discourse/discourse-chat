@@ -34,6 +34,24 @@ module("Discourse Chat | Component | chat-channel-title", function (hooks) {
     },
   });
 
+  componentTest("category channel - escapes title", {
+    template: hbs`{{chat-channel-title channel=channel}}`,
+
+    beforeEach() {
+      this.set(
+        "channel",
+        fabricators.chatChannel({
+          chatable_type: CHATABLE_TYPES.categoryChannel,
+          title: "<div class='xss'>evil</div>",
+        })
+      );
+    },
+
+    async test(assert) {
+      assert.notOk(exists(".xss"));
+    },
+  });
+
   componentTest("category channel - read restricted", {
     template: hbs`{{chat-channel-title channel=channel}}`,
 

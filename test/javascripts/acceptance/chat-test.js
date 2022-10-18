@@ -82,6 +82,9 @@ acceptance("Discourse Chat - without unread", function (needs) {
         users: [hawkAsJson],
       });
     });
+    server.get("/chat/emojis.json", () =>
+      helper.response({ favorites: [{ name: "grinning" }] })
+    );
 
     server.put("/chat/:chat_channel_id/react/:messageId.json", helper.response);
 
@@ -214,7 +217,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     await triggerEvent(".chat-message-container[data-id='174']", "mouseenter");
 
     const currentUserDropdown = selectKit(
-      ".chat-message-container[data-id='174'] .more-buttons"
+      ".chat-msgactions-hover[data-id='174'] .more-buttons"
     );
     await currentUserDropdown.expand();
 
@@ -240,7 +243,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     );
 
     const notCurrentUserDropdown = selectKit(
-      ".chat-message-container[data-id='175'] .more-buttons"
+      ".chat-msgactions-hover[data-id='175'] .more-buttons"
     );
     await triggerEvent(".chat-message-container[data-id='175']", "mouseenter");
     await notCurrentUserDropdown.expand();
@@ -252,17 +255,16 @@ acceptance("Discourse Chat - without unread", function (needs) {
 
   test("Message controls are present and correct for permissions", async function (assert) {
     await visit("/chat/channel/11/another-category");
-    const messages = queryAll(".chat-message");
     await triggerEvent(".chat-message-container[data-id='174']", "mouseenter");
 
     // User created this message
     assert.ok(
-      messages[0].querySelector(".reply-btn"),
+      ".chat-msgactions-hover[data-id='174'] .reply-btn",
       "it shows the reply button"
     );
 
     const currentUserDropdown = selectKit(
-      ".chat-message-container[data-id='174'] .more-buttons"
+      ".chat-msgactions-hover[data-id='174'] .more-buttons"
     );
     await currentUserDropdown.expand();
 
@@ -299,11 +301,11 @@ acceptance("Discourse Chat - without unread", function (needs) {
     // User _didn't_ create this message
     await triggerEvent(".chat-message-container[data-id='175']", "mouseenter");
     assert.ok(
-      messages[1].querySelector(".reply-btn"),
+      ".chat-msgactions-hover[data-id='175'] .reply-btn",
       "it shows the reply button"
     );
     const notCurrentUserDropdown = selectKit(
-      ".chat-message-container[data-id='175'] .more-buttons"
+      ".chat-msgactions-hover[data-id='175'] .more-buttons"
     );
     await notCurrentUserDropdown.expand();
 
@@ -374,7 +376,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     await click(".topic-chat-drawer-header__return-to-channels-btn");
     await click(".chat-channel-row.chat-channel-9");
     await triggerEvent(".chat-message-container[data-id='174']", "mouseenter");
-    await click(".chat-message-container[data-id='174'] .reply-btn");
+    await click(".chat-msgactions-hover[data-id='174'] .reply-btn");
     // Reply-to line is present
     assert.ok(exists(".chat-composer-message-details .chat-reply"));
     await click(".topic-chat-drawer-header__return-to-channels-btn");
@@ -384,7 +386,7 @@ acceptance("Discourse Chat - without unread", function (needs) {
     // Now click on reply btn and cancel it on channel 7
 
     await triggerEvent(".chat-message-container[data-id='174']", "mouseenter");
-    await click(".chat-message-container[data-id='174'] .reply-btn");
+    await click(".chat-msgactions-hover[data-id='174'] .reply-btn");
     await click(".cancel-message-action");
 
     // Go back to channel 9 and check that reply-to is present
@@ -445,10 +447,12 @@ acceptance("Discourse Chat - without unread", function (needs) {
     );
     assert.equal(
       lastMessage.querySelector(".chat-message-text").innerText.trim(),
-      messageContent
+      this.siteSettings.enable_markdown_typographer
+        ? "Here’s a message"
+        : messageContent
     );
 
-    publishToMessageBus("/chat/11", {
+    await publishToMessageBus("/chat/11", {
       type: "sent",
       stagedId: 1,
       chat_message: {
@@ -459,9 +463,6 @@ acceptance("Discourse Chat - without unread", function (needs) {
         cooked: messageContent + " some extra cooked stuff",
       },
     });
-
-    // Wait for DOM to rerender. Message should be un-staged
-    await settled();
 
     assert.equal(
       lastMessage.closest(".chat-message-container").dataset.id,
@@ -502,15 +503,13 @@ acceptance("Discourse Chat - without unread", function (needs) {
     await visit("/chat/channel/11/another-category");
 
     const cooked = "<h1>hello there</h1>";
-    publishToMessageBus(`/chat/11`, {
+    await publishToMessageBus(`/chat/11`, {
       type: "processed",
       chat_message: {
         cooked,
         id: 175,
       },
     });
-
-    await settled();
 
     assert.ok(
       query(
@@ -531,7 +530,7 @@ Widget.triangulate(arg: "test")
     await focus(composerInput);
     await triggerKeyEvent(composerInput, "keydown", "Enter");
 
-    publishToMessageBus("/chat/11", {
+    await publishToMessageBus("/chat/11", {
       type: "sent",
       stagedId: 1,
       chat_message: {
@@ -543,8 +542,6 @@ Widget.triangulate(arg: "test")
         },
       },
     });
-
-    await settled();
 
     const messages = queryAll(".chat-message");
     const lastMessage = messages[messages.length - 1];
@@ -609,11 +606,10 @@ Widget.triangulate(arg: "test")
       exists(".header-dropdown-toggle.open-chat .chat-channel-unread-indicator")
     );
 
-    publishToMessageBus("/chat/9/new-messages", {
+    await publishToMessageBus("/chat/9/new-messages", {
       message_id: 201,
       user_id: 2,
     });
-    await settled();
 
     assert.ok(
       exists(".header-dropdown-toggle.open-chat .chat-channel-unread-indicator")
@@ -628,11 +624,10 @@ Widget.triangulate(arg: "test")
       )
     );
 
-    publishToMessageBus("/chat/75/new-messages", {
+    await publishToMessageBus("/chat/75/new-messages", {
       message_id: 201,
       user_id: 2,
     });
-    await settled();
     assert.ok(
       exists(
         ".header-dropdown-toggle.open-chat .chat-channel-unread-indicator.urgent .number"
@@ -648,15 +643,14 @@ Widget.triangulate(arg: "test")
 
   test("Unread DM count overrides the public unread indicator", async function (assert) {
     await visit("/t/internationalization-localization/280");
-    publishToMessageBus("/chat/9/new-messages", {
+    await publishToMessageBus("/chat/9/new-messages", {
       message_id: 201,
       user_id: 2,
     });
-    publishToMessageBus("/chat/75/new-messages", {
+    await publishToMessageBus("/chat/75/new-messages", {
       message_id: 202,
       user_id: 2,
     });
-    await settled();
     assert.ok(
       exists(
         ".header-dropdown-toggle.open-chat .chat-channel-unread-indicator.urgent .number"
@@ -671,10 +665,9 @@ Widget.triangulate(arg: "test")
 
   test("Mentions in public channels show the unread urgent indicator", async function (assert) {
     await visit("/t/internationalization-localization/280");
-    publishToMessageBus("/chat/9/new-mentions", {
+    await publishToMessageBus("/chat/9/new-mentions", {
       message_id: 201,
     });
-    await settled();
     assert.ok(
       exists(
         ".header-dropdown-toggle.open-chat .chat-channel-unread-indicator.urgent .number"
@@ -693,7 +686,9 @@ Widget.triangulate(arg: "test")
 
     const firstMessage = query(".chat-message-container");
     await triggerEvent(firstMessage, "mouseenter");
-    const dropdown = selectKit(".chat-message-container .more-buttons");
+    const dropdown = selectKit(
+      `.chat-msgactions-hover[data-id="${firstMessage.dataset.id}"] .more-buttons`
+    );
     await dropdown.expand();
     await dropdown.selectRowByValue("selectMessage");
 
@@ -740,15 +735,15 @@ Widget.triangulate(arg: "test")
     const message = query(".chat-message-container");
     await triggerEvent(message, "mouseenter");
     assert.notOk(message.querySelector(".chat-message-reaction-list"));
-    await click(message.querySelector(".chat-msgactions .react-btn"));
-    await click(".emoji-picker.opened .section-group .emoji");
+    await click(".chat-msgactions .react-btn");
+    await click(`.chat-emoji-picker .emoji[alt="grinning"]`);
 
     assert.ok(message.querySelector(".chat-message-reaction-list"));
     const reaction = message.querySelector(
       ".chat-message-reaction-list .chat-message-reaction.reacted"
     );
     assert.ok(reaction);
-    assert.equal(reaction.innerText.trim(), 1);
+    assert.equal(reaction.querySelector(".count").innerText.trim(), 1);
   });
 
   test("Reacting works with existing reactions", async function (assert) {
@@ -780,7 +775,7 @@ Widget.triangulate(arg: "test")
     assert.equal(heartReaction.innerText.trim(), "2");
     assert.ok(heartReaction.classList.contains("reacted"));
 
-    publishToMessageBus("/chat/11", {
+    await publishToMessageBus("/chat/11", {
       action: "add",
       user: { id: 1, username: "eviltrout" },
       emoji: "heart",
@@ -794,14 +789,13 @@ Widget.triangulate(arg: "test")
     assert.notOk(heartReaction.classList.contains("reacted"));
 
     // Message from another user coming in!
-    publishToMessageBus("/chat/11", {
+    await publishToMessageBus("/chat/11", {
       action: "add",
       user: { id: 77, username: "rando" },
       emoji: "sneezing_face",
       type: "reaction",
       chat_message_id: 176,
     });
-    await settled();
     const sneezingFaceReaction = lastMessage.querySelector(
       ".chat-message-reaction.sneezing_face"
     );
@@ -836,29 +830,32 @@ Widget.triangulate(arg: "test")
 
     assert.deepEqual(lastMessage.dataset.id, "202");
     await triggerEvent(lastMessage, "mouseenter");
-    await click(lastMessage.querySelector(".chat-msgactions .react-btn"));
-    await click(".emoji-picker.opened .section-group .emoji[alt='grin']");
+    await click(
+      `.chat-msgactions-hover[data-id="${lastMessage.dataset.id}"] .react-btn`
+    );
+    await click(`.emoji[alt="grinning"]`);
 
     const reaction = lastMessage.querySelector(
-      ".chat-message-reaction.grin.reacted"
+      ".chat-message-reaction.grinning.reacted"
     );
+
     await publishToMessageBus("/chat/11", {
       action: "add",
       user: { id: 1, username: "eviltrout" },
-      emoji: "grin",
+      emoji: "grinning",
       type: "reaction",
       chat_message_id: 202,
     });
-    await settled();
     await click(reaction);
+
     assert.notOk(
-      lastMessage.querySelector(".chat-message-reaction.grin.reacted")
+      lastMessage.querySelector(".chat-message-reaction.grinning.reacted")
     );
   });
 
   test("mention warning is rendered", async function (assert) {
     await visit("/chat/channel/11/another-category");
-    publishToMessageBus("/chat/11", {
+    await publishToMessageBus("/chat/11", {
       type: "mention_warning",
       cannot_see: [{ id: 75, username: "hawk" }],
       without_membership: [
@@ -867,7 +864,6 @@ Widget.triangulate(arg: "test")
       ],
       chat_message_id: 176,
     });
-    await settled();
 
     assert.ok(
       exists(
@@ -934,6 +930,18 @@ Widget.triangulate(arg: "test")
       composer,
       "enter is a special case and should not focus"
     );
+  });
+
+  test("changing channel resets message selection", async function (assert) {
+    await visit("/chat/channel/11/another-category");
+    await triggerEvent(".chat-message-container", "mouseenter");
+    const dropdown = selectKit(".chat-msgactions .more-buttons");
+    await dropdown.expand();
+    await dropdown.selectRowByValue("selectMessage");
+    await click("#chat-copy-btn");
+    await click("#chat-channel-row-9");
+
+    assert.notOk(exists("#chat-copy-btn"));
   });
 });
 
@@ -1238,17 +1246,10 @@ acceptance(
     test("Create channel modal", async function (assert) {
       this.container.lookup("service:chat").set("chatWindowFullPage", true);
 
-      await visit("/chat/channel/11/another-category");
-      const dropdown = selectKit(".edit-channels-dropdown");
-      await dropdown.expand();
-      await dropdown.selectRowByValue("browseChannels");
-      assert.strictEqual(currentURL(), "/chat/browse/open");
+      await visit("/chat/browse");
+      await click(".new-channel-btn");
 
-      await visit("/chat/channel/11/another-category");
-      await dropdown.expand();
-      await dropdown.selectRowByValue("openCreateChannelModal");
-      assert.ok(exists(".create-channel-modal"));
-      assert.ok(query(".create-channel-modal .btn.create").disabled);
+      assert.strictEqual(currentURL(), "/chat/browse/open");
 
       let categories = selectKit(".create-channel-modal .category-chooser");
       await categories.expand();
@@ -1478,7 +1479,8 @@ acceptance("Discourse Chat - image uploads", function (needs) {
     const done = assert.async();
     await fillIn(".d-editor-input", "The image:\n");
 
-    appEvents.on("composer:all-uploads-complete", () => {
+    appEvents.on("composer:all-uploads-complete", async () => {
+      await settled();
       assert.strictEqual(
         query(".d-editor-input").value,
         "The image:\n![avatar.PNG|690x320](upload://yoj8pf9DdIeHRRULyw7i57GAYdz.jpeg)\n",
@@ -1509,6 +1511,50 @@ acceptance("Discourse Chat - image uploads", function (needs) {
     appEvents.trigger("composer:add-files", image);
   });
 });
+
+acceptance(
+  "Discourse Chat - image uploads - uploads not allowed",
+  function (needs) {
+    needs.user({
+      admin: false,
+      moderator: false,
+      username: "eviltrout",
+      id: 1,
+      can_chat: true,
+      has_chat_enabled: true,
+    });
+    needs.settings({
+      chat_enabled: true,
+      chat_allow_uploads: false,
+      discourse_local_dates_enabled: false,
+    });
+    needs.pretender((server, helper) => {
+      baseChatPretenders(server, helper);
+      directMessageChannelPretender(server, helper);
+      chatChannelPretender(server, helper);
+    });
+
+    test("uploads are not allowed in public channels", async function (assert) {
+      await visit("/chat/channel/4/public-category");
+      await click(".chat-composer-dropdown__trigger-btn");
+
+      assert.notOk(
+        exists(".chat-composer-dropdown__item.chat-upload-btn"),
+        "composer dropdown should not be visible because uploads are not enabled and no other buttons are rendered"
+      );
+    });
+
+    test("uploads are not allowed in direct message channels", async function (assert) {
+      await visit("/chat/channel/75/@hawk");
+      await click(".chat-composer-dropdown__trigger-btn");
+
+      assert.notOk(
+        exists(".chat-composer-dropdown__item.chat-upload-btn"),
+        "composer dropdown should not be visible because uploads are not enabled and no other buttons are rendered"
+      );
+    });
+  }
+);
 
 acceptance("Discourse Chat - Insert Date", function (needs) {
   needs.user({
@@ -1583,7 +1629,7 @@ acceptance(
     test("read only channels do not show the reply, react, delete, edit, restore, or rebuild options for messages", async function (assert) {
       await visit("/chat/channel/5/public-category");
       await triggerEvent(".chat-message-container", "mouseenter");
-      const dropdown = selectKit(".chat-message-container .more-buttons");
+      const dropdown = selectKit(".chat-msgactions .more-buttons");
       await dropdown.expand();
       assert.notOk(exists(".select-kit-row[data-value='edit']"));
       assert.notOk(exists(".select-kit-row[data-value='deleteMessage']"));
@@ -1636,7 +1682,7 @@ acceptance(
       await visit("/chat/channel/4/public-category");
 
       await triggerEvent(".chat-message-container", "mouseenter");
-      const dropdown = selectKit(".chat-message-container .more-buttons");
+      const dropdown = selectKit(".chat-msgactions .more-buttons");
       await dropdown.expand();
 
       assert.notOk(exists(".select-kit-row[data-value='edit']"));
@@ -1681,7 +1727,7 @@ acceptance(
     test("closed channels show the reply, react, delete, edit, restore, or rebuild options for messages", async function (assert) {
       await visit("/chat/channel/4/public-category");
       await triggerEvent(".chat-message-container", "mouseenter");
-      const dropdown = selectKit(".chat-message-container .more-buttons");
+      const dropdown = selectKit(".chat-msgactions .more-buttons");
       await dropdown.expand();
       assert.ok(
         exists(".select-kit-row[data-value='edit']"),

@@ -137,7 +137,7 @@ describe ChatMessage do
         <div class="chat-transcript-username">
         chatbbcodeuser</div>
         <div class="chat-transcript-datetime">
-        <a href="/chat/message/#{msg1.id}" title="#{msg1.created_at.iso8601}"></a>
+        <a href="/chat/channel/#{chat_channel.id}/-?messageId=#{msg1.id}" title="#{msg1.created_at.iso8601}"></a>
         </div>
         </div>
         <div class="chat-transcript-messages">
@@ -152,7 +152,7 @@ describe ChatMessage do
         <div class="chat-transcript-username">
         otherbbcodeuser</div>
         <div class="chat-transcript-datetime">
-        <a href="/chat/message/#{msg2.id}" title="#{msg2.created_at.iso8601}"></a>
+        <span title="#{msg2.created_at.iso8601}"></span>
         </div>
         </div>
         <div class="chat-transcript-messages">
@@ -331,7 +331,7 @@ describe ChatMessage do
     it "supports emoji shortcuts" do
       cooked = ChatMessage.cook("this is a replace test :P :|")
       expect(cooked).to eq(<<~HTML.chomp)
-        <p>this is a replace test <img src="/images/emoji/twitter/stuck_out_tongue.png?v=12" title=":stuck_out_tongue:" alt=":stuck_out_tongue:" loading=\"lazy\" width=\"20\" height=\"20\" class="emoji" tabindex="0"> <img src="/images/emoji/twitter/expressionless.png?v=12" title=":expressionless:" alt=":expressionless:" loading=\"lazy\" width=\"20\" height=\"20\" class="emoji" tabindex="0"></p>
+        <p>this is a replace test <img src="/images/emoji/twitter/stuck_out_tongue.png?v=12" title=":stuck_out_tongue:" class="emoji" alt=":stuck_out_tongue:" loading=\"lazy\" width=\"20\" height=\"20\"> <img src="/images/emoji/twitter/expressionless.png?v=12" title=":expressionless:" class="emoji" alt=":expressionless:" loading=\"lazy\" width=\"20\" height=\"20\"></p>
       HTML
     end
 
@@ -345,7 +345,7 @@ describe ChatMessage do
       end
     end
 
-    context "unicode usernames are enabled" do
+    context "when unicode usernames are enabled" do
       before { SiteSetting.unicode_usernames = true }
 
       it "cooks unicode mentions" do
@@ -470,7 +470,7 @@ describe ChatMessage do
       expect { chat_upload_1.reload }.to raise_error(ActiveRecord::RecordNotFound)
     end
 
-    context "bookmarks" do
+    describe "bookmarks" do
       before { Bookmark.register_bookmarkable(ChatMessageBookmarkable) }
 
       it "destroys bookmarks" do

@@ -22,13 +22,14 @@ class ChatChannel < ActiveRecord::Base
             presence: true,
             allow_nil: true
 
-  scope :public_channels, -> do
-    where(chatable_type: public_channel_chatable_types)
-      .where("categories.id IS NOT NULL")
-      .joins(
-        "LEFT JOIN categories ON categories.id = chat_channels.chatable_id AND chat_channels.chatable_type = 'Category'",
-      )
-  end
+  scope :public_channels,
+        -> {
+          where(chatable_type: public_channel_chatable_types).where(
+            "categories.id IS NOT NULL",
+          ).joins(
+            "LEFT JOIN categories ON categories.id = chat_channels.chatable_id AND chat_channels.chatable_type = 'Category'",
+          )
+        }
 
   class << self
     def public_channel_chatable_types
@@ -41,9 +42,7 @@ class ChatChannel < ActiveRecord::Base
   end
 
   statuses.keys.each do |status|
-    define_method("#{status}!") do |acting_user|
-      change_status(acting_user, status.to_sym)
-    end
+    define_method("#{status}!") { |acting_user| change_status(acting_user, status.to_sym) }
   end
 
   def membership_for(user)
@@ -51,32 +50,11 @@ class ChatChannel < ActiveRecord::Base
   end
 
   def add(user)
-    ActiveRecord::Base.transaction do
-      membership =
-        UserChatChannelMembership.find_or_initialize_by(user_id: user.id, chat_channel: self)
-
-      if !membership.following
-        update!(user_count: (user_count || 0) + 1)
-        membership.following = true
-        membership.save!
-      end
-
-      membership
-    end
+    DiscourseChat::ChatChannelMembershipManager.new(self).follow(user)
   end
 
   def remove(user)
-    ActiveRecord::Base.transaction do
-      membership = UserChatChannelMembership.find_by!(user_id: user.id, chat_channel: self)
-
-      if membership.following
-        new_user_count = [(user_count || 0) - 1, 0].max
-        update!(user_count: new_user_count)
-        membership.update!(following: false)
-      end
-
-      membership
-    end
+    DiscourseChat::ChatChannelMembershipManager.new(self).unfollow(user)
   end
 
   def status_name
@@ -197,10 +175,13 @@ end
 #  user_count              :integer          default(0), not null
 #  last_message_sent_at    :datetime         not null
 #  auto_join_users         :boolean          default(FALSE), not null
+#  user_count_stale        :boolean          default(FALSE), not null
+#  slug                    :string
 #
 # Indexes
 #
 #  index_chat_channels_on_chatable_id                    (chatable_id)
 #  index_chat_channels_on_chatable_id_and_chatable_type  (chatable_id,chatable_type)
+#  index_chat_channels_on_slug                           (slug)
 #  index_chat_channels_on_status                         (status)
 #

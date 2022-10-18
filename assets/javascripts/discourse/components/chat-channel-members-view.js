@@ -30,6 +30,13 @@ export default class ChatChannelMembersView extends Component {
     this._focusSearch();
     this.set("members", []);
     this.fetchMembers();
+
+    this.appEvents.on("chat:refresh-channel-members", this, "onFilterMembers");
+  }
+
+  willDestroyElement() {
+    this._super(...arguments);
+    this.appEvents.off("chat:refresh-channel-members", this, "onFilterMembers");
   }
 
   get chatProgressBarContainer() {

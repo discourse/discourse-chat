@@ -4,7 +4,7 @@ module DiscourseChat::ChatChannelFetcher
   MAX_PUBLIC_CHANNEL_RESULTS = 50
 
   def self.structured(guardian)
-    memberships = UserChatChannelMembership.where(user_id: guardian.user.id)
+    memberships = DiscourseChat::ChatChannelMembershipManager.all_for_user(guardian.user)
     {
       public_channels:
         secured_public_channels(guardian, memberships, status: :open, following: true),
@@ -62,7 +62,7 @@ module DiscourseChat::ChatChannelFetcher
     SQL
   end
 
-  def self.secured_public_channels(guardian, memberships, options = { following: true })
+  def self.secured_public_channel_search(guardian, options = {})
     channels =
       ChatChannel
         .includes(:chat_channel_archive)
@@ -107,7 +107,11 @@ module DiscourseChat::ChatChannelFetcher
     )
     options[:offset] = [options[:offset].to_i, 0].max
 
-    channels = channels.limit(options[:limit]).offset(options[:offset])
+    channels.limit(options[:limit]).offset(options[:offset])
+  end
+
+  def self.secured_public_channels(guardian, memberships, options = { following: true })
+    channels = secured_public_channel_search(guardian, options)
     decorate_memberships_with_tracking_data(guardian, channels, memberships)
     channels = channels.to_a
     preload_custom_fields_for(channels)

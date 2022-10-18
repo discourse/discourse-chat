@@ -25,7 +25,6 @@ fi:
         leave: "Poistu"
       channels_list_popup:
         browse: "Selaa kanavia"
-        create: "Luo kanava"
       click_to_join: "Näytä saatavilla olevat kanavat napsauttamalla tätä."
       close: "Sulje"
       collapse: "Tiivistä chat-laatikko"
@@ -107,7 +106,6 @@ fi:
         create: "Luo kanava"
         description: "Kuvaus (valinnainen)"
         name: "Kanavan nimi"
-        title: "Luo kanava"
         type: "Tyyppi"
         types:
           category: "Alue"

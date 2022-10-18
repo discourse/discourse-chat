@@ -12,16 +12,23 @@ describe UserNotifications do
     SiteSetting.chat_allowed_groups = chatters_group.id
   end
 
+  def refresh_auto_groups
+    Group.refresh_automatic_groups!
+    user.reload
+    sender.reload
+  end
+
   describe ".chat_summary" do
-    context "private channel" do
+    context "with private channel" do
       fab!(:channel) do
+        refresh_auto_groups
         DiscourseChat::DirectMessageChannelCreator.create!(
           acting_user: sender,
           target_users: [sender, user],
         )
       end
 
-      context "email subject" do
+      describe "email subject" do
         it "includes the sender username in the subject" do
           expected_subject =
             I18n.t(
@@ -65,6 +72,8 @@ describe UserNotifications do
 
         it "includes both channel titles when there are exactly two with unread messages" do
           another_dm_user = Fabricate(:user, group_ids: [chatters_group.id])
+          refresh_auto_groups
+          another_dm_user.reload
           another_channel =
             DiscourseChat::DirectMessageChannelCreator.create!(
               acting_user: user,
@@ -83,6 +92,8 @@ describe UserNotifications do
 
           3.times do
             sender = Fabricate(:user, group_ids: [chatters_group.id])
+            refresh_auto_groups
+            sender.reload
             channel =
               DiscourseChat::DirectMessageChannelCreator.create!(
                 acting_user: sender,
@@ -116,7 +127,7 @@ describe UserNotifications do
       end
     end
 
-    context "public channel" do
+    context "with public channel" do
       fab!(:channel) { Fabricate(:chat_channel) }
       fab!(:chat_message) { Fabricate(:chat_message, user: sender, chat_channel: channel) }
       fab!(:user_membership) do
@@ -135,7 +146,7 @@ describe UserNotifications do
       end
 
       describe "email subject" do
-        context "regular mentions" do
+        context "with regular mentions" do
           before { Fabricate(:chat_mention, user: user, chat_message: chat_message) }
 
           it "includes the sender username in the subject" do
@@ -202,8 +213,9 @@ describe UserNotifications do
           end
         end
 
-        context "both unread DM messages and mentions" do
+        context "with both unread DM messages and mentions" do
           before do
+            refresh_auto_groups
             channel =
               DiscourseChat::DirectMessageChannelCreator.create!(
                 acting_user: sender,
@@ -312,6 +324,7 @@ describe UserNotifications do
 
           it "returns an email when the user has unread private messages" do
             user_membership.update!(last_read_message_id: chat_message.id)
+            refresh_auto_groups
             channel =
               DiscourseChat::DirectMessageChannelCreator.create!(
                 acting_user: sender,

@@ -109,6 +109,7 @@ RSpec.describe DiscourseChat::ChatChannelsController do
         fab!(:user3) { Fabricate(:user) }
 
         before do
+          Group.refresh_automatic_groups!
           @dm1 =
             DiscourseChat::DirectMessageChannelCreator.create!(
               acting_user: user1,
@@ -233,7 +234,6 @@ RSpec.describe DiscourseChat::ChatChannelsController do
         membership_record.reload.following
       }.to(true).from(false)
       expect(response.status).to eq(200)
-      expect(response.parsed_body["memberships_count"]).to eq(1)
       expect(response.parsed_body["current_user_membership"]["following"]).to eq(true)
       expect(response.parsed_body["current_user_membership"]["chat_channel_id"]).to eq(
         chat_channel.id,
@@ -255,7 +255,6 @@ RSpec.describe DiscourseChat::ChatChannelsController do
         membership_record.reload.following
       }.to(false).from(true)
       expect(response.status).to eq(200)
-      expect(response.parsed_body["memberships_count"]).to eq(0)
       expect(response.parsed_body["current_user_membership"]["following"]).to eq(false)
       expect(response.parsed_body["current_user_membership"]["chat_channel_id"]).to eq(
         chat_channel.id,
@@ -515,12 +514,27 @@ RSpec.describe DiscourseChat::ChatChannelsController do
         group = Fabricate(:group, name: "chatpeeps")
         SiteSetting.chat_allowed_groups = group.id
         GroupUser.create(user: user, group: group)
+        dm_chat_channel_2 =
+          Fabricate(
+            :chat_channel,
+            chatable: Fabricate(:direct_message_channel, users: [user, other_user]),
+          )
 
-        get "/chat/chat_channels/search.json", params: { filter: "andyjones" }
+        get "/chat/chat_channels/search.json", params: { filter: "janemay" }
         expect(response.status).to eq(200)
         expect(response.parsed_body["direct_message_channels"].count).to eq(0)
 
-        GroupUser.create(user: admin, group: group)
+        GroupUser.create(user: other_user, group: group)
+        get "/chat/chat_channels/search.json", params: { filter: "janemay" }
+        expect(response.status).to eq(200)
+        expect(response.parsed_body["direct_message_channels"][0]["id"]).to eq(dm_chat_channel_2.id)
+      end
+
+      it "returns DM channels for staff users even if they are not in chat_allowed_groups" do
+        group = Fabricate(:group, name: "chatpeeps")
+        SiteSetting.chat_allowed_groups = group.id
+        GroupUser.create(user: user, group: group)
+
         get "/chat/chat_channels/search.json", params: { filter: "andyjones" }
         expect(response.status).to eq(200)
         expect(response.parsed_body["direct_message_channels"][0]["id"]).to eq(dm_chat_channel.id)

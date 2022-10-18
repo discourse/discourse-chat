@@ -120,7 +120,7 @@ module Jobs
     def send_notifications(membership, notification_data, os_payload)
       create_notification!(membership, notification_data)
 
-      if !membership.desktop_notifications_never?
+      if !membership.desktop_notifications_never? && !membership.muted?
         MessageBus.publish(
           "/chat/notification-alert/#{membership.user_id}",
           os_payload,
@@ -128,7 +128,7 @@ module Jobs
         )
       end
 
-      if !membership.mobile_notifications_never?
+      if !membership.mobile_notifications_never? && !membership.muted?
         PostAlerter.push_notification(membership.user, os_payload)
       end
     end

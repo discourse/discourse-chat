@@ -19,7 +19,7 @@ describe Jobs::ProcessChatMessage do
     )
   end
 
-  context "is_dirty args is true" do
+  context "when is_dirty args is true" do
     fab!(:chat_message) { Fabricate(:chat_message, message: "a very lovely cat") }
 
     it "publishes the update" do
@@ -28,7 +28,7 @@ describe Jobs::ProcessChatMessage do
     end
   end
 
-  context "is_dirty args is not true" do
+  context "when is_dirty args is not true" do
     fab!(:chat_message) { Fabricate(:chat_message, message: "a very lovely cat") }
 
     it "doesn’t publish the update" do
@@ -36,7 +36,7 @@ describe Jobs::ProcessChatMessage do
       described_class.new.execute(chat_message_id: chat_message.id)
     end
 
-    context "the cooked message changed" do
+    context "when the cooked message changed" do
       it "publishes the update" do
         chat_message.update!(cooked: "another lovely cat")
         ChatPublisher.expects(:publish_processed!).once

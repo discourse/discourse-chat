@@ -90,7 +90,7 @@ describe Jobs::DeleteOldChatMessages do
     SiteSetting.chat_channel_retention_days = 0
     SiteSetting.chat_dm_retention_days = 0
 
-    expect { described_class.new.execute }.to change { ChatMessage.count }.by(0)
+    expect { described_class.new.execute }.not_to change { ChatMessage.count }
   end
 
   describe "public channels" do
@@ -112,7 +112,7 @@ describe Jobs::DeleteOldChatMessages do
 
     it "does nothing when no messages fall in the time range" do
       SiteSetting.chat_channel_retention_days = 800
-      expect { described_class.new.execute }.to change { ChatMessage.in_public_channel.count }.by(0)
+      expect { described_class.new.execute }.not_to change { ChatMessage.in_public_channel.count }
     end
 
     it "resets last_read_message_id from memberships" do
@@ -129,6 +129,24 @@ describe Jobs::DeleteOldChatMessages do
       described_class.new.execute
 
       expect(membership.reload.last_read_message_id).to be_nil
+    end
+
+    it "deletes flags associated to deleted chat messages" do
+      SiteSetting.chat_channel_retention_days = 10
+      guardian = Guardian.new(Discourse.system_user)
+      DiscourseChat::ChatReviewQueue.new.flag_message(
+        public_days_old_20,
+        guardian,
+        ReviewableScore.types[:off_topic],
+      )
+
+      reviewable = ReviewableChatMessage.last
+      expect(reviewable).to be_present
+
+      described_class.new.execute
+
+      expect { public_days_old_20.reload }.to raise_exception(ActiveRecord::RecordNotFound)
+      expect { reviewable.reload }.to raise_exception(ActiveRecord::RecordNotFound)
     end
   end
 
@@ -151,7 +169,7 @@ describe Jobs::DeleteOldChatMessages do
 
     it "does nothing when no messages fall in the time range" do
       SiteSetting.chat_dm_retention_days = 800
-      expect { described_class.new.execute }.to change { ChatMessage.in_dm_channel.count }.by(0)
+      expect { described_class.new.execute }.not_to change { ChatMessage.in_dm_channel.count }
     end
 
     it "resets last_read_message_id from memberships" do

@@ -3,7 +3,6 @@ import {
   acceptance,
   publishToMessageBus,
 } from "discourse/tests/helpers/qunit-helpers";
-import { settled } from "@ember/test-helpers";
 import { test } from "qunit";
 import fabricators from "../../helpers/fabricators";
 import { directMessageChannels } from "discourse/plugins/discourse-chat/chat-fixtures";
@@ -11,6 +10,7 @@ import { cloneJSON } from "discourse-common/lib/object";
 import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
 import sinon from "sinon";
 import pretender from "discourse/tests/helpers/create-pretender";
+import { settled } from "@ember/test-helpers";
 
 acceptance("Discourse Chat | Unit | Service | chat", function (needs) {
   needs.hooks.beforeEach(function () {
@@ -127,12 +127,11 @@ acceptance("Discourse Chat | Unit | Service | chat", function (needs) {
     setupMockPresenceChannel(this.chatService);
     await this.chatService.forceRefreshChannels();
 
-    publishToMessageBus("/chat/1/new-messages", {
+    await publishToMessageBus("/chat/1/new-messages", {
       user_id: this.currentUser.id,
       username: this.currentUser.username,
       message_id: 124,
     });
-    await settled();
 
     assert.equal(
       this.currentUser.chat_channel_tracking_state[1].chat_message_id,
@@ -151,12 +150,11 @@ acceptance("Discourse Chat | Unit | Service | chat", function (needs) {
     setupMockPresenceChannel(this.chatService);
     await this.chatService.forceRefreshChannels();
 
-    publishToMessageBus("/chat/1/new-messages", {
+    await publishToMessageBus("/chat/1/new-messages", {
       user_id: 2327,
       username: "johnny",
       message_id: 124,
     });
-    await settled();
 
     assert.equal(
       this.currentUser.chat_channel_tracking_state[1].chat_message_id,
@@ -174,12 +172,11 @@ acceptance("Discourse Chat | Unit | Service | chat", function (needs) {
     setupMockPresenceChannel(this.chatService);
     await this.chatService.forceRefreshChannels();
 
-    publishToMessageBus("/chat/1/new-messages", {
+    await publishToMessageBus("/chat/1/new-messages", {
       user_id: 2327,
       username: "jane",
       message_id: 124,
     });
-    await settled();
 
     assert.equal(
       this.currentUser.chat_channel_tracking_state[1].chat_message_id,

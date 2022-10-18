@@ -253,6 +253,12 @@ export default Component.extend({
             this.highlightOrFetchMessage(this.targetMessageId);
           }
 
+          if (this._scrollerEl && this.capabilities.isIOS) {
+            // iOS hack to avoid blank div when sticking scroll to bottom during momentum
+            this._scrollerEl.style.overflow = "hidden";
+            this._scrollerEl.style.overflow = "scroll";
+          }
+
           this.focusComposer();
         });
     });

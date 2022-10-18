@@ -145,4 +145,10 @@ module("Discourse Chat | Component | chat-emoji-picker", function (hooks) {
 
     assert.strictEqual(selection, "grinning");
   });
+
+  test("When opening the picker", async function (assert) {
+    await render(hbs`<ChatEmojiPicker />`);
+
+    assert.ok(document.activeElement.classList.contains("dc-filter-input"));
+  });
 });

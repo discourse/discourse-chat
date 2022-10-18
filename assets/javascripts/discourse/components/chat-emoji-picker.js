@@ -280,8 +280,9 @@ export default class ChatEmojiPicker extends Component {
       const originalTarget = event.target;
       let emoji = event.target.dataset.emoji;
       const tonable = event.target.dataset.tonable;
-      if (tonable) {
-        emoji = `${emoji}:t${this.chatEmojiReactionStore.diversity}`;
+      const diversity = this.chatEmojiReactionStore.diversity;
+      if (tonable && diversity > 1) {
+        emoji = `${emoji}:t${diversity}`;
       }
 
       this.chatEmojiPickerManager.didSelectEmoji(emoji);

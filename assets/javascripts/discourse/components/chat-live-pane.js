@@ -629,7 +629,7 @@ export default Component.extend({
     this.set("stickyScroll", true);
 
     if (this._scrollerEl) {
-      // iOS hack to avoid blank div when requesting section during momentum
+      // iOS hack to avoid blank div when sticking scroll to bottom during momentum
       if (this.capabilities.isIOS) {
         this._scrollerEl.style.overflow = "hidden";
       }
@@ -643,7 +643,7 @@ export default Component.extend({
         if (this._scrollerEl) {
           this._scrollerEl.scrollTop = 0;
 
-          // iOS hack to avoid blank div when requesting section during momentum
+          // iOS hack to avoid blank div when sticking scroll to bottom during momentum
           if (this.capabilities.isIOS) {
             this._scrollerEl.style.overflow = "scroll";
           }

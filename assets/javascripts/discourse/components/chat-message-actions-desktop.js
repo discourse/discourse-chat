@@ -25,8 +25,11 @@ export default Component.extend({
         ),
         {
           placement: "right-start",
-          hide: { enabled: true },
           modifiers: [
+            {
+              name: "eventListeners",
+              options: { scroll: false },
+            },
             {
               name: "offset",
               options: {

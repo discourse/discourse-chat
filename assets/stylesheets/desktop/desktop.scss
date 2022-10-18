@@ -62,6 +62,12 @@
   }
 }
 
+.chat-live-pane.is-scrolling {
+  .chat-msgactions-hover {
+    visibility: hidden;
+  }
+}
+
 // Full Page Styling in Core
 .has-full-page-chat:not(.discourse-sidebar) {
   --max-chat-width: 1200px;

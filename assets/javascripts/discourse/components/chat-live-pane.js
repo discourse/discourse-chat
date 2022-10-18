@@ -662,6 +662,14 @@ export default Component.extend({
     if (this._selfDeleted) {
       return;
     }
+
+    const chatLivePane = document.querySelector(".chat-live-pane");
+    cancel(this._scrollClassTimer);
+    chatLivePane.classList.add("is-scrolling");
+    this._scrollClassTimer = discourseLater(() => {
+      chatLivePane.classList.remove("is-scrolling");
+    }, 150);
+
     resetIdle();
 
     const atTop =

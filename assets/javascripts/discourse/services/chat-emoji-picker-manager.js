@@ -111,13 +111,13 @@ export default class ChatEmojiPickerManager extends Service {
     }
   }
 
-  startFromComposer(callback) {
+  startFromComposer(callback, term = "") {
     this.context = "chat-composer";
     this.element = document.querySelector(".chat-composer-emoji-picker-anchor");
-    this.open(callback);
+    this.open(callback, term);
   }
 
-  open(callback) {
+  open(callback, term = "") {
     if (this.opened) {
       this.closeExisting();
     }
@@ -126,6 +126,10 @@ export default class ChatEmojiPickerManager extends Service {
 
     this.callback = callback;
     this.opened = true;
+
+    schedule("afterRender", () => {
+      document.querySelector(".dc-filter-input").value = term;
+    })
   }
 
   _loadEmojisData() {

@@ -316,8 +316,24 @@ export default Component.extend(TextareaTextManipulation, {
   },
 
   @bind
-  didSelectEmoji(emoji) {
-    this.addText(this.getSelected(), `:${emoji}:`);
+  didSelectEmoji(code) {
+    let selected = this.getSelected();
+    const captures = selected.pre.match(/\B:(\w*)$/);
+
+    if (isEmpty(captures)) {
+      if (selected.pre.match(/\S$/)) {
+        this.addText(selected, ` :${code}:`);
+      } else {
+        this.addText(selected, `:${code}:`);
+      }
+    } else {
+      let numOfRemovedChars = captures[1].length;
+      this._insertAt(
+        selected.start - numOfRemovedChars,
+        selected.end,
+        `${code}:`
+      );
+    }
   },
 
   @action
@@ -411,7 +427,10 @@ export default Component.extend(TextareaTextManipulation, {
           return `${v.code}:`;
         } else {
           $textarea.autocomplete({ cancel: true });
-          this.set("emojiPickerIsActive", true);
+          this.chatEmojiPickerManager.startFromComposer(
+            this.didSelectEmoji,
+            v.term
+          );
           return "";
         }
       },

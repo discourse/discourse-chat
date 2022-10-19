@@ -1,5 +1,5 @@
 import { setupRenderingTest } from "discourse/tests/helpers/component-test";
-import { exists, queryAll } from "discourse/tests/helpers/qunit-helpers";
+import { exists, query, queryAll } from "discourse/tests/helpers/qunit-helpers";
 import hbs from "htmlbars-inline-precompile";
 import { module, test } from "qunit";
 import pretender from "discourse/tests/helpers/create-pretender";
@@ -161,7 +161,7 @@ module("Discourse Chat | Component | chat-emoji-picker", function (hooks) {
       selection = emoji;
     };
     await render(hbs`<ChatEmojiPicker />`);
-    await click('img.emoji[alt="grinning"]');
+    await click('img.emoji[data-emoji="grinning"]');
 
     assert.strictEqual(selection, "grinning");
   });
@@ -173,12 +173,12 @@ module("Discourse Chat | Component | chat-emoji-picker", function (hooks) {
     };
     await render(hbs`<ChatEmojiPicker />`);
     this.emojiReactionStore.diversity = 1;
-    await click('img.emoji[alt="man_rowing_boat"]');
+    await click('img.emoji[data-emoji="man_rowing_boat"]');
 
     assert.strictEqual(selection, "man_rowing_boat");
 
     this.emojiReactionStore.diversity = 2;
-    await click('img.emoji[alt="man_rowing_boat"]');
+    await click('img.emoji[data-emoji="man_rowing_boat"]');
 
     assert.strictEqual(selection, "man_rowing_boat:t2");
   });
@@ -187,5 +187,50 @@ module("Discourse Chat | Component | chat-emoji-picker", function (hooks) {
     await render(hbs`<ChatEmojiPicker />`);
 
     assert.ok(document.activeElement.classList.contains("dc-filter-input"));
+  });
+
+  test("When hovering an emoji", async function (assert) {
+    await render(hbs`<ChatEmojiPicker />`);
+
+    assert.strictEqual(
+      query(
+        '.chat-emoji-picker__section[data-section="people_&_body"] img.emoji:nth-child(1)'
+      ).title,
+      ":raised_hands:",
+      "first emoji has a title"
+    );
+
+    assert.strictEqual(
+      query(
+        '.chat-emoji-picker__section[data-section="people_&_body"] img.emoji:nth-child(2)'
+      ).title,
+      ":man_rowing_boat:",
+      "second emoji has a title"
+    );
+
+    await fillIn(".dc-filter-input", "grinning");
+    assert.strictEqual(
+      query('img.emoji[data-emoji="grinning"]').title,
+      ":grinning:",
+      "filtered emoji have a title"
+    );
+
+    this.emojiReactionStore.diversity = 1;
+    await render(hbs`<ChatEmojiPicker />`);
+
+    assert.strictEqual(
+      query('img.emoji[data-emoji="man_rowing_boat"]').title,
+      ":man_rowing_boat:",
+      "it has a title without the scale as diversity value is 1"
+    );
+
+    this.emojiReactionStore.diversity = 2;
+    await render(hbs`<ChatEmojiPicker />`);
+
+    assert.strictEqual(
+      query('img.emoji[data-emoji="man_rowing_boat"]').title,
+      ":man_rowing_boat:t2:",
+      "it has a title with the scale"
+    );
   });
 });

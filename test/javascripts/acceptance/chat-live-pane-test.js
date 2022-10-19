@@ -151,7 +151,8 @@ acceptance(
       await visit("/chat/channel/1/cat");
 
       assert.notOk(exists(`.chat-message-container[data-id='${51}']`));
-      const scrollerEl = document.querySelector("#ember-testing-container");
+      const scrollerEl = document.querySelector(".chat-messages-scroll");
+      scrollerEl.scrollTop = -500; // Scroll up a bit
       const initialPosition = scrollerEl.scrollTop;
       await triggerEvent(".chat-messages-scroll", "scroll", {
         forceShowScrollToBottom: true,

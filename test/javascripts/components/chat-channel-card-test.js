@@ -53,7 +53,7 @@ module("Discourse Chat | Component | chat-channel-card", function (hooks) {
     await render(hbs`{{chat-channel-card channel=channel}}`);
 
     assert.equal(
-      query(".chat-channel-card__tag.-muted").innerText.trim(),
+      query(".chat-channel-card__tag.-muted").textContent.trim(),
       I18n.t("chat.muted")
     );
   });
@@ -63,7 +63,7 @@ module("Discourse Chat | Component | chat-channel-card", function (hooks) {
     await render(hbs`{{chat-channel-card channel=channel}}`);
 
     assert.equal(
-      query(".chat-channel-card__tag.-joined").innerText.trim(),
+      query(".chat-channel-card__tag.-joined").textContent.trim(),
       I18n.t("chat.joined")
     );
   });
@@ -79,7 +79,7 @@ module("Discourse Chat | Component | chat-channel-card", function (hooks) {
     await render(hbs`{{chat-channel-card channel=channel}}`);
 
     assert.equal(
-      query(".chat-channel-card__members").innerText.trim(),
+      query(".chat-channel-card__members").textContent.trim(),
       I18n.t("chat.channel.memberships_count", { count: 4 })
     );
   });
@@ -95,7 +95,7 @@ module("Discourse Chat | Component | chat-channel-card", function (hooks) {
     await render(hbs`{{chat-channel-card channel=channel}}`);
 
     assert.equal(
-      query(".chat-channel-card__description").innerText.trim(),
+      query(".chat-channel-card__description").textContent.trim(),
       this.channel.description
     );
   });

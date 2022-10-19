@@ -48,8 +48,8 @@ module(
         this.set("presenceChannel.users", [sam]);
 
         assert.equal(
-          query(".chat-replying-indicator").innerText,
-          `${sam.username} is typing . . .`
+          query(".chat-replying-indicator__text").innerText,
+          `${sam.username} is typing`
         );
       },
     });
@@ -73,8 +73,8 @@ module(
         this.set("presenceChannel.users", [sam, mark]);
 
         assert.equal(
-          query(".chat-replying-indicator").innerText,
-          `${sam.username} and ${mark.username} are typing . . .`
+          query(".chat-replying-indicator__text").innerText,
+          `${sam.username} and ${mark.username} are typing`
         );
       },
     });
@@ -99,8 +99,8 @@ module(
         this.set("presenceChannel.users", [sam, mark, joffrey]);
 
         assert.equal(
-          query(".chat-replying-indicator").innerText,
-          `${sam.username}, ${mark.username} and ${joffrey.username} are typing . . .`
+          query(".chat-replying-indicator__text").innerText,
+          `${sam.username}, ${mark.username} and ${joffrey.username} are typing`
         );
       },
     });
@@ -126,8 +126,8 @@ module(
         this.set("presenceChannel.users", [sam, mark, joffrey, taylor]);
 
         assert.equal(
-          query(".chat-replying-indicator").innerText,
-          `${sam.username}, ${mark.username} and 2 others are typing . . .`
+          query(".chat-replying-indicator__text").innerText,
+          `${sam.username}, ${mark.username} and 2 others are typing`
         );
       },
     });
@@ -150,8 +150,8 @@ module(
         this.set("presenceChannel.users", [sam, this.currentUser]);
 
         assert.equal(
-          query(".chat-replying-indicator").innerText,
-          `${sam.username} is typing . . .`
+          query(".chat-replying-indicator__text").innerText,
+          `${sam.username} is typing`
         );
       },
     });

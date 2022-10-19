@@ -24,7 +24,7 @@ module("Discourse Chat | Component | chat-message-info", function (hooks) {
         this.message.chat_webhook_event.username
       );
       assert.equal(
-        query(".chat-message-info__bot-indicator").innerText.trim(),
+        query(".chat-message-info__bot-indicator").textContent.trim(),
         I18n.t("chat.bot")
       );
     },

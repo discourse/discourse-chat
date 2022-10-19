@@ -1776,10 +1776,10 @@ acceptance("Discourse Chat - Channel Replying Indicator", function (needs) {
     await joinChannel("/chat-reply/4", user);
 
     assert.equal(
-      query(".chat-replying-indicator").innerText,
+      query(".chat-replying-indicator__text").innerText,
       I18n.t("chat.replying_indicator.single_user", {
         username: user.username,
-      }) + " . . ."
+      })
     );
 
     await leaveChannel("/chat-reply/4", user);

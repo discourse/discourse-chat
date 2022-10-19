@@ -9,8 +9,9 @@ import { later, schedule } from "@ember/runloop";
 import { makeArray } from "discourse-common/lib/helpers";
 import { Promise } from "rsvp";
 import { computed } from "@ember/object";
+import { isTesting } from "discourse-common/config/environment";
 
-const TRANSITION_TIME = 125; // CSS transition time
+const TRANSITION_TIME = isTesting() ? 0 : 125; // CSS transition time
 const DEFAULT_VISIBLE_SECTIONS = ["favorites", "smileys_&_emotion"];
 const DEFAULT_LAST_SECTION = "favorites";
 

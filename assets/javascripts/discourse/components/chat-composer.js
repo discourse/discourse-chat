@@ -10,18 +10,17 @@ import TextareaTextManipulation from "discourse/mixins/textarea-text-manipulatio
 import userSearch from "discourse/lib/user-search";
 import { action } from "@ember/object";
 import { cancel, next, schedule, throttle } from "@ember/runloop";
-import { categoryHashtagTriggerRule } from "discourse/lib/category-hashtags";
 import { cloneJSON } from "discourse-common/lib/object";
 import { findRawTemplate } from "discourse-common/lib/raw-templates";
 import { emojiSearch, isSkinTonableEmoji } from "pretty-text/emoji";
 import { emojiUrlFor } from "discourse/lib/text";
 import { inject as service } from "@ember/service";
 import { readOnly, reads } from "@ember/object/computed";
-import { search as searchCategoryTag } from "discourse/lib/category-tag-search";
 import { SKIP } from "discourse/lib/autocomplete";
 import { Promise } from "rsvp";
 import { translations } from "pretty-text/emoji/data";
 import { channelStatusName } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
+import { setupHashtagAutocomplete } from "discourse/lib/hashtag-autocomplete";
 import {
   chatComposerButtons,
   chatComposerButtonsDependentKeys,
@@ -355,29 +354,15 @@ export default Component.extend(TextareaTextManipulation, {
   },
 
   _applyCategoryHashtagAutocomplete($textarea) {
-    const siteSettings = this.siteSettings;
-
-    $textarea.autocomplete({
-      template: findRawTemplate("category-tag-autocomplete"),
-      key: "#",
-      treatAsTextarea: true,
-      afterComplete: (value) => {
+    setupHashtagAutocomplete(
+      "chat-composer",
+      $textarea,
+      this.siteSettings,
+      (value) => {
         this.set("value", value);
         return this._focusTextArea();
-      },
-      transformComplete: (obj) => {
-        return obj.text;
-      },
-      dataSource: (term) => {
-        if (term.match(/\s/)) {
-          return null;
-        }
-        return searchCategoryTag(term, siteSettings);
-      },
-      triggerRule: (textarea, opts) => {
-        return categoryHashtagTriggerRule(textarea, opts);
-      },
-    });
+      }
+    );
   },
 
   _applyEmojiAutocomplete($textarea) {

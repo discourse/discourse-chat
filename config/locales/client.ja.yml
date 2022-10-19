@@ -156,6 +156,7 @@ ja:
         post_to: "投稿先"
         reset_emoji: "絵文字をリセット"
         save: "保存"
+        edit: "編集"
         select_emoji: "絵文字を選択"
         system: "システム"
         title: "着信 Webhook"

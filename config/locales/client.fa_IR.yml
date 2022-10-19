@@ -235,6 +235,7 @@ fa_IR:
         no_emoji: "هیچ شکلکی انتخاب نشده"
         reset_emoji: "تنظیم مجدد شکلک"
         save: "ذخیره"
+        edit: "ویرایش"
         select_emoji: "انتخاب شکلک"
         system: "سیستم"
         username: "نام‌کاربری"
@@ -251,6 +252,16 @@ fa_IR:
         single_user: "%{username} در حال نوشتن"
         multiple_users: "%{commaSeparatedUsernames} و %{lastUsername} در حال نوشتن"
       topic_button_title: "گفتگو"
+      emoji_picker:
+        favorites: "اغلب استفاده می‌شه"
+        objects: "اشیاء"
+        people_&_body: "مردم و بدن"
+        travel_&_places: "سفر و مکان‌ها"
+        animals_&_nature: "حیوانات و طبیعت"
+        food_&_drink: "غذا و خوراکی"
+        activities: "فعالیت‌ها"
+        flags: "پرچم‌ها"
+        no_results: "هیج نتیجه‌ای نداشت"
     notifications:
       chat_quoted: "<span>%{username}</span> %{description}"
       popup:
@@ -276,6 +287,8 @@ fa_IR:
               label: فرستنده
               description: پیش‌فرض‌های سیستم
     review:
+      transcript:
+        view: "مشاهده رونوشت متن پیام‌های قبلی"
       types:
         reviewable_chat_message:
           title: "پیام گفتگوی پرچم گذاری شده"
@@ -297,6 +310,7 @@ fa_IR:
       allow_private_messages_from_specific_users: "فقط به کاربران خاصی اجازه دهید، تا پیام‌های شخصی یا پیام‌های مستقیم در گفتگو را برای من ارسال کنند"
       ignored_users_instructions: "تمام نوشته‌ها، آگاه‌سازی‌ها، پیام‌های شخصی و پیام‌های مستقیم در گفتگو این کاربران را سرکوب کنید."
     user_menu:
+      no_chat_notifications_title: "شما هنوز هیچ آگاه‌سازی گفتگوی ندارید"
       tabs:
         chat_notifications: "آگاه‌سازی‌های گفتگو"
         chat_notifications_with_unread:

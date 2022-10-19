@@ -93,6 +93,9 @@ ru:
           title: "Отклонить"
         ignore:
           title: "Игнорировать"
+      direct_messages:
+        transcript_title: "Содержимое предыдущих сообщений в канале %{channel_name}"
+        transcript_body: "Чтобы дать больше контекста, мы отображаем содержимое предыдущих сообщений этой беседы (до десяти):\n\n%{transcript}"
     channel:
       statuses:
         read_only: "Только для чтения"

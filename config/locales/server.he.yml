@@ -93,6 +93,9 @@ he:
           title: "אי־הסכמה"
         ignore:
           title: "התעלמות"
+      direct_messages:
+        transcript_title: "תמלול הודעות קודמות בערוץ %{channel_name}"
+        transcript_body: "כדי לתת לך יותר הקשר, הוספנו תמליל של (עד עשר) ההודעות הקודמות בשיחה זו:\n\n%{transcript}"
     channel:
       statuses:
         read_only: "לקריאה בלבד"

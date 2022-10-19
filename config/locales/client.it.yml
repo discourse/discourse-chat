@@ -160,6 +160,7 @@ it:
         post_to: "Pubblica in"
         reset_emoji: "Reimposta emoji"
         save: "Salva"
+        edit: "Modifica"
         select_emoji: "Scegli emoji"
         system: "sistema"
         title: "Webhook in ingresso"

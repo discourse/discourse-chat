@@ -229,6 +229,7 @@ pl_PL:
         post_to: "Opublikuj w"
         reset_emoji: "Zresetuj emotikony"
         save: "Zapisz"
+        edit: "Edytuj"
         select_emoji: "Wybierz emoji"
         system: "system"
         title: "Przychodzące webhooki"
@@ -259,6 +260,8 @@ pl_PL:
         public: "Historia kanału jest przechowywana przez %{days} dni."
         dm: "Historia osobistego czatu jest przechowywana przez %{days} dni."
       topic_button_title: "Czat"
+      emoji_picker:
+        no_results: "Brak wyników"
     notifications:
       chat_quoted: "<span>%{username}</span> %{description}"
       popup:

@@ -160,6 +160,7 @@ fr:
         post_to: "Publier sur"
         reset_emoji: "Réinitialiser l'émoji"
         save: "Enregistrer"
+        edit: "Modifier"
         select_emoji: "Choisir un émoji"
         system: "système"
         title: "Webhooks entrants"

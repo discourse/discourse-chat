@@ -179,6 +179,10 @@
     &.t6 {
       background: #7c533e;
     }
+
+    @media (forced-colors: active) {
+      forced-color-adjust: none;
+    }
   }
 
   &__fitzpatrick-scale {

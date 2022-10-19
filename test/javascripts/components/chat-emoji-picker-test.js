@@ -33,6 +33,13 @@ function emojisResponse() {
         group: "people_&_body",
         search_aliases: [],
       },
+      {
+        name: "man_rowing_boat",
+        tonable: true,
+        url: "/images/emoji/twitter/man_rowing_boat.png?v=12",
+        group: "people_&_body",
+        search_aliases: [],
+      },
     ],
     objects: [
       {
@@ -49,6 +56,10 @@ function emojisResponse() {
 module("Discourse Chat | Component | chat-emoji-picker", function (hooks) {
   setupRenderingTest(hooks);
 
+  hooks.afterEach(function () {
+    this.emojiReactionStore.diversity = 1;
+  });
+
   hooks.beforeEach(function () {
     pretender.get("/chat/emojis.json", () => {
       return [200, {}, emojisResponse()];
@@ -58,6 +69,15 @@ module("Discourse Chat | Component | chat-emoji-picker", function (hooks) {
       "service:chat-emoji-picker-manager"
     );
     this.chatEmojiPickerManager.startFromComposer(() => {});
+    this.chatEmojiPickerManager.addVisibleSections([
+      "smileys_&_emotion",
+      "people_&_body",
+      "objects",
+    ]);
+
+    this.emojiReactionStore = this.container.lookup(
+      "service:chat-emoji-reaction-store"
+    );
   });
 
   test("When displaying navigation", async function (assert) {
@@ -144,5 +164,28 @@ module("Discourse Chat | Component | chat-emoji-picker", function (hooks) {
     await click('img.emoji[alt="grinning"]');
 
     assert.strictEqual(selection, "grinning");
+  });
+
+  test("When selecting a toned an emoji", async function (assert) {
+    let selection;
+    this.chatEmojiPickerManager.didSelectEmoji = (emoji) => {
+      selection = emoji;
+    };
+    await render(hbs`<ChatEmojiPicker />`);
+    this.emojiReactionStore.diversity = 1;
+    await click('img.emoji[alt="man_rowing_boat"]');
+
+    assert.strictEqual(selection, "man_rowing_boat");
+
+    this.emojiReactionStore.diversity = 2;
+    await click('img.emoji[alt="man_rowing_boat"]');
+
+    assert.strictEqual(selection, "man_rowing_boat:t2");
+  });
+
+  test("When opening the picker", async function (assert) {
+    await render(hbs`<ChatEmojiPicker />`);
+
+    assert.ok(document.activeElement.classList.contains("dc-filter-input"));
   });
 });

@@ -662,6 +662,14 @@ export default Component.extend({
     if (this._selfDeleted) {
       return;
     }
+
+    const chatLivePane = document.querySelector(".chat-live-pane");
+    cancel(this._scrollClassTimer);
+    chatLivePane.classList.add("is-scrolling");
+    this._scrollClassTimer = discourseLater(() => {
+      chatLivePane.classList.remove("is-scrolling");
+    }, 150);
+
     resetIdle();
 
     const atTop =
@@ -1339,14 +1347,18 @@ export default Component.extend({
     if (event) {
       if (
         event.type === "mouseleave" &&
-        event.toElement?.closest(".chat-message-actions-desktop-anchor")
+        (event.toElement || event.relatedTarget)?.closest(
+          ".chat-message-actions-desktop-anchor"
+        )
       ) {
         return;
       }
 
       if (
         event.type === "mouseenter" &&
-        event.fromElement?.closest(".chat-message-actions-desktop-anchor")
+        (event.fromElement || event.relatedTarget)?.closest(
+          ".chat-message-actions-desktop-anchor"
+        )
       ) {
         this.set("hoveredMessageId", message?.id);
         return;

@@ -198,6 +198,12 @@ describe ChatMessageSerializer do
 
         expect(serialized[:available_flags]).to include(:spam)
       end
+
+      it "fallbacks to the object association when the chat_channel option is nil" do
+        serialized = described_class.new(dm_message, options.except(:chat_channel)).as_json
+
+        expect(serialized[:available_flags]).not_to include(:notify_moderators)
+      end
     end
   end
 end

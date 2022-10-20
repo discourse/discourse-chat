@@ -3,23 +3,23 @@
     "chat.channel"
     reviewable.chat_channel.id
     reviewable.chat_channel.title
-    (query-params messageId=reviewable.chat_message.id)
+    (query-params messageId=reviewable.target_id)
   }}
     {{chat-channel-title channel=reviewable.chat_channel}}
   {{/link-to}}
 </div>
 
 <div class="post-contents-wrapper">
-  {{reviewable-created-by user=reviewable.chat_message.user tagName=""}}
+  {{reviewable-created-by user=reviewable.target_created_by tagName=""}}
   <div class="post-contents">
     {{reviewable-post-header
       reviewable=reviewable
-      createdBy=reviewable.chat_message.user
+      createdBy=reviewable.target_created_by
       tagName=""
     }}
 
     <div class="post-body">
-      {{html-safe (or reviewable.payload.message_cooked reviewable.chat_message.cooked)}}
+      {{html-safe (or reviewable.payload.message_cooked reviewable.cooked)}}
     </div>
 
     {{#if this.reviewable.payload.transcript_topic_id}}

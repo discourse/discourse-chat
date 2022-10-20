@@ -143,6 +143,8 @@
     }}
   {{/if}}
 
+  <p>{{html-safe (i18n "chat.incoming_webhooks.instructions")}}</p>
+
   <div class="incoming-chat-webhooks">
     {{#if model.incoming_chat_webhooks}}
       {{#each sortedWebhooks as |webhook|}}

@@ -19,8 +19,13 @@ RSpec.describe DiscourseChat::IncomingChatWebhooksController do
       expect(response.status).to eq(400)
     end
 
-    it "errors when the body is over 1000 characters" do
-      post "/chat/hooks/#{webhook.key}.json", params: { text: "$" * 1001 }
+    it "errors when the body is over WEBHOOK_MAX_MESSAGE_LENGTH characters" do
+      post "/chat/hooks/#{webhook.key}.json",
+           params: {
+             text:
+               "$" *
+                 (DiscourseChat::IncomingChatWebhooksController::WEBHOOK_MAX_MESSAGE_LENGTH + 1),
+           }
       expect(response.status).to eq(400)
     end
 

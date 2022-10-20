@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class DiscourseChat::IncomingChatWebhooksController < ApplicationController
-  WEBHOOK_MAX_MESSAGE_LENGTH = 1000
+  WEBHOOK_MAX_MESSAGE_LENGTH = 2000
   WEBHOOK_MESSAGES_PER_MINUTE_LIMIT = 10
 
   skip_before_action :verify_authenticity_token, :redirect_to_login_if_required
@@ -11,7 +11,7 @@ class DiscourseChat::IncomingChatWebhooksController < ApplicationController
   def create_message
     debug_payload
 
-    hijack { process_webhook_payload(text: params[:text], key: params[:key]) }
+    process_webhook_payload(text: params[:text], key: params[:key])
   end
 
   # See https://api.slack.com/reference/messaging/payload for the
@@ -40,7 +40,7 @@ class DiscourseChat::IncomingChatWebhooksController < ApplicationController
       text = DiscourseChat::SlackCompatibility.process_legacy_attachments(attachments)
     end
 
-    hijack { process_webhook_payload(text: text, key: params[:key]) }
+    process_webhook_payload(text: text, key: params[:key])
   rescue JSON::ParserError
     raise Discourse::InvalidParameters
   end

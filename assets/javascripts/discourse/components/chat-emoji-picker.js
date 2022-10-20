@@ -195,11 +195,15 @@ export default class ChatEmojiPicker extends Component {
     target.focus();
   }
 
-  debouncedDidInputFilter(filter) {
+  debouncedDidInputFilter(filter = "") {
+    filter = filter.toLowerCase();
+
     this.filteredEmojis = this.flatEmojis.filter(
       (emoji) =>
-        emoji.name.includes(filter) ||
-        emoji.search_aliases?.any((alias) => alias.includes(filter))
+        emoji.name.toLowerCase().includes(filter) ||
+        emoji.search_aliases?.any((alias) =>
+          alias.toLowerCase().includes(filter)
+        )
     );
 
     schedule("afterRender", () => {

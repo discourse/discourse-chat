@@ -147,6 +147,13 @@ module("Discourse Chat | Component | chat-emoji-picker", function (hooks) {
       "it filters the correct emoji"
     );
 
+    await fillIn(".dc-filter-input", "Grinning");
+
+    assert.ok(
+      exists('.chat-emoji-picker__sections > img[alt="grinning"]'),
+      "it is case insensitive"
+    );
+
     await fillIn(".dc-filter-input", "smiley_cat");
 
     assert.ok(

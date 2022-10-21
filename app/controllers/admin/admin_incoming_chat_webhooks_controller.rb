@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-class DiscourseChat::AdminIncomingChatWebhooksController < Admin::AdminController
-  requires_plugin DiscourseChat::PLUGIN_NAME
+class Chat::AdminIncomingChatWebhooksController < Admin::AdminController
+  requires_plugin Chat::PLUGIN_NAME
 
   def index
     render_serialized(

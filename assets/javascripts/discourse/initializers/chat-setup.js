@@ -2,8 +2,8 @@ import { withPluginApi } from "discourse/lib/plugin-api";
 import I18n from "I18n";
 import { bind } from "discourse-common/utils/decorators";
 import { getOwner } from "discourse-common/lib/get-owner";
-import { MENTION_KEYWORDS } from "discourse/plugins/discourse-chat/discourse/components/chat-message";
-import { clearChatComposerButtons } from "discourse/plugins/discourse-chat/discourse/lib/chat-composer-buttons";
+import { MENTION_KEYWORDS } from "discourse/plugins/chat/discourse/components/chat-message";
+import { clearChatComposerButtons } from "discourse/plugins/chat/discourse/lib/chat-composer-buttons";
 
 let _lastForcedRefreshAt;
 const MIN_REFRESH_DURATION_MS = 180000; // 3 minutes
@@ -69,9 +69,8 @@ export default {
           const currentUser = getOwner(this).lookup("service:current-user");
           const currentUserTimezone =
             currentUser?.resolvedTimezone(currentUser);
-          const chatTranscriptElements = elem.querySelectorAll(
-            ".discourse-chat-transcript"
-          );
+          const chatTranscriptElements =
+            elem.querySelectorAll(".chat-transcript");
 
           chatTranscriptElements.forEach((el) => {
             const dateTimeRaw = el.dataset["datetime"];

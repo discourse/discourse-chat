@@ -13,7 +13,7 @@ import {
   triggerKeyEvent,
   visit,
 } from "@ember/test-helpers";
-import { directMessageChannels } from "discourse/plugins/discourse-chat/chat-fixtures";
+import { directMessageChannels } from "discourse/plugins/chat/chat-fixtures";
 import { cloneJSON } from "discourse-common/lib/object";
 import I18n from "I18n";
 import { withPluginApi } from "discourse/lib/plugin-api";

@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-describe DiscourseChat::ChatMessageUpdater do
+describe Chat::ChatMessageUpdater do
   fab!(:admin1) { Fabricate(:admin) }
   fab!(:admin2) { Fabricate(:admin) }
   fab!(:user1) { Fabricate(:user) }
@@ -30,15 +30,12 @@ describe DiscourseChat::ChatMessageUpdater do
     end
     Group.refresh_automatic_groups!
     @direct_message_channel =
-      DiscourseChat::DirectMessageChannelCreator.create!(
-        acting_user: user1,
-        target_users: [user1, user2],
-      )
+      Chat::DirectMessageChannelCreator.create!(acting_user: user1, target_users: [user1, user2])
   end
 
   def create_chat_message(user, message, channel, upload_ids: nil)
     creator =
-      DiscourseChat::ChatMessageCreator.create(
+      Chat::ChatMessageCreator.create(
         chat_channel: channel,
         user: user,
         in_reply_to_id: nil,
@@ -54,8 +51,7 @@ describe DiscourseChat::ChatMessageUpdater do
     chat_message = create_chat_message(user1, og_message, public_chat_channel)
     new_message = "2 short"
 
-    updater =
-      DiscourseChat::ChatMessageUpdater.update(chat_message: chat_message, new_content: new_message)
+    updater = Chat::ChatMessageUpdater.update(chat_message: chat_message, new_content: new_message)
     expect(updater.failed?).to eq(true)
     expect(updater.error.message).to match(
       I18n.t(
@@ -70,14 +66,14 @@ describe DiscourseChat::ChatMessageUpdater do
     chat_message = create_chat_message(user1, "This will be changed", public_chat_channel)
     new_message = "Change to this!"
 
-    DiscourseChat::ChatMessageUpdater.update(chat_message: chat_message, new_content: new_message)
+    Chat::ChatMessageUpdater.update(chat_message: chat_message, new_content: new_message)
     expect(chat_message.reload.message).to eq(new_message)
   end
 
   it "creates mention notifications for unmentioned users" do
     chat_message = create_chat_message(user1, "This will be changed", public_chat_channel)
     expect {
-      DiscourseChat::ChatMessageUpdater.update(
+      Chat::ChatMessageUpdater.update(
         chat_message: chat_message,
         new_content:
           "this is a message with @system @mentions @#{user2.username} and @#{user3.username}",
@@ -89,7 +85,7 @@ describe DiscourseChat::ChatMessageUpdater do
     message = "ping @#{user2.username} @#{user3.username}"
     chat_message = create_chat_message(user1, message, public_chat_channel)
     expect {
-      DiscourseChat::ChatMessageUpdater.update(
+      Chat::ChatMessageUpdater.update(
         chat_message: chat_message,
         new_content: message + " editedddd",
       )
@@ -101,7 +97,7 @@ describe DiscourseChat::ChatMessageUpdater do
     chat_message = create_chat_message(user1, message, public_chat_channel)
 
     expect {
-      DiscourseChat::ChatMessageUpdater.update(
+      Chat::ChatMessageUpdater.update(
         chat_message: chat_message,
         new_content: message + " @#{user_without_memberships.username}",
       )
@@ -112,7 +108,7 @@ describe DiscourseChat::ChatMessageUpdater do
     chat_message =
       create_chat_message(user1, "ping @#{user2.username} @#{user3.username}", public_chat_channel)
     expect {
-      DiscourseChat::ChatMessageUpdater.update(
+      Chat::ChatMessageUpdater.update(
         chat_message: chat_message,
         new_content: "ping @#{user3.username}",
       )
@@ -122,7 +118,7 @@ describe DiscourseChat::ChatMessageUpdater do
   it "creates new, leaves existing, and removes old mentions all at once" do
     chat_message =
       create_chat_message(user1, "ping @#{user2.username} @#{user3.username}", public_chat_channel)
-    DiscourseChat::ChatMessageUpdater.update(
+    Chat::ChatMessageUpdater.update(
       chat_message: chat_message,
       new_content: "ping @#{user3.username} @#{user4.username}",
     )
@@ -135,7 +131,7 @@ describe DiscourseChat::ChatMessageUpdater do
   it "does not create new mentions in direct message for users who don't have access" do
     chat_message = create_chat_message(user1, "ping nobody", @direct_message_channel)
     expect {
-      DiscourseChat::ChatMessageUpdater.update(
+      Chat::ChatMessageUpdater.update(
         chat_message: chat_message,
         new_content: "ping @#{admin1.username}",
       )
@@ -146,7 +142,7 @@ describe DiscourseChat::ChatMessageUpdater do
     it "creates group mentions on update" do
       chat_message = create_chat_message(user1, "ping nobody", public_chat_channel)
       expect {
-        DiscourseChat::ChatMessageUpdater.update(
+        Chat::ChatMessageUpdater.update(
           chat_message: chat_message,
           new_content: "ping @#{admin_group.name}",
         )
@@ -159,7 +155,7 @@ describe DiscourseChat::ChatMessageUpdater do
     it "doesn't duplicate mentions when the user is already direct mentioned and then group mentioned" do
       chat_message = create_chat_message(user1, "ping @#{admin2.username}", public_chat_channel)
       expect {
-        DiscourseChat::ChatMessageUpdater.update(
+        Chat::ChatMessageUpdater.update(
           chat_message: chat_message,
           new_content: "ping @#{admin_group.name} @#{admin2.username}",
         )
@@ -169,7 +165,7 @@ describe DiscourseChat::ChatMessageUpdater do
     it "deletes old mentions when group mention is removed" do
       chat_message = create_chat_message(user1, "ping @#{admin_group.name}", public_chat_channel)
       expect {
-        DiscourseChat::ChatMessageUpdater.update(
+        Chat::ChatMessageUpdater.update(
           chat_message: chat_message,
           new_content: "ping nobody anymore!",
         )
@@ -184,7 +180,7 @@ describe DiscourseChat::ChatMessageUpdater do
     old_message = "It's a thrsday!"
     new_message = "It's a thursday!"
     chat_message = create_chat_message(user1, old_message, public_chat_channel)
-    DiscourseChat::ChatMessageUpdater.update(chat_message: chat_message, new_content: new_message)
+    Chat::ChatMessageUpdater.update(chat_message: chat_message, new_content: new_message)
     revision = chat_message.revisions.last
     expect(revision.old_message).to eq(old_message)
     expect(revision.new_message).to eq(new_message)
@@ -203,7 +199,7 @@ describe DiscourseChat::ChatMessageUpdater do
           upload_ids: [upload1.id, upload2.id],
         )
       expect {
-        DiscourseChat::ChatMessageUpdater.update(
+        Chat::ChatMessageUpdater.update(
           chat_message: chat_message,
           new_content: "I guess this is different",
           upload_ids: [upload2.id, upload1.id],
@@ -220,7 +216,7 @@ describe DiscourseChat::ChatMessageUpdater do
           upload_ids: [upload1.id, upload2.id],
         )
       expect {
-        DiscourseChat::ChatMessageUpdater.update(
+        Chat::ChatMessageUpdater.update(
           chat_message: chat_message,
           new_content: "I guess this is different",
           upload_ids: [upload1.id],
@@ -237,7 +233,7 @@ describe DiscourseChat::ChatMessageUpdater do
           upload_ids: [upload1.id, upload2.id],
         )
       expect {
-        DiscourseChat::ChatMessageUpdater.update(
+        Chat::ChatMessageUpdater.update(
           chat_message: chat_message,
           new_content: "I guess this is different",
           upload_ids: [],
@@ -248,7 +244,7 @@ describe DiscourseChat::ChatMessageUpdater do
     it "adds one upload if none exist" do
       chat_message = create_chat_message(user1, "something", public_chat_channel)
       expect {
-        DiscourseChat::ChatMessageUpdater.update(
+        Chat::ChatMessageUpdater.update(
           chat_message: chat_message,
           new_content: "I guess this is different",
           upload_ids: [upload1.id],
@@ -259,7 +255,7 @@ describe DiscourseChat::ChatMessageUpdater do
     it "adds multiple uploads if none exist" do
       chat_message = create_chat_message(user1, "something", public_chat_channel)
       expect {
-        DiscourseChat::ChatMessageUpdater.update(
+        Chat::ChatMessageUpdater.update(
           chat_message: chat_message,
           new_content: "I guess this is different",
           upload_ids: [upload1.id, upload2.id],
@@ -271,7 +267,7 @@ describe DiscourseChat::ChatMessageUpdater do
       chat_message =
         create_chat_message(user1, "something", public_chat_channel, upload_ids: [upload1.id])
       expect {
-        DiscourseChat::ChatMessageUpdater.update(
+        Chat::ChatMessageUpdater.update(
           chat_message: chat_message,
           new_content: "I guess this is different",
           upload_ids: [0],
@@ -283,7 +279,7 @@ describe DiscourseChat::ChatMessageUpdater do
       SiteSetting.chat_allow_uploads = false
       chat_message = create_chat_message(user1, "something", public_chat_channel)
       expect {
-        DiscourseChat::ChatMessageUpdater.update(
+        Chat::ChatMessageUpdater.update(
           chat_message: chat_message,
           new_content: "I guess this is different",
           upload_ids: [upload1.id, upload2.id],
@@ -301,7 +297,7 @@ describe DiscourseChat::ChatMessageUpdater do
           upload_ids: [upload1.id, upload2.id],
         )
       expect {
-        DiscourseChat::ChatMessageUpdater.update(
+        Chat::ChatMessageUpdater.update(
           chat_message: chat_message,
           new_content: "I guess this is different",
           upload_ids: [],
@@ -319,7 +315,7 @@ describe DiscourseChat::ChatMessageUpdater do
         )
       SiteSetting.chat_minimum_message_length = 10
       new_message = "hi :)"
-      DiscourseChat::ChatMessageUpdater.update(
+      Chat::ChatMessageUpdater.update(
         chat_message: chat_message,
         new_content: new_message,
         upload_ids: [upload1.id],
@@ -334,7 +330,7 @@ describe DiscourseChat::ChatMessageUpdater do
     it "errors when a blocked word is present" do
       chat_message = create_chat_message(user1, "something", public_chat_channel)
       creator =
-        DiscourseChat::ChatMessageCreator.create(
+        Chat::ChatMessageCreator.create(
           chat_channel: public_chat_channel,
           user: user1,
           content: "bad word - #{watched_word.word}",
@@ -351,7 +347,7 @@ describe DiscourseChat::ChatMessageUpdater do
 
     def update_message(user)
       message.update(user: user)
-      DiscourseChat::ChatMessageUpdater.update(
+      Chat::ChatMessageUpdater.update(
         chat_message: message,
         new_content: "I guess this is different",
       )

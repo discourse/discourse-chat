@@ -134,7 +134,7 @@ describe Jobs::DeleteOldChatMessages do
     it "deletes flags associated to deleted chat messages" do
       SiteSetting.chat_channel_retention_days = 10
       guardian = Guardian.new(Discourse.system_user)
-      DiscourseChat::ChatReviewQueue.new.flag_message(
+      Chat::ChatReviewQueue.new.flag_message(
         public_days_old_20,
         guardian,
         ReviewableScore.types[:off_topic],

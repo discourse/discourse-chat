@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe DiscourseChat::ChatChannelFetcher do
+describe Chat::ChatChannelFetcher do
   fab!(:category) { Fabricate(:category, name: "support") }
   fab!(:private_category) { Fabricate(:private_category, group: Fabricate(:group)) }
   fab!(:category_channel) { Fabricate(:category_channel, chatable: category) }
@@ -210,12 +210,12 @@ describe DiscourseChat::ChatChannelFetcher do
     end
 
     it "ensures limit has a max value" do
-      over_limit = DiscourseChat::ChatChannelFetcher::MAX_PUBLIC_CHANNEL_RESULTS + 1
+      over_limit = Chat::ChatChannelFetcher::MAX_PUBLIC_CHANNEL_RESULTS + 1
       over_limit.times { Fabricate(:category_channel) }
 
       expect(
         subject.secured_public_channels(guardian, memberships, limit: over_limit).length,
-      ).to eq(DiscourseChat::ChatChannelFetcher::MAX_PUBLIC_CHANNEL_RESULTS)
+      ).to eq(Chat::ChatChannelFetcher::MAX_PUBLIC_CHANNEL_RESULTS)
     end
 
     it "does not show the user category channels they cannot access" do

@@ -3,15 +3,14 @@
 CHAT_CHANNEL_EDITABLE_PARAMS = %i[name description]
 CATEGORY_CHAT_CHANNEL_EDITABLE_PARAMS = %i[auto_join_users]
 
-class DiscourseChat::Api::ChatChannelsController < DiscourseChat::Api
+class Chat::Api::ChatChannelsController < Chat::Api
   def index
     options = { status: params[:status] ? ChatChannel.statuses[params[:status]] : nil }.merge(
       params.permit(:filter, :limit, :offset),
     ).symbolize_keys!
 
-    memberships = DiscourseChat::ChatChannelMembershipManager.all_for_user(current_user)
-    channels =
-      DiscourseChat::ChatChannelFetcher.secured_public_channels(guardian, memberships, options)
+    memberships = Chat::ChatChannelMembershipManager.all_for_user(current_user)
+    channels = Chat::ChatChannelFetcher.secured_public_channels(guardian, memberships, options)
 
     serialized_channels =
       channels.map do |channel|
@@ -47,9 +46,7 @@ class DiscourseChat::Api::ChatChannelsController < DiscourseChat::Api
     ChatPublisher.publish_chat_channel_edit(chat_channel, current_user)
 
     if chat_channel.category_channel? && chat_channel.auto_join_users
-      DiscourseChat::ChatChannelMembershipManager.new(
-        chat_channel,
-      ).enforce_automatic_channel_memberships
+      Chat::ChatChannelMembershipManager.new(chat_channel).enforce_automatic_channel_memberships
     end
 
     render_serialized(
@@ -70,8 +67,7 @@ class DiscourseChat::Api::ChatChannelsController < DiscourseChat::Api
 
   def find_membership
     chat_channel = find_chat_channel
-    membership =
-      DiscourseChat::ChatChannelMembershipManager.new(chat_channel).find_for_user(current_user)
+    membership = Chat::ChatChannelMembershipManager.new(chat_channel).find_for_user(current_user)
     raise Discourse::NotFound if membership.blank?
     membership
   end

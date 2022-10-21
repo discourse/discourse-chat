@@ -34,7 +34,7 @@ class ChatMessage < ActiveRecord::Base
 
   def validate_message(has_uploads:)
     WatchedWordsValidator.new(attributes: [:message]).validate(self)
-    DiscourseChat::DuplicateMessageValidator.new(self).validate
+    Chat::DuplicateMessageValidator.new(self).validate
 
     if !has_uploads && message_too_short?
       self.errors.add(
@@ -121,7 +121,7 @@ class ChatMessage < ActiveRecord::Base
     code
     category-hashtag
     censored
-    discourse-chat-transcript
+    chat-transcript
     discourse-local-dates
     emoji
     emojiShortcuts

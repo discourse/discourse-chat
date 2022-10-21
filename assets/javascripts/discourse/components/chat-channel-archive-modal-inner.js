@@ -11,8 +11,8 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 import {
   EXISTING_TOPIC_SELECTION,
   NEW_TOPIC_SELECTION,
-} from "discourse/plugins/discourse-chat/discourse/components/chat-to-topic-selector";
-import { CHANNEL_STATUSES } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
+} from "discourse/plugins/chat/discourse/components/chat-to-topic-selector";
+import { CHANNEL_STATUSES } from "discourse/plugins/chat/discourse/models/chat-channel";
 import { htmlSafe } from "@ember/template";
 
 export default Component.extend({

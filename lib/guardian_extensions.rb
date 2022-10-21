@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module DiscourseChat::GuardianExtensions
+module Chat::GuardianExtensions
   def can_moderate_chat?(chatable)
     case chatable.class.name
     when "Category"
@@ -13,7 +13,7 @@ module DiscourseChat::GuardianExtensions
   def can_chat?(user)
     return false unless user
 
-    user.staff? || user.in_any_groups?(DiscourseChat.allowed_group_ids)
+    user.staff? || user.in_any_groups?(Chat.allowed_group_ids)
   end
 
   def can_create_chat_message?

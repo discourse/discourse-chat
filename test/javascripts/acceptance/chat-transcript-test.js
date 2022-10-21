@@ -52,7 +52,7 @@ function generateTranscriptHTML(messageContent, opts) {
 
   let tabIndexHTML = opts.linkTabIndex ? ' tabindex="-1"' : "";
 
-  let transcriptClasses = ["discourse-chat-transcript"];
+  let transcriptClasses = ["chat-transcript"];
   if (opts.chained) {
     transcriptClasses.push("chat-transcript-chained");
   }
@@ -168,7 +168,7 @@ function buildAdditionalOptions() {
   };
 }
 
-acceptance("Discourse Chat | discourse-chat-transcript", function (needs) {
+acceptance("Discourse Chat | chat-transcript", function (needs) {
   let additionalOptions = buildAdditionalOptions();
 
   needs.user({
@@ -449,7 +449,7 @@ here is a message :P with category hashtag #test
 });
 
 acceptance(
-  "Discourse Chat | discourse-chat-transcript date decoration",
+  "Discourse Chat | chat-transcript date decoration",
   function (needs) {
     let additionalOptions = buildAdditionalOptions();
 
@@ -500,7 +500,7 @@ acceptance(
 );
 
 acceptance(
-  "Discourse Chat - discourse-chat-transcript - Composer Oneboxes ",
+  "Discourse Chat - chat-transcript - Composer Oneboxes ",
   function (needs) {
     let additionalOptions = buildAdditionalOptions();
     needs.user({

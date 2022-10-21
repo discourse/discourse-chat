@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-describe DiscourseChat::ChatChannelArchiveService do
+describe Chat::ChatChannelArchiveService do
   class FakeArchiveError < StandardError
   end
 
@@ -10,7 +10,7 @@ describe DiscourseChat::ChatChannelArchiveService do
   fab!(:user) { Fabricate(:user, admin: true) }
   fab!(:category) { Fabricate(:category) }
   let(:topic_params) { { topic_title: "This will be a new topic", category_id: category.id } }
-  subject { DiscourseChat::ChatChannelArchiveService }
+  subject { Chat::ChatChannelArchiveService }
 
   describe "#begin_archive_process" do
     before { 3.times { Fabricate(:chat_message, chat_channel: channel) } }
@@ -110,7 +110,7 @@ describe DiscourseChat::ChatChannelArchiveService do
           user: Fabricate(:user),
           emoji: "+1",
         )
-        stub_const(DiscourseChat::ChatChannelArchiveService, "ARCHIVED_MESSAGES_PER_POST", 5) do
+        stub_const(Chat::ChatChannelArchiveService, "ARCHIVED_MESSAGES_PER_POST", 5) do
           subject.new(@channel_archive).execute
         end
 
@@ -273,7 +273,7 @@ describe DiscourseChat::ChatChannelArchiveService do
           user: Fabricate(:user),
           emoji: "+1",
         )
-        stub_const(DiscourseChat::ChatChannelArchiveService, "ARCHIVED_MESSAGES_PER_POST", 5) do
+        stub_const(Chat::ChatChannelArchiveService, "ARCHIVED_MESSAGES_PER_POST", 5) do
           subject.new(@channel_archive).execute
         end
 
@@ -309,12 +309,12 @@ describe DiscourseChat::ChatChannelArchiveService do
         Rails.logger = @fake_logger = FakeLogger.new
         create_messages(35) && start_archive
 
-        DiscourseChat::ChatChannelArchiveService
+        Chat::ChatChannelArchiveService
           .any_instance
           .stubs(:create_post)
           .raises(FakeArchiveError.new("this is a test error"))
 
-        stub_const(DiscourseChat::ChatChannelArchiveService, "ARCHIVED_MESSAGES_PER_POST", 5) do
+        stub_const(Chat::ChatChannelArchiveService, "ARCHIVED_MESSAGES_PER_POST", 5) do
           expect { subject.new(@channel_archive).execute }.to raise_error(FakeArchiveError)
         end
 
@@ -326,8 +326,8 @@ describe DiscourseChat::ChatChannelArchiveService do
           I18n.t("system_messages.chat_channel_archive_failed.subject_template"),
         )
 
-        DiscourseChat::ChatChannelArchiveService.any_instance.unstub(:create_post)
-        stub_const(DiscourseChat::ChatChannelArchiveService, "ARCHIVED_MESSAGES_PER_POST", 5) do
+        Chat::ChatChannelArchiveService.any_instance.unstub(:create_post)
+        stub_const(Chat::ChatChannelArchiveService, "ARCHIVED_MESSAGES_PER_POST", 5) do
           subject.new(@channel_archive).execute
         end
 

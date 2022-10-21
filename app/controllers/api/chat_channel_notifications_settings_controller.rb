@@ -2,7 +2,7 @@
 
 MEMBERSHIP_EDITABLE_PARAMS = %i[muted desktop_notification_level mobile_notification_level]
 
-class DiscourseChat::Api::ChatChannelNotificationsSettingsController < DiscourseChat::Api::ChatChannelsController
+class Chat::Api::ChatChannelNotificationsSettingsController < Chat::Api::ChatChannelsController
   def update
     settings_params = params.permit(MEMBERSHIP_EDITABLE_PARAMS)
     membership = find_membership

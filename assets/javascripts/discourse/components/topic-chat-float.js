@@ -6,7 +6,7 @@ import {
   CHAT_VIEW,
   DRAFT_CHANNEL_VIEW,
   LIST_VIEW,
-} from "discourse/plugins/discourse-chat/discourse/services/chat";
+} from "discourse/plugins/chat/discourse/services/chat";
 import { equal } from "@ember/object/computed";
 import { cancel, next, throttle } from "@ember/runloop";
 import { inject as service } from "@ember/service";

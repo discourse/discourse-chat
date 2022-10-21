@@ -1,4 +1,4 @@
-import slugifyChannel from "discourse/plugins/discourse-chat/discourse/lib/slugify-channel";
+import slugifyChannel from "discourse/plugins/chat/discourse/lib/slugify-channel";
 import deprecated from "discourse-common/lib/deprecated";
 import userSearch from "discourse/lib/user-search";
 import { popupAjaxError } from "discourse/lib/ajax-error";
@@ -13,11 +13,11 @@ import { Promise } from "rsvp";
 import ChatChannel, {
   CHANNEL_STATUSES,
   CHATABLE_TYPES,
-} from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
-import simpleCategoryHashMentionTransform from "discourse/plugins/discourse-chat/discourse/lib/simple-category-hash-mention-transform";
+} from "discourse/plugins/chat/discourse/models/chat-channel";
+import simpleCategoryHashMentionTransform from "discourse/plugins/chat/discourse/lib/simple-category-hash-mention-transform";
 import discourseDebounce from "discourse-common/lib/debounce";
 import EmberObject, { computed } from "@ember/object";
-import ChatApi from "discourse/plugins/discourse-chat/discourse/lib/chat-api";
+import ChatApi from "discourse/plugins/chat/discourse/lib/chat-api";
 import discourseLater from "discourse-common/lib/later";
 import userPresent from "discourse/lib/user-presence";
 

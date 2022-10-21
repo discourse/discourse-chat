@@ -1,7 +1,7 @@
 import Controller from "@ember/controller";
 import { action, computed } from "@ember/object";
 import ModalFunctionality from "discourse/mixins/modal-functionality";
-import ChatApi from "discourse/plugins/discourse-chat/discourse/lib/chat-api";
+import ChatApi from "discourse/plugins/chat/discourse/lib/chat-api";
 
 export default class ChatChannelEditTitleController extends Controller.extend(
   ModalFunctionality

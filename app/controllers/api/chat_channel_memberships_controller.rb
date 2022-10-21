@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class DiscourseChat::Api::ChatChannelMembershipsController < DiscourseChat::Api::ChatChannelsController
+class Chat::Api::ChatChannelMembershipsController < Chat::Api::ChatChannelsController
   def index
     channel = find_chat_channel
 

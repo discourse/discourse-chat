@@ -4,7 +4,7 @@
 # Handles :post_alerter_after_save_post events from
 # core. Used for notifying users that their chat message
 # has been quoted in a post.
-class DiscourseChat::PostNotificationHandler
+class Chat::PostNotificationHandler
   attr_reader :post
 
   def initialize(post, notified_users)

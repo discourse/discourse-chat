@@ -15,7 +15,7 @@
 #
 # We may want to process attachments and blocks from slack in future, and
 # convert user IDs into user mentions.
-class DiscourseChat::SlackCompatibility
+class Chat::SlackCompatibility
   MRKDWN_LINK_REGEX = Regexp.new(/(<[^\n<\|>]+>|<[^\n<\>]+>)/).freeze
 
   class << self

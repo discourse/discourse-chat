@@ -14,7 +14,7 @@ class ChatMessageBookmarkable < BaseBookmarkable
   end
 
   def self.list_query(user, guardian)
-    accessible_channel_ids = DiscourseChat::ChatChannelFetcher.all_secured_channel_ids(guardian)
+    accessible_channel_ids = Chat::ChatChannelFetcher.all_secured_channel_ids(guardian)
     return if accessible_channel_ids.empty?
     user
       .bookmarks_of_type("ChatMessage")

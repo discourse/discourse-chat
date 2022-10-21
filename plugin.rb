@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-# name: discourse-chat
+# name: chat
 # about: Chat inside Discourse
 # version: 0.4
 # authors: Kane York, Mark VanLandingham, Martin Brennan, Joffrey Jaffeux
-# url: https://github.com/discourse/discourse-chat
+# url: https://github.com/discourse/discourse/tree/main/plugins/chat
 # transpile_js: true
 
 enabled_site_setting :chat_enabled
@@ -83,13 +83,13 @@ require_relative "app/core_ext/plugin_instance.rb"
 GlobalSetting.add_default(:allow_unsecure_chat_uploads, false)
 
 after_initialize do
-  module ::DiscourseChat
-    PLUGIN_NAME = "discourse-chat"
+  module ::Chat
+    PLUGIN_NAME = "chat"
     HAS_CHAT_ENABLED = "has_chat_enabled"
 
     class Engine < ::Rails::Engine
       engine_name PLUGIN_NAME
-      isolate_namespace DiscourseChat
+      isolate_namespace Chat
     end
 
     def self.allowed_group_ids
@@ -99,13 +99,13 @@ after_initialize do
     def self.onebox_template
       @onebox_template ||=
         begin
-          path = "#{Rails.root}/plugins/discourse-chat/lib/onebox/templates/discourse_chat.mustache"
+          path = "#{Rails.root}/plugins/chat/lib/onebox/templates/discourse_chat.mustache"
           File.read(path)
         end
     end
   end
 
-  register_seedfu_fixtures(Rails.root.join("plugins", "discourse-chat", "db", "fixtures"))
+  register_seedfu_fixtures(Rails.root.join("plugins", "chat", "db", "fixtures"))
 
   load File.expand_path(
          "../app/controllers/admin/admin_incoming_chat_webhooks_controller.rb",
@@ -212,7 +212,7 @@ after_initialize do
 
   UserNotifications.append_view_path(File.expand_path("../app/views", __FILE__))
 
-  register_category_custom_field_type(DiscourseChat::HAS_CHAT_ENABLED, :boolean)
+  register_category_custom_field_type(Chat::HAS_CHAT_ENABLED, :boolean)
 
   UserUpdater::OPTION_ATTR.push(:chat_enabled)
   UserUpdater::OPTION_ATTR.push(:only_chat_push_notifications)
@@ -225,24 +225,24 @@ after_initialize do
   reloadable_patch do |plugin|
     ReviewableScore.add_new_types([:needs_review])
 
-    Site.preloaded_category_custom_fields << DiscourseChat::HAS_CHAT_ENABLED
+    Site.preloaded_category_custom_fields << Chat::HAS_CHAT_ENABLED
     Site.markdown_additional_options["chat"] = {
       limited_pretty_text_features: ChatMessage::MARKDOWN_FEATURES,
       limited_pretty_text_markdown_rules: ChatMessage::MARKDOWN_IT_RULES,
     }
 
-    Guardian.prepend DiscourseChat::GuardianExtensions
-    UserNotifications.prepend DiscourseChat::UserNotificationsExtension
-    UserOption.prepend DiscourseChat::UserOptionExtension
-    Category.prepend DiscourseChat::CategoryExtension
-    User.prepend DiscourseChat::UserExtension
-    Jobs::UserEmail.prepend DiscourseChat::UserEmailExtension
+    Guardian.prepend Chat::GuardianExtensions
+    UserNotifications.prepend Chat::UserNotificationsExtension
+    UserOption.prepend Chat::UserOptionExtension
+    Category.prepend Chat::CategoryExtension
+    User.prepend Chat::UserExtension
+    Jobs::UserEmail.prepend Chat::UserEmailExtension
 
     Bookmark.register_bookmarkable(ChatMessageBookmarkable)
   end
 
   if Oneboxer.respond_to?(:register_local_handler)
-    Oneboxer.register_local_handler("discourse_chat/chat") do |url, route|
+    Oneboxer.register_local_handler("chat/chat") do |url, route|
       queryParams =
         begin
           CGI.parse(URI.parse(url).query)
@@ -306,12 +306,12 @@ after_initialize do
         args[:created_at_str] = message.created_at.iso8601
       end
 
-      Mustache.render(DiscourseChat.onebox_template, args)
+      Mustache.render(Chat.onebox_template, args)
     end
   end
 
   if InlineOneboxer.respond_to?(:register_local_handler)
-    InlineOneboxer.register_local_handler("discourse_chat/chat") do |url, route|
+    InlineOneboxer.register_local_handler("chat/chat") do |url, route|
       queryParams =
         begin
           CGI.parse(URI.parse(url).query)
@@ -408,9 +408,9 @@ after_initialize do
   add_to_serializer(:current_user, :needs_dm_retention_reminder) { true }
 
   add_to_serializer(:current_user, :has_joinable_public_channels) do
-    DiscourseChat::ChatChannelFetcher.secured_public_channels(
+    Chat::ChatChannelFetcher.secured_public_channels(
       self.scope,
-      DiscourseChat::ChatChannelMembershipManager.all_for_user(self.scope.user),
+      Chat::ChatChannelMembershipManager.all_for_user(self.scope.user),
       following: false,
       limit: 1,
       status: :open,
@@ -418,7 +418,7 @@ after_initialize do
   end
 
   add_to_serializer(:current_user, :chat_channels) do
-    structured = DiscourseChat::ChatChannelFetcher.structured(self.scope)
+    structured = Chat::ChatChannelFetcher.structured(self.scope)
     ChatChannelIndexSerializer.new(structured, scope: self.scope, root: false).as_json
   end
 
@@ -475,19 +475,19 @@ after_initialize do
     end
 
     if name == :secure_uploads && old_value == false && new_value == true
-      DiscourseChat::SecureUploadsCompatibility.update_settings
+      Chat::SecureUploadsCompatibility.update_settings
     end
   end
 
   on(:post_alerter_after_save_post) do |post, new_record, notified|
     next if !new_record
-    DiscourseChat::PostNotificationHandler.new(post, notified).handle
+    Chat::PostNotificationHandler.new(post, notified).handle
   end
 
   register_presence_channel_prefix("chat") do |channel_name|
     next nil unless channel_name == "/chat/online"
     config = PresenceChannel::Config.new
-    config.allowed_group_ids = DiscourseChat.allowed_group_ids
+    config.allowed_group_ids = Chat.allowed_group_ids
     config
   end
 
@@ -530,9 +530,7 @@ after_initialize do
       ChatChannel
         .where(auto_join_users: true)
         .each do |channel|
-          DiscourseChat::ChatChannelMembershipManager.new(
-            channel,
-          ).enforce_automatic_user_membership(user)
+          Chat::ChatChannelMembershipManager.new(channel).enforce_automatic_user_membership(user)
         end
     end
   end
@@ -542,9 +540,7 @@ after_initialize do
       ChatChannel
         .where(auto_join_users: true)
         .each do |channel|
-          DiscourseChat::ChatChannelMembershipManager.new(
-            channel,
-          ).enforce_automatic_user_membership(user)
+          Chat::ChatChannelMembershipManager.new(channel).enforce_automatic_user_membership(user)
         end
     end
   end
@@ -560,9 +556,7 @@ after_initialize do
         .where(category_groups: { group_id: group.id })
 
     channels_to_add.each do |channel|
-      DiscourseChat::ChatChannelMembershipManager.new(channel).enforce_automatic_user_membership(
-        user,
-      )
+      Chat::ChatChannelMembershipManager.new(channel).enforce_automatic_user_membership(user)
     end
   end
 
@@ -573,13 +567,11 @@ after_initialize do
     category_channel = ChatChannel.find_by(auto_join_users: true, chatable: category)
 
     if category_channel
-      DiscourseChat::ChatChannelMembershipManager.new(
-        category_channel,
-      ).enforce_automatic_channel_memberships
+      Chat::ChatChannelMembershipManager.new(category_channel).enforce_automatic_channel_memberships
     end
   end
 
-  DiscourseChat::Engine.routes.draw do
+  Chat::Engine.routes.draw do
     namespace :api do
       get "/chat_channels" => "chat_channels#index"
       get "/chat_channels/:chat_channel_id/memberships" => "chat_channel_memberships#index"
@@ -656,16 +648,16 @@ after_initialize do
   end
 
   Discourse::Application.routes.append do
-    mount ::DiscourseChat::Engine, at: "/chat"
-    get "/admin/plugins/chat" => "discourse_chat/admin_incoming_chat_webhooks#index",
+    mount ::Chat::Engine, at: "/chat"
+    get "/admin/plugins/chat" => "chat/admin_incoming_chat_webhooks#index",
         :constraints => StaffConstraint.new
-    post "/admin/plugins/chat/hooks" => "discourse_chat/admin_incoming_chat_webhooks#create",
+    post "/admin/plugins/chat/hooks" => "chat/admin_incoming_chat_webhooks#create",
          :constraints => StaffConstraint.new
     put "/admin/plugins/chat/hooks/:incoming_chat_webhook_id" =>
-          "discourse_chat/admin_incoming_chat_webhooks#update",
+          "chat/admin_incoming_chat_webhooks#update",
         :constraints => StaffConstraint.new
     delete "/admin/plugins/chat/hooks/:incoming_chat_webhook_id" =>
-             "discourse_chat/admin_incoming_chat_webhooks#destroy",
+             "chat/admin_incoming_chat_webhooks#destroy",
            :constraints => StaffConstraint.new
     get "u/:username/preferences/chat" => "users#preferences",
         :constraints => {
@@ -690,7 +682,7 @@ after_initialize do
         )
 
         creator =
-          DiscourseChat::ChatMessageCreator.create(
+          Chat::ChatMessageCreator.create(
             chat_channel: channel,
             user: sender,
             content: utils.apply_placeholders(fields.dig("message", "value"), placeholders),
@@ -707,7 +699,7 @@ after_initialize do
     :chat,
     {
       create_message: {
-        actions: %w[discourse_chat/chat#create_message],
+        actions: %w[chat/chat#create_message],
         params: %i[chat_channel_id],
       },
     },
@@ -725,15 +717,13 @@ after_initialize do
     register_email_unsubscriber("chat_summary", EmailControllerHelper::ChatSummaryUnsubscriber)
   end
 
-  register_about_stat_group("chat_messages", show_in_ui: true) do
-    DiscourseChat::Statistics.about_messages
-  end
+  register_about_stat_group("chat_messages", show_in_ui: true) { Chat::Statistics.about_messages }
 
-  register_about_stat_group("chat_channels") { DiscourseChat::Statistics.about_channels }
+  register_about_stat_group("chat_channels") { Chat::Statistics.about_channels }
 
-  register_about_stat_group("chat_users") { DiscourseChat::Statistics.about_users }
+  register_about_stat_group("chat_users") { Chat::Statistics.about_users }
 end
 
 if Rails.env == "test"
-  Dir[Rails.root.join("plugins/discourse-chat/spec/support/**/*.rb")].each { |f| require f }
+  Dir[Rails.root.join("plugins/chat/spec/support/**/*.rb")].each { |f| require f }
 end

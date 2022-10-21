@@ -7,7 +7,7 @@ module Jobs
     def execute(args = {})
       return unless SiteSetting.chat_enabled
 
-      DiscourseChat::ChatMailer.send_unread_mentions_summary
+      Chat::ChatMailer.send_unread_mentions_summary
     end
   end
 end

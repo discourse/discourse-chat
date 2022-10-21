@@ -22,10 +22,7 @@ describe UserNotifications do
     context "with private channel" do
       fab!(:channel) do
         refresh_auto_groups
-        DiscourseChat::DirectMessageChannelCreator.create!(
-          acting_user: sender,
-          target_users: [sender, user],
-        )
+        Chat::DirectMessageChannelCreator.create!(acting_user: sender, target_users: [sender, user])
       end
 
       describe "email subject" do
@@ -75,7 +72,7 @@ describe UserNotifications do
           refresh_auto_groups
           another_dm_user.reload
           another_channel =
-            DiscourseChat::DirectMessageChannelCreator.create!(
+            Chat::DirectMessageChannelCreator.create!(
               acting_user: user,
               target_users: [another_dm_user, user],
             )
@@ -95,7 +92,7 @@ describe UserNotifications do
             refresh_auto_groups
             sender.reload
             channel =
-              DiscourseChat::DirectMessageChannelCreator.create!(
+              Chat::DirectMessageChannelCreator.create!(
                 acting_user: sender,
                 target_users: [user, sender],
               )
@@ -217,7 +214,7 @@ describe UserNotifications do
           before do
             refresh_auto_groups
             channel =
-              DiscourseChat::DirectMessageChannelCreator.create!(
+              Chat::DirectMessageChannelCreator.create!(
                 acting_user: sender,
                 target_users: [sender, user],
               )
@@ -326,7 +323,7 @@ describe UserNotifications do
             user_membership.update!(last_read_message_id: chat_message.id)
             refresh_auto_groups
             channel =
-              DiscourseChat::DirectMessageChannelCreator.create!(
+              Chat::DirectMessageChannelCreator.create!(
                 acting_user: sender,
                 target_users: [sender, user],
               )

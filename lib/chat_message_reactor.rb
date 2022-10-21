@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class DiscourseChat::ChatMessageReactor
+class Chat::ChatMessageReactor
   ADD_REACTION = :add
   REMOVE_REACTION = :remove
   MAX_REACTIONS_LIMIT = 30
@@ -44,7 +44,7 @@ class DiscourseChat::ChatMessageReactor
   end
 
   def enforce_channel_membership!
-    DiscourseChat::ChatChannelMembershipManager.new(@chat_channel).follow(@user)
+    Chat::ChatChannelMembershipManager.new(@chat_channel).follow(@user)
   end
 
   def validate_channel_status!

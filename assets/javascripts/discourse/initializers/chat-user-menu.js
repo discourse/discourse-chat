@@ -2,7 +2,7 @@ import I18n from "I18n";
 
 import { withPluginApi } from "discourse/lib/plugin-api";
 import { formatUsername } from "discourse/lib/utilities";
-import slugifyChannel from "discourse/plugins/discourse-chat/discourse/lib/slugify-channel";
+import slugifyChannel from "discourse/plugins/chat/discourse/lib/slugify-channel";
 
 export default {
   name: "chat-user-menu",

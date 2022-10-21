@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class DiscourseChat::Api < DiscourseChat::ChatBaseController
+class Chat::Api < Chat::ChatBaseController
   before_action :ensure_logged_in
   before_action :ensure_can_chat
 

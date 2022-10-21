@@ -19,12 +19,12 @@ import { readOnly, reads } from "@ember/object/computed";
 import { SKIP } from "discourse/lib/autocomplete";
 import { Promise } from "rsvp";
 import { translations } from "pretty-text/emoji/data";
-import { channelStatusName } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
+import { channelStatusName } from "discourse/plugins/chat/discourse/models/chat-channel";
 import { setupHashtagAutocomplete } from "discourse/lib/hashtag-autocomplete";
 import {
   chatComposerButtons,
   chatComposerButtonsDependentKeys,
-} from "discourse/plugins/discourse-chat/discourse/lib/chat-composer-buttons";
+} from "discourse/plugins/chat/discourse/lib/chat-composer-buttons";
 
 const THROTTLE_MS = 150;
 

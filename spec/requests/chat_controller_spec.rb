@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.describe DiscourseChat::ChatController do
+RSpec.describe Chat::ChatController do
   fab!(:user) { Fabricate(:user) }
   fab!(:other_user) { Fabricate(:user) }
   fab!(:admin) { Fabricate(:admin) }
@@ -34,9 +34,7 @@ RSpec.describe DiscourseChat::ChatController do
   end
 
   def flag_message(message, flagger, flag_type: ReviewableScore.types[:off_topic])
-    DiscourseChat::ChatReviewQueue.new.flag_message(message, Guardian.new(flagger), flag_type)[
-      :reviewable
-    ]
+    Chat::ChatReviewQueue.new.flag_message(message, Guardian.new(flagger), flag_type)[:reviewable]
   end
 
   describe "#messages" do

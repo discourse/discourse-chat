@@ -6,7 +6,7 @@ class DeletedChatUser < User
   end
 
   def avatar_template
-    "/plugins/discourse-chat/images/deleted-chat-user-avatar.png"
+    "/plugins/chat/images/deleted-chat-user-avatar.png"
   end
 
   def bot?

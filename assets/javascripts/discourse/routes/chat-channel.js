@@ -3,8 +3,8 @@ import Promise from "rsvp";
 import EmberObject, { action } from "@ember/object";
 import { ajax } from "discourse/lib/ajax";
 import { inject as service } from "@ember/service";
-import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
-import slugifyChannel from "discourse/plugins/discourse-chat/discourse/lib/slugify-channel";
+import ChatChannel from "discourse/plugins/chat/discourse/models/chat-channel";
+import slugifyChannel from "discourse/plugins/chat/discourse/lib/slugify-channel";
 
 export default class ChatChannelRoute extends DiscourseRoute {
   @service chat;

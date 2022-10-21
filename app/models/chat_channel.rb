@@ -60,11 +60,11 @@ class ChatChannel < ActiveRecord::Base
   end
 
   def add(user)
-    DiscourseChat::ChatChannelMembershipManager.new(self).follow(user)
+    Chat::ChatChannelMembershipManager.new(self).follow(user)
   end
 
   def remove(user)
-    DiscourseChat::ChatChannelMembershipManager.new(self).unfollow(user)
+    Chat::ChatChannelMembershipManager.new(self).unfollow(user)
   end
 
   def status_name

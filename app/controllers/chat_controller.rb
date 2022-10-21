@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
+class Chat::ChatController < Chat::ChatBaseController
   PAST_MESSAGE_LIMIT = 20
   FUTURE_MESSAGE_LIMIT = 40
   PAST = "past"
@@ -45,18 +45,18 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
 
     success = chat_channel.save
     if success && chat_channel.chatable_has_custom_fields?
-      @chatable.custom_fields[DiscourseChat::HAS_CHAT_ENABLED] = true
+      @chatable.custom_fields[Chat::HAS_CHAT_ENABLED] = true
       @chatable.save!
     end
 
     if success
-      membership = DiscourseChat::ChatChannelMembershipManager.new(channel).follow(user)
+      membership = Chat::ChatChannelMembershipManager.new(channel).follow(user)
       render_serialized(chat_channel, ChatChannelSerializer, membership: membership)
     else
       render_json_error(chat_channel)
     end
 
-    DiscourseChat::ChatChannelMembershipManager.new(channel).follow(user)
+    Chat::ChatChannelMembershipManager.new(channel).follow(user)
   end
 
   def disable_chat
@@ -68,7 +68,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     success = chat_channel.save
     if success
       if chat_channel.chatable_has_custom_fields?
-        @chatable.custom_fields.delete(DiscourseChat::HAS_CHAT_ENABLED)
+        @chatable.custom_fields.delete(Chat::HAS_CHAT_ENABLED)
         @chatable.save!
       end
 
@@ -81,10 +81,10 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
   def create_message
     raise Discourse::InvalidAccess if current_user.silenced?
 
-    DiscourseChat::ChatMessageRateLimiter.run!(current_user)
+    Chat::ChatMessageRateLimiter.run!(current_user)
 
     @user_chat_channel_membership =
-      DiscourseChat::ChatChannelMembershipManager.new(@chat_channel).find_for_user(
+      Chat::ChatChannelMembershipManager.new(@chat_channel).find_for_user(
         current_user,
         following: true,
       )
@@ -99,7 +99,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     content = params[:message]
 
     chat_message_creator =
-      DiscourseChat::ChatMessageCreator.create(
+      Chat::ChatMessageCreator.create(
         chat_channel: @chat_channel,
         user: current_user,
         in_reply_to_id: reply_to_msg_id,
@@ -146,7 +146,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
   def edit_message
     guardian.ensure_can_edit_chat!(@message)
     chat_message_updater =
-      DiscourseChat::ChatMessageUpdater.update(
+      Chat::ChatMessageUpdater.update(
         chat_message: @message,
         new_content: params[:new_message],
         upload_ids: params[:upload_ids] || [],
@@ -159,7 +159,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
 
   def update_user_last_read
     membership =
-      DiscourseChat::ChatChannelMembershipManager.new(@chat_channel).find_for_user(
+      Chat::ChatChannelMembershipManager.new(@chat_channel).find_for_user(
         current_user,
         following: true,
       )
@@ -246,7 +246,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     params.require(%i[message_id emoji react_action])
     guardian.ensure_can_react!
 
-    DiscourseChat::ChatMessageReactor.new(current_user, @chat_channel).react!(
+    Chat::ChatMessageReactor.new(current_user, @chat_channel).react!(
       message_id: params[:message_id],
       react_action: params[:react_action].to_sym,
       emoji: params[:emoji],
@@ -404,21 +404,17 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
 
     raise Discourse::InvalidAccess if !guardian.can_move_chat_messages?(@chat_channel)
     destination_channel =
-      DiscourseChat::ChatChannelFetcher.find_with_access_check(
-        params[:destination_channel_id],
-        guardian,
-      )
+      Chat::ChatChannelFetcher.find_with_access_check(params[:destination_channel_id], guardian)
 
     begin
       message_ids = params[:message_ids].map(&:to_i)
       moved_messages =
-        DiscourseChat::MessageMover.new(
+        Chat::MessageMover.new(
           acting_user: current_user,
           source_channel: @chat_channel,
           message_ids: message_ids,
         ).move_to_channel(destination_channel)
-    rescue DiscourseChat::MessageMover::NoMessagesFound,
-           DiscourseChat::MessageMover::InvalidChannel => err
+    rescue Chat::MessageMover::NoMessagesFound, Chat::MessageMover::InvalidChannel => err
       return render_json_error(err.message)
     end
 
@@ -450,12 +446,7 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
     set_channel_and_chatable_with_access_check(chat_channel_id: chat_message.chat_channel_id)
 
     result =
-      DiscourseChat::ChatReviewQueue.new.flag_message(
-        chat_message,
-        guardian,
-        flag_type_id,
-        permitted_params,
-      )
+      Chat::ChatReviewQueue.new.flag_message(chat_message, guardian, flag_type_id, permitted_params)
 
     if result[:success]
       render json: success_json

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class DiscourseChat::DirectMessagesController < DiscourseChat::ChatBaseController
+class Chat::DirectMessagesController < Chat::ChatBaseController
   # NOTE: For V1 of chat channel archiving and deleting we are not doing
   # anything for DM channels, their behaviour will stay as is.
   def create
@@ -9,17 +9,14 @@ class DiscourseChat::DirectMessagesController < DiscourseChat::ChatBaseControlle
 
     begin
       chat_channel =
-        DiscourseChat::DirectMessageChannelCreator.create!(
-          acting_user: current_user,
-          target_users: users,
-        )
+        Chat::DirectMessageChannelCreator.create!(acting_user: current_user, target_users: users)
       render_serialized(
         chat_channel,
         ChatChannelSerializer,
         root: "chat_channel",
         membership: chat_channel.membership_for(current_user),
       )
-    rescue DiscourseChat::DirectMessageChannelCreator::NotAllowed => err
+    rescue Chat::DirectMessageChannelCreator::NotAllowed => err
       render_json_error(err.message)
     end
   end

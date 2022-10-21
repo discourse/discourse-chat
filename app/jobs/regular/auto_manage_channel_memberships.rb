@@ -38,7 +38,7 @@ module Jobs
       # The Jobs::AutoJoinChannelBatch job will only do this recalculation
       # if it's operating on one user, so we need to make sure we do it for
       # the channel here once this job is complete.
-      DiscourseChat::ChatChannelMembershipManager.new(channel).recalculate_user_count
+      Chat::ChatChannelMembershipManager.new(channel).recalculate_user_count
     end
 
     private

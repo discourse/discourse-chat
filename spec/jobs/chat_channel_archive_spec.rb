@@ -34,7 +34,7 @@ describe Jobs::ChatChannelArchive do
   end
 
   it "processes the archive" do
-    DiscourseChat::ChatChannelArchiveService.any_instance.expects(:execute)
+    Chat::ChatChannelArchiveService.any_instance.expects(:execute)
     run_job
   end
 end

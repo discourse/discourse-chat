@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe DiscourseChat::Api::ChatChannelNotificationsSettingsController do
+RSpec.describe Chat::Api::ChatChannelNotificationsSettingsController do
   before do
     SiteSetting.chat_enabled = true
     SiteSetting.chat_allowed_groups = Group::AUTO_GROUPS[:everyone]

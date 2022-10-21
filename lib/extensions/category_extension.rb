@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module DiscourseChat::CategoryExtension
+module Chat::CategoryExtension
   extend ActiveSupport::Concern
 
   include Chatable

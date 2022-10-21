@@ -5,7 +5,7 @@ import {
   CHANNEL_STATUSES,
   channelStatusIcon,
   channelStatusName,
-} from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
+} from "discourse/plugins/chat/discourse/models/chat-channel";
 
 export default Component.extend({
   tagName: "",

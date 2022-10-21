@@ -12,7 +12,7 @@ import {
   chatChannels,
   directMessageChannels,
   generateChatView,
-} from "discourse/plugins/discourse-chat/chat-fixtures";
+} from "discourse/plugins/chat/chat-fixtures";
 import { test } from "qunit";
 
 acceptance("Discourse Chat - User card test", function (needs) {

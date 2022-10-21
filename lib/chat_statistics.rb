@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class DiscourseChat::Statistics
+class Chat::Statistics
   def self.about_messages
     {
       :last_day => ChatMessage.where("created_at > ?", 1.days.ago).count,

@@ -5,7 +5,7 @@ import { DefaultNotificationItem } from "discourse/widgets/default-notification-
 import { h } from "virtual-dom";
 import { formatUsername } from "discourse/lib/utilities";
 import { iconNode } from "discourse-common/lib/icon-library";
-import slugifyChannel from "discourse/plugins/discourse-chat/discourse/lib/slugify-channel";
+import slugifyChannel from "discourse/plugins/chat/discourse/lib/slugify-channel";
 
 const chatNotificationItem = {
   services: ["chat", "router"],

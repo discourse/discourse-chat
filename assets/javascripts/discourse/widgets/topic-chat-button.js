@@ -1,6 +1,6 @@
 import hbs from "discourse/widgets/hbs-compiler";
 import { createWidget } from "discourse/widgets/widget";
-import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
+import ChatChannel from "discourse/plugins/chat/discourse/models/chat-channel";
 
 export default createWidget("topic-chat-button", {
   tagName: "button.btn.btn-default.topic-chat-button",

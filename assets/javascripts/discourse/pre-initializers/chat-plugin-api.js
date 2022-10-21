@@ -2,8 +2,8 @@ import { withPluginApi } from "discourse/lib/plugin-api";
 import {
   addChatMessageDecorator,
   resetChatMessageDecorators,
-} from "discourse/plugins/discourse-chat/discourse/components/chat-message";
-import { registerChatComposerButton } from "discourse/plugins/discourse-chat/discourse/lib/chat-composer-buttons";
+} from "discourse/plugins/chat/discourse/components/chat-message";
+import { registerChatComposerButton } from "discourse/plugins/chat/discourse/lib/chat-composer-buttons";
 
 export default {
   name: "chat-plugin-api",

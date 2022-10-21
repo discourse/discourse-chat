@@ -2,11 +2,11 @@
 
 require "rails_helper"
 
-describe DiscourseChat::PostNotificationHandler do
+describe Chat::PostNotificationHandler do
   let(:acting_user) { Fabricate(:user) }
   let(:post) { Fabricate(:post) }
   let(:notified_users) { [] }
-  let(:subject) { DiscourseChat::PostNotificationHandler.new(post, notified_users) }
+  let(:subject) { Chat::PostNotificationHandler.new(post, notified_users) }
 
   fab!(:channel) { Fabricate(:category_channel) }
   fab!(:message1) do

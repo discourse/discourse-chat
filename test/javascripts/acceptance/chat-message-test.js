@@ -7,7 +7,7 @@ import { test } from "qunit";
 import {
   chatChannels,
   generateChatView,
-} from "discourse/plugins/discourse-chat/chat-fixtures";
+} from "discourse/plugins/chat/chat-fixtures";
 
 function setupPretenders(server, helper) {
   server.get("/chat/chat_channels.json", () => helper.response(chatChannels));

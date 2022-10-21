@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-describe DiscourseChat::DirectMessageChannelCreator do
+describe Chat::DirectMessageChannelCreator do
   fab!(:user_1) { Fabricate(:user) }
   fab!(:user_2) { Fabricate(:user) }
   fab!(:user_3) { Fabricate(:user) }
@@ -220,7 +220,7 @@ describe DiscourseChat::DirectMessageChannelCreator do
         expect {
           subject.create!(acting_user: user_1, target_users: [user_1, user_2, user_3])
         }.to raise_error(
-          DiscourseChat::DirectMessageChannelCreator::NotAllowed,
+          Chat::DirectMessageChannelCreator::NotAllowed,
           I18n.t("chat.errors.not_accepting_dms", username: user_2.username),
         )
       end
@@ -229,7 +229,7 @@ describe DiscourseChat::DirectMessageChannelCreator do
         expect {
           subject.create!(acting_user: user_2, target_users: [user_2, user_1, user_3])
         }.to raise_error(
-          DiscourseChat::DirectMessageChannelCreator::NotAllowed,
+          Chat::DirectMessageChannelCreator::NotAllowed,
           I18n.t("chat.errors.actor_ignoring_target_user", username: user_1.username),
         )
       end
@@ -242,7 +242,7 @@ describe DiscourseChat::DirectMessageChannelCreator do
         expect {
           subject.create!(acting_user: user_1, target_users: [user_1, user_2, user_3])
         }.to raise_error(
-          DiscourseChat::DirectMessageChannelCreator::NotAllowed,
+          Chat::DirectMessageChannelCreator::NotAllowed,
           I18n.t("chat.errors.not_accepting_dms", username: user_2.username),
         )
       end
@@ -251,7 +251,7 @@ describe DiscourseChat::DirectMessageChannelCreator do
         expect {
           subject.create!(acting_user: user_2, target_users: [user_2, user_1, user_3])
         }.to raise_error(
-          DiscourseChat::DirectMessageChannelCreator::NotAllowed,
+          Chat::DirectMessageChannelCreator::NotAllowed,
           I18n.t("chat.errors.actor_muting_target_user", username: user_1.username),
         )
       end
@@ -264,7 +264,7 @@ describe DiscourseChat::DirectMessageChannelCreator do
         expect {
           subject.create!(acting_user: user_1, target_users: [user_1, user_2, user_3])
         }.to raise_error(
-          DiscourseChat::DirectMessageChannelCreator::NotAllowed,
+          Chat::DirectMessageChannelCreator::NotAllowed,
           I18n.t("chat.errors.not_accepting_dms", username: user_2.username),
         )
       end
@@ -273,7 +273,7 @@ describe DiscourseChat::DirectMessageChannelCreator do
         expect {
           subject.create!(acting_user: user_2, target_users: [user_2, user_1, user_3])
         }.to raise_error(
-          DiscourseChat::DirectMessageChannelCreator::NotAllowed,
+          Chat::DirectMessageChannelCreator::NotAllowed,
           I18n.t("chat.errors.actor_disallowed_dms"),
         )
       end
@@ -285,7 +285,7 @@ describe DiscourseChat::DirectMessageChannelCreator do
       it "raises an error with a helpful message" do
         expect {
           subject.create!(acting_user: user_1, target_users: [user_1, user_2, user_3])
-        }.to raise_error(DiscourseChat::DirectMessageChannelCreator::NotAllowed)
+        }.to raise_error(Chat::DirectMessageChannelCreator::NotAllowed)
       end
 
       it "does not raise an error if the acting user is allowed to send the PM" do
@@ -299,7 +299,7 @@ describe DiscourseChat::DirectMessageChannelCreator do
         expect {
           subject.create!(acting_user: user_2, target_users: [user_2, user_1, user_3])
         }.to raise_error(
-          DiscourseChat::DirectMessageChannelCreator::NotAllowed,
+          Chat::DirectMessageChannelCreator::NotAllowed,
           I18n.t("chat.errors.actor_preventing_target_user_from_dm", username: user_1.username),
         )
       end

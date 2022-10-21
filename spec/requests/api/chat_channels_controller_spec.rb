@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-describe DiscourseChat::Api::ChatChannelsController do
+describe Chat::Api::ChatChannelsController do
   before do
     SiteSetting.chat_enabled = true
     SiteSetting.chat_allowed_groups = Group::AUTO_GROUPS[:everyone]

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class DiscourseChat::Api::CategoryChatablesController < ApplicationController
+class Chat::Api::CategoryChatablesController < ApplicationController
   def permissions
     category = Category.find(params[:id])
 

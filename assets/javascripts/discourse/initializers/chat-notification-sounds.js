@@ -2,8 +2,8 @@ import { withPluginApi } from "discourse/lib/plugin-api";
 import discourseDebounce from "discourse-common/lib/debounce";
 
 export const CHAT_SOUNDS = {
-  bell: "/plugins/discourse-chat/audio/bell.mp3",
-  ding: "/plugins/discourse-chat/audio/ding.mp3",
+  bell: "/plugins/chat/audio/bell.mp3",
+  ding: "/plugins/chat/audio/ding.mp3",
 };
 
 const MENTION = 29;

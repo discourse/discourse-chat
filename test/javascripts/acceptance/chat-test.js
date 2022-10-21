@@ -23,7 +23,7 @@ import { skip, test } from "qunit";
 import {
   chatChannels,
   messageContents,
-} from "discourse/plugins/discourse-chat/chat-fixtures";
+} from "discourse/plugins/chat/chat-fixtures";
 import Session from "discourse/models/session";
 import { cloneJSON } from "discourse-common/lib/object";
 import {
@@ -36,7 +36,7 @@ import selectKit from "discourse/tests/helpers/select-kit-helper";
 import sinon from "sinon";
 import * as ajaxModule from "discourse/lib/ajax";
 import I18n from "I18n";
-import { CHANNEL_STATUSES } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
+import { CHANNEL_STATUSES } from "discourse/plugins/chat/discourse/models/chat-channel";
 import fabricators from "../helpers/fabricators";
 import {
   baseChatPretenders,

@@ -10,7 +10,7 @@ describe "chat bbcode quoting in posts" do
       raw: "[chat quote=\"martin;2321;2022-01-25T05:40:39Z\"]\nThis is a chat message.\n[/chat]",
     )
     expect(post.cooked.chomp).to eq(<<~COOKED.chomp)
-      <div class="discourse-chat-transcript" data-message-id="2321" data-username="martin" data-datetime="2022-01-25T05:40:39Z">
+      <div class="chat-transcript" data-message-id="2321" data-username="martin" data-datetime="2022-01-25T05:40:39Z">
       <div class="chat-transcript-user">
       <div class="chat-transcript-user-avatar"></div>
       <div class="chat-transcript-username">
@@ -32,7 +32,7 @@ describe "chat bbcode quoting in posts" do
         "[chat quote=\"martin;2321;2022-01-25T05:40:39Z\" channel=\"Cool Cats Club\" channelId=\"1234\" multiQuote=\"true\"]\nThis is a chat message.\n[/chat]",
     )
     expect(post.cooked.chomp).to eq(<<~COOKED.chomp)
-      <div class="discourse-chat-transcript" data-message-id="2321" data-username="martin" data-datetime="2022-01-25T05:40:39Z" data-channel-name="Cool Cats Club" data-channel-id="1234">
+      <div class="chat-transcript" data-message-id="2321" data-username="martin" data-datetime="2022-01-25T05:40:39Z" data-channel-name="Cool Cats Club" data-channel-id="1234">
       <div class="chat-transcript-meta">
       Originally sent in <a href="/chat/channel/1234/-">Cool Cats Club</a>
       </div>
@@ -57,7 +57,7 @@ describe "chat bbcode quoting in posts" do
         "[chat quote=\"martin;2321;2022-01-25T05:40:39Z\" channel=\"Cool Cats Club\" channelId=\"1234\"]\nThis is a chat message.\n[/chat]",
     )
     expect(post.cooked.chomp).to eq(<<~COOKED.chomp)
-      <div class="discourse-chat-transcript" data-message-id="2321" data-username="martin" data-datetime="2022-01-25T05:40:39Z" data-channel-name="Cool Cats Club" data-channel-id="1234">
+      <div class="chat-transcript" data-message-id="2321" data-username="martin" data-datetime="2022-01-25T05:40:39Z" data-channel-name="Cool Cats Club" data-channel-id="1234">
       <div class="chat-transcript-user">
       <div class="chat-transcript-user-avatar"></div>
       <div class="chat-transcript-username">
@@ -81,7 +81,7 @@ describe "chat bbcode quoting in posts" do
         "[chat quote=\"martin;2321;2022-01-25T05:40:39Z\" channel=\"Cool Cats Club\" channelId=\"1234\" chained=\"true\"]\nThis is a chat message.\n[/chat]",
     )
     expect(post.cooked.chomp).to eq(<<~COOKED.chomp)
-      <div class="discourse-chat-transcript chat-transcript-chained" data-message-id="2321" data-username="martin" data-datetime="2022-01-25T05:40:39Z" data-channel-name="Cool Cats Club" data-channel-id="1234">
+      <div class="chat-transcript chat-transcript-chained" data-message-id="2321" data-username="martin" data-datetime="2022-01-25T05:40:39Z" data-channel-name="Cool Cats Club" data-channel-id="1234">
       <div class="chat-transcript-user">
       <div class="chat-transcript-user-avatar"></div>
       <div class="chat-transcript-username">
@@ -105,7 +105,7 @@ describe "chat bbcode quoting in posts" do
         "[chat quote=\"martin;2321;2022-01-25T05:40:39Z\" channel=\"Cool Cats Club\" channelId=\"1234\" multiQuote=\"true\" noLink=\"true\"]\nThis is a chat message.\n[/chat]",
     )
     expect(post.cooked.chomp).to eq(<<~COOKED.chomp)
-      <div class="discourse-chat-transcript" data-message-id="2321" data-username="martin" data-datetime="2022-01-25T05:40:39Z" data-channel-name="Cool Cats Club" data-channel-id="1234">
+      <div class="chat-transcript" data-message-id="2321" data-username="martin" data-datetime="2022-01-25T05:40:39Z" data-channel-name="Cool Cats Club" data-channel-id="1234">
       <div class="chat-transcript-meta">
       Originally sent in <a href="/chat/channel/1234/-">Cool Cats Club</a>
       </div>
@@ -131,7 +131,7 @@ describe "chat bbcode quoting in posts" do
         "[chat quote=\"martin;2321;2022-01-25T05:40:39Z\" channel=\"Cool Cats Club\" channelId=\"1234\" reactions=\"#{reactions_attr}\"]\nThis is a chat message.\n[/chat]",
     )
     expect(post.cooked.chomp).to eq(<<~COOKED.chomp)
-      <div class="discourse-chat-transcript" data-message-id="2321" data-username="martin" data-datetime="2022-01-25T05:40:39Z" data-reactions="+1:martin;heart:martin,eviltrout" data-channel-name="Cool Cats Club" data-channel-id="1234">
+      <div class="chat-transcript" data-message-id="2321" data-username="martin" data-datetime="2022-01-25T05:40:39Z" data-reactions="+1:martin;heart:martin,eviltrout" data-channel-name="Cool Cats Club" data-channel-id="1234">
       <div class="chat-transcript-user">
       <div class="chat-transcript-user-avatar"></div>
       <div class="chat-transcript-username">
@@ -192,7 +192,7 @@ This is an inline onebox https://en.wikipedia.org/wiki/Hyperlink.
 
     expect(post.cooked.chomp).to eq(<<~COOKED.chomp)
 #{full_onebox_html}
-<div class="discourse-chat-transcript" data-message-id="2321" data-username="martin" data-datetime="2022-01-25T05:40:39Z">
+<div class="chat-transcript" data-message-id="2321" data-username="martin" data-datetime="2022-01-25T05:40:39Z">
 <div class="chat-transcript-user">
 <div class="chat-transcript-user-avatar"></div>
 <div class="chat-transcript-username">

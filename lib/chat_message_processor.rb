@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class DiscourseChat::ChatMessageProcessor
+class Chat::ChatMessageProcessor
   include ::CookedProcessorMixin
 
   def initialize(chat_message)

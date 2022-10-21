@@ -37,7 +37,7 @@ module Jobs
       # are doing it for many then we should do it after all batches are
       # complete for the channel in Jobs::AutoManageChannelMemberships
       if start_user_id == end_user_id
-        DiscourseChat::ChatChannelMembershipManager.new(channel).recalculate_user_count
+        Chat::ChatChannelMembershipManager.new(channel).recalculate_user_count
       end
 
       ChatPublisher.publish_new_channel(channel.reload, User.where(id: new_member_ids))

@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.describe DiscourseChat::GuardianExtensions do
+RSpec.describe Chat::GuardianExtensions do
   fab!(:user) { Fabricate(:user) }
   fab!(:staff) { Fabricate(:user, admin: true) }
   fab!(:chat_group) { Fabricate(:group) }
@@ -16,7 +16,7 @@ RSpec.describe DiscourseChat::GuardianExtensions do
     chat_group.add(user)
   end
 
-  it "cannot chat if the user is not in the DiscourseChat.allowed_group_ids" do
+  it "cannot chat if the user is not in the Chat.allowed_group_ids" do
     SiteSetting.chat_allowed_groups = ""
     expect(guardian.can_chat?(user)).to eq(false)
   end

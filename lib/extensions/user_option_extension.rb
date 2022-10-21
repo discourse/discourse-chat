@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module DiscourseChat::UserOptionExtension
+module Chat::UserOptionExtension
   # TODO: remove last_emailed_for_chat and chat_isolated in 2023
   def self.prepended(base)
     if base.ignored_columns

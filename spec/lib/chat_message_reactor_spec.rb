@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-describe DiscourseChat::ChatMessageReactor do
+describe Chat::ChatMessageReactor do
   fab!(:reacting_user) { Fabricate(:user) }
   fab!(:channel) { Fabricate(:category_channel) }
   fab!(:reactor) { described_class.new(reacting_user, channel) }
@@ -54,7 +54,7 @@ describe DiscourseChat::ChatMessageReactor do
 
   context "when max reactions has been reached" do
     before do
-      emojis = Emoji.all.slice(0, DiscourseChat::ChatMessageReactor::MAX_REACTIONS_LIMIT)
+      emojis = Emoji.all.slice(0, Chat::ChatMessageReactor::MAX_REACTIONS_LIMIT)
       emojis.each do |emoji|
         ChatMessageReaction.create!(
           chat_message: message_1,

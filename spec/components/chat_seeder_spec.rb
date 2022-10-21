@@ -41,8 +41,8 @@ describe ChatSeeder do
     assert_channel_was_correctly_seeded(staff_channel, Group[:staff])
     assert_channel_was_correctly_seeded(general_channel, Group[:everyone])
 
-    expect(staff_category.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]).to eq(true)
-    expect(general_category.reload.custom_fields[DiscourseChat::HAS_CHAT_ENABLED]).to eq(true)
+    expect(staff_category.custom_fields[Chat::HAS_CHAT_ENABLED]).to eq(true)
+    expect(general_category.reload.custom_fields[Chat::HAS_CHAT_ENABLED]).to eq(true)
     expect(SiteSetting.needs_chat_seeded).to eq(false)
   end
 

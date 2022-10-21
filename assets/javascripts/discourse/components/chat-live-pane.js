@@ -1,8 +1,8 @@
 import isElementInViewport from "discourse/lib/is-element-in-viewport";
-import ChatApi from "discourse/plugins/discourse-chat/discourse/lib/chat-api";
+import ChatApi from "discourse/plugins/chat/discourse/lib/chat-api";
 import { cloneJSON } from "discourse-common/lib/object";
-import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
-import ChatMessage from "discourse/plugins/discourse-chat/discourse/models/chat-message";
+import ChatChannel from "discourse/plugins/chat/discourse/models/chat-channel";
+import ChatMessage from "discourse/plugins/chat/discourse/models/chat-message";
 import Component from "@ember/component";
 import discourseComputed, {
   afterRender,
@@ -26,7 +26,7 @@ import {
   onPresenceChange,
   removeOnPresenceChange,
 } from "discourse/lib/user-presence";
-import isZoomed from "discourse/plugins/discourse-chat/discourse/lib/zoom-check";
+import isZoomed from "discourse/plugins/chat/discourse/lib/zoom-check";
 import { isTesting } from "discourse-common/config/environment";
 
 const MAX_RECENT_MSGS = 100;

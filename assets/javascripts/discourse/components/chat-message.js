@@ -17,9 +17,9 @@ import { clipboardCopy } from "discourse/lib/utilities";
 import { inject as service } from "@ember/service";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import discourseLater from "discourse-common/lib/later";
-import isZoomed from "discourse/plugins/discourse-chat/discourse/lib/zoom-check";
+import isZoomed from "discourse/plugins/chat/discourse/lib/zoom-check";
 import showModal from "discourse/lib/show-modal";
-import ChatMessageFlag from "discourse/plugins/discourse-chat/discourse/lib/chat-message-flag";
+import ChatMessageFlag from "discourse/plugins/chat/discourse/lib/chat-message-flag";
 
 let _chatMessageDecorators = [];
 

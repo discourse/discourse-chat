@@ -19,9 +19,9 @@ import {
 import {
   chatChannels,
   generateChatView,
-} from "discourse/plugins/discourse-chat/chat-fixtures";
-import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
-import { KEY_MODIFIER } from "discourse/plugins/discourse-chat/discourse/initializers/chat-keyboard-shortcuts";
+} from "discourse/plugins/chat/chat-fixtures";
+import ChatChannel from "discourse/plugins/chat/discourse/models/chat-channel";
+import { KEY_MODIFIER } from "discourse/plugins/chat/discourse/initializers/chat-keyboard-shortcuts";
 import { test } from "qunit";
 
 const MODIFIER_OPTIONS =

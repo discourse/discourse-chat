@@ -1,7 +1,7 @@
 import { acceptance } from "discourse/tests/helpers/qunit-helpers";
 import { currentURL, visit } from "@ember/test-helpers";
 import { test } from "qunit";
-import { chatChannels } from "discourse/plugins/discourse-chat/chat-fixtures";
+import { chatChannels } from "discourse/plugins/chat/chat-fixtures";
 
 acceptance("Discourse Chat - chat channel slug", function (needs) {
   needs.user({ has_chat_enabled: true, can_chat: true });

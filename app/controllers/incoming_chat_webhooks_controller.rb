@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class DiscourseChat::IncomingChatWebhooksController < ApplicationController
+class Chat::IncomingChatWebhooksController < ApplicationController
   WEBHOOK_MAX_MESSAGE_LENGTH = 2000
   WEBHOOK_MESSAGES_PER_MINUTE_LIMIT = 10
 
@@ -35,9 +35,9 @@ class DiscourseChat::IncomingChatWebhooksController < ApplicationController
       end
 
     if params[:text].present?
-      text = DiscourseChat::SlackCompatibility.process_text(params[:text])
+      text = Chat::SlackCompatibility.process_text(params[:text])
     else
-      text = DiscourseChat::SlackCompatibility.process_legacy_attachments(attachments)
+      text = Chat::SlackCompatibility.process_legacy_attachments(attachments)
     end
 
     process_webhook_payload(text: text, key: params[:key])
@@ -52,7 +52,7 @@ class DiscourseChat::IncomingChatWebhooksController < ApplicationController
     webhook = find_and_rate_limit_webhook(key)
 
     chat_message_creator =
-      DiscourseChat::ChatMessageCreator.create(
+      Chat::ChatMessageCreator.create(
         chat_channel: webhook.chat_channel,
         user: Discourse.system_user,
         content: text,

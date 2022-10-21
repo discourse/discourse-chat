@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-describe DiscourseChat::MessageMover do
+describe Chat::MessageMover do
   fab!(:acting_user) { Fabricate(:admin, username: "testmovechat") }
   fab!(:source_channel) { Fabricate(:category_channel) }
   fab!(:destination_channel) { Fabricate(:category_channel) }
@@ -56,14 +56,14 @@ describe DiscourseChat::MessageMover do
           source_channel: Fabricate(:dm_channel),
           message_ids: move_message_ids,
         ).move_to_channel(destination_channel)
-      }.to raise_error(DiscourseChat::MessageMover::InvalidChannel)
+      }.to raise_error(Chat::MessageMover::InvalidChannel)
       expect {
         described_class.new(
           acting_user: acting_user,
           source_channel: source_channel,
           message_ids: move_message_ids,
         ).move_to_channel(Fabricate(:dm_channel))
-      }.to raise_error(DiscourseChat::MessageMover::InvalidChannel)
+      }.to raise_error(Chat::MessageMover::InvalidChannel)
     end
 
     it "raises an error if no messages are found using the message ids" do
@@ -71,7 +71,7 @@ describe DiscourseChat::MessageMover do
       message1.update(chat_channel: other_channel)
       message2.update(chat_channel: other_channel)
       message3.update(chat_channel: other_channel)
-      expect { move! }.to raise_error(DiscourseChat::MessageMover::NoMessagesFound)
+      expect { move! }.to raise_error(Chat::MessageMover::NoMessagesFound)
     end
 
     it "deletes the messages from the source channel and sends messagebus delete messages" do

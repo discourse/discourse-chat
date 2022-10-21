@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-describe DiscourseChat::ChatMailer do
+describe Chat::ChatMailer do
   fab!(:chatters_group) { Fabricate(:group) }
   fab!(:sender) { Fabricate(:user, group_ids: [chatters_group.id]) }
   fab!(:user_1) { Fabricate(:user, group_ids: [chatters_group.id], last_seen_at: 15.minutes.ago) }
@@ -18,10 +18,7 @@ describe DiscourseChat::ChatMailer do
   end
   fab!(:private_chat_channel) do
     Group.refresh_automatic_groups!
-    DiscourseChat::DirectMessageChannelCreator.create!(
-      acting_user: sender,
-      target_users: [sender, user_1],
-    )
+    Chat::DirectMessageChannelCreator.create!(acting_user: sender, target_users: [sender, user_1])
   end
 
   before do

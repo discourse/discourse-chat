@@ -5,7 +5,7 @@ import {
 } from "discourse/tests/helpers/qunit-helpers";
 import { test } from "qunit";
 import { visit } from "@ember/test-helpers";
-import { directMessageChannels } from "discourse/plugins/discourse-chat/chat-fixtures";
+import { directMessageChannels } from "discourse/plugins/chat/chat-fixtures";
 import { cloneJSON } from "discourse-common/lib/object";
 
 acceptance(

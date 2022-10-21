@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module DiscourseChat::DirectMessageChannelCreator
+module Chat::DirectMessageChannelCreator
   class NotAllowed < StandardError
   end
 

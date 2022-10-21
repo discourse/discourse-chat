@@ -4,7 +4,7 @@ import { action, computed } from "@ember/object";
 import { schedule } from "@ember/runloop";
 import { inject as service } from "@ember/service";
 import { and, empty, reads } from "@ember/object/computed";
-import { DRAFT_CHANNEL_VIEW } from "discourse/plugins/discourse-chat/discourse/services/chat";
+import { DRAFT_CHANNEL_VIEW } from "discourse/plugins/chat/discourse/services/chat";
 
 export default class ChannelsList extends Component {
   @service chat;

@@ -1,7 +1,7 @@
 {
-  "name": "discourse-chat",
+  "name": "chat",
   "version": "0.1",
-  "repository": "https://github.com/discourse/discourse-chat",
+  "repository": "https://github.com/discourse/discourse/tree/main/plugins/chat",
   "author": "Kane York, Mark VanLandingham",
   "license": "MIT",
   "devDependencies": {

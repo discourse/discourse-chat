@@ -29,7 +29,7 @@ const chatTranscriptRule = {
     }
 
     let wrapperDivToken = state.push("div_chat_transcript_wrap", "div", 1);
-    let wrapperClasses = ["discourse-chat-transcript"];
+    let wrapperClasses = ["chat-transcript"];
 
     if (!!tagInfo.attrs.chained) {
       wrapperClasses.push("chat-transcript-chained");
@@ -201,8 +201,8 @@ const chatTranscriptRule = {
 
 export function setup(helper) {
   helper.allowList([
-    "div[class=discourse-chat-transcript]",
-    "div[class=discourse-chat-transcript chat-transcript-chained]",
+    "div[class=chat-transcript]",
+    "div[class=chat-transcript chat-transcript-chained]",
     "div.chat-transcript-meta",
     "div.chat-transcript-user",
     "div.chat-transcript-username",
@@ -221,15 +221,12 @@ export function setup(helper) {
   ]);
 
   helper.registerOptions((opts, siteSettings) => {
-    opts.features["discourse-chat-transcript"] = !!siteSettings.chat_enabled;
+    opts.features["chat-transcript"] = !!siteSettings.chat_enabled;
   });
 
   helper.registerPlugin((md) => {
-    if (md.options.discourse.features["discourse-chat-transcript"]) {
-      md.block.bbcode.ruler.push(
-        "discourse-chat-transcript",
-        chatTranscriptRule
-      );
+    if (md.options.discourse.features["chat-transcript"]) {
+      md.block.bbcode.ruler.push("chat-transcript", chatTranscriptRule);
     }
   });
 

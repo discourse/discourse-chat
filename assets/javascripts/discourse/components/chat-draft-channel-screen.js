@@ -1,4 +1,4 @@
-import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
+import ChatChannel from "discourse/plugins/chat/discourse/models/chat-channel";
 import { inject as service } from "@ember/service";
 import Component from "@ember/component";
 import { action } from "@ember/object";

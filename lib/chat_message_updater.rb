@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-class DiscourseChat::ChatMessageUpdater
+class Chat::ChatMessageUpdater
   attr_reader :error
 
   def self.update(opts)
@@ -31,10 +31,7 @@ class DiscourseChat::ChatMessageUpdater
       revision = save_revision!
       ChatPublisher.publish_edit!(@chat_channel, @chat_message)
       Jobs.enqueue(:process_chat_message, { chat_message_id: @chat_message.id })
-      DiscourseChat::ChatNotifier.notify_edit(
-        chat_message: @chat_message,
-        timestamp: revision.created_at,
-      )
+      Chat::ChatNotifier.notify_edit(chat_message: @chat_message, timestamp: revision.created_at)
     rescue => error
       @error = error
     end

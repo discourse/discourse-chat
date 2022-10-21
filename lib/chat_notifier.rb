@@ -26,7 +26,7 @@
 #
 # The ignore/mute filtering is also applied via the ChatNotifyWatching job,
 # which prevents desktop / push notifications being sent.
-class DiscourseChat::ChatNotifier
+class Chat::ChatNotifier
   class << self
     def user_has_seen_message?(membership, chat_message_id)
       (membership.last_read_message_id || 0) >= chat_message_id

@@ -5,9 +5,9 @@ import {
 } from "discourse/tests/helpers/qunit-helpers";
 import { test } from "qunit";
 import fabricators from "../../helpers/fabricators";
-import { directMessageChannels } from "discourse/plugins/discourse-chat/chat-fixtures";
+import { directMessageChannels } from "discourse/plugins/chat/chat-fixtures";
 import { cloneJSON } from "discourse-common/lib/object";
-import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
+import ChatChannel from "discourse/plugins/chat/discourse/models/chat-channel";
 import sinon from "sinon";
 import pretender from "discourse/tests/helpers/create-pretender";
 import { settled } from "@ember/test-helpers";

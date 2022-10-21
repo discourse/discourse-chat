@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class DiscourseChat::ChatMessageRateLimiter
+class Chat::ChatMessageRateLimiter
   def self.run!(user)
     instance = self.new(user)
     instance.run!

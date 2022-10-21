@@ -7,7 +7,7 @@ describe Jobs::EmailChatNotifications do
     before { SiteSetting.chat_enabled = true }
 
     it "starts the mailer" do
-      DiscourseChat::ChatMailer.expects(:send_unread_mentions_summary)
+      Chat::ChatMailer.expects(:send_unread_mentions_summary)
 
       Jobs.enqueue(:email_chat_notifications)
     end
@@ -15,7 +15,7 @@ describe Jobs::EmailChatNotifications do
 
   context "when chat is not enabled" do
     it "does nothing" do
-      DiscourseChat::ChatMailer.expects(:send_unread_mentions_summary).never
+      Chat::ChatMailer.expects(:send_unread_mentions_summary).never
 
       Jobs.enqueue(:email_chat_notifications)
     end

@@ -1,7 +1,7 @@
 import { escapeExpression } from "discourse/lib/utilities";
 import Controller from "@ember/controller";
-import ChatApi from "discourse/plugins/discourse-chat/discourse/lib/chat-api";
-import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
+import ChatApi from "discourse/plugins/chat/discourse/lib/chat-api";
+import ChatChannel from "discourse/plugins/chat/discourse/models/chat-channel";
 import I18n from "I18n";
 import ModalFunctionality from "discourse/mixins/modal-functionality";
 import { ajax } from "discourse/lib/ajax";

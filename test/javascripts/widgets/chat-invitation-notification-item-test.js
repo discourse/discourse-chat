@@ -6,7 +6,7 @@ import { deepMerge } from "discourse-common/lib/object";
 import { NOTIFICATION_TYPES } from "discourse/tests/fixtures/concerns/notification-types";
 import Notification from "discourse/models/notification";
 import hbs from "htmlbars-inline-precompile";
-import slugifyChannel from "discourse/plugins/discourse-chat/discourse/lib/slugify-channel";
+import slugifyChannel from "discourse/plugins/chat/discourse/lib/slugify-channel";
 
 function getNotification(overrides = {}) {
   return Notification.create(

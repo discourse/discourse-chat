@@ -4,7 +4,7 @@ import componentTest, {
 } from "discourse/tests/helpers/component-test";
 import { query } from "discourse/tests/helpers/qunit-helpers";
 import hbs from "htmlbars-inline-precompile";
-import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
+import ChatChannel from "discourse/plugins/chat/discourse/models/chat-channel";
 import { module } from "qunit";
 
 module(

@@ -16,7 +16,7 @@ import {
 import {
   chatChannels,
   generateChatView,
-} from "discourse/plugins/discourse-chat/chat-fixtures";
+} from "discourse/plugins/chat/chat-fixtures";
 import selectKit from "discourse/tests/helpers/select-kit-helper";
 
 const quoteResponse = {

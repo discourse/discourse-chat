@@ -6,7 +6,7 @@ import hbs from "htmlbars-inline-precompile";
 import fabricators from "../helpers/fabricators";
 import selectKit from "discourse/tests/helpers/select-kit-helper";
 import pretender from "discourse/tests/helpers/create-pretender";
-import { CHATABLE_TYPES } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
+import { CHATABLE_TYPES } from "discourse/plugins/chat/discourse/models/chat-channel";
 import { set } from "@ember/object";
 import { module } from "qunit";
 

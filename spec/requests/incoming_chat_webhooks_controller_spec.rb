@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.describe DiscourseChat::IncomingChatWebhooksController do
+RSpec.describe Chat::IncomingChatWebhooksController do
   fab!(:chat_channel) { Fabricate(:category_channel) }
   fab!(:webhook) { Fabricate(:incoming_chat_webhook, chat_channel: chat_channel) }
 
@@ -22,9 +22,7 @@ RSpec.describe DiscourseChat::IncomingChatWebhooksController do
     it "errors when the body is over WEBHOOK_MAX_MESSAGE_LENGTH characters" do
       post "/chat/hooks/#{webhook.key}.json",
            params: {
-             text:
-               "$" *
-                 (DiscourseChat::IncomingChatWebhooksController::WEBHOOK_MAX_MESSAGE_LENGTH + 1),
+             text: "$" * (Chat::IncomingChatWebhooksController::WEBHOOK_MAX_MESSAGE_LENGTH + 1),
            }
       expect(response.status).to eq(400)
     end

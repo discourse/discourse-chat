@@ -4,7 +4,7 @@ import componentTest, {
 import { click, fillIn } from "@ember/test-helpers";
 import hbs from "htmlbars-inline-precompile";
 import { exists, query } from "discourse/tests/helpers/qunit-helpers";
-import { createDirectMessageChannelDraft } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
+import { createDirectMessageChannelDraft } from "discourse/plugins/chat/discourse/models/chat-channel";
 import { Promise } from "rsvp";
 import fabricators from "../helpers/fabricators";
 import { module } from "qunit";

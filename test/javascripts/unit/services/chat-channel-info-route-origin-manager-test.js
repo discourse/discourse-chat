@@ -1,6 +1,6 @@
 import { module, test } from "qunit";
 import { getOwner } from "discourse-common/lib/get-owner";
-import { ORIGINS } from "discourse/plugins/discourse-chat/discourse/services/chat-channel-info-route-origin-manager";
+import { ORIGINS } from "discourse/plugins/chat/discourse/services/chat-channel-info-route-origin-manager";
 
 module(
   "Discourse Chat | Unit | Service | chat-channel-info-route-origin-manager",

@@ -1,7 +1,7 @@
 import Component from "@ember/component";
 import { action, computed } from "@ember/object";
 import { inject as service } from "@ember/service";
-import ChatApi from "discourse/plugins/discourse-chat/discourse/lib/chat-api";
+import ChatApi from "discourse/plugins/chat/discourse/lib/chat-api";
 import showModal from "discourse/lib/show-modal";
 import I18n from "I18n";
 import { camelize } from "@ember/string";

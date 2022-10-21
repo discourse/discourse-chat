@@ -1,6 +1,6 @@
 import { bind } from "discourse-common/utils/decorators";
 import Component from "@ember/component";
-import isZoomed from "discourse/plugins/discourse-chat/discourse/lib/zoom-check";
+import isZoomed from "discourse/plugins/chat/discourse/lib/zoom-check";
 
 const CSS_VAR = "--chat-vh";
 let pendingUpdate = false;

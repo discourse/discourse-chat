@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module DiscourseChat::UserNotificationsExtension
+module Chat::UserNotificationsExtension
   def chat_summary(user, opts)
     guardian = Guardian.new(user)
     return unless guardian.can_chat?(user)

@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-describe DiscourseChat::ChatReviewQueue do
+describe Chat::ChatReviewQueue do
   fab!(:message_poster) { Fabricate(:user) }
   fab!(:flagger) { Fabricate(:user) }
   fab!(:chat_channel) { Fabricate(:category_channel) }
@@ -116,7 +116,7 @@ describe DiscourseChat::ChatReviewQueue do
       end
 
       it "ignores the cooldown window when the message is edited" do
-        DiscourseChat::ChatMessageUpdater.update(
+        Chat::ChatMessageUpdater.update(
           chat_message: message,
           new_content: "I'm editing this message. Please flag it.",
         )

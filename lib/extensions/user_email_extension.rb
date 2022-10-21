@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module DiscourseChat::UserEmailExtension
+module Chat::UserEmailExtension
   def execute(args)
     super(args)
 

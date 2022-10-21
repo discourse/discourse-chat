@@ -61,7 +61,7 @@ module Jobs
       payload = {
         notification_type: Notification.types[:chat_mention],
         username: @creator.username,
-        tag: DiscourseChat::ChatNotifier.push_notification_tag(:mention, @chat_channel.id),
+        tag: Chat::ChatNotifier.push_notification_tag(:mention, @chat_channel.id),
         excerpt: @chat_message.push_notification_excerpt,
         post_url:
           "/chat/channel/#{@chat_channel.id}/#{@chat_channel.title(membership.user)}?messageId=#{@chat_message.id}",
@@ -100,7 +100,7 @@ module Jobs
     end
 
     def create_notification!(membership, notification_data)
-      is_read = DiscourseChat::ChatNotifier.user_has_seen_message?(membership, @chat_message.id)
+      is_read = Chat::ChatNotifier.user_has_seen_message?(membership, @chat_message.id)
 
       notification =
         Notification.create!(

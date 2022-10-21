@@ -1,10 +1,10 @@
 import { htmlSafe } from "@ember/template";
-import slugifyChannel from "discourse/plugins/discourse-chat/discourse/lib/slugify-channel";
+import slugifyChannel from "discourse/plugins/chat/discourse/lib/slugify-channel";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import I18n from "I18n";
 import { bind } from "discourse-common/utils/decorators";
 import { tracked } from "@glimmer/tracking";
-import { DRAFT_CHANNEL_VIEW } from "discourse/plugins/discourse-chat/discourse/services/chat";
+import { DRAFT_CHANNEL_VIEW } from "discourse/plugins/chat/discourse/services/chat";
 import { avatarUrl, escapeExpression } from "discourse/lib/utilities";
 import { dasherize } from "@ember/string";
 import { emojiUnescape } from "discourse/lib/text";

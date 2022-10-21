@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class DiscourseChat::DuplicateMessageValidator
+class Chat::DuplicateMessageValidator
   attr_reader :chat_message
 
   def initialize(chat_message)
@@ -10,7 +10,7 @@ class DiscourseChat::DuplicateMessageValidator
   def validate
     return if SiteSetting.chat_duplicate_message_sensitivity.zero?
     matrix =
-      DiscourseChat::DuplicateMessageValidator.sensitivity_matrix(
+      Chat::DuplicateMessageValidator.sensitivity_matrix(
         SiteSetting.chat_duplicate_message_sensitivity,
       )
 

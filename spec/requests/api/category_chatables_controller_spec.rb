@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-describe DiscourseChat::Api::CategoryChatablesController do
+describe Chat::Api::CategoryChatablesController do
   describe "#access_by_category" do
     fab!(:group) { Fabricate(:group) }
     fab!(:private_category) { Fabricate(:private_category, group: group) }

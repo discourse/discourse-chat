@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-describe "Plugin API for discourse_chat" do
+describe "Plugin API for chat" do
   before { SiteSetting.chat_enabled = true }
 
   let(:metadata) do
@@ -17,9 +17,9 @@ describe "Plugin API for discourse_chat" do
     plugin
   end
 
-  describe "discourse_chat.enable_markdown_feature" do
+  describe "chat.enable_markdown_feature" do
     it "stores the markdown feature" do
-      plugin_instance.discourse_chat.enable_markdown_feature(:foo)
+      plugin_instance.chat.enable_markdown_feature(:foo)
 
       expect(DiscoursePluginRegistry.chat_markdown_features.include?(:foo)).to be_truthy
     end

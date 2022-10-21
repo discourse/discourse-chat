@@ -1,6 +1,6 @@
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
-import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
+import ChatChannel from "discourse/plugins/chat/discourse/models/chat-channel";
 export default class ChatApi {
   static async chatChannelMemberships(channelId, data) {
     return await ajax(`/chat/api/chat_channels/${channelId}/memberships.json`, {

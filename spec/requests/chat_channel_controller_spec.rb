@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.describe DiscourseChat::ChatChannelsController do
+RSpec.describe Chat::ChatChannelsController do
   fab!(:user) { Fabricate(:user, username: "johndoe", name: "John Doe") }
   fab!(:other_user) { Fabricate(:user, username: "janemay", name: "Jane May") }
   fab!(:admin) { Fabricate(:admin, username: "andyjones", name: "Andy Jones") }
@@ -93,7 +93,7 @@ RSpec.describe DiscourseChat::ChatChannelsController do
       it "serializes unread_mentions properly" do
         sign_in(admin)
         Jobs.run_immediately!
-        DiscourseChat::ChatMessageCreator.create(
+        Chat::ChatMessageCreator.create(
           chat_channel: chat_channel,
           user: user,
           content: "Hi @#{admin.username}",
@@ -111,22 +111,22 @@ RSpec.describe DiscourseChat::ChatChannelsController do
         before do
           Group.refresh_automatic_groups!
           @dm1 =
-            DiscourseChat::DirectMessageChannelCreator.create!(
+            Chat::DirectMessageChannelCreator.create!(
               acting_user: user1,
               target_users: [user1, user2],
             )
           @dm2 =
-            DiscourseChat::DirectMessageChannelCreator.create!(
+            Chat::DirectMessageChannelCreator.create!(
               acting_user: user1,
               target_users: [user1, user3],
             )
           @dm3 =
-            DiscourseChat::DirectMessageChannelCreator.create!(
+            Chat::DirectMessageChannelCreator.create!(
               acting_user: user1,
               target_users: [user1, user2, user3],
             )
           @dm4 =
-            DiscourseChat::DirectMessageChannelCreator.create!(
+            Chat::DirectMessageChannelCreator.create!(
               acting_user: user1,
               target_users: [user2, user3],
             )
@@ -167,7 +167,7 @@ RSpec.describe DiscourseChat::ChatChannelsController do
 
         it "correctly set unread_count for DMs for creator" do
           sign_in(user1)
-          DiscourseChat::ChatMessageCreator.create(
+          Chat::ChatMessageCreator.create(
             chat_channel: @dm2,
             user: user1,
             content: "What's going on?!",
@@ -180,7 +180,7 @@ RSpec.describe DiscourseChat::ChatChannelsController do
 
         it "correctly set membership for DMs when user is not following" do
           sign_in(user2)
-          DiscourseChat::ChatMessageCreator.create(
+          Chat::ChatMessageCreator.create(
             chat_channel: @dm2,
             user: user1,
             content: "What's going on?!",
@@ -198,7 +198,7 @@ RSpec.describe DiscourseChat::ChatChannelsController do
             .update!(following: true)
 
           sign_in(user3)
-          DiscourseChat::ChatMessageCreator.create(
+          Chat::ChatMessageCreator.create(
             chat_channel: @dm2,
             user: user1,
             content: "What's going on?!",

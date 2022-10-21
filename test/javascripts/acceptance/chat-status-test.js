@@ -3,7 +3,7 @@ import { cloneJSON } from "discourse-common/lib/object";
 import {
   chatChannels,
   generateChatView,
-} from "discourse/plugins/discourse-chat/chat-fixtures";
+} from "discourse/plugins/chat/chat-fixtures";
 import {
   acceptance,
   exists,

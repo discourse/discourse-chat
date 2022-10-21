@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-class DiscourseChat::ChatMessageCreator
+class Chat::ChatMessageCreator
   attr_reader :error, :chat_message
 
   def self.create(opts)
@@ -48,7 +48,7 @@ class DiscourseChat::ChatMessageCreator
       ChatDraft.where(user_id: @user.id, chat_channel_id: @chat_channel.id).destroy_all
       ChatPublisher.publish_new!(@chat_channel, @chat_message, @staged_id)
       Jobs.enqueue(:process_chat_message, { chat_message_id: @chat_message.id })
-      DiscourseChat::ChatNotifier.notify_new(
+      Chat::ChatNotifier.notify_new(
         chat_message: @chat_message,
         timestamp: @chat_message.created_at,
       )

@@ -1,6 +1,6 @@
 import ChatChannel, {
   CHATABLE_TYPES,
-} from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
+} from "discourse/plugins/chat/discourse/models/chat-channel";
 import EmberObject from "@ember/object";
 import { Fabricator } from "./fabricator";
 

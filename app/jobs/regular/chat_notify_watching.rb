@@ -44,7 +44,7 @@ module Jobs
       user = membership.user
       guardian = Guardian.new(user)
       return unless guardian.can_chat?(user) && guardian.can_see_chat_channel?(@chat_channel)
-      return if DiscourseChat::ChatNotifier.user_has_seen_message?(membership, @chat_message.id)
+      return if Chat::ChatNotifier.user_has_seen_message?(membership, @chat_message.id)
       return if online_user_ids.include?(user.id)
 
       translation_key =
@@ -64,7 +64,7 @@ module Jobs
         notification_type: Notification.types[:chat_message],
         post_url: "/chat/channel/#{@chat_channel.id}/#{@chat_channel.title(user)}",
         translated_title: I18n.t(translation_key, translation_args),
-        tag: DiscourseChat::ChatNotifier.push_notification_tag(:message, @chat_channel.id),
+        tag: Chat::ChatNotifier.push_notification_tag(:message, @chat_channel.id),
         excerpt: @chat_message.push_notification_excerpt,
       }
 

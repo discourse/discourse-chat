@@ -1,5 +1,5 @@
 import { module, test } from "qunit";
-import slugifyChannel from "discourse/plugins/discourse-chat/discourse/lib/slugify-channel";
+import slugifyChannel from "discourse/plugins/chat/discourse/lib/slugify-channel";
 
 module("Discourse Chat | Unit | slugify-channel", function () {
   test("defaults", function (assert) {

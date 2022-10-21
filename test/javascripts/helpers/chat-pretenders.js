@@ -2,7 +2,7 @@ import {
   chatChannels,
   directMessageChannels,
   generateChatView,
-} from "discourse/plugins/discourse-chat/chat-fixtures";
+} from "discourse/plugins/chat/chat-fixtures";
 
 import { cloneJSON } from "discourse-common/lib/object";
 import User from "discourse/models/user";

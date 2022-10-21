@@ -14,10 +14,7 @@ describe Jobs::ChatNotifyMentioned do
 
     @chat_group = Fabricate(:group, users: [user_1, user_2])
     @personal_chat_channel =
-      DiscourseChat::DirectMessageChannelCreator.create!(
-        acting_user: user_1,
-        target_users: [user_1, user_2],
-      )
+      Chat::DirectMessageChannelCreator.create!(acting_user: user_1, target_users: [user_1, user_2])
 
     [user_1, user_2].each do |u|
       Fabricate(:user_chat_channel_membership, chat_channel: public_channel, user: u)
@@ -214,7 +211,7 @@ describe Jobs::ChatNotifyMentioned do
       expect(desktop_notification.data[:notification_type]).to eq(Notification.types[:chat_mention])
       expect(desktop_notification.data[:username]).to eq(user_1.username)
       expect(desktop_notification.data[:tag]).to eq(
-        DiscourseChat::ChatNotifier.push_notification_tag(:mention, public_channel.id),
+        Chat::ChatNotifier.push_notification_tag(:mention, public_channel.id),
       )
       expect(desktop_notification.data[:excerpt]).to eq(message.push_notification_excerpt)
       expect(desktop_notification.data[:post_url]).to eq(
@@ -230,7 +227,7 @@ describe Jobs::ChatNotifyMentioned do
         {
           notification_type: Notification.types[:chat_mention],
           username: user_1.username,
-          tag: DiscourseChat::ChatNotifier.push_notification_tag(:mention, public_channel.id),
+          tag: Chat::ChatNotifier.push_notification_tag(:mention, public_channel.id),
           excerpt: message.push_notification_excerpt,
           post_url:
             "/chat/channel/#{public_channel.id}/#{expected_channel_title}?messageId=#{message.id}",

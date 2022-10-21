@@ -1,4 +1,4 @@
-import ChatChannel from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
+import ChatChannel from "discourse/plugins/chat/discourse/models/chat-channel";
 import { set } from "@ember/object";
 import componentTest, {
   setupRenderingTest,

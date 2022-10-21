@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.describe DiscourseChat::EmojisController do
+RSpec.describe Chat::EmojisController do
   fab!(:user_1) { Fabricate(:user) }
 
   before do

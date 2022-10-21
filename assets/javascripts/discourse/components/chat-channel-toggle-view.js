@@ -1,6 +1,6 @@
 import Component from "@ember/component";
 import { htmlSafe } from "@ember/template";
-import { CHANNEL_STATUSES } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
+import { CHANNEL_STATUSES } from "discourse/plugins/chat/discourse/models/chat-channel";
 import I18n from "I18n";
 import { action, computed } from "@ember/object";
 import { ajax } from "discourse/lib/ajax";

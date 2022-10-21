@@ -2,7 +2,7 @@
 
 class DisableChatUploadsIfSecureMediaEnabled < ActiveRecord::Migration[7.0]
   ##
-  # At this point in time, secure media is not compatible with discourse-chat,
+  # At this point in time, secure media is not compatible with chat,
   # so if it is enabled then chat uploads must be disabled to avoid undesirable
   # behaviour.
   #

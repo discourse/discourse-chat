@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.describe DiscourseChat::AdminIncomingChatWebhooksController do
+RSpec.describe Chat::AdminIncomingChatWebhooksController do
   fab!(:admin) { Fabricate(:admin) }
   fab!(:user) { Fabricate(:user) }
   fab!(:chat_channel1) { Fabricate(:category_channel) }

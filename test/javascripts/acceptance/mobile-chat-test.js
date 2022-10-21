@@ -7,7 +7,7 @@ import { click, currentURL, visit } from "@ember/test-helpers";
 import {
   chatChannels,
   generateChatView,
-} from "discourse/plugins/discourse-chat/chat-fixtures";
+} from "discourse/plugins/chat/chat-fixtures";
 import { test } from "qunit";
 
 acceptance("Discourse Chat - Mobile test", function (needs) {

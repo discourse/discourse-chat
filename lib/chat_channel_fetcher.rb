@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-module DiscourseChat::ChatChannelFetcher
+module Chat::ChatChannelFetcher
   MAX_PUBLIC_CHANNEL_RESULTS = 50
 
   def self.structured(guardian)
-    memberships = DiscourseChat::ChatChannelMembershipManager.all_for_user(guardian.user)
+    memberships = Chat::ChatChannelMembershipManager.all_for_user(guardian.user)
     {
       public_channels:
         secured_public_channels(guardian, memberships, status: :open, following: true),

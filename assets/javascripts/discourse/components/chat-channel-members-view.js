@@ -3,7 +3,7 @@ import { INPUT_DELAY } from "discourse-common/config/environment";
 import Component from "@ember/component";
 import { action } from "@ember/object";
 import { schedule } from "@ember/runloop";
-import ChatApi from "discourse/plugins/discourse-chat/discourse/lib/chat-api";
+import ChatApi from "discourse/plugins/chat/discourse/lib/chat-api";
 import discourseDebounce from "discourse-common/lib/debounce";
 
 const LIMIT = 50;

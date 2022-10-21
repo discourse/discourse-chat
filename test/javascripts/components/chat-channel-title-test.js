@@ -4,7 +4,7 @@ import componentTest, {
 import { exists, query } from "discourse/tests/helpers/qunit-helpers";
 import hbs from "htmlbars-inline-precompile";
 import fabricators from "../helpers/fabricators";
-import { CHATABLE_TYPES } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
+import { CHATABLE_TYPES } from "discourse/plugins/chat/discourse/models/chat-channel";
 import { module } from "qunit";
 
 module("Discourse Chat | Component | chat-channel-title", function (hooks) {

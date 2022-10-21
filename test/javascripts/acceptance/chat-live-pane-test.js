@@ -7,7 +7,7 @@ import {
   query,
 } from "discourse/tests/helpers/qunit-helpers";
 import { test } from "qunit";
-import { generateChatView } from "discourse/plugins/discourse-chat/chat-fixtures";
+import { generateChatView } from "discourse/plugins/chat/chat-fixtures";
 
 function buildMessage(messageId) {
   return {

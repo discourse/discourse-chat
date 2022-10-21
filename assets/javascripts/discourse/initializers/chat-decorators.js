@@ -85,35 +85,33 @@ export default {
   },
 
   renderChatTranscriptDates(element) {
-    element
-      .querySelectorAll(".discourse-chat-transcript")
-      .forEach((transcriptEl) => {
-        const dateTimeRaw = transcriptEl.dataset["datetime"];
-        const dateTimeLinkEl = transcriptEl.querySelector(
-          ".chat-transcript-datetime a"
+    element.querySelectorAll(".chat-transcript").forEach((transcriptEl) => {
+      const dateTimeRaw = transcriptEl.dataset["datetime"];
+      const dateTimeLinkEl = transcriptEl.querySelector(
+        ".chat-transcript-datetime a"
+      );
+
+      // we only show date for first message
+      if (!dateTimeLinkEl) {
+        return;
+      }
+
+      if (dateTimeLinkEl.innerText !== "") {
+        // same as highlight, no need to do this for every single message every time
+        // any message changes
+        return;
+      }
+
+      if (this.currentUserTimezone) {
+        dateTimeLinkEl.innerText = moment
+          .tz(dateTimeRaw, this.currentUserTimezone)
+          .format(I18n.t("dates.long_no_year"));
+      } else {
+        dateTimeLinkEl.innerText = moment(dateTimeRaw).format(
+          I18n.t("dates.long_no_year")
         );
-
-        // we only show date for first message
-        if (!dateTimeLinkEl) {
-          return;
-        }
-
-        if (dateTimeLinkEl.innerText !== "") {
-          // same as highlight, no need to do this for every single message every time
-          // any message changes
-          return;
-        }
-
-        if (this.currentUserTimezone) {
-          dateTimeLinkEl.innerText = moment
-            .tz(dateTimeRaw, this.currentUserTimezone)
-            .format(I18n.t("dates.long_no_year"));
-        } else {
-          dateTimeLinkEl.innerText = moment(dateTimeRaw).format(
-            I18n.t("dates.long_no_year")
-          );
-        }
-      });
+      }
+    });
   },
 
   forceLinksToOpenNewTab(element) {

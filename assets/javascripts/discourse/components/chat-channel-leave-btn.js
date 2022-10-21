@@ -2,7 +2,7 @@ import discourseComputed from "discourse-common/utils/decorators";
 import Component from "@ember/component";
 import { equal } from "@ember/object/computed";
 import { inject as service } from "@ember/service";
-import { CHATABLE_TYPES } from "discourse/plugins/discourse-chat/discourse/models/chat-channel";
+import { CHATABLE_TYPES } from "discourse/plugins/chat/discourse/models/chat-channel";
 
 export default Component.extend({
   tagName: "",

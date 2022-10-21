@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-class DiscourseChat::SecureUploadsCompatibility
+class Chat::SecureUploadsCompatibility
   ##
-  # At this point in time, secure uploads is not compatible with discourse-chat,
+  # At this point in time, secure uploads is not compatible with chat,
   # so if it is enabled then chat uploads must be disabled to avoid undesirable
   # behaviour.
   #

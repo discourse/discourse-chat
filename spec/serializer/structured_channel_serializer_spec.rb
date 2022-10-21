@@ -33,7 +33,7 @@ RSpec.describe StructuredChannelSerializer do
   end
 
   def fetch_data
-    DiscourseChat::ChatChannelFetcher.structured(guardian)
+    Chat::ChatChannelFetcher.structured(guardian)
   end
 
   it "serializes a public channel correctly with membership embedded" do

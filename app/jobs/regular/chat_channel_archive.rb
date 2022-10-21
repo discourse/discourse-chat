@@ -20,7 +20,7 @@ module Jobs
       DistributedMutex.synchronize(
         "archive_chat_channel_#{channel_archive.chat_channel_id}",
         validity: 20.minutes,
-      ) { DiscourseChat::ChatChannelArchiveService.new(channel_archive).execute }
+      ) { Chat::ChatChannelArchiveService.new(channel_archive).execute }
     end
   end
 end

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe DiscourseChat::Statistics do
+describe Chat::Statistics do
   fab!(:frozen_time) { DateTime.parse("2022-07-08 09:30:00") }
 
   def minus_time(time)

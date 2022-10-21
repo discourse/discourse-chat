@@ -16,7 +16,7 @@
 # all of the references associated to a chat message (e.g. reactions, bookmarks,
 # notifications, revisions, mentions, uploads) will be updated to the new
 # message IDs via a moved_chat_messages temporary table.
-class DiscourseChat::MessageMover
+class Chat::MessageMover
   class NoMessagesFound < StandardError
   end
   class InvalidChannel < StandardError
@@ -156,7 +156,7 @@ class DiscourseChat::MessageMover
   end
 
   def add_moved_placeholder(destination_channel, first_moved_message)
-    DiscourseChat::ChatMessageCreator.create(
+    Chat::ChatMessageCreator.create(
       chat_channel: @source_channel,
       user: Discourse.system_user,
       content:

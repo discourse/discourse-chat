@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
+class Chat::ChatChannelsController < Chat::ChatBaseController
   before_action :set_channel_and_chatable_with_access_check, except: %i[index create search]
 
   def index
-    structured = DiscourseChat::ChatChannelFetcher.structured(guardian)
+    structured = Chat::ChatChannelFetcher.structured(guardian)
     render_serialized(structured, ChatChannelIndexSerializer, root: false)
   end
 
@@ -57,9 +57,7 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     chat_channel.user_chat_channel_memberships.create!(user: current_user, following: true)
 
     if chat_channel.auto_join_users
-      DiscourseChat::ChatChannelMembershipManager.new(
-        chat_channel,
-      ).enforce_automatic_channel_memberships
+      Chat::ChatChannelMembershipManager.new(chat_channel).enforce_automatic_channel_memberships
     end
 
     render_serialized(
@@ -93,9 +91,9 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
   def search
     params.require(:filter)
     filter = params[:filter]&.downcase
-    memberships = DiscourseChat::ChatChannelMembershipManager.all_for_user(current_user)
+    memberships = Chat::ChatChannelMembershipManager.all_for_user(current_user)
     public_channels =
-      DiscourseChat::ChatChannelFetcher.secured_public_channels(
+      Chat::ChatChannelFetcher.secured_public_channels(
         guardian,
         memberships,
         filter: filter,
@@ -103,11 +101,11 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
       )
 
     users = User.joins(:user_option).where.not(id: current_user.id)
-    if !DiscourseChat.allowed_group_ids.include?(Group::AUTO_GROUPS[:everyone])
+    if !Chat.allowed_group_ids.include?(Group::AUTO_GROUPS[:everyone])
       users =
         users
           .joins(:groups)
-          .where(groups: { id: DiscourseChat.allowed_group_ids })
+          .where(groups: { id: Chat.allowed_group_ids })
           .or(users.joins(:groups).staff)
     end
 
@@ -180,7 +178,7 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
       raise Discourse::InvalidAccess.new(I18n.t("chat.errors.channel_cannot_be_archived"))
     end
 
-    DiscourseChat::ChatChannelArchiveService.begin_archive_process(
+    Chat::ChatChannelArchiveService.begin_archive_process(
       chat_channel: @chat_channel,
       acting_user: current_user,
       topic_params: {
@@ -201,7 +199,7 @@ class DiscourseChat::ChatChannelsController < DiscourseChat::ChatBaseController
     raise Discourse::NotFound if archive.blank?
     raise Discourse::InvalidAccess if !archive.failed?
 
-    DiscourseChat::ChatChannelArchiveService.retry_archive_process(chat_channel: @chat_channel)
+    Chat::ChatChannelArchiveService.retry_archive_process(chat_channel: @chat_channel)
 
     render json: success_json
   end

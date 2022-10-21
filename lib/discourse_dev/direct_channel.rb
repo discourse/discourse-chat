@@ -25,7 +25,7 @@ module DiscourseDev
 
     def create!
       users = data
-      DiscourseChat::DirectMessageChannelCreator.create!(acting_user: users[0], target_users: users)
+      Chat::DirectMessageChannelCreator.create!(acting_user: users[0], target_users: users)
     end
   end
 end

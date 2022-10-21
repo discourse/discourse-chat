@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class DiscourseChat::ChatMailer
+class Chat::ChatMailer
   def self.send_unread_mentions_summary
     return unless SiteSetting.chat_enabled
 
@@ -30,7 +30,7 @@ class DiscourseChat::ChatMailer
 
   def self.users_with_unprocessed_unread_mentions
     when_away_frequency = UserOption.chat_email_frequencies[:when_away]
-    allowed_group_ids = DiscourseChat.allowed_group_ids
+    allowed_group_ids = Chat.allowed_group_ids
 
     User
       .select("users.id", "ARRAY_AGG(ARRAY[uccm.id, c_msg.id]) AS memberships_with_unread_messages")

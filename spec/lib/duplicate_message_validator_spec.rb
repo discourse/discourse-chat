@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-describe DiscourseChat::DuplicateMessageValidator do
+describe Chat::DuplicateMessageValidator do
   let(:chat_channel) { Fabricate(:chat_channel) }
 
   def message_blocked?(message)

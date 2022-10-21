@@ -14,7 +14,7 @@
 # idempotent, so if we fail halfway through the archive process it can be run again.
 #
 # Once all of the messages have been copied then we mark the channel as archived.
-class DiscourseChat::ChatChannelArchiveService
+class Chat::ChatChannelArchiveService
   ARCHIVED_MESSAGES_PER_POST = 100
 
   def self.begin_archive_process(chat_channel:, acting_user:, topic_params:)
@@ -242,6 +242,6 @@ class DiscourseChat::ChatChannelArchiveService
   end
 
   def kick_all_users
-    DiscourseChat::ChatChannelMembershipManager.new(chat_channel).unfollow_all_users
+    Chat::ChatChannelMembershipManager.new(chat_channel).unfollow_all_users
   end
 end

@@ -1,7 +1,7 @@
 import { acceptance } from "discourse/tests/helpers/qunit-helpers";
 import { click, visit } from "@ember/test-helpers";
 import { test } from "qunit";
-import { ORIGINS } from "discourse/plugins/discourse-chat/discourse/services/chat-channel-info-route-origin-manager";
+import { ORIGINS } from "discourse/plugins/chat/discourse/services/chat-channel-info-route-origin-manager";
 import { getOwner } from "discourse-common/lib/get-owner";
 import fabricators from "../helpers/fabricators";
 

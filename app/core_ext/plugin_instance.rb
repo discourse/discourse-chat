@@ -3,11 +3,11 @@
 DiscoursePluginRegistry.define_register(:chat_markdown_features, Set)
 
 class Plugin::Instance
-  def discourse_chat
-    DiscourseChatPluginApiExtensions
+  def chat
+    ChatPluginApiExtensions
   end
 
-  module DiscourseChatPluginApiExtensions
+  module ChatPluginApiExtensions
     def self.enable_markdown_feature(name)
       DiscoursePluginRegistry.chat_markdown_features << name
     end

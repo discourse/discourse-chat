@@ -24,7 +24,7 @@ module DiscourseDev
     end
 
     def create!
-      DiscourseChat::ChatMessageCreator.create(data)
+      Chat::ChatMessageCreator.create(data)
     end
   end
 end

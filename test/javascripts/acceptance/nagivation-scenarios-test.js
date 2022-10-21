@@ -3,7 +3,7 @@ import {
   loggedInUser,
 } from "discourse/tests/helpers/qunit-helpers";
 import { click, currentURL, visit } from "@ember/test-helpers";
-import { generateChatView } from "discourse/plugins/discourse-chat/chat-fixtures";
+import { generateChatView } from "discourse/plugins/chat/chat-fixtures";
 import { test } from "qunit";
 import fabricators from "../helpers/fabricators";
 

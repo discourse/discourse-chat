@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class DiscourseChat::ChatChannelMembershipManager
+class Chat::ChatChannelMembershipManager
   def self.all_for_user(user)
     UserChatChannelMembership.where(user: user)
   end

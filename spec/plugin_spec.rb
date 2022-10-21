@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-describe DiscourseChat do
+describe Chat do
   before do
     SiteSetting.clean_up_uploads = true
     SiteSetting.clean_orphan_uploads_grace_period_hours = 1
@@ -17,7 +17,7 @@ describe DiscourseChat do
     fab!(:unused_upload) { Fabricate(:upload, user: user, created_at: 1.month.ago) }
 
     let!(:chat_message) do
-      DiscourseChat::ChatMessageCreator.create(
+      Chat::ChatMessageCreator.create(
         chat_channel: chat_channel,
         user: user,
         in_reply_to_id: nil,
@@ -43,7 +43,7 @@ describe DiscourseChat do
     fab!(:unused_upload) { Fabricate(:upload, user: user, created_at: 1.month.ago) }
 
     let!(:chat_message) do
-      DiscourseChat::ChatMessageCreator.create(
+      Chat::ChatMessageCreator.create(
         chat_channel: chat_channel,
         user: user,
         in_reply_to_id: nil,
@@ -82,20 +82,20 @@ describe DiscourseChat do
     context "when chat enabled" do
       before { SiteSetting.chat_enabled = true }
 
-      it "returns true if the target user and the guardian user is in the DiscourseChat.allowed_group_ids" do
+      it "returns true if the target user and the guardian user is in the Chat.allowed_group_ids" do
         SiteSetting.chat_allowed_groups = group.id
         GroupUser.create(user: target_user, group: group)
         GroupUser.create(user: user, group: group)
         expect(serializer.can_chat_user).to eq(true)
       end
 
-      it "returns false if the target user but not the guardian user is in the DiscourseChat.allowed_group_ids" do
+      it "returns false if the target user but not the guardian user is in the Chat.allowed_group_ids" do
         SiteSetting.chat_allowed_groups = group.id
         GroupUser.create(user: target_user, group: group)
         expect(serializer.can_chat_user).to eq(false)
       end
 
-      it "returns false if the guardian user but not the target user is in the DiscourseChat.allowed_group_ids" do
+      it "returns false if the guardian user but not the target user is in the Chat.allowed_group_ids" do
         SiteSetting.chat_allowed_groups = group.id
         GroupUser.create(user: user, group: group)
         expect(serializer.can_chat_user).to eq(false)
@@ -135,7 +135,7 @@ describe DiscourseChat do
     fab!(:user_4) { Fabricate(:user, suspended_till: 3.weeks.from_now) }
 
     let!(:chat_message) do
-      DiscourseChat::ChatMessageCreator.create(
+      Chat::ChatMessageCreator.create(
         chat_channel: chat_channel,
         user: user,
         in_reply_to_id: nil,
@@ -198,7 +198,7 @@ describe DiscourseChat do
 
       it "renders messages" do
         expect(Oneboxer.preview("#{chat_url}?messageId=#{chat_message.id}")).to match_html <<~HTML
-          <div class="discourse-chat-transcript" data-message-id="#{chat_message.id}" data-username="#{user.username}" data-datetime="#{chat_message.created_at.iso8601}" data-channel-name="#{chat_channel.name}" data-channel-id="#{chat_channel.id}">
+          <div class="chat-transcript" data-message-id="#{chat_message.id}" data-username="#{user.username}" data-datetime="#{chat_message.created_at.iso8601}" data-channel-name="#{chat_channel.name}" data-channel-id="#{chat_channel.id}">
           <div class="chat-transcript-user">
             <div class="chat-transcript-user-avatar">
               <a class="trigger-user-card" data-user-card="#{user.username}" aria-hidden="true" tabindex="-1">

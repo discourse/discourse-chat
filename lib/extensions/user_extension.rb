@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module DiscourseChat::UserExtension
+module Chat::UserExtension
   extend ActiveSupport::Concern
 
   prepended do

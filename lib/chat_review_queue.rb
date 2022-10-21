@@ -8,7 +8,7 @@
 #   - queue_for_review: Adds a special reason to the reviwable score and creates the reviewable using
 #     the force_review option.
 
-class DiscourseChat::ChatReviewQueue
+class Chat::ChatReviewQueue
   def flag_message(chat_message, guardian, flag_type_id, opts = {})
     result = { success: false, errors: [] }
 

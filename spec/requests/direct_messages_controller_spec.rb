@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.describe DiscourseChat::DirectMessagesController do
+RSpec.describe Chat::DirectMessagesController do
   fab!(:user) { Fabricate(:user) }
   fab!(:user1) { Fabricate(:user) }
   fab!(:user2) { Fabricate(:user) }

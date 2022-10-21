@@ -4,7 +4,7 @@ import {
   chatComposerButtonsDependentKeys,
   clearChatComposerButtons,
   registerChatComposerButton,
-} from "discourse/plugins/discourse-chat/discourse/lib/chat-composer-buttons";
+} from "discourse/plugins/chat/discourse/lib/chat-composer-buttons";
 
 module("Discourse Chat | Unit | chat-composer-buttons", function (hooks) {
   hooks.beforeEach(function () {

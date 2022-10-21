@@ -27,10 +27,14 @@ import {
   removeOnPresenceChange,
 } from "discourse/lib/user-presence";
 import isZoomed from "discourse/plugins/discourse-chat/discourse/lib/zoom-check";
+import { isTesting } from "discourse-common/config/environment";
 
 const MAX_RECENT_MSGS = 100;
 const STICKY_SCROLL_LENIENCE = 50;
 const PAGE_SIZE = 50;
+
+const SCROLL_HANDLER_THROTTLE_MS = isTesting() ? 0 : 100;
+const FETCH_MORE_MESSAGES_THROTTLE_MS = isTesting() ? 0 : 500;
 
 const PAST = "past";
 const FUTURE = "future";
@@ -190,7 +194,7 @@ export default Component.extend({
 
   @bind
   onScrollHandler(event) {
-    throttle(this, this.onScroll, event, 100, true);
+    throttle(this, this.onScroll, event, SCROLL_HANDLER_THROTTLE_MS, true);
   },
 
   @bind
@@ -373,7 +377,12 @@ export default Component.extend({
   },
 
   _fetchMoreMessagesThrottled(direction) {
-    throttle(this, "_fetchMoreMessages", direction, 500);
+    throttle(
+      this,
+      "_fetchMoreMessages",
+      direction,
+      FETCH_MORE_MESSAGES_THROTTLE_MS
+    );
   },
 
   setCanLoadMoreDetails(meta) {

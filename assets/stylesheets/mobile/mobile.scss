@@ -122,3 +122,16 @@ html.has-full-page-chat body {
 .chat-message-separator {
   margin-left: 0;
 }
+
+.header-dropdown-toggle.open-chat {
+  .icon {
+    &.active {
+      border: 1px solid var(--primary-low);
+      background: var(--primary-very-low);
+
+      .d-icon {
+        color: var(--primary-medium);
+      }
+    }
+  }
+}

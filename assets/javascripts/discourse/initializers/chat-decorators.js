@@ -93,9 +93,14 @@ export default {
           ".chat-transcript-datetime a"
         );
 
-        // same as highlight, no need to do this for every single message every time
-        // any message changes
+        // we only show date for first message
+        if (!dateTimeLinkEl) {
+          return;
+        }
+
         if (dateTimeLinkEl.innerText !== "") {
+          // same as highlight, no need to do this for every single message every time
+          // any message changes
           return;
         }
 

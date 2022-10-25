@@ -28,13 +28,9 @@ class DiscourseChat::DirectMessagesController < DiscourseChat::ChatBaseControlle
     guardian.ensure_can_chat!(current_user)
     users = users_from_usernames(current_user, params)
 
-    direct_message_channel = DirectMessageChannel.for_user_ids(users.map(&:id).uniq)
-    if direct_message_channel
-      chat_channel =
-        ChatChannel.find_by(
-          chatable_id: direct_message_channel.id,
-          chatable_type: "DirectMessageChannel",
-        )
+    direct_message = DirectMessage.for_user_ids(users.map(&:id).uniq)
+    if direct_message
+      chat_channel = ChatChannel.find_by(chatable: direct_message)
       render_serialized(
         chat_channel,
         ChatChannelSerializer,

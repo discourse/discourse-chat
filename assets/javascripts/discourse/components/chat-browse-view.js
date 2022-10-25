@@ -12,12 +12,11 @@ const TABS = ["all", "open", "closed", "archived"];
 const PER_PAGE = 20;
 
 export default class ChatBrowseView extends Component {
-  tagName = "";
-
   @service router;
-
   @tracked isLoading = false;
   @tracked channels = [];
+  tagName = "";
+
   tabs = TABS;
   offset = 0;
   canLoadMore = true;

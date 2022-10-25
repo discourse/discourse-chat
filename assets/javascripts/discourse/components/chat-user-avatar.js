@@ -3,9 +3,8 @@ import { computed } from "@ember/object";
 import { inject as service } from "@ember/service";
 
 export default class ChatUserAvatar extends Component {
-  tagName = "";
-
   @service chat;
+  tagName = "";
 
   user = null;
 

@@ -1,4 +1,4 @@
-{{#d-modal-body title="chat.move_to_channel.title"}}
+<DModalBody @title="chat.move_to_channel.title">
   <div
     id="chat-message-move-to-channel-modal-inner"
     class="chat-message-move-to-channel-modal-inner"
@@ -6,23 +6,11 @@
     <p>{{this.instructionsText}}</p>
   </div>
 
-  {{chat-channel-chooser
-    class="chat-move-message-channel-chooser"
-    content=availableChannels
-    value=destinationChannelId
-    nameProperty="title"
-  }}
-{{/d-modal-body}}
+  <ChatChannelChooser @class="chat-move-message-channel-chooser" @content={{this.availableChannels}} @value={{this.destinationChannelId}} @nameProperty="title" />
+</DModalBody>
 
 <div class="modal-footer">
-  {{d-button
-    class="btn-primary"
-    icon="sign-out-alt"
-    disabled=disableMoveButton
-    action=(action "moveMessages")
-    label="chat.move_to_channel.confirm_move"
-    id="chat-confirm-move-messages-to-channel"
-  }}
+  <DButton @class="btn-primary" @icon="sign-out-alt" @disabled={{this.disableMoveButton}} @action={{action "moveMessages"}} @label="chat.move_to_channel.confirm_move" @id="chat-confirm-move-messages-to-channel" />
 
-  {{d-button label="cancel" class="btn-flat" action=this.closeModal}}
+  <DButton @label="cancel" @class="btn-flat" @action={{this.closeModal}} />
 </div>

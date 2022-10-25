@@ -1,29 +1,23 @@
-{{#d-modal-body title="chat.channel_selector.title"}}
+<DModalBody @title="chat.channel_selector.title">
   <div id="chat-channel-selector-modal-inner">
     <div class="chat-channel-selector-input-container">
       <span class="search-icon">
         {{d-icon "search"}}
       </span>
 
-      {{input
-        id="chat-channel-selector-input"
-        type="text"
-        value=filter
-        input=(action "search" value="target.value")
-        autocomplete="off"
-      }}
+      <Input id="chat-channel-selector-input" @type="text" @value={{this.filter}} autocomplete="off" {{on "input" (action "search")}} />
     </div>
 
     <div class="channels">
-      {{#conditional-loading-spinner condition=this.loading}}
-        {{#each channels as |channel|}}
-          {{chat-channel-selection-row model=channel onClick=switchChannel}}
+      <ConditionalLoadingSpinner @condition={{this.loading}}>
+        {{#each this.channels as |channel|}}
+          <ChatChannelSelectionRow @model={{channel}} @onClick={{this.switchChannel}} />
         {{else}}
           <div class="no-channels-notice">
             {{i18n "chat.channel_selector.no_channels"}}
           </div>
         {{/each}}
-      {{/conditional-loading-spinner}}
+      </ConditionalLoadingSpinner>
     </div>
   </div>
-{{/d-modal-body}}
+</DModalBody>

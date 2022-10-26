@@ -20,6 +20,9 @@ acceptance("Discourse Chat - Mobile test", function (needs) {
     server.get("/chat/:id/messages.json", () =>
       helper.response(generateChatView(loggedInUser()))
     );
+    server.get("/u/search/users", () => {
+      return helper.response([]);
+    });
   });
 
   needs.settings({

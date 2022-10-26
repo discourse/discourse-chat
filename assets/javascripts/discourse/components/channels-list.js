@@ -3,7 +3,7 @@ import Component from "@ember/component";
 import { action, computed } from "@ember/object";
 import { schedule } from "@ember/runloop";
 import { inject as service } from "@ember/service";
-import { empty, reads } from "@ember/object/computed";
+import { and, empty, reads } from "@ember/object/computed";
 import { DRAFT_CHANNEL_VIEW } from "discourse/plugins/discourse-chat/discourse/services/chat";
 
 export default class ChannelsList extends Component {
@@ -16,6 +16,8 @@ export default class ChannelsList extends Component {
   @reads("chat.publicChannels.[]") publicChannels;
   @reads("chat.directMessageChannels.[]") directMessageChannels;
   @empty("publicChannels") publicChannelsEmpty;
+  @and("site.mobileView", "showDirectMessageChannels")
+  showMobileDirectMessageButton;
 
   @computed("canCreateDirectMessageChannel")
   get createDirectMessageChannelLabel() {
@@ -76,10 +78,6 @@ export default class ChannelsList extends Component {
     return `channels-list-container direct-message-channels ${
       this.inSidebar ? "collapsible-sidebar-section" : ""
     }`;
-  }
-
-  get showMobileDirectMessageButton() {
-    return this.site.mobileView && this.showDirectMessageChannels;
   }
 
   @action

@@ -1,4 +1,19 @@
 <div class="chat-draft-channel-screen">
+  {{#if this.site.mobileView}}
+    <header class="chat-draft-channel-screen-header">
+      <FlatButton
+        @class="chat-draft-channel-screen-header__return-to-channels-btn"
+        @icon="chevron-left"
+        @title="chat.draft_channel_screen.cancel"
+        @action={{action "onCancelChatDraft"}}
+      />
+      <h2 class="chat-draft-channel-screen-header__title">
+        {{d-icon "comment"}}
+        {{i18n "chat.draft_channel_screen.header"}}
+      </h2>
+    </header>
+  {{/if}}
+
   <DirectMessageCreator
     @onChangeSelectedUsers={{action "onChangeSelectedUsers"}}
   />

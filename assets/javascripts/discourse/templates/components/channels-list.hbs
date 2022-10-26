@@ -82,13 +82,15 @@
       {{/if}}
       <span class="channel-title">{{i18n "chat.direct_messages.title"}}</span>
 
-      <DButton
-        @class="btn-flat new-dm keep-mobile-sidebar-open"
-        @icon="plus"
-        @action={{action "startCreatingDmChannel"}}
-        @title={{this.createDirectMessageChannelLabel}}
-        @disabled={{not this.canCreateDirectMessageChannel}}
-      />
+      {{#if this.site.desktopView}}
+        <DButton
+          @class="btn-flat new-dm keep-mobile-sidebar-open"
+          @icon="plus"
+          @action={{action "startCreatingDmChannel"}}
+          @title={{this.createDirectMessageChannelLabel}}
+          @disabled={{not this.canCreateDirectMessageChannel}}
+        />
+      {{/if}}
     </div>
   {{/if}}
 

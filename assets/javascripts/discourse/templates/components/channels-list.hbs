@@ -1,11 +1,11 @@
 {{#if showMobileDirectMessageButton}}
-  {{d-button
-    class="btn-flat new-dm keep-mobile-sidebar-open btn-floating"
-    icon="plus"
-    action=(action "startCreatingDmChannel")
-    title=createDirectMessageChannelLabel
-    disabled=(not canCreateDirectMessageChannel)
-  }}
+  <DButton
+    @class="btn-flat new-dm keep-mobile-sidebar-open btn-floating"
+    @icon="plus"
+    @action={{action "startCreatingDmChannel"}}
+    @title={{this.createDirectMessageChannelLabel}}
+    @disabled={{not this.canCreateDirectMessageChannel}}
+  />
 {{/if}}
 
 <div

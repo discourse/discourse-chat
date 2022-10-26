@@ -34,7 +34,7 @@ module("Discourse Chat | Unit | chat-emoji-reaction-store", function (hooks) {
     assert.strictEqual(this.emojiReactionStore.diversity, 2);
   });
 
-  test("when display default favorites", function (assert) {
+  test("when displaying default favorites", function (assert) {
     this.siteSettings.default_emoji_reactions = "smile|heart|tada";
 
     assert.deepEqual(this.emojiReactionStore.favorites, [

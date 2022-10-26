@@ -3,7 +3,6 @@
 
 import KeyValueStore from "discourse/lib/key-value-store";
 import Service from "@ember/service";
-import { tracked } from "@glimmer/tracking";
 
 export default class ChatEmojiReactionStore extends Service {
   STORE_NAMESPACE = "discourse_chat_emoji_reaction_";
@@ -13,7 +12,13 @@ export default class ChatEmojiReactionStore extends Service {
 
   store = new KeyValueStore(this.CHAT_EMOJI_STORE_NAMESPACE);
 
-  @tracked storedFavorites;
+  constructor() {
+    super(...arguments);
+
+    if (!this.store.getObject(this.USER_EMOJIS_STORE_KEY)) {
+      this.storedFavorites = [];
+    }
+  }
 
   get diversity() {
     return this.store.getObject(this.SKIN_TONE_STORE_KEY) || 1;
@@ -25,7 +30,7 @@ export default class ChatEmojiReactionStore extends Service {
   }
 
   get storedFavorites() {
-    let value = this.store.getObject(this.USER_EMOJIS_STORE_KEY) || [];
+    let value = this.store.getObject(this.USER_EMOJIS_STORE_KEY);
 
     if (value.length < 1) {
       if (!this.siteSettings.default_emoji_reactions) {
@@ -42,7 +47,7 @@ export default class ChatEmojiReactionStore extends Service {
     return value;
   }
 
-  set storedFavorites(value = []) {
+  set storedFavorites(value) {
     this.store.setObject({ key: this.USER_EMOJIS_STORE_KEY, value });
   }
 
@@ -56,7 +61,7 @@ export default class ChatEmojiReactionStore extends Service {
 
   track(code) {
     const normalizedCode = code.replace(/(^:)|(:$)/g, "");
-    let recent = this.storedFavorites || [];
+    let recent = this.storedFavorites;
     recent.unshift(normalizedCode);
     recent.length = Math.min(recent.length, this.MAX_TRACKED_EMOJIS);
     this.storedFavorites = recent;

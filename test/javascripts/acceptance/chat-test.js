@@ -1810,47 +1810,6 @@ acceptance("Discourse Chat - Direct Message Creator", function (needs) {
   });
 });
 
-acceptance("Discourse Chat - Composer", function (needs) {
-  needs.user({
-    admin: true,
-    moderator: true,
-    username: "eviltrout",
-    id: 1,
-    can_chat: true,
-    has_chat_enabled: true,
-  });
-  needs.settings({
-    chat_enabled: true,
-    enable_rich_text_paste: true,
-  });
-  needs.pretender((server, helper) => {
-    baseChatPretenders(server, helper);
-    chatChannelPretender(server, helper);
-  });
-
-  test("pasting html in composer", async function (assert) {
-    await visit("/chat/channel/11/another-category");
-
-    const clipboardEvent = new Event("paste", { bubbles: true });
-    clipboardEvent.clipboardData = {
-      types: ["text/html"],
-      getData: (type) => {
-        if (type === "text/html") {
-          return "<a href>Foo</a>";
-        }
-      },
-    };
-
-    document
-      .querySelector(".chat-composer-input")
-      .dispatchEvent(clipboardEvent);
-
-    await settled();
-
-    assert.equal(document.querySelector(".chat-composer-input").value, "Foo");
-  });
-});
-
 acceptance("Discourse Chat - Drawer", function (needs) {
   needs.user({ has_chat_enabled: true });
   needs.settings({ chat_enabled: true });

@@ -24,16 +24,19 @@ module("Discourse Chat | Unit | chat-emoji-reaction-store", function (hooks) {
         .split("|")
         .filter((val) => val)
     );
-    assert.strictEqual(this.emojiReactionStore.diversity, 1);
   });
 
   test("diversity", function (assert) {
+    assert.strictEqual(this.emojiReactionStore.diversity, 1);
+
     this.emojiReactionStore.diversity = 2;
+
     assert.strictEqual(this.emojiReactionStore.diversity, 2);
   });
 
-  test("favorites - default reactions", function (assert) {
+  test("when display default favorites", function (assert) {
     this.siteSettings.default_emoji_reactions = "smile|heart|tada";
+
     assert.deepEqual(this.emojiReactionStore.favorites, [
       "smile",
       "heart",
@@ -41,34 +44,51 @@ module("Discourse Chat | Unit | chat-emoji-reaction-store", function (hooks) {
     ]);
   });
 
-  test("favorites", function (assert) {
-    this.emojiReactionStore.favorites = ["yum", "wink", "innocent"];
-    assert.deepEqual(this.emojiReactionStore.favorites, [
-      "yum",
-      "wink",
-      "innocent",
-    ]);
+  test("when tracking an emoji", function (assert) {
+    this.emojiReactionStore.storedFavorites = [];
+    this.emojiReactionStore.track("yum");
+
+    assert.deepEqual(this.emojiReactionStore.storedFavorites, ["yum"]);
   });
 
-  test("track", function (assert) {
-    this.emojiReactionStore.track("woman:t4");
-    let expected = ["woman:t4"];
+  test("when tracking multiple times the same emoji", function (assert) {
+    this.emojiReactionStore.storedFavorites = [];
+    this.emojiReactionStore.track("yum");
+    this.emojiReactionStore.track("yum");
 
-    if (this.siteSettings.default_emoji_reactions) {
-      expected = expected.concat(
-        this.siteSettings.default_emoji_reactions.split("|")
-      );
-    }
-    assert.deepEqual(this.emojiReactionStore.favorites, expected);
+    assert.deepEqual(this.emojiReactionStore.storedFavorites, ["yum", "yum"]);
+  });
 
-    this.emojiReactionStore.track("otter");
+  test("when tracking different emojis", function (assert) {
+    this.emojiReactionStore.storedFavorites = [];
+    this.emojiReactionStore.track("yum");
+    this.emojiReactionStore.track("not_yum");
+    this.emojiReactionStore.track("yum");
+    this.emojiReactionStore.track("grinning");
 
-    expected = ["otter", "woman:t4"];
-    if (this.siteSettings.default_emoji_reactions) {
-      expected = expected.concat(
-        this.siteSettings.default_emoji_reactions.split("|")
-      );
-    }
-    assert.deepEqual(this.emojiReactionStore.favorites, expected);
+    assert.deepEqual(
+      this.emojiReactionStore.storedFavorites,
+      ["grinning", "yum", "not_yum", "yum"],
+      "it ensures last in is first"
+    );
+  });
+
+  test("when tracking an emoji after reaching the limit", function (assert) {
+    this.emojiReactionStore.storedFavorites = [];
+    [...Array(this.emojiReactionStore.MAX_TRACKED_EMOJIS)].forEach(() => {
+      this.emojiReactionStore.track("yum");
+    });
+    this.emojiReactionStore.track("grinning");
+
+    assert.strictEqual(
+      this.emojiReactionStore.storedFavorites.length,
+      this.emojiReactionStore.MAX_TRACKED_EMOJIS,
+      "it enforces the max length"
+    );
+    assert.strictEqual(
+      this.emojiReactionStore.storedFavorites.firstObject,
+      "grinning",
+      "it correctly stores the last tracked emoji"
+    );
   });
 });

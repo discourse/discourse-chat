@@ -35,7 +35,7 @@ export default Component.extend(TextareaTextManipulation, {
   classNames: ["chat-composer-container"],
   classNameBindings: ["emojiPickerVisible:with-emoji-picker"],
   userSilenced: readOnly("details.user_silenced"),
-  emojiStore: service("emoji-store"),
+  chatEmojiReactionStore: service("chat-emoji-reaction-store"),
   chatEmojiPickerManager: service("chat-emoji-picker-manager"),
   editingMessage: null,
   fullPage: false,
@@ -316,7 +316,9 @@ export default Component.extend(TextareaTextManipulation, {
 
   @bind
   didSelectEmoji(emoji) {
-    this.addText(this.getSelected(), `:${emoji}:`);
+    const code = `:${emoji}:`;
+    this.chatEmojiReactionStore.track(code);
+    this.addText(this.getSelected(), code);
   },
 
   @action
@@ -392,7 +394,7 @@ export default Component.extend(TextareaTextManipulation, {
 
       transformComplete: (v) => {
         if (v.code) {
-          this.emojiStore.track(v.code);
+          this.chatEmojiReactionStore.track(v.code);
           return `${v.code}:`;
         } else {
           $textarea.autocomplete({ cancel: true });
@@ -427,8 +429,8 @@ export default Component.extend(TextareaTextManipulation, {
           }
 
           if (term === "") {
-            if (this.emojiStore.favorites.length) {
-              return resolve(this.emojiStore.favorites.slice(0, 5));
+            if (this.chatEmojiReactionStore.favorites.length) {
+              return resolve(this.chatEmojiReactionStore.favorites.slice(0, 5));
             } else {
               return resolve([
                 "slight_smile",
@@ -469,7 +471,7 @@ export default Component.extend(TextareaTextManipulation, {
 
           const options = emojiSearch(term, {
             maxResults: 5,
-            diversity: this.emojiStore.diversity,
+            diversity: this.chatEmojiReactionStore.diversity,
           });
 
           return resolve(options);

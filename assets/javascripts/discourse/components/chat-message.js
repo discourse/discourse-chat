@@ -563,6 +563,10 @@ export default Component.extend({
     this._loadingReactions.push(emoji);
     this._updateReactionsList(emoji, reactAction, this.currentUser);
 
+    if (reactAction === this.ADD_REACTION) {
+      this.emojiReactionStore.track(`:${emoji}:`);
+    }
+
     return this._publishReaction(emoji, reactAction).then(() => {
       this.notifyPropertyChange("emojiReactions");
 

@@ -1,9 +1,9 @@
-<div class="chat-user-avatar {{if isOnline "is-online"}}">
+<div class="chat-user-avatar {{if this.isOnline "is-online"}}">
   <div
     role="button"
     class="chat-user-avatar-container clickable"
-    data-user-card={{user.username}}
+    data-user-card={{this.user.username}}
   >
-    {{avatar user imageSize=avatarSize}}
+    {{avatar this.user imageSize=this.avatarSize}}
   </div>
 </div>

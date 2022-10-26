@@ -3,9 +3,8 @@ import { action } from "@ember/object";
 import { inject as service } from "@ember/service";
 
 export default class ChatChannelCard extends Component {
-  tagName = "";
-
   @service chat;
+  tagName = "";
 
   @action
   afterMembershipToggle() {

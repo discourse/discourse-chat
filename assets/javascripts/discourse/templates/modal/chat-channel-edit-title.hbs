@@ -1,4 +1,4 @@
-{{#d-modal-body title="chat.channel_edit_title_modal.title"}}
+<DModalBody @title="chat.channel_edit_title_modal.title">
   <textarea
     class="chat-channel-edit-title-modal__title-input"
     placeholder={{i18n "chat.channel_edit_title_modal.input_placeholder"}}
@@ -7,14 +7,9 @@
   <span class="chat-channel-edit-title-modal__description">
     {{i18n "chat.channel_edit_title_modal.description"}}
   </span>
-{{/d-modal-body}}
+</DModalBody>
 
 <div class="modal-footer">
-  {{d-button
-    class="btn-primary create"
-    action=(action "onSaveChatChannelTitle")
-    label="save"
-    disabled=this.isSaveDisabled
-  }}
-  {{d-modal-cancel close=(route-action "closeModal")}}
+  <DButton @class="btn-primary create" @action={{action "onSaveChatChannelTitle"}} @label="save" @disabled={{this.isSaveDisabled}} />
+  <DModalCancel @close={{route-action "closeModal"}} />
 </div>

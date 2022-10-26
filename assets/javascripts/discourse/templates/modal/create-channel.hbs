@@ -1,22 +1,18 @@
-{{#d-modal-body title="chat.create_channel.title"}}
+<DModalBody @title="chat.create_channel.title">
   <label class="create-channel-label">
     {{i18n "chat.create_channel.choose_category.label"}}
   </label>
-  {{category-chooser
-    value=categoryId
-    onChange=(action "onCategoryChange")
-    options=(hash none="chat.create_channel.choose_category.none")
-  }}
+  <CategoryChooser @value={{this.categoryId}} @onChange={{action "onCategoryChange"}} @options={{hash none="chat.create_channel.choose_category.none"}} />
 
-  {{#if categoryPermissionsHint}}
+  {{#if this.categoryPermissionsHint}}
     <div class="create-channel-hint">
-      {{categoryPermissionsHint}}
+      {{this.categoryPermissionsHint}}
     </div>
   {{/if}}
 
-  {{#if autoJoinAvailable}}
+  {{#if this.autoJoinAvailable}}
     <label class="create-channel-label">
-      {{input type="checkbox" checked=autoJoinUsers}}
+      <Input @type="checkbox" @checked={{this.autoJoinUsers}} />
       <span>{{i18n "chat.settings.enable_auto_join_users"}}</span>
     </label>
   {{/if}}
@@ -24,23 +20,14 @@
   <label class="create-channel-label">
     {{i18n "chat.create_channel.name"}}
   </label>
-  {{input class="create-channel-name-input" type="text" value=name}}
+  <Input class="create-channel-name-input" @type="text" @value={{this.name}} />
 
   <label class="create-channel-label">
     {{i18n "chat.create_channel.description"}}
   </label>
-  {{input
-    class="create-channel-description-input"
-    type="textarea"
-    value=description
-  }}
-{{/d-modal-body}}
+  <Input class="create-channel-description-input" @type="textarea" @value={{this.description}} />
+</DModalBody>
 
 <div class="modal-footer">
-  {{d-button
-    class="btn-primary create"
-    action=(action "create")
-    label="chat.create_channel.create"
-    disabled=createDisabled
-  }}
+  <DButton @class="btn-primary create" @action={{action "create"}} @label="chat.create_channel.create" @disabled={{this.createDisabled}} />
 </div>

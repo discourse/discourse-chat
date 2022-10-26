@@ -5,9 +5,8 @@ import { readOnly } from "@ember/object/computed";
 import { inject as service } from "@ember/service";
 
 export default class ChatChannelPreviewCard extends Component {
-  tagName = "";
-
   @service chat;
+  tagName = "";
 
   channel = null;
 

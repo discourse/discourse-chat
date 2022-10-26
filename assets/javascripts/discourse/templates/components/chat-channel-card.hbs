@@ -1,62 +1,45 @@
-{{#if channel}}
+{{#if this.channel}}
   <div
     class={{concat
       "chat-channel-card"
-      (if channel.isClosed " -closed")
-      (if channel.isArchived " -archived")
+      (if this.channel.isClosed " -closed")
+      (if this.channel.isArchived " -archived")
     }}
-    style={{border-color channel.chatable.color}}
+    style={{border-color this.channel.chatable.color}}
   >
-    {{#link-to
-      "chat.channel.info.settings"
-      channel.id
-      (slugify-channel channel.title)
-      class="chat-channel-card__setting"
-      tabindex="-1"
-    }}
+    <LinkTo @route="chat.channel.info.settings" @models={{array this.channel.id (slugify-channel this.channel.title)}} class="chat-channel-card__setting" tabindex="-1">
       {{d-icon "cog"}}
-    {{/link-to}}
+    </LinkTo>
 
-    {{#link-to
-      "chat.channel"
-      channel.id
-      (slugify-channel channel.title)
-      class="chat-channel-card__name-container"
-    }}
+    <LinkTo @route="chat.channel" @models={{array this.channel.id (slugify-channel this.channel.title)}} class="chat-channel-card__name-container">
       <span class="chat-channel-card__name">
-        {{replace-emoji channel.escapedTitle}}
+        {{replace-emoji this.channel.escapedTitle}}
       </span>
-      {{#if channel.chatable.read_restricted}}
+      {{#if this.channel.chatable.read_restricted}}
         {{d-icon "lock" class="chat-channel-card__read-restricted"}}
       {{/if}}
-    {{/link-to}}
+    </LinkTo>
 
-    {{#if channel.description}}
+    {{#if this.channel.description}}
       <div class="chat-channel-card__description">
-        {{replace-emoji channel.escapedDescription}}
+        {{replace-emoji this.channel.escapedDescription}}
       </div>
     {{/if}}
 
     <div class="chat-channel-card__cta">
-      {{#if channel.isFollowing}}
+      {{#if this.channel.isFollowing}}
         <div class="chat-channel-card__tags">
           <span class="chat-channel-card__tag -joined">
             {{i18n "chat.joined"}}
           </span>
 
-          {{#if channel.current_user_membership.muted}}
-            {{#link-to
-              "chat.channel.info.settings"
-              channel.id
-              (slugify-channel channel.title)
-              class="chat-channel-card__tag -muted"
-              tabindex="-1"
-            }}
+          {{#if this.channel.current_user_membership.muted}}
+            <LinkTo @route="chat.channel.info.settings" @models={{array this.channel.id (slugify-channel this.channel.title)}} class="chat-channel-card__tag -muted" tabindex="-1">
               {{i18n "chat.muted"}}
-            {{/link-to}}
+            </LinkTo>
           {{/if}}
         </div>
-      {{else if channel.isJoinable}}
+      {{else if this.channel.isJoinable}}
         <ToggleChannelMembershipButton
           @channel={{this.channel}}
           @onToggle={{action "afterMembershipToggle"}}
@@ -64,19 +47,13 @@
         />
       {{/if}}
 
-      {{#if (gt channel.membershipsCount 0)}}
-        {{#link-to
-          "chat.channel.info.members"
-          channel.id
-          (slugify-channel channel.title)
-          class="chat-channel-card__members"
-          tabindex="-1"
-        }}
+      {{#if (gt this.channel.membershipsCount 0)}}
+        <LinkTo @route="chat.channel.info.members" @models={{array this.channel.id (slugify-channel this.channel.title)}} class="chat-channel-card__members" tabindex="-1">
           {{i18n
             "chat.channel.memberships_count"
-            count=channel.membershipsCount
+            count=this.channel.membershipsCount
           }}
-        {{/link-to}}
+        </LinkTo>
       {{/if}}
     </div>
   </div>

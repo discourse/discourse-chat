@@ -12,14 +12,13 @@ import getURL from "discourse-common/lib/get-url";
 import { bind } from "discourse-common/utils/decorators";
 
 export default class AdminCustomizeColorsShowController extends Component {
+  @service router;
   tagName = "";
   chatChannel = null;
   selectedMessageIds = null;
   showChatQuoteSuccess = false;
   cancelSelecting = null;
   canModerate = false;
-
-  @service router;
 
   @computed("selectedMessageIds.length")
   get anyMessagesSelected() {

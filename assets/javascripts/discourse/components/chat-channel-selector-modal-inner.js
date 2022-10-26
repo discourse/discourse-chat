@@ -115,12 +115,12 @@ export default Component.extend({
   },
 
   @action
-  search() {
-    if (isPresent(this.filter?.trim())) {
+  search(value) {
+    if (isPresent(value?.trim())) {
       discourseDebounce(
         this,
         this.fetchChannelsFromServer,
-        this.filter.trim(),
+        value?.trim(),
         INPUT_DELAY
       );
     } else {

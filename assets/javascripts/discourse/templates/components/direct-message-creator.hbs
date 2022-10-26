@@ -28,7 +28,7 @@
           </DButton>
         {{/each}}
 
-        <Input class="filter-usernames" @value={{this.term}} autofocus="autofocus" {{on "input" (action "onFilterInput")}} {{on "focusin" (action (mut this.isFilterFocused) true)}} {{on "focusout" (action "onFilterInputFocusOut")}} {{on "keydown" (action "handleFilterKeyDown")}} />
+        <Input class="filter-usernames" @value={{this.term}} autofocus="autofocus" {{on "input" (action "onFilterInput" value="target.value")}} {{on "focusin" (action (mut this.isFilterFocused) true)}} {{on "focusout" (action "onFilterInputFocusOut")}} {{on "keyup" (action "handleFilterKeyUp")}} />
       </div>
     </div>
 

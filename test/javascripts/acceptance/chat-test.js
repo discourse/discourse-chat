@@ -1808,6 +1808,21 @@ acceptance("Discourse Chat - Direct Message Creator", function (needs) {
       return helper.response([]);
     });
   });
+
+  test("Create a direct message", async function (assert) {
+    await visit("/latest");
+    await click(".header-dropdown-toggle.open-chat");
+    await click(".topic-chat-drawer-header__return-to-channels-btn");
+    assert.ok(
+      !exists(".new-dm.btn-floating"),
+      "mobile floating button should not exist on desktop"
+    );
+    await click(".btn.new-dm");
+    assert.ok(
+      exists(".chat-draft-channel-screen"),
+      "view changes to draft channel screen"
+    );
+  });
 });
 
 acceptance("Discourse Chat - Composer", function (needs) {

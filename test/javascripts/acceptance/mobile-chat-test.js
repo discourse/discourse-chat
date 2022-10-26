@@ -39,8 +39,7 @@ acceptance("Discourse Chat - Mobile test", function (needs) {
   });
 
   test("Chat new personal chat buttons", async function (assert) {
-    await visit("/latest");
-    await click(".header-dropdown-toggle.open-chat");
+    await visit("/chat");
     await click(".new-dm.btn-floating");
     assert.strictEqual(
       currentURL(),

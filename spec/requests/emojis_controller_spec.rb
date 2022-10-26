@@ -13,6 +13,7 @@ RSpec.describe DiscourseChat::EmojisController do
 
   describe "#index" do
     before do
+      CustomEmoji.destroy_all
       CustomEmoji.create!(name: "cat", upload: Fabricate(:upload))
       Emoji.clear_cache
     end

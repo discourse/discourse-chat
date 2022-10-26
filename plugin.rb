@@ -17,6 +17,7 @@ register_asset "stylesheets/common/dc-filter-input.scss"
 register_asset "stylesheets/common/common.scss"
 register_asset "stylesheets/common/chat-browse.scss"
 register_asset "stylesheets/common/chat-drawer.scss"
+register_asset "stylesheets/mobile/chat-drawer.scss"
 register_asset "stylesheets/common/chat-channel-preview-card.scss"
 register_asset "stylesheets/common/chat-channel-info.scss"
 register_asset "stylesheets/mobile/chat-channel-info.scss", :mobile
@@ -39,6 +40,7 @@ register_asset "stylesheets/common/chat-composer.scss"
 register_asset "stylesheets/desktop/chat-composer.scss", :desktop
 register_asset "stylesheets/mobile/chat-composer.scss", :mobile
 register_asset "stylesheets/common/direct-message-creator.scss"
+register_asset "stylesheets/common/chat-message-collapser.scss"
 register_asset "stylesheets/common/chat-message-collapser.scss"
 register_asset "stylesheets/common/chat-message-images.scss"
 register_asset "stylesheets/common/chat-transcript.scss"

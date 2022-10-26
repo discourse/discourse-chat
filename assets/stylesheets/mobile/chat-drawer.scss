@@ -1,0 +1,63 @@
+.full-page-chat {
+  .channels-list {
+    background: var(--primary-very-low);
+
+    .chat-channel-row {
+      padding: 0.5rem 1rem;
+      &:not(:last-child) {
+        &::after {
+          content: "";
+          display: block;
+          width: 90%;
+          padding-top: 20px;
+          border-bottom: 1px solid var(--primary-low);
+          margin: auto;
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+        }
+      }
+    }
+
+    .chat-channel-divider {
+      padding: 1rem 2rem;
+
+      .channel-title {
+        color: var(--quaternary);
+      }
+    }
+
+    .channels-list-container {
+      background: var(--header_background);
+    }
+  }
+
+  .btn-floating.new-dm {
+    position: absolute;
+    background: var(--tertiary);
+    bottom: 1vh;
+    right: 1rem;
+    border-radius: 50%;
+    font-size: var(--font-up-5);
+    padding: 1rem;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    z-index: z("usercard");
+    box-shadow: 0px 5px 5px -1px rgba(0, 0, 0, 0.25);
+
+    .d-icon {
+      color: var(--primary-very-low);
+    }
+
+    &:active {
+      box-shadow: 0px 0px 5px -1px rgba(0, 0, 0, 0.25);
+      transform: scale(0.9);
+    }
+
+    &:focus {
+      @include default-focus;
+      border-color: var(--quaternary);
+      outline-color: var(--quaternary);
+    }
+  }
+}

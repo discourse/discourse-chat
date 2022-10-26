@@ -1,3 +1,13 @@
+{{#if showMobileDirectMessageButton}}
+  {{d-button
+    class="btn-flat new-dm keep-mobile-sidebar-open btn-floating"
+    icon="plus"
+    action=(action "startCreatingDmChannel")
+    title=createDirectMessageChannelLabel
+    disabled=(not canCreateDirectMessageChannel)
+  }}
+{{/if}}
+
 <div
   role="region"
   aria-label={{i18n "chat.aria_roles.channels_list"}}
@@ -69,13 +79,15 @@
       {{/if}}
       <span class="channel-title">{{i18n "chat.direct_messages.title"}}</span>
 
-      {{d-button
-        class="btn-flat new-dm keep-mobile-sidebar-open"
-        icon="plus"
-        action=(action "startCreatingDmChannel")
-        title=createDirectMessageChannelLabel
-        disabled=(not canCreateDirectMessageChannel)
-      }}
+      {{#unless this.site.mobileView}}
+        {{d-button
+          class="btn-flat new-dm keep-mobile-sidebar-open"
+          icon="plus"
+          action=(action "startCreatingDmChannel")
+          title=createDirectMessageChannelLabel
+          disabled=(not canCreateDirectMessageChannel)
+        }}
+      {{/unless}}
     </div>
   {{/if}}
 

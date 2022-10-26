@@ -12,6 +12,17 @@ RSpec.describe DiscourseChat::EmojisController do
   end
 
   describe "#index" do
+    before do
+      CustomEmoji.destroy_all
+      CustomEmoji.create!(name: "cat", upload: Fabricate(:upload))
+      Emoji.clear_cache
+    end
+
+    after do
+      CustomEmoji.destroy_all
+      Emoji.clear_cache
+    end
+
     it "returns the emojis list" do
       get "/chat/emojis.json"
 
@@ -27,6 +38,7 @@ RSpec.describe DiscourseChat::EmojisController do
           activities
           flags
           symbols
+          default
         ],
       )
     end

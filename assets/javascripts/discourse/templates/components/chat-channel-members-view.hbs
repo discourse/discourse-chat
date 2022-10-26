@@ -1,24 +1,18 @@
 {{#if this.chatProgressBarContainer}}
   {{#in-element this.chatProgressBarContainer}}
-    {{d-progress-bar key="members-view" isLoading=isFetchingMembers}}
+    <DProgressBar @key="members-view" @isLoading={{this.isFetchingMembers}} />
   {{/in-element}}
 {{/if}}
 
-{{#if (gt channel.membershipsCount 0)}}
+{{#if (gt this.channel.membershipsCount 0)}}
   <div class="channel-members-view-wrapper">
     <div
       class={{concat
         "channel-members-view__search-input-container"
-        (if isSearchFocused " is-focused")
+        (if this.isSearchFocused " is-focused")
       }}
     >
-      {{input
-        class=inputSelector
-        placeholder=(i18n "chat.members_view.filter_placeholder")
-        input=(action "onFilterMembers" value="target.value")
-        focus-in=(action (mut isSearchFocused) true)
-        focus-out=(action (mut isSearchFocused) false)
-      }}
+      <Input class={{this.inputSelector}} placeholder={{i18n "chat.members_view.filter_placeholder"}} {{on "input" (action "onFilterMembers" value="target.value")}} {{on "focusin" (action (mut this.isSearchFocused) true)}} {{on "focusout" (action (mut this.isSearchFocused) false)}} />
       {{d-icon "search"}}
     </div>
 
@@ -28,18 +22,18 @@
     >
 
       <div role="list" class="channel-members-view__list">
-        {{#each members as |member|}}
+        {{#each this.members as |member|}}
           <a
             class="channel-members-view__list-item"
             href={{member.user.userPath}}
             data-user-card={{member.user.username}}
             tabindex="0"
           >
-            {{chat-user-avatar user=member.user avatarSize="medium"}}
-            {{chat-user-display-name user=member.user}}
+            <ChatUserAvatar @user={{member.user}} @avatarSize="medium" />
+            <ChatUserDisplayName @user={{member.user}} />
           </a>
         {{else}}
-          {{#unless isFetchingMembers}}
+          {{#unless this.isFetchingMembers}}
             {{i18n "chat.channel.no_memberships_found"}}
           {{/unless}}
         {{/each}}

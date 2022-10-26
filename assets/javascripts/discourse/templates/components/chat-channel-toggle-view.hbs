@@ -1,14 +1,9 @@
-{{#d-modal-body title=modalTitle}}
+<DModalBody @title={{this.modalTitle}}>
   <div id="chat-channel-toggle" class="chat-channel-toggle">
-    <p>{{instructions}}</p>
+    <p>{{this.instructions}}</p>
   </div>
-{{/d-modal-body}}
+</DModalBody>
 
 <div class="modal-footer">
-  {{d-button
-    class="btn-primary"
-    action=(action "changeChannelStatus")
-    label=buttonLabel
-    id="chat-channel-toggle-btn"
-  }}
+  <DButton @class="btn-primary" @action={{action "changeChannelStatus"}} @label={{this.buttonLabel}} @id="chat-channel-toggle-btn" />
 </div>

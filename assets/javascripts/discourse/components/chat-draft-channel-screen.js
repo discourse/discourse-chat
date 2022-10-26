@@ -5,9 +5,9 @@ import { action } from "@ember/object";
 import { cloneJSON } from "discourse-common/lib/object";
 
 export default class ChatDraftChannelScreen extends Component {
+  @service chat;
   tagName = "";
   onSwitchChannel = null;
-  @service chat;
 
   @action
   onChangeSelectedUsers(users) {

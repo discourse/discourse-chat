@@ -1,31 +1,16 @@
 <div class="chat-draft-channel-screen">
-  {{#if this.site.mobileView}}
-    <header class="chat-draft-channel-screen-header">
-      {{flat-button
-        class="chat-draft-channel-screen-header__return-to-channels-btn"
-        icon="chevron-left"
-        title="chat.draft_channel_screen.cancel"
-        action=(action "returnToChannels")
-      }}
-      <h2 class="chat-draft-channel-screen-header__title">
-        {{d-icon "comment"}}
-        {{i18n "chat.draft_channel_screen.header"}}
-      </h2>
-    </header>
-  {{/if}}
+  <DirectMessageCreator
+    @onChangeSelectedUsers={{action "onChangeSelectedUsers"}}
+  />
 
-  {{direct-message-creator
-    onChangeSelectedUsers=(action "onChangeSelectedUsers")
-  }}
-
-  {{#if previewedChannel}}
-    {{chat-live-pane
-      chatChannel=previewedChannel
-      expanded=true
-      floatHidden=false
-      fullPage=true
-      includeHeader=false
-      onSwitchChannel=(action "onSwitchFromDraftChannel")
-    }}
+  {{#if this.previewedChannel}}
+    <ChatLivePane
+      @chatChannel={{this.previewedChannel}}
+      @expanded={{true}}
+      @floatHidden={{false}}
+      @fullPage={{true}}
+      @includeHeader={{false}}
+      @onSwitchChannel={{action "onSwitchFromDraftChannel"}}
+    />
   {{/if}}
 </div>

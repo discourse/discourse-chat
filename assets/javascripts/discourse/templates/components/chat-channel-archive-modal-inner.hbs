@@ -1,28 +1,14 @@
-{{#d-modal-body title="chat.channel_archive.title"}}
+<DModalBody @title="chat.channel_archive.title">
   <div
     id="chat-channel-archive-modal-inner"
     class="chat-channel-archive-modal-inner"
   >
     <p class="chat-channel-archive-modal-instructions">{{this.instructionsText}}</p>
 
-    {{chat-to-topic-selector
-      selection=selection
-      topicTitle=topicTitle
-      categoryId=categoryId
-      tags=tags
-      selectedTopicId=selectedTopicId
-      instructionLabels=instructionLabels
-      allowNewMessage=false
-    }}
+    <ChatToTopicSelector @selection={{this.selection}} @topicTitle={{this.topicTitle}} @categoryId={{this.categoryId}} @tags={{this.tags}} @selectedTopicId={{this.selectedTopicId}} @instructionLabels={{this.instructionLabels}} @allowNewMessage={{false}} />
   </div>
-{{/d-modal-body}}
+</DModalBody>
 
 <div class="modal-footer">
-  {{d-button
-    class="btn-primary"
-    disabled=buttonDisabled
-    action=(action "archiveChannel")
-    label="chat.channel_archive.title"
-    id="chat-confirm-archive-channel"
-  }}
+  <DButton @class="btn-primary" @disabled={{this.buttonDisabled}} @action={{action "archiveChannel"}} @label="chat.channel_archive.title" @id="chat-confirm-archive-channel" />
 </div>

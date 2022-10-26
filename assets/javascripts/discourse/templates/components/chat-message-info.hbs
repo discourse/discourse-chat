@@ -30,16 +30,16 @@
 
   {{#if @message.bookmark}}
     <span class="chat-message-info__bookmark">
-      {{bookmark-icon bookmark=@message.bookmark}}
+      <BookmarkIcon @bookmark={{@message.bookmark}} />
     </span>
   {{/if}}
 
   {{#if this.isFlagged}}
     <span class="chat-message-info__flag">
       {{#if @message.reviewable_id}}
-        {{#link-to "review.show" @message.reviewable_id}}
+        <LinkTo @route="review.show" @model={{@message.reviewable_id}}>
           {{d-icon "flag" title="chat.flagged"}}
-        {{/link-to}}
+        </LinkTo>
       {{else}}
         {{d-icon "flag" title="chat.you_flagged"}}
       {{/if}}

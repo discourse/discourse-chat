@@ -26,9 +26,7 @@
       margin-bottom: 0;
       margin-left: 0.5rem;
       color: var(--primary);
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
+      @include ellipsis;
       font-weight: normal;
 
       .d-icon {

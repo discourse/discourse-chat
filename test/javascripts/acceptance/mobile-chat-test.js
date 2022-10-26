@@ -34,4 +34,22 @@ acceptance("Discourse Chat - Mobile test", function (needs) {
     await click(".chat-channel-row.chat-channel-7");
     assert.notOk(exists(".chat-full-screen-button"));
   });
+
+  test("Chat new personal chat buttons", async function (assert) {
+    await visit("/latest");
+    await click(".header-dropdown-toggle.open-chat");
+    await click(".new-dm.btn-floating");
+    assert.strictEqual(
+      currentURL(),
+      "/chat/draft-channel",
+      "Clicking the floating + button opens the new chat screen"
+    );
+
+    await click(".chat-draft-channel-screen-header__return-to-channels-btn");
+    assert.strictEqual(
+      currentURL(),
+      "/chat",
+      "Clicking the left arrow button returns to the channels list"
+    );
+  });
 });

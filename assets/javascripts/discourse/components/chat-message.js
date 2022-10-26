@@ -42,7 +42,7 @@ export default Component.extend({
   isHovered: false,
   onHoverMessage: null,
   mentionWarning: null,
-  emojiReactionStore: service("chat-emoji-reaction-store"),
+  chatEmojiReactionStore: service("chat-emoji-reaction-store"),
   chatEmojiPickerManager: service("chat-emoji-picker-manager"),
   adminTools: optionalService(),
   _hasSubscribedToAppEvents: false,
@@ -564,7 +564,7 @@ export default Component.extend({
     this._updateReactionsList(emoji, reactAction, this.currentUser);
 
     if (reactAction === this.ADD_REACTION) {
-      this.emojiReactionStore.track(`:${emoji}:`);
+      this.chatEmojiReactionStore.track(`:${emoji}:`);
     }
 
     return this._publishReaction(emoji, reactAction).then(() => {

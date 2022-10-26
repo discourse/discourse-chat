@@ -173,11 +173,10 @@ $float-height: 530px;
     font-weight: bold;
     padding: 0.25rem 0.5rem 0.25rem 2rem;
     font-family: var(--heading-font-family);
-    font-size: var(--font-down-1-rem);
+    font-size: var(--font-0);
 
     .channel-title {
       line-height: var(--line-height-medium);
-      text-transform: uppercase;
     }
   }
 

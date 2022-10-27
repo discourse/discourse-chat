@@ -62,7 +62,8 @@
   }
 }
 
-.chat-msgactions[data-popper-reference-hidden] {
+.chat-msgactions[data-popper-reference-hidden],
+.chat-msgactions[data-popper-escaped] {
   visibility: hidden;
   pointer-events: none;
 }

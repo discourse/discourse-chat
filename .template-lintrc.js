@@ -4,5 +4,5 @@ module.exports = {
 
   rules: {
     "no-capital-arguments": false, // TODO: we extensively use `args` argument name
-  }
+  },
 };

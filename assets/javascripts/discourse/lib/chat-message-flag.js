@@ -1,6 +1,7 @@
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import I18n from "I18n";
+import getURL from "discourse-common/lib/get-url";
 
 export default class ChatMessageFlag {
   title() {
@@ -25,7 +26,10 @@ export default class ChatMessageFlag {
 
   _rewriteFlagDescriptions(flags) {
     return flags.map((flag) => {
-      flag.set("description", I18n.t(`chat.flags.${flag.name_key}`));
+      flag.set(
+        "description",
+        I18n.t(`chat.flags.${flag.name_key}`, { basePath: getURL("") })
+      );
       return flag;
     });
   }

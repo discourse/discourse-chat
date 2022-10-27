@@ -34,7 +34,7 @@ acceptance("Discourse Chat - Chat Message", function (needs) {
 
     await visit("/chat/channel/4/public-category");
     await click(
-      `.chat-message-container[data-id="176"] .chat-message-reaction.heart`
+      `.chat-message-container[data-id="176"] .chat-message-reaction[data-emoji-name="heart"]`
     );
 
     assert.deepEqual(
@@ -44,7 +44,7 @@ acceptance("Discourse Chat - Chat Message", function (needs) {
     );
 
     await click(
-      `.chat-message-container[data-id="176"] .chat-message-reaction.heart`
+      `.chat-message-container[data-id="176"] .chat-message-reaction[data-emoji-name="heart"]`
     );
 
     assert.deepEqual(
@@ -73,7 +73,7 @@ acceptance("Discourse Chat - Chat Message", function (needs) {
     );
 
     await click(
-      `.chat-message-container[data-id="176"] .chat-message-reaction.grinning`
+      `.chat-message-container[data-id="176"] .chat-message-reaction[data-emoji-name="grinning"]`
     );
 
     assert.deepEqual(

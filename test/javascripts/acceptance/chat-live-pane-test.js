@@ -130,9 +130,7 @@ acceptance(
         chat_message_id: 1,
       });
 
-      assert.ok(
-        exists(`.chat-message-reaction.reacted[data-emoji-name="cat"]`)
-      );
+      assert.ok(exists(`.chat-message-reaction[data-emoji-name="cat"]`));
     });
 
     test("Sending a new message when there are still unloaded ones will fetch them", async function (assert) {

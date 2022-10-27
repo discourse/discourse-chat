@@ -6,7 +6,8 @@ import Service from "@ember/service";
 
 export default class ChatEmojiReactionStore extends Service {
   STORE_NAMESPACE = "discourse_chat_emoji_reaction_";
-  MAX_TRACKED_EMOJIS = 20;
+  MAX_DISPLAYED_EMOJIS = 20;
+  MAX_TRACKED_EMOJIS = this.MAX_DISPLAYED_EMOJIS * 2;
   SKIN_TONE_STORE_KEY = "emojiSelectedDiversity";
   USER_EMOJIS_STORE_KEY = "emojiUsage";
 
@@ -30,7 +31,7 @@ export default class ChatEmojiReactionStore extends Service {
   }
 
   get storedFavorites() {
-    let value = this.store.getObject(this.USER_EMOJIS_STORE_KEY);
+    let value = this.store.getObject(this.USER_EMOJIS_STORE_KEY) || [];
 
     if (value.length < 1) {
       if (!this.siteSettings.default_emoji_reactions) {
@@ -49,10 +50,15 @@ export default class ChatEmojiReactionStore extends Service {
 
   set storedFavorites(value) {
     this.store.setObject({ key: this.USER_EMOJIS_STORE_KEY, value });
+    this.notifyPropertyChange("favorites");
   }
 
   get favorites() {
-    return [...new Set(this._frequencySort(this.storedFavorites))];
+    const computedStored = [
+      ...new Set(this._frequencySort(this.storedFavorites)),
+    ];
+
+    return computedStored.slice(0, this.MAX_DISPLAYED_EMOJIS);
   }
 
   set favorites(value = []) {

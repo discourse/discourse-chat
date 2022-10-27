@@ -34,7 +34,7 @@ module("Discourse Chat | Unit | chat-emoji-reaction-store", function (hooks) {
     assert.strictEqual(this.chatEmojiReactionStore.diversity, 2);
   });
 
-  test("when displaying default favorites", function (assert) {
+  test("#favorites with defaults", function (assert) {
     this.siteSettings.default_emoji_reactions = "smile|heart|tada";
 
     assert.deepEqual(this.chatEmojiReactionStore.favorites, [
@@ -44,25 +44,51 @@ module("Discourse Chat | Unit | chat-emoji-reaction-store", function (hooks) {
     ]);
   });
 
-  test("when tracking an emoji", function (assert) {
+  test("#favorites", function (assert) {
+    this.chatEmojiReactionStore.storedFavorites = ["grinning"];
+
+    assert.deepEqual(this.chatEmojiReactionStore.favorites, ["grinning"]);
+  });
+
+  test("#favorites when tracking multiple times the same emoji", function (assert) {
+    this.chatEmojiReactionStore.storedFavorites = [
+      "grinning",
+      "yum",
+      "not_yum",
+      "yum",
+    ];
+
+    assert.deepEqual(
+      this.chatEmojiReactionStore.favorites,
+      ["yum", "grinning", "not_yum"],
+      "it favors count over order"
+    );
+  });
+
+  test("#favorites when reaching displayed limit", function (assert) {
+    this.chatEmojiReactionStore.storedFavorites = [];
+    [...Array(this.chatEmojiReactionStore.MAX_TRACKED_EMOJIS)].forEach(
+      (_, index) => {
+        this.chatEmojiReactionStore.track("yum" + index);
+      }
+    );
+    this.chatEmojiReactionStore.track("grinning");
+
+    assert.strictEqual(
+      this.chatEmojiReactionStore.favorites.length,
+      this.chatEmojiReactionStore.MAX_DISPLAYED_EMOJIS,
+      "it enforces the max length"
+    );
+  });
+
+  test("#storedFavorites", function (assert) {
     this.chatEmojiReactionStore.storedFavorites = [];
     this.chatEmojiReactionStore.track("yum");
 
     assert.deepEqual(this.chatEmojiReactionStore.storedFavorites, ["yum"]);
   });
 
-  test("when tracking multiple times the same emoji", function (assert) {
-    this.chatEmojiReactionStore.storedFavorites = [];
-    this.chatEmojiReactionStore.track("yum");
-    this.chatEmojiReactionStore.track("yum");
-
-    assert.deepEqual(this.chatEmojiReactionStore.storedFavorites, [
-      "yum",
-      "yum",
-    ]);
-  });
-
-  test("when tracking different emojis", function (assert) {
+  test("#storedFavorites when tracking different emojis", function (assert) {
     this.chatEmojiReactionStore.storedFavorites = [];
     this.chatEmojiReactionStore.track("yum");
     this.chatEmojiReactionStore.track("not_yum");
@@ -76,7 +102,7 @@ module("Discourse Chat | Unit | chat-emoji-reaction-store", function (hooks) {
     );
   });
 
-  test("when tracking an emoji after reaching the limit", function (assert) {
+  test("#storedFavorites when tracking an emoji after reaching the limit", function (assert) {
     this.chatEmojiReactionStore.storedFavorites = [];
     [...Array(this.chatEmojiReactionStore.MAX_TRACKED_EMOJIS)].forEach(() => {
       this.chatEmojiReactionStore.track("yum");

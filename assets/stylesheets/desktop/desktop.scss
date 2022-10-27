@@ -62,10 +62,8 @@
   }
 }
 
-.chat-live-pane.is-scrolling {
-  .chat-msgactions-hover {
-    visibility: hidden;
-  }
+.chat-msgactions[data-popper-reference-hidden] {
+  visibility: hidden;
 }
 
 // Full Page Styling in Core

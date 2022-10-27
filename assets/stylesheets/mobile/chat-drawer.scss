@@ -1,6 +1,8 @@
 .full-page-chat {
   .channels-list {
     background: var(--primary-very-low);
+    min-height: 100vh;
+    padding-bottom: 6rem;
 
     .chat-channel-row {
       padding: 0.5rem 1rem;

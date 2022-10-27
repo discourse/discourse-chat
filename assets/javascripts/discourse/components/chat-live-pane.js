@@ -672,13 +672,6 @@ export default Component.extend({
       return;
     }
 
-    const chatLivePane = document.querySelector(".chat-live-pane");
-    cancel(this._scrollClassTimer);
-    chatLivePane.classList.add("is-scrolling");
-    this._scrollClassTimer = discourseLater(() => {
-      chatLivePane.classList.remove("is-scrolling");
-    }, 150);
-
     resetIdle();
 
     const atTop =
@@ -1345,11 +1338,21 @@ export default Component.extend({
 
   @action
   onHoverMessage(message, options = {}, event) {
+    cancel(this._onHoverMessageDebouncedHandler);
+
     if (this.site.mobileView && options.desktopOnly) {
       return;
     }
 
     if (message?.staged) {
+      return;
+    }
+
+    if (
+      this.hoveredMessageId &&
+      message?.id &&
+      this.hoveredMessageId === message?.id
+    ) {
       return;
     }
 

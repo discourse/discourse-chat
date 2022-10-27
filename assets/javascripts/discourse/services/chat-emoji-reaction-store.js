@@ -1,64 +1,88 @@
-// This class is duplicated from emoji-store class in core. We want to maintain separate emoji store for reactions in chat plugin.
+// This class is adapted from emoji-store class in core. We want to maintain separate emoji store for reactions in chat plugin.
 // https://github.com/discourse/discourse/blob/892f7e0506f3a4d40d9a59a4c926ff0a2aa0947e/app/assets/javascripts/discourse/app/services/emoji-store.js
 
 import KeyValueStore from "discourse/lib/key-value-store";
 import Service from "@ember/service";
 
-const EMOJI_USAGE = "emojiUsage";
-const EMOJI_SELECTED_DIVERSITY = "emojiSelectedDiversity";
-const TRACKED_EMOJIS = 15;
-const STORE_NAMESPACE = "discourse_chat_emoji_reaction_";
-
 export default class ChatEmojiReactionStore extends Service {
-  store = new KeyValueStore(STORE_NAMESPACE);
+  STORE_NAMESPACE = "discourse_chat_emoji_reaction_";
+  MAX_DISPLAYED_EMOJIS = 20;
+  MAX_TRACKED_EMOJIS = this.MAX_DISPLAYED_EMOJIS * 2;
+  SKIN_TONE_STORE_KEY = "emojiSelectedDiversity";
+  USER_EMOJIS_STORE_KEY = "emojiUsage";
+
+  store = new KeyValueStore(this.STORE_NAMESPACE);
 
   constructor() {
     super(...arguments);
 
-    if (!this.store.getObject(EMOJI_USAGE)) {
-      this.favorites = [];
+    if (!this.store.getObject(this.USER_EMOJIS_STORE_KEY)) {
+      this.storedFavorites = [];
     }
   }
 
   get diversity() {
-    return this.store.getObject(EMOJI_SELECTED_DIVERSITY) || 1;
+    return this.store.getObject(this.SKIN_TONE_STORE_KEY) || 1;
   }
 
-  set diversity(value) {
-    this.store.setObject({ key: EMOJI_SELECTED_DIVERSITY, value: value || 1 });
+  set diversity(value = 1) {
+    this.store.setObject({ key: this.SKIN_TONE_STORE_KEY, value });
     this.notifyPropertyChange("diversity");
   }
 
-  get favorites() {
-    if (this.store.getObject(EMOJI_USAGE).length < 1) {
+  get storedFavorites() {
+    let value = this.store.getObject(this.USER_EMOJIS_STORE_KEY) || [];
+
+    if (value.length < 1) {
       if (!this.siteSettings.default_emoji_reactions) {
-        this.store.setObject({ key: EMOJI_USAGE, value: [] });
+        value = [];
       } else {
-        const reactions = this.siteSettings.default_emoji_reactions
+        value = this.siteSettings.default_emoji_reactions
           .split("|")
           .filter(Boolean);
-        this.store.setObject({ key: EMOJI_USAGE, value: reactions });
       }
+
+      this.store.setObject({ key: this.USER_EMOJIS_STORE_KEY, value });
     }
-    return this.store.getObject(EMOJI_USAGE) || [];
+
+    return value;
   }
 
-  set favorites(value) {
-    this.store.setObject({ key: EMOJI_USAGE, value: value || [] });
+  set storedFavorites(value) {
+    this.store.setObject({ key: this.USER_EMOJIS_STORE_KEY, value });
     this.notifyPropertyChange("favorites");
+  }
+
+  get favorites() {
+    const computedStored = [
+      ...new Set(this._frequencySort(this.storedFavorites)),
+    ];
+
+    return computedStored.slice(0, this.MAX_DISPLAYED_EMOJIS);
+  }
+
+  set favorites(value = []) {
+    this.store.setObject({ key: this.USER_EMOJIS_STORE_KEY, value });
   }
 
   track(code) {
     const normalizedCode = code.replace(/(^:)|(:$)/g, "");
-    const recent = this.favorites.filter((r) => r !== normalizedCode);
+    let recent = this.storedFavorites;
     recent.unshift(normalizedCode);
-    recent.length = Math.min(recent.length, TRACKED_EMOJIS);
-    this.favorites = recent;
+    recent.length = Math.min(recent.length, this.MAX_TRACKED_EMOJIS);
+    this.storedFavorites = recent;
   }
 
   reset() {
-    const store = new KeyValueStore(STORE_NAMESPACE);
-    store.setObject({ key: EMOJI_USAGE, value: [] });
-    store.setObject({ key: EMOJI_SELECTED_DIVERSITY, value: 1 });
+    this.store.setObject({ key: this.USER_EMOJIS_STORE_KEY, value: [] });
+    this.store.setObject({ key: this.SKIN_TONE_STORE_KEY, value: 1 });
+  }
+
+  _frequencySort(array = []) {
+    const counters = array.reduce((obj, val) => {
+      obj[val] = (obj[val] || 0) + 1;
+      return obj;
+    }, {});
+    return Object.keys(counters).sort((a, b) => counters[b] - counters[a]);
   }
 }

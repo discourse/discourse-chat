@@ -7,10 +7,10 @@
     class={{concat-class
       this.class
       "chat-message-reaction"
-      this.reaction.emoji
       (if this.reaction.reacted "reacted")
       (if this.reaction.count "show")
     }}
+    data-emoji-name={{this.reaction.emoji}}
     title={{this.emojiString}}
   >
     <img

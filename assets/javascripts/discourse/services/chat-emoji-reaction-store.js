@@ -11,7 +11,7 @@ export default class ChatEmojiReactionStore extends Service {
   SKIN_TONE_STORE_KEY = "emojiSelectedDiversity";
   USER_EMOJIS_STORE_KEY = "emojiUsage";
 
-  store = new KeyValueStore(this.CHAT_EMOJI_STORE_NAMESPACE);
+  store = new KeyValueStore(this.STORE_NAMESPACE);
 
   constructor() {
     super(...arguments);

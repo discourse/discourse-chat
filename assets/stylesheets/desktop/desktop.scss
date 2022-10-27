@@ -64,6 +64,7 @@
 
 .chat-msgactions[data-popper-reference-hidden] {
   visibility: hidden;
+  pointer-events: none;
 }
 
 // Full Page Styling in Core

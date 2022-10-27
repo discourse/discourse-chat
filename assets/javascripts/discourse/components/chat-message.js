@@ -793,7 +793,7 @@ export default Component.extend({
     }, 250);
   },
 
-  @discourseComputed("chatEmojiReactionStore.favorites.[]")
+  @discourseComputed("emojiReactionStore.favorites.[]")
   emojiReactions(favorites) {
     // may be a {} if no defaults defined in some production builds
     if (!favorites || !favorites.slice) {

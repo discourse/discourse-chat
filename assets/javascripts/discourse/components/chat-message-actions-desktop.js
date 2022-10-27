@@ -26,7 +26,7 @@ export default Component.extend({
         {
           placement: "right-start",
           modifiers: [
-            { name: "hidden", enabled: true },
+            { name: "hide", enabled: true },
             {
               name: "offset",
               options: {

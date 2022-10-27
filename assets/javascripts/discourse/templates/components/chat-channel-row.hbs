@@ -1,22 +1,22 @@
 <div
-  id="chat-channel-row-{{channel.id}}"
-  class={{rowClassNames}}
+  id="chat-channel-row-{{this.channel.id}}"
+  class={{this.rowClassNames}}
   {{on "click" this.handleClick}}
   {{on "keyup" this.handleKeyUp}}
   {{on "mouseup" this.handleNewWindow}}
   role="button"
   tabindex="0"
-  data-chat-channel-id={{channel.id}}
+  data-chat-channel-id={{this.channel.id}}
 >
-  {{chat-channel-title channel=channel unreadIndicator=true}}
+  <ChatChannelTitle @channel={{this.channel}} @unreadIndicator={{true}} />
 
   {{#if this.showUserStatus}}
-    <UserStatusMessage @status={{channel.chatable.users.firstObject.status}} />
+    <UserStatusMessage @status={{this.channel.chatable.users.firstObject.status}} />
   {{/if}}
 
-  {{#if (and options.leaveButton channel.isFollowing (not site.mobileView))}}
+  {{#if (and this.options.leaveButton this.channel.isFollowing (not this.site.mobileView))}}
     <ToggleChannelMembershipButton
-      @channel={{channel}}
+      @channel={{this.channel}}
       @options={{hash
         leaveClass="btn-flat chat-channel-leave-btn"
         labelType="none"

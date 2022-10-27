@@ -10,7 +10,7 @@ describe EmailController do
       SiteSetting.chat_enabled = true
       never_freq = "never"
       key = UnsubscribeKey.create_key_for(user, "chat_summary")
-      user.user_option.when_away!
+      user.user_option.send_chat_email_when_away!
 
       post "/email/unsubscribe/#{key}.json", params: { chat_email_frequency: never_freq }
 

@@ -40,9 +40,10 @@ export default class ChatEmojiPicker extends Component {
   @service chatEmojiPickerManager;
   @service emojiPickerScrollObserver;
   @service chatEmojiReactionStore;
-  tagName = "";
   @tracked filteredEmojis = null;
   @tracked isExpandedFitzpatrickScale = false;
+  tagName = "";
+
   fitzpatrickModifiers = FITZPATRICK_MODIFIERS;
 
   get groups() {

@@ -1,16 +1,7 @@
 <div class="chat-draft-channel-screen">
-  {{direct-message-creator
-    onChangeSelectedUsers=(action "onChangeSelectedUsers")
-  }}
+  <DirectMessageCreator @onChangeSelectedUsers={{action "onChangeSelectedUsers"}} />
 
-  {{#if previewedChannel}}
-    {{chat-live-pane
-      chatChannel=previewedChannel
-      expanded=true
-      floatHidden=false
-      fullPage=true
-      includeHeader=false
-      onSwitchChannel=(action "onSwitchFromDraftChannel")
-    }}
+  {{#if this.previewedChannel}}
+    <ChatLivePane @chatChannel={{this.previewedChannel}} @expanded={{true}} @floatHidden={{false}} @fullPage={{true}} @includeHeader={{false}} @onSwitchChannel={{action "onSwitchFromDraftChannel"}} />
   {{/if}}
 </div>

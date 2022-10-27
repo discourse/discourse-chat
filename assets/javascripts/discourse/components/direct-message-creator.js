@@ -161,7 +161,7 @@ export default Component.extend({
   },
 
   @action
-  handleFilterKeyDown(value, event) {
+  handleFilterKeyUp(event) {
     if (event.key === "Tab") {
       const enabledComposer = document.querySelector(".chat-composer-input");
       if (enabledComposer && !enabledComposer.disabled) {
@@ -181,7 +181,7 @@ export default Component.extend({
       return;
     }
 
-    if (event.key === "Backspace" && isEmpty(value) && this.hasSelection) {
+    if (event.key === "Backspace" && isEmpty(this.term) && this.hasSelection) {
       event.preventDefault();
       event.stopPropagation();
 

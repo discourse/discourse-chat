@@ -1,16 +1,16 @@
 <div
-  class={{rowClassNames}}
+  class={{this.rowClassNames}}
   role="button"
   tabindex="0"
   {{on "click" this.handleClick}}
-  data-id={{model.id}}
+  data-id={{this.model.id}}
 >
-  {{#if model.user}}
-    {{avatar model imageSize="tiny"}}
+  {{#if this.model.user}}
+    {{avatar this.model imageSize="tiny"}}
     <span class="username">
-      {{model.username}}
+      {{this.model.username}}
     </span>
   {{else}}
-    {{chat-channel-title channel=model unreadIndicator=true}}
+    <ChatChannelTitle @channel={{this.model}} @unreadIndicator={{true}} />
   {{/if}}
 </div>

@@ -1,20 +1,20 @@
 <div class="chat-message-collapser">
-  {{#if hasUploads}}
-    {{html-safe cooked}}
+  {{#if this.hasUploads}}
+    {{html-safe this.cooked}}
 
-    {{#collapser header=uploadsHeader}}
+    <Collapser @header={{this.uploadsHeader}}>
       <div class="chat-uploads">
-        {{#each uploads as |upload|}}
-          {{chat-upload upload=upload}}
+        {{#each this.uploads as |upload|}}
+          <ChatUpload @upload={{upload}} />
         {{/each}}
       </div>
-    {{/collapser}}
+    </Collapser>
   {{else}}
-    {{#each cookedBodies as |cooked|}}
+    {{#each this.cookedBodies as |cooked|}}
       {{#if cooked.needsCollapser}}
-        {{#collapser header=cooked.header}}
+        <Collapser @header={{cooked.header}}>
           {{cooked.body}}
-        {{/collapser}}
+        </Collapser>
       {{else}}
         {{cooked.body}}
       {{/if}}

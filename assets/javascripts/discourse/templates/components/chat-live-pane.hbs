@@ -1,41 +1,31 @@
-{{#if (and fullPage includeHeader)}}
+{{#if (and this.fullPage this.includeHeader)}}
   <div
     class="chat-full-page-header
-      {{unless chatChannel.isFollowing "-not-following"}}"
+      {{unless this.chatChannel.isFollowing "-not-following"}}"
   >
     <div class="chat-channel-header-details">
-      {{#if site.mobileView}}
+      {{#if this.site.mobileView}}
         <div class="chat-full-page-header__left-actions">
-          {{d-button class="btn-flat" icon="chevron-left" action=onBackClick}}
+          <DButton @class="btn-flat" @icon="chevron-left" @action={{this.onBackClick}} />
         </div>
       {{/if}}
 
-      {{#link-to
-        infoTabRoute
-        chatChannel.id
-        (slugify-channel chatChannel.title)
-        class="chat-full-page-header__title"
-      }}
-        {{chat-channel-title channel=chatChannel}}
-      {{/link-to}}
+      <LinkTo @route={{this.infoTabRoute}} @models={{array this.chatChannel.id (slugify-channel this.chatChannel.title)}} class="chat-full-page-header__title">
+        <ChatChannelTitle @channel={{this.chatChannel}} />
+      </LinkTo>
 
-      {{#if showCloseFullScreenBtn}}
+      {{#if this.showCloseFullScreenBtn}}
         <div class="chat-full-page-header__right-actions">
-          {{flat-button
-            class="chat-full-screen-button"
-            icon="discourse-compress"
-            action=(action "onCloseFullScreen" chatChannel)
-            title="chat.close_full_page"
-          }}
+          <FlatButton @class="chat-full-screen-button" @icon="discourse-compress" @action={{action "onCloseFullScreen" this.chatChannel}} @title="chat.close_full_page" />
         </div>
       {{/if}}
     </div>
 
-    {{chat-channel-status channel=chatChannel}}
+    <ChatChannelStatus @channel={{this.chatChannel}} />
   </div>
 {{/if}}
 
-{{chat-retention-reminder chatChannel=chatChannel}}
+<ChatRetentionReminder @chatChannel={{this.chatChannel}} />
 
 <div class="chat-message-actions-mobile-anchor"></div>
 <div class="chat-message-actions-desktop-anchor"></div>
@@ -44,8 +34,8 @@
     "chat-message-emoji-picker-anchor"
     (if
       (and
-        chatEmojiPickerManager.opened
-        (eq chatEmojiPickerManager.context "chat-message")
+        this.chatEmojiPickerManager.opened
+        (eq this.chatEmojiPickerManager.context "chat-message")
       )
       "-opened"
     )
@@ -56,44 +46,26 @@
 <div class="chat-messages-scroll chat-messages-container">
   <div class="chat-messages-container">
     {{#if (or this.loading this.loadingMorePast)}}
-      {{chat-skeleton tagName=""}}
+      <ChatSkeleton @tagName="" />
     {{/if}}
 
     {{#each this.messages as |message|}}
-      {{chat-message
-        message=message
-        canInteractWithChat=canInteractWithChat
-        details=this.details
-        chatChannel=chatChannel
-        setReplyTo=(action "setReplyTo")
-        replyMessageClicked=(action "replyMessageClicked")
-        editButtonClicked=(action "editButtonClicked")
-        selectingMessages=selectingMessages
-        onStartSelectingMessages=onStartSelectingMessages
-        onSelectMessage=onSelectMessage
-        bulkSelectMessages=bulkSelectMessages
-        fullPage=fullPage
-        afterReactionAdded=(action "reStickScrollIfNeeded")
-        isHovered=(eq message.id hoveredMessageId)
-        onHoverMessage=(action "onHoverMessage")
-        onSwitchChannel=onSwitchChannel
-        resendStagedMessage=this.resendStagedMessage
-      }}
+      <ChatMessage @message={{message}} @canInteractWithChat={{this.canInteractWithChat}} @details={{this.details}} @chatChannel={{this.chatChannel}} @setReplyTo={{action "setReplyTo"}} @replyMessageClicked={{action "replyMessageClicked"}} @editButtonClicked={{action "editButtonClicked"}} @selectingMessages={{this.selectingMessages}} @onStartSelectingMessages={{this.onStartSelectingMessages}} @onSelectMessage={{this.onSelectMessage}} @bulkSelectMessages={{this.bulkSelectMessages}} @fullPage={{this.fullPage}} @afterReactionAdded={{action "reStickScrollIfNeeded"}} @isHovered={{eq message.id this.hoveredMessageId}} @onHoverMessage={{action "onHoverMessage"}} @onSwitchChannel={{this.onSwitchChannel}} @resendStagedMessage={{this.resendStagedMessage}} />
     {{/each}}
 
     {{#if this.loadingMoreFuture}}
-      {{chat-skeleton tagName=""}}
+      <ChatSkeleton @tagName="" />
     {{/if}}
   </div>
 
-  {{#if allPastMessagesLoaded}}
+  {{#if this.allPastMessagesLoaded}}
     <div class="all-loaded-message">
       {{i18n "chat.all_loaded"}}
     </div>
   {{/if}}
 </div>
 
-{{#if showScrollToBottomBtn}}
+{{#if this.showScrollToBottomBtn}}
   <div class="scroll-stick-wrap">
     <a
       href
@@ -102,11 +74,11 @@
         "btn"
         "btn-flat"
         "chat-scroll-to-bottom"
-        (if hasNewMessages "unread-messages")
+        (if this.hasNewMessages "unread-messages")
       }}
       {{on "click" (action "restickScrolling")}}
     >
-      {{#if hasNewMessages}}
+      {{#if this.hasNewMessages}}
         {{i18n "chat.scroll_to_new_messages"}}
       {{/if}}
       {{d-icon "arrow-down"}}
@@ -114,34 +86,14 @@
   </div>
 {{/if}}
 
-{{#if expanded}}
-  {{#if selectingMessages}}
-    {{chat-selection-manager
-      selectedMessageIds=selectedMessageIds
-      chatChannel=chatChannel
-      canModerate=details.can_moderate
-      cancelSelecting=(action "cancelSelecting")
-    }}
+{{#if this.expanded}}
+  {{#if this.selectingMessages}}
+    <ChatSelectionManager @selectedMessageIds={{this.selectedMessageIds}} @chatChannel={{this.chatChannel}} @canModerate={{this.details.can_moderate}} @cancelSelecting={{action "cancelSelecting"}} />
   {{else}}
-    {{#if (or chatChannel.isDraft chatChannel.isFollowing)}}
-      {{chat-composer
-        draft=draft
-        details=this.details
-        canInteractWithChat=canInteractWithChat
-        sendMessage=(action "sendMessage")
-        editMessage=(action "editMessage")
-        setReplyTo=(action "setReplyTo")
-        loading=sendingLoading
-        editingMessage=(readonly this.editingMessage)
-        onCancelEditing=this.cancelEditing
-        setInReplyToMsg=this.setInReplyToMsg
-        onEditLastMessageRequested=this.editLastMessageRequested
-        onValueChange=(action "composerValueChanged")
-        fullPage=fullPage
-        chatChannel=chatChannel
-      }}
+    {{#if (or this.chatChannel.isDraft this.chatChannel.isFollowing)}}
+      <ChatComposer @draft={{this.draft}} @details={{this.details}} @canInteractWithChat={{this.canInteractWithChat}} @sendMessage={{action "sendMessage"}} @editMessage={{action "editMessage"}} @setReplyTo={{action "setReplyTo"}} @loading={{this.sendingLoading}} @editingMessage={{readonly this.editingMessage}} @onCancelEditing={{this.cancelEditing}} @setInReplyToMsg={{this.setInReplyToMsg}} @onEditLastMessageRequested={{this.editLastMessageRequested}} @onValueChange={{action "composerValueChanged"}} @fullPage={{this.fullPage}} @chatChannel={{this.chatChannel}} />
     {{else}}
-      {{chat-channel-preview-card channel=chatChannel}}
+      <ChatChannelPreviewCard @channel={{this.chatChannel}} />
     {{/if}}
   {{/if}}
 {{/if}}

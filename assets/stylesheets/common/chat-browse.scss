@@ -94,12 +94,9 @@
 
   .chat-channel-card {
     .chat-channel-card__leave-btn {
-      color: var(--tertiary-high);
-
       &:hover,
       &:focus {
         background: none;
-        color: var(--tertiary);
       }
 
       &:focus {

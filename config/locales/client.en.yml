@@ -31,7 +31,7 @@ en:
       move_to_channel:
         title: "Move messages to channel"
         instructions:
-          one: "You are moving <strong>1</strong> message. Select a destination channel. A placeholder message will be created in the <strong>%{channelTitle}</strong> channel to indicate that this message has been moved."
+          one: "You are moving <strong>%{count}</strong> message. Select a destination channel. A placeholder message will be created in the <strong>%{channelTitle}</strong> channel to indicate that this message has been moved."
           other: "You are moving <strong>%{count}</strong> messages. Select a destination channel. A placeholder message will be created in the <strong>%{channelTitle}</strong> channel to indicate that these messages have been moved."
         confirm_move: "Move Messages"
       channel_settings:
@@ -228,23 +228,23 @@ en:
         no_memberships: This channel has no members
         no_memberships_found: No members found
         memberships_count:
-          one: 1 member
+          one: "%{count} member"
           other: "%{count} members"
 
       create_channel:
         auto_join_users:
           public_category_warning: "%{category} is a public category. Automatically add all recently active users to this channel?"
           warning_groups:
-            one: Automatically add %{members_count} users from %{group_1}?
-            other: Automatically add %{members_count} users from %{group_1} and %{group_2}?
+            one: Automatically add %{members_count} users from %{group}?
+            other: Automatically add %{members_count} users from %{group} and %{group_2}?
           warning_multiple_groups: Automatically add %{members_count} users from %{group_1} and %{count} others?
         choose_category:
           label: "Choose a category"
           none: "select one..."
           default_hint: Manage access by visiting <a href=%{link} target="_blank">%{category} security settings</a>
           hint_groups:
-            one: Users in %{hint_1} will have access to this channel per the <a href=%{link} target="_blank">security settings</a>
-            other: Users in %{hint_1} and %{hint_2} will have access to this channel per the <a href=%{link} target="_blank">security settings</a>
+            one: Users in %{hint} will have access to this channel per the <a href=%{link} target="_blank">security settings</a>
+            other: Users in %{hint} and %{hint_2} will have access to this channel per the <a href=%{link} target="_blank">security settings</a>
           hint_multiple_groups: Users in %{hint_1} and %{count} other groups will have access to this channel per the <a href=%{link} target="_blank">security settings</a>
         create: "Create channel"
         description: "Description (optional)"
@@ -374,7 +374,7 @@ en:
 
       flags:
         off_topic: "This message is not relevant to the current discussion as defined by the channel title, and should probably be moved elsewhere."
-        inappropriate: "This message contains content that a reasonable person would consider offensive, abusive, or a violation of <a href=\"/guidelines\">our community guidelines</a>."
+        inappropriate: "This message contains content that a reasonable person would consider offensive, abusive, or a violation of <a href=\"%{basePath}/guidelines\">our community guidelines</a>."
         spam: "This message is an advertisement, or vandalism. It is not useful or relevant to the current channel."
         notify_user: "I want to talk to this person directly and personally about their message."
         notify_moderators: "This message requires staff attention for another reason not listed above."
@@ -405,12 +405,12 @@ en:
         chat_mention:
           direct: 'mentioned you in "%{channel}"'
           direct_html: '<span>%{username}</span> <span>mentioned you in "%{channel}"</span>'
-          other: 'mentioned %{identifier} in "%{channel}"'
+          other_plain: 'mentioned %{identifier} in "%{channel}"'
           other_html: '<span>%{username}</span> <span>mentioned %{identifier} in "%{channel}"</span>'
         direct_message_chat_mention:
           direct: "mentioned you in personal chat"
           direct_html: "<span>%{username}</span> <span>mentioned you in personal chat</span>"
-          other: "mentioned %{identifier} in personal chat"
+          other_plain: "mentioned %{identifier} in personal chat"
           other_html: "<span>%{username}</span> <span>mentioned %{identifier} in personal chat</span>"
         chat_message: "New chat message"
         chat_quoted: "%{username} quoted your chat message"

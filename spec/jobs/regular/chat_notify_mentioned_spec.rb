@@ -275,7 +275,7 @@ describe Jobs::ChatNotifyMentioned do
 
       let(:payload_translated_title) do
         I18n.t(
-          "discourse_push_notifications.popup.chat_mention.other",
+          "discourse_push_notifications.popup.chat_mention.other_type",
           username: user_1.username,
           identifier: "@all",
           channel: public_channel.title(user_2),
@@ -313,7 +313,7 @@ describe Jobs::ChatNotifyMentioned do
 
           expected_title =
             I18n.t(
-              "discourse_push_notifications.popup.direct_message_chat_mention.other",
+              "discourse_push_notifications.popup.direct_message_chat_mention.other_type",
               username: user_1.username,
               identifier: "@all",
             )
@@ -328,7 +328,7 @@ describe Jobs::ChatNotifyMentioned do
 
       let(:payload_translated_title) do
         I18n.t(
-          "discourse_push_notifications.popup.chat_mention.other",
+          "discourse_push_notifications.popup.chat_mention.other_type",
           username: user_1.username,
           identifier: "@here",
           channel: public_channel.title(user_2),
@@ -365,7 +365,7 @@ describe Jobs::ChatNotifyMentioned do
 
           expected_title =
             I18n.t(
-              "discourse_push_notifications.popup.direct_message_chat_mention.other",
+              "discourse_push_notifications.popup.direct_message_chat_mention.other_type",
               username: user_1.username,
               identifier: "@here",
             )
@@ -432,7 +432,7 @@ describe Jobs::ChatNotifyMentioned do
 
       let(:payload_translated_title) do
         I18n.t(
-          "discourse_push_notifications.popup.chat_mention.other",
+          "discourse_push_notifications.popup.chat_mention.other_type",
           username: user_1.username,
           identifier: "@#{@chat_group.name}",
           channel: public_channel.title(user_2),
@@ -470,7 +470,7 @@ describe Jobs::ChatNotifyMentioned do
 
           expected_title =
             I18n.t(
-              "discourse_push_notifications.popup.direct_message_chat_mention.other",
+              "discourse_push_notifications.popup.direct_message_chat_mention.other_type",
               username: user_1.username,
               identifier: "@#{@chat_group.name}",
             )

@@ -84,7 +84,7 @@ export default {
                   ? "notifications.popup.direct_message_chat_mention"
                   : "notifications.popup.chat_mention";
 
-                const i18nSuffix = identifier ? "other" : "direct";
+                const i18nSuffix = identifier ? "other_plain" : "direct";
 
                 return I18n.t(`${i18nPrefix}.${i18nSuffix}`, {
                   identifier,

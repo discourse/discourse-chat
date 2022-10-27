@@ -1,13 +1,13 @@
-<div class="chat-draft-channel-screen">
+<div class="chat-draft">
   {{#if this.site.mobileView}}
-    <header class="chat-draft-channel-screen-header">
+    <header class="chat-draft-header">
       <FlatButton
-        @class="chat-draft-channel-screen-header__return-to-channels-btn"
+        @class="chat-draft-header__btn"
         @icon="chevron-left"
         @title="chat.draft_channel_screen.cancel"
         @action={{action "onCancelChatDraft"}}
       />
-      <h2 class="chat-draft-channel-screen-header__title">
+      <h2 class="chat-draft-header__title">
         {{d-icon "comment"}}
         {{i18n "chat.draft_channel_screen.header"}}
       </h2>

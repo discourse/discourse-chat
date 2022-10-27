@@ -1,10 +1,10 @@
 .full-page-chat.teams-sidebar-on {
-  .chat-draft-channel {
+  .chat-draft {
     grid-template-columns: 1fr;
   }
 }
 
-.chat-draft-channel-screen {
+.chat-draft {
   height: 100%;
   min-height: 1px;
   width: 100%;
@@ -22,12 +22,12 @@
       display: flex;
       align-items: center;
       gap: 0.5em;
-      font-size: var(--font-0);
       margin-bottom: 0;
       margin-left: 0.5rem;
+      font-size: var(--font-0);
+      font-weight: normal;
       color: var(--primary);
       @include ellipsis;
-      font-weight: normal;
 
       .d-icon {
         height: 1.5em;

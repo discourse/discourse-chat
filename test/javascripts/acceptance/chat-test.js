@@ -1818,10 +1818,7 @@ acceptance("Discourse Chat - Direct Message Creator", function (needs) {
       "mobile floating button should not exist on desktop"
     );
     await click(".btn.new-dm");
-    assert.ok(
-      exists(".chat-draft-channel-screen"),
-      "view changes to draft channel screen"
-    );
+    assert.ok(exists(".chat-draft"), "view changes to draft channel screen");
   });
 });
 

@@ -47,7 +47,7 @@ acceptance("Discourse Chat - Mobile test", function (needs) {
       "Clicking the floating + button opens the new chat screen"
     );
 
-    await click(".chat-draft-channel-screen-header__return-to-channels-btn");
+    await click(".chat-draft-header__btn");
     assert.strictEqual(
       currentURL(),
       "/chat",

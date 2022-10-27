@@ -8,7 +8,12 @@
   <div class="chat-browse-view__header">
     <h1 class="chat-browse-view__title">{{i18n "chat.browse.title"}}</h1>
     {{#if this.currentUser.staff}}
-      <DButton @action={{action "createChannel"}} @icon="plus" @class="new-channel-btn" @label={{if this.site.desktopView "chat.create_channel.title"}} />
+      <DButton
+        @action={{action "createChannel"}}
+        @icon="plus"
+        @class="new-channel-btn"
+        @label={{if this.site.desktopView "chat.create_channel.title"}}
+      />
     {{/if}}
   </div>
 

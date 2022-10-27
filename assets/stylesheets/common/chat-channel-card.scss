@@ -9,6 +9,17 @@
   min-width: 0;
   border-left: 5px solid transparent;
 
+  &__header {
+    align-items: center;
+    display: flex;
+  }
+
+  &__header-actions {
+    align-items: center;
+    display: flex;
+    margin-left: auto;
+  }
+
   &__read-restricted {
     color: var(--primary-medium);
     font-size: var(--font-down-4);
@@ -18,6 +29,7 @@
   &__description {
     @include line-clamp(2);
     color: var(--primary-medium);
+    padding-top: 1rem;
 
     .-closed &,
     .-archived & {
@@ -26,11 +38,6 @@
   }
 
   &__setting {
-    position: absolute;
-    right: 0.25rem;
-    top: 0.25rem;
-    padding: 1rem;
-
     svg {
       fill: var(--primary-medium);
     }
@@ -53,11 +60,11 @@
   &__name-container {
     display: flex;
     align-items: center;
-    margin-bottom: 0.5rem;
     color: var(--primary);
     font-size: 1.15rem;
     text-decoration: none;
-    max-width: 80%;
+    min-width: 0;
+    margin-right: 2rem;
 
     &:visited,
     &:hover {
@@ -82,6 +89,10 @@
     &.-muted {
       color: var(--primary-medium);
       border: 1px solid var(--primary-low-mid);
+
+      & + .chat-channel-card__setting {
+        margin-left: 0.5rem;
+      }
     }
     &.-joined {
       color: var(--success);

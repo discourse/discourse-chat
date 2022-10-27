@@ -1,24 +1,51 @@
 {{#if this.channel}}
   <div
-    class={{concat
+    class={{concat-class
       "chat-channel-card"
-      (if this.channel.isClosed " -closed")
-      (if this.channel.isArchived " -archived")
+      (if this.channel.isClosed "-closed")
+      (if this.channel.isArchived "-archived")
     }}
     style={{border-color this.channel.chatable.color}}
   >
-    <LinkTo @route="chat.channel.info.settings" @models={{array this.channel.id (slugify-channel this.channel.title)}} class="chat-channel-card__setting" tabindex="-1">
-      {{d-icon "cog"}}
-    </LinkTo>
+    <div class="chat-channel-card__header">
+      <LinkTo
+        @route="chat.channel"
+        @models={{array this.channel.id (slugify-channel this.channel.title)}}
+        class="chat-channel-card__name-container"
+      >
+        <span class="chat-channel-card__name">
+          {{replace-emoji this.channel.escapedTitle}}
+        </span>
+        {{#if this.channel.chatable.read_restricted}}
+          {{d-icon "lock" class="chat-channel-card__read-restricted"}}
+        {{/if}}
+      </LinkTo>
 
-    <LinkTo @route="chat.channel" @models={{array this.channel.id (slugify-channel this.channel.title)}} class="chat-channel-card__name-container">
-      <span class="chat-channel-card__name">
-        {{replace-emoji this.channel.escapedTitle}}
-      </span>
-      {{#if this.channel.chatable.read_restricted}}
-        {{d-icon "lock" class="chat-channel-card__read-restricted"}}
-      {{/if}}
-    </LinkTo>
+      <div class="chat-channel-card__header-actions">
+        {{#if this.channel.current_user_membership.muted}}
+          <LinkTo
+            @route="chat.channel.info.settings"
+            @models={{array
+              this.channel.id
+              (slugify-channel this.channel.title)
+            }}
+            class="chat-channel-card__tag -muted"
+            tabindex="-1"
+          >
+            {{i18n "chat.muted"}}
+          </LinkTo>
+        {{/if}}
+
+        <LinkTo
+          @route="chat.channel.info.settings"
+          @models={{array this.channel.id (slugify-channel this.channel.title)}}
+          class="chat-channel-card__setting"
+          tabindex="-1"
+        >
+          {{d-icon "cog"}}
+        </LinkTo>
+      </div>
+    </div>
 
     {{#if this.channel.description}}
       <div class="chat-channel-card__description">
@@ -33,22 +60,33 @@
             {{i18n "chat.joined"}}
           </span>
 
-          {{#if this.channel.current_user_membership.muted}}
-            <LinkTo @route="chat.channel.info.settings" @models={{array this.channel.id (slugify-channel this.channel.title)}} class="chat-channel-card__tag -muted" tabindex="-1">
-              {{i18n "chat.muted"}}
-            </LinkTo>
-          {{/if}}
+          <ToggleChannelMembershipButton
+            @channel={{this.channel}}
+            @onToggle={{action "afterMembershipToggle"}}
+            @options={{hash
+              leaveClass="btn-link btn-small chat-channel-card__leave-btn"
+              labelType="short"
+            }}
+          />
         </div>
       {{else if this.channel.isJoinable}}
         <ToggleChannelMembershipButton
           @channel={{this.channel}}
           @onToggle={{action "afterMembershipToggle"}}
-          @options={{hash joinClass="btn-primary btn-small chat-channel-card__join-btn" labelType="short"}}
+          @options={{hash
+            joinClass="btn-primary btn-small chat-channel-card__join-btn"
+            labelType="short"
+          }}
         />
       {{/if}}
 
       {{#if (gt this.channel.membershipsCount 0)}}
-        <LinkTo @route="chat.channel.info.members" @models={{array this.channel.id (slugify-channel this.channel.title)}} class="chat-channel-card__members" tabindex="-1">
+        <LinkTo
+          @route="chat.channel.info.members"
+          @models={{array this.channel.id (slugify-channel this.channel.title)}}
+          class="chat-channel-card__members"
+          tabindex="-1"
+        >
           {{i18n
             "chat.channel.memberships_count"
             count=this.channel.membershipsCount

@@ -768,7 +768,7 @@ Widget.triangulate(arg: "test")
 
     // React with a heart and make sure the count increments and class is added
     const heartReaction = lastMessage.querySelector(
-      ".chat-message-reaction.heart"
+      `.chat-message-reaction[data-emoji-name="heart"]`
     );
     assert.equal(heartReaction.innerText.trim(), "1");
     await click(heartReaction);
@@ -797,7 +797,7 @@ Widget.triangulate(arg: "test")
       chat_message_id: 176,
     });
     const sneezingFaceReaction = lastMessage.querySelector(
-      ".chat-message-reaction.sneezing_face"
+      `.chat-message-reaction[data-emoji-name="sneezing_face"]`
     );
     assert.ok(sneezingFaceReaction);
     assert.equal(sneezingFaceReaction.innerText.trim(), "1");
@@ -836,7 +836,7 @@ Widget.triangulate(arg: "test")
     await click(`.emoji[alt="grinning"]`);
 
     const reaction = lastMessage.querySelector(
-      ".chat-message-reaction.grinning.reacted"
+      `.chat-message-reaction.reacted[data-emoji-name="grinning"]`
     );
 
     await publishToMessageBus("/chat/11", {
@@ -849,7 +849,9 @@ Widget.triangulate(arg: "test")
     await click(reaction);
 
     assert.notOk(
-      lastMessage.querySelector(".chat-message-reaction.grinning.reacted")
+      lastMessage.querySelector(
+        `.chat-message-reaction.reacted[data-emoji-name="grinning"]`
+      )
     );
   });
 

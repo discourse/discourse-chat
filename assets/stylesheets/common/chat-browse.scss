@@ -8,11 +8,15 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin: 0 0 0 1rem;
+
+    @include breakpoint(mobile-large) {
+      margin-right: 1rem; //fix for different scroll behaviour on mobile where overflow-y:scroll acts like auto
+    }
   }
 
   &__title {
     box-sizing: border-box;
-    margin: 1rem;
   }
 
   &__content_wrapper {
@@ -21,6 +25,10 @@
 
     @include breakpoint(tablet) {
       margin-top: 1rem;
+    }
+
+    @include breakpoint(mobile-large) {
+      margin-right: 1rem; //fix for different scroll behaviour on mobile where overflow-y:scroll acts like auto
     }
   }
 
@@ -52,6 +60,10 @@
       nav {
         width: 100%;
       }
+    }
+
+    @include breakpoint(mobile-large) {
+      margin-right: 1rem; //fix for different scroll behaviour on mobile where overflow-y:scroll acts like auto
     }
   }
 

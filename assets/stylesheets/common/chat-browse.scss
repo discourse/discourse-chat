@@ -4,15 +4,19 @@
   overflow-y: scroll;
   @include chat-scrollbar(var(--secondary));
 
+  @include breakpoint(mobile-large) {
+    padding-right: 1rem; //fix for different scroll behaviour on mobile where overflow-y:scroll acts like auto
+  }
+
   &__header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin: 1rem 0 1rem 1rem;
   }
 
   &__title {
     box-sizing: border-box;
-    margin: 1rem;
   }
 
   &__content_wrapper {
@@ -94,6 +98,7 @@
 
   .chat-channel-card {
     .chat-channel-card__leave-btn {
+      padding: 0;
       &:hover,
       &:focus {
         background: none;

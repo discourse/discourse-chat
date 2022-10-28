@@ -6,13 +6,12 @@ import { isTesting } from "discourse-common/config/environment";
 export default Component.extend({
   tagName: "",
   hasExpandedReply: false,
-  isVisible: false,
+  isVisible: true,
   messageActions: null,
 
   didInsertElement() {
     this._super(...arguments);
 
-    this.set("isVisible", true);
     discourseLater(this._addFadeIn);
 
     if (this.capabilities.canVibrate && !isTesting()) {

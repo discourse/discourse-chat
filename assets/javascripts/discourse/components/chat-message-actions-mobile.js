@@ -6,7 +6,6 @@ import { isTesting } from "discourse-common/config/environment";
 export default Component.extend({
   tagName: "",
   hasExpandedReply: false,
-  isVisible: true,
   messageActions: null,
 
   didInsertElement() {
@@ -47,8 +46,9 @@ export default Component.extend({
         return;
       }
 
-      this.set("isVisible", false);
-      this.onHoverMessage?.(this.message);
+      // by ensuring we are not hovering any message anymore
+      // we also ensure the menu is fully removed
+      this.onHoverMessage?.(null);
     }, 200);
   },
 

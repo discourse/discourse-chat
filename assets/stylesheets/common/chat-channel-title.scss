@@ -120,4 +120,11 @@
   @include ellipsis;
   font-size: var(--font-0);
   color: var(--primary);
+  max-width: 80%;
+}
+
+.channel-info {
+  .chat-channel-title__name {
+    max-width: 100%;
+  }
 }

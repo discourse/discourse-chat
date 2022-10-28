@@ -1,11 +1,13 @@
-import { click, fillIn, triggerEvent, visit } from "@ember/test-helpers";
+import { click, fillIn, tap, triggerEvent, visit } from "@ember/test-helpers";
 import {
   acceptance,
   exists,
+  loggedInUser,
   publishToMessageBus,
   query,
 } from "discourse/tests/helpers/qunit-helpers";
 import { test } from "qunit";
+import { generateChatView } from "discourse/plugins/discourse-chat/chat-fixtures";
 
 function buildMessage(messageId) {
   return {
@@ -257,6 +259,46 @@ acceptance(
 
       assert.ok(exists(".dialog-content"), "it displays a 404 error");
       await click(".dialog-footer .btn-primary");
+    });
+  }
+);
+
+acceptance(
+  "Discourse Chat - Chat live pane (mobile) - actions menu",
+  function (needs) {
+    needs.user({ has_chat_enabled: true });
+
+    needs.settings({ chat_enabled: true });
+
+    needs.mobileView();
+
+    needs.pretender((server, helper) => {
+      server.get("/chat/:chatChannelId/messages.json", () =>
+        helper.response(generateChatView(loggedInUser()))
+      );
+
+      server.get("/chat/chat_channels.json", () =>
+        helper.response({
+          public_channels: [],
+          direct_message_channels: [],
+        })
+      );
+
+      server.get("/chat/chat_channels/:chatChannelId", () =>
+        helper.response({ id: 1, title: "something" })
+      );
+    });
+
+    test("when expanding and collapsing the actions menu", async function (assert) {
+      await visit("/chat/channel/1/cat");
+      const message = query(".chat-message-container");
+      await tap(message);
+
+      assert.ok(exists(".chat-msgactions-backdrop"));
+
+      await tap(".collapse-area");
+
+      assert.notOk(exists(".chat-msgactions-backdrop"));
     });
   }
 );

@@ -323,7 +323,7 @@ export default Component.extend({
     }
 
     document.activeElement.blur();
-    document.querySelector(".chat-composer-input").blur();
+    document.querySelector(".chat-composer-input")?.blur();
 
     this.onHoverMessage(this.message);
   },

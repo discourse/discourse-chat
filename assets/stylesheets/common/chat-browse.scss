@@ -4,15 +4,15 @@
   overflow-y: scroll;
   @include chat-scrollbar(var(--secondary));
 
+  @include breakpoint(mobile-large) {
+    padding-right: 1rem; //fix for different scroll behaviour on mobile where overflow-y:scroll acts like auto
+  }
+
   &__header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 0 0 0 1rem;
-
-    @include breakpoint(mobile-large) {
-      margin-right: 1rem; //fix for different scroll behaviour on mobile where overflow-y:scroll acts like auto
-    }
+    margin: 1rem 0 1rem 1rem;
   }
 
   &__title {

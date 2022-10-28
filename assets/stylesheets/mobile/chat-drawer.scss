@@ -1,11 +1,12 @@
 .full-page-chat {
   .channels-list {
-    background: var(--primary-very-low);
     min-height: 100vh;
     padding-bottom: 6rem;
 
     .chat-channel-row {
       padding: 0.5rem 1rem;
+      margin: 0;
+
       &:not(:last-child) {
         &::after {
           content: "";
@@ -23,7 +24,8 @@
     }
 
     .chat-channel-divider {
-      padding: 1rem 2rem;
+      padding-inline: 2rem;
+      font-size: var(--font-up-1);
 
       .channel-title {
         color: var(--quaternary);
@@ -31,7 +33,9 @@
     }
 
     .channels-list-container {
-      background: var(--header_background);
+      background: var(--primary-very-low);
+      border-radius: 0.5rem;
+      margin: 1rem;
     }
 
     .chat-user-avatar {
@@ -67,13 +71,17 @@
         font-size: var(--font-up-2);
       }
     }
+
+    .chat-channel-unread-indicator {
+      margin-left: 0;
+    }
   }
 
   .btn-floating.new-dm {
     position: absolute;
     background: var(--tertiary);
-    bottom: 1rem;
-    right: 1rem;
+    bottom: 2.5rem;
+    right: 2.5rem;
     border-radius: 50%;
     font-size: var(--font-up-5);
     padding: 1rem;

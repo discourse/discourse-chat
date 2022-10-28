@@ -79,11 +79,7 @@ body.has-full-page-chat {
 
 .channels-list .chat-channel-divider {
   padding: 0.25em 0.5em 0.25em;
-  background: var(--header_background);
-
-  &:not(:first-child) {
-    margin-top: 2em;
-  }
+  margin-top: 1em;
 }
 
 .sidebar-container .channels-list .chat-channel-row {

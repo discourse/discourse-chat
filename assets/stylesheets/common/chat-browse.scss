@@ -26,10 +26,6 @@
     @include breakpoint(tablet) {
       margin-top: 1rem;
     }
-
-    @include breakpoint(mobile-large) {
-      margin-right: 1rem; //fix for different scroll behaviour on mobile where overflow-y:scroll acts like auto
-    }
   }
 
   &__cards {
@@ -60,10 +56,6 @@
       nav {
         width: 100%;
       }
-    }
-
-    @include breakpoint(mobile-large) {
-      margin-right: 1rem; //fix for different scroll behaviour on mobile where overflow-y:scroll acts like auto
     }
   }
 

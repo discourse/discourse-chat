@@ -5,12 +5,14 @@ import { isTesting } from "discourse-common/config/environment";
 
 export default Component.extend({
   tagName: "",
-  isExpanded: false,
+  hasExpandedReply: false,
+  isVisible: false,
   messageActions: null,
 
   didInsertElement() {
     this._super(...arguments);
 
+    this.set("isVisible", true);
     discourseLater(this._addFadeIn);
 
     if (this.capabilities.canVibrate && !isTesting()) {
@@ -21,7 +23,7 @@ export default Component.extend({
   @action
   expandReply(event) {
     event.stopPropagation();
-    this.set("isExpanded", true);
+    this.set("hasExpandedReply", true);
   },
 
   @action
@@ -37,9 +39,7 @@ export default Component.extend({
   },
 
   onCloseMenu() {
-    document
-      .querySelector(".chat-msgactions-backdrop")
-      .classList?.remove("fade-in");
+    this._removeFadeIn();
 
     // we don't want to remove the component right away as it's animating
     // 200 is equal to the duration of the css animation
@@ -48,7 +48,8 @@ export default Component.extend({
         return;
       }
 
-      this.onHoverMessage(this.message);
+      this.set("isVisible", false);
+      this.onHoverMessage?.(this.message);
     }, 200);
   },
 
@@ -56,5 +57,11 @@ export default Component.extend({
     document
       .querySelector(".chat-msgactions-backdrop")
       ?.classList.add("fade-in");
+  },
+
+  _removeFadeIn() {
+    document
+      .querySelector(".chat-msgactions-backdrop")
+      ?.classList?.remove("fade-in");
   },
 });

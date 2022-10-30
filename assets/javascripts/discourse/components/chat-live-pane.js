@@ -257,12 +257,6 @@ export default Component.extend({
             this.highlightOrFetchMessage(this.targetMessageId);
           }
 
-          if (this._scrollerEl && this.capabilities.isIOS) {
-            // iOS hack to avoid blank div when sticking scroll to bottom during momentum
-            this._scrollerEl.style.overflow = "hidden";
-            this._scrollerEl.style.overflow = "scroll";
-          }
-
           this.focusComposer();
         });
     });
@@ -609,8 +603,10 @@ export default Component.extend({
         return;
       }
 
-      messageEl.scrollIntoView({
-        block: opts.position === "top" ? "start" : "end",
+      this._wrapIOSFix(() => {
+        messageEl.scrollIntoView({
+          block: opts.position === "top" ? "start" : "end",
+        });
       });
 
       if (opts.highlight) {
@@ -644,25 +640,16 @@ export default Component.extend({
     this.set("stickyScroll", true);
 
     if (this._scrollerEl) {
-      // iOS hack to avoid blank div when sticking scroll to bottom during momentum
-      if (this.capabilities.isIOS) {
-        this._scrollerEl.style.overflow = "hidden";
-      }
-
       // Trigger a tiny scrollTop change so Safari scrollbar is placed at bottom.
       // Setting to just 0 doesn't work (it's at 0 by default, so there is no change)
       // Very hacky, but no way to get around this Safari bug
       this._scrollerEl.scrollTop = -1;
 
-      window.requestAnimationFrame(() => {
-        if (this._scrollerEl) {
+      this._wrapIOSFix(() => {
+        window.requestAnimationFrame(() => {
           this._scrollerEl.scrollTop = 0;
-
-          // iOS hack to avoid blank div when sticking scroll to bottom during momentum
-          if (this.capabilities.isIOS) {
-            this._scrollerEl.style.overflow = "scroll";
-          }
-        }
+        });
+        this.set("showScrollToBottomBtn", false);
       });
     }
   },
@@ -1493,6 +1480,31 @@ export default Component.extend({
         break;
       default:
         throw error;
+    }
+  },
+
+  // since -webkit-overflow-scrolling: touch can't be used anymore to disable momentum scrolling
+  // we now use this hack to disable it
+  @bind
+  _wrapIOSFix(callback) {
+    if (!this._scrollerEl) {
+      return;
+    }
+
+    if (this.capabilities.isIOS) {
+      this._scrollerEl.style.overflow = "hidden";
+    }
+
+    callback();
+
+    if (this.capabilities.isIOS) {
+      discourseLater(() => {
+        if (!this._scrollerEl) {
+          return;
+        }
+
+        this._scrollerEl.style.overflow = "auto";
+      }, 10);
     }
   },
 });

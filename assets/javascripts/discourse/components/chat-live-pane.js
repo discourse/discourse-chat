@@ -646,9 +646,7 @@ export default Component.extend({
       this._scrollerEl.scrollTop = -1;
 
       this._wrapIOSFix(() => {
-        window.requestAnimationFrame(() => {
-          this._scrollerEl.scrollTop = 0;
-        });
+        this._scrollerEl.scrollTop = 0;
         this.set("showScrollToBottomBtn", false);
       });
     }

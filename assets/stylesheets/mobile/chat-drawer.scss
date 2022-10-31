@@ -1,6 +1,8 @@
+@import "common/foundation/mixins";
 .full-page-chat {
   overflow: hidden; //prevents double scroll
   .channels-list {
+    overflow-y: overlay;
     padding-bottom: 6rem;
     box-sizing: border-box;
     background-color: var(--primary-very-low);

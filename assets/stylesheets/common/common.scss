@@ -131,6 +131,10 @@ $float-height: 530px;
   position: relative;
   @include chat-scrollbar(var(--secondary));
 
+  @include breakpoint(mobile-large) {
+    @include chat-scrollbar();
+  }
+
   .chat-channel-unread-indicator {
     flex-shrink: 0;
     width: 10px;

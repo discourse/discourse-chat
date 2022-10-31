@@ -3,7 +3,7 @@
   align-items: center;
   max-width: 96%;
 
-  .chat-channel-row:hover & {
+  .direct-message-channels .chat-channel-row:hover & {
     overflow: hidden;
     max-width: unset;
   }
@@ -120,7 +120,6 @@
   @include ellipsis;
   font-size: var(--font-0);
   color: var(--primary);
-  max-width: 80%;
 }
 
 .channel-info {

@@ -1,31 +1,41 @@
+html.has-full-page-chat body #main-outlet #main-chat-outlet {
+  min-height: unset; //I think this fixes those weird scroll bugs
+}
+
 .full-page-chat {
   .channels-list {
     min-height: 100vh;
-    padding-bottom: 6rem;
+    padding-bottom: 3rem;
+    background-color: var(--primary-very-low);
+
+    .direct-message-channels {
+      .chat-channel-title {
+        padding: 0.75rem 0; //minor adjustment for visual consistency with channels which dont have avatars
+      }
+    }
 
     .chat-channel-row {
-      padding: 0.5rem 1rem;
       margin: 0;
+      padding: 0;
+      border-radius: 0;
 
       &:not(:last-child) {
-        &::after {
-          content: "";
-          display: block;
-          width: 90%;
-          padding-top: 20px;
+        .chat-channel-title {
           border-bottom: 1px solid var(--primary-low);
-          margin: auto;
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          right: 0;
         }
       }
     }
 
     .chat-channel-divider {
-      padding-inline: 2rem;
+      background-color: var(--secondary);
+      margin-top: 4rem;
+      padding: 1rem 1.5rem;
       font-size: var(--font-up-1);
+
+      &:first-of-type {
+        margin-top: 0;
+        padding-bottom: 0.5rem; //visual compensation
+      }
 
       .channel-title {
         color: var(--quaternary);
@@ -33,9 +43,7 @@
     }
 
     .channels-list-container {
-      background: var(--primary-very-low);
-      border-radius: 0.5rem;
-      margin: 1rem;
+      background: var(--secondary);
     }
 
     .chat-user-avatar {
@@ -50,6 +58,11 @@
     }
 
     .chat-channel-title {
+      margin-inline: 1.5rem;
+      padding: 1.25rem 0;
+      width: 100%;
+      overflow: hidden;
+
       &__users-count {
         width: var(--chat-mobile-avatar-size);
         height: var(--chat-mobile-avatar-size);

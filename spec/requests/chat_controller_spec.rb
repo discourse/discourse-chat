@@ -286,10 +286,17 @@ RSpec.describe DiscourseChat::ChatController do
     describe "for category" do
       fab!(:chat_channel) { Fabricate(:category_channel, chatable: category) }
 
-      it "errors when the user is silenced" do
-        UserSilencer.new(user).silence
-        post "/chat/#{chat_channel.id}.json", params: { message: message }
-        expect(response.status).to eq(403)
+      context "when current user is silenced" do
+        before do
+          UserChatChannelMembership.create(user: user, chat_channel: chat_channel, following: true)
+          sign_in(user)
+          UserSilencer.new(user).silence
+        end
+
+        it "raises invalid acces" do
+          post "/chat/#{chat_channel.id}.json", params: { message: message }
+          expect(response.status).to eq(403)
+        end
       end
 
       it "errors for regular user when chat is staff-only" do
@@ -396,6 +403,19 @@ RSpec.describe DiscourseChat::ChatController do
         sign_in(user2)
         post "/chat/#{direct_message_channel.id}.json", params: { message: message }
         expect(response.status).to eq(200)
+      end
+
+      context "when current user is silenced" do
+        before do
+          create_memberships
+          sign_in(user1)
+          UserSilencer.new(user1).silence
+        end
+
+        it "raises invalid acces" do
+          post "/chat/#{direct_message_channel.id}.json", params: { message: message }
+          expect(response.status).to eq(403)
+        end
       end
 
       context "if any of the direct message users is ignoring the acting user" do
@@ -511,6 +531,18 @@ RSpec.describe DiscourseChat::ChatController do
   describe "#edit_message" do
     fab!(:chat_message) { Fabricate(:chat_message, chat_channel: chat_channel, user: user) }
 
+    context "when current user is silenced" do
+      before do
+        UserSilencer.new(user).silence
+        sign_in(user)
+      end
+
+      it "raises an invalid request" do
+        put "/chat/#{chat_channel.id}/edit/#{chat_message.id}.json", params: { new_message: "Hi" }
+        expect(response.status).to eq(403)
+      end
+    end
+
     it "errors when a user tries to edit another user's message" do
       sign_in(Fabricate(:user))
 
@@ -526,13 +558,6 @@ RSpec.describe DiscourseChat::ChatController do
           params: {
             new_message: new_message,
           }
-      expect(response.status).to eq(403)
-    end
-
-    it "errors when the user is silenced" do
-      UserSilencer.new(user).silence
-      sign_in(user)
-      put "/chat/#{chat_channel.id}/edit/#{chat_message.id}.json", params: { new_message: "Hi" }
       expect(response.status).to eq(403)
     end
 

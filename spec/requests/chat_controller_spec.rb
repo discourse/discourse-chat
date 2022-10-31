@@ -286,7 +286,7 @@ RSpec.describe DiscourseChat::ChatController do
     describe "for category" do
       fab!(:chat_channel) { Fabricate(:category_channel, chatable: category) }
 
-      context "When current user is silenced" do
+      context "when current user is silenced" do
         before do
           UserChatChannelMembership.create(user: user, chat_channel: chat_channel, following: true)
           sign_in(user)
@@ -405,7 +405,7 @@ RSpec.describe DiscourseChat::ChatController do
         expect(response.status).to eq(200)
       end
 
-      context "When current user is silenced" do
+      context "when current user is silenced" do
         before do
           create_memberships
           sign_in(user1)

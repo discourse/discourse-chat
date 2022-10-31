@@ -286,10 +286,17 @@ RSpec.describe DiscourseChat::ChatController do
     describe "for category" do
       fab!(:chat_channel) { Fabricate(:category_channel, chatable: category) }
 
-      it "errors when the user is silenced" do
-        UserSilencer.new(user).silence
-        post "/chat/#{chat_channel.id}.json", params: { message: message }
-        expect(response.status).to eq(403)
+      context "When current user is silenced" do
+        before do
+          UserChatChannelMembership.create(user: user, chat_channel: chat_channel, following: true)
+          sign_in(user)
+          UserSilencer.new(user).silence
+        end
+
+        it "raises invalid acces" do
+          post "/chat/#{chat_channel.id}.json", params: { message: message }
+          expect(response.status).to eq(403)
+        end
       end
 
       it "errors for regular user when chat is staff-only" do
@@ -396,6 +403,19 @@ RSpec.describe DiscourseChat::ChatController do
         sign_in(user2)
         post "/chat/#{direct_message_channel.id}.json", params: { message: message }
         expect(response.status).to eq(200)
+      end
+
+      context "When current user is silenced" do
+        before do
+          create_memberships
+          sign_in(user1)
+          UserSilencer.new(user1).silence
+        end
+
+        it "raises invalid acces" do
+          post "/chat/#{direct_message_channel.id}.json", params: { message: message }
+          expect(response.status).to eq(403)
+        end
       end
 
       context "if any of the direct message users is ignoring the acting user" do

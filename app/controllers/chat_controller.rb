@@ -79,6 +79,8 @@ class DiscourseChat::ChatController < DiscourseChat::ChatBaseController
   end
 
   def create_message
+    raise Discourse::InvalidAccess if current_user.silenced?
+
     DiscourseChat::ChatMessageRateLimiter.run!(current_user)
 
     @user_chat_channel_membership =

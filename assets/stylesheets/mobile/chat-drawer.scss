@@ -85,7 +85,9 @@
     }
 
     .chat-channel-unread-indicator {
-      margin-left: 0;
+      position: absolute;
+      right: 2rem;
+      left: unset !important;
     }
   }
 

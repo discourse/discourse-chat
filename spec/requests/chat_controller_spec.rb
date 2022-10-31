@@ -531,6 +531,18 @@ RSpec.describe DiscourseChat::ChatController do
   describe "#edit_message" do
     fab!(:chat_message) { Fabricate(:chat_message, chat_channel: chat_channel, user: user) }
 
+    context "when current user is silenced" do
+      before do
+        UserSilencer.new(user).silence
+        sign_in(user)
+      end
+
+      it "raises an invalid request" do
+        put "/chat/#{chat_channel.id}/edit/#{chat_message.id}.json", params: { new_message: "Hi" }
+        expect(response.status).to eq(403)
+      end
+    end
+
     it "errors when a user tries to edit another user's message" do
       sign_in(Fabricate(:user))
 

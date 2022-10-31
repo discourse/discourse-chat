@@ -549,13 +549,6 @@ RSpec.describe DiscourseChat::ChatController do
       expect(response.status).to eq(403)
     end
 
-    it "errors when the user is silenced" do
-      UserSilencer.new(user).silence
-      sign_in(user)
-      put "/chat/#{chat_channel.id}/edit/#{chat_message.id}.json", params: { new_message: "Hi" }
-      expect(response.status).to eq(403)
-    end
-
     it "allows a user to edit their own messages" do
       sign_in(user)
       new_message = "Wow markvanlan must be a good programmer"

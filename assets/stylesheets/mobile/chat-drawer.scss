@@ -1,11 +1,8 @@
-html.has-full-page-chat body #main-outlet #main-chat-outlet {
-  min-height: unset; //I think this fixes those weird scroll bugs
-}
-
 .full-page-chat {
+  overflow: hidden; //prevents double scroll
   .channels-list {
-    min-height: 100vh;
-    padding-bottom: 3rem;
+    padding-bottom: 6rem;
+    box-sizing: border-box;
     background-color: var(--primary-very-low);
 
     .direct-message-channels {

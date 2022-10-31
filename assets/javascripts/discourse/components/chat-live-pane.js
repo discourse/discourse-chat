@@ -1502,7 +1502,7 @@ export default Component.extend({
         }
 
         this._scrollerEl.style.overflow = "auto";
-      }, 10);
+      }, 25);
     }
   },
 });

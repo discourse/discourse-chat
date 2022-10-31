@@ -98,7 +98,7 @@ export default class CreateChannelController extends Controller.extend(
         "autoJoinWarning",
         I18n.t(`chat.create_channel.auto_join_users.${warningTranslationKey}`, {
           members_count: catPermissions.members_count,
-          group_1: escapeExpression(allowedGroups[0]),
+          group: escapeExpression(allowedGroups[0]),
           group_2: escapeExpression(allowedGroups[1]),
           count: allowedGroups.length,
         })
@@ -128,7 +128,7 @@ export default class CreateChannelController extends Controller.extend(
           htmlSafe(
             I18n.t(`chat.create_channel.choose_category.${translationKey}`, {
               link: `/c/${escapeExpression(fullSlug)}/edit/security`,
-              hint_1: escapeExpression(allowedGroups[0]),
+              hint: escapeExpression(allowedGroups[0]),
               hint_2: escapeExpression(allowedGroups[1]),
               count: allowedGroups.length,
             })

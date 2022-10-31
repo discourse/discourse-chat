@@ -1,8 +1,8 @@
 <span class="chat-composer-upload">
   <span class="preview">
-    {{#if (eq type IMAGE_TYPE)}}
-      {{#if isDone}}
-        <img class="preview-img" src={{upload.short_path}}>
+    {{#if (eq this.type this.IMAGE_TYPE)}}
+      {{#if this.isDone}}
+        <img class="preview-img" src={{this.upload.short_path}}>
       {{else}}
         {{d-icon "far-image"}}
       {{/if}}
@@ -13,20 +13,15 @@
 
   <span class="data">
     <div class="top-data">
-      <span class="file-name">{{fileName}}</span>
-      {{d-button
-        class="btn-flat remove-upload"
-        action=onCancel
-        icon="times"
-        title="chat.remove_upload"
-      }}
+      <span class="file-name">{{this.fileName}}</span>
+      <DButton @class="btn-flat remove-upload" @action={{this.onCancel}} @icon="times" @title="chat.remove_upload" />
     </div>
 
     <div class="bottom-data">
-      {{#if isDone}}
-        <span class="extension-pill">{{upload.extension}}</span>
+      {{#if this.isDone}}
+        <span class="extension-pill">{{this.upload.extension}}</span>
       {{else}}
-        {{#if upload.processing}}
+        {{#if this.upload.processing}}
           <span class="processing">{{i18n "processing"}}</span>
         {{else}}
           <span class="uploading">{{i18n "uploading"}}</span>
@@ -36,7 +31,7 @@
           class="upload-progress"
           id="file"
           max="100"
-          value={{upload.progress}}
+          value={{this.upload.progress}}
         ></progress>
       {{/if}}
     </div>

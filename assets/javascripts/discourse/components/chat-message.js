@@ -42,7 +42,7 @@ export default Component.extend({
   isHovered: false,
   onHoverMessage: null,
   mentionWarning: null,
-  emojiReactionStore: service("chat-emoji-reaction-store"),
+  chatEmojiReactionStore: service("chat-emoji-reaction-store"),
   chatEmojiPickerManager: service("chat-emoji-picker-manager"),
   adminTools: optionalService(),
   _hasSubscribedToAppEvents: false,
@@ -52,6 +52,7 @@ export default Component.extend({
   chatMessageActionsMobileAnchor: null,
   chatMessageActionsDesktopAnchor: null,
   chatMessageEmojiPickerAnchor: null,
+  cachedFavoritesReactions: null,
 
   init() {
     this._super(...arguments);
@@ -77,6 +78,8 @@ export default Component.extend({
       "chatMessageActionsDesktopAnchor",
       document.querySelector(".chat-message-actions-desktop-anchor")
     );
+
+    this.set("cachedFavoritesReactions", this.chatEmojiReactionStore.favorites);
   },
 
   willDestroyElement() {
@@ -320,7 +323,7 @@ export default Component.extend({
     }
 
     document.activeElement.blur();
-    document.querySelector(".chat-composer-input").blur();
+    document.querySelector(".chat-composer-input")?.blur();
 
     this.onHoverMessage(this.message);
   },
@@ -563,6 +566,10 @@ export default Component.extend({
     this._loadingReactions.push(emoji);
     this._updateReactionsList(emoji, reactAction, this.currentUser);
 
+    if (reactAction === this.ADD_REACTION) {
+      this.chatEmojiReactionStore.track(`:${emoji}:`);
+    }
+
     return this._publishReaction(emoji, reactAction).then(() => {
       this.notifyPropertyChange("emojiReactions");
 
@@ -789,8 +796,10 @@ export default Component.extend({
     }, 250);
   },
 
-  @discourseComputed("emojiReactionStore.favorites.[]")
-  emojiReactions(favorites) {
+  @computed
+  get emojiReactions() {
+    const favorites = this.cachedFavoritesReactions;
+
     // may be a {} if no defaults defined in some production builds
     if (!favorites || !favorites.slice) {
       return [];

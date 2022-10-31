@@ -54,11 +54,10 @@ export default class Chat extends Service {
   sidebarActive = false;
   unreadUrgentCount = null;
   directMessagesLimit = 20;
+  isNetworkUnreliable = false;
+  @and("currentUser.has_chat_enabled", "siteSettings.chat_enabled") userCanChat;
   _chatOpen = false;
   _fetchingChannels = null;
-  isNetworkUnreliable = false;
-
-  @and("currentUser.has_chat_enabled", "siteSettings.chat_enabled") userCanChat;
 
   @computed("currentUser.staff", "currentUser.groups.[]")
   get userCanDirectMessage() {

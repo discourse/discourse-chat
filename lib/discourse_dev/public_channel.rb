@@ -6,7 +6,7 @@ require "faker"
 module DiscourseDev
   class PublicChannel < Record
     def initialize
-      super(::ChatChannel, 5)
+      super(::CategoryChannel, 5)
     end
 
     def data

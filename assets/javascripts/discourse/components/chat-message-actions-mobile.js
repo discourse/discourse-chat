@@ -5,7 +5,7 @@ import { isTesting } from "discourse-common/config/environment";
 
 export default Component.extend({
   tagName: "",
-  isExpanded: false,
+  hasExpandedReply: false,
   messageActions: null,
 
   didInsertElement() {
@@ -21,7 +21,7 @@ export default Component.extend({
   @action
   expandReply(event) {
     event.stopPropagation();
-    this.set("isExpanded", true);
+    this.set("hasExpandedReply", true);
   },
 
   @action
@@ -37,9 +37,7 @@ export default Component.extend({
   },
 
   onCloseMenu() {
-    document
-      .querySelector(".chat-msgactions-backdrop")
-      .classList?.remove("fade-in");
+    this._removeFadeIn();
 
     // we don't want to remove the component right away as it's animating
     // 200 is equal to the duration of the css animation
@@ -48,7 +46,9 @@ export default Component.extend({
         return;
       }
 
-      this.onHoverMessage(this.message);
+      // by ensuring we are not hovering any message anymore
+      // we also ensure the menu is fully removed
+      this.onHoverMessage?.(null);
     }, 200);
   },
 
@@ -56,5 +56,11 @@ export default Component.extend({
     document
       .querySelector(".chat-msgactions-backdrop")
       ?.classList.add("fade-in");
+  },
+
+  _removeFadeIn() {
+    document
+      .querySelector(".chat-msgactions-backdrop")
+      ?.classList?.remove("fade-in");
   },
 });

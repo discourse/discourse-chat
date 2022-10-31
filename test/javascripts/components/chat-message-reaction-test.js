@@ -29,7 +29,7 @@ module("Discourse Chat | Component | chat-message-reaction", function (hooks) {
     template: hbs`{{chat-message-reaction reaction=(hash emoji="heart")}}`,
 
     async test(assert) {
-      assert.ok(exists(".chat-message-reaction.heart"));
+      assert.ok(exists(`.chat-message-reaction[data-emoji-name="heart"]`));
     },
   });
 

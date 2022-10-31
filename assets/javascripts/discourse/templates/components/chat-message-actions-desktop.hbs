@@ -1,47 +1,25 @@
-<div class="chat-msgactions-hover" data-id={{message.id}}>
+<div class="chat-msgactions-hover" data-id={{this.message.id}}>
   <div class="chat-msgactions">
-    {{#each emojiReactions as |reaction|}}
-      {{chat-message-reaction
-        reaction=reaction
-        react=messageActions.react
-        class="show"
-      }}
+    {{#each this.emojiReactions as |reaction|}}
+      <ChatMessageReaction @reaction={{reaction}} @react={{this.messageActions.react}} @class="show" />
     {{/each}}
 
-    {{#if messageCapabilities.canReact}}
-      {{d-button
-        class="btn-flat react-btn"
-        action=messageActions.startReactionForMsgActions
-        icon="discourse-emojis"
-        title="chat.react"
-      }}
+    {{#if this.messageCapabilities.canReact}}
+      <DButton @class="btn-flat react-btn" @action={{this.messageActions.startReactionForMsgActions}} @icon="discourse-emojis" @title="chat.react" />
     {{/if}}
 
-    {{#if messageCapabilities.canBookmark}}
-      {{#d-button
-        class="btn-flat bookmark-btn"
-        action=messageActions.toggleBookmark
-      }}
-        {{bookmark-icon bookmark=message.bookmark}}
-      {{/d-button}}
+    {{#if this.messageCapabilities.canBookmark}}
+      <DButton @class="btn-flat bookmark-btn" @action={{this.messageActions.toggleBookmark}}>
+        <BookmarkIcon @bookmark={{this.message.bookmark}} />
+      </DButton>
     {{/if}}
 
-    {{#if messageCapabilities.canReply}}
-      {{d-button
-        class="btn-flat reply-btn"
-        action=messageActions.reply
-        icon="reply"
-        title="chat.reply"
-      }}
+    {{#if this.messageCapabilities.canReply}}
+      <DButton @class="btn-flat reply-btn" @action={{this.messageActions.reply}} @icon="reply" @title="chat.reply" />
     {{/if}}
 
-    {{#if secondaryButtons.length}}
-      {{dropdown-select-box
-        class="more-buttons"
-        options=(hash icon="ellipsis-v" placement="bottom-end")
-        content=secondaryButtons
-        onChange=(action "handleSecondaryButtons")
-      }}
+    {{#if this.secondaryButtons.length}}
+      <DropdownSelectBox @class="more-buttons" @options={{hash icon="ellipsis-v" placement="bottom-end"}} @content={{this.secondaryButtons}} @onChange={{action "handleSecondaryButtons"}} />
     {{/if}}
   </div>
 </div>

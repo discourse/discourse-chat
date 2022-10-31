@@ -19,11 +19,12 @@ const MUTED_OPTIONS = [
 ];
 
 export default class ChatChannelSettingsView extends Component {
-  tagName = "";
-  channel = null;
   @service chat;
   @service router;
   @service dialog;
+  tagName = "";
+  channel = null;
+
   notificationLevels = NOTIFICATION_LEVELS;
   mutedOptions = MUTED_OPTIONS;
   isSavingNotificationSetting = false;

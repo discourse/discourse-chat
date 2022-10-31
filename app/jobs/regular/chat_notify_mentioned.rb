@@ -76,7 +76,7 @@ module Jobs
           end
         )
 
-      translation_suffix = identifier_type == :direct_mentions ? "direct" : "other"
+      translation_suffix = identifier_type == :direct_mentions ? "direct" : "other_type"
       identifier_text =
         case identifier_type
         when :here_mentions

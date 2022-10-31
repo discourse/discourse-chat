@@ -13,6 +13,6 @@ module DiscourseChat::UserOptionExtension
       @chat_email_frequencies ||= { never: 0, when_away: 1 }
     end
 
-    base.enum chat_email_frequency: base.chat_email_frequencies
+    base.enum :chat_email_frequency, base.chat_email_frequencies, prefix: "send_chat_email"
   end
 end

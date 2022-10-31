@@ -66,6 +66,8 @@ module("Discourse Chat | Component | chat-channel-card", function (hooks) {
       query(".chat-channel-card__tag.-joined").textContent.trim(),
       I18n.t("chat.joined")
     );
+
+    assert.ok(exists(".toggle-channel-membership-button.-leave"));
   });
 
   test("Joinable channel", async function (assert) {

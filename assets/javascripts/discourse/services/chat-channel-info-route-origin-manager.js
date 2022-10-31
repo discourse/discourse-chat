@@ -20,15 +20,15 @@ export default class ChatChannelInfoRouteOriginManager extends Service {
     }
   }
 
+  set origin(value) {
+    this.store.setObject({ key: BACK_KEY, value });
+  }
+
   get isBrowse() {
     return this.origin === ORIGINS.browse;
   }
 
   get isChannel() {
     return this.origin === ORIGINS.channel || isEmpty(this.origin);
-  }
-
-  set origin(value) {
-    this.store.setObject({ key: BACK_KEY, value });
   }
 }

@@ -1,3 +1,7 @@
+:root {
+  --chat-mobile-avatar-size: 38px;
+}
+
 .chat-message {
   // 1px to account for .is-online box-shadow
   padding: 0.1em 1px;
@@ -79,6 +83,7 @@ body.has-full-page-chat {
 
 .channels-list .chat-channel-divider {
   padding: 0.25em 0.5em 0.25em;
+  margin-top: 1em;
 }
 
 .sidebar-container .channels-list .chat-channel-row {
@@ -121,4 +126,17 @@ html.has-full-page-chat body {
 
 .chat-message-separator {
   margin-left: 0;
+}
+
+.header-dropdown-toggle.open-chat {
+  .icon {
+    &.active {
+      border: 1px solid var(--primary-low);
+      background: var(--primary-very-low);
+
+      .d-icon {
+        color: var(--primary-medium);
+      }
+    }
+  }
 }

@@ -131,6 +131,10 @@ $float-height: 530px;
   position: relative;
   @include chat-scrollbar(var(--secondary));
 
+  @include breakpoint(mobile-large) {
+    @include chat-scrollbar();
+  }
+
   .chat-channel-unread-indicator {
     flex-shrink: 0;
     width: 10px;
@@ -173,11 +177,10 @@ $float-height: 530px;
     font-weight: bold;
     padding: 0.25rem 0.5rem 0.25rem 2rem;
     font-family: var(--heading-font-family);
-    font-size: var(--font-down-1-rem);
+    font-size: var(--font-0);
 
     .channel-title {
       line-height: var(--line-height-medium);
-      text-transform: uppercase;
     }
   }
 
@@ -589,7 +592,6 @@ body.has-full-page-chat {
   grid-template-columns: var(--full-page-sidebar-width) 1fr;
 
   .channels-list {
-    background: var(--primary-very-low);
     height: 100%;
     border-right: 1px solid var(--primary-low);
 

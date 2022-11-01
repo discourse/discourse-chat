@@ -3,11 +3,16 @@ import { inject as service } from "@ember/service";
 import Component from "@ember/component";
 import { action } from "@ember/object";
 import { cloneJSON } from "discourse-common/lib/object";
-
 export default class ChatDraftChannelScreen extends Component {
   @service chat;
+  @service router;
   tagName = "";
   onSwitchChannel = null;
+
+  @action
+  onCancelChatDraft() {
+    return this.router.transitionTo("chat.index");
+  }
 
   @action
   onChangeSelectedUsers(users) {

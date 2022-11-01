@@ -396,6 +396,9 @@ en:
         search_placeholder: "Search by emoji name and alias..."
         no_results: "No results"
 
+      draft_channel_screen:
+        header: "New Message"
+        cancel: "Cancel"
     notifications:
       chat_invitation: "invited you to join a chat channel"
       chat_invitation_html: "<span>%{username}</span> <span>invited you to join a chat channel</span>"

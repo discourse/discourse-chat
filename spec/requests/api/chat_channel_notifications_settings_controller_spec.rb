@@ -19,7 +19,7 @@ RSpec.describe DiscourseChat::Api::ChatChannelNotificationsSettingsController do
       before { sign_in(user) }
 
       it "doesn’t use invalid params" do
-        UserChatChannelMembership.any_instance.expects(:update!).with("muted" => "true").once
+        UserChatChannelMembership.any_instance.expects(:update!).with({ "muted" => "true" }).once
 
         put "/chat/api/chat_channels/#{chat_channel.id}/notifications_settings.json",
             params: {
@@ -88,7 +88,7 @@ RSpec.describe DiscourseChat::Api::ChatChannelNotificationsSettingsController do
       before { sign_in(user) }
 
       it "doesn’t use invalid params" do
-        UserChatChannelMembership.any_instance.expects(:update!).with("muted" => "true").once
+        UserChatChannelMembership.any_instance.expects(:update!).with({ "muted" => "true" }).once
 
         put "/chat/api/chat_channels/#{chat_channel.id}/notifications_settings.json",
             params: {

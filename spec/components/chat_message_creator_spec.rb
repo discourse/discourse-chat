@@ -93,6 +93,16 @@ describe DiscourseChat::ChatMessageCreator do
       }.to change { ChatMessage.count }.by(1)
     end
 
+    it "sets the last_editor_id to the user who created the message" do
+      message =
+        DiscourseChat::ChatMessageCreator.create(
+          chat_channel: public_chat_channel,
+          user: user1,
+          content: "this is a message",
+        ).chat_message
+      expect(message.last_editor_id).to eq(user1.id)
+    end
+
     it "creates mention notifications for public chat" do
       expect {
         DiscourseChat::ChatMessageCreator.create(

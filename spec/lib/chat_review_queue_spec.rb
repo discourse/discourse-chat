@@ -117,6 +117,7 @@ describe DiscourseChat::ChatReviewQueue do
 
       it "ignores the cooldown window when the message is edited" do
         DiscourseChat::ChatMessageUpdater.update(
+          guardian: Guardian.new(message.user),
           chat_message: message,
           new_content: "I'm editing this message. Please flag it.",
         )

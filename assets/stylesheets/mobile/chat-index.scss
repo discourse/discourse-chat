@@ -3,7 +3,6 @@
   overflow: hidden; //prevents double scroll
   .channels-list {
     overflow-y: overlay;
-    overflow-x: hidden;
     padding-bottom: 6rem;
     box-sizing: border-box;
     background-color: var(--primary-very-low);
@@ -21,12 +20,6 @@
 
       &:not(:last-child) {
         border-bottom: 1px solid var(--primary-low);
-      }
-
-      &:hover {
-        //technically not even needed cause thee is no hover on mobile, but just in case we reuse in the future for desktop - later
-        margin: 0 -1.5rem;
-        padding: 0 3rem;
       }
     }
 

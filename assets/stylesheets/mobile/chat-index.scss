@@ -14,14 +14,18 @@
     }
 
     .chat-channel-row {
-      margin: 0;
+      margin: 0 1.5rem;
       padding: 0;
       border-radius: 0;
 
       &:not(:last-child) {
-        .chat-channel-title {
-          border-bottom: 1px solid var(--primary-low);
-        }
+        border-bottom: 1px solid var(--primary-low);
+      }
+
+      &:hover {
+        //technically not even needed cause thee is no hover on mobile, but just in case we reuse in the future for desktop
+        margin: 0 -1.5rem;
+        padding: 0 3rem;
       }
     }
 
@@ -57,7 +61,6 @@
     }
 
     .chat-channel-title {
-      margin-inline: 1.5rem;
       padding: 1.25rem 0;
       width: 100%;
       overflow: hidden;
@@ -82,12 +85,6 @@
       &__category-badge {
         font-size: var(--font-up-2);
       }
-    }
-
-    .chat-channel-unread-indicator {
-      position: absolute;
-      right: 2rem;
-      left: unset !important;
     }
   }
 

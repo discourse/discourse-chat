@@ -13,6 +13,16 @@
       }
     }
 
+    @media (hover: none) {
+      .chat-channel-row:hover {
+        background: transparent;
+      }
+
+      .chat-channel-row:active {
+        background: var(--primary-low);
+      }
+    }
+
     .chat-channel-row {
       margin: 0 1.5rem;
       padding: 0;
@@ -20,12 +30,6 @@
 
       &:not(:last-child) {
         border-bottom: 1px solid var(--primary-low);
-      }
-
-      &:hover {
-        //technically not even needed cause thee is no hover on mobile, but just in case we reuse in the future for desktop
-        margin: 0 -1.5rem;
-        padding: 0 3rem;
       }
     }
 

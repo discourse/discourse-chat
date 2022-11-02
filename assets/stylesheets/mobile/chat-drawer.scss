@@ -88,6 +88,15 @@
       position: absolute;
       right: 2rem;
       left: unset !important;
+
+      & ~ .user-status-message {
+        right: 3.5rem;
+      }
+    }
+
+    .user-status-message {
+      position: absolute;
+      right: 1.5rem;
     }
   }
 

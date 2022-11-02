@@ -35,9 +35,6 @@ sv:
       browse_all_channels: "Bläddra bland alla kanaler"
       move_to_channel:
         title: "Flytta meddelanden till kanal"
-        instructions:
-          one: "Du flyttar <strong>1</strong> -meddelande. Välj en destinationskanal. Ett platshållarmeddelande kommer att skapas i kanalen <strong>%{channelTitle}</strong> för att indikera att detta meddelande har flyttats."
-          other: "Du flyttar <strong>%{count}</strong> meddelanden. Välj en destinationskanal. Ett platshållarmeddelande kommer att skapas i kanalen <strong>%{channelTitle}</strong> för att indikera att dessa meddelanden har flyttats."
         confirm_move: "Flytta meddelanden"
       channel_settings:
         title: "Kanalinställningar"
@@ -214,21 +211,21 @@ sv:
         no_memberships: Denna kanal har inga medlemmar
         no_memberships_found: Inga medlemmar hittades
         memberships_count:
-          one: 1 medlem
+          one: "%{count} medlem"
           other: "%{count} medlemmar"
       create_channel:
         auto_join_users:
           warning_groups:
-            one: Lägg automatiskt till %{members_count} användare från %{group_1}?
-            other: Lägg automatiskt till %{members_count} användare från %{group_1} och %{group_2}?
+            one: Lägg automatiskt till %{members_count} användare från %{group}?
+            other: Lägg automatiskt till %{members_count} användare från %{group} och %{group_2}?
           warning_multiple_groups: Lägg automatiskt till %{members_count} användare från %{group_1} och %{count} andra?
         choose_category:
           label: "Välj en kategori"
           none: "Välj en..."
           default_hint: Hantera åtkomst genom att besöka <a href=%{link} target="_blank">%{category} säkerhetsinställningar</a>
           hint_groups:
-            one: Användare i %{hint_1} kommer att ha åtkomst till denna kanal enligt <a href=%{link} target="_blank">säkerhetsinställningar</a>
-            other: Användare i %{hint_1} och %{hint_2} kommer att ha åtkomst till denna kanal enligt <a href=%{link} target="_blank">säkerhetsinställningarna</a>
+            one: Användare i %{hint} kommer att ha åtkomst till denna kanal enligt <a href=%{link} target="_blank">säkerhetsinställningar</a>
+            other: Användare i %{hint} och %{hint_2} kommer att ha åtkomst till denna kanal enligt <a href=%{link} target="_blank">säkerhetsinställningarna</a>
           hint_multiple_groups: Användare i %{hint_1} och %{count} andra grupper kommer att ha åtkomst till denna kanal enligt <a href=%{link} target="_blank">säkerhetsinställningarna</a>
         create: "Skapa kanal"
         description: "Beskrivning (valfritt)"
@@ -338,6 +335,9 @@ sv:
       topic_button_title: "Chatt"
       emoji_picker:
         no_results: "Inga resultat"
+      draft_channel_screen:
+        header: "Nytt meddelande"
+        cancel: "Avbryt"
     notifications:
       chat_invitation: "bjöd in dig att gå med i en chattkanal"
       chat_invitation_html: "<span>%{username}</span> <span>bjöd in dig att gå med i en chattkanal</span>"
@@ -346,12 +346,12 @@ sv:
         chat_mention:
           direct: 'nämnde dig i "%{channel}"'
           direct_html: '<span>%{username}</span> <span>nämnde dig i "%{channel}"</span>'
-          other: 'nämnde %{identifier} i "%{channel}"'
+          other_plain: 'nämnde %{identifier} i "%{channel}"'
           other_html: '<span>%{username}</span> <span>nämnde %{identifier} i "%{channel}"</span>'
         direct_message_chat_mention:
           direct: "nämnde dig i personlig chatt"
           direct_html: "<span>%{username}</span> <span>nämnde dig i en personlig chatt</span>"
-          other: "nämnde %{identifier} i personlig chatt"
+          other_plain: "nämnde %{identifier} i personlig chatt"
           other_html: "<span>%{username}</span> <span>nämnde %{identifier} i personlig chatt</span>"
         chat_message: "Nytt chattmeddelande"
         chat_quoted: "%{username} citerade ditt chattmeddelande"

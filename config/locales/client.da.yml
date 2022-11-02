@@ -126,6 +126,8 @@ da:
         public: "Kanalhistorikken gemmes i %{days} dage."
         dm: "Personlig chathistorik gemmes i %{days} dage."
       topic_button_title: "Chat"
+      draft_channel_screen:
+        cancel: "Annuller"
     notifications:
       chat_invitation_html: "<span>%{username}</span> <span>inviterede dig til at deltage i en chatkanal</span>"
       chat_quoted: "<span>%{username}</span> %{description}"

@@ -134,10 +134,10 @@ ru:
     popup:
       chat_mention:
         direct: 'Пользователь %{username} упомянул вас на канале "%{channel}"'
-        other: 'Пользователь %{username} упомянул %{identifier} на канале "%{channel}"'
+        other_type: 'Пользователь %{username} упомянул %{identifier} в канале "%{channel}"'
       direct_message_chat_mention:
         direct: "Пользователь %{username} упомянул вас в личном чате"
-        other: "Пользователь %{username} упомянул %{identifier} в личном чате"
+        other_type: "Пользователь %{username} упомянул %{identifier} в личном чате"
       new_chat_message: 'Пользователь %{username} отправил сообщение на канале "%{channel}"'
       new_direct_chat_message: "Пользователь %{username} отправил сообщение в личный чат"
   discourse_automation:

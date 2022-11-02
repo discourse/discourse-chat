@@ -36,7 +36,7 @@ he:
       move_to_channel:
         title: "העברת הודעות לערוץ"
         instructions:
-          one: "פעולה זו תעביר הודעה <strong>אחת</strong>. יש לבחור ערוץ יעד. הודעה ממלאת מקום תיווצר בערוץ <strong>%{channelTitle}</strong> כדי לציין שההודעה הזאת הועברה."
+          one: "פעולה זו תעביר הודעה <strong>%{count}</strong>. יש לבחור ערוץ יעד. הודעה ממלאת מקום תיווצר בערוץ <strong>%{channelTitle}</strong> כדי לציין שההודעה הזאת הועברה."
           two: "פעולה זו תעביר <strong>%{count}</strong> הודעות. יש לבחור ערוץ יעד. הודעה ממלאת מקום תיווצר בערוץ <strong>%{channelTitle}</strong> כדי לציין שההודעות האלו הועברו."
           many: "פעולה זו תעביר <strong>%{count}</strong> הודעות. יש לבחור ערוץ יעד. הודעה ממלאת מקום תיווצר בערוץ <strong>%{channelTitle}</strong> כדי לציין שההודעות האלו הועברו."
           other: "פעולה זו תעביר <strong>%{count}</strong> הודעות. יש לבחור ערוץ יעד. הודעה ממלאת מקום תיווצר בערוץ <strong>%{channelTitle}</strong> כדי לציין שההודעות האלו הועברו."
@@ -230,7 +230,7 @@ he:
         no_memberships: אין חברים בערוץ הזה
         no_memberships_found: לא נמצאו חברים
         memberships_count:
-          one: חבר אחד
+          one: "חבר %{count}"
           two: "%{count} חברים"
           many: "%{count} חברים"
           other: "%{count} חברים"
@@ -238,20 +238,20 @@ he:
         auto_join_users:
           public_category_warning: "%{category} היא קטגוריה ציבורית. להוסיף את כל המשתמשים שהיו פעילים לאחרונה לערוץ הזה?"
           warning_groups:
-            one: להוסיף %{members_count} משתמשים מתוך %{group_1} אוטומטית?
-            two: להוסיף %{members_count} משתמשים מתוך %{group_1} ומתוך %{group_2} אוטומטית?
-            many: להוסיף %{members_count} משתמשים מתוך %{group_1} ומתוך %{group_2} אוטומטית?
-            other: להוסיף %{members_count} משתמשים מתוך %{group_1} ומתוך %{group_2} אוטומטית?
+            one: להוסיף %{members_count} משתמשים מתוך %{group} אוטומטית?
+            two: להוסיף %{members_count} משתמשים מתוך %{group} ומתוך %{group_2} אוטומטית?
+            many: להוסיף %{members_count} משתמשים מתוך %{group} ומתוך %{group_2} אוטומטית?
+            other: להוסיף %{members_count} משתמשים מתוך %{group} ומתוך %{group_2} אוטומטית?
           warning_multiple_groups: להוסיף %{members_count} משתמשים מתוך %{group_1} ועוד %{count} קבוצות אוטומטית?
         choose_category:
           label: "נא לבחור קטגוריה"
           none: "נא לבחור אחד…"
           default_hint: ניתן לנהל את הגישה באמצעות ביקור ב<a href=%{link} target="_blank">הגדרות האבטחה של %{category}</a>
           hint_groups:
-            one: למשתמשים ב־%{hint_1} תהיה גישה לערוץ בהתאם ל<a href=%{link} target="_blank">הגדרות האבטחה</a>
-            two: למשתמשים ב־%{hint_1} וב־%{hint_2} תהיה גישה לערוץ בהתאם ל<a href=%{link} target="_blank">הגדרות האבטחה</a>
-            many: למשתמשים ב־%{hint_1} וב־%{hint_2} תהיה גישה לערוץ בהתאם ל<a href=%{link} target="_blank">הגדרות האבטחה</a>
-            other: למשתמשים ב־%{hint_1} וב־%{hint_2} תהיה גישה לערוץ בהתאם ל<a href=%{link} target="_blank">הגדרות האבטחה</a>
+            one: למשתמשים ב־%{hint} תהיה גישה לערוץ בהתאם ל<a href=%{link} target="_blank">הגדרות האבטחה</a>
+            two: למשתמשים ב־%{hint} וב־%{hint_2} תהיה גישה לערוץ בהתאם ל<a href=%{link} target="_blank">הגדרות האבטחה</a>
+            many: למשתמשים ב־%{hint} וב־%{hint_2} תהיה גישה לערוץ בהתאם ל<a href=%{link} target="_blank">הגדרות האבטחה</a>
+            other: למשתמשים ב־%{hint} וב־%{hint_2} תהיה גישה לערוץ בהתאם ל<a href=%{link} target="_blank">הגדרות האבטחה</a>
           hint_multiple_groups: למשתמשים ב־%{hint_1} וב־%{count} קבוצות נוספות תהיה גישה לערוץ בהתאם ל<a href=%{link} target="_blank">הגדרות האבטחה</a>
         create: "יצירת ערוץ"
         description: "תיאור (רשות)"
@@ -375,7 +375,7 @@ he:
       topic_button_title: "צ׳אט"
       flags:
         off_topic: "הודעה זו לא תואמת לדיון הנוכחי כפי שהוגדר בכותרת הערוץ וכנראה שצריך להעביר אותה."
-        inappropriate: "הודעה זו מכילה תוכן שאדם מן השורה עשוי להחשיב כפוגעני, נצלני או מפר את <a href=\"/guidelines\">הכללים המנחים את הקהילה שלנו</a>."
+        inappropriate: "הודעה זו מכילה תוכן שאדם מן השורה עשוי להחשיב כפוגעני, נצלני או מפר את <a href=\"%{basePath}/guidelines\">הכללים המנחים את הקהילה שלנו</a>."
         spam: "הודעה זו היא פרסומת או השחתה. היא אינה שימושית או רלוונטית לערוץ הנוכחי."
         notify_user: "אשמח לדבר עם אותו גורם ישירות ובאופן אישי על ההודעה שנשלחה על ידי הגורם."
         notify_moderators: "הודעה זו דורשת את התערבות הסגל מסיבות אחרות שאינן מופיעות לעיל."
@@ -394,6 +394,9 @@ he:
         symbols: "סמלים"
         search_placeholder: "חיפוש לפי שם וכינוי של האמוג׳י…"
         no_results: "אין תוצאות"
+      draft_channel_screen:
+        header: "הודעה חדשה"
+        cancel: "ביטול"
     notifications:
       chat_invitation: "נשלחה אליך הזמנה להצטרף לערוץ צ׳אט"
       chat_invitation_html: "<span>הוזמנת להצטרף לערוץ צ׳אט על ידי</span> <span>%{username}</span>"
@@ -402,12 +405,12 @@ he:
         chat_mention:
           direct: 'אוזכרת בערוץ „%{channel}”'
           direct_html: '<span>אוזכרת בערוץ „%{channel}” על ידי</span> <span>%{username}</span>'
-          other: 'נוסף אזכור של %{identifier} בערוץ „%{channel}”'
+          other_plain: 'נוסף אזכור של %{identifier} בערוץ „%{channel}”'
           other_html: '<span>נוסף אזכור של %{identifier} בערוץ „%{channel}” על ידי</span> <span>%{username}</span>'
         direct_message_chat_mention:
           direct: "אוזכרת בצ׳אט אישי"
           direct_html: "<span>אוזכרת בצ׳אט אישי על ידי</span> <span>%{username}</span>"
-          other: "נוסף אזכור של %{identifier} בצ׳אט אישי"
+          other_plain: "נוסף אזכור של %{identifier} בצ׳אט אישי"
           other_html: "<span>נוסף אזכור של ‎%{identifier} בצ׳אט אישי על ידי</span> <span>%{username}</span>"
         chat_message: "הודעת צ׳אט חדשה"
         chat_quoted: "הודעת הצ׳אט שלך צוטטה על ידי %{username}"

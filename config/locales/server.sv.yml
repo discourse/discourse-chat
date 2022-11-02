@@ -117,10 +117,10 @@ sv:
     popup:
       chat_mention:
         direct: '%{username} nämnde dig i "%{channel}"'
-        other: '%{username} nämnde %{identifier} i "%{channel}"'
+        other_type: '%{username} nämnde %{identifier} i "%{channel}"'
       direct_message_chat_mention:
         direct: "%{username} nämnde dig i en personlig chatt"
-        other: "%{username} nämnde %{identifier} i personlig chatt"
+        other_type: "%{username} nämnde %{identifier} i personlig chatt"
       new_chat_message: '%{username} skickade ett meddelande i "%{channel}"'
       new_direct_chat_message: "%{username} skickade ett meddelande i personlig chatt"
   discourse_automation:

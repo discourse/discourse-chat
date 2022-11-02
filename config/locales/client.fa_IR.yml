@@ -177,13 +177,13 @@ fa_IR:
         no_memberships: این کانال هنوز هیچ عضوی ندارد
         no_memberships_found: هیچ عضوی یافت نشد
         memberships_count:
-          one: ۱ عضو
+          one: "%{count} عضو"
           other: "%{count} عضو"
       create_channel:
         auto_join_users:
           warning_groups:
-            one: به طور خودکار %{members_count} کاربر از گروه %{group_1} اضافه شود؟
-            other: به طور خودکار %{members_count} کاربر از گروه %{group_1} و %{group_2} اضافه شود؟
+            one: به طور خودکار %{members_count} کاربر از گروه %{group} اضافه شود؟
+            other: به طور خودکار %{members_count} کاربر از گروه %{group} و %{group_2} اضافه شود؟
           warning_multiple_groups: به طور خودکار %{members_count} کاربر از گروه %{group_1} و %{count} نفر دیگر اضافه شود؟
         choose_category:
           label: "انتخاب دسته‌بندی"
@@ -262,6 +262,9 @@ fa_IR:
         activities: "فعالیت‌ها"
         flags: "پرچم‌ها"
         no_results: "هیج نتیجه‌ای نداشت"
+      draft_channel_screen:
+        header: "پیام جدید"
+        cancel: "انصراف"
     notifications:
       chat_quoted: "<span>%{username}</span> %{description}"
       popup:

@@ -160,11 +160,6 @@ pl_PL:
         no_channels: "Żadne kanały nie pasują do Twojego wyszukiwania"
       channel:
         no_memberships_found: Nie znaleziono członków
-        memberships_count:
-          one: 1 członek
-          few: "%{count} członków"
-          many: "%{count} członków"
-          other: "%{count} członków"
       create_channel:
         choose_category:
           label: "Wybierz kategorię"
@@ -262,6 +257,9 @@ pl_PL:
       topic_button_title: "Czat"
       emoji_picker:
         no_results: "Brak wyników"
+      draft_channel_screen:
+        header: "Nowa wiadomość"
+        cancel: "Anuluj"
     notifications:
       chat_quoted: "<span>%{username}</span> %{description}"
       popup:

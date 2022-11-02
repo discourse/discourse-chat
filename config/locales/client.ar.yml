@@ -6,6 +6,12 @@
 
 ar:
   js:
+    admin:
+      logs:
+        staff_actions:
+          actions:
+            chat_channel_status_change: "تم تغيير حالة قناة الدردشة"
+            chat_channel_delete: "تم حذف قناة الدردشة"
     chat:
       dates:
         time_tiny: "h:mm"
@@ -118,7 +124,7 @@ ar:
         choose_category:
           label: "اختيار فئة"
           none: "اختر واحدة..."
-          default_hint: إدارة الوصول من خلال زيارة <a href=%{link} target="_blank">%{category} إعدادات الأمان</a>
+          default_hint: إدارة الوصول بالانتقال إلى <a href=%{link} target="_blank">%{category} إعدادات الأمان</a>
         create: "إنشاء قناة"
         description: "الوصف (اختياري)"
         name: "اسم القناة"

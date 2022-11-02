@@ -37,10 +37,10 @@ da:
     popup:
       chat_mention:
         direct: '%{username} nævnte dig i "%{channel}"'
-        other: '%{username} nævnte %{identifier} i "%{channel}"'
+        other_type: '%{username} nævnte %{identifier} i "%{channel}"'
       direct_message_chat_mention:
         direct: "%{username} nævnte dig i personlig chat"
-        other: "%{username} nævnte %{identifier} i personlig chat"
+        other_type: "%{username} nævnte %{identifier} i personlig chat"
       new_chat_message: '%{username} sendte en besked i "%{channel}"'
       new_direct_chat_message: "%{username} sendte en besked i personlig chat"
   discourse_automation:

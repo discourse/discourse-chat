@@ -134,10 +134,10 @@ he:
     popup:
       chat_mention:
         direct: 'אוזכרת בערוץ „%{channel}” על ידי %{username}'
-        other: 'נוסף אזכור של %{identifier} בערוץ „%{channel}” על ידי %{username}'
+        other_type: 'נוסף אזכור של %{identifier} בערוץ „%{channel}” על ידי %{username}'
       direct_message_chat_mention:
         direct: "אוזכרת בצ׳אט אישי על ידי %{username}"
-        other: "נוסף אזכור של ‎%{identifier} בצ׳אט אישי על ידי %{username}"
+        other_type: "נוסף אזכור של ‎%{identifier} בצ׳אט אישי על ידי %{username}"
       new_chat_message: 'נשלחה הודעה על ידי %{username} ב־„%{channel}”'
       new_direct_chat_message: "נשלחה הודעה על ידי %{username} בצ׳אט אישי"
   discourse_automation:

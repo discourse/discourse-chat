@@ -29,6 +29,7 @@ register_asset "stylesheets/common/incoming-chat-webhooks.scss"
 register_asset "stylesheets/mobile/chat-message.scss", :mobile
 register_asset "stylesheets/desktop/chat-message.scss", :desktop
 register_asset "stylesheets/common/chat-channel-title.scss"
+register_asset "stylesheets/desktop/chat-channel-title.scss", :desktop
 register_asset "stylesheets/common/full-page-chat-header.scss"
 register_asset "stylesheets/common/chat-reply.scss"
 register_asset "stylesheets/common/chat-message.scss"
